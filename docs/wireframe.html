@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rural NbS Scan — TTL Tool Wireframe v0</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: #f8f7f4; color: #1a1a18; font-size: 12px; line-height: 1.4; }
+  .app { width: 100%; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* HEADER */
+  .top-bar { display: flex; align-items: center; gap: 16px; padding: 10px 18px; background: #fff; border-bottom: 1px solid #d3d1c7; }
+  .logo { font-size: 15px; font-weight: 700; color: #0c447c; }
+  .version { font-size: 11px; color: #888780; }
+  .top-bar .spacer { flex: 1; }
+  .user-chip { font-size: 11px; padding: 4px 10px; background: #f1efe8; border-radius: 12px; color: #444441; }
+
+  /* CONTEXT STRIP */
+  .context-strip { display: flex; gap: 18px; padding: 8px 18px; background: #faeeda; border-bottom: 1px solid #e6c388; font-size: 11px; color: #4a3208; }
+  .context-strip b { color: #633806; font-weight: 600; }
+
+  /* TABS */
+  nav.tabs { display: flex; gap: 0; background: #fff; border-bottom: 1px solid #d3d1c7; padding: 0 18px; }
+  nav.tabs button { font: inherit; background: none; border: none; padding: 10px 16px; font-size: 12px; color: #5f5e5a; cursor: pointer; border-bottom: 2px solid transparent; }
+  nav.tabs button:hover { color: #1a1a18; }
+  nav.tabs button.active { color: #0c447c; border-bottom-color: #0c447c; font-weight: 600; }
+  nav.tabs button.restricted { color: #b4b2a9; }
+  nav.tabs button.restricted::before { content: "⚠ "; }
+  nav.tabs .nav-spacer { flex: 1; }
+
+  /* MAIN AREA */
+  main { flex: 1; display: flex; padding: 14px 18px 18px; gap: 12px; overflow: hidden; }
+  section[data-panel] { display: none; flex: 1; gap: 12px; }
+  section[data-panel].active { display: flex; }
+
+  /* PANELS */
+  .panel { background: #fff; border: 1px solid #d3d1c7; border-radius: 6px; padding: 12px 14px; }
+  .panel h2 { font-size: 12px; font-weight: 700; color: #5f5e5a; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 8px; }
+  .panel h3 { font-size: 11px; font-weight: 700; color: #444441; margin: 10px 0 4px; }
+  .panel p, .panel li { font-size: 11px; line-height: 1.5; color: #2c2c2a; }
+  .panel .muted { color: #888780; font-size: 10px; }
+
+  .left { width: 280px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+  .center { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .right { width: 320px; flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; }
+
+  /* CONTROLS */
+  .control-group { margin-bottom: 10px; }
+  .control-group label { font-size: 10px; font-weight: 600; color: #5f5e5a; display: block; margin-bottom: 3px; letter-spacing: .03em; text-transform: uppercase; }
+  .control-group select, .control-group input[type=text] { width: 100%; font: inherit; padding: 5px 8px; border: 1px solid #d3d1c7; border-radius: 4px; background: #fff; font-size: 11px; }
+  .control-group .radio-list, .control-group .check-list { display: flex; flex-direction: column; gap: 4px; }
+  .control-group .radio-list label, .control-group .check-list label { display: flex; align-items: center; gap: 6px; text-transform: none; letter-spacing: 0; font-weight: normal; font-size: 11px; color: #1a1a18; }
+  .toggle { display: inline-flex; gap: 0; border: 1px solid #d3d1c7; border-radius: 4px; overflow: hidden; }
+  .toggle button { font: inherit; background: #fff; border: none; padding: 4px 10px; font-size: 11px; cursor: pointer; color: #5f5e5a; }
+  .toggle button.on { background: #0c447c; color: #fff; }
+  .slider-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 11px; }
+  .slider-row .name { flex: 1; }
+  .slider-row input[type=range] { width: 80px; }
+  .slider-row .val { width: 32px; text-align: right; color: #888780; font-size: 10px; }
+
+  /* VARIABLE CHIPS */
+  .var-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .var-chip { font-size: 10px; padding: 2px 7px; background: #f1efe8; border: 1px solid #e0ddd2; border-radius: 10px; color: #444441; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; }
+  .var-chip:hover { background: #e8e6dc; }
+  .var-chip .cluster-n { background: #eeedfe; color: #3c3489; font-size: 9px; font-weight: 700; padding: 0 4px; border-radius: 6px; }
+  .var-chip .src-native { background: #e1f5ee; color: #085041; font-size: 8px; font-weight: 700; padding: 0 3px; border-radius: 2px; }
+  .var-chip .src-upload { background: #faeeda; color: #633806; font-size: 8px; font-weight: 700; padding: 0 3px; border-radius: 2px; }
+
+  /* MAP */
+  .map-wrap { background: #fff; border: 1px solid #d3d1c7; border-radius: 6px; flex: 1; position: relative; overflow: hidden; min-height: 380px; }
+  .map { width: 100%; height: 100%; min-height: 360px; background: #e8e7e3; }
+  .map-overlay { position: absolute; top: 12px; left: 12px; background: rgba(255,255,255,.95); border: 1px solid #d3d1c7; border-radius: 4px; padding: 6px 10px; font-size: 10px; color: #444441; }
+  .map-overlay b { color: #1a1a18; }
+  .map-legend { position: absolute; bottom: 12px; left: 12px; background: rgba(255,255,255,.95); border: 1px solid #d3d1c7; border-radius: 4px; padding: 8px 10px; font-size: 10px; }
+  .map-legend .leg-title { font-size: 10px; font-weight: 700; color: #5f5e5a; margin-bottom: 4px; letter-spacing: .04em; }
+  .map-legend .leg-row { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+  .map-legend .swatch { width: 14px; height: 10px; border-radius: 2px; }
+  .map-controls { position: absolute; top: 12px; right: 12px; background: #fff; border: 1px solid #d3d1c7; border-radius: 4px; }
+  .map-controls button { font: inherit; background: none; border: none; padding: 5px 8px; font-size: 14px; color: #5f5e5a; cursor: pointer; display: block; width: 28px; }
+  .map-controls button:not(:last-child) { border-bottom: 1px solid #e8e7e3; }
+  .map-attr { position: absolute; bottom: 6px; right: 8px; font-size: 9px; color: #888780; background: rgba(255,255,255,.9); padding: 2px 6px; border-radius: 2px; }
+
+  /* OPP FINGERPRINT */
+  .finger-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #f1efe8; font-size: 11px; }
+  .finger-row:last-child { border-bottom: none; }
+  .finger-row .label { flex: 1; color: #5f5e5a; }
+  .finger-row .val { font-weight: 600; color: #1a1a18; }
+  .finger-row .bar { width: 60px; height: 6px; background: #f1efe8; border-radius: 3px; overflow: hidden; }
+  .finger-row .bar > div { height: 100%; background: #4ca57c; }
+  .stack-bar { display: flex; width: 100%; height: 14px; border-radius: 3px; overflow: hidden; margin: 4px 0; }
+  .stack-bar div { font-size: 9px; color: #fff; padding: 1px 4px; line-height: 12px; font-weight: 600; }
+
+  /* SCORECARD */
+  .scorecard-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 11px; }
+  .scorecard-row .name { flex: 1; color: #2c2c2a; }
+  .scorecard-row .effect-bar { display: flex; width: 100px; }
+  .scorecard-row .effect-bar > div { flex: 1; height: 8px; background: #f1efe8; }
+  .scorecard-row .effect-bar > div.neg { background: #c98a3a; }
+  .scorecard-row .effect-bar > div.pos { background: #4ca57c; }
+  .scorecard-row .effect-bar > div.strong-pos { background: #1f7a4d; }
+  .scorecard-row .effect-bar > div.strong-neg { background: #8c2e0e; }
+  .scorecard-row .conf { font-size: 9px; color: #888780; width: 32px; }
+
+  /* ECONOMIC CARD */
+  .econ-card { background: #faeeda; border-left: 3px solid #c98a3a; padding: 8px 10px; border-radius: 0 4px 4px 0; margin-top: 8px; }
+  .econ-card .archetype { font-size: 11px; font-weight: 700; color: #633806; }
+  .econ-card .range { font-size: 10px; color: #4a3208; margin-top: 2px; }
+  .econ-card .narr { font-size: 10px; color: #5a4222; margin-top: 4px; line-height: 1.45; }
+
+  /* COMPARE */
+  .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .compare-card { background: #fff; border: 1px solid #d3d1c7; border-radius: 6px; padding: 10px 12px; }
+  .compare-card .ctitle { font-size: 12px; font-weight: 700; color: #0c447c; margin-bottom: 4px; }
+  .compare-card .csub { font-size: 10px; color: #888780; margin-bottom: 8px; }
+  .compare-card .mini-map { height: 180px; background: #e8e7e3; border-radius: 4px; margin-bottom: 8px; position: relative; overflow: hidden; }
+
+  /* VARIABLE CARD */
+  .var-table { display: grid; grid-template-columns: 240px 1fr; gap: 12px; }
+  .var-list { background: #fff; border: 1px solid #d3d1c7; border-radius: 6px; padding: 8px; max-height: 520px; overflow-y: auto; }
+  .var-list .var-item { padding: 6px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; display: flex; gap: 6px; align-items: center; margin-bottom: 1px; }
+  .var-list .var-item:hover { background: #f8f7f4; }
+  .var-list .var-item.active { background: #e6f1fb; }
+  .var-list .var-item .vname { flex: 1; font-weight: 500; }
+  .var-list .var-item .vcluster { font-size: 9px; background: #eeedfe; color: #3c3489; padding: 1px 4px; border-radius: 2px; font-weight: 700; }
+
+  .var-detail { background: #fff; border: 1px solid #d3d1c7; border-radius: 6px; padding: 16px 20px; }
+  .var-detail h2 { font-size: 16px; font-weight: 700; color: #1a1a18; margin-bottom: 2px; text-transform: none; letter-spacing: 0; }
+  .var-detail .subtitle { font-size: 11px; color: #888780; margin-bottom: 14px; }
+  .var-detail .slot { margin-bottom: 14px; }
+  .var-detail .slot-label { font-size: 10px; font-weight: 700; color: #888780; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+  .var-detail .slot-text { font-size: 12px; line-height: 1.55; color: #2c2c2a; }
+  .var-detail .slot.cluster .represents { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .var-detail .represents .rchip { font-size: 10px; padding: 2px 6px; background: #f1efe8; border-radius: 3px; color: #444441; }
+  .var-detail .slot.source { background: #f8f7f4; padding: 10px 12px; border-radius: 4px; }
+  .var-detail .source-line { font-size: 11px; color: #2c2c2a; }
+  .var-detail .source-line .src-native { background: #e1f5ee; color: #085041; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 2px; margin-right: 5px; }
+  .var-detail .mf-preview { background: #f8f7f4; padding: 8px 10px; border-radius: 4px; margin-top: 4px; }
+
+  /* HOTSPOT SLIDERS */
+  .hotspot-sliders { display: flex; flex-direction: column; gap: 8px; }
+  .hs-slider { font-size: 11px; }
+  .hs-slider .hs-head { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+  .hs-slider .hs-name { flex: 1; font-weight: 600; color: #1a1a18; font-size: 11px; }
+  .hs-slider .hs-val { color: #0c447c; font-weight: 700; font-size: 11px; }
+  .hs-slider .hs-bar { width: 100%; height: 4px; background: #f1efe8; border-radius: 2px; position: relative; }
+  .hs-slider .hs-bar .hs-fill { height: 100%; background: #0c447c; border-radius: 2px; }
+  .hs-slider .hs-desc { color: #888780; font-size: 10px; margin-top: 2px; }
+
+  /* DANGER ZONE */
+  .danger-banner { background: #faece7; border: 1px solid #d27b50; border-radius: 6px; padding: 14px 18px; margin-bottom: 14px; }
+  .danger-banner h2 { color: #712b13; text-transform: none; letter-spacing: 0; font-size: 14px; margin-bottom: 4px; }
+  .danger-banner p { color: #5a2410; font-size: 12px; }
+
+  /* MISC */
+  .pill { display: inline-block; font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 600; margin-left: 4px; }
+  .pill.green { background: #e1f5ee; color: #085041; }
+  .pill.amber { background: #faeeda; color: #633806; }
+  .pill.gray { background: #f1efe8; color: #5f5e5a; }
+
+  .placeholder { padding: 40px 20px; text-align: center; color: #888780; background: #f8f7f4; border: 1px dashed #d3d1c7; border-radius: 6px; }
+  .placeholder h3 { color: #5f5e5a; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="top-bar">
+    <div class="logo">🌿 Rural NbS Scan</div>
+    <div class="version">v0 · TTL-Facing Tool · Demonstrator (mock data — Sierra Leone)</div>
+    <div class="spacer"></div>
+    <div class="user-chip">L. Frapaise · WB NbS Solutions</div>
+  </header>
+
+  <!-- CONTEXT STRIP -->
+  <div class="context-strip">
+    <span><b>NbS:</b> Agroforestry</span>
+    <span><b>Country:</b> Sierra Leone</span>
+    <span><b>Admin level:</b> District</span>
+    <span><b>Resolution:</b> 1 km</span>
+    <span><b>Climate:</b> Baseline + SSP2-4.5 / 2050</span>
+    <span><b>Risk mode:</b> A · Hazard × Exposure</span>
+    <span><b>Recipe version:</b> agroforestry v0.3</span>
+  </div>
+
+  <!-- TABS -->
+  <nav class="tabs">
+    <button data-tab="setup">Setup</button>
+    <button data-tab="opp" class="active">Opportunity Space</button>
+    <button data-tab="compare">NbS Comparison</button>
+    <button data-tab="hotspot">TTL Hotspots</button>
+    <button data-tab="vars">Variable Config</button>
+    <div class="nav-spacer"></div>
+    <button data-tab="danger" class="restricted">Danger Zone</button>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- ============= SETUP TAB ============= -->
+    <section data-panel="setup">
+      <div class="left">
+        <div class="panel">
+          <h2>1 · NbS &amp; Scope</h2>
+          <div class="control-group">
+            <label>Nature-based Solution</label>
+            <select>
+              <option>Agroforestry (pilot)</option>
+              <option>Water Harvesting &amp; Conservation</option>
+              <option>Forest Restoration</option>
+              <option>Assisted Natural Regeneration</option>
+              <option>Riparian Buffers / Floodplain Mgmt</option>
+              <option disabled>—— more — see catalogue ——</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Subpractice variant</label>
+            <select>
+              <option>Perennial tree-crop (default)</option>
+              <option>Parkland / scattered trees</option>
+              <option>Alley cropping</option>
+              <option>Boundary planting</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label>Country / region</label>
+            <select><option>Sierra Leone</option></select>
+          </div>
+          <div class="control-group">
+            <label>Sub-national focus</label>
+            <select><option>All districts (national)</option><option>Bo district</option><option>Kenema district</option></select>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>2 · Climate &amp; Resolution</h2>
+          <div class="control-group">
+            <label>Analysis resolution</label>
+            <select><option>1 km (recommended)</option><option>500 m</option><option>5 km</option></select>
+            <p class="muted" style="margin-top:3px">Resolution audit will flag any upsampled inputs.</p>
+          </div>
+          <div class="control-group">
+            <label>Climate risk mode</label>
+            <div class="radio-list">
+              <label><input type="radio" name="mode" checked> Mode A · Hazard × Exposure <span class="pill green">recommended</span></label>
+              <label><input type="radio" name="mode"> Mode B · H × E × Vulnerability</label>
+            </div>
+          </div>
+          <div class="control-group">
+            <label>Scenarios to compare</label>
+            <div class="check-list">
+              <label><input type="checkbox" checked> Baseline (1981–2010)</label>
+              <label><input type="checkbox" checked> SSP2-4.5 · mid-century</label>
+              <label><input type="checkbox"> SSP5-8.5 · mid-century</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="center">
+        <div class="panel" style="flex:1; display:flex; flex-direction:column;">
+          <h2>3 · Recipe summary &amp; dataset readiness</h2>
+          <p>The selected recipe will pull <b>23 variables</b> across 6 thematic categories. <b>19 of 23</b> are native to GEE; <b>3</b> require upload (one-off); <b>1</b> has a community-mirrored asset.</p>
+          <h3>Dataset hosting status</h3>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;">
+            <span class="pill green">19 · native GEE</span>
+            <span class="pill amber">1 · community GEE</span>
+            <span class="pill amber">3 · pending upload</span>
+          </div>
+          <h3 style="margin-top:14px;">Variable themes</h3>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:6px;">
+            <div class="panel" style="padding:8px 10px;"><b>Topographic</b> · 4 vars<br><span class="muted">slope, elevation, aspect, TWI</span></div>
+            <div class="panel" style="padding:8px 10px;"><b>Climatic</b> · 5 vars<br><span class="muted">rainfall, PET, aridity, temp, var.</span></div>
+            <div class="panel" style="padding:8px 10px;"><b>Soil</b> · 4 vars<br><span class="muted">depth, texture, OC, pH</span></div>
+            <div class="panel" style="padding:8px 10px;"><b>LULC / vegetation</b> · 3 vars<br><span class="muted">land cover, NDVI, tree cover</span></div>
+            <div class="panel" style="padding:8px 10px;"><b>Socio-econ / infra</b> · 4 vars<br><span class="muted">distance to road, population, electrification, market access</span></div>
+            <div class="panel" style="padding:8px 10px;"><b>Hazard</b> · 3 vars<br><span class="muted">drought (SPEI), flood, heat</span></div>
+          </div>
+          <h3 style="margin-top:14px;">Variable reduction (correlation analysis)</h3>
+          <p>Correlation clustering will run after standardisation. Expected ~<b>16 representative variables</b> entering MCDA after collapsing |r|&gt;0.7 clusters. Cluster membership is preserved and shown to the user.</p>
+          <div style="margin-top:auto; padding-top:14px;">
+            <button style="background:#0c447c; color:#fff; padding:8px 18px; border-radius:4px; border:none; font-size:12px; font-weight:600; cursor:pointer;">Run analysis →</button>
+            <span class="muted" style="margin-left:10px;">Will run on GEE Python; cached outputs reused where possible</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="panel">
+          <h2>Why these defaults?</h2>
+          <p><b>Resolution: 1 km</b> — coarsest socio-economic input is poverty surface at 1 km; finer outputs would be misleading.</p>
+          <p style="margin-top:8px;"><b>Mode A</b> — recommended for pilot to avoid double-counting vulnerability variables that also appear in TTL Hotspots (Mode B available for full IPCC AR6 risk formulation).</p>
+          <p style="margin-top:8px;"><b>Both scenarios</b> — baseline + SSP2-4.5 supports the "act now vs. delay" narrative for Laurent's TTLs.</p>
+        </div>
+        <div class="panel">
+          <h2>Project context</h2>
+          <p>Pilot use case: <b>Sierra Leone FSRP</b> (Food System Resilience Program). LDCF/GEF preparation in flight; agroforestry features in target landscapes.</p>
+          <p class="muted" style="margin-top:6px;">Methodology applies anywhere — schema is country-agnostic; T7 defines geographic context.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= OPPORTUNITY SPACE TAB (default visible) ============= -->
+    <section data-panel="opp" class="active">
+      <div class="left">
+        <div class="panel">
+          <h2>NbS Context</h2>
+          <p style="font-size:12px;"><b>Agroforestry</b> — perennial tree-crop variant</p>
+          <p class="muted" style="margin-top:4px;">Integration of perennial trees with crops at farm or landscape scale.</p>
+        </div>
+
+        <div class="panel">
+          <h2>Suitability variables (16)</h2>
+          <p class="muted" style="margin-bottom:6px;">Each chip = cluster representative. <span class="cluster-n" style="font-size:9px; background:#eeedfe; color:#3c3489; padding:0 4px; border-radius:6px; font-weight:700;">2</span> = 2 others collapsed in.</p>
+          <div class="var-chips">
+            <span class="var-chip">Slope <span class="cluster-n">3</span><span class="src-native">GEE</span></span>
+            <span class="var-chip">Rainfall<span class="src-native">GEE</span></span>
+            <span class="var-chip">Soil depth<span class="src-native">GEE</span></span>
+            <span class="var-chip">Soil pH<span class="src-native">GEE</span></span>
+            <span class="var-chip">Soil OC<span class="src-native">GEE</span></span>
+            <span class="var-chip">Land cover<span class="src-native">GEE</span></span>
+            <span class="var-chip">Tree cover<span class="src-native">GEE</span></span>
+            <span class="var-chip">NDVI<span class="src-native">GEE</span></span>
+            <span class="var-chip">Aridity index<span class="src-native">GEE</span></span>
+            <span class="var-chip">Heat stress<span class="src-native">GEE</span></span>
+            <span class="var-chip">Drought (SPEI) <span class="cluster-n">2</span><span class="src-native">GEE</span></span>
+            <span class="var-chip">Flood hazard<span class="src-native">GEE</span></span>
+            <span class="var-chip">Distance to road<span class="src-native">GEE</span></span>
+            <span class="var-chip">Population<span class="src-native">GEE</span></span>
+            <span class="var-chip">Farm size proxy<span class="src-upload">UPLOAD</span></span>
+            <span class="var-chip">Electrification<span class="src-upload">UPLOAD</span></span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>What-if scenarios</h2>
+          <p class="muted" style="margin-bottom:6px;">Toggle a limiting factor to see how the opportunity space changes — surfaces investment opportunities the Bank could create.</p>
+          <div class="control-group">
+            <label>Distance to road constraint</label>
+            <div class="toggle"><button class="on">On (default)</button><button>Off</button></div>
+          </div>
+          <div class="control-group">
+            <label>Electrification constraint</label>
+            <div class="toggle"><button class="on">On</button><button>Off</button></div>
+          </div>
+          <p class="muted">Δ vs. baseline: <b style="color:#085041;">+12,400 km²</b> would become viable if roads were available everywhere.</p>
+        </div>
+      </div>
+
+      <div class="center">
+        <div class="map-wrap">
+          <div class="map-overlay"><b>Agroforestry suitability · Sierra Leone</b><br>Baseline · 1 km resolution</div>
+          <div class="map-controls"><button>+</button><button>−</button><button>⌖</button></div>
+          <svg class="map" viewBox="0 0 700 480" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <!-- ocean background -->
+            <rect width="700" height="480" fill="#dde6ea"/>
+            <!-- Sierra Leone-ish shape -->
+            <path d="M 110 90 Q 90 130 100 180 Q 80 230 130 280 Q 150 340 220 380 Q 320 420 420 400 Q 540 380 600 320 Q 640 260 620 180 Q 580 120 480 90 Q 380 70 280 80 Q 200 85 110 90 Z" fill="#e8e7e3" stroke="#888780" stroke-width="1.5"/>
+            <!-- suitability grid overlay (clipped roughly to shape) -->
+            <g clip-path="url(#countryClip)" opacity="0.92">
+              <!-- generate grid cells -->
+              <g>
+                <!-- Very high suitability cluster (interior moderate slope, good rainfall) -->
+                <rect x="240" y="160" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="262" y="160" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="284" y="160" width="22" height="22" fill="#4ca57c"/>
+                <rect x="240" y="182" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="262" y="182" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="284" y="182" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="306" y="182" width="22" height="22" fill="#4ca57c"/>
+                <rect x="240" y="204" width="22" height="22" fill="#4ca57c"/>
+                <rect x="262" y="204" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="284" y="204" width="22" height="22" fill="#4ca57c"/>
+                <rect x="306" y="204" width="22" height="22" fill="#4ca57c"/>
+                <rect x="328" y="204" width="22" height="22" fill="#4ca57c"/>
+
+                <!-- High and moderate -->
+                <rect x="218" y="160" width="22" height="22" fill="#4ca57c"/>
+                <rect x="218" y="182" width="22" height="22" fill="#4ca57c"/>
+                <rect x="218" y="204" width="22" height="22" fill="#c4b04a"/>
+                <rect x="240" y="226" width="22" height="22" fill="#4ca57c"/>
+                <rect x="262" y="226" width="22" height="22" fill="#4ca57c"/>
+                <rect x="284" y="226" width="22" height="22" fill="#4ca57c"/>
+                <rect x="306" y="226" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="328" y="226" width="22" height="22" fill="#4ca57c"/>
+                <rect x="350" y="226" width="22" height="22" fill="#c4b04a"/>
+
+                <!-- South-east hilly: high suitability -->
+                <rect x="372" y="204" width="22" height="22" fill="#4ca57c"/>
+                <rect x="372" y="226" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="394" y="226" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="416" y="226" width="22" height="22" fill="#4ca57c"/>
+                <rect x="372" y="248" width="22" height="22" fill="#1f7a4d"/>
+                <rect x="394" y="248" width="22" height="22" fill="#4ca57c"/>
+                <rect x="416" y="248" width="22" height="22" fill="#4ca57c"/>
+                <rect x="438" y="248" width="22" height="22" fill="#c4b04a"/>
+
+                <!-- Moderate -->
+                <rect x="240" y="248" width="22" height="22" fill="#c4b04a"/>
+                <rect x="262" y="248" width="22" height="22" fill="#c4b04a"/>
+                <rect x="284" y="248" width="22" height="22" fill="#c4b04a"/>
+                <rect x="306" y="248" width="22" height="22" fill="#4ca57c"/>
+                <rect x="328" y="248" width="22" height="22" fill="#c4b04a"/>
+                <rect x="350" y="248" width="22" height="22" fill="#4ca57c"/>
+                <rect x="218" y="226" width="22" height="22" fill="#c4b04a"/>
+                <rect x="218" y="248" width="22" height="22" fill="#c4b04a"/>
+                <rect x="218" y="270" width="22" height="22" fill="#b87f33"/>
+                <rect x="240" y="270" width="22" height="22" fill="#b87f33"/>
+                <rect x="262" y="270" width="22" height="22" fill="#c4b04a"/>
+                <rect x="284" y="270" width="22" height="22" fill="#c4b04a"/>
+                <rect x="306" y="270" width="22" height="22" fill="#c4b04a"/>
+                <rect x="328" y="270" width="22" height="22" fill="#c4b04a"/>
+                <rect x="350" y="270" width="22" height="22" fill="#c4b04a"/>
+                <rect x="372" y="270" width="22" height="22" fill="#4ca57c"/>
+                <rect x="394" y="270" width="22" height="22" fill="#4ca57c"/>
+                <rect x="416" y="270" width="22" height="22" fill="#c4b04a"/>
+                <rect x="438" y="270" width="22" height="22" fill="#c4b04a"/>
+                <rect x="460" y="270" width="22" height="22" fill="#b87f33"/>
+
+                <!-- Low and unsuitable -->
+                <rect x="196" y="248" width="22" height="22" fill="#b87f33"/>
+                <rect x="196" y="270" width="22" height="22" fill="#b87f33"/>
+                <rect x="196" y="292" width="22" height="22" fill="#c4c1b7"/>
+                <rect x="218" y="292" width="22" height="22" fill="#b87f33"/>
+                <rect x="240" y="292" width="22" height="22" fill="#b87f33"/>
+                <rect x="262" y="292" width="22" height="22" fill="#c4b04a"/>
+                <rect x="284" y="292" width="22" height="22" fill="#c4b04a"/>
+                <rect x="306" y="292" width="22" height="22" fill="#c4b04a"/>
+                <rect x="328" y="292" width="22" height="22" fill="#b87f33"/>
+                <rect x="350" y="292" width="22" height="22" fill="#b87f33"/>
+                <rect x="372" y="292" width="22" height="22" fill="#c4b04a"/>
+                <rect x="394" y="292" width="22" height="22" fill="#c4b04a"/>
+                <rect x="416" y="292" width="22" height="22" fill="#c4c1b7"/>
+                <rect x="438" y="292" width="22" height="22" fill="#c4c1b7"/>
+                <rect x="460" y="292" width="22" height="22" fill="#c4c1b7"/>
+
+                <!-- coastal/protected fade -->
+                <rect x="180" y="120" width="22" height="22" fill="#c4c1b7"/>
+                <rect x="160" y="140" width="22" height="22" fill="#c4c1b7"/>
+                <rect x="140" y="170" width="22" height="22" fill="#c4c1b7"/>
+                <rect x="500" y="200" width="22" height="22" fill="#c4c1b7"/>
+                <rect x="522" y="200" width="22" height="22" fill="#c4c1b7"/>
+                <rect x="500" y="222" width="22" height="22" fill="#b87f33"/>
+                <rect x="522" y="222" width="22" height="22" fill="#c4b04a"/>
+                <rect x="500" y="244" width="22" height="22" fill="#c4b04a"/>
+                <rect x="522" y="244" width="22" height="22" fill="#c4b04a"/>
+              </g>
+            </g>
+            <defs>
+              <clipPath id="countryClip">
+                <path d="M 110 90 Q 90 130 100 180 Q 80 230 130 280 Q 150 340 220 380 Q 320 420 420 400 Q 540 380 600 320 Q 640 260 620 180 Q 580 120 480 90 Q 380 70 280 80 Q 200 85 110 90 Z"/>
+              </clipPath>
+            </defs>
+            <!-- country outline (on top) -->
+            <path d="M 110 90 Q 90 130 100 180 Q 80 230 130 280 Q 150 340 220 380 Q 320 420 420 400 Q 540 380 600 320 Q 640 260 620 180 Q 580 120 480 90 Q 380 70 280 80 Q 200 85 110 90 Z" fill="none" stroke="#444441" stroke-width="1.6"/>
+            <!-- city dots -->
+            <circle cx="170" cy="220" r="4" fill="#1a1a18"/><text x="178" y="223" font-size="11" fill="#1a1a18" font-weight="600">Freetown</text>
+            <circle cx="320" cy="290" r="3.5" fill="#1a1a18"/><text x="328" y="293" font-size="10" fill="#1a1a18">Bo</text>
+            <circle cx="430" cy="270" r="3.5" fill="#1a1a18"/><text x="438" y="273" font-size="10" fill="#1a1a18">Kenema</text>
+            <!-- north arrow -->
+            <g transform="translate(650, 30)"><path d="M0 0 L 8 25 L 0 18 L -8 25 Z" fill="#444441"/><text x="-5" y="40" font-size="10" fill="#444441">N</text></g>
+            <!-- scale bar -->
+            <g transform="translate(540, 440)">
+              <rect x="0" y="0" width="60" height="6" fill="#1a1a18"/>
+              <text x="0" y="20" font-size="10" fill="#1a1a18">0  50  100 km</text>
+            </g>
+          </svg>
+          <div class="map-legend">
+            <div class="leg-title">Suitability</div>
+            <div class="leg-row"><span class="swatch" style="background:#1f7a4d"></span> Very high</div>
+            <div class="leg-row"><span class="swatch" style="background:#4ca57c"></span> High</div>
+            <div class="leg-row"><span class="swatch" style="background:#c4b04a"></span> Moderate</div>
+            <div class="leg-row"><span class="swatch" style="background:#b87f33"></span> Low</div>
+            <div class="leg-row"><span class="swatch" style="background:#c4c1b7"></span> Excluded / unsuitable</div>
+          </div>
+          <div class="map-attr">Mock data · resolution 1 km · MCDA + fuzzy</div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="panel">
+          <h2>Opportunity Fingerprint</h2>
+          <p class="muted" style="margin-bottom:8px;">Where this NbS could plausibly be implemented.</p>
+          <div class="finger-row"><span class="label">Total country area</span><span class="val">72,300 km²</span></div>
+          <div class="finger-row"><span class="label">High &amp; very-high suitability</span><span class="val">18,700 km²</span></div>
+          <div class="finger-row"><span class="label">Share of country</span><span class="val">25.9%</span></div>
+          <h3>Suitability classes (km²)</h3>
+          <div class="stack-bar">
+            <div style="background:#1f7a4d; flex: 18.7;">Very Hi 11k</div>
+            <div style="background:#4ca57c; flex: 27.6;">High 27k</div>
+            <div style="background:#c4b04a; flex: 38.2;">Mod 28k</div>
+            <div style="background:#b87f33; flex: 25.2;">Low 18k</div>
+            <div style="background:#c4c1b7; flex: 10.7;">Excl 8k</div>
+          </div>
+          <h3>Within opportunity space</h3>
+          <div class="finger-row"><span class="label">Rural population</span><span class="val">4.3 M</span></div>
+          <div class="finger-row"><span class="label">Smallholder farms</span><span class="val">~620,000</span></div>
+          <div class="finger-row"><span class="label">Production value</span><span class="val">$480 M/yr</span></div>
+          <div class="finger-row"><span class="label">Avg farm size</span><span class="val">1.4 ha</span></div>
+          <h3>Dominant farming systems</h3>
+          <div class="stack-bar">
+            <div style="background:#0c447c; flex: 62;">Mixed rainfed 62%</div>
+            <div style="background:#3c3489; flex: 28;">Tree crop 28%</div>
+            <div style="background:#888780; flex: 10;">Other 10%</div>
+          </div>
+          <h3>Drought exposure (baseline)</h3>
+          <div class="stack-bar">
+            <div style="background:#c4c1b7; flex: 22;">None 22%</div>
+            <div style="background:#c4b04a; flex: 38;">Low 38%</div>
+            <div style="background:#b87f33; flex: 28;">Mod 28%</div>
+            <div style="background:#8c2e0e; flex: 12;">High 12%</div>
+          </div>
+          <h3>Δ under SSP2-4.5 (2050)</h3>
+          <p class="muted" style="margin-top:4px;">Suitable area shrinks <b style="color:#8c2e0e;">−14% (−2,600 km²)</b> by 2050 if no action taken — drier mid-rainy season reduces tree-crop viability in northern districts.</p>
+        </div>
+
+        <div class="panel">
+          <h2>NbS Scorecard</h2>
+          <p class="muted" style="margin-bottom:6px;">Qualitative effects across outcomes a TTL might prioritise.</p>
+          <div class="scorecard-row"><span class="name">Erosion mitigation</span><div class="effect-bar"><div></div><div></div><div></div><div class="pos"></div><div class="pos"></div></div><span class="conf">med</span></div>
+          <div class="scorecard-row"><span class="name">Drought resilience</span><div class="effect-bar"><div></div><div></div><div></div><div class="pos"></div><div></div></div><span class="conf">med</span></div>
+          <div class="scorecard-row"><span class="name">Biodiversity</span><div class="effect-bar"><div></div><div></div><div></div><div class="pos"></div><div class="pos"></div></div><span class="conf">high</span></div>
+          <div class="scorecard-row"><span class="name">Carbon mitigation</span><div class="effect-bar"><div></div><div></div><div></div><div class="pos"></div><div class="pos"></div></div><span class="conf">high</span></div>
+          <div class="scorecard-row"><span class="name">Rural income</span><div class="effect-bar"><div></div><div></div><div></div><div class="pos"></div><div class="pos"></div></div><span class="conf">high</span></div>
+          <div class="scorecard-row"><span class="name">Gender equity</span><div class="effect-bar"><div></div><div></div><div></div><div class="pos"></div><div></div></div><span class="conf">med</span></div>
+          <div class="scorecard-row"><span class="name">Food security</span><div class="effect-bar"><div></div><div></div><div></div><div class="pos"></div><div class="pos"></div></div><span class="conf">high</span></div>
+          <div class="scorecard-row"><span class="name">Fire risk</span><div class="effect-bar"><div></div><div class="neg"></div><div></div><div></div><div></div></div><span class="conf">low</span></div>
+
+          <div class="econ-card">
+            <div class="archetype">Economic archetype: Long Horizon</div>
+            <div class="range">$200–800 / ha establishment · moderate recurring · 5–10 yr to first income</div>
+            <div class="narr">Patient capital or bridging incentives required. Trees mature into a long-lived productive asset. Revenue streams: fruit, timber, NTFPs, carbon (eligible).</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= NbS COMPARISON ============= -->
+    <section data-panel="compare">
+      <div class="center" style="flex:1;">
+        <div class="panel">
+          <h2>Compare NbS in the same geography</h2>
+          <p class="muted">Side-by-side opportunity spaces for Sierra Leone. Overlap highlighted in the third panel.</p>
+        </div>
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="ctitle">Agroforestry</div>
+            <div class="csub">Perennial tree-crop variant · long horizon</div>
+            <div class="mini-map">
+              <svg viewBox="0 0 400 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="180" fill="#dde6ea"/>
+                <path d="M 60 30 Q 50 50 60 70 Q 50 90 80 110 Q 100 130 160 145 Q 240 155 320 145 Q 360 130 360 90 Q 350 50 290 30 Q 200 25 60 30 Z" fill="#e8e7e3" stroke="#888780" stroke-width="1"/>
+                <g opacity="0.9">
+                  <rect x="140" y="60" width="14" height="14" fill="#1f7a4d"/><rect x="154" y="60" width="14" height="14" fill="#1f7a4d"/><rect x="168" y="60" width="14" height="14" fill="#4ca57c"/>
+                  <rect x="140" y="74" width="14" height="14" fill="#1f7a4d"/><rect x="154" y="74" width="14" height="14" fill="#1f7a4d"/><rect x="168" y="74" width="14" height="14" fill="#4ca57c"/>
+                  <rect x="140" y="88" width="14" height="14" fill="#4ca57c"/><rect x="154" y="88" width="14" height="14" fill="#4ca57c"/><rect x="168" y="88" width="14" height="14" fill="#c4b04a"/>
+                  <rect x="200" y="80" width="14" height="14" fill="#4ca57c"/><rect x="214" y="80" width="14" height="14" fill="#1f7a4d"/><rect x="228" y="80" width="14" height="14" fill="#1f7a4d"/>
+                  <rect x="200" y="94" width="14" height="14" fill="#c4b04a"/><rect x="214" y="94" width="14" height="14" fill="#4ca57c"/><rect x="228" y="94" width="14" height="14" fill="#4ca57c"/>
+                  <rect x="240" y="100" width="14" height="14" fill="#c4b04a"/><rect x="254" y="100" width="14" height="14" fill="#b87f33"/>
+                </g>
+              </svg>
+            </div>
+            <div class="finger-row"><span class="label">Suitable area</span><span class="val">18,700 km²</span></div>
+            <div class="finger-row"><span class="label">Population</span><span class="val">4.3 M</span></div>
+            <div class="finger-row"><span class="label">Δ 2050</span><span class="val" style="color:#8c2e0e;">−14%</span></div>
+          </div>
+          <div class="compare-card">
+            <div class="ctitle">Forest Restoration</div>
+            <div class="csub">Assisted natural regeneration variant · medium horizon</div>
+            <div class="mini-map">
+              <svg viewBox="0 0 400 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                <rect width="400" height="180" fill="#dde6ea"/>
+                <path d="M 60 30 Q 50 50 60 70 Q 50 90 80 110 Q 100 130 160 145 Q 240 155 320 145 Q 360 130 360 90 Q 350 50 290 30 Q 200 25 60 30 Z" fill="#e8e7e3" stroke="#888780" stroke-width="1"/>
+                <g opacity="0.9">
+                  <rect x="220" y="80" width="14" height="14" fill="#1f7a4d"/><rect x="234" y="80" width="14" height="14" fill="#1f7a4d"/><rect x="248" y="80" width="14" height="14" fill="#1f7a4d"/>
+                  <rect x="220" y="94" width="14" height="14" fill="#1f7a4d"/><rect x="234" y="94" width="14" height="14" fill="#1f7a4d"/><rect x="248" y="94" width="14" height="14" fill="#4ca57c"/>
+                  <rect x="262" y="94" width="14" height="14" fill="#4ca57c"/><rect x="276" y="94" width="14" height="14" fill="#1f7a4d"/><rect x="290" y="94" width="14" height="14" fill="#4ca57c"/>
+                  <rect x="262" y="108" width="14" height="14" fill="#1f7a4d"/><rect x="276" y="108" width="14" height="14" fill="#4ca57c"/><rect x="290" y="108" width="14" height="14" fill="#c4b04a"/>
+                  <rect x="140" y="74" width="14" height="14" fill="#c4b04a"/><rect x="154" y="74" width="14" height="14" fill="#c4b04a"/>
+                  <rect x="140" y="88" width="14" height="14" fill="#b87f33"/><rect x="154" y="88" width="14" height="14" fill="#b87f33"/>
+                </g>
+              </svg>
+            </div>
+            <div class="finger-row"><span class="label">Suitable area</span><span class="val">14,200 km²</span></div>
+            <div class="finger-row"><span class="label">Population</span><span class="val">2.1 M</span></div>
+            <div class="finger-row"><span class="label">Δ 2050</span><span class="val" style="color:#085041;">−4%</span></div>
+          </div>
+        </div>
+
+        <div class="compare-grid">
+          <div class="compare-card">
+            <div class="ctitle">Spatial overlap</div>
+            <div class="csub">Where both NbS are simultaneously suitable — areas requiring trade-off decisions</div>
+            <div class="finger-row"><span class="label">Overlap area</span><span class="val">5,800 km²</span></div>
+            <div class="finger-row"><span class="label">Only agroforestry</span><span class="val">12,900 km²</span></div>
+            <div class="finger-row"><span class="label">Only forest restoration</span><span class="val">8,400 km²</span></div>
+            <p class="muted" style="margin-top:8px;">Overlap mostly in south-east hilly districts (Kenema, Kailahun). Trade-off informed by tenure, market access, and TTL priorities.</p>
+          </div>
+          <div class="compare-card">
+            <div class="ctitle">Comparative scorecard</div>
+            <div class="csub">Which NbS responds better to which TTL priority</div>
+            <div class="scorecard-row"><span class="name">Erosion</span><span class="muted" style="font-size:10px;">Agro: +2 · Restore: +3</span></div>
+            <div class="scorecard-row"><span class="name">Biodiversity</span><span class="muted" style="font-size:10px;">Agro: +2 · Restore: +3</span></div>
+            <div class="scorecard-row"><span class="name">Rural income</span><span class="muted" style="font-size:10px;">Agro: +2 · Restore: +1</span></div>
+            <div class="scorecard-row"><span class="name">Carbon</span><span class="muted" style="font-size:10px;">Agro: +2 · Restore: +3</span></div>
+            <div class="scorecard-row"><span class="name">Food security</span><span class="muted" style="font-size:10px;">Agro: +2 · Restore: 0</span></div>
+            <p class="muted" style="margin-top:8px;">Restoration scores higher on ecological outcomes; agroforestry higher on livelihood outcomes — typical productive-vs-conservation trade-off.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= TTL HOTSPOTS ============= -->
+    <section data-panel="hotspot">
+      <div class="left">
+        <div class="panel">
+          <h2>TTL priority weights</h2>
+          <p class="muted" style="margin-bottom:10px;">Within the opportunity space, weight the development priorities that matter to your project. Hotspot map updates live.</p>
+          <div class="hotspot-sliders">
+            <div class="hs-slider">
+              <div class="hs-head"><span class="hs-name">Rural poverty</span><span class="hs-val">0.30</span></div>
+              <div class="hs-bar"><div class="hs-fill" style="width:30%;"></div></div>
+              <div class="hs-desc">Areas with high headcount poverty get higher hotspot scores.</div>
+            </div>
+            <div class="hs-slider">
+              <div class="hs-head"><span class="hs-name">Climate risk (rural)</span><span class="hs-val">0.25</span></div>
+              <div class="hs-bar"><div class="hs-fill" style="width:25%;"></div></div>
+              <div class="hs-desc">Hazard × exposure for rural populations (Mode A).</div>
+            </div>
+            <div class="hs-slider">
+              <div class="hs-head"><span class="hs-name">Gender inequality</span><span class="hs-val">0.15</span></div>
+              <div class="hs-bar"><div class="hs-fill" style="width:15%;"></div></div>
+              <div class="hs-desc">GII or proxy for areas with high female labour share in agriculture.</div>
+            </div>
+            <div class="hs-slider">
+              <div class="hs-head"><span class="hs-name">Biodiversity loss</span><span class="hs-val">0.15</span></div>
+              <div class="hs-bar"><div class="hs-fill" style="width:15%;"></div></div>
+              <div class="hs-desc">Recent forest loss + key biodiversity area proximity.</div>
+            </div>
+            <div class="hs-slider">
+              <div class="hs-head"><span class="hs-name">Agricultural production</span><span class="hs-val">0.10</span></div>
+              <div class="hs-bar"><div class="hs-fill" style="width:10%;"></div></div>
+              <div class="hs-desc">Production value at risk; high value = stronger investment case.</div>
+            </div>
+            <div class="hs-slider">
+              <div class="hs-head"><span class="hs-name">IPLC presence</span><span class="hs-val">0.05</span></div>
+              <div class="hs-bar"><div class="hs-fill" style="width:5%;"></div></div>
+              <div class="hs-desc">Indigenous Peoples / Local Community lands (proximity).</div>
+            </div>
+          </div>
+          <p class="muted" style="margin-top:10px;">Weights sum to <b>1.00</b> · CRITIC/Entropy will offer an objective comparison set.</p>
+        </div>
+      </div>
+
+      <div class="center">
+        <div class="map-wrap">
+          <div class="map-overlay"><b>TTL hotspot map</b> · weighted MCDA on the opportunity space</div>
+          <svg class="map" viewBox="0 0 700 480" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <rect width="700" height="480" fill="#dde6ea"/>
+            <path d="M 110 90 Q 90 130 100 180 Q 80 230 130 280 Q 150 340 220 380 Q 320 420 420 400 Q 540 380 600 320 Q 640 260 620 180 Q 580 120 480 90 Q 380 70 280 80 Q 200 85 110 90 Z" fill="#e8e7e3" stroke="#888780" stroke-width="1.5"/>
+            <g clip-path="url(#countryClip2)" opacity="0.92">
+              <!-- Hotspots concentrated where opp space + priorities align -->
+              <rect x="240" y="160" width="22" height="22" fill="#fef0e0" opacity="0.4"/>
+              <rect x="262" y="160" width="22" height="22" fill="#fbcfb0" opacity="0.6"/>
+              <rect x="284" y="182" width="22" height="22" fill="#ed8866"/>
+              <rect x="306" y="204" width="22" height="22" fill="#cb441e"/>
+              <rect x="328" y="226" width="22" height="22" fill="#a02607"/>
+              <rect x="350" y="226" width="22" height="22" fill="#cb441e"/>
+              <rect x="372" y="248" width="22" height="22" fill="#a02607"/>
+              <rect x="394" y="248" width="22" height="22" fill="#a02607"/>
+              <rect x="416" y="270" width="22" height="22" fill="#cb441e"/>
+              <rect x="438" y="270" width="22" height="22" fill="#ed8866"/>
+              <rect x="372" y="270" width="22" height="22" fill="#cb441e"/>
+              <rect x="394" y="270" width="22" height="22" fill="#a02607"/>
+              <rect x="416" y="248" width="22" height="22" fill="#cb441e"/>
+              <rect x="284" y="226" width="22" height="22" fill="#ed8866"/>
+              <rect x="306" y="248" width="22" height="22" fill="#ed8866"/>
+              <rect x="240" y="226" width="22" height="22" fill="#fbcfb0" opacity="0.6"/>
+              <rect x="262" y="226" width="22" height="22" fill="#ed8866"/>
+            </g>
+            <defs>
+              <clipPath id="countryClip2">
+                <path d="M 110 90 Q 90 130 100 180 Q 80 230 130 280 Q 150 340 220 380 Q 320 420 420 400 Q 540 380 600 320 Q 640 260 620 180 Q 580 120 480 90 Q 380 70 280 80 Q 200 85 110 90 Z"/>
+              </clipPath>
+            </defs>
+            <path d="M 110 90 Q 90 130 100 180 Q 80 230 130 280 Q 150 340 220 380 Q 320 420 420 400 Q 540 380 600 320 Q 640 260 620 180 Q 580 120 480 90 Q 380 70 280 80 Q 200 85 110 90 Z" fill="none" stroke="#444441" stroke-width="1.6"/>
+            <circle cx="320" cy="290" r="3.5" fill="#1a1a18"/><text x="328" y="293" font-size="10" fill="#1a1a18" font-weight="600">Bo</text>
+            <circle cx="430" cy="270" r="3.5" fill="#1a1a18"/><text x="438" y="273" font-size="10" fill="#1a1a18" font-weight="600">Kenema (hotspot 1)</text>
+          </svg>
+          <div class="map-legend">
+            <div class="leg-title">Hotspot score</div>
+            <div class="leg-row"><span class="swatch" style="background:#a02607"></span> Very high</div>
+            <div class="leg-row"><span class="swatch" style="background:#cb441e"></span> High</div>
+            <div class="leg-row"><span class="swatch" style="background:#ed8866"></span> Moderate</div>
+            <div class="leg-row"><span class="swatch" style="background:#fbcfb0"></span> Low</div>
+            <div class="leg-row"><span class="swatch" style="background:#e8e7e3"></span> Outside opp space</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="right">
+        <div class="panel">
+          <h2>Top hotspots</h2>
+          <div class="finger-row"><span class="label">1 · Kenema district</span><span class="val">0.87</span></div>
+          <p class="muted" style="margin: -2px 0 6px;">High poverty (54%) · drought exposure rising · suitable for agroforestry · production-value $48M/yr</p>
+          <div class="finger-row"><span class="label">2 · Kailahun district</span><span class="val">0.79</span></div>
+          <p class="muted" style="margin: -2px 0 6px;">Poverty + biodiversity overlap (Gola forest periphery)</p>
+          <div class="finger-row"><span class="label">3 · Bo district</span><span class="val">0.71</span></div>
+          <p class="muted" style="margin: -2px 0 6px;">Mixed rainfed system · climate risk score elevated</p>
+        </div>
+        <div class="panel">
+          <h2>Why this hotspot?</h2>
+          <p>Hotspot scoring uses MCDA on the T5 opportunity space variables you weighted. <b>Kenema</b> ranks highest because:</p>
+          <ul style="margin-left:14px; margin-top:6px; font-size:11px; line-height:1.55;">
+            <li>Rural poverty headcount 54% (top-quintile nationally)</li>
+            <li>Drought exposure moderate-high under baseline</li>
+            <li>Falls within agroforestry opportunity space at high suitability</li>
+            <li>Production value at risk: $48M/yr in cocoa &amp; coffee</li>
+          </ul>
+          <p class="muted" style="margin-top:8px;">No variable double-counted: climate risk used only here (not also as suitability constraint).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= VARIABLE CONFIG ============= -->
+    <section data-panel="vars">
+      <div class="center" style="flex:1;">
+        <div class="panel" style="margin-bottom:0;">
+          <h2>Variable Configuration · Agroforestry recipe v0.3</h2>
+          <p class="muted">23 variables across 6 themes. Click a variable to see its Variable Card. Reduce / Source / Explain — each card carries all three.</p>
+        </div>
+        <div class="var-table">
+          <div class="var-list">
+            <div style="font-size:10px; color:#5f5e5a; font-weight:700; padding:4px 8px; letter-spacing:.04em;">TOPOGRAPHIC</div>
+            <div class="var-item active"><span class="vname">Slope</span><span class="vcluster">3</span></div>
+            <div class="var-item"><span class="vname">Elevation</span></div>
+            <div class="var-item"><span class="vname">Aspect</span></div>
+            <div class="var-item"><span class="vname">TWI (topo wetness)</span></div>
+            <div style="font-size:10px; color:#5f5e5a; font-weight:700; padding:6px 8px 4px; letter-spacing:.04em;">CLIMATIC</div>
+            <div class="var-item"><span class="vname">Annual rainfall</span></div>
+            <div class="var-item"><span class="vname">PET</span></div>
+            <div class="var-item"><span class="vname">Aridity index</span></div>
+            <div class="var-item"><span class="vname">Temperature</span></div>
+            <div class="var-item"><span class="vname">Rainfall variability</span></div>
+            <div style="font-size:10px; color:#5f5e5a; font-weight:700; padding:6px 8px 4px; letter-spacing:.04em;">SOIL</div>
+            <div class="var-item"><span class="vname">Soil depth</span></div>
+            <div class="var-item"><span class="vname">Soil texture</span></div>
+            <div class="var-item"><span class="vname">Soil organic carbon</span></div>
+            <div class="var-item"><span class="vname">Soil pH</span></div>
+            <div style="font-size:10px; color:#5f5e5a; font-weight:700; padding:6px 8px 4px; letter-spacing:.04em;">LULC / VEGETATION</div>
+            <div class="var-item"><span class="vname">Land cover</span></div>
+            <div class="var-item"><span class="vname">Tree cover</span></div>
+            <div class="var-item"><span class="vname">NDVI</span></div>
+            <div style="font-size:10px; color:#5f5e5a; font-weight:700; padding:6px 8px 4px; letter-spacing:.04em;">SOCIO-ECON / INFRA</div>
+            <div class="var-item"><span class="vname">Distance to road</span></div>
+            <div class="var-item"><span class="vname">Population density</span></div>
+            <div class="var-item"><span class="vname">Electrification</span></div>
+            <div class="var-item"><span class="vname">Market access</span></div>
+            <div style="font-size:10px; color:#5f5e5a; font-weight:700; padding:6px 8px 4px; letter-spacing:.04em;">HAZARD</div>
+            <div class="var-item"><span class="vname">Drought (SPEI)</span><span class="vcluster">2</span></div>
+            <div class="var-item"><span class="vname">Flood hazard</span></div>
+            <div class="var-item"><span class="vname">Heat stress</span></div>
+          </div>
+
+          <div class="var-detail">
+            <h2>Land slope</h2>
+            <div class="subtitle">Topographic · cluster representative (3 variables in cluster) · GEE native</div>
+
+            <div class="slot">
+              <div class="slot-label">What it is</div>
+              <div class="slot-text">Rate of elevation change across the landscape, expressed in degrees from horizontal. Derived from a 30 m Digital Elevation Model.</div>
+            </div>
+
+            <div class="slot">
+              <div class="slot-label">Why it's included (agroforestry-specific)</div>
+              <div class="slot-text">Slope controls runoff, root anchoring, mechanisation feasibility, and erosion risk for tree-crop establishment. Steep slopes constrain implementation; very flat areas may waterlog.</div>
+            </div>
+
+            <div class="slot">
+              <div class="slot-label">How to read it</div>
+              <div class="slot-text"><b>0–8° (gentle):</b> highly suitable · <b>8–20°:</b> moderately suitable, terracing may help · <b>&gt;25°:</b> generally unsuitable for tree-crop agroforestry without engineering. Trapezoidal fuzzy membership applied.</div>
+              <div class="mf-preview">
+                <svg viewBox="0 0 240 50" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 320px;">
+                  <line x1="10" y1="40" x2="230" y2="40" stroke="#888780" stroke-width="1"/>
+                  <line x1="10" y1="5" x2="10" y2="40" stroke="#888780" stroke-width="1"/>
+                  <polyline points="10,40 50,5 130,5 210,40 230,40" fill="none" stroke="#0c447c" stroke-width="2"/>
+                  <text x="48" y="48" font-size="9" fill="#5f5e5a">0°</text>
+                  <text x="125" y="48" font-size="9" fill="#5f5e5a">8°</text>
+                  <text x="205" y="48" font-size="9" fill="#5f5e5a">25°</text>
+                  <text x="170" y="48" font-size="9" fill="#5f5e5a">20°</text>
+                  <text x="220" y="13" font-size="9" fill="#5f5e5a" text-anchor="end">suitability →</text>
+                </svg>
+              </div>
+            </div>
+
+            <div class="slot cluster">
+              <div class="slot-label">What it represents (correlation cluster)</div>
+              <div class="slot-text">In this AOI (Sierra Leone), slope correlates strongly (|r| &gt; 0.7) with these variables, which it represents in the MCDA:</div>
+              <div class="represents">
+                <span class="rchip">Aspect (r = 0.78)</span>
+                <span class="rchip">Curvature (r = 0.81)</span>
+                <span class="rchip">TWI · topo wetness (r = 0.73)</span>
+              </div>
+              <p class="muted" style="margin-top:6px;">You can promote any of these to its own row, or pick a different cluster representative, in technical mode.</p>
+            </div>
+
+            <div class="slot source">
+              <div class="slot-label">Where it comes from</div>
+              <div class="source-line"><span class="src-native">NATIVE GEE</span><b>SRTM v3, 30 m</b> · global · <code>USGS/SRTMGL1_003</code> · CC0</div>
+              <p class="muted" style="margin-top:4px;">Pre-processed at 1 km via mean resampling for the analysis layer. Resampled view marked in the resolution audit.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============= DANGER ZONE ============= -->
+    <section data-panel="danger">
+      <div class="center" style="flex:1;">
+        <div class="danger-banner">
+          <h2>⚠ Restricted area — methodology &amp; cache controls</h2>
+          <p>Actions in this tab modify the analytical configuration or invalidate precomputed outputs across the team. Limited to designated administrators.</p>
+        </div>
+        <div class="panel">
+          <h2>Restricted actions</h2>
+          <ul style="margin-left:14px;">
+            <li>Edit T4 suitability response functions (changes methodology)</li>
+            <li>Invalidate cached suitability surfaces</li>
+            <li>Add / remove variables from a recipe</li>
+            <li>Change global default weights</li>
+            <li>Promote a non-default cluster representative</li>
+          </ul>
+          <p class="muted" style="margin-top:10px;">All changes are logged in the methodology version log and required to update T0.last_updated.</p>
+        </div>
+        <div class="placeholder" style="margin-top:14px;">
+          <h3>v0 — controls not yet wired</h3>
+          <p>Sufficient as a visible architectural boundary. Wire to schema mutation API when the protected back-end exists.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Tab switching
+  const buttons = document.querySelectorAll('nav.tabs button[data-tab]');
+  const panels = document.querySelectorAll('section[data-panel]');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      buttons.forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      panels.forEach(p => p.classList.toggle('active', p.dataset.panel === tab));
+    });
+  });
+
+  // Toggle clicks
+  document.querySelectorAll('.toggle button').forEach(b => {
+    b.addEventListener('click', () => {
+      b.parentElement.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+      b.classList.add('on');
+    });
+  });
+
+  // Variable item highlight
+  document.querySelectorAll('.var-list .var-item').forEach(it => {
+    it.addEventListener('click', () => {
+      document.querySelectorAll('.var-list .var-item').forEach(x => x.classList.remove('active'));
+      it.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

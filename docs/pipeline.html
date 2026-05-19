@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rural NbS Scan — Pipeline Architecture v0.1</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 24px; }
+  .nbs-diagram { max-width: 1400px; margin: 0 auto; }
+  .nbs-diagram h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .nbs-diagram .sub { font-size: 13px; color: #5f5e5a; margin-bottom: 20px; }
+  .nbs-diagram .meta { font-size: 11px; color: #888780; margin-bottom: 24px; }
+  .layer-row { display: grid; grid-template-columns: 80px 1fr; gap: 10px; align-items: stretch; margin-bottom: 8px; }
+  .layer-label { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px; font-weight: 700; letter-spacing: .12em; color: #5f5e5a; text-align: center; padding: 10px 0; background: #f1efe8; border-radius: 4px; }
+  .row-content { display: flex; gap: 6px; }
+  .box { background: #fff; border: 1px solid #d3d1c7; border-radius: 6px; padding: 8px 10px; flex: 1; font-size: 11px; line-height: 1.4; }
+  .box.benson { background: #faece7; border-color: #e3a48c; }
+  .box .b-title { font-size: 11px; font-weight: 600; color: #712b13; margin-bottom: 2px; }
+  .box .b-sub { font-size: 10px; color: #5f5e5a; }
+
+  .pipeline { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .mod { background: #fff; border: 1.5px solid #d3d1c7; border-radius: 8px; padding: 10px 9px 9px; position: relative; font-size: 11px; line-height: 1.4; }
+  .mod .mid { font-size: 10px; font-weight: 700; letter-spacing: .04em; color: #888780; margin-bottom: 2px; }
+  .mod .mname { font-size: 12px; font-weight: 600; color: #1a1a18; line-height: 1.25; margin-bottom: 6px; min-height: 32px; }
+  .mod .mline { font-size: 10px; color: #5f5e5a; margin-bottom: 4px; }
+  .mod .owner { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 3px; background: #e6f1fb; color: #0c447c; margin-right: 2px; }
+  .mod .owner.benson { background: #faece7; color: #712b13; }
+  .mod .owner.namita { background: #fbeaf0; color: #72243e; }
+  .mod .owner.brayden { background: #eaf3de; color: #27500a; }
+  .mod .owner.pete { background: #faeeda; color: #633806; }
+  .mod .owner.mfl { background: #eeedfe; color: #3c3489; }
+  .mod .status { position: absolute; top: 8px; right: 8px; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .03em; }
+  .mod .status.done { background: #e1f5ee; color: #085041; }
+  .mod .status.partial { background: #faeeda; color: #633806; }
+  .mod .status.todo { background: #f1efe8; color: #5f5e5a; }
+  .mod .tables { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 2px; }
+  .tbl-chip { font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; }
+  .tbl-chip.t0 { background: #e1f5ee; color: #085041; }
+  .tbl-chip.t1 { background: #e6f1fb; color: #0c447c; }
+  .tbl-chip.t2 { background: #faece7; color: #712b13; }
+  .tbl-chip.t3 { background: #faeeda; color: #633806; }
+  .tbl-chip.t4 { background: #eeedfe; color: #3c3489; }
+  .tbl-chip.t5 { background: #eaf3de; color: #27500a; }
+  .tbl-chip.t6 { background: #fbeaf0; color: #72243e; }
+  .tbl-chip.t7 { background: #f1efe8; color: #444441; }
+
+  .recipe-row, .runtime-row { display: flex; gap: 6px; }
+  .recipe-box { background: #fff; border: 1px dashed #b4b2a9; border-radius: 6px; padding: 7px 10px; font-size: 11px; flex: 1; }
+  .recipe-box .r-title { font-size: 10px; font-weight: 700; color: #5f5e5a; letter-spacing: .03em; margin-bottom: 2px; }
+  .recipe-box .r-sub { font-size: 10px; color: #888780; }
+  .recipe-box.done { border-style: solid; border-color: #66a691; background: #f3faf7; }
+  .recipe-box.done .r-title { color: #085041; }
+
+  .footer { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .footer-block { background: #fff; border: 1px solid #e8e7e3; border-radius: 6px; padding: 10px 14px; }
+  .footer-block h3 { font-size: 11px; font-weight: 700; color: #5f5e5a; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px; }
+  .footer-block ul { padding-left: 16px; margin: 0; }
+  .footer-block li { margin-bottom: 3px; font-size: 11px; color: #2c2c2a; line-height: 1.45; }
+  .footer-block strong { color: #1a1a18; }
+
+  .note { margin-top: 14px; background: #faeeda; border-left: 3px solid #c98a3a; padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 11px; color: #4a3208; line-height: 1.5; }
+  .note strong { color: #633806; }
+
+  .legend { margin-top: 10px; display: flex; gap: 12px; font-size: 10px; color: #5f5e5a; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+  .legend-chip { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="nbs-diagram">
+  <h1>Rural NbS Scan — Pipeline Architecture v0.1</h1>
+  <p class="sub">Three layers · seven modules · maps to schema T0–T7 · Benson's existing work inherited as framework primitives</p>
+  <p class="meta">Alliance Bioversity International &amp; CIAT · World Bank D591 · Draft for team discussion — May 2026</p>
+
+  <!-- FRAMEWORK PRIMITIVES (top strip — Benson's work) -->
+  <div class="layer-row">
+    <div class="layer-label">FRAMEWORK PRIMITIVES · INHERITED FROM BENSON</div>
+    <div class="row-content">
+      <div class="box benson">
+        <div class="b-title">Standardisation Library</div>
+        <div class="b-sub">5 fuzzy functions: sigmoid · linear · Gaussian · bell · inverted sigmoid</div>
+      </div>
+      <div class="box benson">
+        <div class="b-title">Weighting Engine</div>
+        <div class="b-sub">AHP → CRITIC + Entropy, α-reconciled, weight log per run</div>
+      </div>
+      <div class="box benson">
+        <div class="b-title">Reference MCDA</div>
+        <div class="b-sub">spatMCDA.R — weighted overlay + classification + ±10% sensitivity</div>
+      </div>
+      <div class="box benson">
+        <div class="b-title">Recipe Template</div>
+        <div class="b-sub">Water Harvesting master variable table (def · relevance · normalisation · source)</div>
+      </div>
+      <div class="box benson">
+        <div class="b-title">Subpractice Pattern</div>
+        <div class="b-sub">Within-NbS variants (e.g. in-situ / micro-catchment / ex-situ / terraces)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIPELINE (7 modules) -->
+  <div class="layer-row">
+    <div class="layer-label">PIPELINE · 7 MODULES TTL-FACING TOOL CONSUMES</div>
+    <div class="row-content" style="flex-direction: column; gap: 6px;">
+      <div class="pipeline">
+        <div class="mod">
+          <span class="status todo">SETUP</span>
+          <div class="mid">M0</div>
+          <div class="mname">Setup &amp; Scope</div>
+          <div class="mline">AOI · NbS · resolution · scenario · ingestion check</div>
+          <div><span class="owner pete">Pete</span></div>
+          <div class="tables"><span class="tbl-chip t0">T0</span><span class="tbl-chip t1">T1</span><span class="tbl-chip t7">T7</span></div>
+        </div>
+        <div class="mod">
+          <span class="status done">DONE</span>
+          <div class="mid">M1</div>
+          <div class="mname">Suitability → Opportunity Space</div>
+          <div class="mline">Fuzzy + MCDA → continuous suitability raster</div>
+          <div><span class="owner benson">Benson</span> <span class="owner namita">Namita</span></div>
+          <div class="tables"><span class="tbl-chip t1">T1</span><span class="tbl-chip t4">T4</span><span class="tbl-chip t7">T7</span></div>
+        </div>
+        <div class="mod">
+          <span class="status partial">PARTIAL</span>
+          <div class="mid">M2</div>
+          <div class="mname">Rural Climate Risk</div>
+          <div class="mline">Hazard × exposure (× AC toggle) · baseline + future</div>
+          <div><span class="owner brayden">Brayden</span></div>
+          <div class="tables"><span class="tbl-chip t1">T1</span><span class="tbl-chip t2">T2</span></div>
+        </div>
+        <div class="mod">
+          <span class="status todo">TO SCOPE</span>
+          <div class="mid">M3</div>
+          <div class="mname">Opp Space Characterisation</div>
+          <div class="mline">Poverty · biodiversity · GESI · production · pop · farm size</div>
+          <div><span class="owner namita">Namita</span> <span class="owner benson">Benson</span></div>
+          <div class="tables"><span class="tbl-chip t1">T1</span><span class="tbl-chip t5">T5</span></div>
+        </div>
+        <div class="mod">
+          <span class="status todo">TO SCOPE</span>
+          <div class="mid">M4</div>
+          <div class="mname">TTL Hotspots (MCDA)</div>
+          <div class="mline">User-weighted MCDA on T5 vars within opp space</div>
+          <div><span class="owner benson">Benson</span></div>
+          <div class="tables"><span class="tbl-chip t5">T5</span></div>
+        </div>
+        <div class="mod">
+          <span class="status todo">TO SCOPE</span>
+          <div class="mid">M5</div>
+          <div class="mname">NbS Scorecard &amp; Response</div>
+          <div class="mline">Likert effects · economic archetype · benefit profile</div>
+          <div><span class="owner namita">Namita</span></div>
+          <div class="tables"><span class="tbl-chip t3">T3</span><span class="tbl-chip t6">T6</span></div>
+        </div>
+        <div class="mod">
+          <span class="status todo">TO SCOPE</span>
+          <div class="mid">M6</div>
+          <div class="mname">Implementation Hand-off</div>
+          <div class="mline">Next-step tools · contextualisation · feasibility pointers · domain pointers</div>
+          <div><span class="owner mfl">MFL team</span> <span class="owner pete">Pete</span> <span class="owner namita">Namita</span></div>
+          <div class="tables"><span class="tbl-chip t0">T0</span><span class="tbl-chip t6">T6</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECIPE LAYER -->
+  <div class="layer-row">
+    <div class="layer-label">RECIPE LAYER · PER-NBS CONFIGURATION</div>
+    <div class="row-content">
+      <div class="recipe-box done">
+        <div class="r-title">WATER HARVESTING</div>
+        <div class="r-sub">Done — Benson's recipe (27 vars × 6 themes × 5 subpractices). Pattern template for other NbS.</div>
+      </div>
+      <div class="recipe-box">
+        <div class="r-title">AGROFORESTRY</div>
+        <div class="r-sub">Schema tables drafted (T0–T7 xlsx); pilot NbS — needs full recipe write-up</div>
+      </div>
+      <div class="recipe-box">
+        <div class="r-title">FOREST RESTORATION / ANR</div>
+        <div class="r-sub">Next priority cluster — Sarah / Evert / Hannes domain input</div>
+      </div>
+      <div class="recipe-box">
+        <div class="r-title">+ FUTURE NbS</div>
+        <div class="r-sub">New rows in T0 + new T4 mappings — no code change required</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RUNTIME LAYER -->
+  <div class="layer-row">
+    <div class="layer-label">RUNTIME · GEE PYTHON + COLAB NOTEBOOKS (PER PROPOSAL)</div>
+    <div class="row-content">
+      <div class="recipe-box">
+        <div class="r-title">GEE PYTHON PIPELINE</div>
+        <div class="r-sub">Benson — port spatMCDA.R logic; reads from T0–T7 (never hardcoded)</div>
+      </div>
+      <div class="recipe-box">
+        <div class="r-title">COLAB DELIVERABLE NOTEBOOK</div>
+        <div class="r-sub">Per-pilot — reproducible, hand-off to WB technical team</div>
+      </div>
+      <div class="recipe-box">
+        <div class="r-title">GEE APP / WIREFRAME (v0)</div>
+        <div class="r-sub">Pete + Claude — demonstrator at final WB presentation; not contractual</div>
+      </div>
+      <div class="recipe-box">
+        <div class="r-title">PILOT × 2 (PROPOSAL PHASE 3)</div>
+        <div class="r-sub">Benson — apply methodology to SSA + Asia (or per Dinara's offer)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <span class="legend-item"><span class="legend-chip" style="background:#e1f5ee"></span>Done</span>
+    <span class="legend-item"><span class="legend-chip" style="background:#faeeda"></span>Partial</span>
+    <span class="legend-item"><span class="legend-chip" style="background:#f1efe8"></span>To scope</span>
+    <span class="legend-item"><span class="legend-chip" style="background:#faece7"></span>Benson</span>
+    <span class="legend-item"><span class="legend-chip" style="background:#fbeaf0"></span>Namita</span>
+    <span class="legend-item"><span class="legend-chip" style="background:#eaf3de"></span>Brayden</span>
+    <span class="legend-item"><span class="legend-chip" style="background:#faeeda"></span>Pete</span>
+    <span class="legend-item"><span class="legend-chip" style="background:#eeedfe"></span>MFL team (Sarah · Chris · Evert · Hannes)</span>
+    <span class="legend-item">T-chips: schema table dependencies (see ERD v0.1)</span>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-block">
+      <h3>Variable selection (sub-step in M1 &amp; M3) — Ani's three principles</h3>
+      <ul>
+        <li><strong>Reduce</strong> — thematic grouping (per recipe) + correlation cluster (per AOI). One representative per cluster enters MCDA.</li>
+        <li><strong>Source</strong> — native GEE → community GEE → upload-to-GEE. Fitness-for-purpose precedes platform.</li>
+        <li><strong>Explain</strong> — every variable shipped as a Variable Card: What · Why · How to read · Cluster · Source · Interpretation.</li>
+      </ul>
+    </div>
+    <div class="footer-block">
+      <h3>Scope guardrails</h3>
+      <ul>
+        <li><strong>Now</strong> — Agroforestry &amp; Water Harvesting recipes; 2 pilot notebooks; v0 GEE wireframe.</li>
+        <li><strong>Soon</strong> — Forest restoration &amp; ANR recipe (cluster); refined hotspot MCDA.</li>
+        <li><strong>Later</strong> — WB Disaster Risk integration; richer scorecard; production hosting.</li>
+        <li><strong>Out</strong> — Ecosystem service modelling · full CBA · site-level feasibility · participatory weighting.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><strong>Read the diagram top-to-bottom:</strong> framework primitives (top, all Benson) power the pipeline (middle); recipes (per-NbS config) parameterise the pipeline; runtime (bottom) is the GEE Python + Colab implementation that consumes recipes via the schema. The schema (T0–T7, chips on each module) is the contract between Namita's content work and Benson's pipeline code — analytical rules read from schema, never hardcoded.</div>
+</div>
+</body>
+</html>
