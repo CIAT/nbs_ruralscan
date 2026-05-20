@@ -10,7 +10,7 @@ Spec sheets are NbS-agnostic. They describe the framework module; per-NbS specif
 |---|---|---|---|---|
 | M0 | Setup & Scope | `M0_setup.md` *(TBD)* | Pete | planned |
 | **M1** | **Suitability → Opportunity Space** | [`M1_suitability.md`](./M1_suitability.md) | Benson + Namita | **draft (v0.1)** |
-| M2 | Rural Climate Risk | `M2_climate_risk.md` *(TBD)* | Brayden | planned |
+| M2 | Rural Climate Risk | [`M2_climate_risk.md`](./M2_climate_risk.md) | Brayden | draft (v0.1) |
 | M3 | Opportunity Space Characterisation | `M3_characterisation.md` *(TBD)* | Namita + Benson | planned |
 | M4 | TTL Hotspots (MCDA) | `M4_hotspots.md` *(TBD)* | Benson | planned |
 | M5 | NbS Scorecard & Response | `M5_scorecard.md` *(TBD)* | Namita | planned |
