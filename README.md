@@ -18,25 +18,81 @@ Includes:
 
 Both use mock Sierra Leone / agroforestry data.
 
+---
+
+## Working in this repo — quick start (≈10 minutes)
+
+The development environment is **VS Code + Claude Code in the integrated terminal**. Claude Code reads `CLAUDE.md` automatically on every session so you're never starting cold.
+
+### One-time setup
+
+```bash
+# 1. Tools
+brew install gh                                   # GitHub CLI (for issue/PR commands)
+curl -fsSL https://claude.com/install.sh | bash   # Claude Code installer
+# (Or follow https://docs.claude.com/en/docs/claude-code/setup for your platform)
+gh auth login                                     # authenticate GitHub CLI
+
+# 2. Clone and open
+git clone https://github.com/CIAT/nbs_ruralscan.git
+cd nbs_ruralscan
+code .                                            # opens in VS Code
+```
+
+In VS Code, the Source Control panel (left sidebar, branch icon — or `⌃ ⇧ G`) shows git status. The integrated terminal (`⌃ \``) is where you'll run Claude Code.
+
+### Your typical loop
+
+In VS Code's integrated terminal, from the repo root:
+
+```bash
+git pull                          # sync with main
+git checkout -b feat/your-task    # branch
+claude                            # start Claude Code in this repo
+```
+
+Claude Code now reads `CLAUDE.md` and is grounded in project context. Tell it what you want — for example:
+
+> *"I'm picking up issue #6 (Agroforestry recipe). Read `methodology/recipes/water_harvesting.md` as the template, then scaffold `methodology/recipes/agroforestry.md` with the same eight-section structure. Stop after the master variable table so I can populate the rows."*
+
+Iterate, test, then commit and push via VS Code's Source Control panel or by asking Claude Code to do it for you. Raise the PR via the GitHub UI or `gh pr create`; use the PR template.
+
+### Where to look for what
+
+| You want to… | Read this |
+|---|---|
+| Understand the system architecture, what's locked, who does what | [`CLAUDE.md`](./CLAUDE.md) |
+| Learn the team's workflows and conventions | [`PLAYBOOK.md`](./PLAYBOOK.md) |
+| Find a task to pick up | [Issues tab](https://github.com/CIAT/nbs_ruralscan/issues) (or [`.github/SEED_ISSUES.md`](./.github/SEED_ISSUES.md) if you're seeding the backlog) |
+| Set up the project board / labels | [`.github/PROJECT_BOARD_SETUP.md`](./.github/PROJECT_BOARD_SETUP.md) and [`.github/setup-labels.sh`](./.github/setup-labels.sh) |
+| Author or update a recipe | [`methodology/recipes/water_harvesting.md`](./methodology/recipes/water_harvesting.md) (canonical pattern) + `/new-recipe` slash command |
+| Author or update a Variable Card | [`.claude/commands/update-variable-card.md`](./.claude/commands/update-variable-card.md) + the issue template |
+| Understand a module's I/O contract | [`methodology/modules/`](./methodology/modules/) |
+| Look at the live demonstrators | https://ciat.github.io/nbs_ruralscan/ |
+
+If you're brand new, **read CLAUDE.md and PLAYBOOK.md before your first issue.** Together they're about 15 minutes. They'll save you days of misunderstanding the architecture.
+
+---
+
 ## Repo structure
 
 | Folder | Contents |
 |---|---|
-| `docs/` | GitHub Pages — live demonstrators |
-| `methodology/` | Cross-cutting framework + per-NbS recipes |
+| `docs/` | GitHub Pages — live demonstrators (wireframe + pipeline diagram) |
+| `methodology/` | Cross-cutting framework + per-NbS recipes + module specs |
 | `schema/` | T0–T7 schema tables and reference (ERD) |
-| `pipeline/` | GEE Python implementation + pilot Colab notebooks |
+| `pipeline/` | GEE Python implementation, pilot Colab notebooks, GEE App |
 | `reference/` | Stocktake findings, source R scripts, literature references |
 | `.claude/` | Project memory and slash commands for Claude Code |
-| `.github/` | Issue templates and PR template |
+| `.github/` | Issue templates, PR template, project board setup, seed issues |
 
 ## Contributing
 
-Workflow is documented in [PLAYBOOK.md](./PLAYBOOK.md). Project memory for Claude Code lives in [CLAUDE.md](./CLAUDE.md). Open an issue using one of the templates; raise a PR using the PR template; we review and merge.
+Detailed walkthrough in [`CONTRIBUTING.md`](./CONTRIBUTING.md). Team workflows in [`PLAYBOOK.md`](./PLAYBOOK.md). Project memory for Claude Code in [`CLAUDE.md`](./CLAUDE.md). Open an issue using one of the templates; raise a PR using the PR template; we review and merge.
 
 ## Team
 
-Alliance Bioversity International & CIAT — Climate Action Net Zero. Pete Steward (Team Lead, p.steward@cgiar.org). Full team in [CLAUDE.md](./CLAUDE.md#team--roles).
+Alliance Bioversity International & CIAT — Climate Action Net Zero. Pete Steward (Team Lead, p.steward@cgiar.org). Full team in [`CLAUDE.md`](./CLAUDE.md#team--roles).
 
 ## License
 
