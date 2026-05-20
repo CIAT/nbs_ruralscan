@@ -161,12 +161,14 @@ Recommended views (Projects v2 supports multiple views over the same data):
 - **By NbS** — group by NbS label
 - **By Phase** — group by milestone
 
-Automation to enable (one-off setup):
+Automation to enable (one-off setup — click-by-click runbook at [`.github/PROJECT_BOARD_SETUP.md`](./.github/PROJECT_BOARD_SETUP.md)):
 
 - New issue → auto-add to Backlog
-- Issue assigned → move to This week
-- PR opened linking issue → move to Review
-- PR merged / issue closed → move to Done
+- Issue assigned / Monday standup → move to This week *(manual)*
+- Work starting → move to In Progress *(manual)*
+- PR opened or approved → move to Review *(optional auto via "Code review approved" workflow)*
+- PR merged / issue closed → move to Done *(auto)*
+- Done items older than 14 days → auto-archive *(optional)*
 
 ### Conventions
 
