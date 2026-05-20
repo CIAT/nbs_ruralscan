@@ -3,249 +3,1000 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rural NbS Scan — Pipeline Architecture v0.1</title>
+<title>Rural NbS Scan — Pipeline Architecture v0.2</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 24px; }
-  .nbs-diagram { max-width: 1400px; margin: 0 auto; }
-  .nbs-diagram h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
-  .nbs-diagram .sub { font-size: 13px; color: #5f5e5a; margin-bottom: 20px; }
-  .nbs-diagram .meta { font-size: 11px; color: #888780; margin-bottom: 24px; }
-  .layer-row { display: grid; grid-template-columns: 80px 1fr; gap: 10px; align-items: stretch; margin-bottom: 8px; }
-  .layer-label { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px; font-weight: 700; letter-spacing: .12em; color: #5f5e5a; text-align: center; padding: 10px 0; background: #f1efe8; border-radius: 4px; }
-  .row-content { display: flex; gap: 6px; }
-  .box { background: #fff; border: 1px solid #d3d1c7; border-radius: 6px; padding: 8px 10px; flex: 1; font-size: 11px; line-height: 1.4; }
-  .box.benson { background: #faece7; border-color: #e3a48c; }
-  .box .b-title { font-size: 11px; font-weight: 600; color: #712b13; margin-bottom: 2px; }
-  .box .b-sub { font-size: 10px; color: #5f5e5a; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  .pipeline { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
-  .mod { background: #fff; border: 1.5px solid #d3d1c7; border-radius: 8px; padding: 10px 9px 9px; position: relative; font-size: 11px; line-height: 1.4; }
-  .mod .mid { font-size: 10px; font-weight: 700; letter-spacing: .04em; color: #888780; margin-bottom: 2px; }
-  .mod .mname { font-size: 12px; font-weight: 600; color: #1a1a18; line-height: 1.25; margin-bottom: 6px; min-height: 32px; }
-  .mod .mline { font-size: 10px; color: #5f5e5a; margin-bottom: 4px; }
-  .mod .owner { display: inline-block; font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 3px; background: #e6f1fb; color: #0c447c; margin-right: 2px; }
-  .mod .owner.benson { background: #faece7; color: #712b13; }
-  .mod .owner.namita { background: #fbeaf0; color: #72243e; }
-  .mod .owner.brayden { background: #eaf3de; color: #27500a; }
-  .mod .owner.pete { background: #faeeda; color: #633806; }
-  .mod .owner.mfl { background: #eeedfe; color: #3c3489; }
-  .mod .status { position: absolute; top: 8px; right: 8px; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .03em; }
-  .mod .status.done { background: #e1f5ee; color: #085041; }
-  .mod .status.partial { background: #faeeda; color: #633806; }
-  .mod .status.todo { background: #f1efe8; color: #5f5e5a; }
-  .mod .tables { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 2px; }
-  .tbl-chip { font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; }
-  .tbl-chip.t0 { background: #e1f5ee; color: #085041; }
-  .tbl-chip.t1 { background: #e6f1fb; color: #0c447c; }
-  .tbl-chip.t2 { background: #faece7; color: #712b13; }
-  .tbl-chip.t3 { background: #faeeda; color: #633806; }
-  .tbl-chip.t4 { background: #eeedfe; color: #3c3489; }
-  .tbl-chip.t5 { background: #eaf3de; color: #27500a; }
-  .tbl-chip.t6 { background: #fbeaf0; color: #72243e; }
-  .tbl-chip.t7 { background: #f1efe8; color: #444441; }
+  :root {
+    --bg: #f4f2ec;
+    --paper: #ffffff;
+    --ink: #14140f;
+    --ink-2: #3c3a33;
+    --mute: #6c6a62;
+    --mute-2: #94918a;
+    --rule: #ddd9cd;
+    --rule-2: #c7c2b3;
 
-  .recipe-row, .runtime-row { display: flex; gap: 6px; }
-  .recipe-box { background: #fff; border: 1px dashed #b4b2a9; border-radius: 6px; padding: 7px 10px; font-size: 11px; flex: 1; }
-  .recipe-box .r-title { font-size: 10px; font-weight: 700; color: #5f5e5a; letter-spacing: .03em; margin-bottom: 2px; }
-  .recipe-box .r-sub { font-size: 10px; color: #888780; }
-  .recipe-box.done { border-style: solid; border-color: #66a691; background: #f3faf7; }
-  .recipe-box.done .r-title { color: #085041; }
+    --benson-tint: #f7e6dd;
+    --benson-tint-2: #ecd2bf;
+    --benson-ink: #5a1f0a;
+    --benson-ink-2: #8c3a1c;
 
-  .footer { margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .footer-block { background: #fff; border: 1px solid #e8e7e3; border-radius: 6px; padding: 10px 14px; }
-  .footer-block h3 { font-size: 11px; font-weight: 700; color: #5f5e5a; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 6px; }
-  .footer-block ul { padding-left: 16px; margin: 0; }
-  .footer-block li { margin-bottom: 3px; font-size: 11px; color: #2c2c2a; line-height: 1.45; }
-  .footer-block strong { color: #1a1a18; }
+    --done-bg: #d8efe5;     --done-ink: #074034;
+    --partial-bg: #f6e0bb;  --partial-ink: #5a3007;
+    --todo-bg: #e6e3d8;     --todo-ink: #4a4940;
+    --setup-bg: #e0e5ee;    --setup-ink: #2a3f5e;
 
-  .note { margin-top: 14px; background: #faeeda; border-left: 3px solid #c98a3a; padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 11px; color: #4a3208; line-height: 1.5; }
-  .note strong { color: #633806; }
+    /* T schema (preserved) */
+    --t0-bg:#e1f5ee; --t0-ink:#085041;
+    --t1-bg:#e6f1fb; --t1-ink:#0c447c;
+    --t2-bg:#faece7; --t2-ink:#712b13;
+    --t3-bg:#faeeda; --t3-ink:#633806;
+    --t4-bg:#eeedfe; --t4-ink:#3c3489;
+    --t5-bg:#eaf3de; --t5-ink:#27500a;
+    --t6-bg:#fbeaf0; --t6-ink:#72243e;
+    --t7-bg:#f1efe8; --t7-ink:#444441;
 
-  .legend { margin-top: 10px; display: flex; gap: 12px; font-size: 10px; color: #5f5e5a; flex-wrap: wrap; }
-  .legend-item { display: flex; align-items: center; gap: 4px; }
-  .legend-chip { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+    /* owners (preserved) */
+    --o-pete-bg:#faeeda; --o-pete-ink:#633806;
+    --o-benson-bg:#faece7; --o-benson-ink:#712b13;
+    --o-namita-bg:#fbeaf0; --o-namita-ink:#72243e;
+    --o-brayden-bg:#eaf3de; --o-brayden-ink:#27500a;
+    --o-mfl-bg:#eeedfe; --o-mfl-ink:#3c3489;
+  }
+
+  html, body { background: var(--bg); }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: 18px 24px 24px;
+  }
+  .mono { font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace; }
+
+  .page {
+    width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    gap: 10px;
+  }
+
+  /* ────────────────────────────── HEADER ────────────────────────────── */
+  .head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 24px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .head .eyebrow {
+    font-size: 10.5px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--mute); font-weight: 600;
+  }
+  .head h1 {
+    font-size: 26px; font-weight: 800; letter-spacing: -.015em;
+    line-height: 1.1; margin-top: 4px; color: var(--ink);
+  }
+  .head h1 .v { color: var(--mute-2); font-weight: 500; letter-spacing: 0; }
+  .head .sub { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; line-height: 1.4; }
+  .head .meta { text-align: right; font-size: 10.5px; color: var(--mute); line-height: 1.55; }
+  .head .meta b { color: var(--ink-2); font-weight: 600; }
+
+  /* ───────────────────────────── LAYER BAND ──────────────────────────── */
+  .layer {
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 6px;
+  }
+  .layer-head {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 2px 0 4px;
+  }
+  .layer-num {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 10.5px; font-weight: 700;
+    width: 32px; height: 22px;
+    display: grid; place-items: center;
+    background: var(--ink); color: #f4f2ec;
+    border-radius: 4px; letter-spacing: .04em;
+  }
+  .layer-head h2 {
+    font-size: 15px; font-weight: 800;
+    letter-spacing: .04em; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .layer-head h2 .tag {
+    margin-left: 10px;
+    font-size: 12px; font-weight: 500;
+    text-transform: none; letter-spacing: 0;
+    color: var(--mute);
+  }
+  .layer-head .right {
+    font-size: 10.5px; color: var(--mute);
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    letter-spacing: .04em;
+  }
+
+  /* ───────────────────────── FRAMEWORK (Benson) ──────────────────────── */
+  .benson-band {
+    background: var(--benson-tint);
+    border: 1px solid var(--benson-tint-2);
+    border-radius: 8px;
+    padding: 14px 16px 12px;
+    position: relative;
+  }
+  .benson-band .lead {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    gap: 28px;
+    align-items: baseline;
+    padding: 0 0 12px;
+  }
+  .benson-band .lead h3 {
+    font-size: 19px; font-weight: 800;
+    color: var(--benson-ink);
+    letter-spacing: -.012em;
+    line-height: 1.15;
+  }
+  .benson-band .lead h3 .em {
+    background: var(--benson-ink);
+    color: var(--benson-tint);
+    padding: 1px 8px 2px;
+    border-radius: 4px;
+    margin-right: 2px;
+    font-weight: 800;
+  }
+  .benson-band .lead p {
+    font-size: 12px; color: var(--benson-ink-2);
+    line-height: 1.5;
+    max-width: 64ch;
+  }
+  .benson-band .lead p b { color: var(--benson-ink); font-weight: 700; }
+  .prim-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .prim {
+    background: #fff;
+    border: 1px solid var(--benson-tint-2);
+    border-radius: 6px;
+    padding: 9px 11px 10px;
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    position: relative;
+  }
+  .prim .pn {
+    font-family: ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 700;
+    color: var(--benson-ink); letter-spacing: .08em;
+  }
+  .prim .pt {
+    font-size: 13px; font-weight: 700;
+    color: var(--ink); letter-spacing: -.005em;
+    line-height: 1.2;
+  }
+  .prim .ps {
+    font-size: 11px; color: var(--ink-2);
+    line-height: 1.4;
+  }
+
+  /* descent — five dotted lines from each primitive down to the pipeline */
+  .descent {
+    height: 28px;
+    margin: 4px 0 -2px;
+    display: block;
+    width: 100%;
+  }
+  .descent line { stroke: var(--benson-tint-2); stroke-width: 1.2; stroke-dasharray: 2 3; }
+  .descent path { fill: var(--benson-ink-2); }
+  .descent text {
+    font-family: ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 700;
+    fill: var(--benson-ink);
+    letter-spacing: .14em;
+  }
+
+  /* ────────────────────────────── PIPELINE ───────────────────────────── */
+  .pipeline {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 14px;
+    position: relative;
+  }
+  .mod {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    display: grid;
+    grid-template-rows: 4px auto 1fr auto;
+    overflow: visible;
+    position: relative;
+    box-shadow: 0 1px 0 rgba(0,0,0,.02);
+  }
+
+  /* chevron connectors between modules */
+  .mod::after {
+    content: "";
+    position: absolute;
+    top: 22px;
+    right: -14px;
+    width: 14px;
+    height: 18px;
+    background-image:
+      linear-gradient(45deg, transparent 46%, var(--rule-2) 46% 54%, transparent 54%),
+      linear-gradient(-45deg, transparent 46%, var(--rule-2) 46% 54%, transparent 54%);
+    background-size: 8px 10px, 8px 10px;
+    background-position: 3px 4px, 3px -6px;
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+  .mod:last-child::after { display: none; }
+
+  /* top accent — colored by status */
+  .mod .accent {
+    height: 4px;
+    background: var(--rule);
+    border-radius: 8px 8px 0 0;
+  }
+  .mod.s-done    .accent { background: var(--done-ink); }
+  .mod.s-partial .accent { background: var(--partial-ink); }
+  .mod.s-todo    .accent { background: var(--todo-ink); opacity: .35; }
+  .mod.s-setup   .accent { background: var(--setup-ink); opacity: .55; }
+
+  .mod .hd {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px 6px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .mod .mid {
+    font-family: ui-monospace, monospace;
+    font-size: 18px; font-weight: 800;
+    color: var(--ink);
+    line-height: 1;
+    letter-spacing: -.02em;
+  }
+  .mod .seq {
+    font-family: ui-monospace, monospace;
+    font-size: 9px; font-weight: 700;
+    color: var(--mute-2);
+    letter-spacing: .12em;
+    text-align: center;
+  }
+  .mod .status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 800;
+    letter-spacing: .1em;
+    padding: 3px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .mod .status .dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    display: inline-block;
+  }
+  .mod.s-done    .status { background: var(--done-bg);    color: var(--done-ink); }
+  .mod.s-done    .status .dot { background: var(--done-ink); }
+  .mod.s-partial .status { background: var(--partial-bg); color: var(--partial-ink); }
+  .mod.s-partial .status .dot { background: var(--partial-ink); }
+  .mod.s-todo    .status { background: var(--todo-bg);    color: var(--todo-ink); }
+  .mod.s-todo    .status .dot { background: transparent; border: 1.5px solid var(--todo-ink); box-sizing: border-box; }
+  .mod.s-setup   .status { background: var(--setup-bg);   color: var(--setup-ink); }
+  .mod.s-setup   .status .dot { background: var(--setup-ink); }
+
+  .mod .body {
+    padding: 9px 10px 6px;
+    display: grid; gap: 6px;
+    align-content: start;
+  }
+  .mod .mname {
+    font-size: 13.5px; font-weight: 700;
+    color: var(--ink);
+    line-height: 1.22; letter-spacing: -.005em;
+  }
+  .mod .mline {
+    font-size: 10.5px; color: var(--mute);
+    line-height: 1.45;
+  }
+  .mod .foot {
+    border-top: 1px dashed var(--rule);
+    padding: 7px 10px 8px;
+    display: grid; gap: 6px;
+  }
+
+  /* priority dimming for the four "to scope" modules */
+  .mod.q2 .body .mname, .mod.q2 .body .mline { color: color-mix(in oklab, currentColor 92%, var(--bg)); }
+  .mod.q3, .mod.q3 .body .mname, .mod.q3 .body .mline { opacity: 1; }
+  .mod.q3 .accent { opacity: .25; }
+  .mod.q4 .accent { opacity: .18; }
+  .mod.q3 .body, .mod.q3 .foot { opacity: .82; }
+  .mod.q4 .body, .mod.q4 .foot { opacity: .68; }
+
+  /* "next up" tag on M3 */
+  .mod .nextup {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: ui-monospace, monospace;
+    font-size: 8.5px; font-weight: 800;
+    letter-spacing: .14em;
+    color: var(--benson-ink);
+    background: var(--benson-tint);
+    border: 1px solid var(--benson-tint-2);
+    padding: 1px 5px 2px;
+    border-radius: 3px;
+    margin-left: 4px;
+  }
+
+  .owners {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    align-items: center;
+  }
+  .owner {
+    display: inline-flex; align-items: center;
+    gap: 5px;
+    padding: 1px 7px 1px 2px;
+    border-radius: 999px;
+    background: #faf8f1;
+    border: 1px solid var(--rule);
+    font-size: 10.5px; font-weight: 600;
+    color: var(--ink-2);
+    line-height: 1;
+  }
+  .owner .av {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: ui-monospace, monospace;
+    font-size: 9px; font-weight: 800;
+    letter-spacing: -.02em;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.04);
+  }
+  .owner.pete    .av { background: var(--o-pete-ink);    color: var(--o-pete-bg); }
+  .owner.benson  .av { background: var(--o-benson-ink);  color: var(--o-benson-bg); }
+  .owner.namita  .av { background: var(--o-namita-ink);  color: var(--o-namita-bg); }
+  .owner.brayden .av { background: var(--o-brayden-ink); color: var(--o-brayden-bg); }
+  .owner.mfl     .av { background: var(--o-mfl-ink);     color: var(--o-mfl-bg); }
+
+  .tables {
+    display: flex; flex-wrap: wrap; gap: 3px;
+  }
+  .tbl-chip {
+    font-family: ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: .02em;
+    line-height: 1.25;
+  }
+  .tbl-chip.t0 { background: var(--t0-bg); color: var(--t0-ink); }
+  .tbl-chip.t1 { background: var(--t1-bg); color: var(--t1-ink); }
+  .tbl-chip.t2 { background: var(--t2-bg); color: var(--t2-ink); }
+  .tbl-chip.t3 { background: var(--t3-bg); color: var(--t3-ink); }
+  .tbl-chip.t4 { background: var(--t4-bg); color: var(--t4-ink); }
+  .tbl-chip.t5 { background: var(--t5-bg); color: var(--t5-ink); }
+  .tbl-chip.t6 { background: var(--t6-bg); color: var(--t6-ink); }
+  .tbl-chip.t7 { background: var(--t7-bg); color: var(--t7-ink); }
+
+  /* ─────────────────────────── RECIPE LAYER ──────────────────────────── */
+  .recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .recipe {
+    background: linear-gradient(180deg, #fffaf3 0%, #ffffff 100%);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--benson-tint-2);
+    border-radius: 6px;
+    padding: 9px 12px 10px;
+    display: grid; gap: 3px;
+    position: relative;
+  }
+  .recipe .ct {
+    font-family: ui-monospace, monospace;
+    font-size: 11px; font-weight: 800;
+    color: var(--ink); letter-spacing: .08em;
+  }
+  .recipe .cs {
+    font-size: 11px; color: var(--mute);
+    line-height: 1.4;
+  }
+  .recipe .cstate {
+    position: absolute; top: 9px; right: 11px;
+    font-family: ui-monospace, monospace;
+    font-size: 9px; font-weight: 800; letter-spacing: .12em;
+    padding: 1px 6px; border-radius: 3px;
+    background: var(--todo-bg); color: var(--todo-ink);
+  }
+  .recipe.done {
+    background: linear-gradient(180deg, #eff8f3 0%, #fbfefc 100%);
+    border-color: #9ec9b8;
+    border-left-color: var(--done-ink);
+  }
+  .recipe.done .ct { color: var(--done-ink); }
+  .recipe.done .cstate { background: var(--done-bg); color: var(--done-ink); }
+  .recipe.next .cstate { background: var(--partial-bg); color: var(--partial-ink); }
+  .recipe.open { border-style: dashed; background: #fbfaf6; }
+  .recipe.open .cstate { background: var(--setup-bg); color: var(--setup-ink); }
+
+  /* ─────────────────────────── RUNTIME LAYER ─────────────────────────── */
+  .runtime-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .rt {
+    background: #1a1a18;
+    color: #e6e3d8;
+    border: 1px solid #2a2925;
+    border-radius: 6px;
+    padding: 9px 12px 10px;
+    display: grid; gap: 3px;
+    position: relative;
+    font-family: ui-monospace, monospace;
+  }
+  .rt::before {
+    content: "";
+    position: absolute;
+    top: 9px; left: 12px; width: 6px; height: 6px;
+    border-radius: 50%; background: #4caf72;
+    box-shadow: 10px 0 0 #d8b056, 20px 0 0 #c95757;
+  }
+  .rt .ct {
+    margin-top: 14px;
+    font-size: 11px; font-weight: 800;
+    color: #f4f2ec; letter-spacing: .08em;
+  }
+  .rt .cs {
+    font-size: 10.5px; color: #b4b0a2;
+    line-height: 1.45;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  .rt .cstate {
+    position: absolute; top: 9px; right: 12px;
+    font-family: ui-monospace, monospace;
+    font-size: 9px; font-weight: 800; letter-spacing: .12em;
+    padding: 1px 6px; border-radius: 3px;
+    background: #2a2925; color: #b4b0a2;
+  }
+  .rt.build .cstate { background: rgba(76,175,114,.15); color: #7fd0a1; }
+  .rt.demo  .cstate { background: rgba(216,176,86,.15); color: #e4c485; }
+  .rt.phase .cstate { background: rgba(124,158,219,.15); color: #9fbbe6; }
+
+  /* ─────────────────────────── SCHEMA LEGEND ─────────────────────────── */
+  .schema {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 9px 14px 10px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+  }
+  .schema .sh {
+    font-family: ui-monospace, monospace;
+    font-size: 10px; font-weight: 800;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .schema .sh .sub {
+    display: block; font-weight: 500; font-size: 9.5px;
+    color: var(--mute); letter-spacing: .06em; text-transform: none;
+    margin-top: 2px;
+  }
+  .schema-row {
+    display: grid; grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+  }
+  .schema-item {
+    display: grid; grid-template-columns: auto 1fr; gap: 6px;
+    align-items: center;
+    font-size: 10.5px;
+    color: var(--ink-2);
+    line-height: 1.2;
+  }
+  .schema-item .tbl-chip { padding: 3px 7px; font-size: 11px; }
+  .schema-item .lbl { font-size: 10px; color: var(--mute); }
+  .schema-erd {
+    font-family: ui-monospace, monospace;
+    font-size: 10px; color: var(--mute);
+    letter-spacing: .08em;
+  }
+
+  /* ────────────────────────────── FOOTER ─────────────────────────────── */
+  .foot-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 10px;
+  }
+  .fcard {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 10px 14px 11px;
+  }
+  .fcard h3 {
+    font-size: 10.5px; font-weight: 800;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .fcard h3 .small {
+    font-size: 10px; font-weight: 500;
+    letter-spacing: .02em; text-transform: none;
+    color: var(--mute);
+  }
+  .fcard ul { list-style: none; display: grid; gap: 4px; }
+  .fcard li {
+    font-size: 11.5px; color: var(--ink-2);
+    line-height: 1.45;
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .fcard li .k {
+    font-family: ui-monospace, monospace;
+    font-size: 10px; font-weight: 800;
+    letter-spacing: .1em;
+    color: var(--ink);
+    padding: 2px 7px;
+    background: #efece2;
+    border-radius: 3px;
+    text-align: center;
+    width: max-content;
+    min-width: 56px;
+  }
+  .fcard li .k.now  { background: var(--done-bg);    color: var(--done-ink); }
+  .fcard li .k.soon { background: var(--partial-bg); color: var(--partial-ink); }
+  .fcard li .k.later{ background: var(--t1-bg);      color: var(--t1-ink); }
+  .fcard li .k.out  { background: var(--todo-bg);    color: var(--todo-ink); }
+
+  /* contract note — quieter */
+  .contract {
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 11.5px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: start;
+  }
+  .contract b { color: var(--ink); font-weight: 700; }
+  .contract .label {
+    font-family: ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 800;
+    letter-spacing: .14em;
+    color: var(--mute);
+    padding-top: 2px;
+  }
+
+  /* legend strip */
+  .legend {
+    display: flex; flex-wrap: wrap;
+    gap: 14px 18px;
+    padding: 8px 2px 0;
+    font-size: 10.5px; color: var(--mute);
+    border-top: 1px solid var(--rule);
+    margin-top: 4px;
+  }
+  .legend-group {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap;
+  }
+  .legend-group .gl {
+    font-family: ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 800;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .legend-item {
+    display: inline-flex; align-items: center; gap: 5px;
+    color: var(--ink-2);
+  }
+  .legend-chip {
+    width: 10px; height: 10px; border-radius: 2px;
+    display: inline-block;
+  }
+
+  /* ────────────────────────────── PRINT ─────────────────────────────── */
+  @media print {
+    @page { size: A3 landscape; margin: 12mm; }
+    body { padding: 0; background: #fff; }
+    .page { width: 100%; }
+    .layer, .benson-band, .pipeline, .mod, .recipe-grid, .runtime-grid,
+    .foot-grid, .fcard, .contract { break-inside: avoid; page-break-inside: avoid; }
+    .mod, .recipe, .rt, .fcard, .schema, .contract { box-shadow: none; }
+  }
 </style>
 </head>
 <body>
-<div class="nbs-diagram">
-  <h1>Rural NbS Scan — Pipeline Architecture v0.1</h1>
-  <p class="sub">Three layers · seven modules · maps to schema T0–T7 · Benson's existing work inherited as framework primitives</p>
-  <p class="meta">Alliance Bioversity International &amp; CIAT · World Bank D591 · Draft for team discussion — May 2026</p>
+<div class="page">
 
-  <!-- FRAMEWORK PRIMITIVES (top strip — Benson's work) -->
-  <div class="layer-row">
-    <div class="layer-label">FRAMEWORK PRIMITIVES · INHERITED FROM BENSON</div>
-    <div class="row-content">
-      <div class="box benson">
-        <div class="b-title">Standardisation Library</div>
-        <div class="b-sub">5 fuzzy functions: sigmoid · linear · Gaussian · bell · inverted sigmoid</div>
+  <!-- HEADER -->
+  <header class="head">
+    <div>
+      <div class="eyebrow">Pipeline architecture · v0.2 · draft for team discussion</div>
+      <h1>Rural NbS Scan <span class="v">— methodology &amp; pipeline map</span></h1>
+      <div class="sub">Four layers · seven modules · schema T0–T7 contract · Benson's existing work inherited as framework primitives.</div>
+    </div>
+    <div class="meta">
+      <b>Alliance Bioversity International &amp; CIAT</b><br>
+      World Bank D591 · May 2026<br>
+      Pilots: Sierra Leone (FSRP) · Agroforestry
+    </div>
+  </header>
+
+  <!-- LAYER 01 — FRAMEWORK PRIMITIVES (BENSON) -->
+  <section class="layer">
+    <div class="layer-head">
+      <div class="layer-num">01</div>
+      <h2>Framework primitives <span class="tag">— inherited from Benson, called by every downstream module</span></h2>
+      <div class="right">5 mechanisms · reusable</div>
+    </div>
+
+    <div class="benson-band">
+      <div class="lead">
+        <h3><span class="em">The pipeline doesn't start from scratch.</span></h3>
+        <p>Five reusable mechanisms from <b>Benson's existing CIAT work</b> — standardisation, weighting, MCDA, recipe template, subpractice pattern — become the framework primitives every module below calls into. The pipeline is the new orchestration layer; the analytical engine is already built.</p>
       </div>
-      <div class="box benson">
-        <div class="b-title">Weighting Engine</div>
-        <div class="b-sub">AHP → CRITIC + Entropy, α-reconciled, weight log per run</div>
-      </div>
-      <div class="box benson">
-        <div class="b-title">Reference MCDA</div>
-        <div class="b-sub">spatMCDA.R — weighted overlay + classification + ±10% sensitivity</div>
-      </div>
-      <div class="box benson">
-        <div class="b-title">Recipe Template</div>
-        <div class="b-sub">Water Harvesting master variable table (def · relevance · normalisation · source)</div>
-      </div>
-      <div class="box benson">
-        <div class="b-title">Subpractice Pattern</div>
-        <div class="b-sub">Within-NbS variants (e.g. in-situ / micro-catchment / ex-situ / terraces)</div>
+
+      <div class="prim-grid">
+        <div class="prim">
+          <div class="pn">P1 · STANDARDISATION</div>
+          <div class="pt">5-function library</div>
+          <div class="ps">Fuzzy: sigmoid · linear · Gaussian · bell · inverted sigmoid.</div>
+        </div>
+        <div class="prim">
+          <div class="pn">P2 · WEIGHTING</div>
+          <div class="pt">Weighting engine</div>
+          <div class="ps">AHP → CRITIC + Entropy, α-reconciled, weight log per run.</div>
+        </div>
+        <div class="prim">
+          <div class="pn">P3 · MCDA</div>
+          <div class="pt">Reference MCDA</div>
+          <div class="ps"><span class="mono">spatMCDA.R</span> — weighted overlay, classification, ±10% sensitivity.</div>
+        </div>
+        <div class="prim">
+          <div class="pn">P4 · RECIPE</div>
+          <div class="pt">Recipe template</div>
+          <div class="ps">Water-harvesting master variable table (def · relevance · normalisation · source).</div>
+        </div>
+        <div class="prim">
+          <div class="pn">P5 · SUBPRACTICE</div>
+          <div class="pt">Subpractice pattern</div>
+          <div class="ps">Within-NbS variants (in-situ · micro-catchment · ex-situ · terraces).</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- PIPELINE (7 modules) -->
-  <div class="layer-row">
-    <div class="layer-label">PIPELINE · 7 MODULES TTL-FACING TOOL CONSUMES</div>
-    <div class="row-content" style="flex-direction: column; gap: 6px;">
-      <div class="pipeline">
-        <div class="mod">
-          <span class="status todo">SETUP</span>
+    <!-- DESCENT: five dotted feeders from primitives down into the pipeline -->
+    <svg class="descent" viewBox="0 0 1000 28" preserveAspectRatio="none" aria-hidden="true">
+      <!-- each primitive center, in fractional units; pipeline below is 7 cols, primitives are 5 cols -->
+      <!-- 5-col centers: 10%, 30%, 50%, 70%, 90% -->
+      <line x1="100"  y1="0" x2="100"  y2="22"/>
+      <line x1="300"  y1="0" x2="300"  y2="22"/>
+      <line x1="500"  y1="0" x2="500"  y2="22"/>
+      <line x1="700"  y1="0" x2="700"  y2="22"/>
+      <line x1="900"  y1="0" x2="900"  y2="22"/>
+      <!-- arrowheads -->
+      <path d="M96 21 L100 27 L104 21 Z"/>
+      <path d="M296 21 L300 27 L304 21 Z"/>
+      <path d="M496 21 L500 27 L504 21 Z"/>
+      <path d="M696 21 L700 27 L704 21 Z"/>
+      <path d="M896 21 L900 27 L904 21 Z"/>
+      <text x="500" y="11" text-anchor="middle">READ BY EVERY PIPELINE MODULE</text>
+    </svg>
+  </section>
+
+  <!-- LAYER 02 — PIPELINE -->
+  <section class="layer">
+    <div class="layer-head">
+      <div class="layer-num">02</div>
+      <h2>Pipeline <span class="tag">— 7 modules, left → right, the TTL-facing tool consumes in order</span></h2>
+      <div class="right">M0 → M6 · linear flow</div>
+    </div>
+
+    <div class="pipeline">
+
+      <article class="mod s-setup">
+        <div class="accent"></div>
+        <div class="hd">
           <div class="mid">M0</div>
+          <div class="seq">1 / 7</div>
+          <div class="status"><span class="dot"></span>SETUP</div>
+        </div>
+        <div class="body">
           <div class="mname">Setup &amp; Scope</div>
-          <div class="mline">AOI · NbS · resolution · scenario · ingestion check</div>
-          <div><span class="owner pete">Pete</span></div>
-          <div class="tables"><span class="tbl-chip t0">T0</span><span class="tbl-chip t1">T1</span><span class="tbl-chip t7">T7</span></div>
+          <div class="mline">AOI · NbS · resolution · scenario · ingestion check.</div>
         </div>
-        <div class="mod">
-          <span class="status done">DONE</span>
+        <div class="foot">
+          <div class="owners">
+            <span class="owner pete"><span class="av">P</span>Pete</span>
+          </div>
+          <div class="tables">
+            <span class="tbl-chip t0">T0</span><span class="tbl-chip t1">T1</span><span class="tbl-chip t7">T7</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="mod s-done">
+        <div class="accent"></div>
+        <div class="hd">
           <div class="mid">M1</div>
+          <div class="seq">2 / 7</div>
+          <div class="status"><span class="dot"></span>DONE</div>
+        </div>
+        <div class="body">
           <div class="mname">Suitability → Opportunity Space</div>
-          <div class="mline">Fuzzy + MCDA → continuous suitability raster</div>
-          <div><span class="owner benson">Benson</span> <span class="owner namita">Namita</span></div>
-          <div class="tables"><span class="tbl-chip t1">T1</span><span class="tbl-chip t4">T4</span><span class="tbl-chip t7">T7</span></div>
+          <div class="mline">Fuzzy + MCDA → continuous suitability raster.</div>
         </div>
-        <div class="mod">
-          <span class="status partial">PARTIAL</span>
+        <div class="foot">
+          <div class="owners">
+            <span class="owner benson"><span class="av">B</span>Benson</span>
+            <span class="owner namita"><span class="av">N</span>Namita</span>
+          </div>
+          <div class="tables">
+            <span class="tbl-chip t1">T1</span><span class="tbl-chip t4">T4</span><span class="tbl-chip t7">T7</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="mod s-partial">
+        <div class="accent"></div>
+        <div class="hd">
           <div class="mid">M2</div>
+          <div class="seq">3 / 7</div>
+          <div class="status"><span class="dot"></span>PARTIAL</div>
+        </div>
+        <div class="body">
           <div class="mname">Rural Climate Risk</div>
-          <div class="mline">Hazard × exposure (× AC toggle) · baseline + future</div>
-          <div><span class="owner brayden">Brayden</span></div>
-          <div class="tables"><span class="tbl-chip t1">T1</span><span class="tbl-chip t2">T2</span></div>
+          <div class="mline">Hazard × exposure (× AC toggle) · baseline + future.</div>
         </div>
-        <div class="mod">
-          <span class="status todo">TO SCOPE</span>
+        <div class="foot">
+          <div class="owners">
+            <span class="owner brayden"><span class="av">Br</span>Brayden</span>
+          </div>
+          <div class="tables">
+            <span class="tbl-chip t1">T1</span><span class="tbl-chip t2">T2</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="mod s-todo q2">
+        <div class="accent"></div>
+        <div class="hd">
           <div class="mid">M3</div>
+          <div class="seq">4 / 7</div>
+          <div class="status"><span class="dot"></span>TO SCOPE<span class="nextup">NEXT UP</span></div>
+        </div>
+        <div class="body">
           <div class="mname">Opp Space Characterisation</div>
-          <div class="mline">Poverty · biodiversity · GESI · production · pop · farm size</div>
-          <div><span class="owner namita">Namita</span> <span class="owner benson">Benson</span></div>
-          <div class="tables"><span class="tbl-chip t1">T1</span><span class="tbl-chip t5">T5</span></div>
+          <div class="mline">Poverty · biodiversity · GESI · production · pop · farm size.</div>
         </div>
-        <div class="mod">
-          <span class="status todo">TO SCOPE</span>
+        <div class="foot">
+          <div class="owners">
+            <span class="owner namita"><span class="av">N</span>Namita</span>
+            <span class="owner benson"><span class="av">B</span>Benson</span>
+          </div>
+          <div class="tables">
+            <span class="tbl-chip t1">T1</span><span class="tbl-chip t5">T5</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="mod s-todo q3">
+        <div class="accent"></div>
+        <div class="hd">
           <div class="mid">M4</div>
+          <div class="seq">5 / 7</div>
+          <div class="status"><span class="dot"></span>TO SCOPE</div>
+        </div>
+        <div class="body">
           <div class="mname">TTL Hotspots (MCDA)</div>
-          <div class="mline">User-weighted MCDA on T5 vars within opp space</div>
-          <div><span class="owner benson">Benson</span></div>
-          <div class="tables"><span class="tbl-chip t5">T5</span></div>
+          <div class="mline">User-weighted MCDA on T5 vars within opp space.</div>
         </div>
-        <div class="mod">
-          <span class="status todo">TO SCOPE</span>
+        <div class="foot">
+          <div class="owners">
+            <span class="owner benson"><span class="av">B</span>Benson</span>
+          </div>
+          <div class="tables">
+            <span class="tbl-chip t5">T5</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="mod s-todo q3">
+        <div class="accent"></div>
+        <div class="hd">
           <div class="mid">M5</div>
+          <div class="seq">6 / 7</div>
+          <div class="status"><span class="dot"></span>TO SCOPE</div>
+        </div>
+        <div class="body">
           <div class="mname">NbS Scorecard &amp; Response</div>
-          <div class="mline">Likert effects · economic archetype · benefit profile</div>
-          <div><span class="owner namita">Namita</span></div>
-          <div class="tables"><span class="tbl-chip t3">T3</span><span class="tbl-chip t6">T6</span></div>
+          <div class="mline">Likert effects · economic archetype · benefit profile.</div>
         </div>
-        <div class="mod">
-          <span class="status todo">TO SCOPE</span>
+        <div class="foot">
+          <div class="owners">
+            <span class="owner namita"><span class="av">N</span>Namita</span>
+          </div>
+          <div class="tables">
+            <span class="tbl-chip t3">T3</span><span class="tbl-chip t6">T6</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="mod s-todo q4">
+        <div class="accent"></div>
+        <div class="hd">
           <div class="mid">M6</div>
-          <div class="mname">Implementation Hand-off</div>
-          <div class="mline">Next-step tools · contextualisation · feasibility pointers · domain pointers</div>
-          <div><span class="owner mfl">MFL team</span> <span class="owner pete">Pete</span> <span class="owner namita">Namita</span></div>
-          <div class="tables"><span class="tbl-chip t0">T0</span><span class="tbl-chip t6">T6</span></div>
+          <div class="seq">7 / 7</div>
+          <div class="status"><span class="dot"></span>TO SCOPE</div>
         </div>
+        <div class="body">
+          <div class="mname">Implementation Hand-off</div>
+          <div class="mline">Next-step tools · contextualisation · feasibility &amp; domain pointers.</div>
+        </div>
+        <div class="foot">
+          <div class="owners">
+            <span class="owner mfl"><span class="av">M</span>MFL team</span>
+            <span class="owner pete"><span class="av">P</span>Pete</span>
+            <span class="owner namita"><span class="av">N</span>Namita</span>
+          </div>
+          <div class="tables">
+            <span class="tbl-chip t0">T0</span><span class="tbl-chip t6">T6</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- SCHEMA LEGEND (T0–T7) -->
+  <section class="schema" aria-label="Schema table reference">
+    <div class="sh">Schema<br><span class="sub">T-chip key</span></div>
+    <div class="schema-row">
+      <div class="schema-item"><span class="tbl-chip t0">T0</span><span class="lbl">NbS registry</span></div>
+      <div class="schema-item"><span class="tbl-chip t1">T1</span><span class="lbl">Spatial inputs</span></div>
+      <div class="schema-item"><span class="tbl-chip t2">T2</span><span class="lbl">Climate risk</span></div>
+      <div class="schema-item"><span class="tbl-chip t3">T3</span><span class="lbl">Likert scorecard</span></div>
+      <div class="schema-item"><span class="tbl-chip t4">T4</span><span class="lbl">Suitability vars</span></div>
+      <div class="schema-item"><span class="tbl-chip t5">T5</span><span class="lbl">Hotspot vars</span></div>
+      <div class="schema-item"><span class="tbl-chip t6">T6</span><span class="lbl">Economic archetype</span></div>
+      <div class="schema-item"><span class="tbl-chip t7">T7</span><span class="lbl">Run metadata</span></div>
+    </div>
+    <div class="schema-erd">see ERD v0.1</div>
+  </section>
+
+  <!-- LAYER 03 — RECIPE -->
+  <section class="layer">
+    <div class="layer-head">
+      <div class="layer-num">03</div>
+      <h2>Recipe layer <span class="tag">— per-NbS content configuration · parameterises the pipeline via schema</span></h2>
+      <div class="right">4 recipes · 1 done</div>
+    </div>
+
+    <div class="recipe-grid">
+      <div class="recipe done">
+        <span class="cstate">DONE</span>
+        <div class="ct">WATER HARVESTING</div>
+        <div class="cs">Benson's recipe — 27 vars × 6 themes × 5 subpractices. Pattern template for other NbS.</div>
       </div>
+      <div class="recipe">
+        <span class="cstate">DRAFTED</span>
+        <div class="ct">AGROFORESTRY</div>
+        <div class="cs">Schema tables drafted (T0–T7 xlsx); pilot NbS — needs full recipe write-up.</div>
+      </div>
+      <div class="recipe next">
+        <span class="cstate">NEXT</span>
+        <div class="ct">FOREST RESTORATION / ANR</div>
+        <div class="cs">Next priority cluster — Sarah · Evert · Hannes domain input.</div>
+      </div>
+      <div class="recipe open">
+        <span class="cstate">OPEN</span>
+        <div class="ct">+ FUTURE NbS</div>
+        <div class="cs">New rows in T0 + new T4 mappings — no code change required.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LAYER 04 — RUNTIME -->
+  <section class="layer">
+    <div class="layer-head">
+      <div class="layer-num">04</div>
+      <h2>Runtime <span class="tag">— code artifacts · GEE Python + Colab notebooks (per proposal)</span></h2>
+      <div class="right">implementation surface</div>
+    </div>
+
+    <div class="runtime-grid">
+      <div class="rt build">
+        <span class="cstate">BUILD</span>
+        <div class="ct">GEE PYTHON PIPELINE</div>
+        <div class="cs">Benson — port <span class="mono">spatMCDA.R</span> logic; reads from T0–T7, never hardcoded.</div>
+      </div>
+      <div class="rt build">
+        <span class="cstate">BUILD</span>
+        <div class="ct">COLAB DELIVERABLE NOTEBOOK</div>
+        <div class="cs">Per-pilot — reproducible, hand-off to WB technical team.</div>
+      </div>
+      <div class="rt demo">
+        <span class="cstate">DEMO</span>
+        <div class="ct">GEE APP / WIREFRAME (v0)</div>
+        <div class="cs">Pete + Claude — demonstrator at final WB presentation; not contractual.</div>
+      </div>
+      <div class="rt phase">
+        <span class="cstate">PHASE 3</span>
+        <div class="ct">PILOT × 2</div>
+        <div class="cs">Benson — apply methodology to SSA + Asia (or per Dinara's offer).</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTRACT NOTE (quieter) -->
+  <div class="contract">
+    <div class="label">CONTRACT</div>
+    <div>
+      <b>The schema (T0–T7) is the seam between content and code.</b>
+      Primitives power the pipeline; recipes parameterise it; runtime consumes recipes through the schema. Analytical rules read from the schema — <b>never hardcoded</b>. New NbS = new schema rows, not new code.
     </div>
   </div>
 
-  <!-- RECIPE LAYER -->
-  <div class="layer-row">
-    <div class="layer-label">RECIPE LAYER · PER-NBS CONFIGURATION</div>
-    <div class="row-content">
-      <div class="recipe-box done">
-        <div class="r-title">WATER HARVESTING</div>
-        <div class="r-sub">Done — Benson's recipe (27 vars × 6 themes × 5 subpractices). Pattern template for other NbS.</div>
-      </div>
-      <div class="recipe-box">
-        <div class="r-title">AGROFORESTRY</div>
-        <div class="r-sub">Schema tables drafted (T0–T7 xlsx); pilot NbS — needs full recipe write-up</div>
-      </div>
-      <div class="recipe-box">
-        <div class="r-title">FOREST RESTORATION / ANR</div>
-        <div class="r-sub">Next priority cluster — Sarah / Evert / Hannes domain input</div>
-      </div>
-      <div class="recipe-box">
-        <div class="r-title">+ FUTURE NbS</div>
-        <div class="r-sub">New rows in T0 + new T4 mappings — no code change required</div>
-      </div>
+  <!-- FOOTER GRID -->
+  <div class="foot-grid">
+    <div class="fcard">
+      <h3>Variable selection <span class="small">— Ani's three principles, sub-step in M1 &amp; M3</span></h3>
+      <ul>
+        <li><span class="k">REDUCE</span><span>Thematic grouping (per recipe) + correlation cluster (per AOI). One representative per cluster enters MCDA.</span></li>
+        <li><span class="k">SOURCE</span><span>Native GEE → community GEE → upload-to-GEE. Fitness-for-purpose precedes platform.</span></li>
+        <li><span class="k">EXPLAIN</span><span>Every variable shipped as a Variable Card: What · Why · How to read · Cluster · Source · Interpretation.</span></li>
+      </ul>
     </div>
-  </div>
 
-  <!-- RUNTIME LAYER -->
-  <div class="layer-row">
-    <div class="layer-label">RUNTIME · GEE PYTHON + COLAB NOTEBOOKS (PER PROPOSAL)</div>
-    <div class="row-content">
-      <div class="recipe-box">
-        <div class="r-title">GEE PYTHON PIPELINE</div>
-        <div class="r-sub">Benson — port spatMCDA.R logic; reads from T0–T7 (never hardcoded)</div>
-      </div>
-      <div class="recipe-box">
-        <div class="r-title">COLAB DELIVERABLE NOTEBOOK</div>
-        <div class="r-sub">Per-pilot — reproducible, hand-off to WB technical team</div>
-      </div>
-      <div class="recipe-box">
-        <div class="r-title">GEE APP / WIREFRAME (v0)</div>
-        <div class="r-sub">Pete + Claude — demonstrator at final WB presentation; not contractual</div>
-      </div>
-      <div class="recipe-box">
-        <div class="r-title">PILOT × 2 (PROPOSAL PHASE 3)</div>
-        <div class="r-sub">Benson — apply methodology to SSA + Asia (or per Dinara's offer)</div>
-      </div>
+    <div class="fcard">
+      <h3>Scope guardrails <span class="small">— for the World Bank deliverable</span></h3>
+      <ul>
+        <li><span class="k now">NOW</span><span>Agroforestry &amp; Water Harvesting recipes · 2 pilot notebooks · v0 GEE wireframe.</span></li>
+        <li><span class="k soon">SOON</span><span>Forest restoration &amp; ANR recipe (cluster) · refined hotspot MCDA.</span></li>
+        <li><span class="k later">LATER</span><span>WB Disaster Risk integration · richer scorecard · production hosting.</span></li>
+        <li><span class="k out">OUT</span><span>Ecosystem service modelling · full CBA · site-level feasibility · participatory weighting.</span></li>
+      </ul>
     </div>
   </div>
 
   <!-- LEGEND -->
   <div class="legend">
-    <span class="legend-item"><span class="legend-chip" style="background:#e1f5ee"></span>Done</span>
-    <span class="legend-item"><span class="legend-chip" style="background:#faeeda"></span>Partial</span>
-    <span class="legend-item"><span class="legend-chip" style="background:#f1efe8"></span>To scope</span>
-    <span class="legend-item"><span class="legend-chip" style="background:#faece7"></span>Benson</span>
-    <span class="legend-item"><span class="legend-chip" style="background:#fbeaf0"></span>Namita</span>
-    <span class="legend-item"><span class="legend-chip" style="background:#eaf3de"></span>Brayden</span>
-    <span class="legend-item"><span class="legend-chip" style="background:#faeeda"></span>Pete</span>
-    <span class="legend-item"><span class="legend-chip" style="background:#eeedfe"></span>MFL team (Sarah · Chris · Evert · Hannes)</span>
-    <span class="legend-item">T-chips: schema table dependencies (see ERD v0.1)</span>
-  </div>
-
-  <!-- FOOTER -->
-  <div class="footer">
-    <div class="footer-block">
-      <h3>Variable selection (sub-step in M1 &amp; M3) — Ani's three principles</h3>
-      <ul>
-        <li><strong>Reduce</strong> — thematic grouping (per recipe) + correlation cluster (per AOI). One representative per cluster enters MCDA.</li>
-        <li><strong>Source</strong> — native GEE → community GEE → upload-to-GEE. Fitness-for-purpose precedes platform.</li>
-        <li><strong>Explain</strong> — every variable shipped as a Variable Card: What · Why · How to read · Cluster · Source · Interpretation.</li>
-      </ul>
+    <div class="legend-group">
+      <span class="gl">Status</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--done-bg)"></span>Done</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--partial-bg)"></span>Partial</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--setup-bg)"></span>Setup</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--todo-bg)"></span>To scope</span>
     </div>
-    <div class="footer-block">
-      <h3>Scope guardrails</h3>
-      <ul>
-        <li><strong>Now</strong> — Agroforestry &amp; Water Harvesting recipes; 2 pilot notebooks; v0 GEE wireframe.</li>
-        <li><strong>Soon</strong> — Forest restoration &amp; ANR recipe (cluster); refined hotspot MCDA.</li>
-        <li><strong>Later</strong> — WB Disaster Risk integration; richer scorecard; production hosting.</li>
-        <li><strong>Out</strong> — Ecosystem service modelling · full CBA · site-level feasibility · participatory weighting.</li>
-      </ul>
+    <div class="legend-group">
+      <span class="gl">Owners</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--o-pete-ink)"></span>Pete</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--o-benson-ink)"></span>Benson</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--o-namita-ink)"></span>Namita</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--o-brayden-ink)"></span>Brayden</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--o-mfl-ink)"></span>MFL team (Sarah · Chris · Evert · Hannes)</span>
     </div>
   </div>
 
-  <div class="note"><strong>Read the diagram top-to-bottom:</strong> framework primitives (top, all Benson) power the pipeline (middle); recipes (per-NbS config) parameterise the pipeline; runtime (bottom) is the GEE Python + Colab implementation that consumes recipes via the schema. The schema (T0–T7, chips on each module) is the contract between Namita's content work and Benson's pipeline code — analytical rules read from schema, never hardcoded.</div>
 </div>
 </body>
 </html>
