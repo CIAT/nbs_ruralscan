@@ -4,6 +4,49 @@ Methodology and demonstrator for spatial prioritisation of Nature-based Solution
 
 > ⚠ **Status:** v0 work-in-progress. Mock data only. Not yet a production decision tool.
 
+---
+
+## 👋 Team kickoff — start here
+
+Welcome Benson, Namita, Brayden (and everyone else who lands here). This repo is the shared home for our methodology and workflow going forward. **Please spend ~15 minutes reading this section before picking up any work.**
+
+### What's here
+
+The scaffolding covers the methodology (modules, schema, recipes), the team's working conventions, and a populated project board with the first 15 issues. It's a *spine* you hang your work off — not a replacement for what's already been done.
+
+### Three things to look at, with your feedback in mind
+
+1. **[Pipeline architecture](https://ciat.github.io/nbs_ruralscan/pipeline.html)** — one-page diagram of the 7 modules and the T0–T7 schema. **Benson** — your water-harvesting recipe and v2 plan are the *framework primitives* layer at the top (5 fuzzy MFs, AHP+CRITIC+Entropy, spatMCDA, recipe template). Read on whether the attribution and architecture feel right.
+2. **Module specs — M1 and M2**
+   - **[M1 Suitability](./methodology/modules/M1_suitability.md)** — Benson, this is the I/O contract and 8 sub-steps for porting `spatMCDA.R` to `pipeline/mcda_pipeline.py`. Check whether the sub-step breakdown matches how you'd structure it. Function signatures in §13.
+   - **[M2 Rural Climate Risk](./methodology/modules/M2_climate_risk.md)** — **Brayden**, pre-scaffolded for you. Mode A vs Mode B, double-count guard with M3/M4, function signatures for `pipeline/climate_risk.py`. Six open methodology questions at the bottom that need your view.
+3. **Repo conventions + workflow** — [`CLAUDE.md`](./CLAUDE.md), [`PLAYBOOK.md`](./PLAYBOOK.md), [`CONTRIBUTING.md`](./CONTRIBUTING.md). **Namita** — keen on your take here since you'll coordinate recipe authoring + Variable Cards.
+
+### Your assigned work on the [Delivery board](https://github.com/orgs/CIAT/projects/2)
+
+- **Benson:** M1 port (#9), M4 spec (#3), agroforestry recipe (#6), Sierra Leone pilot (#11), GEE App spec (#13)
+- **Namita:** M3 spec (#2), M5 spec (#4), forest restoration recipe (#7), riparian buffer recipe (#8)
+- **Brayden:** M2 climate risk implementation (#10)
+
+### Feedback forum — 1:1 catch-ups
+
+Given staggered availability (Namita out next week; Brayden on leave Monday), the walkthrough happens as three separate 1:1s rather than a group session:
+
+- **Benson — Monday** (calendar invite already sent). 60 min, focused on the framework primitives layer, M1, and the architecture overall.
+- **Brayden — when back**. 30–45 min, focused on M2 and the six open methodology questions.
+- **Namita — when back**. 45–60 min, focused on recipes, M3/M5, Variable Cards, and the workflow side.
+
+In each: bring questions, pushback, "this is wrong because…" — all welcome.
+
+### Framings worth flagging
+
+- This is **scaffolding**, not a fait accompli.
+- Benson's existing work is the canonical reference for the framework primitives and M1.
+- Module specs are I/O contracts you can adjust, not briefs being handed to you.
+- The wireframe is being sent for visual polish separately — feedback on flow and content is welcome.
+
+---
+
 ## What this is
 
 A scoping and decision-support framework that helps World Bank Task Team Leaders (TTLs) identify where different Nature-based Solutions could be invested in, how extensive the opportunity is, and which TTL priorities (poverty, biodiversity, climate risk, gender equity) intersect that opportunity space. Outputs are reproducible Jupyter/Colab notebooks plus an interactive demonstrator UI.
