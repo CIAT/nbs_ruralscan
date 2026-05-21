@@ -170,11 +170,12 @@ A few transitions remain manual — that's by design. The team uses them:
 | **In Progress → Review** | Drag manually when you raise the PR (or set up Workflow E above to auto-do this on PR approval) |
 | **Done → archived** | After a week or so, archive done items via *…* → *Archive*; or set up **Auto-archive items** workflow below |
 
-### Workflow F (optional): Auto-archive done items after 14 days
+### Workflow F (optional): Auto-archive done items after 2 weeks
 
 1. Click **Auto-archive items**.
 2. Toggle **On**.
-3. Set: filter → `status:Done updated:<@today-14d`
+3. Set: filter → `is:closed updated:<@today-2w`
+   - GitHub's auto-archive filter uses issue/PR search syntax, not Project custom-field syntax — so `status:Done` will fail with "Unknown field name". Filter on `is:closed` instead, which catches everything that lands in Done (issues close and PRs merge into Done via Workflows C and D).
 4. Save.
 
 Keeps the board tidy without manual archiving.
