@@ -18,6 +18,10 @@ Includes:
 
 Both use mock Sierra Leone / agroforestry data.
 
+## Project board
+
+Active work is tracked at the **[NbS Rural Scan — Delivery board](https://github.com/orgs/CIAT/projects/2)**. Five columns (Backlog · This week · In progress · Review · Done); new issues auto-add to Backlog. See [`.github/PROJECT_BOARD_SETUP.md`](./.github/PROJECT_BOARD_SETUP.md) for the setup runbook.
+
 ---
 
 ## Working in this repo — quick start (≈10 minutes)
