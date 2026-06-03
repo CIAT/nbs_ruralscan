@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NbS Schema — Entity Relationship Diagram</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 24px; }
+  h1 { font-size: 20px; font-weight: 600; color: #1a1a18; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #5f5e5a; margin-bottom: 20px; }
+
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
+
+  .tbl { border-radius: 10px; overflow: hidden; border: 1.5px solid #d3d1c7; background: #fff; font-size: 12px; }
+  .tbl-head { padding: 8px 10px 6px; }
+  .tbl-id { font-size: 10px; font-weight: 600; letter-spacing: .05em; opacity: .8; }
+  .tbl-name { font-size: 13px; font-weight: 600; line-height: 1.3; margin-top: 1px; }
+  .tbl-role { font-size: 10px; opacity: .65; margin-top: 2px; line-height: 1.3; }
+  .tbl-fields { border-top: 1px solid #e8e7e3; }
+  .field { display: flex; align-items: baseline; gap: 6px; padding: 3px 10px; border-bottom: 1px solid #f1efe8; }
+  .field:last-child { border-bottom: none; }
+  .field-name { font-size: 11px; font-weight: 400; flex: 1; white-space: nowrap; color: #2c2c2a; }
+  .field-type { font-size: 10px; color: #888780; white-space: nowrap; }
+  .badge { display: inline-block; font-size: 9px; font-weight: 600; padding: 1px 4px; border-radius: 3px; margin-right: 2px; white-space: nowrap; }
+  .pk { background: #faeeda; color: #633806; }
+  .fk { background: #e6f1fb; color: #0c447c; }
+  .ref { background: #eeedfe; color: #3c3489; }
+
+  .t0 .tbl-head { background: #e1f5ee; } .t0 .tbl-id, .t0 .tbl-name { color: #085041; }
+  .t1 .tbl-head { background: #e6f1fb; } .t1 .tbl-id, .t1 .tbl-name { color: #0c447c; }
+  .t2 .tbl-head { background: #faece7; } .t2 .tbl-id, .t2 .tbl-name { color: #712b13; }
+  .t3 .tbl-head { background: #faeeda; } .t3 .tbl-id, .t3 .tbl-name { color: #633806; }
+  .t4 .tbl-head { background: #eeedfe; } .t4 .tbl-id, .t4 .tbl-name { color: #3c3489; }
+  .t5 .tbl-head { background: #eaf3de; } .t5 .tbl-id, .t5 .tbl-name { color: #27500a; }
+  .t6 .tbl-head { background: #fbeaf0; } .t6 .tbl-id, .t6 .tbl-name { color: #72243e; }
+  .t7 .tbl-head { background: #f1efe8; } .t7 .tbl-id, .t7 .tbl-name { color: #444441; }
+
+  .section-label { font-size: 11px; font-weight: 600; color: #5f5e5a; letter-spacing: .04em; margin: 20px 0 8px; text-transform: uppercase; }
+
+  .rel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+  .rel-row { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #5f5e5a; padding: 5px 10px; border-radius: 6px; background: #fff; border: 1px solid #e8e7e3; }
+  .rel-from { font-weight: 600; color: #1a1a18; min-width: 22px; }
+  .rel-card { font-family: 'Courier New', monospace; font-size: 10px; color: #888780; }
+  .rel-to { font-weight: 600; color: #1a1a18; min-width: 22px; }
+  .rel-on { color: #888780; font-size: 10px; }
+
+  .legend { display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap; align-items: center; }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #5f5e5a; }
+
+  .note { background: #f1efe8; border-left: 3px solid #b4b2a9; padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 11px; color: #444441; margin-top: 12px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<h1>Rural NbS Scan — Entity Relationship Diagram</h1>
+<p class="subtitle">Schema v0.1 · All tables, key fields, and join relationships · Click to zoom in browser</p>
+
+<div class="grid-4">
+  <div class="tbl t0">
+    <div class="tbl-head">
+      <div class="tbl-id">T0</div>
+      <div class="tbl-name">NbS registry</div>
+      <div class="tbl-role">Master record — anchor for all joins</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">nbs_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">nbs_name</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">cluster</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">economic_archetype</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">establishment_period_years</span><span class="field-type">object</span></div>
+      <div class="field"><span class="field-name">evidence_quality</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">is_active</span><span class="field-type">bool</span></div>
+    </div>
+  </div>
+
+  <div class="tbl t1">
+    <div class="tbl-head">
+      <div class="tbl-id">T1</div>
+      <div class="tbl-name">Data registry</div>
+      <div class="tbl-role">Every geospatial dataset — referenced by T2, T4, T5, T7</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">dataset_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">dataset_name</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">analytical_module</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">variable_unit</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">access_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">gee_asset_id</span><span class="field-type">string?</span></div>
+      <div class="field"><span class="field-name">download_url</span><span class="field-type">string?</span></div>
+      <div class="field"><span class="field-name">license / citation</span><span class="field-type">string</span></div>
+    </div>
+  </div>
+
+  <div class="tbl t2">
+    <div class="tbl-head">
+      <div class="tbl-id">T2</div>
+      <div class="tbl-name">Climate risk formulation</div>
+      <div class="tbl-role">Risk variables, weights, simplified vs advanced mode flags</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">variable_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">risk_component</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">hazard_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">scenario_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">use_in_simplified_mode</span><span class="field-type">bool</span></div>
+      <div class="field"><span class="field-name">use_in_advanced_mode</span><span class="field-type">bool</span></div>
+      <div class="field"><span class="field-name">double_count_risk</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">weight_default</span><span class="field-type">float</span></div>
+    </div>
+  </div>
+
+  <div class="tbl t3">
+    <div class="tbl-head">
+      <div class="tbl-id">T3</div>
+      <div class="tbl-name">NbS × hazard × farming</div>
+      <div class="tbl-role">Qualitative mitigation potential matrix — no geospatial dataset needed</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">record_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">nbs_id → T0</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">hazard_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">farming_system</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">mitigation_potential</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">confidence</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">timescale_of_effect</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">landscape_scale_only</span><span class="field-type">bool</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="grid-4">
+  <div class="tbl t4">
+    <div class="tbl-head">
+      <div class="tbl-id">T4</div>
+      <div class="tbl-name">Suitability mappings</div>
+      <div class="tbl-role">Response functions, scenario flags, AEZ context overrides</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">mapping_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">nbs_id → T0</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge ref">REF</span><span class="field-name">context_overrides → T7</span><span class="field-type">object[]</span></div>
+      <div class="field"><span class="field-name">suitability_dimension</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">relationship_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">relationship_params</span><span class="field-type">object</span></div>
+      <div class="field"><span class="field-name">is_scenario_candidate</span><span class="field-type">bool</span></div>
+      <div class="field"><span class="field-name">has_future_projection</span><span class="field-type">bool</span></div>
+      <div class="field"><span class="field-name">weight_default</span><span class="field-type">float</span></div>
+    </div>
+  </div>
+
+  <div class="tbl t5">
+    <div class="tbl-head">
+      <div class="tbl-id">T5</div>
+      <div class="tbl-name">Opportunity space vars</div>
+      <div class="tbl-role">TTL-facing priority layers for MCDA weighting</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">variable_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">variable_name</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">category</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">directionality_of_concern</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">is_climate_risk_component</span><span class="field-type">bool</span></div>
+      <div class="field"><span class="field-name">ttl_priority_label</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">is_active</span><span class="field-type">bool</span></div>
+    </div>
+  </div>
+
+  <div class="tbl t6">
+    <div class="tbl-head">
+      <div class="tbl-id">T6</div>
+      <div class="tbl-name">NbS scorecard</div>
+      <div class="tbl-role">Likert effects + economic profile per NbS per variable</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">record_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">nbs_id → T0</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">variable_id → T5</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">variable_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">effect_direction</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">effect_confidence</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">economic_indicator_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">economic_value_range</span><span class="field-type">object</span></div>
+    </div>
+  </div>
+
+  <div class="tbl t7">
+    <div class="tbl-head">
+      <div class="tbl-id">T7</div>
+      <div class="tbl-name">Geographic context</div>
+      <div class="tbl-role">AEZ / farming system / admin lookups for T4 overrides</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">context_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">context_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">context_name</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">value_in_dataset</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">is_active</span><span class="field-type">bool</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">Relationships</div>
+<div class="rel-grid">
+  <div class="rel-row"><span class="rel-from">T0</span><span class="rel-card">||——o{</span><span class="rel-to">T3</span><span class="rel-on">on nbs_id · one NbS has many hazard mitigation rows</span></div>
+  <div class="rel-row"><span class="rel-from">T0</span><span class="rel-card">||——o{</span><span class="rel-to">T4</span><span class="rel-on">on nbs_id · one NbS has many suitability variable rows</span></div>
+  <div class="rel-row"><span class="rel-from">T0</span><span class="rel-card">||——o{</span><span class="rel-to">T6</span><span class="rel-on">on nbs_id · one NbS has many scorecard entries</span></div>
+  <div class="rel-row"><span class="rel-from">T1</span><span class="rel-card">||——o{</span><span class="rel-to">T2</span><span class="rel-on">on dataset_id · one dataset used by many risk variable rows</span></div>
+  <div class="rel-row"><span class="rel-from">T1</span><span class="rel-card">||——o{</span><span class="rel-to">T4</span><span class="rel-on">on dataset_id · one dataset used by many suitability mappings</span></div>
+  <div class="rel-row"><span class="rel-from">T1</span><span class="rel-card">||——o{</span><span class="rel-to">T5</span><span class="rel-on">on dataset_id · one dataset backs many opp. space variables</span></div>
+  <div class="rel-row"><span class="rel-from">T1</span><span class="rel-card">||——o{</span><span class="rel-to">T7</span><span class="rel-on">on dataset_id · one dataset defines many geo contexts</span></div>
+  <div class="rel-row"><span class="rel-from">T5</span><span class="rel-card">||——o{</span><span class="rel-to">T6</span><span class="rel-on">on variable_id · one opp. space var has many NbS scorecard entries</span></div>
+  <div class="rel-row"><span class="rel-from">T7</span><span class="rel-card">}o——o{</span><span class="rel-to">T4</span><span class="rel-on">via context_overrides[ ] · soft many-to-many, validated at load</span></div>
+</div>
+
+<div class="legend">
+  <div class="leg-item"><span class="badge pk">PK</span> Primary key</div>
+  <div class="leg-item"><span class="badge fk">FK</span> Hard foreign key (must exist in target table)</div>
+  <div class="leg-item"><span class="badge ref">REF</span> Soft reference (embedded array, validated at pipeline load)</div>
+  <div class="leg-item" style="color:#888780">· T3 has no FK to T1 — it is qualitative literature only, no geospatial dataset</div>
+</div>
+
+<div class="note">
+  <strong>Key structural note for Benson:</strong> T1 (Data Registry) is the single source of truth for every geospatial dataset. T2, T4, T5, and T7 all carry a <code>dataset_id → T1</code> foreign key. T3 does <em>not</em> link to T1 because the hazard mitigation matrix is qualitative literature — it names hazard types but does not consume a geospatial raster directly. The pipeline accesses the hazard rasters via T2 (for the risk arm) and via T4 (if any hazard-related variable appears as a suitability constraint). T2 and T4 are <em>parallel arms</em>, not connected to each other.
+</div>
+
+</body>
+</html>

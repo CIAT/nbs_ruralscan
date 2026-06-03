@@ -2,7 +2,19 @@
 
 The analytical backbone. All analytical rules, datasets, response functions, weights — read from these tables by the pipeline. **Never hardcoded in code.**
 
-> Schema v0.1 — designed as 8 tables (T0–T7) joined on `nbs_id` / `dataset_id` / `variable_id`. See the ERD at [`../docs/pipeline.html`](../docs/pipeline.html) (informal) and the field-level schema reference at `2_Technical_&_Data/Claude Outputs/NbS_Schema_Reference_v01_1.docx`.
+> Schema v0.1 — designed as 8 tables (T0–T7) joined on `nbs_id` / `dataset_id` / `variable_id`.
+> Field-level spec: [`spec.md`](spec.md). Entity-relationship diagram: [`design/NbS_ERD_v01.html`](design/NbS_ERD_v01.html)
+> (published on the [Pages site](https://ciat.github.io/nbs_ruralscan/schema.html)). Pipeline-architecture view: [`../docs/pipeline.html`](../docs/pipeline.html).
+
+## Draft-0 worked examples
+
+The first populated tables — pilot NbS **Agroforestry** and **Water Harvesting & Conservation**, sourced from the agroforestry/water-harvesting stocktake. They demonstrate the spec and are the template every subsequent NbS recipe follows. CSV + JSON for all eight tables; foreign keys validated.
+
+- Per-NbS tables (T0, T3, T4, T6): [`recipes/agroforestry/`](recipes/agroforestry/) and [`recipes/water_harvesting_conservation/`](recipes/water_harvesting_conservation/) — each with its own README.
+- Cross-NbS tables (T1, T2, T5, T7): at this schema root — `T1_data_registry.*` (21 datasets), `T2_climate_risk.*` (11 risk variables), `T5_opportunity_space.*` (14 priority layers), `T7_geographic_context.*` (15 contexts). Rows from both recipes are merged and **deduplicated** — see [`DEDUP_NOTES.md`](DEDUP_NOTES.md); shared datasets carry a unioned `nbs_ids_using`.
+- Design sources archived in [`design/`](design/): the ERD, the Schema Reference docx, and the human-readable workbooks the tables were generated from.
+
+> **Deduplication (June 2026).** The two source workbooks were authored standalone, so the water-harvesting workbook aliased shared datasets, risk variables, priority layers and geographic contexts with a `_wh` suffix. These clones have been collapsed into single shared rows so the framework layer (T1/T2/T5/T7) is one source of truth; genuinely water-specific entries were kept (with the `_wh` alias stripped). Full decision log: [`DEDUP_NOTES.md`](DEDUP_NOTES.md). One item needs methodology sign-off (Brayden): the merged T2 baseline risk weights were renormalised proportionally as a **provisional** placeholder.
 
 ## Tables
 
@@ -19,8 +31,8 @@ The analytical backbone. All analytical rules, datasets, response functions, wei
 
 ## Conventions
 
-- **JSON or CSV** — both supported. CSV for tables that humans edit (T0, T2, T4, T5, T6); JSON for tables with nested structures (e.g. T4's `context_overrides` and `relationship_params`).
-- **One folder per recipe** — `schema/recipes/<nbs_id>/` contains the rows of T0, T4, T6 for that NbS. Cross-NbS tables (T1, T7) live at the schema root.
+- **JSON and CSV — both maintained.** JSON is the machine-readable source of truth (object/list fields parsed to nested structures); CSV is the human-editing view (cells verbatim). Fix the JSON, then regenerate the CSV.
+- **One folder per recipe** — `schema/recipes/<nbs_id>/` holds the tables that carry an `nbs_id` (T0, T3, T4, T6) for that NbS. Cross-NbS tables (T1, T2, T5, T7) live at the schema root.
 - **Snake_case IDs throughout** — `nbs_id`, `dataset_id`, `variable_id`, `context_id`.
 - **Schema migrations are PRs.** Don't add columns without an RFC issue. Don't change the meaning of an existing column.
 
@@ -32,4 +44,4 @@ Validation: every recipe's schema rows must pass validation (referential integri
 
 ## Sourcing the canonical structure
 
-The canonical field-level definitions live in `2_Technical_&_Data/Claude Outputs/NbS_Schema_Reference_v01_1.docx`. As the schema stabilises we'll port the definitions into a Markdown spec here (`schema/spec.md`) for in-repo discoverability.
+The canonical field-level definitions now live in-repo at [`spec.md`](spec.md) (ported from the v0.1 Schema Reference). The original design documents are archived under [`design/`](design/) for reference.
