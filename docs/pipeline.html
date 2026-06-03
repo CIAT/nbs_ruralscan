@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rural NbS Scan — Pipeline Architecture v0.2</title>
+<title>Rural NbS Scan — Pipeline Architecture v0.3</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -630,13 +630,13 @@
   <!-- HEADER -->
   <header class="head">
     <div>
-      <div class="eyebrow">Pipeline architecture · v0.2 · draft for team discussion</div>
+      <div class="eyebrow">Pipeline architecture · v0.3 · draft for team discussion</div>
       <h1>Rural NbS Scan <span class="v">— methodology &amp; pipeline map</span></h1>
-      <div class="sub">Four layers · seven modules · schema T0–T7 contract · Benson's existing work inherited as framework primitives.</div>
+      <div class="sub">Four layers · seven modules (+ M2b project-risk addendum) · schema T0–T7 contract · Benson's existing work inherited as framework primitives.</div>
     </div>
     <div class="meta">
       <b>Alliance Bioversity International &amp; CIAT</b><br>
-      World Bank D591 · May 2026<br>
+      World Bank D591 · June 2026<br>
       Pilots: Sierra Leone (FSRP) · Agroforestry
     </div>
   </header>
@@ -734,12 +734,12 @@
         </div>
       </article>
 
-      <article class="mod s-done">
+      <article class="mod s-partial">
         <div class="accent"></div>
         <div class="hd">
           <div class="mid">M1</div>
           <div class="seq">2 / 7</div>
-          <div class="status"><span class="dot"></span>DONE</div>
+          <div class="status"><span class="dot"></span>SPEC'D</div>
         </div>
         <div class="body">
           <div class="mname">Suitability → Opportunity Space</div>
@@ -765,7 +765,7 @@
         </div>
         <div class="body">
           <div class="mname">Rural Climate Risk</div>
-          <div class="mline">Hazard × exposure (× AC toggle) · baseline + future.</div>
+          <div class="mline">Risk to rural livelihoods · H × E (×AC) · baseline + future. <b>+ M2b</b>: project/asset disaster risk (addendum lens).</div>
         </div>
         <div class="foot">
           <div class="owners">
@@ -807,8 +807,8 @@
           <div class="status"><span class="dot"></span>TO SCOPE</div>
         </div>
         <div class="body">
-          <div class="mname">TTL Hotspots (MCDA)</div>
-          <div class="mline">User-weighted MCDA on T5 vars within opp space.</div>
+          <div class="mname">Priority Hotspots (MCDA)</div>
+          <div class="mline">User-weighted MCDA on T5 vars within opp space. + Project-Risk scope (planned).</div>
         </div>
         <div class="foot">
           <div class="owners">
@@ -919,15 +919,15 @@
   <section class="layer">
     <div class="layer-head">
       <div class="layer-num">04</div>
-      <h2>Runtime <span class="tag">— code artifacts · GEE Python + Colab notebooks (per proposal)</span></h2>
+      <h2>Runtime <span class="tag">— code artifacts · Python + Colab notebooks (per proposal)</span></h2>
       <div class="right">implementation surface</div>
     </div>
 
     <div class="runtime-grid">
       <div class="rt build">
         <span class="cstate">BUILD</span>
-        <div class="ct">GEE PYTHON PIPELINE</div>
-        <div class="cs">Benson — port <span class="mono">spatMCDA.R</span> logic; reads from T0–T7, never hardcoded.</div>
+        <div class="ct">PYTHON PIPELINE</div>
+        <div class="cs">Team + Claude Code — port <span class="mono">spatMCDA.R</span> to Python (numpy/rasterio); pulls GEE &amp; other data, computes locally; reads T0–T7, never hardcoded.</div>
       </div>
       <div class="rt build">
         <span class="cstate">BUILD</span>
@@ -936,13 +936,13 @@
       </div>
       <div class="rt demo">
         <span class="cstate">DEMO</span>
-        <div class="ct">GEE APP / WIREFRAME (v0)</div>
-        <div class="cs">Pete + Claude — demonstrator at final WB presentation; not contractual.</div>
+        <div class="ct">WIREFRAME (v0.6)</div>
+        <div class="cs">Pete + Claude — demonstrator at final WB presentation; not contractual. (GEE App dropped.)</div>
       </div>
       <div class="rt phase">
         <span class="cstate">PHASE 3</span>
         <div class="ct">PILOT × 2</div>
-        <div class="cs">Benson — apply methodology to SSA + Asia (or per Dinara's offer).</div>
+        <div class="cs">Apply methodology to 2 LDC pilots — SSA + Asia (or per Dinara's offer).</div>
       </div>
     </div>
   </section>
@@ -962,7 +962,7 @@
       <h3>Variable selection <span class="small">— Ani's three principles, sub-step in M1 &amp; M3</span></h3>
       <ul>
         <li><span class="k">REDUCE</span><span>Thematic grouping (per recipe) + correlation cluster (per AOI). One representative per cluster enters MCDA.</span></li>
-        <li><span class="k">SOURCE</span><span>Native GEE → community GEE → upload-to-GEE. Fitness-for-purpose precedes platform.</span></li>
+        <li><span class="k">SOURCE</span><span>GEE catalog → community → upload; data pulled into Python. Fitness-for-purpose precedes platform.</span></li>
         <li><span class="k">EXPLAIN</span><span>Every variable shipped as a Variable Card: What · Why · How to read · Cluster · Source · Interpretation.</span></li>
       </ul>
     </div>
@@ -970,9 +970,9 @@
     <div class="fcard">
       <h3>Scope guardrails <span class="small">— for the World Bank deliverable</span></h3>
       <ul>
-        <li><span class="k now">NOW</span><span>Agroforestry &amp; Water Harvesting recipes · 2 pilot notebooks · v0 GEE wireframe.</span></li>
-        <li><span class="k soon">SOON</span><span>Forest restoration &amp; ANR recipe (cluster) · refined hotspot MCDA.</span></li>
-        <li><span class="k later">LATER</span><span>WB Disaster Risk integration · richer scorecard · production hosting.</span></li>
+        <li><span class="k now">NOW</span><span>Agroforestry &amp; Water Harvesting recipes · 2 pilot notebooks · v0.6 wireframe (incl. Project Risk / M2b lens).</span></li>
+        <li><span class="k soon">SOON</span><span>Forest restoration &amp; ANR recipe (cluster) · refined hotspot MCDA · project disaster-risk (M2b) standalone + as a hotspot scope.</span></li>
+        <li><span class="k later">LATER</span><span>Richer scorecard · production hosting.</span></li>
         <li><span class="k out">OUT</span><span>Ecosystem service modelling · full CBA · site-level feasibility · participatory weighting.</span></li>
       </ul>
     </div>
