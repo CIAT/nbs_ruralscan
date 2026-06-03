@@ -1,4 +1,9 @@
-# Schema spec — field-level reference (v0.1)
+# Schema spec — field-level reference (v0.2)
+
+> **v0.2 (June 2026)** — added `T3.risk_role` + `T3.asset_risk_weight` (the M2 / M2b two-risk split);
+> added `T5.theme` + `T5.weight_default` (hotspot grouping & weighting); reconciled `T4.relationship_type`
+> to one canonical membership-function set with a wireframe crosswalk; documented NbS-response layers as
+> derived (T5 `theme=nbs_response` × T6) and the shared-layer dedup. v0.1 was the original 8-table design.
 
 > In-repo Markdown port of `NbS_Schema_Reference_v01_1.docx` (Pete Steward, 7 May 2026).
 > Source archived at [`design/NbS_Schema_Reference_v01.docx`](design/NbS_Schema_Reference_v01.docx).

@@ -2,7 +2,7 @@
 
 The analytical backbone. All analytical rules, datasets, response functions, weights — read from these tables by the pipeline. **Never hardcoded in code.**
 
-> Schema v0.1 — designed as 8 tables (T0–T7) joined on `nbs_id` / `dataset_id` / `variable_id`.
+> Schema v0.2 — 8 tables (T0–T7) joined on `nbs_id` / `dataset_id` / `variable_id`.
 > Field-level spec: [`spec.md`](spec.md). Entity-relationship diagram: [`design/NbS_ERD_v01.html`](design/NbS_ERD_v01.html)
 > (published on the [Pages site](https://ciat.github.io/nbs_ruralscan/schema.html)). Pipeline-architecture view: [`../docs/pipeline.html`](../docs/pipeline.html).
 
