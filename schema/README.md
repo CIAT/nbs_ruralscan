@@ -26,7 +26,7 @@ The analytical backbone. All analytical rules, datasets, response functions, wei
 
 ## How the pipeline reads schema
 
-The pipeline expects to import the schema as Python dicts (via `pandas.read_csv` or `json.load`). The reference implementation lives in `../pipeline/schema_loader.py` *(to be authored)*.
+The pipeline expects to import the schema as Python dicts (via `pandas.read_csv` or `json.load`). The reference implementation lives in `../src/nbs_ruralscan/schema_loader.py` *(to be authored)*.
 
 Validation: every recipe's schema rows must pass validation (referential integrity across foreign keys, required field coverage, valid enum values) before pipeline execution.
 
