@@ -133,6 +133,12 @@ Qualitative matrix of NbS mitigation potential against each climate hazard, per 
 row per NbS × hazard × farming_system. Use `all` in `farming_system` where the relationship holds universally.
 Negative scores are allowed where an NbS *worsens* a hazard (e.g. dense planting raising fire risk).
 
+**This table carries the two-risk split.** `risk_role` tags each hazard×NbS row as something the NbS
+*mitigates* (a livelihood **need** layer feeding M2) or something that *threatens the asset* but the NbS does
+**not** mitigate (feeding the **M2b** project disaster-risk screen). The same hazard family can appear in both
+roles for different NbS (e.g. flooding is a need driver for wetland creation but an asset threat to a parkland
+plot). M2b reads the `asset_threat` rows and their `asset_risk_weight`; M2 reads the mitigation rows.
+
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
 | `record_id` | string | Required | Unique row identifier. | `agro_drought_mixed_rainfed` |
@@ -140,6 +146,8 @@ Negative scores are allowed where an NbS *worsens* a hazard (e.g. dense planting
 | `hazard_type` | enum | Required | `drought` \| `flood` \| `heat_stress` \| `fire` \| `wind_cyclone` \| `waterlogging` \| `frost`. | `drought` |
 | `farming_system` | string | Required | Farming-system context, or `all`. | `mixed_rainfed` |
 | `mitigation_potential` | enum | Required | 7-point: `very_negative` \| `negative` \| `none` \| `low` \| `moderate` \| `high` \| `very_high`. | `moderate` |
+| `risk_role` | enum | Required | Which lens this row serves. `livelihood_mitigation` (NbS *mitigates* this hazard → M2 need layer) \| `asset_threat` (hazard *damages the NbS asset* but is not mitigated → M2b project-risk) \| `both`. | `livelihood_mitigation` |
+| `asset_risk_weight` | float | Conditional | Required when `risk_role` includes `asset_threat`. Default weight (0–1) of this hazard in the M2b project disaster-risk rating for this NbS; per-NbS `asset_threat` weights sum to 1. Blank for pure `livelihood_mitigation` rows. | `0.40` |
 | `mitigation_mechanism` | string | Required | How the NbS mitigates the hazard (1–3 sentences). | `Tree canopy reduces evapotranspiration…` |
 | `confidence` | enum | Required | `high` \| `medium` \| `low` \| `expert_opinion`. | `medium` |
 | `timescale_of_effect` | enum | Required | `immediate` \| `short_term_1_3yr` \| `medium_term_3_7yr` \| `long_term_7yr_plus`. | `medium_term_3_7yr` |
@@ -169,7 +177,7 @@ The most complex table. Each row defines how a dataset variable maps to NbS suit
 | `variable_name` | string | Required | Variable being assessed. | `Terrain slope` |
 | `variable_unit` | string | Required | Unit. | `degrees` |
 | `suitability_dimension` | enum | Required | `biophysical_constraint` \| `system_constraint` \| `operational_constraint`. | `biophysical_constraint` |
-| `relationship_type` | enum | Required | `binary` \| `linear_decay` \| `trapezoidal_fuzzy` \| `gaussian_fuzzy` \| `ecocrop` \| `ranked_classes`. | `trapezoidal_fuzzy` |
+| `relationship_type` | enum | Required | Canonical set: `trapezoidal` \| `gaussian` \| `linear_increasing` \| `linear_decreasing` \| `sigmoid` \| `inverted_sigmoid` \| `threshold` \| `ranked_classes` \| `piecewise`. See the reference + wireframe crosswalk below. | `trapezoidal` |
 | `relationship_params` | object | Required | Parameters for the relationship (structure depends on type). | `{ opt_low: 0, opt_high: 15, abs_max: 35 }` |
 | `uncertainty_pct` | float | Optional | Symmetric ± buffer on limits (%). | `10` |
 | `context_overrides` | object[] | Optional | `[{ context_type, context_id, relationship_params }]`. Global default if no match. | `[{ context_type:'aez', context_id:'humid_tropics', … }]` |
@@ -186,14 +194,29 @@ The most complex table. Each row defines how a dataset variable maps to NbS suit
 
 ### Relationship-type reference (`relationship_type` + `relationship_params`)
 
-| `relationship_type` | Parameters required | When to use |
-|---|---|---|
-| `binary` | `{ threshold, above_is_suitable: bool }` | Hard pass/fail. e.g. protected area = exclude. |
-| `linear_decay` | `{ suitable_max, unsuitable_min, direction: 'increasing'|'decreasing' }` | Suitability falls linearly between two boundaries. |
-| `trapezoidal_fuzzy` | `{ abs_min, opt_low, opt_high, abs_max }` | Optimal plateau with declining shoulders. Most biophysical variables (slope, rainfall). Suitability = 1.0 within `[opt_low, opt_high]`, declining linearly to 0 at `abs_min`/`abs_max`. `uncertainty_pct` applies a symmetric ± buffer to all four limits. |
-| `gaussian_fuzzy` | `{ mean, sigma }` | Bell-curve suitability around an optimum. Temperature optima. |
-| `ecocrop` | `{ t_min, t_opt_low, t_opt_high, t_max }` (replicated per dimension) | Multi-dimensional EcoCrop-style with absolute and optimal limits. |
-| `ranked_classes` | `{ class_map: { value: score } }` | Categorical input (soil type, land use) mapped to 0–1 scores. |
+This is the **one canonical list** of membership/response functions. It supersedes the older
+`binary`/`linear_decay`/`*_fuzzy` names and the diagram's "5-function" wording, and it is the set the
+`docs/pipeline.html` P1 primitive and the TTL wireframe both map to (crosswalk in the last column).
+
+| Canonical `relationship_type` | Parameters | When to use | TTL wireframe label · internal token |
+|---|---|---|---|
+| `trapezoidal` | `{ abs_min, opt_low, opt_high, abs_max }` | Optimal plateau with declining shoulders. Most biophysical variables (slope, rainfall). 1.0 within `[opt_low, opt_high]`, → 0 at `abs_min`/`abs_max`. `uncertainty_pct` applies a symmetric ± buffer to the limits. | "Trapezoidal (plateau)" · `trapezoid` |
+| `gaussian` | `{ mean, sigma }` | Bell-curve suitability around an optimum (temperature optima). Subsumes the old "bell". | "Gaussian (optimal band)" · `gaussian` |
+| `linear_increasing` | `{ unsuitable_min, suitable_max }` | More is better — rises linearly between the bounds. | "Linear — more is better" · `linup` |
+| `linear_decreasing` | `{ suitable_max, unsuitable_min }` | Less is better — falls linearly (was `linear_decay`). | "Linear — less is better" · `lindown` |
+| `sigmoid` | `{ midpoint, slope }` | Smooth monotonic **increase** (S-curve). | advanced — not in the TTL dropdown |
+| `inverted_sigmoid` | `{ midpoint, slope }` | Smooth monotonic **decrease** (S-curve). | advanced — not in the TTL dropdown |
+| `threshold` | `{ threshold, above_is_suitable: bool }` | Hard pass/fail (was `binary`); e.g. protected area = exclude. | "Threshold (hard cut)" · `threshold` |
+| `ranked_classes` | `{ class_map: { value: score } }` | Categorical input (soil type, land use) → 0–1 scores. | categorical — separate control |
+| `piecewise` | `{ points: [[x, y], …] }` | User-defined custom curve. | "Custom (piecewise)" · `custom` |
+
+> `ecocrop` is **not** a base type — it is a multi-dimensional composite (`{ t_min, t_opt_low, t_opt_high, t_max }`
+> replicated per dimension) built from `trapezoidal`/`threshold` limits. Document it as a composite where used.
+>
+> **Surfacing.** The TTL wireframe exposes the continuous subset (trapezoidal · gaussian · linear↑/↓ · threshold ·
+> piecewise). `sigmoid`/`inverted_sigmoid` and `ranked_classes` are available to the engine and to technical users
+> but are not in the default TTL dropdown. The wireframe keeps its short internal tokens (`trapezoid`, `linup`,
+> `lindown`, `custom`); they map to the canonical names per the table above.
 
 ---
 
@@ -208,7 +231,8 @@ prevents double-counting.
 |---|---|---|---|---|
 | `variable_id` | string | Required | Unique identifier. | `rural_poverty_headcount` |
 | `variable_name` | string | Required | Display name. | `Rural poverty headcount ratio` |
-| `category` | enum | Required | `socioeconomic` \| `biodiversity` \| `carbon` \| `agricultural_production` \| `infrastructure` \| `climate_risk` \| `governance` \| `gender`. | `socioeconomic` |
+| `category` | enum | Required | Data domain. `socioeconomic` \| `biodiversity` \| `carbon` \| `agricultural_production` \| `infrastructure` \| `climate_risk` \| `governance` \| `gender`. | `socioeconomic` |
+| `theme` | enum | Required | Hotspot pillar for grouping + theme-level weighting in M4 (distinct from `category`). `climate_hazard` \| `nbs_response` \| `people_production` \| `infrastructure`. | `people_production` |
 | `dataset_id` | string | Required | FK → `T1.dataset_id`. | `worldpop_poverty_2020` |
 | `unit` | string | Required | Unit of measurement. | `% population below $2.15/day` |
 | `directionality_of_concern` | enum | Required | `high_is_bad` \| `low_is_bad` \| `context_dependent` (sets dashboard colours). | `high_is_bad` |
@@ -217,10 +241,26 @@ prevents double-counting.
 | `is_climate_risk_component` | boolean | Required | Also used in T2 (pipeline uses T2 `double_count_risk` to avoid duplication). | `false` |
 | `aggregation_method` | enum | Required | `mean` \| `sum` \| `max` \| `majority` \| `area_weighted_mean`. | `mean` |
 | `normalisation_method` | enum | Required | `min_max` \| `percentile_clip` \| `log_transform` \| `none`. | `percentile_clip` |
+| `weight_default` | float | Required | Default weight of this variable **within its theme** for the hotspot MCDA (0–1; weights within a theme normalise to 1). TTL-adjustable at M4. | `0.25` |
 | `spatial_resolution_m` | integer | Required | Native resolution of source. | `1000` |
 | `has_future_projection` | boolean | Required | Future projection available. | `false` |
 | `is_active` | boolean | Required | Include in current prototype. | `true` |
 | `references` | string[] | Required | Data and literature references. | `['World Bank PovcalNet 2024']` |
+
+### Theme weights and NbS-response layers
+
+**Theme weights.** Variable weights normalise within a theme; the *theme-level* defaults that set how much each
+pillar drives the hotspot index live in a small `theme_weights` lookup at the schema root (pilot defaults:
+`climate_hazard` 0.30 · `nbs_response` 0.25 · `people_production` 0.30 · `infrastructure` 0.15). All TTL-adjustable
+at M4. (A row carrying `weight_default` × its theme weight gives the variable's contribution before user reweighting.)
+
+**NbS-response layers (`theme = nbs_response`).** These are the only T5 variables whose magnitude is
+**NbS-specific** — e.g. erosion-reduction potential, water-yield benefit, carbon sequestration, biodiversity
+co-benefit. They are **derived, not stored as fixed rasters**: the shared T5 row defines the underlying
+need/biophysical layer + direction + `dataset_id`; the per-NbS strength comes from the matching **T6** scorecard
+effect, joined on `variable_id` + `nbs_id` (`effect_direction` / `effect_mechanism`). So no extra table is needed —
+the T5↔T6 link already carries the NbS-specific modulation. Pure context layers (poverty, market access) have no
+T6 row and are identical across NbS.
 
 ---
 
