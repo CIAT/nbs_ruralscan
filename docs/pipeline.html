@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rural NbS Scan — Pipeline Architecture v0.3</title>
+<title>Rural NbS Scan — Pipeline Architecture v0.4</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -185,6 +185,14 @@
   .prim .ps {
     font-size: 11px; color: var(--ink-2);
     line-height: 1.4;
+  }
+  .prim .be {
+    display: inline-block; margin-top: 5px;
+    font-family: ui-monospace, monospace;
+    font-size: 8px; font-weight: 800; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--mute);
+    background: #efece2; border: 1px solid var(--rule-2);
+    border-radius: 3px; padding: 1px 5px;
   }
 
   /* descent — five dotted lines from each primitive down to the pipeline */
@@ -385,6 +393,49 @@
   .tbl-chip.t5 { background: var(--t5-bg); color: var(--t5-ink); }
   .tbl-chip.t6 { background: var(--t6-bg); color: var(--t6-ink); }
   .tbl-chip.t7 { background: var(--t7-bg); color: var(--t7-ink); }
+
+  /* ─────────────────── M2b PARALLEL LANE (branches off M2) ───────────── */
+  .m2b-lane {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 14px;
+    margin-top: 12px;
+    align-items: center;
+  }
+  .m2b-from {
+    grid-column: 1 / 3;
+    text-align: right;
+    font-family: ui-monospace, monospace;
+    font-size: 10.5px; color: var(--mute);
+    letter-spacing: .04em; line-height: 1.4;
+  }
+  .m2b-from b { color: var(--o-brayden-ink); }
+  .m2b-card { grid-column: 3 / 5; align-self: start; }
+  .m2b-card::after { display: none; }
+  .m2b-card .accent { background: var(--o-brayden-ink); opacity: .5; }
+  .m2b-flow {
+    grid-column: 5 / 8;
+    font-size: 11px; color: var(--mute); line-height: 1.5;
+  }
+  .m2b-flow b { color: var(--ink-2); font-weight: 700; }
+
+  /* QA/QC strip (Benson — spans all modules) */
+  .qaqc-strip {
+    margin-top: 12px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 12px;
+    border: 1px dashed var(--rule-2);
+    border-radius: 6px;
+    background: #fbfaf6;
+    font-size: 10.5px; color: var(--ink-2); line-height: 1.4;
+  }
+  .qaqc-strip .ql {
+    font-family: ui-monospace, monospace;
+    font-size: 9.5px; font-weight: 800;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--o-benson-ink);
+    white-space: nowrap;
+  }
 
   /* ─────────────────────────── RECIPE LAYER ──────────────────────────── */
   .recipe-grid {
@@ -630,9 +681,9 @@
   <!-- HEADER -->
   <header class="head">
     <div>
-      <div class="eyebrow">Pipeline architecture · v0.3 · draft for team discussion</div>
+      <div class="eyebrow">Pipeline architecture · v0.4 · draft for team discussion</div>
       <h1>Rural NbS Scan <span class="v">— methodology &amp; pipeline map</span></h1>
-      <div class="sub">Four layers · seven modules (+ M2b project-risk addendum) · schema T0–T7 contract · Benson's existing work inherited as framework primitives.</div>
+      <div class="sub">Four layers · seven modules + M2b disaster-risk addendum · the T0–T7 schema is the content/code contract · build &amp; stress-test via the wireframe.</div>
     </div>
     <div class="meta">
       <b>Alliance Bioversity International &amp; CIAT</b><br>
@@ -645,41 +696,43 @@
   <section class="layer">
     <div class="layer-head">
       <div class="layer-num">01</div>
-      <h2>Framework primitives <span class="tag">— inherited from Benson, called by every downstream module</span></h2>
+      <h2>Framework primitives <span class="tag">— reusable mechanisms every downstream module calls into</span></h2>
       <div class="right">5 mechanisms · reusable</div>
     </div>
 
     <div class="benson-band">
       <div class="lead">
-        <h3><span class="em">The pipeline doesn't start from scratch.</span></h3>
-        <p>Five reusable mechanisms from <b>Benson's existing CIAT work</b> — standardisation, weighting, MCDA, recipe template, subpractice pattern — become the framework primitives every module below calls into. The pipeline is the new orchestration layer; the analytical engine is already built.</p>
+        <h3><span class="em">Five reusable mechanisms, one schema-driven engine.</span></h3>
+        <p>Standardisation, weighting, MCDA, the recipe template and the subpractice pattern are the framework primitives every module below reads. They are specified and reusable — the build now is <b>wiring them to the schema and into the wireframe</b> to construct and stress-test the method, not rebuilding the analytical engine. Some run <b>back-end / technical</b> and are not surfaced in the TTL view (tagged below); the TTL tool exposes the simpler controls.</p>
       </div>
 
       <div class="prim-grid">
         <div class="prim">
           <div class="pn">P1 · STANDARDISATION</div>
-          <div class="pt">5-function library</div>
-          <div class="ps">Fuzzy: sigmoid · linear · Gaussian · bell · inverted sigmoid.</div>
+          <div class="pt">Membership-function library</div>
+          <div class="ps">Canonical set: trapezoidal · gaussian · linear ↑/↓ · sigmoid · threshold · piecewise. Single list shared by schema &amp; wireframe.</div>
         </div>
         <div class="prim">
           <div class="pn">P2 · WEIGHTING</div>
           <div class="pt">Weighting engine</div>
-          <div class="ps">AHP → CRITIC + Entropy, α-reconciled, weight log per run.</div>
+          <div class="ps">AHP → CRITIC + Entropy, α-reconciled, weight log per run. TTL view uses simple sliders.</div>
+          <span class="be">Back-end · technical</span>
         </div>
         <div class="prim">
           <div class="pn">P3 · MCDA</div>
-          <div class="pt">Reference MCDA</div>
-          <div class="ps"><span class="mono">spatMCDA.R</span> — weighted overlay, classification, ±10% sensitivity.</div>
+          <div class="pt">MCDA engine</div>
+          <div class="ps">Weighted overlay + classification (in the TTL view) · ±10% sensitivity is back-end. Reference impl ported to Python.</div>
         </div>
         <div class="prim">
           <div class="pn">P4 · RECIPE</div>
           <div class="pt">Recipe template</div>
-          <div class="ps">Water-harvesting master variable table (def · relevance · normalisation · source).</div>
+          <div class="ps">Per-NbS master variable table (def · relevance · normalisation · source).</div>
         </div>
         <div class="prim">
           <div class="pn">P5 · SUBPRACTICE</div>
           <div class="pt">Subpractice pattern</div>
-          <div class="ps">Within-NbS variants (in-situ · micro-catchment · ex-situ · terraces).</div>
+          <div class="ps">Within-NbS variants (in-situ · micro-catchment · ex-situ · terraces). Not yet surfaced in the wireframe.</div>
+          <span class="be">Back-end · not in TTL view</span>
         </div>
       </div>
     </div>
@@ -747,7 +800,6 @@
         </div>
         <div class="foot">
           <div class="owners">
-            <span class="owner benson"><span class="av">B</span>Benson</span>
             <span class="owner namita"><span class="av">N</span>Namita</span>
           </div>
           <div class="tables">
@@ -765,7 +817,7 @@
         </div>
         <div class="body">
           <div class="mname">Rural Climate Risk</div>
-          <div class="mline">Risk to rural livelihoods · H × E (×AC) · baseline + future. <b>+ M2b</b>: project/asset disaster risk (addendum lens).</div>
+          <div class="mline">Risk to rural <b>livelihoods</b> · H × E (×AC) · baseline + future. <b>↓ M2b</b> branches off in parallel (asset risk).</div>
         </div>
         <div class="foot">
           <div class="owners">
@@ -791,7 +843,6 @@
         <div class="foot">
           <div class="owners">
             <span class="owner namita"><span class="av">N</span>Namita</span>
-            <span class="owner benson"><span class="av">B</span>Benson</span>
           </div>
           <div class="tables">
             <span class="tbl-chip t1">T1</span><span class="tbl-chip t5">T5</span>
@@ -808,11 +859,11 @@
         </div>
         <div class="body">
           <div class="mname">Priority Hotspots (MCDA)</div>
-          <div class="mline">User-weighted MCDA on T5 vars within opp space. + Project-Risk scope (planned).</div>
+          <div class="mline">User-weighted MCDA on T5 vars within opp space. + M2b project-risk scope.</div>
         </div>
         <div class="foot">
           <div class="owners">
-            <span class="owner benson"><span class="av">B</span>Benson</span>
+            <span class="owner pete"><span class="av">P</span>Pete</span>
           </div>
           <div class="tables">
             <span class="tbl-chip t5">T5</span>
@@ -854,8 +905,8 @@
         </div>
         <div class="foot">
           <div class="owners">
-            <span class="owner mfl"><span class="av">M</span>MFL team</span>
             <span class="owner pete"><span class="av">P</span>Pete</span>
+            <span class="owner mfl"><span class="av">M</span>MFL team</span>
             <span class="owner namita"><span class="av">N</span>Namita</span>
           </div>
           <div class="tables">
@@ -865,6 +916,38 @@
       </article>
 
     </div>
+
+    <!-- M2b — disaster-risk addendum, branches off M2 (parallel lane) -->
+    <div class="m2b-lane">
+      <div class="m2b-from">↳ branches off <b>M2</b><br>parallel lens</div>
+      <article class="mod s-todo m2b-card">
+        <div class="accent"></div>
+        <div class="hd">
+          <div class="mid">M2b</div>
+          <div class="seq">addendum</div>
+          <div class="status"><span class="dot"></span>TO SCOPE</div>
+        </div>
+        <div class="body">
+          <div class="mname">Project Disaster-Risk Screen</div>
+          <div class="mline">Risk to the <b>investment / asset</b> · WB Climate &amp; Disaster Risk Screening · baseline + future. A feasibility filter — never summed into hotspots.</div>
+        </div>
+        <div class="foot">
+          <div class="owners">
+            <span class="owner brayden"><span class="av">Br</span>Brayden</span>
+          </div>
+          <div class="tables">
+            <span class="tbl-chip t1">T1</span><span class="tbl-chip t2">T2</span><span class="tbl-chip t3">T3</span><span class="tbl-chip t7">T7</span>
+          </div>
+        </div>
+      </article>
+      <div class="m2b-flow">Evaluated within the M1 opportunity space → later exposed as a third scope on <b>M4 Priority Hotspots</b>. Two-risk distinction: M2 = risk to livelihoods (a <i>need</i> layer); M2b = risk to the investment (a <i>feasibility</i> filter).</div>
+    </div>
+
+    <!-- QA/QC role band (Benson) -->
+    <div class="qaqc-strip">
+      <span class="ql">QA / QC · all modules</span>
+      <span><span class="owner benson"><span class="av">B</span>Benson</span> &nbsp;dataset fitness sign-off · output validation · resolution audit.</span>
+    </div>
   </section>
 
   <!-- SCHEMA LEGEND (T0–T7) -->
@@ -872,13 +955,13 @@
     <div class="sh">Schema<br><span class="sub">T-chip key</span></div>
     <div class="schema-row">
       <div class="schema-item"><span class="tbl-chip t0">T0</span><span class="lbl">NbS registry</span></div>
-      <div class="schema-item"><span class="tbl-chip t1">T1</span><span class="lbl">Spatial inputs</span></div>
+      <div class="schema-item"><span class="tbl-chip t1">T1</span><span class="lbl">Data registry</span></div>
       <div class="schema-item"><span class="tbl-chip t2">T2</span><span class="lbl">Climate risk</span></div>
-      <div class="schema-item"><span class="tbl-chip t3">T3</span><span class="lbl">Likert scorecard</span></div>
-      <div class="schema-item"><span class="tbl-chip t4">T4</span><span class="lbl">Suitability vars</span></div>
-      <div class="schema-item"><span class="tbl-chip t5">T5</span><span class="lbl">Hotspot vars</span></div>
-      <div class="schema-item"><span class="tbl-chip t6">T6</span><span class="lbl">Economic archetype</span></div>
-      <div class="schema-item"><span class="tbl-chip t7">T7</span><span class="lbl">Run metadata</span></div>
+      <div class="schema-item"><span class="tbl-chip t3">T3</span><span class="lbl">NbS × hazard × farming</span></div>
+      <div class="schema-item"><span class="tbl-chip t4">T4</span><span class="lbl">Suitability mappings</span></div>
+      <div class="schema-item"><span class="tbl-chip t5">T5</span><span class="lbl">Opportunity space</span></div>
+      <div class="schema-item"><span class="tbl-chip t6">T6</span><span class="lbl">NbS scorecard</span></div>
+      <div class="schema-item"><span class="tbl-chip t7">T7</span><span class="lbl">Geographic context</span></div>
     </div>
     <div class="schema-erd">see ERD v0.1</div>
   </section>
@@ -888,19 +971,19 @@
     <div class="layer-head">
       <div class="layer-num">03</div>
       <h2>Recipe layer <span class="tag">— per-NbS content configuration · parameterises the pipeline via schema</span></h2>
-      <div class="right">4 recipes · 1 done</div>
+      <div class="right">4 recipes · 2 draft-0</div>
     </div>
 
     <div class="recipe-grid">
       <div class="recipe done">
-        <span class="cstate">DONE</span>
+        <span class="cstate">DRAFT-0</span>
         <div class="ct">WATER HARVESTING</div>
-        <div class="cs">Benson's recipe — 27 vars × 6 themes × 5 subpractices. Pattern template for other NbS.</div>
+        <div class="cs">Draft-0 T0–T7 tables in repo (CSV+JSON) — 27 vars × 6 themes × 5 subpractices. Pattern template for other NbS.</div>
       </div>
       <div class="recipe">
-        <span class="cstate">DRAFTED</span>
+        <span class="cstate">DRAFT-0</span>
         <div class="ct">AGROFORESTRY</div>
-        <div class="cs">Schema tables drafted (T0–T7 xlsx); pilot NbS — needs full recipe write-up.</div>
+        <div class="cs">Draft-0 T0–T7 tables in repo (CSV+JSON); pilot NbS — needs full recipe write-up.</div>
       </div>
       <div class="recipe next">
         <span class="cstate">NEXT</span>
@@ -919,25 +1002,25 @@
   <section class="layer">
     <div class="layer-head">
       <div class="layer-num">04</div>
-      <h2>Runtime <span class="tag">— code artifacts · Python + Colab notebooks (per proposal)</span></h2>
-      <div class="right">implementation surface</div>
+      <h2>Runtime <span class="tag">— method implementation · build &amp; stress-test surface</span></h2>
+      <div class="right">no GEE compute · local Python + wireframe</div>
     </div>
 
     <div class="runtime-grid">
       <div class="rt build">
         <span class="cstate">BUILD</span>
-        <div class="ct">PYTHON PIPELINE</div>
-        <div class="cs">Team + Claude Code — port <span class="mono">spatMCDA.R</span> to Python (numpy/rasterio); pulls GEE &amp; other data, computes locally; reads T0–T7, never hardcoded.</div>
+        <div class="ct">PYTHON METHOD PACKAGE</div>
+        <div class="cs"><span class="mono">src/nbs_ruralscan/</span> (uv · ruff · ty) — schema_loader · data_loaders · outputs. Implements the primitives in Python (numpy/rasterio); reads T0–T7, never hardcoded. Data pulled locally (incl. GEE catalog) — no server-side GEE.</div>
+      </div>
+      <div class="rt build">
+        <span class="cstate">BUILD · LEAD</span>
+        <div class="ct">WIREFRAME → METHOD HARNESS</div>
+        <div class="cs">Pete + Claude — we build the method into the v0.6 wireframe and stress-test it interactively. The primary working surface and WB-facing demonstrator. (Not contractual; GEE App dropped.)</div>
       </div>
       <div class="rt build">
         <span class="cstate">BUILD</span>
         <div class="ct">COLAB DELIVERABLE NOTEBOOK</div>
-        <div class="cs">Per-pilot — reproducible, hand-off to WB technical team.</div>
-      </div>
-      <div class="rt demo">
-        <span class="cstate">DEMO</span>
-        <div class="ct">WIREFRAME (v0.6)</div>
-        <div class="cs">Pete + Claude — demonstrator at final WB presentation; not contractual. (GEE App dropped.)</div>
+        <div class="cs">Per-pilot — reproducible, the contracted hand-off to the WB technical team.</div>
       </div>
       <div class="rt phase">
         <span class="cstate">PHASE 3</span>
@@ -970,8 +1053,8 @@
     <div class="fcard">
       <h3>Scope guardrails <span class="small">— for the World Bank deliverable</span></h3>
       <ul>
-        <li><span class="k now">NOW</span><span>Agroforestry &amp; Water Harvesting recipes · 2 pilot notebooks · v0.6 wireframe (incl. Project Risk / M2b lens).</span></li>
-        <li><span class="k soon">SOON</span><span>Forest restoration &amp; ANR recipe (cluster) · refined hotspot MCDA · project disaster-risk (M2b) standalone + as a hotspot scope.</span></li>
+        <li><span class="k now">NOW</span><span>Build the method into the v0.6 wireframe &amp; stress-test it · Agroforestry &amp; Water Harvesting draft-0 recipes · develop population methods for T0–T7.</span></li>
+        <li><span class="k soon">SOON</span><span>Forest restoration &amp; ANR recipe (cluster) · refined hotspot MCDA · project disaster-risk (M2b) standalone + as a hotspot scope · 2 pilot notebooks.</span></li>
         <li><span class="k later">LATER</span><span>Richer scorecard · production hosting.</span></li>
         <li><span class="k out">OUT</span><span>Ecosystem service modelling · full CBA · site-level feasibility · participatory weighting.</span></li>
       </ul>
@@ -990,7 +1073,7 @@
     <div class="legend-group">
       <span class="gl">Owners</span>
       <span class="legend-item"><span class="legend-chip" style="background:var(--o-pete-ink)"></span>Pete</span>
-      <span class="legend-item"><span class="legend-chip" style="background:var(--o-benson-ink)"></span>Benson</span>
+      <span class="legend-item"><span class="legend-chip" style="background:var(--o-benson-ink)"></span>Benson (QA/QC)</span>
       <span class="legend-item"><span class="legend-chip" style="background:var(--o-namita-ink)"></span>Namita</span>
       <span class="legend-item"><span class="legend-chip" style="background:var(--o-brayden-ink)"></span>Brayden</span>
       <span class="legend-item"><span class="legend-chip" style="background:var(--o-mfl-ink)"></span>MFL team (Sarah · Chris · Evert · Hannes)</span>
