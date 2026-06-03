@@ -69,3 +69,43 @@ Milestones: Phase 2 — Methodology Development · Phase 3 — Piloting.
 **Milestone:** Phase 2
 
 > Docs reconciled in June (README, CLAUDE.md, pipeline.html). Remaining: reword Issue 9 (#9) to "implement MCDA in Python pulling GEE data"; close/park the GEE App spec (#13); sweep recipe/pipeline READMEs for "native GEE pipeline" language; confirm the wireframe's "Runs in Python" wording (Dev Notes item).
+
+---
+
+## Board hygiene — reassignments & closes (apply on the live board)
+
+Not new issues — edits to existing cards, reflecting the ownership shift:
+
+- **#3 M4 spec** — reassign **@benson → @pete** (Pete now owns Priority Hotspots).
+- **M6 hand-off** — set **@pete** as lead (MFL team + Namita remain contributors).
+- **#9 M1 port** — drop @benson as owner (Benson → QA/QC); implementation is Python via Claude Code (Brayden / Anastasia / Pete). Reword per issue F.
+- **#13 GEE App spec** — **close / park** (GEE App dropped).
+- Tag **@benson** as **QA/QC reviewer** across modules rather than a module owner.
+
+---
+
+## G — Dedup methodology sign-off (post draft-0)
+
+**Title:** `[Decision] T2/T5 reconciliation after shared-layer dedup`
+**Assignees:** @brayden @pete
+**Labels:** `methodology`, `schema`, `M2-climate-risk`, `priority-high`
+**Milestone:** Phase 2
+
+> The draft-0 dedup collapsed the `_wh` clones into single shared rows (see `schema/DEDUP_NOTES.md`). Three items need methodology sign-off before the pilot review: (1) **T2 baseline risk weights are provisional** — after removing duplicates the merged set was renormalised proportionally to 1.0 (gives agroforestry-origin variables ~64% of weight purely by count); decide the correct combined weighting. (2) **Two flood-hazard methods coexist** in T2 (`flood_exposure_baseline` CHELSA-precip vs `flood_hazard_runoff_depth` SCS-CN) — pick a canonical one or justify both. (3) **`soil_erosion_risk` vs `soil_degradation_risk`** (T5) — confirm distinct or merge.
+
+---
+
+## H — Develop T0–T7 population methods
+
+**Title:** `[Methodology] Reproducible methods to populate the schema tables`
+**Assignees:** @namita @brayden @pete @benson
+**Labels:** `methodology`, `schema`, `priority-high`
+**Milestone:** Phase 2
+
+> The draft-0 tables are placeholders that illustrate the data model; the deliverable is the **methods that populate them** reproducibly per NbS/AOI. Highest-leverage piece: a repeatable, quality-scored **evidence-extraction protocol** feeding T3/T4/T6 (papers → schema-valid rows with justification, references, confidence). Plus a **dataset-curation protocol** for T1/T7 (fitness-for-purpose, 3-tier sourcing, resolution audit — Benson QA/QC) and **operationalising the weighting/clustering** for T2/T4/T5 (already half-specified in the framework primitives). T7 contexts and T0 are largely adopt/template.
+
+---
+
+## Schema status (informational)
+
+> Schema is now **v0.2** (committed). Added since v0.1: `T3.risk_role` + `asset_risk_weight` (M2 / M2b two-risk split), `T5.theme` + `weight_default` (hotspot grouping/weighting), canonical `T4.relationship_type` set, and the shared-layer dedup. This **defines** the fields issues **A** (T5 priority-variable fields) and **B** (`risk_role` for M2b) called for — those are now design-complete at the schema level; **populating** the new columns with real values is part of issue **H**.

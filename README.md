@@ -16,19 +16,23 @@ The scaffolding covers the methodology (modules, schema, recipes), the team's wo
 
 ### Three things to look at, with your feedback in mind
 
-1. **[Pipeline architecture](https://ciat.github.io/nbs_ruralscan/pipeline.html)** — one-page diagram of the 7 modules (+ the M2b project-risk addendum) and the T0–T7 schema. **Benson** — your water-harvesting recipe and v2 plan are the *framework primitives* layer at the top (5 fuzzy MFs, AHP+CRITIC+Entropy, spatMCDA, recipe template). Read on whether the attribution and architecture feel right.
+1. **[Pipeline architecture (v0.4)](https://ciat.github.io/nbs_ruralscan/pipeline.html)** — one-page map of the 7 modules + the M2b disaster-risk addendum and the T0–T7 schema. The *framework primitives* layer at the top (canonical membership functions, hybrid weighting, MCDA engine, recipe template) is reusable and read by every module; some run back-end and aren't surfaced in the TTL view.
 2. **Module specs — M1 and M2**
-   - **[M1 Suitability](./methodology/modules/M1_suitability.md)** — Benson, this is the I/O contract and 8 sub-steps for porting `spatMCDA.R` to `pipeline/mcda_pipeline.py`. Check whether the sub-step breakdown matches how you'd structure it. Function signatures in §13.
+   - **[M1 Suitability](./methodology/modules/M1_suitability.md)** — the I/O contract and 8 sub-steps for the suitability → opportunity-space stage, implemented in Python under `src/nbs_ruralscan/`. Function signatures in §13.
    - **[M2 Rural Climate Risk](./methodology/modules/M2_climate_risk.md)** — **Brayden**, pre-scaffolded for you. Mode A vs Mode B, double-count guard with M3/M4, function signatures for `pipeline/climate_risk.py`. Six open methodology questions at the bottom that need your view.
 3. **Repo conventions + workflow** — [`CLAUDE.md`](./CLAUDE.md), [`PLAYBOOK.md`](./PLAYBOOK.md), [`CONTRIBUTING.md`](./CONTRIBUTING.md). **Namita** — keen on your take here since you'll coordinate recipe authoring + Variable Cards.
 
-### Your assigned work on the [Delivery board](https://github.com/orgs/CIAT/projects/2)
+### Ownership (current — June 2026)
 
-> **Updated June 2026 — ownership has shifted since this kickoff snapshot.** Benson is moving to **QA/QC** (dataset fitness sign-off, output validation); the new **project disaster-risk lens (M2b)** sits with Brayden + Pete; native server-side GEE and the GEE App are **dropped** (we pull GEE data into Python); pipeline code is written in **Python via Claude Code**, driven by Brayden / Anastasia / Pete. The list below is the original kickoff — see the Delivery board for live state.
+> Shifted since the kickoff snapshot. See the [Delivery board](https://github.com/orgs/CIAT/projects/2) for live, issue-level state.
 
-- **Benson:** M1 port (#9), M4 spec (#3), agroforestry recipe (#6), Sierra Leone pilot (#11), GEE App spec (#13)
-- **Namita:** M3 spec (#2), M5 spec (#4), forest restoration recipe (#7), riparian buffer recipe (#8)
-- **Brayden:** M2 climate risk implementation (#10)
+- **Pete** — framework integrity & scope-control · M0 Setup · M4 Priority Hotspots · M6 Implementation Hand-off (lead)
+- **Brayden** — M2 Rural Climate Risk · M2b Project Disaster-Risk
+- **Namita** — M1 / M3 / M5 content · per-NbS recipes · Variable Cards · coordination
+- **Benson** — **QA/QC across all modules**: dataset fitness sign-off, output validation, resolution audit
+- **MFL team** (Sarah · Chris · Evert · Hannes) — M6 hand-off content, ecosystem-services & domain input
+
+Runtime is **Python via Claude Code** (`src/nbs_ruralscan/`), driven by Brayden / Anastasia / Pete. Native server-side GEE and the GEE App are **dropped** — we pull GEE data into Python and build/stress-test the method through the wireframe.
 
 ### Feedback forum — 1:1 catch-ups
 
@@ -43,7 +47,7 @@ In each: bring questions, pushback, "this is wrong because…" — all welcome.
 ### Framings worth flagging
 
 - This is **scaffolding**, not a fait accompli.
-- Benson's existing work is the canonical reference for the framework primitives and M1.
+- The framework primitives draw on prior CIAT MCDA work and are treated as canonical.
 - Module specs are I/O contracts you can adjust, not briefs being handed to you.
 - The wireframe is being sent for visual polish separately — feedback on flow and content is welcome.
 
@@ -59,9 +63,10 @@ A scoping and decision-support framework that helps World Bank Task Team Leaders
 
 Includes:
 - **TTL Tool Wireframe** — interactive mockup of the decision-support tool
-- **Pipeline Architecture** — one-page methodology architecture diagram
+- **Pipeline Architecture (v0.4)** — one-page methodology architecture diagram
+- **Data Schema (v0.2)** — the T0–T7 ERD, field-level spec, and draft-0 example tables
 
-Both use mock Sierra Leone / agroforestry data.
+Demonstrators use mock Sierra Leone / agroforestry data.
 
 ## Project board
 
@@ -127,10 +132,11 @@ If you're brand new, **read CLAUDE.md and PLAYBOOK.md before your first issue.**
 
 | Folder | Contents |
 |---|---|
-| `docs/` | GitHub Pages — live demonstrators (wireframe + pipeline diagram) |
+| `docs/` | GitHub Pages — live demonstrators (wireframe · pipeline diagram · schema page + ERD) |
 | `methodology/` | Cross-cutting framework + per-NbS recipes + module specs |
-| `schema/` | T0–T7 schema tables and reference (ERD) |
-| `pipeline/` | Python implementation (pulls GEE/other data, computes locally), pilot Colab notebooks |
+| `schema/` | T0–T7 schema — `spec.md`, ERD, dedup notes, and draft-0 example tables (CSV+JSON) for 2 NbS |
+| `src/nbs_ruralscan/` | Python method package — schema loader, data loaders, outputs (uv · ruff · ty) |
+| `pipeline/` | Pilot Colab notebooks and outputs |
 | `reference/` | Stocktake findings, source R scripts, literature references |
 | `.claude/` | Project memory and slash commands for Claude Code |
 | `.github/` | Issue templates, PR template, project board setup, seed issues |
