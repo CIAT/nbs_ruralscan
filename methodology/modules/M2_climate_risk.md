@@ -33,7 +33,7 @@ M2 answers a question that is **deliberately separated from M1 suitability**: wh
 
 What M2 explicitly **does not** answer:
 
-- Risk to *project infrastructure* (separate WB Disaster Risk Screening framework — deferred to "Later" scope; not in this module)
+- Risk to the *project/investment itself* (the WB Climate & Disaster Risk Screening lens) — now specified separately in [`M2b_project_risk.md`](./M2b_project_risk.md), not in this module
 - Where the NbS is biophysically feasible (M1)
 - What TTL development priorities concentrate where (M3 / M4)
 - Whether the NbS actually reduces the risk (M5 scorecard captures this qualitatively; quantitative impact modelling is downstream of scoping)
