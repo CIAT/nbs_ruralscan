@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NbS Schema — Entity Relationship Diagram</title>
+<title>NbS Schema — Entity Relationship Diagram v0.2</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 24px; }
@@ -55,7 +55,7 @@
 <body>
 
 <h1>Rural NbS Scan — Entity Relationship Diagram</h1>
-<p class="subtitle">Schema v0.1 · All tables, key fields, and join relationships · Click to zoom in browser</p>
+<p class="subtitle">Schema v0.2 · tracks current <code>spec.md</code> (T3 risk_role, T5 theme + weights, canonical relationship types, deduped shared layers) · all tables, key fields &amp; joins · click to zoom</p>
 
 <div class="grid-4">
   <div class="tbl t0">
@@ -116,7 +116,7 @@
     <div class="tbl-head">
       <div class="tbl-id">T3</div>
       <div class="tbl-name">NbS × hazard × farming</div>
-      <div class="tbl-role">Qualitative mitigation potential matrix — no geospatial dataset needed</div>
+      <div class="tbl-role">Qualitative matrix — drives the M2 (livelihood) / M2b (asset) two-risk split</div>
     </div>
     <div class="tbl-fields">
       <div class="field"><span class="badge pk">PK</span><span class="field-name">record_id</span><span class="field-type">string</span></div>
@@ -124,9 +124,10 @@
       <div class="field"><span class="field-name">hazard_type</span><span class="field-type">enum</span></div>
       <div class="field"><span class="field-name">farming_system</span><span class="field-type">string</span></div>
       <div class="field"><span class="field-name">mitigation_potential</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="badge" style="background:#faece7;color:#712b13;">M2b</span><span class="field-name">risk_role</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">asset_risk_weight</span><span class="field-type">float?</span></div>
       <div class="field"><span class="field-name">confidence</span><span class="field-type">enum</span></div>
       <div class="field"><span class="field-name">timescale_of_effect</span><span class="field-type">enum</span></div>
-      <div class="field"><span class="field-name">landscape_scale_only</span><span class="field-type">bool</span></div>
     </div>
   </div>
 </div>
@@ -156,15 +157,16 @@
     <div class="tbl-head">
       <div class="tbl-id">T5</div>
       <div class="tbl-name">Opportunity space vars</div>
-      <div class="tbl-role">TTL-facing priority layers for MCDA weighting</div>
+      <div class="tbl-role">TTL-facing priority layers · grouped by theme, weighted into the hotspot MCDA</div>
     </div>
     <div class="tbl-fields">
       <div class="field"><span class="badge pk">PK</span><span class="field-name">variable_id</span><span class="field-type">string</span></div>
       <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string</span></div>
       <div class="field"><span class="field-name">variable_name</span><span class="field-type">string</span></div>
       <div class="field"><span class="field-name">category</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">theme</span><span class="field-type">enum</span></div>
       <div class="field"><span class="field-name">directionality_of_concern</span><span class="field-type">enum</span></div>
-      <div class="field"><span class="field-name">is_climate_risk_component</span><span class="field-type">bool</span></div>
+      <div class="field"><span class="field-name">weight_default</span><span class="field-type">float</span></div>
       <div class="field"><span class="field-name">ttl_priority_label</span><span class="field-type">string</span></div>
       <div class="field"><span class="field-name">is_active</span><span class="field-type">bool</span></div>
     </div>
@@ -214,7 +216,7 @@
   <div class="rel-row"><span class="rel-from">T1</span><span class="rel-card">||——o{</span><span class="rel-to">T4</span><span class="rel-on">on dataset_id · one dataset used by many suitability mappings</span></div>
   <div class="rel-row"><span class="rel-from">T1</span><span class="rel-card">||——o{</span><span class="rel-to">T5</span><span class="rel-on">on dataset_id · one dataset backs many opp. space variables</span></div>
   <div class="rel-row"><span class="rel-from">T1</span><span class="rel-card">||——o{</span><span class="rel-to">T7</span><span class="rel-on">on dataset_id · one dataset defines many geo contexts</span></div>
-  <div class="rel-row"><span class="rel-from">T5</span><span class="rel-card">||——o{</span><span class="rel-to">T6</span><span class="rel-on">on variable_id · one opp. space var has many NbS scorecard entries</span></div>
+  <div class="rel-row"><span class="rel-from">T5</span><span class="rel-card">||——o{</span><span class="rel-to">T6</span><span class="rel-on">on variable_id · scorecard entries; also modulates nbs_response priority layers per NbS</span></div>
   <div class="rel-row"><span class="rel-from">T7</span><span class="rel-card">}o——o{</span><span class="rel-to">T4</span><span class="rel-on">via context_overrides[ ] · soft many-to-many, validated at load</span></div>
 </div>
 
@@ -226,7 +228,9 @@
 </div>
 
 <div class="note">
-  <strong>Key structural note for Benson:</strong> T1 (Data Registry) is the single source of truth for every geospatial dataset. T2, T4, T5, and T7 all carry a <code>dataset_id → T1</code> foreign key. T3 does <em>not</em> link to T1 because the hazard mitigation matrix is qualitative literature — it names hazard types but does not consume a geospatial raster directly. The pipeline accesses the hazard rasters via T2 (for the risk arm) and via T4 (if any hazard-related variable appears as a suitability constraint). T2 and T4 are <em>parallel arms</em>, not connected to each other.
+  <strong>Key structural notes:</strong> T1 (Data Registry) is the single source of truth for every geospatial dataset; T2, T4, T5 and T7 all carry a <code>dataset_id → T1</code> foreign key. The cross-NbS tables (T1, T2, T5, T7) are <strong>deduplicated</strong> — one row per real-world dataset / variable / context, shared across recipes (see <code>DEDUP_NOTES.md</code>). T3 does <em>not</em> link to T1: the matrix is qualitative literature — it names hazard types but consumes no raster directly. T2 (risk to livelihoods) and T4 (suitability) are <em>parallel arms</em>, not connected to each other.
+  <br><br>
+  <strong>Two-risk split (M2 / M2b):</strong> <code>T3.risk_role</code> tags each hazard×NbS row as <code>livelihood_mitigation</code> (feeds M2) or <code>asset_threat</code> (feeds the M2b project disaster-risk screen, weighted by <code>asset_risk_weight</code>). <strong>NbS-response priority layers</strong> (<code>T5.theme = nbs_response</code>) are derived, not stored — the shared T5 layer is modulated per NbS by the matching T6 effect. <code>T4.relationship_type</code> uses the canonical membership-function set (trapezoidal · gaussian · linear↑/↓ · sigmoid · threshold · piecewise).
 </div>
 
 </body>
