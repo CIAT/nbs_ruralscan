@@ -16,13 +16,15 @@ The scaffolding covers the methodology (modules, schema, recipes), the team's wo
 
 ### Three things to look at, with your feedback in mind
 
-1. **[Pipeline architecture](https://ciat.github.io/nbs_ruralscan/pipeline.html)** — one-page diagram of the 7 modules and the T0–T7 schema. **Benson** — your water-harvesting recipe and v2 plan are the *framework primitives* layer at the top (5 fuzzy MFs, AHP+CRITIC+Entropy, spatMCDA, recipe template). Read on whether the attribution and architecture feel right.
+1. **[Pipeline architecture](https://ciat.github.io/nbs_ruralscan/pipeline.html)** — one-page diagram of the 7 modules (+ the M2b project-risk addendum) and the T0–T7 schema. **Benson** — your water-harvesting recipe and v2 plan are the *framework primitives* layer at the top (5 fuzzy MFs, AHP+CRITIC+Entropy, spatMCDA, recipe template). Read on whether the attribution and architecture feel right.
 2. **Module specs — M1 and M2**
    - **[M1 Suitability](./methodology/modules/M1_suitability.md)** — Benson, this is the I/O contract and 8 sub-steps for porting `spatMCDA.R` to `pipeline/mcda_pipeline.py`. Check whether the sub-step breakdown matches how you'd structure it. Function signatures in §13.
    - **[M2 Rural Climate Risk](./methodology/modules/M2_climate_risk.md)** — **Brayden**, pre-scaffolded for you. Mode A vs Mode B, double-count guard with M3/M4, function signatures for `pipeline/climate_risk.py`. Six open methodology questions at the bottom that need your view.
 3. **Repo conventions + workflow** — [`CLAUDE.md`](./CLAUDE.md), [`PLAYBOOK.md`](./PLAYBOOK.md), [`CONTRIBUTING.md`](./CONTRIBUTING.md). **Namita** — keen on your take here since you'll coordinate recipe authoring + Variable Cards.
 
 ### Your assigned work on the [Delivery board](https://github.com/orgs/CIAT/projects/2)
+
+> **Updated June 2026 — ownership has shifted since this kickoff snapshot.** Benson is moving to **QA/QC** (dataset fitness sign-off, output validation); the new **project disaster-risk lens (M2b)** sits with Brayden + Pete; native server-side GEE and the GEE App are **dropped** (we pull GEE data into Python); pipeline code is written in **Python via Claude Code**, driven by Brayden / Anastasia / Pete. The list below is the original kickoff — see the Delivery board for live state.
 
 - **Benson:** M1 port (#9), M4 spec (#3), agroforestry recipe (#6), Sierra Leone pilot (#11), GEE App spec (#13)
 - **Namita:** M3 spec (#2), M5 spec (#4), forest restoration recipe (#7), riparian buffer recipe (#8)
@@ -128,7 +130,7 @@ If you're brand new, **read CLAUDE.md and PLAYBOOK.md before your first issue.**
 | `docs/` | GitHub Pages — live demonstrators (wireframe + pipeline diagram) |
 | `methodology/` | Cross-cutting framework + per-NbS recipes + module specs |
 | `schema/` | T0–T7 schema tables and reference (ERD) |
-| `pipeline/` | GEE Python implementation, pilot Colab notebooks, GEE App |
+| `pipeline/` | Python implementation (pulls GEE/other data, computes locally), pilot Colab notebooks |
 | `reference/` | Stocktake findings, source R scripts, literature references |
 | `.claude/` | Project memory and slash commands for Claude Code |
 | `.github/` | Issue templates, PR template, project board setup, seed issues |

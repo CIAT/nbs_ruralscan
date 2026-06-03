@@ -16,7 +16,7 @@ The Rural NbS Scan is a World Bank-funded methodology and demonstrator (D591, $2
 
 Demonstrator-grade artefacts (not contracted but valuable):
 - **TTL tool wireframe** — see `docs/wireframe.html`
-- **GEE App** — visual end of the pilot pipeline
+- ~~GEE App~~ — **deferred** (native GEE dropped; the wireframe is the demonstrator)
 - **Pipeline architecture diagram** — see `docs/pipeline.html`
 
 ## Architecture (read this if you do anything in this repo)
@@ -25,7 +25,7 @@ Demonstrator-grade artefacts (not contracted but valuable):
 
 - **Framework** — cross-cutting methodology, MCDA engine, standardisation library, schema. NbS-agnostic.
 - **Recipe** — per-NbS configuration. One file per NbS. Defines variables, thresholds, weights, subpractice families.
-- **Runtime** — reusable Python package + Colab pilot notebooks + GEE App.
+- **Runtime** — reusable Python package (`src/nbs_ruralscan/`) that pulls GEE & other data and computes locally with numpy/rasterio + Colab pilot notebooks. *Native server-side GEE compute and the GEE App are dropped — see Team decision June 2026.*
 
 ### Seven modules
 
@@ -33,9 +33,10 @@ Demonstrator-grade artefacts (not contracted but valuable):
 |---|---|---|---|
 | M0 | Setup & Scope | Pete | T0, T1, T7 |
 | M1 | Suitability → Opportunity Space | Benson + Namita | T1, T4, T7 |
-| M2 | Rural Climate Risk | Brayden | T1, T2 |
+| M2 | Rural Climate Risk (risk to **livelihoods**) | Brayden | T1, T2 |
+| M2b | Project Disaster Risk Screen (addendum — risk to the **investment**) | Brayden + Pete | T2, T3 |
 | M3 | Opportunity Space Characterisation | Namita + Benson | T1, T5 |
-| M4 | TTL Hotspots (MCDA) | Benson | T5 |
+| M4 | Priority Hotspots (MCDA) | Benson | T5 |
 | M5 | NbS Scorecard & Response | Namita | T3, T6 |
 | M6 | Implementation Hand-off | MFL team + Pete + Namita | T0, T6 |
 
@@ -47,13 +48,14 @@ The pipeline reads all analytical rules, datasets, response functions, and weigh
 
 These decisions are structural. If you want to change them, raise an issue and tag the team — don't just edit.
 
-- **Wireframe** has six tabs in order: Setup → Opportunity Space → NbS Comparison → TTL Hotspots → Variable Config → Danger Zone.
-- **Variable Card** has six slots: What / Why (NbS-specific) / How to read / What it represents (cluster) / Where it comes from / Membership function preview.
+- **Wireframe** tabs (v0.6), in order: Setup → Opportunity Space → Project Risk → Priority Hotspots → NbS Comparison → Next Steps, plus Danger Zone and an internal Dev Notes tab. Variable Config now lives as a sub-tab under Setup, with two surfaces (Suitability variables · Priority/hotspot variables). *(Tab-set ratification still pending — see backlog.)*
+- **Variable Card** has six slots: What / Why (NbS-specific) / How to read / What it represents (cluster) / Where it comes from / Response preview (membership curve + raw-vs-transformed maps).
 - **T0–T7 colour scheme** matches the ERD. Visual consistency across artefacts.
 - **Climate risk Mode A** (Hazard × Exposure) is the pilot default. Mode B is full IPCC AR6 — selectable but not default. Vulnerability variables also appear in M3/M4; using them in Mode B + M4 double-counts.
+- **Two risk lenses are distinct**: risk to rural **livelihoods** (M2, a *need* layer → hotspots) vs risk to the **investment** (M2b, the WB disaster-screening lens → a feasibility filter/scope). Kept separate; M2b applied as a filter, never summed. See `methodology/modules/M2b_project_risk.md`.
 - **Pipeline reads from schema** — analytical rules never hardcoded.
 - **Variable selection is 2-stage**: thematic grouping (per recipe) + correlation clustering (per AOI). One representative per cluster enters MCDA. Cluster membership preserved and shown to users.
-- **Dataset sourcing is 3-tier**: native GEE → community-hosted GEE → upload to GEE. Fitness-for-purpose precedes platform.
+- **Dataset sourcing is 3-tier**: GEE catalog → community-hosted → upload. Fitness-for-purpose precedes platform. Data is **pulled into Python** for computation (numpy/rasterio) — there is no native server-side GEE pipeline.
 
 ## Inheritance from Benson's existing work
 
@@ -72,8 +74,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - `docs/` — GitHub Pages site (wireframe, pipeline diagram, index, README)
 - `methodology/` — written methodology framework + per-NbS recipes
 - `schema/` — T0–T7 schema tables and reference
-- `src/nbs_ruralscan/` — reusable Python implementation
-- `pipeline/` — pilot notebooks, outputs, and GEE App runtime artefacts
+- `src/nbs_ruralscan/` — reusable Python implementation (pulls GEE/other data, computes locally)
+- `pipeline/` — pilot notebooks and outputs
 - `reference/` — stocktake findings, source R script, lit references
 - `.claude/commands/` — custom slash commands
 - `.github/ISSUE_TEMPLATE/` — issue templates by type
@@ -91,7 +93,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 ## Team & roles
 
 - **Pete Steward** (Team Lead) — framework integrity, wireframe direction, scope-control
-- **Benson Kenduiywo** (Lead — Geospatial Analytics) — GEE pipeline, M1 deep, pilot implementations
+- **Benson Kenduiywo** (Geospatial Analytics) — **transitioning to QA/QC**: dataset fitness sign-off, output validation, resolution-audit review. *(The framework primitives below remain his inherited work and stay attributed to him.)* Pipeline implementation now proceeds in Python via Claude Code, driven by Brayden / Anastasia / Pete.
 - **Namita Joshi** (Coordination + lit) — Variable Cards, recipe content, NbS scorecards (T6), project coordination
 - **Brayden Youngberg** (Co-lead — methodology) — M2 climate risk methods; front-end help where capacity allows
 - **Aniruddha Ghosh** — variable parsimony + transparency principles; Claude Code patterns
@@ -111,7 +113,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 ## Don't
 
 - Don't hardcode analytical rules in pipeline code; read from schema
-- Don't merge wireframe edits without preserving the six-tab structure
+- Don't merge wireframe edits without preserving the agreed tab structure (see "What is locked") and the six Variable-Card slots
 - Don't expand variables into MCDA without correlation reduction
 - Don't add an NbS to a cluster without checking it shares the biophysical logic (water harvesting ≠ wetland creation; we caught this once already)
 - Don't promise the World Bank a polished web tool — the proposal commits to notebooks; the App and wireframe are demonstrators

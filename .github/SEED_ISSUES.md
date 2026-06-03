@@ -1,5 +1,7 @@
 # Seed issues — initial backlog
 
+> **⚠ Partly superseded (June 2026).** Ownership and platform have changed since this was seeded: Benson → **QA/QC**; the M1 port and pilots are **Python via Claude Code** (not native GEE); the **GEE App (Issue 13) is dropped**; Issue 9 "Port spatMCDA.R to **GEE** Python" is now "…to Python (numpy/rasterio), pulling GEE data". New work (project disaster-risk **M2b**, priority-variable normalization, Project-Risk hotspot scope, Next Steps content, M3–M6 specs, doc reconciliation) lives in [`SEED_ISSUES_2026-06.md`](./SEED_ISSUES_2026-06.md) and [`SEED_ISSUE_M2b_project_risk.md`](./SEED_ISSUE_M2b_project_risk.md). Treat the blocks below as historical except where still accurate.
+
 Copy each block below into a new issue on github.com/CIAT/nbs_ruralscan/issues/new. Pick the right template (recipe / variable-card / module-spec / pilot-task) — the title and labels are pre-filled in each block. Open one at a time.
 
 Open them in roughly this order so the backlog tells a coherent story when the team first sees it.

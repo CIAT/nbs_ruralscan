@@ -9,8 +9,9 @@ This folder hosts the live demonstrator artefacts for the Rural NbS Scan project
 | File | Description |
 |---|---|
 | `index.html` | Landing page listing the artefacts |
-| `wireframe.html` | TTL tool wireframe v0 (interactive mockup) |
-| `pipeline.html` | Pipeline architecture v0.1 (one-page diagram) |
+| `wireframe.html` | TTL tool wireframe v0.6 (interactive mockup) |
+| `sle_geo.js` · `sle_map.js` · `priority_detail.js` · `project_risk.js` | JS the wireframe loads (geometry + map/detail/risk logic) |
+| `pipeline.html` | Pipeline architecture v0.3 (one-page diagram) |
 | `README.md` | This file |
 
 ## Editing workflow — Claude Code
@@ -32,7 +33,7 @@ Ask Claude Code naturally — it knows HTML/CSS/JS and can read the existing pat
 
 - *"In `docs/wireframe.html`, change the map cells in the Opportunity Space tab to use real Sierra Leone district outlines from this GeoJSON I've added."*
 - *"On the Variable Config tab, add a search box that filters the variable list by name."*
-- *"Add a new tab between TTL Hotspots and Variable Config called `Methodology` that shows the seven-module pipeline as a sequence diagram."*
+- *"On the Priority Hotspots tab, add the planned Project-Risk scope alongside the NbS Suitability Scope and Priority Scope."*
 - *"Improve the typography hierarchy across the wireframe — move from default sizes to a more refined scale."*
 
 Claude Code edits files in-place. Test the result by opening the file locally in your browser, or run a tiny local server:
@@ -59,8 +60,9 @@ GitHub Pages auto-rebuilds within ~2 minutes. Visit the live URL to confirm.
 
 Some structural decisions in the artefacts are deliberate and shouldn't drift between edits. If you want to change any of these, propose it in the team channel first:
 
-- **Wireframe tab structure** — six tabs, in the order Setup → Opportunity Space → NbS Comparison → TTL Hotspots → Variable Config → Danger Zone. Setup → Opp Space is the primary TTL flow; Variable Config and Danger Zone are technical.
-- **Variable Card structure** — six slots: What / Why (NbS-specific) / How to read / What it represents (cluster) / Where it comes from / Membership function preview. Driven by Ani's three principles.
+- **Wireframe tab structure** (v0.6) — Setup → Opportunity Space → Project Risk → Priority Hotspots → NbS Comparison → Next Steps, plus Danger Zone and an internal Dev Notes tab. Setup → Opportunity Space is the primary TTL flow; Variable Config (now a sub-tab under Setup, with Suitability and Priority/hotspot surfaces), Danger Zone and Dev Notes are technical/internal. *(Tab-set ratification pending.)*
+- **Variable Card structure** — six slots: What / Why (NbS-specific) / How to read / What it represents (cluster) / Where it comes from / Response preview (membership curve + raw-vs-transformed maps). Driven by Ani's three principles.
+- **Two risk lenses** — risk to rural livelihoods (Opportunity Space) vs risk to the investment (Project Risk tab). Keep them labelled and distinct.
 - **T0–T7 colour scheme** — matches the ERD in `2_Technical_&_Data/Claude Outputs/NbS_ERD_v01.html`. Visual consistency across artefacts.
 - **Cluster representative + GEE/upload badges** on variable chips — these are the visible expression of Ani's reduce/source principles.
 - **Pipeline diagram inheritance attribution** — the top strip of framework primitives all attributed to Benson is structural, not decorative.
