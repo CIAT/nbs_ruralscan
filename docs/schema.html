@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rural NbS Scan — Data Schema (T0–T7)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 40px 24px; line-height: 1.55; }
+  .container { max-width: 960px; margin: 0 auto; }
+  a.back { font-size: 12px; color: #0c447c; text-decoration: none; }
+  h1 { font-size: 26px; font-weight: 600; color: #0c447c; margin: 10px 0 4px; }
+  .subtitle { font-size: 13px; color: #5f5e5a; margin-bottom: 6px; }
+  .meta { font-size: 11px; color: #888780; margin-bottom: 26px; }
+  h2 { font-size: 17px; font-weight: 600; color: #0c447c; margin: 28px 0 10px; }
+  p { font-size: 13px; color: #333330; margin-bottom: 12px; }
+  .card { background: #fff; border: 1px solid #d3d1c7; border-radius: 8px; padding: 20px 24px; margin-bottom: 14px; transition: border-color .15s, box-shadow .15s; }
+  .card:hover { border-color: #0c447c; box-shadow: 0 2px 8px rgba(12,68,124,.08); }
+  .card a.head { text-decoration: none; color: inherit; display: block; }
+  .card h3 { font-size: 15px; font-weight: 600; color: #0c447c; margin-bottom: 4px; }
+  .card .desc { font-size: 12px; color: #444441; margin-bottom: 8px; }
+  .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag { font-size: 10px; padding: 2px 7px; border-radius: 3px; background: #f1efe8; color: #5f5e5a; font-weight: 600; letter-spacing: .02em; }
+  .tag.draft { background: #faeeda; color: #633806; }
+  .tag.live { background: #e1f5ee; color: #085041; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; background: #fff; border: 1px solid #d3d1c7; border-radius: 8px; overflow: hidden; margin-bottom: 8px; }
+  th { background: #0c447c; color: #fff; text-align: left; padding: 8px 10px; font-weight: 600; font-size: 11px; letter-spacing: .02em; }
+  td { padding: 7px 10px; border-top: 1px solid #ecebe5; vertical-align: top; }
+  tr:nth-child(even) td { background: #faf9f6; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; background: #f1efe8; padding: 1px 5px; border-radius: 3px; }
+  .pk { color: #085041; font-weight: 600; }
+  .fk { color: #633806; font-weight: 600; }
+  .root { color: #0c447c; font-weight: 600; }
+  .note { font-size: 11px; color: #5f5e5a; }
+  .footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid #e8e7e3; font-size: 11px; color: #888780; }
+  .footer a { color: #0c447c; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back" href="index.html">← Demonstrator artefacts</a>
+  <h1>Data Schema — T0–T7</h1>
+  <p class="subtitle">World Bank D591 · Alliance Bioversity International &amp; CIAT</p>
+  <p class="meta">The analytical backbone. The pipeline reads every analytical rule, dataset, response function and weight from these eight tables — nothing is hardcoded. Schema v0.1 · draft-0 examples: Agroforestry · Water Harvesting &amp; Conservation.</p>
+
+  <div class="card">
+    <a class="head" href="erd.html">
+      <h3>Entity-Relationship Diagram (v0.1)</h3>
+      <p class="desc">All eight tables, their key fields, and the foreign-key joins that bind them. Click through to zoom.</p>
+      <div class="tags"><span class="tag draft">v0.1 draft</span><span class="tag">diagram</span><span class="tag live">on this site</span></div>
+    </a>
+  </div>
+
+  <div class="card">
+    <a class="head" href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/spec.md">
+      <h3>Field-level schema spec ↗</h3>
+      <p class="desc">Every field, type, enum and foreign key for all eight tables, plus the relationship-type reference and implementation notes. Markdown, rendered on GitHub.</p>
+      <div class="tags"><span class="tag draft">v0.1</span><span class="tag">spec</span><span class="tag">schema/spec.md</span></div>
+    </a>
+  </div>
+
+  <div class="card">
+    <a class="head" href="https://github.com/CIAT/nbs_ruralscan/tree/main/schema/recipes">
+      <h3>Draft-0 worked examples: Agroforestry · Water Harvesting ↗</h3>
+      <p class="desc">The first populated tables — CSV + JSON for all of T0–T7, sourced from the NbS stocktake. The template every subsequent NbS recipe follows. Per-NbS tables under <code>recipes/&lt;nbs_id&gt;/</code>; cross-NbS tables (T1, T2, T5, T7) merged at the <a href="https://github.com/CIAT/nbs_ruralscan/tree/main/schema">schema root</a>.</p>
+      <div class="tags"><span class="tag draft">draft 0</span><span class="tag">2 NbS</span><span class="tag">CSV + JSON</span><span class="tag">FK-validated</span></div>
+    </a>
+  </div>
+
+  <h2>The eight tables</h2>
+  <table>
+    <thead><tr><th>Table</th><th>Purpose</th><th>Key field</th><th>Owner</th><th>Location</th></tr></thead>
+    <tbody>
+      <tr><td><strong>T0</strong> NbS Registry</td><td>Master record per NbS; economic archetype; evidence quality</td><td><span class="pk">nbs_id</span></td><td>Namita</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
+      <tr><td><strong>T1</strong> Data Registry</td><td>Dataset catalog — access routes, citations, limitations</td><td><span class="pk">dataset_id</span></td><td>Namita + Benson</td><td><span class="root">schema root</span></td></tr>
+      <tr><td><strong>T2</strong> Climate Risk Formulation</td><td>Risk variables, hazard/exposure formula, double-count guard</td><td>variable_id · <span class="fk">dataset_id→T1</span></td><td>Namita (lit)</td><td><span class="root">schema root</span></td></tr>
+      <tr><td><strong>T3</strong> NbS × Hazard × Farming</td><td>Qualitative mitigation-potential matrix</td><td>record_id · <span class="fk">nbs_id→T0</span></td><td>Namita (lit)</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
+      <tr><td><strong>T4</strong> Suitability Mappings</td><td>Response functions, scenario flags, context overrides</td><td>mapping_id · <span class="fk">nbs_id→T0, dataset_id→T1</span></td><td>Namita</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
+      <tr><td><strong>T5</strong> Opportunity Space Vars</td><td>TTL-facing priority layers</td><td>variable_id · <span class="fk">dataset_id→T1</span></td><td>Namita + Benson</td><td><span class="root">schema root</span></td></tr>
+      <tr><td><strong>T6</strong> NbS Scorecard</td><td>Likert effects + economic profile per NbS</td><td>record_id · <span class="fk">nbs_id→T0, variable_id→T5</span></td><td>Namita + MFL</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
+      <tr><td><strong>T7</strong> Geographic Context</td><td>AEZ / farming-system / admin context definitions</td><td>context_id · <span class="fk">dataset_id→T1</span></td><td>Benson</td><td><span class="root">schema root</span></td></tr>
+    </tbody>
+  </table>
+  <p class="note"><span class="pk">green</span> = primary key · <span class="fk">brown</span> = foreign key · tables carrying an <code>nbs_id</code> live in the recipe folder; cross-NbS tables live at the schema root. Adding an NbS = a new recipe folder + appended rows. No schema or code changes required.</p>
+
+  <h2>How they connect</h2>
+  <p>All joins run on three keys — <code>nbs_id</code> (T0), <code>dataset_id</code> (T1), <code>variable_id</code> (T5). The pipeline validates every foreign key on load and fails loudly on a broken link rather than producing a silent gap. T2 (risk to livelihoods) and T4 (suitability) are parallel arms; the <code>double_count_risk</code> flag in T2 prevents a variable being counted in both the risk index and the opportunity space. With two recipes merged and deduplicated, the shared root tables hold 21 datasets (T1), 11 risk variables (T2), 14 opportunity-space variables (T5) and 15 geographic contexts (T7) — one source of truth across NbS.</p>
+
+  <div class="footer">
+    <p>Source design archived in <a href="https://github.com/CIAT/nbs_ruralscan/tree/main/schema/design"><code>schema/design/</code></a> (ERD · Schema Reference docx · the Agroforestry and Water-Harvesting workbooks). Edit workflow: modify <code>schema/</code> files in the <a href="https://github.com/CIAT/nbs_ruralscan/">repo</a>, commit + push; Pages auto-deploys docs within ~2 minutes.</p>
+  </div>
+</div>
+</body>
+</html>
