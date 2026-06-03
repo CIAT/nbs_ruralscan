@@ -14,15 +14,16 @@ The methodology is implemented in three explicit layers — kept separate so eac
 | **Recipe** | Per-NbS configuration. Variables, response functions, weights, subpractice families. | `methodology/recipes/<nbs_id>.md` |
 | **Runtime** | GEE Python pipeline · Colab pilot notebooks · GEE App. | `pipeline/` |
 
-## Seven analytical modules
+## Seven analytical modules (+ M2b project-risk addendum)
 
 | ID | Module | Question answered | Schema tables |
 |---|---|---|---|
 | **M0** | Setup & Scope | AOI · NbS · resolution · scenario · ingestion check | T0, T1, T7 |
 | **M1** | Suitability → Opportunity Space | Where could this NbS biophysically work? | T1, T4, T7 |
-| **M2** | Rural Climate Risk | Where are rural livelihoods exposed to climate hazards (baseline + future)? | T1, T2 |
+| **M2** | Rural Climate Risk | Where are rural **livelihoods** exposed to climate hazards (baseline + future)? | T1, T2 |
+| **M2b** | Project Disaster Risk Screen *(addendum)* | Where could disasters damage/destroy the **investment**? (WB disaster-screening lens) | T2, T3 |
 | **M3** | Opp Space Characterisation | What's in the opportunity space (poverty, biodiversity, GESI, production, pop)? | T1, T5 |
-| **M4** | TTL Hotspots (MCDA) | Where within the opp space do TTL priorities concentrate? | T5 |
+| **M4** | Priority Hotspots (MCDA) | Where within the opp space do TTL priorities concentrate? | T5 |
 | **M5** | NbS Scorecard & Response | What can this NbS plausibly address (Likert) + economic profile? | T3, T6 |
 | **M6** | Implementation Hand-off | What comes next after scoping (feasibility tools, contextualisation)? | T0, T6 |
 
