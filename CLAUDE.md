@@ -25,7 +25,7 @@ Demonstrator-grade artefacts (not contracted but valuable):
 
 - **Framework** — cross-cutting methodology, MCDA engine, standardisation library, schema. NbS-agnostic.
 - **Recipe** — per-NbS configuration. One file per NbS. Defines variables, thresholds, weights, subpractice families.
-- **Runtime** — GEE Python pipeline + Colab pilot notebooks + GEE App.
+- **Runtime** — reusable Python package + Colab pilot notebooks + GEE App.
 
 ### Seven modules
 
@@ -72,7 +72,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - `docs/` — GitHub Pages site (wireframe, pipeline diagram, index, README)
 - `methodology/` — written methodology framework + per-NbS recipes
 - `schema/` — T0–T7 schema tables and reference
-- `pipeline/` — GEE Python implementation + pilot notebooks
+- `src/nbs_ruralscan/` — reusable Python implementation
+- `pipeline/` — pilot notebooks, outputs, and GEE App runtime artefacts
 - `reference/` — stocktake findings, source R script, lit references
 - `.claude/commands/` — custom slash commands
 - `.github/ISSUE_TEMPLATE/` — issue templates by type
@@ -80,6 +81,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 ## Run / preview / deploy
 
+- **Python environment**: use `uv` from the repo root. Add runtime dependencies with `uv add ...`; add dev tools with `uv add --dev ...`.
+- **Python checks**: run `uv run ruff check .`, `uv run ruff format .`, and `uv run ty check` before PRs that touch `src/`.
 - **Preview docs locally**: `cd docs && python3 -m http.server 8000` → http://localhost:8000
 - **Run pilot notebook**: open `pipeline/notebooks/<nbs>_<country>.ipynb` in Colab; authenticate GEE
 - **Deploy docs**: push to main; GitHub Pages auto-rebuilds from `/docs` within ~2 min
