@@ -85,7 +85,7 @@
       <div class="field"><span class="badge pk">PK</span><span class="field-name">dataset_id</span><span class="field-type">string</span></div>
       <div class="field"><span class="field-name">dataset_name</span><span class="field-type">string</span></div>
       <div class="field"><span class="field-name">analytical_module</span><span class="field-type">enum</span></div>
-      <div class="field"><span class="field-name">variable_unit</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">spatial_resolution_m</span><span class="field-type">int</span></div>
       <div class="field"><span class="field-name">access_type</span><span class="field-type">enum</span></div>
       <div class="field"><span class="field-name">gee_asset_id</span><span class="field-type">string?</span></div>
       <div class="field"><span class="field-name">download_url</span><span class="field-type">string?</span></div>
@@ -142,6 +142,8 @@
     <div class="tbl-fields">
       <div class="field"><span class="badge pk">PK</span><span class="field-name">mapping_id</span><span class="field-type">string</span></div>
       <div class="field"><span class="badge fk">FK</span><span class="field-name">nbs_id → T0</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">suitability_family_id → FAM</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">variable → VONT</span><span class="field-type">string</span></div>
       <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string</span></div>
       <div class="field"><span class="badge ref">REF</span><span class="field-name">context_overrides → T7</span><span class="field-type">object[]</span></div>
       <div class="field"><span class="field-name">suitability_dimension</span><span class="field-type">enum</span></div>
@@ -161,9 +163,8 @@
     </div>
     <div class="tbl-fields">
       <div class="field"><span class="badge pk">PK</span><span class="field-name">variable_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">variable → VONT</span><span class="field-type">string</span></div>
       <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string</span></div>
-      <div class="field"><span class="field-name">variable_name</span><span class="field-type">string</span></div>
-      <div class="field"><span class="field-name">category</span><span class="field-type">enum</span></div>
       <div class="field"><span class="field-name">theme</span><span class="field-type">enum</span></div>
       <div class="field"><span class="field-name">directionality_of_concern</span><span class="field-type">enum</span></div>
       <div class="field"><span class="field-name">weight_default</span><span class="field-type">float</span></div>
@@ -231,6 +232,8 @@
   <strong>Key structural notes:</strong> T1 (Data Registry) is the single source of truth for every geospatial dataset; T2, T4, T5 and T7 all carry a <code>dataset_id → T1</code> foreign key. The cross-NbS tables (T1, T2, T5, T7) are <strong>deduplicated</strong> — one row per real-world dataset / variable / context, shared across recipes (see <code>DEDUP_NOTES.md</code>). T3 does <em>not</em> link to T1: the matrix is qualitative literature — it names hazard types but consumes no raster directly. T2 (risk to livelihoods) and T4 (suitability) are <em>parallel arms</em>, not connected to each other.
   <br><br>
   <strong>Two-risk split (M2 / M2b):</strong> <code>T3.risk_role</code> tags each hazard×NbS row as <code>livelihood_mitigation</code> (feeds M2) or <code>asset_threat</code> (feeds the M2b project disaster-risk screen, weighted by <code>asset_risk_weight</code>). <strong>NbS-response priority layers</strong> (<code>T5.theme = nbs_response</code>) are derived, not stored — the shared T5 layer is modulated per NbS by the matching T6 effect. <code>T4.relationship_type</code> uses the canonical membership-function set (trapezoidal · gaussian · linear↑/↓ · sigmoid · threshold · piecewise).
+  <br><br>
+  <strong>Evidence &amp; configuration layer (v0.2.1–2, not drawn above):</strong> analytical tables now reference canonical variables in <strong>VONT</strong> (name + unit + <code>context_sensitivity</code> live there, once), T4 keys to a suitability family in <strong>FAM</strong>, provenance rows live in <strong>SRC</strong>/<strong>EV</strong> (<code>evidence_ids</code>), and per-context dataset choice is resolved through <strong>BIND</strong>. These registers live in <code>schema/registers/</code> + <code>spec.md</code>.
 </div>
 
 </body>
