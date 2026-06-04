@@ -1,5 +1,5 @@
 {
-  "manifest_version": "0.2-structure-frozen",
+  "manifest_version": "0.2.1-structure-frozen",
   "spec_source": "schema/spec.md",
   "generated": "2026-06-04",
   "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
@@ -126,10 +126,21 @@
       "per_nbs": false,
       "primary_key": "canonical_variable_id",
       "required": ["canonical_variable_id", "label", "canonical_unit", "group_id", "candidate_dataset_ids", "min_meaningful_resolution_m", "resolution_sensitivity", "derive_then_aggregate"],
-      "optional": ["aliases", "unit_conversions"],
+      "optional": ["aliases", "unit_conversions", "context_sensitivity"],
       "conditional": [],
       "derived": [],
       "fk": {}
+    },
+    "BIND": {
+      "name": "Dataset Binding Registry",
+      "location": "registers/BIND_dataset_binding.{csv,json}",
+      "per_nbs": false,
+      "primary_key": "binding_id",
+      "required": ["binding_id", "variable", "scope_type", "preference_rank", "status"],
+      "optional": ["dataset_id", "fitness_note"],
+      "conditional": ["scope_id"],
+      "derived": [],
+      "fk": {"variable": "VONT.canonical_variable_id", "scope_id": "T7.context_id", "dataset_id": "T1.dataset_id"}
     },
     "FAM": {
       "name": "Subpractice / Suitability-Family Registry",

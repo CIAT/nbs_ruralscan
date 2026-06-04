@@ -54,16 +54,24 @@
   <div class="card">
     <a class="head" href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/spec.md">
       <h3>Field-level schema spec ↗</h3>
-      <p class="desc">Every field, type, enum and foreign key for all eight tables, plus the relationship-type reference and implementation notes. Markdown, rendered on GitHub.</p>
-      <div class="tags"><span class="tag draft">v0.1</span><span class="tag">spec</span><span class="tag">schema/spec.md</span></div>
+      <p class="desc">Every field, type, enum and foreign key for all eight tables plus the evidence/config registers, the relationship-type reference and implementation notes. Markdown, rendered on GitHub.</p>
+      <div class="tags"><span class="tag live">v0.2 · structure frozen</span><span class="tag">spec</span><span class="tag">schema/spec.md</span></div>
     </a>
   </div>
 
   <div class="card">
     <a class="head" href="https://github.com/CIAT/nbs_ruralscan/tree/main/schema/recipes">
       <h3>Draft-0 worked examples: Agroforestry · Water Harvesting ↗</h3>
-      <p class="desc">The first populated tables — CSV + JSON for all of T0–T7, sourced from the NbS stocktake. The template every subsequent NbS recipe follows. Per-NbS tables under <code>recipes/&lt;nbs_id&gt;/</code>; cross-NbS tables (T1, T2, T5, T7) merged at the <a href="https://github.com/CIAT/nbs_ruralscan/tree/main/schema">schema root</a>.</p>
-      <div class="tags"><span class="tag draft">draft 0</span><span class="tag">2 NbS</span><span class="tag">CSV + JSON</span><span class="tag">FK-validated</span></div>
+      <p class="desc">The first populated tables — CSV + JSON for all of T0–T7, sourced from the NbS stocktake. The template every subsequent NbS recipe follows. Per-NbS tables under <code>recipes/&lt;nbs_id&gt;/</code>; cross-NbS tables (T1, T2, T5, T7) merged at the <a href="https://github.com/CIAT/nbs_ruralscan/tree/main/schema">schema root</a>. Structure-conformant; row content in progress.</p>
+      <div class="tags"><span class="tag draft">draft 0</span><span class="tag">2 NbS</span><span class="tag">CSV + JSON</span><span class="tag">structure-conformant</span></div>
+    </a>
+  </div>
+
+  <div class="card">
+    <a class="head" href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/structure/columns.json">
+      <h3>Frozen structure — column manifest + validator ↗</h3>
+      <p class="desc">The column set of every table is locked at <code>v0.2-structure-frozen</code>: required/optional/conditional/derived status and foreign keys, captured machine-readably in <code>structure/columns.json</code>. A stdlib validator (<code>src/nbs_ruralscan/structure.py</code>) checks any data file against it — column conformance + FK shape always, content completeness under <code>--strict</code>. The team populates rows without the columns shifting underneath.</p>
+      <div class="tags"><span class="tag live">structure frozen</span><span class="tag">manifest</span><span class="tag">validator</span></div>
     </a>
   </div>
 
@@ -90,10 +98,10 @@
     </tbody>
   </table>
   <p class="note"><span class="pk">green</span> = primary key · <span class="fk">brown</span> = foreign key · tables carrying an <code>nbs_id</code> live in the recipe folder; cross-NbS tables live at the schema root. Adding an NbS = a new recipe folder + appended rows. No schema or code changes required.</p>
-  <p class="note"><strong>v0.2</strong> adds an <strong>evidence &amp; configuration layer</strong> upstream of T0–T7 — Source Register · Evidence Register · Variable Ontology · Subpractice/Suitability-Family registry — feeding T3/T4/T6 with full provenance. T4 keys to <code>suitability_family_id</code>. See the <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/spec.md">field-level spec</a>.</p>
+  <p class="note"><strong>v0.2</strong> adds an <strong>evidence &amp; configuration layer</strong> upstream of T0–T7 — Source Register · Evidence Register · Variable Ontology · Subpractice/Suitability-Family registry, now materialised under <a href="https://github.com/CIAT/nbs_ruralscan/tree/main/schema/registers"><code>schema/registers/</code></a> — feeding T2/T3/T4/T5/T6 with full provenance via <code>evidence_ids</code>. <strong>v0.2.1</strong> adds the <strong>BIND</strong> registry: context-aware variable→dataset resolution (a global default, overridable per country/AEZ; a <code>requires_upload</code> status flags better local data for the user to supply) — so a global recipe is refined for an AOI without forking it. T4 keys to <code>suitability_family_id</code>; canonical variable names + units live once in the Variable Ontology. The <strong>agroforestry F1 × slope</strong> row is the first fully-populated chain (T4 → 3 evidence units with quotes + pages → sources). See the <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/spec.md">field-level spec</a>.</p>
 
   <h2>How they connect</h2>
-  <p>All joins run on three keys — <code>nbs_id</code> (T0), <code>dataset_id</code> (T1), <code>variable_id</code> (T5). The pipeline validates every foreign key on load and fails loudly on a broken link rather than producing a silent gap. T2 (risk to livelihoods) and T4 (suitability) are parallel arms; the <code>double_count_risk</code> flag in T2 prevents a variable being counted in both the risk index and the opportunity space. With two recipes merged and deduplicated, the shared root tables hold 21 datasets (T1), 11 risk variables (T2), 14 opportunity-space variables (T5) and 15 geographic contexts (T7) — one source of truth across NbS.</p>
+  <p>All joins run on three keys — <code>nbs_id</code> (T0), <code>dataset_id</code> (T1), <code>variable_id</code> (T5) — with the evidence layer adding <code>variable</code>→Ontology, <code>suitability_family_id</code>→Family registry and <code>evidence_ids</code>→Evidence Register. The validator checks every foreign key on load and fails loudly on a broken link rather than producing a silent gap. T2 (risk to livelihoods) and T4 (suitability) are parallel arms; the <code>double_count_risk</code> flag in T2 prevents a variable being counted in both the risk index and the opportunity space. With two recipes merged and deduplicated, the shared root tables hold 21 datasets (T1), 11 risk variables (T2), 14 opportunity-space variables (T5) and 15 geographic contexts (T7) — one source of truth across NbS.</p>
 
   <div class="footer">
     <p>Source design archived in <a href="https://github.com/CIAT/nbs_ruralscan/tree/main/schema/design"><code>schema/design/</code></a> (ERD · Schema Reference docx · the Agroforestry and Water-Harvesting workbooks). Edit workflow: modify <code>schema/</code> files in the <a href="https://github.com/CIAT/nbs_ruralscan/">repo</a>, commit + push; Pages auto-deploys docs within ~2 minutes.</p>

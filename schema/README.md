@@ -10,7 +10,8 @@ The analytical backbone. All analytical rules, datasets, response functions, wei
 
 ## Structure is LOCKED · content is in progress
 
-The **column structure** of every table is frozen at `v0.2-structure-frozen`. The team can populate rows against it
+The **column structure** of every table is frozen at `v0.2.1-structure-frozen` (v0.2.1 added the optional **BIND**
+registry — additive, no existing column changed). The team can populate rows against it
 without fear the columns will move under them. **What's locked:** the column set, required/optional/conditional/derived
 status, and foreign keys — captured machine-readably in [`structure/columns.json`](structure/columns.json) (the
 authoritative manifest, generated from `spec.md`). **What's still open:** the row *content* — most `evidence_ids` are
@@ -34,7 +35,7 @@ The first populated tables — pilot NbS **Agroforestry** and **Water Harvesting
 
 - Per-NbS tables (T0, T3, T4, T6): [`recipes/agroforestry/`](recipes/agroforestry/) and [`recipes/water_harvesting_conservation/`](recipes/water_harvesting_conservation/) — each with its own README.
 - Cross-NbS tables (T1, T2, T5, T7): at this schema root — `T1_data_registry.*` (21 datasets), `T2_climate_risk.*` (11 risk variables), `T5_opportunity_space.*` (14 priority layers), `T7_geographic_context.*` (15 contexts). Rows from both recipes are merged and **deduplicated** — see [`DEDUP_NOTES.md`](DEDUP_NOTES.md). (Which NbS use a shared dataset is now derived from the T2/T4 joins, not stored.)
-- Evidence & configuration registers (cross-NbS): [`registers/`](registers/) — `VONT` (canonical variables), `FAM` (subpractice / suitability families), `SRC` (source register), `EV` (atomic evidence units).
+- Evidence & configuration registers (cross-NbS): [`registers/`](registers/) — `VONT` (canonical variables), `FAM` (subpractice / suitability families), `SRC` (source register), `EV` (atomic evidence units), and `BIND` (context-aware variable→dataset binding: global default + country/AEZ overrides; `requires_upload` flags better local data to supply).
 - Design sources archived in [`design/`](design/): the ERD, the Schema Reference docx, and the human-readable workbooks the tables were generated from.
 
 **Draft-0 content caveats (not structural):** Only the **agroforestry F1 × slope** row is a fully-populated, `--strict`-passing chain (T4 → 3 `EV` units with quotes/pages → `SRC`, keyed to family `agroforestry__planted_silvoarable`, variable `slope` in `VONT`). Every other row is structure-conformant with `evidence_ids` pending. All draft-0 T4 rows are currently tagged to a single placeholder family per NbS; the full family scheme (F1–F5) awaits Namita + MFL review.

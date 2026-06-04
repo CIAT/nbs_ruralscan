@@ -1,5 +1,15 @@
-# Schema spec — field-level reference (v0.2)
+# Schema spec — field-level reference (v0.2.2)
 
+> **v0.2.2 (June 2026)** — added optional `VONT.context_sensitivity` (`low`/`medium`/`high`): flags
+> nationally-derived / sovereignty-sensitive variables (population, poverty, production) so the scoping
+> output recommends a country-endorsed source. A **flag for hand-off, not analysis** — scoping flags, the
+> feasibility phase validates. Additive.
+>
+> **v0.2.1 (June 2026)** — added the **BIND — Dataset Binding registry**: context-aware variable→dataset
+> resolution (`global` default + country/AEZ/region overrides; `requires_upload` status drives the
+> flag-to-upload prompt), and formalised **most-specific-context-wins** precedence for both BIND and
+> `T4.context_overrides`. Additive — no existing column changed. See the BIND section below.
+>
 > **v0.2 (June 2026)** — added `T3.risk_role` + `T3.asset_risk_weight` (the M2 / M2b two-risk split);
 > added `T5.theme` + `T5.weight_default` (hotspot grouping & weighting); reconciled `T4.relationship_type`
 > to one canonical membership-function set with a wireframe crosswalk; documented NbS-response layers as
@@ -376,6 +386,7 @@ Canonical variables: harmonisation + data-catalog link + resolution validity.
 | `min_meaningful_resolution_m` | integer | Required | Coarsest grid at which the variable stays valid. | `90` |
 | `resolution_sensitivity` | enum | Required | `low` \| `medium` \| `high` (derivatives = high). | `high` |
 | `derive_then_aggregate` | boolean | Required | Compute native then summarise to grid (slope, TWI…). | `true` |
+| `context_sensitivity` | enum | Optional | How generalisable / politically sensitive the variable is. `low` (generalisable physical — slope, climate; global default fine) \| `medium` (context-dependent but apolitical — soils, land cover) \| `high` (nationally-derived / sovereignty-sensitive — population, poverty, production stats; prefer a **country-endorsed** source). A **flag** read by variable cards, the data-gap prompt and the M6 hand-off — it does not change the analysis. | `high` |
 
 ### FAM — Subpractice / Suitability-Family registry
 
@@ -392,6 +403,33 @@ NbS decomposition; the unit T4 is keyed to.
 
 **T4 change:** rows key to `suitability_family_id` (subpractices roll up to NbS for display). T4 `references`/
 `justification` now cite `evidence_id`s.
+
+### BIND — Dataset Binding registry (context-aware data resolution)
+
+*Added v0.2.1.* Binds a **variable → dataset per geographic context**, so a global recipe can be **refined for an
+AOI** without forking it. Each variable has a `global` binding (the default); a country/AEZ/region can override it
+with a better local dataset. When the better dataset is known but not yet catalogued, the row carries no
+`dataset_id` and `status = requires_upload` — the signal the runtime/wireframe uses to **prompt the user to supply
+it** (falling back to the global default meanwhile). Relationship *parameters* are refined separately and
+compositely via `T4.context_overrides`; BIND chooses *which dataset*, the overrides re-parameterise the *response*.
+
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `binding_id` | string | Required | Unique id. | `cocoa_distribution__sle` |
+| `variable` | string | Required | FK → VONT. | `cocoa_distribution` |
+| `scope_type` | enum | Required | `global` \| `aez` \| `farming_system` \| `admin_country` \| `admin_region` \| `hydrobasin`. | `admin_country` |
+| `scope_id` | string | Conditional | FK → `T7.context_id`. Required unless `scope_type = global`. | `sle` |
+| `dataset_id` | string | Optional | FK → `T1.dataset_id`. **Blank** when `status = requires_upload`. | `mapspam_cocoa_2020` |
+| `preference_rank` | integer | Required | Lower = preferred when several bindings match a pixel's context. | `1` |
+| `status` | enum | Required | `catalogued` (in T1, fetchable) \| `community` (community-hosted) \| `requires_upload` (better data known, user must supply). | `requires_upload` |
+| `fitness_note` | string | Optional | Why this dataset for this context (resolution, currency, provenance). | `National EO cocoa map, 10 m, 2023` |
+
+**Resolution rule (runtime).** For each variable in an AOI: collect bindings whose `scope` matches the AOI's
+contexts (from T7), pick the one with the **most-specific scope**, breaking ties by lowest `preference_rank`.
+Precedence: `admin_region` > `admin_country` > `hydrobasin` > `farming_system` > `aez` > `global`. If the winning
+binding is `catalogued`/`community` → pull it; if `requires_upload` → use the global default, **flag the user**,
+and record the substitution in the run config + resolution audit. The same most-specific-wins precedence now
+governs `T4.context_overrides`.
 
 ---
 
