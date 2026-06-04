@@ -1,25 +1,34 @@
 # pipeline/
 
-GEE Python implementation of the methodology + pilot Colab notebooks + GEE App.
+Per-pilot Colab notebooks and their outputs. **The reusable method code lives in
+[`../src/nbs_ruralscan/`](../src/nbs_ruralscan/)** — schema loader, data loaders,
+document ingestion, and the evidence → synthesis → recipe engine. A pilot notebook is
+a thin driver that imports that package, runs one NbS × AOI, writes outputs, and
+renders maps + tables inline. **Notebooks are the contracted deliverable.**
+
+> **Architecture note (June 2026).** Native server-side GEE compute and the GEE App are
+> **dropped**. Data is pulled into Python (including from the GEE catalog) and computed
+> **locally** (numpy / rasterio); the engine moved from `pipeline/` to
+> `src/nbs_ruralscan/`; and the **TTL wireframe** (`docs/wireframe.html`) is the visual
+> demonstrator. See `../CLAUDE.md` and `../methodology/T4_generation_method.md`.
 
 ## Structure
 
 | Path | Contents |
 |---|---|
-| `mcda_pipeline.py` | Core MCDA engine — port of `../reference/R/spatMCDA.R` to GEE Python. CRITIC + Entropy + AHP weighting; weighted linear combination; classification; ±10% sensitivity. *(to be authored — see Claude Code uplift prompts)* |
-| `climate_risk.py` | M2 climate risk implementation — see `../methodology/modules/M2_climate_risk.md`. *(to be authored — Brayden)* |
-| `schema_loader.py` | Loads T0–T7 schema rows for a given NbS + AOI; routes to the MCDA engine. *(to be authored)* |
-| `data_loaders/` | Per-dataset loaders that fetch from GEE or uploaded assets. *(to be authored)* |
-| `notebooks/` | Per-pilot Colab notebooks — one per `<nbs>_<country>.ipynb`. |
-| `outputs/` | Pilot outputs — one folder per `<pilot_id>/`. **`.gitignore`'d** (or LFS) for large rasters. |
-| `gee_app/` | **GEE App — design owned by Benson** (see [`gee_app/README.md`](./gee_app/README.md)). The visual demonstrator that consumes pilot outputs. |
+| `notebooks/` | Per-pilot Colab notebooks — one `<nbs>_<iso3>.ipynb`. The contracted deliverable. |
+| `outputs/` | Pilot outputs — one folder per `<pilot_id>/`. Large rasters gitignored (or LFS). |
+
+The engine the notebooks call lives in `../src/nbs_ruralscan/`: `schema_loader` (T0–T7
+rows for an NbS + AOI), `data_loaders/`, `ingest/` (vectorless doc ingestion),
+`evidence` · `synthesis` · `support` · `recipe` (the T4 generation engine), `outputs`.
 
 ## Conventions
 
-- **Notebooks are the contracted deliverable.** They must be self-contained: authenticate GEE, load recipe from schema, run the pipeline, write outputs, render maps + tables inline.
-- **Pipeline reads from schema, never hardcoded.** If a value (variable list, threshold, weight) appears in a Python literal, it belongs in T0–T7 instead.
+- **Notebooks are self-contained:** load the recipe from the schema (`schema_loader`), pull data into Python, run the method, write outputs, render maps + tables inline.
+- **Reads from schema, never hardcoded.** If a variable list, threshold or weight appears as a Python literal, it belongs in T0–T7 instead.
 - **Markdown cells document every step in plain language** so a WB analyst can follow without verbal explanation.
-- **Reproducibility** — every run records its config in `outputs/<pilot_id>/run_config.json`: NbS ID, recipe version, schema version, AOI, resolution, date, dataset versions, weights used.
+- **Reproducibility** — every run records its config in `outputs/<pilot_id>/run_config.json`: NbS ID, recipe version, schema version, AOI, resolution, date, dataset versions, weights used. (Also freeze the ingestion cache + Source/Evidence registers for the run.)
 
 ## Output folder structure (per pilot)
 
@@ -50,26 +59,17 @@ outputs/<pilot_id>/
 └── README.md                # one-page pilot summary
 ```
 
-The GEE App (`gee_app/`) consumes these outputs to render the visual demonstrator. If the App needs additional outputs the pipeline doesn't produce, raise an issue against the relevant module spec — the contract changes together.
-
-## Three delivery artefacts (recap)
+## Delivery artefacts (recap)
 
 | Artefact | Audience | Owner | Contractual? |
 |---|---|---|---|
-| Colab pilot notebook | WB technical team (Dany), future implementers | Benson | Yes (Phase 3) |
-| GEE App | Demo viewers · WB final presentation | Benson | No — demonstrator |
-| HTML wireframe | Design target · WB final presentation | Pete + Claude | No — aspirational design |
+| Colab pilot notebook | WB technical team, future implementers | Brayden · Anastasia · Pete (Claude Code) | **Yes** (Phase 3) |
+| TTL wireframe (`docs/wireframe.html`) | demo viewers · WB final presentation | Pete + Claude | No — demonstrator |
 
-Full rationale in the *Delivery Architecture & Claude Code Uplift* note (in the project working folder).
+*(The GEE App is dropped — see `gee_app/README.md`. Benson is now QA/QC: dataset fitness sign-off, output validation, resolution audit.)*
 
-## Starting points for Claude Code
+## Starting points
 
-See the **Claude Code uplift note** in the project working folder for five concrete starting prompts. The first three:
-
-1. Port `spatMCDA.R` to `mcda_pipeline.py`
-2. Scaffold the agroforestry pilot notebook
-3. Build `schema_loader.py` that reads T0–T7 rows for an NbS + AOI
-
-Each is a couple of hours of pair-programming with Claude Code.
-
-For the GEE App specifically, see [`gee_app/README.md`](./gee_app/README.md) — Benson's design brief and process.
+1. Wire the **M1 suitability raster pipeline** in `src/nbs_ruralscan/` against the T4 recipe rows (the evidence → recipe engine already produces them).
+2. Build the per-dataset **`data_loaders/`** (GEE-catalog + uploaded assets → local arrays).
+3. Scaffold the **agroforestry pilot notebook** (`notebooks/agroforestry_sle.ipynb`) as a thin driver over the package.

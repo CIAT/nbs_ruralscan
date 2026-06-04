@@ -1,6 +1,6 @@
 # Pilot notebooks
 
-One Colab notebook per pilot. Each notebook is end-to-end: authenticate GEE, load recipe, run pipeline, write outputs, render maps and tables inline.
+One Colab notebook per pilot. Each notebook is a thin driver over the `nbs_ruralscan` package, end-to-end: load the recipe from schema, pull data into Python (incl. from the GEE catalog), run the method **locally** (numpy/rasterio), write outputs, render maps and tables inline. *(No native server-side GEE compute — see `../README.md`.)*
 
 ## Naming convention
 
@@ -17,9 +17,9 @@ If sub-national: `<nbs_id>_<iso3_country>_<region>.ipynb` (e.g. `agroforestry_sl
 ## Notebook structure (recommended)
 
 1. **Header** — title, pilot ID, authors, date, recipe version, schema version.
-2. **Setup** — install dependencies (Earth Engine, geemap, pandas, etc.); authenticate GEE.
-3. **Configuration** — define AOI, NbS, resolution, climate scenario. Load recipe from `../schema/recipes/<nbs_id>/`.
-4. **Data ingestion** — call `data_loaders` for each variable; show the resolution audit table.
+2. **Setup** — `uv`/pip install the `nbs_ruralscan` package + deps (rasterio, numpy, pandas; earthengine-api for catalog access); authenticate the GEE catalog only if pulling GEE-hosted data.
+3. **Configuration** — define AOI, NbS, resolution, climate scenario. Load recipe from `../schema/recipes/<nbs_id>/` via `nbs_ruralscan.schema_loader`.
+4. **Data ingestion** — call `nbs_ruralscan.data_loaders` for each variable (pull into Python); show the resolution audit table.
 5. **Variable reduction** — thematic grouping (from recipe) + correlation clustering (per AOI); show cluster membership.
 6. **M1 Suitability** — fuzzy standardisation, weighting (CRITIC + Entropy + AHP), weighted overlay; classify into 4 classes; sensitivity perturbation.
 7. **M2 Climate Risk** — hazard × exposure (Mode A) baseline + future scenario.
