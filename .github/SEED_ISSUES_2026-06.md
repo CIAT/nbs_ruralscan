@@ -137,6 +137,6 @@ Not new issues — edits to existing cards, reflecting the ownership shift:
 **M — Water-harvesting taxonomy.**
 **Assignees:** @pete @brayden
 **Labels:** `methodology`
-> Build the WH subpractice → suitability-family taxonomy (second NbS), reusing existing standards (FAO land eval, WOCAT/SLM, GAEZ, Dixon farming systems) rather than inventing.
+> Build the WH subpractice → suitability-family taxonomy (second NbS), reusing existing standards (FAO land eval, WOCAT/SLM, GAEZ, Dixon farming systems) rather than inventing. Use the prior WH methodological plan (`Methodology/Claude/Spatial_Methodological_Plan_Water_Harvesting_NbS_v1.docx`) as a **`scoping_candidate` reference only** — it proposes candidate variables + subpractice structure but carries **no decision history** to justify variable selection, so every variable must be substantiated through the evidence layer (the 85 WH stocktake PDFs). Reference, not justification.
 
 **Done this session:** corrected the draft-0 agroforestry slope row (abs_max 45°→30°, unit-conflation fix) — see the slope worked example.

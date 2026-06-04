@@ -196,6 +196,8 @@ The most complex table. Each row defines how a dataset variable maps to NbS suit
 | `future_dataset_ids` | object | Conditional | `{ ssp126, ssp245, ssp585 }` → dataset_id. | `{ ssp245: 'chelsa_precip_ssp245_2050' }` |
 | `weight_default` | float | Required | Default MCDA weight within the suitability index (0–1). | `0.15` |
 | `weight_adjustable` | boolean | Required | Can the analyst adjust the weight? | `true` |
+| `paper_support_pct` | float | Optional | Literature prevalence — % of the family's screened corpus with ≥1 evidence unit for this variable (selection signal; rolls up to group via the Variable Ontology `group_id`, set-union). | `75.0` |
+| `n_sources` · `corpus_n` | integer | Optional | Numerator (distinct sources) and denominator (papers screened) behind `paper_support_pct`. | `6` · `8` |
 | `justification` | string | Required | Why this variable and this function shape. | `Slope >35° prevents machinery access…` |
 | `references` | string[] | Required | Supporting references. | `['Nair 1993','Zomer et al. 2014']` |
 
