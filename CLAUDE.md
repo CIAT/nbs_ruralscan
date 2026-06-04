@@ -42,9 +42,11 @@ Demonstrator-grade artefacts (not contracted but valuable):
 
 ### Schema (the analytical backbone)
 
-The pipeline reads all analytical rules, datasets, response functions, and weights from the T0–T7 schema tables. **Never hardcode analytical rules in code.** The schema is the methodology made machine-readable. Field-level spec: `schema/spec.md` (v0.2); ERD: `docs/erd.html`; architecture: `docs/pipeline.html`.
+The pipeline reads all analytical rules, datasets, response functions, and weights from the T0–T7 schema tables. **Never hardcode analytical rules in code.** The schema is the methodology made machine-readable. Field-level spec: `schema/spec.md` (v0.2.2); ERD: `docs/erd.html`; architecture: `docs/pipeline.html`.
 
-Schema v0.2 adds an **evidence & configuration layer** upstream of T0–T7 — Source Register, Evidence Register, Variable Ontology, and the Subpractice/Suitability-Family registry — that makes every T3/T4/T6 value traceable (`row → evidence_id → source · tier · page · quote`). How these tables are generated from literature is the **T4 generation method**: `methodology/T4_generation_method.md` (with a worked gold standard in `methodology/examples/`).
+Schema v0.2 adds an **evidence & configuration layer** upstream of T0–T7 — now materialised under `schema/registers/`: Source Register (SRC), Evidence Register (EV), Variable Ontology (VONT), the Subpractice/Suitability-Family registry (FAM), and the **Dataset Binding registry (BIND)** — making every T3/T4/T6 value traceable (`row → evidence_id → source · tier · page · quote`) and every variable's dataset context-resolvable. How these tables are generated from literature is the **T4 generation method**: `methodology/T4_generation_method.md` (with a worked gold standard in `methodology/examples/`).
+
+**Structure is frozen + machine-validated.** The column set of every table lives in `schema/structure/columns.json` (the manifest) and is enforced by `src/nbs_ruralscan/structure.py` (run `python3 src/nbs_ruralscan/structure.py schema`, also in CI). Structure changes go via the manifest + an issue — never reshape data files silently. Content (most `evidence_ids`) is still being populated; the F1×slope chain is the one fully-evidenced example.
 
 ## What is locked
 
@@ -58,9 +60,12 @@ These decisions are structural. If you want to change them, raise an issue and t
 - **Pipeline reads from schema** — analytical rules never hardcoded.
 - **Variable selection is 2-stage**: thematic grouping (per recipe) + correlation clustering (per AOI). One representative per cluster enters MCDA. Cluster membership preserved and shown to users.
 - **Dataset sourcing is 3-tier**: GEE catalog → community-hosted → upload. Fitness-for-purpose precedes platform. Data is **pulled into Python** for computation (numpy/rasterio) — there is no native server-side GEE pipeline.
-- **Suitability is reasoned per *suitability family*, not per whole NbS.** Families group subpractices by their **shared dominant limiting factor** (e.g. agroforestry F1 planted silvoarable · F2 regeneration-based · F3 silvopastoral · F4 linear · F5 shaded perennial-crop). T4 keys to `suitability_family_id`. Grouping carries a documented rationale; don't lump by appearance. *(Scheme is a draft pending Namita + MFL review.)*
+- **Suitability is reasoned per *suitability family*, not per whole NbS.** Families group subpractices by their **shared dominant limiting factor** (agroforestry F1 planted silvoarable · F2 regeneration-based · F3 silvopastoral · F4 linear · F5 shaded perennial-crop). T4 keys to `suitability_family_id`. Grouping carries a documented rationale; don't lump by appearance. **Scheme drafted for sign-off in `methodology/families/agroforestry.md`** *(pending Namita + MFL review)*. F5's understorey crop is a **parameter, not a sub-family** (run per crop, max + retain driver).
 - **Every family carries a `spatial_product_type`** (`area_suitability` | `applicability_zone` | `zonal_linear` | `qualitative_only`). Linear/point practices are **not** reported as pixel area (over-estimation grows with coarseness). Run coarseness is also bounded **per variable** by `min_meaningful_resolution_m` (slope ≈ 30–90 m); scale-dependent derivatives are **derive-then-aggregate**, never resample-then-derive.
 - **Evidence-first / provenance.** Analytical values in T3/T4/T6 trace to evidence units (source · tier · page · quote). Never PDF → threshold in one step. `claim_scope` separates **species/crop-specific** claims from **practice/technology** ones — species envelopes never define a practice row. See `methodology/T4_generation_method.md`.
+- **Constrain by observed distribution, not a modelled niche, where data exist.** Where a family is gated by an existing host system (a crop, land use, grazing), use the host's observed distribution/production (MapSPAM, EO maps, ag-stats) as the gating layer; niche/envelope modelling is the fallback. Method §2.5.
+- **Context-aware datasets (BIND) + most-specific-context-wins.** A global recipe binds each variable to a default dataset; country/AEZ/region overrides refine it (`requires_upload` flags a better local dataset for the user to supply). Resolver: `src/nbs_ruralscan/binding.py`. Relationship *params* refine in parallel via `T4.context_overrides`.
+- **Flag sensitive variables, don't resolve them.** `VONT.context_sensitivity` (`low`/`medium`/`high`) marks nationally-derived / sovereignty-sensitive variables (population, poverty, production) so the scoping output recommends a country-endorsed source. **Scoping flags; feasibility validates** — the tool does not negotiate or validate national data (the scope line). Method §2.6, M6.
 
 ## Inheritance from Benson's existing work
 
@@ -76,20 +81,22 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 ## File map
 
-- `docs/` — GitHub Pages site (wireframe, pipeline diagram, index, README)
-- `methodology/` — framework + per-NbS recipes + module specs + **`T4_generation_method.md`** (evidence-first suitability generation) + `examples/` (worked gold standards)
-- `schema/` — `spec.md` (v0.2 field-level), T0–T7 + evidence/config-layer tables, ERD/dedup notes, draft-0 example recipes
-- `src/nbs_ruralscan/` — reusable Python implementation (pulls GEE/other data, computes locally)
+- `docs/` — GitHub Pages site (wireframe, pipeline diagram, index, schema page + ERD)
+- `methodology/` — framework + per-NbS recipes + module specs + **`T4_generation_method.md`** (evidence-first suitability generation) + **`families/`** (suitability-family schemes) + `examples/` (worked gold standards)
+- `schema/` — `spec.md` (v0.2.2 field-level), T0–T7 tables, `registers/` (SRC·EV·VONT·FAM·BIND), `structure/columns.json` (frozen column manifest), ERD/dedup notes, draft-0 example recipes
+- `src/nbs_ruralscan/` — reusable Python implementation: `ingest/` (doc ingestion), `evidence`·`synthesis`·`support`·`recipe` (T4 engine), `binding` (BIND resolver), `structure` (schema validator)
+- `tests/` — pytest suite (run via `uv run pytest`)
 - `pipeline/` — pilot notebooks and outputs
 - `reference/` — stocktake findings, source R script, lit references
 - `.claude/commands/` — custom slash commands
+- `.github/workflows/ci.yml` — CI: ruff · ty · pytest · schema structure validation
 - `.github/ISSUE_TEMPLATE/` — issue templates by type
 - `PLAYBOOK.md` — team workflows
 
 ## Run / preview / deploy
 
 - **Python environment**: use `uv` from the repo root. Add runtime dependencies with `uv add ...`; add dev tools with `uv add --dev ...`.
-- **Python checks**: run `uv run ruff check .`, `uv run ruff format .`, and `uv run ty check` before PRs that touch `src/`.
+- **Python checks**: run `uv run ruff check .`, `uv run ruff format .`, `uv run ty check`, `uv run pytest`, and `python3 src/nbs_ruralscan/structure.py schema` before PRs that touch `src/` or `schema/`. CI (`.github/workflows/ci.yml`) runs the same gates.
 - **Preview docs locally**: `cd docs && python3 -m http.server 8000` → http://localhost:8000
 - **Run pilot notebook**: open `pipeline/notebooks/<nbs>_<country>.ipynb` in Colab; authenticate GEE
 - **Deploy docs**: push to main; GitHub Pages auto-rebuilds from `/docs` within ~2 min

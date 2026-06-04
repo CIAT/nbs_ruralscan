@@ -70,6 +70,11 @@ outputs/<pilot_id>/
 
 ## Starting points
 
+> **Pilot build is gated (June 2026).** The agroforestry Sierra Leone pilot is **deferred pending World Bank
+> use-case definition** (which decisions the TTLs want the tool to inform, AOI granularity, which what-if
+> scenarios, which families). Don't start the runtime build until the use-cases are agreed — revisit **early
+> July 2026**. The steps below are the build plan for *when it's unblocked*.
+
 1. Wire the **M1 suitability raster pipeline** in `src/nbs_ruralscan/` against the T4 recipe rows (the evidence → recipe engine already produces them).
 2. Build the per-dataset **`data_loaders/`** (GEE-catalog + uploaded assets → local arrays). For each variable,
    resolve *which* dataset to use with `nbs_ruralscan.binding.resolve_binding(variable, aoi_contexts)` (BIND
