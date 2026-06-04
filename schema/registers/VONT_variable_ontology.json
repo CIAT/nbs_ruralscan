@@ -1,0 +1,619 @@
+[
+  {
+    "canonical_variable_id": "slope",
+    "label": "Terrain slope",
+    "aliases": [
+      "gradient",
+      "slope %",
+      "slope degrees"
+    ],
+    "canonical_unit": "degrees",
+    "unit_conversions": {
+      "pct->deg": "atan",
+      "ratio->deg": "atan"
+    },
+    "group_id": "topographic",
+    "candidate_dataset_ids": [
+      "srtm_dem_30m",
+      "srtm_dem_90m"
+    ],
+    "min_meaningful_resolution_m": 90,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true
+  },
+  {
+    "canonical_variable_id": "annual_precipitation",
+    "label": "Mean annual precipitation",
+    "aliases": [
+      "BIO12",
+      "MAP",
+      "annual rainfall"
+    ],
+    "canonical_unit": "mm/year",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "worldclim_v2_precip",
+      "chelsa_bioclim_v21_baseline",
+      "chirps_precipitation_v2"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "mean_annual_temperature",
+    "label": "Mean annual temperature",
+    "aliases": [
+      "BIO1",
+      "MAT"
+    ],
+    "canonical_unit": "degC",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "worldclim_v2_bioclim",
+      "chelsa_bioclim_v21_baseline"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "soil_ph",
+    "label": "Topsoil pH (0-30 cm)",
+    "aliases": [
+      "pH",
+      "soil reaction"
+    ],
+    "canonical_unit": "pH_units",
+    "unit_conversions": {},
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "isric_soilgrids250_v2"
+    ],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "soil_organic_carbon",
+    "label": "Topsoil organic carbon (0-30 cm)",
+    "aliases": [
+      "SOC",
+      "organic carbon"
+    ],
+    "canonical_unit": "g/kg",
+    "unit_conversions": {},
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "isric_soilgrids250_v2",
+      "fao_gsoc_map"
+    ],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "soil_drainage",
+    "label": "Soil drainage class",
+    "aliases": [
+      "drainage class"
+    ],
+    "canonical_unit": "ordinal_1_7",
+    "unit_conversions": {},
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "hwsd_v2"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "land_cover",
+    "label": "Land cover / land use class",
+    "aliases": [
+      "LULC",
+      "land cover class"
+    ],
+    "canonical_unit": "categorical",
+    "unit_conversions": {},
+    "group_id": "land_use",
+    "candidate_dataset_ids": [
+      "esa_worldcover_2021"
+    ],
+    "min_meaningful_resolution_m": 10,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "protected_area_status",
+    "label": "Protected-area status (IUCN category)",
+    "aliases": [
+      "WDPA category",
+      "IUCN cat"
+    ],
+    "canonical_unit": "categorical",
+    "unit_conversions": {},
+    "group_id": "governance",
+    "candidate_dataset_ids": [
+      "protected_areas_wdpa"
+    ],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "distance_to_road",
+    "label": "Distance to nearest road",
+    "aliases": [
+      "road access",
+      "market access proxy"
+    ],
+    "canonical_unit": "km",
+    "unit_conversions": {
+      "m->km": "/1000"
+    },
+    "group_id": "infrastructure",
+    "candidate_dataset_ids": [
+      "osm_road_network"
+    ],
+    "min_meaningful_resolution_m": 100,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": true
+  },
+  {
+    "canonical_variable_id": "aridity_index",
+    "label": "Aridity Index (P/PET)",
+    "aliases": [
+      "AI",
+      "UNEP aridity index"
+    ],
+    "canonical_unit": "dimensionless",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "global_aridity_index_v3"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "tree_canopy_cover",
+    "label": "Tree canopy cover",
+    "aliases": [
+      "canopy cover",
+      "tree cover"
+    ],
+    "canonical_unit": "percent",
+    "unit_conversions": {},
+    "group_id": "land_use",
+    "candidate_dataset_ids": [
+      "hansen_treecover2000"
+    ],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "soil_texture_hsg",
+    "label": "Soil texture / Hydrologic Soil Group",
+    "aliases": [
+      "HSG",
+      "texture class"
+    ],
+    "canonical_unit": "categorical",
+    "unit_conversions": {},
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "hwsd_v2",
+      "isric_soilgrids250_v2"
+    ],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "drainage_density",
+    "label": "Drainage density",
+    "aliases": [
+      "stream density"
+    ],
+    "canonical_unit": "km/km2",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [
+      "scs_cn_runoff_composite",
+      "srtm_dem_30m"
+    ],
+    "min_meaningful_resolution_m": 90,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true
+  },
+  {
+    "canonical_variable_id": "stream_order",
+    "label": "Stream order (Strahler)",
+    "aliases": [
+      "Strahler order"
+    ],
+    "canonical_unit": "ordinal",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [
+      "scs_cn_runoff_composite",
+      "srtm_dem_30m"
+    ],
+    "min_meaningful_resolution_m": 90,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true
+  },
+  {
+    "canonical_variable_id": "permanent_water",
+    "label": "Permanent water body",
+    "aliases": [
+      "surface water",
+      "water occurrence"
+    ],
+    "canonical_unit": "percent_occurrence",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [
+      "esa_worldcover_2021"
+    ],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "drought_spei12_baseline",
+    "label": "Drought severity (SPEI-12, baseline)",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "spei_global_v26"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "heat_stress_tmax_baseline",
+    "label": "Heat stress (Tmax warmest month)",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "chelsa_bioclim_v21_baseline"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "flood_exposure_baseline",
+    "label": "Flood hazard proxy (precip wettest month)",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "chelsa_bioclim_v21_baseline"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "agricultural_cropland_exposure",
+    "label": "Cropland exposure fraction",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "land_use",
+    "candidate_dataset_ids": [
+      "esa_worldcover_2021"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "population_exposure_rural",
+    "label": "Rural population exposure",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "socioeconomic",
+    "candidate_dataset_ids": [
+      "worldpop_population_density"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "soil_degradation_sensitivity",
+    "label": "Soil degradation sensitivity",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "isric_soilgrids250_v2"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "adaptive_capacity_road_access",
+    "label": "Adaptive capacity (road access)",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "infrastructure",
+    "candidate_dataset_ids": [
+      "osm_road_network"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "drought_spei12_ssp245_2050",
+    "label": "Projected drought severity (SSP2-4.5)",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "chelsa_bioclim_ssp245_2050"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "flood_hazard_runoff_depth",
+    "label": "Flood hazard (runoff depth)",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [
+      "scs_cn_runoff_composite"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "rainfall_variability_exposure",
+    "label": "Rainfall variability exposure",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "chirps_precipitation_v2"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "soil_permeability_sensitivity",
+    "label": "Soil permeability sensitivity",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "isric_soilgrids250_v2"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "rural_poverty_headcount",
+    "label": "Rural poverty headcount",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "socioeconomic",
+    "candidate_dataset_ids": [
+      "world_bank_poverty_pip"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "carbon_sequestration_potential",
+    "label": "Carbon sequestration potential",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "carbon",
+    "candidate_dataset_ids": [
+      "fao_gsoc_map"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "food_security_risk",
+    "label": "Food-security risk",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "socioeconomic",
+    "candidate_dataset_ids": [
+      "world_bank_poverty_pip"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "biodiversity_conservation_priority",
+    "label": "Biodiversity conservation priority",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "biodiversity",
+    "candidate_dataset_ids": [
+      "protected_areas_wdpa"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "soil_degradation_risk",
+    "label": "Soil degradation risk",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "isric_soilgrids250_v2"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "road_infrastructure_access",
+    "label": "Road infrastructure access",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "infrastructure",
+    "candidate_dataset_ids": [
+      "osm_road_network"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "climate_drought_hazard",
+    "label": "Climate drought hazard",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "spei_global_v26"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "tree_cover_gap",
+    "label": "Tree-cover gap",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "land_use",
+    "candidate_dataset_ids": [
+      "hansen_treecover2000"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "agricultural_water_deficit",
+    "label": "Agricultural water deficit",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [
+      "chirps_precipitation_v2"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "runoff_potential_index",
+    "label": "Surface runoff potential",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [
+      "scs_cn_runoff_composite"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "soil_erosion_risk",
+    "label": "Soil erosion risk",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "isric_soilgrids250_v2"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "groundwater_recharge_potential",
+    "label": "Groundwater recharge potential",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [
+      "scs_cn_runoff_composite"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "flood_risk",
+    "label": "Flood risk",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "scs_cn_runoff_composite"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  },
+  {
+    "canonical_variable_id": "water_access_deficit",
+    "label": "Water-access deficit",
+    "aliases": [],
+    "canonical_unit": "index_or_native",
+    "unit_conversions": {},
+    "group_id": "socioeconomic",
+    "candidate_dataset_ids": [
+      "world_bank_poverty_pip"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false
+  }
+]

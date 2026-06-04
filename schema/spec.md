@@ -5,7 +5,15 @@
 > to one canonical membership-function set with a wireframe crosswalk; documented NbS-response layers as
 > derived (T5 `theme=nbs_response` × T6) and the shared-layer dedup; **added the evidence & configuration layer**
 > (Source / Evidence / Variable-Ontology / Subpractice-Family registers) making T3/T4/T6 values traceable, and
-> keyed T4 to `suitability_family_id`. v0.1 was the original 8-table design.
+> keyed T4 to `suitability_family_id`. **Field trim (June 2026):** evidence-based tables (T2/T3/T4/T6) now carry
+> `evidence_ids` (→ EV) instead of free-text `references`; canonical variable name + unit live only in the
+> Variable Ontology (analytical tables reference `variable`); derived/duplicated fields removed
+> (`T1.nbs_ids_using`, `T5.spatial_resolution_m`, `T5.category`, `T0.last_updated`/`updated_by`); minor merges
+> (`T1.limitations`); added `T4.suitability_family_id` (the unit T4 keys to). v0.1 was the original 8-table design.
+>
+> **Structure frozen (`v0.2-structure-frozen`).** The column set here is machine-mirrored in
+> [`structure/columns.json`](structure/columns.json) and enforced by `src/nbs_ruralscan/structure.py`. Change the
+> structure only by editing this spec, regenerating the manifest, and raising an issue — never by reshaping data files.
 
 > In-repo Markdown port of `NbS_Schema_Reference_v01_1.docx` (Pete Steward, 7 May 2026).
 > Source archived at [`design/NbS_Schema_Reference_v01.docx`](design/NbS_Schema_Reference_v01.docx).
@@ -65,24 +73,20 @@ before populating any other table. `economic_archetype` maps to the CrossBoundar
 | `is_active` | boolean | Required | Included in the current pipeline. | `true` |
 | `evidence_quality` | enum | Required | `strong` \| `moderate` \| `limited` \| `emerging`. | `strong` |
 | `primary_references` | string[] | Required | Key supporting literature. | `['Mercer 2004','Jose 2009']` |
-| `last_updated` | date | Required | ISO 8601. | `2026-05-07` |
-| `updated_by` | string | Required | Last editor. | `namita.joshi` |
 
 ---
 
 ## T1 — Data Registry
 
 Dataset catalog — every dataset used anywhere in the analysis must have a record here. The pipeline looks up
-datasets here rather than hardcoding URLs. `download_function_ref` points to a download/GEE-access script in
-the repo.
+datasets here rather than hardcoding URLs (`download_url` / `gee_asset_id` carry the access pointer). Which NbS
+use a dataset is derived on demand from the T2/T4 joins, not stored.
 
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
 | `dataset_id` | string | Required | Unique identifier (snake_case). | `chelsa_precipitation_v21` |
 | `dataset_name` | string | Required | Full descriptive name. | `CHELSA Precipitation v2.1` |
 | `analytical_module` | enum | Required | `climate_hazard` \| `climate_impact` \| `structural_suitability` \| `adaptive_capacity` \| `exposure` \| `opportunity_space` \| `geographic_context`. | `climate_hazard` |
-| `variable_name` | string | Required | Specific variable represented. | `mean_annual_precipitation` |
-| `variable_unit` | string | Required | Unit of measurement. | `mm/year` |
 | `hazard_type` | enum | Optional | If `analytical_module = climate_hazard`: `drought` \| `flood` \| `heat_stress` \| `fire` \| `wind_cyclone` \| `waterlogging` \| `frost` \| `multi`. | `drought` |
 | `scenario_type` | enum | Required | `baseline` \| `future_ssp126` \| `future_ssp245` \| `future_ssp585` \| `multi_scenario`. | `baseline` |
 | `time_period` | string | Optional | Reference period or horizon. | `1981–2010` |
@@ -92,16 +96,12 @@ the repo.
 | `access_type` | enum | Required | `direct_download` \| `gee_asset` \| `api` \| `proprietary_licensed`. | `direct_download` |
 | `download_url` | string | Optional | Direct download URL or DOI. | `https://chelsa-climate.org/` |
 | `gee_asset_id` | string | Optional | GEE asset path if `access_type = gee_asset`. | `ECMWF/ERA5_LAND/MONTHLY_AGGR` |
-| `download_function_ref` | string | Optional | Path to a download/access script in the repo. | `scripts/data/download_chelsa.py` |
 | `license` | string | Required | License (SPDX identifier preferred). | `CC-BY-4.0` |
 | `citation` | string | Required | Full bibliographic citation. | `Karger et al. (2017). Sci. Data…` |
 | `doi` | string | Optional | DOI. | `10.1038/sdata.2017.122` |
 | `version` | string | Required | Dataset version used. | `v2.1` |
 | `preprocessing_notes` | string | Optional | Resampling, masking, etc. | `Resample to 1km COG, clip to AOI` |
-| `known_limitations` | string | Required | Key caveats for naive users. | `Coarse resolution, may miss local effects` |
-| `do_not_use_for` | string | Required | Explicit guidance on inappropriate uses. | `Site-level engineering design` |
-| `further_info_urls` | string[] | Optional | Publications, docs, codebase links. | `['https://doi.org/…']` |
-| `nbs_ids_using` | string[] | Optional | Which NbS use this dataset (from T4/T2 joins). | `['agroforestry','water_harvesting_conservation']` |
+| `limitations` | string | Required | Key caveats + inappropriate uses (merged). | `Coarse resolution; not for site-level design` |
 
 ---
 
@@ -119,7 +119,7 @@ compositing.
 | `dataset_id` | string | Required | FK → `T1.dataset_id`. | `spei_global_v26` |
 | `risk_component` | enum | Required | `hazard` \| `exposure` \| `sensitivity` \| `adaptive_capacity`. | `hazard` |
 | `hazard_type` | enum | Conditional | Required if `risk_component = hazard`. `drought` \| `flood` \| `heat_stress` \| `fire` \| `wind_cyclone` \| `waterlogging` \| `frost`. | `drought` |
-| `variable_name` | string | Required | Descriptive name. | `SPEI-12 drought severity (baseline)` |
+| `variable` | string | Required | FK → Variable Ontology (canonical name + unit live there). | `spei12` |
 | `scenario_type` | enum | Required | `baseline` \| `future_ssp126` \| `future_ssp245` \| `future_ssp585`. | `baseline` |
 | `use_in_simplified_mode` | boolean | Required | Include in simplified (climate-index-only) mode. | `true` |
 | `use_in_advanced_mode` | boolean | Required | Include in advanced (hazard × exposure) mode. | `true` |
@@ -129,8 +129,8 @@ compositing.
 | `weight_default` | float | Required | Default weight in composite index (0–1; per-scenario weights sum to 1). | `0.35` |
 | `weight_adjustable` | boolean | Required | Can TTL/analyst adjust this weight? | `true` |
 | `directionality` | enum | Required | `positive_risk` \| `negative_risk` (e.g. adaptive capacity = `negative_risk`). | `positive_risk` |
-| `justification` | string | Required | Brief rationale for inclusion and weight. | `SPEI-12 is standard drought metric…` |
-| `references` | string[] | Required | Supporting references. | `['Vicente-Serrano et al. 2010']` |
+| `evidence_ids` | string[] | Required | FK list → EV (provenance: source · tier · page · quote). | `['ev_spei_vicente10']` |
+| `justification` | string | Optional | One-line summary, generated from the evidence units. | `SPEI-12 is standard drought metric…` |
 
 ---
 
@@ -160,8 +160,8 @@ plot). M2b reads the `asset_threat` rows and their `asset_risk_weight`; M2 reads
 | `timescale_of_effect` | enum | Required | `immediate` \| `short_term_1_3yr` \| `medium_term_3_7yr` \| `long_term_7yr_plus`. | `medium_term_3_7yr` |
 | `landscape_scale_only` | boolean | Required | Effect only at landscape/catchment scale, not farm scale. | `false` |
 | `caveats` | string | Optional | Conditions or exceptions. | `Effect reduced in very arid AEZs` |
-| `justification` | string | Required | Rationale and key evidence summary. | `Meta-analysis of 47 studies shows…` |
-| `references` | string[] | Required | Supporting references. | `['Mbow et al. 2014','Quandt et al. 2019']` |
+| `evidence_ids` | string[] | Required | FK list → EV (provenance). | `['ev_agro_drought_mbow14']` |
+| `justification` | string | Optional | One-line summary, generated from the evidence units. | `Meta-analysis of 47 studies shows…` |
 
 ---
 
@@ -178,11 +178,11 @@ The most complex table. Each row defines how a dataset variable maps to NbS suit
 
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
-| `mapping_id` | string | Required | Unique row identifier. | `agro_slope_global` |
+| `mapping_id` | string | Required | Unique row identifier. | `agro_f1_slope_global` |
 | `nbs_id` | string | Required | FK → `T0.nbs_id`. | `agroforestry` |
+| `suitability_family_id` | string | Required | FK → `FAM.suitability_family_id`. **The unit T4 is keyed to** — suitability is reasoned per family, not per whole NbS. Rolls up to `nbs_id` for display. | `agroforestry__planted_silvoarable` |
 | `dataset_id` | string | Required | FK → `T1.dataset_id`. | `srtm_slope_30m` |
-| `variable_name` | string | Required | Variable being assessed. | `Terrain slope` |
-| `variable_unit` | string | Required | Unit. | `degrees` |
+| `variable` | string | Required | FK → Variable Ontology (canonical name + unit live there). | `slope` |
 | `suitability_dimension` | enum | Required | `biophysical_constraint` \| `system_constraint` \| `operational_constraint`. | `biophysical_constraint` |
 | `relationship_type` | enum | Required | Canonical set: `trapezoidal` \| `gaussian` \| `linear_increasing` \| `linear_decreasing` \| `sigmoid` \| `inverted_sigmoid` \| `threshold` \| `ranked_classes` \| `piecewise`. See the reference + wireframe crosswalk below. | `trapezoidal` |
 | `relationship_params` | object | Required | Parameters for the relationship (structure depends on type). | `{ opt_low: 0, opt_high: 15, abs_max: 35 }` |
@@ -196,10 +196,10 @@ The most complex table. Each row defines how a dataset variable maps to NbS suit
 | `future_dataset_ids` | object | Conditional | `{ ssp126, ssp245, ssp585 }` → dataset_id. | `{ ssp245: 'chelsa_precip_ssp245_2050' }` |
 | `weight_default` | float | Required | Default MCDA weight within the suitability index (0–1). | `0.15` |
 | `weight_adjustable` | boolean | Required | Can the analyst adjust the weight? | `true` |
-| `paper_support_pct` | float | Optional | Literature prevalence — % of the family's screened corpus with ≥1 evidence unit for this variable (selection signal; rolls up to group via the Variable Ontology `group_id`, set-union). | `75.0` |
-| `n_sources` · `corpus_n` | integer | Optional | Numerator (distinct sources) and denominator (papers screened) behind `paper_support_pct`. | `6` · `8` |
-| `justification` | string | Required | Why this variable and this function shape. | `Slope >35° prevents machinery access…` |
-| `references` | string[] | Required | Supporting references. | `['Nair 1993','Zomer et al. 2014']` |
+| `n_sources` · `corpus_n` | integer | Optional | Numerator (distinct sources with ≥1 evidence unit for this variable) and denominator (papers screened for the family). | `6` · `8` |
+| `paper_support_pct` | float | Derived | Literature-prevalence selection signal = `100 · n_sources / corpus_n`. Rolls up to group via the Variable Ontology `group_id` (set-union). Not stored authoritatively — computed from `n_sources`/`corpus_n`. | `75.0` |
+| `evidence_ids` | string[] | Required | FK list → EV (provenance behind the thresholds + shape). | `['ev_slope_nair93','ev_slope_zomer14']` |
+| `justification` | string | Optional | One-line summary of why this variable and shape, generated from the evidence units. | `Slope >35° prevents machinery access…` |
 
 ### Relationship-type reference (`relationship_type` + `relationship_params`)
 
@@ -239,11 +239,9 @@ prevents double-counting.
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
 | `variable_id` | string | Required | Unique identifier. | `rural_poverty_headcount` |
-| `variable_name` | string | Required | Display name. | `Rural poverty headcount ratio` |
-| `category` | enum | Required | Data domain. `socioeconomic` \| `biodiversity` \| `carbon` \| `agricultural_production` \| `infrastructure` \| `climate_risk` \| `governance` \| `gender`. | `socioeconomic` |
-| `theme` | enum | Required | Hotspot pillar for grouping + theme-level weighting in M4 (distinct from `category`). `climate_hazard` \| `nbs_response` \| `people_production` \| `infrastructure`. | `people_production` |
+| `variable` | string | Required | FK → Variable Ontology (canonical name, unit, and `group_id` for theme roll-up live there). | `rural_poverty_headcount` |
+| `theme` | enum | Required | Hotspot pillar for grouping + theme-level weighting in M4. `climate_hazard` \| `nbs_response` \| `people_production` \| `infrastructure`. | `people_production` |
 | `dataset_id` | string | Required | FK → `T1.dataset_id`. | `worldpop_poverty_2020` |
-| `unit` | string | Required | Unit of measurement. | `% population below $2.15/day` |
 | `directionality_of_concern` | enum | Required | `high_is_bad` \| `low_is_bad` \| `context_dependent` (sets dashboard colours). | `high_is_bad` |
 | `ttl_priority_label` | string | Required | Short label in the weighting interface. | `Poverty` |
 | `ttl_priority_description` | string | Required | 1–2 sentence explanation for the TTL. | `Areas with high poverty headcount…` |
@@ -251,10 +249,9 @@ prevents double-counting.
 | `aggregation_method` | enum | Required | `mean` \| `sum` \| `max` \| `majority` \| `area_weighted_mean`. | `mean` |
 | `normalisation_method` | enum | Required | `min_max` \| `percentile_clip` \| `log_transform` \| `none`. | `percentile_clip` |
 | `weight_default` | float | Required | Default weight of this variable **within its theme** for the hotspot MCDA (0–1; weights within a theme normalise to 1). TTL-adjustable at M4. | `0.25` |
-| `spatial_resolution_m` | integer | Required | Native resolution of source. | `1000` |
 | `has_future_projection` | boolean | Required | Future projection available. | `false` |
 | `is_active` | boolean | Required | Include in current prototype. | `true` |
-| `references` | string[] | Required | Data and literature references. | `['World Bank PovcalNet 2024']` |
+| `evidence_ids` | string[] | Optional | FK list → EV where a literature claim backs inclusion (context layers may be data-only). | `['ev_poverty_wb24']` |
 
 ### Theme weights and NbS-response layers
 
@@ -277,8 +274,8 @@ T6 row and are identical across NbS.
 
 Per-NbS qualitative effect on each opportunity-space variable, plus economic indicators — the scorecard the
 literature team completes. An economist can use `economic_value_range` to construct an indicative cost-benefit
-narrative without a full CBA. `economic_archetype_note` is narrative linking to the CrossBoundary archetype,
-not a model output.
+narrative without a full CBA. `economic_archetype_id` points to the CrossBoundary archetype lookup (the
+narrative lives there), not a model output.
 
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
@@ -293,9 +290,9 @@ not a model output.
 | `timescale_of_effect` | enum | Required | `immediate` \| `short_term_1_3yr` \| `medium_term_3_7yr` \| `long_term_7yr_plus`. | `long_term_7yr_plus` |
 | `economic_indicator_type` | enum | Conditional | Required if `variable_type = economic_indicator`. `establishment_cost` \| `recurrent_cost` \| `income_potential` \| `cost_reduction` \| `market_access` \| `carbon_revenue` \| `subsidy_dependency`. | `income_potential` |
 | `economic_value_range` | object | Conditional | `{ low_usd_ha_yr, high_usd_ha_yr, source_note }`. | `{ low_usd_ha_yr: 50, high_usd_ha_yr: 300, … }` |
-| `economic_archetype_note` | string | Optional | Free text linking to the CrossBoundary archetype. | `Long horizon: 5–10yr to income…` |
-| `justification` | string | Required | Evidence summary. | `Mercer (2004) meta-analysis shows…` |
-| `references` | string[] | Required | Supporting references. | `['Mercer 2004','ICRAF 2020']` |
+| `economic_archetype_id` | string | Optional | FK → CrossBoundary archetype lookup (narrative lives there, not inline). | `agroforestry_long_horizon` |
+| `evidence_ids` | string[] | Required | FK list → EV (provenance behind the effect + economic range). | `['ev_agro_income_mercer04']` |
+| `justification` | string | Optional | One-line evidence summary, generated from the evidence units. | `Mercer (2004) meta-analysis shows…` |
 
 ---
 
@@ -370,8 +367,10 @@ Canonical variables: harmonisation + data-catalog link + resolution validity.
 | Field | Type | Req | Description | Example |
 |---|---|---|---|---|
 | `canonical_variable_id` | string | Required | Unique id. | `slope` |
-| `label` · `aliases` | string/[] | Required | Display + known surface names. | `['terrain slope','gradient','slope %']` |
-| `canonical_unit` · `unit_conversions` | string/object | Required | Unit + conversions. | `degrees` · `{pct→deg:"atan"}` |
+| `label` | string | Required | Display name. | `Terrain slope` |
+| `aliases` | string[] | Optional | Known surface names (may be empty). | `['terrain slope','gradient','slope %']` |
+| `canonical_unit` | string | Required | Canonical unit. | `degrees` |
+| `unit_conversions` | object | Optional | Conversions to canonical unit (may be empty). | `{pct→deg:"atan"}` |
 | `group_id` | string | Required | → Variable-Group vocab (Topographic, …). | `topographic` |
 | `candidate_dataset_ids` | string[] | Required | → T1 datasets that can supply it. | `['srtm_dem_30m','srtm_dem_90m']` |
 | `min_meaningful_resolution_m` | integer | Required | Coarsest grid at which the variable stays valid. | `90` |
@@ -404,7 +403,10 @@ line) is an option for streaming.
 
 **Foreign-key validation (fail loudly).** On load, validate: every `dataset_id` in T2/T3/T4/T5/T7 exists in
 T1; every `nbs_id` in T0/T3/T4/T6 exists in T0; every `variable_id` in T6 exists in T5 (or is a T3 hazard_type
-for `climate_hazard_mitigation` rows). A missing target raises an explicit error — never a silent gap.
+for `climate_hazard_mitigation` rows). Evidence layer: every `variable` in T2/T4/T5 (and EV) exists in **VONT**;
+every `evidence_id` in T2/T3/T4/T5/T6 exists in **EV**; every `source_id` in EV exists in **SRC**; every
+`suitability_family_id` in T4 (and EV) exists in **FAM**. A missing target raises an explicit error — never a
+silent gap.
 
 **Climate mode switch.** A top-level `climate_mode = 'simplified' | 'advanced'`. Simplified filters T2 rows by
 `use_in_simplified_mode = true` and uses only the composite climate index as a single variable; advanced uses

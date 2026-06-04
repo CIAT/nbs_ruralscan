@@ -3,10 +3,8 @@
     "mapping_id": "agro_slope_global",
     "nbs_id": "agroforestry",
     "dataset_id": "srtm_dem_90m",
-    "variable_name": "Terrain slope",
-    "variable_unit": "degrees",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal_fuzzy",
+    "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 0,
       "opt_low": 0,
@@ -47,22 +45,23 @@
     "weight_default": 0.15,
     "weight_adjustable": true,
     "justification": "Suitability highest on flat–gentle slopes, declining with erosion/mechanisation limits. Global opt_high≈10°, abs_max≈30° (high uncertainty). CORRECTION (v0.2): prior abs_max=45° conflated %-slope sources (45% ≈ 24°) with degree-native montane studies (Nath 2021 ~44°); abs_max revised to 30° global with a montane/humid override to ~44°. See methodology/examples/t4_slice_agroforestry_F1_slope.md.",
-    "references": [
-      "Ahmad & Goparaju (2017) - Land Evaluation in terms of Agroforestry Suitability",
-      "Ahmad et al. (2018) - Remote sensing and GIS for land suitability for agroforestry",
-      "Chuma et al. (2021) - Suitability for agroforestry around Itombwe Nature Reserve",
-      "Haile (2024) - Land Suitability Evaluation for Agroforestry in Genale Sub-basin",
-      "Nath et al. (2021) - Agroforestry land suitability in the Eastern Indian Himalayan region"
-    ]
+    "variable": "slope",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": [
+      "ev_slope_nath21",
+      "ev_slope_zomer14",
+      "ev_slope_nair93"
+    ],
+    "n_sources": 3,
+    "corpus_n": 8,
+    "paper_support_pct": 37.5
   },
   {
     "mapping_id": "agro_annual_precip_global",
     "nbs_id": "agroforestry",
     "dataset_id": "worldclim_v2_bioclim",
-    "variable_name": "Mean annual precipitation (BIO12)",
-    "variable_unit": "mm/year",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal_fuzzy",
+    "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 300,
       "opt_low": 600,
@@ -94,20 +93,16 @@
     "weight_default": 0.15,
     "weight_adjustable": true,
     "justification": "Annual rainfall is the primary biophysical determinant of agroforestry species selection and system viability. Minimum threshold of 300mm separates viable from non-viable zones for most agroforestry systems; absolute minimum of 200mm applies for specialised dryland parkland systems. Upper limit of 4000mm reflects waterlogging and disease risk in extremely wet environments. Consistently used across all 23 stocktake papers including Ahmad et al. (2020) South Asia analysis and Nath et al. (2021) Himalayan study.",
-    "references": [
-      "Ahmad et al. (2020) - Quantification of the Land Potential for Scaling Agroforestry in South Asia",
-      "Nath et al. (2021) - Agroforestry land suitability in the Eastern Indian Himalayan region",
-      "Wotlolan et al. (2021) - Land suitability evaluation for multiple crop agroforestry in Fiji"
-    ]
+    "variable": "annual_precipitation",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   },
   {
     "mapping_id": "agro_mean_annual_temp_global",
     "nbs_id": "agroforestry",
     "dataset_id": "worldclim_v2_bioclim",
-    "variable_name": "Mean annual temperature (BIO1)",
-    "variable_unit": "°C",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal_fuzzy",
+    "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 5,
       "opt_low": 15,
@@ -139,20 +134,16 @@
     "weight_default": 0.1,
     "weight_adjustable": true,
     "justification": "Temperature determines tree species viability through frost risk (< 5°C constrains tropical species) and heat stress (> 38°C damages most commercially relevant species). The 15–30°C optimal range encompasses the majority of tropical and subtropical agroforestry systems. Yadav et al. (2024) use BIO1 as a primary CHELSA variable in AHP-based tree suitability assessment. Kiziridis et al. (2026) use annual mean temperature as a WorldClim input for silvopastoral MaxEnt modelling.",
-    "references": [
-      "Yadav et al. (2024) - Prototype Decision Support System for Tree Selection and Agroforestry",
-      "Kiziridis et al. (2026) - Agroforestry Optimisation for Climate Policy",
-      "Nath et al. (2021) - Agroforestry land suitability in the Eastern Indian Himalayan region"
-    ]
+    "variable": "mean_annual_temperature",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   },
   {
     "mapping_id": "agro_soil_ph_global",
     "nbs_id": "agroforestry",
     "dataset_id": "isric_soilgrids250_v2",
-    "variable_name": "Topsoil pH (0–30 cm)",
-    "variable_unit": "pH units",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal_fuzzy",
+    "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 4.5,
       "opt_low": 5.5,
@@ -170,20 +161,16 @@
     "weight_default": 0.08,
     "weight_adjustable": true,
     "justification": "Extreme soil pH limits nutrient availability and species establishment. pH < 4.5 causes aluminium toxicity; pH > 8.5 causes micronutrient deficiencies. The 5.5–7.5 optimal range supports the majority of commercial agroforestry species. Haile (2024) includes soil pH as a suitability criterion; Ahmad et al. (2018) include pH mapping; Wotlolan et al. (2021) use minimum and maximum pH as input criteria for Fiji agroforestry suitability.",
-    "references": [
-      "Haile (2024) - Land Suitability Evaluation for Agroforestry in Genale Sub-basin",
-      "Wotlolan et al. (2021) - Land suitability evaluation for multiple crop agroforestry in Fiji",
-      "Ahmad et al. (2018) - Remote sensing and GIS for land suitability for agroforestry in Bihar"
-    ]
+    "variable": "soil_ph",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   },
   {
     "mapping_id": "agro_soil_organic_carbon_global",
     "nbs_id": "agroforestry",
     "dataset_id": "isric_soilgrids250_v2",
-    "variable_name": "Topsoil organic carbon (0–30 cm)",
-    "variable_unit": "g/kg",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "linear_decay",
+    "relationship_type": "linear_decreasing",
     "relationship_params": {
       "suitable_max": 999,
       "unsuitable_min": 2,
@@ -200,17 +187,14 @@
     "weight_default": 0.08,
     "weight_adjustable": true,
     "justification": "Higher soil organic carbon indicates better soil structure, water retention, and nutrient cycling — all supporting tree establishment and crop productivity in agroforestry systems. Very low SOC (< 2 g/kg) indicates severely degraded soils that may still be suitable for agroforestry rehabilitation but require more intensive inputs. Mendonça et al. (2023) explicitly use soil organic carbon sequestration potential as an agroforestry prioritisation criterion. Ahmad & Goparaju (2017) include nutrient availability (linked to SOC) as a primary suitability layer.",
-    "references": [
-      "Mendonça et al. (2023) - Multicriteria spatial model to prioritize areas for agroforestry",
-      "Ahmad & Goparaju (2017) - Land Evaluation in terms of Agroforestry Suitability"
-    ]
+    "variable": "soil_organic_carbon",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   },
   {
     "mapping_id": "agro_soil_drainage_global",
     "nbs_id": "agroforestry",
     "dataset_id": "hwsd_v2",
-    "variable_name": "Soil drainage class",
-    "variable_unit": "categorical (1=very poorly drained to 7=excessively drained)",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "ranked_classes",
     "relationship_params": {
@@ -235,18 +219,14 @@
     "weight_default": 0.08,
     "weight_adjustable": true,
     "justification": "Poorly drained soils (classes 1–2) are unsuitable for most agroforestry tree species due to root anoxia. Excessively well-drained soils (class 7) may indicate sandy or skeletal soils with low water retention. Well-drained to moderately well-drained (classes 4–5) are optimal. Mushtaq et al. (2023) and Wotlolan et al. (2021) include soil drainage as a key AHP criterion; Haris et al. (2021) use drainage in land capability classification.",
-    "references": [
-      "Mushtaq et al. (2023) - Multi-criteria land suitability for mulberry agroforestry",
-      "Wotlolan et al. (2021) - Land suitability evaluation for multiple crop agroforestry in Fiji",
-      "Haris et al. (2021) - Land suitability evaluation of crops for agroforestry"
-    ]
+    "variable": "soil_drainage",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   },
   {
     "mapping_id": "agro_land_cover_eligibility",
     "nbs_id": "agroforestry",
     "dataset_id": "esa_worldcover_2021",
-    "variable_name": "Land cover suitability for agroforestry conversion",
-    "variable_unit": "categorical (ESA WorldCover 11-class)",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "ranked_classes",
     "relationship_params": {
@@ -288,20 +268,16 @@
     "weight_default": 0.1,
     "weight_adjustable": false,
     "justification": "Land cover is an eligibility filter, not a graduated suitability variable. Cropland (class 40) and grassland/pasture (20, 30) are the primary targets for agroforestry integration. Built-up, water, ice, and mangroves are hard exclusions. Used as the primary land-use mask in Ahmad et al. (2020), Castle et al. (2025), Baldwin et al. (2022), and the majority of stocktake papers.",
-    "references": [
-      "Ahmad et al. (2020) - Quantification of the Land Potential for Scaling Agroforestry in South Asia",
-      "Castle et al. (2025) - Mapping the social-ecological suitability of agroforestry in the US Midwest",
-      "Mendonça et al. (2022) - Spatial indicator of priority areas for agroforestry systems"
-    ]
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   },
   {
     "mapping_id": "agro_protected_areas_exclusion",
     "nbs_id": "agroforestry",
     "dataset_id": "protected_areas_wdpa",
-    "variable_name": "IUCN protected area category (hard exclusion: Cat I–II)",
-    "variable_unit": "categorical (IUCN categories)",
     "suitability_dimension": "operational_constraint",
-    "relationship_type": "binary",
+    "relationship_type": "threshold",
     "relationship_params": {
       "threshold": "IUCN_Cat_I_II",
       "above_is_suitable": false
@@ -317,19 +293,16 @@
     "weight_default": 1.0,
     "weight_adjustable": false,
     "justification": "Strict nature reserves (IUCN I–II) prohibit agricultural intervention including agroforestry. Hard exclusion required regardless of biophysical suitability. Chuma et al. (2021) use the Itombwe Nature Reserve boundary as a hard exclusion layer in DR Congo agroforestry suitability mapping. Pinto et al. (2019) use protected area boundaries as planning zones in Montado conservation prioritisation.",
-    "references": [
-      "Chuma et al. (2021) - Suitability for agroforestry around Itombwe Nature Reserve",
-      "Pinto et al. (2019) - Spatial modelling of biodiversity conservation priorities in Portugal's Montado"
-    ]
+    "variable": "protected_area_status",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   },
   {
     "mapping_id": "agro_road_access_scenario",
     "nbs_id": "agroforestry",
     "dataset_id": "osm_road_network",
-    "variable_name": "Distance to nearest road (market access proxy)",
-    "variable_unit": "km",
     "suitability_dimension": "system_constraint",
-    "relationship_type": "linear_decay",
+    "relationship_type": "linear_decreasing",
     "relationship_params": {
       "suitable_max": 2,
       "unsuitable_min": 15,
@@ -357,20 +330,16 @@
     "weight_default": 0.08,
     "weight_adjustable": true,
     "justification": "Market access is essential for the commercialisation of agroforestry outputs (timber, fruits, carbon credits). Chuma et al. (2021) use Euclidean distance to roads as a suitability criterion in South Kivu. Castle et al. (2025) include connectivity through transport infrastructure as a social-ecological suitability layer. This is a scenario candidate because road investment projects can realistically change this constraint.",
-    "references": [
-      "Chuma et al. (2021) - Suitability for agroforestry around Itombwe Nature Reserve",
-      "Castle et al. (2025) - Mapping the social-ecological suitability of agroforestry in the US Midwest",
-      "Brandt et al. (2015) - How to target climate-smart agriculture"
-    ]
+    "variable": "distance_to_road",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   },
   {
     "mapping_id": "agro_aridity_index_global",
     "nbs_id": "agroforestry",
     "dataset_id": "global_aridity_index_v3",
-    "variable_name": "Global Aridity Index (P/PET)",
-    "variable_unit": "dimensionless",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal_fuzzy",
+    "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 0.05,
       "opt_low": 0.3,
@@ -388,19 +357,16 @@
     "weight_default": 0.08,
     "weight_adjustable": true,
     "justification": "The Global Aridity Index provides an integrated moisture availability signal combining precipitation and evaporative demand. Hyperarid zones (AI < 0.05) are unsuitable for agroforestry. Dryland agroforestry (parkland, FMNR) is viable at AI 0.3–0.5 with appropriate species. Ahmad et al. (2020) and Nath et al. (2021) use aridity index as a core suitability input. AI is complementary to annual precipitation, capturing atmospheric demand.",
-    "references": [
-      "Ahmad et al. (2020) - Quantification of the Land Potential for Scaling Agroforestry in South Asia",
-      "Nath et al. (2021) - Agroforestry land suitability in the Eastern Indian Himalayan region"
-    ]
+    "variable": "aridity_index",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   },
   {
     "mapping_id": "agro_tree_cover_existing",
     "nbs_id": "agroforestry",
     "dataset_id": "hansen_treecover2000",
-    "variable_name": "Existing tree canopy cover (current)",
-    "variable_unit": "% canopy cover",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal_fuzzy",
+    "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 0,
       "opt_low": 0,
@@ -418,9 +384,8 @@
     "weight_default": 0.08,
     "weight_adjustable": true,
     "justification": "Low current tree cover (0–30%) identifies areas with greatest potential for agroforestry tree integration. Areas with > 70% tree cover are likely already forested and not the target for agroforestry introduction. Very high canopy closure may indicate established natural forest better managed as conservation rather than conversion to managed agroforestry. Ahmad et al. (2020) use Hansen tree cover (2000) as a core input; Singh et al. (2024) use tree height and NDVI from drone/satellite to map current agroforestry status.",
-    "references": [
-      "Ahmad et al. (2020) - Quantification of the Land Potential for Scaling Agroforestry in South Asia",
-      "Singh et al. (2024) - Leveraging Remote Sensing and Nanotechnology for Agroforestry Adoption"
-    ]
+    "variable": "tree_canopy_cover",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": []
   }
 ]

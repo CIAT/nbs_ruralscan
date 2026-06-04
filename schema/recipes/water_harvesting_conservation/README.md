@@ -46,12 +46,19 @@ water-specific entries (e.g. `srtm_dem_30m`, `runoff_potential_index`, `groundwa
 [`../../DEDUP_NOTES.md`](../../DEDUP_NOTES.md). Three items await Brayden's M2 sign-off (T2 weight reconciliation,
 flood-hazard method, erosion-vs-degradation).
 
-## Validation status (draft-0)
+## Structure & validation status
 
-- All foreign keys validated against the merged root tables — including nested `context_overrides`,
-  `baseline_dataset_id` and `future_dataset_ids` — no broken links.
+Conformant to the **frozen v0.2 structure** ([`../../structure/columns.json`](../../structure/columns.json)).
+Verify with `python3 src/nbs_ruralscan/structure.py schema` (expect 0 errors).
+
+- Columns match the manifest; FKs resolve to VONT (`variable`), FAM (`suitability_family_id`), T1 (`dataset_id`)
+  — including nested `context_overrides`, `baseline_dataset_id` and `future_dataset_ids`.
 - A pre-existing dangling reference (`chelsa_precip_ssp245_2050_wh`, never catalogued in T1) was repointed to
   `chelsa_bioclim_ssp245_2050`.
-- All required fields populated; optional fields blank rather than omitted.
+
+**Content still pending (not structural):**
+- All 9 T4 rows are tagged to the placeholder family `water_harvesting__runoff_catchment`; the full family scheme
+  awaits Namita + MFL review. No row carries real evidence yet — `evidence_ids` are empty pending extraction.
+- Free-text `references`/`justification` were replaced by `evidence_ids` (→ EV) in the v0.2 trim.
 
 > Draft-0 content still needs literature-team review before the pilot review milestone.

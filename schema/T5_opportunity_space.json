@@ -1,296 +1,226 @@
 [
   {
     "variable_id": "rural_poverty_headcount",
-    "variable_name": "Rural poverty headcount ratio",
-    "category": "socioeconomic",
     "dataset_id": "world_bank_poverty_pip",
-    "unit": "% population below $2.15/day (2017 PPP)",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Poverty",
     "ttl_priority_description": "Areas with high rural poverty headcount indicate greater need for livelihood-improving NbS investments. Agroforestry can diversify income streams and reduce exposure to climate-induced agricultural losses in the most vulnerable communities.",
     "is_climate_risk_component": false,
     "aggregation_method": "area_weighted_mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "World Bank PIP (2024)",
-      "Brandt et al. (2015) - How to target climate-smart agriculture",
-      "Ahmad & Goparaju (2017) - Land Evaluation for Agroforestry Suitability"
-    ]
+    "variable": "rural_poverty_headcount",
+    "theme": "people_production",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "carbon_sequestration_potential",
-    "variable_name": "Soil organic carbon sequestration potential (agroforestry additionality)",
-    "category": "carbon",
     "dataset_id": "fao_gsoc_map",
-    "unit": "t CO₂-eq/ha/yr (indicative)",
     "directionality_of_concern": "low_is_bad",
     "ttl_priority_label": "Carbon potential",
     "ttl_priority_description": "Indicates the potential for agroforestry to sequester additional carbon in biomass and soil relative to current land use. Higher values indicate greater climate mitigation co-benefit and potential for carbon finance to support investment.",
     "is_climate_risk_component": false,
     "aggregation_method": "mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Mendonça et al. (2023) - Multicriteria spatial model to prioritize areas for agroforestry",
-      "Kiziridis et al. (2026) - Agroforestry Optimisation for Climate Policy: Mapping Silvopastoral Carbon Sequestration Trade-Offs",
-      "Palma et al. (2007) - Integrating environmental and economic performance of silvoarable agroforestry"
-    ]
+    "variable": "carbon_sequestration_potential",
+    "theme": "nbs_response",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "food_security_risk",
-    "variable_name": "Agricultural production vulnerability (food insecurity proxy)",
-    "category": "agricultural_production",
     "dataset_id": "chelsa_bioclim_v21_baseline",
-    "unit": "index (0–1, composite of yield gap and climate risk)",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Food security risk",
     "ttl_priority_description": "Areas with high agricultural production vulnerability show elevated food insecurity risk, where agroforestry diversification of farm outputs can provide a buffer against crop failure and stabilise household nutrition.",
     "is_climate_risk_component": true,
     "aggregation_method": "mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": true,
     "is_active": true,
-    "references": [
-      "Brandt et al. (2015) - How to target climate-smart agriculture in Kenya",
-      "Ahmad et al. (2020) - Quantification of the Land Potential for Scaling Agroforestry in South Asia"
-    ]
+    "variable": "food_security_risk",
+    "theme": "people_production",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "biodiversity_conservation_priority",
-    "variable_name": "Biodiversity conservation priority (species richness / key habitats)",
-    "category": "biodiversity",
     "dataset_id": "protected_areas_wdpa",
-    "unit": "index (0–1, composite of species richness and habitat integrity)",
     "directionality_of_concern": "low_is_bad",
     "ttl_priority_label": "Biodiversity",
     "ttl_priority_description": "Areas with high biodiversity value where agroforestry can contribute to habitat connectivity, tree cover restoration, and species conservation alongside productive land use. High biodiversity areas can justify agroforestry as a nature-positive investment.",
     "is_climate_risk_component": false,
     "aggregation_method": "max",
     "normalisation_method": "min_max",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Pinto et al. (2019) - Spatial modelling of biodiversity conservation priorities in Portugal's Montado",
-      "Chuma et al. (2021) - Suitability for agroforestry around Itombwe Nature Reserve",
-      "Nath et al. (2021) - Agroforestry land suitability in the Eastern Indian Himalayan region"
-    ]
+    "variable": "biodiversity_conservation_priority",
+    "theme": "nbs_response",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "soil_degradation_risk",
-    "variable_name": "Soil degradation risk (erosion and SOC depletion)",
-    "category": "agricultural_production",
     "dataset_id": "isric_soilgrids250_v2",
-    "unit": "index (0–1, composite of erosion risk and low SOC)",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Soil degradation",
     "ttl_priority_description": "Areas with high soil degradation risk—from water erosion, wind erosion, or organic carbon depletion—where agroforestry tree cover and root systems can provide long-term soil protection and regeneration benefits.",
     "is_climate_risk_component": false,
     "aggregation_method": "mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Palma et al. (2007) - Integrating environmental and economic performance of silvoarable agroforestry",
-      "Castle et al. (2025) - Mapping the social-ecological suitability of agroforestry in the US Midwest",
-      "Mendonça et al. (2022) - Spatial indicator of priority areas for agroforestry systems"
-    ]
+    "variable": "soil_degradation_risk",
+    "theme": "nbs_response",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "road_infrastructure_access",
-    "variable_name": "Infrastructure access (distance to road network)",
-    "category": "infrastructure",
     "dataset_id": "osm_road_network",
-    "unit": "km to nearest road",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Market access",
     "ttl_priority_description": "Areas close to road infrastructure have better market access for selling agroforestry products (timber, fruit, carbon credits) and receiving inputs and extension services, making investments more commercially viable.",
     "is_climate_risk_component": false,
     "aggregation_method": "mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Chuma et al. (2021) - Suitability for agroforestry around Itombwe Nature Reserve",
-      "Castle et al. (2025) - Mapping the social-ecological suitability of agroforestry in the US Midwest",
-      "Brandt et al. (2015) - How to target climate-smart agriculture"
-    ]
+    "variable": "road_infrastructure_access",
+    "theme": "infrastructure",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "climate_drought_hazard",
-    "variable_name": "Climate drought hazard (SPEI-12 severity, baseline)",
-    "category": "climate_risk",
     "dataset_id": "spei_global_v26",
-    "unit": "SPEI z-score (negative = drier than normal)",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Drought risk",
     "ttl_priority_description": "Areas with high drought risk where agroforestry can provide direct climate adaptation benefits by reducing evapotranspiration, improving soil moisture, and stabilising crop yields under dry conditions.",
     "is_climate_risk_component": true,
     "aggregation_method": "mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": true,
     "is_active": true,
-    "references": [
-      "Brandt et al. (2015) - How to target climate-smart agriculture",
-      "Ahmad et al. (2020) - Quantification of the Land Potential for Scaling Agroforestry in South Asia",
-      "Mendonça et al. (2022) - Spatial indicator of priority areas for agroforestry systems"
-    ]
+    "variable": "climate_drought_hazard",
+    "theme": "climate_hazard",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "tree_cover_gap",
-    "variable_name": "Tree cover gap (area below 30% canopy cover in suitable zones)",
-    "category": "agricultural_production",
     "dataset_id": "hansen_treecover2000",
-    "unit": "% of pixel below 30% canopy cover",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Tree cover gap",
     "ttl_priority_description": "Areas with a large gap between current and potential tree cover where agroforestry integration can significantly increase landscape tree cover, generating multiple co-benefits for climate, biodiversity, and farmer livelihoods.",
     "is_climate_risk_component": false,
     "aggregation_method": "mean",
     "normalisation_method": "min_max",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Ahmad et al. (2020) - Quantification of the Land Potential for Scaling Agroforestry in South Asia",
-      "Singh et al. (2024) - Leveraging Remote Sensing and Nanotechnology for Agroforestry Adoption",
-      "Kiziridis et al. (2026) - Agroforestry Optimisation for Climate Policy"
-    ]
+    "variable": "tree_cover_gap",
+    "theme": "nbs_response",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "agricultural_water_deficit",
-    "variable_name": "Agricultural water deficit (crop water demand minus rainfall)",
-    "category": "agricultural_production",
     "dataset_id": "worldclim_v2_precip",
-    "unit": "mm/growing season",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Water deficit",
     "ttl_priority_description": "Areas where crop water demand consistently exceeds seasonal rainfall, indicating the highest potential impact from water harvesting structures that bridge the deficit gap during critical crop growth stages.",
     "is_climate_risk_component": true,
     "aggregation_method": "mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": true,
     "is_active": true,
-    "references": [
-      "Buraihi & Shariff (2015)",
-      "Khan et al. (2022)",
-      "Worku et al. (2020)"
-    ]
+    "variable": "agricultural_water_deficit",
+    "theme": "nbs_response",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "runoff_potential_index",
-    "variable_name": "Surface runoff potential index (SCS-CN derived)",
-    "category": "agricultural_production",
     "dataset_id": "isric_soilgrids250_v2",
-    "unit": "mm/event (CN-derived runoff depth)",
     "directionality_of_concern": "low_is_bad",
     "ttl_priority_label": "Harvestable runoff",
     "ttl_priority_description": "Areas with high surface runoff potential have the most water available for capture. Higher runoff index indicates greater volumes available for storage in check dams and farm ponds, making WH investments more productive per unit cost.",
     "is_climate_risk_component": false,
     "aggregation_method": "mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Vema et al. (2019)",
-      "Jha et al. (2014)",
-      "Singh et al. (2016)",
-      "Bera & Mukhopadhyay (2023)"
-    ]
+    "variable": "runoff_potential_index",
+    "theme": "nbs_response",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "soil_erosion_risk",
-    "variable_name": "Soil erosion risk (water erosion vulnerability)",
-    "category": "agricultural_production",
     "dataset_id": "srtm_dem_30m",
-    "unit": "t/ha/yr (indicative, RUSLE-derived)",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Erosion risk",
     "ttl_priority_description": "Areas with high soil erosion risk benefit most from WH structures that slow runoff, trap sediment, and stabilise gullies. Erosion control is a major co-benefit of check dams and contour bunding alongside water storage.",
     "is_climate_risk_component": false,
     "aggregation_method": "mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Singh et al. (2023) - RUSLE model soil loss and watershed prioritisation",
-      "Zhang et al. (2020)",
-      "Jhariya et al. (2018)"
-    ]
+    "variable": "soil_erosion_risk",
+    "theme": "nbs_response",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "groundwater_recharge_potential",
-    "variable_name": "Groundwater recharge potential",
-    "category": "agricultural_production",
     "dataset_id": "isric_soilgrids250_v2",
-    "unit": "index (0-1, composite of geology, soil, slope, LULC)",
     "directionality_of_concern": "low_is_bad",
     "ttl_priority_label": "Groundwater recharge",
     "ttl_priority_description": "Areas where percolation tanks and check dams can recharge shallow aquifers, sustaining dry-season well levels for drinking water and supplemental irrigation. High recharge potential areas offer dual storage benefit — surface and subsurface.",
     "is_climate_risk_component": false,
     "aggregation_method": "mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Singh et al. (2016)",
-      "Mussa et al. (2020) - Open-source groundwater recharge delineation",
-      "Jha et al. (2014)"
-    ]
+    "variable": "groundwater_recharge_potential",
+    "theme": "nbs_response",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "flood_risk",
-    "variable_name": "Flash flood and surface runoff hazard",
-    "category": "climate_risk",
     "dataset_id": "srtm_dem_30m",
-    "unit": "index (0-1, DEM-derived flood susceptibility)",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Flood risk",
     "ttl_priority_description": "Areas with high flash flood risk where WH structures can attenuate peak flows and reduce downstream flooding, providing dual drought-adaptation and flood-mitigation benefits. Both a co-benefit driver and a siting constraint.",
     "is_climate_risk_component": true,
     "aggregation_method": "max",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Abd-el-Kader et al. (2023)",
-      "Ejegu & Yegizaw (2020)",
-      "Al-Hasani et al. (2023)"
-    ]
+    "variable": "flood_risk",
+    "theme": "climate_hazard",
+    "weight_default": 0.071,
+    "evidence_ids": []
   },
   {
     "variable_id": "water_access_deficit",
-    "variable_name": "Rural population without reliable water access",
-    "category": "socioeconomic",
     "dataset_id": "worldpop_population_density",
-    "unit": "% of rural population without access to clean water within 30 min",
     "directionality_of_concern": "high_is_bad",
     "ttl_priority_label": "Water access gap",
     "ttl_priority_description": "Areas where rural populations lack reliable water access, where WH structures can provide drinking water, domestic water, and livestock watering in addition to agricultural irrigation benefits. Captures the human welfare dimension of WH investment.",
     "is_climate_risk_component": false,
     "aggregation_method": "area_weighted_mean",
     "normalisation_method": "percentile_clip",
-    "spatial_resolution_m": 1000,
     "has_future_projection": false,
     "is_active": true,
-    "references": [
-      "Shadeed et al. (2019)",
-      "Terencio et al. (2017)",
-      "Mahmoud et al. (2014)"
-    ]
+    "variable": "water_access_deficit",
+    "theme": "people_production",
+    "weight_default": 0.071,
+    "evidence_ids": []
   }
 ]

@@ -3,8 +3,6 @@
     "dataset_id": "worldclim_v2_bioclim",
     "dataset_name": "WorldClim v2.1 Bioclimatic Variables",
     "analytical_module": "climate_hazard",
-    "variable_name": "Bioclimatic variables (19 vars: temperature, precipitation seasonality, extremes)",
-    "variable_unit": "°C × 10 / mm",
     "hazard_type": "multi",
     "scenario_type": "baseline",
     "time_period": "1970–2000",
@@ -19,18 +17,12 @@
     "doi": "10.1002/joc.5086",
     "version": "v2.1",
     "preprocessing_notes": "Resample to 1 km COG, clip to AOI. BIO1=Annual Mean Temp; BIO12=Annual Precipitation; BIO15=Precipitation Seasonality most relevant for agroforestry suitability.",
-    "known_limitations": "30-year climatological mean; does not capture interannual variability or extremes. Resolution may mask local topographic effects.",
-    "do_not_use_for": "Site-level microclimate analysis or real-time weather monitoring",
-    "nbs_ids_using": [
-      "agroforestry"
-    ]
+    "limitations": "30-year climatological mean; does not capture interannual variability or extremes. Resolution may mask local topographic effects. Not for: Site-level microclimate analysis or real-time weather monitoring"
   },
   {
     "dataset_id": "chelsa_bioclim_v21_baseline",
     "dataset_name": "CHELSA Bioclimatic Variables v2.1 (Baseline)",
     "analytical_module": "climate_hazard",
-    "variable_name": "High-resolution bioclimatic variables including temperature extremes and precipitation",
-    "variable_unit": "°C / mm",
     "hazard_type": "multi",
     "scenario_type": "baseline",
     "time_period": "1981–2010",
@@ -45,19 +37,12 @@
     "doi": "10.1038/sdata.2017.122",
     "version": "v2.1",
     "preprocessing_notes": "Resample to 1 km COG. CHELSA-BIOCLIM+ Version 1.2 used by Yadav et al. (2024) for agroforestry suitability in Punjab. Use Bio1 (Annual Mean Temp), Bio12 (Annual Precipitation), Tmax_Jan, Tmax_May.",
-    "known_limitations": "Statistical downscaling from ERA5; may show artefacts in complex terrain. Less validated over Africa and Central Asia.",
-    "do_not_use_for": "Short-term weather forecasting or sub-field precision agriculture",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Statistical downscaling from ERA5; may show artefacts in complex terrain. Less validated over Africa and Central Asia. Not for: Short-term weather forecasting or sub-field precision agriculture"
   },
   {
     "dataset_id": "chelsa_bioclim_ssp245_2050",
     "dataset_name": "CHELSA Bioclimatic Variables v2.1 (SSP2-4.5, 2041–2070)",
     "analytical_module": "climate_hazard",
-    "variable_name": "Projected bioclimatic variables under moderate emissions scenario",
-    "variable_unit": "°C / mm",
     "hazard_type": "heat_stress",
     "scenario_type": "future_ssp245",
     "time_period": "2041–2070",
@@ -72,19 +57,12 @@
     "doi": "10.5194/essd-15-2445-2023",
     "version": "v2.1",
     "preprocessing_notes": "Use delta-change approach relative to baseline. Clip to project AOI. Ensemble mean of available CMIP6 GCMs preferred.",
-    "known_limitations": "Ensemble spread is wide in tropical regions. Precipitation projections carry higher uncertainty than temperature.",
-    "do_not_use_for": "Single-GCM deterministic planning; local infrastructure design",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Ensemble spread is wide in tropical regions. Precipitation projections carry higher uncertainty than temperature. Not for: Single-GCM deterministic planning; local infrastructure design"
   },
   {
     "dataset_id": "spei_global_v26",
     "dataset_name": "Global SPEI Database v2.6",
     "analytical_module": "climate_hazard",
-    "variable_name": "Standardised Precipitation-Evapotranspiration Index (SPEI-12)",
-    "variable_unit": "dimensionless (z-score)",
     "hazard_type": "drought",
     "scenario_type": "baseline",
     "time_period": "1950–2020",
@@ -99,19 +77,12 @@
     "doi": "10.1175/2009JCLI2909.1",
     "version": "v2.6",
     "preprocessing_notes": "Extract SPEI-12 (12-month accumulation window) for drought risk. Compute mean and trend over 1981–2010 baseline. Bilinearly resample to 1 km for overlay.",
-    "known_limitations": "Very coarse native resolution (0.5°). Misses sub-regional drought heterogeneity. PET estimation method affects values.",
-    "do_not_use_for": "Farm-level drought monitoring; flash drought detection",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Very coarse native resolution (0.5°). Misses sub-regional drought heterogeneity. PET estimation method affects values. Not for: Farm-level drought monitoring; flash drought detection"
   },
   {
     "dataset_id": "isric_soilgrids250_v2",
     "dataset_name": "ISRIC SoilGrids 250m v2.0",
     "analytical_module": "structural_suitability",
-    "variable_name": "Soil properties: pH, organic carbon, clay, sand, CEC, bulk density, nitrogen",
-    "variable_unit": "multiple (pH: unitless; SOC: g/kg; clay/sand: %; CEC: cmolc/kg; BD: kg/dm³; N: cg/kg)",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "circa 2000–2015",
@@ -126,19 +97,12 @@
     "doi": "10.5194/soil-7-217-2021",
     "version": "v2.0",
     "preprocessing_notes": "Extract layers at 0–30 cm depth (topsoil) and 30–60 cm (subsoil). Resample to 1 km. pH, SOC, clay content, CEC are primary agroforestry suitability constraints per Ahmad et al. (2020), Chuma et al. (2021), Haile (2024).",
-    "known_limitations": "Prediction uncertainty is high in data-sparse regions (much of sub-Saharan Africa). Point observations biased toward accessible areas. Temporal static — does not capture land-use change effects on soil.",
-    "do_not_use_for": "Precision soil management at plot level; nutrient management plans without ground-truthing",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Prediction uncertainty is high in data-sparse regions (much of sub-Saharan Africa). Point observations biased toward accessible areas. Temporal static — does not capture land-use change effects on soil. Not for: Precision soil management at plot level; nutrient management plans without ground-truthing"
   },
   {
     "dataset_id": "hwsd_v2",
     "dataset_name": "Harmonized World Soil Database v2.0",
     "analytical_module": "structural_suitability",
-    "variable_name": "Soil texture class, drainage, nutrient status, available water capacity",
-    "variable_unit": "categorical / %",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "circa 1990–2007",
@@ -153,18 +117,12 @@
     "doi": "10.4060/cc3823en",
     "version": "v2.0",
     "preprocessing_notes": "Used by Ahmad et al. (2020) as primary soil input for South Asia agroforestry suitability. Join soil mapping unit attributes on raster values. Extract topsoil properties for suitability scoring.",
-    "known_limitations": "Coarser conceptual resolution than SoilGrids despite same pixel size — many large mapping units contain internally variable soils. Outdated in rapidly changing agricultural areas.",
-    "do_not_use_for": "Detailed site characterisation; soil carbon accounting",
-    "nbs_ids_using": [
-      "agroforestry"
-    ]
+    "limitations": "Coarser conceptual resolution than SoilGrids despite same pixel size — many large mapping units contain internally variable soils. Outdated in rapidly changing agricultural areas. Not for: Detailed site characterisation; soil carbon accounting"
   },
   {
     "dataset_id": "srtm_dem_90m",
     "dataset_name": "SRTM Digital Elevation Model (90m / 30m)",
     "analytical_module": "structural_suitability",
-    "variable_name": "Elevation and derived slope, aspect",
-    "variable_unit": "m / degrees",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "2000",
@@ -179,19 +137,12 @@
     "doi": "10.1029/2005RG000183",
     "version": "v3",
     "preprocessing_notes": "Derive slope (degrees) and aspect from DEM in GEE. Slope is primary biophysical constraint for agroforestry machinery access and erosion risk. Used across nearly all 23 AF papers in stocktake (Ahmad et al. 2017, 2018, 2020; Chuma et al. 2021; Haile 2024; Nath et al. 2021; Mushtaq et al. 2023; Seja et al. 2022; Wotlolan et al. 2021).",
-    "known_limitations": "Voids in high-relief areas filled with ASTER or other interpolation methods — check for artefacts. Vegetation canopy not filtered — potential overestimation of elevation under forest cover.",
-    "do_not_use_for": "Hydraulic modelling requiring bare-earth DEM; landslide hazard at plot scale",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Voids in high-relief areas filled with ASTER or other interpolation methods — check for artefacts. Vegetation canopy not filtered — potential overestimation of elevation under forest cover. Not for: Hydraulic modelling requiring bare-earth DEM; landslide hazard at plot scale"
   },
   {
     "dataset_id": "esa_worldcover_2021",
     "dataset_name": "ESA WorldCover 2021 (10m Land Cover)",
     "analytical_module": "structural_suitability",
-    "variable_name": "Land cover / land use classification",
-    "variable_unit": "categorical (11 classes)",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "2021",
@@ -206,19 +157,12 @@
     "doi": "10.5281/zenodo.7254221",
     "version": "v200 (2021)",
     "preprocessing_notes": "Reclassify to agricultural mask (cropland, grassland, sparse vegetation) to define eligible agroforestry conversion area. Exclude built-up, water bodies, bare soil with high salinity. Aggregate to 100m or 1km for pipeline. Used as LULC base by multiple AF studies.",
-    "known_limitations": "Mixed-pixel confusion in fragmented agricultural landscapes. Annual snapshot — does not capture seasonal cultivation. Accuracy lower in arid landscapes and under cloud cover.",
-    "do_not_use_for": "Crop-type mapping; sub-field land use classification",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Mixed-pixel confusion in fragmented agricultural landscapes. Annual snapshot — does not capture seasonal cultivation. Accuracy lower in arid landscapes and under cloud cover. Not for: Crop-type mapping; sub-field land use classification"
   },
   {
     "dataset_id": "global_aridity_index_v3",
     "dataset_name": "Global Aridity Index and PET v3 (CGIAR-CSI)",
     "analytical_module": "climate_hazard",
-    "variable_name": "Aridity Index (AI = Precipitation / PET)",
-    "variable_unit": "dimensionless",
     "hazard_type": "drought",
     "scenario_type": "baseline",
     "time_period": "1970–2000",
@@ -233,18 +177,12 @@
     "doi": "10.6084/m9.figshare.7504448",
     "version": "v3",
     "preprocessing_notes": "AI < 0.5 = dryland; used to mask unsuitable extreme arid zones for agroforestry. Ahmad et al. (2020) use aridity index as key suitability layer for South Asia. Nath et al. (2021) use Global Aridity Index for Himalayan region.",
-    "known_limitations": "Derived from WorldClim 1970–2000 climatology — does not reflect recent drying trends. PET estimated with Penman-Monteith assuming reference crop.",
-    "do_not_use_for": "Real-time drought monitoring; current water stress assessment",
-    "nbs_ids_using": [
-      "agroforestry"
-    ]
+    "limitations": "Derived from WorldClim 1970–2000 climatology — does not reflect recent drying trends. PET estimated with Penman-Monteith assuming reference crop. Not for: Real-time drought monitoring; current water stress assessment"
   },
   {
     "dataset_id": "protected_areas_wdpa",
     "dataset_name": "World Database on Protected Areas (WDPA)",
     "analytical_module": "structural_suitability",
-    "variable_name": "Protected area boundaries and categories",
-    "variable_unit": "categorical (IUCN categories I–VI)",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "Updated monthly",
@@ -259,19 +197,12 @@
     "doi": null,
     "version": "Monthly release May 2026",
     "preprocessing_notes": "Rasterize to 100m. Hard exclusion mask for IUCN categories Ia, Ib, II for agroforestry suitability (conversion not permitted). Categories V, VI may allow agroforestry within management plans — flag as conditional. Used by Chuma et al. (2021) as exclusion layer around Itombwe Nature Reserve.",
-    "known_limitations": "Boundary data quality varies by country. Some protected areas are paper parks with little enforcement. Does not capture community conserved areas (OECMs) comprehensively.",
-    "do_not_use_for": "Legal compliance decisions; site-level permitting",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Boundary data quality varies by country. Some protected areas are paper parks with little enforcement. Does not capture community conserved areas (OECMs) comprehensively. Not for: Legal compliance decisions; site-level permitting"
   },
   {
     "dataset_id": "osm_road_network",
     "dataset_name": "OpenStreetMap Road Network",
     "analytical_module": "structural_suitability",
-    "variable_name": "Road network (primary, secondary, tertiary, track)",
-    "variable_unit": "m (distance to nearest road)",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "Updated continuously (use annual snapshot)",
@@ -286,19 +217,12 @@
     "doi": null,
     "version": "2024 annual snapshot",
     "preprocessing_notes": "Compute Euclidean distance to nearest road of any class. Used by Chuma et al. (2021) as infrastructure accessibility layer. Apply 5km threshold as moderate accessibility constraint for agroforestry market access. is_scenario_candidate = true (road investment can change this).",
-    "known_limitations": "OSM coverage quality is highly variable in rural sub-Saharan Africa, Central Asia, and remote tropical regions — significant under-mapping in key project areas. Validate against national road datasets where possible.",
-    "do_not_use_for": "Routing or logistics planning; travel-time modelling without validation",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "OSM coverage quality is highly variable in rural sub-Saharan Africa, Central Asia, and remote tropical regions — significant under-mapping in key project areas. Validate against national road datasets where possible. Not for: Routing or logistics planning; travel-time modelling without validation"
   },
   {
     "dataset_id": "worldpop_population_density",
     "dataset_name": "WorldPop Population Density 2020 (constrained, 100m)",
     "analytical_module": "exposure",
-    "variable_name": "Population density",
-    "variable_unit": "persons/km²",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "2020",
@@ -313,19 +237,12 @@
     "doi": "10.5258/SOTON/WP00674",
     "version": "2020",
     "preprocessing_notes": "Aggregate to 1 km for pipeline. Use as proxy for population exposure in climate risk and as denominator for opportunity space poverty metrics.",
-    "known_limitations": "Constrained model relies on settlement/building footprint mapping — may undercount nomadic/dispersed rural populations. Accuracy varies with census quality of input data.",
-    "do_not_use_for": "Individual household targeting; electoral boundary analysis",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Constrained model relies on settlement/building footprint mapping — may undercount nomadic/dispersed rural populations. Accuracy varies with census quality of input data. Not for: Individual household targeting; electoral boundary analysis"
   },
   {
     "dataset_id": "fao_gsoc_map",
     "dataset_name": "FAO Global Soil Organic Carbon Map (GSOCmap) v1.6.1",
     "analytical_module": "opportunity_space",
-    "variable_name": "Soil organic carbon stock (0–30 cm)",
-    "variable_unit": "t C/ha",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "circa 2010–2015",
@@ -340,19 +257,12 @@
     "doi": "10.4060/I8891EN",
     "version": "v1.6.1",
     "preprocessing_notes": "Use as carbon co-benefit layer in opportunity space. Mendonça et al. (2023) use SOC sequestration potential as an agroforestry prioritisation criterion. Kiziridis et al. (2026) map silvopastoral carbon sequestration. Complement with FAO GSOCseq for sequestration rate.",
-    "known_limitations": "Country submissions vary in quality and methodology. National and sub-national SOC maps (where available) should be used in preference.",
-    "do_not_use_for": "Carbon crediting baselines without country-specific validation; REDD+ baseline setting",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Country submissions vary in quality and methodology. National and sub-national SOC maps (where available) should be used in preference. Not for: Carbon crediting baselines without country-specific validation; REDD+ baseline setting"
   },
   {
     "dataset_id": "gaez_v4_aez33",
     "dataset_name": "FAO-IIASA Global Agro-Ecological Zones v4 (33-class AEZ)",
     "analytical_module": "geographic_context",
-    "variable_name": "Agro-ecological zone classification (33 classes)",
-    "variable_unit": "categorical",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "1981–2010",
@@ -367,19 +277,12 @@
     "doi": "10.4060/cb4744en",
     "version": "v4",
     "preprocessing_notes": "Use for AEZ context classification in T7. Key AEZ groups for agroforestry context overrides: humid tropics, sub-humid tropics, semi-arid, highland tropics.",
-    "known_limitations": "AEZ boundaries are climate-envelope based and do not capture soil or management diversity within zones.",
-    "do_not_use_for": "Crop yield modelling at field scale",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "AEZ boundaries are climate-envelope based and do not capture soil or management diversity within zones. Not for: Crop yield modelling at field scale"
   },
   {
     "dataset_id": "fao_farming_systems",
     "dataset_name": "FAO/IFAD Farming Systems of the World (Dixon et al. 2001 / updated)",
     "analytical_module": "geographic_context",
-    "variable_name": "Farming system classification",
-    "variable_unit": "categorical",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "circa 2000",
@@ -394,23 +297,16 @@
     "doi": null,
     "version": "2001 (base); updated regional maps where available",
     "preprocessing_notes": "Rasterize at 10 km then resample to 1 km with majority resampling. Used to populate T7 farming system contexts and to apply context-specific suitability overrides in T4.",
-    "known_limitations": "Classification is 20+ years old; agricultural systems have shifted significantly in some regions. Mixed-farming boundaries are expert-delineated and coarse.",
-    "do_not_use_for": "Subnational farming system analysis without local validation",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Classification is 20+ years old; agricultural systems have shifted significantly in some regions. Mixed-farming boundaries are expert-delineated and coarse. Not for: Subnational farming system analysis without local validation"
   },
   {
     "dataset_id": "world_bank_poverty_pip",
     "dataset_name": "World Bank Poverty and Inequality Platform — Subnational Poverty Estimates",
     "analytical_module": "opportunity_space",
-    "variable_name": "Rural poverty headcount ratio (< $2.15/day, 2017 PPP)",
-    "variable_unit": "% population",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "Most recent available (2015–2023)",
-    "spatial_resolution_m": null,
+    "spatial_resolution_m": 1000,
     "geographic_coverage": "Global (subnational admin-1 or admin-2 where available)",
     "data_format": "csv",
     "access_type": "api",
@@ -421,19 +317,12 @@
     "doi": null,
     "version": "2024 release",
     "preprocessing_notes": "Interpolate to raster using admin boundary weights and WorldPop population density. Combine with spatial poverty maps (e.g. CGIAR CELL5M poverty layers) for higher-resolution estimates.",
-    "known_limitations": "Sub-national resolution limited to admin-1 or -2 in most countries. Survey years vary. Does not capture within-admin spatial variation.",
-    "do_not_use_for": "Household targeting; beneficiary selection for project implementation",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Sub-national resolution limited to admin-1 or -2 in most countries. Survey years vary. Does not capture within-admin spatial variation. Not for: Household targeting; beneficiary selection for project implementation"
   },
   {
     "dataset_id": "hansen_treecover2000",
     "dataset_name": "Hansen/UMD/Google/USGS/NASA Global Forest Change (Tree Cover)",
     "analytical_module": "opportunity_space",
-    "variable_name": "Tree canopy cover (year 2000 baseline) and annual loss/gain",
-    "variable_unit": "% canopy cover",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "2000–2023",
@@ -448,19 +337,12 @@
     "doi": "10.1126/science.1244693",
     "version": "v1.11 (2023)",
     "preprocessing_notes": "Current tree cover = baseline (2000) − loss + gain. Used to identify areas below 10% tree cover as agroforestry expansion opportunity and areas with existing tree cover for context. Singh et al. (2024) and Ahmad et al. (2020) use Hansen tree cover as AF suitability input.",
-    "known_limitations": "Confusion between natural forest and plantation/agroforestry systems. Understory trees in agroforestry are often missed at 30m resolution.",
-    "do_not_use_for": "Legal deforestation monitoring for jurisdictional REDD+; plot-level timber volume",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Confusion between natural forest and plantation/agroforestry systems. Understory trees in agroforestry are often missed at 30m resolution. Not for: Legal deforestation monitoring for jurisdictional REDD+; plot-level timber volume"
   },
   {
     "dataset_id": "chirps_precipitation_v2",
     "dataset_name": "WorldClim v2.1 Monthly Precipitation",
     "analytical_module": "climate_hazard",
-    "variable_name": "Mean monthly and annual precipitation",
-    "variable_unit": "mm/month",
     "hazard_type": "drought",
     "scenario_type": "baseline",
     "time_period": "1970-2000",
@@ -475,19 +357,12 @@
     "doi": "10.1002/joc.5086",
     "version": "v2.1",
     "preprocessing_notes": "Rainfall is the second most frequent input variable (38 of 85 papers). Extract mean annual precipitation and wet-season monthly totals. Use for SCS-CN runoff depth calculation combined with HSG soil map. Buraihi & Shariff (2015) use projected precipitation to assess future RWH viability under climate change.",
-    "known_limitations": "30-year climatological mean; interannual variability not captured. Resolution too coarse for localised orographic precipitation in complex terrain.",
-    "do_not_use_for": "Flood frequency analysis; design-storm estimation for dam sizing",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "30-year climatological mean; interannual variability not captured. Resolution too coarse for localised orographic precipitation in complex terrain. Not for: Flood frequency analysis; design-storm estimation for dam sizing"
   },
   {
     "dataset_id": "scs_cn_runoff_composite",
     "dataset_name": "HydroSHEDS Watershed Boundaries and River Network",
     "analytical_module": "geographic_context",
-    "variable_name": "Sub-watershed delineation, stream order, drainage area",
-    "variable_unit": "km2 / Strahler order",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "2000 (SRTM-derived)",
@@ -502,19 +377,12 @@
     "doi": "10.1029/2008EO100001",
     "version": "v1",
     "preprocessing_notes": "Use HydroBASINS level 8-10 for sub-watershed delineation context. Stream order used as a primary RWH site-type discriminator: first/second-order streams suit check dams and gully plugs; third/fourth-order streams suit percolation tanks; larger streams suit small dams. Kumar et al. (2018) and Singh et al. (2016) use stream order as a primary MCDA criterion.",
-    "known_limitations": "Derived from 3-arc-second SRTM; misses ephemeral channels in flat arid terrain. Resolution insufficient for first-order gully mapping.",
-    "do_not_use_for": "Detailed gully morphometry; flash flood routing",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Derived from 3-arc-second SRTM; misses ephemeral channels in flat arid terrain. Resolution insufficient for first-order gully mapping. Not for: Detailed gully morphometry; flash flood routing"
   },
   {
     "dataset_id": "srtm_dem_30m",
     "dataset_name": "SRTM DEM 30m",
     "analytical_module": "structural_suitability",
-    "variable_name": "Elevation, slope, drainage",
-    "variable_unit": "m / degrees",
     "hazard_type": null,
     "scenario_type": "baseline",
     "time_period": "2000",
@@ -529,19 +397,12 @@
     "doi": "10.1029/2005RG000183",
     "version": "v3",
     "preprocessing_notes": "WH module alias for SRTM. See srtm_dem_90m entry for full notes.",
-    "known_limitations": "Voids in high-relief terrain.",
-    "do_not_use_for": "Engineering design",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "Voids in high-relief terrain. Not for: Engineering design"
   },
   {
     "dataset_id": "worldclim_v2_precip",
     "dataset_name": "WorldClim v2.1 Monthly Precipitation",
     "analytical_module": "climate_hazard",
-    "variable_name": "Mean monthly and annual precipitation",
-    "variable_unit": "mm/month",
     "hazard_type": "drought",
     "scenario_type": "baseline",
     "time_period": "1970-2000",
@@ -556,11 +417,6 @@
     "doi": "10.1002/joc.5086",
     "version": "v2.1",
     "preprocessing_notes": "Extract mean annual precipitation and wet-season monthly totals for SCS-CN runoff calculation.",
-    "known_limitations": "30-year climatological mean; interannual variability not captured.",
-    "do_not_use_for": "Flood frequency analysis; design-storm estimation",
-    "nbs_ids_using": [
-      "agroforestry",
-      "water_harvesting_conservation"
-    ]
+    "limitations": "30-year climatological mean; interannual variability not captured. Not for: Flood frequency analysis; design-storm estimation"
   }
 ]

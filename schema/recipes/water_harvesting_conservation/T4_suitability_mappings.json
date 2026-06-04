@@ -3,10 +3,8 @@
     "mapping_id": "wh_slope_global",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "srtm_dem_90m",
-    "variable_name": "Terrain slope",
-    "variable_unit": "degrees",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal_fuzzy",
+    "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 0,
       "opt_low": 1,
@@ -47,22 +45,16 @@
     "weight_default": 0.2,
     "weight_adjustable": true,
     "justification": "Slope is the single most frequently used input variable across all 85 WH stocktake papers (72 of 85). The 1-8 degree optimal range reflects the consensus across Bera & Mukhopadhyay (2023), Alene et al. (2022), Hassan et al. (2025), Jha et al. (2014), Vema et al. (2019), and Zheng et al. (2023). Slopes < 1 degree risk waterlogging and structural foundation issues; slopes > 30 degrees are unsafe for dam/bund construction and generate erosive flash runoff.",
-    "references": [
-      "Bera & Mukhopadhyay (2023)",
-      "Alene et al. (2022)",
-      "Hassan et al. (2025)",
-      "Vema et al. (2019)",
-      "Jha et al. (2014)"
-    ]
+    "variable": "slope",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": []
   },
   {
     "mapping_id": "wh_rainfall_global",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "chirps_precipitation_v2",
-    "variable_name": "Mean annual precipitation",
-    "variable_unit": "mm/year",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal_fuzzy",
+    "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 100,
       "opt_low": 250,
@@ -105,19 +97,14 @@
     "weight_default": 0.18,
     "weight_adjustable": true,
     "justification": "Rainfall (38 of 85 papers) directly determines runoff volume available for capture. Below 100mm, runoff is insufficient for most structural WH. Above 1800mm, natural water availability reduces WH investment need. The 250-800mm optimal range corresponds to semi-arid and sub-humid zones where water scarcity is acute but rainfall is sufficient to generate meaningful runoff. Used in SCS-CN calculations across virtually all quantitative WH papers.",
-    "references": [
-      "Jha et al. (2014)",
-      "Singh et al. (2016)",
-      "Bera & Mukhopadhyay (2023)",
-      "Alene et al. (2022)"
-    ]
+    "variable": "annual_precipitation",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": []
   },
   {
     "mapping_id": "wh_soil_texture_global",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "isric_soilgrids250_v2",
-    "variable_name": "Soil texture / Hydrologic Soil Group (HSG)",
-    "variable_unit": "categorical (A, B, C, D)",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "ranked_classes",
     "relationship_params": {
@@ -145,21 +132,16 @@
     "weight_default": 0.15,
     "weight_adjustable": true,
     "justification": "Soil texture (27 of 85 papers) determines both runoff generation potential (HSG A = low runoff, D = high runoff) and pond/dam seepage integrity. Higher-class HSG soils generate more runoff suitable for capture and are better at retaining stored water. Vema et al. (2019) use soil permeability as one of three core fuzzy inference inputs. Jha et al. (2014), Singh et al. (2016), and Bera & Mukhopadhyay (2023) all use soil texture/HSG in AHP-weighted MCDA.",
-    "references": [
-      "Vema et al. (2019)",
-      "Jha et al. (2014)",
-      "Singh et al. (2016)",
-      "Bera & Mukhopadhyay (2023)"
-    ]
+    "variable": "soil_texture_hsg",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": []
   },
   {
     "mapping_id": "wh_drainage_density_global",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "srtm_dem_90m",
-    "variable_name": "Drainage density",
-    "variable_unit": "km/km2",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal_fuzzy",
+    "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 0,
       "opt_low": 0.5,
@@ -177,19 +159,14 @@
     "weight_default": 0.12,
     "weight_adjustable": true,
     "justification": "Drainage density (21 of 85 papers) indicates runoff concentration potential and stream network density. Moderate drainage density (0.5-3 km/km2) indicates sufficient surface flow to sustain check dams and percolation tanks. Very low drainage density (< 0.5) suggests insufficient runoff; very high density (> 6) indicates highly erosive landscape unsuitable for stable structure siting. Used by Kumar et al. (2018), Bera & Mukhopadhyay (2023), Singh et al. (2016), and Jha et al. (2014).",
-    "references": [
-      "Kumar et al. (2018)",
-      "Bera & Mukhopadhyay (2023)",
-      "Singh et al. (2016)",
-      "Jha et al. (2014)"
-    ]
+    "variable": "drainage_density",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": []
   },
   {
     "mapping_id": "wh_stream_order_structure_type",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "scs_cn_runoff_composite",
-    "variable_name": "Stream order (Strahler) — determines suitable WH structure type",
-    "variable_unit": "Strahler order (1-8)",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "ranked_classes",
     "relationship_params": {
@@ -223,19 +200,14 @@
     "weight_default": 0.15,
     "weight_adjustable": true,
     "justification": "Stream order (14 of 85 papers) is a key discriminator for WH structure type and scale. First- and second-order streams are optimal for check dams and gully plugs; third-order for percolation tanks; fourth-order for farm ponds and small dams. Kumar et al. (2018), Singh et al. (2016), Alene et al. (2022), and Hassan et al. (2025) all include stream order as a primary MCDA suitability criterion.",
-    "references": [
-      "Kumar et al. (2018)",
-      "Singh et al. (2016)",
-      "Alene et al. (2022)",
-      "Hassan et al. (2025)"
-    ]
+    "variable": "stream_order",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": []
   },
   {
     "mapping_id": "wh_land_cover_eligibility",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "esa_worldcover_2021",
-    "variable_name": "Land cover eligibility for WH siting",
-    "variable_unit": "categorical (ESA WorldCover 11-class)",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "ranked_classes",
     "relationship_params": {
@@ -277,20 +249,16 @@
     "weight_default": 0.1,
     "weight_adjustable": false,
     "justification": "Land cover determines the CN value for runoff estimation and the land-use compatibility of WH structure siting. Grassland and shrubland generate reliable runoff and allow construction without crop displacement. Built-up, permanent water, snow, and mangroves are hard exclusions. Used across the majority of WH stocktake papers as the LULC input to CN calculation.",
-    "references": [
-      "Bera & Mukhopadhyay (2023)",
-      "Alene et al. (2022)",
-      "Singh et al. (2016)"
-    ]
+    "variable": "land_cover",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": []
   },
   {
     "mapping_id": "wh_protected_areas_exclusion",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "protected_areas_wdpa",
-    "variable_name": "IUCN protected area category (hard exclusion Cat I-II)",
-    "variable_unit": "categorical",
     "suitability_dimension": "operational_constraint",
-    "relationship_type": "binary",
+    "relationship_type": "threshold",
     "relationship_params": {
       "threshold": "IUCN_Cat_I_II",
       "above_is_suitable": false
@@ -306,19 +274,16 @@
     "weight_default": 1.0,
     "weight_adjustable": false,
     "justification": "Construction of WH structures in strict nature reserves (IUCN Cat I-II) is prohibited. Hard exclusion regardless of biophysical suitability. Applied across all papers that include protected area layers as exclusion zones.",
-    "references": [
-      "Terencio et al. (2017)",
-      "Ejegu & Yegizaw (2020)"
-    ]
+    "variable": "protected_area_status",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": []
   },
   {
     "mapping_id": "wh_road_access_scenario",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "osm_road_network",
-    "variable_name": "Distance to nearest road (construction access)",
-    "variable_unit": "km",
     "suitability_dimension": "system_constraint",
-    "relationship_type": "linear_decay",
+    "relationship_type": "linear_decreasing",
     "relationship_params": {
       "suitable_max": 5,
       "unsuitable_min": 25,
@@ -346,19 +311,16 @@
     "weight_default": 0.05,
     "weight_adjustable": true,
     "justification": "Road proximity is less critical for WH than for agroforestry, as many WH structures can be built with local labour and simple equipment. However, larger structures (check dams, farm ponds with liners) require material transport. Threshold set at 5km (suitable) to 25km (unsuitable) reflecting typical tractor/cart reach in rural settings. Weight deliberately low.",
-    "references": [
-      "Terencio et al. (2017)",
-      "Grum et al. (2016)"
-    ]
+    "variable": "distance_to_road",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": []
   },
   {
     "mapping_id": "wh_existing_water_exclusion",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "fao_gsoc_map",
-    "variable_name": "Permanent water body (exclusion zone)",
-    "variable_unit": "% occurrence",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "binary",
+    "relationship_type": "threshold",
     "relationship_params": {
       "threshold": 80,
       "above_is_suitable": false
@@ -374,10 +336,8 @@
     "weight_default": 1.0,
     "weight_adjustable": false,
     "justification": "Areas with > 80% permanent water occurrence (rivers, lakes, perennial ponds) are not candidates for new WH structure siting — they are already saturated or represent natural water bodies. Hard exclusion. Al-Hasani et al. (2023, 2025) and multiple Iraqi/Middle East papers incorporate existing water body layers as exclusion zones.",
-    "references": [
-      "Al-Hasani et al. (2023)",
-      "Al-Hasani et al. (2025)",
-      "Hassan et al. (2025)"
-    ]
+    "variable": "permanent_water",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": []
   }
 ]

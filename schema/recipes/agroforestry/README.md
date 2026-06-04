@@ -26,11 +26,20 @@ Generated from `RuralNbS_Agroforestry_Tables_T0-T7.xlsx` (archived at [`../../de
 formats describe the same content: **JSON is the machine-readable source of truth; CSV is the human-editing
 view.** Fix the JSON, then regenerate the CSV.
 
-## Validation status (draft-0)
+## Structure & validation status
 
-- All foreign keys validated — no broken links across the eight tables.
+Conformant to the **frozen v0.2 structure** ([`../../structure/columns.json`](../../structure/columns.json)).
+Verify with `python3 src/nbs_ruralscan/structure.py schema` (expect 0 errors).
+
+- Columns match the manifest; FKs resolve to VONT (`variable`), FAM (`suitability_family_id`), T1 (`dataset_id`).
 - T2 baseline weights normalised to sum to 1.000.
 - T4 `is_scenario_candidate = true` only for investment-influenceable variables (road access).
-- All required fields populated; optional fields blank rather than omitted.
+
+**Content still pending (not structural):**
+- Only the **F1 × slope** row carries real evidence (`ev_slope_nath21/zomer14/nair93`, with quotes + pages); it
+  passes `--strict`. Every other row has `evidence_ids` empty pending literature extraction.
+- All 11 T4 rows are tagged to the placeholder family `agroforestry__planted_silvoarable`; the full F1–F5 scheme
+  awaits Namita + MFL review.
+- Free-text `references`/`justification` were replaced by `evidence_ids` (→ EV) in the v0.2 trim.
 
 > Draft-0 content still needs literature-team review before the pilot review milestone.
