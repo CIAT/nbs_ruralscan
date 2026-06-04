@@ -2,9 +2,11 @@
 
 The analytical backbone. All analytical rules, datasets, response functions, weights — read from these tables by the pipeline. **Never hardcoded in code.**
 
-> Schema v0.2 — 8 tables (T0–T7) joined on `nbs_id` / `dataset_id` / `variable_id`.
-> Field-level spec: [`spec.md`](spec.md). Entity-relationship diagram: [`design/NbS_ERD_v01.html`](design/NbS_ERD_v01.html)
-> (published on the [Pages site](https://ciat.github.io/nbs_ruralscan/schema.html)). Pipeline-architecture view: [`../docs/pipeline.html`](../docs/pipeline.html).
+> Schema v0.2 — 8 analytical tables (T0–T7) joined on `nbs_id` / `dataset_id` / `variable_id`, **plus an evidence &
+> configuration layer** (Source / Evidence / Variable-Ontology / Subpractice-Family registers) that makes every
+> T3/T4/T6 value traceable. Field-level spec: [`spec.md`](spec.md). ERD: [`design/NbS_ERD_v01.html`](design/NbS_ERD_v01.html)
+> (published on the [Pages site](https://ciat.github.io/nbs_ruralscan/schema.html)). Architecture: [`../docs/pipeline.html`](../docs/pipeline.html).
+> How the evidence-based tables are generated from literature: [`../methodology/T4_generation_method.md`](../methodology/T4_generation_method.md).
 
 ## Draft-0 worked examples
 

@@ -42,7 +42,9 @@ Demonstrator-grade artefacts (not contracted but valuable):
 
 ### Schema (the analytical backbone)
 
-The pipeline reads all analytical rules, datasets, response functions, and weights from the T0–T7 schema tables. **Never hardcode analytical rules in code.** The schema is the methodology made machine-readable. Schema reference: `schema/README.md` (when populated); ERD: `docs/pipeline.html`.
+The pipeline reads all analytical rules, datasets, response functions, and weights from the T0–T7 schema tables. **Never hardcode analytical rules in code.** The schema is the methodology made machine-readable. Field-level spec: `schema/spec.md` (v0.2); ERD: `docs/erd.html`; architecture: `docs/pipeline.html`.
+
+Schema v0.2 adds an **evidence & configuration layer** upstream of T0–T7 — Source Register, Evidence Register, Variable Ontology, and the Subpractice/Suitability-Family registry — that makes every T3/T4/T6 value traceable (`row → evidence_id → source · tier · page · quote`). How these tables are generated from literature is the **T4 generation method**: `methodology/T4_generation_method.md` (with a worked gold standard in `methodology/examples/`).
 
 ## What is locked
 
@@ -56,6 +58,9 @@ These decisions are structural. If you want to change them, raise an issue and t
 - **Pipeline reads from schema** — analytical rules never hardcoded.
 - **Variable selection is 2-stage**: thematic grouping (per recipe) + correlation clustering (per AOI). One representative per cluster enters MCDA. Cluster membership preserved and shown to users.
 - **Dataset sourcing is 3-tier**: GEE catalog → community-hosted → upload. Fitness-for-purpose precedes platform. Data is **pulled into Python** for computation (numpy/rasterio) — there is no native server-side GEE pipeline.
+- **Suitability is reasoned per *suitability family*, not per whole NbS.** Families group subpractices by their **shared dominant limiting factor** (e.g. agroforestry F1 planted silvoarable · F2 regeneration-based · F3 silvopastoral · F4 linear · F5 shaded perennial-crop). T4 keys to `suitability_family_id`. Grouping carries a documented rationale; don't lump by appearance. *(Scheme is a draft pending Namita + MFL review.)*
+- **Every family carries a `spatial_product_type`** (`area_suitability` | `applicability_zone` | `zonal_linear` | `qualitative_only`). Linear/point practices are **not** reported as pixel area (over-estimation grows with coarseness). Run coarseness is also bounded **per variable** by `min_meaningful_resolution_m` (slope ≈ 30–90 m); scale-dependent derivatives are **derive-then-aggregate**, never resample-then-derive.
+- **Evidence-first / provenance.** Analytical values in T3/T4/T6 trace to evidence units (source · tier · page · quote). Never PDF → threshold in one step. `claim_scope` separates **species/crop-specific** claims from **practice/technology** ones — species envelopes never define a practice row. See `methodology/T4_generation_method.md`.
 
 ## Inheritance from Benson's existing work
 
@@ -72,8 +77,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 ## File map
 
 - `docs/` — GitHub Pages site (wireframe, pipeline diagram, index, README)
-- `methodology/` — written methodology framework + per-NbS recipes
-- `schema/` — T0–T7 schema tables and reference
+- `methodology/` — framework + per-NbS recipes + module specs + **`T4_generation_method.md`** (evidence-first suitability generation) + `examples/` (worked gold standards)
+- `schema/` — `spec.md` (v0.2 field-level), T0–T7 + evidence/config-layer tables, ERD/dedup notes, draft-0 example recipes
 - `src/nbs_ruralscan/` — reusable Python implementation (pulls GEE/other data, computes locally)
 - `pipeline/` — pilot notebooks and outputs
 - `reference/` — stocktake findings, source R script, lit references

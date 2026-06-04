@@ -67,6 +67,14 @@
     </a>
   </div>
 
+  <div class="card">
+    <a class="head" href="https://github.com/CIAT/nbs_ruralscan/blob/main/methodology/T4_generation_method.md">
+      <h3>How the tables are generated — T4 method ↗</h3>
+      <p class="desc">Evidence-first, defensible generation of suitability mappings from literature: discovery → vectorless ingestion → Source/Evidence registers → synthesis. Covers suitability families &amp; <code>spatial_product_type</code>, species-vs-technology, and publication-bias handling. Adds an <strong>evidence &amp; configuration layer</strong> upstream of T0–T7 so every value traces to source · tier · page · quote.</p>
+      <div class="tags"><span class="tag draft">v0.1</span><span class="tag">methodology</span><span class="tag">provenance-first</span></div>
+    </a>
+  </div>
+
   <h2>The eight tables</h2>
   <table>
     <thead><tr><th>Table</th><th>Purpose</th><th>Key field</th><th>Owner</th><th>Location</th></tr></thead>
@@ -82,6 +90,7 @@
     </tbody>
   </table>
   <p class="note"><span class="pk">green</span> = primary key · <span class="fk">brown</span> = foreign key · tables carrying an <code>nbs_id</code> live in the recipe folder; cross-NbS tables live at the schema root. Adding an NbS = a new recipe folder + appended rows. No schema or code changes required.</p>
+  <p class="note"><strong>v0.2</strong> adds an <strong>evidence &amp; configuration layer</strong> upstream of T0–T7 — Source Register · Evidence Register · Variable Ontology · Subpractice/Suitability-Family registry — feeding T3/T4/T6 with full provenance. T4 keys to <code>suitability_family_id</code>. See the <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/spec.md">field-level spec</a>.</p>
 
   <h2>How they connect</h2>
   <p>All joins run on three keys — <code>nbs_id</code> (T0), <code>dataset_id</code> (T1), <code>variable_id</code> (T5). The pipeline validates every foreign key on load and fails loudly on a broken link rather than producing a silent gap. T2 (risk to livelihoods) and T4 (suitability) are parallel arms; the <code>double_count_risk</code> flag in T2 prevents a variable being counted in both the risk index and the opportunity space. With two recipes merged and deduplicated, the shared root tables hold 21 datasets (T1), 11 risk variables (T2), 14 opportunity-space variables (T5) and 15 geographic contexts (T7) — one source of truth across NbS.</p>

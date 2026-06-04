@@ -133,8 +133,8 @@ If you're brand new, **read CLAUDE.md and PLAYBOOK.md before your first issue.**
 | Folder | Contents |
 |---|---|
 | `docs/` | GitHub Pages — live demonstrators (wireframe · pipeline diagram · schema page + ERD) |
-| `methodology/` | Cross-cutting framework + per-NbS recipes + module specs |
-| `schema/` | T0–T7 schema — `spec.md`, ERD, dedup notes, and draft-0 example tables (CSV+JSON) for 2 NbS |
+| `methodology/` | Framework + per-NbS recipes + module specs + **`T4_generation_method.md`** (evidence-first suitability generation) + `examples/` (worked gold standards) |
+| `schema/` | `spec.md` (v0.2: T0–T7 + evidence/config layer), ERD, dedup notes, draft-0 example tables (CSV+JSON) for 2 NbS |
 | `src/nbs_ruralscan/` | Python method package — schema loader, data loaders, outputs (uv · ruff · ty) |
 | `pipeline/` | Pilot Colab notebooks and outputs |
 | `reference/` | Stocktake findings, source R scripts, literature references |
