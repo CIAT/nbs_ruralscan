@@ -108,4 +108,35 @@ Not new issues — edits to existing cards, reflecting the ownership shift:
 
 ## Schema status (informational)
 
-> Schema is now **v0.2** (committed). Added since v0.1: `T3.risk_role` + `asset_risk_weight` (M2 / M2b two-risk split), `T5.theme` + `weight_default` (hotspot grouping/weighting), canonical `T4.relationship_type` set, and the shared-layer dedup. This **defines** the fields issues **A** (T5 priority-variable fields) and **B** (`risk_role` for M2b) called for — those are now design-complete at the schema level; **populating** the new columns with real values is part of issue **H**.
+> Schema is now **v0.2** (committed). Added since v0.1: `T3.risk_role` + `asset_risk_weight` (M2 / M2b two-risk split), `T5.theme` + `weight_default` (hotspot grouping/weighting), canonical `T4.relationship_type` set, the shared-layer dedup, **and the evidence & configuration layer** (Source / Evidence / Variable-Ontology / Subpractice-Family registers; T4 keyed to `suitability_family_id`). This **defines** the fields issues **A** (T5 priority-variable fields) and **B** (`risk_role` for M2b) called for — design-complete at the schema level; **populating** with real values is part of issue **H**.
+
+---
+
+## T4 build stream (June 2026 — method = `methodology/T4_generation_method.md`)
+
+**I — Family scheme review (blocks the build).**
+**Assignees:** @namita (+ consult MFL: @sarah-jones @chris-kettle @evert-thomas @hannes-gaisberger)
+**Labels:** `methodology`, `priority-high`
+> Review and sign off the agroforestry suitability families (F1 planted silvoarable · F2 regeneration-based · F3 silvopastoral · F4 linear/boundary · F5 shaded perennial-crop · homegardens `qualitative_only` · riparian split to its own NbS). Grouping criterion = shared dominant limiting factor. Confirm or revise before extraction is built on it.
+
+**J — Build `doc-ingestion` pipeline (vectorless, structure-aware).**
+**Assignees:** @brayden @anastasia @pete (Claude Code)
+**Labels:** `pipeline`, `priority-high`
+> `src/nbs_ruralscan/ingest`: PDF → page-tagged text + structure index (sections/tables/figures w/ captions+pages) + parsed tables; OCR fallback; keyword/structure (vectorless) retrieval; targeted figure-vision. Cache **gitignored** (copyright). Recovers table-bound thresholds (e.g. Ahmad 2018, Haile 2024).
+
+**K — Depth-first F1 (alley-cropping first) → first full agroforestry recipe.**
+**Assignees:** @namita @pete (Claude)
+**Labels:** `methodology`, `recipe`
+> After the slope slice, complete all F1 variables starting with alley-cropping-type silvoarable; produce the first complete per-family T4 recipe with full provenance.
+
+**L — Per-table extraction contracts (enables extract-once).**
+**Assignees:** @namita @brayden @pete
+**Labels:** `methodology`, `schema`
+> Author the T3 (mitigation matrix), T5 (priority-layer) and T6 (effects) extraction sub-instructions/skills so one paper read populates multiple tables correctly. T4 leads; others follow once contracts exist.
+
+**M — Water-harvesting taxonomy.**
+**Assignees:** @pete @brayden
+**Labels:** `methodology`
+> Build the WH subpractice → suitability-family taxonomy (second NbS), reusing existing standards (FAO land eval, WOCAT/SLM, GAEZ, Dixon farming systems) rather than inventing.
+
+**Done this session:** corrected the draft-0 agroforestry slope row (abs_max 45°→30°, unit-conflation fix) — see the slope worked example.

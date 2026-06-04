@@ -3,7 +3,9 @@
 > **v0.2 (June 2026)** — added `T3.risk_role` + `T3.asset_risk_weight` (the M2 / M2b two-risk split);
 > added `T5.theme` + `T5.weight_default` (hotspot grouping & weighting); reconciled `T4.relationship_type`
 > to one canonical membership-function set with a wireframe crosswalk; documented NbS-response layers as
-> derived (T5 `theme=nbs_response` × T6) and the shared-layer dedup. v0.1 was the original 8-table design.
+> derived (T5 `theme=nbs_response` × T6) and the shared-layer dedup; **added the evidence & configuration layer**
+> (Source / Evidence / Variable-Ontology / Subpractice-Family registers) making T3/T4/T6 values traceable, and
+> keyed T4 to `suitability_family_id`. v0.1 was the original 8-table design.
 
 > In-repo Markdown port of `NbS_Schema_Reference_v01_1.docx` (Pete Steward, 7 May 2026).
 > Source archived at [`design/NbS_Schema_Reference_v01.docx`](design/NbS_Schema_Reference_v01.docx).
@@ -312,6 +314,83 @@ overrides in T4. Primarily populated by Benson. Provides the controlled vocabula
 | `value_in_dataset` | string | Required | Value/code identifying this context in the dataset. | `120` |
 | `description` | string | Required | Brief description for documentation. | `Humid tropical zone, >1200mm rainfall…` |
 | `is_active` | boolean | Required | Currently used for overrides. | `true` |
+
+---
+
+## Evidence & configuration layer (upstream of T0–T7)
+
+Added v0.2. These tables feed the evidence-based analytical tables (**T3, T4, T6**) and are produced by the T4
+generation method ([`../methodology/T4_generation_method.md`](../methodology/T4_generation_method.md)). They make
+every analytical value traceable: **T4 row → `evidence_id`s → source (tier, page, quote)**. Source tier is stored
+once on the Source Register and reached by `source_id` join — never copied onto evidence rows.
+
+### SRC — Source Register
+
+One row per publication/report/tool (formalises the stocktake `NbS_peer_reviewed_benchmarked.csv`).
+
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `source_id` | string | Required | Unique id. | `nath_2021` |
+| `citation` · `doi` | string | Required | Bibliographic. | `Nath et al. (2021)…` |
+| `benchmark_tier` | enum | Required | `high` \| `medium` \| `low` (C/I/D rubric). **The only place tier is stored.** | `medium` |
+| `study_country` · `region` · `coords` | string | Optional | Where the study was done. | `India / E. Himalaya` |
+| `aez` · `farming_system` | string | Optional | Study context (→ T7 vocab). | `humid_tropics` |
+| `method_type` | enum | Optional | `ahp` \| `critic` \| `entropy` \| `fao_landeval` \| `ecocrop` \| `empirical` \| `expert`. | `ahp` |
+| `spatial_scale` · `analysis_resolution_m` | string/int | Optional | Scale + grid used. | `1000` |
+| `nbs_ids` | string[] | Optional | NbS the source addresses. | `['agroforestry']` |
+
+### EV — Evidence Register
+
+One row per **atomic claim**. The structured replacement for free-text justifications.
+
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `evidence_id` | string | Required | Unique id. | `ev_slope_nath21` |
+| `source_id` | string | Required | FK → SRC. (tier via join.) | `nath_2021` |
+| `nbs_id` · `suitability_family_id` | string | Required | What it pertains to. | `agroforestry` · `agroforestry__planted_silvoarable` |
+| `variable` | string | Required | FK → Variable Ontology (canonical). | `slope` |
+| `relationship` | object | Optional | Extracted thresholds/shape. | `{opt_low:0,opt_high:10,abs_max:44,unit:"deg"}` |
+| `context` | object | Optional | AEZ/farming system the claim applies to. | `{aez:"humid_tropics"}` |
+| `use_role` | enum | Required | Which table it feeds. `structural_suitability`(T4) \| `climate_risk`(T2) \| `priority_need`(T5) \| `nbs_effect`(T6) \| `dataset`(T1). | `structural_suitability` |
+| `evidence_type` | enum | Required | `literature_relationship` \| `ml_importance` \| `scoping_candidate` \| `expert`. Only literature/expert carry shape params. | `literature_relationship` |
+| `claim_basis` | enum | Required | `primary_measured` \| `modelled` \| `cited_secondary` \| `expert_assertion` \| `table` \| `figure_read`. Claim strength within source. | `table` |
+| `claim_scope` | enum | Required | `practice_technology` \| `species_specific` \| `crop_specific`. Species/crop claims must not set practice rows. | `practice_technology` |
+| `taxon` | string | Conditional | Required when `claim_scope ≠ practice_technology`. | `Morus alba` |
+| `lineage_of` | string | Optional | `evidence_id`/`source_id` this claim is *echoing* (citation cascade) → dedupe to origin. | `harrison_2016` |
+| `extraction_confidence` | enum | Required | Transcription fidelity. | `high` |
+| `quote` · `page` | string/int | Required | Verbatim + page (provenance). | `"…slope 0 to 5…", p.11` |
+| `reviewer_ok` | boolean | Optional | Human-validated. | `false` |
+
+### VONT — Variable Ontology
+
+Canonical variables: harmonisation + data-catalog link + resolution validity.
+
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `canonical_variable_id` | string | Required | Unique id. | `slope` |
+| `label` · `aliases` | string/[] | Required | Display + known surface names. | `['terrain slope','gradient','slope %']` |
+| `canonical_unit` · `unit_conversions` | string/object | Required | Unit + conversions. | `degrees` · `{pct→deg:"atan"}` |
+| `group_id` | string | Required | → Variable-Group vocab (Topographic, …). | `topographic` |
+| `candidate_dataset_ids` | string[] | Required | → T1 datasets that can supply it. | `['srtm_dem_30m','srtm_dem_90m']` |
+| `min_meaningful_resolution_m` | integer | Required | Coarsest grid at which the variable stays valid. | `90` |
+| `resolution_sensitivity` | enum | Required | `low` \| `medium` \| `high` (derivatives = high). | `high` |
+| `derive_then_aggregate` | boolean | Required | Compute native then summarise to grid (slope, TWI…). | `true` |
+
+### FAM — Subpractice / Suitability-Family registry
+
+NbS decomposition; the unit T4 is keyed to.
+
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `subpractice_id` · `nbs_id` | string | Required | Variant + parent NbS. | `alley_cropping` · `agroforestry` |
+| `name` · `definition` | string | Required | + scope boundaries. | `Alley cropping` |
+| `suitability_family_id` | string | Required | The family it belongs to (T4 keys to this). | `agroforestry__planted_silvoarable` |
+| `dominant_limiting_factor` | string | Required | Why it's grouped here. | `biophysical envelope + management` |
+| `spatial_product_type` | enum | Required | `area_suitability` \| `applicability_zone` \| `zonal_linear` \| `qualitative_only`. | `area_suitability` |
+| `grouping_rationale` · `references` | string/[] | Required | Documented + cited (auditable lumping). | `…` |
+
+**T4 change:** rows key to `suitability_family_id` (subpractices roll up to NbS for display). T4 `references`/
+`justification` now cite `evidence_id`s.
 
 ---
 
