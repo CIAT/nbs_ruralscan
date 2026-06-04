@@ -14,13 +14,15 @@
 
 ## 1. Context and Scope
 
-*TODO* — write the NbS definition, scope, sub-practice list. Agroforestry encompasses several distinct sub-practices that need to be distinguished early:
+**Subpractice typology → suitability families is now drafted for sign-off:
+[`../families/agroforestry.md`](../families/agroforestry.md)** (F1 planted silvoarable · F2 regeneration-based ·
+F3 silvopastoral · F4 linear/boundary · F5 shaded perennial-crop; homegardens parked as `qualitative_only`,
+riparian buffers split to their own NbS). T4 is keyed to `suitability_family_id` per that scheme. Author the
+narrative scope here against the agreed families once MFL has signed off.
 
-- Perennial tree-crop systems (e.g. shade trees in coffee, cocoa)
-- Parkland / scattered trees (Sahelian zone, Faidherbia parklands)
-- Alley cropping (rows of trees + crop strips)
-- Boundary planting / live fences
-- Sylvo-pastoral (trees + grazing) — *cluster overlap; cross-reference recipe TBD*
+*TODO* — write the NbS definition and scope narrative, drawing the subpractice list from the family scheme above
+rather than re-listing it. The grouping principle (group by *dominant limiting factor*, not visual structure) is
+why, e.g., planted parkland (F1) and retained/FMNR parkland (F2) are separate families despite looking identical.
 
 ### 1.1 Position within the generic methodological framework
 

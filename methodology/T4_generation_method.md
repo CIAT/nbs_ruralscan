@@ -188,6 +188,60 @@ Rules:
 So coarseness is bounded by **two** things at once: product type (footprint honesty) *and* the binding variable
 (signal validity).
 
+### 2.5 Constrain by observed distribution, not a modelled niche, where data exist
+
+When a family's applicability is gated by an **existing host system** (a land use, a crop, a grazing system),
+prefer the host's **observed distribution / production** as the gating layer over a model of its potential niche.
+This is a general rule, not an F5 special case:
+
+- It is already the logic behind **land-cover eligibility** in F1/F2 (observed land use gates the planting/
+  regeneration envelope). F5 extends it from "cropland" to "this specific crop"; F3 would use pasture/grazing
+  distribution.
+- It is **more correct for "improve the existing system" interventions** (shading existing coffee/cocoa,
+  thinning canopy): the intervention happens where the system already is, so a potential-niche surface
+  over-claims into land the system never occupies. Observed distribution also already integrates the real
+  climate · soil · market · tenure reasons the system sits where it does — things a bioclimatic envelope misses.
+- Use a **graded** constraint (fractional area / production intensity: MapSPAM, GAEZ harvested-area, EO commodity
+  maps, national ag-stats) rather than binary presence where the data support it.
+- **Resolution honesty applies** (§2.4): a coarse distribution layer constrains coarsely; carry that into the
+  uncertainty, don't pretend to fine detail.
+- **Niche / envelope modelling is the fallback**, used only where distribution data are absent or too coarse —
+  and flagged as potential, not realised, extent.
+- Where the family is also about **adaptation** (e.g. shade), reframe the benefit as *prioritising the
+  climate-stressed edge within the observed distribution*, not extending beyond it.
+
+Record the choice (distribution-constrained vs niche-modelled) per family in the target/scope spec (§2.2) so the
+provenance is auditable.
+
+**Mechanism — the BIND registry (schema v0.2.1).** Which dataset supplies a variable is **context-resolved**, not
+fixed globally: the global recipe carries a `global` binding, and a country / AEZ / region can override it with a
+better local dataset (most-specific-context-wins). When a better local dataset is known but not catalogued, the
+binding is `requires_upload` — the runtime uses the global default and **flags the user to supply it**. So "select
+Sierra Leone → use the national cocoa map if present, else prompt for it" is a schema lookup, not a code change.
+See `schema/spec.md` → BIND. Relationship *parameters* are refined in parallel via `T4.context_overrides`.
+
+### 2.6 Variable generalisability & data sovereignty — flag, don't resolve
+
+Variables differ in how freely a global dataset transfers and how politically charged the numbers are. Carry this
+as `VONT.context_sensitivity`:
+
+- **`low`** — generalisable physical variables (slope, climate, terrain). A global dataset transfers across
+  countries; uncontroversial. Set the global binding and move on.
+- **`medium`** — context-dependent but apolitical (soils, land cover, infrastructure). Local data is better where
+  available, via a BIND override.
+- **`high`** — **nationally-derived / sovereignty-sensitive** (population, poverty, crop production). Official
+  figures carry political weight, and a global model (WorldPop, MapSPAM, PIP) can diverge from — or appear to
+  contradict — the country's own numbers. For these, the scoping output should **recommend a country-endorsed
+  source** and treat a global default as provisional.
+
+**The scope line (important).** This is a **flag, not a resolution.** The scoping tool *marks* a variable as
+sensitive and *recommends* the source be confirmed/validated with the country in the **feasibility phase**
+(surfaced in the data-gap prompt and the M6 hand-off). It does **not** negotiate, validate or endorse national
+data itself — that is feasibility work, downstream, and outside this project's rapid-scoping mandate. Naming the
+sensitive variables precisely is exactly the kind of hand-off guidance scoping *should* produce ("confirm these,
+don't trust the global default blindly"); doing the confirmation is not ours to do. Keep it a labelling layer —
+no change to the suitability analysis.
+
 ---
 
 ## 3. Discovery (recall-first — proposes candidates)

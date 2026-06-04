@@ -61,7 +61,7 @@ What M6 explicitly **does not** do (the scope boundary):
 
 1. **Stage pathway** — Scoping (you are here) → Pre-feasibility → Feasibility & design → Implementation; each stage states what it adds.
 2. **Indicative economic snapshot** — render M5/T6 archetype (cost band, benefit-cost, payback) with an explicit "planning-level, full CBA at feasibility" caveat.
-3. **Recommended next steps** — validate priority units in the field (from M4 ranks); stakeholder & tenure mapping; full cost-benefit & financing scan; safeguards/ESG screening — each traced to the tool layer it builds on.
+3. **Recommended next steps** — validate priority units in the field (from M4 ranks); stakeholder & tenure mapping; full cost-benefit & financing scan; safeguards/ESG screening — each traced to the tool layer it builds on. **Confirm country-endorsed data sources** for any variable flagged `context_sensitivity = high` in VONT (population, poverty, production stats): scoping used a global default; feasibility should validate/replace it with a source the country accepts. Scoping *flags* this; it does not negotiate or validate the figures.
 4. **Feasibility methods & tools (guidance notes)** — signpost the valuation toolbox from Stocktake Table 6, grouped: nature-based (IPCC Tier 1–3 carbon, RUSLE erosion, InVEST/ARIES/Co$tingNature), and integrated (CBA, MCDA). Tool names are quiet references, not endorsements. Include the **proportionality principle**: simple methods (benefit transfer, proxy indicators) suffice early; reserve detailed spatial modelling for high-priority sites.
 5. **Design step (tree-based NbS)** — "right-tree-right-place": species/mixture selection, establishment feasibility, future-climate resilience — authored with the MFL sector team (Evert species, Chris biodiversity, Hannes diversification, Sarah ES).
 6. **Context tailoring** — country/NbS-specific guidance; cross-link to the Opportunity Space what-if (e.g. enabling-environment / road investment relaxing a constraint — Laurent's [LF15] point).
@@ -78,6 +78,7 @@ Authored by the MFL/sector team + Pete + Namita as **short, targeted guidance no
 - [ ] Methods block signposts feasibility tools (not just activities) with the proportionality caveat.
 - [ ] Right-tree-right-place design step present for tree-based NbS; MFL signposting included.
 - [ ] Each recommended next step is tied to a specific tool output (e.g. "validate Kenema/Kailahun/Bo = VH suit ∩ hotspot").
+- [ ] `context_sensitivity = high` variables are listed for country-endorsed source confirmation (flag, not validation).
 - [ ] Per-NbS / stacked-cluster tailoring supported.
 
 ## 9. Definition of done

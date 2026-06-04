@@ -71,5 +71,7 @@ outputs/<pilot_id>/
 ## Starting points
 
 1. Wire the **M1 suitability raster pipeline** in `src/nbs_ruralscan/` against the T4 recipe rows (the evidence → recipe engine already produces them).
-2. Build the per-dataset **`data_loaders/`** (GEE-catalog + uploaded assets → local arrays).
+2. Build the per-dataset **`data_loaders/`** (GEE-catalog + uploaded assets → local arrays). For each variable,
+   resolve *which* dataset to use with `nbs_ruralscan.binding.resolve_binding(variable, aoi_contexts)` (BIND
+   registry — global default + per-AOI override) before loading, and surface any `needs_upload` prompts to the user.
 3. Scaffold the **agroforestry pilot notebook** (`notebooks/agroforestry_sle.ipynb`) as a thin driver over the package.

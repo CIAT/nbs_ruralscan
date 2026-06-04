@@ -8,6 +8,7 @@ Written methodology for the Rural NbS Scan — the cross-cutting framework and t
 |---|---|
 | `framework.md` | Cross-cutting methodology — the analytical strategy that applies to all NbS. NbS-agnostic. |
 | `T4_generation_method.md` | **How suitability mappings (T4) are generated from literature** — evidence-first, defensible: discovery → ingestion (vectorless) → evidence registers → synthesis. Covers suitability families, `spatial_product_type`, species-vs-technology, publication-bias handling. |
+| `families/` | Per-NbS **suitability-family schemes** for sign-off — subpractices grouped by dominant limiting factor, keyed to `suitability_family_id`. `families/agroforestry.md` (F1–F5) is in MFL review. |
 | `examples/` | Worked gold standards (e.g. `t4_slice_agroforestry_F1_slope.md`) — one variable end-to-end with full provenance. |
 | `modules/` | M0–M6 (+ M2b) module specs — per-module I/O contracts. |
 | `recipes/water_harvesting.md` | Canonical recipe pattern (May 2026). Reference for all other recipes. |
