@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NbS Schema — Entity Relationship Diagram v0.2.2</title>
+<title>NbS Schema — Entity Relationship Diagram v0.2.3</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 24px; }
@@ -11,6 +11,7 @@
   .subtitle { font-size: 13px; color: #5f5e5a; margin-bottom: 20px; }
 
   .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 12px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
   .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 12px; }
 
   .tbl { border-radius: 10px; overflow: hidden; border: 1.5px solid #d3d1c7; background: #fff; font-size: 12px; }
@@ -37,6 +38,11 @@
   .t6 .tbl-head { background: #fbeaf0; } .t6 .tbl-id, .t6 .tbl-name { color: #72243e; }
   .t7 .tbl-head { background: #f1efe8; } .t7 .tbl-id, .t7 .tbl-name { color: #444441; }
 
+  /* evidence & configuration layer */
+  .reg { border-color: #c9c6d8; }
+  .reg .tbl-head { background: #ecebf3; } .reg .tbl-id, .reg .tbl-name { color: #38346a; }
+  .badge.lit { background: #efe7f7; color: #5a2b86; }
+
   .section-label { font-size: 11px; font-weight: 600; color: #5f5e5a; letter-spacing: .04em; margin: 20px 0 8px; text-transform: uppercase; }
 
   .rel-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
@@ -55,7 +61,7 @@
 <body>
 
 <h1>Rural NbS Scan — Entity Relationship Diagram</h1>
-<p class="subtitle">Schema v0.2.2 · tracks current <code>spec.md</code> (T3 risk_role, T5 theme + weights, canonical relationship types, deduped shared layers) · this diagram shows the T0–T7 core; the evidence &amp; configuration registers (SRC · EV · VONT · FAM · BIND) live in <code>schema/registers/</code> and the <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/spec.md">spec</a> · click to zoom</p>
+<p class="subtitle">Schema v0.2.3 · tracks current <code>spec.md</code> · <strong>all 12 entities</strong> — the T0–T7 analytical core plus the evidence &amp; configuration registers (VONT · FAM · BIND · SRC · EV) — with key fields &amp; joins · click to zoom</p>
 
 <div class="grid-4">
   <div class="tbl t0">
@@ -208,7 +214,97 @@
   </div>
 </div>
 
-<div class="section-label">Relationships</div>
+<div class="section-label">Evidence &amp; configuration layer (upstream of T0–T7 · v0.2.1–3)</div>
+<div class="grid-3">
+  <div class="tbl reg">
+    <div class="tbl-head">
+      <div class="tbl-id">VONT</div>
+      <div class="tbl-name">Variable ontology</div>
+      <div class="tbl-role">Canonical variables — name · unit · resolution validity · sensitivity. Referenced by T2 / T4 / T5 / EV / BIND.</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">canonical_variable_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">label · aliases</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">canonical_unit</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">group_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge ref">REF</span><span class="field-name">candidate_dataset_ids → T1</span><span class="field-type">string[]</span></div>
+      <div class="field"><span class="field-name">min_meaningful_resolution_m</span><span class="field-type">int</span></div>
+      <div class="field"><span class="field-name">resolution_sensitivity</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">context_sensitivity</span><span class="field-type">enum</span></div>
+    </div>
+  </div>
+
+  <div class="tbl reg">
+    <div class="tbl-head">
+      <div class="tbl-id">FAM</div>
+      <div class="tbl-name">Subpractice / suitability-family registry</div>
+      <div class="tbl-role">NbS decomposition — the unit T4 keys to. Grouped by dominant limiting factor.</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">subpractice_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">nbs_id → T0</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">suitability_family_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">dominant_limiting_factor</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">spatial_product_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">grouping_rationale</span><span class="field-type">string</span></div>
+    </div>
+  </div>
+
+  <div class="tbl reg">
+    <div class="tbl-head">
+      <div class="tbl-id">BIND</div>
+      <div class="tbl-name">Dataset binding registry</div>
+      <div class="tbl-role">Context-aware variable → dataset resolution. Global default + per-AOI override; <code>requires_upload</code> flags better local data.</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">binding_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">variable → VONT</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">scope_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">scope_id → T7</span><span class="field-type">string?</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string?</span></div>
+      <div class="field"><span class="field-name">preference_rank</span><span class="field-type">int</span></div>
+      <div class="field"><span class="field-name">status</span><span class="field-type">enum</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="grid-2">
+  <div class="tbl reg">
+    <div class="tbl-head">
+      <div class="tbl-id">SRC</div>
+      <div class="tbl-name">Source register</div>
+      <div class="tbl-role">One row per publication / report / tool. <strong>The only place benchmark tier is stored.</strong></div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">source_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">citation · doi</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">benchmark_tier</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">method_type</span><span class="field-type">enum?</span></div>
+      <div class="field"><span class="field-name">study_country · region · aez</span><span class="field-type">string?</span></div>
+      <div class="field"><span class="field-name">nbs_ids</span><span class="field-type">string[]?</span></div>
+    </div>
+  </div>
+
+  <div class="tbl reg">
+    <div class="tbl-head">
+      <div class="tbl-id">EV</div>
+      <div class="tbl-name">Evidence register</div>
+      <div class="tbl-role">One row per atomic claim (quote + page). The structured replacement for free-text justifications; T2/T3/T4/T5/T6 cite <code>evidence_ids</code>.</div>
+    </div>
+    <div class="tbl-fields">
+      <div class="field"><span class="badge pk">PK</span><span class="field-name">evidence_id</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">source_id → SRC</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">nbs_id → T0</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">suitability_family_id → FAM</span><span class="field-type">string</span></div>
+      <div class="field"><span class="badge fk">FK</span><span class="field-name">variable → VONT</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">use_role · evidence_type</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">claim_basis · claim_scope</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="badge lit">LIT</span><span class="field-name">quote · page</span><span class="field-type">string · int</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section-label">Relationships — core schema (T0–T7)</div>
 <div class="rel-grid">
   <div class="rel-row"><span class="rel-from">T0</span><span class="rel-card">||——o{</span><span class="rel-to">T3</span><span class="rel-on">on nbs_id · one NbS has many hazard mitigation rows</span></div>
   <div class="rel-row"><span class="rel-from">T0</span><span class="rel-card">||——o{</span><span class="rel-to">T4</span><span class="rel-on">on nbs_id · one NbS has many suitability variable rows</span></div>
@@ -219,6 +315,19 @@
   <div class="rel-row"><span class="rel-from">T1</span><span class="rel-card">||——o{</span><span class="rel-to">T7</span><span class="rel-on">on dataset_id · one dataset defines many geo contexts</span></div>
   <div class="rel-row"><span class="rel-from">T5</span><span class="rel-card">||——o{</span><span class="rel-to">T6</span><span class="rel-on">on variable_id · scorecard entries; also modulates nbs_response priority layers per NbS</span></div>
   <div class="rel-row"><span class="rel-from">T7</span><span class="rel-card">}o——o{</span><span class="rel-to">T4</span><span class="rel-on">via context_overrides[ ] · soft many-to-many, validated at load</span></div>
+</div>
+
+<div class="section-label">Relationships — evidence &amp; configuration layer</div>
+<div class="rel-grid">
+  <div class="rel-row"><span class="rel-from">VONT</span><span class="rel-card">||——o{</span><span class="rel-to">T2·T4·T5</span><span class="rel-on">on variable · canonical name/unit/sensitivity governed once</span></div>
+  <div class="rel-row"><span class="rel-from">FAM</span><span class="rel-card">||——o{</span><span class="rel-to">T4</span><span class="rel-on">on suitability_family_id · the unit T4 is keyed to</span></div>
+  <div class="rel-row"><span class="rel-from">T7</span><span class="rel-card">||——o{</span><span class="rel-to">T3 · T0</span><span class="rel-on">on farming_system / farming_systems_applicable · T7 governs the vocabulary (v0.2.3)</span></div>
+  <div class="rel-row"><span class="rel-from">SRC</span><span class="rel-card">||——o{</span><span class="rel-to">EV</span><span class="rel-on">on source_id · one source, many atomic claims (tier stored on SRC)</span></div>
+  <div class="rel-row"><span class="rel-from">EV</span><span class="rel-card">}o——o{</span><span class="rel-to">T2·T3·T4·T5·T6</span><span class="rel-on">via evidence_ids[ ] · provenance, soft, validated at load</span></div>
+  <div class="rel-row"><span class="rel-from">VONT·FAM</span><span class="rel-card">||——o{</span><span class="rel-to">EV</span><span class="rel-on">on variable / suitability_family_id · each claim is scoped to a variable &amp; family</span></div>
+  <div class="rel-row"><span class="rel-from">VONT</span><span class="rel-card">||——o{</span><span class="rel-to">BIND</span><span class="rel-on">on variable · one variable, many context-scoped bindings</span></div>
+  <div class="rel-row"><span class="rel-from">BIND</span><span class="rel-card">}o——o|</span><span class="rel-to">T1</span><span class="rel-on">on dataset_id (optional — blank when requires_upload)</span></div>
+  <div class="rel-row"><span class="rel-from">BIND</span><span class="rel-card">}o——o{</span><span class="rel-to">T7</span><span class="rel-on">on scope_id · which AEZ/country/region the override applies to</span></div>
 </div>
 
 <div class="legend">
@@ -233,7 +342,7 @@
   <br><br>
   <strong>Two-risk split (M2 / M2b):</strong> <code>T3.risk_role</code> tags each hazard×NbS row as <code>livelihood_mitigation</code> (feeds M2) or <code>asset_threat</code> (feeds the M2b project disaster-risk screen, weighted by <code>asset_risk_weight</code>). <strong>NbS-response priority layers</strong> (<code>T5.theme = nbs_response</code>) are derived, not stored — the shared T5 layer is modulated per NbS by the matching T6 effect. <code>T4.relationship_type</code> uses the canonical membership-function set (trapezoidal · gaussian · linear↑/↓ · sigmoid · threshold · piecewise).
   <br><br>
-  <strong>Evidence &amp; configuration layer (v0.2.1–2, not drawn above):</strong> analytical tables now reference canonical variables in <strong>VONT</strong> (name + unit + <code>context_sensitivity</code> live there, once), T4 keys to a suitability family in <strong>FAM</strong>, provenance rows live in <strong>SRC</strong>/<strong>EV</strong> (<code>evidence_ids</code>), and per-context dataset choice is resolved through <strong>BIND</strong>. These registers live in <code>schema/registers/</code> + <code>spec.md</code>.
+  <strong>Evidence &amp; configuration layer (v0.2.1–3, shown above):</strong> analytical tables reference canonical variables in <strong>VONT</strong> (name + unit + <code>context_sensitivity</code> live there, once), T4 keys to a suitability family in <strong>FAM</strong>, provenance rows live in <strong>SRC</strong>/<strong>EV</strong> (cited by <code>evidence_ids</code>), and per-context dataset choice is resolved through <strong>BIND</strong> (global default + per-AOI override / upload-flag). <strong>Value governance:</strong> closed enums are inline in <code>spec.md</code>; open vocabularies are FK-governed — datasets by T1, contexts &amp; farming systems by T7, variables by VONT, families by FAM. Field-level detail in <code>spec.md</code>.
 </div>
 
 </body>

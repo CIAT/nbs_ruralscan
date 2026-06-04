@@ -1,5 +1,10 @@
-# Schema spec — field-level reference (v0.2.2)
+# Schema spec — field-level reference (v0.2.3)
 
+> **v0.2.3 (June 2026)** — documented **value governance** (inline enums vs FK-governed vocabularies) and made
+> `farming_system` (T3) + `farming_systems_applicable` (T0) explicit FKs to **T7** (`context_type =
+> farming_system`); registered the previously-unregistered `irrigated_paddy` + `dryland_cereal` farming systems
+> in T7; validator now catches farming-system drift. Additive.
+>
 > **v0.2.2 (June 2026)** — added optional `VONT.context_sensitivity` (`low`/`medium`/`high`): flags
 > nationally-derived / sovereignty-sensitive variables (population, poverty, production) so the scoping
 > output recommends a country-endorsed source. A **flag for hand-off, not analysis** — scoping flags, the
@@ -40,6 +45,24 @@ analytical backbone of the Rural NbS Scan. They are the authoritative starting p
 
 All tables link via three foreign keys: `nbs_id` (from T0), `dataset_id` (from T1), `variable_id` (from T5).
 
+### Value governance — where each field's allowed values live
+
+A field's controlled vocabulary sits in one of two places:
+
+- **Inline enums** — closed value sets are listed in the field's description here in `spec.md` (e.g.
+  `risk_component`, `relationship_type`, `cluster`, `spatial_product_type`, `context_sensitivity`). The
+  description *is* the vocabulary.
+- **FK-governed vocabularies** — open / extensible value sets are owned by a table and referenced by foreign
+  key: datasets → **T1**, NbS → **T0**, opportunity variables → **T5**, canonical variables → **VONT**,
+  suitability families → **FAM**, evidence → **EV** / sources → **SRC**, and **geographic & farming-system
+  contexts → T7** (`aez`, `farming_system`, `admin_*`, `hydrobasin`). To extend one of these, add a row to the
+  governing table — never invent a value inline.
+
+So **`farming_system` (T3) and `farming_systems_applicable` (T0) are governed by T7** — the rows with
+`context_type = farming_system` (FAO/IIASA-sourced) — with `all` as the only allowed wildcard. The structure
+validator enforces these FKs; an unregistered value is flagged rather than silently accepted. (Method §2.3 lists
+the vocabularies to lock up front.)
+
 ## Table overview
 
 | Table | Primary purpose | Owner | Per-NbS? | Location in repo |
@@ -72,7 +95,7 @@ before populating any other table. `economic_archetype` maps to the CrossBoundar
 | `cluster` | enum | Required | `tree_based` \| `soil_water` \| `wetland` \| `pastoral` \| `landscape_scale`. | `tree_based` |
 | `description_short` | string | Required | 1–2 sentence plain-language summary. | `Deliberate integration of trees…` |
 | `description_technical` | string | Required | Technical description for methodology docs. | `Agroforestry encompasses…` |
-| `farming_systems_applicable` | string[] | Required | FAO/IIASA farming-system IDs, or `all`. | `['mixed_rainfed','irrigated_paddy']` |
+| `farming_systems_applicable` | string[] | Required | FK list → T7 (`context_type = farming_system`; FAO/IIASA-sourced), or `all`. | `['mixed_rainfed','irrigated_paddy']` |
 | `implementation_scale` | enum | Required | `plot` \| `farm` \| `landscape` \| `watershed`. | `farm` |
 | `establishment_period_years` | object | Required | `{ min, max, typical }`. | `{ min: 2, max: 10, typical: 5 }` |
 | `economic_archetype` | enum | Required | `high_capital` \| `long_horizon` \| `fragile_gains` \| `quick_returns`. | `long_horizon` |
@@ -161,7 +184,7 @@ plot). M2b reads the `asset_threat` rows and their `asset_risk_weight`; M2 reads
 | `record_id` | string | Required | Unique row identifier. | `agro_drought_mixed_rainfed` |
 | `nbs_id` | string | Required | FK → `T0.nbs_id`. | `agroforestry` |
 | `hazard_type` | enum | Required | `drought` \| `flood` \| `heat_stress` \| `fire` \| `wind_cyclone` \| `waterlogging` \| `frost`. | `drought` |
-| `farming_system` | string | Required | Farming-system context, or `all`. | `mixed_rainfed` |
+| `farming_system` | string | Required | FK → T7 (rows with `context_type = farming_system`), or `all` where the relationship holds universally. | `mixed_rainfed` |
 | `mitigation_potential` | enum | Required | 7-point: `very_negative` \| `negative` \| `none` \| `low` \| `moderate` \| `high` \| `very_high`. | `moderate` |
 | `risk_role` | enum | Required | Which lens this row serves. `livelihood_mitigation` (NbS *mitigates* this hazard → M2 need layer) \| `asset_threat` (hazard *damages the NbS asset* but is not mitigated → M2b project-risk) \| `both`. | `livelihood_mitigation` |
 | `asset_risk_weight` | float | Conditional | Required when `risk_role` includes `asset_threat`. Default weight (0–1) of this hazard in the M2b project disaster-risk rating for this NbS; per-NbS `asset_threat` weights sum to 1. Blank for pure `livelihood_mitigation` rows. | `0.40` |

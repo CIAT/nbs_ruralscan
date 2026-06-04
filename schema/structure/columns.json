@@ -1,5 +1,5 @@
 {
-  "manifest_version": "0.2.1-structure-frozen",
+  "manifest_version": "0.2.3-structure-frozen",
   "spec_source": "schema/spec.md",
   "generated": "2026-06-04",
   "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
@@ -19,7 +19,7 @@
       "optional": ["aliases", "upfront_cost_usd_ha"],
       "conditional": [],
       "derived": [],
-      "fk": {}
+      "fk": {"farming_systems_applicable": {"targets": ["T7.context_id"], "literals": ["all"]}}
     },
     "T1": {
       "name": "Data Registry",
@@ -52,7 +52,7 @@
       "optional": ["caveats", "justification"],
       "conditional": ["asset_risk_weight"],
       "derived": [],
-      "fk": {"nbs_id": "T0.nbs_id", "evidence_ids": "EV.evidence_id"}
+      "fk": {"nbs_id": "T0.nbs_id", "farming_system": {"targets": ["T7.context_id"], "literals": ["all"]}, "evidence_ids": "EV.evidence_id"}
     },
     "T4": {
       "name": "Suitability Variable Mappings",
