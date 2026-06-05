@@ -124,6 +124,61 @@ No existing column meanings change. Default for legacy rows: `risk_role = liveli
 5. Institutional/social constraints (conflict, cohesion) — in-scope for v0 or deferred? (Data availability and country-agnosticism are the constraints.)
 6. On-by-default or optional? Suggest optional tab for v0, opt-in scope on hotspots.
 
-## 12. Version history
+## 12. Two streams — Stream A (asset hazard) + Stream B (operational/enabling) — v0.3.0
+
+Sections 1-11 above describe **Stream A — asset hazard exposure**: T2 hazards × T3
+`asset_threat` / `asset_risk_weight`, baseline + future, modulated by T0
+`establishment_period_years` (a 30-year tree-crop investment is more exposed to slow-onset
+climate change than a 3-year annual cropping intervention).
+
+**Stream B — operational / enabling environment** is added at v0.3.0 to cover the
+investment-readiness levers TTLs need to surface. **Soft / investment-addressable**: each
+variable is a scenario lever ("what if road access improved?"), **not** baked into the
+opportunity-space surface; **filter / flag, never summed** into hotspots. Hard exclusions
+(legal protected areas, water bodies, urban) remain T4 masks per the v0.2.6 hard-vs-soft
+decision.
+
+| Stream-B lever | Variable family | Datasets / sources | T4 row |
+|---|---|---|---|
+| Accessibility | travel time to market / town | Nelson accessibility, Weiss et al. | `accessibility_travel_time` |
+| Electrification | grid coverage, night-lights | World Bank Energy / VIIRS night-lights | `electrification_index` |
+| Tenure (incl. IPLC) | land tenure security, customary/IPLC lands | **LandMark** + **WWF/ICCA** + Prindex; carries **FPIC / ESS7 safeguard flag** | `tenure_security` |
+| Conflict / fragility | sub-national conflict events + WB FCV list | **ACLED** + WB FCV list | `conflict_fragility_index` |
+| Governance / extension | extension-service coverage, governance quality | WB WGI, country-team uploads | `extension_governance` |
+| Finance / credit | rural credit / micro-finance / project portfolio | WB project-funding density, FinScope | `finance_credit_access` |
+| Market / value-chain | output-market depth + processing capacity | FAOSTAT + country-team uploads | `market_value_chain` |
+| Labour | seasonal labour availability + cost | ILO + LSMS-ISA / country uploads | `labour_availability` |
+
+**Stream-B principle (filter, never summed):**
+
+- Each lever becomes a T4 row with `suitability_dimension = operational_constraint` and
+  `is_scenario_candidate = true`. Together they constitute the *enabling-environment scope*
+  in the wireframe — a third hotspot scope (`Project-Risk + Operational-Readiness` is the
+  full M2b lens; Sections 1-11 cover the hazard-exposure half).
+- **Hard exclusions** remain T4 masks (`is_scenario_candidate = false`): legal protected
+  areas, urban/built-up, water bodies, formally-designated reserves. Soft levers don't get
+  promoted to hard exclusions on the scoping timescale.
+- **Scoping flags; feasibility validates.** M2b surfaces *where the investment is fragile or
+  the enabling environment is thin*; the project team handles validation, FPIC, ESS7
+  procedural compliance downstream.
+- **IPLC tenure** carries an explicit safeguard flag: a hotspot that overlaps IPLC customary
+  land triggers `FPIC_REQUIRED = true` in the M6 hand-off + a scorecard note. LandMark + WWF/
+  ICCA layers are the spatial input; ESS7 is the WB Operational Policy hook.
+
+**Discovery sources for Stream B** (T4 method §3 seed-set rule applies):
+
+- **Accessibility / electrification**: WorldPop, Nelson accessibility, VIIRS, WB Energy.
+- **Tenure / IPLC**: LandMark + WWF/ICCA + Prindex.
+- **Conflict / fragility**: ACLED, WB FCV list, ND-GAIN.
+- **Governance / extension**: WB WGI + project-level evidence (WB PADs / ICRs).
+- **Finance**: WB FAR (Financial Access Report), FinScope, project-portfolio density.
+- **Labour**: ILO statistics, LSMS-ISA, country-team uploads.
+
+## 13. Version history
 
 - **v0.1** (June 2026) — addendum drafted to pin down the project-disaster-risk method ahead of the standalone Project Risk tab and its later use as a hotspot scope. Structure mirrors `M2_climate_risk.md`. Schema additions raised as an RFC; combination stance (filter-not-sum) specified to keep the double-count guard intact.
+- **v0.2** (June 2026 — v0.3.0 schema batch) — added §12 **Stream-B operational/enabling
+  levers**: accessibility, electrification, tenure (with FPIC/ESS7 flag for IPLC overlap),
+  conflict/fragility, governance, finance, market, labour. Each lands as a T4
+  `operational_constraint` row with `is_scenario_candidate = true`. Filter / flag, never
+  summed.
