@@ -14,10 +14,11 @@
     "variable": "annual_precipitation",
     "scope_type": "global",
     "scope_id": "",
-    "dataset_id": "chirps_precipitation_v2",
+    "dataset_id": "chelsa_bioclim_v21_baseline",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "CHIRPS ~5 km baseline rainfall."
+    "fitness_note": "CHELSA v2.1 BIO12 (annual precip) \u2014 bias-corrected high-res; preferred over CHIRPS for static climatology.",
+    "band": "BIO12"
   },
   {
     "binding_id": "cocoa_distribution__global",
@@ -27,16 +28,26 @@
     "dataset_id": "mapspam_cocoa_2020",
     "preference_rank": 2,
     "status": "catalogued",
-    "fitness_note": "MapSPAM ~10 km harvested-area fraction — coarse global default."
+    "fitness_note": "MapSPAM ~10 km harvested-area fraction \u2014 coarse global default."
   },
   {
-    "binding_id": "cocoa_distribution__sle",
+    "binding_id": "cocoa_distribution__SLE",
     "variable": "cocoa_distribution",
     "scope_type": "admin_country",
-    "scope_id": "sle",
+    "scope_id": "SLE",
     "dataset_id": "",
     "preference_rank": 1,
     "status": "requires_upload",
     "fitness_note": "National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot."
+  },
+  {
+    "binding_id": "mean_annual_temperature__global",
+    "variable": "mean_annual_temperature",
+    "scope_type": "global",
+    "dataset_id": "chelsa_bioclim_v21_baseline",
+    "band": "BIO1",
+    "preference_rank": 1,
+    "status": "catalogued",
+    "fitness_note": "CHELSA BIO1 = annual mean temperature; multi-band asset, band-resolved via this binding."
   }
 ]

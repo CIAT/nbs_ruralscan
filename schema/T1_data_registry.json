@@ -5,19 +5,23 @@
     "analytical_module": "climate_hazard",
     "hazard_type": "multi",
     "scenario_type": "baseline",
-    "time_period": "1970–2000",
+    "time_period": "1970\u20132000",
     "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff",
     "access_type": "direct_download",
     "download_url": "https://www.worldclim.org/data/worldclim21.html",
     "gee_asset_id": "WORLDCLIM/V1/BIO",
     "license": "CC-BY-4.0",
-    "citation": "Fick, S.E. & Hijmans, R.J. (2017). WorldClim 2: new 1km spatial resolution climate surfaces for global land areas. International Journal of Climatology, 37(12), 4302–4315.",
+    "citation": "Fick, S.E. & Hijmans, R.J. (2017). WorldClim 2: new 1km spatial resolution climate surfaces for global land areas. International Journal of Climatology, 37(12), 4302\u20134315.",
     "doi": "10.1002/joc.5086",
     "version": "v2.1",
     "preprocessing_notes": "Resample to 1 km COG, clip to AOI. BIO1=Annual Mean Temp; BIO12=Annual Precipitation; BIO15=Precipitation Seasonality most relevant for agroforestry suitability.",
-    "limitations": "30-year climatological mean; does not capture interannual variability or extremes. Resolution may mask local topographic effects. Not for: Site-level microclimate analysis or real-time weather monitoring"
+    "limitations": "30-year climatological mean; does not capture interannual variability or extremes. Resolution may mask local topographic effects. Not for: Site-level microclimate analysis or real-time weather monitoring",
+    "description": "Global gridded bioclimatic variables (BIO1-BIO19) derived from 1970-2000 monthly temperature and precipitation.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "chelsa_bioclim_v21_baseline",
@@ -25,9 +29,11 @@
     "analytical_module": "climate_hazard",
     "hazard_type": "multi",
     "scenario_type": "baseline",
-    "time_period": "1981–2010",
+    "time_period": "1981\u20132010",
     "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "direct_download",
     "download_url": "https://chelsa-climate.org/bioclim/",
@@ -37,27 +43,33 @@
     "doi": "10.1038/sdata.2017.122",
     "version": "v2.1",
     "preprocessing_notes": "Resample to 1 km COG. CHELSA-BIOCLIM+ Version 1.2 used by Yadav et al. (2024) for agroforestry suitability in Punjab. Use Bio1 (Annual Mean Temp), Bio12 (Annual Precipitation), Tmax_Jan, Tmax_May.",
-    "limitations": "Statistical downscaling from ERA5; may show artefacts in complex terrain. Less validated over Africa and Central Asia. Not for: Short-term weather forecasting or sub-field precision agriculture"
+    "limitations": "Statistical downscaling from ERA5; may show artefacts in complex terrain. Less validated over Africa and Central Asia. Not for: Short-term weather forecasting or sub-field precision agriculture",
+    "description": "Bias-corrected high-resolution global bioclimatic variables, climatology 1981-2010 (~1 km).",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "chelsa_bioclim_ssp245_2050",
-    "dataset_name": "CHELSA Bioclimatic Variables v2.1 (SSP2-4.5, 2041–2070)",
+    "dataset_name": "CHELSA Bioclimatic Variables v2.1 (SSP2-4.5, 2041\u20132070)",
     "analytical_module": "climate_hazard",
     "hazard_type": "heat_stress",
     "scenario_type": "future_ssp245",
-    "time_period": "2041–2070",
+    "time_period": "2041\u20132070",
     "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "direct_download",
     "download_url": "https://chelsa-climate.org/cmip6/",
     "gee_asset_id": null,
     "license": "CC-BY-4.0",
-    "citation": "Karger, D.N. et al. (2023). CHELSA-W5E5: Daily 1 km meteorological forcing data for climate impact studies. Earth System Science Data, 15, 2445–2464.",
+    "citation": "Karger, D.N. et al. (2023). CHELSA-W5E5: Daily 1 km meteorological forcing data for climate impact studies. Earth System Science Data, 15, 2445\u20132464.",
     "doi": "10.5194/essd-15-2445-2023",
     "version": "v2.1",
     "preprocessing_notes": "Use delta-change approach relative to baseline. Clip to project AOI. Ensemble mean of available CMIP6 GCMs preferred.",
-    "limitations": "Ensemble spread is wide in tropical regions. Precipitation projections carry higher uncertainty than temperature. Not for: Single-GCM deterministic planning; local infrastructure design"
+    "limitations": "Ensemble spread is wide in tropical regions. Precipitation projections carry higher uncertainty than temperature. Not for: Single-GCM deterministic planning; local infrastructure design",
+    "description": "CHELSA bioclimatic variables under SSP2-4.5 around 2050 (CMIP6 ensemble downscaled).",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "spei_global_v26",
@@ -65,49 +77,57 @@
     "analytical_module": "climate_hazard",
     "hazard_type": "drought",
     "scenario_type": "baseline",
-    "time_period": "1950–2020",
+    "time_period": "1950\u20132020",
     "spatial_resolution_m": 55000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "netcdf",
     "access_type": "direct_download",
     "download_url": "https://spei.csic.es/database.html",
     "gee_asset_id": null,
     "license": "CC-BY-4.0",
-    "citation": "Vicente-Serrano, S.M. et al. (2010). A Multiscalar Drought Index Sensitive to Global Warming: The Standardized Precipitation Evapotranspiration Index. Journal of Climate, 23(7), 1696–1718.",
+    "citation": "Vicente-Serrano, S.M. et al. (2010). A Multiscalar Drought Index Sensitive to Global Warming: The Standardized Precipitation Evapotranspiration Index. Journal of Climate, 23(7), 1696\u20131718.",
     "doi": "10.1175/2009JCLI2909.1",
     "version": "v2.6",
-    "preprocessing_notes": "Extract SPEI-12 (12-month accumulation window) for drought risk. Compute mean and trend over 1981–2010 baseline. Bilinearly resample to 1 km for overlay.",
-    "limitations": "Very coarse native resolution (0.5°). Misses sub-regional drought heterogeneity. PET estimation method affects values. Not for: Farm-level drought monitoring; flash drought detection"
+    "preprocessing_notes": "Extract SPEI-12 (12-month accumulation window) for drought risk. Compute mean and trend over 1981\u20132010 baseline. Bilinearly resample to 1 km for overlay.",
+    "limitations": "Very coarse native resolution (0.5\u00b0). Misses sub-regional drought heterogeneity. PET estimation method affects values. Not for: Farm-level drought monitoring; flash drought detection",
+    "description": "Standardized Precipitation-Evapotranspiration Index, global ~55 km, monthly 1901-present.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "isric_soilgrids250_v2",
     "dataset_name": "ISRIC SoilGrids 250m v2.0",
     "analytical_module": "structural_suitability",
     "hazard_type": null,
-    "scenario_type": "baseline",
-    "time_period": "circa 2000–2015",
+    "time_period": "circa 2000\u20132015",
     "spatial_resolution_m": 250,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "gee_asset",
     "download_url": "https://www.isric.org/explore/soilgrids",
     "gee_asset_id": "projects/soilgrids-isric/",
     "license": "CC-BY-4.0",
-    "citation": "Poggio, L. et al. (2021). SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL, 7, 217–240.",
+    "citation": "Poggio, L. et al. (2021). SoilGrids 2.0: producing soil information for the globe with quantified spatial uncertainty. SOIL, 7, 217\u2013240.",
     "doi": "10.5194/soil-7-217-2021",
     "version": "v2.0",
-    "preprocessing_notes": "Extract layers at 0–30 cm depth (topsoil) and 30–60 cm (subsoil). Resample to 1 km. pH, SOC, clay content, CEC are primary agroforestry suitability constraints per Ahmad et al. (2020), Chuma et al. (2021), Haile (2024).",
-    "limitations": "Prediction uncertainty is high in data-sparse regions (much of sub-Saharan Africa). Point observations biased toward accessible areas. Temporal static — does not capture land-use change effects on soil. Not for: Precision soil management at plot level; nutrient management plans without ground-truthing"
+    "preprocessing_notes": "Extract layers at 0\u201330 cm depth (topsoil) and 30\u201360 cm (subsoil). Resample to 1 km. pH, SOC, clay content, CEC are primary agroforestry suitability constraints per Ahmad et al. (2020), Chuma et al. (2021), Haile (2024).",
+    "limitations": "Prediction uncertainty is high in data-sparse regions (much of sub-Saharan Africa). Point observations biased toward accessible areas. Temporal static \u2014 does not capture land-use change effects on soil. Not for: Precision soil management at plot level; nutrient management plans without ground-truthing",
+    "description": "Global digital soil mapping (250 m) of physical and chemical soil properties at six depths.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "hwsd_v2",
     "dataset_name": "Harmonized World Soil Database v2.0",
     "analytical_module": "structural_suitability",
     "hazard_type": null,
-    "scenario_type": "baseline",
-    "time_period": "circa 1990–2007",
+    "time_period": "circa 1990\u20132007",
     "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff",
     "access_type": "direct_download",
     "download_url": "https://www.fao.org/soils-portal/soil-survey/soil-maps-and-databases/harmonized-world-soil-database-v20/en/",
@@ -117,17 +137,20 @@
     "doi": "10.4060/cc3823en",
     "version": "v2.0",
     "preprocessing_notes": "Used by Ahmad et al. (2020) as primary soil input for South Asia agroforestry suitability. Join soil mapping unit attributes on raster values. Extract topsoil properties for suitability scoring.",
-    "limitations": "Coarser conceptual resolution than SoilGrids despite same pixel size — many large mapping units contain internally variable soils. Outdated in rapidly changing agricultural areas. Not for: Detailed site characterisation; soil carbon accounting"
+    "limitations": "Coarser conceptual resolution than SoilGrids despite same pixel size \u2014 many large mapping units contain internally variable soils. Outdated in rapidly changing agricultural areas. Not for: Detailed site characterisation; soil carbon accounting",
+    "description": "Harmonized World Soil Database v2 \u2014 global ~1 km soil units with property attributes.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "srtm_dem_90m",
     "dataset_name": "SRTM Digital Elevation Model (90m / 30m)",
     "analytical_module": "structural_suitability",
     "hazard_type": null,
-    "scenario_type": "baseline",
     "time_period": "2000",
     "spatial_resolution_m": 30,
-    "geographic_coverage": "Global (56°S–60°N)",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "gee_asset",
     "download_url": "https://dwtkns.com/srtm30m/",
@@ -137,17 +160,20 @@
     "doi": "10.1029/2005RG000183",
     "version": "v3",
     "preprocessing_notes": "Derive slope (degrees) and aspect from DEM in GEE. Slope is primary biophysical constraint for agroforestry machinery access and erosion risk. Used across nearly all 23 AF papers in stocktake (Ahmad et al. 2017, 2018, 2020; Chuma et al. 2021; Haile 2024; Nath et al. 2021; Mushtaq et al. 2023; Seja et al. 2022; Wotlolan et al. 2021).",
-    "limitations": "Voids in high-relief areas filled with ASTER or other interpolation methods — check for artefacts. Vegetation canopy not filtered — potential overestimation of elevation under forest cover. Not for: Hydraulic modelling requiring bare-earth DEM; landslide hazard at plot scale"
+    "limitations": "Voids in high-relief areas filled with ASTER or other interpolation methods \u2014 check for artefacts. Vegetation canopy not filtered \u2014 potential overestimation of elevation under forest cover. Not for: Hydraulic modelling requiring bare-earth DEM; landslide hazard at plot scale",
+    "description": "Shuttle Radar Topography Mission digital elevation model, 3 arc-second (~90 m), 56\u00b0S-60\u00b0N.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "esa_worldcover_2021",
     "dataset_name": "ESA WorldCover 2021 (10m Land Cover)",
     "analytical_module": "structural_suitability",
     "hazard_type": null,
-    "scenario_type": "baseline",
     "time_period": "2021",
     "spatial_resolution_m": 10,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "gee_asset",
     "download_url": "https://esa-worldcover.org/",
@@ -157,7 +183,9 @@
     "doi": "10.5281/zenodo.7254221",
     "version": "v200 (2021)",
     "preprocessing_notes": "Reclassify to agricultural mask (cropland, grassland, sparse vegetation) to define eligible agroforestry conversion area. Exclude built-up, water bodies, bare soil with high salinity. Aggregate to 100m or 1km for pipeline. Used as LULC base by multiple AF studies.",
-    "limitations": "Mixed-pixel confusion in fragmented agricultural landscapes. Annual snapshot — does not capture seasonal cultivation. Accuracy lower in arid landscapes and under cloud cover. Not for: Crop-type mapping; sub-field land use classification"
+    "limitations": "Mixed-pixel confusion in fragmented agricultural landscapes. Annual snapshot \u2014 does not capture seasonal cultivation. Accuracy lower in arid landscapes and under cloud cover. Not for: Crop-type mapping; sub-field land use classification",
+    "description": "ESA WorldCover 10 m global land-cover map (2021), Sentinel-1/2 derived 11-class classification.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "global_aridity_index_v3",
@@ -165,9 +193,11 @@
     "analytical_module": "climate_hazard",
     "hazard_type": "drought",
     "scenario_type": "baseline",
-    "time_period": "1970–2000",
+    "time_period": "1970\u20132000",
     "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff",
     "access_type": "direct_download",
     "download_url": "https://figshare.com/articles/dataset/Global_Aridity_Index_and_Potential_Evapotranspiration_ET0_Climate_Database_v2/7504448",
@@ -177,17 +207,19 @@
     "doi": "10.6084/m9.figshare.7504448",
     "version": "v3",
     "preprocessing_notes": "AI < 0.5 = dryland; used to mask unsuitable extreme arid zones for agroforestry. Ahmad et al. (2020) use aridity index as key suitability layer for South Asia. Nath et al. (2021) use Global Aridity Index for Himalayan region.",
-    "limitations": "Derived from WorldClim 1970–2000 climatology — does not reflect recent drying trends. PET estimated with Penman-Monteith assuming reference crop. Not for: Real-time drought monitoring; current water stress assessment"
+    "limitations": "Derived from WorldClim 1970\u20132000 climatology \u2014 does not reflect recent drying trends. PET estimated with Penman-Monteith assuming reference crop. Not for: Real-time drought monitoring; current water stress assessment",
+    "description": "Global-Aridity Index v3 \u2014 long-term P/PET ratio at ~1 km (CGIAR-CSI).",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "protected_areas_wdpa",
     "dataset_name": "World Database on Protected Areas (WDPA)",
     "analytical_module": "structural_suitability",
     "hazard_type": null,
-    "scenario_type": "baseline",
     "time_period": "Updated monthly",
-    "spatial_resolution_m": 30,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "shapefile",
     "access_type": "direct_download",
     "download_url": "https://www.protectedplanet.net/en/thematic-areas/wdpa",
@@ -196,18 +228,20 @@
     "citation": "UNEP-WCMC & IUCN (2024). Protected Planet: The World Database on Protected Areas (WDPA). Cambridge: UNEP-WCMC and IUCN.",
     "doi": null,
     "version": "Monthly release May 2026",
-    "preprocessing_notes": "Rasterize to 100m. Hard exclusion mask for IUCN categories Ia, Ib, II for agroforestry suitability (conversion not permitted). Categories V, VI may allow agroforestry within management plans — flag as conditional. Used by Chuma et al. (2021) as exclusion layer around Itombwe Nature Reserve.",
-    "limitations": "Boundary data quality varies by country. Some protected areas are paper parks with little enforcement. Does not capture community conserved areas (OECMs) comprehensively. Not for: Legal compliance decisions; site-level permitting"
+    "preprocessing_notes": "Rasterize to 100m. Hard exclusion mask for IUCN categories Ia, Ib, II for agroforestry suitability (conversion not permitted). Categories V, VI may allow agroforestry within management plans \u2014 flag as conditional. Used by Chuma et al. (2021) as exclusion layer around Itombwe Nature Reserve.",
+    "limitations": "Boundary data quality varies by country. Some protected areas are paper parks with little enforcement. Does not capture community conserved areas (OECMs) comprehensively. Not for: Legal compliance decisions; site-level permitting",
+    "description": "World Database on Protected Areas \u2014 global polygons of legally protected sites (UNEP-WCMC / IUCN).",
+    "grain_type": "vector"
   },
   {
     "dataset_id": "osm_road_network",
     "dataset_name": "OpenStreetMap Road Network",
     "analytical_module": "structural_suitability",
     "hazard_type": null,
-    "scenario_type": "baseline",
     "time_period": "Updated continuously (use annual snapshot)",
-    "spatial_resolution_m": 30,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "shapefile",
     "access_type": "direct_download",
     "download_url": "https://download.geofabrik.de/",
@@ -217,17 +251,20 @@
     "doi": null,
     "version": "2024 annual snapshot",
     "preprocessing_notes": "Compute Euclidean distance to nearest road of any class. Used by Chuma et al. (2021) as infrastructure accessibility layer. Apply 5km threshold as moderate accessibility constraint for agroforestry market access. is_scenario_candidate = true (road investment can change this).",
-    "limitations": "OSM coverage quality is highly variable in rural sub-Saharan Africa, Central Asia, and remote tropical regions — significant under-mapping in key project areas. Validate against national road datasets where possible. Not for: Routing or logistics planning; travel-time modelling without validation"
+    "limitations": "OSM coverage quality is highly variable in rural sub-Saharan Africa, Central Asia, and remote tropical regions \u2014 significant under-mapping in key project areas. Validate against national road datasets where possible. Not for: Routing or logistics planning; travel-time modelling without validation",
+    "description": "OpenStreetMap global road network vector lines, multiple admin levels.",
+    "grain_type": "vector"
   },
   {
     "dataset_id": "worldpop_population_density",
     "dataset_name": "WorldPop Population Density 2020 (constrained, 100m)",
     "analytical_module": "exposure",
     "hazard_type": null,
-    "scenario_type": "baseline",
     "time_period": "2020",
     "spatial_resolution_m": 100,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "direct_download",
     "download_url": "https://hub.worldpop.org/geodata/listing?id=75",
@@ -237,17 +274,20 @@
     "doi": "10.5258/SOTON/WP00674",
     "version": "2020",
     "preprocessing_notes": "Aggregate to 1 km for pipeline. Use as proxy for population exposure in climate risk and as denominator for opportunity space poverty metrics.",
-    "limitations": "Constrained model relies on settlement/building footprint mapping — may undercount nomadic/dispersed rural populations. Accuracy varies with census quality of input data. Not for: Individual household targeting; electoral boundary analysis"
+    "limitations": "Constrained model relies on settlement/building footprint mapping \u2014 may undercount nomadic/dispersed rural populations. Accuracy varies with census quality of input data. Not for: Individual household targeting; electoral boundary analysis",
+    "description": "Global gridded population estimates at 100 m for the year stated (WorldPop).",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "fao_gsoc_map",
     "dataset_name": "FAO Global Soil Organic Carbon Map (GSOCmap) v1.6.1",
     "analytical_module": "opportunity_space",
     "hazard_type": null,
-    "scenario_type": "baseline",
-    "time_period": "circa 2010–2015",
+    "time_period": "circa 2010\u20132015",
     "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff",
     "access_type": "direct_download",
     "download_url": "https://www.fao.org/soils-portal/soil-survey/soil-maps-and-databases/global-soil-organic-carbon-map-gsocmap/en/",
@@ -256,38 +296,44 @@
     "citation": "FAO & ITPS (2018). Global Soil Organic Carbon Map (GSOCmap) v1.6.1. Technical Report. FAO, Rome.",
     "doi": "10.4060/I8891EN",
     "version": "v1.6.1",
-    "preprocessing_notes": "Use as carbon co-benefit layer in opportunity space. Mendonça et al. (2023) use SOC sequestration potential as an agroforestry prioritisation criterion. Kiziridis et al. (2026) map silvopastoral carbon sequestration. Complement with FAO GSOCseq for sequestration rate.",
-    "limitations": "Country submissions vary in quality and methodology. National and sub-national SOC maps (where available) should be used in preference. Not for: Carbon crediting baselines without country-specific validation; REDD+ baseline setting"
+    "preprocessing_notes": "Use as carbon co-benefit layer in opportunity space. Mendon\u00e7a et al. (2023) use SOC sequestration potential as an agroforestry prioritisation criterion. Kiziridis et al. (2026) map silvopastoral carbon sequestration. Complement with FAO GSOCseq for sequestration rate.",
+    "limitations": "Country submissions vary in quality and methodology. National and sub-national SOC maps (where available) should be used in preference. Not for: Carbon crediting baselines without country-specific validation; REDD+ baseline setting",
+    "description": "FAO Global Soil Organic Carbon map \u2014 country-validated 1 km topsoil (0-30 cm) SOC stocks.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "gaez_v4_aez33",
     "dataset_name": "FAO-IIASA Global Agro-Ecological Zones v4 (33-class AEZ)",
     "analytical_module": "geographic_context",
     "hazard_type": null,
-    "scenario_type": "baseline",
-    "time_period": "1981–2010",
+    "time_period": "1981\u20132010",
     "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff",
     "access_type": "direct_download",
     "download_url": "https://gaez.fao.org/",
     "gee_asset_id": null,
     "license": "CC-BY-4.0",
-    "citation": "FAO & IIASA (2021). Global Agro-Ecological Zones – GAEZ v4. FAO, Rome & IIASA, Laxenburg.",
+    "citation": "FAO & IIASA (2021). Global Agro-Ecological Zones \u2013 GAEZ v4. FAO, Rome & IIASA, Laxenburg.",
     "doi": "10.4060/cb4744en",
     "version": "v4",
     "preprocessing_notes": "Use for AEZ context classification in T7. Key AEZ groups for agroforestry context overrides: humid tropics, sub-humid tropics, semi-arid, highland tropics.",
-    "limitations": "AEZ boundaries are climate-envelope based and do not capture soil or management diversity within zones. Not for: Crop yield modelling at field scale"
+    "limitations": "AEZ boundaries are climate-envelope based and do not capture soil or management diversity within zones. Not for: Crop yield modelling at field scale",
+    "description": "Global Agro-Ecological Zones v4 \u2014 33-class agro-ecological zoning at ~1 km.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "fao_farming_systems",
     "dataset_name": "FAO/IFAD Farming Systems of the World (Dixon et al. 2001 / updated)",
     "analytical_module": "geographic_context",
     "hazard_type": null,
-    "scenario_type": "baseline",
     "time_period": "circa 2000",
     "spatial_resolution_m": 10000,
-    "geographic_coverage": "Global (developing regions)",
+    "geographic_coverage": [
+      "developing_regions"
+    ],
     "data_format": "shapefile",
     "access_type": "direct_download",
     "download_url": "https://www.fao.org/family-farming/detail/en/c/285215/",
@@ -297,17 +343,19 @@
     "doi": null,
     "version": "2001 (base); updated regional maps where available",
     "preprocessing_notes": "Rasterize at 10 km then resample to 1 km with majority resampling. Used to populate T7 farming system contexts and to apply context-specific suitability overrides in T4.",
-    "limitations": "Classification is 20+ years old; agricultural systems have shifted significantly in some regions. Mixed-farming boundaries are expert-delineated and coarse. Not for: Subnational farming system analysis without local validation"
+    "limitations": "Classification is 20+ years old; agricultural systems have shifted significantly in some regions. Mixed-farming boundaries are expert-delineated and coarse. Not for: Subnational farming system analysis without local validation",
+    "description": "FAO Dixon farming-systems typology for developing regions (Africa/Asia/Latin America).",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "world_bank_poverty_pip",
-    "dataset_name": "World Bank Poverty and Inequality Platform — Subnational Poverty Estimates",
+    "dataset_name": "World Bank Poverty and Inequality Platform \u2014 Subnational Poverty Estimates",
     "analytical_module": "opportunity_space",
     "hazard_type": null,
-    "scenario_type": "baseline",
-    "time_period": "Most recent available (2015–2023)",
-    "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global (subnational admin-1 or admin-2 where available)",
+    "time_period": "Most recent available (2015\u20132023)",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "csv",
     "access_type": "api",
     "download_url": "https://pip.worldbank.org/",
@@ -317,27 +365,33 @@
     "doi": null,
     "version": "2024 release",
     "preprocessing_notes": "Interpolate to raster using admin boundary weights and WorldPop population density. Combine with spatial poverty maps (e.g. CGIAR CELL5M poverty layers) for higher-resolution estimates.",
-    "limitations": "Sub-national resolution limited to admin-1 or -2 in most countries. Survey years vary. Does not capture within-admin spatial variation. Not for: Household targeting; beneficiary selection for project implementation"
+    "limitations": "Sub-national resolution limited to admin-1 or -2 in most countries. Survey years vary. Does not capture within-admin spatial variation. Not for: Household targeting; beneficiary selection for project implementation",
+    "description": "World Bank PIP subnational poverty headcount estimates at admin-1 (admin-2 where available).",
+    "grain_type": "admin",
+    "admin_level": "admin1"
   },
   {
     "dataset_id": "hansen_treecover2000",
     "dataset_name": "Hansen/UMD/Google/USGS/NASA Global Forest Change (Tree Cover)",
     "analytical_module": "opportunity_space",
     "hazard_type": null,
-    "scenario_type": "baseline",
-    "time_period": "2000–2023",
+    "time_period": "2000\u20132023",
     "spatial_resolution_m": 30,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "gee_asset",
     "download_url": "https://earthenginepartners.appspot.com/science-2013-global-forest",
     "gee_asset_id": "UMD/hansen/global_forest_change_2023_v1_11",
     "license": "CC-BY-4.0",
-    "citation": "Hansen, M.C. et al. (2013). High-Resolution Global Maps of 21st-Century Forest Cover Change. Science, 342(6160), 850–853.",
+    "citation": "Hansen, M.C. et al. (2013). High-Resolution Global Maps of 21st-Century Forest Cover Change. Science, 342(6160), 850\u2013853.",
     "doi": "10.1126/science.1244693",
     "version": "v1.11 (2023)",
-    "preprocessing_notes": "Current tree cover = baseline (2000) − loss + gain. Used to identify areas below 10% tree cover as agroforestry expansion opportunity and areas with existing tree cover for context. Singh et al. (2024) and Ahmad et al. (2020) use Hansen tree cover as AF suitability input.",
-    "limitations": "Confusion between natural forest and plantation/agroforestry systems. Understory trees in agroforestry are often missed at 30m resolution. Not for: Legal deforestation monitoring for jurisdictional REDD+; plot-level timber volume"
+    "preprocessing_notes": "Current tree cover = baseline (2000) \u2212 loss + gain. Used to identify areas below 10% tree cover as agroforestry expansion opportunity and areas with existing tree cover for context. Singh et al. (2024) and Ahmad et al. (2020) use Hansen tree cover as AF suitability input.",
+    "limitations": "Confusion between natural forest and plantation/agroforestry systems. Understory trees in agroforestry are often missed at 30m resolution. Not for: Legal deforestation monitoring for jurisdictional REDD+; plot-level timber volume",
+    "description": "Global Forest Change tree cover and loss layers (Hansen et al.) at 30 m.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "chirps_precipitation_v2",
@@ -347,7 +401,9 @@
     "scenario_type": "baseline",
     "time_period": "1970-2000",
     "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "direct_download",
     "download_url": "https://www.worldclim.org/data/worldclim21.html",
@@ -357,17 +413,20 @@
     "doi": "10.1002/joc.5086",
     "version": "v2.1",
     "preprocessing_notes": "Rainfall is the second most frequent input variable (38 of 85 papers). Extract mean annual precipitation and wet-season monthly totals. Use for SCS-CN runoff depth calculation combined with HSG soil map. Buraihi & Shariff (2015) use projected precipitation to assess future RWH viability under climate change.",
-    "limitations": "30-year climatological mean; interannual variability not captured. Resolution too coarse for localised orographic precipitation in complex terrain. Not for: Flood frequency analysis; design-storm estimation for dam sizing"
+    "limitations": "30-year climatological mean; interannual variability not captured. Resolution too coarse for localised orographic precipitation in complex terrain. Not for: Flood frequency analysis; design-storm estimation for dam sizing",
+    "description": "Climate Hazards Group InfraRed Precipitation with Stations, ~5 km daily precipitation 1981-present.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "scs_cn_runoff_composite",
     "dataset_name": "HydroSHEDS Watershed Boundaries and River Network",
     "analytical_module": "geographic_context",
     "hazard_type": null,
-    "scenario_type": "baseline",
     "time_period": "2000 (SRTM-derived)",
     "spatial_resolution_m": 90,
-    "geographic_coverage": "Global (56S-60N)",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "shapefile",
     "access_type": "direct_download",
     "download_url": "https://www.hydrosheds.org/",
@@ -377,17 +436,20 @@
     "doi": "10.1029/2008EO100001",
     "version": "v1",
     "preprocessing_notes": "Use HydroBASINS level 8-10 for sub-watershed delineation context. Stream order used as a primary RWH site-type discriminator: first/second-order streams suit check dams and gully plugs; third/fourth-order streams suit percolation tanks; larger streams suit small dams. Kumar et al. (2018) and Singh et al. (2016) use stream order as a primary MCDA criterion.",
-    "limitations": "Derived from 3-arc-second SRTM; misses ephemeral channels in flat arid terrain. Resolution insufficient for first-order gully mapping. Not for: Detailed gully morphometry; flash flood routing"
+    "limitations": "Derived from 3-arc-second SRTM; misses ephemeral channels in flat arid terrain. Resolution insufficient for first-order gully mapping. Not for: Detailed gully morphometry; flash flood routing",
+    "description": "Composite SCS curve-number runoff potential surface combining land-cover and hydrologic soil group.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "srtm_dem_30m",
     "dataset_name": "SRTM DEM 30m",
     "analytical_module": "structural_suitability",
     "hazard_type": null,
-    "scenario_type": "baseline",
     "time_period": "2000",
     "spatial_resolution_m": 30,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "gee_asset",
     "download_url": "https://dwtkns.com/srtm30m/",
@@ -397,7 +459,9 @@
     "doi": "10.1029/2005RG000183",
     "version": "v3",
     "preprocessing_notes": "WH module alias for SRTM. See srtm_dem_90m entry for full notes.",
-    "limitations": "Voids in high-relief terrain. Not for: Engineering design"
+    "limitations": "Voids in high-relief terrain. Not for: Engineering design",
+    "description": "Shuttle Radar Topography Mission digital elevation model, 1 arc-second (~30 m), 56\u00b0S-60\u00b0N.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "worldclim_v2_precip",
@@ -407,7 +471,9 @@
     "scenario_type": "baseline",
     "time_period": "1970-2000",
     "spatial_resolution_m": 1000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff_cog",
     "access_type": "direct_download",
     "download_url": "https://www.worldclim.org/data/worldclim21.html",
@@ -417,17 +483,20 @@
     "doi": "10.1002/joc.5086",
     "version": "v2.1",
     "preprocessing_notes": "Extract mean annual precipitation and wet-season monthly totals for SCS-CN runoff calculation.",
-    "limitations": "30-year climatological mean; interannual variability not captured. Not for: Flood frequency analysis; design-storm estimation"
+    "limitations": "30-year climatological mean; interannual variability not captured. Not for: Flood frequency analysis; design-storm estimation",
+    "description": "WorldClim v2 monthly precipitation (1970-2000) at ~1 km.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "mapspam_cocoa_2020",
     "dataset_name": "MapSPAM 2020 cocoa harvested area",
     "analytical_module": "structural_suitability",
     "hazard_type": "",
-    "scenario_type": "baseline",
     "time_period": "2020",
     "spatial_resolution_m": 10000,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "geotiff",
     "access_type": "direct_download",
     "download_url": "https://mapspam.info/",
@@ -437,17 +506,19 @@
     "doi": "",
     "version": "2020",
     "preprocessing_notes": "Use harvested-area fraction as graded crop-presence constraint.",
-    "limitations": "~10 km; allocation-model estimate, not observed. Coarse for sub-national targeting. Not for: plot siting."
+    "limitations": "~10 km; allocation-model estimate, not observed. Coarse for sub-national targeting. Not for: plot siting.",
+    "description": "MapSPAM 2020 \u2014 gridded crop production allocation for cocoa at ~10 km.",
+    "grain_type": "grid"
   },
   {
     "dataset_id": "gadm_v41_admin",
     "dataset_name": "GADM v4.1 administrative boundaries",
     "analytical_module": "geographic_context",
     "hazard_type": "",
-    "scenario_type": "baseline",
     "time_period": "2022",
-    "spatial_resolution_m": 0,
-    "geographic_coverage": "Global",
+    "geographic_coverage": [
+      "global"
+    ],
     "data_format": "shapefile",
     "access_type": "direct_download",
     "download_url": "https://gadm.org/",
@@ -457,6 +528,8 @@
     "doi": "",
     "version": "4.1",
     "preprocessing_notes": "Country/region polygons for AOI + admin context scoping.",
-    "limitations": "Boundary vintages vary by country; non-commercial licence. Not for: dispute adjudication."
+    "limitations": "Boundary vintages vary by country; non-commercial licence. Not for: dispute adjudication.",
+    "description": "GADM Database of Global Administrative Areas v4.1 \u2014 admin-0/1/2/3 boundary polygons.",
+    "grain_type": "vector"
   }
 ]
