@@ -242,6 +242,37 @@ sensitive variables precisely is exactly the kind of hand-off guidance scoping *
 don't trust the global default blindly"); doing the confirmation is not ours to do. Keep it a labelling layer —
 no change to the suitability analysis.
 
+### 2.7 Hard vs soft operational constraints (resolves the schema ↔ Fig 9 tension)
+
+The stocktake's **Figure 9** framing routed social/institutional factors into a separate **Project
+Operational Risk** stream, which doesn't, on its face, sit cleanly inside the T4
+`operational_constraint` dimension. The reconciliation (v0.2.6) is the *hard-vs-soft* split:
+
+- **Hard exclusions** belong inside the opportunity space as T4 constraints. Examples: legal
+  protected areas, water bodies, urban/built-up footprints, formally-designated reserves.
+  Tag: `suitability_dimension = operational_constraint`, `is_scenario_candidate = false`.
+  These aren't investment-addressable on a scoping timescale.
+- **Soft, investment-addressable** access/institutional factors are **not** baked into the core
+  biophysical opportunity space. They appear as:
+  - **scenario levers** (T4 rows, `is_scenario_candidate = true`) — toggle on/off in the wireframe
+    to surface what investment would unlock;
+  - **inputs to a separate operational-risk / feasibility filter** on the M2b side (project-disaster
+    + project-feasibility lens).
+
+  Examples: road access, market access, extension coverage, tenure security.
+
+The practical test: if turning the variable off in a what-if scenario is a *reasonable* policy
+question, the variable is soft → scenario lever + operational-risk filter. If it isn't (you can't
+legislate away a water body), it's hard → exclusion in T4.
+
+Reconciliation with Fig 9: biophysical + system + hard-operational dimensions ≈ the opportunity-
+space surface; soft-operational ≈ scenario levers + the project-operational-risk stream (M2b
+family). Two streams, one consistent framework. The earlier inconsistency (e.g. `road_access`
+tagged `system_constraint` in draft-0) is fixed in v0.2.6.
+
+See `schema/spec.md` → T4 → "Hard vs soft operational decision" for the schema-side
+implementation.
+
 ---
 
 ## 3. Discovery (recall-first — proposes candidates)
@@ -271,6 +302,62 @@ papers, then weight by tier, then synthesise. Concretely:
 
 The four feeds below still produce the *initial* candidate-source set, but the per-paper scan is the
 operative discovery loop for T4 extraction itself.
+
+### Bounded, authority-weighted seed-set rule (v0.2.6)
+
+Discovery does not sweep 100k abstracts. Per NbS (or NbS cluster) assemble a **capped seed set**
+of authoritative sources, then expand only when the seed set leaves obvious gaps. Categories to
+hit, in roughly this order of authority:
+
+- **World Bank rural-NbS catalogue** (in-house operational reports + adoption studies)
+- **GEF / NBS Invest** materials (project portfolios, lessons-learnt)
+- **IPCC** (AR6 WGII, SRCCL chapters relevant to the NbS)
+- **FAO** (land-evaluation framework, GAEZ, ecocrop, AgrEd, EX-ACT)
+- **WRI** (Global Restoration Initiative, Restoration Diagnostic, AFR100/Atlantic Forest)
+- **Major meta-analyses / reviews** in the peer-reviewed literature for the NbS
+- **MEL / MELIA reports** and synthesis pieces from large CGIAR/donor projects (Kuria, Sida-NbS,
+  Restoration Initiative MEL packs)
+- **CSA adoption & barriers dataset** (Aggarwal et al. and successors — the synthesised
+  adoption/dis-adoption evidence base)
+
+**Tie to `SRC.benchmark_tier`:** prefer `high` and `medium`; admit `low` only when the seed set
+above is genuinely thin for the variable. `external` tier is used for citation-cascade pointers
+(Mushtaq → Ahmad 2019), not for primary discovery.
+
+**Corpus differs per table — sequence T6/T3 after T4.** The 220-paper stocktake was scoped to
+**suitability (T4)** — *that* corpus is in hand. The other tables need their own bounded
+discovery passes against different literature:
+
+- **T6** (NbS effects, conditionality, economic profile): effectiveness / impact / adoption +
+  **MEL / MELIA** reports + CSA adoption & barriers. Effectiveness lit is different from
+  spatial-suitability lit.
+- **T3** (NbS × hazard mitigation matrix): hazard-resilience + vulnerability literature; IPCC
+  AR6 WGII Chapter 2/3; CGIAR-CCAFS climate-resilience reviews. Brayden's M2 lit is the spine.
+- **T1** (data registry): GEE / STAC catalogues; data provider documentation. Not literature.
+- **T7** (AEZ + farming systems): GAEZ + Dixon farming-systems standards. Not literature.
+
+Sequence: **complete T4 first**, then T6/T3 use the same paper-first machinery against their
+own bounded seed sets.
+
+### Evidence-source principle — observed-reality signals (v0.2.6)
+
+**Adoption / dis-adoption studies and MEL/MELIA evidence are observed-reality signals**, not
+parallel to literature thresholds. They extend the **"constrain by observed distribution, not
+modelled niche"** rule (§2.5) to the human-system side:
+
+- Where an adoption study shows that practice X is *not* taken up in context Y despite a
+  favourable bioclimatic envelope, that's evidence the **system_constraint** or
+  **operational_constraint** dimension is binding — and the binding variable belongs in T4 with
+  that dimension tag, not in T2/M2b.
+- MEL reports show which conditions *actually* deliver the effect at scale, which feeds T6
+  (effects + conditionality + economic profile) directly.
+- Operationally: ingest these sources via the per-paper sweep (§3 above) with
+  `SRC.method_type = adoption_study` or `mel_report` (added in v0.2.6). Tier them via the
+  Source Register the same way as suitability papers — they are not a separate evidence stream.
+
+This sharpens the corpus-selection rule for T4 system/operational variables (currently we
+under-source them because the stocktake was scoped to spatial-suitability lit) and for T6
+conditionality (currently empty `evidence_ids`).
 
 Discovery's job is to find *what to look for and where*; it is allowed to be speculative because nothing it
 proposes reaches a T4 parameter without passing through the evidence layer. Three feeds:
