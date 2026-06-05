@@ -10,8 +10,12 @@ The analytical backbone. All analytical rules, datasets, response functions, wei
 
 ## Structure is LOCKED · content is in progress
 
-The **column structure** of every table is frozen at `v0.2.1-structure-frozen` (v0.2.1 added the optional **BIND**
-registry — additive, no existing column changed). The team can populate rows against it
+The **column structure** of every table is frozen at `v0.2.6-structure-frozen` (v0.2.6 = methodology sharpenings:
+`suitability_dimension` sharpened with three ordered-by-changeability definitions, T4 enum_values now police
+`suitability_dimension` and `relationship_type` under `--strict`, `SRC.method_type` extended with `adoption_study`
+and `mel_report`. v0.2.5 added paper-first sweep fields on EV/SRC + Namita's attribution capture
+(`raw_name`/`attribution`/`justification_quote`/`selection_justification`) + the immutability rule for
+`canonical_variable_id`. v0.2.1–4 added the BIND registry, vocab policing, and `context_sensitivity`). The team can populate rows against it
 without fear the columns will move under them. **What's locked:** the column set, required/optional/conditional/derived
 status, and foreign keys — captured machine-readably in [`structure/columns.json`](structure/columns.json) (the
 authoritative manifest, generated from `spec.md`). **What's still open:** the row *content* — most `evidence_ids` are

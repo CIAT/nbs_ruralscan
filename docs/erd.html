@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NbS Schema — Entity Relationship Diagram v0.2.3</title>
+<title>NbS Schema — Entity Relationship Diagram v0.2.6</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 24px; }
@@ -61,7 +61,7 @@
 <body>
 
 <h1>Rural NbS Scan — Entity Relationship Diagram</h1>
-<p class="subtitle">Schema v0.2.3 · tracks current <code>spec.md</code> · <strong>all 12 entities</strong> — the T0–T7 analytical core plus the evidence &amp; configuration registers (VONT · FAM · BIND · SRC · EV) — with key fields &amp; joins · click to zoom</p>
+<p class="subtitle">Schema v0.2.6 · tracks current <code>spec.md</code> · <strong>all 12 entities</strong> — the T0–T7 analytical core plus the evidence &amp; configuration registers (VONT · FAM · BIND · SRC · EV) — with key fields &amp; joins · click to zoom</p>
 
 <div class="grid-4">
   <div class="tbl t0">
@@ -152,7 +152,7 @@
       <div class="field"><span class="badge fk">FK</span><span class="field-name">variable → VONT</span><span class="field-type">string</span></div>
       <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string</span></div>
       <div class="field"><span class="badge ref">REF</span><span class="field-name">context_overrides → T7</span><span class="field-type">object[]</span></div>
-      <div class="field"><span class="field-name">suitability_dimension</span><span class="field-type">enum</span></div>
+      <div class="field"><span class="field-name">suitability_dimension</span><span class="field-type">enum</span><span class="field-type" style="margin-left:6px; opacity:0.7;">biophysical · system · operational</span></div>
       <div class="field"><span class="field-name">relationship_type</span><span class="field-type">enum</span></div>
       <div class="field"><span class="field-name">relationship_params</span><span class="field-type">object</span></div>
       <div class="field"><span class="field-name">is_scenario_candidate</span><span class="field-type">bool</span></div>
@@ -321,7 +321,7 @@
 <div class="rel-grid">
   <div class="rel-row"><span class="rel-from">VONT</span><span class="rel-card">||——o{</span><span class="rel-to">T2·T4·T5</span><span class="rel-on">on variable · canonical name/unit/sensitivity governed once</span></div>
   <div class="rel-row"><span class="rel-from">FAM</span><span class="rel-card">||——o{</span><span class="rel-to">T4</span><span class="rel-on">on suitability_family_id · the unit T4 is keyed to</span></div>
-  <div class="rel-row"><span class="rel-from">T7</span><span class="rel-card">||——o{</span><span class="rel-to">T3 · T0</span><span class="rel-on">on farming_system / farming_systems_applicable · T7 governs the vocabulary (v0.2.3)</span></div>
+  <div class="rel-row"><span class="rel-from">T7</span><span class="rel-card">||——o{</span><span class="rel-to">T3 · T0</span><span class="rel-on">on farming_system / farming_systems_applicable · T7 governs the vocabulary (v0.2.6)</span></div>
   <div class="rel-row"><span class="rel-from">SRC</span><span class="rel-card">||——o{</span><span class="rel-to">EV</span><span class="rel-on">on source_id · one source, many atomic claims (tier stored on SRC)</span></div>
   <div class="rel-row"><span class="rel-from">EV</span><span class="rel-card">}o——o{</span><span class="rel-to">T2·T3·T4·T5·T6</span><span class="rel-on">via evidence_ids[ ] · provenance, soft, validated at load</span></div>
   <div class="rel-row"><span class="rel-from">VONT·FAM</span><span class="rel-card">||——o{</span><span class="rel-to">EV</span><span class="rel-on">on variable / suitability_family_id · each claim is scoped to a variable &amp; family</span></div>
