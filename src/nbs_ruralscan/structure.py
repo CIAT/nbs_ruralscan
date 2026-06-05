@@ -7,10 +7,11 @@ Two tiers:
 
 * **STRUCTURE** (always fatal) — column drift: required columns missing, or unknown
   columns present. This is the frozen v0.2 contract; breaking it fails the build.
-* **CONTENT** (advisory by default; fatal under ``--strict``) — empty required values
-  and unresolved foreign keys. Draft-0 example tables are *expected* to have content
-  gaps until populated, so these are warnings unless you ask for ``--strict`` (used to
-  prove a fully-populated slice, e.g. the F1×slope chain).
+* **CONTENT** (advisory by default; fatal under ``--strict``) — empty required values,
+  unresolved foreign keys, and out-of-vocabulary enum values (``enum_values`` in the
+  manifest). Draft-0 example tables are *expected* to have content gaps until populated,
+  so these are warnings unless you ask for ``--strict`` (used to prove a fully-populated
+  slice, e.g. the F1×slope chain).
 
 Stdlib only — runs with plain ``python3 -m nbs_ruralscan.structure <schema_root>`` even
 without the package installed. Exit code is non-zero if any ERROR is found. Use it in
@@ -154,6 +155,7 @@ def validate_structure(schema_root: str | Path, *, strict: bool = False) -> Repo
         seen_tables.add(tname)
         allowed = _allowed(spec)
         required = set(spec.get("required", []))
+        enum_values: dict[str, list[str]] = spec.get("enum_values", {})
         loaded.setdefault(tname, [])
         for path in files:
             cols, rows = _read_rows(path)
@@ -170,6 +172,15 @@ def validate_structure(schema_root: str | Path, *, strict: bool = False) -> Repo
                         content(
                             tname, f"{path.name} row {i}: required '{col}' is empty"
                         )
+                for col, valid_vals in enum_values.items():
+                    if col in colset:
+                        for v in _fk_values(row.get(col)):
+                            if v not in valid_vals:
+                                content(
+                                    tname,
+                                    f"{path.name} row {i}: {col}='{v}' not a valid "
+                                    f"enum value",
+                                )
                 for tt, tc in wanted_cols:
                     if tt == tname:
                         for v in _fk_values(row.get(tc)):

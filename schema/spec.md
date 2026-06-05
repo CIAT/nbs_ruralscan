@@ -1,5 +1,10 @@
-# Schema spec — field-level reference (v0.2.3)
+# Schema spec — field-level reference (v0.2.4)
 
+> **v0.2.4 (June 2026)** — extended vocabulary policing: the validator now checks **enum membership**
+> (`hazard_type`, `scenario_type` across T1/T2/T3) and FK-binds the remaining context fields
+> (`SRC.aez`, `SRC.farming_system` → T7; `SRC.nbs_ids` → T0). Closed enums are policed by value, open
+> vocabularies by FK. Additive.
+>
 > **v0.2.3 (June 2026)** — documented **value governance** (inline enums vs FK-governed vocabularies) and made
 > `farming_system` (T3) + `farming_systems_applicable` (T0) explicit FKs to **T7** (`context_type =
 > farming_system`); registered the previously-unregistered `irrigated_paddy` + `dryland_cereal` farming systems

@@ -1,5 +1,5 @@
 {
-  "manifest_version": "0.2.3-structure-frozen",
+  "manifest_version": "0.2.4-structure-frozen",
   "spec_source": "schema/spec.md",
   "generated": "2026-06-04",
   "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
@@ -7,7 +7,9 @@
     "required": "column present on every row; value non-empty",
     "optional": "column may be present; value may be blank",
     "conditional": "required only when its trigger condition holds (see spec.md)",
-    "derived": "computed from other columns; not authored by hand"
+    "derived": "computed from other columns; not authored by hand",
+    "fk": "maps a column to its referenced table.column (or {targets:[...], literals:[...]}); non-empty values must resolve",
+    "enum_values": "maps a column to its allowed closed-vocabulary values; non-empty values must be members"
   },
   "tables": {
     "T0": {
@@ -30,7 +32,11 @@
       "optional": ["hazard_type", "time_period", "download_url", "gee_asset_id", "doi", "preprocessing_notes"],
       "conditional": [],
       "derived": [],
-      "fk": {}
+      "fk": {},
+      "enum_values": {
+        "hazard_type": ["drought", "flood", "heat_stress", "fire", "wind_cyclone", "waterlogging", "frost", "multi"],
+        "scenario_type": ["baseline", "future_ssp126", "future_ssp245", "future_ssp585", "multi_scenario"]
+      }
     },
     "T2": {
       "name": "Climate Risk Formulation",
@@ -41,7 +47,11 @@
       "optional": ["normalisation_params", "justification"],
       "conditional": ["hazard_type"],
       "derived": [],
-      "fk": {"dataset_id": "T1.dataset_id", "variable": "VONT.canonical_variable_id", "evidence_ids": "EV.evidence_id"}
+      "fk": {"dataset_id": "T1.dataset_id", "variable": "VONT.canonical_variable_id", "evidence_ids": "EV.evidence_id"},
+      "enum_values": {
+        "hazard_type": ["drought", "flood", "heat_stress", "fire", "wind_cyclone", "waterlogging", "frost"],
+        "scenario_type": ["baseline", "future_ssp126", "future_ssp245", "future_ssp585"]
+      }
     },
     "T3": {
       "name": "NbS x Hazard x Farming System",
@@ -52,7 +62,10 @@
       "optional": ["caveats", "justification"],
       "conditional": ["asset_risk_weight"],
       "derived": [],
-      "fk": {"nbs_id": "T0.nbs_id", "farming_system": {"targets": ["T7.context_id"], "literals": ["all"]}, "evidence_ids": "EV.evidence_id"}
+      "fk": {"nbs_id": "T0.nbs_id", "farming_system": {"targets": ["T7.context_id"], "literals": ["all"]}, "evidence_ids": "EV.evidence_id"},
+      "enum_values": {
+        "hazard_type": ["drought", "flood", "heat_stress", "fire", "wind_cyclone", "waterlogging", "frost"]
+      }
     },
     "T4": {
       "name": "Suitability Variable Mappings",
@@ -107,7 +120,7 @@
       "optional": ["doi", "study_country", "region", "coords", "aez", "farming_system", "method_type", "spatial_scale", "analysis_resolution_m", "nbs_ids"],
       "conditional": [],
       "derived": [],
-      "fk": {}
+      "fk": {"aez": "T7.context_id", "farming_system": "T7.context_id", "nbs_ids": "T0.nbs_id"}
     },
     "EV": {
       "name": "Evidence Register",
