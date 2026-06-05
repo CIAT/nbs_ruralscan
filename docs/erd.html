@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NbS Schema — Entity Relationship Diagram v0.2.8</title>
+<title>NbS Schema — Entity Relationship Diagram v0.2.9</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 24px; }
@@ -61,7 +61,7 @@
 <body>
 
 <h1>Rural NbS Scan — Entity Relationship Diagram</h1>
-<p class="subtitle">Schema v0.2.8 · tracks current <code>spec.md</code> · <strong>all 12 entities</strong> — the T0–T7 analytical core plus the evidence &amp; configuration registers (VONT · FAM · BIND · SRC · EV) — with key fields &amp; joins · click to zoom</p>
+<p class="subtitle">Schema v0.2.9 · tracks current <code>spec.md</code> · <strong>all 12 entities</strong> — the T0–T7 analytical core plus the evidence &amp; configuration registers (VONT · FAM · BIND · SRC · EV) — with key fields &amp; joins · click to zoom</p>
 
 <div class="grid-4">
   <div class="tbl t0">
@@ -90,12 +90,18 @@
     <div class="tbl-fields">
       <div class="field"><span class="badge pk">PK</span><span class="field-name">dataset_id</span><span class="field-type">string</span></div>
       <div class="field"><span class="field-name">dataset_name</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">description</span><span class="field-type">string</span></div>
       <div class="field"><span class="field-name">analytical_module</span><span class="field-type">enum</span></div>
-      <div class="field"><span class="field-name">spatial_resolution_m</span><span class="field-type">int</span></div>
+      <div class="field"><span class="field-name">grain_type</span><span class="field-type">enum</span><span class="field-type" style="margin-left:6px; opacity:0.7;">grid · admin · vector</span></div>
+      <div class="field"><span class="field-name">spatial_resolution_m</span><span class="field-type">int?</span><span class="field-type" style="margin-left:6px; opacity:0.7;">iff grid</span></div>
+      <div class="field"><span class="field-name">admin_level</span><span class="field-type">enum?</span><span class="field-type" style="margin-left:6px; opacity:0.7;">iff admin</span></div>
+      <div class="field"><span class="field-name">geographic_coverage</span><span class="field-type">string[]</span></div>
+      <div class="field"><span class="field-name">scenario_type</span><span class="field-type">enum?</span><span class="field-type" style="margin-left:6px; opacity:0.7;">iff climate</span></div>
       <div class="field"><span class="field-name">access_type</span><span class="field-type">enum</span></div>
       <div class="field"><span class="field-name">gee_asset_id</span><span class="field-type">string?</span></div>
       <div class="field"><span class="field-name">download_url</span><span class="field-type">string?</span></div>
-      <div class="field"><span class="field-name">license / citation</span><span class="field-type">string</span></div>
+      <div class="field"><span class="field-name">access_params</span><span class="field-type">object?</span></div>
+      <div class="field"><span class="field-name">license / citation / doi</span><span class="field-type">string</span></div>
     </div>
   </div>
 
@@ -262,6 +268,7 @@
       <div class="field"><span class="field-name">scope_type</span><span class="field-type">enum</span></div>
       <div class="field"><span class="badge fk">FK</span><span class="field-name">scope_id → T7</span><span class="field-type">string?</span></div>
       <div class="field"><span class="badge fk">FK</span><span class="field-name">dataset_id → T1</span><span class="field-type">string?</span></div>
+      <div class="field"><span class="field-name">band</span><span class="field-type">string?</span><span class="field-type" style="margin-left:6px; opacity:0.7;">multi-band asset</span></div>
       <div class="field"><span class="field-name">preference_rank</span><span class="field-type">int</span></div>
       <div class="field"><span class="field-name">status</span><span class="field-type">enum</span></div>
     </div>
@@ -321,7 +328,7 @@
 <div class="rel-grid">
   <div class="rel-row"><span class="rel-from">VONT</span><span class="rel-card">||——o{</span><span class="rel-to">T2·T4·T5</span><span class="rel-on">on variable · canonical name/unit/sensitivity governed once</span></div>
   <div class="rel-row"><span class="rel-from">FAM</span><span class="rel-card">||——o{</span><span class="rel-to">T4</span><span class="rel-on">on suitability_family_id · the unit T4 is keyed to</span></div>
-  <div class="rel-row"><span class="rel-from">T7</span><span class="rel-card">||——o{</span><span class="rel-to">T3 · T0</span><span class="rel-on">on farming_system / farming_systems_applicable · T7 governs the vocabulary (v0.2.8)</span></div>
+  <div class="rel-row"><span class="rel-from">T7</span><span class="rel-card">||——o{</span><span class="rel-to">T3 · T0</span><span class="rel-on">on farming_system / farming_systems_applicable · T7 governs the vocabulary (v0.2.9)</span></div>
   <div class="rel-row"><span class="rel-from">SRC</span><span class="rel-card">||——o{</span><span class="rel-to">EV</span><span class="rel-on">on source_id · one source, many atomic claims (tier stored on SRC)</span></div>
   <div class="rel-row"><span class="rel-from">EV</span><span class="rel-card">}o——o{</span><span class="rel-to">T2·T3·T4·T5·T6</span><span class="rel-on">via evidence_ids[ ] · provenance, soft, validated at load</span></div>
   <div class="rel-row"><span class="rel-from">VONT·FAM</span><span class="rel-card">||——o{</span><span class="rel-to">EV</span><span class="rel-on">on variable / suitability_family_id · each claim is scoped to a variable &amp; family</span></div>
