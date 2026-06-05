@@ -1,5 +1,89 @@
-# Schema spec — field-level reference (v0.2.9)
+# Schema spec — field-level reference (v0.3.0)
 
+> **v0.3.0 (June 2026)** — large methodology batch: T5 ratification, farming-system vocab swap,
+> production-gap variable, T6 economic-profile generalisation + cost-effectiveness denominators,
+> M2b implementation variables. Companion methodology doc:
+> [`../methodology/opportunity_space_T5.md`](../methodology/opportunity_space_T5.md).
+>
+> **A — T5 (opportunity-space) ratification.**
+>
+> - `T5.mcda_role` (Required, new enum): `priority` (drives M4 hotspot MCDA, links to T6 effects)
+>   vs `descriptor` (carried for narrative/intersection but not in the MCDA). **T6 effect rows
+>   link only to `priority` rows.** Resolves the "carry every layer" vs "score only the binding
+>   ones" tension.
+> - `T5.theme` enum updated: `climate_hazard` · `nbs_response` · `people_production` ·
+>   `equity_inclusion` · `context`. **Renamed `equity_gender` → `equity_inclusion`** (broadens to
+>   IPLC/marginalisation/GESI, not just gender) and **dropped `infrastructure`** as a top-level
+>   theme — infrastructure rows are either descriptors (`theme = context`) or operational levers
+>   (M2b Stream B), not opportunity-space pillars.
+> - **Repopulated `T5_opportunity_space.*`** with 15 rows: 11 priorities + 4 descriptors
+>   (replaces the draft-0 14). Five-lens reasoning: climate-hazard · nbs-response ·
+>   people/production · equity/inclusion · context. Variables: `drought_hazard`, `flood_hazard`,
+>   `heat_stress_hazard`, `soil_erosion_risk`, `carbon_sequestration_potential`,
+>   `biodiversity_priority`, `water_stress`, `rural_poverty`, `production_gap`,
+>   `agricultural_dependency`, `gender_inequity` (national flag for now), plus 4 descriptors
+>   `rural_population`, `market_access`, `farm_size`, `agricultural_production_value`.
+> - **Spatial-grain rule for T5** (documented in `opportunity_space_T5.md`, derived at runtime
+>   from `T1.grain_type` + `T1.admin_level` — *not* a new T5 field): a priority that resolves to
+>   `admin0` (country) carries a qualified flag, not a hotspot-discriminating layer.
+>   `admin1`-or-finer required for MCDA differentiation; `admin0` → flag for hand-off. Mirrors
+>   the resolution-trap (§2.4 in T4 method) on the human-system side.
+> - **Proximate-over-distal principle**: where two T5 variables capture the same concern at
+>   different distances from the outcome (e.g. tree cover vs ecosystem health), prefer the
+>   proximate. Distal indicators (literacy → adaptive capacity → resilience) carry compounding
+>   uncertainty and are documented as descriptors, not priorities.
+> - `biodiversity_priority` ships as `requires_upload` placeholder via BIND — the choice of
+>   biodiversity layer (KBA, IBAT, BII, eco-uniqueness, refugia, distance-to-protected) is a
+>   deferred review (see seed issue).
+>
+> **B — Farming-system vocab swap + `production_gap` + BIND examples.**
+>
+> - **`T7` `farming_system` vocabulary replaced** with a derived EO classification (~6
+>   categories): `cropping_rainfed` · `cropping_irrigated` · `mixed_crop_livestock` ·
+>   `agro_pastoral` · `pastoral_rangeland` · `tree_perennial`. Derived at scoping grade from
+>   GLAD/WorldCereal cropland · GLW livestock density · GMIA irrigation · Hansen/MapSPAM
+>   tree-perennial. **BIND-overridable** per country/region. Distinct from `aez`. Dixon
+>   farming-systems vocabulary becomes a documented crosswalk only (kept in
+>   `schema/registers/FS_DIXON_CROSSWALK.md`). T7 + T3 rows migrated.
+> - **`production_gap`** = shortfall vs the *attainable* productivity of the dominant farming
+>   system in the pixel — resolved per `farming_system` via BIND: yield-gap (GAEZ/MapSPAM) for
+>   cropping; forage/rangeland NPP gap for pastoral; mixed for mixed-system; **livestock side is
+>   thinner → `requires_upload`** for many contexts. Several BIND example rows added populating
+>   the new `band`/`access_params` fields from v0.2.9.
+>
+> **C — Suitability/discovery SOP (no schema change this batch).** Add IPLC tenure/rights sources
+> to the T4-method seed-set: **LandMark** (LandMark Global Platform of Indigenous & Community
+> Lands) + **WWF / ICCA Consortium** (State of IPLC Lands). Already part of the diamond classes
+> from v0.2.7; this batch names them explicitly under the M2b tenure stream as well.
+>
+> **D — T6 economic profile.**
+>
+> - `T6.economic_indicator_type` extended with **cost-effectiveness denominators**:
+>   `cost_per_beneficiary`, `cost_per_hectare_restored`, `cost_per_tco2e_avoided`,
+>   `cost_per_farmer_reached`. Mark these as **indicative scoping-grade**, *not* CBA — they
+>   feed M5 / M6 framing, not project finance.
+> - **`T6.economic_value_range`** generalised from `[low, high]` pairs to a structured object
+>   `{ low, high, unit, source_note }`. **`unit` enum-policed:** `usd_per_ha`,
+>   `usd_per_ha_yr`, `usd_per_beneficiary`, `usd_per_tco2e`, `usd_per_farmer`. Draft-0 T6 rows
+>   migrated to the new shape.
+>
+> **E — M2b implementation variables.** Updated `methodology/modules/M2b_project_risk.md` with
+> the two streams: **A = asset hazard exposure** (T2 hazards × T3 `asset_threat`/`asset_risk_weight`,
+> baseline + future, modulated by T0 `establishment_period_years`); **B = operational / enabling
+> environment, scenario levers**: accessibility, electrification, tenure (incl. IPLC/customary
+> with FPIC / ESS7 safeguard flag; LandMark + WWF/ICCA layers), conflict / fragility (ACLED,
+> WB-FCV list), governance/extension, finance/credit, market/value-chain, labour. **Filter,
+> never summed** into the priority hotspot; hard exclusions stay as T4 masks; scoping flags,
+> feasibility validates. T4 gets new `operational_constraint` rows tagged
+> `is_scenario_candidate = true` for the soft Stream-B levers.
+>
+> Manifest: `T5.mcda_role` + `T5.theme` enum_values updated; `T7.farming_system` vocab governed
+> by data (not enum_values — open vocab via T7); `T6.economic_indicator_type` enum extended;
+> `T6.economic_value_range.unit` enum_values added.
+>
+> Bumped to `v0.3.0-structure-frozen`. Companion docs: `opportunity_space_T5.md`,
+> `M2b_project_risk.md`.
+>
 > **v0.2.9 (June 2026)** — focused T1 (Data Registry) reshape to unblock Brayden's data-download
 > layer. **Mixed migration** — additive fields + one field re-classification + one rename target;
 > all draft-0 T1 rows migrated in lockstep with CSV+JSON.

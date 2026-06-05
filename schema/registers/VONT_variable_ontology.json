@@ -1143,5 +1143,254 @@
     "raised_by": "ev_forestfrag_mendonca22",
     "raised_date": "2026-06-05",
     "comment": "Derived from forest cover layer + patch analysis; agroforestry-priority signal (Brazilian Atlantic Forest restoration framing)."
+  },
+  {
+    "canonical_variable_id": "drought_hazard",
+    "label": "Drought hazard (SPEI / annualised severity)",
+    "aliases": [
+      "SPEI",
+      "drought severity"
+    ],
+    "canonical_unit": "unitless",
+    "group_id": "climate_hazard",
+    "candidate_dataset_ids": [
+      "spei_global_v26",
+      "chirps_precipitation_v2"
+    ],
+    "min_meaningful_resolution_m": 5000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low"
+  },
+  {
+    "canonical_variable_id": "flood_hazard",
+    "label": "Flood hazard (return-period flood depth/extent)",
+    "aliases": [
+      "flood risk",
+      "flood depth"
+    ],
+    "canonical_unit": "m",
+    "group_id": "climate_hazard",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05",
+    "comment": "Layer choice deferred \u2014 FATHOM, JRC, WRI Aqueduct. Pilot-time decision."
+  },
+  {
+    "canonical_variable_id": "heat_stress_hazard",
+    "label": "Heat-stress hazard (Tmax-days / WBGT / heat-index frequency)",
+    "aliases": [
+      "heat stress",
+      "Tmax",
+      "extreme heat days"
+    ],
+    "canonical_unit": "days_per_year",
+    "group_id": "climate_hazard",
+    "candidate_dataset_ids": [
+      "chelsa_bioclim_v21_baseline",
+      "chelsa_bioclim_ssp245_2050"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05"
+  },
+  {
+    "canonical_variable_id": "biodiversity_priority",
+    "label": "Biodiversity priority (layer TBD)",
+    "aliases": [
+      "KBA",
+      "BII",
+      "biodiversity priority"
+    ],
+    "canonical_unit": "unitless",
+    "group_id": "biodiversity",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05",
+    "comment": "Choice of biodiversity layer deferred (KBA, IBAT, BII, eco-uniqueness, refugia, distance-to-protected). Ships as BIND requires_upload."
+  },
+  {
+    "canonical_variable_id": "water_stress",
+    "label": "Water stress (Aqueduct or ET-deficit composite)",
+    "aliases": [
+      "aqueduct",
+      "water scarcity",
+      "P-PET"
+    ],
+    "canonical_unit": "unitless",
+    "group_id": "climatic",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05"
+  },
+  {
+    "canonical_variable_id": "rural_poverty",
+    "label": "Rural poverty headcount (subnational)",
+    "aliases": [
+      "poverty headcount",
+      "subnational poverty",
+      "PIP"
+    ],
+    "canonical_unit": "pct",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [
+      "world_bank_poverty_pip"
+    ],
+    "min_meaningful_resolution_m": 50000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "high"
+  },
+  {
+    "canonical_variable_id": "production_gap",
+    "label": "Production gap vs attainable productivity",
+    "aliases": [
+      "yield gap",
+      "NPP gap",
+      "productivity gap"
+    ],
+    "canonical_unit": "pct",
+    "group_id": "agricultural_system",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05",
+    "comment": "Per-farming-system metric resolved via BIND: yield-gap (GAEZ/MapSPAM) for cropping; NPP gap for rangeland; mixed where applicable. Livestock side often requires_upload."
+  },
+  {
+    "canonical_variable_id": "agricultural_dependency",
+    "label": "Agricultural-sector dependency (livelihood)",
+    "aliases": [
+      "ag dependency",
+      "ag employment share"
+    ],
+    "canonical_unit": "pct",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 50000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "high",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05"
+  },
+  {
+    "canonical_variable_id": "gender_inequity",
+    "label": "Gender inequity index (national flag)",
+    "aliases": [
+      "GII",
+      "gender gap"
+    ],
+    "canonical_unit": "unitless",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 100000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "high",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05",
+    "comment": "National-flag layer for now. Subnational disaggregation requires_upload."
+  },
+  {
+    "canonical_variable_id": "rural_population",
+    "label": "Rural population density",
+    "aliases": [
+      "population density",
+      "rural pop"
+    ],
+    "canonical_unit": "persons_per_km2",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [
+      "worldpop_population_density"
+    ],
+    "min_meaningful_resolution_m": 100,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "medium"
+  },
+  {
+    "canonical_variable_id": "market_access",
+    "label": "Market access (travel time to large markets)",
+    "aliases": [
+      "accessibility",
+      "travel time"
+    ],
+    "canonical_unit": "minutes",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05",
+    "comment": "Nelson/Weiss accessibility surface. Distinct from distance_to_road (proxy)."
+  },
+  {
+    "canonical_variable_id": "farm_size",
+    "label": "Mean farm size (smallholder share or median ha)",
+    "aliases": [
+      "smallholder share",
+      "median farm size"
+    ],
+    "canonical_unit": "ha",
+    "group_id": "agricultural_system",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05"
+  },
+  {
+    "canonical_variable_id": "agricultural_production_value",
+    "label": "Agricultural production value (gridded)",
+    "aliases": [
+      "ag GDP",
+      "ag production",
+      "MapSPAM value"
+    ],
+    "canonical_unit": "usd_per_ha_yr",
+    "group_id": "agricultural_system",
+    "candidate_dataset_ids": [
+      "mapspam_cocoa_2020"
+    ],
+    "min_meaningful_resolution_m": 10000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "t5_v030_ratification",
+    "raised_date": "2026-06-05",
+    "comment": "Generic MapSPAM-style value layer. Cocoa-specific binding already in T1; this canonical is the multi-crop generalisation."
   }
 ]

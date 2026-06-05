@@ -1,5 +1,5 @@
 {
-  "manifest_version": "0.2.9-structure-frozen",
+  "manifest_version": "0.3.0-structure-frozen",
   "spec_source": "schema/spec.md",
   "generated": "2026-06-05",
   "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
@@ -89,13 +89,14 @@
       "location": "T5_opportunity_space.{csv,json}",
       "per_nbs": false,
       "primary_key": "variable_id",
-      "required": ["variable_id", "variable", "theme", "dataset_id", "directionality_of_concern", "ttl_priority_label", "ttl_priority_description", "is_climate_risk_component", "aggregation_method", "normalisation_method", "weight_default", "has_future_projection", "is_active"],
+      "required": ["variable_id", "variable", "mcda_role", "theme", "dataset_id", "directionality_of_concern", "ttl_priority_label", "ttl_priority_description", "is_climate_risk_component", "aggregation_method", "normalisation_method", "weight_default", "has_future_projection", "is_active"],
       "optional": ["evidence_ids"],
       "conditional": [],
       "derived": [],
       "fk": {"variable": "VONT.canonical_variable_id", "dataset_id": "T1.dataset_id", "evidence_ids": "EV.evidence_id"},
       "enum_values": {
-        "theme": ["climate_hazard", "nbs_response", "people_production", "infrastructure", "equity_gender"]
+        "mcda_role": ["priority", "descriptor"],
+        "theme": ["climate_hazard", "nbs_response", "people_production", "equity_inclusion", "context"]
       }
     },
     "T6": {
@@ -107,7 +108,10 @@
       "optional": ["conditionality", "economic_archetype_id", "justification"],
       "conditional": ["economic_indicator_type", "economic_value_range"],
       "derived": [],
-      "fk": {"nbs_id": "T0.nbs_id", "variable_id": {"targets": ["T5.variable_id", "T3.hazard_type"], "literals": ["establishment_cost", "recurrent_cost", "income_potential", "cost_reduction", "market_access", "carbon_revenue", "subsidy_dependency"]}, "evidence_ids": "EV.evidence_id"}
+      "fk": {"nbs_id": "T0.nbs_id", "variable_id": {"targets": ["T5.variable_id", "T3.hazard_type"], "literals": ["establishment_cost", "recurrent_cost", "income_potential", "cost_reduction", "market_access", "carbon_revenue", "subsidy_dependency", "cost_per_beneficiary", "cost_per_hectare_restored", "cost_per_tco2e_avoided", "cost_per_farmer_reached"]}, "evidence_ids": "EV.evidence_id"},
+      "enum_values": {
+        "economic_indicator_type": ["establishment_cost", "recurrent_cost", "income_potential", "cost_reduction", "market_access", "carbon_revenue", "subsidy_dependency", "cost_per_beneficiary", "cost_per_hectare_restored", "cost_per_tco2e_avoided", "cost_per_farmer_reached"]
+      }
     },
     "T7": {
       "name": "Geographic Context",
