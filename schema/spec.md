@@ -1,5 +1,31 @@
-# Schema spec — field-level reference (v0.2.4)
+# Schema spec — field-level reference (v0.2.5)
 
+> **v0.2.5 (June 2026)** — additive fields for the **paper-first extraction loop** (T4 method §3 update)
+> and Namita's attribution requirement. Additions:
+>
+> - **EV:** `raw_name` (preserve the paper's surface name pre-harmonisation), `observed_dataset`
+>   (which dataset the paper actually used for the variable — audit-grade), `attribution` (free-text
+>   citation pointer when the paper attributes a threshold to a non-corpus source — pairs with
+>   `lineage_of` which targets corpus sources), `justification_quote` + `justification_page`
+>   (the paper's own rationale for the threshold — a *second* quote, often on a different page from
+>   the threshold), `selection_justification` + `selection_justification_page` (why the paper
+>   selected the variable at all — typically the AHP-weight prose).
+> - **SRC:** `vars_extracted[]` (canonical-id list — paper's variable inventory after sweep),
+>   `extraction_status` (`pending|in_progress|swept|signed_off`), `extraction_status_by_family`
+>   (per-family map for multi-family papers), `extraction_date`, `extraction_run_id`, `extractor`.
+> - **SRC.benchmark_tier**: enum extended with `external` (citations not in the screened corpus —
+>   e.g. Ahmad 2019 cited by Mushtaq; gets weight 0 in synthesis).
+> - **VONT:** `review_status` (`canonical|pending_review|rejected`; default `canonical`), `raised_by`
+>   (the `evidence_id` that surfaced the variable when `pending_review`), `raised_date`,
+>   `composite_of[]` (FK → VONT — declares this canonical aggregates other canonicals; runtime can
+>   decide single-row vs composite synthesis per-family).
+>
+> **Rule (new):** `VONT.canonical_variable_id` is **immutable** once assigned. Renames happen via
+> the `aliases[]` list, never by mutating the id. EV rows depend on it for FK stability.
+>
+> Backwards compatible — all additions optional. Existing EV/SRC/VONT rows remain valid; sweep
+> output backfills these fields opportunistically.
+>
 > **v0.2.4 (June 2026)** — extended vocabulary policing: the validator now checks **enum membership**
 > (`hazard_type`, `scenario_type` across T1/T2/T3) and FK-binds the remaining context fields
 > (`SRC.aez`, `SRC.farming_system` → T7; `SRC.nbs_ids` → T0). Closed enums are policed by value, open
@@ -369,12 +395,18 @@ One row per publication/report/tool (formalises the stocktake `NbS_peer_reviewed
 |---|---|---|---|---|
 | `source_id` | string | Required | Unique id. | `nath_2021` |
 | `citation` · `doi` | string | Required | Bibliographic. | `Nath et al. (2021)…` |
-| `benchmark_tier` | enum | Required | `high` \| `medium` \| `low` (C/I/D rubric). **The only place tier is stored.** | `medium` |
+| `benchmark_tier` | enum | Required | `high` \| `medium` \| `low` \| `external` (C/I/D rubric; `external` = citation-only, not screened — weight 0 in synthesis). **The only place tier is stored.** | `medium` |
 | `study_country` · `region` · `coords` | string | Optional | Where the study was done. | `India / E. Himalaya` |
 | `aez` · `farming_system` | string | Optional | Study context (→ T7 vocab). | `humid_tropics` |
 | `method_type` | enum | Optional | `ahp` \| `critic` \| `entropy` \| `fao_landeval` \| `ecocrop` \| `empirical` \| `expert`. | `ahp` |
 | `spatial_scale` · `analysis_resolution_m` | string/int | Optional | Scale + grid used. | `1000` |
 | `nbs_ids` | string[] | Optional | NbS the source addresses. | `['agroforestry']` |
+| `vars_extracted` | string[] | Optional *(paper-first sweep)* | Canonical-variable ids the paper-first sweep captured. Derivable via `SELECT DISTINCT variable FROM EV WHERE source_id=...`; persisted for fast lookup + completeness check. FK → VONT. | `['slope','annual_precipitation','soil_ph',...]` |
+| `extraction_status` | enum | Optional *(paper-first sweep)* | `pending` \| `in_progress` \| `swept` \| `signed_off`. Default `pending` when absent. | `swept` |
+| `extraction_status_by_family` | object | Optional *(paper-first sweep)* | Per-family map for multi-family papers. Keys are `suitability_family_id`, values are the status enum. | `{"agroforestry__planted_silvoarable":"swept"}` |
+| `extraction_date` | date | Optional *(paper-first sweep)* | ISO date the sweep completed. | `2026-06-05` |
+| `extraction_run_id` | string | Optional *(paper-first sweep)* | Free-form run identifier (git sha, timestamp, ticket id). | `nath_sweep_worked_example` |
+| `extractor` | string | Optional *(paper-first sweep)* | Who/what did the extraction. | `claude-opus-4-7` |
 
 ### EV — Evidence Register
 
@@ -397,6 +429,11 @@ One row per **atomic claim**. The structured replacement for free-text justifica
 | `extraction_confidence` | enum | Required | Transcription fidelity. | `high` |
 | `quote` · `page` | string/int | Required | Verbatim + page (provenance). | `"…slope 0 to 5…", p.11` |
 | `reviewer_ok` | boolean | Optional | Human-validated. | `false` |
+| `raw_name` | string | Optional *(paper-first sweep)* | The paper's surface name **before** harmonisation to the canonical variable. Preserves the mapping audit (`gradient` → `slope`). | `Slope degree` |
+| `observed_dataset` | string | Optional *(paper-first sweep)* | Which dataset the paper actually used to operationalise the variable. Free-text or T1 `dataset_id` when catalogued. Feeds resolution-audit decisions. | `SRTM 90m` · `worldclim_v2_bioclim` |
+| `attribution` | string | Optional *(Namita's attribution requirement)* | Free-text citation pointer when the paper *attributes* the threshold/variable selection to a source not in our screened corpus. Pairs with `lineage_of` (which targets corpus sources). | `Harrison (2016) — slope >35% cut` |
+| `justification_quote` · `justification_page` | string/int | Optional *(Namita's attribution requirement)* | A *second* verbatim quote (different from the threshold quote) capturing the paper's rationale for **why** the threshold was chosen. Often on a different page from the threshold itself. | `"…mechanisation-limited beyond this gradient", p.5` |
+| `selection_justification` · `selection_justification_page` | string/int | Optional *(Namita's attribution requirement)* | Quote + page explaining why the paper **selected the variable at all** (typically the AHP-weight prose or criteria-table commentary). Separate from threshold reasoning. | `"slope ranked second-most-important due to erosion + mechanisation interaction", p.6` |
 
 ### VONT — Variable Ontology
 
@@ -415,6 +452,12 @@ Canonical variables: harmonisation + data-catalog link + resolution validity.
 | `resolution_sensitivity` | enum | Required | `low` \| `medium` \| `high` (derivatives = high). | `high` |
 | `derive_then_aggregate` | boolean | Required | Compute native then summarise to grid (slope, TWI…). | `true` |
 | `context_sensitivity` | enum | Optional | How generalisable / politically sensitive the variable is. `low` (generalisable physical — slope, climate; global default fine) \| `medium` (context-dependent but apolitical — soils, land cover) \| `high` (nationally-derived / sovereignty-sensitive — population, poverty, production stats; prefer a **country-endorsed** source). A **flag** read by variable cards, the data-gap prompt and the M6 hand-off — it does not change the analysis. | `high` |
+| `review_status` | enum | Optional *(paper-first sweep)* | `canonical` \| `pending_review` \| `rejected`. Default `canonical`. `pending_review` rows are queued for Pete/Namita ontology sign-off — EV rows may point at them, but no T4 synthesis until status flips to `canonical`. | `pending_review` |
+| `raised_by` | string | Optional *(paper-first sweep)* | The `evidence_id` that surfaced this variable during a sweep. Audit trail for `pending_review` entries. | `ev_cec_nath21` |
+| `raised_date` | date | Optional *(paper-first sweep)* | ISO date the entry was raised. | `2026-06-05` |
+| `composite_of` | string[] | Optional | If this canonical aggregates other canonicals (e.g. `soil_fertility = [soil_n, soil_p, soil_k, soil_organic_carbon]`), the list of member canonical_variable_ids. FK → VONT. **Decision deferred per-family** — at synthesis time the recipe chooses whether to use the composite or the individual atoms. | `['soil_n','soil_p','soil_k','soil_organic_carbon']` |
+
+**Immutability rule (v0.2.5):** `canonical_variable_id` is **permanent** once assigned. Renames happen via `aliases[]`, never by mutating the id — EV rows depend on it for FK stability. Migrations that change the meaning of a canonical require a deprecation/replacement pair, not a rename.
 
 ### FAM — Subpractice / Suitability-Family registry
 

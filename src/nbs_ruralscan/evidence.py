@@ -66,6 +66,19 @@ class EvidenceUnit:
     taxon: str | None = None
     lineage_of: str | None = None
     reviewer_ok: bool = False
+    # ── paper-first sweep (v0.2.5) — all optional, backwards compatible ──
+    raw_name: str | None = None  # surface name from paper before harmonisation
+    observed_dataset: str | None = None  # which dataset the paper actually used
+    # Namita's attribution requirement: who the paper cites + the paper's own rationale
+    attribution: str | None = None  # free-text citation pointer (e.g. "Harrison 2016")
+    justification_quote: str | None = (
+        None  # second verbatim quote — paper's rationale for the threshold
+    )
+    justification_page: int | None = None
+    selection_justification: str | None = (
+        None  # why the paper selected the variable at all
+    )
+    selection_justification_page: int | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

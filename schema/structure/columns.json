@@ -1,7 +1,7 @@
 {
-  "manifest_version": "0.2.4-structure-frozen",
+  "manifest_version": "0.2.5-structure-frozen",
   "spec_source": "schema/spec.md",
-  "generated": "2026-06-04",
+  "generated": "2026-06-05",
   "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
   "value_rules": {
     "required": "column present on every row; value non-empty",
@@ -117,10 +117,14 @@
       "per_nbs": false,
       "primary_key": "source_id",
       "required": ["source_id", "citation", "benchmark_tier"],
-      "optional": ["doi", "study_country", "region", "coords", "aez", "farming_system", "method_type", "spatial_scale", "analysis_resolution_m", "nbs_ids"],
+      "optional": ["doi", "study_country", "region", "coords", "aez", "farming_system", "method_type", "spatial_scale", "analysis_resolution_m", "nbs_ids", "vars_extracted", "extraction_status", "extraction_status_by_family", "extraction_date", "extraction_run_id", "extractor"],
       "conditional": [],
       "derived": [],
-      "fk": {"aez": "T7.context_id", "farming_system": "T7.context_id", "nbs_ids": "T0.nbs_id"}
+      "fk": {"aez": "T7.context_id", "farming_system": "T7.context_id", "nbs_ids": "T0.nbs_id", "vars_extracted": "VONT.canonical_variable_id"},
+      "enum_values": {
+        "benchmark_tier": ["high", "medium", "low", "external"],
+        "extraction_status": ["pending", "in_progress", "swept", "signed_off"]
+      }
     },
     "EV": {
       "name": "Evidence Register",
@@ -128,7 +132,7 @@
       "per_nbs": false,
       "primary_key": "evidence_id",
       "required": ["evidence_id", "source_id", "nbs_id", "suitability_family_id", "variable", "use_role", "evidence_type", "claim_basis", "claim_scope", "extraction_confidence", "quote", "page"],
-      "optional": ["relationship", "context", "lineage_of", "reviewer_ok"],
+      "optional": ["relationship", "context", "lineage_of", "reviewer_ok", "raw_name", "observed_dataset", "attribution", "justification_quote", "justification_page", "selection_justification", "selection_justification_page"],
       "conditional": ["taxon"],
       "derived": [],
       "fk": {"source_id": "SRC.source_id", "nbs_id": "T0.nbs_id", "suitability_family_id": "FAM.suitability_family_id", "variable": "VONT.canonical_variable_id"}
@@ -139,10 +143,13 @@
       "per_nbs": false,
       "primary_key": "canonical_variable_id",
       "required": ["canonical_variable_id", "label", "canonical_unit", "group_id", "candidate_dataset_ids", "min_meaningful_resolution_m", "resolution_sensitivity", "derive_then_aggregate"],
-      "optional": ["aliases", "unit_conversions", "context_sensitivity"],
+      "optional": ["aliases", "unit_conversions", "context_sensitivity", "review_status", "raised_by", "raised_date", "composite_of"],
       "conditional": [],
       "derived": [],
-      "fk": {}
+      "fk": {"composite_of": "VONT.canonical_variable_id"},
+      "enum_values": {
+        "review_status": ["canonical", "pending_review", "rejected"]
+      }
     },
     "BIND": {
       "name": "Dataset Binding Registry",
