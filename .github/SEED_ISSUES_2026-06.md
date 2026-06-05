@@ -140,3 +140,29 @@ Not new issues — edits to existing cards, reflecting the ownership shift:
 > Build the WH subpractice → suitability-family taxonomy (second NbS), reusing existing standards (FAO land eval, WOCAT/SLM, GAEZ, Dixon farming systems) rather than inventing. Use the prior WH methodological plan (`Methodology/Claude/Spatial_Methodological_Plan_Water_Harvesting_NbS_v1.docx`) as a **`scoping_candidate` reference only** — it proposes candidate variables + subpractice structure but carries **no decision history** to justify variable selection, so every variable must be substantiated through the evidence layer (the 85 WH stocktake PDFs). Reference, not justification.
 
 **Done this session:** corrected the draft-0 agroforestry slope row (abs_max 45°→30°, unit-conflation fix) — see the slope worked example.
+
+---
+
+## v0.2.6 sharpenings backlog (June 2026 — corpus + adoption-evidence sequencing)
+
+**N — T6 bounded-corpus discovery pass (effectiveness + conditionality).**
+**Assignees:** @namita @pete (Claude support)
+**Labels:** `methodology`, `discovery`, `t6`
+> Assemble the **T6 bounded seed-set** per the v0.2.6 rule (`methodology/T4_generation_method.md` §3): WB rural-NbS catalogue · GEF / NBS Invest · IPCC · FAO · WRI · major meta-analyses · **MEL/MELIA reports** · CSA adoption & barriers dataset. Tier each entry against `SRC.benchmark_tier`. Don't sweep 100k abstracts. **Sequenced after T4** — start scoping once F1 (agroforestry, planted silvoarable) is complete. Output: a `schema/registers/CV_t6_seed_agroforestry.csv` (or per-NbS) mirroring the structure of the v0.6 T4 candidate-variable register.
+
+**O — T3 bounded-corpus discovery pass (hazard mitigation + vulnerability).**
+**Assignees:** @brayden @pete
+**Labels:** `methodology`, `discovery`, `t3`
+> Same as N but for T3: hazard-resilience + vulnerability literature; IPCC AR6 WGII Ch.2/3; CGIAR-CCAFS climate-resilience reviews. Brayden's M2 lit is the spine. Sequenced after T4. Output: per-NbS T3 seed-set CSV.
+
+**P — Ingest the CSA adoption & barriers dataset (Aggarwal et al. + successors).**
+**Assignees:** @namita @pete (Claude Code)
+**Labels:** `data`, `methodology`, `discovery`
+> Pull the CSA adoption & barriers synthesised dataset into the SRC + EV registers as **observed-reality evidence** (`SRC.method_type = adoption_study`). Per v0.2.6 method §3 evidence-source principle, this feeds T4 **system_constraint** / **operational_constraint** variables and T6 conditionality directly. Keep PDFs/full text **off-repo**; only short fair-use quotes + structured EV rows commit. Goal: cover the agroforestry & water-harvesting practices for the pilot.
+
+**Q — MEL / MELIA seed-set per NbS (large-project synthesis material).**
+**Assignees:** @namita (with MFL team: @sarah-jones @chris-kettle @evert-thomas @hannes-gaisberger)
+**Labels:** `methodology`, `discovery`, `data`
+> Assemble per-NbS the MEL/MELIA reports and synthesis pieces from large CGIAR/donor projects (Kuria, Sida-NbS, Restoration Initiative MEL packs, AFR100, ICRAF MELIA outputs, GEF NBS Invest portfolios). Same ingest path as N/P (`SRC.method_type = mel_report`, observed-reality evidence). Feeds T4 system/operational dimensions + T6 conditionality. Sequence after T4 unless a specific MEL paper is already known to fill a T4 gap.
+
+**Done in v0.2.6:** sharpened `T4.suitability_dimension` (3 ordered definitions); fixed draft-0 mislabels (`land_cover` → system; `distance_to_road` → operational; `permanent_water` → operational); added enum_values policing for `suitability_dimension` + `relationship_type`; extended `SRC.method_type` with `adoption_study` + `mel_report`; method-doc §3 bounded seed-set + §2.7 hard-vs-soft reconcile (resolves the stocktake Fig 9 tension); CLAUDE.md + READMEs + docs cascade.
