@@ -246,6 +246,32 @@ no change to the suitability analysis.
 
 ## 3. Discovery (recall-first — proposes candidates)
 
+**Process order (Pete, 2026-06-05) — paper-first, not variable-first.** Earlier passes extracted
+one canonical variable at a time across the corpus (slope, precip, MAT…) against an unaudited
+draft-0 variable list. This is inverted: traverse the corpus *one paper at a time*, capturing every
+variable that paper uses and its quantified relationships in a single pass, then harmonise across
+papers, then weight by tier, then synthesise. Concretely:
+
+1. **Per-paper variable scan + relationship capture.** For each paper in the corpus, enumerate every
+   suitability variable it uses and extract any quantified threshold/class table at the same visit —
+   *one trip through the PDF per paper, not one per variable.* Records both the variable's surface name
+   and any in-paper relationship (EvidenceUnits with quote + page) in a single pass. Append the
+   variable list to the paper's row in `schema/registers/SRC_source_register` (`vars_extracted[]`).
+2. **Harmonisation.** Map surface names → canonical Variable Ontology ids, keeping the surface name
+   in EV (`raw_name`) for audit. New variables not in VONT are queued for ontology review (Namita +
+   Pete) before they enter T4.
+3. **Tier-weighted prevalence + variable combining.** Prevalence across the corpus is not raw
+   paper-count — weight each paper by its `benchmark_tier` (High/Med/Low → 1.0/0.6/0.35 per
+   `synthesis.py`). Variables that fail a soft floor on weighted prevalence are reviewed (not auto-
+   dropped) and may be combined (e.g. soil N/P/K → a nutrient-availability composite when the
+   underlying papers themselves do so).
+4. **Synthesis → global aggregate / composite response functions.** Only after steps 1-3 does each
+   surviving (family × canonical variable) get its T4 row synthesised — same weighted-median logic as
+   today (§6).
+
+The four feeds below still produce the *initial* candidate-source set, but the per-paper scan is the
+operative discovery loop for T4 extraction itself.
+
 Discovery's job is to find *what to look for and where*; it is allowed to be speculative because nothing it
 proposes reaches a T4 parameter without passing through the evidence layer. Three feeds:
 
@@ -503,6 +529,7 @@ evidence types, and synthesis.
 - ~~Human review per tier?~~ **Resolved** — intermediate QA = extraction team + Claude; Benson reviews later-stage outputs; Namita + MFL review families/recipes (§7).
 - How do we **version the corpus** so a T4 row is reproducible against a frozen evidence set? *(Proposal: freeze the ingested cache + Source/Evidence registers per run, hash-stamped.)*
 - T3/T5/T6 **per-table extraction contracts** — to be authored before extract-once.
+- **Climate variables in F1 — load-bearing or redundant?** Open for team review (Pete, 2026-06-04 while reviewing annual_precipitation). Hypothesis: once a pixel is not rocky / frozen / desert (gated by land cover, ecosystem layer, AEZ mask), trees can grow → agroforestry biophysically possible. The crisp climate thresholds in the corpus are nearly all **species** envelopes routed out by `claim_scope`; the surviving *practice-level* claims (Haile, Nath on precip) bottom out at "not desert / not freezing," which other layers already exclude. Tension with §2.5's distribution-over-niche rule. If climate is redundant in F1, replace per-variable envelopes with a single non-extreme-environment composite (or let correlation clustering prune it per AOI). Decide once F1 climate variables are extracted end to end; ML-importance on the pilot AOI is the natural decider.
 
 ---
 
