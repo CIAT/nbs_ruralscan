@@ -1,5 +1,5 @@
 {
-  "manifest_version": "0.2.8-structure-frozen",
+  "manifest_version": "0.2.9-structure-frozen",
   "spec_source": "schema/spec.md",
   "generated": "2026-06-05",
   "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
@@ -28,14 +28,16 @@
       "location": "T1_data_registry.{csv,json}",
       "per_nbs": false,
       "primary_key": "dataset_id",
-      "required": ["dataset_id", "dataset_name", "analytical_module", "scenario_type", "spatial_resolution_m", "geographic_coverage", "data_format", "access_type", "license", "citation", "version", "limitations"],
-      "optional": ["hazard_type", "time_period", "download_url", "gee_asset_id", "doi", "preprocessing_notes"],
-      "conditional": [],
+      "required": ["dataset_id", "dataset_name", "description", "analytical_module", "grain_type", "geographic_coverage", "data_format", "access_type", "license", "citation", "version", "limitations"],
+      "optional": ["time_period", "download_url", "gee_asset_id", "doi", "preprocessing_notes", "access_params"],
+      "conditional": ["hazard_type", "scenario_type", "spatial_resolution_m", "admin_level"],
       "derived": [],
       "fk": {},
       "enum_values": {
         "hazard_type": ["drought", "flood", "heat_stress", "fire", "wind_cyclone", "waterlogging", "frost", "multi"],
-        "scenario_type": ["baseline", "future_ssp126", "future_ssp245", "future_ssp585", "multi_scenario"]
+        "scenario_type": ["baseline", "future_ssp126", "future_ssp245", "future_ssp585", "multi_scenario"],
+        "grain_type": ["grid", "admin", "vector"],
+        "admin_level": ["admin0", "admin1", "admin2"]
       }
     },
     "T2": {
@@ -166,7 +168,7 @@
       "per_nbs": false,
       "primary_key": "binding_id",
       "required": ["binding_id", "variable", "scope_type", "preference_rank", "status"],
-      "optional": ["dataset_id", "fitness_note"],
+      "optional": ["dataset_id", "fitness_note", "band"],
       "conditional": ["scope_id"],
       "derived": [],
       "fk": {"variable": "VONT.canonical_variable_id", "scope_id": "T7.context_id", "dataset_id": "T1.dataset_id"}

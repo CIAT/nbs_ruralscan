@@ -1,5 +1,41 @@
-# Schema spec — field-level reference (v0.2.8)
+# Schema spec — field-level reference (v0.2.9)
 
+> **v0.2.9 (June 2026)** — focused T1 (Data Registry) reshape to unblock Brayden's data-download
+> layer. **Mixed migration** — additive fields + one field re-classification + one rename target;
+> all draft-0 T1 rows migrated in lockstep with CSV+JSON.
+>
+> - **`T1.scenario_type`** → **Conditional** (was Required). Required only if
+>   `analytical_module ∈ { climate_hazard, climate_impact }`; omitted for static / non-climate
+>   datasets (SoilGrids, SRTM, OSM roads, GADM, etc.). Mirrors the existing `hazard_type`
+>   conditional.
+> - **`T1.description`** — **new Required**, UI-facing one-line description. Populate from the
+>   provider's official metadata/abstract (GEE catalog, dataset landing page) — *not* bespoke
+>   prose. Provenance via `citation` + `download_url`.
+> - **Spatial-grain model** — replaces the metres-only assumption:
+>   - **`T1.grain_type`** — new Required enum `grid` / `admin` / `vector`.
+>   - **`T1.spatial_resolution_m`** — Conditional (required iff `grain_type = grid`).
+>   - **`T1.admin_level`** — new Conditional enum `admin0` / `admin1` / `admin2` (required iff
+>     `grain_type = admin`).
+> - **`T1.citation`** — guidance only (no schema change): **APA-7**, sourced verbatim from the
+>   provider's recommended citation where given, else resolved from `doi` via Crossref / DataCite.
+>   Don't hand-author. Validator stays at `non-empty`; the format expectation is documented in the
+>   T1 field row.
+> - **`T1.geographic_coverage`** — now a **list of codes**: ISO 3166-1 alpha-3 country codes
+>   (uppercase, e.g. `SLE`), plus the keyword **`global`**, plus UN M49 region tokens for broad
+>   regional products (e.g. `sub_saharan_africa`, `developing_regions`). Format-policed by the
+>   manifest. Draft-0 free-text strings ("Global", "Global (developing regions)") migrated.
+> - **`T1.access_params`** — new Optional object: endpoint / collection / asset-key / band-name
+>   that a bare `download_url` can't hold. STAC + API datasets land here.
+> - **ISO3 alignment** — uppercase ISO3 standardised across the schema: **T7 `admin_country`
+>   context_ids** (`sle` → `SLE`), **BIND `scope_id` / `binding_id`** (cocoa rows), so
+>   `T1.geographic_coverage`, `T7.admin_country`, and BIND admin-country scopes share one code
+>   vocabulary and the FK-policing lines up.
+> - **`BIND.band`** — new Optional field (was an explicit gap): a multi-band asset (e.g. WorldClim
+>   bioclim's 19 bands, CHELSA bands) needs to resolve to the right layer per variable. Pairs with
+>   `T1.access_params` for the parent dataset.
+>
+> Bumped to `v0.2.9-structure-frozen`. **Unblocks Brayden's T1 → Python download layer.**
+>
 > **v0.2.8 (June 2026)** — T5 opportunity-space theme ratification. Equity / gender is **its own
 > T5 theme** (`equity_gender`), not folded into `people_production` (Pete decision). Pilot
 > theme-weight defaults shift from 4 × 0.25 to 5 × 0.20 (TTL-adjustable at M4); update the
@@ -204,19 +240,23 @@ use a dataset is derived on demand from the T2/T4 joins, not stored.
 |---|---|---|---|---|
 | `dataset_id` | string | Required | Unique identifier (snake_case). | `chelsa_precipitation_v21` |
 | `dataset_name` | string | Required | Full descriptive name. | `CHELSA Precipitation v2.1` |
+| `description` | string | Required *(v0.2.9)* | Short UI-facing one-line description. **Populate from the provider's official metadata/abstract** (GEE catalog, dataset landing page), not bespoke prose. Provenance via `citation` / `download_url`. | `Bias-corrected high-resolution gridded climate (1981-2010, monthly precip @ ~1 km).` |
 | `analytical_module` | enum | Required | `climate_hazard` \| `climate_impact` \| `structural_suitability` \| `adaptive_capacity` \| `exposure` \| `opportunity_space` \| `geographic_context`. | `climate_hazard` |
-| `hazard_type` | enum | Optional | If `analytical_module = climate_hazard`: `drought` \| `flood` \| `heat_stress` \| `fire` \| `wind_cyclone` \| `waterlogging` \| `frost` \| `multi`. | `drought` |
-| `scenario_type` | enum | Required | `baseline` \| `future_ssp126` \| `future_ssp245` \| `future_ssp585` \| `multi_scenario`. | `baseline` |
+| `hazard_type` | enum | Conditional | Required if `analytical_module = climate_hazard`: `drought` \| `flood` \| `heat_stress` \| `fire` \| `wind_cyclone` \| `waterlogging` \| `frost` \| `multi`. | `drought` |
+| `scenario_type` | enum | Conditional *(v0.2.9)* | Required iff `analytical_module ∈ { climate_hazard, climate_impact }`: `baseline` \| `future_ssp126` \| `future_ssp245` \| `future_ssp585` \| `multi_scenario`. Omit for static / non-climate datasets. | `baseline` |
 | `time_period` | string | Optional | Reference period or horizon. | `1981–2010` |
-| `spatial_resolution_m` | integer | Required | Native resolution (metres). | `1000` |
-| `geographic_coverage` | string | Required | Geographic extent. | `Global` |
+| `grain_type` | enum | Required *(v0.2.9)* | Spatial-grain class: `grid` (raster) \| `admin` (administrative unit polygons keyed by `admin_level`) \| `vector` (other vector features — line, point, irregular polygons). Drives whether `spatial_resolution_m` or `admin_level` is the operative grain field. | `grid` |
+| `spatial_resolution_m` | integer | Conditional *(v0.2.9)* | Required iff `grain_type = grid`. Native resolution in metres. **Don't fudge** an admin/vector dataset into metres; leave blank and use `admin_level` (admin) or omit (vector). | `1000` |
+| `admin_level` | enum | Conditional *(v0.2.9)* | Required iff `grain_type = admin`: `admin0` (country) \| `admin1` (state / province) \| `admin2` (district). | `admin1` |
+| `geographic_coverage` | string[] | Required | List of codes. Values: ISO 3166-1 alpha-3 country codes (uppercase, e.g. `SLE`, `KEN`, `BRA`) · the keyword `global` · UN-M49 / project region tokens (`sub_saharan_africa`, `south_asia`, `latin_america`, `southeast_asia`, `developing_regions`). Format-policed by the manifest. | `['global']` · `['SLE']` · `['sub_saharan_africa']` |
 | `data_format` | enum | Required | `geotiff` \| `geotiff_cog` \| `geoparquet` \| `netcdf` \| `csv` \| `shapefile` \| `gee_asset`. | `geotiff_cog` |
 | `access_type` | enum | Required | `direct_download` \| `gee_asset` \| `api` \| `proprietary_licensed`. | `direct_download` |
 | `download_url` | string | Optional | Direct download URL or DOI. | `https://chelsa-climate.org/` |
 | `gee_asset_id` | string | Optional | GEE asset path if `access_type = gee_asset`. | `ECMWF/ERA5_LAND/MONTHLY_AGGR` |
+| `access_params` | object | Optional *(v0.2.9)* | Endpoint / collection / asset-key parameters that a bare `download_url` can't hold (STAC, generic API). Free-form keys: `endpoint`, `collection`, `asset_key`, `auth_required`, etc. BIND `band` chooses *which layer*; this object captures *how to reach* the parent dataset. | `{ "endpoint":"https://earth-search.aws.element84.com/v1", "collection":"sentinel-2-l2a" }` |
 | `license` | string | Required | License (SPDX identifier preferred). | `CC-BY-4.0` |
-| `citation` | string | Required | Full bibliographic citation. | `Karger et al. (2017). Sci. Data…` |
-| `doi` | string | Optional | DOI. | `10.1038/sdata.2017.122` |
+| `citation` | string | Required | Full bibliographic citation. **APA-7**, sourced verbatim from the provider's recommended citation where given, else resolved from `doi` via Crossref / DataCite. Don't hand-author. Validator: non-empty; `doi` should be present where one exists. | `Karger, D. N., et al. (2017). Climatologies at high resolution for the earth's land surface areas. Scientific Data, 4, 170122.` |
+| `doi` | string | Optional | DOI (canonical machine id). | `10.1038/sdata.2017.122` |
 | `version` | string | Required | Dataset version used. | `v2.1` |
 | `preprocessing_notes` | string | Optional | Resampling, masking, etc. | `Resample to 1km COG, clip to AOI` |
 | `limitations` | string | Required | Key caveats + inappropriate uses (merged). | `Coarse resolution; not for site-level design` |
@@ -592,6 +632,7 @@ compositely via `T4.context_overrides`; BIND chooses *which dataset*, the overri
 | `scope_type` | enum | Required | `global` \| `aez` \| `farming_system` \| `admin_country` \| `admin_region` \| `hydrobasin`. | `admin_country` |
 | `scope_id` | string | Conditional | FK → `T7.context_id`. Required unless `scope_type = global`. | `sle` |
 | `dataset_id` | string | Optional | FK → `T1.dataset_id`. **Blank** when `status = requires_upload`. | `mapspam_cocoa_2020` |
+| `band` | string | Optional *(v0.2.9)* | When the bound dataset is a multi-band / multi-layer asset, this names the specific band/layer to use for the variable. WorldClim bioclim → `BIO1`/`BIO12`; CHELSA → `bio1`/`bio12`; multi-asset GEE collections → the asset key. Pairs with `T1.access_params`. | `BIO12` |
 | `preference_rank` | integer | Required | Lower = preferred when several bindings match a pixel's context. | `1` |
 | `status` | enum | Required | `catalogued` (in T1, fetchable) \| `community` (community-hosted) \| `requires_upload` (better data known, user must supply). | `requires_upload` |
 | `fitness_note` | string | Optional | Why this dataset for this context (resolution, currency, provenance). | `National EO cocoa map, 10 m, 2023` |
