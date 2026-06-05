@@ -520,6 +520,7 @@ Canonical variables: harmonisation + data-catalog link + resolution validity.
 | `raised_by` | string | Optional *(paper-first sweep)* | The `evidence_id` that surfaced this variable during a sweep. Audit trail for `pending_review` entries. | `ev_cec_nath21` |
 | `raised_date` | date | Optional *(paper-first sweep)* | ISO date the entry was raised. | `2026-06-05` |
 | `composite_of` | string[] | Optional | If this canonical aggregates other canonicals (e.g. `soil_fertility = [soil_n, soil_p, soil_k, soil_organic_carbon]`), the list of member canonical_variable_ids. FK → VONT. **Decision deferred per-family** — at synthesis time the recipe chooses whether to use the composite or the individual atoms. | `['soil_n','soil_p','soil_k','soil_organic_carbon']` |
+| `comment` | string | Optional | Free-text note. Used on `pending_review` rows to flag schema-level decisions (depth stratification, merge vs split, composite vs atomic). Removed or resolved when the row flips to `canonical`. | `Depth-stratified pair with soil_organic_carbon. Decide: separate canonicals vs single canonical with depth context.` |
 
 **Immutability rule (v0.2.5):** `canonical_variable_id` is **permanent** once assigned. Renames happen via `aliases[]`, never by mutating the id — EV rows depend on it for FK stability. Migrations that change the meaning of a canonical require a deprecation/replacement pair, not a rename.
 
