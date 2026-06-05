@@ -166,3 +166,29 @@ Not new issues — edits to existing cards, reflecting the ownership shift:
 > Assemble per-NbS the MEL/MELIA reports and synthesis pieces from large CGIAR/donor projects (Kuria, Sida-NbS, Restoration Initiative MEL packs, AFR100, ICRAF MELIA outputs, GEF NBS Invest portfolios). Same ingest path as N/P (`SRC.method_type = mel_report`, observed-reality evidence). Feeds T4 system/operational dimensions + T6 conditionality. Sequence after T4 unless a specific MEL paper is already known to fill a T4 gap.
 
 **Done in v0.2.6:** sharpened `T4.suitability_dimension` (3 ordered definitions); fixed draft-0 mislabels (`land_cover` → system; `distance_to_road` → operational; `permanent_water` → operational); added enum_values policing for `suitability_dimension` + `relationship_type`; extended `SRC.method_type` with `adoption_study` + `mel_report`; method-doc §3 bounded seed-set + §2.7 hard-vs-soft reconcile (resolves the stocktake Fig 9 tension); CLAUDE.md + READMEs + docs cascade.
+
+---
+
+## v0.2.7 discovery-and-evidence-sourcing SOP backlog (June 2026)
+
+**R — WOCAT seed-set per NbS (SLM technologies database).**
+**Assignees:** @namita @pete (Claude Code)
+**Labels:** `methodology`, `discovery`, `data`
+> Assemble per-NbS the WOCAT (World Overview of Conservation Approaches and Technologies) SLM-technology entries that match the family scheme. **LMIC-grounded**, per-practice fact sheets cover **T4 requirements** (climate/soil/topography/land-use) AND **T6 benefits/costs** (impacts, adoption costs, success factors). The highest-yield single class in the seed-set rule (v0.2.7 method §3 diamond classes). Ingest via per-paper sweep; assign `SRC.venue_type = institutional_report`; assess each entry against the six-axis rubric. Goal: cover agroforestry + water harvesting for the pilot.
+
+**S — Evidence Gap Maps ingest (3ie / Campbell / CEE).**
+**Assignees:** @namita @pete
+**Labels:** `methodology`, `discovery`, `t6`
+> Pull pre-mapped intervention × outcome evidence from 3ie / Campbell Collaboration / CEE (Collaboration for Environmental Evidence) for the pilot NbS. EGMs are a shortcut + **honest gaps** — where evidence is missing they say so, which is exactly the input T6 conditionality needs. Map each EGM cell to T6 effect rows via `SRC.method_type = empirical`/`mel_report` (depending on study designs underneath) and `venue_type = institutional_report`. Sequenced after T4.
+
+**T — WB project evidence (PADs / ICRs / IEG reviews).**
+**Assignees:** @pete @namita
+**Labels:** `methodology`, `discovery`, `data`
+> Pull NbS-relevant WB Project Appraisal Documents, Implementation Completion Reports, and Independent Evaluation Group reviews into the SRC + EV registers as **operational-reality evidence** — what the Bank actually funded, what worked, what didn't. Feeds T4 `operational_constraint` + T6 conditionality. `SRC.venue_type = institutional_report`; `SRC.method_type = mel_report` or `adoption_study` depending on doc. Coordinate with the TORs-named tools (D4R, AAAA, MapAWD) and the WB rural-NbS catalogue.
+
+**U — Discovery-log SOP rollout (PRISMA-lite).**
+**Assignees:** @pete (Claude support)
+**Labels:** `methodology`, `documentation`
+> Author the first per-NbS × table discovery logs under `methodology/discovery_logs/`. Start with `agroforestry_T4.md` (retrospective — capture what was done on the 23-paper Stocktake + the F1 sweep) and `water_harvesting_T4.md` (forward-looking — feeds the WH discovery pass when the second NbS comes into scope). Template lives at `methodology/discovery_logs/README.md`. Records search strings, sources queried, dates, PRISMA-lite counts (returned → screened → included). **Markdown, not a schema register** — narrative audit trail at this phase.
+
+**Done in v0.2.7:** added SRC fields `study_income_group` (enum), `is_seminal` (bool), `venue_type` (enum) to make the six-axis credibility rubric auditable; reconciled the C/I/D rubric with the six-axis rubric in spec.md + method doc (one scheme, two views); expanded method §3 with the diamond source classes (WOCAT, EGMs, WB project evidence + TORs tools, ICRAF/Ecocrop/TECA), five-step screening funnel, LMIC tie-break, independence/COI discount, source-type register (economic valuation / gender / maladaptation / BIND-T1 datasets); created `methodology/discovery_logs/` with PRISMA-lite template; CLAUDE.md + READMEs + docs cascade. **Not in scope this batch:** T5 opportunity-space ratification — still waiting on Pete (equity/gender = own theme vs folded into people_production).
