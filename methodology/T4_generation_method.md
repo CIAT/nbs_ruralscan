@@ -303,22 +303,51 @@ papers, then weight by tier, then synthesise. Concretely:
 The four feeds below still produce the *initial* candidate-source set, but the per-paper scan is the
 operative discovery loop for T4 extraction itself.
 
-### Bounded, authority-weighted seed-set rule (v0.2.6)
+### Bounded, authority-weighted seed-set rule (v0.2.6, expanded v0.2.7)
 
-Discovery does not sweep 100k abstracts. Per NbS (or NbS cluster) assemble a **capped seed set**
-of authoritative sources, then expand only when the seed set leaves obvious gaps. Categories to
-hit, in roughly this order of authority:
+Discovery does not sweep 100k abstracts. Per **NbS × table**, assemble a **capped seed set
+(~10-20 sources)** of authoritative material, then expand only when the seed set leaves
+obvious gaps. Categories to hit, in roughly this order of authority:
+
+**Tier-1 authority (project-relevant, evidence-grade):**
 
 - **World Bank rural-NbS catalogue** (in-house operational reports + adoption studies)
+- **WB project evidence** — Project Appraisal Documents (PADs), Implementation Completion Reports
+  (ICRs), Independent Evaluation Group (IEG) reviews. Operational reality + outcomes that
+  literature alone misses.
+- **WB TORs-named tools** — **D4R** (Data for Resilience), **Africa Agriculture Adaptation Atlas
+  (AAAA)**, **MapAWD** (Mapping Agriculture's Water Demand). Pre-curated decision-support
+  surfaces; mine them for variables, datasets, and operational thresholds.
 - **GEF / NBS Invest** materials (project portfolios, lessons-learnt)
 - **IPCC** (AR6 WGII, SRCCL chapters relevant to the NbS)
-- **FAO** (land-evaluation framework, GAEZ, ecocrop, AgrEd, EX-ACT)
+- **FAO** (land-evaluation framework, GAEZ, **Ecocrop**, **TECA** = Technologies and Practices
+  for Small Agricultural Producers, AgrEd, EX-ACT)
 - **WRI** (Global Restoration Initiative, Restoration Diagnostic, AFR100/Atlantic Forest)
-- **Major meta-analyses / reviews** in the peer-reviewed literature for the NbS
-- **MEL / MELIA reports** and synthesis pieces from large CGIAR/donor projects (Kuria, Sida-NbS,
-  Restoration Initiative MEL packs)
+- **CGIAR** systems-level reviews + science-quality outputs (ICRAF, ILRI, IWMI…)
+
+**Tier-1 "diamond classes" — pre-mapped evidence + practice databases (high-leverage):**
+
+- **WOCAT** (World Overview of Conservation Approaches and Technologies) — SLM technologies
+  database; **LMIC-grounded**, structured per-practice fact sheets covering **T4 requirements**
+  (climate/soil/topography/land-use), **T6 benefits/costs** (impacts, adoption costs, success
+  factors), and dis-adoption notes. The single highest-yield single source for SLM/NbS
+  characterisation.
+- **Evidence Gap Maps** (EGMs) — **3ie**, **Campbell Collaboration**, **CEE** (Collaboration for
+  Environmental Evidence) — pre-mapped intervention × outcome evidence with assessed
+  effectiveness; a **shortcut + honest gaps** for T6 (where evidence is missing, EGMs say so).
+- **ICRAF / World Agroforestry tree databases** (Agroforestree, Vegetation Map for Africa, GTPK
+  Genetic Resources Information System) — species, traits, growth, requirements; complements
+  Ecocrop with agroforestry-specific species.
 - **CSA adoption & barriers dataset** (Aggarwal et al. and successors — the synthesised
   adoption/dis-adoption evidence base)
+
+**Tier-2 (peer-reviewed):**
+
+- **Major meta-analyses / reviews** in the peer-reviewed literature for the NbS
+- **MEL / MELIA reports** + synthesis pieces from large CGIAR/donor projects (Kuria, Sida-NbS,
+  Restoration Initiative MEL packs)
+
+**Tier-3 (admitted only when seed-set above is thin):** primary peer-reviewed studies.
 
 **Tie to `SRC.benchmark_tier`:** prefer `high` and `medium`; admit `low` only when the seed set
 above is genuinely thin for the variable. `external` tier is used for citation-cascade pointers
@@ -338,6 +367,92 @@ discovery passes against different literature:
 
 Sequence: **complete T4 first**, then T6/T3 use the same paper-first machinery against their
 own bounded seed sets.
+
+### Screening funnel (v0.2.7) — the repeatable SOP
+
+A reproducible five-step screening pipeline, applied per NbS × table:
+
+1. **Frame the claim precisely + search for syntheses first.** Define the specific claim being
+   sourced (e.g. "for F1 silvoarable, what slope above which erosion risk dominates?"). Search
+   for **syntheses** (systematic reviews, EGMs, meta-analyses, WOCAT entries, IPCC chapters)
+   before primary studies — a good synthesis saves N primary-paper extractions.
+2. **Source-type triage.** Authority order: **synthesis > primary > grey**. Within types, prefer
+   the diamond classes (WOCAT, EGM, WB-project, ICRAF DBs) over generic peer-reviewed primary
+   studies *for breadth*; admit primaries for *depth* on a specific threshold.
+3. **Relevance screen** on three dimensions: **practice** (does it cover this NbS/family?) ·
+   **outcome/hazard** (does it cover the variable/effect/exposure of interest?) · **system**
+   (is the agro-ecological / income-group context relevant — LMIC preference applied as a
+   tie-break, not a veto on global syntheses).
+4. **Credibility scoring** → `SRC.benchmark_tier` on **six orthogonal axes** (replaces narrative
+   tiering, reconciles the prior C/I/D rubric):
+   - **(i) Evidence strength** — RCT/quasi-experimental/observational/correlational/expert
+   - **(ii) Methodological transparency** — pre-registration, data availability, reproducible code
+   - **(iii) Authority & venue reputation** — `SRC.venue_type` (peer-reviewed > institutional report > preprint > grey); landmark institutions weigh more
+   - **(iv) Context relevance / transferability** — `SRC.study_income_group`, AEZ, farming system;
+     **LMIC preference** (`low`/`lower_middle`/`upper_middle`) for WB-investable contexts as a
+     tie-break (not a veto)
+   - **(v) Recency** — newer evidence preferred *unless* the source is `SRC.is_seminal = true`
+     (foundational sources never penalised for age)
+   - **(vi) Seminality / influence** — `is_seminal` flag; citation count + landmark status
+   - **Independence / conflict-of-interest discount** — advocacy sources (industry-funded,
+     promotional grey lit, single-perspective NGO output) take a tier-down adjustment.
+
+   The **C/I/D rubric** (Content · Impact · Data quality) used historically is **one summary
+   view** of these six axes — both produce the same `benchmark_tier`. Don't store the six axes
+   separately on every row; use the SRC fields `study_income_group`, `is_seminal`, `venue_type`,
+   `method_type` to capture what's audit-relevant and let the tier represent the summary.
+5. **Saturation stop-rule + cap.** Stop adding sources when (a) new sources add no new
+   variables/thresholds *and* (b) tier coverage looks robust (at least 1 High + 2 Medium for
+   shape-bearing claims; ML or scoping-candidate okay for selection-only). Hard cap ~20 sources
+   per NbS × table; lift only with a recorded justification.
+
+After screening: extract paper-first (§3 above), dedupe lineage cascades via `lineage_of`,
+record disagreement (don't silently average).
+
+### Reproducible discovery log (PRISMA-lite, v0.2.7)
+
+**Per NbS × table**, log:
+
+- date of search
+- search strings / queries
+- sources & databases queried
+- **counts** at each funnel stage: `returned → relevance_screened → included` (PRISMA-like)
+- exclusions with reason
+
+**Decision (v0.2.7):** store as **markdown** under `methodology/discovery_logs/<nbs>_<table>.md`
+rather than a formal schema register. Rationale: at this phase the log is a *narrative audit
+trail* for a handful of NbS × table combinations, not a structured query target — a register
+would be over-engineered. Promote to a register if the audit pattern stabilises and downstream
+code needs to query it (e.g. to surface "how was this T4 row's evidence set assembled?" in the
+wireframe).
+
+Each log mirrors a single bounded seed-set run; commits to it land alongside the per-paper
+sweep commits so the audit trail tracks the EV register growth.
+
+### Source-type register (v0.2.7) — classes documented but not yet machine-readable
+
+Beyond the diamond classes above, the following source classes are **named here** so they're
+not lost — machinery (registers, ingest paths, dedicated bounded seed-sets) is **deferred
+until that table or analysis is in scope**:
+
+- **Economic valuation** — ELD (Economics of Land Degradation), TEEB (The Economics of
+  Ecosystems and Biodiversity), social-cost-of-carbon literature, voluntary-carbon-market price
+  series. Feeds **T0 economic archetypes**, **T6 economic profile**, and the M5 scorecard's
+  benefit-cost framing. Phase 2.
+- **Gender-disaggregated / distributional evidence** — CGIAR GENDER Platform, FAO gender-and-land
+  series, IFPRI WEAI (Women's Empowerment in Agriculture Index). Feeds T5
+  `priority_need` (equity/GESI theme) and is the dataset side of the T5 equity-theme ratification
+  question Pete still owes. Phase 2.
+- **Deliberate maladaptation / failure / trade-off stream** — Eriksen et al., Schipper, the
+  "negative cases" literature. Captures *where NbS made things worse* — counter-stories to the
+  optimistic-corpus bias documented in §6.1. Feeds T6 conditionality (negative cases) and the
+  publication-bias humility rule.
+- **Dataset-discovery list for BIND / T1** — **STAC** index, **Awesome-GEE-Community-Catalog**,
+  **HDX** (Humanitarian Data Exchange), **WB Data Catalog**, **AWS Open Data**. Server-side
+  preferred per CLAUDE.md dataset-sourcing rule (v0.2.6+). These feed Brayden's T1 download
+  layer + BIND resolution; documented here so the discovery work isn't reinvented.
+
+Each class becomes a candidate bounded seed-set when its target table moves into scope.
 
 ### Evidence-source principle — observed-reality signals (v0.2.6)
 
