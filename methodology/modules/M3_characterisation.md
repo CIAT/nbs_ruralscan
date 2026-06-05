@@ -6,7 +6,7 @@
 |---|---|
 | **ID** | M3 |
 | **Module** | Opportunity Space Characterisation |
-| **Owner(s)** | Namita Joshi (variable content) · Benson (QA/QC) · implemented in Python via Claude Code |
+| **Owner(s)** | Pete Steward (operational lead) · Namita Joshi (variable content) · Benson (QA/QC) · implemented in Python via Claude Code |
 | **Status** | Draft — authored to match the v0.6 wireframe (Opportunity Space panels) |
 | **Schema tables consumed** | T1 · T5 · T7 (+ M1 opportunity-space mask) |
 | **Schema tables produced** | (none — outputs are rasters + tables) |

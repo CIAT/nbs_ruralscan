@@ -26,13 +26,15 @@ The scaffolding covers the methodology (modules, schema, recipes), the team's wo
 
 > Shifted since the kickoff snapshot. See the [Delivery board](https://github.com/orgs/CIAT/projects/2) for live, issue-level state.
 
-- **Pete** — framework integrity & scope-control · M0 Setup · M4 Priority Hotspots · M6 Implementation Hand-off (lead)
-- **Brayden** — M2 Rural Climate Risk · M2b Project Disaster-Risk
-- **Namita** — M1 / M3 / M5 content · per-NbS recipes · Variable Cards · coordination
+- **Pete** — framework integrity & scope-control · M0 Setup · **M1 Suitability · M3 Opportunity Space · M4 Priority Hotspots** · M6 Implementation Hand-off (lead)
+- **Brayden** — M2 Rural Climate Risk · M2b Project Disaster-Risk · **dataset download layer (T1 → Python) and analytical-context construction (T7); server-side preferred (GEE / STAC / large services)**
+- **Namita** — **expert-opinion elicitation + pipeline integration** · M5 content · per-NbS recipes · Variable Cards · coordination
 - **Benson** — **QA/QC across all modules**: dataset fitness sign-off, output validation, resolution audit
 - **MFL team** (Sarah · Chris · Evert · Hannes) — M6 hand-off content, ecosystem-services & domain input
 
 Runtime is **Python via Claude Code** (`src/nbs_ruralscan/`), driven by Brayden / Anastasia / Pete. Native server-side GEE and the GEE App are **dropped** — we pull GEE data into Python and build/stress-test the method through the wireframe.
+
+**Implementation pathway is bifurcated.** Minimum committed deliverable is a Colab notebook worked example per pilot (the WB contract obligation — notebooks, not a polished web app). In parallel, the **Claude-Code-built front/back end** is being explored against the same schema (wireframe = front-end demonstrator; backend reads `schema/registers/` + T0–T7). Both consumers read the same registers — schema stability matters.
 
 ### Feedback forum — 1:1 catch-ups
 

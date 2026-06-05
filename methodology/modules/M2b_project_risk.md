@@ -6,7 +6,7 @@
 |---|---|
 | **ID** | M2b (addendum to M2) |
 | **Module** | Project Disaster Risk Screen |
-| **Owner(s)** | Brayden Youngberg (lead, climate methods) · Pete (oversight) |
+| **Owner(s)** | Brayden Youngberg (lead — hazard-index formulation + dataset download from T1) · Pete (oversight) |
 | **Status** | Draft — RFC. Methodology to be confirmed before it becomes a wireframe surface. |
 | **Schema tables consumed** | T1 · T2 · T3 · T7 |
 | **Schema tables produced** | (none — outputs are rasters + tables) |

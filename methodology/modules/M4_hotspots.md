@@ -6,7 +6,7 @@
 |---|---|
 | **ID** | M4 |
 | **Module** | Priority Hotspots (MCDA) |
-| **Owner(s)** | Benson Kenduiywo (QA/QC) · Brayden + Pete (methods) · implemented in Python via Claude Code |
+| **Owner(s)** | Pete Steward (operational lead, methods) · Brayden (methods support) · Benson Kenduiywo (QA/QC) · implemented in Python via Claude Code |
 | **Status** | Draft — authored to match the v0.6 wireframe (Priority Hotspots tab) |
 | **Schema tables consumed** | T5 · T7 (+ M1 opportunity-space mask, M3 priority layers, optional M2b project-risk rating) |
 | **Schema tables produced** | (none — outputs are rasters + tables) |

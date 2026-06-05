@@ -85,8 +85,8 @@ Some structural decisions in the artefacts are deliberate and shouldn't drift be
 
 ## Roles
 
-- **Pete** owns artefact direction; reviews PRs that change the structural elements above.
-- **Benson** can edit freely once pipeline outputs are ready to replace mock data.
-- **Namita** owns variable content (Variable Cards, recipe tables).
-- **Brayden** can iterate front-end visual polish.
+- **Pete** owns artefact direction; reviews PRs that change the structural elements above. Operational lead on M1/M3/M4 outputs once they replace mock data.
+- **Benson** reviews pipeline outputs for fitness/resolution as QA/QC; can edit artefacts where his sign-off applies.
+- **Namita** owns variable content (Variable Cards, recipe tables) and expert-opinion integration.
+- **Brayden** owns dataset-download / analytical-context outputs surfaced on the site (climate risk, hazard indices); can iterate front-end visual polish where needed.
 - **MFL team** (Sarah, Chris, Evert, Hannes) own M6 content (Implementation Hand-off).

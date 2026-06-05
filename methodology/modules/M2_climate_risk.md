@@ -6,7 +6,7 @@
 |---|---|
 | **ID** | M2 |
 | **Module** | Rural Climate Risk |
-| **Owner(s)** | Brayden Youngberg (lead) · Pete (oversight) · Benson (pipeline integration) |
+| **Owner(s)** | Brayden Youngberg (lead — climate-risk index formulation + dataset download from T1) · Pete (oversight) · Benson (QA/QC) |
 | **Status** | Draft — pre-scaffolded for Brayden, awaiting methodology authorship in Session C |
 | **Schema tables consumed** | T1 · T2 · T3 (for NbS-relevant hazards) · T7 |
 | **Schema tables produced** | (none — outputs are rasters + tables) |

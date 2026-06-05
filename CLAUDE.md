@@ -32,11 +32,11 @@ Demonstrator-grade artefacts (not contracted but valuable):
 | ID | Module | Owner | Schema tables |
 |---|---|---|---|
 | M0 | Setup & Scope | Pete | T0, T1, T7 |
-| M1 | Suitability → Opportunity Space | Benson + Namita | T1, T4, T7 |
+| M1 | Suitability → Opportunity Space | Pete (Benson QA) | T1, T4, T7 |
 | M2 | Rural Climate Risk (risk to **livelihoods**) | Brayden | T1, T2 |
-| M2b | Project Disaster Risk Screen (addendum — risk to the **investment**) | Brayden + Pete | T2, T3 |
-| M3 | Opportunity Space Characterisation | Namita + Benson | T1, T5 |
-| M4 | Priority Hotspots (MCDA) | Benson | T5 |
+| M2b | Project Disaster Risk Screen (addendum — risk to the **investment**) | Brayden | T2, T3 |
+| M3 | Opportunity Space Characterisation | Pete (Namita content) | T1, T5 |
+| M4 | Priority Hotspots (MCDA) | Pete (Benson QA) | T5 |
 | M5 | NbS Scorecard & Response | Namita | T3, T6 |
 | M6 | Implementation Hand-off | MFL team + Pete + Namita | T0, T6 |
 
@@ -59,13 +59,14 @@ These decisions are structural. If you want to change them, raise an issue and t
 - **Two risk lenses are distinct**: risk to rural **livelihoods** (M2, a *need* layer → hotspots) vs risk to the **investment** (M2b, the WB disaster-screening lens → a feasibility filter/scope). Kept separate; M2b applied as a filter, never summed. See `methodology/modules/M2b_project_risk.md`.
 - **Pipeline reads from schema** — analytical rules never hardcoded.
 - **Variable selection is 2-stage**: thematic grouping (per recipe) + correlation clustering (per AOI). One representative per cluster enters MCDA. Cluster membership preserved and shown to users.
-- **Dataset sourcing is 3-tier**: GEE catalog → community-hosted → upload. Fitness-for-purpose precedes platform. Data is **pulled into Python** for computation (numpy/rasterio) — there is no native server-side GEE pipeline.
+- **Dataset sourcing is 3-tier**: GEE catalog → community-hosted → upload. Fitness-for-purpose precedes platform. Data is **pulled into Python** for computation (numpy/rasterio) — there is no native server-side GEE pipeline. **Within the tiers, prefer server-side hosting (GEE catalog → community GEE → other large STAC/AWS-Open-Data services) over flat-file download** so resample/crop/mosaic happens server-side before transfer and the download functions stay simple and consistent. Where a fitness-equivalent GEE-hosted version exists, take it.
 - **Suitability is reasoned per *suitability family*, not per whole NbS.** Families group subpractices by their **shared dominant limiting factor** (agroforestry F1 planted silvoarable · F2 regeneration-based · F3 silvopastoral · F4 linear · F5 shaded perennial-crop). T4 keys to `suitability_family_id`. Grouping carries a documented rationale; don't lump by appearance. **Scheme drafted for sign-off in `methodology/families/agroforestry.md`** *(pending Namita + MFL review)*. F5's understorey crop is a **parameter, not a sub-family** (run per crop, max + retain driver).
 - **Every family carries a `spatial_product_type`** (`area_suitability` | `applicability_zone` | `zonal_linear` | `qualitative_only`). Linear/point practices are **not** reported as pixel area (over-estimation grows with coarseness). Run coarseness is also bounded **per variable** by `min_meaningful_resolution_m` (slope ≈ 30–90 m); scale-dependent derivatives are **derive-then-aggregate**, never resample-then-derive.
 - **Evidence-first / provenance.** Analytical values in T3/T4/T6 trace to evidence units (source · tier · page · quote). Never PDF → threshold in one step. `claim_scope` separates **species/crop-specific** claims from **practice/technology** ones — species envelopes never define a practice row. See `methodology/T4_generation_method.md`.
 - **Constrain by observed distribution, not a modelled niche, where data exist.** Where a family is gated by an existing host system (a crop, land use, grazing), use the host's observed distribution/production (MapSPAM, EO maps, ag-stats) as the gating layer; niche/envelope modelling is the fallback. Method §2.5.
 - **Context-aware datasets (BIND) + most-specific-context-wins.** A global recipe binds each variable to a default dataset; country/AEZ/region overrides refine it (`requires_upload` flags a better local dataset for the user to supply). Resolver: `src/nbs_ruralscan/binding.py`. Relationship *params* refine in parallel via `T4.context_overrides`.
 - **Flag sensitive variables, don't resolve them.** `VONT.context_sensitivity` (`low`/`medium`/`high`) marks nationally-derived / sovereignty-sensitive variables (population, poverty, production) so the scoping output recommends a country-endorsed source. **Scoping flags; feasibility validates** — the tool does not negotiate or validate national data (the scope line). Method §2.6, M6.
+- **Implementation pathway is bifurcated.** Minimum commitment is the **Colab notebook** worked example per pilot (the contract deliverable). In parallel, the **Claude-Code-built front/back end** is explored against the same schema (wireframe = front-end demonstrator; backend reads SRC/EV/VONT/FAM/BIND + T0–T7). Both consumers read the same registers — schema stability matters more now (two consumers, not one).
 
 ## Inheritance from Benson's existing work
 
@@ -104,10 +105,10 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 ## Team & roles
 
-- **Pete Steward** (Team Lead) — framework integrity, wireframe direction, scope-control
-- **Benson Kenduiywo** (Geospatial Analytics) — **transitioning to QA/QC**: dataset fitness sign-off, output validation, resolution-audit review. *(The framework primitives below remain his inherited work and stay attributed to him.)* Pipeline implementation now proceeds in Python via Claude Code, driven by Brayden / Anastasia / Pete.
-- **Namita Joshi** (Coordination + lit) — Variable Cards, recipe content, NbS scorecards (T6), project coordination
-- **Brayden Youngberg** (Co-lead — methodology) — M2 climate risk methods; front-end help where capacity allows
+- **Pete Steward** (Team Lead) — framework integrity, wireframe direction, scope-control; **operational lead on M1 (suitability), M3 (opportunity-space characterisation), M4 (hotspotting/MCDA)**.
+- **Benson Kenduiywo** (Geospatial Analytics) — **QA/QC**: dataset fitness sign-off, output validation, resolution-audit review. *(The framework primitives below remain his inherited work and stay attributed to him.)* Pipeline implementation now proceeds in Python via Claude Code, driven by Brayden / Anastasia / Pete.
+- **Namita Joshi** (Coordination + lit) — **expert-opinion elicitation + pipeline integration**, Variable Cards, recipe content, NbS scorecards (T6), project coordination.
+- **Brayden Youngberg** (Co-lead — methodology) — **M2 climate-risk + M2b project-disaster-risk index formulation; dataset download layer from T1 + analytical-context construction from T7** (server-side preferred — GEE / STAC / large services).
 - **Aniruddha Ghosh** — variable parsimony + transparency principles; Claude Code patterns
 - **Sarah Jones, Chris Kettle, Evert Thomas, Hannes Gaisberger** (MFL team) — ecosystem services, M6 implementation hand-off content, agroforestry & forest restoration domain input
 - **Lolita Müller** — stocktake methods, literature pipelines
@@ -129,6 +130,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - Don't expand variables into MCDA without correlation reduction
 - Don't add an NbS to a cluster without checking it shares the biophysical logic (water harvesting ≠ wetland creation; we caught this once already)
 - Don't promise the World Bank a polished web tool — the proposal commits to notebooks; the App and wireframe are demonstrators
+- Don't pick a flat-file dataset when a fitness-equivalent GEE-hosted (or other server-side) version exists — server-side resample/crop is the default.
+- Don't break the EvidenceUnit shape when adding expert-evidence capture — expert claims must land in the same EV rows as literature, via `evidence_type=expert`; only patch the schema if EV literally cannot represent something Namita needs.
 
 ## When in doubt
 

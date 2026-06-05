@@ -9,11 +9,11 @@ Spec sheets are NbS-agnostic. They describe the framework module; per-NbS specif
 | ID | Module | File | Owner(s) | Status |
 |---|---|---|---|---|
 | **M0** | Setup & Scope | [`M0_setup.md`](./M0_setup.md) | Pete | **draft (v0.1)** |
-| **M1** | **Suitability → Opportunity Space** | [`M1_suitability.md`](./M1_suitability.md) | Benson + Namita | **draft (v0.1)** |
+| **M1** | **Suitability → Opportunity Space** | [`M1_suitability.md`](./M1_suitability.md) | Pete (lead) + Namita (content) + Benson (QA) | **draft (v0.1)** |
 | M2 | Rural Climate Risk (risk to livelihoods) | [`M2_climate_risk.md`](./M2_climate_risk.md) | Brayden | draft (v0.1) |
-| **M2b** | Project Disaster Risk Screen (risk to investment) | [`M2b_project_risk.md`](./M2b_project_risk.md) | Brayden + Pete | **draft (v0.1)** |
-| **M3** | Opportunity Space Characterisation | [`M3_characterisation.md`](./M3_characterisation.md) | Namita + Benson | **draft (v0.1)** |
-| **M4** | Priority Hotspots (MCDA) | [`M4_hotspots.md`](./M4_hotspots.md) | Benson (QA) + Brayden/Pete | **draft (v0.1)** |
+| **M2b** | Project Disaster Risk Screen (risk to investment) | [`M2b_project_risk.md`](./M2b_project_risk.md) | Brayden | **draft (v0.1)** |
+| **M3** | Opportunity Space Characterisation | [`M3_characterisation.md`](./M3_characterisation.md) | Pete (lead) + Namita (content) + Benson (QA) | **draft (v0.1)** |
+| **M4** | Priority Hotspots (MCDA) | [`M4_hotspots.md`](./M4_hotspots.md) | Pete (lead) + Brayden (methods) + Benson (QA) | **draft (v0.1)** |
 | **M5** | NbS Scorecard & Response | [`M5_scorecard.md`](./M5_scorecard.md) | Namita + MFL | **draft (v0.1)** |
 | **M6** | Implementation Hand-off | [`M6_handoff.md`](./M6_handoff.md) | MFL team + Pete + Namita | **draft (v0.1)** |
 

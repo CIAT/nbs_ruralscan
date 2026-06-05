@@ -6,7 +6,7 @@
 |---|---|
 | **ID** | M1 |
 | **Module** | Suitability → Opportunity Space |
-| **Owner(s)** | Benson Kenduiywo (lead) · Namita Joshi (variable content) |
+| **Owner(s)** | Pete Steward (operational lead) · Namita Joshi (variable content) · Benson Kenduiywo (QA/QC) |
 | **Status** | Draft — based on Benson's v2 methodology plan + water-harvesting recipe |
 | **Schema tables consumed** | T0 · T1 · T4 · T7 |
 | **Schema tables produced** | (none — outputs are rasters + tables, not schema rows) |
