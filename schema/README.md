@@ -10,7 +10,7 @@ The analytical backbone. All analytical rules, datasets, response functions, wei
 
 ## Structure is LOCKED · content is in progress
 
-The **column structure** of every table is frozen at `v0.2.7-structure-frozen` (v0.2.7 = discovery-and-evidence-sourcing SOP: SRC fields `study_income_group` / `is_seminal` / `venue_type` to make the six-axis credibility rubric auditable; spec/method-doc reconciliation of the C/I/D rubric with the six-axis view; diamond source classes (WOCAT, EGMs, WB project evidence, ICRAF/Ecocrop/TECA) added to the seed-set rule; PRISMA-lite discovery log SOP under `methodology/discovery_logs/`. v0.2.6 = methodology sharpenings:
+The **column structure** of every table is frozen at `v0.2.8-structure-frozen` (v0.2.8 = T5 opportunity-space theme ratification — equity/gender is its own theme (`equity_gender`), not folded into `people_production`; pilot theme-weight defaults shift to 5 × 0.20; manifest enum-polices `T5.theme`. v0.2.7 = discovery-and-evidence-sourcing SOP: SRC fields `study_income_group` / `is_seminal` / `venue_type` to make the six-axis credibility rubric auditable; spec/method-doc reconciliation of the C/I/D rubric with the six-axis view; diamond source classes (WOCAT, EGMs, WB project evidence, ICRAF/Ecocrop/TECA) added to the seed-set rule; PRISMA-lite discovery log SOP under `methodology/discovery_logs/`. v0.2.6 = methodology sharpenings:
 `suitability_dimension` sharpened with three ordered-by-changeability definitions, T4 enum_values now police
 `suitability_dimension` and `relationship_type` under `--strict`, `SRC.method_type` extended with `adoption_study`
 and `mel_report`. v0.2.5 added paper-first sweep fields on EV/SRC + Namita's attribution capture

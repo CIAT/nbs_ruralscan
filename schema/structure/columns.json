@@ -1,5 +1,5 @@
 {
-  "manifest_version": "0.2.7-structure-frozen",
+  "manifest_version": "0.2.8-structure-frozen",
   "spec_source": "schema/spec.md",
   "generated": "2026-06-05",
   "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
@@ -91,7 +91,10 @@
       "optional": ["evidence_ids"],
       "conditional": [],
       "derived": [],
-      "fk": {"variable": "VONT.canonical_variable_id", "dataset_id": "T1.dataset_id", "evidence_ids": "EV.evidence_id"}
+      "fk": {"variable": "VONT.canonical_variable_id", "dataset_id": "T1.dataset_id", "evidence_ids": "EV.evidence_id"},
+      "enum_values": {
+        "theme": ["climate_hazard", "nbs_response", "people_production", "infrastructure", "equity_gender"]
+      }
     },
     "T6": {
       "name": "NbS Scorecard",

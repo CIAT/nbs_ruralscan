@@ -1,5 +1,12 @@
-# Schema spec — field-level reference (v0.2.7)
+# Schema spec — field-level reference (v0.2.8)
 
+> **v0.2.8 (June 2026)** — T5 opportunity-space theme ratification. Equity / gender is **its own
+> T5 theme** (`equity_gender`), not folded into `people_production` (Pete decision). Pilot
+> theme-weight defaults shift from 4 × 0.25 to 5 × 0.20 (TTL-adjustable at M4); update the
+> `theme_weights` lookup when populating it. Manifest now enum-polices `T5.theme` with all five
+> values. Additive — existing T5 rows valid; no row needs re-tagging this batch (none currently
+> use `equity_gender`; the next equity-leaning T5 variable goes there).
+>
 > **v0.2.7 (June 2026)** — discovery-and-evidence-sourcing SOP (paired with extended
 > `T4_generation_method.md` §3). Additive.
 >
@@ -393,7 +400,7 @@ prevents double-counting.
 |---|---|---|---|---|
 | `variable_id` | string | Required | Unique identifier. | `rural_poverty_headcount` |
 | `variable` | string | Required | FK → Variable Ontology (canonical name, unit, and `group_id` for theme roll-up live there). | `rural_poverty_headcount` |
-| `theme` | enum | Required | Hotspot pillar for grouping + theme-level weighting in M4. `climate_hazard` \| `nbs_response` \| `people_production` \| `infrastructure`. | `people_production` |
+| `theme` | enum | Required | Hotspot pillar for grouping + theme-level weighting in M4. `climate_hazard` \| `nbs_response` \| `people_production` \| `infrastructure` \| `equity_gender` (v0.2.8 — equity / gender / GESI is its own theme, not folded into people_production). | `equity_gender` |
 | `dataset_id` | string | Required | FK → `T1.dataset_id`. | `worldpop_poverty_2020` |
 | `directionality_of_concern` | enum | Required | `high_is_bad` \| `low_is_bad` \| `context_dependent` (sets dashboard colours). | `high_is_bad` |
 | `ttl_priority_label` | string | Required | Short label in the weighting interface. | `Poverty` |
@@ -409,7 +416,8 @@ prevents double-counting.
 ### Theme weights and NbS-response layers
 
 **Theme weights.** Variable weights normalise within a theme; the *theme-level* defaults that set how much each
-pillar drives the hotspot index live in a small `theme_weights` lookup at the schema root (pilot defaults:
+pillar drives the hotspot index live in a small `theme_weights` lookup at the schema root. With the v0.2.8 split
+the pilot defaults are **5 × 0.20** across `climate_hazard` · `nbs_response` · `people_production` · `infrastructure` · `equity_gender` (previously 4 × 0.25; TTL-adjustable at M4). Earlier pilot defaults:
 `climate_hazard` 0.30 · `nbs_response` 0.25 · `people_production` 0.30 · `infrastructure` 0.15). All TTL-adjustable
 at M4. (A row carrying `weight_default` × its theme weight gives the variable's contribution before user reweighting.)
 
