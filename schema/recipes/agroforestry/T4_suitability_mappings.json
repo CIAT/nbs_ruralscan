@@ -44,7 +44,7 @@
     "future_dataset_ids": null,
     "weight_default": 0.15,
     "weight_adjustable": true,
-    "justification": "Suitability highest on flat–gentle slopes, declining with erosion/mechanisation limits. Global opt_high≈10°, abs_max≈30° (high uncertainty). CORRECTION (v0.2): prior abs_max=45° conflated %-slope sources (45% ≈ 24°) with degree-native montane studies (Nath 2021 ~44°); abs_max revised to 30° global with a montane/humid override to ~44°. See methodology/examples/t4_slice_agroforestry_F1_slope.md.",
+    "justification": "Suitability highest on flat\u2013gentle slopes, declining with erosion/mechanisation limits. Global opt_high\u224810\u00b0, abs_max\u224830\u00b0 (high uncertainty). CORRECTION (v0.2): prior abs_max=45\u00b0 conflated %-slope sources (45% \u2248 24\u00b0) with degree-native montane studies (Nath 2021 ~44\u00b0); abs_max revised to 30\u00b0 global with a montane/humid override to ~44\u00b0. See methodology/examples/t4_slice_agroforestry_F1_slope.md.",
     "variable": "slope",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "evidence_ids": [
@@ -63,23 +63,21 @@
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
-      "abs_min": 300,
-      "opt_low": 600,
-      "opt_high": 2000,
-      "abs_max": 4000
+      "abs_min": 1000,
+      "opt_low": 2000,
+      "opt_high": 3000,
+      "abs_max": null
     },
-    "uncertainty_pct": 10.0,
+    "uncertainty_pct": 30.0,
     "context_overrides": [
       {
         "context_type": "aez",
         "context_id": "semi_arid",
         "relationship_params": {
-          "abs_min": 200,
-          "opt_low": 400,
-          "opt_high": 900,
-          "abs_max": 1500
+          "abs_min": 600,
+          "opt_low": 1200
         },
-        "note": "Dryland-adapted agroforestry systems (parkland, FMNR) are viable at 200–400mm with drought-tolerant species (Haile 2024, Ahmad et al. 2020)"
+        "note": "Semi-arid agroforestry tolerates lower rainfall (Haile 2024 Ethiopia: <600mm unsuitable; 800-1200mm high; >1200mm very high). Synthesiser groups overrides by AEZ but only fires on abs_max/opt_high divergence \u2014 semi_arid divergence here is in abs_min/opt_low so the override is recorded manually. ev_precip_haile24"
       }
     ],
     "is_scenario_candidate": false,
@@ -92,10 +90,21 @@
     },
     "weight_default": 0.15,
     "weight_adjustable": true,
-    "justification": "Annual rainfall is the primary biophysical determinant of agroforestry species selection and system viability. Minimum threshold of 300mm separates viable from non-viable zones for most agroforestry systems; absolute minimum of 200mm applies for specialised dryland parkland systems. Upper limit of 4000mm reflects waterlogging and disease risk in extremely wet environments. Consistently used across all 23 stocktake papers including Ahmad et al. (2020) South Asia analysis and Nath et al. (2021) Himalayan study.",
+    "justification": "Annual precipitation is monotonically beneficial up to a humid-tropical plateau (~2000-3000mm). Global trapezoidal {abs_min=1000, opt_low=2000, opt_high=3000} from weighted-median reconciliation of two shape-bearing sources: Nath 2021 (Medium, EIHR humid-tropics; <1000 unsuitable, >2000 very good; ev_precip_nath21) and Haile 2024 (Low, Ethiopia semi-arid; <600 unsuitable, >1200 very high; ev_precip_haile24). Semi-arid context override (600/1200) recorded from Haile. Variable selected by 5 additional papers (scoping_candidate; Ahmad-Goparaju 2017, Seja 2022, Castle 2025, Palma 2007, Brandt 2015) that include annual precipitation as an MCDA input without stating a transferable shape. Three species/crop-specific claims (Mushtaq 2023 mulberry, Haris 2021 sengon, Wotlolan 2021 Pacific multi-crop) dropped per claim_scope rule; their numeric envelopes belong to species suitability, not the practice-level row. Uncertainty bumped to 30% reflecting n=2 shape-bearing sources and publication-bias humility (\u00a76.1).",
     "variable": "annual_precipitation",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": []
+    "evidence_ids": [
+      "ev_precip_haile24",
+      "ev_precip_nath21",
+      "ev_precip_ahmad_gop17",
+      "ev_precip_seja22",
+      "ev_precip_castle25",
+      "ev_precip_palma07",
+      "ev_precip_brandt15"
+    ],
+    "n_sources": 2,
+    "corpus_n": 23,
+    "paper_support_pct": 30.4
   },
   {
     "mapping_id": "agro_mean_annual_temp_global",
@@ -105,24 +114,12 @@
     "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 5,
-      "opt_low": 15,
-      "opt_high": 30,
-      "abs_max": 38
+      "opt_low": 20,
+      "opt_high": 25.5,
+      "abs_max": null
     },
-    "uncertainty_pct": 5.0,
-    "context_overrides": [
-      {
-        "context_type": "aez",
-        "context_id": "highland_tropics",
-        "relationship_params": {
-          "abs_min": 5,
-          "opt_low": 10,
-          "opt_high": 25,
-          "abs_max": 32
-        },
-        "note": "Highland tropical systems have cooler optimal ranges; temperate AF species viable at lower temperatures (Seja et al. 2022, Nath et al. 2021)"
-      }
-    ],
+    "uncertainty_pct": 40.0,
+    "context_overrides": [],
     "is_scenario_candidate": false,
     "scenario_label": null,
     "scenario_description": null,
@@ -133,10 +130,20 @@
     },
     "weight_default": 0.1,
     "weight_adjustable": true,
-    "justification": "Temperature determines tree species viability through frost risk (< 5°C constrains tropical species) and heat stress (> 38°C damages most commercially relevant species). The 15–30°C optimal range encompasses the majority of tropical and subtropical agroforestry systems. Yadav et al. (2024) use BIO1 as a primary CHELSA variable in AHP-based tree suitability assessment. Kiziridis et al. (2026) use annual mean temperature as a WorldClim input for silvopastoral MaxEnt modelling.",
+    "justification": "Evidence base is THIN \u2014 only one source (Nath 2021, Medium, EIHR humid-tropics; ev_temp_nath21) states a quantified practice-level suitability class table for annual mean temperature (very good 20-25.5\u00b0C; <5\u00b0C unsuitable). One secondary citation in Mushtaq 2023 (Med) attributes a generic agroforestry envelope of 20-30\u00b0C to Ahmad et al. 2019 (external to corpus; ev_temp_mushtaq23_generic, lineage_of=ahmad_2019_external). Synthesised global trapezoidal {abs_min=5, opt_low=20, opt_high=25.5} \u2014 opt_high reflects Nath's observed range cap, not a stated maximum; the cited-secondary envelope supports up to ~30\u00b0C. abs_max left null \u2014 no F1 source states an upper exclusion (mulberry's 32\u00b0C cut is species-specific, dropped). 4 additional papers (Seja 2022, Ahmad 2020, Palma 2007, Chuma 2021) include MAT/temperature as an input variable without stating a transferable shape \u2192 scoping_candidate. One species-specific row (Mushtaq mulberry, Morus alba) dropped per claim_scope rule. Uncertainty bumped to 40% to reflect n=1 shape source + observed-range vs stated-envelope ambiguity (\u00a76.1 publication-bias humility). **Methodological flag (Pete, 2026-06-04):** climate variables in F1 may be redundant with non-extreme-environment gates (land cover, AEZ mask) \u2014 review variable utility once all F1 climate variables are extracted.",
     "variable": "mean_annual_temperature",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": []
+    "evidence_ids": [
+      "ev_temp_nath21",
+      "ev_temp_mushtaq23_generic",
+      "ev_temp_seja22",
+      "ev_temp_ahmad20",
+      "ev_temp_palma07",
+      "ev_temp_chuma21"
+    ],
+    "n_sources": 1,
+    "corpus_n": 23,
+    "paper_support_pct": 26.1
   },
   {
     "mapping_id": "agro_soil_ph_global",
@@ -145,36 +152,10 @@
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
-      "abs_min": 4.5,
-      "opt_low": 5.5,
-      "opt_high": 7.5,
-      "abs_max": 8.5
-    },
-    "uncertainty_pct": 5.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "scenario_label": null,
-    "scenario_description": null,
-    "has_future_projection": false,
-    "baseline_dataset_id": null,
-    "future_dataset_ids": null,
-    "weight_default": 0.08,
-    "weight_adjustable": true,
-    "justification": "Extreme soil pH limits nutrient availability and species establishment. pH < 4.5 causes aluminium toxicity; pH > 8.5 causes micronutrient deficiencies. The 5.5–7.5 optimal range supports the majority of commercial agroforestry species. Haile (2024) includes soil pH as a suitability criterion; Ahmad et al. (2018) include pH mapping; Wotlolan et al. (2021) use minimum and maximum pH as input criteria for Fiji agroforestry suitability.",
-    "variable": "soil_ph",
-    "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": []
-  },
-  {
-    "mapping_id": "agro_soil_organic_carbon_global",
-    "nbs_id": "agroforestry",
-    "dataset_id": "isric_soilgrids250_v2",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "linear_decreasing",
-    "relationship_params": {
-      "suitable_max": 999,
-      "unsuitable_min": 2,
-      "direction": "decreasing"
+      "abs_min": 5.0,
+      "opt_low": 6.6,
+      "opt_high": 7.3,
+      "abs_max": 8.3
     },
     "uncertainty_pct": 10.0,
     "context_overrides": [],
@@ -184,12 +165,67 @@
     "has_future_projection": false,
     "baseline_dataset_id": null,
     "future_dataset_ids": null,
+    "weight_default": 0.1,
+    "weight_adjustable": true,
+    "justification": "Strong cross-site consensus on a near-neutral optimum (6.6-7.3). Three independent practice-level shape-bearing sources spanning humid-tropics (Nath 2021 Medium-tier EIHR: opt 5.5-7.2; ev_ph_nath21), semi-arid (Haile 2024 Low Ethiopia: very-high band 6.6-7.3, unsuit <5 or >8; ev_ph_haile24), and sub-humid (Ahmad & Goparaju 2017 Low India: high 6.6-7.3, low <5.5 or >8.5; ev_ph_ahmad_gop17) converge on the same neutral window. Synthesised global trapezoidal {abs_min=5.0, opt_low=6.6, opt_high=7.3, abs_max=8.3} via tier\u00d7claim_basis weighted median; spread is tight, uncertainty kept at 10%. Two additional sources (Castle 2025 High, Ahmad 2018 Low) include soil pH as an MCDA/fertility input without a stated transferable shape \u2192 scoping_candidate. Two species/crop-specific rows (Mushtaq 2023 mulberry pH 6.5-7.5; Wotlolan 2021 Pacific crops 4.0-8.5) dropped per claim_scope rule \u2014 their numeric envelopes belong to species suitability. UNLIKE the climate variables (precip, MAT), this is a genuine cross-geography biophysical constraint with real evidence convergence \u2014 supports keeping it in the practice-level row.",
+    "variable": "soil_ph",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": [
+      "ev_ph_nath21",
+      "ev_ph_haile24",
+      "ev_ph_ahmad_gop17",
+      "ev_ph_castle25",
+      "ev_ph_ahmad18"
+    ],
+    "n_sources": 3,
+    "corpus_n": 23,
+    "paper_support_pct": 21.7
+  },
+  {
+    "mapping_id": "agro_soil_organic_carbon_global",
+    "nbs_id": "agroforestry",
+    "dataset_id": "isric_soilgrids250_v2",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "linear_up",
+    "relationship_params": {
+      "abs_min": 0.5,
+      "opt_low": 0.8,
+      "unit": "pct_weight"
+    },
+    "uncertainty_pct": 20.0,
+    "context_overrides": [
+      {
+        "context_type": "aez",
+        "context_id": "humid_tropics",
+        "relationship_params": {
+          "abs_min": 0.6,
+          "opt_low": 2.0,
+          "unit": "pct_weight"
+        },
+        "note": "Humid-tropical soils carry higher background SOC; Nath 2021 EIHR class table sets Very-good at >2.0% (ev_soc_nath21). Manual override \u2014 synthesiser checks override divergence on abs_max/opt_high only; this divergence is in opt_low."
+      }
+    ],
+    "is_scenario_candidate": false,
+    "scenario_label": null,
+    "scenario_description": null,
+    "has_future_projection": false,
+    "baseline_dataset_id": null,
+    "future_dataset_ids": null,
     "weight_default": 0.08,
     "weight_adjustable": true,
-    "justification": "Higher soil organic carbon indicates better soil structure, water retention, and nutrient cycling — all supporting tree establishment and crop productivity in agroforestry systems. Very low SOC (< 2 g/kg) indicates severely degraded soils that may still be suitable for agroforestry rehabilitation but require more intensive inputs. Mendonça et al. (2023) explicitly use soil organic carbon sequestration potential as an agroforestry prioritisation criterion. Ahmad & Goparaju (2017) include nutrient availability (linked to SOC) as a primary suitability layer.",
+    "justification": "Monotonically positive \u2014 higher SOC = better soil structure, water retention, nutrient cycling for both trees and intercropped crops. No upper exclusion stated in any F1 source. Three independent practice-level sources (Haile 2024 Low Ethiopia/semi-arid: <0.5% Low, >0.75% Very high, ev_soc_haile24; Ahmad & Goparaju 2017 Low India/sub-humid: <0.5% Low, >0.75% High, ev_soc_ahmad_gop17; Nath 2021 Medium EIHR/humid-tropics: <0.6% Marginal, >2.0% Very good, ev_soc_nath21). Synthesised global linear_up {abs_min=0.5%, opt_low=0.8%} via tier\u00d7basis weighted median \u2014 but the underlying values DIVERGE BY CONTEXT: dry/sub-humid soils saturate suitability at ~0.75% while humid-tropical soils need ~2.0% to count as Very good (background SOC ranges differ across AEZ). Humid_tropics override (opt_low=2.0%) recorded manually. Two scoping_candidate sources (Castle 2025 High GSOCseq input; Ahmad 2018 Low fertility composite) confirm variable selection without adding shape. One crop_specific row (Yadav 2024 Punjab tree-group rankings, dropped). Unit caveat: values reported by sources as % weight; SoilGrids dataset serves g/kg or dg/kg \u2014 pipeline converts (0.75% \u2248 7.5 g/kg \u2248 75 dg/kg). Uncertainty bumped to 20% reflecting genuine AEZ-driven divergence in the threshold magnitude. SUPPORTS the climate-vars-redundancy note's counterpoint \u2014 like pH and slope, SOC is a real edaphic constraint that varies by context, not species-lit residue.",
     "variable": "soil_organic_carbon",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": []
+    "evidence_ids": [
+      "ev_soc_nath21",
+      "ev_soc_haile24",
+      "ev_soc_ahmad_gop17",
+      "ev_soc_castle25",
+      "ev_soc_ahmad18"
+    ],
+    "n_sources": 3,
+    "corpus_n": 23,
+    "paper_support_pct": 21.7
   },
   {
     "mapping_id": "agro_soil_drainage_global",
@@ -218,7 +254,7 @@
     "future_dataset_ids": null,
     "weight_default": 0.08,
     "weight_adjustable": true,
-    "justification": "Poorly drained soils (classes 1–2) are unsuitable for most agroforestry tree species due to root anoxia. Excessively well-drained soils (class 7) may indicate sandy or skeletal soils with low water retention. Well-drained to moderately well-drained (classes 4–5) are optimal. Mushtaq et al. (2023) and Wotlolan et al. (2021) include soil drainage as a key AHP criterion; Haris et al. (2021) use drainage in land capability classification.",
+    "justification": "Poorly drained soils (classes 1\u20132) are unsuitable for most agroforestry tree species due to root anoxia. Excessively well-drained soils (class 7) may indicate sandy or skeletal soils with low water retention. Well-drained to moderately well-drained (classes 4\u20135) are optimal. Mushtaq et al. (2023) and Wotlolan et al. (2021) include soil drainage as a key AHP criterion; Haris et al. (2021) use drainage in land capability classification.",
     "variable": "soil_drainage",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "evidence_ids": []
@@ -292,7 +328,7 @@
     "future_dataset_ids": null,
     "weight_default": 1.0,
     "weight_adjustable": false,
-    "justification": "Strict nature reserves (IUCN I–II) prohibit agricultural intervention including agroforestry. Hard exclusion required regardless of biophysical suitability. Chuma et al. (2021) use the Itombwe Nature Reserve boundary as a hard exclusion layer in DR Congo agroforestry suitability mapping. Pinto et al. (2019) use protected area boundaries as planning zones in Montado conservation prioritisation.",
+    "justification": "Strict nature reserves (IUCN I\u2013II) prohibit agricultural intervention including agroforestry. Hard exclusion required regardless of biophysical suitability. Chuma et al. (2021) use the Itombwe Nature Reserve boundary as a hard exclusion layer in DR Congo agroforestry suitability mapping. Pinto et al. (2019) use protected area boundaries as planning zones in Montado conservation prioritisation.",
     "variable": "protected_area_status",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "evidence_ids": []
@@ -356,7 +392,7 @@
     "future_dataset_ids": null,
     "weight_default": 0.08,
     "weight_adjustable": true,
-    "justification": "The Global Aridity Index provides an integrated moisture availability signal combining precipitation and evaporative demand. Hyperarid zones (AI < 0.05) are unsuitable for agroforestry. Dryland agroforestry (parkland, FMNR) is viable at AI 0.3–0.5 with appropriate species. Ahmad et al. (2020) and Nath et al. (2021) use aridity index as a core suitability input. AI is complementary to annual precipitation, capturing atmospheric demand.",
+    "justification": "The Global Aridity Index provides an integrated moisture availability signal combining precipitation and evaporative demand. Hyperarid zones (AI < 0.05) are unsuitable for agroforestry. Dryland agroforestry (parkland, FMNR) is viable at AI 0.3\u20130.5 with appropriate species. Ahmad et al. (2020) and Nath et al. (2021) use aridity index as a core suitability input. AI is complementary to annual precipitation, capturing atmospheric demand.",
     "variable": "aridity_index",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "evidence_ids": []
@@ -383,7 +419,7 @@
     "future_dataset_ids": null,
     "weight_default": 0.08,
     "weight_adjustable": true,
-    "justification": "Low current tree cover (0–30%) identifies areas with greatest potential for agroforestry tree integration. Areas with > 70% tree cover are likely already forested and not the target for agroforestry introduction. Very high canopy closure may indicate established natural forest better managed as conservation rather than conversion to managed agroforestry. Ahmad et al. (2020) use Hansen tree cover (2000) as a core input; Singh et al. (2024) use tree height and NDVI from drone/satellite to map current agroforestry status.",
+    "justification": "Low current tree cover (0\u201330%) identifies areas with greatest potential for agroforestry tree integration. Areas with > 70% tree cover are likely already forested and not the target for agroforestry introduction. Very high canopy closure may indicate established natural forest better managed as conservation rather than conversion to managed agroforestry. Ahmad et al. (2020) use Hansen tree cover (2000) as a core input; Singh et al. (2024) use tree height and NDVI from drone/satellite to map current agroforestry status.",
     "variable": "tree_canopy_cover",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "evidence_ids": []
