@@ -338,6 +338,11 @@ obvious gaps. Categories to hit, in roughly this order of authority:
 - **ICRAF / World Agroforestry tree databases** (Agroforestree, Vegetation Map for Africa, GTPK
   Genetic Resources Information System) — species, traits, growth, requirements; complements
   Ecocrop with agroforestry-specific species.
+- **IPLC tenure / rights layers** (v0.3.0) — **LandMark Global Platform of Indigenous &
+  Community Lands** + **WWF / ICCA Consortium State of IPLC Lands**. Authoritative spatial
+  layers for indigenous and community customary lands. Feed the **M2b tenure stream** + the
+  T5 `equity_inclusion` theme (the future `marginalisation` / `iplc_lands` priority row when
+  ratified). Carry the FPIC / ESS7 safeguard flag downstream.
 - **CSA adoption & barriers dataset** (Aggarwal et al. and successors — the synthesised
   adoption/dis-adoption evidence base)
 
