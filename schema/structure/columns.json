@@ -1,5 +1,5 @@
 {
-  "manifest_version": "0.2.5-structure-frozen",
+  "manifest_version": "0.2.6-structure-frozen",
   "spec_source": "schema/spec.md",
   "generated": "2026-06-05",
   "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
@@ -76,7 +76,11 @@
       "optional": ["uncertainty_pct", "context_overrides", "n_sources", "corpus_n", "justification"],
       "conditional": ["scenario_label", "scenario_description", "baseline_dataset_id", "future_dataset_ids"],
       "derived": ["paper_support_pct"],
-      "fk": {"nbs_id": "T0.nbs_id", "suitability_family_id": "FAM.suitability_family_id", "dataset_id": "T1.dataset_id", "variable": "VONT.canonical_variable_id", "evidence_ids": "EV.evidence_id"}
+      "fk": {"nbs_id": "T0.nbs_id", "suitability_family_id": "FAM.suitability_family_id", "dataset_id": "T1.dataset_id", "variable": "VONT.canonical_variable_id", "evidence_ids": "EV.evidence_id"},
+      "enum_values": {
+        "suitability_dimension": ["biophysical_constraint", "system_constraint", "operational_constraint"],
+        "relationship_type": ["trapezoidal", "gaussian", "linear_increasing", "linear_decreasing", "sigmoid", "inverted_sigmoid", "threshold", "ranked_classes", "piecewise"]
+      }
     },
     "T5": {
       "name": "Opportunity Space Variables",

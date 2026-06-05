@@ -1,5 +1,27 @@
-# Schema spec — field-level reference (v0.2.5)
+# Schema spec — field-level reference (v0.2.6)
 
+> **v0.2.6 (June 2026)** — methodology sharpenings (paired with `T4_generation_method.md` updates).
+> Additive.
+>
+> - **`T4.suitability_dimension` sharpened** with three definitions ordered by what does the limiting:
+>   `biophysical_constraint` (natural envelope) · `system_constraint` (existing land-use/farming
+>   system — where "constrain by observed distribution" lives) · `operational_constraint`
+>   (implementation feasibility / enabling environment — typical scenario levers).
+> - **Hard-vs-soft operational decision** documented (resolves the schema ↔ Fig 9 tension): hard
+>   exclusions (legal protected areas, water bodies, urban) stay inside the opportunity space as
+>   T4 constraints; soft investment-addressable access/institutional factors are treated as
+>   scenario levers + an operational-risk filter on the M2b side, not baked into the core
+>   opportunity surface.
+> - **Manifest enum_values extended** for T4 to police `suitability_dimension` and
+>   `relationship_type` (same way `hazard_type` and `scenario_type` are policed).
+> - **`SRC.method_type` vocabulary extended** with `adoption_study` and `mel_report` — observed-
+>   reality signals that feed `system_constraint` / `operational_constraint` variables and T6
+>   conditionality. (See "Evidence-source principle" in the T4 method doc.)
+>
+> Existing rows that already use the canonical `suitability_dimension` / `relationship_type` /
+> `method_type` values remain valid. Draft-0 T4 mislabels (e.g. `land_cover_eligibility` tagged
+> `biophysical_constraint`) are fixed in this release.
+>
 > **v0.2.5 (June 2026)** — additive fields for the **paper-first extraction loop** (T4 method §3 update)
 > and Namita's attribution requirement. Additions:
 >
@@ -234,6 +256,48 @@ plot). M2b reads the `asset_threat` rows and their `asset_risk_weight`; M2 reads
 The most complex table. Each row defines how a dataset variable maps to NbS suitability via a named
 `relationship_type` (see the Relationship-type reference below).
 
+### `suitability_dimension` — three dimensions, ordered by what's doing the limiting
+
+Defined by *what does the limiting*, ordered from least to most changeable:
+
+1. **`biophysical_constraint`** — the **natural envelope** (climate, terrain, soils): *can the NbS establish
+   and persist at all?* Nature-given. Slow to change, hard to engineer. Examples: slope, mean annual
+   temperature, soil pH, soil organic carbon, frost-free period, drought index.
+2. **`system_constraint`** — the **existing land-use / farming / land-cover system** the NbS must integrate
+   with: current land cover, existing tree cover, farming system, host-crop presence, livestock density.
+   This is where the **"constrain by observed distribution, not modelled niche"** rule lives (§2.5) —
+   prefer the host system's observed extent over a bioclimatic envelope. Changes on land-use timescales
+   (years to decades).
+3. **`operational_constraint`** — **implementation feasibility / enabling environment**: road access, market
+   access, electrification, extension coverage, land tenure, legal/protected exclusions. Often
+   investment-addressable → the **what-if scenario levers** (`is_scenario_candidate = true` lives here).
+
+### Hard vs soft operational decision (resolves the schema ↔ Fig 9 tension)
+
+The stocktake's Figure 9 framing routes social/institutional factors into a separate **Project
+Operational Risk** stream. The schema needs to be consistent with that, so:
+
+- **Hard exclusions stay inside the opportunity space** as suitability constraints. Examples: legal
+  protected areas, water bodies, urban/built-up footprints, formally-designated reserves. These are
+  *not* investment-addressable on the timescale of a scoping exercise; they belong in T4 with
+  `suitability_dimension = operational_constraint` and `is_scenario_candidate = false`.
+- **Soft, investment-addressable access/institutional factors are NOT baked into the core biophysical
+  opportunity space.** They appear as **scenario levers** (T4 rows with
+  `is_scenario_candidate = true`) and as inputs to a separate **operational-risk / feasibility filter**
+  on the M2b side (project-disaster + project-feasibility lens). Examples: road access, market
+  access, extension coverage, tenure security. A soft variable applied as a hard mask would
+  over-constrain the opportunity space and hide where investment could *create* feasibility.
+
+The practical test: if turning the variable off in a what-if scenario is a *reasonable* policy
+question, it's soft → scenario lever + operational-risk filter. If it isn't (you can't legislate away
+a water body), it's hard → exclusion in T4.
+
+This reconciliation makes the schema's three-dimension structure consistent with Fig 9's separation:
+biophysical + system + hard-operational ≈ opportunity-space surface; soft-operational ≈ scenario
+levers + project-operational-risk stream (M2b family).
+
+### Other field guidance
+
 - **Scenario candidate flag:** `is_scenario_candidate = true` **only** for variables a project investment could
   realistically change (road access, electrification, extension coverage). **Never** true for purely physical
   variables (slope, elevation, soil texture).
@@ -398,7 +462,7 @@ One row per publication/report/tool (formalises the stocktake `NbS_peer_reviewed
 | `benchmark_tier` | enum | Required | `high` \| `medium` \| `low` \| `external` (C/I/D rubric; `external` = citation-only, not screened — weight 0 in synthesis). **The only place tier is stored.** | `medium` |
 | `study_country` · `region` · `coords` | string | Optional | Where the study was done. | `India / E. Himalaya` |
 | `aez` · `farming_system` | string | Optional | Study context (→ T7 vocab). | `humid_tropics` |
-| `method_type` | enum | Optional | `ahp` \| `critic` \| `entropy` \| `fao_landeval` \| `ecocrop` \| `empirical` \| `expert`. | `ahp` |
+| `method_type` | enum | Optional | `ahp` \| `critic` \| `entropy` \| `fao_landeval` \| `ecocrop` \| `empirical` \| `expert` \| `adoption_study` \| `mel_report`. Last two are **observed-reality** signals (adoption/dis-adoption studies, MEL/MELIA reports) that feed `system_constraint` / `operational_constraint` variables and T6 conditionality (see T4 method doc, "Evidence-source principle"). | `adoption_study` |
 | `spatial_scale` · `analysis_resolution_m` | string/int | Optional | Scale + grid used. | `1000` |
 | `nbs_ids` | string[] | Optional | NbS the source addresses. | `['agroforestry']` |
 | `vars_extracted` | string[] | Optional *(paper-first sweep)* | Canonical-variable ids the paper-first sweep captured. Derivable via `SELECT DISTINCT variable FROM EV WHERE source_id=...`; persisted for fast lookup + completeness check. FK → VONT. | `['slope','annual_precipitation','soil_ph',...]` |
