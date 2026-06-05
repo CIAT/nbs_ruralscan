@@ -878,5 +878,191 @@
     "derive_then_aggregate": false,
     "candidate_dataset_ids": [],
     "unit_conversions": {}
+  },
+  {
+    "canonical_variable_id": "soil_erosion_wind",
+    "label": "Wind erosion risk (erodibility index)",
+    "aliases": [
+      "wind erodibility"
+    ],
+    "canonical_unit": "unitless",
+    "group_id": "hazard",
+    "candidate_dataset_ids": [
+      "ssurgo_wind_erodibility"
+    ],
+    "min_meaningful_resolution_m": 800,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_erosion_wind_castle25",
+    "raised_date": "2026-06-05"
+  },
+  {
+    "canonical_variable_id": "water_quality_nitrate",
+    "label": "Water-quality nitrate violation probability",
+    "aliases": [
+      "nitrate violation index"
+    ],
+    "canonical_unit": "probability",
+    "group_id": "hazard",
+    "candidate_dataset_ids": [
+      "epa_nitrate_violation_index"
+    ],
+    "min_meaningful_resolution_m": 500,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_nitrate_castle25",
+    "raised_date": "2026-06-05",
+    "comment": "Could be modelled as priority_need (T5) instead of structural_suitability (T4) \u2014 water quality is an opportunity-space concern, not a tree-growth constraint."
+  },
+  {
+    "canonical_variable_id": "soc_sequestration_potential",
+    "label": "SOC sequestration potential (counterfactual)",
+    "aliases": [
+      "GSOCseq",
+      "SOC seq potential"
+    ],
+    "canonical_unit": "t_C_per_ha",
+    "group_id": "nbs_response",
+    "candidate_dataset_ids": [
+      "fao_gsocseq"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_soc_seq_castle25",
+    "raised_date": "2026-06-05",
+    "comment": "Counterfactual \u2014 distinct from soil_organic_carbon stock. Belongs in T5 nbs_response or T6 (effect), not as a T4 structural variable."
+  },
+  {
+    "canonical_variable_id": "frost_free_period",
+    "label": "Frost-free period (days)",
+    "aliases": [
+      "FFP",
+      "frost-free season"
+    ],
+    "canonical_unit": "days",
+    "group_id": "climatic",
+    "candidate_dataset_ids": [
+      "ssurgo_frostfree"
+    ],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_frostfree_castle25",
+    "raised_date": "2026-06-05",
+    "comment": "Temperate-zone climate constraint. Distinct from mean_annual_temperature."
+  },
+  {
+    "canonical_variable_id": "soil_depth_to_bedrock",
+    "label": "Soil depth to bedrock",
+    "aliases": [
+      "depth to bedrock",
+      "soil depth"
+    ],
+    "canonical_unit": "cm",
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "ssurgo_statsgo",
+      "isric_soilgrids250_v2"
+    ],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_depth_castle25",
+    "raised_date": "2026-06-05",
+    "comment": "Distinct from soil_depth (Nath pending entry which is unspecified depth metric). Consider merging."
+  },
+  {
+    "canonical_variable_id": "set_aside_conservation",
+    "label": "Set-aside conservation program coverage",
+    "aliases": [
+      "CRP coverage",
+      "conservation easements"
+    ],
+    "canonical_unit": "pct",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [
+      "nass_census_2022"
+    ],
+    "min_meaningful_resolution_m": 50000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_setaside_castle25",
+    "raised_date": "2026-06-05",
+    "comment": "US-specific (NASS county-level). Decide: drop, generalise (e.g. 'protected/conservation land coverage'), or keep as country-binding variable."
+  },
+  {
+    "canonical_variable_id": "rotational_grazing",
+    "label": "Rotational grazing prevalence",
+    "aliases": [],
+    "canonical_unit": "pct",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [
+      "nass_census_2022"
+    ],
+    "min_meaningful_resolution_m": 50000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_rotgraze_castle25",
+    "raised_date": "2026-06-05",
+    "comment": "Silvopasture-specific (F3 family). Likely not relevant to F1 silvoarable \u2014 flag for family-routing decision."
+  },
+  {
+    "canonical_variable_id": "rented_lands",
+    "label": "Rented agricultural land share",
+    "aliases": [
+      "tenure (renter)"
+    ],
+    "canonical_unit": "pct",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [
+      "nass_census_2022"
+    ],
+    "min_meaningful_resolution_m": 50000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_rented_castle25",
+    "raised_date": "2026-06-05",
+    "comment": "Tenure proxy. Could merge with a generic 'tenure security' canonical."
+  },
+  {
+    "canonical_variable_id": "beginning_farmers",
+    "label": "Beginning-farmer share",
+    "aliases": [],
+    "canonical_unit": "pct",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [
+      "nass_census_2022"
+    ],
+    "min_meaningful_resolution_m": 50000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_beginfarmers_castle25",
+    "raised_date": "2026-06-05"
+  },
+  {
+    "canonical_variable_id": "hired_labor",
+    "label": "Hired labour reporting share",
+    "aliases": [],
+    "canonical_unit": "pct",
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [
+      "nass_census_2022"
+    ],
+    "min_meaningful_resolution_m": 50000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": false,
+    "review_status": "pending_review",
+    "raised_by": "ev_hiredlabor_castle25",
+    "raised_date": "2026-06-05"
   }
 ]
