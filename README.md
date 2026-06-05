@@ -66,7 +66,7 @@ A scoping and decision-support framework that helps World Bank Task Team Leaders
 Includes:
 - **TTL Tool Wireframe** — interactive mockup of the decision-support tool
 - **Pipeline Architecture (v0.4)** — one-page methodology architecture diagram
-- **Data Schema (v0.2.6)** — the T0–T7 ERD, field-level spec, evidence/config registers, and draft-0 example tables (structure frozen + machine-validated)
+- **Data Schema (v0.2.7)** — the T0–T7 ERD, field-level spec, evidence/config registers, and draft-0 example tables (structure frozen + machine-validated)
 
 Demonstrators use mock Sierra Leone / agroforestry data.
 
@@ -136,7 +136,7 @@ If you're brand new, **read CLAUDE.md and PLAYBOOK.md before your first issue.**
 |---|---|
 | `docs/` | GitHub Pages — live demonstrators (wireframe · pipeline diagram · schema page + ERD) |
 | `methodology/` | Framework + per-NbS recipes + module specs + **`T4_generation_method.md`** (evidence-first suitability generation) + **`families/`** (suitability-family schemes) + `examples/` (worked gold standards) |
-| `schema/` | `spec.md` (v0.2.6: T0–T7 + evidence/config registers SRC·EV·VONT·FAM·BIND), `structure/columns.json` (frozen column manifest), ERD, dedup notes, draft-0 example tables (CSV+JSON) for 2 NbS |
+| `schema/` | `spec.md` (v0.2.7: T0–T7 + evidence/config registers SRC·EV·VONT·FAM·BIND), `structure/columns.json` (frozen column manifest), ERD, dedup notes, draft-0 example tables (CSV+JSON) for 2 NbS |
 | `src/nbs_ruralscan/` | Python method package — doc ingestion, evidence→synthesis→recipe engine, BIND dataset resolver, structure validator (uv · ruff · ty · pytest) |
 | `pipeline/` | Pilot Colab notebooks and outputs |
 | `reference/` | Stocktake findings, source R scripts, literature references |
