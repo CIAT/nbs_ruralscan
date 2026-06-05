@@ -1,5 +1,5 @@
 {
-  "manifest_version": "0.2.6-structure-frozen",
+  "manifest_version": "0.2.7-structure-frozen",
   "spec_source": "schema/spec.md",
   "generated": "2026-06-05",
   "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
@@ -121,13 +121,15 @@
       "per_nbs": false,
       "primary_key": "source_id",
       "required": ["source_id", "citation", "benchmark_tier"],
-      "optional": ["doi", "study_country", "region", "coords", "aez", "farming_system", "method_type", "spatial_scale", "analysis_resolution_m", "nbs_ids", "vars_extracted", "extraction_status", "extraction_status_by_family", "extraction_date", "extraction_run_id", "extractor"],
+      "optional": ["doi", "study_country", "region", "coords", "aez", "farming_system", "method_type", "spatial_scale", "analysis_resolution_m", "nbs_ids", "vars_extracted", "extraction_status", "extraction_status_by_family", "extraction_date", "extraction_run_id", "extractor", "study_income_group", "is_seminal", "venue_type"],
       "conditional": [],
       "derived": [],
       "fk": {"aez": "T7.context_id", "farming_system": "T7.context_id", "nbs_ids": "T0.nbs_id", "vars_extracted": "VONT.canonical_variable_id"},
       "enum_values": {
         "benchmark_tier": ["high", "medium", "low", "external"],
-        "extraction_status": ["pending", "in_progress", "swept", "signed_off"]
+        "extraction_status": ["pending", "in_progress", "swept", "signed_off"],
+        "study_income_group": ["low", "lower_middle", "upper_middle", "high"],
+        "venue_type": ["peer_reviewed_journal", "institutional_report", "preprint", "grey"]
       }
     },
     "EV": {

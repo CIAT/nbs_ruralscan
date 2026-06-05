@@ -1,5 +1,30 @@
-# Schema spec — field-level reference (v0.2.6)
+# Schema spec — field-level reference (v0.2.7)
 
+> **v0.2.7 (June 2026)** — discovery-and-evidence-sourcing SOP (paired with extended
+> `T4_generation_method.md` §3). Additive.
+>
+> - **SRC additions** (all optional) to make the six-axis credibility rubric auditable:
+>   - `study_income_group` (enum: `low` / `lower_middle` / `upper_middle` / `high`) — World-Bank
+>     income classification of the study's geography. Drives the **LMIC-preference** tie-break in
+>     synthesis (prefer evidence from low/lower-middle/upper-middle for WB-investable contexts).
+>   - `is_seminal` (boolean) — flag for foundational / highly-cited / influential sources whose
+>     authority outweighs recency. Used to reconcile recency vs seminality in the rubric.
+>   - `venue_type` (enum: `peer_reviewed_journal` / `institutional_report` / `preprint` / `grey`) —
+>     authority & venue axis; coarser than `method_type`, captures the publication channel.
+>
+> - **Rubric reconciliation:** the existing **C/I/D** rubric (Content · Impact · Data quality) on
+>   `benchmark_tier` is one **summary** of the **six-axis** credibility rubric documented in the T4
+>   method doc (§3): (1) evidence strength · (2) methodological transparency · (3) authority & venue
+>   reputation · (4) context relevance / transferability (LMIC preference) · (5) recency
+>   (compensated by `is_seminal`) · (6) seminality / influence — plus an **independence /
+>   conflict-of-interest discount** for advocacy sources. The six axes feed `benchmark_tier`; they
+>   are not stored separately on every row. (One scheme, two views.)
+>
+> - **Manifest:** `SRC.study_income_group` policed by enum_values; `is_seminal` + `venue_type`
+>   added as optional fields. Manifest bumped to `v0.2.7-structure-frozen`.
+>
+> Existing rows that lack the new fields stay valid (all optional).
+>
 > **v0.2.6 (June 2026)** — methodology sharpenings (paired with `T4_generation_method.md` updates).
 > Additive.
 >
@@ -459,10 +484,13 @@ One row per publication/report/tool (formalises the stocktake `NbS_peer_reviewed
 |---|---|---|---|---|
 | `source_id` | string | Required | Unique id. | `nath_2021` |
 | `citation` · `doi` | string | Required | Bibliographic. | `Nath et al. (2021)…` |
-| `benchmark_tier` | enum | Required | `high` \| `medium` \| `low` \| `external` (C/I/D rubric; `external` = citation-only, not screened — weight 0 in synthesis). **The only place tier is stored.** | `medium` |
+| `benchmark_tier` | enum | Required | `high` \| `medium` \| `low` \| `external`. Summary tier derived from the **six-axis credibility rubric** (T4 method §3): evidence strength · methodological transparency · authority & venue · context relevance/transferability (LMIC preference) · recency (offset by `is_seminal`) · seminality/influence — minus an independence/COI discount. The existing C/I/D rubric is one view of the six axes; both produce the same `benchmark_tier`. `external` = citation-only, not screened — weight 0 in synthesis. **The only place tier is stored.** | `medium` |
 | `study_country` · `region` · `coords` | string | Optional | Where the study was done. | `India / E. Himalaya` |
 | `aez` · `farming_system` | string | Optional | Study context (→ T7 vocab). | `humid_tropics` |
 | `method_type` | enum | Optional | `ahp` \| `critic` \| `entropy` \| `fao_landeval` \| `ecocrop` \| `empirical` \| `expert` \| `adoption_study` \| `mel_report`. Last two are **observed-reality** signals (adoption/dis-adoption studies, MEL/MELIA reports) that feed `system_constraint` / `operational_constraint` variables and T6 conditionality (see T4 method doc, "Evidence-source principle"). | `adoption_study` |
+| `study_income_group` | enum | Optional *(v0.2.7)* | World-Bank income classification of the study's geography. `low` / `lower_middle` / `upper_middle` / `high`. Drives the LMIC-preference tie-break in synthesis — evidence from `low`/`lower_middle`/`upper_middle` is preferred for WB-investable contexts. Multi-country studies take the modal income group. | `lower_middle` |
+| `is_seminal` | boolean | Optional *(v0.2.7)* | Flag for foundational / highly-cited / influential sources whose authority outweighs simple recency. Used in synthesis to avoid penalising landmark older studies under a recency rule. | `true` |
+| `venue_type` | enum | Optional *(v0.2.7)* | Authority & venue axis (coarser than `method_type`): `peer_reviewed_journal` / `institutional_report` (FAO, IPCC, WB, ICRAF, etc.) / `preprint` (bioRxiv, EarthArxiv, SSRN) / `grey` (project reports, blog/web, working papers). | `institutional_report` |
 | `spatial_scale` · `analysis_resolution_m` | string/int | Optional | Scale + grid used. | `1000` |
 | `nbs_ids` | string[] | Optional | NbS the source addresses. | `['agroforestry']` |
 | `vars_extracted` | string[] | Optional *(paper-first sweep)* | Canonical-variable ids the paper-first sweep captured. Derivable via `SELECT DISTINCT variable FROM EV WHERE source_id=...`; persisted for fast lookup + completeness check. FK → VONT. | `['slope','annual_precipitation','soil_ph',...]` |
