@@ -168,6 +168,26 @@ acceptance of the EO surface as ground truth.
 
 ---
 
+## Dataset improvements (follow-up — tracked separately)
+
+The v0.3.0 input set is the **minimum credible**. Several stronger / complementary EO layers
+exist and should be folded in once the classifier moves beyond first-cut scoping. Captured here
+so the design isn't lost; implementation is a follow-up issue.
+
+| Class / role | Candidate replacement / addition | Why |
+|---|---|---|
+| Tree-perennial (cocoa · coffee · oil palm · rubber) | **Forest Data Partnership** layers on GEE (`forestdatapartnership` publisher) | Higher-resolution + commodity-specific cocoa, coffee, palm maps. **MapSPAM is weak on these** — Forest Data Partnership is the better source where coverage exists. |
+| Cereals (rainfed, irrigated, rice) | **ESA WorldCereal 2021 models v100** (`ESA/WorldCereal/2021/MODELS/v100` on GEE) and/or **GLAD** (Potapov et al. 2022) | WorldCereal MODELS variant has cereal-class detail (including rice flagging) GLAD lacks; use complementarily. **Check rice coverage explicitly** in any AOI before relying on either alone. |
+| Irrigation footprint | **IWMI** (irrigated area mapping) + **GFSAD** (Global Food Security-Support Analysis Data) | Refine GMIA's coarse 5-arc-min footprint with higher-res IWMI + GFSAD irrigation surfaces. Use as the primary irrigation signal where coverage is good; GMIA fallback. |
+| Tea? | open follow-up | No global product noted. Country-level layers (FAOSTAT + national crop maps) until a global tea map exists. |
+| Other plantation crops (banana, sugarcane, mango, citrus …)? | open follow-up | Where Forest Data Partnership doesn't cover, fall back to MapSPAM or country uploads. |
+| **Forest plantations vs natural forests** | open follow-up — needs a planted-forest layer (e.g. Du et al. Global Planted Forests + Hansen forest cover differencing) | The classifier currently treats *all* tree cover as a candidate for `tree_perennial`. Smallholder cocoa shade, oil-palm estate, and natural forest get conflated. A planted-forest mask would (a) sharpen `tree_perennial` to commercial perennial and (b) flag natural forest for exclusion. **High-leverage for accuracy.** |
+
+Each row above is a candidate seed for follow-up implementation. Until they land, the v0.3.0
+classifier remains scoping-grade with the noted fitness limits.
+
+---
+
 ## See also
 
 - `schema/registers/FS_DIXON_CROSSWALK.md` — Dixon ↔ EO crosswalk reference.
