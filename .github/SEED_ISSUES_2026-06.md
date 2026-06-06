@@ -192,3 +192,42 @@ Not new issues — edits to existing cards, reflecting the ownership shift:
 > Author the first per-NbS × table discovery logs under `methodology/discovery_logs/`. Start with `agroforestry_T4.md` (retrospective — capture what was done on the 23-paper Stocktake + the F1 sweep) and `water_harvesting_T4.md` (forward-looking — feeds the WH discovery pass when the second NbS comes into scope). Template lives at `methodology/discovery_logs/README.md`. Records search strings, sources queried, dates, PRISMA-lite counts (returned → screened → included). **Markdown, not a schema register** — narrative audit trail at this phase.
 
 **Done in v0.2.7:** added SRC fields `study_income_group` (enum), `is_seminal` (bool), `venue_type` (enum) to make the six-axis credibility rubric auditable; reconciled the C/I/D rubric with the six-axis rubric in spec.md + method doc (one scheme, two views); expanded method §3 with the diamond source classes (WOCAT, EGMs, WB project evidence + TORs tools, ICRAF/Ecocrop/TECA), five-step screening funnel, LMIC tie-break, independence/COI discount, source-type register (economic valuation / gender / maladaptation / BIND-T1 datasets); created `methodology/discovery_logs/` with PRISMA-lite template; CLAUDE.md + READMEs + docs cascade. **Not in scope this batch:** T5 opportunity-space ratification — still waiting on Pete (equity/gender = own theme vs folded into people_production).
+
+---
+
+## v0.3.0 follow-ups (T5 ratification + farming-system + M2b Stream-B + T6 cost-effectiveness)
+
+**V — EO-derived farming_system classifier (build the recipe).**
+**Assignees:** @bjyberg @peetmate
+**Labels:** `methodology`, `data`, `recipe`
+> Implement the EO-derived 6-class farming_system recipe documented in `schema/registers/FS_DIXON_CROSSWALK.md`: GLAD/WorldCereal cropland · GLW livestock density · GMIA irrigation · Hansen/MapSPAM tree-perennial → `cropping_rainfed` / `cropping_irrigated` / `mixed_crop_livestock` / `agro_pastoral` / `pastoral_rangeland` / `tree_perennial`. Fix the thresholds on the pilot AOI (Sierra Leone). Output: gridded farming_system layer + accompanying BIND `T7.farming_system` overrides where useful.
+
+**W — `production_gap` per-farming-system binding rollout.**
+**Assignees:** @namita-joshi @peetmate
+**Labels:** `data`, `methodology`, `discovery`
+> The 6 BIND `production_gap__<farming_system>` rows currently ship as `requires_upload`. Bind the cropping rows to GAEZ v4 attainable-vs-actual (or MapSPAM-derived yield gaps); bind the pastoral row to MODIS NPP vs CASA potential or equivalent; resolve the mixed and tree-perennial composites. Livestock side is thinner — `requires_upload` where genuinely no global product exists.
+
+**X — Biodiversity-priority layer choice.**
+**Assignees:** @peetmate @namita-joshi
+**Labels:** `methodology`, `recipe`
+> `T5.biodiversity_priority` ships as BIND `requires_upload` placeholder. Decide the canonical biodiversity layer for the pilot: KBA · IBAT · BII · refugia · distance-to-protected · eco-uniqueness composite. Bind in BIND + populate the candidate_dataset_ids on the VONT pending entry.
+
+**Y — T5 marginalisation / IPLC row under `equity_inclusion`.**
+**Assignees:** @namita-joshi @peetmate
+**Labels:** `methodology`, `recipe`
+> Once the LandMark + WWF/ICCA State of IPLC Lands ingest (block T) lands, add a T5 `marginalisation` (or `iplc_lands`) priority row under `equity_inclusion`. National `gender_inequity` flag stays; this gives a sub-national equity/IPLC signal.
+
+**Z — Cost-effectiveness denominator evidence gathering.**
+**Assignees:** @namita-joshi (lit) @peetmate (oversight)
+**Labels:** `methodology`, `discovery`, `t6`
+> Source ranges for the four cost-effectiveness denominators (`cost_per_beneficiary` / `cost_per_hectare_restored` / `cost_per_tco2e_avoided` / `cost_per_farmer_reached`) per NbS. Discovery channels: WB PADs/ICRs · WOCAT cost data · CrossBoundary · ELD/TEEB · CGIAR project reports. Capture as `T6.economic_value_range` `{low, high, unit, source_note}` objects with study context. Label indicative scoping-grade in justification.
+
+**AA — Drop or recover the 4 orphan T5 var refs in T6.**
+**Assignees:** @namita-joshi
+**Labels:** `methodology`, `schema`
+> T6 rows still reference 4 dropped-from-T5 variables (`tree_cover_gap`, `runoff_potential_index`, `food_security_risk`, `groundwater_recharge_potential`). Decide per row: route to nearest T5 priority, route to T3 hazard, or drop. Each is a strict-mode warning today; not a structural error.
+
+**BB — M2b Stream-B dataset binding for each lever.**
+**Assignees:** @bjyberg @peetmate
+**Labels:** `methodology`, `data`
+> Bind each of the 8 M2b Stream-B operational/enabling levers (T4 `agro_*_scenario` rows + matching pending VONT canonicals) to actual datasets: Nelson accessibility · VIIRS night-lights · LandMark + WWF/ICCA tenure · ACLED + WB FCV conflict · WB WGI · WB FAR finance · FAOSTAT market · ILO/LSMS-ISA labour. Each lands as a BIND row + T1 dataset entry. FPIC/ESS7 flag plumbed where IPLC overlap detected.
