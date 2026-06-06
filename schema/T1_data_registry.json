@@ -694,5 +694,165 @@
     "version": "R2023A",
     "preprocessing_notes": "Pick the epoch nearest to the run year; threshold built-up share if a binary mask is needed.",
     "limitations": "Smallholder rural settlement under-detected at 100m; complements WorldPop population for a built+population framing."
+  },
+  {
+    "dataset_id": "nelson_accessibility_2015",
+    "dataset_name": "Global accessibility to cities \u2014 Weiss et al. (Nelson) 2018, 2015 baseline",
+    "description": "Global travel time to the nearest city of 50,000+ inhabitants at ~1 km. Built from road network, terrain, surface friction and city polygons.",
+    "analytical_module": "adaptive_capacity",
+    "grain_type": "grid",
+    "spatial_resolution_m": 1000,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "gee_asset",
+    "gee_asset_id": "Oxford/MAP/accessibility_to_cities_2015_v1_0",
+    "download_url": "https://malariaatlas.org/explorer/",
+    "license": "CC-BY-4.0",
+    "citation": "Weiss, D. J., et al. (2018). A global map of travel time to cities to assess inequalities in accessibility in 2015. Nature, 553, 333-336.",
+    "doi": "10.1038/nature25181",
+    "version": "2015",
+    "preprocessing_notes": "Travel time minutes; invert if framing as accessibility (1 / time) for the suitability surface.",
+    "limitations": "Road network from OSM ~2016; coverage variable in remote regions; not updated for post-2016 infrastructure."
+  },
+  {
+    "dataset_id": "viirs_nighttime_lights",
+    "dataset_name": "VIIRS Day/Night Band Annual Composite (night-lights)",
+    "description": "NOAA Earth Observation Group VIIRS DNB annual cloud-free composite at ~500m \u2014 radiance values used as electrification proxy.",
+    "analytical_module": "adaptive_capacity",
+    "grain_type": "grid",
+    "spatial_resolution_m": 500,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "gee_asset",
+    "gee_asset_id": "NOAA/VIIRS/DNB/ANNUAL_V21",
+    "download_url": "https://eogdata.mines.edu/products/vnl/",
+    "license": "public_domain",
+    "citation": "Elvidge, C. D., et al. (2021). Annual time series of global VIIRS nighttime lights derived from monthly averages: 2012 to 2019. Remote Sensing, 13(5), 922.",
+    "doi": "10.3390/rs13050922",
+    "version": "v21",
+    "preprocessing_notes": "Use as continuous radiance or threshold (e.g. >1 nW/cm\u00b2/sr) for binary 'grid-served'.",
+    "limitations": "Proxy only \u2014 captures lit pavement + industrial flaring, not domestic-only electrification."
+  },
+  {
+    "dataset_id": "landmark_iplc_lands",
+    "dataset_name": "LandMark \u2014 Global Platform of Indigenous & Community Lands",
+    "description": "Global vector platform of indigenous and community lands \u2014 formal recognition status, customary tenure boundaries.",
+    "analytical_module": "geographic_context",
+    "grain_type": "vector",
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "shapefile",
+    "access_type": "direct_download",
+    "download_url": "https://www.landmarkmap.org/",
+    "license": "CC-BY-4.0",
+    "citation": "LandMark Consortium (2024). LandMark: Global Platform of Indigenous and Community Lands. World Resources Institute and partners.",
+    "doi": "",
+    "version": "2024",
+    "preprocessing_notes": "Spatial join with AOI; flag overlap as FPIC_REQUIRED for M6 hand-off.",
+    "limitations": "Coverage is patchy \u2014 only countries where IPLC mapping is documented; absence \u2260 no IPLC presence."
+  },
+  {
+    "dataset_id": "acled_conflict_events",
+    "dataset_name": "ACLED \u2014 Armed Conflict Location & Event Data",
+    "description": "Point-event conflict dataset (battles, violence, riots, protests) with daily updates. Used here as gridded event density for fragility framing.",
+    "analytical_module": "adaptive_capacity",
+    "grain_type": "vector",
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "csv",
+    "access_type": "api",
+    "download_url": "https://acleddata.com/",
+    "license": "proprietary_licensed",
+    "citation": "Raleigh, C., Linke, A., Hegre, H., & Karlsen, J. (2010). Introducing ACLED-Armed Conflict Location and Event Data. Journal of Peace Research, 47(5), 651-660.",
+    "doi": "10.1177/0022343310378914",
+    "version": "live",
+    "preprocessing_notes": "Aggregate events per km\u00b2 over a rolling window (e.g. 5 years); pair with WB FCV admin0 list.",
+    "limitations": "Event detection bias (media-coverage-dependent); under-reporting in less-mediated conflicts."
+  },
+  {
+    "dataset_id": "wb_wgi_governance",
+    "dataset_name": "World Bank Worldwide Governance Indicators (WGI)",
+    "description": "WB WGI \u2014 six aggregate governance indicators (voice/accountability, political stability, government effectiveness, regulatory quality, rule of law, control of corruption), admin0, annual.",
+    "analytical_module": "adaptive_capacity",
+    "grain_type": "admin",
+    "admin_level": "admin0",
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "csv",
+    "access_type": "direct_download",
+    "download_url": "https://www.worldbank.org/en/publication/worldwide-governance-indicators",
+    "license": "CC-BY-4.0",
+    "citation": "Kaufmann, D., Kraay, A., & Mastruzzi, M. (2010). The Worldwide Governance Indicators: Methodology and Analytical Issues. World Bank Policy Research Working Paper 5430.",
+    "doi": "",
+    "version": "annual",
+    "preprocessing_notes": "Use the 'government effectiveness' indicator as the default extension/governance proxy; composite across all six if a broader index is needed.",
+    "limitations": "Country-level only; no subnational variation \u2014 qualified-flag-only for in-country MCDA differentiation (per T5 spatial-grain rule)."
+  },
+  {
+    "dataset_id": "wb_findex_access",
+    "dataset_name": "World Bank Global Findex (financial inclusion)",
+    "description": "WB Global Findex \u2014 financial inclusion indicators (account ownership, savings, credit, mobile money). Survey-based, admin0, triennial.",
+    "analytical_module": "adaptive_capacity",
+    "grain_type": "admin",
+    "admin_level": "admin0",
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "csv",
+    "access_type": "direct_download",
+    "download_url": "https://www.worldbank.org/en/publication/globalfindex",
+    "license": "CC-BY-4.0",
+    "citation": "Demirg\u00fc\u00e7-Kunt, A., Klapper, L., Singer, D., & Ansar, S. (2022). The Global Findex Database 2021: Financial Inclusion, Digital Payments, and Resilience in the Age of COVID-19. World Bank.",
+    "doi": "10.1596/978-1-4648-1897-4",
+    "version": "2021",
+    "preprocessing_notes": "Use 'account ownership' or 'borrowed from formal financial institution' as the rural-finance proxy; subnational requires_upload via national surveys.",
+    "limitations": "Survey-based, country-level only; subnational requires_upload."
+  },
+  {
+    "dataset_id": "faostat_country_indicators",
+    "dataset_name": "FAOSTAT \u2014 country agricultural statistics",
+    "description": "FAO statistical database \u2014 country agricultural production, trade, prices, food balances. Admin0, annual.",
+    "analytical_module": "adaptive_capacity",
+    "grain_type": "admin",
+    "admin_level": "admin0",
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "csv",
+    "access_type": "api",
+    "download_url": "https://www.fao.org/faostat/en/",
+    "license": "CC-BY-4.0",
+    "citation": "FAO (2024). FAOSTAT statistical database. Rome: Food and Agriculture Organization of the United Nations.",
+    "doi": "",
+    "version": "live",
+    "preprocessing_notes": "Use producer prices + trade volumes as a market-depth proxy; subnational requires country-team uploads.",
+    "limitations": "Admin0 granularity; subnational variation invisible."
+  },
+  {
+    "dataset_id": "ilo_labour_statistics",
+    "dataset_name": "ILOSTAT \u2014 labour statistics",
+    "description": "International Labour Organization ILOSTAT \u2014 labour-force participation, agricultural employment share, wage indicators. Admin0, annual.",
+    "analytical_module": "adaptive_capacity",
+    "grain_type": "admin",
+    "admin_level": "admin0",
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "csv",
+    "access_type": "api",
+    "download_url": "https://ilostat.ilo.org/",
+    "license": "CC-BY-4.0",
+    "citation": "ILO (2024). ILOSTAT \u2014 Labour Statistics. International Labour Organization, Geneva.",
+    "doi": "",
+    "version": "live",
+    "preprocessing_notes": "Use 'agricultural employment as % of total employment' as the rural-labour-availability framing; pair with LSMS-ISA for subnational where present.",
+    "limitations": "Country-level only; subnational variation requires LSMS-ISA or country uploads."
   }
 ]
