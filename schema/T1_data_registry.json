@@ -531,5 +531,86 @@
     "limitations": "Boundary vintages vary by country; non-commercial licence. Not for: dispute adjudication.",
     "description": "GADM Database of Global Administrative Areas v4.1 \u2014 admin-0/1/2/3 boundary polygons.",
     "grain_type": "vector"
+  },
+  {
+    "dataset_id": "glad_global_cropland_2019",
+    "dataset_name": "GLAD Global Cropland 2019 (30m)",
+    "description": "Potapov et al. (2022) global cropland extent for the year 2019 at 30m, derived from Landsat time series. Binary cropland mask.",
+    "analytical_module": "geographic_context",
+    "grain_type": "grid",
+    "spatial_resolution_m": 30,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff_cog",
+    "access_type": "gee_asset",
+    "gee_asset_id": "users/potapovpeter/Global_cropland_2019",
+    "download_url": "https://glad.umd.edu/dataset/croplands",
+    "license": "CC-BY-4.0",
+    "citation": "Potapov, P., Turubanova, S., Hansen, M. C., Tyukavina, A., Zalles, V., Khan, A., Song, X.-P., Pickens, A., Shen, Q., & Cortez, J. (2022). Global maps of cropland extent and change show accelerated cropland expansion in the twenty-first century. Nature Food, 3, 19-28.",
+    "doi": "10.1038/s43016-021-00429-z",
+    "version": "2019",
+    "preprocessing_notes": "Use as binary cropland presence layer.",
+    "limitations": "Cropland definition includes fallow + temporary cropping; rotational use may misclassify."
+  },
+  {
+    "dataset_id": "esa_worldcereal_2021",
+    "dataset_name": "ESA WorldCereal 2021 (10m)",
+    "description": "ESA WorldCereal product (2020-2021 season) at 10m: active cropland + 4 seasonal crop classes (temporary crops, irrigated/rainfed). Used here as cropland + irrigation auxiliary.",
+    "analytical_module": "geographic_context",
+    "grain_type": "grid",
+    "spatial_resolution_m": 10,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff_cog",
+    "access_type": "direct_download",
+    "download_url": "https://esa-worldcereal.org/en/products",
+    "license": "CC-BY-4.0",
+    "citation": "Van Tricht, K., Degerickx, J., Gilliams, S., Zanaga, D., Battude, M., Grosu, A., Brombacher, J., Pelayo, Y. M., Lesiv, M., Buchhorn, M., Smets, B., Tarko, A., Szantoi, Z., Bauwens, I., Defourny, P., & Szilagyi, I. (2023). WorldCereal: a dynamic open-source system for global-scale, seasonal, and reproducible crop and irrigation mapping. Earth System Science Data, 15, 5491-5515.",
+    "doi": "10.5194/essd-15-5491-2023",
+    "version": "2021",
+    "preprocessing_notes": "Multi-layer: active_cropland, temporary_crops, irrigation. Pick layer per use.",
+    "limitations": "Calibration variable by region; irrigation class is presence not intensity."
+  },
+  {
+    "dataset_id": "glw4_livestock_2020",
+    "dataset_name": "Gridded Livestock of the World v4 (GLW4, 2020)",
+    "description": "FAO/ILRI/UMR-SELMET gridded livestock density (per species: cattle, buffalo, sheep, goats, pigs, chickens, ducks, horses) at ~10 km, year 2015 baseline (v4 release 2024).",
+    "analytical_module": "geographic_context",
+    "grain_type": "grid",
+    "spatial_resolution_m": 10000,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "direct_download",
+    "download_url": "https://dataverse.harvard.edu/dataverse/glw",
+    "license": "CC-BY-4.0",
+    "citation": "Gilbert, M., Nicolas, G., Cinardi, G., Van Boeckel, T. P., Vanwambeke, S. O., Wint, G. R. W., & Robinson, T. P. (2018). Global distribution data for cattle, buffaloes, horses, sheep, goats, pigs, chickens and ducks in 2010. Scientific Data, 5, 180227. (v4 update 2024).",
+    "doi": "10.1038/sdata.2018.227",
+    "version": "v4 (2024)",
+    "preprocessing_notes": "Sum across ruminant species (cattle + buffalo + sheep + goats) for total ruminant density; convert TLU using ILRI weights for fair comparison.",
+    "limitations": "Modelled (dasymetric), not observed; uncertainty highest in pastoral / mobile-herd contexts."
+  },
+  {
+    "dataset_id": "fao_gmia_v5",
+    "dataset_name": "FAO Global Map of Irrigation Areas v5 (GMIA)",
+    "description": "FAO/Rheinische Friedrich-Wilhelms-Universit\u00e4t Bonn GMIA v5 \u2014 area equipped for irrigation as % of cell, at 5 arc-minute (~10 km).",
+    "analytical_module": "geographic_context",
+    "grain_type": "grid",
+    "spatial_resolution_m": 10000,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "direct_download",
+    "download_url": "https://www.fao.org/aquastat/en/geospatial-information/global-maps-irrigated-areas/",
+    "license": "CC-BY-4.0",
+    "citation": "Siebert, S., Henrich, V., Frenken, K., & Burke, J. (2013). Update of the digital global map of irrigation areas to version 5. FAO/Rheinische Friedrich-Wilhelms-Universit\u00e4t Bonn.",
+    "doi": "",
+    "version": "v5",
+    "preprocessing_notes": "Area equipped for irrigation is potential, not actual irrigation use; combine with WorldCereal irrigation for refinement.",
+    "limitations": "Coarse resolution; lags real-world updates; rainfed mosaics may be misclassified at coarse aggregation."
   }
 ]
