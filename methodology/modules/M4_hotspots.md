@@ -137,30 +137,86 @@ All T5 priority variables for the AOI, grouped by theme (climate hazards · NbS-
 
 ## 13. Implementation notes (Python)
 
+> **Schema state when this spec is picked up (v0.3.0+, June 2026):** the MCDA math core and several T5 fields the original draft assumed-pending have since landed. **Read this before implementing.**
+>
+> | Draft assumption | Current state |
+> |---|---|
+> | Module path `pipeline/hotspots.py` | **Updated** → `src/nbs_ruralscan/hotspots.py` per the v0.2 GEE-App-dropped runtime. Math is pure-numpy (caller-side raster I/O via rasterio); GEE wrapper a thin adapter if/when needed. |
+> | MCDA engine | **Available** in `src/nbs_ruralscan/mcda.py`: `critic_weights`, `entropy_weights`, `ahp_weights`, `reconcile_weights(alpha=0.4)`, `weighted_overlay`, `sensitivity_perturb` (returns `SensitivityResult`), `quartile_classify`. Reuse, don't duplicate. The conceptual→numeric mapping + ranked-unit aggregation are the only M4-specific math. |
+> | T5 `mcda_role` | **Live** at v0.3.0 with values `priority` (drives the hotspot MCDA — 11 rows) and `descriptor` (carried for context, never weighted — 4 rows). M4 MUST filter to `mcda_role == 'priority'` before building the priority stack. |
+> | T5 themes | **Ratified** at v0.3.0: five themes — `climate_hazard`, `nbs_response`, `people`, `production`, `equity_gender`. The UI groups by these; M4 reads `theme` for the "top drivers" attribution. |
+> | T5 normalization fields | **Live**: `norm_method`, `direction`, `reference_frame`, `clip`. Pull these into `hotspots_meta.json` verbatim — don't re-derive. |
+> | Spatial-grain rule | **Declared**: priority variables coarser than admin1 (e.g. admin0-only indices) **cannot drive** MCDA differentiation; emit a qualified-flag in meta and surface in the UI. See `methodology/opportunity_space_T5.md` §3 (spatial-grain rule). |
+> | T7 `farming_system` | **Swapped** at v0.3.0 to 6 EO-derived classes (`cropping_rainfed` · `cropping_irrigated` · `mixed_crop_livestock` · `agro_pastoral` · `pastoral_rangeland` · `tree_perennial`). Dixon = crosswalk only. Update any farming-system-conditional ranking logic. |
+> | Project-risk scope (M2b) | **Stream A** (asset-hazard composition) + **Stream B** (operational/enabling levers) both specified at v0.3.0; T4 has 8 Stream-B BIND-bound scenario rows. M4 still consumes M2b output **as a filter only** — never summed. |
+> | Double-count guard | T2 ↔ T5 still the concern. With `mcda_role`, guard against T2 variables doubling into T5 **priority** rows (descriptors are exempt — they don't weight). |
+
+Suggested Python function signatures for `src/nbs_ruralscan/hotspots.py` (was `pipeline/hotspots.py` in the v0.1 draft):
+
 ```python
-def map_conceptual_weights(settings: dict, scale=(0,1,2,3)) -> dict:
-    """§6.3 — map {priority: '—'|'L'|'M'|'H'} to normalised numeric weights."""
+from nbs_ruralscan.mcda import (
+    weighted_overlay,
+    sensitivity_perturb,
+    quartile_classify,
+    reconcile_weights,
+)
 
-def normalize_priority(layer, rule) -> "np.ndarray":
-    """§9 — standardise one priority layer to 0–1 per its T5 rule (fixed | min-max |
-    percentile | z-score), with direction, reference frame and clip. (Applied in M3;
-    validated here.)"""
+def map_conceptual_weights(
+    settings: dict[str, str],
+    scale: tuple[float, float, float, float] = (0.0, 1.0, 2.0, 3.0),
+) -> dict[str, float]:
+    """§6.3 — map {priority_id: '—'|'L'|'M'|'H'} to normalised numeric weights
+    (sum to 1). Filter out '—' priorities before normalising."""
 
-def hotspot_overlay(priority_stack, weights, opp_mask) -> "np.ndarray":
-    """§6.5 — weighted linear combination within the opportunity-space mask."""
+def build_priority_stack(
+    t5_rows: "pd.DataFrame",
+    layers: dict[str, "np.ndarray"],
+    opp_mask: "np.ndarray",
+) -> tuple["np.ndarray", list[str]]:
+    """§6.1 — assemble (H, W, K) stack from M3's standardised priority layers,
+    filtering T5 to mcda_role == 'priority', clipped to opp_mask. Returns
+    (stack, ordered variable_ids)."""
 
-def apply_project_risk_scope(hotspot, project_risk, mode='flag') -> "np.ndarray":
+def hotspot_overlay(
+    stack: "np.ndarray",
+    weights: "np.ndarray",
+    opp_mask: "np.ndarray",
+) -> "np.ndarray":
+    """§6.5 — thin wrapper over mcda.weighted_overlay that re-applies opp_mask
+    (NaN outside) and renormalises 0–1. Reuse, don't reimplement."""
+
+def apply_project_risk_scope(
+    hotspot: "np.ndarray",
+    project_risk: "np.ndarray",
+    mode: str = "flag",  # "flag" | "exclude"
+) -> "np.ndarray":
     """§6.6 — filter/flag high project-risk cells; never sum into the score."""
 
-def bivariate(suitability, hotspot, bins=5) -> "np.ndarray":
-    """§6.7 — 5×5 suit × priority classification."""
+def bivariate(
+    suitability: "np.ndarray",
+    hotspot: "np.ndarray",
+    bins: int = 5,
+) -> "np.ndarray":
+    """§6.7 — 5×5 suit × priority classification (reuse mcda.quartile_classify
+    once per axis; combine into a single 1–25 code)."""
 
-def rank_units(hotspot, admin_vector) -> "pd.DataFrame":
-    """§6.8 — per-ADM-unit score, top drivers, intersection fingerprint."""
+def rank_units(
+    hotspot: "np.ndarray",
+    stack: "np.ndarray",
+    variable_ids: list[str],
+    weights: "np.ndarray",
+    admin_vector: "gpd.GeoDataFrame",
+) -> "pd.DataFrame":
+    """§6.8 — per-ADM-unit mean hotspot score + top-3 driver variables
+    (weighted contribution to the unit mean) + intersection fingerprint."""
 
-def sensitivity_perturb(priority_stack, weights, n=50, scale=0.1) -> "np.ndarray":
-    """§6.9 — ±10% weight perturbation variance."""
+# Sensitivity: reuse mcda.sensitivity_perturb(stack, weights, n=50, scale=0.1)
+# directly — no module-local re-implementation.
 ```
+
+### Likely starting prompt for Claude Code
+
+> Implement `src/nbs_ruralscan/hotspots.py` for the Rural NbS Scan, following the spec in `methodology/modules/M4_hotspots.md`. Pure-numpy math core (T1 datasets already BIND-bound at v0.3.0; M3 produces the standardised priority layers; M1 produces the opportunity-space mask; caller handles raster I/O via rasterio). Filter T5 rows to `mcda_role == 'priority'` before building the priority stack. Reuse `src/nbs_ruralscan/mcda.py` (`weighted_overlay`, `sensitivity_perturb`, `quartile_classify`, `reconcile_weights`) — do not duplicate the math. M2b project-risk applied only as a filter (mode `flag` | `exclude`), never summed. Use the function signatures listed in the spec's "Implementation notes" section. Show me the imports + `map_conceptual_weights` + `build_priority_stack` first; pause for review before the rest.
 
 ## 14. Open questions
 
@@ -174,3 +230,4 @@ def sensitivity_perturb(priority_stack, weights, n=50, scale=0.1) -> "np.ndarray
 ## Version history
 
 - **v0.1** (June 2026) — authored to match the v0.6 wireframe and to capture the priority-variable normalization decision. Reuses M1's weighting engine with TTL conceptual weights. Computed in Python (post native-GEE).
+- **v0.1.1** (June 2026) — annotated §13 with v0.3.0 schema state (mcda_role priority/descriptor; T5 themes ratified; spatial-grain rule; T7 farming_system 6-class swap; M2b Stream-A+B). Function stubs rewritten to reuse the shipped `src/nbs_ruralscan/mcda.py` math core (no duplication). Added a starting prompt for Claude Code. No methodology change.
