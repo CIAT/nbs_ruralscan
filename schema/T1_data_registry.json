@@ -854,5 +854,108 @@
     "version": "live",
     "preprocessing_notes": "Use 'agricultural employment as % of total employment' as the rural-labour-availability framing; pair with LSMS-ISA for subnational where present.",
     "limitations": "Country-level only; subnational variation requires LSMS-ISA or country uploads."
+  },
+  {
+    "dataset_id": "jrc_global_flood_hazard",
+    "dataset_name": "JRC Global Flood Hazard Maps (Dottori et al. 2016)",
+    "description": "JRC global river-flood hazard maps \u2014 return-period flood depth grids (e.g. 100-year, 500-year) at ~30 arc-second (~1 km).",
+    "analytical_module": "climate_hazard",
+    "hazard_type": "flood",
+    "scenario_type": "baseline",
+    "grain_type": "grid",
+    "spatial_resolution_m": 1000,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "direct_download",
+    "download_url": "https://data.jrc.ec.europa.eu/dataset/jrc-floods-floodmapgl_rp50y-tif",
+    "license": "CC-BY-4.0",
+    "citation": "Dottori, F., Salamon, P., Bianchi, A., Alfieri, L., Hirpa, F. A., & Feyen, L. (2016). Development and evaluation of a framework for global flood hazard mapping. Advances in Water Resources, 94, 87-102.",
+    "doi": "10.1016/j.advwatres.2016.05.002",
+    "version": "2016",
+    "preprocessing_notes": "Pick return-period band (100y default for scoping); model assumes existing flood protection per FLOPROS.",
+    "limitations": "River flooding only \u2014 pluvial/urban + coastal flooding need separate layers (e.g. WRI Aqueduct Coastal). Hydrological-model uncertainty in data-sparse basins."
+  },
+  {
+    "dataset_id": "wri_aqueduct_water_stress",
+    "dataset_name": "WRI Aqueduct 4.0 \u2014 water stress baseline",
+    "description": "World Resources Institute Aqueduct 4.0 baseline water-stress index \u2014 ratio of withdrawals to renewable supply, at HydroSHEDS basin level + admin1.",
+    "analytical_module": "climate_hazard",
+    "scenario_type": "baseline",
+    "grain_type": "grid",
+    "spatial_resolution_m": 1000,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "direct_download",
+    "download_url": "https://www.wri.org/data/aqueduct-water-risk-atlas",
+    "license": "CC-BY-4.0",
+    "citation": "Kuzma, S., Saccoccia, L., & Chertock, M. (2023). 25 Countries, Housing One-quarter of the Population, Face Extremely High Water Stress. World Resources Institute (Aqueduct 4.0).",
+    "doi": "",
+    "version": "4.0",
+    "preprocessing_notes": "Use the baseline-water-stress (BWS) layer; SSP scenarios available for future projections.",
+    "limitations": "Basin/admin1 granularity; not pixel-level."
+  },
+  {
+    "dataset_id": "undp_gii_national",
+    "dataset_name": "UNDP Gender Inequality Index (GII)",
+    "description": "UNDP Human Development Report Office Gender Inequality Index \u2014 composite of reproductive health, empowerment, labour-market gender gap. Admin0, annual.",
+    "analytical_module": "opportunity_space",
+    "grain_type": "admin",
+    "admin_level": "admin0",
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "csv",
+    "access_type": "direct_download",
+    "download_url": "https://hdr.undp.org/data-center/thematic-composite-indices/gender-inequality-index",
+    "license": "CC-BY-4.0",
+    "citation": "UNDP (2024). Gender Inequality Index (GII). Human Development Report Office, United Nations Development Programme.",
+    "doi": "",
+    "version": "2022",
+    "preprocessing_notes": "National-flag layer; subnational disaggregation requires_upload (LSMS, DHS).",
+    "limitations": "Admin0 only \u2014 no subnational variation. Per T5 spatial-grain rule, surfaces as qualified flag, not hotspot driver."
+  },
+  {
+    "dataset_id": "lesiv_smallholder_farm_size",
+    "dataset_name": "Lesiv et al. Global field-size / smallholder share",
+    "description": "Lesiv et al. (2019) global field-size and smallholder-share dataset \u2014 derived from crowdsourced photo-interpretation, ~1 km. Field-size class + smallholder fraction.",
+    "analytical_module": "opportunity_space",
+    "grain_type": "grid",
+    "spatial_resolution_m": 1000,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "direct_download",
+    "download_url": "https://pure.iiasa.ac.at/15526",
+    "license": "CC-BY-4.0",
+    "citation": "Lesiv, M., Bayas, J. C. L., See, L., Duerauer, M., Dahlia, D., Durando, N., et al. (2019). Estimating the global distribution of field size using crowdsourcing. Global Change Biology, 25, 174-186.",
+    "doi": "10.1111/gcb.14492",
+    "version": "2019",
+    "preprocessing_notes": "Use field-size class or smallholder fraction depending on T5 framing.",
+    "limitations": "Crowdsourced \u2014 sampling uneven; complements national agricultural censuses rather than replaces them."
+  },
+  {
+    "dataset_id": "mapspam_v2",
+    "dataset_name": "MapSPAM 2017 v2.0 \u2014 global crop production value",
+    "description": "IFPRI/IIASA Spatial Production Allocation Model (MapSPAM) v2.0 \u2014 gridded crop area, yield, production, value for 42 crops at ~10 km.",
+    "analytical_module": "opportunity_space",
+    "grain_type": "grid",
+    "spatial_resolution_m": 10000,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "direct_download",
+    "download_url": "https://www.mapspam.info/",
+    "license": "CC-BY-4.0",
+    "citation": "International Food Policy Research Institute (IFPRI) (2024). Global Spatially-Disaggregated Crop Production Statistics Data for 2017 Version 2.0. Harvard Dataverse.",
+    "doi": "10.7910/DVN/SWPENT",
+    "version": "v2.0 (2017 baseline)",
+    "preprocessing_notes": "Sum economic value across crops for a generic production-value layer; per-crop layers also available.",
+    "limitations": "Modelled allocation (not surveyed); coarse ~10 km; specific tree-perennial coverage weak (use Forest Data Partnership for cocoa/coffee/palm)."
   }
 ]
