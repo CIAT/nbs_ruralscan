@@ -632,5 +632,67 @@
     "version": "2016",
     "preprocessing_notes": "BII is a 0-100 (or 0-1) intactness index \u2014 invert if framing biodiversity_priority as 'higher = more concern' (i.e. priority = 1 - intactness, so lowest-intactness areas surface).",
     "limitations": "Modelled (PREDICTS database); systematic uncertainty in under-sampled biomes. Doesn't capture rare-species hotspots \u2014 pair with KBA polygons as a binary high-priority flag."
+  },
+  {
+    "dataset_id": "mod13q1_ndvi",
+    "dataset_name": "MODIS MOD13Q1 NDVI (250m, 16-day)",
+    "description": "NASA MODIS Terra Vegetation Indices MOD13Q1 \u2014 16-day composite NDVI at 250m. The de facto standard NDVI surface for time-series + annual aggregation.",
+    "analytical_module": "opportunity_space",
+    "grain_type": "grid",
+    "spatial_resolution_m": 250,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "gee_asset",
+    "gee_asset_id": "MODIS/061/MOD13Q1",
+    "download_url": "https://lpdaac.usgs.gov/products/mod13q1v061/",
+    "license": "public_domain",
+    "citation": "Didan, K. (2021). MODIS/Terra Vegetation Indices 16-Day L3 Global 250m SIN Grid V061. NASA EOSDIS Land Processes DAAC.",
+    "doi": "10.5067/MODIS/MOD13Q1.061",
+    "version": "v061",
+    "preprocessing_notes": "Aggregate to annual mean / max-NDVI / range as needed. Mask cloud-flagged pixels per QA layer.",
+    "limitations": "Coarser than Sentinel-2; for finer NDVI use Sentinel-2 SR. Cloud contamination in tropics."
+  },
+  {
+    "dataset_id": "worldclim_v2_srad",
+    "dataset_name": "WorldClim v2.1 solar radiation",
+    "description": "WorldClim v2.1 monthly solar radiation surface, ~1 km, 1970-2000 climatology. kJ/m\u00b2/day.",
+    "analytical_module": "climate_hazard",
+    "grain_type": "grid",
+    "spatial_resolution_m": 1000,
+    "scenario_type": "baseline",
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "direct_download",
+    "download_url": "https://worldclim.org/data/worldclim21.html",
+    "license": "CC-BY-4.0",
+    "citation": "Fick, S. E., & Hijmans, R. J. (2017). WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. International Journal of Climatology, 37(12), 4302-4315.",
+    "doi": "10.1002/joc.5086",
+    "version": "v2.1",
+    "preprocessing_notes": "Sum across months or take annual mean as appropriate.",
+    "limitations": "Modelled (not measured) at any specific location; baseline only, no climate projections in this release."
+  },
+  {
+    "dataset_id": "ghsl_built_up",
+    "dataset_name": "GHSL Built-Up Surface (100m, multi-temporal)",
+    "description": "Joint Research Centre Global Human Settlement Layer (GHSL) built-up surface \u2014 global multi-temporal product at 100m, 5-year epochs from 1975 to present.",
+    "analytical_module": "geographic_context",
+    "grain_type": "grid",
+    "spatial_resolution_m": 100,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "direct_download",
+    "download_url": "https://human-settlement.emergency.copernicus.eu/",
+    "license": "CC-BY-4.0",
+    "citation": "Pesaresi, M., & Politis, P. (2023). GHS-BUILT-S R2023A \u2014 GHS built-up surface grid, derived from Sentinel-2 composite and Landsat, multitemporal (1975-2030). European Commission, Joint Research Centre (JRC).",
+    "doi": "10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA",
+    "version": "R2023A",
+    "preprocessing_notes": "Pick the epoch nearest to the run year; threshold built-up share if a binary mask is needed.",
+    "limitations": "Smallholder rural settlement under-detected at 100m; complements WorldPop population for a built+population framing."
   }
 ]

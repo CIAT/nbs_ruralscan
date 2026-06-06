@@ -730,10 +730,10 @@
     ],
     "canonical_unit": "pH_units",
     "group_id": "edaphic",
-    "review_status": "pending_review",
+    "review_status": "rejected",
     "raised_by": "ev_phsub_nath21",
     "raised_date": "2026-06-05",
-    "comment": "Depth-stratified pair with soil_ph (topsoil). Decide: separate canonicals vs single canonical with depth context.",
+    "comment": "Deferred: pilot uses topsoil 0-30 cm only via the topsoil canonical (soil_ph / soil_organic_carbon). Per v0.2.5 worked example, depth-stratified pairs are option (b) for a future v0.3.x schema increment; re-authored when subsoil binding becomes operationally needed.",
     "min_meaningful_resolution_m": 250,
     "resolution_sensitivity": "medium",
     "derive_then_aggregate": false,
@@ -748,10 +748,10 @@
     ],
     "canonical_unit": "g/kg",
     "group_id": "edaphic",
-    "review_status": "pending_review",
+    "review_status": "rejected",
     "raised_by": "ev_socsub_nath21",
     "raised_date": "2026-06-05",
-    "comment": "Depth-stratified pair with soil_organic_carbon.",
+    "comment": "Deferred: pilot uses topsoil 0-30 cm only via the topsoil canonical (soil_ph / soil_organic_carbon). Per v0.2.5 worked example, depth-stratified pairs are option (b) for a future v0.3.x schema increment; re-authored when subsoil binding becomes operationally needed.",
     "min_meaningful_resolution_m": 250,
     "resolution_sensitivity": "medium",
     "derive_then_aggregate": false,
@@ -767,14 +767,16 @@
     ],
     "canonical_unit": "class",
     "group_id": "edaphic",
-    "review_status": "pending_review",
+    "review_status": "canonical",
     "raised_by": "ev_tex_nath21",
     "raised_date": "2026-06-05",
-    "comment": "VONT has soil_texture_hsg (HSG classification); this is finer USDA-style. Decide: merge or distinct.",
+    "comment": "Canonical USDA-class soil texture. Complementary to soil_texture_hsg (HSG hydrology classification) \u2014 not a duplicate. Both stay canonical.",
     "min_meaningful_resolution_m": 250,
     "resolution_sensitivity": "medium",
     "derive_then_aggregate": false,
-    "candidate_dataset_ids": [],
+    "candidate_dataset_ids": [
+      "isric_soilgrids250_v2"
+    ],
     "unit_conversions": {}
   },
   {
@@ -865,13 +867,15 @@
     ],
     "canonical_unit": "unitless",
     "group_id": "land_cover_vegetation",
-    "review_status": "pending_review",
+    "review_status": "canonical",
     "raised_by": "ev_ndvi_nath21",
     "raised_date": "2026-06-05",
     "min_meaningful_resolution_m": 250,
     "resolution_sensitivity": "low",
     "derive_then_aggregate": false,
-    "candidate_dataset_ids": [],
+    "candidate_dataset_ids": [
+      "mod13q1_ndvi"
+    ],
     "unit_conversions": {}
   },
   {
@@ -883,14 +887,16 @@
     ],
     "canonical_unit": "boolean_or_distance",
     "group_id": "socio_economic",
-    "review_status": "pending_review",
+    "review_status": "canonical",
     "raised_by": "ev_builtup_nath21",
     "raised_date": "2026-06-05",
     "comment": "Could be merged with population_exposure_rural or treated as proximity variable.",
     "min_meaningful_resolution_m": 100,
     "resolution_sensitivity": "low",
     "derive_then_aggregate": false,
-    "candidate_dataset_ids": [],
+    "candidate_dataset_ids": [
+      "ghsl_built_up"
+    ],
     "unit_conversions": {}
   },
   {
@@ -1073,7 +1079,7 @@
     "min_meaningful_resolution_m": 1000,
     "resolution_sensitivity": "low",
     "derive_then_aggregate": false,
-    "review_status": "pending_review",
+    "review_status": "canonical",
     "raised_by": "ev_radiation_palma07",
     "raised_date": "2026-06-05"
   },
