@@ -90,14 +90,40 @@ Authored by the MFL/sector team + Pete + Namita as **short, targeted guidance no
 
 ## 10. Implementation notes
 
-M6 is primarily content (markdown/T6 + UI), not a compute module. Minimal logic:
+> **Schema state when this spec is picked up (v0.3.0+, June 2026):** several upstream pieces the v0.1 draft assumed-pending have since landed. **Read this before authoring/implementing.**
+>
+> | Draft assumption | Current state |
+> |---|---|
+> | Module path `pipeline/handoff.py` | **Updated** → `src/nbs_ruralscan/handoff.py` per the v0.2 GEE-App-dropped runtime. Mostly content assembly; no heavy compute. |
+> | FPIC / ESS7 trigger | **Live**: `T5.iplc_lands` (v0.3.0-F) bound to LandMark via BIND `iplc_lands__global`. Where IPLC polygons overlap the M1 opportunity-space mask, the hand-off MUST flag `FPIC_REQUIRED` and surface ESS7 safeguard in the consultations block. Coverage patchy — absence ≠ no IPLC presence; phrase the flag accordingly. |
+> | Country-endorsed source list | **Live**: `VONT.context_sensitivity = 'high'` is the canonical filter (population, poverty, agricultural-production-value, gender-inequity, IPLC-tenure …). The hand-off card lists every high-sensitivity variable consumed in the run with a "validate against country-endorsed source" prompt. *Scoping flags; feasibility validates* — the tool never negotiates or validates national data. |
+> | M2b operational levers | **Live**: Stream-A (asset hazard) + Stream-B (8 operational/enabling levers — accessibility, electrification, tenure, conflict/fragility, governance, finance, market, labour) shipped at v0.3.0. Hand-off should surface any Stream-B lever flagged as a binding constraint (BIND `requires_upload` or low-score in M2b output) under "consultations / pre-feasibility checks". |
+> | T6 cost-effectiveness denominators | **Live**: `T6.economic_indicator_type` carries `cost_per_beneficiary` · `cost_per_hectare_restored` · `cost_per_tco2e_avoided` · `cost_per_farmer_reached`. `economic_value_range = {low, high, unit, source_note}`. Snapshot card renders whatever denominators the recipe populated; **label scoping-grade, not CBA**. |
+> | T5 `mcda_role` | **Live** at v0.3.0: priorities drove the hotspots; descriptors (rural_population, market_access, farm_size, agricultural_production_value) supply context for the hand-off card (population in priority units, accessibility caveat, agrarian-structure note). Don't re-weight descriptors here — read them as narrative context. |
+> | T7 farming_system | **Swapped** to 6 EO-derived classes at v0.3.0. The hand-off card's "design step" (right-tree-right-place) should key off the dominant `farming_system` class in the ranked units, not Dixon labels. |
+
+M6 is primarily content (markdown/T6 + UI), not a compute module. Minimal logic for `src/nbs_ruralscan/handoff.py`:
 
 ```python
-def handoff_card(nbs_id, t0, t6, ranked_units, economic_profile) -> dict:
-    """Assemble the per-NbS hand-off card: economic snapshot, next steps (tied to
-    tool layers), feasibility methods (Table 6), design step, context tailoring."""
+def handoff_card(
+    nbs_id: str,
+    t0_row: dict,
+    t6_rows: "pd.DataFrame",
+    ranked_units: "pd.DataFrame",
+    economic_profile: dict,
+    iplc_overlap: bool,
+    context_sensitive_vars: list[str],
+    m2b_binding_levers: list[str],
+    dominant_farming_system: str,
+) -> dict:
+    """Assemble the per-NbS hand-off card: economic snapshot (T6 denominators,
+    scoping-grade labelled), next steps (tied to tool layers), feasibility
+    methods (Table 6), design step keyed off `dominant_farming_system`, FPIC
+    flag (if `iplc_overlap`), country-endorsed source prompts (one per
+    `context_sensitive_vars` entry), M2b pre-feas checks (one per
+    `m2b_binding_levers` entry), and context tailoring."""
 
-def stacked_cluster_card(nbs_ids, ...) -> dict:
+def stacked_cluster_card(nbs_ids: list[str], ...) -> dict:
     """Hand-off for a stacked NbS cluster where several NbS overlap spatially."""
 ```
 
@@ -112,3 +138,4 @@ def stacked_cluster_card(nbs_ids, ...) -> dict:
 ## Version history
 
 - **v0.1** (June 2026) — authored to match the v0.6 wireframe Next Steps tab and Stocktake §5 + Table 6. Content/guidance module (no heavy compute); the project's scope boundary. Closes the M0–M6 spec set.
+- **v0.1.1** (June 2026) — annotated §10 with v0.3.0 schema state: FPIC/ESS7 trigger via `iplc_lands` (v0.3.0-F); country-endorsed source list driven by `VONT.context_sensitivity = high`; M2b Stream-B binding-constraint surfacing; T6 cost-effectiveness denominators in the snapshot; T5 descriptors as narrative context; T7 farming-system 6-class swap drives the design step. Function signature widened to consume the new inputs. Module path → `src/nbs_ruralscan/handoff.py`. No methodology change.
