@@ -19,7 +19,7 @@ The scaffolding covers the methodology (modules, schema, recipes), the team's wo
 1. **[Pipeline architecture (v0.4)](https://ciat.github.io/nbs_ruralscan/pipeline.html)** — one-page map of the 7 modules + the M2b disaster-risk addendum and the T0–T7 schema. The *framework primitives* layer at the top (canonical membership functions, hybrid weighting, MCDA engine, recipe template) is reusable and read by every module; some run back-end and aren't surfaced in the TTL view.
 2. **Module specs — M1 and M2**
    - **[M1 Suitability](./methodology/modules/M1_suitability.md)** — the I/O contract and 8 sub-steps for the suitability → opportunity-space stage, implemented in Python under `src/nbs_ruralscan/`. Function signatures in §13.
-   - **[M2 Rural Climate Risk](./methodology/modules/M2_climate_risk.md)** — **Brayden**, pre-scaffolded for you. Mode A vs Mode B, double-count guard with M3/M4, function signatures for `pipeline/climate_risk.py`. Six open methodology questions at the bottom that need your view.
+   - **[M2 Rural Climate Risk](./methodology/modules/M2_climate_risk.md)** — **Brayden**, pre-scaffolded for you. Mode A vs Mode B, double-count guard with M3/M4, function signatures for `src/nbs_ruralscan/climate_risk.py` (v0.3.0 schema annotations in §14). Six open methodology questions at the bottom that need your view.
 3. **Repo conventions + workflow** — [`CLAUDE.md`](./CLAUDE.md), [`PLAYBOOK.md`](./PLAYBOOK.md), [`CONTRIBUTING.md`](./CONTRIBUTING.md). **Namita** — keen on your take here since you'll coordinate recipe authoring + Variable Cards.
 
 ### Ownership (current — June 2026)

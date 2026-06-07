@@ -6,7 +6,7 @@ Source material that informed the framework and recipes — kept here for citati
 
 | Path | Contents |
 |---|---|
-| `R/spatMCDA.R` | Original R MCDA prototype by Benson Kenduiywo. The reference implementation that the GEE Python pipeline (`pipeline/mcda_pipeline.py`) ports. |
+| `R/spatMCDA.R` | Original R MCDA prototype by Benson Kenduiywo. Ported to numpy at `src/nbs_ruralscan/mcda.py` (June 2026 — see `tests/test_mcda.py`). |
 | `stocktake/` | Stocktake review findings — extracted patterns from the 85 reviewed studies. Pointers to the canonical docx on OneDrive. |
 
 ## Conventions

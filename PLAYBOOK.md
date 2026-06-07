@@ -75,8 +75,8 @@ Benson has a Claude Premium seat. We expect Claude Code to be the default develo
 
 Anything with concrete inputs and outputs. Examples:
 
-- *"Port `reference/R/spatMCDA.R` to GEE Python, preserving the CRITIC + Entropy + AHP weighting logic. Save to `pipeline/mcda_pipeline.py`."*
-- *"Scaffold an agroforestry pilot Colab notebook for Sierra Leone, loading the recipe from `methodology/recipes/agroforestry.md`, calling `pipeline/mcda_pipeline.py`, and writing outputs to `pipeline/outputs/agroforestry_sl/`."*
+- *"Port `reference/R/spatMCDA.R` to numpy, preserving the CRITIC + Entropy + AHP weighting logic. Save to `src/nbs_ruralscan/mcda.py`."* (✅ shipped — see `tests/test_mcda.py`)
+- *"Scaffold an agroforestry pilot Colab notebook for Sierra Leone, loading the recipe from `methodology/recipes/agroforestry.md`, calling `src/nbs_ruralscan/mcda.py`, and writing outputs to `pipeline/outputs/agroforestry_sl/`."*
 - *"In `docs/wireframe.html`, replace the Sierra Leone SVG outline with district boundaries from the attached GeoJSON, keeping the existing colour scheme."*
 - *"Add a Variable Card for `aridity_index` in the agroforestry recipe. Use the same six-slot structure as the slope card."*
 
@@ -179,7 +179,7 @@ Automation to enable (one-off setup — click-by-click runbook at [`.github/PROJ
 
 ### Seed backlog
 
-`.github/SEED_ISSUES.md` lists the initial ~15 issues to open. Walks through module specs (M0/M3/M4/M5/M6), recipe authoring (agroforestry / forest restoration / riparian buffers), pipeline implementation (`mcda_pipeline.py`, `climate_risk.py`), pilots, the GEE App spec, and Pages setup. Open them through the web UI one at a time — ~20 min total — and the backlog tells a coherent story when the team first opens it.
+`.github/SEED_ISSUES.md` lists the initial ~15 issues to open. Walks through module specs (M0/M3/M4/M5/M6), recipe authoring (agroforestry / forest restoration / riparian buffers), pipeline implementation (`src/nbs_ruralscan/mcda.py` shipped; `src/nbs_ruralscan/climate_risk.py` per M2 spec), pilots, the GEE App spec, and Pages setup. Open them through the web UI one at a time — ~20 min total — and the backlog tells a coherent story when the team first opens it.
 
 ### Cadence
 

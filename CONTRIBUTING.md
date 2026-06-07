@@ -57,10 +57,10 @@ We have two custom slash commands in `.claude/commands/`:
 
 Five focused prompts that map to project deliverables are in the **Claude Code Uplift note** (in the project working folder — ask Pete for a copy). Each is a couple of hours of pair-programming that produces a tangible artefact:
 
-1. Port `reference/R/spatMCDA.R` to `pipeline/mcda_pipeline.py`
-2. Scaffold the agroforestry pilot Colab notebook
+1. ~~Port `reference/R/spatMCDA.R` to `pipeline/mcda_pipeline.py`~~ ✅ shipped at `src/nbs_ruralscan/mcda.py` (see `tests/test_mcda.py`)
+2. Scaffold the agroforestry pilot Colab notebook (calls `src/nbs_ruralscan/mcda.py`)
 3. Extend the Water Harvesting master variable table into Variable Cards
-4. Build the v0 GEE App
+4. ~~Build the v0 GEE App~~ deferred (native GEE dropped; the wireframe is the demonstrator)
 5. Run correlation reduction on input variables
 
 ---
