@@ -98,21 +98,72 @@ Variables here (T5) must not also be active in T2 (M2) for the same `nbs_id`. Co
 
 ## 12. Implementation notes (Python)
 
+> **Schema state when this spec is picked up (v0.3.0+, June 2026):** several T5 fields the v0.1 draft assumed-pending have since landed. **Read this before implementing.**
+>
+> | Draft assumption | Current state |
+> |---|---|
+> | Module path `pipeline/characterisation.py` | **Updated** → `src/nbs_ruralscan/characterisation.py` per the v0.2 GEE-App-dropped runtime. Pure-numpy / xarray; caller-side raster I/O via rasterio. |
+> | T5 `mcda_role` | **Live** at v0.3.0 with `priority` | `descriptor`. M3 assembles **both** but flags which goes downstream: priorities → standardised stack for M4; descriptors → fingerprint/context only (never standardised for MCDA). Filter at assembly time. |
+> | T5 normalization fields | **Live**: `norm_method`, `direction`, `reference_frame` (AOI / sub-national / global / fixed-baseline), `clip`. M3 applies them per row — don't re-derive. Record what was applied in run meta for M4 to validate. |
+> | T5 themes | **Ratified** at v0.3.0: `climate_hazard` · `nbs_response` · `people_production` · `equity_inclusion` · `context`. Per-theme correlation clustering keys on this enum. |
+> | T7 farming_system | **Swapped** to 6 EO-derived classes at v0.3.0. The fingerprint's farming-system breakdown should key off this vocab, not Dixon labels (which now live in `schema/registers/FS_DIXON_CROSSWALK.md` as a translation-only reference). |
+> | BIND resolver | **Live**: `src/nbs_ruralscan/binding.py` resolves variable → dataset under most-specific-context-wins. Call it per priority variable instead of reading `T5.dataset_id` raw — overrides (per-country / per-farming-system) need to be honoured. |
+> | iplc_lands (v0.3.0-F) | **Priority row added**; LandMark-bound. Treat as priority; standardise as binary presence (0/1) into the equity_inclusion theme. Surface FPIC/ESS7 flag whenever the layer overlaps `opp_mask` (consumed by M6). |
+
+Suggested Python function signatures for `src/nbs_ruralscan/characterisation.py`:
+
 ```python
-def assemble_priorities(t5_rows, aoi, resolution, opp_mask) -> "xr.Dataset":
-    """§6.1 — load + harmonise + clip priority variables to the opportunity space."""
+from nbs_ruralscan.binding import resolve_dataset
 
-def reduce_correlated(stack, threshold=0.7) -> "Tuple[xr.Dataset, dict]":
-    """§6.2 — per-theme correlation clustering; reuse M1 logic."""
+def assemble_priorities(
+    t5_rows: "pd.DataFrame",
+    aoi: "gpd.GeoDataFrame",
+    resolution: int,
+    opp_mask: "np.ndarray",
+    context: dict,  # {country, farming_system, ...} for BIND resolution
+) -> "xr.Dataset":
+    """§6.1 — for each T5 row where mcda_role == 'priority': resolve dataset via
+    BIND under `context`, load, harmonise to grid, clip to opp_mask. Descriptors
+    are loaded separately by extract_fingerprint."""
 
-def standardise_priorities(stack, t5_rows) -> "xr.Dataset":
-    """§6.3 — apply each variable's normalization rule (see M4 §9)."""
+def reduce_correlated(
+    stack: "xr.Dataset",
+    threshold: float = 0.7,
+) -> tuple["xr.Dataset", dict]:
+    """§6.2 — per-theme correlation clustering; reuse M1 logic. Cluster within
+    a theme, never across themes."""
 
-def extract_fingerprint(opp_mask, exposure_layers, admin_vector) -> "pd.DataFrame":
-    """§6.4 — coverage, population, farms, production, farm size within the mask."""
+def standardise_priorities(
+    stack: "xr.Dataset",
+    t5_rows: "pd.DataFrame",
+) -> "xr.Dataset":
+    """§6.3 — apply each variable's T5 rule (norm_method, direction,
+    reference_frame, clip). Returns 0-1 layers + records applied rules in attrs
+    for M4 to validate."""
 
-def problem_distribution(standardised, opp_mask, scenarios) -> "pd.DataFrame":
-    """§6.5 — share of opp-space land at each severity level, per variable × scenario."""
+def extract_fingerprint(
+    opp_mask: "np.ndarray",
+    descriptor_layers: dict[str, "np.ndarray"],
+    farming_system: "np.ndarray",  # 6-class EO-derived
+    admin_vector: "gpd.GeoDataFrame",
+) -> "pd.DataFrame":
+    """§6.4 — coverage, population, farms, production, farm size + dominant
+    farming-system class per ADM unit within the mask."""
+
+def problem_distribution(
+    standardised: "xr.Dataset",
+    opp_mask: "np.ndarray",
+    scenarios: list[str],
+) -> "pd.DataFrame":
+    """§6.5 — share of opp-space land at each severity level, per variable ×
+    scenario."""
+
+def iplc_overlap_flag(
+    opp_mask: "np.ndarray",
+    iplc_lands_layer: "np.ndarray",
+) -> bool:
+    """§6.6 (v0.3.0-F) — boolean for whether IPLC polygons overlap opp_mask.
+    Consumed by M6 to set FPIC_REQUIRED / ESS7."""
 ```
 
 ## 13. Open questions
@@ -126,3 +177,4 @@ def problem_distribution(standardised, opp_mask, scenarios) -> "pd.DataFrame":
 ## Version history
 
 - **v0.1** (June 2026) — authored to match the v0.6 wireframe Opportunity Space panels. Splits cleanly from M4 (M3 describes, M4 prioritises). Computed in Python (post native-GEE).
+- **v0.1.1** (June 2026) — annotated §12 with v0.3.0 schema state: T5 mcda_role priority/descriptor split at assembly; ratified themes; T7 6-class EO-derived farming_system; BIND resolver call required (not raw T5.dataset_id); iplc_lands binary-presence handling + FPIC overlap flag. Module path → `src/nbs_ruralscan/characterisation.py`. Function signatures widened; new `iplc_overlap_flag` helper. No methodology change.

@@ -83,18 +83,57 @@ T3 and T6 content is literature- and expert-derived (Namita + MFL team). Each Li
 
 ## 10. Implementation notes (Python)
 
+> **Schema state when this spec is picked up (v0.3.0+, June 2026):** several T6 and T5 fields the v0.1 draft assumed-pending have since landed. **Read this before implementing.**
+>
+> | Draft assumption | Current state |
+> |---|---|
+> | Module path `pipeline/scorecard.py` | **Updated** → `src/nbs_ruralscan/scorecard.py` per the v0.2 GEE-App-dropped runtime. Mostly table assembly; no heavy compute. |
+> | T6 effect rows | **Constrained** at v0.3.0: T6 effect rows link **only** to T5 rows where `mcda_role == 'priority'`. The scorecard MUST filter T5 to priorities before pairing — descriptors don't carry effect strengths. |
+> | T6 economic profile | **Generalised** at v0.3.0: `economic_indicator_type` extended with `cost_per_beneficiary` · `cost_per_hectare_restored` · `cost_per_tco2e_avoided` · `cost_per_farmer_reached` (indicative, scoping-grade, **not CBA**). `economic_value_range` is now an object `{low, high, unit, source_note}` with `unit` enum-policed. Render whatever denominators the recipe populated; never compute new ones. |
+> | T6 orphans | 2 orphan T5 refs rerouted at v0.3.0-E (`food_security_risk` → `production_gap`; `groundwater_recharge_potential` → `water_stress`). No outstanding orphans. |
+> | T3 risk-component fields | **Live**: `risk_role` (mitigates vs causes), `asset_threat`, `asset_risk_weight` shipped at v0.3.0. M5 reads `risk_role` to distinguish hazard-mitigation rows from hazard-causing rows when rendering the scorecard. |
+> | iplc_lands flag | If the run had IPLC overlap (M3 `iplc_overlap_flag`), the scorecard's comparison block surfaces the **FPIC/ESS7 caveat** alongside any NbS-vs-NbS comparison — don't hide it inside M6 only. |
+> | Likert confidence | T6 carries `confidence` (`high` · `medium` · `low`) plus `evidence_ids` linking back to EV rows. Surface confidence per cell; per #32, cost-effectiveness denominators arrive **scoping-grade** and should default to `confidence = low` until evidence-gathering lands. |
+
+Suggested Python function signatures for `src/nbs_ruralscan/scorecard.py`:
+
 ```python
-def load_scorecard(nbs_id, t3, t6) -> "pd.DataFrame":
-    """§6.1 — Likert effects per outcome/hazard with confidence + source."""
+def load_scorecard(
+    nbs_id: str,
+    t3: "pd.DataFrame",
+    t6: "pd.DataFrame",
+    t5_priorities: "pd.DataFrame",  # T5 filtered to mcda_role == 'priority'
+) -> "pd.DataFrame":
+    """§6.1 — Likert effects per priority/hazard row with confidence + source.
+    Filters T6 to rows whose variable_id ∈ t5_priorities (or T3 hazard for
+    risk_role='mitigates' rows). Descriptor rows excluded."""
 
-def pair_with_problems(scorecard, characterisation) -> "pd.DataFrame":
-    """§6.2 — join response strength to problem-present-in-opp-space distribution."""
+def pair_with_problems(
+    scorecard: "pd.DataFrame",
+    characterisation: "pd.DataFrame",
+) -> "pd.DataFrame":
+    """§6.2 — join response strength to M3's problem-present-in-opp-space
+    distribution."""
 
-def economic_profile(nbs_id, t6) -> dict:
-    """§6.3 — establishment cost band, time-to-income, revenue streams, financing archetype."""
+def economic_profile(
+    nbs_id: str,
+    t6: "pd.DataFrame",
+) -> dict:
+    """§6.3 — establishment cost band, time-to-income, revenue streams,
+    financing archetype + cost-effectiveness denominators
+    (cost_per_beneficiary / _ha / _tco2e / _farmer where populated). Renders
+    `economic_value_range = {low, high, unit, source_note}` as-is. Labels
+    scoping-grade — never CBA."""
 
-def comparison_rows(nbs_ids, t3, t6) -> "pd.DataFrame":
-    """§6.4 — response + economic rows shaped for NbS Comparison."""
+def comparison_rows(
+    nbs_ids: list[str],
+    t3: "pd.DataFrame",
+    t6: "pd.DataFrame",
+    t5_priorities: "pd.DataFrame",
+    iplc_overlap: bool = False,
+) -> "pd.DataFrame":
+    """§6.4 — response + economic rows shaped for NbS Comparison. Adds
+    FPIC/ESS7 caveat column when `iplc_overlap` is True."""
 ```
 
 ## 11. Open questions
@@ -108,3 +147,4 @@ def comparison_rows(nbs_ids, t3, t6) -> "pd.DataFrame":
 ## Version history
 
 - **v0.1** (June 2026) — authored to match the v0.6 wireframe (scorecard + economic archetype + comparison rows). Qualitative; economic profile is indicative archetype, not CBA (downstream M6).
+- **v0.1.1** (June 2026) — annotated §10 with v0.3.0 schema state: T6 effects gated to T5 mcda_role=priority; T6 economic-profile generalisation + cost-effectiveness denominators; T3 risk_role / asset_threat / asset_risk_weight live; T6 orphan reroutes done; iplc_lands FPIC/ESS7 caveat surfaced in comparison rows. Module path → `src/nbs_ruralscan/scorecard.py`. Function signatures widened. No methodology change.
