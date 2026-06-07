@@ -7,7 +7,8 @@
     "dataset_id": "srtm_dem_30m",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "30 m SRTM; derive-then-aggregate for slope."
+    "fitness_note": "30 m SRTM; derive-then-aggregate for slope.",
+    "band": ""
   },
   {
     "binding_id": "annual_precipitation__global",
@@ -28,7 +29,8 @@
     "dataset_id": "mapspam_cocoa_2020",
     "preference_rank": 2,
     "status": "catalogued",
-    "fitness_note": "MapSPAM ~10 km harvested-area fraction \u2014 coarse global default."
+    "fitness_note": "MapSPAM ~10 km harvested-area fraction \u2014 coarse global default.",
+    "band": ""
   },
   {
     "binding_id": "cocoa_distribution__SLE",
@@ -38,17 +40,19 @@
     "dataset_id": "",
     "preference_rank": 1,
     "status": "requires_upload",
-    "fitness_note": "National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot."
+    "fitness_note": "National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot.",
+    "band": ""
   },
   {
     "binding_id": "mean_annual_temperature__global",
     "variable": "mean_annual_temperature",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "chelsa_bioclim_v21_baseline",
-    "band": "BIO1",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "CHELSA BIO1 = annual mean temperature; multi-band asset, band-resolved via this binding."
+    "fitness_note": "CHELSA BIO1 = annual mean temperature; multi-band asset, band-resolved via this binding.",
+    "band": "BIO1"
   },
   {
     "binding_id": "production_gap__cropping_rainfed",
@@ -56,10 +60,10 @@
     "scope_type": "farming_system",
     "scope_id": "cropping_rainfed",
     "dataset_id": "",
-    "band": "",
     "preference_rank": 1,
     "status": "requires_upload",
-    "fitness_note": "Cropping-rainfed yield gap \u2014 GAEZ v4 attainable-vs-actual or MapSPAM-derived; pilot binding to be uploaded."
+    "fitness_note": "Cropping-rainfed yield gap \u2014 GAEZ v4 attainable-vs-actual or MapSPAM-derived; pilot binding to be uploaded.",
+    "band": ""
   },
   {
     "binding_id": "production_gap__cropping_irrigated",
@@ -67,10 +71,10 @@
     "scope_type": "farming_system",
     "scope_id": "cropping_irrigated",
     "dataset_id": "",
-    "band": "",
     "preference_rank": 1,
     "status": "requires_upload",
-    "fitness_note": "Cropping-irrigated yield gap \u2014 GAEZ v4 irrigated attainable-vs-actual; pilot binding to be uploaded."
+    "fitness_note": "Cropping-irrigated yield gap \u2014 GAEZ v4 irrigated attainable-vs-actual; pilot binding to be uploaded.",
+    "band": ""
   },
   {
     "binding_id": "production_gap__mixed_crop_livestock",
@@ -78,10 +82,10 @@
     "scope_type": "farming_system",
     "scope_id": "mixed_crop_livestock",
     "dataset_id": "",
-    "band": "",
     "preference_rank": 1,
     "status": "requires_upload",
-    "fitness_note": "Mixed systems: composite of crop yield gap and livestock-productivity gap; livestock side often thinner \u2014 flag for upload."
+    "fitness_note": "Mixed systems: composite of crop yield gap and livestock-productivity gap; livestock side often thinner \u2014 flag for upload.",
+    "band": ""
   },
   {
     "binding_id": "production_gap__pastoral_rangeland",
@@ -89,10 +93,10 @@
     "scope_type": "farming_system",
     "scope_id": "pastoral_rangeland",
     "dataset_id": "",
-    "band": "",
     "preference_rank": 1,
     "status": "requires_upload",
-    "fitness_note": "Rangeland NPP gap (e.g. MODIS NPP vs CASA potential); livestock side often thinner \u2014 requires_upload by default."
+    "fitness_note": "Rangeland NPP gap (e.g. MODIS NPP vs CASA potential); livestock side often thinner \u2014 requires_upload by default.",
+    "band": ""
   },
   {
     "binding_id": "production_gap__agro_pastoral",
@@ -100,10 +104,10 @@
     "scope_type": "farming_system",
     "scope_id": "agro_pastoral",
     "dataset_id": "",
-    "band": "",
     "preference_rank": 1,
     "status": "requires_upload",
-    "fitness_note": "Agro-pastoral composite (cropping yield-gap + NPP-gap) \u2014 pilot upload."
+    "fitness_note": "Agro-pastoral composite (cropping yield-gap + NPP-gap) \u2014 pilot upload.",
+    "band": ""
   },
   {
     "binding_id": "production_gap__tree_perennial",
@@ -111,10 +115,10 @@
     "scope_type": "farming_system",
     "scope_id": "tree_perennial",
     "dataset_id": "",
-    "band": "",
     "preference_rank": 1,
     "status": "requires_upload",
-    "fitness_note": "Tree-perennial production gap \u2014 MapSPAM-based attainable for the perennial; per-crop binding (cocoa/coffee/etc.) preferred."
+    "fitness_note": "Tree-perennial production gap \u2014 MapSPAM-based attainable for the perennial; per-crop binding (cocoa/coffee/etc.) preferred.",
+    "band": ""
   },
   {
     "binding_id": "heat_stress_hazard__global",
@@ -122,10 +126,10 @@
     "scope_type": "global",
     "scope_id": "",
     "dataset_id": "chelsa_bioclim_v21_baseline",
-    "band": "BIO5",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "CHELSA BIO5 = max temperature of warmest month \u2014 proxy for heat-stress exposure; multi-band asset, band-resolved."
+    "fitness_note": "CHELSA BIO5 = max temperature of warmest month \u2014 proxy for heat-stress exposure; multi-band asset, band-resolved.",
+    "band": "BIO5"
   },
   {
     "binding_id": "rural_poverty__global",
@@ -135,16 +139,19 @@
     "dataset_id": "world_bank_poverty_pip",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "WB PIP subnational poverty headcount at admin1 (admin2 where available)."
+    "fitness_note": "WB PIP subnational poverty headcount at admin1 (admin2 where available).",
+    "band": ""
   },
   {
     "binding_id": "farming_system__global",
     "variable": "farming_system",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "",
     "preference_rank": 1,
     "status": "requires_upload",
-    "fitness_note": "Derived run-time layer. Inputs: glad_global_cropland_2019 + esa_worldcereal_2021 + glw4_livestock_2020 + fao_gmia_v5 + hansen_treecover2000 + mapspam_cocoa_2020. Recipe: methodology/farming_system_classifier.md. Default thresholds; tune per AOI."
+    "fitness_note": "Derived run-time layer. Inputs: glad_global_cropland_2019 + esa_worldcereal_2021 + glw4_livestock_2020 + fao_gmia_v5 + hansen_treecover2000 + mapspam_cocoa_2020. Recipe: methodology/farming_system_classifier.md. Default thresholds; tune per AOI.",
+    "band": ""
   },
   {
     "binding_id": "farming_system__SLE",
@@ -154,150 +161,194 @@
     "dataset_id": "",
     "preference_rank": 1,
     "status": "requires_upload",
-    "fitness_note": "Sierra Leone tuning: irrigation_share=0.10, livestock_mixed=3.0 TLU/km2, livestock_pastoral=15.0, tree_perennial_dominant=0.40. See farming_system_classifier.md \u00a7Per-AOI tuning."
+    "fitness_note": "Sierra Leone tuning: irrigation_share=0.10, livestock_mixed=3.0 TLU/km2, livestock_pastoral=15.0, tree_perennial_dominant=0.40. See farming_system_classifier.md \u00a7Per-AOI tuning.",
+    "band": ""
   },
   {
     "binding_id": "biodiversity_priority__global",
     "variable": "biodiversity_priority",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "bii_nhm_global",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "BII (Newbold et al. 2016). Global 1 km. Use (1 - BII) as priority."
+    "fitness_note": "BII (Newbold et al. 2016). Global 1 km. Use (1 - BII) as priority.",
+    "band": ""
   },
   {
     "binding_id": "accessibility_travel_time__global",
     "variable": "accessibility_travel_time",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "nelson_accessibility_2015",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "Weiss/Nelson 2015 baseline ~1 km global accessibility surface. Travel-time minutes."
+    "fitness_note": "Weiss/Nelson 2015 baseline ~1 km global accessibility surface. Travel-time minutes.",
+    "band": ""
   },
   {
     "binding_id": "electrification_index__global",
     "variable": "electrification_index",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "viirs_nighttime_lights",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "VIIRS annual night-lights composite at ~500 m as electrification proxy."
+    "fitness_note": "VIIRS annual night-lights composite at ~500 m as electrification proxy.",
+    "band": ""
   },
   {
     "binding_id": "tenure_security__global",
     "variable": "tenure_security",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "landmark_iplc_lands",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "LandMark IPLC vector layer. FPIC_REQUIRED flag triggers on overlap with the M1 opportunity-space mask. Coverage patchy \u2014 absence \u2260 no IPLC presence."
+    "fitness_note": "LandMark IPLC vector layer. FPIC_REQUIRED flag triggers on overlap with the M1 opportunity-space mask. Coverage patchy \u2014 absence \u2260 no IPLC presence.",
+    "band": ""
   },
   {
     "binding_id": "conflict_fragility_index__global",
     "variable": "conflict_fragility_index",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "acled_conflict_events",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "ACLED rolling 5-year event-density grid; pair with WB FCV admin0 list for binary fragility flag."
+    "fitness_note": "ACLED rolling 5-year event-density grid; pair with WB FCV admin0 list for binary fragility flag.",
+    "band": ""
   },
   {
     "binding_id": "extension_governance__global",
     "variable": "extension_governance",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "wb_wgi_governance",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "WB WGI 'government effectiveness' (admin0). Per the T5 spatial-grain rule (admin0 \u2192 qualified flag, not hotspot driver). Subnational requires_upload."
+    "fitness_note": "WB WGI 'government effectiveness' (admin0). Per the T5 spatial-grain rule (admin0 \u2192 qualified flag, not hotspot driver). Subnational requires_upload.",
+    "band": ""
   },
   {
     "binding_id": "finance_credit_access__global",
     "variable": "finance_credit_access",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "wb_findex_access",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "WB Global Findex (admin0). Subnational requires_upload via LSMS-ISA / FinScope."
+    "fitness_note": "WB Global Findex (admin0). Subnational requires_upload via LSMS-ISA / FinScope.",
+    "band": ""
   },
   {
     "binding_id": "market_value_chain__global",
     "variable": "market_value_chain",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "faostat_country_indicators",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "FAOSTAT country indicators (producer prices + trade) as market-depth proxy. Subnational requires country uploads."
+    "fitness_note": "FAOSTAT country indicators (producer prices + trade) as market-depth proxy. Subnational requires country uploads.",
+    "band": ""
   },
   {
     "binding_id": "labour_availability__global",
     "variable": "labour_availability",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "ilo_labour_statistics",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "ILOSTAT agricultural employment share. Subnational requires LSMS-ISA or country uploads."
+    "fitness_note": "ILOSTAT agricultural employment share. Subnational requires LSMS-ISA or country uploads.",
+    "band": ""
   },
   {
     "binding_id": "flood_hazard__global",
     "variable": "flood_hazard",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "jrc_global_flood_hazard",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "JRC Global Flood Hazard 100-year return period as default. WRI Aqueduct + FATHOM (proprietary) considered, JRC chosen for open + global + grid."
+    "fitness_note": "JRC Global Flood Hazard 100-year return period as default. WRI Aqueduct + FATHOM (proprietary) considered, JRC chosen for open + global + grid.",
+    "band": ""
   },
   {
     "binding_id": "water_stress__global",
     "variable": "water_stress",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "wri_aqueduct_water_stress",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "WRI Aqueduct 4.0 baseline water-stress index. Basin/admin1 granularity."
+    "fitness_note": "WRI Aqueduct 4.0 baseline water-stress index. Basin/admin1 granularity.",
+    "band": ""
   },
   {
     "binding_id": "agricultural_dependency__global",
     "variable": "agricultural_dependency",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "ilo_labour_statistics",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "ILOSTAT 'employment in agriculture (% of total)' admin0 indicator. Subnational requires_upload."
+    "fitness_note": "ILOSTAT 'employment in agriculture (% of total)' admin0 indicator. Subnational requires_upload.",
+    "band": ""
   },
   {
     "binding_id": "gender_inequity__global",
     "variable": "gender_inequity",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "undp_gii_national",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "UNDP Gender Inequality Index \u2014 national flag. Per T5 spatial-grain rule, surfaces as qualified flag within a country, not hotspot driver."
+    "fitness_note": "UNDP Gender Inequality Index \u2014 national flag. Per T5 spatial-grain rule, surfaces as qualified flag within a country, not hotspot driver.",
+    "band": ""
   },
   {
     "binding_id": "market_access__global",
     "variable": "market_access",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "nelson_accessibility_2015",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "Same Nelson/Weiss surface as accessibility_travel_time \u2014 re-bound here for the T5 descriptor framing (market connectivity context, not scenario lever)."
+    "fitness_note": "Same Nelson/Weiss surface as accessibility_travel_time \u2014 re-bound here for the T5 descriptor framing (market connectivity context, not scenario lever).",
+    "band": ""
   },
   {
     "binding_id": "farm_size__global",
     "variable": "farm_size",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "lesiv_smallholder_farm_size",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "Lesiv et al. 2019 crowdsourced field-size dataset, ~1 km."
+    "fitness_note": "Lesiv et al. 2019 crowdsourced field-size dataset, ~1 km.",
+    "band": ""
   },
   {
     "binding_id": "agricultural_production_value__global",
     "variable": "agricultural_production_value",
     "scope_type": "global",
+    "scope_id": "",
     "dataset_id": "mapspam_v2",
     "preference_rank": 1,
     "status": "catalogued",
-    "fitness_note": "MapSPAM v2.0 summed crop economic value, ~10 km. Weak on tree-perennials \u2014 Forest Data Partnership (issue #35) is the supplement."
+    "fitness_note": "MapSPAM v2.0 summed crop economic value, ~10 km. Weak on tree-perennials \u2014 Forest Data Partnership (issue #35) is the supplement.",
+    "band": ""
+  },
+  {
+    "binding_id": "iplc_lands__global",
+    "variable": "iplc_lands",
+    "scope_type": "global",
+    "scope_id": "",
+    "dataset_id": "landmark_iplc_lands",
+    "preference_rank": 1,
+    "status": "catalogued",
+    "fitness_note": "LandMark IPLC vector layer. Marks IPLC overlap with M1 opportunity-space mask for equity priority + FPIC/ESS7 flag. Coverage patchy - absence != no IPLC presence.",
+    "band": ""
   }
 ]

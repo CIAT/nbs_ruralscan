@@ -1,5 +1,9 @@
 # Schema spec — field-level reference (v0.3.0)
 
+> **v0.3.0-F (June 2026)** — additive: `iplc_lands` priority row added under T5
+> `equity_inclusion` (issue #31). VONT canonical + BIND `iplc_lands__global` → `landmark_iplc_lands`
+> shipped. T5 now 16 rows (12 priorities + 4 descriptors). No structural change.
+>
 > **v0.3.0 (June 2026)** — large methodology batch: T5 ratification, farming-system vocab swap,
 > production-gap variable, T6 economic-profile generalisation + cost-effectiveness denominators,
 > M2b implementation variables. Companion methodology doc:

@@ -58,7 +58,7 @@ apply to descriptors.
 
 ## The 15 ratified rows
 
-### Priorities (11)
+### Priorities (12)
 
 | variable_id | theme | concern direction | notes |
 |---|---|---|---|
@@ -73,6 +73,7 @@ apply to descriptors.
 | `production_gap` | people_production | higher → more concern | per-farming-system metric via BIND (yield gap / NPP gap / mixed) |
 | `agricultural_dependency` | people_production | higher → more concern | share of livelihoods in ag |
 | `gender_inequity` | equity_inclusion | higher → more concern | national flag; subnational requires_upload |
+| `iplc_lands` | equity_inclusion | higher → more concern | LandMark + WWF/ICCA — IPLC presence within opp-space; triggers FPIC/ESS7 flag |
 
 ### Descriptors (4, `theme=context`)
 
@@ -87,9 +88,9 @@ apply to descriptors.
 
 - **`biodiversity_priority`** — ships as BIND `requires_upload`. Layer choice (KBA · IBAT · BII ·
   refugia · distance-to-protected) is a deferred review (seed issue).
-- **Marginalisation** (race/ethnicity/IPLC subnational) — unpopulated placeholder under
-  `equity_inclusion`. LandMark + WWF/ICCA layers feed M2b tenure stream and the future T5
-  marginalisation row when ratified.
+- **Broader marginalisation** (race/ethnicity disaggregation) — beyond IPLC, no global subnational
+  layer at scoping grade. Country uploads recommended where available; otherwise covered partly
+  by `iplc_lands` + `gender_inequity`.
 
 ---
 
@@ -155,8 +156,9 @@ Joins:
 
 1. **Biodiversity-layer ratification** — choose `biodiversity_priority`'s bound dataset (KBA /
    IBAT / BII / eco-uniqueness / refugia / distance-to-protected). Currently `requires_upload`.
-2. **Marginalisation row** — when WWF/ICCA + LandMark integration matures, add a
-   `marginalisation` or `iplc_lands` priority under `equity_inclusion`.
+2. ~~**Marginalisation row** — when WWF/ICCA + LandMark integration matures, add a
+   `marginalisation` or `iplc_lands` priority under `equity_inclusion`.~~ ✅ Done (June 2026) —
+   `iplc_lands` row added; bound to LandMark via BIND `iplc_lands__global`. Issue #31.
 3. **`flood_hazard` layer choice** — FATHOM vs JRC vs WRI Aqueduct vs basin-routing model.
 4. **Production-gap binding rollout** — per-farming-system BIND examples beyond the rainfed
    cropping example.
