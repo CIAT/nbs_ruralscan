@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Rural NbS Scan — TTL-facing decision-support tool for Nature-based Solutions investment. Wireframe v0 demonstrator. World Bank D591 / Alliance Bioversity & CIAT.">
-<title>Rural NbS Scan — TTL Tool Wireframe v0.6</title>
+<meta name="description" content="Rural NbS Scan — TTL-facing decision-support tool for Nature-based Solutions investment. Wireframe v0.7 demonstrator. World Bank D591 / Alliance Bioversity & CIAT.">
+<title>Rural NbS Scan — TTL Tool Wireframe v0.7</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -304,6 +304,7 @@
   }
   .todo-tag.major  { background: #f3d2c8; color: #8c2e0e; }
   .todo-tag.medium { background: var(--t2-bg); color: var(--t2-ink); }
+  .todo-tag.done   { background: #d8ecd6; color: var(--done-ink); }
   .todo-item .ti-owner { font-family: ui-monospace, monospace; font-size: 10px; color: var(--mute); }
   .todo-item .ti-prog { color: var(--done-ink); font-weight: 700; font-style: italic; }
 
@@ -2819,6 +2820,131 @@
   .help-strip[open] > summary::after { content: "\25be"; }
   .help-strip > .panel, .help-strip .panel { border: none; box-shadow: none; padding-top: 0; }
 
+  /* ============ v0.7 methodology additions ============ */
+  /* Priorities vs Descriptors — shared concept */
+  .pvd-legend { display:flex; flex-wrap:wrap; gap:14px; padding:10px 13px; margin-bottom:12px;
+    background:var(--bg-2); border:1px solid var(--rule); border-radius:8px; font-size:11px; color:var(--ink-2); }
+  .pvd-legend .pvd { display:flex; gap:8px; align-items:flex-start; flex:1; min-width:230px; line-height:1.45; }
+  .pvd-legend .pvd b { color:var(--ink); }
+  .kind-badge { font-family:ui-monospace,monospace; font-size:8.5px; font-weight:800; letter-spacing:.08em;
+    text-transform:uppercase; padding:2px 7px; border-radius:4px; white-space:nowrap; flex-shrink:0; }
+  .kind-badge.priority { background:var(--t2-bg); color:var(--hot-h); }
+  .kind-badge.descriptor { background:var(--setup-bg); color:var(--setup-ink); }
+  .kind-badge.flag { background:var(--t4-bg); color:var(--t4-ink); }
+
+  /* Pillar grouping (priority variables) */
+  .pillar { border:1px solid var(--rule); border-radius:8px; padding:10px 12px; margin-bottom:10px; background:var(--paper); }
+  .pillar-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .pillar-head .pn { font-size:12px; font-weight:800; color:var(--ink); }
+  .pillar-head .pw { margin-left:auto; font-family:ui-monospace,monospace; font-size:10px; font-weight:800; color:var(--hot-h); background:var(--t2-bg); padding:1px 7px; border-radius:10px; }
+
+  /* Descriptor filter toggles (priority hotspots) */
+  .desc-block { margin-top:12px; border:1px dashed var(--rule-2); border-radius:8px; padding:10px 12px; background:var(--bg-2); }
+  .desc-block .db-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
+  .desc-block .db-head .nm { font-size:12px; font-weight:800; color:var(--ink); }
+  .desc-row { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--rule); font-size:11.5px; }
+  .desc-row:last-child { border-bottom:none; }
+  .desc-row .nm { flex:1; color:var(--ink); }
+  .desc-row .nm .sub { display:block; font-size:10px; color:var(--mute); }
+  .gender-flag { display:flex; gap:9px; align-items:flex-start; margin-top:10px; padding:9px 11px;
+    background:var(--t4-bg); border:1px solid #cfc9f2; border-left:3px solid var(--t4-ink); border-radius:0 6px 6px 0;
+    font-size:11px; color:#322b6e; line-height:1.45; }
+  .gender-flag svg { width:15px; height:15px; color:var(--t4-ink); flex-shrink:0; margin-top:1px; }
+  .gender-flag b { color:var(--t4-ink); }
+
+  /* Constraint-type grouping + hard/soft marks (suitability vars) */
+  .cons-mark { font-family:ui-monospace,monospace; font-size:8px; font-weight:800; letter-spacing:.06em;
+    padding:1px 5px; border-radius:3px; text-transform:uppercase; margin-left:6px; vertical-align:middle; }
+  .cons-mark.hard { background:#f0d8d0; color:var(--benson-ink); }
+  .cons-mark.soft { background:var(--done-bg); color:var(--done-ink); }
+  .con-note { display:flex; gap:14px; flex-wrap:wrap; font-size:10.5px; color:var(--mute); margin:2px 0 10px; }
+  .con-note span { display:inline-flex; align-items:center; gap:5px; }
+
+  /* per-variable data-source panel */
+  .dsrc { border:1px solid var(--rule); border-radius:8px; padding:11px 13px; margin-top:10px; background:var(--bg-2); }
+  .dsrc-row { display:flex; gap:8px; align-items:baseline; font-size:11px; padding:3px 0; }
+  .dsrc-row .k { font-family:ui-monospace,monospace; font-size:9px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--mute); width:84px; flex-shrink:0; }
+  .dsrc-row .v { color:var(--ink); }
+  .dsrc-row .v code { font-family:ui-monospace,monospace; font-size:10px; background:var(--bg); padding:1px 4px; border-radius:3px; }
+  .dsrc-flag { display:flex; gap:8px; align-items:flex-start; margin-top:8px; padding:8px 10px; border-radius:6px; font-size:10.5px; line-height:1.45; }
+  .dsrc-flag.endorsed { background:var(--t3-bg); color:var(--t3-ink); border:1px solid #e6c98a; }
+  .dsrc-flag.upload { background:var(--accent-soft); color:var(--setup-ink); border:1px solid #b9c8e0; }
+  .dsrc-flag svg { width:14px; height:14px; flex-shrink:0; margin-top:1px; }
+  .dsrc-flag b { font-weight:800; }
+
+  /* provenance chips (variable card) */
+  .prov-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .prov-chip { display:inline-flex; align-items:center; gap:5px; font-size:10px; padding:2px 8px; border-radius:12px;
+    background:var(--bg-2); border:1px solid var(--rule); color:var(--ink-2); }
+  .prov-chip .pk { font-family:ui-monospace,monospace; font-size:8px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--mute); }
+  .prov-chip.tier { background:var(--t5-bg); color:var(--t5-ink); border-color:#cde3b4; }
+  .prov-chip.sens { background:var(--t3-bg); color:var(--t3-ink); border-color:#e6c98a; }
+  .prov-quote { margin-top:8px; padding:7px 11px; border-left:3px solid var(--rule-2); background:var(--bg-2);
+    font-size:10.5px; color:var(--ink-2); font-style:italic; line-height:1.5; border-radius:0 4px 4px 0; }
+  .prov-quote cite { display:block; font-style:normal; font-size:9.5px; color:var(--mute); margin-top:3px; font-family:ui-monospace,monospace; }
+
+  /* farming-system selector */
+  .fsys { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .fsys-opt { font:inherit; font-size:11px; padding:5px 11px; border:1px solid var(--rule-2); border-radius:999px;
+    background:var(--paper); color:var(--ink-2); cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+  .fsys-opt[aria-pressed="true"] { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .fsys-opt .sw { width:8px; height:8px; border-radius:2px; background:currentColor; opacity:.7; }
+
+  /* Project Risk — Part A / Part B */
+  .pr-part { display:flex; align-items:baseline; gap:9px; margin:20px 0 10px; flex-wrap:wrap; }
+  .pr-part .pp-n { font-family:ui-monospace,monospace; font-size:11px; font-weight:800; letter-spacing:.08em;
+    color:#fff; background:var(--pr-h); padding:2px 9px; border-radius:6px; align-self:center; }
+  .pr-part .pp-t { font-size:13.5px; font-weight:800; color:var(--ink); }
+  .pr-part .pp-s { font-size:11px; color:var(--mute); }
+  .feas-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+  .feas-row { border:1px solid var(--rule); border-radius:8px; padding:9px 11px; background:var(--paper); }
+  .feas-row .fr-head { display:flex; align-items:center; gap:7px; margin-bottom:4px; }
+  .feas-row .fr-head .ic { width:14px; height:14px; color:var(--accent); }
+  .feas-row .fr-head .nm { font-size:11.5px; font-weight:700; color:var(--ink); }
+  .feas-row .fr-state { margin-left:auto; font-family:ui-monospace,monospace; font-size:8px; font-weight:800; letter-spacing:.06em; padding:1px 6px; border-radius:10px; text-transform:uppercase; }
+  .fr-state.ok { background:var(--done-bg); color:var(--done-ink); }
+  .fr-state.watch { background:var(--partial-bg); color:var(--partial-ink); }
+  .fr-state.block { background:#f0d8d0; color:var(--benson-ink); }
+  .feas-row .fr-d { font-size:10.5px; color:var(--mute); line-height:1.45; }
+  .fpic-flag { display:flex; gap:9px; align-items:flex-start; margin-top:10px; padding:9px 11px;
+    background:var(--t3-bg); border:1px solid #e6c98a; border-left:3px solid var(--benson-ink-2); border-radius:0 6px 6px 0;
+    font-size:11px; color:var(--benson-ink); line-height:1.45; }
+  .fpic-flag svg { width:15px; height:15px; color:var(--benson-ink-2); flex-shrink:0; margin-top:1px; }
+  .fpic-flag b { color:var(--benson-ink); }
+  .pr-notescore { display:flex; gap:9px; align-items:flex-start; margin:12px 0 0; padding:9px 12px;
+    background:var(--accent-soft); border:1px solid #b9c8e0; border-radius:8px; font-size:11px; color:var(--setup-ink); line-height:1.45; }
+  .pr-notescore svg { width:15px; height:15px; color:var(--accent); flex-shrink:0; margin-top:1px; }
+
+  /* cost-effectiveness snapshot */
+  .ce-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:8px; }
+  .ce-card { border:1px solid var(--rule); border-radius:8px; padding:10px 12px; background:var(--bg-2); }
+  .ce-card .ce-k { font-size:10px; color:var(--mute); font-weight:600; }
+  .ce-card .ce-v { font-size:15px; font-weight:800; color:var(--ink); letter-spacing:-.01em; margin-top:3px; }
+  .ce-card .ce-s { font-size:9.5px; color:var(--mute); font-family:ui-monospace,monospace; margin-top:3px; }
+  .ce-indic { display:inline-flex; align-items:center; gap:5px; font-family:ui-monospace,monospace; font-size:8.5px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--partial-ink); background:var(--partial-bg); padding:2px 7px; border-radius:3px; }
+
+  /* like-with-like guard */
+  .likewise { display:flex; gap:9px; align-items:flex-start; margin:0 0 12px; padding:9px 12px;
+    background:var(--partial-bg); border:1px solid #e6c98a; border-radius:8px; font-size:11px; color:var(--partial-ink); line-height:1.45; }
+  .likewise svg { width:15px; height:15px; flex-shrink:0; margin-top:1px; }
+  .likewise b { color:#3f2105; }
+
+  /* version log */
+  .vlog { border:1px solid var(--rule); border-radius:8px; overflow:hidden; margin-bottom:20px; }
+  .vlog-entry { padding:11px 14px; border-bottom:1px solid var(--rule); }
+  .vlog-entry:last-child { border-bottom:none; }
+  .vlog-entry.cur { background:var(--accent-soft); }
+  .vlog-h { display:flex; align-items:center; gap:9px; margin-bottom:5px; }
+  .vlog-v { font-family:ui-monospace,monospace; font-size:11px; font-weight:800; color:#fff; background:var(--accent); padding:1px 8px; border-radius:10px; }
+  .vlog-entry:not(.cur) .vlog-v { background:var(--mute); }
+  .vlog-date { font-size:10px; color:var(--mute); font-family:ui-monospace,monospace; }
+  .vlog-entry ul { margin:4px 0 0 16px; padding:0; }
+  .vlog-entry li { font-size:11px; color:var(--ink-2); line-height:1.5; margin-bottom:2px; }
+
+  /* opp footprint / context notes */
+  .fp-note { display:flex; gap:8px; align-items:flex-start; margin-top:8px; padding:8px 10px;
+    background:var(--bg-2); border:1px solid var(--rule); border-radius:6px; font-size:10.5px; color:var(--ink-2); line-height:1.45; }
+  .fp-note svg { width:14px; height:14px; color:var(--accent); flex-shrink:0; margin-top:1px; }
   /*__APPEND_HERE__*/
 </style>
 </head>
@@ -2874,7 +3000,7 @@
     <div class="brand">
       <div class="mark" aria-hidden="true">NbS</div>
       <div class="name">Rural NbS Scan
-        <span class="sub">TTL-Facing Tool · v0.6 demonstrator</span>
+        <span class="sub">TTL-Facing Tool · v0.7 demonstrator</span>
       </div>
     </div>
     <div class="meta" role="status" aria-label="Tool status">
@@ -3090,8 +3216,8 @@
           <p>A <b>recipe</b> is the set of environmental, socio-economic and hazard variables — and the rules that turn them into a suitability score — used to map where this NbS can work. The <b>Standard</b> recipe is expert-curated; you can switch to your own saved settings in Variable Config.</p>
           <p style="margin-top:8px;">This recipe pulls <b>23 variables</b>; after correlation clustering (collapsing variables that measure nearly the same thing, <code>|r| &gt; 0.7</code>) about <b>16 representatives</b> enter the analysis. Data readiness:</p>
           <div class="row-flex" style="margin:10px 0;">
-            <span class="pill green"><span class="dot"></span>19 · NATIVE GEE</span>
-            <span class="pill amber"><span class="dot"></span>1 · COMMUNITY GEE</span>
+            <span class="pill green"><span class="dot"></span>19 · BUILT-IN</span>
+            <span class="pill amber"><span class="dot"></span>1 · COMMUNITY</span>
             <span class="pill amber"><span class="dot"></span>3 · PENDING UPLOAD</span>
           </div>
           <p class="muted" style="font-size:10.5px; margin-bottom:10px;">In Variable Config you can inspect each variable and its data source, see the correlation matrix &amp; clusters, adjust cluster/variable weights, and tune how each NbS responds to each variable.</p>
@@ -3113,7 +3239,7 @@
               Run analysis
               <svg class="ic" aria-hidden="true"><use href="#i-arrow-right"/></svg>
             </button>
-            <span class="muted">Runs on GEE Python · cached outputs reused where possible</span>
+            <span class="muted">Runs in Python · cached outputs reused where possible</span>
           </div>
           <p class="muted" style="margin-top:10px; font-size:10.5px; display:inline-flex; align-items:center; gap:6px;"><span class="sb-status" style="background:#f0d8d0; color:var(--benson-ink); display:inline-flex; align-items:center; gap:4px;"><svg class="ic-xs" aria-hidden="true"><use href="#i-lock"/></svg>Admin</span> Invalidating cached suitability surfaces is audit-logged and affects the whole team.</p>
         </div></div>
@@ -3183,25 +3309,56 @@
 
       <div class="col-left">
         <div class="panel">
-          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg>What-if</h2><span class="right">constraints</span></div>
-          <p class="muted" style="margin-bottom:8px;">Toggle a limiting factor to see how the opportunity space changes — surfaces investment opportunities the Bank could create.</p>
+          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-eye"/></svg>Soft scenario levers</h2><span class="right">reversible</span></div>
+          <p class="muted" style="margin-bottom:8px;">Operational constraints the Bank could relax. Toggle one off to see how much opportunity space a road or grid investment would unlock — these are <b>reversible what-ifs</b>, not hard limits.</p>
           <div class="ctl">
-            <span class="lbl"><svg class="ic" aria-hidden="true"><use href="#i-route"/></svg>Distance to road</span>
-            <div class="toggle" role="group" aria-label="Distance to road constraint">
+            <span class="lbl"><svg class="ic" aria-hidden="true"><use href="#i-route"/></svg>Road access <span class="cons-mark soft">lever</span></span>
+            <div class="toggle" role="group" aria-label="Road access lever">
               <button type="button" aria-pressed="true">On</button>
               <button type="button" aria-pressed="false">Off</button>
             </div>
           </div>
           <div class="ctl">
-            <span class="lbl"><svg class="ic" aria-hidden="true"><use href="#i-power"/></svg>Electrification</span>
-            <div class="toggle" role="group" aria-label="Electrification constraint">
+            <span class="lbl"><svg class="ic" aria-hidden="true"><use href="#i-power"/></svg>Electrification <span class="cons-mark soft">lever</span></span>
+            <div class="toggle" role="group" aria-label="Electrification lever">
               <button type="button" aria-pressed="true">On</button>
               <button type="button" aria-pressed="false">Off</button>
             </div>
           </div>
           <div class="delta">
-            Δ vs. baseline: <b>+12,400 km²</b> would become viable if roads were available everywhere.
+            Δ vs. baseline: <b>+12,400 km²</b> would become viable if road access were available everywhere.
           </div>
+        </div>
+
+        <div class="panel">
+          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg>Hard exclusions</h2><span class="right">masks</span></div>
+          <p class="muted" style="margin-bottom:8px;">Always applied — these cells are <b>removed, not scored</b>, and can't be relaxed by a lever.</p>
+          <ul style="list-style:none; display:flex; flex-direction:column; gap:6px;">
+            <li style="font-size:11.5px; color:var(--ink);">Built-up &amp; settlement <span class="cons-mark hard">mask</span></li>
+            <li style="font-size:11.5px; color:var(--ink);">Open water &amp; wetland <span class="cons-mark hard">mask</span></li>
+            <li style="font-size:11.5px; color:var(--ink);">Protected areas <span class="cons-mark hard">mask</span></li>
+            <li style="font-size:11.5px; color:var(--ink);">Slope &gt; 30° <span class="cons-mark hard">mask</span></li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg>Context layers</h2></div>
+          <p class="muted" style="margin-bottom:8px;">Descriptive overlays — they characterise the footprint, they don't change suitability.</p>
+          <div class="ctl">
+            <span class="lbl"><svg class="ic" aria-hidden="true"><use href="#i-database"/></svg>Production-gap layer</span>
+            <div class="toggle" role="group" aria-label="Production-gap layer">
+              <button type="button" aria-pressed="false">On</button>
+              <button type="button" aria-pressed="true">Off</button>
+            </div>
+          </div>
+          <div class="ctl">
+            <span class="lbl"><svg class="ic" aria-hidden="true"><use href="#i-leaf"/></svg>Farming system</span>
+            <div class="toggle" role="group" aria-label="Farming-system context">
+              <button type="button" aria-pressed="false">On</button>
+              <button type="button" aria-pressed="true">Off</button>
+            </div>
+          </div>
+          <div class="fp-note"><svg aria-hidden="true"><use href="#i-info"/></svg><div>Farming-system context: this footprint is mostly <b>tree / perennial</b> and <b>rainfed cropping</b> (set in Variable Config) — the systems agroforestry fits.</div></div>
         </div>
       </div>
 
@@ -3265,6 +3422,7 @@
         <div class="panel">
           <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>Opportunity fingerprint</h2></div>
           <p class="muted">Where this NbS could plausibly be implemented.</p>
+          <div class="fp-note"><svg aria-hidden="true"><use href="#i-info"/></svg><div><b>How footprint is reported:</b> area-based NbS (agroforestry, restoration) are summed as <b>km²</b>; linear / zonal practices (riparian buffers, bunds) are reported as <b>km of line or buffer zone</b> so they aren’t over-counted as blanket area.</div></div>
           <h3>Coverage</h3>
           <div class="finger-row"><span class="lab">Total country area</span><span class="val">72,300 km²</span></div>
           <div class="finger-row"><span class="lab">High &amp; very-high suitability</span><span class="val good">18,700 km²</span></div>
@@ -3501,6 +3659,11 @@
         </div>
       </div>
 
+      <div class="likewise">
+        <svg aria-hidden="true"><use href="#i-alert"/></svg>
+        <div><b>Compare like with like.</b> Agroforestry, forest restoration and water harvesting are <b>area-based</b> (km²). <b>Riparian buffers</b> is a <b>linear / zonal</b> practice (km of corridor) — its footprint isn’t directly comparable, so it’s shown for context but kept out of area-based rankings.</div>
+      </div>
+
       <!-- Spatial co-occurrence maps (combination + count, side by side) -->
       <div class="panel">
         <div class="ph">
@@ -3716,6 +3879,44 @@
             <div class="cmp-cell empty">crop yield gain · soil</div>
             <div class="cmp-cell empty">fish · NTFPs · flood reduction</div>
           </div>
+
+          <!-- COST-EFFECTIVENESS (indicative) -->
+          <div class="cmp-section">
+            <div class="cmp-stitle">Cost-effectiveness · indicative</div>
+            <div class="cmp-snote">Planning-level unit costs from the T6 economic archetype applied to each opportunity space — <b>mock ranges, not a CBA</b>. Area-based NbS only; riparian shown for context (linear).</div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-label">$ / beneficiary</div>
+            <div class="cmp-cell"><div class="cmp-v">$180–520</div></div>
+            <div class="cmp-cell"><div class="cmp-v">$260–700</div></div>
+            <div class="cmp-cell"><div class="cmp-v">$90–300</div></div>
+            <div class="cmp-cell"><div class="cmp-v" style="color:var(--mute);">$150–480*</div></div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-label">$ / ha restored</div>
+            <div class="cmp-cell"><div class="cmp-v">$200–800</div></div>
+            <div class="cmp-cell"><div class="cmp-v">$400–1,500</div></div>
+            <div class="cmp-cell"><div class="cmp-v">$40–200</div></div>
+            <div class="cmp-cell"><div class="cmp-v" style="color:var(--mute);">per km*</div></div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-label">$ / tCO₂e avoided</div>
+            <div class="cmp-cell"><div class="cmp-v good">$8–22</div></div>
+            <div class="cmp-cell"><div class="cmp-v good">$6–18</div></div>
+            <div class="cmp-cell"><div class="cmp-v">$20–60</div></div>
+            <div class="cmp-cell"><div class="cmp-v" style="color:var(--mute);">$14–40*</div></div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-label">$ / farmer reached</div>
+            <div class="cmp-cell"><div class="cmp-v">$320–900</div></div>
+            <div class="cmp-cell"><div class="cmp-v">$480–1,300</div></div>
+            <div class="cmp-cell"><div class="cmp-v">$150–500</div></div>
+            <div class="cmp-cell"><div class="cmp-v" style="color:var(--mute);">n/a*</div></div>
+          </div>
+          <div class="cmp-row">
+            <div class="cmp-label"></div>
+            <div class="cmp-cell" style="grid-column:2 / -1;"><span class="ce-indic">indicative</span> <span class="cmp-sub">* riparian is linear (km of corridor) — not directly comparable on area-based unit costs.</span></div>
+          </div>
         </div>
       </div>
 
@@ -3867,7 +4068,7 @@
             <button type="button" data-preset="climate" aria-pressed="false"><span class="pn">Climate adaptation</span><span class="pd">hazards + resilience first</span></button>
             <button type="button" data-preset="livelihood" aria-pressed="true"><span class="pn">Livelihood</span><span class="pd">poverty + production</span></button>
             <button type="button" data-preset="biodiv" aria-pressed="false"><span class="pn">Biodiversity</span><span class="pd">ecology + carbon</span></button>
-            <button type="button" data-preset="portfolio" aria-pressed="false"><span class="pn">Bank portfolio fit</span><span class="pd">infra + access</span></button>
+            <button type="button" data-preset="portfolio" aria-pressed="false"><span class="pn">Balanced</span><span class="pd">even across pillars</span></button>
           </div>
 
           <div class="prio-profile" id="prio-profile">
@@ -3878,7 +4079,7 @@
                   <option value="climate">Climate adaptation</option>
                   <option value="livelihood" selected>Livelihood</option>
                   <option value="biodiv">Biodiversity</option>
-                  <option value="portfolio">Bank portfolio fit</option>
+                  <option value="portfolio">Balanced</option>
                 </optgroup>
                 <optgroup label="My profiles" id="prio-myopt">
                   <option value="my-fsrp">FSRP board case</option>
@@ -3901,50 +4102,56 @@
           </div>
 
           <div class="prio-rail" id="prio-rail">
-            <details class="prio-group"><summary class="prio-group-head"><svg class="ic" aria-hidden="true"><use href="#i-thermometer"/></svg>Climate hazards<span class="tag">4 vars</span></summary>
-              <div class="prio-row"><div class="nm">Drought (SPEI)<span class="sub">hazard intensity</span></div>
+            <details class="prio-group" open><summary class="prio-group-head"><svg class="ic" aria-hidden="true"><use href="#i-thermometer"/></svg>Climate hazard<span class="tag">4 vars · 35%</span></summary>
+              <div class="prio-row"><div class="nm">Drought hazard<span class="sub">SPEI intensity</span></div>
                 <div class="prio" data-var="drought"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2" aria-pressed="true">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Heat stress<span class="sub">days &gt; Tmax</span></div>
-                <div class="prio" data-var="heat"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
               <div class="prio-row"><div class="nm">Flood hazard<span class="sub">1-in-100 yr depth</span></div>
-                <div class="prio" data-var="flood"><button type="button" data-p="0" aria-pressed="true">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Erosion risk<span class="sub">slope × LULC × rain</span></div>
-                <div class="prio" data-var="erosion"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
+                <div class="prio" data-var="flood"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
+              <div class="prio-row"><div class="nm">Heat-stress hazard<span class="sub">WBGT anomaly</span></div>
+                <div class="prio" data-var="heat"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
+              <div class="prio-row"><div class="nm">Water stress<span class="sub">demand / supply</span></div>
+                <div class="prio" data-var="water"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
             </details>
-            <details class="prio-group"><summary class="prio-group-head"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>NbS-response outcomes<span class="tag">6 vars</span></summary>
+            <details class="prio-group"><summary class="prio-group-head"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>NbS response (environment)<span class="tag">3 vars · 30%</span></summary>
+              <div class="prio-row"><div class="nm">Soil-erosion risk<span class="sub">RUSLE soil loss</span></div>
+                <div class="prio" data-var="erosion"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
+              <div class="prio-row"><div class="nm">Carbon-sequestration potential<span class="sub">tCO₂/ha/yr</span></div>
+                <div class="prio" data-var="carbon"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
+              <div class="prio-row"><div class="nm">Biodiversity priority<span class="sub">KBA + intactness</span></div>
+                <div class="prio" data-var="biodiv"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
+            </details>
+            <details class="prio-group"><summary class="prio-group-head"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>People &amp; production<span class="tag">3 vars · 35%</span></summary>
               <div class="prio-row"><div class="nm">Rural poverty<span class="sub">headcount</span></div>
                 <div class="prio" data-var="poverty"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3" aria-pressed="true">H</button></div></div>
-              <div class="prio-row"><div class="nm">Food insecurity<span class="sub">prevalence</span></div>
-                <div class="prio" data-var="food"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2" aria-pressed="true">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Gender inequality<span class="sub">GII / female labour</span></div>
-                <div class="prio" data-var="gender"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2" aria-pressed="true">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Biodiversity loss<span class="sub">forest loss + KBA</span></div>
-                <div class="prio" data-var="biodiv"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Carbon deficit<span class="sub">sequestration gap</span></div>
-                <div class="prio" data-var="carbon"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Fire risk<span class="sub">caution — avoid</span></div>
-                <div class="prio" data-var="fire"><button type="button" data-p="0" aria-pressed="true">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
+              <div class="prio-row"><div class="nm">Production gap<span class="sub">yield shortfall</span></div>
+                <div class="prio" data-var="prodgap"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3" aria-pressed="true">H</button></div></div>
+              <div class="prio-row"><div class="nm">Agricultural dependency<span class="sub">% livelihoods</span></div>
+                <div class="prio" data-var="agdep"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2" aria-pressed="true">M</button><button type="button" data-p="3">H</button></div></div>
             </details>
-            <details class="prio-group"><summary class="prio-group-head"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>People &amp; production<span class="tag">4 vars</span></summary>
-              <div class="prio-row"><div class="nm">Rural population<span class="sub">density</span></div>
-                <div class="prio" data-var="pop"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2" aria-pressed="true">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Smallholder farms<span class="sub">parcel density</span></div>
-                <div class="prio" data-var="farms"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2" aria-pressed="true">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Production value<span class="sub">$ at risk / yr</span></div>
-                <div class="prio" data-var="prod"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2" aria-pressed="true">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">IPLC presence<span class="sub">proximity to lands</span></div>
-                <div class="prio" data-var="iplc"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
+            <details class="prio-group"><summary class="prio-group-head"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg>Equity &amp; inclusion<span class="tag">flag · not weighted</span></summary>
+              <div class="gender-flag">
+                <svg aria-hidden="true"><use href="#i-info"/></svg>
+                <div><b>Gender inequity — national contextual flag.</b> Shown as an overlay on the map &amp; ranking so it can inform targeting, but it is <b>not weighted</b> into the hotspot score.
+                  <div class="toggle" role="group" aria-label="Gender flag overlay" style="margin-top:7px;">
+                    <button type="button" aria-pressed="true">Overlay on</button>
+                    <button type="button" aria-pressed="false">Off</button>
+                  </div>
+                </div>
+              </div>
             </details>
-            <details class="prio-group"><summary class="prio-group-head"><svg class="ic" aria-hidden="true"><use href="#i-route"/></svg>Infrastructure &amp; access<span class="tag">4 vars</span></summary>
-              <div class="prio-row"><div class="nm">Distance to roads<span class="sub">closer = easier</span></div>
-                <div class="prio" data-var="roads"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Electrification<span class="sub">grid access</span></div>
-                <div class="prio" data-var="elec"><button type="button" data-p="0" aria-pressed="true">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Market access<span class="sub">travel time to market</span></div>
-                <div class="prio" data-var="market"><button type="button" data-p="0">—</button><button type="button" data-p="1">L</button><button type="button" data-p="2" aria-pressed="true">M</button><button type="button" data-p="3">H</button></div></div>
-              <div class="prio-row"><div class="nm">Bank portfolio fit<span class="sub">existing projects nearby</span></div>
-                <div class="prio" data-var="portfolio"><button type="button" data-p="0">—</button><button type="button" data-p="1" aria-pressed="true">L</button><button type="button" data-p="2">M</button><button type="button" data-p="3">H</button></div></div>
-            </details>
+          </div>
+
+          <div class="desc-block">
+            <div class="db-head"><span class="nm">Descriptors</span><span class="kind-badge descriptor">filters · not weighted</span></div>
+            <p class="muted" style="font-size:10.5px; margin-bottom:4px;">Context that describes the area, not problems the NbS resolves. Use them to <b>filter / mask</b> the hotspot view — they never enter the weighted score.</p>
+            <div class="desc-row"><div class="nm">Rural population<span class="sub">density mask</span></div>
+              <div class="toggle" role="group" aria-label="Rural population filter"><button type="button" aria-pressed="false">On</button><button type="button" aria-pressed="true">Off</button></div></div>
+            <div class="desc-row"><div class="nm">Market access<span class="sub">≤ 3 h to market</span></div>
+              <div class="toggle" role="group" aria-label="Market access filter"><button type="button" aria-pressed="false">On</button><button type="button" aria-pressed="true">Off</button></div></div>
+            <div class="desc-row"><div class="nm">Farm size / smallholder<span class="sub">smallholder areas</span></div>
+              <div class="toggle" role="group" aria-label="Smallholder filter"><button type="button" aria-pressed="false">On</button><button type="button" aria-pressed="true">Off</button></div></div>
+            <div class="desc-row"><div class="nm">Ag. production value<span class="sub">$ at stake</span></div>
+              <div class="toggle" role="group" aria-label="Production value filter"><button type="button" aria-pressed="false">On</button><button type="button" aria-pressed="true">Off</button></div></div>
           </div>
 
           <div class="prio-summary" id="prio-summary">
@@ -4267,6 +4474,58 @@
           <button type="button" data-surface="priority" aria-pressed="false"><span class="cs-t"><span class="cs-stage m4">M4</span>Priority / hotspot variables</span><span class="cs-s">TTL priorities — where action matters <em>most</em> · feeds Priority Hotspots.</span></button>
         </div>
         <div id="cfg-suit">
+        <div class="panel" style="margin-bottom:14px;">
+          <div class="ph">
+            <h2><svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg>Constraint types</h2>
+            <span class="tag">— how each suitability variable limits where this NbS can go</span>
+          </div>
+          <p class="muted" style="font-size:11px; margin:6px 0 4px;">Suitability variables are grouped by the kind of constraint they impose. <b>Hard exclusions</b> mask cells out entirely; <b>soft scenario levers</b> are reversible what-ifs the Bank could relax (see Opportunity Space).</p>
+          <div class="con-note">
+            <span><span class="cons-mark hard">mask</span> hard exclusion — removes the cell</span>
+            <span><span class="cons-mark soft">lever</span> soft scenario lever — reversible what-if</span>
+          </div>
+          <div class="nbsvars-list">
+            <div class="nbsvar-grp"><div class="nbsvar-gt">Biophysical<span class="kind-badge descriptor">can it grow here</span></div><div class="nbsvar-chips">
+              <span class="nbsvar chosen"><span class="badge">✓</span>Slope <span class="cons-mark hard">mask &gt;30°</span></span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Soil depth</span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Soil pH</span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Soil organic carbon</span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Annual rainfall</span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Aridity index</span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Temperature</span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Tree cover</span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>NDVI</span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Drought (SPEI)</span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Heat stress</span>
+            </div></div>
+            <div class="nbsvar-grp"><div class="nbsvar-gt">System<span class="kind-badge descriptor">is the land available / appropriate</span></div><div class="nbsvar-chips">
+              <span class="nbsvar chosen"><span class="badge">✓</span>Land cover / land-use <span class="cons-mark hard">mask built-up · water</span></span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Protected-area status <span class="cons-mark hard">mask</span></span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Open water &amp; wetland <span class="cons-mark hard">mask</span></span>
+            </div></div>
+            <div class="nbsvar-grp"><div class="nbsvar-gt">Operational<span class="kind-badge descriptor">can we implement it</span></div><div class="nbsvar-chips">
+              <span class="nbsvar chosen"><span class="badge">✓</span>Distance to road <span class="cons-mark soft">lever</span></span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Electrification <span class="cons-mark soft">lever</span></span>
+              <span class="nbsvar chosen"><span class="badge">✓</span>Market access <span class="cons-mark soft">lever</span></span>
+              <span class="nbsvar collapsed"><span class="badge"></span>Population density</span>
+            </div></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-bottom:14px;">
+          <div class="ph">
+            <h2><svg class="ic" aria-hidden="true"><use href="#i-leaf"/></svg>Farming system</h2>
+            <span class="tag">— derived land-system classes that contextualise suitability &amp; priorities</span>
+          </div>
+          <p class="muted" style="font-size:11px; margin:6px 0 2px;">Derived from land cover, livestock density and irrigation data. Scopes the context layers and tailors which descriptors matter — it does <b>not</b> change the suitability rule itself.</p>
+          <div class="fsys" id="fsys-pick" role="group" aria-label="Farming system">
+            <button type="button" class="fsys-opt" data-fsys="crop-rain" aria-pressed="true"><span class="sw"></span>Cropping — rainfed</button>
+            <button type="button" class="fsys-opt" data-fsys="crop-irr"><span class="sw"></span>Cropping — irrigated</button>
+            <button type="button" class="fsys-opt" data-fsys="mixed"><span class="sw"></span>Mixed crop-livestock</button>
+            <button type="button" class="fsys-opt" data-fsys="agropas"><span class="sw"></span>Agro-pastoral</button>
+            <button type="button" class="fsys-opt" data-fsys="pastoral"><span class="sw"></span>Pastoral / rangeland</button>
+            <button type="button" class="fsys-opt" data-fsys="tree"><span class="sw"></span>Tree / perennial</button>
+          </div>
+        </div>
         <div class="panel" style="margin-bottom:0;">
           <div class="ph">
             <h2><svg class="ic" aria-hidden="true"><use href="#i-database"/></svg>Variable configuration</h2>
@@ -4373,13 +4632,20 @@
             <h2>Land slope <span id="vd-modbadge" class="modified-badge" style="display:none; vertical-align:middle;">modified</span></h2>
             <div class="vsub">
               <span class="pill blue"><svg class="ic-xs" aria-hidden="true"><use href="#i-layers"/></svg>CLUSTER REPRESENTATIVE · 3 VARS</span>
-              <span class="pill green"><svg class="ic-xs" aria-hidden="true"><use href="#i-check"/></svg>NATIVE GEE</span>
+              <span class="pill green"><svg class="ic-xs" aria-hidden="true"><use href="#i-check"/></svg>BUILT-IN</span>
               <span class="pill gray">T1 · SPATIAL</span>
             </div>
 
             <div class="slot">
               <div class="slot-label">What it is</div>
-              <div class="slot-text">Rate of elevation change across the landscape, expressed in degrees from horizontal. Derived from a 30 m Digital Elevation Model. <b>Shared across all NbS</b> — only the suitability response below changes per NbS.</div>
+              <div class="slot-text">Rate of elevation change across the landscape, expressed in degrees from horizontal. Derived from a 30 m Digital Elevation Model. <b>Shared across all NbS</b> — only the suitability response below changes per NbS.
+                <div class="prov-chips">
+                  <span class="prov-chip"><span class="pk">dataset</span>SRTM v3 · 30 m</span>
+                  <span class="prov-chip"><span class="pk">grain</span>1 km analysis</span>
+                  <span class="prov-chip tier"><span class="pk">evidence</span>Tier 1 · global standard</span>
+                  <span class="prov-chip"><span class="pk">sensitivity</span>public · not sensitive</span>
+                </div>
+              </div>
             </div>
 
             <div class="slot">
@@ -4496,8 +4762,17 @@
               <div class="slot-label">Source</div>
               <div class="slot-text">
                 <div class="source-block">
-                  <div class="src-line"><span class="pill green"><svg class="ic-xs" aria-hidden="true"><use href="#i-check"/></svg>NATIVE GEE</span><b>SRTM v3</b> · 30 m · global · <code>USGS/SRTMGL1_003</code> · CC0</div>
-                  <p class="muted" style="margin-top:6px;">Pre-processed at 1 km via mean resampling for the analysis layer. Resampled view marked in the resolution audit.</p>
+                  <div class="src-line"><span class="pill green"><svg class="ic-xs" aria-hidden="true"><use href="#i-check"/></svg>BUILT-IN</span><b>SRTM v3</b> · 30 m · global · <code>USGS/SRTMGL1_003</code> · CC0</div>
+                  <div class="dsrc">
+                    <div class="dsrc-row"><span class="k">In use</span><span class="v"><b>SRTM v3</b> — global 30 m DEM, resampled to the 1 km analysis grid.</span></div>
+                    <div class="dsrc-row"><span class="k">Grain</span><span class="v">native 30 m · analysis 1 km <span class="muted">(mean resampling; flagged in the resolution audit)</span></span></div>
+                    <div class="dsrc-row"><span class="k">Sensitivity</span><span class="v">public, non-sensitive — <b>no country endorsement required</b>.</span></div>
+                    <div class="dsrc-flag upload">
+                      <svg aria-hidden="true"><use href="#i-download"/></svg>
+                      <div><b>A better local dataset is known.</b> Sierra Leone has a 12 m national DEM (SLE-NSDI) not yet catalogued here — upload it to sharpen slope on steep terrain.</div>
+                    </div>
+                  </div>
+                  <div class="prov-quote">“Slope and terrain position are first-order controls on tree-crop establishment and erosion risk.”<cite>Recipe note · Agroforestry · Standard · §Biophysical (p. 4)</cite></div>
                   <button type="button" class="btn-secondary" id="vd-swap" style="margin-top:10px;"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>Replace with your own dataset…</button>
                 </div>
               </div>
@@ -4571,7 +4846,7 @@
                 <li><b>Extent</b> — must cover the country AOI (Sierra Leone); larger is fine, it will be clipped.</li>
                 <li><b>Resolution</b> — ≤ 5 km; finer is resampled to the analysis grid. Coarser inputs are flagged in the resolution audit.</li>
                 <li><b>Values</b> — single continuous or categorical band; nodata flagged; units documented.</li>
-                <li><b>Size</b> — ≤ 2 GB per file. Larger layers: host on GEE and supply an asset ID instead.</li>
+                <li><b>Size</b> — ≤ 2 GB per file. Larger layers: host the layer in cloud storage and supply a URL / asset ID instead.</li>
                 <li><b>Licence</b> — you must have the right to use the data; record the source &amp; licence.</li>
               </ul>
               <p class="muted" style="font-size:10.5px; margin-top:8px;">After upload the tool runs a validation pass (CRS, extent, nodata, range) and shows a preview before the layer is swapped into the recipe. Placeholder — not wired in v0.</p>
@@ -4599,45 +4874,55 @@
           <div class="corr-wrap active">
             <div class="nbsvars-head">
               <div>
-                <h3 style="margin:0 0 2px;">Priority variables by theme</h3>
-                <p class="muted" style="font-size:11px;"><b style="color:var(--ink);">14</b> variables across 4 themes · standardised so <b>higher = higher priority</b>, then weighted into the hotspot index.</p>
+                <h3 style="margin:0 0 2px;">Priority &amp; descriptor variables</h3>
+                <p class="muted" style="font-size:11px;"><b style="color:var(--ink);">11 priorities</b> across <b>4 pillars</b> + <b>4 descriptors</b>. Priorities are standardised so <b>higher = higher priority</b>, then weighted into the hotspot index; descriptors are context only.</p>
               </div>
               <button type="button" class="btn-secondary tech-only" style="padding:6px 12px; font-size:11.5px;"><svg class="ic" aria-hidden="true"><use href="#i-edit"/></svg>Edit included variables</button>
             </div>
+
+            <div class="pvd-legend">
+              <div class="pvd"><span class="kind-badge priority">Priority</span><span>A <b>problem or need the NbS acts on</b>. Weighted in the hotspot ranking; shown as a slider in Priority Hotspots.</span></div>
+              <div class="pvd"><span class="kind-badge descriptor">Descriptor</span><span><b>Context that describes the area</b> (not a problem the NbS resolves). Usable as a filter / mask, <b>never weighted</b>.</span></div>
+            </div>
+
             <div class="nbsvars-list">
-              <div class="nbsvar-grp"><div class="nbsvar-gt">Climate hazards</div><div class="nbsvar-chips">
-                <span class="nbsvar chosen"><span class="badge">✓</span>Drought (SPEI)</span>
+              <div class="nbsvar-grp"><div class="nbsvar-gt">Climate hazard<span class="kind-badge priority">weighted pillar</span></div><div class="nbsvar-chips">
+                <span class="nbsvar chosen"><span class="badge">✓</span>Drought hazard</span>
                 <span class="nbsvar chosen"><span class="badge">✓</span>Flood hazard</span>
-                <span class="nbsvar chosen"><span class="badge">✓</span>Heat stress</span>
-                <span class="nbsvar collapsed"><span class="badge"></span>Rainfall variability</span>
+                <span class="nbsvar chosen"><span class="badge">✓</span>Heat-stress hazard</span>
+                <span class="nbsvar chosen"><span class="badge">✓</span>Water stress</span>
               </div></div>
-              <div class="nbsvar-grp"><div class="nbsvar-gt">NbS-response outcomes</div><div class="nbsvar-chips">
-                <span class="nbsvar chosen"><span class="badge">✓</span>Erosion-reduction potential</span>
-                <span class="nbsvar chosen"><span class="badge">✓</span>Carbon sequestration</span>
-                <span class="nbsvar chosen"><span class="badge">✓</span>Water-yield benefit</span>
-                <span class="nbsvar collapsed"><span class="badge"></span>Biodiversity co-benefit</span>
+              <div class="nbsvar-grp"><div class="nbsvar-gt">NbS response (environment)<span class="kind-badge priority">weighted pillar</span></div><div class="nbsvar-chips">
+                <span class="nbsvar chosen"><span class="badge">✓</span>Soil-erosion risk</span>
+                <span class="nbsvar chosen"><span class="badge">✓</span>Carbon-sequestration potential</span>
+                <span class="nbsvar chosen"><span class="badge">✓</span>Biodiversity priority</span>
               </div></div>
-              <div class="nbsvar-grp"><div class="nbsvar-gt">People &amp; production</div><div class="nbsvar-chips">
-                <span class="nbsvar chosen"><span class="badge">✓</span>Rural population</span>
-                <span class="nbsvar chosen"><span class="badge">✓</span>Poverty rate</span>
-                <span class="nbsvar chosen"><span class="badge">✓</span>Food insecurity</span>
-                <span class="nbsvar collapsed"><span class="badge"></span>Smallholder density</span>
+              <div class="nbsvar-grp"><div class="nbsvar-gt">People &amp; production<span class="kind-badge priority">weighted pillar</span></div><div class="nbsvar-chips">
+                <span class="nbsvar chosen"><span class="badge">✓</span>Rural poverty</span>
+                <span class="nbsvar chosen"><span class="badge">✓</span>Production gap</span>
+                <span class="nbsvar chosen"><span class="badge">✓</span>Agricultural dependency</span>
               </div></div>
-              <div class="nbsvar-grp"><div class="nbsvar-gt">Infrastructure</div><div class="nbsvar-chips">
-                <span class="nbsvar chosen"><span class="badge">✓</span>Market access</span>
-                <span class="nbsvar collapsed"><span class="badge"></span>Road density</span>
+              <div class="nbsvar-grp"><div class="nbsvar-gt">Equity &amp; inclusion<span class="kind-badge flag">contextual flag</span></div><div class="nbsvar-chips">
+                <span class="nbsvar chosen"><span class="badge">✓</span>Gender inequity <span class="src" style="background:var(--t4-bg); color:var(--t4-ink); font-family:ui-monospace,monospace; font-size:8px; font-weight:800; padding:1px 5px; border-radius:3px; margin-left:4px;">NATIONAL — CONTEXTUAL</span></span>
+              </div></div>
+              <div class="nbsvar-grp"><div class="nbsvar-gt">Descriptors (context)<span class="kind-badge descriptor">filters · not weighted</span></div><div class="nbsvar-chips">
+                <span class="nbsvar collapsed"><span class="badge"></span>Rural population</span>
+                <span class="nbsvar collapsed"><span class="badge"></span>Market access</span>
+                <span class="nbsvar collapsed"><span class="badge"></span>Farm size / smallholder</span>
+                <span class="nbsvar collapsed"><span class="badge"></span>Agricultural production value</span>
               </div></div>
             </div>
+            <p class="muted" style="font-size:10.5px; margin-top:8px;"><b>Gender inequity</b> is held as a <b>national contextual flag</b> — shown alongside the ranking but it does not differentiate the map. Descriptors appear in Priority Hotspots as filter toggles, never as weighted sliders.</p>
 
             <h3 style="margin:18px 0 8px; padding-top:14px; border-top:1px solid var(--rule);">Scoring &amp; direction</h3>
             <p class="muted" style="font-size:11px; margin-bottom:10px;">Each variable is standardised to 0–1. <b>Direction</b> sets which end is "high priority"; thresholds clip extremes. (Suitability response curves do not apply here — priority is a need score, not a fitness score.)</p>
             <table class="resp-table" style="max-width:560px;">
               <thead><tr><th>Variable</th><th>Direction</th><th>Scoring</th></tr></thead>
               <tbody>
-                <tr><td>Drought (SPEI)</td><td style="text-align:right;">drier → higher</td><td class="unit">percentile</td></tr>
-                <tr><td>Erosion-reduction potential</td><td style="text-align:right;">more → higher</td><td class="unit">linear</td></tr>
-                <tr><td>Poverty rate</td><td style="text-align:right;">poorer → higher</td><td class="unit">linear</td></tr>
-                <tr><td>Market access</td><td style="text-align:right;">remoter → higher</td><td class="unit">inverse</td></tr>
+                <tr><td>Drought hazard</td><td style="text-align:right;">drier → higher</td><td class="unit">percentile</td></tr>
+                <tr><td>Soil-erosion risk</td><td style="text-align:right;">more → higher</td><td class="unit">min–max</td></tr>
+                <tr><td>Rural poverty</td><td style="text-align:right;">poorer → higher</td><td class="unit">percentile</td></tr>
+                <tr><td>Production gap</td><td style="text-align:right;">larger → higher</td><td class="unit">percentile</td></tr>
               </tbody>
             </table>
 
@@ -4650,11 +4935,12 @@
               <h3 style="margin:18px 0 8px; padding-top:14px; border-top:1px solid var(--rule);">Theme &amp; variable weights <span class="sb-status" style="background:#f0d8d0; color:var(--benson-ink); display:inline-flex; align-items:center; gap:4px; vertical-align:middle; margin-left:6px;"><svg class="ic-xs" aria-hidden="true"><use href="#i-lock"/></svg>Admin</span></h3>
               <p class="muted" style="font-size:11px; margin-bottom:10px;">Theme weights set how much each pillar drives the hotspot index. Normalise to 100%.</p>
               <div class="cfg-pri-weights">
-                <div class="cpw-row"><span class="cpw-nm">Climate hazards</span><span class="cpw-bar"><span style="width:30%; background:var(--hot-h);"></span></span><span class="cpw-v">30%</span></div>
-                <div class="cpw-row"><span class="cpw-nm">NbS-response outcomes</span><span class="cpw-bar"><span style="width:25%; background:var(--hot-h);"></span></span><span class="cpw-v">25%</span></div>
-                <div class="cpw-row"><span class="cpw-nm">People &amp; production</span><span class="cpw-bar"><span style="width:30%; background:var(--hot-h);"></span></span><span class="cpw-v">30%</span></div>
-                <div class="cpw-row"><span class="cpw-nm">Infrastructure</span><span class="cpw-bar"><span style="width:15%; background:var(--hot-h);"></span></span><span class="cpw-v">15%</span></div>
+                <div class="cpw-row"><span class="cpw-nm">Climate hazard</span><span class="cpw-bar"><span style="width:35%; background:var(--hot-h);"></span></span><span class="cpw-v">35%</span></div>
+                <div class="cpw-row"><span class="cpw-nm">NbS response (environment)</span><span class="cpw-bar"><span style="width:30%; background:var(--hot-h);"></span></span><span class="cpw-v">30%</span></div>
+                <div class="cpw-row"><span class="cpw-nm">People &amp; production</span><span class="cpw-bar"><span style="width:35%; background:var(--hot-h);"></span></span><span class="cpw-v">35%</span></div>
+                <div class="cpw-row"><span class="cpw-nm">Equity &amp; inclusion</span><span class="cpw-bar"><span style="width:0%; background:var(--hot-h);"></span></span><span class="cpw-v" style="color:var(--t4-ink);">flag</span></div>
               </div>
+              <p class="muted" style="font-size:10px; margin-top:6px;">Three weighted pillars normalise to 100%. <b>Equity &amp; inclusion</b> (gender inequity) is carried as a contextual flag — shown, not weighted — so it can never silently tilt the ranking.</p>
             </div>
           </div>
           </div><!-- /#pri-overview-view -->
@@ -4828,6 +5114,17 @@
           </div>
 
           <div class="panel ns-card">
+            <h3>Cost-effectiveness snapshot · <span id="ns-ce-nbs">Agroforestry</span> <span class="ce-indic">indicative</span></h3>
+            <p class="muted" style="font-size:11px; margin-bottom:6px;">Planning-level unit costs from the <b>T6 economic archetype</b> over the opportunity-space extent — to size the ask and compare options, <b>not a CBA</b>.</p>
+            <div class="ce-grid">
+              <div class="ce-card"><div class="ce-k">Cost / beneficiary</div><div class="ce-v">$180–520</div><div class="ce-s">over 20-yr horizon</div></div>
+              <div class="ce-card"><div class="ce-k">Cost / ha restored</div><div class="ce-v">$200–800</div><div class="ce-s">establishment + early upkeep</div></div>
+              <div class="ce-card"><div class="ce-k">Cost / tCO₂e avoided</div><div class="ce-v">$8–22</div><div class="ce-s">above-ground, tier-1</div></div>
+              <div class="ce-card"><div class="ce-k">Cost / farmer reached</div><div class="ce-v">$320–900</div><div class="ce-s">smallholders in footprint</div></div>
+            </div>
+          </div>
+
+          <div class="panel ns-card">
             <h3>Feasibility methods &amp; tools</h3>
             <p class="muted" style="font-size:11px; margin-bottom:12px;">Guidance on the valuation &amp; assessment methods to commission downstream for <b id="ns-meth-nbs">agroforestry</b> — <b>signposts, not prescriptions or endorsements</b>. Choose by decision stage (see proportionality).</p>
 
@@ -4902,6 +5199,32 @@
           </div>
 
           <div class="panel ns-card">
+            <h3>Safeguards &amp; FPIC hand-off</h3>
+            <div class="fpic-flag">
+              <svg aria-hidden="true"><use href="#i-alert"/></svg>
+              <div><b>Indigenous / community-lands FPIC.</b> Part of the footprint overlaps customary &amp; community lands (flagged in Project Risk · Part B). <b>Free, Prior and Informed Consent</b> and the WB ESF land / Indigenous Peoples standards must be screened before any siting.</div>
+            </div>
+            <p class="muted" style="font-size:10.5px; margin-top:9px;">This tool <b>flags the trigger</b> and hands off to the safeguards team at pre-feasibility — it does not perform the screening.</p>
+          </div>
+
+          <div class="panel ns-card">
+            <h3>Confirm data before feasibility</h3>
+            <p class="muted" style="font-size:11px; margin-bottom:8px;">Two data actions to close out before committing to sites.</p>
+            <div class="dsrc-flag endorsed">
+              <svg aria-hidden="true"><use href="#i-alert"/></svg>
+              <div><b>Confirm country-endorsed sources</b> for the nationally-sensitive variables — <b>population, poverty, agricultural production value</b> — with Stats SL before publishing district figures.</div>
+            </div>
+            <div style="margin-top:12px;">
+              <div class="nbsvar-gt" style="margin-bottom:6px;">Data gaps · upload better local data</div>
+              <ul style="list-style:none; display:flex; flex-direction:column; gap:7px;">
+                <li class="fp-note"><svg aria-hidden="true"><use href="#i-download"/></svg><div><b>12 m national DEM (SLE-NSDI)</b> — sharpen slope on steep SE terrain (default is 30 m SRTM).</div></li>
+                <li class="fp-note"><svg aria-hidden="true"><use href="#i-download"/></svg><div><b>2024 district poverty surface</b> — replace the 2018 default once the survey round is released.</div></li>
+                <li class="fp-note"><svg aria-hidden="true"><use href="#i-download"/></svg><div><b>Updated local road / market network</b> — refine the market-access &amp; road-access layers.</div></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel ns-card">
             <h3>Tailoring to context</h3>
             <div class="ns-tailor">
               <span class="et"><svg class="ic-xs" aria-hidden="true"><use href="#i-info"/></svg> Sierra Leone · FSRP</span>
@@ -4922,6 +5245,12 @@
       <div class="pr-frame">
         <svg aria-hidden="true"><use href="#i-alert"/></svg>
         <div>Risk that hazards <b>damage or destroy the NbS investment</b> — the WB <b>Climate &amp; Disaster Risk Screening</b> lens. Distinct from <b>risk to rural livelihoods</b> (a <em>need</em> measure — see Opportunity Space).</div>
+      </div>
+
+      <div class="pr-part">
+        <span class="pp-n">A</span>
+        <span class="pp-t">Hazards threatening the investment</span>
+        <span class="pp-s">— drought · flood · fire · heat to the establishing NbS asset</span>
       </div>
 
       <div class="pr-cols">
@@ -4993,6 +5322,33 @@
         </div>
       </div>
 
+      <div class="pr-part">
+        <span class="pp-n">B</span>
+        <span class="pp-t">Operational feasibility filters</span>
+        <span class="pp-s">— can the investment actually be delivered &amp; sustained here?</span>
+      </div>
+      <div class="panel">
+        <p class="muted" style="font-size:11px; margin-bottom:10px;">These describe whether an NbS can be <b>implemented and maintained</b> — they <b>filter / flag</b> the opportunity space to help rule sites in or out. They are deliberately <b>kept out of the hotspot score</b> so a feasibility blocker can't be silently traded off against need.</p>
+        <div class="feas-grid">
+          <div class="feas-row"><div class="fr-head"><svg class="ic" aria-hidden="true"><use href="#i-route"/></svg><span class="nm">Accessibility</span><span class="fr-state watch">watch</span></div><div class="fr-d">Dry-season road access reaches most of the SE footprint; remote upland cells are seasonally cut off.</div></div>
+          <div class="feas-row"><div class="fr-head"><svg class="ic" aria-hidden="true"><use href="#i-power"/></svg><span class="nm">Electrification</span><span class="fr-state watch">watch</span></div><div class="fr-d">Low grid coverage; nursery / processing may need off-grid power. Soft lever — improvable.</div></div>
+          <div class="feas-row"><div class="fr-head"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg><span class="nm">Land tenure</span><span class="fr-state block">flag</span></div><div class="fr-d">Predominantly customary tenure; overlaps with community lands — triggers the FPIC safeguard below.</div></div>
+          <div class="feas-row"><div class="fr-head"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg><span class="nm">Conflict &amp; fragility</span><span class="fr-state ok">ok</span></div><div class="fr-d">No active conflict in the candidate landscapes; standard fragility monitoring applies.</div></div>
+          <div class="feas-row"><div class="fr-head"><svg class="ic" aria-hidden="true"><use href="#i-book"/></svg><span class="nm">Governance &amp; extension</span><span class="fr-state watch">watch</span></div><div class="fr-d">Extension reach is thin in the SE — delivery depends on strengthening local services.</div></div>
+          <div class="feas-row"><div class="fr-head"><svg class="ic" aria-hidden="true"><use href="#i-database"/></svg><span class="nm">Finance</span><span class="fr-state watch">watch</span></div><div class="fr-d">Long payback for tree-based NbS favours patient / blended capital; instrument to be matched at feasibility.</div></div>
+          <div class="feas-row"><div class="fr-head"><svg class="ic" aria-hidden="true"><use href="#i-target"/></svg><span class="nm">Market access</span><span class="fr-state watch">watch</span></div><div class="fr-d">Remoteness raises aggregation cost; pairing with road / market investment expands viability.</div></div>
+          <div class="feas-row"><div class="fr-head"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg><span class="nm">Labour</span><span class="fr-state ok">ok</span></div><div class="fr-d">Adequate seasonal labour for establishment; competing demands at peak planting noted.</div></div>
+        </div>
+        <div class="fpic-flag">
+          <svg aria-hidden="true"><use href="#i-alert"/></svg>
+          <div><b>Indigenous / community-lands FPIC safeguard.</b> Part of the footprint overlaps customary &amp; community lands. <b>Free, Prior and Informed Consent</b> and the WB ESF land / Indigenous Peoples standards must be screened before any siting — carried forward to the Next Steps safeguards hand-off.</div>
+        </div>
+        <div class="pr-notescore">
+          <svg aria-hidden="true"><use href="#i-info"/></svg>
+          <div>Feasibility filters <b>screen and flag</b> the opportunity space — they are <b>not</b> hazards to the asset (Part A) and are <b>not</b> added into the Priority-Hotspot score.</div>
+        </div>
+      </div>
+
       <div class="pr-caveat">
         <svg aria-hidden="true"><use href="#i-info"/></svg>
         <div><b>Indicative spatial screen</b> — not the full project-level WB Disaster Risk Screening, which is done downstream at <b>pre-feasibility</b> (see Next Steps).</div>
@@ -5058,7 +5414,30 @@
       <div class="todo-wrap">
         <div class="todo-intro">
           <span class="todo-internal-badge">Internal</span>
-          <span>Living dev checklist — <b>not for TTLs</b>. Remaining medium / major work, grouped. Keep it terse.</span>
+          <span>Living dev checklist — <b>not for TTLs</b>. What just landed in <b>v0.7</b>, plus remaining medium / major work.</span>
+        </div>
+
+        <div class="todo-gt" style="margin-bottom:6px;">Version log</div>
+        <div class="vlog">
+          <div class="vlog-entry cur">
+            <div class="vlog-h"><span class="vlog-v">v0.7</span><span class="vlog-date">Jun 2026 · current</span></div>
+            <ul>
+              <li><b>Priorities vs Descriptors</b> split introduced across Variable Config &amp; Priority Hotspots — descriptors filter, never weight.</li>
+              <li>Priority variables reorganised into <b>4 weighted pillars</b> (Climate hazard · NbS response · People &amp; production · Equity &amp; inclusion) + a Descriptors group; <b>gender</b> moved to a national contextual flag.</li>
+              <li>Suitability variables grouped by <b>constraint type</b> (Biophysical · System · Operational) with <b>hard-exclusion vs soft-lever</b> marks.</li>
+              <li>Per-variable <b>data-source panel</b> + <b>provenance chips</b> (dataset+grain · tier · sensitivity · quote); <b>country-endorsed</b> flag on population / poverty / production; <b>farming-system</b> derived classes.</li>
+              <li>Opportunity Space: soft levers vs hard masks, production-gap &amp; farming-system context, area-vs-line footprint note.</li>
+              <li>Project Risk split into <b>Part A</b> (asset hazards) + <b>Part B</b> (operational feasibility filters incl. FPIC) — filters / flags, <b>not scored</b>.</li>
+              <li>NbS Comparison: <b>like-with-like</b> guard + indicative <b>cost-effectiveness</b> snapshot. Next Steps: cost-effectiveness, country-endorsed-data prompt, FPIC hand-off, data-gap list.</li>
+              <li>Dropped the “native GEE” framing → “Runs in Python”; tab set + order ratified in <code>CLAUDE.md</code>.</li>
+            </ul>
+          </div>
+          <div class="vlog-entry">
+            <div class="vlog-h"><span class="vlog-v">v0.6</span><span class="vlog-date">earlier</span></div>
+            <ul>
+              <li>Project Risk tab added at position 03; risk-to-rural-livelihoods relabel; dual scope bands on Priority Hotspots &amp; NbS Comparison; project-risk rating confined to the opportunity-space footprint.</li>
+            </ul>
+          </div>
         </div>
 
         <div class="todo-group">
@@ -5071,24 +5450,12 @@
           <div class="todo-gt">Methodology / Schema</div>
           <div class="todo-item"><span class="todo-tag major">Major</span><span><b>Schema RFC pending sign-off:</b> T3 <code>risk_role</code> + <code>asset_fragility</code>, T2 <code>risk_lens</code> + <code>asset_exposure</code> (see M2b spec). Blocks the Project-Risk hotspot scope. <span class="ti-owner">Owner: Brayden.</span></span></div>
           <div class="todo-item"><span class="todo-tag major">Major</span><span><b>Priority-variable normalization:</b> lock the default reference frame (AOI-relative percentile vs fixed-where-a-standard-exists). Defines what a hotspot means.</span></div>
-          <div class="todo-item"><span class="todo-tag medium">Medium</span><span>Project-risk rating to be confined to the opportunity-space footprint <span class="ti-prog">(in progress)</span>.</span></div>
         </div>
 
         <div class="todo-group">
           <div class="todo-gt">Integration (planned)</div>
           <div class="todo-item"><span class="todo-tag medium">Medium</span><span>Add Project Risk to <b>Priority Hotspots</b> as a third "Project-Risk scope" filter (depends on schema RFC).</span></div>
           <div class="todo-item"><span class="todo-tag medium">Medium</span><span>Add Project Risk to <b>NbS Comparison</b> as an investment-durability dimension.</span></div>
-        </div>
-
-        <div class="todo-group">
-          <div class="todo-gt">Content to author (with sector team)</div>
-          <div class="todo-item"><span class="todo-tag medium">Medium</span><span><b>Next Steps:</b> add feasibility methods &amp; tools (valuation Table 6), right-tree-right-place design step, MFL signposting, proportionality note, scope-boundary line, and traceability to tool layers.</span></div>
-        </div>
-
-        <div class="todo-group">
-          <div class="todo-gt">Housekeeping</div>
-          <div class="todo-item"><span class="todo-tag medium">Medium</span><span>Ratify the tab set + order in <code>CLAUDE.md</code> (now 6 main tabs; originally fewer).</span></div>
-          <div class="todo-item"><span class="todo-tag medium">Medium</span><span>Replace "Runs on GEE Python" / "NATIVE GEE" wording with "<b>Runs in Python</b>" — native GEE is no longer the approach.</span></div>
         </div>
       </div>
     </section>
@@ -5185,6 +5552,14 @@
         group.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', 'false'));
         b.setAttribute('aria-pressed', 'true');
       });
+    });
+  });
+
+  /* farming-system selector (single-select) */
+  document.querySelectorAll('#fsys-pick').forEach(grp => {
+    grp.addEventListener('click', e => {
+      const b = e.target.closest('.fsys-opt'); if (!b) return;
+      grp.querySelectorAll('.fsys-opt').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
     });
   });
 
@@ -5514,16 +5889,15 @@
   const prioSummary = document.getElementById('prio-summary');
   const presetStrip = document.querySelector('#panel-hotspot .preset-strip');
   const prioLabels = {
-    drought:'Drought', heat:'Heat', flood:'Flood', erosion:'Erosion',
-    poverty:'Rural poverty', food:'Food insecurity', gender:'Gender', biodiv:'Biodiversity', carbon:'Carbon', fire:'Fire risk',
-    pop:'Pop. density', farms:'Farms', prod:'Production $', iplc:'IPLC',
-    roads:'Roads', elec:'Electrification', market:'Market acc.', portfolio:'Portfolio fit'
+    drought:'Drought hazard', flood:'Flood hazard', heat:'Heat-stress hazard', water:'Water stress',
+    erosion:'Soil-erosion risk', carbon:'Carbon potential', biodiv:'Biodiversity',
+    poverty:'Rural poverty', prodgap:'Production gap', agdep:'Ag. dependency'
   };
   const prioPresets = {
-    climate:    { drought:3, heat:3, flood:2, erosion:2, poverty:2, food:2, gender:1, biodiv:1, carbon:1, fire:1, pop:2, farms:1, prod:1, iplc:0, roads:1, elec:0, market:1, portfolio:0 },
-    livelihood: { drought:2, heat:1, flood:0, erosion:1, poverty:3, food:2, gender:2, biodiv:1, carbon:1, fire:0, pop:2, farms:2, prod:2, iplc:1, roads:1, elec:0, market:2, portfolio:1 },
-    biodiv:     { drought:1, heat:1, flood:1, erosion:2, poverty:1, food:1, gender:1, biodiv:3, carbon:3, fire:2, pop:1, farms:1, prod:1, iplc:2, roads:0, elec:0, market:0, portfolio:1 },
-    portfolio:  { drought:1, heat:1, flood:1, erosion:1, poverty:2, food:1, gender:1, biodiv:1, carbon:1, fire:0, pop:2, farms:2, prod:3, iplc:0, roads:3, elec:2, market:3, portfolio:3 }
+    climate:    { drought:3, flood:2, heat:3, water:2, erosion:1, carbon:1, biodiv:1, poverty:1, prodgap:1, agdep:1 },
+    livelihood: { drought:2, flood:1, heat:1, water:1, erosion:1, carbon:1, biodiv:1, poverty:3, prodgap:3, agdep:2 },
+    biodiv:     { drought:1, flood:1, heat:1, water:1, erosion:2, carbon:3, biodiv:3, poverty:1, prodgap:1, agdep:1 },
+    portfolio:  { drought:2, flood:2, heat:2, water:2, erosion:2, carbon:2, biodiv:2, poverty:2, prodgap:2, agdep:2 }
   };
   function setPrio(varKey, level) {
     const row = prioRail && prioRail.querySelector('[data-var="' + varKey + '"]');
@@ -5582,8 +5956,8 @@
   const prioMyOpt = document.getElementById('prio-myopt');
   // saved custom profiles captured from current weights
   const prioSaved = {
-    'my-fsrp':   { drought:2, heat:1, flood:0, erosion:1, poverty:3, food:2, gender:2, biodiv:1, carbon:1, fire:0, pop:2, farms:2, prod:3, iplc:1, roads:2, elec:1, market:2, portfolio:3 },
-    'my-kenema': { drought:3, heat:2, flood:0, erosion:1, poverty:3, food:3, gender:2, biodiv:2, carbon:1, fire:0, pop:3, farms:2, prod:2, iplc:1, roads:1, elec:0, market:1, portfolio:1 }
+    'my-fsrp':   { drought:2, flood:1, heat:1, water:1, erosion:1, carbon:1, biodiv:1, poverty:3, prodgap:3, agdep:2 },
+    'my-kenema': { drought:3, flood:1, heat:2, water:2, erosion:1, carbon:1, biodiv:2, poverty:3, prodgap:2, agdep:2 }
   };
   let prioDirty = false;
   function applyProfile(weights) {

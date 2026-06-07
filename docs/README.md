@@ -9,7 +9,7 @@ This folder hosts the live demonstrator artefacts for the Rural NbS Scan project
 | File | Description |
 |---|---|
 | `index.html` | Landing page listing the artefacts |
-| `wireframe.html` | TTL tool wireframe v0.6 (interactive mockup) |
+| `wireframe.html` | TTL tool wireframe v0.7 (interactive mockup) |
 | `sle_geo.js` · `sle_map.js` · `priority_detail.js` · `project_risk.js` | JS the wireframe loads (geometry + map/detail/risk logic) |
 | `pipeline.html` | Pipeline architecture v0.3 (one-page diagram) |
 | `README.md` | This file |

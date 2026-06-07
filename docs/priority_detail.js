@@ -40,85 +40,98 @@
   // dir: 'hi' = higher raw → higher priority; 'lo' = lower raw → higher priority
   // fixed: ascending bands by upper bound `max` (last = Infinity)
   var INF = Infinity;
+  // kind: 'priority' = weighted need score · 'descriptor' = context filter, never weighted
+  // sens: nationally-sensitive variable → carries a "confirm country-endorsed source" flag
   var PVARS = [
-    { key: 'spei', name: 'Drought (SPEI)', theme: 'Climate hazards', unit: 'SPEI · index', fkey: 'north',
+    { key: 'spei', name: 'Drought hazard', theme: 'Climate hazard', kind: 'priority', unit: 'SPEI · index', fkey: 'north',
       range: [-2.4, 1.0], dir: 'lo', method: 'percentile',
       fixed: [{ lab: 'Extreme', max: -2 }, { lab: 'Severe', max: -1.5 }, { lab: 'Moderate', max: -1 }, { lab: 'Mild', max: -0.5 }, { lab: 'None / wet', max: INF }],
       prov: 'SPEI drought classes', invField: true,
       what: 'Standardised Precipitation–Evapotranspiration Index — a normalised measure of dry vs wet conditions. More negative = drier.',
-      source: '<b>SPEI global</b> · 1 km · monthly · CSIC · CC-BY 4.0' },
-    { key: 'flood', name: 'Flood hazard', theme: 'Climate hazards', unit: 'hazard · 0–1', fkey: 'south',
+      source: '<b>SPEI global</b> · 1 km · monthly · CSIC · CC-BY 4.0', grain: 'SPEI global · 1 km', tier: 'Tier 1 · peer-reviewed',
+      quote: '“Drought is the dominant climate stressor on rainfed systems in the interior.” — Recipe note · Climate hazard (p. 6)' },
+    { key: 'flood', name: 'Flood hazard', theme: 'Climate hazard', kind: 'priority', unit: 'hazard · 0–1', fkey: 'south',
       range: [0, 1], dir: 'hi', method: 'fixed',
       fixed: [{ lab: 'Low', max: 0.33 }, { lab: 'Moderate', max: 0.66 }, { lab: 'High', max: INF }],
       prov: 'flood return-period classes',
       what: 'Modelled flood hazard from return-period inundation depth, normalised 0–1. Concentrated on low-lying southern plains and river margins.',
-      source: '<b>Fathom / JRC</b> · 90 m · global · research licence' },
-    { key: 'heat', name: 'Heat stress', theme: 'Climate hazards', unit: '°C anomaly', fkey: 'north',
+      source: '<b>Fathom / JRC</b> · 90 m · global · research licence', grain: 'Fathom / JRC · 90 m', tier: 'Tier 2 · global model' },
+    { key: 'heat', name: 'Heat-stress hazard', theme: 'Climate hazard', kind: 'priority', unit: '°C anomaly', fkey: 'north',
       range: [0.4, 3.4], dir: 'hi', method: 'percentile',
       fixed: [{ lab: 'Slight', max: 1.2 }, { lab: 'Moderate', max: 2.0 }, { lab: 'High', max: 2.8 }, { lab: 'Extreme', max: INF }],
       prov: 'WBGT anomaly classes',
       what: 'Projected wet-bulb temperature anomaly under SSP2-4.5, °C above baseline. Highest in the drier interior north.',
-      source: '<b>CHIRTS / CMIP6</b> · 5 km · derived' },
-    { key: 'erosion', name: 'Erosion-reduction potential', theme: 'NbS-response outcomes', unit: 't/ha/yr avoided', fkey: 'se',
+      source: '<b>CHIRTS / CMIP6</b> · 5 km · derived', grain: 'CHIRTS / CMIP6 · 5 km', tier: 'Tier 2 · derived' },
+    { key: 'wstress', name: 'Water stress', theme: 'Climate hazard', kind: 'priority', unit: 'index · 0–1', fkey: 'north',
+      range: [0.05, 0.95], dir: 'hi', method: 'percentile',
+      fixed: [{ lab: 'Low', max: 0.33 }, { lab: 'Moderate', max: 0.55 }, { lab: 'High', max: 0.75 }, { lab: 'Severe', max: INF }],
+      prov: 'water-stress index classes',
+      what: 'Ratio of water demand to renewable supply, 0–1. Higher = more stressed; peaks in the drier interior north.',
+      source: '<b>WRI Aqueduct</b> · sub-basin · derived', grain: 'WRI Aqueduct · sub-basin', tier: 'Tier 2 · global model' },
+    { key: 'erosion', name: 'Soil-erosion risk', theme: 'NbS response (environment)', kind: 'priority', unit: 't/ha/yr', fkey: 'se',
       range: [0, 28], dir: 'hi', method: 'minmax',
       fixed: [{ lab: 'Low', max: 6 }, { lab: 'Moderate', max: 14 }, { lab: 'High', max: 22 }, { lab: 'Very high', max: INF }],
-      prov: 'RUSLE avoided-loss bands',
-      what: 'Soil loss that NbS could plausibly avoid (RUSLE), t/ha/yr. Highest on the steep south-eastern uplands.',
-      source: '<b>RUSLE (derived)</b> · 1 km · from slope, soil & cover' },
-    { key: 'carbon', name: 'Carbon sequestration', theme: 'NbS-response outcomes', unit: 'tCO₂/ha/yr', fkey: 'se',
+      prov: 'RUSLE soil-loss bands',
+      what: 'Modelled soil loss the NbS could reduce (RUSLE), t/ha/yr. Highest on the steep south-eastern uplands.',
+      source: '<b>RUSLE (derived)</b> · 1 km · from slope, soil & cover', grain: 'RUSLE derived · 1 km', tier: 'Tier 2 · derived' },
+    { key: 'carbon', name: 'Carbon-sequestration potential', theme: 'NbS response (environment)', kind: 'priority', unit: 'tCO₂/ha/yr', fkey: 'se',
       range: [0.3, 7.5], dir: 'hi', method: 'minmax',
       fixed: [{ lab: 'Low', max: 2 }, { lab: 'Moderate', max: 4 }, { lab: 'High', max: INF }],
       prov: 'IPCC tier-1 accumulation rates',
       what: 'Indicative above-ground carbon accumulation an NbS could deliver, tCO₂/ha/yr.',
-      source: '<b>IPCC tier-1</b> · agro-ecological zone lookup' },
-    { key: 'wyield', name: 'Water-yield benefit', theme: 'NbS-response outcomes', unit: 'mm/yr', fkey: 'ne',
-      range: [0, 110], dir: 'hi', method: 'percentile',
-      fixed: [{ lab: 'Low', max: 30 }, { lab: 'Moderate', max: 70 }, { lab: 'High', max: INF }],
-      prov: 'InVEST water-yield bands',
-      what: 'Modelled change in catchment water yield attributable to restoration, mm/yr.',
-      source: '<b>InVEST</b> · catchment model (derived)' },
-    { key: 'biodiv', name: 'Biodiversity co-benefit', theme: 'NbS-response outcomes', unit: 'index · 0–1', fkey: 'east',
+      source: '<b>IPCC tier-1</b> · agro-ecological zone lookup', grain: 'IPCC tier-1 · zone lookup', tier: 'Tier 1 · IPCC' },
+    { key: 'biodiv', name: 'Biodiversity priority', theme: 'NbS response (environment)', kind: 'priority', unit: 'index · 0–1', fkey: 'east',
       range: [0.05, 0.95], dir: 'hi', method: 'percentile',
       fixed: [{ lab: 'Low', max: 0.33 }, { lab: 'Moderate', max: 0.66 }, { lab: 'High', max: INF }],
       prov: 'KBA / intactness composite',
       what: 'Composite of proximity to Key Biodiversity Areas and habitat intactness, 0–1. Peaks toward the eastern Gola forests.',
-      source: '<b>KBA + intactness</b> · composite' },
-    { key: 'rpop', name: 'Rural population', theme: 'People & production', unit: 'persons/km²', fkey: 'townrural',
-      range: [4, 380], dir: 'hi', method: 'percentile',
-      fixed: [{ lab: 'Sparse', max: 40 }, { lab: 'Moderate', max: 120 }, { lab: 'Dense', max: 250 }, { lab: 'Very dense', max: INF }],
-      prov: 'WorldPop density bands',
-      what: 'Rural population density, persons/km². Higher density = more people who could benefit.',
-      source: '<b>WorldPop</b> · 100 m · 2020 · CC-BY 4.0' },
-    { key: 'poverty', name: 'Poverty rate', theme: 'People & production', unit: '% below line', fkey: 'north',
-      range: [16, 84], dir: 'hi', method: 'percentile',
+      source: '<b>KBA + intactness</b> · composite', grain: 'KBA + intactness · composite', tier: 'Tier 2 · composite' },
+    { key: 'poverty', name: 'Rural poverty', theme: 'People & production', kind: 'priority', unit: '% below line', fkey: 'north',
+      range: [16, 84], dir: 'hi', method: 'percentile', sens: true,
       fixed: [{ lab: '<20%', max: 20 }, { lab: '20–40%', max: 40 }, { lab: '40–60%', max: 60 }, { lab: '60–80%', max: 80 }, { lab: '≥80%', max: INF }],
       prov: 'national poverty assessment',
       what: 'Share of population below the national poverty line, %. Higher = greater need.',
-      source: '<b>SL Integrated Household Survey</b> · ADM2' },
-    { key: 'ipc', name: 'Food insecurity', theme: 'People & production', unit: 'IPC phase 1–5', fkey: 'ne',
-      range: [1, 5], dir: 'hi', method: 'fixed',
-      fixed: [{ lab: '1 · Minimal', max: 1.5 }, { lab: '2 · Stressed', max: 2.5 }, { lab: '3 · Crisis', max: 3.5 }, { lab: '4 · Emergency', max: 4.5 }, { lab: '5 · Famine', max: INF }],
-      prov: 'IPC phases', round: true,
-      what: 'Integrated Phase Classification of acute food insecurity, phases 1–5 (an absolute, internationally-comparable scale).',
-      source: '<b>IPC / Cadre Harmonisé</b> · ADM2 · seasonal' },
-    { key: 'smallhold', name: 'Smallholder density', theme: 'People & production', unit: 'farms/km²', fkey: 'townrural',
+      source: '<b>SL Integrated Household Survey</b> · ADM2', grain: 'SL IHS · ADM2', tier: 'Tier 1 · national survey',
+      endorse: 'Poverty figures are nationally sensitive — confirm the Stats SL country-endorsed release before publishing.',
+      upload: 'A more recent district poverty surface from the 2024 survey round may exist locally — upload to replace the 2018 default.' },
+    { key: 'prodgap', name: 'Production gap', theme: 'People & production', kind: 'priority', unit: '% below potential', fkey: 'ne',
+      range: [5, 70], dir: 'hi', method: 'percentile',
+      fixed: [{ lab: 'Small', max: 20 }, { lab: 'Moderate', max: 40 }, { lab: 'Large', max: 55 }, { lab: 'Very large', max: INF }],
+      prov: 'yield-gap bands',
+      what: 'Shortfall of actual vs attainable yield, %. A larger gap = more headroom for an NbS to lift production.',
+      source: '<b>GYGA / FAO</b> · agro-zone (derived)', grain: 'GYGA / FAO · agro-zone', tier: 'Tier 2 · derived' },
+    { key: 'agdep', name: 'Agricultural dependency', theme: 'People & production', kind: 'priority', unit: '% livelihoods', fkey: 'townrural',
+      range: [20, 92], dir: 'hi', method: 'percentile',
+      fixed: [{ lab: 'Low', max: 35 }, { lab: 'Moderate', max: 55 }, { lab: 'High', max: 75 }, { lab: 'Very high', max: INF }],
+      prov: 'census livelihood shares',
+      what: 'Share of livelihoods dependent on agriculture, %. Higher = more exposed to land-productivity change.',
+      source: '<b>Agricultural census</b> · ADM2', grain: 'Ag census · ADM2', tier: 'Tier 1 · national census' },
+    { key: 'rpop', name: 'Rural population', theme: 'Descriptors (context)', kind: 'descriptor', unit: 'persons/km²', fkey: 'townrural',
+      range: [4, 380], dir: 'hi', method: 'percentile', sens: true,
+      fixed: [{ lab: 'Sparse', max: 40 }, { lab: 'Moderate', max: 120 }, { lab: 'Dense', max: 250 }, { lab: 'Very dense', max: INF }],
+      prov: 'WorldPop density bands',
+      what: 'Rural population density, persons/km². A descriptor of who is present — used as a filter, not weighted into the score.',
+      source: '<b>WorldPop</b> · 100 m · 2020 · CC-BY 4.0', grain: 'WorldPop · 100 m', tier: 'Tier 1 · modelled census',
+      endorse: 'Population counts are nationally sensitive — confirm the country-endorsed census / WorldPop release.' },
+    { key: 'smallhold', name: 'Farm size / smallholder', theme: 'Descriptors (context)', kind: 'descriptor', unit: 'farms/km²', fkey: 'townrural',
       range: [2, 58], dir: 'hi', method: 'minmax',
       fixed: [{ lab: 'Low', max: 12 }, { lab: 'Moderate', max: 30 }, { lab: 'High', max: INF }],
       prov: 'agricultural census bands',
-      what: 'Smallholder farm density, farms/km² — a proxy for how many producers a measure would reach.',
-      source: '<b>Agricultural census</b> · ADM2 (derived)' },
-    { key: 'market', name: 'Market access', theme: 'Infrastructure', unit: 'hours to market', fkey: 'remote',
+      what: 'Smallholder farm density, farms/km² — a descriptor of the farming structure, used as a filter.',
+      source: '<b>Agricultural census</b> · ADM2 (derived)', grain: 'Ag census · ADM2', tier: 'Tier 2 · derived' },
+    { key: 'market', name: 'Market access', theme: 'Descriptors (context)', kind: 'descriptor', unit: 'hours to market', fkey: 'remote',
       range: [0.3, 7.5], dir: 'hi', method: 'percentile',
       fixed: [{ lab: '<1 h', max: 1 }, { lab: '1–3 h', max: 3 }, { lab: '3–5 h', max: 5 }, { lab: '≥5 h', max: INF }],
       prov: 'travel-time surface classes',
-      what: 'Travel time to the nearest market town, hours. Remoter (more hours) = higher priority for support.',
-      source: '<b>Malaria Atlas / Weiss et al.</b> · 1 km · global' },
-    { key: 'roads', name: 'Road density', theme: 'Infrastructure', unit: 'km/km²', fkey: 'townrural',
-      range: [0.02, 1.15], dir: 'lo', method: 'minmax',
-      fixed: [{ lab: 'Very low', max: 0.15 }, { lab: 'Low', max: 0.4 }, { lab: 'Moderate', max: 0.8 }, { lab: 'High', max: INF }],
-      prov: 'OSM road-density bands', invField: true,
-      what: 'Road length per km². Lower density = more isolated = higher priority for enabling investment.',
-      source: '<b>OpenStreetMap</b> · road network (derived)' }
+      what: 'Travel time to the nearest market town, hours — a descriptor of remoteness, used as a filter / mask.',
+      source: '<b>Malaria Atlas / Weiss et al.</b> · 1 km · global', grain: 'Weiss et al. · 1 km', tier: 'Tier 1 · peer-reviewed' },
+    { key: 'prodval', name: 'Agricultural production value', theme: 'Descriptors (context)', kind: 'descriptor', unit: '$/km²/yr', fkey: 'se',
+      range: [5, 260], dir: 'hi', method: 'percentile', sens: true,
+      fixed: [{ lab: 'Low', max: 40 }, { lab: 'Moderate', max: 110 }, { lab: 'High', max: 180 }, { lab: 'Very high', max: INF }],
+      prov: 'gridded ag-GDP bands',
+      what: 'Value of agricultural output per km², $/yr — context for what is at stake, used as a filter, not a need score.',
+      source: '<b>Spatial ag-GDP</b> · 10 km (derived)', grain: 'Spatial ag-GDP · 10 km', tier: 'Tier 3 · indicative',
+      endorse: 'Production value is nationally sensitive — confirm the country-endorsed agricultural-statistics source.' }
   ];
 
   var REGION = { Kenema: 1, Kailahun: 1, Kono: 1 };   // mock "Eastern region" subset
@@ -314,12 +327,23 @@
     byId('pd-theme').textContent = active.theme;
     byId('pd-name-bc').textContent = active.name;
     byId('pd-title').textContent = active.name;
+    var kindPill = active.kind === 'descriptor'
+      ? '<span class="pill blue"><svg class="ic-xs" aria-hidden="true"><use href="#i-eye"/></svg>DESCRIPTOR · CONTEXT</span>'
+      : '<span class="pill blue"><svg class="ic-xs" aria-hidden="true"><use href="#i-target"/></svg>PRIORITY · NEED SCORE</span>';
+    var sensPill = active.sens ? '<span class="pill amber"><svg class="ic-xs" aria-hidden="true"><use href="#i-lock"/></svg>NATIONALLY SENSITIVE</span>' : '';
     byId('pd-pills').innerHTML =
-      '<span class="pill gray">' + active.theme.toUpperCase() + '</span>' +
-      '<span class="pill blue"><svg class="ic-xs" aria-hidden="true"><use href="#i-target"/></svg>PRIORITY · NEED SCORE</span>' +
+      '<span class="pill gray">' + active.theme.toUpperCase() + '</span>' + kindPill + sensPill +
       '<span class="pill green">NbS-AGNOSTIC</span>';
     byId('pd-what').textContent = active.what;
-    byId('pd-source').innerHTML = '<div class="source-block"><div class="src-line">' + active.source + '</div></div>';
+    var chips = '<div class="prov-chips">' +
+      '<span class="prov-chip"><span class="pk">dataset</span>' + (active.grain || '—') + '</span>' +
+      '<span class="prov-chip tier"><span class="pk">evidence</span>' + (active.tier || 'Tier 2') + '</span>' +
+      '<span class="prov-chip' + (active.sens ? ' sens' : '') + '"><span class="pk">sensitivity</span>' + (active.sens ? 'nationally sensitive' : 'public') + '</span>' +
+      '</div>';
+    var endorse = active.sens ? '<div class="dsrc-flag endorsed"><svg aria-hidden="true"><use href="#i-alert"/></svg><div><b>Confirm a country-endorsed source.</b> ' + active.endorse + '</div></div>' : '';
+    var upload = active.upload ? '<div class="dsrc-flag upload"><svg aria-hidden="true"><use href="#i-download"/></svg><div><b>A better local dataset may exist.</b> ' + active.upload + '</div></div>' : '';
+    var quote = active.quote ? '<div class="prov-quote">' + active.quote + '</div>' : '';
+    byId('pd-source').innerHTML = '<div class="source-block"><div class="src-line">' + active.source + '</div>' + chips + endorse + upload + quote + '</div>';
     byId('pd-raw-unit').textContent = active.unit;
     byId('pd-raw-lo').textContent = fmt(active.range[0]);
     byId('pd-raw-hi').textContent = fmt(active.range[1]);
