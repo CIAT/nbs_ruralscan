@@ -1,5 +1,10 @@
 # Schema spec — field-level reference (v0.3.0)
 
+> **v0.3.0-G (June 2026)** — doc-only: Table-overview owners refreshed to current roles
+> (Brayden = M2/M2b + T1 download + T7 farming_system classifier; Pete = M1/M3/M4 + T4/T5 method
+> lead; Namita = Variable Cards + expert elicitation + T6 lit-sourced; MFL team = T6 domain;
+> Benson = QA across). T7 prose updated to match. No structural or content change.
+>
 > **v0.3.0-F (June 2026)** — additive: `iplc_lands` priority row added under T5
 > `equity_inclusion` (issue #31). VONT canonical + BIND `iplc_lands__global` → `landmark_iplc_lands`
 > shipped. T5 now 16 rows (12 priorities + 4 descriptors). No structural change.
@@ -249,7 +254,7 @@ analytical backbone of the Rural NbS Scan. They are the authoritative starting p
 
 - **Pipeline implementation** — building the data pipeline and MCDA engine. Code always *reads* from these
   files rather than hardcoding values.
-- **Literature team (Namita)** — populating the tables for each NbS via human-validated research.
+- **Methodology team** — populating the tables for each NbS via human-validated research. Pete coordinates T4 (suitability) generation; Namita coordinates expert-opinion elicitation + Variable Cards + T6 scorecards; Brayden owns the M2/M2b risk-side population and the T1 dataset-download layer.
 - **Future expansion** — adding an NbS means appending rows, not changing the schema or the code.
 
 All tables link via three foreign keys: `nbs_id` (from T0), `dataset_id` (from T1), `variable_id` (from T5).
@@ -274,16 +279,16 @@ the vocabularies to lock up front.)
 
 ## Table overview
 
-| Table | Primary purpose | Owner | Per-NbS? | Location in repo |
-|---|---|---|---|---|
-| **T0** NbS Registry | Master record per NbS, economic archetype, evidence quality | Namita | yes (`nbs_id`) | `recipes/<nbs_id>/` |
-| **T1** Data Registry | Dataset catalog, access routes, citations, limitations | Namita + Benson | no | schema root |
-| **T2** Climate Risk Formulation | Risk variables, hazard/exposure formula, double-count guard | Namita (lit) | no | schema root |
-| **T3** NbS × Hazard × Farming | Qualitative mitigation-potential matrix | Namita (lit) | yes (`nbs_id`) | `recipes/<nbs_id>/` |
-| **T4** Suitability Mappings | Response functions, scenario flags, context overrides | Namita | yes (`nbs_id`) | `recipes/<nbs_id>/` |
-| **T5** Opportunity Space Vars | TTL-facing priority layers | Namita + Benson | no | schema root |
-| **T6** NbS Scorecard | Likert effects, economic profile per NbS | Namita (lit) + MFL | yes (`nbs_id`) | `recipes/<nbs_id>/` |
-| **T7** Geographic Context | AEZ / farming-system / admin context definitions | Benson | no | schema root |
+| Table | Primary purpose | Owner | QA | Per-NbS? | Location in repo |
+|---|---|---|---|---|---|
+| **T0** NbS Registry | Master record per NbS, economic archetype, evidence quality | Namita (content) · Pete (oversight) | Benson | yes (`nbs_id`) | `recipes/<nbs_id>/` |
+| **T1** Data Registry | Dataset catalog, access routes, citations, limitations | Brayden (download layer) · Namita (lit-sourced rows) | Benson | no | schema root |
+| **T2** Climate Risk Formulation | Risk variables, hazard/exposure formula, double-count guard | Brayden (M2 owner) · Namita (lit) | Benson | no | schema root |
+| **T3** NbS × Hazard × Farming | Qualitative mitigation-potential matrix · `risk_role` + asset-threat weights for M2b | Brayden (M2/M2b risk side) · Namita (lit) | Benson | yes (`nbs_id`) | `recipes/<nbs_id>/` |
+| **T4** Suitability Mappings | Response functions, scenario flags, context overrides | Pete (method lead) · Namita (lit-sourced rows + expert elicitation) · MFL review | Benson | yes (`nbs_id`) | `recipes/<nbs_id>/` |
+| **T5** Opportunity Space Vars | TTL-facing priority layers (`mcda_role = priority` \| `descriptor`) | Pete (M4 lead) · Namita (Variable Cards + expert input) | Benson | no | schema root |
+| **T6** NbS Scorecard | Likert effects (linked to T5 priorities), economic profile + cost-effectiveness denominators | Namita (lit-sourced) · MFL team (Sarah · Chris · Evert · Hannes — domain content) | Benson | yes (`nbs_id`) | `recipes/<nbs_id>/` |
+| **T7** Geographic Context | AEZ / farming-system (EO-derived, 6 classes) / admin context definitions | Brayden (classifier + analytical context) · Pete (vocab review) | Benson | no | schema root |
 
 **Placement rule (draft-0):** tables that carry an `nbs_id` column (T0, T3, T4, T6) live under
 `schema/recipes/<nbs_id>/`; cross-NbS tables (T1, T2, T5, T7) live at the schema root. Adding an NbS adds a
@@ -588,8 +593,10 @@ narrative lives there), not a model output.
 ## T7 — Geographic Context
 
 AEZ, farming-system, administrative and hydrological context definitions used to resolve context-specific
-overrides in T4. Primarily populated by Benson. Provides the controlled vocabulary the pipeline looks up by
-`context_type` + `value_in_dataset` when reading raster/vector data.
+overrides in T4. Populated by Brayden (analytical context + EO-derived farming-system classifier — see
+`methodology/farming_system_classifier.md`) with Pete reviewing the controlled vocab; Benson QA. Provides
+the controlled vocabulary the pipeline looks up by `context_type` + `value_in_dataset` when reading
+raster/vector data.
 
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
