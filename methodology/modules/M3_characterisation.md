@@ -1,13 +1,13 @@
 # M3 — Opportunity Space Characterisation
 
-**Module spec sheet · v0.1 draft · June 2026**
+**Module spec sheet · v1.0 · June 2026**
 
 | Field | Value |
 |---|---|
 | **ID** | M3 |
 | **Module** | Opportunity Space Characterisation |
 | **Owner(s)** | Pete Steward (operational lead) · Namita Joshi (variable content) · Benson (QA/QC) · implemented in Python via Claude Code |
-| **Status** | Draft — authored to match the v0.6 wireframe (Opportunity Space panels) |
+| **Status** | Ratified — v1.0 |
 | **Schema tables consumed** | T1 · T5 · T7 (+ M1 opportunity-space mask) |
 | **Schema tables produced** | (none — outputs are rasters + tables) |
 | **Position in pipeline** | M1 (Opp Space) → **M3 (Characterisation)** → M4 (Hotspots) |
@@ -166,11 +166,11 @@ def iplc_overlap_flag(
     Consumed by M6 to set FPIC_REQUIRED / ESS7."""
 ```
 
-## 13. Open questions
+## 13. Open questions & decisions
 
-1. Should M3 standardise (own the normalization application) or only assemble, leaving standardisation to M4? *(Current spec: M3 applies; M4 specifies + validates.)*
-2. Which exposure layers are framework-default vs recipe-specific (rural pop, farms, production value, livestock)?
-3. Future-scenario characterisation — characterise under baseline only, or baseline + future?
+1. **Standardization Responsibility:** M3 applies standardisation to priority variables according to their T5 normalization rules; M4 validates and records what was applied in metadata (`hotspots_meta.json`).
+2. **Exposure/Priority Layers Sourcing:** Rural population, smallholder farms, and crop/livestock production values are framework-default priority variables; recipe-specific variables (e.g., livestock densities, regional poverty indicators) can be introduced via T5 as needed.
+3. **Scenario Horizon:** Characterisation runs under both baseline and future climate scenario horizons (e.g., SPEI/hazard levels under future projections) to map the distribution of potential outcomes.
 
 ---
 
@@ -178,3 +178,4 @@ def iplc_overlap_flag(
 
 - **v0.1** (June 2026) — authored to match the v0.6 wireframe Opportunity Space panels. Splits cleanly from M4 (M3 describes, M4 prioritises). Computed in Python (post native-GEE).
 - **v0.1.1** (June 2026) — annotated §12 with v0.3.0 schema state: T5 mcda_role priority/descriptor split at assembly; ratified themes; T7 6-class EO-derived farming_system; BIND resolver call required (not raw T5.dataset_id); iplc_lands binary-presence handling + FPIC overlap flag. Module path → `src/nbs_ruralscan/characterisation.py`. Function signatures widened; new `iplc_overlap_flag` helper. No methodology change.
+- **v1.0** (June 2026) — Finalised and ratified module specification. Open questions resolved and locked to match the built wireframe.

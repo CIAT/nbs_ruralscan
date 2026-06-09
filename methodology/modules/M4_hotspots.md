@@ -1,13 +1,13 @@
 # M4 — Priority Hotspots (MCDA)
 
-**Module spec sheet · v0.1 draft · June 2026**
+**Module spec sheet · v1.0 · June 2026**
 
 | Field | Value |
 |---|---|
 | **ID** | M4 |
 | **Module** | Priority Hotspots (MCDA) |
 | **Owner(s)** | Pete Steward (operational lead, methods) · Brayden (methods support) · Benson Kenduiywo (QA/QC) · implemented in Python via Claude Code |
-| **Status** | Draft — authored to match the v0.6 wireframe (Priority Hotspots tab) |
+| **Status** | Ratified — v1.0 |
 | **Schema tables consumed** | T5 · T7 (+ M1 opportunity-space mask, M3 priority layers, optional M2b project-risk rating) |
 | **Schema tables produced** | (none — outputs are rasters + tables) |
 | **Position in pipeline** | M1 (Opp Space) + M3 (Characterisation) → **M4 (Hotspots)**; M2b applied as a scope filter |
@@ -109,7 +109,7 @@ Each T5 row carries: `norm_method`, `direction`, `reference_frame`, `clip`, and 
 | Global dataset | severity vs a global distribution | cross-AOI comparable; may give little internal contrast |
 | Fixed baseline | change vs a historical baseline | trajectory framing |
 
-**Recommended default (pending team ratification — see backlog issue A):** percentile within the **AOI**, *labelled as relative*, with the raw value + a fixed reference band shown alongside so relative contrast isn't misread as absolute severity. Use **fixed thresholds wherever a credible standard exists** (more defensible to the WB). The chosen method, direction and reference frame are surfaced in the UI and in the map caption (Technical mode), and logged in `hotspots_meta.json`.
+**Ratified default:** percentile within the **AOI**, *labelled as relative*, with the raw value + a fixed reference band shown alongside so relative contrast isn't misread as absolute severity. Use **fixed thresholds wherever a credible standard exists** (more defensible to the WB). The chosen method, direction and reference frame are surfaced in the UI and in the map caption (Technical mode), and logged in `hotspots_meta.json`.
 
 > Priority scoring uses monotonic rescales (direction + clip), **not** the fuzzy membership curves of M1 suitability — priority is a *need* score, not a *fitness* score.
 
@@ -131,7 +131,7 @@ All T5 priority variables for the AOI, grouped by theme (climate hazards · NbS-
 
 - [ ] T5 rows populated with normalization rules for the NbS/AOI
 - [ ] M1 mask + M3 priority layers available
-- [ ] Normalization default ratified by the team (backlog issue A)
+- [x] Normalization default ratified by the team (backlog issue A)
 - [ ] Pipeline runs end-to-end for agroforestry Sierra Leone
 - [ ] Outputs sanity-checked; ranked units match regional knowledge
 
@@ -218,12 +218,12 @@ def rank_units(
 
 > Implement `src/nbs_ruralscan/hotspots.py` for the Rural NbS Scan, following the spec in `methodology/modules/M4_hotspots.md`. Pure-numpy math core (T1 datasets already BIND-bound at v0.3.0; M3 produces the standardised priority layers; M1 produces the opportunity-space mask; caller handles raster I/O via rasterio). Filter T5 rows to `mcda_role == 'priority'` before building the priority stack. Reuse `src/nbs_ruralscan/mcda.py` (`weighted_overlay`, `sensitivity_perturb`, `quartile_classify`, `reconcile_weights`) — do not duplicate the math. M2b project-risk applied only as a filter (mode `flag` | `exclude`), never summed. Use the function signatures listed in the spec's "Implementation notes" section. Show me the imports + `map_conceptual_weights` + `build_priority_stack` first; pause for review before the rest.
 
-## 14. Open questions
+## 14. Open questions & decisions
 
-1. Conceptual→numeric mapping: 0/1/2/3 (default) vs 0/0.33/0.66/1 vs exponential? Document the choice.
-2. Should "climate risk to livelihoods" (M2) enter M4 as a single composite priority layer, or as its component hazards? (Composite avoids double-count; components give finer control.)
-3. Reference-frame default — confirm AOI-relative vs fixed-where-available (backlog issue A).
-4. Project-Risk scope default behaviour — flag vs exclude.
+1. **Conceptual→numeric mapping:** The conceptual weight inputs (`—`, `L`, `M`, `H`) map to numeric weights `0`, `1`, `2`, `3` by default, normalised to sum to 1.
+2. **Climate Risk Representation:** Climate risk to livelihoods (M2) enters M4 as a single composite priority layer (the hazard-exposure index) rather than its component hazard layers to prevent double-counting.
+3. **Reference Frame Defaults:** Percentile within the AOI is the standard default for relative parameters, but fixed thresholds must be applied where established standard brackets exist (e.g. IPC, SPEI).
+4. **Project-Risk Scope Action:** If the project-risk filter is active, cells exceeding the risk threshold are flagged in the UI by default rather than completely excluded, though the user can select an "exclude" mode.
 
 ---
 
@@ -231,3 +231,4 @@ def rank_units(
 
 - **v0.1** (June 2026) — authored to match the v0.6 wireframe and to capture the priority-variable normalization decision. Reuses M1's weighting engine with TTL conceptual weights. Computed in Python (post native-GEE).
 - **v0.1.1** (June 2026) — annotated §13 with v0.3.0 schema state (mcda_role priority/descriptor; T5 themes ratified; spatial-grain rule; T7 farming_system 6-class swap; M2b Stream-A+B). Function stubs rewritten to reuse the shipped `src/nbs_ruralscan/mcda.py` math core (no duplication). Added a starting prompt for Claude Code. No methodology change.
+- **v1.0** (June 2026) — Finalised and ratified module specification. Open questions resolved, normalization defaults locked (Issue A), and mcda.py alignment complete.
