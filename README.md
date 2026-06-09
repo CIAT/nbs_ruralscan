@@ -66,8 +66,9 @@ been done.
   ecosystem-services & domain input
 
 Runtime is **Python via Claude Code** (`src/nbs_ruralscan/`), driven by Brayden
-/ Anastasia / Pete. Native GEE App is **dropped** — we work with GEE data in
-Python and build/stress-test the method through the wireframe.
+/ Anastasia / Pete. The standalone **GEE App is dropped** — we pull GEE data and
+run its server-side processing through **xee** (Earth Engine ↔ xarray), compute
+with xarray / rioxarray, and build/stress-test the method through the wireframe.
 
 **Implementation pathway is bifurcated.** Minimum committed deliverable is a
 Colab notebook worked example per pilot (the WB contract obligation — notebooks,

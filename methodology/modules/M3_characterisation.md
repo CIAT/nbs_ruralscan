@@ -12,7 +12,7 @@
 | **Schema tables produced** | (none — outputs are rasters + tables) |
 | **Position in pipeline** | M1 (Opp Space) → **M3 (Characterisation)** → M4 (Hotspots) |
 
-> M3 *describes* the opportunity space; M4 *prioritises* within it. M3 assembles and characterises the priority/development variables (the "fingerprint", climate-risk-to-livelihoods profile, and problem-variable distributions) and hands the clustered priority layers to M4. Computed in **Python** (numpy/rasterio); layers pulled via the Earth Engine API or direct source.
+> M3 *describes* the opportunity space; M4 *prioritises* within it. M3 assembles and characterises the priority/development variables (the "fingerprint", climate-risk-to-livelihoods profile, and problem-variable distributions) and hands the clustered priority layers to M4. Computed in **Python** (xarray · rioxarray); layers pulled via **xee** (Earth Engine ↔ xarray) or direct source.
 
 ---
 
@@ -102,7 +102,7 @@ Variables here (T5) must not also be active in T2 (M2) for the same `nbs_id`. Co
 >
 > | Draft assumption | Current state |
 > |---|---|
-> | Module path `pipeline/characterisation.py` | **Updated** → `src/nbs_ruralscan/characterisation.py` per the v0.2 GEE-App-dropped runtime. Pure-numpy / xarray; caller-side raster I/O via rasterio. |
+> | Module path `pipeline/characterisation.py` | **Updated** → `src/nbs_ruralscan/characterisation.py` per the v0.2 GEE-App-dropped runtime. xarray / rioxarray; GEE data/processing via xee. |
 > | T5 `mcda_role` | **Live** at v0.3.0 with `priority` | `descriptor`. M3 assembles **both** but flags which goes downstream: priorities → standardised stack for M4; descriptors → fingerprint/context only (never standardised for MCDA). Filter at assembly time. |
 > | T5 normalization fields | **Live**: `norm_method`, `direction`, `reference_frame` (AOI / sub-national / global / fixed-baseline), `clip`. M3 applies them per row — don't re-derive. Record what was applied in run meta for M4 to validate. |
 > | T5 themes | **Ratified** at v0.3.0: `climate_hazard` · `nbs_response` · `people_production` · `equity_inclusion` · `context`. Per-theme correlation clustering keys on this enum. |

@@ -12,7 +12,7 @@
 | **Schema tables produced** | (none — outputs are rasters + tables) |
 | **Position in pipeline** | M1 (Opp Space) + M3 (Characterisation) → **M4 (Hotspots)**; M2b applied as a scope filter |
 
-> Renamed from "TTL Hotspots" → **Priority Hotspots** (v0.6). M4 reuses M1's weighting engine (AHP + CRITIC + Entropy) with **TTL-supplied conceptual weights** replacing the recipe defaults. Computed in **Python** (numpy/rasterio); layers pulled via the Earth Engine API or direct source — there is no native server-side GEE pipeline.
+> Renamed from "TTL Hotspots" → **Priority Hotspots** (v0.6). M4 reuses M1's weighting engine (AHP + CRITIC + Entropy) with **TTL-supplied conceptual weights** replacing the recipe defaults. Computed in **Python** (xarray · rioxarray); layers pulled via **xee** (Earth Engine ↔ xarray) or direct source.
 
 ---
 
@@ -141,7 +141,7 @@ All T5 priority variables for the AOI, grouped by theme (climate hazards · NbS-
 >
 > | Draft assumption | Current state |
 > |---|---|
-> | Module path `pipeline/hotspots.py` | **Updated** → `src/nbs_ruralscan/hotspots.py` per the v0.2 GEE-App-dropped runtime. Math is pure-numpy (caller-side raster I/O via rasterio); GEE wrapper a thin adapter if/when needed. |
+> | Module path `pipeline/hotspots.py` | **Updated** → `src/nbs_ruralscan/hotspots.py` per the v0.2 GEE-App-dropped runtime. Operates on xarray DataArrays (raster I/O via rioxarray; GEE data/processing via xee). |
 > | MCDA engine | **Available** in `src/nbs_ruralscan/mcda.py`: `critic_weights`, `entropy_weights`, `ahp_weights`, `reconcile_weights(alpha=0.4)`, `weighted_overlay`, `sensitivity_perturb` (returns `SensitivityResult`), `quartile_classify`. Reuse, don't duplicate. The conceptual→numeric mapping + ranked-unit aggregation are the only M4-specific math. |
 > | T5 `mcda_role` | **Live** at v0.3.0 with values `priority` (drives the hotspot MCDA — 11 rows) and `descriptor` (carried for context, never weighted — 4 rows). M4 MUST filter to `mcda_role == 'priority'` before building the priority stack. |
 > | T5 themes | **Ratified** at v0.3.0: five themes — `climate_hazard`, `nbs_response`, `people`, `production`, `equity_gender`. The UI groups by these; M4 reads `theme` for the "top drivers" attribution. |
@@ -216,7 +216,7 @@ def rank_units(
 
 ### Likely starting prompt for Claude Code
 
-> Implement `src/nbs_ruralscan/hotspots.py` for the Rural NbS Scan, following the spec in `methodology/modules/M4_hotspots.md`. Pure-numpy math core (T1 datasets already BIND-bound at v0.3.0; M3 produces the standardised priority layers; M1 produces the opportunity-space mask; caller handles raster I/O via rasterio). Filter T5 rows to `mcda_role == 'priority'` before building the priority stack. Reuse `src/nbs_ruralscan/mcda.py` (`weighted_overlay`, `sensitivity_perturb`, `quartile_classify`, `reconcile_weights`) — do not duplicate the math. M2b project-risk applied only as a filter (mode `flag` | `exclude`), never summed. Use the function signatures listed in the spec's "Implementation notes" section. Show me the imports + `map_conceptual_weights` + `build_priority_stack` first; pause for review before the rest.
+> Implement `src/nbs_ruralscan/hotspots.py` for the Rural NbS Scan, following the spec in `methodology/modules/M4_hotspots.md`. xarray-based math core operating on `xarray.DataArray`s (T1 datasets already BIND-bound at v0.3.0; M3 produces the standardised priority layers; M1 produces the opportunity-space mask; caller handles raster I/O via rioxarray and GEE data/processing via xee). Filter T5 rows to `mcda_role == 'priority'` before building the priority stack. Reuse `src/nbs_ruralscan/mcda.py` (`weighted_overlay`, `sensitivity_perturb`, `quartile_classify`, `reconcile_weights`) — do not duplicate the math. M2b project-risk applied only as a filter (mode `flag` | `exclude`), never summed. Use the function signatures listed in the spec's "Implementation notes" section. Show me the imports + `map_conceptual_weights` + `build_priority_stack` first; pause for review before the rest.
 
 ## 14. Open questions
 
