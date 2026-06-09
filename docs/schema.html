@@ -87,14 +87,14 @@
   <table>
     <thead><tr><th>Table</th><th>Purpose</th><th>Key field</th><th>Owner</th><th>Location</th></tr></thead>
     <tbody>
-      <tr><td><strong>T0</strong> NbS Registry</td><td>Master record per NbS; economic archetype; evidence quality</td><td><span class="pk">nbs_id</span></td><td>Namita</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
-      <tr><td><strong>T1</strong> Data Registry</td><td>Dataset catalog — access routes, citations, limitations</td><td><span class="pk">dataset_id</span></td><td>Namita + Benson</td><td><span class="root">schema root</span></td></tr>
-      <tr><td><strong>T2</strong> Climate Risk Formulation</td><td>Risk variables, hazard/exposure formula, double-count guard</td><td>variable_id · <span class="fk">dataset_id→T1</span></td><td>Namita (lit)</td><td><span class="root">schema root</span></td></tr>
-      <tr><td><strong>T3</strong> NbS × Hazard × Farming</td><td>Qualitative mitigation-potential matrix</td><td>record_id · <span class="fk">nbs_id→T0</span></td><td>Namita (lit)</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
-      <tr><td><strong>T4</strong> Suitability Mappings</td><td>Response functions, scenario flags, context overrides</td><td>mapping_id · <span class="fk">nbs_id→T0, dataset_id→T1</span></td><td>Namita</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
-      <tr><td><strong>T5</strong> Opportunity Space Vars</td><td>TTL-facing priority layers</td><td>variable_id · <span class="fk">dataset_id→T1</span></td><td>Namita + Benson</td><td><span class="root">schema root</span></td></tr>
-      <tr><td><strong>T6</strong> NbS Scorecard</td><td>Likert effects + economic profile per NbS</td><td>record_id · <span class="fk">nbs_id→T0, variable_id→T5</span></td><td>Namita + MFL</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
-      <tr><td><strong>T7</strong> Geographic Context</td><td>AEZ / farming-system / admin context definitions</td><td>context_id · <span class="fk">dataset_id→T1</span></td><td>Benson</td><td><span class="root">schema root</span></td></tr>
+      <tr><td><strong>T0</strong> NbS Registry</td><td>Master record per NbS; economic archetype; evidence quality</td><td><span class="pk">nbs_id</span></td><td>Pete (oversight) · Namita (content)</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
+      <tr><td><strong>T1</strong> Data Registry</td><td>Dataset catalog — access routes, citations, limitations</td><td><span class="pk">dataset_id</span></td><td>Brayden · Namita · Benson</td><td><span class="root">schema root</span></td></tr>
+      <tr><td><strong>T2</strong> Climate Risk Formulation</td><td>Risk variables, hazard/exposure formula, double-count guard</td><td>variable_id · <span class="fk">dataset_id→T1</span></td><td>Brayden · Namita (lit)</td><td><span class="root">schema root</span></td></tr>
+      <tr><td><strong>T3</strong> NbS × Hazard × Farming</td><td>Qualitative mitigation-potential matrix</td><td>record_id · <span class="fk">nbs_id→T0</span></td><td>Brayden · Namita (lit)</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
+      <tr><td><strong>T4</strong> Suitability Mappings</td><td>Response functions, scenario flags, context overrides</td><td>mapping_id · <span class="fk">nbs_id→T0, dataset_id→T1</span></td><td>Pete · Namita (Task H)</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
+      <tr><td><strong>T5</strong> Opportunity Space Vars</td><td>TTL-facing priority layers</td><td>variable_id · <span class="fk">dataset_id→T1</span></td><td>Pete · Benson</td><td><span class="root">schema root</span></td></tr>
+      <tr><td><strong>T6</strong> NbS Scorecard</td><td>Likert effects + economic profile per NbS</td><td>record_id · <span class="fk">nbs_id→T0, variable_id→T5</span></td><td>Namita · MFL</td><td><code>recipes/&lt;nbs_id&gt;/</code></td></tr>
+      <tr><td><strong>T7</strong> Geographic Context</td><td>AEZ / farming-system / admin context definitions</td><td>context_id · <span class="fk">dataset_id→T1</span></td><td>Benson · Brayden</td><td><span class="root">schema root</span></td></tr>
     </tbody>
   </table>
   <p class="note"><span class="pk">green</span> = primary key · <span class="fk">brown</span> = foreign key · tables carrying an <code>nbs_id</code> live in the recipe folder; cross-NbS tables live at the schema root. Adding an NbS = a new recipe folder + appended rows. No schema or code changes required.</p>
