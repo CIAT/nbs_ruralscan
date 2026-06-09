@@ -6,9 +6,9 @@ How we work. Read once, re-skim when unsure.
 
 | Person | Role | Owns |
 |---|---|---|
-| **Pete Steward** | Team Lead | Framework integrity · wireframe direction · scope-control · WB liaison · **operational lead on M1 (Suitability), M3 (Opp Space Characterisation), M4 (Priority Hotspots)** |
+| **Pete Steward** | Team Lead | Framework integrity · wireframe direction · scope-control · WB liaison · **operational lead on M1 (Suitability), M3 (Opp Space Characterisation), M4 (Priority Hotspots)** · recipe/spec authoring |
 | **Benson Kenduiywo** | QA / QC | Dataset fitness sign-off · output validation · resolution audit · framework primitives (inherited attribution) |
-| **Namita Joshi** | Project Coordination + Literature | **Expert-opinion elicitation + pipeline integration** · Variable Cards · recipe content · NbS scorecards (T6) · coordination |
+| **Namita Joshi** | Project Coordination + Literature | **Task H focus (T0–T7 population methods & extraction protocol)** · expert-opinion elicitation · project coordination |
 | **Brayden Youngberg** | Co-lead — Methodology | **M2 climate-risk + M2b project-disaster-risk index formulation · dataset download layer (T1 → Python) + analytical-context construction (T7); server-side preferred (GEE / STAC / large services)** |
 | **Aniruddha Ghosh** | Methodology Advisor | Variable parsimony · transparency · Claude Code patterns |
 | **Sarah Jones, Chris Kettle, Evert Thomas, Hannes Gaisberger** | MFL Team | Ecosystem services · M6 hand-off content · agroforestry/forest domain input |
