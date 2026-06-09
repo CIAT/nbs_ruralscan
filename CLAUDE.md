@@ -118,7 +118,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 - **Pete Steward** (Team Lead) — framework integrity, wireframe direction, scope-control; **operational lead on M1 (suitability), M3 (opportunity-space characterisation), M4 (hotspotting/MCDA)**. Leads recipe/spec authoring.
 - **Benson Kenduiywo** (Geospatial Analytics) — **QA/QC**: dataset fitness sign-off, output validation, resolution-audit review. *(The framework primitives below remain his inherited work and stay attributed to him.)* Pipeline implementation now proceeds in Python via Claude Code, driven by Brayden / Anastasia / Pete.
-- **Namita Joshi** (Coordination + lit) — **Task H focus (T0–T7 population methods & extraction protocol)**, expert-opinion elicitation, project coordination.
+- **Namita Joshi** (Coordination + lit) — **Task H focus ([expert-opinion elicitation & integration protocol](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/methodology/expert_opinion_protocol.md))**, project coordination.
 - **Brayden Youngberg** (Co-lead — methodology) — **M2 climate-risk + M2b project-disaster-risk index formulation; dataset download layer from T1 + analytical-context construction from T7** (server-side preferred — GEE / STAC / large services).
 - **Aniruddha Ghosh** — variable parsimony + transparency principles; Claude Code patterns
 - **Sarah Jones, Chris Kettle, Evert Thomas, Hannes Gaisberger** (MFL team) — ecosystem services, M6 implementation hand-off content, agroforestry & forest restoration domain input
