@@ -28,7 +28,7 @@ The scaffolding covers the methodology (modules, schema, recipes), the team's wo
 
 - **Pete** — framework integrity & scope-control · M0 Setup · **M1 Suitability · M3 Opportunity Space · M4 Priority Hotspots** · M6 Implementation Hand-off (lead) · recipe/spec/module authoring
 - **Brayden** — M2 Rural Climate Risk · M2b Project Disaster-Risk · **dataset download layer (T1 → Python) and analytical-context construction (T7); server-side preferred (GEE / STAC / large services)**
-- **Namita** — **Task H focus (T0–T7 population methods & extraction protocol)** · expert-opinion elicitation · coordination
+- **Namita** — **Task H focus ([expert-opinion elicitation & integration protocol](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/methodology/expert_opinion_protocol.md))** · expert-opinion elicitation · coordination
 - **Benson** — **QA/QC across all modules**: dataset fitness sign-off, output validation, resolution audit
 - **MFL team** (Sarah · Chris · Evert · Hannes) — M6 hand-off content, ecosystem-services & domain input
 
