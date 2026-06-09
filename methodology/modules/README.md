@@ -12,9 +12,9 @@ Spec sheets are NbS-agnostic. They describe the framework module; per-NbS specif
 | **M1** | **Suitability → Opportunity Space** | [`M1_suitability.md`](./M1_suitability.md) | Pete (lead) + Namita (content) + Benson (QA) | **draft (v0.1)** |
 | M2 | Rural Climate Risk (risk to livelihoods) | [`M2_climate_risk.md`](./M2_climate_risk.md) | Brayden | draft (v0.1) |
 | **M2b** | Project Disaster Risk Screen (risk to investment) | [`M2b_project_risk.md`](./M2b_project_risk.md) | Brayden | **draft (v0.1)** |
-| **M3** | Opportunity Space Characterisation | [`M3_characterisation.md`](./M3_characterisation.md) | Pete (lead) + Namita (content) + Benson (QA) | **draft (v0.1)** |
-| **M4** | Priority Hotspots (MCDA) | [`M4_hotspots.md`](./M4_hotspots.md) | Pete (lead) + Brayden (methods) + Benson (QA) | **draft (v0.1)** |
-| **M5** | NbS Scorecard & Response | [`M5_scorecard.md`](./M5_scorecard.md) | Namita + MFL | **draft (v0.1)** |
+| **M3** | Opportunity Space Characterisation | [`M3_characterisation.md`](./M3_characterisation.md) | Pete (lead) + Namita (content) + Benson (QA) | **ratified (v1.0)** |
+| **M4** | Priority Hotspots (MCDA) | [`M4_hotspots.md`](./M4_hotspots.md) | Pete (lead) + Brayden (methods) + Benson (QA) | **ratified (v1.0)** |
+| **M5** | NbS Scorecard & Response | [`M5_scorecard.md`](./M5_scorecard.md) | Namita + MFL | **ratified (v1.0)** |
 | **M6** | Implementation Hand-off | [`M6_handoff.md`](./M6_handoff.md) | MFL team + Pete + Namita | **draft (v0.1)** |
 
 ## Authoring a module spec

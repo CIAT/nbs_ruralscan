@@ -1,13 +1,13 @@
 # M5 — NbS Scorecard & Response
 
-**Module spec sheet · v0.1 draft · June 2026**
+**Module spec sheet · v1.0 · June 2026**
 
 | Field | Value |
 |---|---|
 | **ID** | M5 |
 | **Module** | NbS Scorecard & Response |
 | **Owner(s)** | Namita Joshi (lit + content) · MFL team (Likert + economic input) · Pete (oversight) |
-| **Status** | Draft — authored to match the v0.6 wireframe ("What this NbS can address" + Economic archetype + NbS Comparison response rows) |
+| **Status** | Ratified — v1.0 |
 | **Schema tables consumed** | T3 · T6 (+ M3 problem-variable distributions) |
 | **Schema tables produced** | (none — renders schema rows) |
 | **Position in pipeline** | reads `nbs_id`; renders alongside M3 in Opportunity Space; feeds NbS Comparison and Next Steps |
@@ -136,11 +136,11 @@ def comparison_rows(
     FPIC/ESS7 caveat column when `iplc_overlap` is True."""
 ```
 
-## 11. Open questions
+## 11. Open questions & decisions
 
-1. Likert scale rendering — keep 5-point (++ · + · 0 · − · −−) or add an explicit "n/a / not assessed"?
-2. Economic archetype granularity — fixed archetypes (Long/Medium/Short Horizon) vs per-NbS numeric bands? (Current: archetype label + indicative bands from T6.)
-3. How prominently to surface confidence — per-cell flag vs an overall scorecard confidence?
+1. **Likert Scale Range:** Maintain the 5-point Likert scale (`++` · `+` · `0` · `−` · `−−`) for qualitative response. If evidence is absent, indicate as "Not Assessed" (`n/a`) in the UI rather than implying neutral (`0`) effect.
+2. **Economic Archetype Granularity:** Combine qualitative archetypes (e.g. "Long Horizon") with quantitative cost ranges (`low`, `high`, `unit`, `source_note` via T6 `economic_value_range` object) to represent establishment and recurring costs.
+3. **Confidence Level Visibility:** Confidence levels (`high` · `medium` · `low`) are shown per outcome cell to maintain transparency. Cost-effectiveness denominators default to `low` confidence until systematically populated from literature.
 
 ---
 
@@ -148,3 +148,4 @@ def comparison_rows(
 
 - **v0.1** (June 2026) — authored to match the v0.6 wireframe (scorecard + economic archetype + comparison rows). Qualitative; economic profile is indicative archetype, not CBA (downstream M6).
 - **v0.1.1** (June 2026) — annotated §10 with v0.3.0 schema state: T6 effects gated to T5 mcda_role=priority; T6 economic-profile generalisation + cost-effectiveness denominators; T3 risk_role / asset_threat / asset_risk_weight live; T6 orphan reroutes done; iplc_lands FPIC/ESS7 caveat surfaced in comparison rows. Module path → `src/nbs_ruralscan/scorecard.py`. Function signatures widened. No methodology change.
+- **v1.0** (June 2026) — Finalised and ratified module specification. Open questions resolved and aligned with the v0.3.0 schema tables.
