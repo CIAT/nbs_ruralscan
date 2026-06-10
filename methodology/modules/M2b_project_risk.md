@@ -149,6 +149,19 @@ decision.
 | Market / value-chain | output-market depth + processing capacity | FAOSTAT + country-team uploads | `market_value_chain` |
 | Labour | seasonal labour availability + cost | ILO + LSMS-ISA / country uploads | `labour_availability` |
 
+### WOCAT QM Alignment & GCA 2022 Enabler Evidence
+
+To ensure methodological traceability and alignment with global Sustainable Land Management (SLM) standards, the 8 operational enabling-environment scenario levers in Stream B are explicitly modeled after and aligned with the **WOCAT QM (Questionnaire on SLM Technologies/Approaches)** indirect drivers of land degradation and SLM adoption:
+
+1. **Accessibility (`accessibility_travel_time`)** maps directly to WOCAT QM indirect driver **`m`** (market access, including roads and transport infrastructure).
+2. **Electrification (`electrification_index`)** maps to WOCAT QM indirect driver **`i`** (infrastructure, including energy, communication, and basic utilities).
+3. **Tenure (`tenure_security`)** maps to WOCAT QM indirect driver **`t`** (land tenure, including formal and customary rights). Secure land tenure is documented by the **Global Center on Adaptation (GCA 2022, p. 85)** as a critical prerequisite for long-term agroforestry investment, as smallholders require long-term land security to justify upfront tree-planting labor and deferred returns.
+4. **Conflict / Fragility (`conflict_fragility_index`)** maps to WOCAT QM indirect driver **`p`** (political stability, security, and conflict).
+5. **Governance / Extension (`extension_governance`)** maps to WOCAT QM indirect drivers **`e`** (extension/education) and **`g`** (governance, policy, and institutional support).
+6. **Finance / Credit (`finance_credit_access`)** maps to WOCAT QM indirect driver **`f`** (financial access and credit availability). **GCA (2022, p. 86)** emphasizes that bridging the agricultural credit and finance gap is critical to buffer the establishment phase of NbS investments.
+7. **Market / Value-chain (`market_value_chain`)** maps to WOCAT QM indirect driver **`m`** (market depth, processing infrastructure, and value chain development).
+8. **Labour (`labour_availability`)** maps to WOCAT QM indirect driver **`l`** (labor availability, including seasonal labor supply and age/gender structures).
+
 **Stream-B principle (filter, never summed):**
 
 - Each lever becomes a T4 row with `suitability_dimension = operational_constraint` and

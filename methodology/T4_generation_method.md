@@ -291,11 +291,7 @@ papers, then weight by tier, then synthesise. Concretely:
 2. **Harmonisation.** Map surface names → canonical Variable Ontology ids, keeping the surface name
    in EV (`raw_name`) for audit. New variables not in VONT are queued for ontology review (Namita +
    Pete) before they enter T4.
-3. **Tier-weighted prevalence + variable combining.** Prevalence across the corpus is not raw
-   paper-count — weight each paper by its `benchmark_tier` (High/Med/Low → 1.0/0.6/0.35 per
-   `synthesis.py`). Variables that fail a soft floor on weighted prevalence are reviewed (not auto-
-   dropped) and may be combined (e.g. soil N/P/K → a nutrient-availability composite when the
-   underlying papers themselves do so).
+3. **Tier-weighted prevalence + variable combining.** Prevalence of a variable across the corpus is not a raw paper count or percentage of instances. Instead, we calculate a **weighted prevalence ratio** where each paper's vote is scaled by its authority and pedigree (its `benchmark_tier` weight: High=1.0, Med=0.6, Low=0.35). This ensures that a variable supported by highly authoritative, seminal syntheses is prioritized over one found in multiple low-tier primary studies. Variables that fail a soft floor on weighted prevalence are reviewed (not auto-dropped) and may be combined (e.g. soil N/P/K → a nutrient-availability composite when the underlying papers themselves do so).
 4. **Synthesis → global aggregate / composite response functions.** Only after steps 1-3 does each
    surviving (family × canonical variable) get its T4 row synthesised — same weighted-median logic as
    today (§6).
@@ -332,12 +328,8 @@ obvious gaps. Categories to hit, in roughly this order of authority:
   (climate/soil/topography/land-use), **T6 benefits/costs** (impacts, adoption costs, success
   factors), and dis-adoption notes. The single highest-yield single source for SLM/NbS
   characterisation.
-- **Evidence Gap Maps** (EGMs) — **3ie**, **Campbell Collaboration**, **CEE** (Collaboration for
-  Environmental Evidence) — pre-mapped intervention × outcome evidence with assessed
-  effectiveness; a **shortcut + honest gaps** for T6 (where evidence is missing, EGMs say so).
-- **ICRAF / World Agroforestry tree databases** (Agroforestree, Vegetation Map for Africa, GTPK
-  Genetic Resources Information System) — species, traits, growth, requirements; complements
-  Ecocrop with agroforestry-specific species.
+- **Evidence Gap Maps (EGMs)** (e.g., **3ie**, **Campbell Collaboration**, **CEE**) — these pre-map the landscape of intervention-outcome pairs, acting as a **discovery shortcut** to immediately locate high-quality, relevant synthesis papers and primary evidence. Crucially, they also identify true 'evidence gaps', letting us know where empirical support is absent so we can avoid over-claiming or asserting spurious precision in T4/T6.
+- **NbS-specialist research organisation assets & databases** — databases and tools developed by international research centers specializing in specific NbS classes (e.g., **ICRAF / World Agroforestry Treefinder**, **CIAT MyFarmTrees**, Vegetation Map for Africa, or GTPK Genetic Resources Information System). These offer species lists, traits, growth requirements, suitability profiles, and propagation guidelines that complement general databases like Ecocrop with practice-specific species recommendations.
 - **IPLC tenure / rights layers** (v0.3.0) — **LandMark Global Platform of Indigenous &
   Community Lands** + **WWF / ICCA Consortium State of IPLC Lands**. Authoritative spatial
   layers for indigenous and community customary lands. Feed the **M2b tenure stream** + the
@@ -346,8 +338,11 @@ obvious gaps. Categories to hit, in roughly this order of authority:
 - **CSA adoption & barriers dataset** (Aggarwal et al. and successors — the synthesised
   adoption/dis-adoption evidence base)
 
-**Tier-2 (peer-reviewed):**
+**Tier-2 (peer-reviewed / synthesis):**
 
+- **Global-scale suitability models & MCDAs** (e.g. Zomer et al. 2014, GAEZ crop suitability models, or global-scale spatial methods). These are highly valuable for establishing baseline global biophysical envelopes, default threshold shapes, and candidate variable lists.
+  - *Heritage & Pedigree:* These global-scale methods represent a crucial link to the **Stocktake Report** (which screened 220 peer-reviewed papers for spatial suitability/MCDA to build our initial variable inventory). They inherit the Stocktake's rigorous benchmark scoring (`High`/`Medium`/`Low`) and provide the initial global defaults in T4.
+  - *Context Constraints:* To mitigate their coarse resolution and absence of local socio-economic inputs, their global thresholds act only as provisional defaults, subject to **context overrides** (`T4.context_overrides`) and **local dataset bindings** (`BIND`).
 - **Major meta-analyses / reviews** in the peer-reviewed literature for the NbS
 - **MEL / MELIA reports** + synthesis pieces from large CGIAR/donor projects (Kuria, Sida-NbS,
   Restoration Initiative MEL packs)
@@ -489,7 +484,11 @@ proposes reaches a T4 parameter without passing through the evidence layer. Thre
 
 Output: a **candidate-variable register** and a **candidate-source set**, both explicitly provisional.
 
-**Don't assume the corpus is complete, but don't boil the ocean.** The 220-paper stocktake is the starting set; re-discovery looks only for *key* new or missed publications, reports and tools — not thousands of papers. Phasing: **Phase 1 works from the existing corpus** (already discovered, screened, tiered — see §11); **Phase 2 is a bounded re-discovery pass** (incl. the repo/tool search above) once the method is proven on the existing set.
+**Discovery as an active, iterative process.** Do not treat candidate lists or the initial 220-paper stocktake as static, pre-completed databases. Discovery is an ongoing activity designed to determine whether we have everything we need, specifically targeting:
+- **Gaps in the Stocktake Report**: The stocktake report is the foundational core of this work, but it must be actively audited and supplemented. Discovery searches for missed peer-reviewed studies, key local grey literature, and newer project reviews to add to the corpus.
+- **Triage of Suggestions**: Many variables and datasets in initial registers are provisional suggestions. Active discovery queries these suggestions to confirm if they are supported by empirical literature or if they should be refined/combined.
+
+Phasing: **Phase 1 works from the existing corpus** (already discovered, screened, tiered — see §11) to establish the baseline recipes; **Phase 2 executes bounded re-discovery passes** (incl. the repo/tool search above) to fill identified gaps and expand the stocktake foundation once the method is proven on the existing set.
 
 **Discovery is per-table — the existing corpus was scoped to *suitability* (T4).** The 220-paper stocktake targeted spatial-suitability/MCDA methods, so it is a strong source for **T4** and decent for **T1/T3/T5/T6-effects** (extract-once, §5/§6), but a **weak** source for several tables that will need their own dedicated discovery passes against different literature: **T2** climate-risk formulation (climate-risk/AR6 lit + Brayden's M2), **T6 economics** (economic/CBA lit + CrossBoundary archetypes), **T0** economic archetypes/costs, and **T7** AEZ/farming-system vocabularies (GAEZ/Dixon standards, not papers). Plan a discovery pass per table, not one corpus for all.
 
@@ -613,8 +612,7 @@ One variable (within one suitability family) at a time: combine its evidence uni
 - **Ranking / weighting** — an evidence unit's weight ≈ `f(source_tier [joined], claim_basis, context_match, recency)`. A High-tier study in your AEZ/farming system outweighs a Low-tier one from a different biome — but a Low-tier `primary_measured` threshold can outweigh a High-tier `cited_secondary` ranking (`claim_basis` does that work).
 - **Thresholds / optima** → tier-weighted reconciliation (e.g. weighted median for `opt_low/opt_high/abs_max`); the **spread sets `uncertainty_pct`** (real disagreement, not a guess).
 - **Context-specific values** → where High-tier sources in a specific AEZ disagree with the global picture, that becomes a **`context_override`** keyed to T7, not averaged away.
-- **Conflicts** → recorded explicitly in `justification` with the `evidence_id`s ("3 High-tier sources support 0–15°; Nath 2021 (Himalayan, High) extends to 20° → captured as a humid-tropics override"), never silently resolved.
-- **Variable selection (now 3 signals)** → (1) **literature prevalence** `paper_support_pct` — share of the family's screened corpus with ≥1 evidence unit for the variable (the provenanced successor to the stocktake variable-frequency heatmap), rolled up the hierarchy to group level by **set-union** over members; (2) **ML importance**; (3) **thematic fit** (group vocab + scoping target). These feed thematic grouping; **per-AOI correlation clustering** then prunes to one representative per cluster at runtime.
+- **Variable selection (now 3 signals)** → (1) **literature prevalence** `paper_support_pct` — weighted prevalence ratio of the family's screened corpus with ≥1 evidence unit for the variable (scaled by each paper's benchmark tier authority weight, as the provenanced successor to the stocktake variable-frequency heatmap), rolled up the hierarchy to group level by **set-union** over members; (2) **ML importance**; (3) **thematic fit** (group vocab + scoping target). These feed thematic grouping; **per-AOI correlation clustering** then prunes to one representative per cluster at runtime.
 - **Filter before T4? Soft floor, not a hard cut.** Carry every candidate variable into T4 *with* its `paper_support_pct`, `n_sources` and ML flag. A variable below a prevalence floor (default 20 %) is **flagged `review_low_support` for a recorded inclusion decision**, not auto-dropped — because prevalence is as much *convention* (citation echo, publication bias) as importance, and a rarely-published variable can be locally decisive (ML can rescue it → `include_ml_override`). Hard, statistical pruning is left to correlation clustering; inclusion/exclusion is an auditable, admin-gated decision (mirrors the wireframe's "edit included variables").
 - **Output** → a T4 row with `relationship_type` + `relationship_params`, `uncertainty_pct`, `context_overrides`, `weight_default`, **`paper_support_pct` + `n_sources` + `corpus_n`**, `justification` (citing `evidence_id`s), `references`, and `dataset_id` resolved via the ontology.
 
