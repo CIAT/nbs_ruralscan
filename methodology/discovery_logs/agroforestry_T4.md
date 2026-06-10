@@ -25,6 +25,14 @@
 - **Method:** paper-first SOP per `T4_generation_method.md` §3 (v0.2.6+) — one PDF visit per paper, all variables + relationships in one pass, harmonise to VONT, tier-weight, synthesise.
 - **Tools:** local ingest cache (`src/nbs_ruralscan/ingest/`, vectorless retrieval over page-tagged + table-extracted PDF index, OCR fallback). Cache gitignored (PDFs copyrighted).
 
+### Phase 2: Unified Synthesis & WOCAT Ingestion (June 2026, Issue #24)
+
+- **WOCAT SLM Database (Liniger et al., 2011)** — targeted extraction of biophysical thresholds and baseline establishment costs for the F1 agroforestry family.
+- **Scientific Synthesis Papers**:
+  - **CGIAR (Simelton et al., 2021)** — agricultural NBS functions mapping to priority themes.
+  - **GCA (2022)** — State and Trends agroforestry enabler findings (tenure, finance).
+  - **WRI (Collins et al., 2025)** — Sub-Saharan Africa climate-resilience cost-effectiveness.
+
 ---
 
 ## PRISMA-lite counts
@@ -52,6 +60,15 @@
 | **AF EV rows committed** | **81** | Across slope, annual_precipitation, mean_annual_temperature, soil_ph, soil_organic_carbon + each swept paper's full variable inventory |
 | **AF papers not yet swept paper-first** | 5 swept-fully + 12 partial = **17 remaining for full sweep** | Tracked as ongoing work; Med/Low tiers |
 
+### Phase 2: Unified Ingestion Counts (Issue #24)
+
+| Stage | Count | Notes |
+|---|---:|---|
+| Query targeting synthesis sources | 5 | Targeted identification of core WOCAT database reviews and 3 institutional synthesis publications |
+| Retained for metadata register extraction | **5** | All 5 papers extracted for biophysical, cost-effectiveness, or enabler evidence |
+| Added to SRC Register | **5** | Registered as High-tier synthesis sources |
+| Added to EV Register (Agroforestry) | **7** | ev_slope_wocat_liniger11, ev_precip_wocat_liniger11, ev_estcost_wocat_liniger11, ev_priority_simelton21, ev_tenure_gca22, ev_finance_gca22, ev_cost_wri25 |
+
 ---
 
 ## Inclusions
@@ -78,6 +95,14 @@ All 18 AF sources now in `schema/registers/SRC_source_register.json` (`nbs_ids` 
 | `haile_2024` | Low | Haile 2024 | semi_arid · Ethiopia | — (variable-first) |
 | `haris_2021` | Low | Haris 2021 | humid_tropics · Indonesia (Maros) | — (variable-first) |
 | `seja_2022` | Low | Seja 2022 | sub_humid_tropics · Tanzania (Uluguru) | — (variable-first) |
+
+#### Phase 2 Ingested Synthesis Sources (All High Tier)
+| `source_id` | tier | first author / year | aez · country | variables extracted |
+|---|---|---|---|---|
+| `wocat_liniger_2011` | High | Liniger 2011 | continental · SSA | slope, annual_precipitation, establishment_cost |
+| `simelton_2021` | High | Simelton 2021 | global · Global | biodiversity_conservation_priority |
+| `gca_2022` | High | GCA 2022 | continental · SSA | tenure_security, finance_credit_access |
+| `wri_2025` | High | Collins 2025 | continental · SSA | establishment_cost |
 
 Tier rationale: C/I/D rubric (Lolita) for the Stocktake; six-axis rubric (v0.2.7) confirms the same tiers when re-checked on the High sources (no down-/up-grade triggered).
 
@@ -159,4 +184,5 @@ When these land, this log gets a §"Phase 2 amendments" with the additional sour
 |---|---|
 | Screening (Stocktake) | Lolita Müller (May 2026) |
 | Paper-first sweep (F1 v0.3.0) | Pete Steward (2026-06-06) — operator-level only; QA pass pending |
-| QA / dataset-fitness review | **Benson Kenduiywo (pending)** — flag this log when Brayden's dataset-binding work for F1 inputs lands. |
+| Phase 2 Ingestion (Issue #24) | Pete Steward (2026-06-09) — database-first sweep |
+| QA / dataset-fitness review | **Benson Kenduiywo (pending)** — flag this log when developmental dataset bindings land. |

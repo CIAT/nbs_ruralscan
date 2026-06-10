@@ -15,13 +15,77 @@ from .models import DocIndex, Passage
 
 # a number with a unit/operator nearby — marks a likely threshold
 _NUMERIC = re.compile(
-    r"\d+(?:\.\d+)?\s*(?:°|deg|degree|%|percent|mm|m\b|km|ppm|<|>|–|-|to)\b", re.I
+    r"\d+(?:\.\d+)?\s*(?:(?:°|%|<|>|–|-)|(?:deg|degree|percent|mm|m\b|km|ppm|to)\b)",
+    re.I,
 )
 
 
 def _terms_re(terms: list[str]) -> re.Pattern[str]:
     alt = "|".join(re.escape(t) for t in terms if t)
     return re.compile(rf"\b(?:{alt})\b", re.I)
+
+
+def _filter_table_text(
+    rows: list[list[str]], rx: re.Pattern[str], max_rows: int = 12
+) -> str:
+    """Filter columns in a table to retain only relevant information, then format.
+
+    Always keeps column 0 (usually categories/labels).
+    Keeps any column where the header matches terms or cells contain numeric patterns.
+    Caps rows at max_rows to avoid token blowup on massive tables.
+    """
+    if not rows:
+        return ""
+
+    num_cols = max(len(r) for r in rows)
+    if num_cols <= 1:
+        # Single-column table, nothing to filter
+        formatted_rows = [" | ".join(r) for r in rows]
+    else:
+        # Standardize row lengths to prevent IndexError
+        std_rows = []
+        for r in rows:
+            if len(r) < num_cols:
+                std_rows.append(r + [""] * (num_cols - len(r)))
+            else:
+                std_rows.append(r[:num_cols])
+
+        header = std_rows[0]
+        keep_indices = {0}  # always keep first column
+
+        # Analyze other columns
+        for col_idx in range(1, num_cols):
+            # 1) Does header match the terms pattern?
+            header_text = header[col_idx]
+            if rx.search(header_text):
+                keep_indices.add(col_idx)
+                continue
+
+            # 2) Do cells in this column contain numeric info?
+            has_numeric = False
+            for r in std_rows[1:]:
+                cell = r[col_idx]
+                if _NUMERIC.search(cell):
+                    has_numeric = True
+                    break
+            if has_numeric:
+                keep_indices.add(col_idx)
+
+        # If we filtered out all columns except column 0, keep all columns (no filtering)
+        if len(keep_indices) <= 1:
+            keep_indices = set(range(num_cols))
+
+        sorted_indices = sorted(list(keep_indices))
+
+        # Format the filtered table rows
+        formatted_rows = []
+        for r in std_rows:
+            formatted_rows.append(" | ".join(r[idx] for idx in sorted_indices))
+
+    # Truncate rows if too long
+    if len(formatted_rows) > max_rows:
+        return "\n".join(formatted_rows[:max_rows]) + "\n... [table truncated]"
+    return "\n".join(formatted_rows)
 
 
 def retrieve(
@@ -41,7 +105,7 @@ def retrieve(
         flat = " | ".join(" ".join(r) for r in t.rows)
         if rx.search(flat):
             score = 4.0 + (2.0 if _NUMERIC.search(flat) else 0.0)
-            preview = flat[:400]
+            preview = _filter_table_text(t.rows, rx)
             key = (t.page, preview[:60])
             if key not in seen:
                 seen.add(key)
@@ -76,10 +140,29 @@ def retrieve(
     # 2) body windows around each term hit
     for pno, text in enumerate(index.pages, start=1):
         flat = re.sub(r"\s+", " ", text)
-        for m in rx.finditer(flat):
+        matches = list(rx.finditer(flat))
+        if not matches:
+            continue
+
+        # Calculate raw window spans for each match
+        intervals = []
+        for m in matches:
             a = max(0, m.start() - window // 2)
             b = min(len(flat), m.end() + window // 2)
-            snippet = flat[a:b].strip()
+            intervals.append((a, b))
+
+        # Sort and merge overlapping or adjacent intervals
+        intervals.sort(key=lambda x: x[0])
+        merged = []
+        for start, end in intervals:
+            if not merged or start > merged[-1][1]:
+                merged.append([start, end])
+            else:
+                merged[-1][1] = max(merged[-1][1], end)
+
+        # Extract passages from merged intervals
+        for start, end in merged:
+            snippet = flat[start:end].strip()
             key = (pno, snippet[:60])
             if key in seen:
                 continue

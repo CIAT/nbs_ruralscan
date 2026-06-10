@@ -61,8 +61,8 @@ def synthesise_family(
 
     # support is measured over the structural-suitability candidates (what T4 considers)
     t4_units = [u for u in units if u.use_role == "structural_suitability"]
-    var_support = variable_support(t4_units, corpus_n)
-    groups = group_support(t4_units, group_map, corpus_n)
+    var_support = variable_support(t4_units, corpus_n, tiers=tiers)
+    groups = group_support(t4_units, group_map, corpus_n, tiers=tiers)
     selection = selection_table(
         var_support, floor_pct=floor_pct, ml_important=ml_important
     )

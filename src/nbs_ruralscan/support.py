@@ -28,43 +28,108 @@ class Support:
     members: list[str] = field(default_factory=list)  # group members (group-level only)
 
 
-def _pct(n: int, d: int) -> float:
-    return round(100.0 * n / d, 1) if d else 0.0
+TIER_W = {"high": 1.0, "medium": 0.6, "low": 0.35}
 
 
-def variable_support(units: list[EvidenceUnit], corpus_n: int) -> dict[str, Support]:
-    """Distinct-source prevalence per canonical variable."""
+def _get_weight(source_id: str, tiers: dict[str, str] | None) -> float:
+    if not tiers:
+        return 1.0
+    return TIER_W.get(tiers.get(source_id, "medium"), 0.5)
+
+
+def variable_support(
+    units: list[EvidenceUnit],
+    corpus_n: int | set[str],
+    tiers: dict[str, str] | None = None,
+) -> dict[str, Support]:
+    """Distinct-source prevalence per canonical variable (weighted by paper authority if tiers provided)."""
     srcs: dict[str, set[str]] = defaultdict(set)
     for u in units:
         srcs[u.variable].add(u.source_id)
-    return {
-        v: Support(
-            key=v, n_sources=len(s), corpus_n=corpus_n, pct=_pct(len(s), corpus_n)
+
+    # Resolve denominator count and weight
+    if isinstance(corpus_n, set):
+        corpus_sources = corpus_n
+        total_denom = sum(_get_weight(s, tiers) for s in corpus_sources)
+        n_den = len(corpus_sources)
+    else:
+        total_denom = float(corpus_n)
+        n_den = corpus_n
+
+    out: dict[str, Support] = {}
+    for v, s in sorted(srcs.items(), key=lambda kv: -len(kv[1])):
+        if tiers or isinstance(corpus_n, set):
+            # If we only have the integer corpus_n, we assume the unseen papers are of default/medium weight
+            if not isinstance(corpus_n, set):
+                # We can construct a proxy denom: sum of weights of seen papers + (corpus_n - seen) * default weight
+                seen_sources = set(
+                    src_id for src_list in srcs.values() for src_id in src_list
+                )
+                seen_weight = sum(_get_weight(sid, tiers) for sid in seen_sources)
+                unseen_count = max(0, corpus_n - len(seen_sources))
+                total_denom = seen_weight + unseen_count * TIER_W["medium"]
+
+            n_num = sum(_get_weight(src_id, tiers) for src_id in s)
+            pct = round(100.0 * n_num / total_denom, 1) if total_denom > 0 else 0.0
+        else:
+            pct = round(100.0 * len(s) / total_denom, 1) if total_denom > 0 else 0.0
+
+        out[v] = Support(
+            key=v,
+            n_sources=len(s),
+            corpus_n=n_den,
+            pct=pct,
         )
-        for v, s in sorted(srcs.items(), key=lambda kv: -len(kv[1]))
-    }
+    return out
 
 
 def group_support(
-    units: list[EvidenceUnit], group_map: dict[str, str], corpus_n: int
+    units: list[EvidenceUnit],
+    group_map: dict[str, str],
+    corpus_n: int | set[str],
+    tiers: dict[str, str] | None = None,
 ) -> dict[str, Support]:
-    """Roll variable prevalence up to its group (set-union over members)."""
+    """Roll variable prevalence up to its group (set-union over members, weighted if tiers provided)."""
     srcs: dict[str, set[str]] = defaultdict(set)
     members: dict[str, set[str]] = defaultdict(set)
     for u in units:
         g = group_map.get(u.variable, "ungrouped")
         srcs[g].add(u.source_id)
         members[g].add(u.variable)
-    return {
-        g: Support(
+
+    # Resolve denominator count and weight
+    if isinstance(corpus_n, set):
+        corpus_sources = corpus_n
+        total_denom = sum(_get_weight(s, tiers) for s in corpus_sources)
+        n_den = len(corpus_sources)
+    else:
+        total_denom = float(corpus_n)
+        n_den = corpus_n
+
+    out: dict[str, Support] = {}
+    for g, s in sorted(srcs.items(), key=lambda kv: -len(kv[1])):
+        if tiers or isinstance(corpus_n, set):
+            if not isinstance(corpus_n, set):
+                seen_sources = set(
+                    src_id for src_list in srcs.values() for src_id in src_list
+                )
+                seen_weight = sum(_get_weight(sid, tiers) for sid in seen_sources)
+                unseen_count = max(0, corpus_n - len(seen_sources))
+                total_denom = seen_weight + unseen_count * TIER_W["medium"]
+
+            n_num = sum(_get_weight(src_id, tiers) for src_id in s)
+            pct = round(100.0 * n_num / total_denom, 1) if total_denom > 0 else 0.0
+        else:
+            pct = round(100.0 * len(s) / total_denom, 1) if total_denom > 0 else 0.0
+
+        out[g] = Support(
             key=g,
             n_sources=len(s),
-            corpus_n=corpus_n,
-            pct=_pct(len(s), corpus_n),
+            corpus_n=n_den,
+            pct=pct,
             members=sorted(members[g]),
         )
-        for g, s in sorted(srcs.items(), key=lambda kv: -len(kv[1]))
-    }
+    return out
 
 
 @dataclass
