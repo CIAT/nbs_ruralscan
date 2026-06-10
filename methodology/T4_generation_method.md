@@ -280,7 +280,7 @@ implementation.
 **Process order (Pete, 2026-06-05) — paper-first, not variable-first.** Earlier passes extracted
 one canonical variable at a time across the corpus (slope, precip, MAT…) against an unaudited
 draft-0 variable list. This is inverted: traverse the corpus *one paper at a time*, capturing every
-variable that paper uses and its quantified relationships in a single pass, then harmonise across
+variable across all relevant tables (T3 hazard mitigation, T4 suitability, T5 priority targets, and T6 economics/scorecard) in a single pass, then harmonise across
 papers, then weight by tier, then synthesise. Concretely:
 
 1. **Per-paper variable scan + relationship capture.** For each paper in the corpus, enumerate every
@@ -316,7 +316,7 @@ obvious gaps. Categories to hit, in roughly this order of authority:
   surfaces; mine them for variables, datasets, and operational thresholds.
 - **GEF / NBS Invest** materials (project portfolios, lessons-learnt)
 - **IPCC** (AR6 WGII, SRCCL chapters relevant to the NbS)
-- **FAO** (land-evaluation framework, GAEZ, **Ecocrop**, **TECA** = Technologies and Practices
+- **FAO** (land-evaluation framework, GAEZ, **Ecocrop** (restricted to F5 shaded systems understorey crop envelope modeling; explicitly excluded for general practice suitability models), **TECA** = Technologies and Practices
   for Small Agricultural Producers, AgrEd, EX-ACT)
 - **WRI** (Global Restoration Initiative, Restoration Diagnostic, AFR100/Atlantic Forest)
 - **CGIAR** systems-level reviews + science-quality outputs (ICRAF, ILRI, IWMI…)
@@ -385,7 +385,7 @@ A reproducible five-step screening pipeline, applied per NbS × table:
    tie-break, not a veto on global syntheses).
 4. **Credibility scoring** → `SRC.benchmark_tier` on **six orthogonal axes** (replaces narrative
    tiering, reconciles the prior C/I/D rubric):
-   - **(i) Evidence strength** — RCT/quasi-experimental/observational/correlational/expert
+   - **(i) Evidence strength** — RCT/quasi-experimental/observational/correlational/expert; upweight papers that include empirical validation or performance metrics (such as ROC/AUC of maps, yield measurements, or cost-benefit verification)
    - **(ii) Methodological transparency** — pre-registration, data availability, reproducible code
    - **(iii) Authority & venue reputation** — `SRC.venue_type` (peer-reviewed > institutional report > preprint > grey); landmark institutions weigh more
    - **(iv) Context relevance / transferability** — `SRC.study_income_group`, AEZ, farming system;
