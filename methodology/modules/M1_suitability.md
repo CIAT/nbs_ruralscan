@@ -57,7 +57,7 @@ These are deliberately downstream so M1 stays NbS-specific and interpretable.
 
 | Output | Format | Path | Consumer |
 |---|---|---|---|
-| **Continuous suitability raster** | Cloud-Optimised GeoTIFF, 0–1, single band | `pipeline/outputs/<pilot_id>/maps/suitability.tif` | M3, M4, GEE App, Colab |
+| **Continuous suitability raster** | Cloud-Optimised GeoTIFF, 0–1, single band | `pipeline/outputs/<pilot_id>/maps/suitability.tif` | M3, M4, wireframe, Colab |
 | **Classified suitability raster** | COG, 5 classes | `pipeline/outputs/<pilot_id>/maps/suitability_class.tif` | Wireframe map; demo views |
 | **Opportunity space mask** | Boolean COG (high + very-high cells) | `pipeline/outputs/<pilot_id>/maps/opp_space_mask.tif` | M3 (extracts characterisation vars within this mask) · M4 (constrains hotspot MCDA) |
 | **Opportunity fingerprint table** | CSV | `pipeline/outputs/<pilot_id>/tables/fingerprint.csv` | Wireframe right-panel; M6 hand-off summary |
@@ -144,7 +144,7 @@ Mandatory before M1 can run: every variable in T4 for `nbs_id` must have a popul
 M1 implements all three principles introduced by Ani:
 
 1. **Reduce** — §6.3 above. Two-stage: thematic grouping (in the recipe) + correlation clustering (per AOI). One representative per cluster enters the MCDA. Cluster membership is preserved in cluster_log.json and shown in the UI.
-2. **Source** — three-tier dataset preference (native GEE → community GEE → upload). Each variable's `T1.hosting_status` is checked at §6.1; missing assets trigger the ingestion sub-pipeline in M0.
+2. **Source** — three-tier dataset preference (GEE catalog → community GEE → upload). Each variable's `T1.hosting_status` is checked at §6.1; missing assets trigger the ingestion sub-pipeline in M0.
 3. **Explain** — every variable carries its six-slot Variable Card metadata through the pipeline. Outputs include the variable cards as a JSON sidecar so downstream displays can render them.
 
 ## 9. Climate scenario handling
@@ -176,7 +176,7 @@ For M1 to be considered "done" for a given NbS in a given AOI:
 
 - [ ] Recipe authored and reviewed (`methodology/recipes/<nbs_id>.md` status ≥ draft)
 - [ ] Schema rows populated (`schema/recipes/<nbs_id>/T4_*.csv`)
-- [ ] All variables have native GEE / community GEE access or upload completed
+- [ ] All variables have GEE catalog / community GEE access or upload completed
 - [ ] All Variable Cards have six slots populated
 - [ ] Pipeline runs end-to-end without manual intervention
 - [ ] Outputs sanity-checked against regional knowledge by a domain expert

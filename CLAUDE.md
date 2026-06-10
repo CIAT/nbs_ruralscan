@@ -16,7 +16,7 @@ The Rural NbS Scan is a World Bank-funded methodology and demonstrator (D591, $2
 
 Demonstrator-grade artefacts (not contracted but valuable):
 - **TTL tool wireframe** — see `docs/wireframe.html`
-- ~~GEE App~~ — **deferred** (native GEE dropped; the wireframe is the demonstrator)
+- ~~GEE App~~ — **deferred** (standalone GEE App dropped; GEE stays central via xee; the wireframe is the demonstrator)
 - **Pipeline architecture diagram** — see `docs/pipeline.html`
 
 ## Architecture (read this if you do anything in this repo)
@@ -25,7 +25,7 @@ Demonstrator-grade artefacts (not contracted but valuable):
 
 - **Framework** — cross-cutting methodology, MCDA engine, standardisation library, schema. NbS-agnostic.
 - **Recipe** — per-NbS configuration. One file per NbS. Defines variables, thresholds, weights, subpractice families.
-- **Runtime** — reusable Python package (`src/nbs_ruralscan/`) that pulls GEE & other data and computes locally with numpy/rasterio + Colab pilot notebooks. *Native server-side GEE compute and the GEE App are dropped — see Team decision June 2026.*
+- **Runtime** — reusable Python package (`src/nbs_ruralscan/`) that pulls GEE & other data and computes with xarray, rioxarray, and xee + Colab pilot notebooks. *the GEE App is dropped — see Team decision June 2026.*
 
 ### Seven modules
 
@@ -59,7 +59,7 @@ These decisions are structural. If you want to change them, raise an issue and t
 - **Two risk lenses are distinct**: risk to rural **livelihoods** (M2, a *need* layer → hotspots) vs risk to the **investment** (M2b, the WB disaster-screening lens → a feasibility filter/scope). Kept separate; M2b applied as a filter, never summed. See `methodology/modules/M2b_project_risk.md`.
 - **Pipeline reads from schema** — analytical rules never hardcoded.
 - **Variable selection is 2-stage**: thematic grouping (per recipe) + correlation clustering (per AOI). One representative per cluster enters MCDA. Cluster membership preserved and shown to users.
-- **Dataset sourcing is 3-tier**: GEE catalog → community-hosted → upload. Fitness-for-purpose precedes platform. Data is **pulled into Python** for computation (numpy/rasterio) — there is no native server-side GEE pipeline. **Within the tiers, prefer server-side hosting (GEE catalog → community GEE → other large STAC/AWS-Open-Data services) over flat-file download** so resample/crop/mosaic happens server-side before transfer and the download functions stay simple and consistent. Where a fitness-equivalent GEE-hosted version exists, take it.
+- **Dataset sourcing is 3-tier**: GEE catalog → community-hosted → upload. Fitness-for-purpose precedes platform. Data is **pulled into Python** for computation (xarray, rioxarray); GEE data and its server-side processing are reached through **xee** (Earth Engine ↔ xarray) rather than a native Earth Engine app or script. **Within the tiers, prefer server-side hosting (GEE catalog → community GEE → other large STAC/AWS-Open-Data services) over flat-file download** so resample/crop/mosaic happens server-side before transfer and the download functions stay simple and consistent. Where a fitness-equivalent GEE-hosted version exists, take it.
 - **Suitability is reasoned per *suitability family*, not per whole NbS.** Families group subpractices by their **shared dominant limiting factor** (agroforestry F1 planted silvoarable · F2 regeneration-based · F3 silvopastoral · F4 linear · F5 shaded perennial-crop). T4 keys to `suitability_family_id`. Grouping carries a documented rationale; don't lump by appearance. **Scheme drafted for sign-off in `methodology/families/agroforestry.md`** *(pending Namita + MFL review)*. F5's understorey crop is a **parameter, not a sub-family** (run per crop, max + retain driver).
 - **Every family carries a `spatial_product_type`** (`area_suitability` | `applicability_zone` | `zonal_linear` | `qualitative_only`). Linear/point practices are **not** reported as pixel area (over-estimation grows with coarseness). Run coarseness is also bounded **per variable** by `min_meaningful_resolution_m` (slope ≈ 30–90 m); scale-dependent derivatives are **derive-then-aggregate**, never resample-then-derive.
 - **Evidence-first / provenance.** Analytical values in T3/T4/T6 trace to evidence units (source · tier · page · quote). Never PDF → threshold in one step. `claim_scope` separates **species/crop-specific** claims from **practice/technology** ones — species envelopes never define a practice row. See `methodology/T4_generation_method.md`.
@@ -133,6 +133,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - NbS IDs: `snake_case` (e.g. `agroforestry`, `water_harvesting`)
 - Files: kebab-case for `docs/` artefacts (`wireframe.html`, `pipeline.html`); snake_case for code
 - Per-NbS recipe filenames: `methodology/recipes/<nbs_id>.md`
+- If using/directly importing a python module, check that it is included in `pyproject.toml` and use `uv add <module_name>` if missing.
 
 ## Don't
 

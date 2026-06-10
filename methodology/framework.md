@@ -12,7 +12,7 @@ The methodology is implemented in three explicit layers — kept separate so eac
 |---|---|---|
 | **Framework** | Cross-cutting methodology · MCDA engine · standardisation library · schema. NbS-agnostic. | `methodology/framework.md` · `schema/` |
 | **Recipe** | Per-NbS configuration. Variables, response functions, weights, subpractice families. | `methodology/recipes/<nbs_id>.md` |
-| **Runtime** | GEE Python pipeline · Colab pilot notebooks · GEE App. | `pipeline/` |
+| **Runtime** | Python method package (xarray · rioxarray · xee) · Colab pilot notebooks. | `src/nbs_ruralscan/` · `pipeline/` |
 
 ## Seven analytical modules (+ M2b project-risk addendum)
 
@@ -66,9 +66,9 @@ The cluster membership is preserved and surfaced in the UI (Variable Config tab 
 
 For each variable, the recipe's `T1` Data Registry entry uses the first option that satisfies fitness-for-purpose:
 
-1. **Native GEE asset** if a credible one exists
+1. **GEE catalog asset** if a credible one exists
 2. **Community-hosted GEE asset** (e.g. `projects/sat-io/open-datasets/`)
-3. **Upload to GEE** if the best-fit dataset isn't already hosted
+3. **Upload** if the best-fit dataset isn't already hosted
 
 Fitness for purpose precedes platform. We do not substitute the best dataset for an inferior one just because the better one isn't already in GEE.
 

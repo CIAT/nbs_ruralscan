@@ -24,12 +24,12 @@ assignees: []
 - [ ] Reproducible Colab notebook in `pipeline/notebooks/<nbs>_<country>.ipynb`
 - [ ] Outputs in `pipeline/outputs/<pilot_id>/` (maps, summary tables, opportunity fingerprint, scorecard)
 - [ ] One-page pilot summary in this issue
-- [ ] Demo-ready GEE App view (if time allows)
+- [ ] Demo-ready wireframe view (if time allows)
 
 ## Data readiness check (before running)
 
-- [ ] All recipe variables have native GEE or community GEE source — or
-- [ ] Required uploads identified and lined up
+- [ ] All recipe variables have a GEE catalog or community GEE source — or
+- [ ] Any user-supplied datasets identified and lined up
 - [ ] Country-specific datasets reviewed (national land cover, finer DEM if available)
 - [ ] AOI vector available
 
