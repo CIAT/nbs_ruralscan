@@ -46,17 +46,29 @@ def _pct_to_deg(v: float) -> float:
     return round(math.degrees(math.atan(v / 100.0)), 1)
 
 
+def _deg_to_pct(v: float) -> float:
+    return round(math.tan(math.radians(v)) * 100.0, 1)
+
+
 def _harmonise(unit: EvidenceUnit, canonical_unit: str) -> dict[str, float]:
     """Return the unit's threshold params converted to the canonical unit."""
     rel = unit.relationship or {}
     src_unit = str(rel.get("unit", canonical_unit)).lower()
-    conv = (
-        canonical_unit == "degrees" or canonical_unit == "deg"
-    ) and src_unit in _PCT_UNITS
+
+    canon = canonical_unit.lower()
+    conv_pct_to_deg = (canon in {"degrees", "deg"}) and src_unit in _PCT_UNITS
+    conv_deg_to_pct = (canon in _PCT_UNITS) and src_unit in {"degrees", "deg"}
+
     out: dict[str, float] = {}
     for k in _PARAMS:
         if k in rel and isinstance(rel[k], (int, float)):
-            out[k] = _pct_to_deg(float(rel[k])) if conv else float(rel[k])
+            val = float(rel[k])
+            if conv_pct_to_deg:
+                out[k] = _pct_to_deg(val)
+            elif conv_deg_to_pct:
+                out[k] = _deg_to_pct(val)
+            else:
+                out[k] = val
     return out
 
 
@@ -92,19 +104,64 @@ def _reconcile(
     return params
 
 
+def _resolve_root_origin(
+    unit: EvidenceUnit,
+    units_by_ev_id: dict[str, EvidenceUnit],
+    units_by_source: dict[str, list[EvidenceUnit]],
+) -> str:
+    """Resolve the ultimate primary source_id or external identifier by following lineage_of."""
+    visited = {unit.evidence_id, unit.source_id}
+    curr_lineage = unit.lineage_of
+
+    while curr_lineage:
+        if curr_lineage in visited:
+            return curr_lineage
+        visited.add(curr_lineage)
+
+        # Is the lineage pointer an evidence ID?
+        if curr_lineage in units_by_ev_id:
+            parent = units_by_ev_id[curr_lineage]
+            if not parent.lineage_of:
+                return parent.source_id
+            curr_lineage = parent.lineage_of
+        # Is the lineage pointer a source ID that we have in the current synthesis?
+        elif curr_lineage in units_by_source:
+            # Take the first one in the list as representative to trace lineage
+            parent = units_by_source[curr_lineage][0]
+            if not parent.lineage_of:
+                return parent.source_id
+            curr_lineage = parent.lineage_of
+        else:
+            # External or unresolved source/evidence ID. It is the root.
+            return curr_lineage
+
+    return unit.source_id
+
+
 def _dedupe_lineage(
     units: list[EvidenceUnit], tiers: dict[str, str], report: SynthesisReport
 ) -> list[EvidenceUnit]:
     """Collapse citation echoes: keep one highest-weight unit per origin source."""
+    units_by_ev_id = {u.evidence_id: u for u in units if u.evidence_id}
+    units_by_source: dict[str, list[EvidenceUnit]] = {}
+    for u in units:
+        units_by_source.setdefault(u.source_id, []).append(u)
+
     by_origin: dict[str, list[EvidenceUnit]] = {}
     for u in units:
-        origin = u.lineage_of or u.source_id
+        origin = _resolve_root_origin(u, units_by_ev_id, units_by_source)
         by_origin.setdefault(origin, []).append(u)
+
     kept: list[EvidenceUnit] = []
     for origin, group in by_origin.items():
-        group.sort(
-            key=lambda u: _weight(u, tiers.get(u.source_id, "medium")), reverse=True
-        )
+        # Sort group: prioritize units with lineage_of == None (the primary study)
+        # and then by weight (tier * claim_basis)
+        def sort_key(u: EvidenceUnit) -> tuple[int, float]:
+            is_primary = 1 if not u.lineage_of else 0
+            w = _weight(u, tiers.get(u.source_id, "medium"))
+            return (is_primary, w)
+
+        group.sort(key=sort_key, reverse=True)
         kept.append(group[0])
         for echo in group[1:]:
             report.collapsed.append((echo.evidence_id, origin))
@@ -155,15 +212,15 @@ def synthesise_t4_row(
     ]
     global_params = _reconcile(contribs)
 
-    # 4) uncertainty from spread of abs_max (widen, never narrow); humility bumps
-    maxes = [
-        (ph["abs_max"], _weight(u, t)) for (u, t, ph) in contribs if "abs_max" in ph
-    ]
+    # 4) uncertainty from spread of values across all parameters (widen, never narrow); humility bumps
     unc = 10.0
-    if global_params.get("abs_max") and len(maxes) >= 2:
-        vals = [v for v, _ in maxes]
-        spread_pct = (max(vals) - min(vals)) / global_params["abs_max"] * 100
-        unc = max(unc, round(spread_pct, 0))
+    for key in _PARAMS:
+        vals = [ph[key] for (u, t, ph) in contribs if key in ph]
+        if len(vals) >= 2 and global_params.get(key):
+            denom = global_params[key]
+            if denom != 0:
+                spread_pct = (max(vals) - min(vals)) / abs(denom) * 100
+                unc = max(unc, round(spread_pct, 0))
     n_independent = len({u.source_id for u in kept})
     if n_independent < 3:
         unc += 10  # thin evidence → less, not more, confidence
