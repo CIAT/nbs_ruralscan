@@ -51,5 +51,9 @@ evidence_type (only literature_relationship/expert carry shape params); claim_ba
 (species/crop claims need taxon and must NOT define a practice row). Set lineage_of when a value is
 cited from another source. Capture exclusion/failure thresholds too. No silent unit harmonisation.
 
-Reference: methodology/examples/t4_slice_agroforestry_F1_slope.md (the gold standard to reproduce).
+When extracting evidence supporting tables other than T4, consult the specific extraction contracts:
+- For T3 (mitigation matrix / M2 / M2b): [.agents/skills/extraction_contracts/T3_contract.md](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/.agents/skills/extraction_contracts/T3_contract.md)
+- For T5 (opportunity variables / MCDA): [.agents/skills/extraction_contracts/T5_contract.md](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/.agents/skills/extraction_contracts/T5_contract.md)
+- For T6 (scorecard / cost-effectiveness): [.agents/skills/extraction_contracts/T6_contract.md](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/.agents/skills/extraction_contracts/T6_contract.md)
 
+Reference: methodology/examples/t4_slice_agroforestry_F1_slope.md (the gold standard to reproduce).
