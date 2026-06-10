@@ -367,4 +367,3 @@ def already_extracted(
             for row in reader
             if row.get("source_id") == source_id and row.get("variable") == variable
         ]
-

@@ -13,8 +13,8 @@ from nbs_ruralscan.evidence import (
 from nbs_ruralscan.ingest.models import DocIndex
 
 
-
 from typing import Any
+
 
 def _sample_unit(**overrides: Any) -> EvidenceUnit:
     defaults: dict[str, Any] = dict(
@@ -33,7 +33,6 @@ def _sample_unit(**overrides: Any) -> EvidenceUnit:
     )
     defaults.update(overrides)
     return EvidenceUnit(**defaults)
-
 
 
 def test_save_load_round_trip(tmp_path):
@@ -120,21 +119,23 @@ def test_package_for_extraction_multi(tmp_path):
             "However, if annual precipitation is less than 600mm, it fails."
         ],
     )
-    
+
     # We want to search for two variables
     variables = [
         {"variable": "slope", "aliases": ["gradient"]},
         {"variable": "annual_precipitation", "aliases": ["rainfall", "precipitation"]},
     ]
-    
+
     # Run packaging without any ev register (so no skipping)
-    res = package_for_extraction_multi(index, variables, ev_register=tmp_path / "EV.csv")
-    
+    res = package_for_extraction_multi(
+        index, variables, ev_register=tmp_path / "EV.csv"
+    )
+
     assert res["source_id"] == "nath_2021"
     assert "slope" in res["variables"]
     assert "annual_precipitation" in res["variables"]
     assert len(res["skipped"]) == 0
-    
+
     # The text contains both slope and precipitation in the same passage window.
     # Therefore, the deduplicated passages list should have exactly one passage,
     # and it should be flagged as relevant to BOTH variables.
@@ -150,11 +151,9 @@ def test_package_for_extraction_multi_skips_and_force(tmp_path):
         path="nath.pdf",
         sha1="sha123",
         n_pages=1,
-        pages=[
-            "Slope is 5% and rainfall is 800mm."
-        ],
+        pages=["Slope is 5% and rainfall is 800mm."],
     )
-    
+
     # Write EV register containing nath_2021 and slope already extracted
     csv_content = textwrap.dedent("""\
         evidence_id,source_id,variable,nbs_id
@@ -162,12 +161,12 @@ def test_package_for_extraction_multi_skips_and_force(tmp_path):
     """)
     ev = tmp_path / "EV.csv"
     ev.write_text(csv_content)
-    
+
     variables = [
         {"variable": "slope", "aliases": ["gradient"]},
         {"variable": "annual_precipitation", "aliases": ["rainfall"]},
     ]
-    
+
     # Run packaging: should skip 'slope' but keep 'annual_precipitation'
     res = package_for_extraction_multi(index, variables, ev_register=ev)
     assert "annual_precipitation" in res["variables"]
@@ -175,10 +174,14 @@ def test_package_for_extraction_multi_skips_and_force(tmp_path):
     assert res["skipped"] == ["slope"]
     assert len(res["passages"]) == 1
     assert res["passages"][0]["relevant_to"] == ["annual_precipitation"]
-    
+
     # Run packaging with force=True: should NOT skip 'slope'
-    res_force = package_for_extraction_multi(index, variables, ev_register=ev, force=True)
+    res_force = package_for_extraction_multi(
+        index, variables, ev_register=ev, force=True
+    )
     assert sorted(res_force["variables"]) == ["annual_precipitation", "slope"]
     assert len(res_force["skipped"]) == 0
-    assert sorted(res_force["passages"][0]["relevant_to"]) == ["annual_precipitation", "slope"]
-
+    assert sorted(res_force["passages"][0]["relevant_to"]) == [
+        "annual_precipitation",
+        "slope",
+    ]

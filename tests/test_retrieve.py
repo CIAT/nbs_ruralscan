@@ -4,7 +4,6 @@ from nbs_ruralscan.ingest.models import DocIndex, TableBlock
 from nbs_ruralscan.ingest.retrieve import retrieve
 
 
-
 def test_retrieve_no_matches():
     index = DocIndex(
         source_id="test_doc",
@@ -99,13 +98,13 @@ def test_retrieve_smart_table_filtering():
         pages=["Table 1 contains slope values."],
         tables=[table],
     )
-    
+
     # Query for slope
     res = retrieve(index, ["slope"])
     table_passages = [p for p in res if p.kind == "table"]
     assert len(table_passages) == 1
     passage = table_passages[0]
-    
+
     # Verify that Study Location (Col 1) is dropped, but other columns are preserved
     text_rows = passage.text.split("\n")
     assert text_rows[0] == "Crop | Rainfall | Slope limit"
@@ -119,7 +118,7 @@ def test_retrieve_smart_table_truncation():
     rows = [["Header Col 0", "Slope limit"]]
     for i in range(15):
         rows.append([f"Row {i}", "10%"])
-        
+
     table = TableBlock(
         page=1,
         rows=rows,
@@ -133,15 +132,13 @@ def test_retrieve_smart_table_truncation():
         pages=["Table 1 contains values."],
         tables=[table],
     )
-    
+
     res = retrieve(index, ["slope"])
     table_passages = [p for p in res if p.kind == "table"]
     assert len(table_passages) == 1
     passage = table_passages[0]
-    
+
     text_rows = passage.text.split("\n")
     # Should be exactly 12 rows of data + 1 row of truncation indicator = 13 total lines
     assert len(text_rows) == 13
     assert "... [table truncated]" in text_rows[-1]
-
-

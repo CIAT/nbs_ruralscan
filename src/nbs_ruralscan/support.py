@@ -62,11 +62,13 @@ def variable_support(
             # If we only have the integer corpus_n, we assume the unseen papers are of default/medium weight
             if not isinstance(corpus_n, set):
                 # We can construct a proxy denom: sum of weights of seen papers + (corpus_n - seen) * default weight
-                seen_sources = set(src_id for src_list in srcs.values() for src_id in src_list)
+                seen_sources = set(
+                    src_id for src_list in srcs.values() for src_id in src_list
+                )
                 seen_weight = sum(_get_weight(sid, tiers) for sid in seen_sources)
                 unseen_count = max(0, corpus_n - len(seen_sources))
                 total_denom = seen_weight + unseen_count * TIER_W["medium"]
-            
+
             n_num = sum(_get_weight(src_id, tiers) for src_id in s)
             pct = round(100.0 * n_num / total_denom, 1) if total_denom > 0 else 0.0
         else:
@@ -108,11 +110,13 @@ def group_support(
     for g, s in sorted(srcs.items(), key=lambda kv: -len(kv[1])):
         if tiers or isinstance(corpus_n, set):
             if not isinstance(corpus_n, set):
-                seen_sources = set(src_id for src_list in srcs.values() for src_id in src_list)
+                seen_sources = set(
+                    src_id for src_list in srcs.values() for src_id in src_list
+                )
                 seen_weight = sum(_get_weight(sid, tiers) for sid in seen_sources)
                 unseen_count = max(0, corpus_n - len(seen_sources))
                 total_denom = seen_weight + unseen_count * TIER_W["medium"]
-            
+
             n_num = sum(_get_weight(src_id, tiers) for src_id in s)
             pct = round(100.0 * n_num / total_denom, 1) if total_denom > 0 else 0.0
         else:

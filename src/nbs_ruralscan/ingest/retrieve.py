@@ -15,7 +15,8 @@ from .models import DocIndex, Passage
 
 # a number with a unit/operator nearby — marks a likely threshold
 _NUMERIC = re.compile(
-    r"\d+(?:\.\d+)?\s*(?:(?:°|%|<|>|–|-)|(?:deg|degree|percent|mm|m\b|km|ppm|to)\b)", re.I
+    r"\d+(?:\.\d+)?\s*(?:(?:°|%|<|>|–|-)|(?:deg|degree|percent|mm|m\b|km|ppm|to)\b)",
+    re.I,
 )
 
 

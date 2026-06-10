@@ -58,7 +58,7 @@ def test_variable_support_without_tiers():
 
     # total corpus count of papers is 2 (src_a and src_b are seen)
     res = variable_support(units, corpus_n=2)
-    
+
     # slope is in both papers (src_a, src_b) -> 2/2 = 100%
     assert res["slope"].pct == 100.0
     assert res["slope"].n_sources == 2
@@ -185,6 +185,7 @@ def test_group_support():
 def test_selection_table():
     """Test floor_pct and override rules."""
     from nbs_ruralscan.support import Support
+
     var_support = {
         "slope": Support(key="slope", n_sources=3, corpus_n=10, pct=30.0),
         "elevation": Support(key="elevation", n_sources=1, corpus_n=10, pct=10.0),
@@ -206,6 +207,7 @@ def test_selection_table():
 
 def test_attach_support():
     from nbs_ruralscan.support import Support
+
     var_support = {"slope": Support(key="slope", n_sources=3, corpus_n=10, pct=30.0)}
     row = {"variable": "slope", "justification": "foo"}
     attach_support(row, var_support)
