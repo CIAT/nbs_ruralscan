@@ -12,7 +12,7 @@
 | **Schema tables produced** | run configuration (JSON, not a schema table) |
 | **Position in pipeline** | **M0 (Setup)** → M1 · M2 · M2b · M3 · M4 · M5 |
 
-> M0 is the front door. It captures the user's choices, validates that every required dataset is reachable, and emits the **run configuration** every downstream module consumes. Computed in **Python**; datasets pulled via the Earth Engine API or direct source — no native server-side GEE pipeline.
+> M0 is the front door. It captures the user's choices, validates that every required dataset is reachable, and emits the **run configuration** every downstream module consumes. Computed in **Python** (xarray · rioxarray); datasets pulled via **xee** (Earth Engine ↔ xarray) or direct source.
 
 ---
 

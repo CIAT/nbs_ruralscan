@@ -24,7 +24,7 @@ Steps:
 
 5. **Run a quick consistency check**:
    - Is the variable's theme correct (topographic / climatic / soil / LULC / socio-econ / hazard)?
-   - Does the hosting status reflect reality? If not native GEE, has an upload path been considered?
+   - Does the hosting status reflect reality? If it's not in the GEE catalog, has a community-GEE or user-supplied path been considered?
    - Does the membership function shape match the rationale (e.g. a steep-slope variable should not have an increasing-sigmoid)?
 
 6. **Confirm to the user** what was updated, and remind them that:

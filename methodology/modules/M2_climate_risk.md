@@ -147,7 +147,7 @@ Mandatory before M2 can run: every variable in T2 for `nbs_id` (filtered by sele
 M2 implements the same three principles as M1:
 
 1. **Reduce** — thematic grouping is by IPCC risk component (hazard / exposure / sensitivity / adaptive capacity). Correlation clustering also runs across variables within the same component for the AOI. Cluster membership is logged.
-2. **Source** — three-tier dataset preference (native GEE → community GEE → upload). For M2 specifically, the climate projection datasets (NEX-GDDP-CMIP6, CORDEX, TerraClimate future scenarios) are usually native GEE; some socio-economic exposure layers may require upload.
+2. **Source** — three-tier dataset preference (GEE catalog → community GEE → upload). For M2 specifically, the climate projection datasets (NEX-GDDP-CMIP6, CORDEX, TerraClimate future scenarios) are usually in the GEE catalog; some socio-economic exposure layers may require upload.
 3. **Explain** — Variable Card metadata flows through pipeline to UI.
 
 ## 9. Mode A vs Mode B — when to use which
@@ -206,7 +206,7 @@ For M2 to be considered "done" for a given NbS in a given AOI:
 
 - [ ] T3 rows populated for this NbS — at minimum one hazard with confidence ≥ medium
 - [ ] T2 rows populated for each relevant hazard, exposure, and (Mode B) vulnerability variable
-- [ ] All variables have native GEE / community GEE access or upload completed
+- [ ] All variables have GEE catalog / community GEE access or upload completed
 - [ ] All Variable Cards have six slots populated
 - [ ] Pipeline runs end-to-end without manual intervention
 - [ ] Outputs sanity-checked by Brayden + Pete against regional climate knowledge
@@ -220,7 +220,7 @@ For M2 to be considered "done" for a given NbS in a given AOI:
 > |---|---|
 > | `T3.risk_role`, `T3.asset_risk_weight` (RFC in original draft) | **Live** since v0.2 — drives M2 / M2b two-risk split. M2 reads `risk_role ∈ {livelihood_mitigation, both}`. |
 > | T2 hazard layers | **BIND-bound** at v0.3.0: `drought_hazard__global` → SPEI v26 · `flood_hazard__global` → JRC Global Flood Hazard 100y · `heat_stress_hazard__global` → CHELSA BIO5 · `water_stress__global` → WRI Aqueduct 4.0. All `status = catalogued`. |
-> | Module path `pipeline/climate_risk.py` | **Updated** → `src/nbs_ruralscan/climate_risk.py` per the v0.2 GEE-App-dropped runtime. Math is pure-numpy (caller-side raster I/O via rasterio); GEE wrapper a thin adapter if/when needed. |
+> | Module path `pipeline/climate_risk.py` | **Updated** → `src/nbs_ruralscan/climate_risk.py` per the v0.2 GEE-App-dropped runtime. Operates on xarray DataArrays (raster I/O via rioxarray; GEE data/processing via xee). |
 > | `sensitivity_perturb` (§6.7) | **Available**: `src/nbs_ruralscan/mcda.py::sensitivity_perturb(stack, weights, n=50, scale=0.1, seed=None)` — `SensitivityResult` dataclass (mean / variance / weight bounds). Reuse, don't duplicate. |
 > | Exposure variable IDs | T5 v0.3.0 has `rural_population` (descriptor), `agricultural_production_value` (descriptor), `farm_size` (descriptor) bound to WorldPop / MapSPAM v2 / Lesiv 2019 respectively. Map M2 exposure layers to these where they align. |
 > | T7 farming_system vocab | **Swapped** at v0.3.0 to 6 EO-derived classes (`cropping_rainfed` · `cropping_irrigated` · `mixed_crop_livestock` · `agro_pastoral` · `pastoral_rangeland` · `tree_perennial`). Dixon = crosswalk only. Update any farming-system-conditional logic. |
@@ -266,7 +266,7 @@ Each function is independently testable. The pilot notebook calls them in order;
 
 ### Likely starting prompt for Claude Code (analogous to the M1 prompt)
 
-> Implement `src/nbs_ruralscan/climate_risk.py` for the Rural NbS Scan, following the spec in `methodology/modules/M2_climate_risk.md`. Pure-numpy math core (T1 datasets already BIND-bound at v0.3.0; caller handles raster I/O via rasterio). Mode A only for the first pass — defer Mode B's vulnerability composition behind a `NotImplementedError`. Inputs are T1, T2, T3, T7 rows from the schema for a given `nbs_id`. Use the function signatures listed in the spec's "Implementation notes" section. Reuse `src/nbs_ruralscan/mcda.py::sensitivity_perturb` for §6.7 — don't duplicate. Show me the imports + the first three functions; pause for review before the rest.
+> Implement `src/nbs_ruralscan/climate_risk.py` for the Rural NbS Scan, following the spec in `methodology/modules/M2_climate_risk.md`. xarray-based math core operating on `xarray.DataArray`s (T1 datasets already BIND-bound at v0.3.0; caller handles raster I/O via rioxarray and GEE data/processing via xee). Mode A only for the first pass — defer Mode B's vulnerability composition behind a `NotImplementedError`. Inputs are T1, T2, T3, T7 rows from the schema for a given `nbs_id`. Use the function signatures listed in the spec's "Implementation notes" section. Reuse `src/nbs_ruralscan/mcda.py::sensitivity_perturb` for §6.7 — don't duplicate. Show me the imports + the first three functions; pause for review before the rest.
 
 ---
 

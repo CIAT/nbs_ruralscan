@@ -6,9 +6,10 @@ document ingestion, and the evidence → synthesis → recipe engine. A pilot no
 a thin driver that imports that package, runs one NbS × AOI, writes outputs, and
 renders maps + tables inline. **Notebooks are the contracted deliverable.**
 
-> **Architecture note (June 2026).** Native server-side GEE compute and the GEE App are
-> **dropped**. Data is pulled into Python (including from the GEE catalog) and computed
-> **locally** (numpy / rasterio); the engine moved from `pipeline/` to
+> **Architecture note (June 2026).** The standalone **GEE App is dropped**. The method runs
+> as a Python package that pulls GEE (and other) data and computes with **xarray / rioxarray**;
+> GEE data and server-side processing are reached through **xee** (Earth Engine ↔ xarray)
+> rather than a native Earth Engine app or script. The engine moved from `pipeline/` to
 > `src/nbs_ruralscan/`; and the **TTL wireframe** (`docs/wireframe.html`) is the visual
 > demonstrator. See `../CLAUDE.md` and `../methodology/T4_generation_method.md`.
 

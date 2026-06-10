@@ -57,5 +57,3 @@ When extracting evidence supporting tables other than T4, consult the specific e
 - For T6 (scorecard / cost-effectiveness): [.agents/skills/extraction_contracts/T6_contract.md](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/.agents/skills/extraction_contracts/T6_contract.md)
 
 Reference: methodology/examples/t4_slice_agroforestry_F1_slope.md (the gold standard to reproduce).
-
-

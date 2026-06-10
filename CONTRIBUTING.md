@@ -60,7 +60,7 @@ Five focused prompts that map to project deliverables are in the **Claude Code U
 1. ~~Port `reference/R/spatMCDA.R` to `pipeline/mcda_pipeline.py`~~ ✅ shipped at `src/nbs_ruralscan/mcda.py` (see `tests/test_mcda.py`)
 2. Scaffold the agroforestry pilot Colab notebook (calls `src/nbs_ruralscan/mcda.py`)
 3. Extend the Water Harvesting master variable table into Variable Cards
-4. ~~Build the v0 GEE App~~ deferred (native GEE dropped; the wireframe is the demonstrator)
+4. ~~Build the v0 GEE App~~ deferred (GEE App dropped; the wireframe is the demonstrator)
 5. Run correlation reduction on input variables
 
 ---
@@ -181,11 +181,11 @@ The methodology is data-driven — analytical rules read from the schema (T0–T
 
 Pilot notebooks (`pipeline/notebooks/`) follow the structure in [`pipeline/notebooks/README.md`](./pipeline/notebooks/README.md) — header → setup → configuration → ingestion → reduction → M1 → M2 → M3 → M4 → M5 → outputs → summary. Plain-language markdown between cells so a WB analyst can follow without verbal explanation.
 
-For GEE Python development, ensure you have Earth Engine API access (request via your CGIAR email if you don't). The pipeline assumes you're authenticated to GEE.
+To pull GEE-hosted data, ensure you have Earth Engine API access (request via your CGIAR email if you don't). The package reaches GEE data and server-side processing through **xee** (Earth Engine ↔ xarray), so you'll need to be authenticated to Earth Engine when a run touches GEE-hosted layers.
 
-### Working on the GEE App (`pipeline/gee_app/`)
+### The GEE App is dropped
 
-See [`pipeline/gee_app/README.md`](./pipeline/gee_app/README.md) — Benson owns the design within the constraints listed there. If you're not Benson, raise a discussion in the Teams channel before editing the App.
+The standalone GEE App is no longer in scope (team decision, June 2026) — see [`pipeline/gee_app/README.md`](./pipeline/gee_app/README.md). GEE itself stays central via xee; the **wireframe** (`docs/wireframe.html`) is the visual demonstrator. If a GEE App is ever revived, raise an issue first.
 
 ---
 
