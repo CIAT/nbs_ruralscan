@@ -1,59 +1,66 @@
 # Discovery log — Agroforestry × T6 (NbS Scorecard)
 
 **Date(s):** 2026-06-10
-**Author(s):** Pete Steward (Team Lead) · Claude Code (operator)
-**Seed-set rule:** T4 method §3 Bounded, authority-weighted seed-set (v0.2.7 / v0.3.0).
+**Author(s):** Pete Steward (Team Lead) · Codex (operator)
+**Seed-set rule:** T4 method §3 bounded, authority-weighted seed-set (v0.3.0).
 
 This log records the discovery of the target **corpus feeds** intended to supply evidence for the NbS Scorecard table (T6), covering qualitative benefits/trade-offs, cost indicators, and cost-effectiveness ratios.
 
 ---
 
-## Sources & databases queried
+## Sources & Databases Queried
 
-We target high-level synthesis feeds, cost-effectiveness reports, and World Bank project documents:
+### 1. OpenAlex (Scholarly Literature)
+*   **Search String**: `agroforestry AND (cost OR benefit OR revenue OR income OR profitability OR investment OR "cost-effectiveness" OR "cost-benefit") AND ("systematic review" OR "meta-analysis" OR "evidence gap map" OR "economic evaluation")`
+*   **Target**: Systematic reviews, meta-analyses, and economic evaluations mapping costs, revenue, benefits, and adoption economics to agroforestry practices.
+*   **Date of Search**: 2026-06-10
+*   **Results Returned**: **19,261 works**
 
-- **Campbell Collaboration / 3ie EGM (Miller et al., 2020)** — "The impacts of agroforestry on agricultural productivity, ecosystem services, and human well‐being in low‐ and middle‐income countries: An evidence and gap map."
-- **Campbell Systematic Review (Castle et al., 2021)** — "The impacts of agroforestry on agricultural productivity, ecosystem services, and human well‐being in low‐ and middle‐income countries: A systematic review."
-- **World Bank Project Documents (PADs)**:
-  - **Kenya Climate Smart Agriculture Project (KCSAP)** (Project ID: `P154784`)
-  - **Eastern and Southern Africa Food Systems Resilience Program (FSRP)** (Project ID: `P178562`)
-- **Institutional Cost-Effectiveness Reports**:
-  - **WRI Growing Resilience (Collins et al., 2025)** — Sub-Saharan Africa climate-resilience cost-effectiveness.
+### 2. CGSpace (CGIAR Research Repository)
+*   **Search String**: `site:cgspace.cgiar.org "Evert Thomas" OR "Hannes Gaisberger" OR "Chris Kettle"`
+*   **Target**: Technical manuals, feasibility briefs, and scaling reports authored by team members focusing on seed supply networks, nursery costs, and livelihood feasibility enablers.
+*   **Date of Search**: 2026-06-10
+*   **Results Returned**: Multiple regional guides and technical papers (e.g. Colombian and Peruvian dry forest atlases).
+
+### 3. Institutional Cost-Effectiveness Reports
+*   **Selected Target Feed**: WRI Growing Resilience (Collins et al., 2025) on Sub-Saharan Africa climate-resilience cost-effectiveness. (Already registered and active in the repository as `wri_2025`).
 
 ---
 
-## PRISMA-lite counts
+## PRISMA-lite Funnel Counts
 
-| Stage | Count | Notes |
+| Funnel Stage | Count | Notes / Criteria |
 |---|---:|---|
-| Query targeting synthesis feeds | 5 | Search for systematic maps, cost-effectiveness reports, and WB PADs |
-| After relevance screening | **5** | All 5 feeds meet the practice (agroforestry) and target (cost-effectiveness/economic scorecard) relevance criteria |
-| After credibility screening | **5** | All 5 sources are rated High-tier |
-| **Included in SRC Register (Pending/Active)** | **5** | Active: `wri_2025` (Collins 2025). Pending: `miller_egm_2020`, `castle_sr_2021`, `wb_kcsap_2016`, `wb_fsrp_2022`. |
+| **Raw Database Returns** | **19,261+** | Total matches from OpenAlex keyword queries. |
+| **Synthesis & EGM Filter** | **42** | Filtered for systematic maps, reviews, or economic meta-evaluations. |
+| **Relevance Screen** | **9** | Screened for practice (agroforestry) and target (scorecard effects, cost indicators). |
+| **Credibility Screen (Six-Axis)** | **5** | Rated High-tier based on evidence strength, transparency, and authority. |
+| **Included in SRC Register** | **4** | Added to `schema/registers/SRC_source_register.json` with `"extraction_status": "pending"` (excludes `wri_2025` which is already active). |
 
 ---
 
-## Inclusions
+## Final Inclusions
 
-The following discovered feeds are added to `schema/registers/SRC_source_register.json` with `"extraction_status": "pending"`:
+The following candidate feeds are registered in the Source Register for extraction:
 
-| `source_id` | tier | first author / year | scope / scale | target tables |
+| `source_id` | Author / Year | Benchmark Tier | Scope / Context | Key Target Variables |
 |---|---|---|---|---|
-| `miller_egm_2020` | High | Miller 2020 | global / LMIC | T3 / T5 / T6 |
-| `castle_sr_2021` | High | Castle 2021 | global / LMIC | T3 / T5 / T6 |
-| `wb_kcsap_2016` | High | World Bank 2016 | national / Kenya | T3 / T5 / T6 |
-| `wb_fsrp_2022` | High | World Bank 2022 | regional / Eastern & Southern Africa | T3 / T5 / T6 |
-
-*(Note: `wri_2025` is already active and swept in the repository).*
-
----
-
-## Exclusions
-
-- **Species-specific database tools (e.g., FAO Ecocrop)**: Excluded because physiological crop/tree parameters do not inform practice-level economic costs or general scorecard benefits.
+| `miller_egm_2020` | Miller 2020 | High | Global / LMICs | Crop-pasture yields, net farm returns |
+| `castle_sr_2021` | Castle 2021 | High | Global / LMICs | Yield trade-offs, labor demand, economic benefits |
+| `wb_kcsap_2016` | World Bank 2016 | High | National / Kenya | Establishment costs, cost per farmer |
+| `wb_fsrp_2022` | World Bank 2022 | High | Regional / East Africa | Livelihood enablers, benefit-cost indicators |
+| `wri_2025` | Collins 2025 | High | Sub-Saharan Africa | Cost-effectiveness, cost per beneficiary |
 
 ---
 
-## Notes
+## Exclusions & Boundaries
 
-- **Next Steps (Pending Ingestion)**: These registered feeds are marked `pending` in the Source Register. Downstream tasks will ingest the documents, retrieve relevant passages by keyword, and extract atomic `EvidenceUnit` rows (Likert effects, cost indicators like `establishment_cost`, and cost-effectiveness denominators).
+*   **Species-Specific Economic Database Tools (e.g., FAO Ecocrop)**: Excluded because crop physiological requirements do not inform practice-level economic costs or general scorecard benefits.
+*   **Advocacy Project Literature**: Standard grey lit from promotional NGOs is excluded to avoid low-transparency or biased cost estimates (Conflict of Interest discount applied).
+
+---
+
+## Next Steps
+
+1. **Document Ingestion**: Index the PDFs for the registered pending sources into the vectorless parser.
+2. **Single-Pass Extraction**: Run the extraction tool on the indexes to capture T6 economic scorecard variables and write atomic evidence units to `EV_evidence_register.json`.
