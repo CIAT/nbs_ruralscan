@@ -8,11 +8,11 @@ The user will give you an NbS ID in `snake_case` (e.g. `agroforestry`, `forest_r
 
 Scaffold the following:
 
-1. **Create** `methodology/recipes/<nbs_id>.md` using the structure of `methodology/recipes/water_harvesting.md` (or, if that doesn't exist, the Variable Card schema in CLAUDE.md). Pre-fill the front-matter with the NbS ID; leave content sections marked `TODO`. The six-theme master variable table structure must be present even if empty.
+1. **Create** `methodology/recipes/<nbs_id>.md` using the structure of `methodology/recipes/water_harvesting.md` (or, if that doesn't exist, the Variable Card schema in AGENTS.md). Pre-fill the front-matter with the NbS ID; leave content sections marked `TODO`. The six-theme master variable table structure must be present even if empty.
 
 2. **Create** `schema/recipes/<nbs_id>/` folder with placeholder CSV files:
    - `T0_nbs_registry.csv` — one row for this NbS
-   - `T4_suitability_variables.csv` — empty with headers from CLAUDE.md schema description
+   - `T4_suitability_variables.csv` — empty with headers from AGENTS.md schema description
    - `T6_scorecard.csv` — empty with headers
 
 3. **Pre-populate `T0_nbs_registry.csv`** with one row including the NbS ID, default cluster (ask user if uncertain), economic archetype placeholder, evidence quality `emerging`, is_active `false` (set true after recipe review), created date, updated_by current user.
