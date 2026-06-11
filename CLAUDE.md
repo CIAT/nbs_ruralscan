@@ -107,8 +107,13 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 ## Run / preview / deploy
 
+- **Local paths and variables**: Stored in [.env](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/.env) (copied from [.env.example](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/.env.example)). This defines:
+  - `ONEDRIVE_LIBRARY_PATH`: The parent OneDrive directory for the PDF library.
+  - `LOCAL_CORPUS_PATH`: Staged PDFs for ingestion (`.cache/corpus/`).
+  - `LOCAL_INGEST_CACHE`: Extracted document indexes (`.cache/ingest/`).
 - **Python environment**: use `uv` from the repo root. Add runtime dependencies with `uv add ...`; add dev tools with `uv add --dev ...`.
 - **Python checks**: run `uv run ruff check .`, `uv run ruff format .`, `uv run ty check`, `uv run pytest`, and `python3 src/nbs_ruralscan/structure.py schema` before PRs that touch `src/` or `schema/`. CI (`.github/workflows/ci.yml`) runs the same gates.
+
 - **Preview docs locally**: `cd docs && python3 -m http.server 8000` → http://localhost:8000
 - **Run pilot notebook**: open `pipeline/notebooks/<nbs>_<country>.ipynb` in Colab; authenticate GEE
 - **Deploy docs**: push to main; GitHub Pages auto-rebuilds from `/docs` within ~2 min
