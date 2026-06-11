@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from nbs_ruralscan.generate import _coerce, _csv_to_rows, generate
+from nbs_ruralscan.schema_tools.generate import _coerce, _csv_to_rows, generate
 
 SCHEMA = Path(__file__).resolve().parents[1] / "schema"
 

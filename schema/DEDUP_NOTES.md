@@ -11,7 +11,7 @@ the shared *framework* layer — one row per real-world concept, referenced by e
 
 After the change: all foreign keys (including nested `context_overrides`, `baseline_dataset_id`,
 `future_dataset_ids`) resolve; T2 weights sum to 1.0 per scenario; CSV is the source of truth and JSON is
-generated from it (`python3 src/nbs_ruralscan/generate.py schema`) — edit the CSV only.
+generated from it (`python3 src/nbs_ruralscan/schema_tools/generate.py schema`) — edit the CSV only.
 
 ## Counts
 

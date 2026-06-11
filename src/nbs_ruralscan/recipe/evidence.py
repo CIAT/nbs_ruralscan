@@ -14,8 +14,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from .ingest.models import DocIndex
-from .ingest.retrieve import retrieve
+from ..ingest.models import DocIndex
+from ..ingest.retrieve import retrieve
 
 USE_ROLE = {
     "structural_suitability",

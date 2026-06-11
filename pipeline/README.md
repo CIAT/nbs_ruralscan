@@ -20,9 +20,11 @@ renders maps + tables inline. **Notebooks are the contracted deliverable.**
 | `notebooks/` | Per-pilot Colab notebooks — one `<nbs>_<iso3>.ipynb`. The contracted deliverable. |
 | `outputs/` | Pilot outputs — one folder per `<pilot_id>/`. Large rasters gitignored (or LFS). |
 
-The engine the notebooks call lives in `../src/nbs_ruralscan/`: `schema_loader` (T0–T7
-rows for an NbS + AOI), `data_loaders/`, `ingest/` (vectorless doc ingestion),
-`evidence` · `synthesis` · `support` · `recipe` (the T4 generation engine), `outputs`.
+The engine the notebooks call lives in `../src/nbs_ruralscan/`, grouped into:
+`runtime/` (`schema_loader` — T0–T7 rows for an NbS + AOI; `mcda`, `binding`,
+`farming_system`; `outputs`), `recipe/` (`evidence` · `support` · `synthesis` ·
+`family` — the T4 generation engine), `schema_tools/` (`structure`, `generate`,
+`freeze`), plus `data_loaders/` and `ingest/` (vectorless doc ingestion).
 
 ## Conventions
 
@@ -78,6 +80,6 @@ outputs/<pilot_id>/
 
 1. Wire the **M1 suitability raster pipeline** in `src/nbs_ruralscan/` against the T4 recipe rows (the evidence → recipe engine already produces them).
 2. Build the per-dataset **`data_loaders/`** (GEE-catalog + uploaded assets → local arrays). For each variable,
-   resolve *which* dataset to use with `nbs_ruralscan.binding.resolve_binding(variable, aoi_contexts)` (BIND
+   resolve *which* dataset to use with `nbs_ruralscan.runtime.binding.resolve_binding(variable, aoi_contexts)` (BIND
    registry — global default + per-AOI override) before loading, and surface any `needs_upload` prompts to the user.
 3. Scaffold the **agroforestry pilot notebook** (`notebooks/agroforestry_sle.ipynb`) as a thin driver over the package.

@@ -3,7 +3,7 @@
 import json
 import textwrap
 
-from nbs_ruralscan.evidence import (
+from nbs_ruralscan.recipe.evidence import (
     EvidenceUnit,
     already_extracted,
     load_units,

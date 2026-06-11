@@ -37,7 +37,7 @@ been done.
      §13.
    - **[M2 Rural Climate Risk](./methodology/modules/M2_climate_risk.md)** —
      **Brayden**, pre-scaffolded for you. Mode A vs Mode B, double-count guard
-     with M3/M4, function signatures for `src/nbs_ruralscan/climate_risk.py`
+     with M3/M4, function signatures for `src/nbs_ruralscan/runtime/climate_risk.py`
      (v0.3.0 schema annotations in §14). Six open methodology questions at the
      bottom that need your view.
 3. **Repo conventions + workflow** — [`CLAUDE.md`](./CLAUDE.md),

@@ -13,8 +13,8 @@ so working CSVs not in the manifest (e.g. the ``CV_*`` lit-review sheets) are le
 
 Usage::
 
-    python3 src/nbs_ruralscan/generate.py schema           # (re)write all JSONs
-    python3 src/nbs_ruralscan/generate.py schema --check    # CI: fail if any JSON is stale
+    python3 src/nbs_ruralscan/schema_tools/generate.py schema           # (re)write all JSONs
+    python3 src/nbs_ruralscan/schema_tools/generate.py schema --check    # CI: fail if any JSON is stale
 
 Stdlib only.
 """
@@ -81,12 +81,12 @@ def main(argv: list[str] | None = None) -> int:
     root = (
         Path(positional[0])
         if positional
-        else Path(__file__).resolve().parents[2] / "schema"
+        else Path(__file__).resolve().parents[3] / "schema"
     )
     changed = generate(root, check=check)
     if check and changed:
         print(
-            "Stale JSON (regenerate with `python3 src/nbs_ruralscan/generate.py schema`):"
+            "Stale JSON (regenerate with `python3 src/nbs_ruralscan/schema_tools/generate.py schema`):"
         )
         for p in changed:
             print(f"  {p}")

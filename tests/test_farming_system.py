@@ -1,6 +1,6 @@
 """Unit tests for the EO-derived farming_system classifier."""
 
-from nbs_ruralscan.farming_system import (
+from nbs_ruralscan.runtime.farming_system import (
     AGRO_PASTORAL,
     CROPPING_IRRIGATED,
     CROPPING_RAINFED,
