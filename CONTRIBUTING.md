@@ -1,6 +1,6 @@
 # Contributing to NbS Rural Scan
 
-Welcome. This document is the detailed onboarding for working in this repo — for first-time contributors and as a refresher for the existing team. Read [`CLAUDE.md`](./CLAUDE.md) and [`PLAYBOOK.md`](./PLAYBOOK.md) first if you haven't; they set the architectural and team context. This file is about *how to actually get hands on the work*.
+Welcome. This document is the detailed onboarding for working in this repo — for first-time contributors and as a refresher for the existing team. Read [`AGENTS.md`](./AGENTS.md) and [`PLAYBOOK.md`](./PLAYBOOK.md) first if you haven't; they set the architectural and team context. This file is about *how to actually get hands on the work*.
 
 ---
 
@@ -38,7 +38,7 @@ Open the repo with: `cd nbs_ruralscan && code .`
 
 ## Claude Code: how we use it on this repo
 
-**Claude Code reads `CLAUDE.md` on every session.** That file encodes the project architecture, what's locked vs open, the seven modules, the team, the conventions. You don't need to brief Claude Code on the project — just open it in the repo and tell it what you want to do.
+**Claude Code reads `AGENTS.md` on every session.** That file encodes the project architecture, what's locked vs open, the seven modules, the team, the conventions. You don't need to brief Claude Code on the project — just open it in the repo and tell it what you want to do.
 
 The team has Claude Premium seats. We expect Claude Code to be the default development environment — not a side tool. The Claude Code uplift expectations are documented in [`PLAYBOOK.md`](./PLAYBOOK.md#using-claude-code-on-this-repo).
 
@@ -99,7 +99,7 @@ claude
 
 Tell it what you're doing and reference the issue:
 
-> *"I'm picking up issue #N: [issue title]. The acceptance criteria are X, Y, Z. Read the relevant context files (CLAUDE.md is already loaded; also look at [specific file]) and propose an approach before writing anything."*
+> *"I'm picking up issue #N: [issue title]. The acceptance criteria are X, Y, Z. Read the relevant context files (AGENTS.md is already loaded; also look at [specific file]) and propose an approach before writing anything."*
 
 Iterate until you have a working artefact. Test it (run the notebook, preview the docs page, validate the schema row — whatever applies).
 
@@ -134,7 +134,7 @@ The PR will auto-populate from the PR template. Fill out the **Structural checkl
 
 ### Step 7 — Review
 
-Request at least one reviewer (your assignee is in the issue). For structural changes (wireframe, schema, CLAUDE.md), request Pete + one other reviewer.
+Request at least one reviewer (your assignee is in the issue). For structural changes (wireframe, schema, AGENTS.md), request Pete + one other reviewer.
 
 When the PR is approved and merged, the issue closes automatically, the project board moves it to Done.
 
@@ -204,9 +204,9 @@ Mirrored from PLAYBOOK so it's findable here:
 
 - Code questions → ask Claude Code first. It knows the project conventions.
 - Workflow questions → check `PLAYBOOK.md`.
-- Architecture questions → check `CLAUDE.md` (for the locked decisions) and the module specs (`methodology/modules/`).
+- Architecture questions → check `AGENTS.md` (for the locked decisions) and the module specs (`methodology/modules/`).
 - Domain questions (does this NbS work in X context?) → ask the relevant MFL team member.
 - Anything urgent → `NbS Rural Scan Task Force` Teams channel.
-- Anything that should be remembered for future Claude Code sessions → update `CLAUDE.md` (small) or `PLAYBOOK.md` (larger).
+- Anything that should be remembered for future Claude Code sessions → update `AGENTS.md` (small) or `PLAYBOOK.md` (larger).
 
 Welcome aboard.
