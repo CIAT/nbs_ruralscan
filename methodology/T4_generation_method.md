@@ -108,7 +108,7 @@ edges of the crop's range (shade as adaptation), so the surface is "where the cr
 resilience," not the bare crop envelope.
 
 **T4 is keyed to `suitability_family_id`, not to the whole NbS.** The grouping carries a documented rationale +
-references (the biophysical-logic check `CLAUDE.md` enforces — "water harvesting ≠ wetland creation"). It is a
+references (the biophysical-logic check `AGENTS.md` enforces — "water harvesting ≠ wetland creation"). It is a
 **first-pass hypothesis, revisable** once evidence is in, recorded so the revision is auditable.
 
 ### 2.2 Target / scope spec (what we're looking for)
@@ -449,7 +449,7 @@ until that table or analysis is in scope**:
   publication-bias humility rule.
 - **Dataset-discovery list for BIND / T1** — **STAC** index, **Awesome-GEE-Community-Catalog**,
   **HDX** (Humanitarian Data Exchange), **WB Data Catalog**, **AWS Open Data**. Server-side
-  preferred per CLAUDE.md dataset-sourcing rule (v0.2.6+). These feed Brayden's T1 download
+  preferred per AGENTS.md dataset-sourcing rule (v0.2.6+). These feed Brayden's T1 download
   layer + BIND resolution; documented here so the discovery work isn't reinvented.
 
 Each class becomes a candidate bounded seed-set when its target table moves into scope.

@@ -31,7 +31,7 @@ human-editing view.** Fix the JSON, then regenerate the CSV.
 ## Naming note (for reconciliation)
 
 The workbook sets `nbs_id = water_harvesting_conservation`, so this recipe folder matches that ID. The
-methodology file is `methodology/recipes/water_harvesting.md` and `CLAUDE.md` cites `water_harvesting` as the
+methodology file is `methodology/recipes/water_harvesting.md` and `AGENTS.md` cites `water_harvesting` as the
 NbS-ID example. **These should be reconciled to a single canonical `nbs_id`** before the schema stabilises —
 raise an issue rather than silently editing.
 
