@@ -48,6 +48,8 @@ Schema v0.2 adds an **evidence & configuration layer** upstream of T0–T7 — n
 
 **Structure is frozen + machine-validated.** The column set of every table lives in `schema/structure/columns.json` (the manifest) and is enforced by `src/nbs_ruralscan/structure.py` (run `python3 src/nbs_ruralscan/structure.py schema`, also in CI). Structure changes go via the manifest + an issue — never reshape data files silently. Content (most `evidence_ids`) is still being populated; the F1×slope chain is the one fully-evidenced example.
 
+**CSV is the source of truth; JSON is generated.** Each schema table is a CSV (edit this) plus a typed JSON the code reads. **Never edit the JSON by hand** — run `python3 src/nbs_ruralscan/generate.py schema` after editing any CSV (CI fails on stale JSON). Generator: `src/nbs_ruralscan/generate.py`.
+
 ## What is locked
 
 These decisions are structural. If you want to change them, raise an issue and tag the team — don't just edit.
@@ -96,7 +98,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - `docs/` — GitHub Pages site (wireframe, pipeline diagram, index, schema page + ERD)
 - `methodology/` — framework + per-NbS recipes + module specs + **`T4_generation_method.md`** (evidence-first suitability generation) + **`families/`** (suitability-family schemes) + `examples/` (worked gold standards)
 - `schema/` — `spec.md` (v0.3.0 field-level), T0–T7 tables, `registers/` (SRC·EV·VONT·FAM·BIND), `structure/columns.json` (frozen column manifest), ERD/dedup notes, draft-0 example recipes
-- `src/nbs_ruralscan/` — reusable Python implementation: `ingest/` (doc ingestion), `evidence`·`synthesis`·`support`·`recipe` (T4 engine), `binding` (BIND resolver), `structure` (schema validator)
+- `src/nbs_ruralscan/` — reusable Python implementation: `ingest/` (doc ingestion), `evidence`·`synthesis`·`support`·`recipe` (T4 engine), `binding` (BIND resolver), `structure` (schema validator), `generate` (CSV→JSON generator)
 - `tests/` — pytest suite (run via `uv run pytest`)
 - `pipeline/` — pilot notebooks and outputs
 - `reference/` — stocktake findings, source R script, lit references
@@ -108,7 +110,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 ## Run / preview / deploy
 
 - **Python environment**: use `uv` from the repo root. Add runtime dependencies with `uv add ...`; add dev tools with `uv add --dev ...`.
-- **Python checks**: run `uv run ruff check .`, `uv run ruff format .`, `uv run ty check`, `uv run pytest`, and `python3 src/nbs_ruralscan/structure.py schema` before PRs that touch `src/` or `schema/`. CI (`.github/workflows/ci.yml`) runs the same gates.
+- **Edited a schema CSV?** Regenerate its JSON: `python3 src/nbs_ruralscan/generate.py schema` (CSV is source of truth; CI fails on stale JSON).
+- **Python checks**: run `uv run ruff check .`, `uv run ruff format .`, `uv run ty check`, `uv run pytest`, `python3 src/nbs_ruralscan/generate.py schema --check`, and `python3 src/nbs_ruralscan/structure.py schema` before PRs that touch `src/` or `schema/`. CI (`.github/workflows/ci.yml`) runs the same gates.
 - **Preview docs locally**: `cd docs && python3 -m http.server 8000` → http://localhost:8000
 - **Run pilot notebook**: open `pipeline/notebooks/<nbs>_<country>.ipynb` in Colab; authenticate GEE
 - **Deploy docs**: push to main; GitHub Pages auto-rebuilds from `/docs` within ~2 min

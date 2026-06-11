@@ -32,6 +32,10 @@ jobs:
       - name: Unit tests (pytest)
         run: uv run pytest -q
 
+      # CSV is the source of truth; JSON is generated. Fail if any JSON is stale.
+      - name: Schema JSON in sync with CSV
+        run: python3 src/nbs_ruralscan/generate.py schema --check
+
       # The frozen-structure gate: every schema data file must match the column manifest.
       - name: Schema structure validation
         run: python3 src/nbs_ruralscan/structure.py schema

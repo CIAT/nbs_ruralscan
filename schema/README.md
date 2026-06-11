@@ -61,7 +61,7 @@ The first populated tables — pilot NbS **Agroforestry** and **Water Harvesting
 
 ## Conventions
 
-- **JSON and CSV — both maintained.** JSON is the machine-readable source of truth (object/list fields parsed to nested structures); CSV is the human-editing view (cells verbatim). Fix the JSON, then regenerate the CSV.
+- **CSV is the source of truth; JSON is generated.** Edit the CSV (cells verbatim — object/list fields as JSON literals); the typed JSON the code reads is generated from it. **Never hand-edit the JSON.** After editing a CSV run `python3 src/nbs_ruralscan/generate.py schema` (CI fails on stale JSON via `--check`).
 - **One folder per recipe** — `schema/recipes/<nbs_id>/` holds the tables that carry an `nbs_id` (T0, T3, T4, T6) for that NbS. Cross-NbS tables (T1, T2, T5, T7) live at the schema root.
 - **Snake_case IDs throughout** — `nbs_id`, `dataset_id`, `variable_id`, `context_id`.
 - **Schema migrations are PRs.** Don't add columns without an RFC issue. Don't change the meaning of an existing column.
