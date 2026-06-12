@@ -31,7 +31,7 @@ human-editing view.** Fix the JSON, then regenerate the CSV.
 ## Naming note (for reconciliation)
 
 The workbook sets `nbs_id = water_harvesting_conservation`, so this recipe folder matches that ID. The
-methodology file is `methodology/recipes/water_harvesting.md` and `CLAUDE.md` cites `water_harvesting` as the
+methodology file is `methodology/recipes/water_harvesting.md` and `AGENTS.md` cites `water_harvesting` as the
 NbS-ID example. **These should be reconciled to a single canonical `nbs_id`** before the schema stabilises —
 raise an issue rather than silently editing.
 
@@ -49,7 +49,7 @@ flood-hazard method, erosion-vs-degradation).
 ## Structure & validation status
 
 Conformant to the **frozen v0.2 structure** ([`../../structure/columns.json`](../../structure/columns.json)).
-Verify with `python3 src/nbs_ruralscan/structure.py schema` (expect 0 errors).
+Verify with `python3 src/nbs_ruralscan/schema_tools/structure.py schema` (expect 0 errors).
 
 - Columns match the manifest; FKs resolve to VONT (`variable`), FAM (`suitability_family_id`), T1 (`dataset_id`)
   — including nested `context_overrides`, `baseline_dataset_id` and `future_dataset_ids`.

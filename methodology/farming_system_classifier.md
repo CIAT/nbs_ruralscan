@@ -2,7 +2,7 @@
 
 **Owner:** Brayden (lead) · Pete (oversight) · Benson (QA / fitness sign-off)
 **Status:** v0.3.0 scoping-grade recipe; thresholds documented + tuned per AOI.
-**Companion:** `src/nbs_ruralscan/farming_system.py` (classifier code) · `tests/test_farming_system.py` ·
+**Companion:** `src/nbs_ruralscan/runtime/farming_system.py` (classifier code) · `tests/test_farming_system.py` ·
 `schema/registers/FS_DIXON_CROSSWALK.md` (Dixon ↔ EO crosswalk).
 
 The schema's six T7 `farming_system` classes are derived from open EO layers at scoping grade.
@@ -107,7 +107,7 @@ tree-perennial systems in the south-east; limited large irrigation; modest lives
 Override the defaults with:
 
 ```python
-from nbs_ruralscan.farming_system import Thresholds, classify_arrays
+from nbs_ruralscan.runtime.farming_system import Thresholds, classify_arrays
 
 sle = Thresholds(
     irrigation_share=0.10,
