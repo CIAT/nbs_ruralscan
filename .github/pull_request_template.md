@@ -24,7 +24,7 @@ Tick all that apply. **If anything is unchecked, explain in the comments.**
 ### For all PRs
 - [ ] Conventional Commits used in commit messages
 - [ ] No analytical rules hardcoded in code — all read from schema (T0–T7)
-- [ ] CLAUDE.md updated if a structural decision changed
+- [ ] AGENTS.md updated if a structural decision changed
 
 ### For wireframe / docs edits
 - [ ] Six-tab structure preserved (Setup · Opportunity Space · NbS Comparison · TTL Hotspots · Variable Config · Danger Zone)

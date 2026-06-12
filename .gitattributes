@@ -1,0 +1,9 @@
+# Schema JSON is generated from the CSV source of truth — never hand-edit.
+# Run `python3 src/nbs_ruralscan/schema_tools/generate.py schema` after editing a CSV.
+# `linguist-generated` collapses these in GitHub diffs and labels them "generated".
+schema/*.json                  linguist-generated=true
+schema/recipes/**/*.json       linguist-generated=true
+schema/registers/*.json        linguist-generated=true
+
+# The column manifest is hand-authored, not generated — keep it visible in diffs.
+schema/structure/columns.json  -linguist-generated

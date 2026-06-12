@@ -220,15 +220,15 @@ For M2 to be considered "done" for a given NbS in a given AOI:
 > |---|---|
 > | `T3.risk_role`, `T3.asset_risk_weight` (RFC in original draft) | **Live** since v0.2 — drives M2 / M2b two-risk split. M2 reads `risk_role ∈ {livelihood_mitigation, both}`. |
 > | T2 hazard layers | **BIND-bound** at v0.3.0: `drought_hazard__global` → SPEI v26 · `flood_hazard__global` → JRC Global Flood Hazard 100y · `heat_stress_hazard__global` → CHELSA BIO5 · `water_stress__global` → WRI Aqueduct 4.0. All `status = catalogued`. |
-> | Module path `pipeline/climate_risk.py` | **Updated** → `src/nbs_ruralscan/climate_risk.py` per the v0.2 GEE-App-dropped runtime. Operates on xarray DataArrays (raster I/O via rioxarray; GEE data/processing via xee). |
-> | `sensitivity_perturb` (§6.7) | **Available**: `src/nbs_ruralscan/mcda.py::sensitivity_perturb(stack, weights, n=50, scale=0.1, seed=None)` — `SensitivityResult` dataclass (mean / variance / weight bounds). Reuse, don't duplicate. |
+> | Module path `pipeline/climate_risk.py` | **Updated** → `src/nbs_ruralscan/runtime/climate_risk.py` per the v0.2 GEE-App-dropped runtime. Operates on xarray DataArrays (raster I/O via rioxarray; GEE data/processing via xee). |
+> | `sensitivity_perturb` (§6.7) | **Available**: `src/nbs_ruralscan/runtime/mcda.py::sensitivity_perturb(stack, weights, n=50, scale=0.1, seed=None)` — `SensitivityResult` dataclass (mean / variance / weight bounds). Reuse, don't duplicate. |
 > | Exposure variable IDs | T5 v0.3.0 has `rural_population` (descriptor), `agricultural_production_value` (descriptor), `farm_size` (descriptor) bound to WorldPop / MapSPAM v2 / Lesiv 2019 respectively. Map M2 exposure layers to these where they align. |
 > | T7 farming_system vocab | **Swapped** at v0.3.0 to 6 EO-derived classes (`cropping_rainfed` · `cropping_irrigated` · `mixed_crop_livestock` · `agro_pastoral` · `pastoral_rangeland` · `tree_perennial`). Dixon = crosswalk only. Update any farming-system-conditional logic. |
 > | Double-count guard | T2 ↔ T5 overlap still the concern. T5 now distinguishes `mcda_role ∈ {priority, descriptor}` — guard against T2 variables doubling into T5 **priority** rows (not descriptors). |
 >
 > **Recommended v0 scope (per spec's suggested Claude-Code prompt):** Mode A only; defer Mode B's vulnerability composition behind a `NotImplementedError`. Equal hazard weights; per-NbS-run mode toggle (not global). Multiplicative composition `Risk_i = H_i × E_i` (sum across hazards) is the spec's default; methodology note required either way.
 
-Suggested Python function signatures for `src/nbs_ruralscan/climate_risk.py` (was `pipeline/climate_risk.py` in the v0.1 draft):
+Suggested Python function signatures for `src/nbs_ruralscan/runtime/climate_risk.py` (was `pipeline/climate_risk.py` in the v0.1 draft):
 
 ```python
 def relevant_hazards(nbs_id: str, t3: pd.DataFrame) -> list[str]:
@@ -266,7 +266,7 @@ Each function is independently testable. The pilot notebook calls them in order;
 
 ### Likely starting prompt for Claude Code (analogous to the M1 prompt)
 
-> Implement `src/nbs_ruralscan/climate_risk.py` for the Rural NbS Scan, following the spec in `methodology/modules/M2_climate_risk.md`. xarray-based math core operating on `xarray.DataArray`s (T1 datasets already BIND-bound at v0.3.0; caller handles raster I/O via rioxarray and GEE data/processing via xee). Mode A only for the first pass — defer Mode B's vulnerability composition behind a `NotImplementedError`. Inputs are T1, T2, T3, T7 rows from the schema for a given `nbs_id`. Use the function signatures listed in the spec's "Implementation notes" section. Reuse `src/nbs_ruralscan/mcda.py::sensitivity_perturb` for §6.7 — don't duplicate. Show me the imports + the first three functions; pause for review before the rest.
+> Implement `src/nbs_ruralscan/runtime/climate_risk.py` for the Rural NbS Scan, following the spec in `methodology/modules/M2_climate_risk.md`. xarray-based math core operating on `xarray.DataArray`s (T1 datasets already BIND-bound at v0.3.0; caller handles raster I/O via rioxarray and GEE data/processing via xee). Mode A only for the first pass — defer Mode B's vulnerability composition behind a `NotImplementedError`. Inputs are T1, T2, T3, T7 rows from the schema for a given `nbs_id`. Use the function signatures listed in the spec's "Implementation notes" section. Reuse `src/nbs_ruralscan/runtime/mcda.py::sensitivity_perturb` for §6.7 — don't duplicate. Show me the imports + the first three functions; pause for review before the rest.
 
 ---
 

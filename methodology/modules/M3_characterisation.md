@@ -102,18 +102,18 @@ Variables here (T5) must not also be active in T2 (M2) for the same `nbs_id`. Co
 >
 > | Draft assumption | Current state |
 > |---|---|
-> | Module path `pipeline/characterisation.py` | **Updated** → `src/nbs_ruralscan/characterisation.py` per the v0.2 GEE-App-dropped runtime. xarray / rioxarray; GEE data/processing via xee. |
+> | Module path `pipeline/characterisation.py` | **Updated** → `src/nbs_ruralscan/runtime/characterisation.py` per the v0.2 GEE-App-dropped runtime. xarray / rioxarray; GEE data/processing via xee. |
 > | T5 `mcda_role` | **Live** at v0.3.0 with `priority` | `descriptor`. M3 assembles **both** but flags which goes downstream: priorities → standardised stack for M4; descriptors → fingerprint/context only (never standardised for MCDA). Filter at assembly time. |
 > | T5 normalization fields | **Live**: `norm_method`, `direction`, `reference_frame` (AOI / sub-national / global / fixed-baseline), `clip`. M3 applies them per row — don't re-derive. Record what was applied in run meta for M4 to validate. |
 > | T5 themes | **Ratified** at v0.3.0: `climate_hazard` · `nbs_response` · `people_production` · `equity_inclusion` · `context`. Per-theme correlation clustering keys on this enum. |
 > | T7 farming_system | **Swapped** to 6 EO-derived classes at v0.3.0. The fingerprint's farming-system breakdown should key off this vocab, not Dixon labels (which now live in `schema/registers/FS_DIXON_CROSSWALK.md` as a translation-only reference). |
-> | BIND resolver | **Live**: `src/nbs_ruralscan/binding.py` resolves variable → dataset under most-specific-context-wins. Call it per priority variable instead of reading `T5.dataset_id` raw — overrides (per-country / per-farming-system) need to be honoured. |
+> | BIND resolver | **Live**: `src/nbs_ruralscan/runtime/binding.py` resolves variable → dataset under most-specific-context-wins. Call it per priority variable instead of reading `T5.dataset_id` raw — overrides (per-country / per-farming-system) need to be honoured. |
 > | iplc_lands (v0.3.0-F) | **Priority row added**; LandMark-bound. Treat as priority; standardise as binary presence (0/1) into the equity_inclusion theme. Surface FPIC/ESS7 flag whenever the layer overlaps `opp_mask` (consumed by M6). |
 
-Suggested Python function signatures for `src/nbs_ruralscan/characterisation.py`:
+Suggested Python function signatures for `src/nbs_ruralscan/runtime/characterisation.py`:
 
 ```python
-from nbs_ruralscan.binding import resolve_dataset
+from nbs_ruralscan.runtime.binding import resolve_dataset
 
 def assemble_priorities(
     t5_rows: "pd.DataFrame",
@@ -177,5 +177,5 @@ def iplc_overlap_flag(
 ## Version history
 
 - **v0.1** (June 2026) — authored to match the v0.6 wireframe Opportunity Space panels. Splits cleanly from M4 (M3 describes, M4 prioritises). Computed in Python (post native-GEE).
-- **v0.1.1** (June 2026) — annotated §12 with v0.3.0 schema state: T5 mcda_role priority/descriptor split at assembly; ratified themes; T7 6-class EO-derived farming_system; BIND resolver call required (not raw T5.dataset_id); iplc_lands binary-presence handling + FPIC overlap flag. Module path → `src/nbs_ruralscan/characterisation.py`. Function signatures widened; new `iplc_overlap_flag` helper. No methodology change.
+- **v0.1.1** (June 2026) — annotated §12 with v0.3.0 schema state: T5 mcda_role priority/descriptor split at assembly; ratified themes; T7 6-class EO-derived farming_system; BIND resolver call required (not raw T5.dataset_id); iplc_lands binary-presence handling + FPIC overlap flag. Module path → `src/nbs_ruralscan/runtime/characterisation.py`. Function signatures widened; new `iplc_overlap_flag` helper. No methodology change.
 - **v1.0** (June 2026) — Finalised and ratified module specification. Open questions resolved and locked to match the built wireframe.

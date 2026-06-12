@@ -37,10 +37,10 @@ been done.
      §13.
    - **[M2 Rural Climate Risk](./methodology/modules/M2_climate_risk.md)** —
      **Brayden**, pre-scaffolded for you. Mode A vs Mode B, double-count guard
-     with M3/M4, function signatures for `src/nbs_ruralscan/climate_risk.py`
+     with M3/M4, function signatures for `src/nbs_ruralscan/runtime/climate_risk.py`
      (v0.3.0 schema annotations in §14). Six open methodology questions at the
      bottom that need your view.
-3. **Repo conventions + workflow** — [`CLAUDE.md`](./CLAUDE.md),
+3. **Repo conventions + workflow** — [`AGENTS.md`](./AGENTS.md),
    [`PLAYBOOK.md`](./PLAYBOOK.md), [`CONTRIBUTING.md`](./CONTRIBUTING.md).
    **Namita** — keen on your take here since you'll coordinate recipe
    authoring + Variable Cards.
@@ -137,7 +137,7 @@ setup runbook.
 ## Working in this repo — quick start (≈10 minutes)
 
 The development environment is **VS Code + Claude Code in the integrated
-terminal**. Claude Code reads `CLAUDE.md` automatically on every session so
+terminal**. Claude Code reads `AGENTS.md` automatically on every session so
 you're never starting cold.
 
 ### One-time setup
@@ -169,7 +169,7 @@ git checkout -b feat/your-task    # branch
 claude                            # start Claude Code in this repo
 ```
 
-Claude Code now reads `CLAUDE.md` and is grounded in project context. Tell it
+Claude Code now reads `AGENTS.md` and is grounded in project context. Tell it
 what you want — for example:
 
 > _"I'm picking up issue #6 (Agroforestry recipe). Read
@@ -185,7 +185,7 @@ asking Claude Code to do it for you. Raise the PR via the GitHub UI or
 
 | You want to…                                                     | Read this                                                                                                                                          |
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Understand the system architecture, what's locked, who does what | [`CLAUDE.md`](./CLAUDE.md)                                                                                                                         |
+| Understand the system architecture, what's locked, who does what | [`AGENTS.md`](./AGENTS.md)                                                                                                                         |
 | Learn the team's workflows and conventions                       | [`PLAYBOOK.md`](./PLAYBOOK.md)                                                                                                                     |
 | Find a task to pick up                                           | [Issues tab](https://github.com/CIAT/nbs_ruralscan/issues) (or [`.github/SEED_ISSUES.md`](./.github/SEED_ISSUES.md) if you're seeding the backlog) |
 | Set up the project board / labels                                | [`.github/PROJECT_BOARD_SETUP.md`](./.github/PROJECT_BOARD_SETUP.md) and [`.github/setup-labels.sh`](./.github/setup-labels.sh)                    |
@@ -194,7 +194,7 @@ asking Claude Code to do it for you. Raise the PR via the GitHub UI or
 | Understand a module's I/O contract                               | [`methodology/modules/`](./methodology/modules/)                                                                                                   |
 | Look at the live demonstrators                                   | https://ciat.github.io/nbs_ruralscan/                                                                                                              |
 
-If you're brand new, **read CLAUDE.md and PLAYBOOK.md before your first issue.**
+If you're brand new, **read AGENTS.md and PLAYBOOK.md before your first issue.**
 Together they're about 15 minutes. They'll save you days of misunderstanding the
 architecture.
 
@@ -217,14 +217,14 @@ architecture.
 
 Detailed walkthrough in [`CONTRIBUTING.md`](./CONTRIBUTING.md). Team workflows
 in [`PLAYBOOK.md`](./PLAYBOOK.md). Project memory for Claude Code in
-[`CLAUDE.md`](./CLAUDE.md). Open an issue using one of the templates; raise a PR
+[`AGENTS.md`](./AGENTS.md). Open an issue using one of the templates; raise a PR
 using the PR template; we review and merge.
 
 ## Team
 
 Alliance Bioversity International & CIAT — Climate Action Net Zero. Pete Steward
 (Team Lead, p.steward@cgiar.org). Full team in
-[`CLAUDE.md`](./CLAUDE.md#team--roles).
+[`AGENTS.md`](./AGENTS.md#team--roles).
 
 ## License
 

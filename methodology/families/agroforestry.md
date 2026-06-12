@@ -32,7 +32,7 @@ We deliberately **do not group by visual structure or by tree species.** The can
 cropland* can arise by **planting** (limited by the biophysical envelope + management) or by **assisted natural
 regeneration / retention** (limited by remnant rootstock, seedbank, seed-source proximity, tenure). Same picture
 on the ground — different limiting factor, different variables, different suitable area. They must be **different
-families**. (This is the same discipline `CLAUDE.md` enforces elsewhere: "water harvesting ≠ wetland creation.")
+families**. (This is the same discipline `AGENTS.md` enforces elsewhere: "water harvesting ≠ wetland creation.")
 
 Four limiting-factor archetypes underlie the scheme:
 

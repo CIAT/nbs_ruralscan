@@ -241,7 +241,7 @@
 > (`T1.limitations`); added `T4.suitability_family_id` (the unit T4 keys to). v0.1 was the original 8-table design.
 >
 > **Structure frozen (`v0.2-structure-frozen`).** The column set here is machine-mirrored in
-> [`structure/columns.json`](structure/columns.json) and enforced by `src/nbs_ruralscan/structure.py`. Change the
+> [`structure/columns.json`](structure/columns.json) and enforced by `src/nbs_ruralscan/schema_tools/structure.py`. Change the
 > structure only by editing this spec, regenerating the manifest, and raising an issue — never by reshaping data files.
 
 > In-repo Markdown port of `NbS_Schema_Reference_v01_1.docx` (Pete Steward, 7 May 2026).
@@ -743,9 +743,12 @@ governs `T4.context_overrides`.
 
 ## Implementation notes
 
-**File formats.** Tables are implemented as JSON arrays of objects (one object per row) for machine
-consumption, with a parallel CSV view for human editing. For large tables (T1, T4), JSONL (one object per
-line) is an option for streaming.
+**File formats.** Each table is a CSV (the **human-editable source of truth**) plus a typed JSON
+array-of-objects (one object per row) for machine consumption. **The JSON is generated from the CSV — never
+edit it by hand.** Regenerate with `python3 src/nbs_ruralscan/schema_tools/generate.py schema` (CI fails on stale JSON via
+`--check`). Conversion is per-cell: a cell that parses as JSON becomes its typed value (numbers, booleans,
+`null`, nested `[...]`/`{...}`); otherwise it stays a string; empty cells are dropped. For large tables (T1,
+T4), JSONL (one object per line) is an option for streaming.
 
 **Foreign-key validation (fail loudly).** On load, validate: every `dataset_id` in T2/T3/T4/T5/T7 exists in
 T1; every `nbs_id` in T0/T3/T4/T6 exists in T0; every `variable_id` in T6 exists in T5 (or is a T3 hazard_type

@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from nbs_ruralscan.mcda import (
+from nbs_ruralscan.runtime.mcda import (
     ahp_consistency_ratio,
     ahp_matrix_from_weights,
     ahp_weights,

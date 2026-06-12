@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import zipfile
 
-from nbs_ruralscan.freeze import (
+from nbs_ruralscan.schema_tools.freeze import (
     create_manifest_and_snapshot,
     get_sha256,
     verify_manifest,

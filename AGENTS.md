@@ -1,6 +1,6 @@
 # NbS Rural Scan — Project Memory
 
-> This file is read by Codex on every session. Keep it tight — under ~200 lines. Anything longer becomes wallpaper.
+> **This is the canonical agent guide** (the cross-tool `AGENTS.md` standard). It is read directly by coding agents, and Claude Code loads it via `CLAUDE.md` → `@AGENTS.md`. **Edit this file, not `CLAUDE.md`.** Keep it tight — under ~200 lines. Anything longer becomes wallpaper.
 
 ## What this project is
 
@@ -16,7 +16,7 @@ The Rural NbS Scan is a World Bank-funded methodology and demonstrator (D591, $2
 
 Demonstrator-grade artefacts (not contracted but valuable):
 - **TTL tool wireframe** — see `docs/wireframe.html`
-- ~~GEE App~~ — **deferred** (native GEE dropped; the wireframe is the demonstrator)
+- ~~GEE App~~ — **deferred** (standalone GEE App dropped; GEE stays central via xee; the wireframe is the demonstrator)
 - **Pipeline architecture diagram** — see `docs/pipeline.html`
 
 ## Architecture (read this if you do anything in this repo)
@@ -25,7 +25,7 @@ Demonstrator-grade artefacts (not contracted but valuable):
 
 - **Framework** — cross-cutting methodology, MCDA engine, standardisation library, schema. NbS-agnostic.
 - **Recipe** — per-NbS configuration. One file per NbS. Defines variables, thresholds, weights, subpractice families.
-- **Runtime** — reusable Python package (`src/nbs_ruralscan/`) that pulls GEE & other data and computes locally with numpy/rasterio + Colab pilot notebooks. *Native server-side GEE compute and the GEE App are dropped — see Team decision June 2026.*
+- **Runtime** — reusable Python package (`src/nbs_ruralscan/`) that pulls GEE & other data and computes with xarray, rioxarray, and xee + Colab pilot notebooks. *the GEE App is dropped — see Team decision June 2026.*
 
 ### Seven modules
 
@@ -46,7 +46,9 @@ The pipeline reads all analytical rules, datasets, response functions, and weigh
 
 Schema v0.2 adds an **evidence & configuration layer** upstream of T0–T7 — now materialised under `schema/registers/`: Source Register (SRC), Evidence Register (EV), Variable Ontology (VONT), the Subpractice/Suitability-Family registry (FAM), and the **Dataset Binding registry (BIND)** — making every T3/T4/T6 value traceable (`row → evidence_id → source · tier · page · quote`) and every variable's dataset context-resolvable. How these tables are generated from literature is the **T4 generation method**: `methodology/T4_generation_method.md` (with a worked gold standard in `methodology/examples/`).
 
-**Structure is frozen + machine-validated.** The column set of every table lives in `schema/structure/columns.json` (the manifest) and is enforced by `src/nbs_ruralscan/structure.py` (run `python3 src/nbs_ruralscan/structure.py schema`, also in CI). Structure changes go via the manifest + an issue — never reshape data files silently. Content (most `evidence_ids`) is still being populated; the F1×slope chain is the one fully-evidenced example.
+**Structure is frozen + machine-validated.** The column set of every table lives in `schema/structure/columns.json` (the manifest) and is enforced by `src/nbs_ruralscan/schema_tools/structure.py` (run `python3 src/nbs_ruralscan/schema_tools/structure.py schema`, also in CI). Structure changes go via the manifest + an issue — never reshape data files silently. Content (most `evidence_ids`) is still being populated; the F1×slope chain is the one fully-evidenced example.
+
+**CSV is the source of truth; JSON is generated.** Each schema table is a CSV (edit this) plus a typed JSON the code reads. **Never edit the JSON by hand** — run `python3 src/nbs_ruralscan/schema_tools/generate.py schema` after editing any CSV (CI fails on stale JSON). Generator: `src/nbs_ruralscan/schema_tools/generate.py`.
 
 ## What is locked
 
@@ -59,14 +61,14 @@ These decisions are structural. If you want to change them, raise an issue and t
 - **Two risk lenses are distinct**: risk to rural **livelihoods** (M2, a *need* layer → hotspots) vs risk to the **investment** (M2b, the WB disaster-screening lens → a feasibility filter/scope). Kept separate; M2b applied as a filter, never summed. See `methodology/modules/M2b_project_risk.md`.
 - **Pipeline reads from schema** — analytical rules never hardcoded.
 - **Variable selection is 2-stage**: thematic grouping (per recipe) + correlation clustering (per AOI). One representative per cluster enters MCDA. Cluster membership preserved and shown to users.
-- **Dataset sourcing is 3-tier**: GEE catalog → community-hosted → upload. Fitness-for-purpose precedes platform. Data is **pulled into Python** for computation (numpy/rasterio) — there is no native server-side GEE pipeline. **Within the tiers, prefer server-side hosting (GEE catalog → community GEE → other large STAC/AWS-Open-Data services) over flat-file download** so resample/crop/mosaic happens server-side before transfer and the download functions stay simple and consistent. Where a fitness-equivalent GEE-hosted version exists, take it.
+- **Dataset sourcing is 3-tier**: GEE catalog → community-hosted → upload. Fitness-for-purpose precedes platform. Data is **pulled into Python** for computation (xarray, rioxarray); GEE data and its server-side processing are reached through **xee** (Earth Engine ↔ xarray) rather than a native Earth Engine app or script. **Within the tiers, prefer server-side hosting (GEE catalog → community GEE → other large STAC/AWS-Open-Data services) over flat-file download** so resample/crop/mosaic happens server-side before transfer and the download functions stay simple and consistent. Where a fitness-equivalent GEE-hosted version exists, take it.
 - **Suitability is reasoned per *suitability family*, not per whole NbS.** Families group subpractices by their **shared dominant limiting factor** (agroforestry F1 planted silvoarable · F2 regeneration-based · F3 silvopastoral · F4 linear · F5 shaded perennial-crop). T4 keys to `suitability_family_id`. Grouping carries a documented rationale; don't lump by appearance. **Scheme drafted for sign-off in `methodology/families/agroforestry.md`** *(pending Namita + MFL review)*. F5's understorey crop is a **parameter, not a sub-family** (run per crop, max + retain driver).
 - **Every family carries a `spatial_product_type`** (`area_suitability` | `applicability_zone` | `zonal_linear` | `qualitative_only`). Linear/point practices are **not** reported as pixel area (over-estimation grows with coarseness). Run coarseness is also bounded **per variable** by `min_meaningful_resolution_m` (slope ≈ 30–90 m); scale-dependent derivatives are **derive-then-aggregate**, never resample-then-derive.
 - **Evidence-first / provenance.** Analytical values in T3/T4/T6 trace to evidence units (source · tier · page · quote). Never PDF → threshold in one step. `claim_scope` separates **species/crop-specific** claims from **practice/technology** ones — species envelopes never define a practice row. See `methodology/T4_generation_method.md`.
 - **Constrain by observed distribution, not a modelled niche, where data exist.** Where a family is gated by an existing host system (a crop, land use, grazing), use the host's observed distribution/production (MapSPAM, EO maps, ag-stats) as the gating layer; niche/envelope modelling is the fallback. Method §2.5.
-- **Context-aware datasets (BIND) + most-specific-context-wins.** A global recipe binds each variable to a default dataset; country/AEZ/region overrides refine it (`requires_upload` flags a better local dataset for the user to supply). Resolver: `src/nbs_ruralscan/binding.py`. Relationship *params* refine in parallel via `T4.context_overrides`.
+- **Context-aware datasets (BIND) + most-specific-context-wins.** A global recipe binds each variable to a default dataset; country/AEZ/region overrides refine it (`requires_upload` flags a better local dataset for the user to supply). Resolver: `src/nbs_ruralscan/runtime/binding.py`. Relationship *params* refine in parallel via `T4.context_overrides`.
 - **Flag sensitive variables, don't resolve them.** `VONT.context_sensitivity` (`low`/`medium`/`high`) marks nationally-derived / sovereignty-sensitive variables (population, poverty, production) so the scoping output recommends a country-endorsed source. **Scoping flags; feasibility validates** — the tool does not negotiate or validate national data (the scope line). Method §2.6, M6.
-- **Implementation pathway is bifurcated.** Minimum commitment is the **Colab notebook** worked example per pilot (the contract deliverable). In parallel, the **Codex-built front/back end** is explored against the same schema (wireframe = front-end demonstrator; backend reads SRC/EV/VONT/FAM/BIND + T0–T7). Both consumers read the same registers — schema stability matters more now (two consumers, not one).
+- **Implementation pathway is bifurcated.** Minimum commitment is the **Colab notebook** worked example per pilot (the contract deliverable). In parallel, the **Claude-Code-built front/back end** is explored against the same schema (wireframe = front-end demonstrator; backend reads SRC/EV/VONT/FAM/BIND + T0–T7). Both consumers read the same registers — schema stability matters more now (two consumers, not one).
 - **`suitability_dimension` — three dimensions, ordered by what does the limiting** (v0.3.0 sharpening): `biophysical_constraint` = natural envelope (climate · terrain · soils — can the NbS establish at all); `system_constraint` = existing land-use / farming / land-cover system the NbS must integrate with (where "constrain by observed distribution" lives); `operational_constraint` = implementation feasibility / enabling environment (road & market access, extension, tenure, legal/protected exclusions — typically the scenario levers). Field-level definitions in `schema/spec.md`; method-side framing in `methodology/T4_generation_method.md` §2.7.
 - **Hard vs soft operational constraints** (resolves the schema ↔ stocktake Fig 9 tension): **hard exclusions** (legal protected areas, water bodies, urban footprints) stay inside the opportunity space as T4 constraints (`is_scenario_candidate = false`); **soft, investment-addressable** factors (road access, market access, extension, tenure) are **scenario levers** + inputs to an **operational-risk filter on the M2b side** — not baked into the core opportunity surface. Reconciles biophysical + system + hard-operational ≈ opportunity space; soft-operational ≈ scenario levers + project-risk stream.
 - **Bounded, authority-weighted discovery seed-set per NbS** (T4 method §3): WB rural-NbS catalogue · GEF / NBS Invest · IPCC · FAO · WRI · major meta-analyses · MEL/MELIA reports · CSA adoption & barriers dataset. Don't sweep 100k abstracts. Tie selection to `SRC.benchmark_tier`. **Corpus differs per table** — sequence T6/T3 discovery after T4. Read each paper once: extract T3/T4/T5/T6 variables in a single pass.
@@ -96,11 +98,11 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - `docs/` — GitHub Pages site (wireframe, pipeline diagram, index, schema page + ERD)
 - `methodology/` — framework + per-NbS recipes + module specs + **`T4_generation_method.md`** (evidence-first suitability generation) + **`families/`** (suitability-family schemes) + `examples/` (worked gold standards)
 - `schema/` — `spec.md` (v0.3.0 field-level), T0–T7 tables, `registers/` (SRC·EV·VONT·FAM·BIND), `structure/columns.json` (frozen column manifest), ERD/dedup notes, draft-0 example recipes
-- `src/nbs_ruralscan/` — reusable Python implementation: `ingest/` (doc ingestion), `evidence`·`synthesis`·`support`·`recipe` (T4 engine), `binding` (BIND resolver), `structure` (schema validator)
+- `src/nbs_ruralscan/` — reusable Python implementation, grouped by what code acts on: `schema_tools/` (`structure` validator · `generate` CSV→JSON · `freeze` snapshots), `recipe/` (the evidence engine: `evidence`→`support`→`synthesis`→`family`), `runtime/` (`mcda` · `binding` resolver · `farming_system`; `schema_loader`/`outputs` to be authored), `ingest/` (doc ingestion), `data_loaders/` (geospatial loaders), `models` (shared types). Subpackage map in `__init__.py`.
 - `tests/` — pytest suite (run via `uv run pytest`)
 - `pipeline/` — pilot notebooks and outputs
 - `reference/` — stocktake findings, source R script, lit references
-- `.Codex/commands/` — custom slash commands
+- `.claude/commands/` — custom slash commands
 - `.github/workflows/ci.yml` — CI: ruff · ty · pytest · schema structure validation
 - `.github/ISSUE_TEMPLATE/` — issue templates by type
 - `PLAYBOOK.md` — team workflows
@@ -108,7 +110,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 ## Run / preview / deploy
 
 - **Python environment**: use `uv` from the repo root. Add runtime dependencies with `uv add ...`; add dev tools with `uv add --dev ...`.
-- **Python checks**: run `uv run ruff check .`, `uv run ruff format .`, `uv run ty check`, `uv run pytest`, and `python3 src/nbs_ruralscan/structure.py schema` before PRs that touch `src/` or `schema/`. CI (`.github/workflows/ci.yml`) runs the same gates.
+- **Edited a schema CSV?** Regenerate its JSON: `python3 src/nbs_ruralscan/schema_tools/generate.py schema` (CSV is source of truth; CI fails on stale JSON).
+- **Python checks**: run `uv run ruff check .`, `uv run ruff format .`, `uv run ty check`, `uv run pytest`, `python3 src/nbs_ruralscan/schema_tools/generate.py schema --check`, and `python3 src/nbs_ruralscan/schema_tools/structure.py schema` before PRs that touch `src/` or `schema/`. CI (`.github/workflows/ci.yml`) runs the same gates.
 - **Preview docs locally**: `cd docs && python3 -m http.server 8000` → http://localhost:8000
 - **Run pilot notebook**: open `pipeline/notebooks/<nbs>_<country>.ipynb` in Colab; authenticate GEE
 - **Deploy docs**: push to main; GitHub Pages auto-rebuilds from `/docs` within ~2 min
@@ -120,7 +123,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - **Benson Kenduiywo** (Geospatial Analytics) — **QA/QC**: dataset fitness sign-off, output validation, resolution-audit review. *(The framework primitives below remain his inherited work and stay attributed to him.)* Pipeline implementation now proceeds in Python via Claude Code, driven by Brayden / Anastasia / Pete.
 - **Namita Joshi** (Coordination + lit) — **Task H focus ([expert-opinion elicitation & integration protocol](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/methodology/expert_opinion_protocol.md))**, lead on **M6 (Implementation Hand-off)**, project coordination.
 - **Brayden Youngberg** (Co-lead — methodology) — **M2 climate-risk + M2b project-disaster-risk index formulation; dataset download layer from T1 + analytical-context construction from T7** (server-side preferred — GEE / STAC / large services).
-- **Aniruddha Ghosh** — variable parsimony + transparency principles; Codex patterns
+- **Aniruddha Ghosh** — variable parsimony + transparency principles; Claude Code patterns
 - **Sarah Jones, Chris Kettle, Evert Thomas, Hannes Gaisberger** (MFL team) — ecosystem services, M6 implementation hand-off content, agroforestry & forest restoration domain input
 - **Lolita Müller** — stocktake methods, literature pipelines
 - **Anastasia Wahome** — geospatial implementation support
@@ -133,6 +136,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - NbS IDs: `snake_case` (e.g. `agroforestry`, `water_harvesting`)
 - Files: kebab-case for `docs/` artefacts (`wireframe.html`, `pipeline.html`); snake_case for code
 - Per-NbS recipe filenames: `methodology/recipes/<nbs_id>.md`
+- If using/directly importing a python module, check that it is included in `pyproject.toml` and use `uv add <module_name>` if missing.
 
 ## Don't
 
@@ -148,5 +152,5 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 - Read `PLAYBOOK.md` for workflows
 - Read the most recent `5_Meetings/` transcript for current discussion state
-- Read the closest AGENTS.md to where you're working (subfolder AGENTS.md takes precedence)
+- Read the closest AGENTS.md/CLAUDE.md to where you're working (subfolder memory takes precedence)
 - Ask in the Teams `NbS Rural Scan Task Force` channel

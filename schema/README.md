@@ -24,8 +24,8 @@ empty pending literature extraction, and the suitability-family scheme is a draf
 Check any data file against the frozen structure:
 
 ```bash
-python3 src/nbs_ruralscan/structure.py schema          # STRUCTURE only — must pass (0 errors)
-python3 src/nbs_ruralscan/structure.py schema --strict  # + CONTENT completeness (expect gaps until populated)
+python3 src/nbs_ruralscan/schema_tools/structure.py schema          # STRUCTURE only — must pass (0 errors)
+python3 src/nbs_ruralscan/schema_tools/structure.py schema --strict  # + CONTENT completeness (expect gaps until populated)
 ```
 
 Default run validates column conformance + FK shape (fatal). `--strict` additionally flags empty required values and
@@ -61,16 +61,16 @@ The first populated tables — pilot NbS **Agroforestry** and **Water Harvesting
 
 ## Conventions
 
-- **JSON and CSV — both maintained.** JSON is the machine-readable source of truth (object/list fields parsed to nested structures); CSV is the human-editing view (cells verbatim). Fix the JSON, then regenerate the CSV.
+- **CSV is the source of truth; JSON is generated.** Edit the CSV (cells verbatim — object/list fields as JSON literals); the typed JSON the code reads is generated from it. **Never hand-edit the JSON.** After editing a CSV run `python3 src/nbs_ruralscan/schema_tools/generate.py schema` (CI fails on stale JSON via `--check`).
 - **One folder per recipe** — `schema/recipes/<nbs_id>/` holds the tables that carry an `nbs_id` (T0, T3, T4, T6) for that NbS. Cross-NbS tables (T1, T2, T5, T7) live at the schema root.
 - **Snake_case IDs throughout** — `nbs_id`, `dataset_id`, `variable_id`, `context_id`.
 - **Schema migrations are PRs.** Don't add columns without an RFC issue. Don't change the meaning of an existing column.
 
 ## How the pipeline reads schema
 
-The pipeline expects to import the schema as Python dicts (via `pandas.read_csv` or `json.load`). The reference implementation lives in `../src/nbs_ruralscan/schema_loader.py` *(to be authored)*.
+The pipeline expects to import the schema as Python dicts (via `pandas.read_csv` or `json.load`). The reference implementation lives in `../src/nbs_ruralscan/runtime/schema_loader.py` *(to be authored)*.
 
-Validation: `src/nbs_ruralscan/structure.py` checks every data file against the frozen manifest
+Validation: `src/nbs_ruralscan/schema_tools/structure.py` checks every data file against the frozen manifest
 ([`structure/columns.json`](structure/columns.json)) — column conformance + FK shape (always), and required-value /
 FK completeness (under `--strict`). Run it before any PR that touches `schema/`; wire it into CI.
 
