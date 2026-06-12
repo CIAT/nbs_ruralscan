@@ -187,6 +187,20 @@ To ensure methodological traceability and alignment with global Sustainable Land
 - **Finance**: WB FAR (Financial Access Report), FinScope, project-portfolio density.
 - **Labour**: ILO statistics, LSMS-ISA, country-team uploads.
 
+### ICRAF & PRAGA/SRM Methodological Refinements for M2/M2b (June 2026)
+
+Based on the open-source audit of CIFOR-ICRAF tools and the Participatory Rangeland and Grassland Assessment (PRAGA) / VGGT guidelines, we propose the following specific additions for the M2/M2b modules:
+
+1. **Livestock Grazing Pressure Bottleneck (F3 Silvopasture / Agrosilvopasture)**:
+   * **The Hazard/Risk**: Planting trees/shrubs in active pastures (F3) faces high seedling mortality from livestock grazing and trampling during the `establishment_period_years`.
+   * **Variables to Ingest**: Cross-reference grazing land classification maps (ESA WorldCover/Copernicus class 30) with livestock density statistics (FAO GLW - Gridded Livestock of the World) to estimate stocking density / grazing pressure.
+   * **Scoping Lever**: High grazing density acts as an operational-constraint flag in M2b. In the user interface, it triggers a scenario lever: "Establishment exclusion fencing / rotational grazing plan" which, if active, overrides the high-risk flag to represent managed protection.
+
+2. **Common-Property Rangeland Governance**:
+   * **The Risk**: Dryland pastoral landscapes are typically managed under collective or customary tenure rather than private title. Fenced tree plots can trigger user conflicts over restricted common pasture access.
+   * **Variables to Ingest**: Customary land boundary datasets (LandMark and WWF/ICCA database).
+   * **Scoping Flag**: Any overlap with customary lands triggers an explicit `FPIC_REQUIRED = true` safeguard flag in the Module 6 hand-off (aligning with WB ESS7 safeguard policies).
+
 ## 13. Version history
 
 - **v0.1** (June 2026) — addendum drafted to pin down the project-disaster-risk method ahead of the standalone Project Risk tab and its later use as a hotspot scope. Structure mirrors `M2_climate_risk.md`. Schema additions raised as an RFC; combination stance (filter-not-sum) specified to keep the double-count guard intact.
@@ -195,3 +209,5 @@ To ensure methodological traceability and alignment with global Sustainable Land
   conflict/fragility, governance, finance, market, labour. Each lands as a T4
   `operational_constraint` row with `is_scenario_candidate = true`. Filter / flag, never
   summed.
+- **v0.2.1** (June 2026) — Integrated ICRAF & PRAGA/SRM recommendations for F3 silvopastural/agrosilvopastural grazing pressure limits and customary rangeland tenure flags (livestock mobility corridors variable removed due to data limitations).
+
