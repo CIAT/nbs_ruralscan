@@ -22,6 +22,7 @@ Stdlib only.
 from __future__ import annotations
 
 import csv
+from datetime import datetime, timezone
 import json
 import sys
 from pathlib import Path
@@ -53,6 +54,101 @@ def _csv_files(schema_root: Path, location: str) -> list[Path]:
     return sorted(schema_root.glob(glob + ".csv"))
 
 
+def generate_progress_report(schema_root: Path, check: bool = False) -> list[Path]:
+    """Generates docs/progress.json summarizing literature registers status."""
+    src_csv = schema_root / "registers" / "SRC_source_register.csv"
+    if not src_csv.exists():
+        return []
+
+    import subprocess
+    from collections import Counter
+
+    try:
+        git_commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True
+        ).stdout.strip()
+    except Exception:
+        git_commit = "unknown"
+
+    nbs_stats = {}
+    with src_csv.open(newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if not row.get("source_id"):
+                continue
+            nbs_ids = [n.strip() for n in row.get("nbs_ids", "").split(";") if n.strip()]
+            status = row.get("extraction_status", "pending") or "pending"
+            tier = row.get("benchmark_tier", "low") or "low"
+            method = row.get("method_type", "empirical") or "empirical"
+            country = row.get("study_country", "") or ""
+            vars_list = [v.strip() for v in row.get("vars_extracted", "").split(";") if v.strip()]
+
+            for nbs in nbs_ids:
+                if nbs not in nbs_stats:
+                    nbs_stats[nbs] = {
+                        "total_sources": 0,
+                        "status_counts": Counter(),
+                        "benchmark_tiers": Counter(),
+                        "method_types": Counter(),
+                        "variables_extracted": set(),
+                        "countries": set()
+                    }
+                s = nbs_stats[nbs]
+                s["total_sources"] += 1
+                s["status_counts"][status] += 1
+                s["benchmark_tiers"][tier] += 1
+                s["method_types"][method] += 1
+                for v in vars_list:
+                    s["variables_extracted"].add(v)
+                if country:
+                    s["countries"].add(country)
+
+    formatted_stats = {}
+    for nbs, s in nbs_stats.items():
+        formatted_stats[nbs] = {
+            "total_sources": s["total_sources"],
+            "status_counts": dict(s["status_counts"]),
+            "benchmark_tiers": dict(s["benchmark_tiers"]),
+            "method_types": dict(s["method_types"]),
+            "variables_extracted": sorted(list(s["variables_extracted"])),
+            "countries": sorted(list(s["countries"]))
+        }
+
+    report_data = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "git_commit": git_commit,
+        "nbs_progress": formatted_stats
+    }
+
+    dest_path = schema_root.parent / "docs" / "progress.json"
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+
+    current_data = None
+    if dest_path.exists():
+        try:
+            current_data = json.loads(dest_path.read_text())
+        except Exception:
+            pass
+
+    if current_data and current_data.get("git_commit") == git_commit and current_data.get("nbs_progress") == formatted_stats:
+        report_data["timestamp"] = current_data["timestamp"]
+
+    text = json.dumps(report_data, ensure_ascii=False, indent=2) + "\n"
+    current = dest_path.read_text() if dest_path.exists() else None
+
+    if text == current:
+        return []
+
+    changed = [dest_path]
+    if not check:
+        dest_path.write_text(text)
+    return changed
+
+
 def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     """Write (or, under ``check``, compare) every JSON from its CSV. Returns the
     list of paths that were written / are stale."""
@@ -71,6 +167,9 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             changed.append(json_path)
             if not check:
                 json_path.write_text(text)
+    
+    # Compile the progress.json report
+    changed.extend(generate_progress_report(schema_root, check=check))
     return changed
 
 
