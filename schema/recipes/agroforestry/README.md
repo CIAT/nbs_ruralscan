@@ -29,7 +29,7 @@ view.** Fix the JSON, then regenerate the CSV.
 ## Structure & validation status
 
 Conformant to the **frozen v0.2 structure** ([`../../structure/columns.json`](../../structure/columns.json)).
-Verify with `python3 src/nbs_ruralscan/structure.py schema` (expect 0 errors).
+Verify with `python3 src/nbs_ruralscan/schema_tools/structure.py schema` (expect 0 errors).
 
 - Columns match the manifest; FKs resolve to VONT (`variable`), FAM (`suitability_family_id`), T1 (`dataset_id`).
 - T2 baseline weights normalised to sum to 1.000.

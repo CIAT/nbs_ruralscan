@@ -1,7 +1,7 @@
 """Tests for the variable and group support prevalence logic."""
 
-from nbs_ruralscan.evidence import EvidenceUnit
-from nbs_ruralscan.support import (
+from nbs_ruralscan.recipe.evidence import EvidenceUnit
+from nbs_ruralscan.recipe.support import (
     variable_support,
     group_support,
     selection_table,
@@ -184,7 +184,7 @@ def test_group_support():
 
 def test_selection_table():
     """Test floor_pct and override rules."""
-    from nbs_ruralscan.support import Support
+    from nbs_ruralscan.recipe.support import Support
 
     var_support = {
         "slope": Support(key="slope", n_sources=3, corpus_n=10, pct=30.0),
@@ -206,7 +206,7 @@ def test_selection_table():
 
 
 def test_attach_support():
-    from nbs_ruralscan.support import Support
+    from nbs_ruralscan.recipe.support import Support
 
     var_support = {"slope": Support(key="slope", n_sources=3, corpus_n=10, pct=30.0)}
     row = {"variable": "slope", "justification": "foo"}

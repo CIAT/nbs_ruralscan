@@ -87,7 +87,7 @@ T3 and T6 content is literature- and expert-derived (Namita + MFL team). Each Li
 >
 > | Draft assumption | Current state |
 > |---|---|
-> | Module path `pipeline/scorecard.py` | **Updated** → `src/nbs_ruralscan/scorecard.py` per the v0.2 GEE-App-dropped runtime. Mostly table assembly; no heavy compute. |
+> | Module path `pipeline/scorecard.py` | **Updated** → `src/nbs_ruralscan/runtime/scorecard.py` per the v0.2 GEE-App-dropped runtime. Mostly table assembly; no heavy compute. |
 > | T6 effect rows | **Constrained** at v0.3.0: T6 effect rows link **only** to T5 rows where `mcda_role == 'priority'`. The scorecard MUST filter T5 to priorities before pairing — descriptors don't carry effect strengths. |
 > | T6 economic profile | **Generalised** at v0.3.0: `economic_indicator_type` extended with `cost_per_beneficiary` · `cost_per_hectare_restored` · `cost_per_tco2e_avoided` · `cost_per_farmer_reached` (indicative, scoping-grade, **not CBA**). `economic_value_range` is now an object `{low, high, unit, source_note}` with `unit` enum-policed. Render whatever denominators the recipe populated; never compute new ones. |
 > | T6 orphans | 2 orphan T5 refs rerouted at v0.3.0-E (`food_security_risk` → `production_gap`; `groundwater_recharge_potential` → `water_stress`). No outstanding orphans. |
@@ -95,7 +95,7 @@ T3 and T6 content is literature- and expert-derived (Namita + MFL team). Each Li
 > | iplc_lands flag | If the run had IPLC overlap (M3 `iplc_overlap_flag`), the scorecard's comparison block surfaces the **FPIC/ESS7 caveat** alongside any NbS-vs-NbS comparison — don't hide it inside M6 only. |
 > | Likert confidence | T6 carries `confidence` (`high` · `medium` · `low`) plus `evidence_ids` linking back to EV rows. Surface confidence per cell; per #32, cost-effectiveness denominators arrive **scoping-grade** and should default to `confidence = low` until evidence-gathering lands. |
 
-Suggested Python function signatures for `src/nbs_ruralscan/scorecard.py`:
+Suggested Python function signatures for `src/nbs_ruralscan/runtime/scorecard.py`:
 
 ```python
 def load_scorecard(
@@ -147,5 +147,5 @@ def comparison_rows(
 ## Version history
 
 - **v0.1** (June 2026) — authored to match the v0.6 wireframe (scorecard + economic archetype + comparison rows). Qualitative; economic profile is indicative archetype, not CBA (downstream M6).
-- **v0.1.1** (June 2026) — annotated §10 with v0.3.0 schema state: T6 effects gated to T5 mcda_role=priority; T6 economic-profile generalisation + cost-effectiveness denominators; T3 risk_role / asset_threat / asset_risk_weight live; T6 orphan reroutes done; iplc_lands FPIC/ESS7 caveat surfaced in comparison rows. Module path → `src/nbs_ruralscan/scorecard.py`. Function signatures widened. No methodology change.
+- **v0.1.1** (June 2026) — annotated §10 with v0.3.0 schema state: T6 effects gated to T5 mcda_role=priority; T6 economic-profile generalisation + cost-effectiveness denominators; T3 risk_role / asset_threat / asset_risk_weight live; T6 orphan reroutes done; iplc_lands FPIC/ESS7 caveat surfaced in comparison rows. Module path → `src/nbs_ruralscan/runtime/scorecard.py`. Function signatures widened. No methodology change.
 - **v1.0** (June 2026) — Finalised and ratified module specification. Open questions resolved and aligned with the v0.3.0 schema tables.

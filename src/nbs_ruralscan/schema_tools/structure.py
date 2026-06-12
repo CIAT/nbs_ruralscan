@@ -13,7 +13,7 @@ Two tiers:
   so these are warnings unless you ask for ``--strict`` (used to prove a fully-populated
   slice, e.g. the F1×slope chain).
 
-Stdlib only — runs with plain ``python3 -m nbs_ruralscan.structure <schema_root>`` even
+Stdlib only — runs with plain ``python3 -m nbs_ruralscan.schema_tools.structure <schema_root>`` even
 without the package installed. Exit code is non-zero if any ERROR is found. Use it in
 CI and as the team's "did I break the structure?" check.
 """
@@ -223,7 +223,7 @@ def main(argv: list[str] | None = None) -> int:
     root = (
         Path(positional[0])
         if positional
-        else Path(__file__).resolve().parents[2] / "schema"
+        else Path(__file__).resolve().parents[3] / "schema"
     )
     rep = validate_structure(root, strict=strict)
     print(_format(rep))
