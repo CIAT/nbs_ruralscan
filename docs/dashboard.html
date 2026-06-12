@@ -790,6 +790,53 @@
     padding: 0 1px;
     border-radius: 2px;
   }
+
+  /* Table filter pills & controls */
+  .pill-btn {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 5px 12px;
+    font-size: 11px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .pill-btn:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--text-primary);
+  }
+  .pill-btn.active.emerald {
+    background: rgba(16, 185, 129, 0.1);
+    border-color: var(--accent-emerald);
+    color: var(--accent-emerald);
+    font-weight: 600;
+  }
+  .pill-btn.active.rose {
+    background: rgba(244, 63, 94, 0.1);
+    border-color: var(--accent-rose);
+    color: var(--accent-rose);
+    font-weight: 600;
+  }
+  .pill-btn.active.amber {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: var(--accent-amber);
+    color: var(--accent-amber);
+    font-weight: 600;
+  }
+  .pill-btn.active.sky {
+    background: rgba(14, 165, 233, 0.1);
+    border-color: var(--accent-sky);
+    color: var(--accent-sky);
+    font-weight: 600;
+  }
+  .pill-btn.active.purple {
+    background: rgba(168, 85, 247, 0.1);
+    border-color: var(--accent-purple);
+    color: var(--accent-purple);
+    font-weight: 600;
+  }
 </style>
 </head>
 <body data-theme="dark">
@@ -946,6 +993,26 @@
         </div>
       </div>
 
+      <!-- Overview Scope Filter -->
+      <div class="card-container" style="margin-top: 24px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="background:rgba(16,185,129,0.1); color:var(--accent-emerald); padding:10px; border-radius:8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+          </div>
+          <div>
+            <h3 style="margin:0; font-size:15px; font-weight:600; color:var(--text-primary); font-family:var(--font-outfit);">Filter Overview Scope</h3>
+            <p style="margin:2px 0 0 0; font-size:12px; color:var(--text-muted);">Select a Nature-based Solution or sub-practice family to filter the statistics and flow diagram.</p>
+          </div>
+        </div>
+        <div>
+          <select id="overview-scope-select" class="select-input" style="min-width: 320px; font-size: 13px; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary); cursor: pointer; font-family: var(--font-inter); font-weight: 500;">
+            <option value="all">🌐 All Nature-based Solutions (Global)</option>
+          </select>
+        </div>
+      </div>
+
       <!-- Sankey flow network diagram container -->
       <div class="card-container">
         <h2 class="card-title">
@@ -999,9 +1066,15 @@
           <h2 class="card-title">Represented Study Countries / Contexts</h2>
           <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="country-progress-list"></div>
         </div>
-        <div class="card-container" style="margin-bottom:0;">
-          <h2 class="card-title">Literature Sourcing Methods</h2>
-          <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="method-progress-list"></div>
+        <div class="card-container" style="margin-bottom:0; display:flex; flex-direction:column;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h2 class="card-title" style="margin-bottom:0;">Literature Sourcing Methods</h2>
+            <div style="display:flex; gap:4px; background:var(--bg-secondary); padding:2px; border-radius:4px; border:1px solid var(--border-color);" id="sourcing-group-toggle">
+              <button class="toggle-btn active" data-mode="method" style="background:var(--bg-card); border:none; color:var(--accent-sky); padding:4px 8px; font-size:11px; border-radius:3px; cursor:pointer; font-weight:600; transition:all 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);">Sourcing Method</button>
+              <button class="toggle-btn" data-mode="author" style="background:transparent; border:none; color:var(--text-muted); padding:4px 8px; font-size:11px; border-radius:3px; cursor:pointer; font-weight:500; transition:all 0.2s;">Author &amp; Date</button>
+            </div>
+          </div>
+          <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin; flex:1;" id="method-progress-list"></div>
         </div>
       </div>
 
@@ -1057,95 +1130,172 @@
           </div>
 
           <!-- T4 Suitability Variable Mappings -->
-          <div>
-            <h3 class="interrogator-section-title emerald">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="4 14 10 14 14 6 20 6"></polyline>
-              </svg>
-              T4 Suitability Variable Mappings
-            </h3>
-            <div class="table-wrapper">
-              <table class="data-table" id="table-t4-mappings">
-                <thead>
-                  <tr>
-                    <th>Variable</th>
-                    <th>Dimension</th>
-                    <th>Default Weight</th>
-                    <th>Standard Dataset</th>
-                    <th>Response Function / Params</th>
-                    <th>Evidence Reconciliation &amp; Justification</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="body-t4-mappings"></tbody>
-              </table>
+          <div style="margin-bottom: 24px;">
+            <div class="interrogator-header-row emerald" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 8px;" onclick="toggleSection('wrapper-t4-mappings', 'chev-t4')">
+              <h3 class="interrogator-section-title emerald" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+                <span id="chev-t4" style="display:inline-block; transition:transform 0.2s;">▼</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="4 14 10 14 14 6 20 6"></polyline>
+                </svg>
+                T4 Suitability Variable Mappings
+              </h3>
+              <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
+            </div>
+            
+            <div id="wrapper-t4-mappings">
+              <!-- Filter / Search toolbar -->
+              <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
+                <div style="display:flex; gap:6px; align-items:center;">
+                  <span style="font-size:11.5px; color:var(--text-muted); font-weight:500; margin-right:4px;">Dimension:</span>
+                  <div style="display:flex; gap:4px;" class="table-filter-pills" id="filter-t4-dimension">
+                    <button class="pill-btn active emerald" data-filter="all">All</button>
+                    <button class="pill-btn emerald" data-filter="biophysical_constraint">Biophysical</button>
+                    <button class="pill-btn emerald" data-filter="system_constraint">System</button>
+                    <button class="pill-btn emerald" data-filter="operational_constraint">Operational</button>
+                  </div>
+                </div>
+                <div>
+                  <input type="text" class="table-search-input" id="search-t4-table" placeholder="Filter variables..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:180px;">
+                </div>
+              </div>
+              
+              <div class="table-wrapper">
+                <table class="data-table" id="table-t4-mappings">
+                  <thead>
+                    <tr>
+                      <th>Variable</th>
+                      <th>Dimension</th>
+                      <th>Default Weight</th>
+                      <th>Standard Dataset</th>
+                      <th>Response Function / Params</th>
+                      <th>Evidence Reconciliation &amp; Justification</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="body-t4-mappings"></tbody>
+                </table>
+              </div>
             </div>
           </div>
 
           <!-- Joined Evidence Register Claims -->
-          <div>
-            <h3 class="interrogator-section-title">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-                <polyline points="10 9 9 9 8 9"></polyline>
-              </svg>
-              Verbatim Evidence Claims
-            </h3>
-            <div class="evidence-container" id="evidence-list"></div>
+          <div style="margin-bottom: 24px;">
+            <div class="interrogator-header-row" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--text-secondary); padding-bottom: 8px;" onclick="toggleSection('wrapper-evidence-claims', 'chev-evidence')">
+              <h3 class="interrogator-section-title" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+                <span id="chev-evidence" style="display:inline-block; transition:transform 0.2s;">▼</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                Verbatim Evidence Claims
+              </h3>
+              <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
+            </div>
+            <div id="wrapper-evidence-claims">
+              <div class="evidence-container" id="evidence-list"></div>
+            </div>
           </div>
 
-          <!-- T3 Hazard Matrix & Farming systems -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+          <!-- T3 Hazard Matrix & T6 Cost scorecard economics -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- T3 -->
             <div>
-              <h3 class="interrogator-section-title rose">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                  <line x1="12" y1="9" x2="12" y2="13"></line>
-                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
-                T3 Climate Hazard Mitigation Links
-              </h3>
-              <div class="table-wrapper">
-                <table class="data-table" id="table-t3-hazard">
-                  <thead>
-                    <tr>
-                      <th>Hazard</th>
-                      <th>Farming Context</th>
-                      <th>Mitigation Potential</th>
-                      <th>Mechanism &amp; Evidence</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="body-t3-hazard"></tbody>
-                </table>
+              <div class="interrogator-header-row rose" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-rose); padding-bottom: 8px;" onclick="toggleSection('wrapper-t3-hazard', 'chev-t3')">
+                <h3 class="interrogator-section-title rose" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+                  <span id="chev-t3" style="display:inline-block; transition:transform 0.2s;">▼</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  T3 Climate Hazard Mitigation Links
+                </h3>
+                <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
+              </div>
+              
+              <div id="wrapper-t3-hazard">
+                <!-- Filter / Search toolbar -->
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
+                  <div style="display:flex; gap:6px; align-items:center;">
+                    <span style="font-size:11.5px; color:var(--text-muted); font-weight:500; margin-right:4px;">Hazard:</span>
+                    <div style="display:flex; gap:4px;" class="table-filter-pills" id="filter-t3-hazard-type">
+                      <button class="pill-btn active rose" data-filter="all">All</button>
+                      <button class="pill-btn rose" data-filter="drought">Drought</button>
+                      <button class="pill-btn rose" data-filter="flood">Flood</button>
+                      <button class="pill-btn rose" data-filter="heat">Heat</button>
+                      <button class="pill-btn rose" data-filter="erosion">Erosion</button>
+                    </div>
+                  </div>
+                  <div>
+                    <input type="text" class="table-search-input" id="search-t3-table" placeholder="Filter hazards..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:130px;">
+                  </div>
+                </div>
+                
+                <div class="table-wrapper">
+                  <table class="data-table" id="table-t3-hazard">
+                    <thead>
+                      <tr>
+                        <th>Hazard</th>
+                        <th>Farming Context</th>
+                        <th>Mitigation Potential</th>
+                        <th>Mechanism &amp; Evidence</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="body-t3-hazard"></tbody>
+                  </table>
+                </div>
               </div>
             </div>
 
             <!-- T6 Cost scorecard economics -->
             <div>
-              <h3 class="interrogator-section-title amber">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <line x1="12" y1="1" x2="12" y2="23"></line>
-                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                </svg>
-                T6 Cost-Effectiveness &amp; Scorecard Economics
-              </h3>
-              <div class="table-wrapper">
-                <table class="data-table" id="table-t6-scorecard">
-                  <thead>
-                    <tr>
-                      <th>Economic Indicator</th>
-                      <th>Value range</th>
-                      <th>Confidence</th>
-                      <th>Mechanism &amp; Evidence</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="body-t6-scorecard"></tbody>
-                </table>
+              <div class="interrogator-header-row amber" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-amber); padding-bottom: 8px;" onclick="toggleSection('wrapper-t6-scorecard', 'chev-t6')">
+                <h3 class="interrogator-section-title amber" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+                  <span id="chev-t6" style="display:inline-block; transition:transform 0.2s;">▼</span>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  T6 Cost-Effectiveness &amp; Scorecard Economics
+                </h3>
+                <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
+              </div>
+              
+              <div id="wrapper-t6-scorecard">
+                <!-- Filter / Search toolbar -->
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
+                  <div style="display:flex; gap:6px; align-items:center;">
+                    <span style="font-size:11.5px; color:var(--text-muted); font-weight:500; margin-right:4px;">Type:</span>
+                    <div style="display:flex; gap:4px;" class="table-filter-pills" id="filter-t6-cost-type">
+                      <button class="pill-btn active amber" data-filter="all">All</button>
+                      <button class="pill-btn amber" data-filter="cost">Cost</button>
+                      <button class="pill-btn amber" data-filter="benefit">Benefit</button>
+                      <button class="pill-btn amber" data-filter="carbon">Carbon</button>
+                    </div>
+                  </div>
+                  <div>
+                    <input type="text" class="table-search-input" id="search-t6-table" placeholder="Filter economics..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:130px;">
+                  </div>
+                </div>
+                
+                <div class="table-wrapper">
+                  <table class="data-table" id="table-t6-scorecard">
+                    <thead>
+                      <tr>
+                        <th>Economic Indicator</th>
+                        <th>Value range</th>
+                        <th>Confidence</th>
+                        <th>Mechanism &amp; Evidence</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="body-t6-scorecard"></tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
@@ -1157,46 +1307,93 @@
     <!-- ================= TAB 3: VARIABLES ================= -->
     <div id="tab-variables" class="tab-content">
       <div class="card-container">
-        <h2 class="card-title">VONT Variable Ontology Register</h2>
-        <div style="margin-bottom:16px; display:flex; gap:16px;">
-          <input type="text" class="text-input" id="search-vont" placeholder="Filter variables by name or group..." style="max-width:360px;">
+        <div class="interrogator-header-row sky" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-sky); padding-bottom: 8px;" onclick="toggleSection('wrapper-vont', 'chev-vont')">
+          <h3 class="interrogator-section-title sky" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+            <span id="chev-vont" style="display:inline-block; transition:transform 0.2s;">▼</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="9" y1="3" x2="9" y2="21"></line>
+            </svg>
+            VONT Variable Ontology Register
+          </h3>
+          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
         </div>
-        <div class="table-wrapper">
-          <table class="data-table" id="table-vont">
-            <thead>
-              <tr>
-                <th>Variable ID</th>
-                <th>Label</th>
-                <th>Group</th>
-                <th>Canonical Unit</th>
-                <th>Min meaningful resolution</th>
-                <th>Sensitivity</th>
-              </tr>
-            </thead>
-            <tbody id="body-vont"></tbody>
-          </table>
+
+        <div id="wrapper-vont">
+          <!-- Filter / Search toolbar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              <span style="font-size:11.5px; color:var(--text-muted); font-weight:500; margin-right:4px;">Group:</span>
+              <div style="display:flex; gap:4px; flex-wrap:wrap;" class="table-filter-pills" id="filter-vont-group">
+                <button class="pill-btn active sky" data-filter="all">All</button>
+              </div>
+            </div>
+            <div>
+              <input type="text" class="table-search-input" id="search-vont" placeholder="Filter variables..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:180px;">
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table" id="table-vont">
+              <thead>
+                <tr>
+                  <th>Variable ID</th>
+                  <th>Label</th>
+                  <th>Group</th>
+                  <th>Canonical Unit</th>
+                  <th>Min meaningful resolution</th>
+                  <th>Sensitivity</th>
+                </tr>
+              </thead>
+              <tbody id="body-vont"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       <div class="card-container" style="margin-top:24px;">
-        <h2 class="card-title">T1 Spatial Dataset Registry</h2>
-        <div style="margin-bottom:16px; display:flex; gap:16px;">
-          <input type="text" class="text-input" id="search-t1" placeholder="Filter datasets..." style="max-width:360px;">
+        <div class="interrogator-header-row purple" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-purple); padding-bottom: 8px;" onclick="toggleSection('wrapper-t1', 'chev-t1')">
+          <h3 class="interrogator-section-title purple" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+            <span id="chev-t1" style="display:inline-block; transition:transform 0.2s;">▼</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            T1 Spatial Dataset Registry
+          </h3>
+          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
         </div>
-        <div class="table-wrapper">
-          <table class="data-table" id="table-t1">
-            <thead>
-              <tr>
-                <th>Dataset ID</th>
-                <th>Dataset Name</th>
-                <th>Coverage</th>
-                <th>Format</th>
-                <th>Access Type / asset ID</th>
-                <th>Limitations</th>
-              </tr>
-            </thead>
-            <tbody id="body-t1"></tbody>
-          </table>
+
+        <div id="wrapper-t1">
+          <!-- Filter / Search toolbar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
+            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              <span style="font-size:11.5px; color:var(--text-muted); font-weight:500; margin-right:4px;">Access:</span>
+              <div style="display:flex; gap:4px; flex-wrap:wrap;" class="table-filter-pills" id="filter-t1-access">
+                <button class="pill-btn active purple" data-filter="all">All</button>
+              </div>
+            </div>
+            <div>
+              <input type="text" class="table-search-input" id="search-t1" placeholder="Filter datasets..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:180px;">
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table" id="table-t1">
+              <thead>
+                <tr>
+                  <th>Dataset ID</th>
+                  <th>Dataset Name</th>
+                  <th>Coverage</th>
+                  <th>Format</th>
+                  <th>Access Type / asset ID</th>
+                  <th>Limitations</th>
+                </tr>
+              </thead>
+              <tbody id="body-t1"></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -1212,6 +1409,20 @@
 
 <script>
   let dashboardData = null;
+  let sourcingGroupMode = 'method'; // 'method' or 'author'
+
+  function toggleSection(wrapperId, chevId) {
+    const wrapper = document.getElementById(wrapperId);
+    const chev = document.getElementById(chevId);
+    if (wrapper) {
+      const isCollapsed = wrapper.style.display === 'none';
+      wrapper.style.display = isCollapsed ? 'block' : 'none';
+      if (chev) {
+        // Since we start expanded (chevron pointing down: 0deg), rotate to -90deg on collapse
+        chev.style.transform = isCollapsed ? 'rotate(0deg)' : 'rotate(-90deg)';
+      }
+    }
+  }
 
   document.addEventListener('DOMContentLoaded', () => {
     // Theme toggler
@@ -1347,27 +1558,119 @@
     window.open(fullUrl, '_blank');
   }
 
+  function triggerOverviewFilter(value) {
+    const sources = dashboardData.registers.SRC_source_register || [];
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    const recipes = Object.keys(dashboardData.recipes) || [];
+
+    let filteredSources = sources;
+    let filteredClaims = claims;
+    let filteredRecipes = recipes;
+
+    if (value === 'all') {
+      // Keep all
+    } else if (value.startsWith('nbs:')) {
+      const targetNbsId = value.substring(4);
+      filteredRecipes = [targetNbsId];
+      filteredClaims = claims.filter(c => c.nbs_id === targetNbsId);
+      filteredSources = sources.filter(s => s.nbs_ids && s.nbs_ids.split(';').map(x=>x.trim()).includes(targetNbsId));
+    } else if (value.startsWith('family:')) {
+      const targetFamilyId = value.substring(7);
+      filteredClaims = claims.filter(c => c.suitability_family_id === targetFamilyId);
+      const targetNbsId = filteredClaims.length > 0 ? filteredClaims[0].nbs_id : 'agroforestry';
+      filteredRecipes = [targetNbsId];
+      const sourceIds = new Set(filteredClaims.map(c => c.source_id));
+      filteredSources = sources.filter(s => sourceIds.has(s.source_id));
+    }
+
+    const sweptCount = filteredSources.filter(s => s.extraction_status === 'swept' || s.extraction_status === 'signed_off').length;
+
+    document.getElementById('stat-total-sources').textContent = filteredSources.length;
+    document.getElementById('stat-swept-sources').textContent = sweptCount;
+    document.getElementById('stat-total-claims').textContent = filteredClaims.length;
+    document.getElementById('stat-total-recipes').textContent = filteredRecipes.length;
+
+    renderOverviewCharts(filteredSources, filteredClaims, filteredRecipes);
+    renderSankeyFlow(filteredSources, filteredClaims);
+  }
+
   function initDashboard() {
     // 1. Meta fields
     const formattedDate = new Date(dashboardData.timestamp).toLocaleString();
     document.getElementById('meta-timestamp-val').textContent = formattedDate;
     document.getElementById('meta-commit-val').textContent = dashboardData.git_commit.slice(0, 8);
 
-    // 2. High-level stats counters
+    // 2. High-level stats counters & lists
     const sources = dashboardData.registers.SRC_source_register || [];
     const claims = dashboardData.registers.EV_evidence_register || [];
     const recipes = Object.keys(dashboardData.recipes) || [];
-    
-    const sweptCount = sources.filter(s => s.extraction_status === 'swept' || s.extraction_status === 'signed_off').length;
 
-    document.getElementById('stat-total-sources').textContent = sources.length;
-    document.getElementById('stat-swept-sources').textContent = sweptCount;
-    document.getElementById('stat-total-claims').textContent = claims.length;
-    document.getElementById('stat-total-recipes').textContent = recipes.length;
+    // Populate Overview Scope dropdown selector
+    const scopeSelect = document.getElementById('overview-scope-select');
+    scopeSelect.innerHTML = '<option value="all">🌐 All Nature-based Solutions (Global)</option>';
 
-    // 3. Overview Charts & Sankey Flow
-    renderOverviewCharts(sources, claims, recipes);
-    renderSankeyFlow();
+    const families = dashboardData.registers.FAM_family_registry || [];
+    recipes.sort().forEach(nbsId => {
+      const optGroup = document.createElement('optgroup');
+      optGroup.label = nbsId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      
+      const allNbsOpt = document.createElement('option');
+      allNbsOpt.value = `nbs:${nbsId}`;
+      allNbsOpt.textContent = `All ${nbsId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}`;
+      optGroup.appendChild(allNbsOpt);
+
+      const nbsFamilies = families.filter(f => f.nbs_id === nbsId);
+      const addedFams = new Set();
+      nbsFamilies.forEach(f => {
+        if (addedFams.has(f.suitability_family_id)) return;
+        addedFams.add(f.suitability_family_id);
+
+        const famOpt = document.createElement('option');
+        famOpt.value = `family:${f.suitability_family_id}`;
+        const displayName = f.suitability_family_id.split('__')[1]
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, c => c.toUpperCase());
+        famOpt.textContent = `${displayName} (${f.name})`;
+        optGroup.appendChild(famOpt);
+      });
+
+      scopeSelect.appendChild(optGroup);
+    });
+
+    // Add change listener to Overview Scope dropdown
+    scopeSelect.addEventListener('change', () => {
+      triggerOverviewFilter(scopeSelect.value);
+    });
+
+    // Setup initial statistics & overview visualisations
+    triggerOverviewFilter('all');
+
+    // Hook up Sourcing Method / Author & Date toggle
+    const toggleContainer = document.getElementById('sourcing-group-toggle');
+    if (toggleContainer) {
+      const buttons = toggleContainer.querySelectorAll('.toggle-btn');
+      buttons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          buttons.forEach(b => {
+            b.classList.remove('active');
+            b.style.color = 'var(--text-muted)';
+            b.style.background = 'transparent';
+            b.style.fontWeight = '500';
+            b.style.boxShadow = 'none';
+          });
+          btn.classList.add('active');
+          btn.style.color = 'var(--accent-sky)';
+          btn.style.background = 'var(--bg-card)';
+          btn.style.fontWeight = '600';
+          btn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
+          
+          sourcingGroupMode = btn.getAttribute('data-mode');
+          
+          // Re-trigger current scope filter to re-render
+          triggerOverviewFilter(scopeSelect.value);
+        });
+      });
+    }
 
     // 4. Interrogator Dropdowns
     const nbsSelect = document.getElementById('select-nbs');
@@ -1397,17 +1700,68 @@
       populateFamilies(recipes[0]);
     }
 
+    // Hook up table filtering & search controls
+    // T4 mappings filtering
+    const t4Pills = document.querySelectorAll('#filter-t4-dimension .pill-btn');
+    t4Pills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        t4Pills.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const nbsId = document.getElementById('select-nbs').value;
+        const familyId = document.getElementById('select-family').value;
+        renderT4Mappings(nbsId, familyId);
+      });
+    });
+
+    document.getElementById('search-t4-table').addEventListener('input', () => {
+      const nbsId = document.getElementById('select-nbs').value;
+      const familyId = document.getElementById('select-family').value;
+      renderT4Mappings(nbsId, familyId);
+    });
+
+    // T3 hazard filtering
+    const t3Pills = document.querySelectorAll('#filter-t3-hazard-type .pill-btn');
+    t3Pills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        t3Pills.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const nbsId = document.getElementById('select-nbs').value;
+        renderT3Hazard(nbsId);
+      });
+    });
+
+    document.getElementById('search-t3-table').addEventListener('input', () => {
+      const nbsId = document.getElementById('select-nbs').value;
+      renderT3Hazard(nbsId);
+    });
+
+    // T6 scorecard filtering
+    const t6Pills = document.querySelectorAll('#filter-t6-cost-type .pill-btn');
+    t6Pills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        t6Pills.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const nbsId = document.getElementById('select-nbs').value;
+        renderT6Scorecard(nbsId);
+      });
+    });
+
+    document.getElementById('search-t6-table').addEventListener('input', () => {
+      const nbsId = document.getElementById('select-nbs').value;
+      renderT6Scorecard(nbsId);
+    });
+
     // 5. Populate Ontology / Dataset lists
     renderOntologyAndDatasets();
   }
 
   // Visualizes Source (Left) -> Variable (Middle) -> Target Tables (Right)
-  function renderSankeyFlow() {
+  function renderSankeyFlow(sources, claims) {
     const svg = document.getElementById('sankey-flow');
     svg.innerHTML = '';
 
-    const sources = dashboardData.registers.SRC_source_register || [];
-    const claims = dashboardData.registers.EV_evidence_register || [];
+    if (!sources) sources = dashboardData.registers.SRC_source_register || [];
+    if (!claims) claims = dashboardData.registers.EV_evidence_register || [];
     
     // Sort sources by claim count and select top 7
     const sourceClaimCounts = {};
@@ -1777,22 +2131,47 @@
       countryList.appendChild(cRow);
     });
 
-    // 5. Sourcing methods
+    // 5. Sourcing methods OR Author & Date (based on sourcingGroupMode)
     const methodList = document.getElementById('method-progress-list');
     methodList.innerHTML = '';
-    const methodMap = {};
-    const methodSources = {};
-    sources.forEach(s => {
-      const m = s.method_type || 'empirical';
-      if (!methodMap[m]) {
-        methodMap[m] = 0;
-        methodSources[m] = [];
+    const groups = {};
+    const groupSources = {};
+    
+    if (sourcingGroupMode === 'author') {
+      sources.forEach(s => {
+        const match = s.source_id.match(/\d{4}$/);
+        const year = match ? match[0] : 'Other';
+        if (!groups[year]) {
+          groups[year] = 0;
+          groupSources[year] = [];
+        }
+        groups[year]++;
+        groupSources[year].push(s);
+      });
+    } else {
+      sources.forEach(s => {
+        const m = s.method_type || 'empirical';
+        if (!groups[m]) {
+          groups[m] = 0;
+          groupSources[m] = [];
+        }
+        groups[m]++;
+        groupSources[m].push(s);
+      });
+    }
+
+    const sortedKeys = Object.keys(groups).sort((a, b) => {
+      if (sourcingGroupMode === 'author') {
+        if (a === 'Other') return 1;
+        if (b === 'Other') return -1;
+        return parseInt(b) - parseInt(a);
+      } else {
+        return groups[b] - groups[a];
       }
-      methodMap[m]++;
-      methodSources[m].push(s);
     });
 
-    Object.entries(methodMap).sort((a,b)=>b[1]-a[1]).forEach(([method, count]) => {
+    sortedKeys.forEach(key => {
+      const count = groups[key];
       const methodContainer = document.createElement('div');
       methodContainer.style.borderBottom = '1px solid var(--border-color)';
       
@@ -1809,19 +2188,21 @@
       mHeader.onmouseover = () => { mHeader.style.background = 'rgba(255,255,255,0.03)'; };
       mHeader.onmouseout = () => { mHeader.style.background = 'transparent'; };
 
-      const methodLabel = method.toUpperCase() === 'AHP' ? 'Analytical Hierarchy Process (AHP / MCDA)' 
-                       : method.toUpperCase() === 'EMPIRICAL' ? 'Empirical literature / Primary measurements'
-                       : method.toUpperCase() === 'SYNTHESIS' ? 'Meta-analyses & Sourcing Guidelines'
-                       : method.toUpperCase() === 'EXPERT' ? 'Expert Elicitation Protocol (Namita)'
-                       : method.toUpperCase() === 'FAO_LANDEVAL' ? 'FAO Land Suitability Evaluation Methodology'
-                       : method.toUpperCase() === 'ADOPTION_STUDY' ? 'Adoption / Dis-adoption Study'
-                       : method.toUpperCase() === 'MEL_REPORT' ? 'MEL / MELIA Monitoring Report'
-                       : method.charAt(0).toUpperCase() + method.slice(1).replace(/_/g, ' ');
+      const groupLabel = sourcingGroupMode === 'author' 
+                       ? `Published in ${key}` 
+                       : (key.toUpperCase() === 'AHP' ? 'Analytical Hierarchy Process (AHP / MCDA)' 
+                       : key.toUpperCase() === 'EMPIRICAL' ? 'Empirical literature / Primary measurements'
+                       : key.toUpperCase() === 'SYNTHESIS' ? 'Meta-analyses & Sourcing Guidelines'
+                       : key.toUpperCase() === 'EXPERT' ? 'Expert Elicitation Protocol (Namita)'
+                       : key.toUpperCase() === 'FAO_LANDEVAL' ? 'FAO Land Suitability Evaluation Methodology'
+                       : key.toUpperCase() === 'ADOPTION_STUDY' ? 'Adoption / Dis-adoption Study'
+                       : key.toUpperCase() === 'MEL_REPORT' ? 'MEL / MELIA Monitoring Report'
+                       : key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '));
 
       mHeader.innerHTML = `
         <span style="display:flex; align-items:center; gap:8px;">
           <span class="chevron" style="display:inline-block; transition:transform 0.2s; font-size:10px; color:var(--text-muted);">▶</span>
-          <span style="font-weight:500;">${methodLabel}</span>
+          <span style="font-weight:500;">${groupLabel}</span>
         </span>
         <span style="color:var(--accent-sky); font-weight:600;">${count} sources</span>
       `;
@@ -1832,8 +2213,8 @@
       mDetails.style.background = 'rgba(0,0,0,0.15)';
       mDetails.style.fontSize = '11.5px';
 
-      // Sort sources under this method by source_id
-      const sortedSources = methodSources[method].sort((a,b) => a.source_id.localeCompare(b.source_id));
+      // Sort sources under this group by source_id
+      const sortedSources = groupSources[key].sort((a,b) => a.source_id.localeCompare(b.source_id));
       sortedSources.forEach(s => {
         const sDiv = document.createElement('div');
         sDiv.style.padding = '6px 0';
@@ -2024,13 +2405,32 @@
       return;
     }
 
-    const familyMappings = recipe.T4_suitability_mappings.filter(m => m.suitability_family_id === familyId);
-    if (familyMappings.length === 0) {
-      mappingsBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No mappings specified for this family variant.</td></tr>';
-      return;
+    let familyMappings = recipe.T4_suitability_mappings.filter(m => m.suitability_family_id === familyId);
+
+    // Filter by dimension pill
+    const dimBtn = document.querySelector('#filter-t4-dimension .pill-btn.active');
+    const dimFilter = dimBtn ? dimBtn.getAttribute('data-filter') : 'all';
+    if (dimFilter !== 'all') {
+      familyMappings = familyMappings.filter(m => m.suitability_dimension === dimFilter);
     }
 
+    // Filter by text search
+    const searchInput = document.getElementById('search-t4-table');
+    const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
     const ontology = dashboardData.registers.VONT_variable_ontology || [];
+    if (searchVal) {
+      familyMappings = familyMappings.filter(m => {
+        const varInfo = ontology.find(v => v.canonical_variable_id === m.variable);
+        const varLabel = varInfo ? varInfo.label.toLowerCase() : '';
+        const varId = m.variable.toLowerCase();
+        return varLabel.includes(searchVal) || varId.includes(searchVal);
+      });
+    }
+
+    if (familyMappings.length === 0) {
+      mappingsBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No mappings match the active filters.</td></tr>';
+      return;
+    }
 
     familyMappings.forEach(m => {
       const tr = document.createElement('tr');
@@ -2198,9 +2598,28 @@
       return;
     }
 
-    const rows = recipe.T3_nbs_hazard_farming;
+    let rows = recipe.T3_nbs_hazard_farming;
+
+    // Filter by hazard pill
+    const hazBtn = document.querySelector('#filter-t3-hazard-type .pill-btn.active');
+    const hazFilter = hazBtn ? hazBtn.getAttribute('data-filter') : 'all';
+    if (hazFilter !== 'all') {
+      rows = rows.filter(r => (r.hazard_type || '').toLowerCase().includes(hazFilter));
+    }
+
+    // Filter by text search
+    const searchInput = document.getElementById('search-t3-table');
+    const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    if (searchVal) {
+      rows = rows.filter(r => 
+        (r.hazard_type || '').toLowerCase().includes(searchVal) ||
+        (r.farming_system || '').toLowerCase().includes(searchVal) ||
+        (r.mitigation_mechanism || '').toLowerCase().includes(searchVal)
+      );
+    }
+
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hazard linkages defined.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hazard links match the active filters.</td></tr>';
       return;
     }
 
@@ -2242,9 +2661,34 @@
       return;
     }
 
-    const rows = recipe.T6_nbs_scorecard;
+    let rows = recipe.T6_nbs_scorecard;
+
+    // Filter by economic type pill
+    const typeBtn = document.querySelector('#filter-t6-cost-type .pill-btn.active');
+    const typeFilter = typeBtn ? typeBtn.getAttribute('data-filter') : 'all';
+    if (typeFilter !== 'all') {
+      if (typeFilter === 'cost') {
+        rows = rows.filter(r => (r.variable_type || '').toLowerCase().includes('cost') || (r.economic_indicator_type || '').toLowerCase().includes('cost'));
+      } else if (typeFilter === 'benefit') {
+        rows = rows.filter(r => (r.variable_type || '').toLowerCase().includes('benefit') || (r.variable_type || '').toLowerCase().includes('income') || (r.economic_indicator_type || '').toLowerCase().includes('income'));
+      } else if (typeFilter === 'carbon') {
+        rows = rows.filter(r => (r.variable_type || '').toLowerCase().includes('carbon') || (r.economic_indicator_type || '').toLowerCase().includes('tco2e'));
+      }
+    }
+
+    // Filter by text search
+    const searchInput = document.getElementById('search-t6-table');
+    const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    if (searchVal) {
+      rows = rows.filter(r => 
+        (r.economic_indicator_type || r.variable_id || '').toLowerCase().replace(/_/g, ' ').includes(searchVal) ||
+        (r.variable_type || '').toLowerCase().includes(searchVal) ||
+        (r.effect_mechanism || '').toLowerCase().includes(searchVal)
+      );
+    }
+
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No economic metrics registered.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No economic metrics match the active filters.</td></tr>';
       return;
     }
 
@@ -2290,13 +2734,45 @@
     vontBody.innerHTML = '';
     const variables = dashboardData.registers.VONT_variable_ontology || [];
 
-    const drawVont = (list) => {
+    // Dynamically generate VONT group pills
+    const vontGroups = new Set();
+    variables.forEach(v => {
+      if (v.group_id) vontGroups.add(v.group_id);
+    });
+
+    const vontFilterContainer = document.getElementById('filter-vont-group');
+    vontFilterContainer.innerHTML = '<button class="pill-btn active sky" data-filter="all">All</button>';
+    Array.from(vontGroups).sort().forEach(grp => {
+      const btn = document.createElement('button');
+      btn.className = 'pill-btn sky';
+      btn.setAttribute('data-filter', grp);
+      btn.textContent = grp.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      vontFilterContainer.appendChild(btn);
+    });
+
+    const drawVont = () => {
+      const activePill = vontFilterContainer.querySelector('.pill-btn.active');
+      const groupFilter = activePill ? activePill.getAttribute('data-filter') : 'all';
+      const q = document.getElementById('search-vont').value.toLowerCase().trim();
+
+      let filtered = variables;
+      if (groupFilter !== 'all') {
+        filtered = filtered.filter(v => v.group_id === groupFilter);
+      }
+      if (q) {
+        filtered = filtered.filter(v => 
+          v.canonical_variable_id.toLowerCase().includes(q) || 
+          v.label.toLowerCase().includes(q) || 
+          v.group_id.toLowerCase().includes(q)
+        );
+      }
+
       vontBody.innerHTML = '';
-      if (list.length === 0) {
-        vontBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No variables match your query</td></tr>';
+      if (filtered.length === 0) {
+        vontBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No variables match your filters</td></tr>';
         return;
       }
-      list.forEach(v => {
+      filtered.forEach(v => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><code style="font-weight:600; color:var(--accent-sky);">${v.canonical_variable_id}</code></td>
@@ -2314,29 +2790,59 @@
       });
     };
 
-    drawVont(variables);
-
-    document.getElementById('search-vont').addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      const filtered = variables.filter(v => 
-        v.canonical_variable_id.toLowerCase().includes(q) || 
-        v.label.toLowerCase().includes(q) || 
-        v.group_id.toLowerCase().includes(q)
-      );
-      drawVont(filtered);
+    vontFilterContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pill-btn');
+      if (!btn) return;
+      vontFilterContainer.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      drawVont();
     });
+
+    document.getElementById('search-vont').addEventListener('input', drawVont);
 
     const t1Body = document.getElementById('body-t1');
     t1Body.innerHTML = '';
     const datasets = dashboardData.global_tables.T1_data_registry || [];
 
-    const drawT1 = (list) => {
+    // Dynamically generate T1 access type pills
+    const t1AccessTypes = new Set();
+    datasets.forEach(d => {
+      if (d.access_type) t1AccessTypes.add(d.access_type);
+    });
+
+    const t1FilterContainer = document.getElementById('filter-t1-access');
+    t1FilterContainer.innerHTML = '<button class="pill-btn active purple" data-filter="all">All</button>';
+    Array.from(t1AccessTypes).sort().forEach(acc => {
+      const btn = document.createElement('button');
+      btn.className = 'pill-btn purple';
+      btn.setAttribute('data-filter', acc);
+      btn.textContent = acc.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      t1FilterContainer.appendChild(btn);
+    });
+
+    const drawT1 = () => {
+      const activePill = t1FilterContainer.querySelector('.pill-btn.active');
+      const accessFilter = activePill ? activePill.getAttribute('data-filter') : 'all';
+      const q = document.getElementById('search-t1').value.toLowerCase().trim();
+
+      let filtered = datasets;
+      if (accessFilter !== 'all') {
+        filtered = filtered.filter(d => d.access_type === accessFilter);
+      }
+      if (q) {
+        filtered = filtered.filter(d => 
+          d.dataset_id.toLowerCase().includes(q) || 
+          d.dataset_name.toLowerCase().includes(q) || 
+          d.access_type.toLowerCase().includes(q)
+        );
+      }
+
       t1Body.innerHTML = '';
-      if (list.length === 0) {
-        t1Body.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No datasets match your query</td></tr>';
+      if (filtered.length === 0) {
+        t1Body.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No datasets match your filters</td></tr>';
         return;
       }
-      list.forEach(d => {
+      filtered.forEach(d => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><code style="font-weight:600; color:var(--accent-sky);">${d.dataset_id}</code></td>
@@ -2353,17 +2859,18 @@
       });
     };
 
-    drawT1(datasets);
-
-    document.getElementById('search-t1').addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      const filtered = datasets.filter(d => 
-        d.dataset_id.toLowerCase().includes(q) || 
-        d.dataset_name.toLowerCase().includes(q) || 
-        d.access_type.toLowerCase().includes(q)
-      );
-      drawT1(filtered);
+    t1FilterContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.pill-btn');
+      if (!btn) return;
+      t1FilterContainer.querySelectorAll('.pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      drawT1();
     });
+
+    document.getElementById('search-t1').addEventListener('input', drawT1);
+
+    drawVont();
+    drawT1();
   }
 </script>
 </body>
