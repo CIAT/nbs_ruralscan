@@ -21,6 +21,7 @@
     --accent-sky-rgb: 14, 165, 233;
     --accent-amber: #f59e0b;
     --accent-rose: #f43f5e;
+    --accent-rose-rgb: 244, 63, 94;
     --accent-purple: #a855f7;
     --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
     --font-outfit: 'Outfit', sans-serif;
@@ -266,7 +267,7 @@
   /* Overview Charts Section */
   .charts-section {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 2fr 1.2fr;
     gap: 24px;
     margin-bottom: 24px;
   }
@@ -366,6 +367,25 @@
     border-radius: 50%;
   }
 
+  /* Flow chart styling */
+  .flow-link {
+    fill: none;
+    transition: var(--transition);
+  }
+
+  .flow-node-rect {
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .flow-node-text {
+    font-family: var(--font-outfit);
+    font-size: 10px;
+    font-weight: 500;
+    transition: var(--transition);
+    pointer-events: none;
+  }
+
   /* Tables styling */
   .table-wrapper {
     overflow-x: auto;
@@ -397,6 +417,7 @@
     padding: 14px 16px;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-primary);
+    vertical-align: top;
   }
 
   .data-table tr:last-child td {
@@ -409,6 +430,28 @@
 
   [data-theme="light"] .data-table tr:hover td {
     background-color: rgba(0, 0, 0, 0.01);
+  }
+
+  /* Action Buttons */
+  .btn-flag {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--accent-rose);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .btn-flag:hover {
+    background-color: rgba(244, 63, 94, 0.08);
+    border-color: var(--accent-rose);
   }
 
   /* Badge styling */
@@ -903,9 +946,20 @@
         </div>
       </div>
 
+      <!-- Sankey flow network diagram container -->
+      <div class="card-container">
+        <h2 class="card-title">
+          <span>Evidence Sourcing &amp; Translation Flow Diagram</span>
+          <span class="card-title-meta">Hover over any literature source, biophysical variable, or target table node to highlight its lineage</span>
+        </h2>
+        <div class="chart-wrapper">
+          <svg id="sankey-flow" viewBox="0 0 800 420" style="width:100%; height:auto; background:var(--bg-secondary); border-radius:var(--radius-md); border:1px solid var(--border-color);"></svg>
+        </div>
+      </div>
+
       <div class="charts-section">
         <!-- SVG Sources by NbS Chart -->
-        <div class="card-container">
+        <div class="card-container" style="margin-bottom:0;">
           <h2 class="card-title">Sources Extraction Status per NbS</h2>
           <div class="chart-wrapper">
             <svg class="svg-chart-container" id="chart-sources-nbs" viewBox="0 0 600 280">
@@ -915,7 +969,6 @@
               <line x1="60" y1="130" x2="560" y2="130" stroke="var(--border-color)" stroke-dasharray="4"></line>
               <line x1="60" y1="180" x2="560" y2="180" stroke="var(--border-color)" stroke-dasharray="4"></line>
               <line x1="60" y1="230" x2="560" y2="230" stroke="var(--border-color)" stroke-dasharray="4"></line>
-              <!-- Chart elements populated by JS -->
             </svg>
           </div>
           <div class="chart-legend">
@@ -925,11 +978,10 @@
         </div>
 
         <!-- SVG Donut Chart: Evidence Tiers -->
-        <div class="card-container">
+        <div class="card-container" style="margin-bottom:0;">
           <h2 class="card-title">Evidence Benchmark Tiers</h2>
           <div class="chart-wrapper">
             <svg class="svg-chart-container" id="chart-evidence-tiers" viewBox="0 0 240 240">
-              <!-- Donut segments populated by JS -->
               <circle cx="120" cy="120" r="80" fill="none" stroke="var(--bg-tertiary)" stroke-width="16"></circle>
             </svg>
             <div style="position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -937,25 +989,19 @@
               <span style="font-size:10px; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Traceable</span>
             </div>
           </div>
-          <div class="chart-legend" id="donut-legend">
-            <!-- Populated by JS -->
-          </div>
+          <div class="chart-legend" id="donut-legend"></div>
         </div>
       </div>
 
       <!-- Countries & Research Methods Grid -->
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-top: 24px;">
         <div class="card-container" style="margin-bottom:0;">
           <h2 class="card-title">Represented Study Countries / Contexts</h2>
-          <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="country-progress-list">
-            <!-- List populated dynamically -->
-          </div>
+          <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="country-progress-list"></div>
         </div>
         <div class="card-container" style="margin-bottom:0;">
           <h2 class="card-title">Literature Sourcing Methods</h2>
-          <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="method-progress-list">
-            <!-- List populated dynamically -->
-          </div>
+          <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="method-progress-list"></div>
         </div>
       </div>
 
@@ -969,16 +1015,12 @@
         <aside class="sidebar-panel">
           <div class="control-group">
             <label class="control-label" for="select-nbs">Select Nature-based Solution</label>
-            <select class="select-input" id="select-nbs">
-              <!-- Option tags populated dynamically -->
-            </select>
+            <select class="select-input" id="select-nbs"></select>
           </div>
           
           <div class="control-group">
             <label class="control-label" for="select-family">Suitability Family / Variant</label>
-            <select class="select-input" id="select-family">
-              <!-- Option tags populated dynamically -->
-            </select>
+            <select class="select-input" id="select-family"></select>
           </div>
           
           <div class="control-group">
@@ -1031,12 +1073,11 @@
                     <th>Default Weight</th>
                     <th>Standard Dataset</th>
                     <th>Response Function / Params</th>
-                    <th>Justification</th>
+                    <th>Evidence Reconciliation &amp; Justification</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
-                <tbody id="body-t4-mappings">
-                  <!-- Rows populated dynamically -->
-                </tbody>
+                <tbody id="body-t4-mappings"></tbody>
               </table>
             </div>
           </div>
@@ -1053,9 +1094,7 @@
               </svg>
               Verbatim Evidence Claims
             </h3>
-            <div class="evidence-container" id="evidence-list">
-              <!-- Cards populated dynamically -->
-            </div>
+            <div class="evidence-container" id="evidence-list"></div>
           </div>
 
           <!-- T3 Hazard Matrix & Farming systems -->
@@ -1076,12 +1115,11 @@
                       <th>Hazard</th>
                       <th>Farming Context</th>
                       <th>Mitigation Potential</th>
-                      <th>Mechanism</th>
+                      <th>Mechanism &amp; Evidence</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
-                  <tbody id="body-t3-hazard">
-                    <!-- Populated dynamically -->
-                  </tbody>
+                  <tbody id="body-t3-hazard"></tbody>
                 </table>
               </div>
             </div>
@@ -1102,12 +1140,11 @@
                       <th>Economic Indicator</th>
                       <th>Value range</th>
                       <th>Confidence</th>
-                      <th>Mechanism</th>
+                      <th>Mechanism &amp; Evidence</th>
+                      <th>Action</th>
                     </tr>
                   </thead>
-                  <tbody id="body-t6-scorecard">
-                    <!-- Populated dynamically -->
-                  </tbody>
+                  <tbody id="body-t6-scorecard"></tbody>
                 </table>
               </div>
             </div>
@@ -1136,9 +1173,7 @@
                 <th>Sensitivity</th>
               </tr>
             </thead>
-            <tbody id="body-vont">
-              <!-- Populated dynamically -->
-            </tbody>
+            <tbody id="body-vont"></tbody>
           </table>
         </div>
       </div>
@@ -1160,9 +1195,7 @@
                 <th>Limitations</th>
               </tr>
             </thead>
-            <tbody id="body-t1">
-              <!-- Populated dynamically -->
-            </tbody>
+            <tbody id="body-t1"></tbody>
           </table>
         </div>
       </div>
@@ -1178,7 +1211,6 @@
 </main>
 
 <script>
-  // Global payload reference
   let dashboardData = null;
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -1198,6 +1230,10 @@
       } else {
         iconSun.style.display = 'block';
         iconMoon.style.display = 'none';
+      }
+      // Redraw sankey with updated node text colors if rendered
+      if (dashboardData) {
+        renderSankeyFlow();
       }
     });
 
@@ -1227,7 +1263,6 @@
         document.getElementById('loading-container').style.display = 'none';
         document.getElementById('dashboard-content').style.display = 'block';
         
-        // Populate core stats and triggers
         initDashboard();
       })
       .catch(err => {
@@ -1236,6 +1271,81 @@
         document.getElementById('error-container').style.display = 'flex';
       });
   });
+
+  // Konstrukt Github Issue link
+  function openGitIssue(type, item) {
+    const baseUrl = "https://github.com/CIAT/nbs_ruralscan/issues/new";
+    let title = "";
+    let body = "";
+    
+    if (type === 't4') {
+      title = `[T4 Review] Suitability mapping review for '${item.variable}'`;
+      body = `### T4 Suitability Mapping Review Flag
+
+- **NbS ID**: \`${item.nbs_id}\`
+- **Family ID**: \`${item.suitability_family_id}\`
+- **Variable**: \`${item.variable}\`
+- **Default Weight**: \`${item.weight_default}\`
+- **Dataset ID**: \`${item.dataset_id}\`
+- **Relationship Type**: \`${item.relationship_type}\`
+- **Reconciliation Comments**: 
+  > ${item.justification || 'None'}
+
+---
+### Review Comments / Requested Changes
+*Provide detailed comments on why this mapping requires a review (e.g. thresholds, parameters, default weights) and link supporting papers or evidence below.*
+`;
+    } else if (type === 't3') {
+      title = `[T3 Review] Climate Hazard link review for '${item.hazard_type}'`;
+      body = `### T3 Climate Hazard Link Review Flag
+
+- **NbS ID**: \`${item.nbs_id}\`
+- **Hazard Type**: \`${item.hazard_type}\`
+- **Farming System**: \`${item.farming_system}\`
+- **Mitigation Potential**: \`${item.mitigation_potential}\`
+- **Mechanism**:
+  > ${item.mitigation_mechanism || 'None'}
+
+---
+### Review Comments / Requested Changes
+*Describe why this hazard link requires modifications.*
+`;
+    } else if (type === 't6') {
+      title = `[T6 Review] Scorecard metric review for '${item.economic_indicator_type || item.variable_id}'`;
+      body = `### T6 Scorecard Metric Review Flag
+
+- **NbS ID**: \`${item.nbs_id}\`
+- **Indicator Type**: \`${item.economic_indicator_type || item.variable_id}\`
+- **Confidence**: \`${item.effect_confidence}\`
+- **Mechanism**:
+  > ${item.effect_mechanism || 'None'}
+
+---
+### Review Comments / Requested Changes
+*Describe requested changes in value ranges, units, or mechanisms.*
+`;
+    } else if (type === 'evidence') {
+      title = `[Evidence Review] Flagging evidence ID '${item.evidence_id}'`;
+      body = `### Verbatim Evidence Claim Review Flag
+
+- **Evidence ID**: \`${item.evidence_id}\`
+- **Source ID**: \`${item.source_id}\`
+- **Variable**: \`${item.variable}\`
+- **AEZ Context**: \`${item.context ? item.context.aez : 'None'}\`
+- **Verbatim Quote**:
+  > “${item.quote}”
+- **Page Number**: \`${item.page || 'N/A'}\`
+
+---
+### Review Comments / Requested Changes
+*Outline why this quote is flagged (e.g., mis-extracted values, incorrect contextual bounding, AEZ mapping error).*
+`;
+    }
+
+    const labels = "review-required,dashboard";
+    const fullUrl = `${baseUrl}?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent(labels)}`;
+    window.open(fullUrl, '_blank');
+  }
 
   function initDashboard() {
     // 1. Meta fields
@@ -1255,18 +1365,17 @@
     document.getElementById('stat-total-claims').textContent = claims.length;
     document.getElementById('stat-total-recipes').textContent = recipes.length;
 
-    // 3. Overview Charts
+    // 3. Overview Charts & Sankey Flow
     renderOverviewCharts(sources, claims, recipes);
+    renderSankeyFlow();
 
     // 4. Interrogator Dropdowns
     const nbsSelect = document.getElementById('select-nbs');
     nbsSelect.innerHTML = '';
     
-    // Sort recipes to display alphabetically
     recipes.sort().forEach(nbsId => {
       const opt = document.createElement('option');
       opt.value = nbsId;
-      // Format label
       opt.textContent = nbsId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       nbsSelect.appendChild(opt);
     });
@@ -1284,7 +1393,6 @@
       renderVerbatimEvidence();
     });
 
-    // Initialise subpractices and interrogator content for the first NbS
     if (recipes.length > 0) {
       populateFamilies(recipes[0]);
     }
@@ -1293,15 +1401,223 @@
     renderOntologyAndDatasets();
   }
 
+  // Visualizes Source (Left) -> Variable (Middle) -> Target Tables (Right)
+  function renderSankeyFlow() {
+    const svg = document.getElementById('sankey-flow');
+    svg.innerHTML = '';
+
+    const sources = dashboardData.registers.SRC_source_register || [];
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    
+    // Sort sources by claim count and select top 7
+    const sourceClaimCounts = {};
+    claims.forEach(c => {
+      sourceClaimCounts[c.source_id] = (sourceClaimCounts[c.source_id] || 0) + 1;
+    });
+    const topSourceIds = Object.entries(sourceClaimCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 7)
+      .map(entry => entry[0]);
+
+    // Sort variables by claim count and select top 8
+    const variableClaimCounts = {};
+    claims.forEach(c => {
+      variableClaimCounts[c.variable] = (variableClaimCounts[c.variable] || 0) + 1;
+    });
+    const topVariables = Object.entries(variableClaimCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 8)
+      .map(entry => entry[0]);
+
+    // Columns structure
+    const col1Nodes = topSourceIds.map(id => ({ id, type: 'source', label: id.replace(/_/g, ' ').replace(/\b\w/g, c=>c.toUpperCase()) }));
+    col1Nodes.push({ id: 'other_sources', type: 'source', label: 'Other Sources' });
+
+    const col2Nodes = topVariables.map(id => ({ id, type: 'variable', label: id.replace(/_/g, ' ').replace(/\b\w/g, c=>c.toUpperCase()) }));
+    col2Nodes.push({ id: 'other_variables', type: 'variable', label: 'Other Variables' });
+
+    const col3Nodes = [
+      { id: 't4_mappings', type: 'table', label: 'T4 Suitability Mappings' },
+      { id: 't3_hazards', type: 'table', label: 'T3 Hazard Links' },
+      { id: 't6_scorecard', type: 'table', label: 'T6 scorecard Economics' }
+    ];
+
+    // Compute coordinates
+    const height = 420;
+    const width = 800;
+    const yMargin = 30;
+
+    const computeY = (nodes, containerHeight) => {
+      const space = (containerHeight - yMargin * 2) / Math.max(nodes.length - 1, 1);
+      nodes.forEach((n, idx) => {
+        n.x = n.type === 'source' ? 100 : (n.type === 'variable' ? 400 : 700);
+        n.y = yMargin + idx * space;
+      });
+    };
+
+    computeY(col1Nodes, height);
+    computeY(col2Nodes, height);
+    computeY(col3Nodes, height);
+
+    const allNodes = [...col1Nodes, ...col2Nodes, ...col3Nodes];
+
+    // Tally connections weights
+    const links = [];
+
+    // Left-to-Middle Links (Source -> Variable)
+    claims.forEach(c => {
+      let srcNode = col1Nodes.find(n => n.id === c.source_id);
+      if (!srcNode) srcNode = col1Nodes.find(n => n.id === 'other_sources');
+
+      let varNode = col2Nodes.find(n => n.id === c.variable);
+      if (!varNode) varNode = col2Nodes.find(n => n.id === 'other_variables');
+
+      if (srcNode && varNode) {
+        let l = links.find(lk => lk.source === srcNode.id && lk.target === varNode.id);
+        if (!l) {
+          l = { source: srcNode.id, target: varNode.id, weight: 0, fromNode: srcNode, toNode: varNode };
+          links.push(l);
+        }
+        l.weight++;
+      }
+    });
+
+    // Middle-to-Right Links (Variable -> Target Table)
+    claims.forEach(c => {
+      let varNode = col2Nodes.find(n => n.id === c.variable);
+      if (!varNode) varNode = col2Nodes.find(n => n.id === 'other_variables');
+
+      // Tally tables destination
+      let destTable = 't4_mappings'; // default
+      if (c.use_role === 'hazard_mitigation' || c.use_role === 'hazard_risk') {
+        destTable = 't3_hazards';
+      } else if (c.use_role === 'economics' || c.use_role === 'cost_sourcing') {
+        destTable = 't6_scorecard';
+      }
+
+      const tblNode = col3Nodes.find(n => n.id === destTable);
+      if (varNode && tblNode) {
+        let l = links.find(lk => lk.source === varNode.id && lk.target === tblNode.id);
+        if (!l) {
+          l = { source: varNode.id, target: tblNode.id, weight: 0, fromNode: varNode, toNode: tblNode };
+          links.push(l);
+        }
+        l.weight++;
+      }
+    });
+
+    // Draw links (bezier ribbons)
+    const isDark = document.body.getAttribute('data-theme') !== 'light';
+    const linkColor = isDark ? '#38bdf8' : '#0284c7';
+    
+    links.forEach((l, index) => {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const x1 = l.fromNode.x;
+      const y1 = l.fromNode.y;
+      const x2 = l.toNode.x;
+      const y2 = l.toNode.y;
+      const dx = (x2 - x1) / 2;
+
+      // Draw ribbon S-curve
+      const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+      
+      path.setAttribute('d', d);
+      path.setAttribute('class', 'flow-link');
+      path.setAttribute('id', `flow-link-${index}`);
+      path.setAttribute('stroke', linkColor);
+      path.setAttribute('stroke-width', Math.min(2 + l.weight * 0.8, 12));
+      path.setAttribute('stroke-opacity', '0.12');
+      path.setAttribute('fill', 'none');
+      
+      // Cache references for fast highlighting
+      l.pathElement = path;
+      svg.appendChild(path);
+    });
+
+    // Draw nodes
+    allNodes.forEach(n => {
+      const nodeGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      
+      // Node rectangle
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.setAttribute('x', n.x - 6);
+      rect.setAttribute('y', n.y - 12);
+      rect.setAttribute('width', 12);
+      rect.setAttribute('height', 24);
+      rect.setAttribute('rx', 3);
+      rect.setAttribute('class', 'flow-node-rect');
+
+      let nodeColor = 'var(--text-muted)';
+      if (n.type === 'variable') nodeColor = 'var(--accent-sky)';
+      else if (n.type === 'table') {
+        nodeColor = n.id === 't4_mappings' ? 'var(--accent-emerald)' 
+                  : n.id === 't3_hazards' ? 'var(--accent-rose)' 
+                  : 'var(--accent-amber)';
+      }
+      rect.setAttribute('fill', nodeColor);
+
+      // Text label
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', n.type === 'source' ? n.x - 14 : n.x + 14);
+      text.setAttribute('y', n.y + 4);
+      text.setAttribute('text-anchor', n.type === 'source' ? 'end' : 'start');
+      text.setAttribute('class', 'flow-node-text');
+      text.setAttribute('fill', 'var(--text-primary)');
+      text.textContent = n.label;
+      n.textElement = text;
+
+      nodeGroup.appendChild(rect);
+      nodeGroup.appendChild(text);
+
+      // Hover events
+      rect.addEventListener('mouseenter', () => {
+        // Highlight active connections
+        links.forEach(lk => {
+          const isConnected = lk.source === n.id || lk.target === n.id || 
+             (n.type === 'source' && lk.fromNode.id === n.id) ||
+             (n.type === 'variable' && (lk.fromNode.id === n.id || lk.toNode.id === n.id)) ||
+             (n.type === 'table' && lk.toNode.id === n.id);
+
+          if (isConnected) {
+            lk.pathElement.setAttribute('stroke-opacity', '0.7');
+            lk.pathElement.setAttribute('stroke', 'var(--accent-emerald)');
+            // highlight endpoints text labels
+            lk.fromNode.textElement.setAttribute('fill', 'var(--accent-emerald)');
+            lk.fromNode.textElement.style.fontWeight = '700';
+            lk.toNode.textElement.setAttribute('fill', 'var(--accent-emerald)');
+            lk.toNode.textElement.style.fontWeight = '700';
+          } else {
+            lk.pathElement.setAttribute('stroke-opacity', '0.02');
+          }
+        });
+        rect.setAttribute('transform', 'scale(1.2)');
+        rect.style.transformOrigin = `${n.x}px ${n.y}px`;
+      });
+
+      rect.addEventListener('mouseleave', () => {
+        // Reset opacities
+        links.forEach(lk => {
+          lk.pathElement.setAttribute('stroke-opacity', '0.12');
+          lk.pathElement.setAttribute('stroke', linkColor);
+          lk.fromNode.textElement.setAttribute('fill', 'var(--text-primary)');
+          lk.fromNode.textElement.style.fontWeight = '500';
+          lk.toNode.textElement.setAttribute('fill', 'var(--text-primary)');
+          lk.toNode.textElement.style.fontWeight = '500';
+        });
+        rect.setAttribute('transform', 'none');
+      });
+
+      svg.appendChild(nodeGroup);
+    });
+  }
+
   function renderOverviewCharts(sources, claims, recipes) {
     // Chart 1: Sources by NbS
     const nbsChart = document.getElementById('chart-sources-nbs');
-    // Clear dynamic content from chart (keep grid lines)
     while (nbsChart.children.length > 5) {
       nbsChart.removeChild(nbsChart.lastChild);
     }
 
-    // Tally source status per NbS
     const stats = {};
     sources.forEach(src => {
       const nbsList = (src.nbs_ids || '').split(';').map(n => n.trim()).filter(Boolean);
@@ -1314,17 +1630,15 @@
     });
 
     const nbsKeys = Object.keys(stats).sort();
-    const barSpacing = 400 / Math.max(nbsKeys.length, 1);
     
     nbsKeys.forEach((nbs, index) => {
       const s = stats[nbs];
       const total = s.swept + s.pending;
-      const sweptHeight = total > 0 ? (s.swept / 40) * 180 : 0; // scale limit ~40 papers
+      const sweptHeight = total > 0 ? (s.swept / 40) * 180 : 0;
       const pendingHeight = total > 0 ? (s.pending / 40) * 180 : 0;
       
       const x = 90 + index * 120;
       
-      // Swept bar (emerald)
       if (s.swept > 0) {
         const rectSwept = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         rectSwept.setAttribute('x', x);
@@ -1336,7 +1650,6 @@
         nbsChart.appendChild(rectSwept);
       }
 
-      // Pending bar (muted gray)
       if (s.pending > 0) {
         const rectPending = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
         rectPending.setAttribute('x', x);
@@ -1349,7 +1662,6 @@
         nbsChart.appendChild(rectPending);
       }
 
-      // X Label
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', x + 16);
       text.setAttribute('y', 250);
@@ -1362,7 +1674,6 @@
       nbsChart.appendChild(text);
     });
 
-    // Add Y Axis labels
     [0, 10, 20, 30, 40].forEach((ticks, idx) => {
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', 45);
@@ -1374,16 +1685,14 @@
       nbsChart.appendChild(text);
     });
 
-    // Chart 2: Benchmark tiers donut
+    // Chart 2: Donut Tiers
     const donutChart = document.getElementById('chart-evidence-tiers');
-    // Clear segments
     while (donutChart.children.length > 1) {
       donutChart.removeChild(donutChart.lastChild);
     }
 
     const tiers = { high: 0, medium: 0, low: 0, external: 0 };
     claims.forEach(c => {
-      // Look up source benchmark tier
       const src = sources.find(s => s.source_id === c.source_id);
       const tier = src ? src.benchmark_tier : 'low';
       if (tiers[tier] !== undefined) tiers[tier]++;
@@ -1408,9 +1717,6 @@
 
       const pct = (count / totalClaims) * 100;
       const angle = (count / totalClaims) * 360;
-
-      // Draw SVG donut slice using stroke-dasharray
-      // Radius of circle = 80, Circumference = 2 * PI * 80 ≈ 502.65
       const circ = 2 * Math.PI * 80;
       const strokeDash = (pct / 100) * circ;
       const strokeOffset = (accumulatedAngle / 360) * circ;
@@ -1424,9 +1730,7 @@
       circle.setAttribute('stroke-dasharray', `${strokeDash} ${circ - strokeDash}`);
       circle.setAttribute('stroke-dashoffset', -strokeOffset);
       circle.setAttribute('transform', 'rotate(-90 120 120)');
-      circle.setAttribute('title', `${tier.toUpperCase()}: ${count} (${Math.round(pct)}%)`);
       
-      // Hover text updater
       circle.addEventListener('mouseenter', () => {
         document.getElementById('center-donut-value').textContent = `${Math.round(pct)}%`;
       });
@@ -1438,7 +1742,6 @@
       donutChart.appendChild(circle);
       accumulatedAngle += angle;
 
-      // Legend Item
       const leg = document.createElement('div');
       leg.className = 'legend-item';
       leg.innerHTML = `<span class="legend-color" style="background-color: ${colors[tier]};"></span>${tier.toUpperCase()} (${count})`;
@@ -1448,31 +1751,24 @@
     const traceablePct = Math.round(((tiers.high + tiers.medium) / totalClaims) * 100);
     document.getElementById('center-donut-value').textContent = `${traceablePct}%`;
 
-    // 4. Country progress summaries
+    // 4. Countries
     const countryList = document.getElementById('country-progress-list');
     countryList.innerHTML = '';
-    
-    // Tally by country
     const countryMap = {};
     sources.forEach(s => {
       const c = s.study_country || 'Global';
       if (!countryMap[c]) countryMap[c] = { total: 0, swept: 0 };
       countryMap[c].total++;
-      if (s.extraction_status === 'swept' || s.extraction_status === 'signed_off') {
-        countryMap[c].swept++;
-      }
+      if (s.extraction_status === 'swept' || s.extraction_status === 'signed_off') countryMap[c].swept++;
     });
 
-    // Sort by count
-    const sortedCountries = Object.entries(countryMap).sort((a, b) => b[1].total - a[1].total);
-    sortedCountries.forEach(([country, stat]) => {
+    Object.entries(countryMap).sort((a,b)=>b[1].total - a[1].total).forEach(([country, stat]) => {
       const cRow = document.createElement('div');
       cRow.style.display = 'flex';
       cRow.style.justifyContent = 'space-between';
       cRow.style.padding = '8px 12px';
       cRow.style.borderBottom = '1px solid var(--border-color)';
       cRow.style.fontSize = '12.5px';
-      
       const pct = Math.round((stat.swept / stat.total) * 100);
       cRow.innerHTML = `
         <span style="font-weight:500;">${country}</span>
@@ -1481,36 +1777,137 @@
       countryList.appendChild(cRow);
     });
 
-    // 5. Method list
+    // 5. Sourcing methods
     const methodList = document.getElementById('method-progress-list');
     methodList.innerHTML = '';
-    
     const methodMap = {};
+    const methodSources = {};
     sources.forEach(s => {
       const m = s.method_type || 'empirical';
-      if (!methodMap[m]) methodMap[m] = 0;
+      if (!methodMap[m]) {
+        methodMap[m] = 0;
+        methodSources[m] = [];
+      }
       methodMap[m]++;
+      methodSources[m].push(s);
     });
 
     Object.entries(methodMap).sort((a,b)=>b[1]-a[1]).forEach(([method, count]) => {
-      const mRow = document.createElement('div');
-      mRow.style.display = 'flex';
-      mRow.style.justifyContent = 'space-between';
-      mRow.style.padding = '8px 12px';
-      mRow.style.borderBottom = '1px solid var(--border-color)';
-      mRow.style.fontSize = '12.5px';
+      const methodContainer = document.createElement('div');
+      methodContainer.style.borderBottom = '1px solid var(--border-color)';
+      
+      const mHeader = document.createElement('div');
+      mHeader.style.display = 'flex';
+      mHeader.style.justifyContent = 'space-between';
+      mHeader.style.alignItems = 'center';
+      mHeader.style.padding = '8px 12px';
+      mHeader.style.cursor = 'pointer';
+      mHeader.style.fontSize = '12.5px';
+      mHeader.style.transition = 'background 0.2s';
+      mHeader.style.userSelect = 'none';
+
+      mHeader.onmouseover = () => { mHeader.style.background = 'rgba(255,255,255,0.03)'; };
+      mHeader.onmouseout = () => { mHeader.style.background = 'transparent'; };
 
       const methodLabel = method.toUpperCase() === 'AHP' ? 'Analytical Hierarchy Process (AHP / MCDA)' 
                        : method.toUpperCase() === 'EMPIRICAL' ? 'Empirical literature / Primary measurements'
                        : method.toUpperCase() === 'SYNTHESIS' ? 'Meta-analyses & Sourcing Guidelines'
                        : method.toUpperCase() === 'EXPERT' ? 'Expert Elicitation Protocol (Namita)'
-                       : method;
-                       
-      mRow.innerHTML = `
-        <span style="font-weight:500;">${methodLabel}</span>
+                       : method.toUpperCase() === 'FAO_LANDEVAL' ? 'FAO Land Suitability Evaluation Methodology'
+                       : method.toUpperCase() === 'ADOPTION_STUDY' ? 'Adoption / Dis-adoption Study'
+                       : method.toUpperCase() === 'MEL_REPORT' ? 'MEL / MELIA Monitoring Report'
+                       : method.charAt(0).toUpperCase() + method.slice(1).replace(/_/g, ' ');
+
+      mHeader.innerHTML = `
+        <span style="display:flex; align-items:center; gap:8px;">
+          <span class="chevron" style="display:inline-block; transition:transform 0.2s; font-size:10px; color:var(--text-muted);">▶</span>
+          <span style="font-weight:500;">${methodLabel}</span>
+        </span>
         <span style="color:var(--accent-sky); font-weight:600;">${count} sources</span>
       `;
-      methodList.appendChild(mRow);
+
+      const mDetails = document.createElement('div');
+      mDetails.style.display = 'none';
+      mDetails.style.padding = '4px 12px 10px 24px';
+      mDetails.style.background = 'rgba(0,0,0,0.15)';
+      mDetails.style.fontSize = '11.5px';
+
+      // Sort sources under this method by source_id
+      const sortedSources = methodSources[method].sort((a,b) => a.source_id.localeCompare(b.source_id));
+      sortedSources.forEach(s => {
+        const sDiv = document.createElement('div');
+        sDiv.style.padding = '6px 0';
+        sDiv.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
+        sDiv.style.display = 'flex';
+        sDiv.style.justifyContent = 'space-between';
+        sDiv.style.alignItems = 'flex-start';
+        sDiv.style.gap = '8px';
+
+        const shortCitation = s.citation ? (s.citation.length > 80 ? s.citation.substring(0, 80) + '...' : s.citation) : s.source_id;
+
+        sDiv.innerHTML = `
+          <div style="flex:1;">
+            <strong style="color:var(--text-primary); font-size:12px;">${s.source_id}</strong>
+            <span style="color:var(--text-muted); display:block; line-height:1.3; margin-top:2px;" title="${s.citation || ''}">${shortCitation}</span>
+          </div>
+          <button class="explore-btn" style="background:transparent; border:1px solid var(--border-color); color:var(--accent-emerald); padding:3px 8px; border-radius:4px; font-size:10px; cursor:pointer; font-weight:500; transition:all 0.2s; white-space:nowrap; margin-top:2px;">
+            Explore Evidence ➔
+          </button>
+        `;
+
+        const exploreBtn = sDiv.querySelector('.explore-btn');
+        exploreBtn.onmouseover = () => {
+          exploreBtn.style.borderColor = 'var(--accent-emerald)';
+          exploreBtn.style.background = 'rgba(16,185,129,0.1)';
+        };
+        exploreBtn.onmouseout = () => {
+          exploreBtn.style.borderColor = 'var(--border-color)';
+          exploreBtn.style.background = 'transparent';
+        };
+
+        exploreBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const targetNbs = s.nbs_ids ? s.nbs_ids.split(',')[0].trim() : 'agroforestry';
+          
+          // Switch to interrogator tab
+          const tabBtn = document.querySelector('[data-tab="tab-interrogator"]');
+          if (tabBtn) tabBtn.click();
+
+          // Set NBS select
+          const nbsSelect = document.getElementById('select-nbs');
+          if (nbsSelect) {
+            nbsSelect.value = targetNbs;
+            // trigger change to load families
+            nbsSelect.dispatchEvent(new Event('change'));
+          }
+
+          // Set search input
+          const searchInput = document.getElementById('search-input');
+          if (searchInput) {
+            searchInput.value = s.source_id;
+            searchInput.dispatchEvent(new Event('input'));
+          }
+
+          // Scroll to the main panels for immediate visibility
+          document.querySelector('.interrogator-grid').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        mDetails.appendChild(sDiv);
+      });
+
+      // Toggle functionality
+      mHeader.addEventListener('click', () => {
+        const isCollapsed = mDetails.style.display === 'none';
+        mDetails.style.display = isCollapsed ? 'block' : 'none';
+        const chev = mHeader.querySelector('.chevron');
+        if (chev) {
+          chev.style.transform = isCollapsed ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+      });
+
+      methodContainer.appendChild(mHeader);
+      methodContainer.appendChild(mDetails);
+      methodList.appendChild(methodContainer);
     });
   }
 
@@ -1521,7 +1918,6 @@
     const families = dashboardData.registers.FAM_family_registry || [];
     const nbsFamilies = families.filter(f => f.nbs_id === nbsId);
 
-    // Unique suitability family variants
     const addedFamilies = new Set();
     
     nbsFamilies.forEach(fam => {
@@ -1529,9 +1925,7 @@
       addedFamilies.add(fam.suitability_family_id);
 
       const opt = document.createElement('option');
-      opt.value = fam.suitability_family_id;
-      
-      // Clean display name
+      opt.value = 	fam.suitability_family_id;
       const displayName = fam.suitability_family_id.split('__')[1]
                           .replace(/_/g, ' ')
                           .replace(/\b\w/g, c => c.toUpperCase());
@@ -1545,8 +1939,53 @@
       familySelect.appendChild(opt);
     }
 
-    // Trigger interrogate update
     interrogateSelection();
+  }
+
+  // Helper template for expandable evidence rows
+  function generateEvidenceDrawerHtml(evidenceIds, matchVariable = null) {
+    if (!evidenceIds || evidenceIds.length === 0) return '';
+    const ids = typeof evidenceIds === 'string' ? evidenceIds.split(';').map(i=>i.trim()).filter(Boolean) : evidenceIds;
+    
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    const sources = dashboardData.registers.SRC_source_register || [];
+    
+    const matchedClaims = claims.filter(c => ids.includes(c.evidence_id) && (!matchVariable || c.variable === matchVariable));
+    if (matchedClaims.length === 0) return '';
+
+    let html = `
+      <details style="margin-top: 8px; font-size:11.5px; border-top: 1px solid var(--border-color); padding-top:6px;">
+        <summary style="cursor:pointer; color:var(--accent-sky); outline:none; font-weight:600;">
+          Linked Evidence (${matchedClaims.length} Claim${matchedClaims.length !== 1 ? 's' : ''})
+        </summary>
+        <div style="margin-top:6px; display:flex; flex-direction:column; gap:8px;">
+    `;
+
+    matchedClaims.forEach(c => {
+      const src = sources.find(s => s.source_id === c.source_id);
+      const citation = src ? src.citation : c.source_id;
+      const tier = src ? src.benchmark_tier : 'low';
+      
+      html += `
+        <div style="background-color:var(--bg-primary); border: 1px solid var(--border-color); border-radius:var(--radius-sm); padding:8px 10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:10px;">
+            <code style="color:var(--accent-emerald); font-weight:600;">${c.evidence_id}</code>
+            <span class="badge ${tier}" style="font-size:8px; padding:1px 4px;">${tier}</span>
+          </div>
+          <p style="font-style:italic; line-height:1.4; color:var(--text-primary); margin-bottom:6px;">“${c.quote}”</p>
+          <div style="font-size:9.5px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:flex-end;">
+            <span style="max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Ref: <strong>${citation}</strong></span>
+            <button class="btn-flag" onclick="openGitIssue('evidence', ${JSON.stringify(c).replace(/"/g, '&quot;')})" style="font-size:9px; padding:2px 5px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+              Flag
+            </button>
+          </div>
+        </div>
+      `;
+    });
+
+    html += `</div></details>`;
+    return html;
   }
 
   function interrogateSelection() {
@@ -1555,7 +1994,6 @@
     
     if (!nbsId || !familyId) return;
 
-    // 1. Update Family Hero metadata card
     const families = dashboardData.registers.FAM_family_registry || [];
     const familyInfo = families.find(f => f.suitability_family_id === familyId);
 
@@ -1570,16 +2008,9 @@
       document.getElementById('family-hero').style.display = 'none';
     }
 
-    // 2. Render T4 suitability mapping variables table
     renderT4Mappings(nbsId, familyId);
-
-    // 3. Render Verbatim Evidence register lines
     renderVerbatimEvidence();
-
-    // 4. Render T3 Hazard Mitigation Table
     renderT3Hazard(nbsId);
-
-    // 5. Render T6 Scorecard cost Economics
     renderT6Scorecard(nbsId);
   }
 
@@ -1589,28 +2020,24 @@
 
     const recipe = dashboardData.recipes[nbsId];
     if (!recipe || !recipe.T4_suitability_mappings) {
-      mappingsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No mappings loaded for this NbS</td></tr>';
+      mappingsBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No suitability mappings loaded.</td></tr>';
       return;
     }
 
     const familyMappings = recipe.T4_suitability_mappings.filter(m => m.suitability_family_id === familyId);
-    
     if (familyMappings.length === 0) {
-      mappingsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No biophysical suitability rules compiled for this family variant.</td></tr>';
+      mappingsBody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">No mappings specified for this family variant.</td></tr>';
       return;
     }
 
-    // Ontology references lookup helper
     const ontology = dashboardData.registers.VONT_variable_ontology || [];
 
     familyMappings.forEach(m => {
       const tr = document.createElement('tr');
-      
       const varInfo = ontology.find(v => v.canonical_variable_id === m.variable);
       const varLabel = varInfo ? varInfo.label : m.variable;
       const unit = varInfo ? varInfo.canonical_unit : '';
 
-      // Format relationship parameters
       let paramsStr = `<strong>${m.relationship_type.replace(/_/g, ' ')}</strong>`;
       if (m.relationship_params) {
         paramsStr += '<div class="param-badge-grid">';
@@ -1624,7 +2051,6 @@
         paramsStr += '</div>';
       }
 
-      // Add context overrides references
       if (m.context_overrides && m.context_overrides.length > 0) {
         paramsStr += '<div style="margin-top: 8px; font-size: 11px; border-top: 1px solid var(--border-color); padding-top: 4px;">';
         paramsStr += '<span style="font-weight:600; color:var(--accent-sky);">AEZ overrides:</span>';
@@ -1634,7 +2060,8 @@
         paramsStr += '</div>';
       }
 
-      const isScenario = m.is_scenario_candidate ? '<span class="badge" style="background-color:rgba(168, 85, 247, 0.1); color:var(--accent-purple); border-color:rgba(168, 85, 247, 0.2);">Scenario candidate</span>' : '';
+      const isScenario = m.is_scenario_candidate ? '<span class="badge" style="background-color:rgba(168, 85, 247, 0.1); color:var(--accent-purple); border-color:rgba(168, 85, 247, 0.2);">Scenario</span>' : '';
+      const evidenceDrawer = generateEvidenceDrawerHtml(m.evidence_ids, m.variable);
 
       tr.innerHTML = `
         <td style="font-weight:600; font-family:var(--font-outfit);">
@@ -1650,13 +2077,18 @@
         <td style="font-weight:bold; font-family:var(--font-outfit); font-size:14px; color:var(--accent-emerald);">
           ${m.weight_default !== undefined ? m.weight_default : 'N/A'}
         </td>
-        <td>
-          <code style="font-size:11px; color:var(--accent-sky);">${m.dataset_id}</code>
-        </td>
+        <td><code style="font-size:11px; color:var(--accent-sky);">${m.dataset_id}</code></td>
         <td>${paramsStr}</td>
-        <td style="font-size:12px; color:var(--text-secondary); max-width: 320px;">
+        <td style="font-size:12px; color:var(--text-secondary); max-width: 300px;">
           ${m.justification || 'No reconciliation comments.'}
           ${m.paper_support_pct !== undefined ? `<div style="margin-top:4px; font-size:10.5px; color:var(--accent-emerald);">Lit support: <strong>${Math.round(m.paper_support_pct)}%</strong> (${m.n_sources || 0} papers)</div>` : ''}
+          ${evidenceDrawer}
+        </td>
+        <td>
+          <button class="btn-flag" onclick="openGitIssue('t4', ${JSON.stringify(m).replace(/"/g, '&quot;')})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+            Flag
+          </button>
         </td>
       `;
       mappingsBody.appendChild(tr);
@@ -1674,16 +2106,12 @@
     const claims = dashboardData.registers.EV_evidence_register || [];
     const sources = dashboardData.registers.SRC_source_register || [];
 
-    // Filter evidence matching nbs and suitability family
     let familyClaims = claims.filter(c => c.nbs_id === nbsId && c.suitability_family_id === familyId);
 
-    // Apply search filter if query is present
     if (searchVal) {
       familyClaims = familyClaims.filter(c => {
         const quote = (c.quote || '').toLowerCase();
         const variable = (c.variable || '').toLowerCase();
-        
-        // Find matching citation
         const src = sources.find(s => s.source_id === c.source_id);
         const citation = src ? src.citation.toLowerCase() : '';
         const studyCountry = src ? (src.study_country || '').toLowerCase() : '';
@@ -1701,15 +2129,12 @@
       return;
     }
 
-    // Sort evidence: highest benchmark tier first
     familyClaims.sort((a, b) => {
       const srcA = sources.find(s => s.source_id === a.source_id);
       const srcB = sources.find(s => s.source_id === b.source_id);
-      
       const tierScore = { high: 3, medium: 2, low: 1, external: 0 };
       const scoreA = srcA ? tierScore[srcA.benchmark_tier] : 1;
       const scoreB = srcB ? tierScore[srcB.benchmark_tier] : 1;
-      
       return scoreB - scoreA;
     });
 
@@ -1721,7 +2146,6 @@
       const card = document.createElement('div');
       card.className = 'evidence-card';
 
-      // Formatting quote with search highlighting
       let highlightedQuote = c.quote || 'No verbatim quote cached.';
       let highlightedCitation = citation;
       if (searchVal) {
@@ -1730,7 +2154,6 @@
         highlightedCitation = highlightedCitation.replace(regex, '<mark>$1</mark>');
       }
 
-      // Context labels
       const details = [];
       if (c.context && c.context.aez) details.push(`AEZ: <strong>${c.context.aez}</strong>`);
       if (src && src.study_country) details.push(`Country: <strong>${src.study_country}</strong>`);
@@ -1738,10 +2161,19 @@
       if (c.taxon) details.push(`Taxon: <em>${c.taxon}</em>`);
       if (c.evidence_type) details.push(`Type: <strong>${c.evidence_type.replace(/_/g, ' ')}</strong>`);
 
+      // Combine claim and source citation to pass to Git Flag button
+      const payload = { ...c, citation };
+
       card.innerHTML = `
         <div class="evidence-card-header">
           <span class="evidence-var-tag">${c.variable}</span>
-          <span class="badge ${tier}">${tier} tier</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge ${tier}">${tier} tier</span>
+            <button class="btn-flag" onclick="openGitIssue('evidence', ${JSON.stringify(payload).replace(/"/g, '&quot;')})" style="font-size:10px; padding:2px 6px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+              Flag
+            </button>
+          </div>
         </div>
         <blockquote class="evidence-quote">“${highlightedQuote}”</blockquote>
         <div class="evidence-citation">
@@ -1762,28 +2194,39 @@
 
     const recipe = dashboardData.recipes[nbsId];
     if (!recipe || !recipe.T3_nbs_hazard_farming) {
-      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No hazard mapping registry found.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hazard mappings compiled.</td></tr>';
       return;
     }
 
     const rows = recipe.T3_nbs_hazard_farming;
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No hazard mitigation links specified.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hazard linkages defined.</td></tr>';
       return;
     }
 
     rows.forEach(r => {
       const tr = document.createElement('tr');
-      
       const potentialColor = r.mitigation_potential === 'high' ? 'var(--accent-emerald)' 
                            : r.mitigation_potential === 'medium' ? 'var(--accent-amber)' 
                            : 'var(--text-secondary)';
+      
+      const evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
 
       tr.innerHTML = `
         <td style="font-weight:600; font-family:var(--font-outfit); text-transform:capitalize;">${r.hazard_type}</td>
         <td><code>${r.farming_system}</code></td>
         <td style="font-weight:bold; color:${potentialColor}; text-transform:uppercase; font-size:12px;">${r.mitigation_potential}</td>
-        <td style="font-size:12.5px; color:var(--text-secondary);">${r.mitigation_mechanism || 'N/A'}</td>
+        <td style="font-size:12.5px; color:var(--text-secondary); max-width: 240px;">
+          ${r.mitigation_mechanism || 'N/A'}
+          ${r.caveats ? `<div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">Caveat: ${r.caveats}</div>` : ''}
+          ${evidenceDrawer}
+        </td>
+        <td>
+          <button class="btn-flag" onclick="openGitIssue('t3', ${JSON.stringify(r).replace(/"/g, '&quot;')})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+            Flag
+          </button>
+        </td>
       `;
       body.appendChild(tr);
     });
@@ -1795,25 +2238,25 @@
 
     const recipe = dashboardData.recipes[nbsId];
     if (!recipe || !recipe.T6_nbs_scorecard) {
-      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No economic scorecard compiled.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No scorecard compiled.</td></tr>';
       return;
     }
 
     const rows = recipe.T6_nbs_scorecard;
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No economic metrics registered.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No economic metrics registered.</td></tr>';
       return;
     }
 
     rows.forEach(r => {
       const tr = document.createElement('tr');
-
-      // format range values
       let valRange = 'N/A';
       if (r.economic_value_range) {
         const vr = r.economic_value_range;
         valRange = `<strong>${vr.low} – ${vr.high}</strong> <span style="color:var(--text-muted); font-size:11px;">${vr.unit || ''}</span>`;
       }
+
+      const evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
 
       tr.innerHTML = `
         <td style="font-weight:600; font-family:var(--font-outfit);">
@@ -1826,9 +2269,16 @@
             ${r.effect_confidence}
           </span>
         </td>
-        <td style="font-size:12.5px; color:var(--text-secondary); max-width:260px;">
+        <td style="font-size:12.5px; color:var(--text-secondary); max-width:240px;">
           ${r.effect_mechanism || 'N/A'}
           ${r.conditionality ? `<div style="margin-top:4px; font-size:10px; color:var(--accent-sky);">Condition: ${r.conditionality}</div>` : ''}
+          ${evidenceDrawer}
+        </td>
+        <td>
+          <button class="btn-flag" onclick="openGitIssue('t6', ${JSON.stringify(r).replace(/"/g, '&quot;')})">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+            Flag
+          </button>
         </td>
       `;
       body.appendChild(tr);
@@ -1836,7 +2286,6 @@
   }
 
   function renderOntologyAndDatasets() {
-    // Populate VONT Variable Ontology Register table
     const vontBody = document.getElementById('body-vont');
     vontBody.innerHTML = '';
     const variables = dashboardData.registers.VONT_variable_ontology || [];
@@ -1867,7 +2316,6 @@
 
     drawVont(variables);
 
-    // Filter vont variables
     document.getElementById('search-vont').addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase().trim();
       const filtered = variables.filter(v => 
@@ -1878,7 +2326,6 @@
       drawVont(filtered);
     });
 
-    // Populate T1 Spatial Dataset Registry table
     const t1Body = document.getElementById('body-t1');
     t1Body.innerHTML = '';
     const datasets = dashboardData.global_tables.T1_data_registry || [];
@@ -1908,7 +2355,6 @@
 
     drawT1(datasets);
 
-    // Filter t1 datasets
     document.getElementById('search-t1').addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase().trim();
       const filtered = datasets.filter(d => 
