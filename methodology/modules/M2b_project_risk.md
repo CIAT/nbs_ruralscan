@@ -196,10 +196,10 @@ Based on the open-source audit of CIFOR-ICRAF tools and the Participatory Rangel
    * **Variables to Ingest**: Cross-reference grazing land classification maps (ESA WorldCover/Copernicus class 30) with livestock density statistics (FAO GLW - Gridded Livestock of the World) to estimate stocking density / grazing pressure.
    * **Scoping Lever**: High grazing density acts as an operational-constraint flag in M2b. In the user interface, it triggers a scenario lever: "Establishment exclusion fencing / rotational grazing plan" which, if active, overrides the high-risk flag to represent managed protection.
 
-2. **Common-Property Rangeland Governance & Mobility Corridors**:
-   * **The Risk**: Dryland pastoral landscapes are typically managed under collective or customary tenure rather than private title. Fenced tree plots can block seasonal migration routes or trigger user conflicts over restricted common pasture access.
-   * **Variables to Ingest**: Customary land boundary datasets (LandMark and WWF/ICCA database) + proximity to traditional livestock transit/mobility corridors.
-   * **Scoping Flag**: High-risk flag if proposed silvopastoral sites intersect mapped mobility corridors. Any overlap with customary lands triggers an explicit `FPIC_REQUIRED = true` safeguard flag in the Module 6 hand-off (aligning with WB ESS7 safeguard policies).
+2. **Common-Property Rangeland Governance**:
+   * **The Risk**: Dryland pastoral landscapes are typically managed under collective or customary tenure rather than private title. Fenced tree plots can trigger user conflicts over restricted common pasture access.
+   * **Variables to Ingest**: Customary land boundary datasets (LandMark and WWF/ICCA database).
+   * **Scoping Flag**: Any overlap with customary lands triggers an explicit `FPIC_REQUIRED = true` safeguard flag in the Module 6 hand-off (aligning with WB ESS7 safeguard policies).
 
 ## 13. Version history
 
@@ -209,5 +209,5 @@ Based on the open-source audit of CIFOR-ICRAF tools and the Participatory Rangel
   conflict/fragility, governance, finance, market, labour. Each lands as a T4
   `operational_constraint` row with `is_scenario_candidate = true`. Filter / flag, never
   summed.
-- **v0.2.1** (June 2026) — Integrated ICRAF & PRAGA/SRM recommendations for F3 silvopastural/agrosilvopastural grazing pressure limits, mobility corridors, and customary rangeland tenure flags.
+- **v0.2.1** (June 2026) — Integrated ICRAF & PRAGA/SRM recommendations for F3 silvopastural/agrosilvopastural grazing pressure limits and customary rangeland tenure flags (livestock mobility corridors variable removed due to data limitations).
 
