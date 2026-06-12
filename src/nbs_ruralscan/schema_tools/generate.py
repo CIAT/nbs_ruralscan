@@ -149,6 +149,106 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
     return changed
 
 
+def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path]:
+    """Generates docs/dashboard_data.json aggregating all registers and recipe data."""
+    registers = [
+        "SRC_source_register",
+        "EV_evidence_register",
+        "FAM_family_registry",
+        "VONT_variable_ontology",
+        "BIND_dataset_binding",
+    ]
+    global_tables = [
+        "T1_data_registry",
+        "T2_climate_risk",
+        "T5_opportunity_space",
+        "T7_geographic_context",
+    ]
+
+    import subprocess
+
+    try:
+        git_commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            check=True
+        ).stdout.strip()
+    except Exception:
+        git_commit = "unknown"
+
+    data = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "git_commit": git_commit,
+        "registers": {},
+        "global_tables": {},
+        "recipes": {}
+    }
+
+    # Read registers
+    for reg in registers:
+        csv_path = schema_root / "registers" / f"{reg}.csv"
+        if csv_path.exists():
+            data["registers"][reg] = _csv_to_rows(csv_path)
+
+    # Read global tables
+    for tbl in global_tables:
+        csv_path = schema_root / f"{tbl}.csv"
+        if csv_path.exists():
+            data["global_tables"][tbl] = _csv_to_rows(csv_path)
+
+    # Discover recipes
+    recipes_dir = schema_root / "recipes"
+    if recipes_dir.exists():
+        for item in sorted(recipes_dir.iterdir()):
+            if item.is_dir():
+                t0_csv = item / "T0_nbs_registry.csv"
+                if t0_csv.exists():
+                    nbs_id = item.name
+                    data["recipes"][nbs_id] = {}
+                    for tbl in [
+                        "T0_nbs_registry",
+                        "T3_nbs_hazard_farming",
+                        "T4_suitability_mappings",
+                        "T6_nbs_scorecard",
+                    ]:
+                        csv_path = item / f"{tbl}.csv"
+                        if csv_path.exists():
+                            data["recipes"][nbs_id][tbl] = _csv_to_rows(csv_path)
+
+    dest_path = schema_root.parent / "docs" / "dashboard_data.json"
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+
+    current_data = None
+    if dest_path.exists():
+        try:
+            current_data = json.loads(dest_path.read_text())
+        except Exception:
+            pass
+
+    # Avoid updating timestamp if nothing has changed
+    if current_data and current_data.get("git_commit") == git_commit:
+        identical = True
+        for key in ["registers", "global_tables", "recipes"]:
+            if current_data.get(key) != data.get(key):
+                identical = False
+                break
+        if identical:
+            data["timestamp"] = current_data["timestamp"]
+
+    text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+    current = dest_path.read_text() if dest_path.exists() else None
+
+    if text == current:
+        return []
+
+    changed = [dest_path]
+    if not check:
+        dest_path.write_text(text)
+    return changed
+
+
 def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     """Write (or, under ``check``, compare) every JSON from its CSV. Returns the
     list of paths that were written / are stale."""
@@ -167,9 +267,11 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             changed.append(json_path)
             if not check:
                 json_path.write_text(text)
-    
+
     # Compile the progress.json report
     changed.extend(generate_progress_report(schema_root, check=check))
+    # Compile the dashboard_data.json payload
+    changed.extend(generate_dashboard_data(schema_root, check=check))
     return changed
 
 

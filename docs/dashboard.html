@@ -1,0 +1,1924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rural NbS Scan — Evidence &amp; Literature Interrogation Dashboard</title>
+<meta name="description" content="Explore and interrogate the systematic literature reviews, evidence claims, biophysical variables, thresholds, hazard matrices, and cost scorecard parameters supporting the Nature-based Solutions Rural Scan methodology.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0b0f19;
+    --bg-secondary: #131c2e;
+    --bg-tertiary: #1e293b;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-emerald: #10b981;
+    --accent-emerald-rgb: 16, 185, 129;
+    --accent-sky: #0ea5e9;
+    --accent-sky-rgb: 14, 165, 233;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --accent-purple: #a855f7;
+    --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    --font-outfit: 'Outfit', sans-serif;
+    --font-inter: 'Inter', sans-serif;
+    --radius-lg: 12px;
+    --radius-md: 8px;
+    --radius-sm: 4px;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Light theme variables */
+  [data-theme="light"] {
+    --bg-primary: #f8fcfb;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent-emerald: #059669;
+    --accent-sky: #0284c7;
+    --accent-amber: #d97706;
+    --accent-rose: #e11d48;
+    --accent-purple: #9333ea;
+    --card-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-inter);
+    line-height: 1.6;
+    transition: background-color 0.3s, color 0.3s;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  .app-header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 24px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .brand-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brand-title {
+    font-family: var(--font-outfit);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand-title svg {
+    color: var(--accent-emerald);
+  }
+
+  .brand-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .btn-theme-toggle {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+  }
+
+  .btn-theme-toggle:hover {
+    background-color: var(--bg-tertiary);
+    border-color: var(--text-secondary);
+  }
+
+  .btn-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+  }
+
+  .btn-back:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+  }
+
+  .main-container {
+    max-width: 1400px;
+    margin: 30px auto 0;
+    padding: 0 24px;
+  }
+
+  /* Navigation Tabs */
+  .tab-nav {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+  }
+
+  .tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font-outfit);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tab-btn:hover {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  .tab-btn.active {
+    background-color: var(--bg-secondary);
+    color: var(--accent-emerald);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+  }
+
+  .tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Dashboard Cards Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: var(--transition);
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(var(--accent-emerald-rgb), 0.3);
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-tertiary);
+  }
+
+  .stat-icon.emerald { color: var(--accent-emerald); background-color: rgba(16, 185, 129, 0.08); }
+  .stat-icon.sky { color: var(--accent-sky); background-color: rgba(14, 165, 233, 0.08); }
+  .stat-icon.amber { color: var(--accent-amber); background-color: rgba(245, 158, 11, 0.08); }
+  .stat-icon.purple { color: var(--accent-purple); background-color: rgba(168, 85, 247, 0.08); }
+
+  .stat-details {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-value {
+    font-family: var(--font-outfit);
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.1;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 4px;
+  }
+
+  /* Overview Charts Section */
+  .charts-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  @media (max-width: 992px) {
+    .charts-section {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .card-container {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+  }
+
+  .card-title {
+    font-family: var(--font-outfit);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-title-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: normal;
+    font-family: var(--font-inter);
+  }
+
+  /* SVG Charts styling */
+  .chart-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .svg-chart-container {
+    width: 100%;
+    max-height: 280px;
+  }
+
+  .bar-rect {
+    fill: var(--accent-emerald);
+    rx: 4px;
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .bar-rect:hover {
+    opacity: 0.85;
+  }
+
+  .bar-rect.secondary {
+    fill: var(--accent-sky);
+  }
+
+  .donut-segment {
+    fill: none;
+    stroke-width: 16;
+    transition: var(--transition);
+    cursor: pointer;
+  }
+
+  .donut-segment:hover {
+    stroke-width: 19;
+  }
+
+  .chart-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 16px;
+    justify-content: center;
+    font-size: 12px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+  }
+
+  .legend-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  /* Tables styling */
+  .table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 13px;
+  }
+
+  .data-table th {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-family: var(--font-outfit);
+    font-weight: 600;
+    padding: 12px 16px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .data-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .data-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .data-table tr:hover td {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  [data-theme="light"] .data-table tr:hover td {
+    background-color: rgba(0, 0, 0, 0.01);
+  }
+
+  /* Badge styling */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .badge.high {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: var(--accent-emerald);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  .badge.medium {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: var(--accent-amber);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+
+  .badge.low {
+    background-color: rgba(100, 116, 139, 0.1);
+    color: var(--text-secondary);
+    border: 1px solid rgba(100, 116, 139, 0.2);
+  }
+
+  .badge.external {
+    background-color: rgba(168, 85, 247, 0.1);
+    color: var(--accent-purple);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+  }
+
+  /* Interrogator layout */
+  .interrogator-grid {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .interrogator-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .sidebar-panel {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 100px;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .control-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+  }
+
+  .select-input, .text-input {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    font-size: 13.5px;
+    width: 100%;
+    outline: none;
+    font-family: var(--font-inter);
+    transition: var(--transition);
+  }
+
+  .select-input:focus, .text-input:focus {
+    border-color: var(--accent-emerald);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15);
+  }
+
+  /* Interrogator Content Panel */
+  .details-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .family-hero-card {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(var(--accent-sky-rgb), 0.03) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+  }
+
+  .family-hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+  }
+
+  .family-title {
+    font-family: var(--font-outfit);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .family-meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+    background-color: var(--bg-tertiary);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .family-desc {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+  }
+
+  .family-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+  }
+
+  .info-block-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .info-block-value {
+    font-size: 12.5px;
+    color: var(--text-primary);
+  }
+
+  /* Subsections in interrogator */
+  .interrogator-section-title {
+    font-family: var(--font-outfit);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-left: 3px solid var(--accent-sky);
+    padding-left: 8px;
+  }
+
+  .interrogator-section-title.emerald {
+    border-left-color: var(--accent-emerald);
+  }
+
+  .interrogator-section-title.amber {
+    border-left-color: var(--accent-amber);
+  }
+
+  /* Cards of Evidence block */
+  .evidence-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-tertiary) transparent;
+  }
+
+  .evidence-container::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .evidence-container::-webkit-scrollbar-thumb {
+    background-color: var(--bg-tertiary);
+    border-radius: 3px;
+  }
+
+  .evidence-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 18px;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+  }
+
+  .evidence-card:hover {
+    border-color: rgba(var(--accent-sky-rgb), 0.25);
+  }
+
+  .evidence-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-size: 11.5px;
+  }
+
+  .evidence-var-tag {
+    font-weight: 600;
+    color: var(--accent-sky);
+    background-color: rgba(14, 165, 233, 0.08);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-outfit);
+  }
+
+  .evidence-quote {
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-primary);
+    border-left: 2.5px solid var(--border-color);
+    padding-left: 12px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .evidence-citation {
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .evidence-citation strong {
+    color: var(--text-primary);
+  }
+
+  .evidence-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 8px;
+    font-size: 10.5px;
+    color: var(--text-muted);
+  }
+
+  .evidence-meta-item strong {
+    color: var(--text-secondary);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+    background-color: var(--bg-secondary);
+    border: 1px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .empty-state svg {
+    color: var(--text-muted);
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Utility Styles */
+  .meta-timestamp {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+    margin-top: 24px;
+  }
+
+  /* Parameter plotting box */
+  .param-badge-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .param-badge {
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-family: var(--font-outfit);
+    font-weight: 500;
+  }
+
+  .param-badge.active {
+    background-color: rgba(16, 185, 129, 0.08);
+    color: var(--accent-emerald);
+    border-color: rgba(16, 185, 129, 0.2);
+  }
+
+  /* Search highlights */
+  mark {
+    background-color: rgba(245, 158, 11, 0.25);
+    color: inherit;
+    padding: 0 1px;
+    border-radius: 2px;
+  }
+</style>
+</head>
+<body data-theme="dark">
+
+<header class="app-header">
+  <div class="brand-group">
+    <h1 class="brand-title" id="app-title">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+      </svg>
+      Rural NbS Scan
+    </h1>
+    <span class="brand-subtitle">Evidence &amp; Literature Interrogation Dashboard</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-theme-toggle" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Theme">
+      <!-- Dark mode (Sun) icon -->
+      <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <!-- Light mode (Moon) icon -->
+      <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+    <a class="btn-back" href="index.html">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Back
+    </a>
+  </div>
+</header>
+
+<main class="main-container">
+  
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="tab-overview" id="btn-overview">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="9"></rect>
+        <rect x="14" y="3" width="7" height="5"></rect>
+        <rect x="14" y="12" width="7" height="9"></rect>
+        <rect x="3" y="16" width="7" height="5"></rect>
+      </svg>
+      Registers Overview
+    </button>
+    <button class="tab-btn" data-tab="tab-interrogator" id="btn-interrogator">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      Evidence Interrogator
+    </button>
+    <button class="tab-btn" data-tab="tab-variables" id="btn-variables">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+      </svg>
+      Ontology &amp; Datasets
+    </button>
+  </nav>
+
+  <!-- LOADING STATE -->
+  <div id="loading-container" class="empty-state">
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
+      <line x1="12" y1="2" x2="12" y2="6"></line>
+      <line x1="12" y1="18" x2="12" y2="22"></line>
+      <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+      <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+      <line x1="2" y1="12" x2="6" y2="12"></line>
+      <line x1="18" y1="12" x2="22" y2="12"></line>
+      <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+      <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+    </svg>
+    <p>Loading consolidated registers and recipes...</p>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div id="error-container" class="empty-state" style="display:none; border-color: var(--accent-rose);">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-rose);">
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="12" y1="8" x2="12" y2="12"></line>
+      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+    </svg>
+    <p>Error loading progress database. Ensure that <code>docs/dashboard_data.json</code> is compiled and generated correctly.</p>
+  </div>
+
+  <div id="dashboard-content" style="display:none;">
+    
+    <!-- ================= TAB 1: OVERVIEW ================= -->
+    <div id="tab-overview" class="tab-content active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon emerald">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-total-sources">0</span>
+            <span class="stat-label">Total Sources Logged</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon sky">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 11 12 14 22 4"></polyline>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+            </svg>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-swept-sources">0</span>
+            <span class="stat-label">Swept / Ingested Sources</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon amber">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-total-claims">0</span>
+            <span class="stat-label">Total Evidence Claims</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <div class="stat-details">
+            <span class="stat-value" id="stat-total-recipes">0</span>
+            <span class="stat-label">Compiled Recipes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-section">
+        <!-- SVG Sources by NbS Chart -->
+        <div class="card-container">
+          <h2 class="card-title">Sources Extraction Status per NbS</h2>
+          <div class="chart-wrapper">
+            <svg class="svg-chart-container" id="chart-sources-nbs" viewBox="0 0 600 280">
+              <!-- Grid lines -->
+              <line x1="60" y1="30" x2="560" y2="30" stroke="var(--border-color)" stroke-dasharray="4"></line>
+              <line x1="60" y1="80" x2="560" y2="80" stroke="var(--border-color)" stroke-dasharray="4"></line>
+              <line x1="60" y1="130" x2="560" y2="130" stroke="var(--border-color)" stroke-dasharray="4"></line>
+              <line x1="60" y1="180" x2="560" y2="180" stroke="var(--border-color)" stroke-dasharray="4"></line>
+              <line x1="60" y1="230" x2="560" y2="230" stroke="var(--border-color)" stroke-dasharray="4"></line>
+              <!-- Chart elements populated by JS -->
+            </svg>
+          </div>
+          <div class="chart-legend">
+            <div class="legend-item"><span class="legend-color" style="background-color: var(--accent-emerald);"></span>Swept / Extracted</div>
+            <div class="legend-item"><span class="legend-color" style="background-color: var(--text-muted);"></span>Pending / Sweeps remaining</div>
+          </div>
+        </div>
+
+        <!-- SVG Donut Chart: Evidence Tiers -->
+        <div class="card-container">
+          <h2 class="card-title">Evidence Benchmark Tiers</h2>
+          <div class="chart-wrapper">
+            <svg class="svg-chart-container" id="chart-evidence-tiers" viewBox="0 0 240 240">
+              <!-- Donut segments populated by JS -->
+              <circle cx="120" cy="120" r="80" fill="none" stroke="var(--bg-tertiary)" stroke-width="16"></circle>
+            </svg>
+            <div style="position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <span id="center-donut-value" style="font-family:var(--font-outfit); font-size:24px; font-weight:800;">100%</span>
+              <span style="font-size:10px; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Traceable</span>
+            </div>
+          </div>
+          <div class="chart-legend" id="donut-legend">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Countries & Research Methods Grid -->
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px;">
+        <div class="card-container" style="margin-bottom:0;">
+          <h2 class="card-title">Represented Study Countries / Contexts</h2>
+          <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="country-progress-list">
+            <!-- List populated dynamically -->
+          </div>
+        </div>
+        <div class="card-container" style="margin-bottom:0;">
+          <h2 class="card-title">Literature Sourcing Methods</h2>
+          <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="method-progress-list">
+            <!-- List populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= TAB 2: INTERROGATOR ================= -->
+    <div id="tab-interrogator" class="tab-content">
+      <div class="interrogator-grid">
+        
+        <!-- Controls Panel -->
+        <aside class="sidebar-panel">
+          <div class="control-group">
+            <label class="control-label" for="select-nbs">Select Nature-based Solution</label>
+            <select class="select-input" id="select-nbs">
+              <!-- Option tags populated dynamically -->
+            </select>
+          </div>
+          
+          <div class="control-group">
+            <label class="control-label" for="select-family">Suitability Family / Variant</label>
+            <select class="select-input" id="select-family">
+              <!-- Option tags populated dynamically -->
+            </select>
+          </div>
+          
+          <div class="control-group">
+            <label class="control-label" for="search-input">Search Quote or Citation</label>
+            <input type="text" class="text-input" id="search-input" placeholder="Type keyword...">
+          </div>
+
+          <div style="margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 14px; font-size: 11px; color: var(--text-muted);">
+            <p style="margin-bottom: 8px;">Consensus values and bounds are medians compiled from evidence rows containing that variable and family.</p>
+            <p>Select another NbS or suitability family to automatically update mapping rules and evidence pools.</p>
+          </div>
+        </aside>
+
+        <!-- Dynamic Content Panel -->
+        <section class="details-panel">
+          
+          <!-- Family description card -->
+          <div class="family-hero-card" id="family-hero">
+            <div class="family-hero-header">
+              <h2 class="family-title" id="family-hero-title">Family Title</h2>
+              <span class="family-meta" id="family-hero-type">Product type</span>
+            </div>
+            <p class="family-desc" id="family-hero-desc">Family definition details.</p>
+            <div class="family-details-grid">
+              <div>
+                <h3 class="info-block-title">Dominant Limiting Factor</h3>
+                <p class="info-block-value" id="family-hero-limit">Limiting factor description.</p>
+              </div>
+              <div>
+                <h3 class="info-block-title">Grouping Rationale</h3>
+                <p class="info-block-value" id="family-hero-rationale">Rationale text.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- T4 Suitability Variable Mappings -->
+          <div>
+            <h3 class="interrogator-section-title emerald">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 14 10 14 14 6 20 6"></polyline>
+              </svg>
+              T4 Suitability Variable Mappings
+            </h3>
+            <div class="table-wrapper">
+              <table class="data-table" id="table-t4-mappings">
+                <thead>
+                  <tr>
+                    <th>Variable</th>
+                    <th>Dimension</th>
+                    <th>Default Weight</th>
+                    <th>Standard Dataset</th>
+                    <th>Response Function / Params</th>
+                    <th>Justification</th>
+                  </tr>
+                </thead>
+                <tbody id="body-t4-mappings">
+                  <!-- Rows populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Joined Evidence Register Claims -->
+          <div>
+            <h3 class="interrogator-section-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+              Verbatim Evidence Claims
+            </h3>
+            <div class="evidence-container" id="evidence-list">
+              <!-- Cards populated dynamically -->
+            </div>
+          </div>
+
+          <!-- T3 Hazard Matrix & Farming systems -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div>
+              <h3 class="interrogator-section-title rose">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                  <line x1="12" y1="9" x2="12" y2="13"></line>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                T3 Climate Hazard Mitigation Links
+              </h3>
+              <div class="table-wrapper">
+                <table class="data-table" id="table-t3-hazard">
+                  <thead>
+                    <tr>
+                      <th>Hazard</th>
+                      <th>Farming Context</th>
+                      <th>Mitigation Potential</th>
+                      <th>Mechanism</th>
+                    </tr>
+                  </thead>
+                  <tbody id="body-t3-hazard">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- T6 Cost scorecard economics -->
+            <div>
+              <h3 class="interrogator-section-title amber">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                T6 Cost-Effectiveness &amp; Scorecard Economics
+              </h3>
+              <div class="table-wrapper">
+                <table class="data-table" id="table-t6-scorecard">
+                  <thead>
+                    <tr>
+                      <th>Economic Indicator</th>
+                      <th>Value range</th>
+                      <th>Confidence</th>
+                      <th>Mechanism</th>
+                    </tr>
+                  </thead>
+                  <tbody id="body-t6-scorecard">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </section>
+      </div>
+    </div>
+
+    <!-- ================= TAB 3: VARIABLES ================= -->
+    <div id="tab-variables" class="tab-content">
+      <div class="card-container">
+        <h2 class="card-title">VONT Variable Ontology Register</h2>
+        <div style="margin-bottom:16px; display:flex; gap:16px;">
+          <input type="text" class="text-input" id="search-vont" placeholder="Filter variables by name or group..." style="max-width:360px;">
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="table-vont">
+            <thead>
+              <tr>
+                <th>Variable ID</th>
+                <th>Label</th>
+                <th>Group</th>
+                <th>Canonical Unit</th>
+                <th>Min meaningful resolution</th>
+                <th>Sensitivity</th>
+              </tr>
+            </thead>
+            <tbody id="body-vont">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card-container" style="margin-top:24px;">
+        <h2 class="card-title">T1 Spatial Dataset Registry</h2>
+        <div style="margin-bottom:16px; display:flex; gap:16px;">
+          <input type="text" class="text-input" id="search-t1" placeholder="Filter datasets..." style="max-width:360px;">
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="table-t1">
+            <thead>
+              <tr>
+                <th>Dataset ID</th>
+                <th>Dataset Name</th>
+                <th>Coverage</th>
+                <th>Format</th>
+                <th>Access Type / asset ID</th>
+                <th>Limitations</th>
+              </tr>
+            </thead>
+            <tbody id="body-t1">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="meta-timestamp">
+    <span>Last compiled: <strong id="meta-timestamp-val">2026-06-12</strong></span>
+    <span>•</span>
+    <span>Git commit: <code id="meta-commit-val" style="font-family:ui-monospace, monospace; font-size:11px; background-color:var(--bg-tertiary); padding:2px 5px; border-radius:3px;">abcdefg</code></span>
+  </div>
+</main>
+
+<script>
+  // Global payload reference
+  let dashboardData = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Theme toggler
+    const themeToggle = document.getElementById('theme-toggle');
+    const iconSun = document.querySelector('.icon-sun');
+    const iconMoon = document.querySelector('.icon-moon');
+    
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', newTheme);
+      
+      if (newTheme === 'dark') {
+        iconSun.style.display = 'none';
+        iconMoon.style.display = 'block';
+      } else {
+        iconSun.style.display = 'block';
+        iconMoon.style.display = 'none';
+      }
+    });
+
+    // Navigation Tabs Toggle
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabButtons.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        
+        btn.classList.add('active');
+        const targetTab = btn.getAttribute('data-tab');
+        document.getElementById(targetTab).classList.add('active');
+      });
+    });
+
+    // Fetch dashboard_data.json
+    fetch('dashboard_data.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Network error loading database');
+        return response.json();
+      })
+      .then(data => {
+        dashboardData = data;
+        document.getElementById('loading-container').style.display = 'none';
+        document.getElementById('dashboard-content').style.display = 'block';
+        
+        // Populate core stats and triggers
+        initDashboard();
+      })
+      .catch(err => {
+        console.error(err);
+        document.getElementById('loading-container').style.display = 'none';
+        document.getElementById('error-container').style.display = 'flex';
+      });
+  });
+
+  function initDashboard() {
+    // 1. Meta fields
+    const formattedDate = new Date(dashboardData.timestamp).toLocaleString();
+    document.getElementById('meta-timestamp-val').textContent = formattedDate;
+    document.getElementById('meta-commit-val').textContent = dashboardData.git_commit.slice(0, 8);
+
+    // 2. High-level stats counters
+    const sources = dashboardData.registers.SRC_source_register || [];
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    const recipes = Object.keys(dashboardData.recipes) || [];
+    
+    const sweptCount = sources.filter(s => s.extraction_status === 'swept' || s.extraction_status === 'signed_off').length;
+
+    document.getElementById('stat-total-sources').textContent = sources.length;
+    document.getElementById('stat-swept-sources').textContent = sweptCount;
+    document.getElementById('stat-total-claims').textContent = claims.length;
+    document.getElementById('stat-total-recipes').textContent = recipes.length;
+
+    // 3. Overview Charts
+    renderOverviewCharts(sources, claims, recipes);
+
+    // 4. Interrogator Dropdowns
+    const nbsSelect = document.getElementById('select-nbs');
+    nbsSelect.innerHTML = '';
+    
+    // Sort recipes to display alphabetically
+    recipes.sort().forEach(nbsId => {
+      const opt = document.createElement('option');
+      opt.value = nbsId;
+      // Format label
+      opt.textContent = nbsId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      nbsSelect.appendChild(opt);
+    });
+
+    // Listeners for dropdowns
+    nbsSelect.addEventListener('change', () => {
+      populateFamilies(nbsSelect.value);
+    });
+
+    document.getElementById('select-family').addEventListener('change', () => {
+      interrogateSelection();
+    });
+
+    document.getElementById('search-input').addEventListener('input', () => {
+      renderVerbatimEvidence();
+    });
+
+    // Initialise subpractices and interrogator content for the first NbS
+    if (recipes.length > 0) {
+      populateFamilies(recipes[0]);
+    }
+
+    // 5. Populate Ontology / Dataset lists
+    renderOntologyAndDatasets();
+  }
+
+  function renderOverviewCharts(sources, claims, recipes) {
+    // Chart 1: Sources by NbS
+    const nbsChart = document.getElementById('chart-sources-nbs');
+    // Clear dynamic content from chart (keep grid lines)
+    while (nbsChart.children.length > 5) {
+      nbsChart.removeChild(nbsChart.lastChild);
+    }
+
+    // Tally source status per NbS
+    const stats = {};
+    sources.forEach(src => {
+      const nbsList = (src.nbs_ids || '').split(';').map(n => n.trim()).filter(Boolean);
+      const isSwept = src.extraction_status === 'swept' || src.extraction_status === 'signed_off';
+      nbsList.forEach(nbs => {
+        if (!stats[nbs]) stats[nbs] = { swept: 0, pending: 0 };
+        if (isSwept) stats[nbs].swept++;
+        else stats[nbs].pending++;
+      });
+    });
+
+    const nbsKeys = Object.keys(stats).sort();
+    const barSpacing = 400 / Math.max(nbsKeys.length, 1);
+    
+    nbsKeys.forEach((nbs, index) => {
+      const s = stats[nbs];
+      const total = s.swept + s.pending;
+      const sweptHeight = total > 0 ? (s.swept / 40) * 180 : 0; // scale limit ~40 papers
+      const pendingHeight = total > 0 ? (s.pending / 40) * 180 : 0;
+      
+      const x = 90 + index * 120;
+      
+      // Swept bar (emerald)
+      if (s.swept > 0) {
+        const rectSwept = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rectSwept.setAttribute('x', x);
+        rectSwept.setAttribute('y', 230 - sweptHeight);
+        rectSwept.setAttribute('width', 32);
+        rectSwept.setAttribute('height', sweptHeight);
+        rectSwept.setAttribute('class', 'bar-rect');
+        rectSwept.setAttribute('title', `${nbs}: ${s.swept} swept`);
+        nbsChart.appendChild(rectSwept);
+      }
+
+      // Pending bar (muted gray)
+      if (s.pending > 0) {
+        const rectPending = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rectPending.setAttribute('x', x);
+        rectPending.setAttribute('y', 230 - sweptHeight - pendingHeight);
+        rectPending.setAttribute('width', 32);
+        rectPending.setAttribute('height', pendingHeight);
+        rectPending.setAttribute('class', 'bar-rect secondary');
+        rectPending.style.fill = 'var(--text-muted)';
+        rectPending.setAttribute('title', `${nbs}: ${s.pending} pending`);
+        nbsChart.appendChild(rectPending);
+      }
+
+      // X Label
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', x + 16);
+      text.setAttribute('y', 250);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('fill', 'var(--text-secondary)');
+      text.style.fontFamily = 'var(--font-outfit)';
+      text.style.fontSize = '11px';
+      text.style.fontWeight = '600';
+      text.textContent = nbs.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      nbsChart.appendChild(text);
+    });
+
+    // Add Y Axis labels
+    [0, 10, 20, 30, 40].forEach((ticks, idx) => {
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', 45);
+      text.setAttribute('y', 234 - idx * 45);
+      text.setAttribute('text-anchor', 'end');
+      text.setAttribute('fill', 'var(--text-muted)');
+      text.style.fontSize = '10px';
+      text.textContent = ticks;
+      nbsChart.appendChild(text);
+    });
+
+    // Chart 2: Benchmark tiers donut
+    const donutChart = document.getElementById('chart-evidence-tiers');
+    // Clear segments
+    while (donutChart.children.length > 1) {
+      donutChart.removeChild(donutChart.lastChild);
+    }
+
+    const tiers = { high: 0, medium: 0, low: 0, external: 0 };
+    claims.forEach(c => {
+      // Look up source benchmark tier
+      const src = sources.find(s => s.source_id === c.source_id);
+      const tier = src ? src.benchmark_tier : 'low';
+      if (tiers[tier] !== undefined) tiers[tier]++;
+      else tiers.low++;
+    });
+
+    const totalClaims = claims.length;
+    let accumulatedAngle = 0;
+    const donutLegend = document.getElementById('donut-legend');
+    donutLegend.innerHTML = '';
+
+    const colors = {
+      high: 'var(--accent-emerald)',
+      medium: 'var(--accent-amber)',
+      low: 'var(--text-muted)',
+      external: 'var(--accent-purple)'
+    };
+
+    Object.keys(tiers).forEach(tier => {
+      const count = tiers[tier];
+      if (count === 0) return;
+
+      const pct = (count / totalClaims) * 100;
+      const angle = (count / totalClaims) * 360;
+
+      // Draw SVG donut slice using stroke-dasharray
+      // Radius of circle = 80, Circumference = 2 * PI * 80 ≈ 502.65
+      const circ = 2 * Math.PI * 80;
+      const strokeDash = (pct / 100) * circ;
+      const strokeOffset = (accumulatedAngle / 360) * circ;
+
+      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      circle.setAttribute('cx', 120);
+      circle.setAttribute('cy', 120);
+      circle.setAttribute('r', 80);
+      circle.setAttribute('class', 'donut-segment');
+      circle.setAttribute('stroke', colors[tier]);
+      circle.setAttribute('stroke-dasharray', `${strokeDash} ${circ - strokeDash}`);
+      circle.setAttribute('stroke-dashoffset', -strokeOffset);
+      circle.setAttribute('transform', 'rotate(-90 120 120)');
+      circle.setAttribute('title', `${tier.toUpperCase()}: ${count} (${Math.round(pct)}%)`);
+      
+      // Hover text updater
+      circle.addEventListener('mouseenter', () => {
+        document.getElementById('center-donut-value').textContent = `${Math.round(pct)}%`;
+      });
+      circle.addEventListener('mouseleave', () => {
+        const tracePct = Math.round(((tiers.high + tiers.medium) / totalClaims) * 100);
+        document.getElementById('center-donut-value').textContent = `${tracePct}%`;
+      });
+
+      donutChart.appendChild(circle);
+      accumulatedAngle += angle;
+
+      // Legend Item
+      const leg = document.createElement('div');
+      leg.className = 'legend-item';
+      leg.innerHTML = `<span class="legend-color" style="background-color: ${colors[tier]};"></span>${tier.toUpperCase()} (${count})`;
+      donutLegend.appendChild(leg);
+    });
+
+    const traceablePct = Math.round(((tiers.high + tiers.medium) / totalClaims) * 100);
+    document.getElementById('center-donut-value').textContent = `${traceablePct}%`;
+
+    // 4. Country progress summaries
+    const countryList = document.getElementById('country-progress-list');
+    countryList.innerHTML = '';
+    
+    // Tally by country
+    const countryMap = {};
+    sources.forEach(s => {
+      const c = s.study_country || 'Global';
+      if (!countryMap[c]) countryMap[c] = { total: 0, swept: 0 };
+      countryMap[c].total++;
+      if (s.extraction_status === 'swept' || s.extraction_status === 'signed_off') {
+        countryMap[c].swept++;
+      }
+    });
+
+    // Sort by count
+    const sortedCountries = Object.entries(countryMap).sort((a, b) => b[1].total - a[1].total);
+    sortedCountries.forEach(([country, stat]) => {
+      const cRow = document.createElement('div');
+      cRow.style.display = 'flex';
+      cRow.style.justifyContent = 'space-between';
+      cRow.style.padding = '8px 12px';
+      cRow.style.borderBottom = '1px solid var(--border-color)';
+      cRow.style.fontSize = '12.5px';
+      
+      const pct = Math.round((stat.swept / stat.total) * 100);
+      cRow.innerHTML = `
+        <span style="font-weight:500;">${country}</span>
+        <span style="color:var(--text-secondary);">${stat.swept} / ${stat.total} swept (${pct}%)</span>
+      `;
+      countryList.appendChild(cRow);
+    });
+
+    // 5. Method list
+    const methodList = document.getElementById('method-progress-list');
+    methodList.innerHTML = '';
+    
+    const methodMap = {};
+    sources.forEach(s => {
+      const m = s.method_type || 'empirical';
+      if (!methodMap[m]) methodMap[m] = 0;
+      methodMap[m]++;
+    });
+
+    Object.entries(methodMap).sort((a,b)=>b[1]-a[1]).forEach(([method, count]) => {
+      const mRow = document.createElement('div');
+      mRow.style.display = 'flex';
+      mRow.style.justifyContent = 'space-between';
+      mRow.style.padding = '8px 12px';
+      mRow.style.borderBottom = '1px solid var(--border-color)';
+      mRow.style.fontSize = '12.5px';
+
+      const methodLabel = method.toUpperCase() === 'AHP' ? 'Analytical Hierarchy Process (AHP / MCDA)' 
+                       : method.toUpperCase() === 'EMPIRICAL' ? 'Empirical literature / Primary measurements'
+                       : method.toUpperCase() === 'SYNTHESIS' ? 'Meta-analyses & Sourcing Guidelines'
+                       : method.toUpperCase() === 'EXPERT' ? 'Expert Elicitation Protocol (Namita)'
+                       : method;
+                       
+      mRow.innerHTML = `
+        <span style="font-weight:500;">${methodLabel}</span>
+        <span style="color:var(--accent-sky); font-weight:600;">${count} sources</span>
+      `;
+      methodList.appendChild(mRow);
+    });
+  }
+
+  function populateFamilies(nbsId) {
+    const familySelect = document.getElementById('select-family');
+    familySelect.innerHTML = '';
+    
+    const families = dashboardData.registers.FAM_family_registry || [];
+    const nbsFamilies = families.filter(f => f.nbs_id === nbsId);
+
+    // Unique suitability family variants
+    const addedFamilies = new Set();
+    
+    nbsFamilies.forEach(fam => {
+      if (addedFamilies.has(fam.suitability_family_id)) return;
+      addedFamilies.add(fam.suitability_family_id);
+
+      const opt = document.createElement('option');
+      opt.value = fam.suitability_family_id;
+      
+      // Clean display name
+      const displayName = fam.suitability_family_id.split('__')[1]
+                          .replace(/_/g, ' ')
+                          .replace(/\b\w/g, c => c.toUpperCase());
+      opt.textContent = `${displayName} (${fam.name})`;
+      familySelect.appendChild(opt);
+    });
+
+    if (addedFamilies.size === 0) {
+      const opt = document.createElement('option');
+      opt.textContent = "No families defined";
+      familySelect.appendChild(opt);
+    }
+
+    // Trigger interrogate update
+    interrogateSelection();
+  }
+
+  function interrogateSelection() {
+    const nbsId = document.getElementById('select-nbs').value;
+    const familyId = document.getElementById('select-family').value;
+    
+    if (!nbsId || !familyId) return;
+
+    // 1. Update Family Hero metadata card
+    const families = dashboardData.registers.FAM_family_registry || [];
+    const familyInfo = families.find(f => f.suitability_family_id === familyId);
+
+    if (familyInfo) {
+      document.getElementById('family-hero-title').textContent = familyInfo.name;
+      document.getElementById('family-hero-type').textContent = `Product: ${familyInfo.spatial_product_type.replace(/_/g, ' ')}`;
+      document.getElementById('family-hero-desc').textContent = familyInfo.definition;
+      document.getElementById('family-hero-limit').textContent = familyInfo.dominant_limiting_factor;
+      document.getElementById('family-hero-rationale').textContent = familyInfo.grouping_rationale;
+      document.getElementById('family-hero').style.display = 'block';
+    } else {
+      document.getElementById('family-hero').style.display = 'none';
+    }
+
+    // 2. Render T4 suitability mapping variables table
+    renderT4Mappings(nbsId, familyId);
+
+    // 3. Render Verbatim Evidence register lines
+    renderVerbatimEvidence();
+
+    // 4. Render T3 Hazard Mitigation Table
+    renderT3Hazard(nbsId);
+
+    // 5. Render T6 Scorecard cost Economics
+    renderT6Scorecard(nbsId);
+  }
+
+  function renderT4Mappings(nbsId, familyId) {
+    const mappingsBody = document.getElementById('body-t4-mappings');
+    mappingsBody.innerHTML = '';
+
+    const recipe = dashboardData.recipes[nbsId];
+    if (!recipe || !recipe.T4_suitability_mappings) {
+      mappingsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No mappings loaded for this NbS</td></tr>';
+      return;
+    }
+
+    const familyMappings = recipe.T4_suitability_mappings.filter(m => m.suitability_family_id === familyId);
+    
+    if (familyMappings.length === 0) {
+      mappingsBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No biophysical suitability rules compiled for this family variant.</td></tr>';
+      return;
+    }
+
+    // Ontology references lookup helper
+    const ontology = dashboardData.registers.VONT_variable_ontology || [];
+
+    familyMappings.forEach(m => {
+      const tr = document.createElement('tr');
+      
+      const varInfo = ontology.find(v => v.canonical_variable_id === m.variable);
+      const varLabel = varInfo ? varInfo.label : m.variable;
+      const unit = varInfo ? varInfo.canonical_unit : '';
+
+      // Format relationship parameters
+      let paramsStr = `<strong>${m.relationship_type.replace(/_/g, ' ')}</strong>`;
+      if (m.relationship_params) {
+        paramsStr += '<div class="param-badge-grid">';
+        Object.entries(m.relationship_params).forEach(([p, val]) => {
+          if (typeof val === 'object') {
+            paramsStr += `<span class="param-badge">${p}: ...</span>`;
+          } else {
+            paramsStr += `<span class="param-badge">${p}: <strong>${val}</strong></span>`;
+          }
+        });
+        paramsStr += '</div>';
+      }
+
+      // Add context overrides references
+      if (m.context_overrides && m.context_overrides.length > 0) {
+        paramsStr += '<div style="margin-top: 8px; font-size: 11px; border-top: 1px solid var(--border-color); padding-top: 4px;">';
+        paramsStr += '<span style="font-weight:600; color:var(--accent-sky);">AEZ overrides:</span>';
+        m.context_overrides.forEach(ov => {
+          paramsStr += `<div style="margin-top: 2px;">• <strong>${ov.context_id}</strong>: ${JSON.stringify(ov.relationship_params)}</div>`;
+        });
+        paramsStr += '</div>';
+      }
+
+      const isScenario = m.is_scenario_candidate ? '<span class="badge" style="background-color:rgba(168, 85, 247, 0.1); color:var(--accent-purple); border-color:rgba(168, 85, 247, 0.2);">Scenario candidate</span>' : '';
+
+      tr.innerHTML = `
+        <td style="font-weight:600; font-family:var(--font-outfit);">
+          ${varLabel}
+          <div style="font-size:10.5px; color:var(--text-muted); font-weight:normal; font-family:var(--font-inter); margin-top:2px;">
+            <code>${m.variable}</code> ${unit ? `(${unit})` : ''}
+          </div>
+        </td>
+        <td>
+          <span style="font-size:12px; font-weight:500;">${m.suitability_dimension.replace(/_/g, ' ')}</span>
+          <div style="margin-top:4px;">${isScenario}</div>
+        </td>
+        <td style="font-weight:bold; font-family:var(--font-outfit); font-size:14px; color:var(--accent-emerald);">
+          ${m.weight_default !== undefined ? m.weight_default : 'N/A'}
+        </td>
+        <td>
+          <code style="font-size:11px; color:var(--accent-sky);">${m.dataset_id}</code>
+        </td>
+        <td>${paramsStr}</td>
+        <td style="font-size:12px; color:var(--text-secondary); max-width: 320px;">
+          ${m.justification || 'No reconciliation comments.'}
+          ${m.paper_support_pct !== undefined ? `<div style="margin-top:4px; font-size:10.5px; color:var(--accent-emerald);">Lit support: <strong>${Math.round(m.paper_support_pct)}%</strong> (${m.n_sources || 0} papers)</div>` : ''}
+        </td>
+      `;
+      mappingsBody.appendChild(tr);
+    });
+  }
+
+  function renderVerbatimEvidence() {
+    const listContainer = document.getElementById('evidence-list');
+    listContainer.innerHTML = '';
+
+    const familyId = document.getElementById('select-family').value;
+    const nbsId = document.getElementById('select-nbs').value;
+    const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    const sources = dashboardData.registers.SRC_source_register || [];
+
+    // Filter evidence matching nbs and suitability family
+    let familyClaims = claims.filter(c => c.nbs_id === nbsId && c.suitability_family_id === familyId);
+
+    // Apply search filter if query is present
+    if (searchVal) {
+      familyClaims = familyClaims.filter(c => {
+        const quote = (c.quote || '').toLowerCase();
+        const variable = (c.variable || '').toLowerCase();
+        
+        // Find matching citation
+        const src = sources.find(s => s.source_id === c.source_id);
+        const citation = src ? src.citation.toLowerCase() : '';
+        const studyCountry = src ? (src.study_country || '').toLowerCase() : '';
+
+        return quote.includes(searchVal) || variable.includes(searchVal) || citation.includes(searchVal) || studyCountry.includes(searchVal);
+      });
+    }
+
+    if (familyClaims.length === 0) {
+      listContainer.innerHTML = `
+        <div class="empty-state" style="padding: 24px;">
+          <p>${searchVal ? 'No evidence claims match your search terms.' : 'No verbatim claims registered for this suitability family variant.'}</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Sort evidence: highest benchmark tier first
+    familyClaims.sort((a, b) => {
+      const srcA = sources.find(s => s.source_id === a.source_id);
+      const srcB = sources.find(s => s.source_id === b.source_id);
+      
+      const tierScore = { high: 3, medium: 2, low: 1, external: 0 };
+      const scoreA = srcA ? tierScore[srcA.benchmark_tier] : 1;
+      const scoreB = srcB ? tierScore[srcB.benchmark_tier] : 1;
+      
+      return scoreB - scoreA;
+    });
+
+    familyClaims.forEach(c => {
+      const src = sources.find(s => s.source_id === c.source_id);
+      const citation = src ? src.citation : 'Unknown Citation reference';
+      const tier = src ? src.benchmark_tier : 'low';
+      
+      const card = document.createElement('div');
+      card.className = 'evidence-card';
+
+      // Formatting quote with search highlighting
+      let highlightedQuote = c.quote || 'No verbatim quote cached.';
+      let highlightedCitation = citation;
+      if (searchVal) {
+        const regex = new RegExp(`(${searchVal})`, 'gi');
+        highlightedQuote = highlightedQuote.replace(regex, '<mark>$1</mark>');
+        highlightedCitation = highlightedCitation.replace(regex, '<mark>$1</mark>');
+      }
+
+      // Context labels
+      const details = [];
+      if (c.context && c.context.aez) details.push(`AEZ: <strong>${c.context.aez}</strong>`);
+      if (src && src.study_country) details.push(`Country: <strong>${src.study_country}</strong>`);
+      if (c.page) details.push(`Page: <strong>${c.page}</strong>`);
+      if (c.taxon) details.push(`Taxon: <em>${c.taxon}</em>`);
+      if (c.evidence_type) details.push(`Type: <strong>${c.evidence_type.replace(/_/g, ' ')}</strong>`);
+
+      card.innerHTML = `
+        <div class="evidence-card-header">
+          <span class="evidence-var-tag">${c.variable}</span>
+          <span class="badge ${tier}">${tier} tier</span>
+        </div>
+        <blockquote class="evidence-quote">“${highlightedQuote}”</blockquote>
+        <div class="evidence-citation">
+          <span>Source: <strong>${highlightedCitation}</strong></span>
+          ${src && src.doi ? `<span style="font-size:10px; color:var(--text-muted); margin-top:2px;">DOI: <a href="https://doi.org/${src.doi}" target="_blank" style="color:inherit; text-decoration:underline;">${src.doi}</a></span>` : ''}
+        </div>
+        <div class="evidence-meta-row">
+          ${details.map(d => `<span class="evidence-meta-item">${d}</span>`).join(' • ')}
+        </div>
+      `;
+      listContainer.appendChild(card);
+    });
+  }
+
+  function renderT3Hazard(nbsId) {
+    const body = document.getElementById('body-t3-hazard');
+    body.innerHTML = '';
+
+    const recipe = dashboardData.recipes[nbsId];
+    if (!recipe || !recipe.T3_nbs_hazard_farming) {
+      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No hazard mapping registry found.</td></tr>';
+      return;
+    }
+
+    const rows = recipe.T3_nbs_hazard_farming;
+    if (rows.length === 0) {
+      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No hazard mitigation links specified.</td></tr>';
+      return;
+    }
+
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+      
+      const potentialColor = r.mitigation_potential === 'high' ? 'var(--accent-emerald)' 
+                           : r.mitigation_potential === 'medium' ? 'var(--accent-amber)' 
+                           : 'var(--text-secondary)';
+
+      tr.innerHTML = `
+        <td style="font-weight:600; font-family:var(--font-outfit); text-transform:capitalize;">${r.hazard_type}</td>
+        <td><code>${r.farming_system}</code></td>
+        <td style="font-weight:bold; color:${potentialColor}; text-transform:uppercase; font-size:12px;">${r.mitigation_potential}</td>
+        <td style="font-size:12.5px; color:var(--text-secondary);">${r.mitigation_mechanism || 'N/A'}</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  function renderT6Scorecard(nbsId) {
+    const body = document.getElementById('body-t6-scorecard');
+    body.innerHTML = '';
+
+    const recipe = dashboardData.recipes[nbsId];
+    if (!recipe || !recipe.T6_nbs_scorecard) {
+      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No economic scorecard compiled.</td></tr>';
+      return;
+    }
+
+    const rows = recipe.T6_nbs_scorecard;
+    if (rows.length === 0) {
+      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No economic metrics registered.</td></tr>';
+      return;
+    }
+
+    rows.forEach(r => {
+      const tr = document.createElement('tr');
+
+      // format range values
+      let valRange = 'N/A';
+      if (r.economic_value_range) {
+        const vr = r.economic_value_range;
+        valRange = `<strong>${vr.low} – ${vr.high}</strong> <span style="color:var(--text-muted); font-size:11px;">${vr.unit || ''}</span>`;
+      }
+
+      tr.innerHTML = `
+        <td style="font-weight:600; font-family:var(--font-outfit);">
+          ${(r.economic_indicator_type || r.variable_id || '').replace(/_/g, ' ')}
+          <div style="font-size:10px; font-weight:normal; color:var(--text-muted);">Type: ${r.variable_type}</div>
+        </td>
+        <td>${valRange}</td>
+        <td>
+          <span class="badge ${r.effect_confidence === 'high' ? 'high' : r.effect_confidence === 'medium' ? 'medium' : 'low'}">
+            ${r.effect_confidence}
+          </span>
+        </td>
+        <td style="font-size:12.5px; color:var(--text-secondary); max-width:260px;">
+          ${r.effect_mechanism || 'N/A'}
+          ${r.conditionality ? `<div style="margin-top:4px; font-size:10px; color:var(--accent-sky);">Condition: ${r.conditionality}</div>` : ''}
+        </td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  function renderOntologyAndDatasets() {
+    // Populate VONT Variable Ontology Register table
+    const vontBody = document.getElementById('body-vont');
+    vontBody.innerHTML = '';
+    const variables = dashboardData.registers.VONT_variable_ontology || [];
+
+    const drawVont = (list) => {
+      vontBody.innerHTML = '';
+      if (list.length === 0) {
+        vontBody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No variables match your query</td></tr>';
+        return;
+      }
+      list.forEach(v => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code style="font-weight:600; color:var(--accent-sky);">${v.canonical_variable_id}</code></td>
+          <td style="font-weight:500;">${v.label}</td>
+          <td><span style="font-size:12px; color:var(--text-secondary); text-transform:capitalize;">${v.group_id}</span></td>
+          <td><code>${v.canonical_unit}</code></td>
+          <td>${v.min_meaningful_resolution_m ? `${v.min_meaningful_resolution_m} m` : 'Scale independent'}</td>
+          <td>
+            <span class="badge ${v.resolution_sensitivity === 'high' ? 'high' : v.resolution_sensitivity === 'medium' ? 'medium' : 'low'}">
+              ${v.resolution_sensitivity || 'low'}
+            </span>
+          </td>
+        `;
+        vontBody.appendChild(tr);
+      });
+    };
+
+    drawVont(variables);
+
+    // Filter vont variables
+    document.getElementById('search-vont').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const filtered = variables.filter(v => 
+        v.canonical_variable_id.toLowerCase().includes(q) || 
+        v.label.toLowerCase().includes(q) || 
+        v.group_id.toLowerCase().includes(q)
+      );
+      drawVont(filtered);
+    });
+
+    // Populate T1 Spatial Dataset Registry table
+    const t1Body = document.getElementById('body-t1');
+    t1Body.innerHTML = '';
+    const datasets = dashboardData.global_tables.T1_data_registry || [];
+
+    const drawT1 = (list) => {
+      t1Body.innerHTML = '';
+      if (list.length === 0) {
+        t1Body.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">No datasets match your query</td></tr>';
+        return;
+      }
+      list.forEach(d => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code style="font-weight:600; color:var(--accent-sky);">${d.dataset_id}</code></td>
+          <td style="font-weight:500; font-family:var(--font-outfit); max-width:240px;">${d.dataset_name}</td>
+          <td><span style="font-size:11.5px; text-transform:uppercase;">${d.geographic_coverage}</span></td>
+          <td><code>${d.data_format}</code></td>
+          <td>
+            <span style="font-size:11.5px;">Type: <strong>${d.access_type}</strong></span>
+            ${d.gee_asset_id ? `<div style="font-size:9.5px; color:var(--text-muted); margin-top:2px; max-width:220px; overflow:hidden; text-overflow:ellipsis;">Asset: <code>${d.gee_asset_id}</code></div>` : ''}
+          </td>
+          <td style="font-size:12px; color:var(--text-secondary); max-width:300px;">${d.limitations || 'None documented.'}</td>
+        `;
+        t1Body.appendChild(tr);
+      });
+    };
+
+    drawT1(datasets);
+
+    // Filter t1 datasets
+    document.getElementById('search-t1').addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      const filtered = datasets.filter(d => 
+        d.dataset_id.toLowerCase().includes(q) || 
+        d.dataset_name.toLowerCase().includes(q) || 
+        d.access_type.toLowerCase().includes(q)
+      );
+      drawT1(filtered);
+    });
+  }
+</script>
+</body>
+</html>
