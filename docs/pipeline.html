@@ -56,10 +56,11 @@
   .mono { font-family: ui-monospace, "SF Mono", Menlo, Monaco, Consolas, monospace; }
 
   .page {
-    width: 1400px;
+    max-width: 1400px;
+    width: 100%;
     margin: 0 auto;
     display: grid;
-    gap: 10px;
+    gap: 12px;
   }
 
   /* ────────────────────────────── HEADER ────────────────────────────── */
@@ -124,7 +125,7 @@
 
   /* ───────────────────────── FRAMEWORK (Benson) ──────────────────────── */
   .benson-band {
-    background: var(--benson-tint);
+    background: #fdf8f5;
     border: 1px solid var(--benson-tint-2);
     border-radius: 8px;
     padding: 14px 16px 12px;
@@ -233,16 +234,13 @@
   .mod::after {
     content: "";
     position: absolute;
-    top: 22px;
-    right: -14px;
-    width: 14px;
-    height: 18px;
-    background-image:
-      linear-gradient(45deg, transparent 46%, var(--rule-2) 46% 54%, transparent 54%),
-      linear-gradient(-45deg, transparent 46%, var(--rule-2) 46% 54%, transparent 54%);
-    background-size: 8px 10px, 8px 10px;
-    background-position: 3px 4px, 3px -6px;
-    background-repeat: no-repeat;
+    top: 26px;
+    right: -11px;
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid var(--rule-2);
+    border-right: 2px solid var(--rule-2);
+    transform: rotate(45deg);
     pointer-events: none;
   }
   .mod:last-child::after { display: none; }
@@ -298,7 +296,7 @@
   .mod.s-partial .status { background: var(--partial-bg); color: var(--partial-ink); }
   .mod.s-partial .status .dot { background: var(--partial-ink); }
   .mod.s-todo    .status { background: var(--todo-bg);    color: var(--todo-ink); }
-  .mod.s-todo    .status .dot { background: transparent; border: 1.5px solid var(--todo-ink); box-sizing: border-box; }
+  .mod.s-todo    .status .dot { background: var(--todo-ink); opacity: 0.4; }
   .mod.s-setup   .status { background: var(--setup-bg);   color: var(--setup-ink); }
   .mod.s-setup   .status .dot { background: var(--setup-ink); }
 
@@ -313,7 +311,7 @@
     line-height: 1.22; letter-spacing: -.005em;
   }
   .mod .mline {
-    font-size: 10.5px; color: var(--mute);
+    font-size: 11.5px; color: var(--mute);
     line-height: 1.45;
   }
   .mod .foot {
@@ -415,7 +413,11 @@
   .m2b-card .accent { background: var(--o-brayden-ink); opacity: .5; }
   .m2b-flow {
     grid-column: 5 / 8;
-    font-size: 11px; color: var(--mute); line-height: 1.5;
+    font-size: 11.5px; color: var(--mute); line-height: 1.5;
+    background: rgba(255, 255, 255, 0.45);
+    border: 1px dashed var(--rule-2);
+    border-radius: 6px;
+    padding: 8px 12px;
   }
   .m2b-flow b { color: var(--ink-2); font-weight: 700; }
 
@@ -662,6 +664,51 @@
   .legend-chip {
     width: 10px; height: 10px; border-radius: 2px;
     display: inline-block;
+  }
+
+  /* ────────────────────────────── RESPONSIVE STYLES ─────────────────── */
+  @media (max-width: 1250px) {
+    .pipeline {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .mod::after {
+      display: none !important;
+    }
+    .m2b-lane {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .m2b-from {
+      grid-column: 1 / -1;
+      text-align: left;
+    }
+    .m2b-card {
+      grid-column: 1 / -1;
+      max-width: 350px;
+    }
+    .m2b-flow {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 800px) {
+    .pipeline {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .recipe-grid, .runtime-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .foot-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 500px) {
+    .pipeline {
+      grid-template-columns: 1fr;
+    }
+    .recipe-grid, .runtime-grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   /* ────────────────────────────── PRINT ─────────────────────────────── */
