@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from nbs_ruralscan.binding import Binding, resolve_all, resolve_binding
+from nbs_ruralscan.runtime.binding import Binding, resolve_all, resolve_binding
 
 # A minimal in-memory registry: global MapSPAM + an SLE upload-required override.
 BINDINGS = [

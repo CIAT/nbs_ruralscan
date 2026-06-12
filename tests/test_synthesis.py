@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from nbs_ruralscan.evidence import EvidenceUnit
-from nbs_ruralscan.synthesis import (
+from nbs_ruralscan.recipe.evidence import EvidenceUnit
+from nbs_ruralscan.recipe.synthesis import (
     _dedupe_lineage,
     _harmonise,
     synthesise_t4_row,

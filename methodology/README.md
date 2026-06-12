@@ -30,4 +30,4 @@ Written methodology for the Rural NbS Scan — the cross-cutting framework and t
 - **Pipeline code** that reads schema + executes the methodology → `pipeline/`.
 - **Source references** (R prototype, stocktake findings) → `reference/`.
 
-See `CLAUDE.md` at the repo root for the architectural overview and what's locked vs open.
+See `AGENTS.md` at the repo root for the architectural overview and what's locked vs open.

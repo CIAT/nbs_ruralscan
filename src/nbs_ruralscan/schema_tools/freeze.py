@@ -4,10 +4,10 @@ Enables reproducible runs by freezing/verifying registers and document index cac
 
 CLI:
     # Snapshot corpus:
-    uv run python -m nbs_ruralscan.freeze --zip-path schema/run_snapshot.zip
+    uv run python -m nbs_ruralscan.schema_tools.freeze --zip-path schema/run_snapshot.zip
 
     # Verify existing manifest:
-    uv run python -m nbs_ruralscan.freeze --verify
+    uv run python -m nbs_ruralscan.schema_tools.freeze --verify
 """
 
 from __future__ import annotations

@@ -17,7 +17,7 @@ Workflow:
    (looked up, never read off the unit); from the Variable Ontology group_map, canonical_units,
    dataset_ids; corpus_n (papers screened); optional ml_important.
 2. Run the engine (do not re-judge thresholds by hand):
-     from nbs_ruralscan.recipe import synthesise_family, save_family
+     from nbs_ruralscan.recipe.family import synthesise_family, save_family
      res = synthesise_family(units, tiers, family=family, corpus_n=corpus_n, group_map=group_map,
          canonical_units=canonical_units, dataset_ids=dataset_ids, ml_important=ml_important,
          floor_pct=20.0, allow_crop_scope=family.endswith("shaded_perennial_crop"))

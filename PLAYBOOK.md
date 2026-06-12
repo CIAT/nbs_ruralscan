@@ -25,7 +25,7 @@ Three artefact types coexist; each serves a different audience.
 | **Claude-Code front/back end** | Stretch demonstrator over the same schema | Pete + Claude Code | No — parallel exploration |
 | **HTML wireframe** | Laurent · final-presentation audience | Pete + Claude | No — demonstrator |
 
-Pipeline architecture is in [`docs/pipeline.html`](./docs/pipeline.html). The full delivery rationale is in [CLAUDE.md](./CLAUDE.md).
+Pipeline architecture is in [`docs/pipeline.html`](./docs/pipeline.html). The full delivery rationale is in [AGENTS.md](./AGENTS.md).
 
 ## Standard workflows
 
@@ -62,7 +62,7 @@ Pipeline architecture is in [`docs/pipeline.html`](./docs/pipeline.html). The fu
 ### Push wireframe / pipeline diagram edits
 
 1. Edit `docs/wireframe.html` or `docs/pipeline.html` directly in Claude Code.
-2. Preserve the locked structure (six tabs · Variable Card slots · T0–T7 colours — see CLAUDE.md).
+2. Preserve the locked structure (six tabs · Variable Card slots · T0–T7 colours — see AGENTS.md).
 3. Test locally: `cd docs && python3 -m http.server 8000`
 4. PR using the PR template. The structural checklist must pass.
 5. GitHub Pages auto-deploys within ~2 minutes after merge.
@@ -75,8 +75,8 @@ Benson has a Claude Premium seat. We expect Claude Code to be the default develo
 
 Anything with concrete inputs and outputs. Examples:
 
-- *"Port `reference/R/spatMCDA.R` to numpy, preserving the CRITIC + Entropy + AHP weighting logic. Save to `src/nbs_ruralscan/mcda.py`."* (✅ shipped — see `tests/test_mcda.py`)
-- *"Scaffold an agroforestry pilot Colab notebook for Sierra Leone, loading the recipe from `methodology/recipes/agroforestry.md`, calling `src/nbs_ruralscan/mcda.py`, and writing outputs to `pipeline/outputs/agroforestry_sl/`."*
+- *"Port `reference/R/spatMCDA.R` to numpy, preserving the CRITIC + Entropy + AHP weighting logic. Save to `src/nbs_ruralscan/runtime/mcda.py`."* (✅ shipped — see `tests/test_mcda.py`)
+- *"Scaffold an agroforestry pilot Colab notebook for Sierra Leone, loading the recipe from `methodology/recipes/agroforestry.md`, calling `src/nbs_ruralscan/runtime/mcda.py`, and writing outputs to `pipeline/outputs/agroforestry_sl/`."*
 - *"In `docs/wireframe.html`, replace the Sierra Leone SVG outline with district boundaries from the attached GeoJSON, keeping the existing colour scheme."*
 - *"Add a Variable Card for `aridity_index` in the agroforestry recipe. Use the same six-slot structure as the slope card."*
 
@@ -96,7 +96,7 @@ Not surveillance — shared learning, and visible progress.
 - Commit messages: Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`)
 - One logical change per PR; don't bundle wireframe and methodology edits
 - All PRs use the PR template
-- One reviewer for content PRs (recipes, variable cards); one + Pete for structural PRs (wireframe, schema, CLAUDE.md)
+- One reviewer for content PRs (recipes, variable cards); one + Pete for structural PRs (wireframe, schema, AGENTS.md)
 
 ## Scope guardrails
 
@@ -138,7 +138,7 @@ One milestone per project phase, dated:
 - **Phase 3 — Piloting** (Apr–Jun 2026; current)
 - **Phase 3.2 — Final outputs + WB presentation** (Jun 2026)
 
-Assign each issue to the milestone it must close before. Leave the milestone field empty for plumbing work (CLAUDE.md updates, repo bootstrap).
+Assign each issue to the milestone it must close before. Leave the milestone field empty for plumbing work (AGENTS.md updates, repo bootstrap).
 
 ### 4. Project board — the Kanban
 
@@ -179,7 +179,7 @@ Automation to enable (one-off setup — click-by-click runbook at [`.github/PROJ
 
 ### Seed backlog
 
-`.github/SEED_ISSUES.md` lists the initial ~15 issues to open. Walks through module specs (M0/M3/M4/M5/M6), recipe authoring (agroforestry / forest restoration / riparian buffers), pipeline implementation (`src/nbs_ruralscan/mcda.py` shipped; `src/nbs_ruralscan/climate_risk.py` per M2 spec), pilots, the GEE App spec, and Pages setup. Open them through the web UI one at a time — ~20 min total — and the backlog tells a coherent story when the team first opens it.
+`.github/SEED_ISSUES.md` lists the initial ~15 issues to open. Walks through module specs (M0/M3/M4/M5/M6), recipe authoring (agroforestry / forest restoration / riparian buffers), pipeline implementation (`src/nbs_ruralscan/runtime/mcda.py` shipped; `src/nbs_ruralscan/runtime/climate_risk.py` per M2 spec), pilots, the GEE App spec, and Pages setup. Open them through the web UI one at a time — ~20 min total — and the backlog tells a coherent story when the team first opens it.
 
 ### Cadence
 
@@ -190,7 +190,7 @@ Automation to enable (one-off setup — click-by-click runbook at [`.github/PROJ
 
 ## When in doubt
 
-- [CLAUDE.md](./CLAUDE.md) is the source of truth for what's locked
+- [AGENTS.md](./AGENTS.md) is the source of truth for what's locked
 - This Playbook is the source of truth for how we work
 - Most recent `5_Meetings/` transcript in the shared SharePoint for current discussion state
 - Teams channel: `NbS Rural Scan Task Force`

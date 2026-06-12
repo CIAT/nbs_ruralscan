@@ -18,7 +18,7 @@ Workflow:
 1. Canonical variable(s) + aliases + min_meaningful_resolution_m from the Variable Ontology; the family
    target spec; tiers from the benchmarked CSV (Source Register).
 2. **Dedup check** (saves tokens — skip work already done):
-     from nbs_ruralscan.evidence import already_extracted
+     from nbs_ruralscan.recipe.evidence import already_extracted
      # Check for each variable in the set
      existing = already_extracted(sid, variable)
      if existing:
@@ -27,7 +27,7 @@ Workflow:
    Report skipped pairs so the user knows what was cached.
 3. Ingest + retrieve (deterministic):
      from nbs_ruralscan.ingest import build_index, load_index, save_index
-     from nbs_ruralscan.evidence import package_for_extraction, package_for_extraction_multi, EvidenceUnit, validate_units, save_units
+     from nbs_ruralscan.recipe.evidence import package_for_extraction, package_for_extraction_multi, EvidenceUnit, validate_units, save_units
      idx = load_index(sid) or build_index(pdf, source_id=sid)
 
      # Single variable extraction:
