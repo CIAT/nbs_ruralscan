@@ -11,7 +11,7 @@ renders maps + tables inline. **Notebooks are the contracted deliverable.**
 > GEE data and server-side processing are reached through **xee** (Earth Engine ↔ xarray)
 > rather than a native Earth Engine app or script. The engine moved from `pipeline/` to
 > `src/nbs_ruralscan/`; and the **TTL wireframe** (`docs/wireframe.html`) is the visual
-> demonstrator. See `../CLAUDE.md` and `../methodology/T4_generation_method.md`.
+> demonstrator. See `../AGENTS.md` and `../methodology/T4_generation_method.md`.
 
 ## Structure
 
