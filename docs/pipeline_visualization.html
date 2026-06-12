@@ -180,14 +180,16 @@ graph TD
     classDef out fill:#f0f9ff,stroke:#0284c7,stroke-width:2px;
 
     %% Data Ingestion
-    LIT["Empirical Literature <br>(WOCAT, EGM Reviews, PADs, Journals)"] -->|PDF Ingest / Indexing| CACHE[".cache/ingest/ <br>(Clean text & table cache)"]
+    LIT["Empirical Literature <br>(Systematic Reviews, PADs, Journals)"] -->|PDF Ingest & Indexing| CACHE_PDF[".cache/ingest/ <br>(Clean text & table cache)"]
+    
+    NON_PDF["Non-PDF Sources <br>(WOCAT SLM, ICRAF Tree DB, GitHub Repos, LandMark)"] -->|API Pull, Scrape, Clone, DB Export| CACHE_RAW[".cache/ingest/ <br>(Raw JSON, Scraped text, Scripts)"]
     
     %% AI Extraction
-    CACHE -->|Single-pass extraction with contracts| EXT["LLM Extraction Engine <br>(source-command-extract-evidence)"]
+    CACHE_PDF & CACHE_RAW -->|Extraction Contracts & Parsing| EXT["Extraction Engine <br>(source-command-extract-evidence / structured parser)"]
     
     %% Registers
     EXT -->|Structured claim records| EV["EV_evidence_register.json / .csv <br> (Verbatim thresholds, contexts, and quotes)"]:::reg
-    LIT -->|Paper metadata, aez, & status| SRC["SRC_source_register.json / .csv <br> (Track variables and validation state)"]:::reg
+    LIT & NON_PDF -->|Metadata, AEZ, & baseline status| SRC["SRC_source_register.json / .csv <br> (Track variables and validation state)"]:::reg
     
     %% Synthesis Script
     EV & SRC -->|Read by| SYN["execute_synthesis.py <br> (Synthesis & Reconciliation Engine)"]:::script
@@ -210,8 +212,10 @@ graph TD
     <pre class="mermaid">
 graph TD
     %% Ingest flow
-    LIT["Empirical Literature <br>(WOCAT, Meta-analyses, PADs, Journals)"] -->|PRISMA funnel query & triage| SRC_P["SRC Register <br>(status: pending)"]
-    SRC_P -->|Contracts-based single-pass LLM extraction| EV_REC["EV Register <br>(Verbatim quotes, thresholds, and economic stats)"]
+    LIT["Empirical Literature <br>(Reviews, PADs, Journals)"] -->|PRISMA funnel query & triage| SRC_P["SRC Register <br>(status: pending)"]
+    NON_PDF["Non-PDF Sources <br>(Tools, DBs, Web Platforms, Repos)"] -->|Database query, scrape & triage| SRC_P
+    
+    SRC_P -->|Extraction Contracts / Parsing| EV_REC["EV Register <br>(Verbatim quotes, thresholds, and economic stats)"]
     SRC_P -->|Metadata validation| SRC_S["SRC Register <br>(status: swept)"]
     SRC_S & EV_REC -->|Schema compiler: generate.py| REC_JSON["JSON Recipes <br>(T3, T4, T6 compiled rules)"]
     REC_JSON -->|runtime/binding.py resolver| BIND_RESOLVE["Context-Resolved Variables for AOI"]
