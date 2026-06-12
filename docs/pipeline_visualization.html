@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rural NbS Scan — Pipeline &amp; Architecture Visualization</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; background: #f8f7f4; color: #1a1a18; padding: 40px 24px; line-height: 1.6; }
+  .container { max-width: 960px; margin: 0 auto; }
+  a.back { font-size: 12px; color: #0c447c; text-decoration: none; display: inline-block; margin-bottom: 12px; }
+  h1 { font-size: 26px; font-weight: 600; color: #0c447c; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #5f5e5a; margin-bottom: 8px; }
+  .meta { font-size: 11px; color: #888780; margin-bottom: 28px; border-bottom: 1px solid #e8e7e3; padding-bottom: 16px; }
+  
+  h2 { font-size: 18px; font-weight: 600; color: #0c447c; margin: 32px 0 12px; border-bottom: 1px solid #ecebe5; padding-bottom: 6px; }
+  p { font-size: 13.5px; color: #333330; margin-bottom: 14px; }
+  
+  /* Diagram container */
+  .diagram-card { background: #fff; border: 1px solid #d3d1c7; border-radius: 8px; padding: 24px; margin: 18px 0 24px; overflow-x: auto; }
+  
+  /* Bullet lists */
+  ul { margin-left: 20px; margin-bottom: 16px; font-size: 13.5px; color: #333330; }
+  li { margin-bottom: 8px; }
+  li strong { color: #0c447c; }
+  
+  /* Alerts */
+  .alert-note { background: #f0f7ff; border-left: 4px solid #0066cc; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 20px 0; font-size: 12.5px; color: #1a3a5c; }
+  .alert-note strong { color: #004499; }
+  
+  .footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid #e8e7e3; font-size: 11px; color: #888780; }
+  .footer a { color: #0c447c; }
+  
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; background: #f1efe8; padding: 1px 5px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <a class="back" href="index.html">← Demonstrator artefacts</a>
+  <h1>Project Architecture &amp; Pipeline</h1>
+  <p class="subtitle">World Bank D591 · Alliance Bioversity International &amp; CIAT</p>
+  <p class="meta">Visual and conceptual guide to the architecture, data schemas, analytical modules, and evidence-synthesis pipelines of the Rural NbS Scan methodology.</p>
+
+  <p>This page provides a comprehensive visual and conceptual guide to the architecture of the <strong>NbS Rural Scan</strong> project, demonstrating how its architectural layers, analytical modules, data schema, and evidence synthesis pipelines fit together.</p>
+
+  <h2>1. The Four-Layer Architecture</h2>
+  <p>The project is structured into four distinct layers that separate reusable core code, analytical steps, configurations, and the execution runtime surface.</p>
+
+  <div class="diagram-card">
+    <pre class="mermaid">
+graph TD
+    %% Styling
+    classDef primitive fill:#f0f7f4,stroke:#7fd0a1,stroke-width:2px;
+    classDef module fill:#fefbf3,stroke:#e4c485,stroke-width:2px;
+    classDef recipe fill:#eff2f8,stroke:#9fbbe6,stroke-width:2px;
+    classDef runtime fill:#1a1a18,stroke:#c95757,stroke-width:2px,color:#fff;
+    
+    %% Layer 1: Primitives
+    subgraph L1 ["Layer 1: Framework Primitives (Core Engine)"]
+        P1["P1: Standardisation (Membership Functions)"]:::primitive
+        P2["P2: Weighting (AHP + CRITIC + Entropy)"]:::primitive
+        P3["P3: MCDA Engine (Weighted Overlay)"]:::primitive
+        P4["P4: Recipe Template Structure"]:::primitive
+        P5["P5: Subpractice Variant Patterns"]:::primitive
+    end
+
+    %% Layer 2: Modules
+    subgraph L2 ["Layer 2: Analytical Modules (Pipeline)"]
+        M_M0["M0: Setup & Scope"]:::module
+        M_M1["M1: Suitability & Opp Space"]:::module
+        M_M2["M2: Rural Climate Risk"]:::module
+        M_M3["M3: Characterisation"]:::module
+        M_M4["M4: Priority Hotspots"]:::module
+        M_M5["M5: Scorecard & Response"]:::module
+        M_M6["M6: Hand-off & Next Steps"]:::module
+    end
+
+    %% Layer 3: Recipes
+    subgraph L3 ["Layer 3: Recipe Layer (Configuration)"]
+        R_WH["Water Harvesting Recipe"]:::recipe
+        R_AF["Agroforestry Recipe"]:::recipe
+        R_FR["Forest Restoration & ANR"]:::recipe
+    end
+
+    %% Layer 4: Runtime
+    subgraph L4 ["Layer 4: Runtime (Execution Surface)"]
+        RT_PKG["Python Method Package (src/nbs_ruralscan/)"]:::runtime
+        RT_WIRE["Interactive Wireframe Demonstrator"]:::runtime
+        RT_COLAB["Reproducible Colab Notebooks"]:::runtime
+    end
+
+    %% Cross-layer links
+    L1 -->|Reused by| L2
+    L3 -->|Parameterises| L2
+    L4 -->|Executes & Renders| L2
+    R_AF -->|Supplies variables & bounds| RT_PKG
+    </pre>
+  </div>
+
+  <h2>2. The Analytical Module Pipeline (M0–M6)</h2>
+  <p>The World Bank Task Team Leaders (TTLs) consume the scoping tool through a linear pipeline of seven modules, plus a parallel project risk addendum (<strong>M2b</strong>).</p>
+
+  <div class="diagram-card">
+    <pre class="mermaid">
+graph LR
+    %% Styling
+    classDef start_card fill:#eef2f3,stroke:#94a3b8,stroke-width:2px;
+    classDef module fill:#fff,stroke:#e2e8f0,stroke-width:2px;
+    classDef risk fill:#fef2f2,stroke:#f87171,stroke-width:2px;
+    
+    %% Modules
+    M0["M0: Setup & Scope <br> (Pete) <br> [T0, T1, T7]"]:::module
+    M1["M1: Opportunity Space <br> (Pete) <br> [T1, T4, T7]"]:::module
+    M2["M2: Rural Climate Risk <br> (Brayden) <br> [T1, T2]"]:::module
+    M2b["M2b: Project Risk Screen <br> (Brayden) <br> [T1, T2, T3, T7]"]:::risk
+    M3["M3: Characterisation <br> (Pete) <br> [T1, T5]"]:::module
+    M4["M4: Hotspots (MCDA) <br> (Pete) <br> [T5]"]:::module
+    M5["M5: Scorecard & Response <br> (Namita) <br> [T3, T6]"]:::module
+    M6["M6: Hand-off & Next Steps <br> (Namita / MFL) <br> [T0, T6]"]:::module
+
+    %% Flows
+    M0 -->|AOI & Scope| M1
+    M1 -->|Opportunity Space Layer| M2
+    M1 -->|Opportunity Space Layer| M3
+    
+    %% M2 to M2b branching
+    M2 -->|Livelihood Risk Need| M4
+    M2 -->|Asset Exposure / Levers| M2b
+    
+    M3 -->|Thematic Priorities| M4
+    
+    %% M2b as a filter on Hotspots
+    M2b -.->|Screening Filter / Flag| M4
+    
+    M4 -->|Priority Hotspots Map| M5
+    M5 -->|Scorecard Metrics| M6
+    </pre>
+  </div>
+
+  <h3>Module Descriptions &amp; Table Bindings</h3>
+  <ul>
+    <li><strong>M0: Setup &amp; Scope</strong>: Selects the Area of Interest (AOI), target NbS, resolution, and baseline context. Matches <code>T0</code> (NbS Registry), <code>T1</code> (Data Registry), and <code>T7</code> (Geographic Context).</li>
+    <li><strong>M1: Suitability → Opportunity Space</strong>: Models biophysical constraints (e.g., slope, elevation, temperature) using fuzzy membership functions and MCDA overlay. Outputs the continuous opportunity space map. Consumes <code>T4</code> (Suitability Mappings).</li>
+    <li><strong>M2: Rural Climate Risk</strong>: Evaluates climate hazards, exposure, and adaptive capacity to assess threat to rural livelihoods (a "need" layer). Consumes <code>T2</code> (Climate Risk).</li>
+    <li><strong>M2b: Project Disaster-Risk Screen</strong>: Assesses risk to the <em>investment itself</em> (Stream A: establishment hazard exposure; Stream B: enabling environment/tenure safeguards). Filters or flags hotspots, but is <strong>never summed</strong> directly with livelihood risks. Consumes <code>T3</code> (Hazard/Farming) and <code>T7</code> (Geographic Context).</li>
+    <li><strong>M3: Opportunity Space Characterisation</strong>: Overlays thematic priorities (poverty, biodiversity, population) to describe the area. Consumes <code>T5</code> (Opportunity Space Priorities).</li>
+    <li><strong>M4: Priority Hotspots</strong>: Performs user-weighted multi-criteria decision analysis (MCDA) to locate high-priority areas within the suitability space.</li>
+    <li><strong>M5: NbS Scorecard &amp; Response</strong>: Summarizes economics, cost-effectiveness denominators (e.g., establishment costs, recurrent costs), and benefits. Consumes <code>T6</code> (NbS Scorecard).</li>
+    <li><strong>M6: Hand-off &amp; Next Steps</strong>: Generates hand-off tool options, legal/exclusion safeguard alerts (ESS7 flags), and context-specific tailoring guidelines.</li>
+  </ul>
+
+  <h2>3. Data Schema (T0–T7) and Content-Code Contract</h2>
+  <p>The analytical rules, weights, and dataset bindings are never hardcoded. The system uses a machine-validated database schema where the runtime code queries these tables for execution.</p>
+
+  <div class="diagram-card">
+    <pre class="mermaid">
+graph TD
+    %% Styling
+    classDef registry fill:#e1f5ee,stroke:#085041,stroke-width:2px,color:#085041;
+    classDef table fill:#f8fafc,stroke:#cbd5e1,stroke-width:2px;
+    
+    T0["T0: NbS Registry"]:::registry --> T4["T4: Suitability Mappings"]:::table
+    T0 --> T6["T6: NbS Scorecard"]:::table
+    T4 --> T7["T7: Geographic Context"]:::table
+    T6 --> T3["T3: Hazard & Farming Link"]:::table
+    T7 --> T1["T1: Data Registry"]:::table
+    T3 --> T1
+    </pre>
+  </div>
+
+  <h2>4. The Evidence-to-Synthesis Pipeline</h2>
+  <p>For each recipe (such as Agroforestry), rules are compiled from empirical literature using our evidence registers. The runtime synthesis engine parses these registers and builds the final schema tables.</p>
+
+  <div class="diagram-card">
+    <pre class="mermaid">
+graph TD
+    %% Styling
+    classDef reg fill:#fff5f5,stroke:#ff8a8a,stroke-width:2px;
+    classDef script fill:#f0fdf4,stroke:#4caf72,stroke-width:2px;
+    classDef out fill:#f0f9ff,stroke:#0284c7,stroke-width:2px;
+
+    %% Data Ingestion
+    LIT["Empirical Literature <br>(WOCAT, EGM Reviews, PADs, Journals)"] -->|PDF Ingest / Indexing| CACHE[".cache/ingest/ <br>(Clean text & table cache)"]
+    
+    %% AI Extraction
+    CACHE -->|Single-pass extraction with contracts| EXT["LLM Extraction Engine <br>(source-command-extract-evidence)"]
+    
+    %% Registers
+    EXT -->|Structured claim records| EV["EV_evidence_register.json / .csv <br> (Verbatim thresholds, contexts, and quotes)"]:::reg
+    LIT -->|Paper metadata, aez, & status| SRC["SRC_source_register.json / .csv <br> (Track variables and validation state)"]:::reg
+    
+    %% Synthesis Script
+    EV & SRC -->|Read by| SYN["execute_synthesis.py <br> (Synthesis & Reconciliation Engine)"]:::script
+    
+    %% Target Tables
+    SYN -->|Calculate weighted medians & support rates| T4["T4_suitability_mappings.json / .csv"]:::out
+    SYN -->|Resolve citations & map hazards| T3["T3_nbs_hazard_farming.json / .csv"]:::out
+    SYN -->|Link Likert effects & resolve economic indicator costs| T6["T6_nbs_scorecard.json / .csv"]:::out
+    </pre>
+  </div>
+
+  <div class="alert-note">
+    <strong>Consensus Weighting Rules:</strong> During synthesis, evidence lines are collapsed back to their ultimate primary study to prevent double-counting. The synthesis engine automatically derives threshold bounds, calculates the percentage of literature support (<code>paper_support_pct</code>), and measures uncertainty spreads across all registered biophysical variables.
+  </div>
+
+  <div class="footer">
+    <p>Read the details of our CSV-first compilation workflow in the <a href="schema.html">Data Schema (T0–T7)</a> section.</p>
+  </div>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ 
+    startOnLoad: true,
+    theme: 'neutral',
+    securityLevel: 'loose'
+  });
+</script>
+</body>
+</html>
