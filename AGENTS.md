@@ -136,6 +136,9 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - NbS IDs: `snake_case` (e.g. `agroforestry`, `water_harvesting`)
 - Files: kebab-case for `docs/` artefacts (`wireframe.html`, `pipeline.html`); snake_case for code
 - Per-NbS recipe filenames: `methodology/recipes/<nbs_id>.md`
+- **Replication for Synthesis**: Do not skip extracting similar thresholds across papers to avoid "redundant entries." The synthesis engine counts the number of unique sources (`n_sources`) to calculate consensus weights and median bounds. Every distinct literature threshold must have its own `EvidenceUnit` in `EV_evidence_register.json`.
+- **Source-Evidence Variable Agreement**: The `vars_extracted` list for each paper in `SRC_source_register.json` must exactly match the variables that have actual evidence rows in `EV_evidence_register.json` (excluding baseline map/mask layers). Run the discrepancy script to align them.
+- **Full-Variable Sweeps**: When sweeping a source, extract all suitability parameters, enablers, and costs mapping to any variable in the target recipe (including `soil_texture`, `soil_drainage`, `distance_to_road`, and `tree_canopy_cover`), not just the core five biophysical variables.
 - If using/directly importing a python module, check that it is included in `pyproject.toml` and use `uv add <module_name>` if missing.
 
 ## Don't
@@ -147,6 +150,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - Don't promise the World Bank a polished web tool — the proposal commits to notebooks; the App and wireframe are demonstrators
 - Don't pick a flat-file dataset when a fitness-equivalent GEE-hosted (or other server-side) version exists — server-side resample/crop is the default.
 - Don't break the EvidenceUnit shape when adding expert-evidence capture — expert claims must land in the same EV rows as literature, via `evidence_type=expert`; only patch the schema if EV literally cannot represent something Namita needs.
+- Don't let `SRC.vars_extracted` diverge from actual `EV_evidence_register.json` variable listings.
+- Don't skip secondary suitability variables (like soil texture/drainage or distance to road) when they are quantified in paper texts.
 
 ## When in doubt
 
