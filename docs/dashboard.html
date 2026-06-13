@@ -993,7 +993,63 @@
         </div>
       </div>
 
-      <!-- Overview Scope Filter -->
+      <!-- Section 1: Global NbS Comparison Table -->
+      <div class="card-container">
+        <h2 class="card-title">
+          <span>Global Nature-based Solutions Comparison</span>
+          <span class="card-title-meta">High-level evidence metrics compiled across all active NbS recipes</span>
+        </h2>
+        <div class="table-wrapper">
+          <table class="data-table" id="table-nbs-comparison">
+            <thead>
+              <tr>
+                <th>Nature-based Solution</th>
+                <th>Total Sources</th>
+                <th>Swept / Ingested</th>
+                <th>Evidence Claims</th>
+                <th>T4 Suitability Mappings</th>
+                <th>T3 Climate Hazard Links</th>
+                <th>T6 Scorecard Economics</th>
+              </tr>
+            </thead>
+            <tbody id="body-nbs-comparison"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Section 2: Management Progress Matrix -->
+      <div class="card-container">
+        <div class="interrogator-header-row sky" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-sky); padding-bottom: 8px;" onclick="toggleSection('wrapper-management-progress', 'chev-progress-matrix')">
+          <h3 class="interrogator-section-title sky" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+            <span id="chev-progress-matrix" style="display:inline-block; transition:transform 0.2s;">▼</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            Suitability Families &amp; Methodology Progress Matrix
+          </h3>
+          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
+        </div>
+        <div id="wrapper-management-progress">
+          <div class="table-wrapper">
+            <table class="data-table" id="table-management-progress">
+              <thead>
+                <tr>
+                  <th>NbS / Suitability Family Variant</th>
+                  <th>T4 Suitability Mappings</th>
+                  <th>Evidence Claims</th>
+                  <th>T3 Climate Hazard Links</th>
+                  <th>T6 Scorecard Costing</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="body-management-progress"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Overview Scope Filter -->
       <div class="card-container" style="margin-top: 24px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="background:rgba(16,185,129,0.1); color:var(--accent-emerald); padding:10px; border-radius:8px;">
@@ -1013,17 +1069,25 @@
         </div>
       </div>
 
-      <!-- Sankey flow network diagram container -->
+      <!-- Section 3: Sankey flow network diagram container -->
       <div class="card-container">
-        <h2 class="card-title">
+        <h2 class="card-title" style="margin-bottom:12px;">
           <span>Evidence Sourcing &amp; Translation Flow Diagram</span>
-          <span class="card-title-meta">Hover over any literature source, biophysical variable, or target table node to highlight its lineage</span>
+          <span class="card-title-meta">Hover over nodes to trace lineage. Filter target tables:</span>
         </h2>
+        <!-- Target Table Toggles -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap;">
+          <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; align-self: center; margin-right: 4px;">Filter Target Tables:</span>
+          <button class="pill-btn active emerald" id="toggle-sankey-t4" data-target="t4_mappings" style="border-radius: 4px; padding: 4px 10px;">T4 Suitability</button>
+          <button class="pill-btn active rose" id="toggle-sankey-t3" data-target="t3_hazards" style="border-radius: 4px; padding: 4px 10px;">T3 Hazards</button>
+          <button class="pill-btn active amber" id="toggle-sankey-t6" data-target="t6_scorecard" style="border-radius: 4px; padding: 4px 10px;">T6 Economics</button>
+        </div>
         <div class="chart-wrapper">
           <svg id="sankey-flow" viewBox="0 0 800 420" style="width:100%; height:auto; background:var(--bg-secondary); border-radius:var(--radius-md); border:1px solid var(--border-color);"></svg>
         </div>
       </div>
 
+      <!-- Section 4: Other charts -->
       <div class="charts-section">
         <!-- SVG Sources by NbS Chart -->
         <div class="card-container" style="margin-bottom:0;">
@@ -1753,6 +1817,292 @@
 
     // 5. Populate Ontology / Dataset lists
     renderOntologyAndDatasets();
+
+    // 6. Populate Global NbS Comparison & Management Progress Matrix
+    renderGlobalNbsComparison();
+    renderManagementProgress();
+
+    // 7. Initialize Sankey target table toggle click listeners
+    const sankeyToggles = ['toggle-sankey-t4', 'toggle-sankey-t3', 'toggle-sankey-t6'];
+    sankeyToggles.forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) {
+        btn.addEventListener('click', () => {
+          btn.classList.toggle('active');
+          const scopeSelect = document.getElementById('overview-scope-select');
+          triggerOverviewFilter(scopeSelect ? scopeSelect.value : 'all');
+        });
+      }
+    });
+  }
+
+  // Resolve which target table a claim maps to, based on database evidence links & fallbacks
+  function getDestTable(c) {
+    const evId = c.evidence_id;
+    if (!window.t4EvidenceIds) {
+      window.t4EvidenceIds = new Set();
+      window.t3EvidenceIds = new Set();
+      window.t6EvidenceIds = new Set();
+      Object.keys(dashboardData.recipes).forEach(nbsId => {
+        const recipe = dashboardData.recipes[nbsId];
+        const parseIds = (val) => {
+          if (!val) return [];
+          if (Array.isArray(val)) return val;
+          try {
+            const parsed = JSON.parse(val);
+            if (Array.isArray(parsed)) return parsed;
+          } catch(e) {}
+          if (typeof val === 'string') {
+            return val.split(';').map(x => x.trim()).filter(Boolean);
+          }
+          return [];
+        };
+        if (recipe.T4_suitability_mappings) {
+          recipe.T4_suitability_mappings.forEach(r => parseIds(r.evidence_ids).forEach(id => window.t4EvidenceIds.add(id)));
+        }
+        if (recipe.T3_nbs_hazard_farming) {
+          recipe.T3_nbs_hazard_farming.forEach(r => parseIds(r.evidence_ids).forEach(id => window.t3EvidenceIds.add(id)));
+        }
+        if (recipe.T6_nbs_scorecard) {
+          recipe.T6_nbs_scorecard.forEach(r => parseIds(r.evidence_ids).forEach(id => window.t6EvidenceIds.add(id)));
+        }
+      });
+    }
+    
+    if (window.t4EvidenceIds.has(evId)) return 't4_mappings';
+    if (window.t3EvidenceIds.has(evId)) return 't3_hazards';
+    if (window.t6EvidenceIds.has(evId)) return 't6_scorecard';
+    
+    // Fallback: use_role
+    const role = (c.use_role || '').toLowerCase();
+    if (role.includes('suitability')) return 't4_mappings';
+    if (role.includes('hazard') || role.includes('risk') || role.includes('priority')) return 't3_hazards';
+    if (role.includes('effect') || role.includes('economic') || role.includes('cost')) return 't6_scorecard';
+    if (role === 'hazard_mitigation' || role === 'hazard_risk') return 't3_hazards';
+    if (role === 'economics' || role === 'cost_sourcing') return 't6_scorecard';
+    
+    return 't4_mappings';
+  }
+
+  function renderGlobalNbsComparison() {
+    const body = document.getElementById('body-nbs-comparison');
+    body.innerHTML = '';
+    
+    const recipes = Object.keys(dashboardData.recipes) || [];
+    const sources = dashboardData.registers.SRC_source_register || [];
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    
+    recipes.sort().forEach(nbsId => {
+      const recipe = dashboardData.recipes[nbsId];
+      const T0 = recipe.T0_nbs_registry && recipe.T0_nbs_registry[0];
+      const nbsName = T0 ? T0.nbs_name : nbsId;
+      
+      const nbsSources = sources.filter(s => (s.nbs_ids || '').split(';').map(x=>x.trim()).includes(nbsId));
+      const totalSourcesCount = nbsSources.length;
+      const sweptSourcesCount = nbsSources.filter(s => s.extraction_status === 'swept' || s.extraction_status === 'signed_off').length;
+      
+      const nbsClaims = claims.filter(c => c.nbs_id === nbsId);
+      const claimsCount = nbsClaims.length;
+      
+      const t4Count = recipe.T4_suitability_mappings ? recipe.T4_suitability_mappings.length : 0;
+      const t3Count = recipe.T3_nbs_hazard_farming ? recipe.T3_nbs_hazard_farming.length : 0;
+      const t6Count = recipe.T6_nbs_scorecard ? recipe.T6_nbs_scorecard.length : 0;
+      
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.title = `Click to explore ${nbsName} in detail`;
+      
+      tr.innerHTML = `
+        <td style="font-weight: 600; font-family: var(--font-outfit); color: var(--accent-sky);">
+          ${nbsName}
+        </td>
+        <td style="font-weight: 500;">${totalSourcesCount}</td>
+        <td>
+          <span class="badge ${sweptSourcesCount === totalSourcesCount ? 'high' : sweptSourcesCount > 0 ? 'medium' : 'low'}">
+            ${sweptSourcesCount} swept (${totalSourcesCount > 0 ? Math.round(sweptSourcesCount / totalSourcesCount * 100) : 0}%)
+          </span>
+        </td>
+        <td>${claimsCount}</td>
+        <td>${t4Count}</td>
+        <td>${t3Count}</td>
+        <td>${t6Count}</td>
+      `;
+      
+      tr.addEventListener('click', () => {
+        // Switch to interrogator tab
+        const tabBtn = document.querySelector('[data-tab="tab-interrogator"]');
+        if (tabBtn) tabBtn.click();
+        
+        // Set NBS select
+        const nbsSelect = document.getElementById('select-nbs');
+        if (nbsSelect) {
+          nbsSelect.value = nbsId;
+          nbsSelect.dispatchEvent(new Event('change'));
+        }
+        
+        // Scroll to the interrogator section
+        document.querySelector('.interrogator-grid').scrollIntoView({ behavior: 'smooth' });
+      });
+      
+      body.appendChild(tr);
+    });
+  }
+
+  function renderManagementProgress() {
+    const body = document.getElementById('body-management-progress');
+    body.innerHTML = '';
+    
+    const families = dashboardData.registers.FAM_family_registry || [];
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    
+    // Group subpractices by suitability_family_id
+    const familiesMap = {};
+    families.forEach(f => {
+      const familyId = f.suitability_family_id;
+      if (!familiesMap[familyId]) {
+        familiesMap[familyId] = {
+          familyId: familyId,
+          nbsId: f.nbs_id,
+          name: f.name,
+          subpractices: [],
+          definition: f.definition,
+          dominantLimitingFactor: f.dominant_limiting_factor,
+          spatialProductType: f.spatial_product_type
+        };
+      }
+      familiesMap[familyId].subpractices.push(f);
+    });
+    
+    const sortedFamilyIds = Object.keys(familiesMap).sort();
+    
+    const parseIds = (val) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val;
+      try {
+        const parsed = JSON.parse(val);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+      if (typeof val === 'string') {
+        return val.split(';').map(x => x.trim()).filter(Boolean);
+      }
+      return [];
+    };
+    
+    sortedFamilyIds.forEach(familyId => {
+      const famData = familiesMap[familyId];
+      const nbsId = famData.nbsId;
+      const recipe = dashboardData.recipes[nbsId];
+      if (!recipe) return;
+      
+      const T0 = recipe.T0_nbs_registry && recipe.T0_nbs_registry[0];
+      const nbsName = T0 ? T0.nbs_name : nbsId;
+      const familyDisplayName = familyId.split('__')[1]
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, c => c.toUpperCase());
+      const subpracticesNames = famData.subpractices.map(s => s.name).join(', ');
+      
+      // T4 suitability mappings for this family
+      const t4Count = recipe.T4_suitability_mappings 
+        ? recipe.T4_suitability_mappings.filter(m => m.suitability_family_id === familyId).length 
+        : 0;
+      
+      // Evidence claims for this family
+      const familyClaims = claims.filter(c => c.suitability_family_id === familyId);
+      const claimsCount = familyClaims.length;
+      const familyClaimIds = new Set(familyClaims.map(c => c.evidence_id));
+      
+      // T3 hazard links linked to this family via evidence IDs
+      let t3Count = 0;
+      if (recipe.T3_nbs_hazard_farming) {
+        recipe.T3_nbs_hazard_farming.forEach(row => {
+          const rowEvIds = parseIds(row.evidence_ids);
+          const hasMatchingEv = rowEvIds.some(id => familyClaimIds.has(id));
+          if (hasMatchingEv) t3Count++;
+        });
+      }
+      
+      // T6 scorecard lines linked to this family via evidence IDs
+      let t6Count = 0;
+      if (recipe.T6_nbs_scorecard) {
+        recipe.T6_nbs_scorecard.forEach(row => {
+          const rowEvIds = parseIds(row.evidence_ids);
+          const hasMatchingEv = rowEvIds.some(id => familyClaimIds.has(id));
+          if (hasMatchingEv) t6Count++;
+        });
+      }
+      
+      // Determine status
+      let statusText = 'Pending';
+      let statusClass = 'low';
+      
+      if (famData.spatialProductType === 'qualitative_only') {
+        if (claimsCount > 0 || t6Count > 0) {
+          statusText = 'Active (Qual)';
+          statusClass = 'high';
+        } else {
+          statusText = 'Draft (Qual)';
+          statusClass = 'medium';
+        }
+      } else {
+        if (t4Count > 0 && claimsCount > 0) {
+          statusText = 'Active';
+          statusClass = 'high';
+        } else if (t4Count > 0 || claimsCount > 0) {
+          statusText = 'Draft / In Progress';
+          statusClass = 'medium';
+        } else {
+          statusText = 'Pending';
+          statusClass = 'low';
+        }
+      }
+      
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.title = `Click to interrogate ${familyDisplayName} in detail`;
+      
+      tr.innerHTML = `
+        <td style="font-weight: 500;">
+          <strong style="color: var(--text-primary);">${nbsName}</strong> — ${familyDisplayName}
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+            Subpractices: ${subpracticesNames}
+          </div>
+        </td>
+        <td>${t4Count}</td>
+        <td>${claimsCount}</td>
+        <td>${t3Count}</td>
+        <td>${t6Count}</td>
+        <td>
+          <span class="badge ${statusClass}">${statusText}</span>
+        </td>
+      `;
+      
+      tr.addEventListener('click', () => {
+        // Switch to interrogator tab
+        const tabBtn = document.querySelector('[data-tab="tab-interrogator"]');
+        if (tabBtn) tabBtn.click();
+        
+        // Set NBS select
+        const nbsSelect = document.getElementById('select-nbs');
+        if (nbsSelect) {
+          nbsSelect.value = nbsId;
+          nbsSelect.dispatchEvent(new Event('change'));
+          
+          // Wait for families dropdown to populate before selecting family
+          setTimeout(() => {
+            const familySelect = document.getElementById('select-family');
+            if (familySelect) {
+              familySelect.value = familyId;
+              familySelect.dispatchEvent(new Event('change'));
+            }
+          }, 100);
+        }
+        
+        // Scroll to the interrogator section
+        document.querySelector('.interrogator-grid').scrollIntoView({ behavior: 'smooth' });
+      });
+      
+      body.appendChild(tr);
+    });
   }
 
   // Visualizes Source (Left) -> Variable (Middle) -> Target Tables (Right)
@@ -1763,9 +2113,18 @@
     if (!sources) sources = dashboardData.registers.SRC_source_register || [];
     if (!claims) claims = dashboardData.registers.EV_evidence_register || [];
     
+    // Resolve active targets from filter toggles
+    const activeTargets = [];
+    if (document.getElementById('toggle-sankey-t4')?.classList.contains('active')) activeTargets.push('t4_mappings');
+    if (document.getElementById('toggle-sankey-t3')?.classList.contains('active')) activeTargets.push('t3_hazards');
+    if (document.getElementById('toggle-sankey-t6')?.classList.contains('active')) activeTargets.push('t6_scorecard');
+
+    // Filter claims to only include those that match the active target tables
+    const filteredClaims = claims.filter(c => activeTargets.includes(getDestTable(c)));
+
     // Sort sources by claim count and select top 7
     const sourceClaimCounts = {};
-    claims.forEach(c => {
+    filteredClaims.forEach(c => {
       sourceClaimCounts[c.source_id] = (sourceClaimCounts[c.source_id] || 0) + 1;
     });
     const topSourceIds = Object.entries(sourceClaimCounts)
@@ -1775,7 +2134,7 @@
 
     // Sort variables by claim count and select top 8
     const variableClaimCounts = {};
-    claims.forEach(c => {
+    filteredClaims.forEach(c => {
       variableClaimCounts[c.variable] = (variableClaimCounts[c.variable] || 0) + 1;
     });
     const topVariables = Object.entries(variableClaimCounts)
@@ -1790,11 +2149,10 @@
     const col2Nodes = topVariables.map(id => ({ id, type: 'variable', label: id.replace(/_/g, ' ').replace(/\b\w/g, c=>c.toUpperCase()) }));
     col2Nodes.push({ id: 'other_variables', type: 'variable', label: 'Other Variables' });
 
-    const col3Nodes = [
-      { id: 't4_mappings', type: 'table', label: 'T4 Suitability Mappings' },
-      { id: 't3_hazards', type: 'table', label: 'T3 Hazard Links' },
-      { id: 't6_scorecard', type: 'table', label: 'T6 scorecard Economics' }
-    ];
+    const col3Nodes = [];
+    if (activeTargets.includes('t4_mappings')) col3Nodes.push({ id: 't4_mappings', type: 'table', label: 'T4 Suitability Mappings' });
+    if (activeTargets.includes('t3_hazards')) col3Nodes.push({ id: 't3_hazards', type: 'table', label: 'T3 Hazard Links' });
+    if (activeTargets.includes('t6_scorecard')) col3Nodes.push({ id: 't6_scorecard', type: 'table', label: 'T6 scorecard Economics' });
 
     // Compute coordinates
     const height = 420;
@@ -1802,10 +2160,11 @@
     const yMargin = 30;
 
     const computeY = (nodes, containerHeight) => {
+      if (nodes.length === 0) return;
       const space = (containerHeight - yMargin * 2) / Math.max(nodes.length - 1, 1);
       nodes.forEach((n, idx) => {
         n.x = n.type === 'source' ? 100 : (n.type === 'variable' ? 400 : 700);
-        n.y = yMargin + idx * space;
+        n.y = nodes.length === 1 ? containerHeight / 2 : yMargin + idx * space;
       });
     };
 
@@ -1819,7 +2178,7 @@
     const links = [];
 
     // Left-to-Middle Links (Source -> Variable)
-    claims.forEach(c => {
+    filteredClaims.forEach(c => {
       let srcNode = col1Nodes.find(n => n.id === c.source_id);
       if (!srcNode) srcNode = col1Nodes.find(n => n.id === 'other_sources');
 
@@ -1837,17 +2196,12 @@
     });
 
     // Middle-to-Right Links (Variable -> Target Table)
-    claims.forEach(c => {
+    filteredClaims.forEach(c => {
       let varNode = col2Nodes.find(n => n.id === c.variable);
       if (!varNode) varNode = col2Nodes.find(n => n.id === 'other_variables');
 
       // Tally tables destination
-      let destTable = 't4_mappings'; // default
-      if (c.use_role === 'hazard_mitigation' || c.use_role === 'hazard_risk') {
-        destTable = 't3_hazards';
-      } else if (c.use_role === 'economics' || c.use_role === 'cost_sourcing') {
-        destTable = 't6_scorecard';
-      }
+      let destTable = getDestTable(c);
 
       const tblNode = col3Nodes.find(n => n.id === destTable);
       if (varNode && tblNode) {
