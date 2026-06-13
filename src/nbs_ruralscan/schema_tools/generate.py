@@ -134,6 +134,10 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
         except Exception:
             pass
 
+    if check and current_data:
+        if current_data.get("nbs_progress") == report_data.get("nbs_progress"):
+            return []
+
     if current_data and current_data.get("git_commit") == git_commit and current_data.get("nbs_progress") == formatted_stats:
         report_data["timestamp"] = current_data["timestamp"]
 
@@ -226,6 +230,15 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
             current_data = json.loads(dest_path.read_text())
         except Exception:
             pass
+
+    if check and current_data:
+        identical = True
+        for key in ["registers", "global_tables", "recipes"]:
+            if current_data.get(key) != data.get(key):
+                identical = False
+                break
+        if identical:
+            return []
 
     # Avoid updating timestamp if nothing has changed
     if current_data and current_data.get("git_commit") == git_commit:
