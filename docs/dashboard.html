@@ -3473,6 +3473,7 @@
     const netSelect = document.getElementById('select-network-nbs');
     if (netSelect) {
       netSelect.innerHTML = '<option value="all">🌐 All Nature-based Solutions (Global)</option>';
+      const recipes = Object.keys(dashboardData.recipes) || [];
       recipes.sort().forEach(nbsId => {
         const opt = document.createElement('option');
         opt.value = nbsId;
