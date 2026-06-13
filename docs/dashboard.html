@@ -1112,7 +1112,7 @@
                 <th>Evidence Claims</th>
                 <th>T4 Suitability Mappings</th>
                 <th>T3 Climate Hazard Links</th>
-                <th>T6 Scorecard Economics</th>
+                <th>T6 Scorecard Outcomes & Costing</th>
               </tr>
             </thead>
             <tbody id="body-nbs-comparison"></tbody>
@@ -1142,7 +1142,7 @@
                   <th>T4 Suitability Mappings</th>
                   <th>Evidence Claims</th>
                   <th>T3 Climate Hazard Links</th>
-                  <th>T6 Scorecard Costing</th>
+                  <th>T6 Scorecard Outcomes & Costing</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -1183,7 +1183,7 @@
           <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; align-self: center; margin-right: 4px;">Filter Target Tables:</span>
           <button class="pill-btn active emerald" id="toggle-sankey-t4" data-target="t4_mappings" style="border-radius: 4px; padding: 4px 10px;">T4 Suitability</button>
           <button class="pill-btn active rose" id="toggle-sankey-t3" data-target="t3_hazards" style="border-radius: 4px; padding: 4px 10px;">T3 Hazards</button>
-          <button class="pill-btn active amber" id="toggle-sankey-t6" data-target="t6_scorecard" style="border-radius: 4px; padding: 4px 10px;">T6 Economics</button>
+          <button class="pill-btn active amber" id="toggle-sankey-t6" data-target="t6_scorecard" style="border-radius: 4px; padding: 4px 10px;">T6 Outcomes & Costing</button>
         </div>
         <div class="chart-wrapper">
           <svg id="sankey-flow" viewBox="0 0 800 420" style="width:100%; height:auto; background:var(--bg-secondary); border-radius:var(--radius-md); border:1px solid var(--border-color);"></svg>
@@ -1366,7 +1366,7 @@
             </div>
           </div>
 
-          <!-- T3 Hazard Matrix & T6 Cost scorecard economics -->
+          <!-- T3 Hazard Matrix & T6 Scorecard Outcomes & Costing -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
             <!-- T3 -->
             <div>
@@ -1418,7 +1418,7 @@
               </div>
             </div>
 
-            <!-- T6 Cost scorecard economics -->
+            <!-- T6 Scorecard Outcomes & Costing -->
             <div>
               <div class="interrogator-header-row amber" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-amber); padding-bottom: 8px;" onclick="toggleSection('wrapper-t6-scorecard', 'chev-t6')">
                 <h3 class="interrogator-section-title amber" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
@@ -1427,7 +1427,7 @@
                     <line x1="12" y1="1" x2="12" y2="23"></line>
                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                   </svg>
-                  T6 Cost-Effectiveness &amp; Scorecard Economics
+                  T6 Scorecard Outcomes &amp; Costing
                 </h3>
                 <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
               </div>
@@ -1445,7 +1445,7 @@
                     </div>
                   </div>
                   <div>
-                    <input type="text" class="table-search-input" id="search-t6-table" placeholder="Filter economics..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:130px;">
+                    <input type="text" class="table-search-input" id="search-t6-table" placeholder="Filter outcomes & costing..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:130px;">
                   </div>
                 </div>
                 
@@ -1453,7 +1453,7 @@
                   <table class="data-table" id="table-t6-scorecard">
                     <thead>
                       <tr>
-                        <th>Economic Indicator</th>
+                        <th>Outcome / Cost Indicator</th>
                         <th>Value range</th>
                         <th>Confidence</th>
                         <th>Mechanism &amp; Evidence</th>
@@ -2349,13 +2349,31 @@
     const col1Nodes = topSourceIds.map(id => ({ id, type: 'source', label: id.replace(/_/g, ' ').replace(/\b\w/g, c=>c.toUpperCase()) }));
     col1Nodes.push({ id: 'other_sources', type: 'source', label: 'Other Sources' });
 
-    const col2Nodes = topVariables.map(id => ({ id, type: 'variable', label: id.replace(/_/g, ' ').replace(/\b\w/g, c=>c.toUpperCase()) }));
-    col2Nodes.push({ id: 'other_variables', type: 'variable', label: 'Other Variables' });
+    // Premium color palette for variables
+    const variableColors = [
+      '#38bdf8', // Sky
+      '#a855f7', // Purple
+      '#ec4899', // Pink
+      '#f59e0b', // Amber
+      '#10b981', // Emerald
+      '#f43f5e', // Rose
+      '#6366f1', // Indigo
+      '#14b8a6', // Teal
+      '#84cc16'  // Lime
+    ];
+
+    const col2Nodes = topVariables.map((id, index) => ({
+      id,
+      type: 'variable',
+      label: id.replace(/_/g, ' ').replace(/\b\w/g, c=>c.toUpperCase()),
+      color: variableColors[index % variableColors.length]
+    }));
+    col2Nodes.push({ id: 'other_variables', type: 'variable', label: 'Other Variables', color: '#64748b' });
 
     const col3Nodes = [];
     if (activeTargets.includes('t4_mappings')) col3Nodes.push({ id: 't4_mappings', type: 'table', label: 'T4 Suitability Mappings' });
     if (activeTargets.includes('t3_hazards')) col3Nodes.push({ id: 't3_hazards', type: 'table', label: 'T3 Hazard Links' });
-    if (activeTargets.includes('t6_scorecard')) col3Nodes.push({ id: 't6_scorecard', type: 'table', label: 'T6 scorecard Economics' });
+    if (activeTargets.includes('t6_scorecard')) col3Nodes.push({ id: 't6_scorecard', type: 'table', label: 'T6 Outcomes & Costing' });
 
     // Compute coordinates
     const height = 420;
@@ -2419,7 +2437,6 @@
 
     // Draw links (bezier ribbons)
     const isDark = document.body.getAttribute('data-theme') !== 'light';
-    const linkColor = isDark ? '#38bdf8' : '#0284c7';
     
     links.forEach((l, index) => {
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
@@ -2432,12 +2449,20 @@
       // Draw ribbon S-curve
       const d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
       
+      // Determine link color based on connected variable node
+      let linkColor = isDark ? '#38bdf8' : '#0284c7';
+      if (l.fromNode.type === 'variable') {
+        linkColor = l.fromNode.color;
+      } else if (l.toNode.type === 'variable') {
+        linkColor = l.toNode.color;
+      }
+
       path.setAttribute('d', d);
       path.setAttribute('class', 'flow-link');
       path.setAttribute('id', `flow-link-${index}`);
       path.setAttribute('stroke', linkColor);
       path.setAttribute('stroke-width', Math.min(2 + l.weight * 0.8, 12));
-      path.setAttribute('stroke-opacity', '0.12');
+      path.setAttribute('stroke-opacity', '0.15');
       path.setAttribute('fill', 'none');
       
       // Cache references for fast highlighting
@@ -2459,7 +2484,7 @@
       rect.setAttribute('class', 'flow-node-rect');
 
       let nodeColor = 'var(--text-muted)';
-      if (n.type === 'variable') nodeColor = 'var(--accent-sky)';
+      if (n.type === 'variable') nodeColor = n.color;
       else if (n.type === 'table') {
         nodeColor = n.id === 't4_mappings' ? 'var(--accent-emerald)' 
                   : n.id === 't3_hazards' ? 'var(--accent-rose)' 
@@ -2490,12 +2515,19 @@
              (n.type === 'table' && lk.toNode.id === n.id);
 
           if (isConnected) {
-            lk.pathElement.setAttribute('stroke-opacity', '0.7');
-            lk.pathElement.setAttribute('stroke', 'var(--accent-emerald)');
+            lk.pathElement.setAttribute('stroke-opacity', '0.75');
+            let highColor = isDark ? '#38bdf8' : '#0284c7';
+            if (lk.fromNode.type === 'variable') {
+              highColor = lk.fromNode.color;
+            } else if (lk.toNode.type === 'variable') {
+              highColor = lk.toNode.color;
+            }
+            lk.pathElement.setAttribute('stroke', highColor);
+            
             // highlight endpoints text labels
-            lk.fromNode.textElement.setAttribute('fill', 'var(--accent-emerald)');
+            lk.fromNode.textElement.setAttribute('fill', highColor);
             lk.fromNode.textElement.style.fontWeight = '700';
-            lk.toNode.textElement.setAttribute('fill', 'var(--accent-emerald)');
+            lk.toNode.textElement.setAttribute('fill', highColor);
             lk.toNode.textElement.style.fontWeight = '700';
           } else {
             lk.pathElement.setAttribute('stroke-opacity', '0.02');
@@ -2506,10 +2538,18 @@
       });
 
       rect.addEventListener('mouseleave', () => {
-        // Reset opacities
+        // Reset opacities and colors
         links.forEach(lk => {
-          lk.pathElement.setAttribute('stroke-opacity', '0.12');
-          lk.pathElement.setAttribute('stroke', linkColor);
+          lk.pathElement.setAttribute('stroke-opacity', '0.15');
+          
+          let baseColor = isDark ? '#38bdf8' : '#0284c7';
+          if (lk.fromNode.type === 'variable') {
+            baseColor = lk.fromNode.color;
+          } else if (lk.toNode.type === 'variable') {
+            baseColor = lk.toNode.color;
+          }
+          lk.pathElement.setAttribute('stroke', baseColor);
+          
           lk.fromNode.textElement.setAttribute('fill', 'var(--text-primary)');
           lk.fromNode.textElement.style.fontWeight = '500';
           lk.toNode.textElement.setAttribute('fill', 'var(--text-primary)');
@@ -3245,7 +3285,7 @@
     }
 
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No economic metrics match the active filters.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No scorecard metrics match the active filters.</td></tr>';
       return;
     }
 
@@ -3643,7 +3683,7 @@
         });
       });
 
-      // T6 Economics
+      // T6 Scorecard Outcomes & Costing
       (recipe.T6_nbs_scorecard || []).forEach(sc => {
         const t6Id = `${nbsId}_t6_${sc.record_id}`;
         const t6Key = addNode(t6Id, 't6', sc.economic_indicator_type || sc.variable_id, sc);
@@ -3857,7 +3897,7 @@
     let html = '';
     const typeLabel = node.type.toUpperCase() === 'T3' ? 'Hazard Link (T3)'
                     : node.type.toUpperCase() === 'T4' ? 'Suitability Mapping (T4)'
-                    : node.type.toUpperCase() === 'T6' ? 'Economics Line (T6)'
+                    : node.type.toUpperCase() === 'T6' ? 'Scorecard Outcome & Cost (T6)'
                     : node.type.charAt(0).toUpperCase() + node.type.slice(1);
                     
     let badgeColor = 'var(--text-muted)';
