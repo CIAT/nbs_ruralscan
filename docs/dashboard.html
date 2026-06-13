@@ -6,6 +6,7 @@
 <title>Rural NbS Scan — Evidence &amp; Literature Interrogation Dashboard</title>
 <meta name="description" content="Explore and interrogate the systematic literature reviews, evidence claims, biophysical variables, thresholds, hazard matrices, and cost scorecard parameters supporting the Nature-based Solutions Rural Scan methodology.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <style>
   :root {
     --bg-primary: #0b0f19;
@@ -837,6 +838,97 @@
     color: var(--accent-purple);
     font-weight: 600;
   }
+
+  /* Network Graph Styles */
+  .network-container {
+    display: flex;
+    gap: 24px;
+    height: 700px;
+    margin-top: 16px;
+  }
+  
+  .network-graph-card {
+    flex: 1;
+    position: relative;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  
+  .network-sidebar-card {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .network-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .network-node-circle {
+    stroke-width: 1.5px;
+    transition: r 0.2s, stroke 0.2s, stroke-width 0.2s;
+    cursor: pointer;
+  }
+
+  .network-node-circle:hover {
+    stroke-width: 2.5px !important;
+  }
+
+  .network-link-line {
+    transition: stroke-opacity 0.2s, stroke-width 0.2s;
+  }
+
+  .network-overlay-instructions {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    background: rgba(11, 15, 25, 0.75);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    color: var(--text-secondary);
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .network-details-panel {
+    flex: 1;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    overflow-y: auto;
+    font-size: 13px;
+  }
+
+  .node-type-toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .node-type-toggle-item input {
+    cursor: pointer;
+  }
+
+  .network-node-text {
+    font-size: 9px;
+    font-family: var(--font-inter);
+    pointer-events: none;
+    text-anchor: middle;
+    fill: var(--text-primary);
+  }
 </style>
 </head>
 <body data-theme="dark">
@@ -905,6 +997,17 @@
         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
       </svg>
       Ontology &amp; Datasets
+    </button>
+    <button class="tab-btn" data-tab="tab-network" id="btn-network">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="18" cy="18" r="3"></circle>
+        <circle cx="6" cy="6" r="3"></circle>
+        <circle cx="6" cy="18" r="3"></circle>
+        <path d="M20 4L4 20"></path>
+        <path d="M9 9l6 6"></path>
+        <path d="M6 9v6"></path>
+      </svg>
+      Evidence Network
     </button>
   </nav>
 
@@ -1457,6 +1560,106 @@
               </thead>
               <tbody id="body-t1"></tbody>
             </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: EVIDENCE NETWORK GRAPH -->
+    <div id="tab-network" class="tab-content">
+      <div class="card-container" style="margin-bottom: 16px;">
+        <h2 class="card-title">
+          <span>Evidence &amp; Methodology Network Diagram</span>
+          <span class="card-title-meta">Force-directed relational network showing how literature sources translate to biophysical variables, suitability families, and target recipe tables.</span>
+        </h2>
+      </div>
+
+      <div class="network-container">
+        <!-- Sidebar Controls -->
+        <div class="network-sidebar-card">
+          <div class="card-container" style="padding: 16px; margin: 0; flex: 1; display: flex; flex-direction: column; gap: 16px; min-height: 380px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 14px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              Filter Settings
+            </h3>
+            
+            <!-- NbS Selector -->
+            <div>
+              <label for="select-network-nbs" style="font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 6px; font-weight: 500;">Nature-based Solution:</label>
+              <select id="select-network-nbs" style="width: 100%; font-size: 12.5px; padding: 8px 12px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary); cursor: pointer;">
+                <option value="all">🌐 All Nature-based Solutions</option>
+              </select>
+            </div>
+
+            <!-- Node Type Visibility Checkboxes -->
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <span style="font-size: 11px; color: var(--text-secondary); display: block; font-weight: 500;">Visible Graph Entities:</span>
+              <label class="node-type-toggle-item">
+                <input type="checkbox" id="toggle-node-source" checked>
+                <span class="legend-color" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #0f766e;"></span>
+                Sources (Literature)
+              </label>
+              <label class="node-type-toggle-item">
+                <input type="checkbox" id="toggle-node-evidence" checked>
+                <span class="legend-color" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--text-secondary);"></span>
+                Evidence Claims (Verbatim)
+              </label>
+              <label class="node-type-toggle-item">
+                <input type="checkbox" id="toggle-node-variable" checked>
+                <span class="legend-color" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-sky);"></span>
+                Variables (Ontology)
+              </label>
+              <label class="node-type-toggle-item">
+                <input type="checkbox" id="toggle-node-family" checked>
+                <span class="legend-color" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-purple);"></span>
+                Families (Siting Logic)
+              </label>
+              <label class="node-type-toggle-item">
+                <input type="checkbox" id="toggle-node-recipes" checked>
+                <span class="legend-color" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald);"></span>
+                Recipe Mappings (T3/T4/T6)
+              </label>
+            </div>
+
+            <!-- Reset Actions -->
+            <div style="margin-top: auto; display: flex; gap: 8px;">
+              <button class="pill-btn active sky" id="btn-network-reset-zoom" style="flex: 1; border-radius: 4px; padding: 6px 10px; font-size: 11px;">Reset Zoom</button>
+              <button class="pill-btn active purple" id="btn-network-clear-filters" style="flex: 1; border-radius: 4px; padding: 6px 10px; font-size: 11px;">Reset All</button>
+            </div>
+          </div>
+
+          <!-- Highlight Legend Info -->
+          <div class="card-container" style="padding: 12px; margin: 0; background: rgba(2, 132, 199, 0.05); border: 1px solid rgba(2, 132, 199, 0.15);">
+            <div style="font-size: 11.5px; color: var(--accent-sky); font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              Lineage Explorer
+            </div>
+            <p style="margin: 0; font-size: 10.5px; line-height: 1.4; color: var(--text-secondary);">
+              Hover over any node to highlight its connected neighborhood. Drag nodes to explore relationships. Use mouse scroll to Zoom and Pan. Double-click to pin/unpin nodes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Graph Rendering Window -->
+        <div class="network-graph-card">
+          <svg id="network-svg" class="network-svg"></svg>
+          <div class="network-overlay-instructions">
+            💡 Drag nodes to explore. Scroll to Zoom. Double-click any node to pin/unpin it.
+          </div>
+        </div>
+
+        <!-- Info Preview Sidebar panel -->
+        <div class="network-sidebar-card">
+          <div class="network-details-panel" id="network-details-panel">
+            <div style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: var(--text-muted); padding: 24px;">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <h4 style="margin: 0 0 4px 0; color: var(--text-secondary); font-size: 13.5px; font-family: var(--font-outfit);">Node Inspector</h4>
+              <p style="margin: 0; font-size: 11.5px;">Hover or select a node in the network to inspect its metadata, details, and verbatim literature claims.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -3225,6 +3428,600 @@
 
     drawVont();
     drawT1();
+
+    // Initialize Network Selector & Filter Listeners
+    const netSelect = document.getElementById('select-network-nbs');
+    if (netSelect) {
+      netSelect.innerHTML = '<option value="all">🌐 All Nature-based Solutions (Global)</option>';
+      recipes.sort().forEach(nbsId => {
+        const opt = document.createElement('option');
+        opt.value = nbsId;
+        opt.textContent = nbsId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        netSelect.appendChild(opt);
+      });
+      netSelect.addEventListener('change', initNetworkGraph);
+    }
+
+    ['toggle-node-source', 'toggle-node-evidence', 'toggle-node-variable', 'toggle-node-family', 'toggle-node-recipes'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('change', initNetworkGraph);
+    });
+
+    const btnClearFilters = document.getElementById('btn-network-clear-filters');
+    if (btnClearFilters) {
+      btnClearFilters.onclick = () => {
+        if (netSelect) netSelect.value = 'all';
+        ['toggle-node-source', 'toggle-node-evidence', 'toggle-node-variable', 'toggle-node-family', 'toggle-node-recipes'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.checked = true;
+        });
+        initNetworkGraph();
+      };
+    }
+
+    const btnNetwork = document.getElementById('btn-network');
+    if (btnNetwork) {
+      btnNetwork.addEventListener('click', () => {
+        // Trigger graph rendering on tab click to handle container dimensions properly
+        setTimeout(initNetworkGraph, 50);
+      });
+    }
+  }
+
+  // Network Graph Helpers
+  let networkSimulation = null;
+  let networkSvgTransform = d3.zoomIdentity;
+
+  function initNetworkGraph() {
+    const nbsSelect = document.getElementById('select-network-nbs');
+    const nbsFilter = nbsSelect ? nbsSelect.value : 'all';
+    
+    const visibleTypes = {
+      source: document.getElementById('toggle-node-source')?.checked ?? true,
+      evidence: document.getElementById('toggle-node-evidence')?.checked ?? true,
+      variable: document.getElementById('toggle-node-variable')?.checked ?? true,
+      family: document.getElementById('toggle-node-family')?.checked ?? true,
+      t3: document.getElementById('toggle-node-recipes')?.checked ?? true,
+      t4: document.getElementById('toggle-node-recipes')?.checked ?? true,
+      t6: document.getElementById('toggle-node-recipes')?.checked ?? true
+    };
+
+    const allData = prepareNetworkData(dashboardData);
+
+    let filteredNodes = allData.nodes.filter(n => {
+      if (!visibleTypes[n.type]) return false;
+
+      if (nbsFilter !== 'all') {
+        if (n.type === 'source') {
+          const nbsList = (n.data.nbs_ids || '').split(';').map(x=>x.trim()).filter(Boolean);
+          if (!nbsList.includes(nbsFilter)) return false;
+        } else if (n.type === 'evidence') {
+          if (n.data.nbs_id !== nbsFilter) return false;
+        } else if (n.type === 'family') {
+          if (n.data.nbs_id !== nbsFilter) return false;
+        } else if (n.type === 't3' || n.type === 't4' || n.type === 't6') {
+          if (n.id && !n.id.startsWith(nbsFilter)) return false;
+        } else if (n.type === 'variable') {
+          const hasLinkedClaim = allData.links.some(l => {
+            const isVarTarget = l.target === n.id || (typeof l.target === 'object' && l.target.id === n.id);
+            const isVarSource = l.source === n.id || (typeof l.source === 'object' && l.source.id === n.id);
+            if (isVarTarget || isVarSource) {
+              const otherKey = isVarTarget ? (typeof l.source === 'object' ? l.source.id : l.source) : (typeof l.target === 'object' ? l.target.id : l.target);
+              const otherType = otherKey.split(':')[0];
+              const otherId = otherKey.split(':').slice(1).join(':');
+              if (otherType === 'evidence') {
+                const claim = dashboardData.registers.EV_evidence_register.find(c => c.evidence_id === otherId);
+                return claim && claim.nbs_id === nbsFilter;
+              }
+              if (otherType === 't4') {
+                return otherId.startsWith(nbsFilter);
+              }
+            }
+            return false;
+          });
+          if (!hasLinkedClaim) return false;
+        }
+      }
+      return true;
+    });
+
+    const nodeIdsSet = new Set(filteredNodes.map(n => n.id));
+
+    let filteredLinks = allData.links.filter(l => {
+      const srcId = typeof l.source === 'object' ? l.source.id : l.source;
+      const tgtId = typeof l.target === 'object' ? l.target.id : l.target;
+      return nodeIdsSet.has(srcId) && nodeIdsSet.has(tgtId);
+    });
+
+    renderD3ForceGraph('#network-svg', { nodes: filteredNodes, links: filteredLinks });
+  }
+
+  function prepareNetworkData(data) {
+    const nodes = [];
+    const links = [];
+    const nodeMap = new Map();
+
+    const addNode = (id, type, label, dataObj) => {
+      const key = `${type}:${id}`;
+      if (!nodeMap.has(key)) {
+        const node = { id: key, type, label, data: dataObj };
+        nodes.push(node);
+        nodeMap.set(key, node);
+      }
+      return key;
+    };
+
+    // 1. Ingest Sources
+    const sources = data.registers.SRC_source_register || [];
+    sources.forEach(s => {
+      addNode(s.source_id, 'source', s.source_id, s);
+    });
+
+    // 2. Ingest Variables
+    const variables = data.registers.VONT_variable_ontology || [];
+    variables.forEach(v => {
+      addNode(v.canonical_variable_id, 'variable', v.label, v);
+    });
+
+    // 3. Ingest Families
+    const families = data.registers.FAM_family_registry || [];
+    families.forEach(f => {
+      addNode(f.suitability_family_id, 'family', f.name, f);
+    });
+
+    // 4. Ingest Evidence claims & link to Sources, Variables, and Families
+    const claims = data.registers.EV_evidence_register || [];
+    claims.forEach(c => {
+      const evKey = addNode(c.evidence_id, 'evidence', c.evidence_id, c);
+      
+      const srcKey = `source:${c.source_id}`;
+      if (nodeMap.has(srcKey)) {
+        links.push({ source: srcKey, target: evKey, relation: 'contains' });
+      }
+      
+      const varKey = `variable:${c.variable}`;
+      if (nodeMap.has(varKey)) {
+        links.push({ source: evKey, target: varKey, relation: 'applies_to' });
+      }
+      
+      if (c.suitability_family_id) {
+        const famKey = `family:${c.suitability_family_id}`;
+        if (nodeMap.has(famKey)) {
+          links.push({ source: evKey, target: famKey, relation: 'observed_in' });
+        }
+      }
+    });
+
+    const parseEvList = (evIds) => {
+      if (!evIds) return [];
+      if (Array.isArray(evIds)) return evIds;
+      try {
+        const parsed = JSON.parse(evIds);
+        if (Array.isArray(parsed)) return parsed;
+      } catch(e) {}
+      if (typeof evIds === 'string') {
+        return evIds.split(';').map(x => x.trim()).filter(Boolean);
+      }
+      return [];
+    };
+
+    // 5. Ingest Recipes (T3, T4, T6) and link to Evidence, Variables, Families
+    Object.entries(data.recipes).forEach(([nbsId, recipe]) => {
+      // T4 Mappings
+      (recipe.T4_suitability_mappings || []).forEach(m => {
+        const t4Id = `${nbsId}_t4_${m.variable}`;
+        const t4Key = addNode(t4Id, 't4', m.variable, m);
+
+        const famKey = `family:${m.suitability_family_id}`;
+        if (nodeMap.has(famKey)) {
+          links.push({ source: famKey, target: t4Key, relation: 'defines_suitability' });
+        }
+
+        const varKey = `variable:${m.variable}`;
+        if (nodeMap.has(varKey)) {
+          links.push({ source: varKey, target: t4Key, relation: 'evaluated_in' });
+        }
+
+        parseEvList(m.evidence_ids).forEach(evId => {
+          const evKey = `evidence:${evId}`;
+          if (nodeMap.has(evKey)) {
+            links.push({ source: evKey, target: t4Key, relation: 'justifies_t4' });
+          }
+        });
+      });
+
+      // T3 Hazard Links
+      (recipe.T3_nbs_hazard_farming || []).forEach(r => {
+        const t3Id = `${nbsId}_t3_${r.record_id}`;
+        const t3Key = addNode(t3Id, 't3', r.hazard_type, r);
+
+        parseEvList(r.evidence_ids).forEach(evId => {
+          const evKey = `evidence:${evId}`;
+          if (nodeMap.has(evKey)) {
+            links.push({ source: evKey, target: t3Key, relation: 'justifies_t3' });
+          }
+        });
+      });
+
+      // T6 Economics
+      (recipe.T6_nbs_scorecard || []).forEach(sc => {
+        const t6Id = `${nbsId}_t6_${sc.record_id}`;
+        const t6Key = addNode(t6Id, 't6', sc.economic_indicator_type || sc.variable_id, sc);
+
+        parseEvList(sc.evidence_ids).forEach(evId => {
+          const evKey = `evidence:${evId}`;
+          if (nodeMap.has(evKey)) {
+            links.push({ source: evKey, target: t6Key, relation: 'justifies_t6' });
+          }
+        });
+      });
+    });
+
+    return { nodes, links };
+  }
+
+  function renderD3ForceGraph(svgSelector, graphData) {
+    const svg = d3.select(svgSelector);
+    svg.selectAll("*").remove();
+
+    const parentNode = svg.node().parentNode;
+    const width = parentNode.clientWidth || 800;
+    const height = parentNode.clientHeight || 580;
+
+    svg.attr("width", width).attr("height", height);
+
+    const gContainer = svg.append("g");
+
+    const zoomBehavior = d3.zoom()
+      .scaleExtent([0.15, 6])
+      .on("zoom", (event) => {
+        gContainer.attr("transform", event.transform);
+        networkSvgTransform = event.transform;
+      });
+
+    svg.call(zoomBehavior);
+    svg.call(zoomBehavior.transform, networkSvgTransform);
+
+    if (networkSimulation) networkSimulation.stop();
+
+    const simulation = d3.forceSimulation(graphData.nodes)
+      .force("link", d3.forceLink(graphData.links).id(d => d.id).distance(d => {
+        if (d.relation === 'defines_suitability') return 45;
+        if (d.relation === 'contains') return 35;
+        return 60;
+      }))
+      .force("charge", d3.forceManyBody().strength(d => {
+        if (d.type === 'evidence') return -30;
+        if (d.type === 'source') return -200;
+        return -140;
+      }))
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("collision", d3.forceCollide().radius(d => {
+        if (d.type === 'source') return 20;
+        if (d.type === 'evidence') return 9;
+        return 15;
+      }))
+      .force("x", d3.forceX(width / 2).strength(0.04))
+      .force("y", d3.forceY(height / 2).strength(0.04));
+
+    networkSimulation = simulation;
+
+    const link = gContainer.append("g")
+      .selectAll("line")
+      .data(graphData.links)
+      .join("line")
+      .attr("class", "network-link-line")
+      .attr("stroke-width", d => d.relation === 'defines_suitability' ? 2.5 : 1.2)
+      .attr("stroke-dasharray", d => (d.relation === 'applies_to' || d.relation === 'observed_in') ? "3,3" : null)
+      .attr("stroke", d => {
+        if (d.relation === 'defines_suitability') return "var(--accent-purple)";
+        if (d.relation.startsWith('justifies_t4')) return "var(--accent-emerald)";
+        if (d.relation.startsWith('justifies_t3')) return "var(--accent-rose)";
+        if (d.relation.startsWith('justifies_t6')) return "var(--accent-amber)";
+        return "var(--text-muted)";
+      })
+      .attr("stroke-opacity", 0.18);
+
+    const node = gContainer.append("g")
+      .selectAll("circle")
+      .data(graphData.nodes)
+      .join("circle")
+      .attr("class", "network-node-circle")
+      .attr("r", d => {
+        if (d.type === 'source') {
+          const claims = dashboardData.registers.EV_evidence_register || [];
+          const count = claims.filter(c => c.source_id === d.data.source_id).length;
+          return 9 + Math.min(count, 13);
+        }
+        if (d.type === 'family') return 9.5;
+        if (d.type === 'variable') return 8;
+        if (d.type === 'evidence') return 4.5;
+        return 7;
+      })
+      .attr("fill", d => {
+        if (d.type === 'source') return "#0f766e";
+        if (d.type === 'evidence') {
+          const tier = d.data.benchmark_tier || 'low';
+          return tier === 'high' ? "var(--accent-emerald)" 
+               : tier === 'medium' ? "var(--accent-amber)" 
+               : "var(--text-secondary)";
+        }
+        if (d.type === 'variable') return "var(--accent-sky)";
+        if (d.type === 'family') return "var(--accent-purple)";
+        if (d.type === 't4') return "var(--accent-emerald)";
+        if (d.type === 't3') return "var(--accent-rose)";
+        if (d.type === 't6') return "var(--accent-amber)";
+        return "var(--text-muted)";
+      })
+      .attr("stroke", "var(--bg-secondary)")
+      .attr("stroke-width", 1.2)
+      .call(d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended));
+
+    const label = gContainer.append("g")
+      .selectAll("text")
+      .data(graphData.nodes.filter(n => n.type === 'source' || n.type === 'family' || n.type === 'variable'))
+      .join("text")
+      .attr("class", "network-node-text")
+      .attr("dy", 20)
+      .style("font-size", "8px")
+      .style("fill", "var(--text-muted)")
+      .text(d => d.label.length > 15 ? d.label.substring(0, 13) + '...' : d.label);
+
+    node.on("mouseenter", (event, d) => {
+      link.attr("stroke-opacity", l => {
+        const isConnected = l.source.id === d.id || l.target.id === d.id;
+        return isConnected ? 0.85 : 0.02;
+      }).attr("stroke-width", l => {
+        const isConnected = l.source.id === d.id || l.target.id === d.id;
+        return isConnected ? (l.relation === 'defines_suitability' ? 3.5 : 2.2) : 1.2;
+      });
+
+      node.style("opacity", n => {
+        if (n.id === d.id) return 1.0;
+        const isConnected = graphData.links.some(l => 
+          (l.source.id === d.id && l.target.id === n.id) ||
+          (l.target.id === d.id && l.source.id === n.id)
+        );
+        return isConnected ? 0.95 : 0.18;
+      }).attr("stroke", n => n.id === d.id ? "var(--text-primary)" : "var(--bg-secondary)");
+
+      inspectNode(d);
+    }).on("mouseleave", () => {
+      link.attr("stroke-opacity", 0.18)
+          .attr("stroke-width", d => d.relation === 'defines_suitability' ? 2.5 : 1.2);
+      node.style("opacity", 1.0)
+          .attr("stroke", "var(--bg-secondary)");
+    });
+
+    document.getElementById('btn-network-reset-zoom').onclick = () => {
+      svg.transition().duration(750).call(zoomBehavior.transform, d3.zoomIdentity);
+    };
+
+    node.on("dblclick", (event, d) => {
+      if (!d.active) {
+        d.fx = d.x;
+        d.fy = d.y;
+        d.active = true;
+        d3.select(event.currentTarget).attr("stroke-width", 2.5).attr("stroke", "var(--accent-sky)");
+      } else {
+        d.fx = null;
+        d.fy = null;
+        d.active = false;
+        d3.select(event.currentTarget).attr("stroke-width", 1.2).attr("stroke", "var(--bg-secondary)");
+      }
+    });
+
+    simulation.on("tick", () => {
+      link
+        .attr("x1", d => d.source.x)
+        .attr("y1", d => d.source.y)
+        .attr("x2", d => d.target.x)
+        .attr("y2", d => d.target.y);
+
+      node
+        .attr("cx", d => d.x)
+        .attr("cy", d => d.y);
+
+      label
+        .attr("x", d => d.x)
+        .attr("y", d => d.y);
+    });
+
+    function dragstarted(event, d) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      d.px = d.x;
+      d.py = d.y;
+    }
+
+    function dragged(event, d) {
+      d.x = event.x;
+      d.y = event.y;
+      if (d.active) {
+        d.fx = event.x;
+        d.fy = event.y;
+      }
+    }
+
+    function dragended(event, d) {
+      if (!event.active) simulation.alphaTarget(0);
+    }
+  }
+
+  function inspectNode(node) {
+    const panel = document.getElementById('network-details-panel');
+    if (!panel) return;
+    
+    let html = '';
+    const typeLabel = node.type.toUpperCase() === 'T3' ? 'Hazard Link (T3)'
+                    : node.type.toUpperCase() === 'T4' ? 'Suitability Mapping (T4)'
+                    : node.type.toUpperCase() === 'T6' ? 'Economics Line (T6)'
+                    : node.type.charAt(0).toUpperCase() + node.type.slice(1);
+                    
+    let badgeColor = 'var(--text-muted)';
+    if (node.type === 'variable') badgeColor = 'var(--accent-sky)';
+    else if (node.type === 'family') badgeColor = 'var(--accent-purple)';
+    else if (node.type === 'source') badgeColor = '#0f766e';
+    else if (node.type === 't4') badgeColor = 'var(--accent-emerald)';
+    else if (node.type === 't3') badgeColor = 'var(--accent-rose)';
+    else if (node.type === 't6') badgeColor = 'var(--accent-amber)';
+
+    html += `
+      <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px;">
+        <span class="badge" style="background: rgba(255,255,255,0.02); color: ${badgeColor}; border-color: ${badgeColor}; text-transform: uppercase; font-size: 9.5px; padding: 2px 6px;">
+          ${typeLabel}
+        </span>
+        <h4 style="margin: 6px 0 0 0; font-size: 14.5px; font-family: var(--font-outfit); color: var(--text-primary);">
+          ${node.label}
+        </h4>
+        <code style="font-size: 10.5px; color: var(--text-muted); display: block; margin-top: 3px;">
+          ID: ${node.id.split(':').slice(1).join(':') || node.id}
+        </code>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; font-size: 12px; line-height: 1.45; color: var(--text-secondary);">
+    `;
+
+    if (node.type === 'source') {
+      const s = node.data;
+      const citation = s.citation || 'N/A';
+      const doi = s.doi ? `<a href="https://doi.org/${s.doi}" target="_blank" style="color: var(--accent-sky); text-decoration: underline;">${s.doi}</a>` : 'N/A';
+      
+      const claims = dashboardData.registers.EV_evidence_register || [];
+      const claimCount = claims.filter(c => c.source_id === s.source_id).length;
+
+      html += `
+        <p><strong>Full Citation:</strong><br><span style="color: var(--text-primary); font-size: 11.5px;">${citation}</span></p>
+        <p><strong>DOI:</strong> ${doi}</p>
+        <p><strong>Study Country:</strong> <span style="text-transform: capitalize;">${s.study_country || 'Global'}</span></p>
+        <p><strong>Methodology Type:</strong> <span style="text-transform: uppercase;">${s.method_type || 'empirical'}</span></p>
+        <p><strong>Benchmark Tier:</strong> <span class="badge ${s.benchmark_tier || 'low'}" style="font-size: 10px; padding: 1px 5px;">${s.benchmark_tier || 'low'}</span></p>
+        <p><strong>Evidence Claims Extracted:</strong> <strong>${claimCount}</strong> claims</p>
+      `;
+    } else if (node.type === 'evidence') {
+      const c = node.data;
+      const s = dashboardData.registers.SRC_source_register.find(src => src.source_id === c.source_id);
+      const citation = s ? s.citation : c.source_id;
+      const tier = s ? s.benchmark_tier : 'low';
+      
+      const details = [];
+      if (c.context && c.context.aez) details.push(`AEZ: <strong>${c.context.aez}</strong>`);
+      if (s && s.study_country) details.push(`Country: <strong>${s.study_country}</strong>`);
+      if (c.page) details.push(`Page: <strong>${c.page}</strong>`);
+      if (c.taxon) details.push(`Taxon: <em>${c.taxon}</em>`);
+      if (c.evidence_type) details.push(`Type: <strong>${c.evidence_type.replace(/_/g, ' ')}</strong>`);
+
+      html += `
+        <blockquote style="margin: 0; padding: 10px 12px; background: rgba(255,255,255,0.02); border-left: 3px solid var(--accent-sky); border-radius: 4px; font-style: italic; color: var(--text-primary); font-size: 11.5px; line-height: 1.45;">
+          “${c.quote}”
+        </blockquote>
+        <p style="margin-top: 8px;"><strong>Linked Reference:</strong><br><span style="font-size: 11.5px;">${citation}</span></p>
+        <p><strong>Benchmark Quality:</strong> <span class="badge ${tier}" style="font-size: 10px; padding: 1px 5px;">${tier} tier</span></p>
+        <p><strong>Context Details:</strong><br><span style="font-size: 11px; color: var(--text-muted);">${details.join(' • ')}</span></p>
+        
+        <div style="margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 12px; display: flex; gap: 8px;">
+          <button class="pill-btn active emerald" id="inspect-network-evidence-go" style="flex: 1; border-radius: 4px; font-size: 11px; padding: 5px;">
+            Go to Interrogator ➔
+          </button>
+          <button class="pill-btn active rose" id="inspect-network-evidence-flag" style="border-radius: 4px; font-size: 11px; padding: 5px 8px;">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:2px;"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+            Flag
+          </button>
+        </div>
+      `;
+      
+      setTimeout(() => {
+        const goBtn = document.getElementById('inspect-network-evidence-go');
+        if (goBtn) {
+          goBtn.onclick = () => {
+            const tabBtn = document.querySelector('[data-tab="tab-interrogator"]');
+            if (tabBtn) tabBtn.click();
+            const nbsSelect = document.getElementById('select-nbs');
+            if (nbsSelect) {
+              nbsSelect.value = c.nbs_id;
+              nbsSelect.dispatchEvent(new Event('change'));
+            }
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+              searchInput.value = c.evidence_id;
+              searchInput.dispatchEvent(new Event('input'));
+            }
+            document.querySelector('.interrogator-grid').scrollIntoView({ behavior: 'smooth' });
+          };
+        }
+        
+        const flagBtn = document.getElementById('inspect-network-evidence-flag');
+        if (flagBtn) {
+          flagBtn.onclick = () => {
+            openGitIssue('evidence', c);
+          };
+        }
+      }, 50);
+
+    } else if (node.type === 'variable') {
+      const v = node.data;
+      html += `
+        <p><strong>Ontology Group:</strong> <span style="text-transform: capitalize;">${v.group_id}</span></p>
+        <p><strong>Canonical Unit:</strong> <code>${v.canonical_unit || 'N/A'}</code></p>
+        <p><strong>Min Siting Resolution:</strong> ${v.min_meaningful_resolution_m ? `${v.min_meaningful_resolution_m} meters` : 'Scale independent'}</p>
+        <p><strong>Resolution Sensitivity:</strong> <span class="badge ${v.resolution_sensitivity || 'low'}" style="font-size: 10px; padding: 1px 5px;">${v.resolution_sensitivity || 'low'}</span></p>
+        <p><strong>Context Sensitivity:</strong> <span style="text-transform: uppercase; font-weight: 600; color: ${v.context_sensitivity === 'high' ? 'var(--accent-rose)' : v.context_sensitivity === 'medium' ? 'var(--accent-amber)' : 'var(--text-secondary)'};">${v.context_sensitivity || 'low'}</span></p>
+      `;
+    } else if (node.type === 'family') {
+      const f = node.data;
+      html += `
+        <p><strong>Product Representation:</strong> <span style="text-transform: capitalize;">${f.spatial_product_type.replace(/_/g, ' ')}</span></p>
+        <p><strong>Dominant Limiting Siting Factor:</strong><br><span style="color: var(--text-primary); font-size: 11.5px;">${f.dominant_limiting_factor}</span></p>
+        <p><strong>Grouping Rationale:</strong><br>${f.grouping_rationale}</p>
+        <p><strong>Scientific Definition:</strong><br>${f.definition}</p>
+      `;
+    } else if (node.type === 't4') {
+      const m = node.data;
+      const isScenario = m.is_scenario_candidate ? '<span class="badge" style="background: rgba(168, 85, 247, 0.1); color: var(--accent-purple); border-color: rgba(168,85,247,0.2); font-size: 9.5px; padding: 1px 5px;">Scenario candidate</span>' : '';
+      
+      let paramsStr = `<strong>${m.relationship_type.replace(/_/g, ' ')}</strong>`;
+      if (m.relationship_params) {
+        paramsStr += '<div style="margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px;">';
+        Object.entries(m.relationship_params).forEach(([p, val]) => {
+          paramsStr += `<span class="param-badge" style="font-size: 10px; padding: 2px 6px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 4px;">${p}: <strong>${val}</strong></span>`;
+        });
+        paramsStr += '</div>';
+      }
+
+      html += `
+        <p><strong>Suitability Dimension:</strong> <span style="text-transform: capitalize;">${m.suitability_dimension.replace(/_/g, ' ')}</span> ${isScenario}</p>
+        <p><strong>Default Siting Weight:</strong> <strong style="color: var(--accent-emerald); font-size: 15px;">${m.weight_default !== undefined ? m.weight_default : 'N/A'}</strong></p>
+        <p><strong>Dataset Sourced:</strong> <code style="color: var(--accent-sky);">${m.dataset_id}</code></p>
+        <p><strong>Siting Threshold Logic:</strong><br>${paramsStr}</p>
+        <p><strong>Reconciliation Comments:</strong><br>${m.justification || 'No justification details.'}</p>
+      `;
+    } else if (node.type === 't3') {
+      const r = node.data;
+      html += `
+        <p><strong>Applicable Farming System:</strong> <code>${r.farming_system}</code></p>
+        <p><strong>Mitigation Potential:</strong> <span style="font-weight: 600; text-transform: uppercase; color: ${r.mitigation_potential === 'high' ? 'var(--accent-emerald)' : r.mitigation_potential === 'medium' ? 'var(--accent-amber)' : 'var(--text-secondary)'};">${r.mitigation_potential}</span></p>
+        <p><strong>Mitigation Mechanism:</strong><br>${r.mitigation_mechanism || 'N/A'}</p>
+        ${r.caveats ? `<p><strong>Caveats:</strong><br><span style="color: var(--text-muted); font-size: 11.5px;">${r.caveats}</span></p>` : ''}
+      `;
+    } else if (node.type === 't6') {
+      const sc = node.data;
+      let valRange = 'N/A';
+      if (sc.economic_value_range) {
+        const vr = sc.economic_value_range;
+        valRange = `<strong>${vr.low} – ${vr.high}</strong> <span style="color:var(--text-muted); font-size:11px;">${vr.unit || ''}</span>`;
+      }
+      html += `
+        <p><strong>Indicator Type:</strong> <span style="text-transform: capitalize;">${sc.variable_type}</span></p>
+        <p><strong>Value Scoping Range:</strong> ${valRange}</p>
+        <p><strong>Confidence:</strong> <span class="badge ${sc.effect_confidence === 'high' ? 'high' : sc.effect_confidence === 'medium' ? 'medium' : 'low'}" style="font-size: 10px; padding: 1px 5px;">${sc.effect_confidence}</span></p>
+        <p><strong>Mechanism:</strong><br>${sc.effect_mechanism || 'N/A'}</p>
+        ${sc.conditionality ? `<p><strong>Conditionality:</strong><br><span style="color: var(--accent-sky); font-size: 11.5px;">${sc.conditionality}</span></p>` : ''}
+      `;
+    }
+
+    html += '</div>';
+    panel.innerHTML = html;
   }
 </script>
 </body>
