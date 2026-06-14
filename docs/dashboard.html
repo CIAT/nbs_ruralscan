@@ -491,6 +491,41 @@
     border: 1px solid rgba(168, 85, 247, 0.2);
   }
 
+  /* Audit table sortable headers and badges */
+  .sortable-header {
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  .sortable-header:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: var(--text-primary) !important;
+  }
+  #audit-hdr-t4:hover {
+    background-color: rgba(16, 185, 129, 0.12) !important;
+  }
+  #audit-hdr-t3:hover {
+    background-color: rgba(244, 63, 94, 0.12) !important;
+  }
+  #audit-hdr-t6:hover {
+    background-color: rgba(245, 158, 11, 0.12) !important;
+  }
+  .badge.audit-badge {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    line-height: 1;
+    border-radius: 50%;
+    cursor: help;
+    transition: transform 0.15s ease, filter 0.15s ease;
+  }
+  .badge.audit-badge:hover {
+    transform: scale(1.2);
+    filter: brightness(1.2);
+  }
+
   /* Interrogator layout */
   .interrogator-grid {
     display: grid;
@@ -1169,93 +1204,61 @@
           <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
         </div>
         <div id="wrapper-discovery-audit">
+          <!-- Filter / Search toolbar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Filter NbS:</span>
+                <select id="filter-audit-nbs" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
+                  <option value="all">All NbS</option>
+                  <option value="agroforestry">Agroforestry</option>
+                  <option value="water_harvesting_conservation">Water Harvesting</option>
+                </select>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Status:</span>
+                <select id="filter-audit-status" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
+                  <option value="all">All</option>
+                  <option value="active">Active (Has Ingested Mappings/Claims)</option>
+                  <option value="pending">Pending/Draft</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <input type="text" class="table-search-input" id="search-audit-table" placeholder="Search families..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:180px;">
+            </div>
+          </div>
           <div class="table-wrapper">
             <table class="data-table" id="table-discovery-audit">
               <thead>
+                <!-- Level 1 header: Targets -->
                 <tr>
-                  <th>NbS &amp; Analytical Target Table</th>
-                  <th>Stock Papers (Stocktake)</th>
-                  <th>Updated Lit Search</th>
-                  <th>Grey Lit Search (Reports)</th>
-                  <th>Tools / Manuals / Project Docs</th>
+                  <th rowspan="2" id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
+                  <th colspan="4" id="audit-hdr-t4" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings</th>
+                  <th colspan="4" id="audit-hdr-t3" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links</th>
+                  <th colspan="4" id="audit-hdr-t6" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing</th>
+                </tr>
+                <!-- Level 2 header: Evidence Types -->
+                <tr>
+                  <!-- T4 Sub-columns -->
+                  <th style="font-size: 10px; text-align: center; border-left: 1px solid var(--border-color); padding: 6px;">Stock</th>
+                  <th style="font-size: 10px; text-align: center; padding: 6px;">Lit</th>
+                  <th style="font-size: 10px; text-align: center; padding: 6px;">Grey</th>
+                  <th style="font-size: 10px; text-align: center; padding: 6px;">Tools</th>
+                  <!-- T3 Sub-columns -->
+                  <th style="font-size: 10px; text-align: center; border-left: 1px solid var(--border-color); padding: 6px;">Stock</th>
+                  <th style="font-size: 10px; text-align: center; padding: 6px;">Lit</th>
+                  <th style="font-size: 10px; text-align: center; padding: 6px;">Grey</th>
+                  <th style="font-size: 10px; text-align: center; padding: 6px;">Tools</th>
+                  <!-- T6 Sub-columns -->
+                  <th style="font-size: 10px; text-align: center; border-left: 1px solid var(--border-color); padding: 6px;">Stock</th>
+                  <th style="font-size: 10px; text-align: center; padding: 6px;">Lit</th>
+                  <th style="font-size: 10px; text-align: center; padding: 6px;">Grey</th>
+                  <th style="font-size: 10px; text-align: center; padding: 6px;">Tools</th>
                 </tr>
               </thead>
-              <tbody>
-                <!-- ================= Agroforestry — Planted Silvoarable ================= -->
-                <tr>
-                  <td style="font-weight: 500; padding: 14px 16px;">
-                    <strong>Agroforestry — Planted Silvoarable</strong> (F1)<br>
-                    <span style="font-size: 11px; color: var(--text-muted);">T4 Suitability Mappings</span>
-                  </td>
-                  <td><span class="badge high">✓ Complete</span></td>
-                  <td><span class="badge high">✓ Complete</span></td>
-                  <td><span class="badge high">✓ Complete</span></td>
-                  <td><span class="badge high">✓ Complete</span></td>
-                </tr>
-                <tr>
-                  <td style="font-weight: 500; padding: 14px 16px;">
-                    <strong>Agroforestry — Planted Silvoarable</strong> (F1)<br>
-                    <span style="font-size: 11px; color: var(--text-muted);">T3 Hazard Links</span>
-                  </td>
-                  <td><span class="badge medium">⚠ Seeded / Registered</span></td>
-                  <td><span class="badge medium">⚠ Seeded / Registered</span></td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                  <td><span class="badge medium">⚠ Seeded / Registered</span></td>
-                </tr>
-                <tr>
-                  <td style="font-weight: 500; padding: 14px 16px;">
-                    <strong>Agroforestry — Planted Silvoarable</strong> (F1)<br>
-                    <span style="font-size: 11px; color: var(--text-muted);">T6 Scorecard Outcomes &amp; Costing</span>
-                  </td>
-                  <td><span class="badge medium">⚠ Seeded / Registered</span></td>
-                  <td><span class="badge medium">⚠ Seeded / Registered</span></td>
-                  <td><span class="badge high">✓ Complete</span></td>
-                  <td><span class="badge medium">⚠ Seeded / Registered</span></td>
-                </tr>
-
-                <!-- ================= Water Harvesting — Runoff Catchment ================= -->
-                <tr>
-                  <td style="font-weight: 500; padding: 14px 16px;">
-                    <strong>Water Harvesting — Runoff Catchment</strong> (F1)<br>
-                    <span style="font-size: 11px; color: var(--text-muted);">T4 Suitability Mappings</span>
-                  </td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                  <td><span class="badge high">✓ Complete</span></td>
-                  <td><span class="badge high">✓ Complete</span></td>
-                </tr>
-                <tr>
-                  <td style="font-weight: 500; padding: 14px 16px;">
-                    <strong>Water Harvesting — Runoff Catchment</strong> (F1)<br>
-                    <span style="font-size: 11px; color: var(--text-muted);">T3 Hazard Links</span>
-                  </td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                </tr>
-                <tr>
-                  <td style="font-weight: 500; padding: 14px 16px;">
-                    <strong>Water Harvesting — Runoff Catchment</strong> (F1)<br>
-                    <span style="font-size: 11px; color: var(--text-muted);">T6 Scorecard Outcomes &amp; Costing</span>
-                  </td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                  <td><span class="badge low">✗ Pending Search</span></td>
-                  <td><span class="badge high">✓ Complete</span></td>
-                </tr>
-
-                <!-- ================= Other Agroforestry Families ================= -->
-                <tr>
-                  <td style="font-weight: 500; padding: 14px 16px; background-color: rgba(255, 255, 255, 0.01);">
-                    <strong>Other Agroforestry Families</strong> (F2–F6)<br>
-                    <span style="font-size: 11px; color: var(--text-muted); font-style: italic;">Silvopastoral, Regeneration, Linear, Shaded, Homegardens</span>
-                  </td>
-                  <td style="background-color: rgba(255, 255, 255, 0.01);"><span class="badge low">✗ Pending Search</span></td>
-                  <td style="background-color: rgba(255, 255, 255, 0.01);"><span class="badge low">✗ Pending Search</span></td>
-                  <td style="background-color: rgba(255, 255, 255, 0.01);"><span class="badge low">✗ Pending Search</span></td>
-                  <td style="background-color: rgba(255, 255, 255, 0.01);"><span class="badge low">✗ Pending Search</span></td>
-                </tr>
+              <tbody id="body-discovery-audit">
+                <!-- Dynamically Rendered -->
               </tbody>
             </table>
           </div>
@@ -2135,6 +2138,22 @@
     renderGlobalNbsComparison();
     renderManagementProgress();
 
+    // 6b. Populate Discovery Audit List & Listeners
+    renderDiscoveryAudit();
+    const auditNbsFilter = document.getElementById('filter-audit-nbs');
+    if (auditNbsFilter) {
+      auditNbsFilter.addEventListener('change', renderDiscoveryAudit);
+    }
+    const auditStatusFilter = document.getElementById('filter-audit-status');
+    if (auditStatusFilter) {
+      auditStatusFilter.addEventListener('change', renderDiscoveryAudit);
+    }
+    const auditSearchInput = document.getElementById('search-audit-table');
+    if (auditSearchInput) {
+      auditSearchInput.addEventListener('input', renderDiscoveryAudit);
+    }
+    setupAuditSortListeners();
+
     // 7. Initialize Sankey target table toggle click listeners
     const sankeyToggles = ['toggle-sankey-t4', 'toggle-sankey-t3', 'toggle-sankey-t6'];
     sankeyToggles.forEach(id => {
@@ -2258,6 +2277,231 @@
       });
       
       body.appendChild(tr);
+    });
+  }
+
+  const discoveryStatusDb = {
+    "agroforestry__homegardens_proximity": {
+      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
+    },
+    "agroforestry__linear_boundary": {
+      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
+    },
+    "agroforestry__planted_silvoarable": {
+      t4: { stock: "complete", updated: "complete", grey: "complete", tools: "complete" },
+      t3: { stock: "seeded", updated: "seeded", grey: "pending", tools: "seeded" },
+      t6: { stock: "seeded", updated: "seeded", grey: "complete", tools: "seeded" }
+    },
+    "agroforestry__regeneration_farmland": {
+      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
+    },
+    "agroforestry__shaded_perennial": {
+      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
+    },
+    "agroforestry__silvopastoral": {
+      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
+    },
+    "water_harvesting__runoff_catchment": {
+      t4: { stock: "pending", updated: "pending", grey: "complete", tools: "complete" },
+      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
+      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "complete" }
+    }
+  };
+
+  let auditSortCol = 'family'; // 'family', 't4', 't3', 't6'
+  let auditSortDir = 'asc';
+
+  function renderDiscoveryAudit() {
+    const body = document.getElementById('body-discovery-audit');
+    if (!body) return;
+    body.innerHTML = '';
+
+    const families = dashboardData.registers.FAM_family_registry || [];
+    const claims = dashboardData.registers.EV_evidence_register || [];
+
+    // Group subpractices by suitability_family_id
+    const familiesMap = {};
+    families.forEach(f => {
+      const familyId = f.suitability_family_id;
+      if (!familiesMap[familyId]) {
+        familiesMap[familyId] = {
+          familyId: familyId,
+          nbsId: f.nbs_id,
+          name: f.name,
+          subpractices: []
+        };
+      }
+      familiesMap[familyId].subpractices.push(f);
+    });
+
+    const nbsFilter = document.getElementById('filter-audit-nbs').value;
+    const statusFilter = document.getElementById('filter-audit-status').value;
+    const searchVal = document.getElementById('search-audit-table').value.toLowerCase().trim();
+
+    let rows = Object.values(familiesMap);
+
+    // 1. Filter by NbS
+    if (nbsFilter !== 'all') {
+      rows = rows.filter(r => r.nbsId === nbsFilter);
+    }
+
+    // 2. Filter by status (active vs pending)
+    if (statusFilter !== 'all') {
+      rows = rows.filter(r => {
+        const hasEvidence = claims.some(c => c.suitability_family_id === r.familyId);
+        return statusFilter === 'active' ? hasEvidence : !hasEvidence;
+      });
+    }
+
+    // 3. Filter by search query
+    if (searchVal) {
+      rows = rows.filter(r => {
+        const familyDisplayName = r.familyId.split('__')[1].replace(/_/g, ' ');
+        const subpracticesNames = r.subpractices.map(s => s.name).join(' ');
+        return familyDisplayName.toLowerCase().includes(searchVal) || 
+               r.nbsId.toLowerCase().replace(/_/g, ' ').includes(searchVal) ||
+               subpracticesNames.toLowerCase().includes(searchVal);
+      });
+    }
+
+    // Helper to calculate score for sorting
+    const getTargetScore = (rowData, targetKey) => {
+      const status = discoveryStatusDb[rowData.familyId];
+      if (!status || !status[targetKey]) return 0;
+      const t = status[targetKey];
+      const getValScore = (v) => v === 'complete' ? 2 : v === 'seeded' ? 1 : 0;
+      return getValScore(t.stock) + getValScore(t.updated) + getValScore(t.grey) + getValScore(t.tools);
+    };
+
+    // 4. Sort
+    rows.sort((a, b) => {
+      let comparison = 0;
+      if (auditSortCol === 'family') {
+        const nameA = a.familyId.toLowerCase();
+        const nameB = b.familyId.toLowerCase();
+        comparison = nameA.localeCompare(nameB);
+      } else {
+        const scoreA = getTargetScore(a, auditSortCol);
+        const scoreB = getTargetScore(b, auditSortCol);
+        comparison = scoreA - scoreB;
+      }
+      return auditSortDir === 'asc' ? comparison : -comparison;
+    });
+
+    if (rows.length === 0) {
+      body.innerHTML = '<tr><td colspan="13" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
+      return;
+    }
+
+    const renderCell = (statusKey, targetKey, typeKey) => {
+      const status = discoveryStatusDb[statusKey];
+      const val = (status && status[targetKey] && status[targetKey][typeKey]) || 'pending';
+      
+      let badgeClass = 'low';
+      let symbol = '✗';
+      let titleText = 'Pending Search';
+      if (val === 'complete') {
+        badgeClass = 'high';
+        symbol = '✓';
+        titleText = 'Complete';
+      } else if (val === 'seeded') {
+        badgeClass = 'medium';
+        symbol = '⚠';
+        titleText = 'Seeded / Registered';
+      }
+      
+      const typeLabel = typeKey === 'stock' ? 'Stock Papers'
+                      : typeKey === 'updated' ? 'Updated Lit'
+                      : typeKey === 'grey' ? 'Grey Lit'
+                      : 'Tools & Manuals';
+      const targetLabel = targetKey === 't4' ? 'T4 Suitability'
+                        : targetKey === 't3' ? 'T3 Hazards'
+                        : 'T6 Outcomes & Costing';
+
+      return `<td style="text-align: center; border-left: ${typeKey === 'stock' ? '1px solid var(--border-color)' : 'none'};" title="${targetLabel} - ${typeLabel}: ${titleText}">
+        <span class="badge ${badgeClass} audit-badge">${symbol}</span>
+      </td>`;
+    };
+
+    rows.forEach(r => {
+      const recipe = dashboardData.recipes[r.nbsId];
+      if (!recipe) return;
+      const T0 = recipe.T0_nbs_registry && recipe.T0_nbs_registry[0];
+      const nbsName = T0 ? T0.nbs_name : r.nbsId;
+      const familyDisplayName = r.familyId.split('__')[1]
+                            .replace(/_/g, ' ')
+                            .replace(/\b\w/g, c => c.toUpperCase());
+      const subpracticesNames = r.subpractices.map(s => s.name).join(', ');
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="font-weight: 500; padding: 12px 16px;">
+          <strong style="color: var(--text-primary);">${nbsName}</strong> — ${familyDisplayName}
+          <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 2px;">
+            Subpractices: ${subpracticesNames}
+          </div>
+        </td>
+        ${renderCell(r.familyId, 't4', 'stock')}
+        ${renderCell(r.familyId, 't4', 'updated')}
+        ${renderCell(r.familyId, 't4', 'grey')}
+        ${renderCell(r.familyId, 't4', 'tools')}
+        
+        ${renderCell(r.familyId, 't3', 'stock')}
+        ${renderCell(r.familyId, 't3', 'updated')}
+        ${renderCell(r.familyId, 't3', 'grey')}
+        ${renderCell(r.familyId, 't3', 'tools')}
+        
+        ${renderCell(r.familyId, 't6', 'stock')}
+        ${renderCell(r.familyId, 't6', 'updated')}
+        ${renderCell(r.familyId, 't6', 'grey')}
+        ${renderCell(r.familyId, 't6', 'tools')}
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  function setupAuditSortListeners() {
+    const headers = [
+      { id: 'audit-hdr-family', col: 'family' },
+      { id: 'audit-hdr-t4', col: 't4' },
+      { id: 'audit-hdr-t3', col: 't3' },
+      { id: 'audit-hdr-t6', col: 't6' }
+    ];
+    headers.forEach(h => {
+      const el = document.getElementById(h.id);
+      if (el) {
+        el.addEventListener('click', () => {
+          if (auditSortCol === h.col) {
+            auditSortDir = auditSortDir === 'asc' ? 'desc' : 'asc';
+          } else {
+            auditSortCol = h.col;
+            auditSortDir = 'desc'; // default sort complete first
+          }
+          // Reset indicator style on all header titles
+          headers.forEach(x => {
+            const elX = document.getElementById(x.id);
+            if (elX) {
+              const label = elX.textContent.replace(' ▲', '').replace(' ▼', '');
+              elX.textContent = label;
+            }
+          });
+          // Add sorting indicator
+          const indicator = auditSortDir === 'asc' ? ' ▲' : ' ▼';
+          el.textContent = el.textContent + indicator;
+          
+          renderDiscoveryAudit();
+        });
+      }
     });
   }
 
