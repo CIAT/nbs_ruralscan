@@ -1224,6 +1224,24 @@
                 </select>
               </div>
             </div>
+            
+            <!-- Legend indicators -->
+            <div style="display:flex; gap:16px; align-items:center; font-size:11.5px; border-left: 1px solid var(--border-color); padding-left: 16px; margin-left: 4px; flex-wrap: wrap;">
+              <span style="color:var(--text-muted); font-weight:500;">Legend:</span>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="badge high audit-badge">✓</span>
+                <span style="color:var(--text-secondary);">Complete</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="badge medium audit-badge">⚠</span>
+                <span style="color:var(--text-secondary);">Seeded / Registered</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="badge low audit-badge">✗</span>
+                <span style="color:var(--text-secondary);">Pending Search</span>
+              </div>
+            </div>
+
             <div>
               <input type="text" class="table-search-input" id="search-audit-table" placeholder="Search families..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:180px;">
             </div>
@@ -1289,17 +1307,47 @@
       <div class="card-container">
         <h2 class="card-title" style="margin-bottom:12px;">
           <span>Evidence Sourcing &amp; Translation Flow Diagram</span>
-          <span class="card-title-meta">Hover over nodes to trace lineage. Filter target tables:</span>
+          <span class="card-title-meta">Hover over nodes to trace lineage, or switch to the Reviewed Sources Grid view.</span>
         </h2>
-        <!-- Target Table Toggles -->
-        <div style="display: flex; gap: 8px; margin-bottom: 16px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap;">
-          <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; align-self: center; margin-right: 4px;">Filter Target Tables:</span>
-          <button class="pill-btn active emerald" id="toggle-sankey-t4" data-target="t4_mappings" style="border-radius: 4px; padding: 4px 10px;">T4 Suitability</button>
-          <button class="pill-btn active rose" id="toggle-sankey-t3" data-target="t3_hazards" style="border-radius: 4px; padding: 4px 10px;">T3 Hazards</button>
-          <button class="pill-btn active amber" id="toggle-sankey-t6" data-target="t6_scorecard" style="border-radius: 4px; padding: 4px 10px;">T6 Outcomes & Costing</button>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+          <!-- Left: Target Table Toggles -->
+          <div style="display: flex; gap: 8px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap;">
+            <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; align-self: center; margin-right: 4px;">Filter Target Tables:</span>
+            <button class="pill-btn active emerald" id="toggle-sankey-t4" data-target="t4_mappings" style="border-radius: 4px; padding: 4px 10px;">T4 Suitability</button>
+            <button class="pill-btn active rose" id="toggle-sankey-t3" data-target="t3_hazards" style="border-radius: 4px; padding: 4px 10px;">T3 Hazards</button>
+            <button class="pill-btn active amber" id="toggle-sankey-t6" data-target="t6_scorecard" style="border-radius: 4px; padding: 4px 10px;">T6 Outcomes &amp; Costing</button>
+          </div>
+          
+          <!-- Right: View Toggle Buttons -->
+          <div style="display: flex; gap: 4px; background: rgba(255,255,255,0.04); padding: 4px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <button class="pill-btn active sky" id="btn-view-sankey" style="border-radius: 4px; padding: 4px 12px; font-size:11.5px; border:none; cursor:pointer;">📊 Flow Network</button>
+            <button class="pill-btn" id="btn-view-audit-list" style="border-radius: 4px; padding: 4px 12px; font-size:11.5px; background:transparent; border:none; color:var(--text-muted); cursor:pointer;">📋 Reviewed Sources Grid</button>
+          </div>
         </div>
-        <div class="chart-wrapper">
+
+        <div class="chart-wrapper" style="position: relative;">
           <svg id="sankey-flow" viewBox="0 0 800 420" style="width:100%; height:auto; background:var(--bg-secondary); border-radius:var(--radius-md); border:1px solid var(--border-color);"></svg>
+          
+          <!-- Alternative Review Table View -->
+          <div id="sankey-review-table-wrapper" style="display: none; width: 100%; max-height: 420px; overflow-y: auto; background: var(--bg-secondary); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <table class="data-table" id="table-sankey-review">
+              <thead>
+                <tr>
+                  <th style="font-size:11px; padding: 8px 10px;">Reviewed Source</th>
+                  <th style="font-size:11px; padding: 8px 10px; text-align: center;">Tier</th>
+                  <th style="font-size:11px; padding: 8px 10px;">Geography / Context</th>
+                  <th style="font-size:11px; padding: 8px 10px; text-align: center; background-color: rgba(16, 185, 129, 0.02);">T4 Suitability</th>
+                  <th style="font-size:11px; padding: 8px 10px; text-align: center; background-color: rgba(244, 63, 94, 0.02);">T3 Hazards</th>
+                  <th style="font-size:11px; padding: 8px 10px; text-align: center; background-color: rgba(245, 158, 11, 0.02);">T6 Costing</th>
+                  <th style="font-size:11px; padding: 8px 10px;">Variables Extracted</th>
+                </tr>
+              </thead>
+              <tbody id="body-sankey-review">
+                <!-- Dynamically Rendered -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -1791,6 +1839,50 @@
   let dashboardData = null;
   let sourcingGroupMode = 'method'; // 'method' or 'author'
 
+  function getFriendlySourceName(sourceId, citation) {
+    const toolMappings = {
+      'wocat_liniger_2011': 'WOCAT Guidelines (Liniger et al. 2011)',
+      'wocat_studer_2013': 'WOCAT SLM Technologies (Studer & Liniger 2013)',
+      'wb_fsrp_2022': 'World Bank FSRP PAD (2022)',
+      'wb_kcsap_2016': 'World Bank KCSAP project docs (2016)',
+      'tnc_accounting_2025': 'TNC Carbon Accounting Methods (2025)',
+      'tnc_naturebase_2025': 'TNC Naturebase Platform (2025)',
+      'wri_2025': 'WRI Restoration Diagnostics (2025)',
+      'miller_egm_2020': 'Miller Evidence Gap Map (2020)',
+      'castle_sr_2021': 'Castle Campbell Systematic Review (2021)',
+      'gca_2022': 'Global Commission on Adaptation report (2022)'
+    };
+    
+    if (toolMappings[sourceId]) {
+      return toolMappings[sourceId];
+    }
+    
+    if (sourceId && sourceId.includes('_')) {
+      const parts = sourceId.split('_');
+      const year = parts[parts.length - 1];
+      if (/^\d{4}$/.test(year)) {
+        if (parts.length === 2) {
+          const author = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+          return `${author} (${year})`;
+        } else if (parts.length === 3 && parts[1] === 'sr') {
+          const author = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+          return `${author} et al. (${year})`;
+        } else if (parts.length === 3 && parts[1] === 'egm') {
+          const author = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+          return `${author} EGM (${year})`;
+        } else if (parts.length > 2) {
+          const author = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+          return `${author} et al. (${year})`;
+        }
+      }
+    }
+    
+    if (sourceId) {
+      return sourceId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+    return 'Unknown Source';
+  }
+
   function toggleSection(wrapperId, chevId) {
     const wrapper = document.getElementById(wrapperId);
     const chev = document.getElementById(chevId);
@@ -1972,6 +2064,7 @@
 
     renderOverviewCharts(filteredSources, filteredClaims, filteredRecipes);
     renderSankeyFlow(filteredSources, filteredClaims);
+    renderSankeyReview(filteredSources, filteredClaims);
   }
 
   function initDashboard() {
@@ -2166,6 +2259,47 @@
         });
       }
     });
+
+    // 7b. View toggle click listeners (Flow Network vs Reviewed Sources Grid)
+    const btnViewSankey = document.getElementById('btn-view-sankey');
+    const btnViewAuditList = document.getElementById('btn-view-audit-list');
+    const sankeyFlowSvg = document.getElementById('sankey-flow');
+    const sankeyReviewTableWrapper = document.getElementById('sankey-review-table-wrapper');
+
+    if (btnViewSankey && btnViewAuditList && sankeyFlowSvg && sankeyReviewTableWrapper) {
+      btnViewSankey.addEventListener('click', () => {
+        // Switch to flow network
+        btnViewSankey.classList.add('active', 'sky');
+        btnViewSankey.style.background = '';
+        btnViewSankey.style.color = '';
+        
+        btnViewAuditList.classList.remove('active', 'sky');
+        btnViewAuditList.style.background = 'transparent';
+        btnViewAuditList.style.color = 'var(--text-muted)';
+        
+        sankeyFlowSvg.style.display = 'block';
+        sankeyReviewTableWrapper.style.display = 'none';
+      });
+
+      btnViewAuditList.addEventListener('click', () => {
+        // Switch to review table grid
+        btnViewAuditList.classList.add('active', 'sky');
+        btnViewAuditList.style.background = '';
+        btnViewAuditList.style.color = '';
+        
+        btnViewSankey.classList.remove('active', 'sky');
+        btnViewSankey.style.background = 'transparent';
+        btnViewSankey.style.color = 'var(--text-muted)';
+        
+        sankeyFlowSvg.style.display = 'none';
+        sankeyReviewTableWrapper.style.display = 'block';
+        
+        // Render current data
+        const scopeSelect = document.getElementById('overview-scope-select');
+        const selectedVal = scopeSelect ? scopeSelect.value : 'all';
+        triggerOverviewFilter(selectedVal);
+      });
+    }
   }
 
   // Resolve which target table a claim maps to, based on database evidence links & fallbacks
@@ -2700,7 +2834,11 @@
       .map(entry => entry[0]);
 
     // Columns structure
-    const col1Nodes = topSourceIds.map(id => ({ id, type: 'source', label: id.replace(/_/g, ' ').replace(/\b\w/g, c=>c.toUpperCase()) }));
+    const col1Nodes = topSourceIds.map(id => {
+      const src = sources.find(s => s.source_id === id);
+      const citation = src ? src.citation : '';
+      return { id, type: 'source', label: getFriendlySourceName(id, citation) };
+    });
     col1Nodes.push({ id: 'other_sources', type: 'source', label: 'Other Sources' });
 
     // Premium color palette for variables
@@ -2914,6 +3052,113 @@
 
       svg.appendChild(nodeGroup);
     });
+  }
+
+  function renderSankeyReview(sources, claims) {
+    const body = document.getElementById('body-sankey-review');
+    if (!body) return;
+    body.innerHTML = '';
+
+    if (!sources) sources = dashboardData.registers.SRC_source_register || [];
+    if (!claims) claims = dashboardData.registers.EV_evidence_register || [];
+    
+    // Resolve active targets from filters
+    const activeTargets = [];
+    const t4Active = document.getElementById('toggle-sankey-t4')?.classList.contains('active');
+    const t3Active = document.getElementById('toggle-sankey-t3')?.classList.contains('active');
+    const t6Active = document.getElementById('toggle-sankey-t6')?.classList.contains('active');
+    if (t4Active) activeTargets.push('t4_mappings');
+    if (t3Active) activeTargets.push('t3_hazards');
+    if (t6Active) activeTargets.push('t6_scorecard');
+
+    sources.forEach(s => {
+      // Find all claims for this source in the filtered set
+      const sourceClaims = claims.filter(c => c.source_id === s.source_id);
+      
+      // Count claims mapping to each table
+      let t4ClaimsCount = 0;
+      let t3ClaimsCount = 0;
+      let t6ClaimsCount = 0;
+
+      sourceClaims.forEach(c => {
+        const dest = getDestTable(c);
+        if (dest === 't4_mappings') t4ClaimsCount++;
+        else if (dest === 't3_hazards') t3ClaimsCount++;
+        else if (dest === 't6_scorecard') t6ClaimsCount++;
+      });
+
+      // Filter: if no active targets are selected, don't show.
+      // Or if the source doesn't contribute to any of the active targets, and is not swept.
+      const hasT4Claims = t4ClaimsCount > 0;
+      const hasT3Claims = t3ClaimsCount > 0;
+      const hasT6Claims = t6ClaimsCount > 0;
+
+      const contributesToActive = (t4Active && hasT4Claims) || (t3Active && hasT3Claims) || (t6Active && hasT6Claims);
+      const isSwept = s.extraction_status === 'swept' || s.extraction_status === 'signed_off';
+
+      if (!contributesToActive && !isSwept) return;
+
+      const tr = document.createElement('tr');
+      
+      // Build variable list
+      const vars = [...new Set(sourceClaims.map(c => c.variable))];
+      const varsLabel = vars.length > 0 
+        ? vars.map(v => `<span class="badge" style="background:rgba(255,255,255,0.05); color:var(--text-secondary); text-transform:none; margin:2px; font-weight:normal; border:1px solid var(--border-color);">${v.replace(/_/g, ' ')}</span>`).join(' ')
+        : `<span style="color:var(--text-muted); font-size:11px;">None extracted</span>`;
+
+      // Badge for tier
+      let tierClass = s.benchmark_tier === 'high' ? 'high' : s.benchmark_tier === 'medium' ? 'medium' : 'low';
+      
+      // Geo context
+      const geo = [s.study_country, s.region].filter(Boolean).join(', ') || 'Global';
+      
+      // User friendly name
+      const friendlyName = getFriendlySourceName(s.source_id, s.citation);
+
+      // Checkmarks for tables
+      const checkMark = (count, active) => {
+        if (!active) return `<span style="color:var(--text-muted); opacity: 0.3;">Disabled</span>`;
+        if (count > 0) {
+          return `<span class="badge high" style="padding: 2px 6px; font-size: 9px;" title="${count} extracted claims">✓ ${count} Mapped</span>`;
+        }
+        return `<span class="badge low" style="padding: 2px 6px; font-size: 9px; opacity:0.6;">✗ None</span>`;
+      };
+
+      tr.innerHTML = `
+        <td style="font-weight: 500; font-family: var(--font-inter); padding: 10px 12px;" title="${s.citation}">
+          <span style="color:var(--text-primary); font-weight:600;">${friendlyName}</span>
+          <div style="font-size:10px; color:var(--text-muted); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:260px; margin-top:2px;">
+            ${s.citation}
+          </div>
+        </td>
+        <td style="text-align: center; vertical-align: middle; padding: 10px 12px;">
+          <span class="badge ${tierClass}" style="font-size:9px; padding:2px 5px;">${s.benchmark_tier}</span>
+        </td>
+        <td style="font-size: 11.5px; padding: 10px 12px; color:var(--text-secondary);">
+          <div>${geo}</div>
+          <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">System: ${(s.farming_system || '').replace(/_/g, ' ')}</div>
+        </td>
+        <td style="text-align: center; vertical-align: middle; padding: 10px 12px; background-color: rgba(16, 185, 129, 0.01);">
+          ${checkMark(t4ClaimsCount, t4Active)}
+        </td>
+        <td style="text-align: center; vertical-align: middle; padding: 10px 12px; background-color: rgba(244, 63, 94, 0.01);">
+          ${checkMark(t3ClaimsCount, t3Active)}
+        </td>
+        <td style="text-align: center; vertical-align: middle; padding: 10px 12px; background-color: rgba(245, 158, 11, 0.01);">
+          ${checkMark(t6ClaimsCount, t6Active)}
+        </td>
+        <td style="padding: 10px 12px;">
+          <div style="display:flex; flex-wrap:wrap; max-width:240px;">
+            ${varsLabel}
+          </div>
+        </td>
+      `;
+      body.appendChild(tr);
+    });
+
+    if (body.children.length === 0) {
+      body.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:20px;">No reviewed sources found matching the active filters.</td></tr>';
+    }
   }
 
   function renderOverviewCharts(sources, claims, recipes) {
@@ -3179,7 +3424,8 @@
 
         sDiv.innerHTML = `
           <div style="flex:1;">
-            <strong style="color:var(--text-primary); font-size:12px;">${s.source_id}</strong>
+            <strong style="color:var(--text-primary); font-size:12px;">${getFriendlySourceName(s.source_id, s.citation)}</strong>
+            <span style="font-size:10px; color:var(--text-muted); margin-left:6px; font-weight:normal;">[${s.source_id}]</span>
             <span style="color:var(--text-muted); display:block; line-height:1.3; margin-top:2px;" title="${s.citation || ''}">${shortCitation}</span>
           </div>
           <button class="explore-btn" style="background:transparent; border:1px solid var(--border-color); color:var(--accent-emerald); padding:3px 8px; border-radius:4px; font-size:10px; cursor:pointer; font-weight:500; transition:all 0.2s; white-space:nowrap; margin-top:2px;">
@@ -3499,10 +3745,15 @@
 
       let highlightedQuote = c.quote || 'No verbatim quote cached.';
       let highlightedCitation = citation;
+      
+      const friendlyName = getFriendlySourceName(c.source_id, citation);
+      let highlightedFriendly = friendlyName;
+
       if (searchVal) {
         const regex = new RegExp(`(${searchVal})`, 'gi');
         highlightedQuote = highlightedQuote.replace(regex, '<mark>$1</mark>');
         highlightedCitation = highlightedCitation.replace(regex, '<mark>$1</mark>');
+        highlightedFriendly = highlightedFriendly.replace(regex, '<mark>$1</mark>');
       }
 
       const details = [];
@@ -3528,7 +3779,7 @@
         </div>
         <blockquote class="evidence-quote">“${highlightedQuote}”</blockquote>
         <div class="evidence-citation">
-          <span>Source: <strong>${highlightedCitation}</strong></span>
+          <span>Source: <strong>${highlightedFriendly}</strong> — <span style="font-size: 11.5px; font-weight: normal; color: var(--text-secondary);">${highlightedCitation}</span></span>
           ${src && src.doi ? `<span style="font-size:10px; color:var(--text-muted); margin-top:2px;">DOI: <a href="https://doi.org/${src.doi}" target="_blank" style="color:inherit; text-decoration:underline;">${src.doi}</a></span>` : ''}
         </div>
         <div class="evidence-meta-row">
