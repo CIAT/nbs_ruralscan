@@ -65,7 +65,7 @@ Rather than relying on general web searches, grey literature and tools were disc
 | **Topic & Scope Filter** | **50** | Screened out urban forestry, non-agroforestry biology, and general restoration papers. |
 | **Relevance Screen** | **30** | Filtered for papers with quantitative or qualitative claims linking practice subtypes to hazard reduction or asset threat thresholds. |
 | **Credibility Screen (Six-Axis)** | **20** | Evaluated for evidence strength, methodological transparency, venue, context relevance (LMIC), recency, and seminality. |
-| **Included in SRC Register** | **19** | 16 literature publications (including 7 new systematic reviews/meta-analyses), 2 grey literature reports, and 1 database tool. |
+| **Included in SRC Register** | **24** | 16 literature publications (including 7 new systematic reviews/meta-analyses), 2 grey literature reports, and 6 tools/methodologies. |
 
 ---
 
@@ -102,9 +102,14 @@ Rather than relying on general web searches, grey literature and tools were disc
 
 ### 3. Tools and Methodologies
 
-| `source_id` | Author / Year | Benchmark Tier | Scope / Context | Key Target Variables / Hazards |
+| `source_id` | Author / Year | Benchmark Tier | Scope / Context | Key Target Variables / Hazards / Modeling Boundaries |
 |---|---|---|---|---|
-| `wocat_slm_database` | WOCAT 2026 | High | Global | SLM technologies database, Climate Change Adaptation |
+| `wocat_slm_database` | WOCAT 2026 | High | Global | SLM technologies database, establishment costs, biophysical thresholds |
+| `invest_ecosystem_services` | Natural Capital Project 2026 | High | Global / Spatial | Carbon storage, USLE soil erosion ($R \times K \times LS \times C \times P$), Sediment Delivery Ratio ($SDR$ Borselli index of connectivity) |
+| `wanulcas_model` | ICRAF / van Noordwijk 2011 | High | Tropics / Plot | Tree-soil-crop resource competition (water, light, N, P), root length density, zone geometry |
+| `yieldsafe_model` | van der Werf et al. 2007 | High | Temperate & Global | Daily biophysical yield simulation, parameter-sparse light/water capture |
+| `fao_exact_carbon_tool` | FAO 2024 | High | Global / Land-use | Ex-ante GHG accounting, carbon pools, AFOLU project carbon balance |
+| `fao_ruralinvest_cba` | FAO 2026 | High | Global / Business | Financial CBA software, cash-flow projections, NPV, IRR, tree establishment amortization |
 
 ---
 
