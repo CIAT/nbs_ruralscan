@@ -139,6 +139,10 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - **Replication for Synthesis**: Do not skip extracting similar thresholds across papers to avoid "redundant entries." The synthesis engine counts the number of unique sources (`n_sources`) to calculate consensus weights and median bounds. Every distinct literature threshold must have its own `EvidenceUnit` in `EV_evidence_register.json`.
 - **Source-Evidence Variable Agreement**: The `vars_extracted` list for each paper in `SRC_source_register.json` must exactly match the variables that have actual evidence rows in `EV_evidence_register.json` (excluding baseline map/mask layers). Run the discrepancy script to align them.
 - **Full-Variable Sweeps**: When sweeping a source, extract all suitability parameters, enablers, and costs mapping to any variable in the target recipe (including `soil_texture`, `soil_drainage`, `distance_to_road`, and `tree_canopy_cover`), not just the core five biophysical variables.
+- **Title-only Multilingual Search**: Formulate disjoined search strings targeting title-only fields (e.g., `display_name.search` in OpenAlex) using AGROVOC synonyms in English, Spanish, French, and Portuguese to avoid full-text search noise.
+- **Human-in-the-Loop Triage**: Always validate borderline inclusions/exclusions with a human-in-the-loop review before registration to align on study boundaries (e.g., rejecting urban shade/pure forestry, accepting temperate baselines).
+- **Living Database Model**: Maintain the decoupled SRC ➔ EV ➔ Synthesis pipeline. Adding more evidence later is append-only (new source rows, new evidence rows); the synthesis engine dynamically recalculates consensus weights and median bounds.
+- **Multilingual Quotes**: Verbatim quotes from non-English sources must be saved in their native language followed by bracketed English translation: `"[Native Text] (English: [Translated Text])"`.
 - If using/directly importing a python module, check that it is included in `pyproject.toml` and use `uv add <module_name>` if missing.
 
 ## Don't

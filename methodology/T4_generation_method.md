@@ -406,8 +406,12 @@ A reproducible five-step screening pipeline, applied per NbS × table:
    shape-bearing claims; ML or scoping-candidate okay for selection-only). Hard cap ~20 sources
    per NbS × table; lift only with a recorded justification.
 
-After screening: extract paper-first (§3 above), dedupe lineage cascades via `lineage_of`,
-record disagreement (don't silently average).
+**Search & Translation Logic:**
+- **Title-Only Filtering**: Programmatic queries target title-only fields (e.g., `display_name.search` in OpenAlex) rather than full-text searches to avoid high-citation noise and non-specific results.
+- **Multilingual AGROVOC Integration**: Query terms incorporate synonyms, sub-practice names, and translations derived from the FAO AGROVOC thesaurus across four languages (English, Spanish, French, Portuguese) to ensure LDC context relevance.
+- **Human-in-the-Loop Triage**: Borderline papers are flagged and reviewed collaboratively (e.g., rejecting urban forestry and pure physiology, accepting mechanical wind models or temperate baselines) to establish clear task boundaries.
+
+After screening: register in the Source Register (SRC), extract paper-first (§3 above), dedupe lineage cascades via `lineage_of`, and record disagreement (don't silently average). For non-English studies, the extraction logs verbatim quotes in their native language followed by a bracketed English translation: `"[Native Text] (English: [Translated Text])"`.
 
 ### Reproducible discovery log (PRISMA-lite, v0.2.7)
 

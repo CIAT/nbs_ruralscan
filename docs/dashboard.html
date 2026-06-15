@@ -839,6 +839,12 @@
     font-weight: 500;
     transition: all 0.2s;
   }
+  .pill-btn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
   .pill-btn:hover {
     background: rgba(255,255,255,0.04);
     color: var(--text-primary);
@@ -964,6 +970,66 @@
     text-anchor: middle;
     fill: var(--text-primary);
   }
+
+  /* Search & Discovery Funnel CSS */
+  .funnel-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .funnel-label {
+    width: 160px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+    padding-right: 16px;
+    flex-shrink: 0;
+    font-family: var(--font-outfit);
+  }
+  .funnel-bar-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .funnel-bar {
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 16px;
+    color: #ffffff;
+    font-family: var(--font-outfit);
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: var(--transition);
+    cursor: pointer;
+  }
+  .funnel-bar span {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+  .funnel-bar:hover {
+    transform: scale(1.02) translateX(4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    filter: brightness(1.1);
+  }
+  .funnel-notes {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    margin-left: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-height: 32px;
+    line-height: 1.4;
+  }
 </style>
 </head>
 <body data-theme="dark">
@@ -1043,6 +1109,15 @@
         <path d="M6 9v6"></path>
       </svg>
       Evidence Network
+    </button>
+    <button class="tab-btn" data-tab="tab-search" id="btn-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        <line x1="8" y1="11" x2="14" y2="11"></line>
+        <line x1="11" y1="8" x2="11" y2="14"></line>
+      </svg>
+      Search &amp; Discovery Logs
     </button>
   </nav>
 
@@ -1826,6 +1901,157 @@
       </div>
     </div>
 
+    <!-- TAB 5: SEARCH & DISCOVERY LOGS -->
+    <div id="tab-search" class="tab-content">
+      <div class="card-container" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <h2 class="card-title" style="margin: 0; display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Search &amp; Discovery Logs</span>
+            <span class="card-title-meta" style="margin-left: 8px;">PRISMA-lite funnels, AGROVOC search queries, and borderline edge-case triage decisions.</span>
+          </h2>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <select id="select-search-log" style="display: none;"></select>
+            <div class="pill-toggle-container" style="display: flex; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 2px;">
+              <button class="pill-btn active sky" id="btn-search-view-structured" style="border-radius: 4px; padding: 6px 12px; font-size: 12px; border: none; cursor: pointer;">Structured View</button>
+              <button class="pill-btn" id="btn-search-view-raw" style="border-radius: 4px; padding: 6px 12px; font-size: 12px; border: none; cursor: pointer; background: transparent; color: var(--text-secondary);">Raw Markdown</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER PILL PANELS -->
+      <div class="card-container" style="margin-bottom: 20px; padding: 20px; background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <!-- Row 1: NbS Selector -->
+          <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 120px;">Practice (NbS)</span>
+            <div id="search-pill-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="pill-btn active sky" data-nbs="agroforestry" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">Agroforestry</button>
+              <button class="pill-btn sky" data-nbs="water_harvesting_conservation" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">Water Harvesting</button>
+            </div>
+          </div>
+          
+          <!-- Row 2: Table Selector -->
+          <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 120px;">Table / Step</span>
+            <div id="search-pill-table" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="pill-btn active purple" data-table="T3" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">T3 (Hazards)</button>
+              <button class="pill-btn purple" data-table="T4" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">T4 (Suitability)</button>
+              <button class="pill-btn purple" data-table="T6" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">T6 (Scorecard)</button>
+            </div>
+          </div>
+
+          <!-- Row 3: Sub-NbS Selector (Suitability Family) -->
+          <div id="search-sub-nbs-row" style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 16px;">
+            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 120px;">Sub-Practice</span>
+            <div id="search-pill-sub-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STRUCTURED PANEL -->
+      <div id="search-structured-panel" style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Metadata Info Grid -->
+        <div class="stats-grid" id="search-metadata-grid">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Funnel and Queries Row -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; flex-wrap: wrap;">
+          <!-- Left: PRISMA-lite Funnel Card -->
+          <div class="card-container" style="margin: 0; display: flex; flex-direction: column;">
+            <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9v6l4 2v-8L22 3z"></path></svg>
+              PRISMA-lite Discovery Funnel
+            </h3>
+            <div id="search-funnel-container" style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px; min-height: 320px; padding: 10px 0;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Right: Queries & Databases Card -->
+          <div class="card-container" style="margin: 0; display: flex; flex-direction: column;">
+            <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+              Queries &amp; Databases Screened
+            </h3>
+            <div id="search-queries-container" style="flex: 1; overflow-y: auto; max-height: 320px; display: flex; flex-direction: column; gap: 12px; font-size: 12.5px;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Inclusions & Exclusions/Borderline Review Grid -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Inclusions Section -->
+          <div class="card-container" style="margin: 0;">
+            <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-emerald);"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                Discovered and Registered Sources
+              </span>
+              <span id="search-inclusions-filter-badge" style="font-size: 11px; font-weight: 500; color: var(--accent-emerald); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 2px 8px; border-radius: 4px; display: none;"></span>
+            </h3>
+            <div style="overflow-x: auto;">
+              <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                  <tr>
+                    <th style="width: 150px;">Source ID</th>
+                    <th style="width: 180px;">Author / Year</th>
+                    <th style="width: 100px;">Tier</th>
+                    <th style="width: 180px;">Scope / Context</th>
+                    <th>Extracted Key Variables / Target Hazards</th>
+                  </tr>
+                </thead>
+                <tbody id="search-inclusions-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+ 
+          <!-- Exclusions and Borderline Cases Section -->
+          <div class="card-container" style="margin: 0;">
+            <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-amber);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Borderline &amp; Triage Decisions (Human-in-the-Loop Review)
+              </span>
+              <span id="search-exclusions-filter-badge" style="font-size: 11px; font-weight: 500; color: var(--accent-amber); background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); padding: 2px 8px; border-radius: 4px; display: none;"></span>
+            </h3>
+            <div style="overflow-x: auto;">
+              <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                  <tr>
+                    <th style="width: 130px;">Decision</th>
+                    <th style="width: 200px;">Category / Source</th>
+                    <th style="width: 280px;">Ambiguity / Reasoning</th>
+                    <th>Proposal &amp; Context Boundary Alignment</th>
+                  </tr>
+                </thead>
+                <tbody id="search-exclusions-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RAW PANEL -->
+      <div id="search-raw-panel" style="display: none;">
+        <div class="card-container" style="margin: 0;">
+          <pre id="search-raw-markdown" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12.5px; line-height: 1.5; padding: 16px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; overflow-x: auto; white-space: pre-wrap; color: var(--text-primary); max-height: 800px; overflow-y: auto;"></pre>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <div class="meta-timestamp">
@@ -2246,6 +2472,242 @@
       auditSearchInput.addEventListener('input', renderDiscoveryAudit);
     }
     setupAuditSortListeners();
+
+    // 6c. Setup Search & Discovery Logs Pills Selection
+    if (dashboardData.discovery_logs) {
+      // Elements
+      const nbsPills = document.querySelectorAll('#search-pill-nbs .pill-btn');
+      const tablePills = document.querySelectorAll('#search-pill-table .pill-btn');
+      const subNbsContainer = document.getElementById('search-pill-sub-nbs');
+      const subNbsRow = document.getElementById('search-sub-nbs-row');
+      const selectSearchLog = document.getElementById('select-search-log');
+
+      // Define Sub-NbS mapping definitions
+      const subNbsDefinitions = {
+        'agroforestry': [
+          { id: 'all', name: 'All Sub-Practices' },
+          { id: 'agroforestry__planted_silvoarable', name: 'Planted Silvoarable (F1)' },
+          { id: 'agroforestry__regeneration_farmland', name: 'Regeneration Farmland (F2)' },
+          { id: 'agroforestry__silvopastoral', name: 'Silvopastoral (F3)' },
+          { id: 'agroforestry__linear_boundary', name: 'Linear Boundary (F4)' },
+          { id: 'agroforestry__shaded_perennial', name: 'Shaded Perennial (F5)' },
+          { id: 'agroforestry__homegardens_proximity', name: 'Homegardens (F6)' }
+        ],
+        'water_harvesting_conservation': [
+          { id: 'all', name: 'All Sub-Practices' },
+          { id: 'water_harvesting__runoff_catchment', name: 'Runoff Catchment (F1)' }
+        ]
+      };
+
+      // Current active states
+      let activeNbs = 'agroforestry';
+      let activeTable = 'T3';
+      let activeSubNbs = 'all';
+
+      // Updates option elements inside the hidden select (for backwards compatibility if any other code references it)
+      function syncHiddenSelect(logId) {
+        if (!selectSearchLog) return;
+        selectSearchLog.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = logId;
+        opt.textContent = logId;
+        selectSearchLog.appendChild(opt);
+        selectSearchLog.value = logId;
+      }
+
+      // Populate Sub-NbS Pills dynamically based on active NbS
+      function renderSubNbsPills() {
+        if (!subNbsContainer) return;
+        subNbsContainer.innerHTML = '';
+        
+        const list = subNbsDefinitions[activeNbs] || [];
+        
+        // Show/hide Sub-Practice row depending on availability (or keep it shown)
+        if (list.length <= 1) {
+          subNbsRow.style.display = 'none';
+          activeSubNbs = 'all';
+          return;
+        } else {
+          subNbsRow.style.display = 'flex';
+        }
+
+        list.forEach((sub, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'pill-btn emerald' + (activeSubNbs === sub.id ? ' active' : '');
+          btn.style.borderRadius = '6px';
+          btn.style.padding = '5px 12px';
+          btn.style.fontSize = '11.5px';
+          btn.textContent = sub.name;
+          btn.dataset.subnbs = sub.id;
+          
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#search-pill-sub-nbs .pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeSubNbs = sub.id;
+            updateLogSelection();
+          });
+          
+          subNbsContainer.appendChild(btn);
+        });
+      }
+
+      // Re-evaluate available logs and update selection
+      function updateLogSelection() {
+        // Enforce logical constraints (Water Harvesting only has T4 Suitability)
+        if (activeNbs === 'water_harvesting_conservation') {
+          tablePills.forEach(btn => {
+            const tableVal = btn.dataset.table;
+            if (tableVal !== 'T4') {
+              btn.classList.add('disabled');
+              btn.classList.remove('active');
+            } else {
+              btn.classList.remove('disabled');
+              btn.classList.add('active');
+            }
+          });
+          activeTable = 'T4';
+        } else {
+          tablePills.forEach(btn => {
+            btn.classList.remove('disabled');
+            if (btn.dataset.table === activeTable) {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          });
+        }
+
+        // Determine log key (e.g. "agroforestry_T3")
+        let logId = `${activeNbs}_${activeTable}`;
+        
+        // Check if log exists in data
+        const logExists = dashboardData.discovery_logs && dashboardData.discovery_logs[logId];
+        
+        // Structured Panel Container reference
+        const structPanel = document.getElementById('search-structured-panel');
+        const rawPanel = document.getElementById('search-raw-panel');
+        
+        if (logExists) {
+          syncHiddenSelect(logId);
+          // Hide no-log placeholder if exists
+          const placeholder = document.getElementById('search-no-log-placeholder');
+          if (placeholder) placeholder.style.display = 'none';
+          
+          if (document.getElementById('btn-search-view-structured').classList.contains('active')) {
+            structPanel.style.display = 'flex';
+            rawPanel.style.display = 'none';
+          } else {
+            structPanel.style.display = 'none';
+            rawPanel.style.display = 'block';
+          }
+          
+          renderSearchLog(logId, activeSubNbs);
+        } else {
+          // Render placeholder warning that log doesn't exist
+          structPanel.style.display = 'none';
+          rawPanel.style.display = 'none';
+          
+          let placeholder = document.getElementById('search-no-log-placeholder');
+          if (!placeholder) {
+            placeholder = document.createElement('div');
+            placeholder.id = 'search-no-log-placeholder';
+            placeholder.className = 'card-container';
+            placeholder.style.textAlign = 'center';
+            placeholder.style.padding = '40px 20px';
+            placeholder.style.background = 'rgba(239, 68, 68, 0.05)';
+            placeholder.style.border = '1px dashed rgba(239, 68, 68, 0.2)';
+            placeholder.style.borderRadius = '8px';
+            placeholder.style.margin = '20px 0';
+            structPanel.parentNode.insertBefore(placeholder, structPanel);
+          }
+          placeholder.style.display = 'block';
+          placeholder.innerHTML = `
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="1.5" style="margin-bottom: 16px; opacity: 0.8;">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3 style="margin: 0 0 8px 0; font-family: var(--font-outfit); font-size: 16px; color: var(--text-primary);">Search Log Not Found</h3>
+            <p style="margin: 0; font-size: 13px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.5;">
+              No Search &amp; Discovery Log exists for this selection combination (<strong>${activeNbs === 'agroforestry' ? 'Agroforestry' : 'Water Harvesting'}</strong> × <strong>${activeTable}</strong>). 
+              Please try selecting a different Table or Practice.
+            </p>
+          `;
+        }
+      }
+
+      // Setup NbS Pills click listeners
+      nbsPills.forEach(btn => {
+        btn.addEventListener('click', () => {
+          nbsPills.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeNbs = btn.dataset.nbs;
+          
+          // Re-populate Sub-NbS list
+          activeSubNbs = 'all';
+          renderSubNbsPills();
+          updateLogSelection();
+        });
+      });
+
+      // Setup Table Pills click listeners
+      tablePills.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.classList.contains('disabled')) return;
+          tablePills.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeTable = btn.dataset.table;
+          updateLogSelection();
+        });
+      });
+
+      // Toggle views
+      const btnViewStruct = document.getElementById('btn-search-view-structured');
+      const btnViewRaw = document.getElementById('btn-search-view-raw');
+      const structPanel = document.getElementById('search-structured-panel');
+      const rawPanel = document.getElementById('search-raw-panel');
+
+      if (btnViewStruct && btnViewRaw && structPanel && rawPanel) {
+        btnViewStruct.addEventListener('click', () => {
+          btnViewStruct.classList.add('active', 'sky');
+          btnViewStruct.style.background = '';
+          btnViewStruct.style.color = '';
+          
+          btnViewRaw.classList.remove('active', 'sky');
+          btnViewRaw.style.background = 'transparent';
+          btnViewRaw.style.color = 'var(--text-muted)';
+          
+          const logId = `${activeNbs}_${activeTable}`;
+          const logExists = dashboardData.discovery_logs && dashboardData.discovery_logs[logId];
+          
+          if (logExists) {
+            structPanel.style.display = 'flex';
+          }
+          rawPanel.style.display = 'none';
+        });
+
+        btnViewRaw.addEventListener('click', () => {
+          btnViewRaw.classList.add('active', 'sky');
+          btnViewRaw.style.background = '';
+          btnViewRaw.style.color = '';
+          
+          btnViewStruct.classList.remove('active', 'sky');
+          btnViewStruct.style.background = 'transparent';
+          btnViewStruct.style.color = 'var(--text-muted)';
+          
+          structPanel.style.display = 'none';
+          const logId = `${activeNbs}_${activeTable}`;
+          const logExists = dashboardData.discovery_logs && dashboardData.discovery_logs[logId];
+          if (logExists) {
+            rawPanel.style.display = 'block';
+          }
+        });
+      }
+
+      // Initial execution
+      renderSubNbsPills();
+      updateLogSelection();
+    }
 
     // 7. Initialize Sankey target table toggle click listeners
     const sankeyToggles = ['toggle-sankey-t4', 'toggle-sankey-t3', 'toggle-sankey-t6'];
@@ -4668,6 +5130,344 @@
 
     html += '</div>';
     panel.innerHTML = html;
+  }
+
+  // Helpers for Search & Discovery Logs tab rendering
+  function parseMarkdownTable(text) {
+    if (!text) return null;
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l.startsWith('|'));
+    if (lines.length < 2) return null;
+    
+    const headers = lines[0].split('|').map(c => c.trim()).filter((c, i) => i > 0 && i < lines[0].split('|').length - 1);
+    const rows = [];
+    
+    // Skip divider line (index 1)
+    for (let i = 2; i < lines.length; i++) {
+      const cells = lines[i].split('|').map(c => c.trim());
+      const rowCells = cells.filter((c, idx) => idx > 0 && idx < cells.length - 1);
+      if (rowCells.length > 0) {
+        rows.push(rowCells);
+      }
+    }
+    return { headers, rows };
+  }
+
+  function parseInclusionsTables(text) {
+    if (!text) return [];
+    const lines = text.split('\n').map(l => l.trim());
+    const allRows = [];
+    
+    lines.forEach(line => {
+      if (line.startsWith('|') && !line.includes('source_id') && !line.includes('---|')) {
+        const cells = line.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1);
+        if (cells.length >= 5) {
+          allRows.push({
+            sourceId: cells[0].replace(/`/g, '').trim(),
+            authorYear: cells[1].trim(),
+            tier: cells[2].trim(),
+            context: cells[3].trim(),
+            variables: cells[4].trim()
+          });
+        }
+      }
+    });
+    return allRows;
+  }
+
+  function parseBorderlineCases(text) {
+    if (!text) return [];
+    const lines = text.split('\n');
+    const cases = [];
+    let currentType = ''; 
+    let currentCase = null;
+    
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('###')) {
+        if (trimmed.toLowerCase().includes('exclusion') || trimmed.toLowerCase().includes('reject')) {
+          currentType = 'Exclude';
+        } else if (trimmed.toLowerCase().includes('inclusion') || trimmed.toLowerCase().includes('accept')) {
+          currentType = 'Include';
+        }
+      } else if (trimmed.startsWith('*') && trimmed.includes('**')) {
+        if (currentCase) {
+          cases.push(currentCase);
+        }
+        const title = trimmed.replace(/^[\*\-\s]+/, '').replace(/\*\*/g, '').replace(/:$/, '').trim();
+        currentCase = {
+          type: currentType || 'Review',
+          title: title,
+          candidate: '',
+          ambiguity: '',
+          proposal: ''
+        };
+      } else if (trimmed.startsWith('-') && currentCase) {
+        if (trimmed.toLowerCase().includes('*candidate*:') || trimmed.toLowerCase().includes('candidate:')) {
+          currentCase.candidate = trimmed.split(/candidate\*:|candidate:/i)[1].trim();
+        } else if (trimmed.toLowerCase().includes('*ambiguity*:') || trimmed.toLowerCase().includes('ambiguity:')) {
+          currentCase.ambiguity = trimmed.split(/ambiguity\*:|ambiguity:/i)[1].trim();
+        } else if (trimmed.toLowerCase().includes('*proposal*:') || trimmed.toLowerCase().includes('proposal:')) {
+          currentCase.proposal = trimmed.split(/proposal\*:|proposal:/i)[1].trim();
+        }
+      }
+    });
+    
+    if (currentCase) {
+      cases.push(currentCase);
+    }
+    return cases;
+  }
+
+  function renderMarkdownText(text) {
+    if (!text) return '';
+    
+    let html = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+      
+    html = html.replace(/`([^`\n]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size: 11.5px; background: var(--bg-tertiary); padding: 2px 4px; border-radius: 4px; color: var(--accent-sky); word-break: break-all;">$1</code>');
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/^\s*[\-\*]\s+(.+)$/gm, '<li style="margin-left: 16px; margin-bottom: 4px;">$1</li>');
+    html = html.replace(/^\s*###\s+(.+)$/gm, '<h4 style="margin: 12px 0 6px 0; font-family: var(--font-outfit); font-size: 13.5px; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">$1</h4>');
+    
+    html = html.split('\n').map(line => {
+      if (line.trim().startsWith('<li') || line.trim().startsWith('<h4') || line.trim() === '') {
+        return line;
+      }
+      return `<p style="margin-bottom: 8px; line-height: 1.5; color: var(--text-secondary);">${line}</p>`;
+    }).join('\n');
+    
+    return html;
+  }
+
+  function renderSearchLog(logId, subNbsFilter = 'all') {
+    if (!dashboardData || !dashboardData.discovery_logs) return;
+    const log = dashboardData.discovery_logs[logId];
+    if (!log) return;
+
+    // Parse Inclusions and Exclusions first so we can use their counts dynamically
+    const inclusionsKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('inclusion'));
+    const inclusionsRows = inclusionsKey ? parseInclusionsTables(log.sections[inclusionsKey]) : [];
+    
+    let filteredRows = inclusionsRows;
+    if (subNbsFilter && subNbsFilter !== 'all') {
+      filteredRows = inclusionsRows.filter(row => {
+        // Check if source exists in evidence register and has matching suitability_family_id
+        const matchingClaims = (dashboardData.registers.EV_evidence_register || []).filter(
+          c => c.source_id === row.sourceId
+        );
+        if (matchingClaims.length > 0) {
+          return matchingClaims.some(c => c.suitability_family_id === subNbsFilter);
+        }
+        
+        // Fallback keywords check
+        const searchSpace = `${row.sourceId} ${row.authorYear} ${row.context} ${row.variables}`.toLowerCase();
+        const keywordMap = {
+          'agroforestry__planted_silvoarable': ['planted', 'silvoarable', 'alley', 'f1', 'arable'],
+          'agroforestry__regeneration_farmland': ['regeneration', 'fmnr', 'anr', 'natural', 'f2'],
+          'agroforestry__silvopastoral': ['silvopastoral', 'silvopasture', 'grazing', 'pastoral', 'f3'],
+          'agroforestry__linear_boundary': ['linear', 'boundary', 'windbreak', 'shelterbelt', 'f4'],
+          'agroforestry__shaded_perennial': ['shade', 'shaded', 'perennial', 'coffee', 'cacao', 'f5'],
+          'agroforestry__homegardens_proximity': ['homegarden', 'f6', 'multistrata'],
+          'water_harvesting__runoff_catchment': ['catchment', 'runoff', 'macrocatchment', 'check dam']
+        };
+        const keywords = keywordMap[subNbsFilter] || [];
+        return keywords.some(k => searchSpace.includes(k));
+      });
+    }
+
+    const exclusionsKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('exclusion') || k.toLowerCase().includes('borderline'));
+    const cases = exclusionsKey ? parseBorderlineCases(log.sections[exclusionsKey]) : [];
+    
+    let filteredCases = cases;
+    if (subNbsFilter && subNbsFilter !== 'all') {
+      filteredCases = cases.filter(c => {
+        const searchSpace = `${c.title} ${c.candidate} ${c.ambiguity} ${c.proposal}`.toLowerCase();
+        const keywordMap = {
+          'agroforestry__planted_silvoarable': ['planted', 'silvoarable', 'alley', 'f1', 'arable', 'poplar', 'boreal', 'temperate'],
+          'agroforestry__regeneration_farmland': ['regeneration', 'fmnr', 'anr', 'natural', 'f2'],
+          'agroforestry__silvopastoral': ['silvopastoral', 'silvopasture', 'grazing', 'pastoral', 'f3'],
+          'agroforestry__linear_boundary': ['linear', 'boundary', 'windbreak', 'shelterbelt', 'f4', 'wind tunnel'],
+          'agroforestry__shaded_perennial': ['shade', 'shaded', 'perennial', 'coffee', 'cacao', 'f5'],
+          'agroforestry__homegardens_proximity': ['homegarden', 'f6', 'multistrata'],
+          'water_harvesting__runoff_catchment': ['catchment', 'runoff', 'macrocatchment', 'check dam']
+        };
+        const keywords = keywordMap[subNbsFilter] || [];
+        return keywords.some(k => searchSpace.includes(k));
+      });
+    }
+
+    // 1. Render Metadata
+    const metadataGrid = document.getElementById('search-metadata-grid');
+    if (metadataGrid) {
+      metadataGrid.innerHTML = `
+        <div class="stat-card" style="padding: 16px 20px;">
+          <div class="stat-label" style="font-size: 11px;">LOG DATE</div>
+          <div class="stat-value" style="font-size: 18px; margin-top: 4px; font-family: var(--font-outfit);">${log.date || 'N/A'}</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 20px;">
+          <div class="stat-label" style="font-size: 11px;">AUTHORS / ROLES</div>
+          <div class="stat-value" style="font-size: 16px; margin-top: 4px; line-height:1.3; font-weight:600; font-family: var(--font-outfit);">${log.authors || 'N/A'}</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 20px; grid-column: span 2;">
+          <div class="stat-label" style="font-size: 11px;">SEED-SET SELECTION RULE</div>
+          <div class="stat-value" style="font-size: 13px; margin-top: 4px; font-weight: normal; color: var(--text-primary); line-height: 1.4;">${log.seed_rule || 'N/A'}</div>
+        </div>
+      `;
+    }
+
+    // 2. Render PRISMA Funnel
+    const funnelContainer = document.getElementById('search-funnel-container');
+    if (funnelContainer) {
+      funnelContainer.innerHTML = '';
+      const funnelSectionKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('funnel') || k.toLowerCase().includes('prisma'));
+      const funnelData = funnelSectionKey ? parseMarkdownTable(log.sections[funnelSectionKey]) : null;
+
+      if (funnelData && funnelData.rows.length > 0) {
+        const stages = funnelData.rows.map((row, idx) => {
+          const stageRaw = row[0].replace(/\*\*/g, '').trim();
+          let count = parseInt(row[1].replace(/[^0-9]/g, '')) || 0;
+          const notes = row[2] || '';
+          
+          // Dynamically compute the final inclusion count based on the filtered list
+          if (idx === funnelData.rows.length - 1 || stageRaw.toLowerCase().includes('include') || stageRaw.toLowerCase().includes('src')) {
+            count = filteredRows.length;
+          }
+          return { stageRaw, count, notes };
+        });
+        
+        const maxCount = Math.max(...stages.map(s => s.count)) || 1;
+        
+        stages.forEach((s, idx) => {
+          const pct = Math.max(15, (s.count / maxCount) * 100);
+          let gradient = 'linear-gradient(90deg, #0ea5e9, #0284c7)';
+          if (idx === 1) gradient = 'linear-gradient(90deg, #60a5fa, #2563eb)';
+          if (idx === 2) gradient = 'linear-gradient(90deg, #818cf8, #4f46e5)';
+          if (idx === 3) gradient = 'linear-gradient(90deg, #c084fc, #9333ea)';
+          if (idx === 4) gradient = 'linear-gradient(90deg, #10b981, #059669)';
+
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'funnel-row';
+          rowDiv.innerHTML = `
+            <div class="funnel-label">${s.stageRaw}</div>
+            <div class="funnel-bar-wrapper">
+              <div class="funnel-bar" style="width: ${pct}%; background: ${gradient};" title="${s.stageRaw}: ${s.count} (${s.notes})">
+                <span>${s.count}</span>
+              </div>
+              <div class="funnel-notes" title="${s.notes}">${s.notes}</div>
+            </div>
+          `;
+          funnelContainer.appendChild(rowDiv);
+        });
+      } else {
+        funnelContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 13px;">No funnel data available for this log.</div>`;
+      }
+    }
+
+    // 3. Render Queries & Databases
+    const queriesContainer = document.getElementById('search-queries-container');
+    if (queriesContainer) {
+      const queriesKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('source') || k.toLowerCase().includes('queried') || k.toLowerCase().includes('database'));
+      if (queriesKey) {
+        queriesContainer.innerHTML = renderMarkdownText(log.sections[queriesKey]);
+      } else {
+        queriesContainer.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
+      }
+    }
+
+    // 4. Update dynamic filter badges
+    const incBadge = document.getElementById('search-inclusions-filter-badge');
+    if (incBadge) {
+      if (subNbsFilter && subNbsFilter !== 'all') {
+        const subName = document.querySelector(`#search-pill-sub-nbs .pill-btn[data-subnbs="${subNbsFilter}"]`)?.textContent || 'Filtered';
+        incBadge.textContent = `Filtered: ${subName}`;
+        incBadge.style.display = 'inline-block';
+      } else {
+        incBadge.style.display = 'none';
+      }
+    }
+
+    const excBadge = document.getElementById('search-exclusions-filter-badge');
+    if (excBadge) {
+      if (subNbsFilter && subNbsFilter !== 'all') {
+        const subName = document.querySelector(`#search-pill-sub-nbs .pill-btn[data-subnbs="${subNbsFilter}"]`)?.textContent || 'Filtered';
+        excBadge.textContent = `Filtered: ${subName}`;
+        excBadge.style.display = 'inline-block';
+      } else {
+        excBadge.style.display = 'none';
+      }
+    }
+
+    // 5. Render Inclusions (filtered)
+    const inclusionsBody = document.getElementById('search-inclusions-table-body');
+    if (inclusionsBody) {
+      inclusionsBody.innerHTML = '';
+      if (filteredRows.length > 0) {
+        filteredRows.forEach(row => {
+          const tr = document.createElement('tr');
+          const tierClass = row.tier.toLowerCase() === 'high' ? 'high' : (row.tier.toLowerCase() === 'medium' ? 'medium' : 'low');
+          
+          tr.innerHTML = `
+            <td>
+              <code style="font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent-sky);">${row.sourceId}</code>
+            </td>
+            <td style="font-weight: 500;">${row.authorYear}</td>
+            <td>
+              <span class="badge ${tierClass}">${row.tier}</span>
+            </td>
+            <td style="color: var(--text-secondary); font-size: 12px;">${row.context}</td>
+            <td style="font-size: 12px; color: var(--text-secondary);">${row.variables}</td>
+          `;
+          inclusionsBody.appendChild(tr);
+        });
+      } else {
+        inclusionsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 16px;">No discovered sources matching this sub-practice selection.</td></tr>`;
+      }
+    }
+
+    // 6. Render Exclusions / Borderline Cases (filtered)
+    const exclusionsBody = document.getElementById('search-exclusions-table-body');
+    if (exclusionsBody) {
+      exclusionsBody.innerHTML = '';
+      if (filteredCases.length > 0) {
+        filteredCases.forEach(c => {
+          const tr = document.createElement('tr');
+          const badgeClass = c.type === 'Include' ? 'high' : 'low';
+          const badgeText = c.type === 'Include' ? 'INCLUDED' : 'EXCLUDED';
+          
+          const formatText = (t) => {
+            return t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                    .replace(/`([^`]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size:11px; background:var(--bg-tertiary); padding:2px 4px; border-radius:3px; color: var(--accent-sky);">$1</code>');
+          };
+          
+          tr.innerHTML = `
+            <td>
+              <span class="badge ${badgeClass}" style="white-space: nowrap;">${badgeText}</span>
+            </td>
+            <td>
+              <div style="font-weight: 600; font-size: 12.5px; font-family: var(--font-outfit); color: var(--text-primary);">${c.title}</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">Candidate: ${formatText(c.candidate)}</div>
+            </td>
+            <td style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">
+              ${formatText(c.ambiguity)}
+            </td>
+            <td style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">
+              ${formatText(c.proposal)}
+            </td>
+          `;
+          exclusionsBody.appendChild(tr);
+        });
+      } else {
+        exclusionsBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 16px;">No borderline exclusions/inclusions recorded for this sub-practice selection.</td></tr>`;
+      }
+    }
+
+    // 7. Render Raw Markdown
+    const rawMarkdownPre = document.getElementById('search-raw-markdown');
+    if (rawMarkdownPre) {
+      rawMarkdownPre.textContent = log.raw_markdown || '';
+    }
   }
 </script>
 </body>
