@@ -42,7 +42,7 @@ Pipeline architecture is in [`docs/pipeline.html`](./docs/pipeline.html). The fu
 
 1. Open an Issue with the **Data Discovery & Ingestion** template.
 2. Formulate organization-neutral, functional search queries for the target table (avoiding hardcoded organization names in the query text).
-3. Query the targeted institutional portals directly (such as WOCAT Global Database, FAO TECA, World Bank project documents, and Center for Agroforestry databases) for design manuals or modeling spreadsheets.
+3. Conduct both general web/repository searches (e.g., using Google, GitHub, or meta-directories like the Nature-Positive Agrifood Systems Toolkit) to discover standalone tools, repositories, and methods, and targeted institutional queries (such as WOCAT Global Database, FAO TECA, World Bank project documents, and Center for Agroforestry databases) for official reports and databases.
 4. Screen and select candidates using the **six-axis credibility rubric** (methodological transparency, evidence type, context AEZ/LMIC relevance, recency, influence).
 5. Compile the screening results in the PRISMA-lite discovery log under `methodology/discovery_logs/<nbs_id>_<table>.md`.
 6. Add the approved candidates to `SRC_source_register.csv` and log detailed evidence extraction quotes in `EV_evidence_register.csv`.

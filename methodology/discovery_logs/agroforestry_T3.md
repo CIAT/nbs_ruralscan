@@ -40,7 +40,7 @@ Disjoined searches in Title Fields (`display_name.search`) incorporating practic
     - *Results*: 10 additional works (specifically targeting general synthesis papers that miss hazard-specific title indexing)
 
 ### 2. Targeted Institutional Database Interrogations
-Rather than relying on general web searches, grey literature and tools were discovered by querying structured institutional portals directly:
+Structured institutional portals were queried directly to find official guides, project documents, and datasets:
 
 *   **WOCAT SLM Database (wocat.net)**:
     - *Search Method*: Filtered the Global Database by Technology Group = `Agroforestry` AND Climate Change Adaptation benefits = `Drought / Waterlogging / Wind / Soil Erosion`.
@@ -55,17 +55,27 @@ Rather than relying on general web searches, grey literature and tools were disc
     - *Search Method*: Searched for `applied agroforestry training manual` and `riparian buffer design`.
     - *Results*: Retrieved the design guides and financial decision-support spreadsheets.
 
+### 3. General Web, Repository & Toolkit Searches
+General search tools and global meta-directories were interrogated to identify standalone software packages, code repositories, and tools hosted outside institutional databases:
+
+*   **Nature-Positive Agrifood Systems Toolkit (agrifood-systems-toolkit.panda.org)**:
+    - *Search Method*: Queried for `agroforestry` tools under "All Tools".
+    - *Results*: Retrieved 4 relevant tools: FAO/UNDP NAP forestry guidelines, USAID AFOLU Carbon Calculator, CGIAR Gender and Inclusion Toolbox, and ICRAF REDD Abacus SP.
+*   **General Web Search (Google / GitHub)**:
+    - *Search Method*: Queried Google and GitHub for `agroforestry mapping modeling tool OR package OR repository` to find standalone software.
+    - *Results*: Discovered 5 specialized tools and models: FarmTree Platform, Agroforestry Designer Toolkit (The Land App), RegenWorks, Agroforestry Design Tool (AgroforestryX), and AgroForstRechner.
+
 ---
 
 ## PRISMA-lite Funnel Counts
 
 | Funnel Stage | Count | Notes / Criteria |
 |---|---:|---|
-| **Returned (raw)** | **80** | Cumulative returns across the 6 disjoined OpenAlex queries (including the new meta-analysis stream). |
-| **Topic & Scope Filter** | **50** | Screened out urban forestry, non-agroforestry biology, and general restoration papers. |
-| **Relevance Screen** | **30** | Filtered for papers with quantitative or qualitative claims linking practice subtypes to hazard reduction or asset threat thresholds. |
-| **Credibility Screen (Six-Axis)** | **20** | Evaluated for evidence strength, methodological transparency, venue, context relevance (LMIC), recency, and seminality. |
-| **Included in SRC Register** | **24** | 16 literature publications (including 7 new systematic reviews/meta-analyses), 2 grey literature reports, and 6 tools/methodologies. |
+| **Returned (raw)** | **95** | Cumulative returns across academic disjoined OpenAlex queries, WWF toolkit search, and general web searches. |
+| **Topic & Scope Filter** | **62** | Screened out urban forestry, non-agroforestry biology, and general restoration papers. |
+| **Relevance Screen** | **41** | Filtered for papers and tools with quantitative/qualitative claims linking practice subtypes to hazard reduction or asset threat thresholds. |
+| **Credibility Screen (Six-Axis)** | **33** | Evaluated for evidence strength, methodological transparency, venue, context relevance (LMIC), recency, and seminality. |
+| **Included in SRC Register** | **33** | 16 literature publications (including 7 new systematic reviews/meta-analyses), 2 grey literature reports, and 15 tools/methodologies. |
 
 ---
 
@@ -110,8 +120,18 @@ Rather than relying on general web searches, grey literature and tools were disc
 | `yieldsafe_model` | van der Werf et al. 2007 | High | Temperate & Global | Daily biophysical yield simulation, parameter-sparse light/water capture |
 | `fao_exact_carbon_tool` | FAO 2024 | High | Global / Land-use | Ex-ante GHG accounting, carbon pools, AFOLU project carbon balance |
 | `fao_ruralinvest_cba` | FAO 2026 | High | Global / Business | Financial CBA software, cash-flow projections, NPV, IRR, tree establishment amortization |
+| `afolu_carbon_calculator` | USAID 2026 | High | Global / Projects | Estimates CO2 benefits and potential climate impacts of forest protection, afforestation, agroforestry, and crop management |
+| `redd_abacus_sp` | World Agroforestry Centre (ICRAF) 2026 | High | Global / Spatial | Estimates emissions from land use/land cover changes, opportunity cost trade-offs, and simulates policy scenarios |
+| `fao_undp_nap_forestry_guidelines` | FAO, UNDP 2026 | High | Global / Policy | Supplementary guidelines for addressing forestry and agroforestry in National Adaptation Plans |
+| `gender_inclusion_toolbox` | CCAFS, ICRAF, CARE 2026 | High | Global / GESI | Participatory research toolbox for diagnostic and action research in gender-sensitive and inclusive programs |
+| `farmtree_platform` | FarmTree 2026 | High | Global / Plot | Web-based forecasting model combining financial projections with long-term productive and agroecological performance |
+| `agroforestry_designer_toolkit` | The Land App 2026 | High | Global / Design | Digital design tool allowing users to map field layouts and generate bespoke agroforestry designs |
+| `regenworks_agroforestry` | RegenWorks 2026 | High | Global / Design | System design software covering land mapping, row layouts, and financial/trade-off analysis |
+| `agroforestryx_design_tool` | AgroforestryX 2026 | High | Global / Planning | Design tool focused on re-establishing species-diverse, multistory agroforestry configurations |
+| `agroforstrechner_tool` | AF-R 2026 | High | Plot / Farm | Excel-based calculator for plot-scale agroforestry layout design and financial planning |
 
 ---
+
 
 ## Exclusions & Borderline Edge Cases (Human-in-the-Loop Review)
 

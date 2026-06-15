@@ -19,7 +19,16 @@ assignees: []
     <!-- e.g. display_name.search:agroforestry AND (drought OR shade) -->
 *   **Target Portal:** OpenAlex
 
-### 2. Targeted Institutional Database Interrogations
+### 2. General Web, Repository & Toolkit Searches
+Identify any general queries or meta-directories to discover standalone tools and repositories:
+*   [ ] **Nature-Positive Agrifood Systems Toolkit (agrifood-systems-toolkit.panda.org)**:
+    - *Method/Keywords:* <!-- e.g., search for 'agroforestry' tools -->
+*   [ ] **General Web / Search Engines (Google, DuckDuckGo)**:
+    - *Keywords:* <!-- e.g., 'agroforestry mapping tool' OR 'agroforestry CBA modeling tool' -->
+*   [ ] **Code Repositories (GitHub, GitLab, CRAN/PyPI)**:
+    - *Keywords:* <!-- e.g., 'agroforestry' packages or models -->
+
+### 3. Targeted Institutional Database Interrogations
 Identify which specific portals will be queried and the search methods:
 *   [ ] **WOCAT SLM Database (wocat.net)**:
     - *Method/Filters:* <!-- e.g., Filter by Technology Group = Agroforestry and Climate Adaptation -->
