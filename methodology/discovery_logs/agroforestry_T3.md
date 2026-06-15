@@ -39,10 +39,21 @@ Disjoined searches in Title Fields (`display_name.search`) incorporating practic
     - *Filter 3 (Keywords)*: `display_name.search:adaptation|resilience|mitigation|productivity|benefits`
     - *Results*: 10 additional works (specifically targeting general synthesis papers that miss hazard-specific title indexing)
 
-### 2. Web & Grey Literature Search
-Targeted searches for institutional reports, guidelines, and manuals from major agricultural development and environmental organizations (World Bank, FAO, WOCAT):
-*   **Search String**: `agroforestry hazard mitigation tools guidelines World Bank FAO WOCAT`
-*   *Results*: Multiple institutional toolkits, database entries, and policy papers.
+### 2. Targeted Institutional Database Interrogations
+Rather than relying on general web searches, grey literature and tools were discovered by querying structured institutional portals directly:
+
+*   **WOCAT SLM Database (wocat.net)**:
+    - *Search Method*: Filtered the Global Database by Technology Group = `Agroforestry` AND Climate Change Adaptation benefits = `Drought / Waterlogging / Wind / Soil Erosion`.
+    - *Results*: Identified specific SLM technology records detailing biophysical thresholds, establishing cost ranges, and hazard reduction ratings.
+*   **FAO TECA Portal (teca.apps.fao.org)**:
+    - *Search Method*: Queried the Technologies and Practices for Small Agricultural Producers portal for `agroforestry hazard mitigation` and `sloping agricultural land technology (SALT)`.
+    - *Results*: Retrieved the FAO field practitioner technical guide and farm disaster risk mitigation manuals.
+*   **World Bank Documents & Reports (documents.worldbank.org)**:
+    - *Search Method*: Searched the project repository for sector = `Agricultural and Rural Development` AND keyword = `agroforestry` AND hazard = `drought / flood`.
+    - *Results*: Retrieved Project Appraisal Documents (PADs) and disaster-screening guidelines (PROFOR-DRM).
+*   **Center for Agroforestry (centerforagroforestry.org)**:
+    - *Search Method*: Searched for `applied agroforestry training manual` and `riparian buffer design`.
+    - *Results*: Retrieved the design guides and financial decision-support spreadsheets.
 
 ---
 
