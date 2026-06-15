@@ -1981,7 +1981,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
               Queries &amp; Databases Screened
             </h3>
-            <div id="search-queries-container" style="flex: 1; overflow-y: auto; max-height: 320px; display: flex; flex-direction: column; gap: 12px; font-size: 12.5px;">
+            <div id="search-queries-container" style="flex: 1; overflow-y: auto; max-height: 550px; display: flex; flex-direction: column; gap: 12px; font-size: 12.5px;">
               <!-- Populated dynamically -->
             </div>
           </div>
@@ -5133,23 +5133,250 @@
   }
 
   // Helpers for Search & Discovery Logs tab rendering
+  function parseMultipleMarkdownTables(text) {
+    if (!text) return [];
+    const lines = text.split('\n').map(l => l.trim());
+    const tables = [];
+    let currentTable = null;
+    let currentTitle = "Funnel";
+    
+    lines.forEach(line => {
+      if (line.startsWith('###') || line.startsWith('##')) {
+        currentTitle = line.replace(/^#+\s+/, '').trim();
+      } else if (line.startsWith('|')) {
+        if (!currentTable) {
+          currentTable = { title: currentTitle, headers: [], rows: [], rawLines: [] };
+          tables.push(currentTable);
+        }
+        currentTable.rawLines.push(line);
+      } else {
+        currentTable = null;
+      }
+    });
+    
+    tables.forEach(t => {
+      const tLines = t.rawLines;
+      if (tLines.length >= 2) {
+        t.headers = tLines[0].split('|').map(c => c.trim()).filter((c, i) => i > 0 && i < tLines[0].split('|').length - 1);
+        for (let i = 2; i < tLines.length; i++) {
+          const cells = tLines[i].split('|').map(c => c.trim());
+          const rowCells = cells.filter((c, idx) => idx > 0 && idx < cells.length - 1);
+          if (rowCells.length > 0 && !rowCells[0].toLowerCase().includes('stage') && !rowCells[0].includes('---')) {
+            t.rows.push(rowCells);
+          }
+        }
+      }
+    });
+    
+    return tables.filter(t => t.rows.length > 0);
+  }
+
   function parseMarkdownTable(text) {
-    if (!text) return null;
-    const lines = text.split('\n').map(l => l.trim()).filter(l => l.startsWith('|'));
-    if (lines.length < 2) return null;
+    const tables = parseMultipleMarkdownTables(text);
+    return tables.length > 0 ? tables[0] : null;
+  }
+
+  function renderQueriesVisual(container, text) {
+    if (!text) {
+      container.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
+      return;
+    }
     
-    const headers = lines[0].split('|').map(c => c.trim()).filter((c, i) => i > 0 && i < lines[0].split('|').length - 1);
-    const rows = [];
+    const lines = text.split('\n');
+    const sections = [];
+    let currentSection = null;
     
-    // Skip divider line (index 1)
-    for (let i = 2; i < lines.length; i++) {
-      const cells = lines[i].split('|').map(c => c.trim());
-      const rowCells = cells.filter((c, idx) => idx > 0 && idx < cells.length - 1);
-      if (rowCells.length > 0) {
-        rows.push(rowCells);
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('###')) {
+        const title = trimmed.replace(/^###\s+/, '').trim();
+        currentSection = {
+          title: title,
+          description: '',
+          items: []
+        };
+        sections.push(currentSection);
+      } else if (currentSection) {
+        if (trimmed.startsWith('*') || trimmed.startsWith('-')) {
+          const match = trimmed.match(/^[\*\-\s]+\*\*([^*]+)\*\*:(.*)$/);
+          if (match) {
+            currentSection.items.push({
+              name: match[1].trim(),
+              content: match[2].trim(),
+              details: []
+            });
+          } else {
+            const cleanLine = trimmed.replace(/^[\*\-\s]+/, '').trim();
+            if (currentSection.items.length > 0) {
+              currentSection.items[currentSection.items.length - 1].details.push(cleanLine);
+            } else {
+              currentSection.description += (currentSection.description ? '<br>' : '') + cleanLine;
+            }
+          }
+        } else if (trimmed !== '') {
+          if (trimmed.startsWith('---')) return;
+          currentSection.description += (currentSection.description ? '<br>' : '') + trimmed;
+        }
+      } else {
+        if (trimmed !== '' && !trimmed.startsWith('---')) {
+          currentSection = {
+            title: "General Sources & Background",
+            description: trimmed,
+            items: []
+          };
+          sections.push(currentSection);
+        }
+      }
+    });
+
+    if (sections.length === 0) {
+      const items = [];
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('*') || trimmed.startsWith('-')) {
+          const cleanLine = trimmed.replace(/^[\*\-\s]+/, '').trim();
+          const boldMatch = cleanLine.match(/^\*\*([^*]+)\*\*(.*)$/);
+          if (boldMatch) {
+            items.push({
+              name: boldMatch[1].trim(),
+              content: boldMatch[2].trim(),
+              details: []
+            });
+          } else {
+            items.push({
+              name: "Database Source",
+              content: cleanLine,
+              details: []
+            });
+          }
+        }
+      });
+      if (items.length > 0) {
+        sections.push({
+          title: "Sources Queried",
+          description: "",
+          items: items
+        });
       }
     }
-    return { headers, rows };
+
+    container.innerHTML = '';
+    sections.forEach(sec => {
+      const secCard = document.createElement('div');
+      secCard.className = 'stat-card';
+      secCard.style.cssText = 'padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-color); background: var(--bg-secondary); border-radius: var(--radius-lg);';
+      
+      let html = `
+        <div style="font-family: var(--font-outfit); font-size: 13.5px; font-weight: 700; color: var(--accent-sky); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          ${sec.title}
+        </div>
+      `;
+      
+      if (sec.description) {
+        let cleanDesc = sec.description
+          .replace(/`([^`\n]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size:11px; background:var(--bg-tertiary); padding:2px 4px; border-radius:3px; color: var(--accent-sky); word-break: break-all;">$1</code>')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html += `<p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.4;">${cleanDesc}</p>`;
+      }
+      
+      if (sec.items.length > 0) {
+        html += `<div style="display: flex; flex-direction: column; gap: 8px;">`;
+        
+        sec.items.forEach(item => {
+          let resultsText = '';
+          let resultsCount = null;
+          let filters = [];
+          
+          item.details.forEach(d => {
+            const lowerD = d.toLowerCase();
+            if (lowerD.includes('results') || lowerD.includes('returned') || lowerD.includes('retained') || lowerD.includes('added')) {
+              resultsText = d.replace(/\*\*|:\s*/g, '').replace(/results|returned|retained|added/i, '').trim();
+              const numMatch = resultsText.match(/([0-9,]+)/);
+              if (numMatch) {
+                resultsCount = parseInt(numMatch[1].replace(/,/g, ''));
+              }
+            } else {
+              filters.push(d);
+            }
+          });
+
+          const contentLower = item.content.toLowerCase();
+          if (contentLower.includes('results') || contentLower.includes('returned') || contentLower.includes('retained')) {
+            resultsText = item.content.replace(/\*\*|:\s*/g, '').replace(/results|returned|retained/i, '').trim();
+            const numMatch = resultsText.match(/([0-9,]+)/);
+            if (numMatch) {
+              resultsCount = parseInt(numMatch[1].replace(/,/g, ''));
+            }
+          }
+          
+          if (resultsCount !== null && !resultsText) {
+            resultsText = `${resultsCount} results`;
+          }
+          if (!resultsText) {
+            if (contentLower.includes('multiple')) resultsText = 'Multiple';
+            else if (item.content) resultsText = item.content;
+          }
+
+          if (resultsText) {
+            resultsText = resultsText.replace(/\*\*([^*]+)\*\*/g, '$1');
+          }
+
+          html += `
+            <div style="background: var(--bg-tertiary); padding: 8px 10px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.02);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px;">
+                <div style="font-weight: 600; font-size: 11.5px; color: var(--text-primary); font-family: var(--font-outfit);">${item.name}</div>
+                ${resultsText ? `
+                  <span class="badge ${resultsCount !== null ? (resultsCount > 50 ? 'high' : 'medium') : 'low'}" style="font-size: 9.5px; padding: 1px 5px; white-space: nowrap;">
+                    ${resultsText}
+                  </span>
+                ` : ''}
+              </div>
+          `;
+
+          if (resultsCount !== null && resultsCount > 0) {
+            const logVal = Math.log10(resultsCount);
+            const barPct = Math.min(100, Math.max(10, (logVal / 4.5) * 100));
+            html += `
+              <div style="height: 5px; width: 100%; background: var(--bg-secondary); border-radius: 2.5px; margin: 4px 0 6px 0; overflow: hidden;">
+                <div style="height: 100%; width: ${barPct}%; background: linear-gradient(90deg, var(--accent-sky), #3b82f6); border-radius: 2.5px;"></div>
+              </div>
+            `;
+          }
+
+          if (filters.length > 0 || (item.content && item.content !== resultsText)) {
+            let cleanContent = item.content;
+            if (cleanContent && cleanContent === resultsText) cleanContent = '';
+            
+            const detailsContent = [
+              cleanContent ? `<strong>Summary:</strong> ${cleanContent}` : '',
+              ...filters.map(f => {
+                return f.replace(/`([^`]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size: 11px; background: var(--bg-secondary); padding: 1px 3px; border-radius: 3px; color: var(--accent-sky); word-break: break-all;">$1</code>')
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+              })
+            ].filter(Boolean).join('<br>');
+
+            html += `
+              <details style="margin-top: 4px;">
+                <summary style="font-size: 10.5px; color: var(--text-muted); cursor: pointer; user-select: none; outline: none;">
+                  Inspect Search Parameters & Strings
+                </summary>
+                <div style="margin-top: 4px; padding: 6px 8px; background: var(--bg-secondary); border-radius: 4px; font-size: 10.5px; color: var(--text-secondary); line-height: 1.4; border-left: 2px solid var(--accent-sky); word-break: break-word;">
+                  ${detailsContent}
+                </div>
+              </details>
+            `;
+          }
+
+          html += `</div>`;
+        });
+        
+        html += `</div>`;
+      }
+      
+      secCard.innerHTML = html;
+      container.appendChild(secCard);
+    });
   }
 
   function parseInclusionsTables(text) {
@@ -5322,16 +5549,65 @@
     if (funnelContainer) {
       funnelContainer.innerHTML = '';
       const funnelSectionKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('funnel') || k.toLowerCase().includes('prisma'));
-      const funnelData = funnelSectionKey ? parseMarkdownTable(log.sections[funnelSectionKey]) : null;
+      const tables = funnelSectionKey ? parseMultipleMarkdownTables(log.sections[funnelSectionKey]) : [];
 
-      if (funnelData && funnelData.rows.length > 0) {
-        const stages = funnelData.rows.map((row, idx) => {
+      if (tables.length > 0) {
+        window.activeFunnelTabs = window.activeFunnelTabs || {};
+        let activeIdx = window.activeFunnelTabs[logId];
+        if (activeIdx === undefined || activeIdx >= tables.length) {
+          activeIdx = 0;
+          window.activeFunnelTabs[logId] = 0;
+        }
+
+        // Render sub-tabs if there are multiple tables
+        if (tables.length > 1) {
+          const tabWrapper = document.createElement('div');
+          tabWrapper.style.cssText = 'display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; flex-wrap: wrap;';
+          
+          tables.forEach((t, tIdx) => {
+            const tabBtn = document.createElement('button');
+            tabBtn.className = 'pill-btn';
+            tabBtn.textContent = t.title;
+            tabBtn.style.cssText = 'padding: 4px 10px; font-size: 11px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;';
+            
+            if (tIdx === activeIdx) {
+              tabBtn.style.background = 'var(--accent-purple)';
+              tabBtn.style.color = '#ffffff';
+              tabBtn.style.borderColor = 'var(--accent-purple)';
+            } else {
+              tabBtn.style.background = 'var(--bg-tertiary)';
+              tabBtn.style.color = 'var(--text-secondary)';
+            }
+            
+            tabBtn.onclick = () => {
+              window.activeFunnelTabs[logId] = tIdx;
+              renderSearchLog(logId, subNbsFilter);
+            };
+            tabWrapper.appendChild(tabBtn);
+          });
+          funnelContainer.appendChild(tabWrapper);
+        }
+
+        const activeTable = tables[activeIdx];
+        
+        // Render active funnel title
+        const funnelTitle = document.createElement('div');
+        funnelTitle.style.cssText = 'font-size: 12.5px; font-weight: 700; font-family: var(--font-outfit); color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;';
+        funnelTitle.innerHTML = `
+          <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent-purple);"></span>
+          ${activeTable.title}
+        `;
+        funnelContainer.appendChild(funnelTitle);
+
+        const stages = activeTable.rows.map((row, idx) => {
           const stageRaw = row[0].replace(/\*\*/g, '').trim();
           let count = parseInt(row[1].replace(/[^0-9]/g, '')) || 0;
           const notes = row[2] || '';
           
-          // Dynamically compute the final inclusion count based on the filtered list
-          if (idx === funnelData.rows.length - 1 || stageRaw.toLowerCase().includes('include') || stageRaw.toLowerCase().includes('src')) {
+          // Dynamically compute the final inclusion count based on the filtered list, but ONLY for the final stage or table containing inclusion counts
+          const isFinalRow = idx === activeTable.rows.length - 1;
+          const isIncludedRow = stageRaw.toLowerCase().includes('include') || stageRaw.toLowerCase().includes('src') || stageRaw.toLowerCase().includes('registered');
+          if (isFinalRow && isIncludedRow) {
             count = filteredRows.length;
           }
           return { stageRaw, count, notes };
@@ -5370,7 +5646,7 @@
     if (queriesContainer) {
       const queriesKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('source') || k.toLowerCase().includes('queried') || k.toLowerCase().includes('database'));
       if (queriesKey) {
-        queriesContainer.innerHTML = renderMarkdownText(log.sections[queriesKey]);
+        renderQueriesVisual(queriesContainer, log.sections[queriesKey]);
       } else {
         queriesContainer.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
       }
