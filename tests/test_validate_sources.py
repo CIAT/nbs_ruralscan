@@ -22,13 +22,38 @@ from nbs_ruralscan.schema_tools.validate_sources import (
 )
 
 _EV_COLS = [
-    "evidence_id", "source_id", "nbs_id", "suitability_family_id", "variable",
-    "relationship", "context", "use_role", "evidence_type", "claim_basis",
-    "claim_scope", "lineage_of", "extraction_confidence", "quote", "page",
-    "locator_type", "locator", "commit_sha",
-    "reviewer_ok", "raw_name", "taxon", "observed_dataset", "attribution",
+    "evidence_id",
+    "source_id",
+    "nbs_id",
+    "suitability_family_id",
+    "variable",
+    "relationship",
+    "context",
+    "use_role",
+    "evidence_type",
+    "claim_basis",
+    "claim_scope",
+    "lineage_of",
+    "extraction_confidence",
+    "quote",
+    "page",
+    "locator_type",
+    "locator",
+    "commit_sha",
+    "reviewer_ok",
+    "raw_name",
+    "taxon",
+    "observed_dataset",
+    "attribution",
 ]
-_SRC_COLS = ["source_id", "citation", "doi", "benchmark_tier", "method_type", "source_kind"]
+_SRC_COLS = [
+    "source_id",
+    "citation",
+    "doi",
+    "benchmark_tier",
+    "method_type",
+    "source_kind",
+]
 
 
 def _make_pdf(path: Path, pages: list[str]) -> None:
@@ -55,13 +80,21 @@ def _write_schema(root: Path, ev_rows: list[dict], src_rows: list[dict]) -> Path
     return root / "schema"
 
 
-def _ev(eid: str, sid: str, quote: str, page: int, **kw) -> dict:
+def _ev(eid: str, sid: str, quote: str, page: int | str, **kw) -> dict:
     base = dict(
-        evidence_id=eid, source_id=sid, nbs_id="agroforestry",
-        suitability_family_id="F1", variable="slope", use_role="structural_suitability",
-        evidence_type="literature_relationship", claim_basis="table",
-        claim_scope="practice_technology", extraction_confidence="high",
-        quote=quote, page=str(page), locator_type="page",
+        evidence_id=eid,
+        source_id=sid,
+        nbs_id="agroforestry",
+        suitability_family_id="F1",
+        variable="slope",
+        use_role="structural_suitability",
+        evidence_type="literature_relationship",
+        claim_basis="table",
+        claim_scope="practice_technology",
+        extraction_confidence="high",
+        quote=quote,
+        page=str(page),
+        locator_type="page",
     )
     base.update(kw)
     return base
@@ -96,7 +129,9 @@ def test_fabricated_quote_fails(tmp_path):
         src_rows=[dict(source_id="src1", method_type="empirical")],
     )
     (tmp_path / ".cache" / "corpus").mkdir(parents=True)
-    _make_pdf(tmp_path / ".cache" / "corpus" / "src1.pdf", ["completely different text"])
+    _make_pdf(
+        tmp_path / ".cache" / "corpus" / "src1.pdf", ["completely different text"]
+    )
     with pytest.raises(ValueError, match="FABRICATED"):
         validate_all_sources(schema)
 
@@ -110,7 +145,10 @@ def test_right_quote_wrong_page_fails(tmp_path):
     (tmp_path / ".cache" / "corpus").mkdir(parents=True)
     _make_pdf(
         tmp_path / ".cache" / "corpus" / "src1.pdf",
-        ["page one has nothing", "the threshold is ten percent"],  # quote on p.2, cited p.1
+        [
+            "page one has nothing",
+            "the threshold is ten percent",
+        ],  # quote on p.2, cited p.1
     )
     with pytest.raises(ValueError, match="NOT on cited page"):
         validate_all_sources(schema)
@@ -136,10 +174,18 @@ def test_section_locator_html_snapshot_passes(tmp_path):
     schema = _write_schema(
         tmp_path,
         ev_rows=[
-            _ev("evH", "web1", "agroforestry reduces surface runoff", "",
-                locator_type="section", locator="3.2 Hydrology")
+            _ev(
+                "evH",
+                "web1",
+                "agroforestry reduces surface runoff",
+                "",
+                locator_type="section",
+                locator="3.2 Hydrology",
+            )
         ],
-        src_rows=[dict(source_id="web1", method_type="synthesis", source_kind="website")],
+        src_rows=[
+            dict(source_id="web1", method_type="synthesis", source_kind="website")
+        ],
     )
     corpus = tmp_path / ".cache" / "corpus"
     corpus.mkdir(parents=True)
@@ -155,14 +201,24 @@ def test_section_locator_fabricated_fails(tmp_path):
     schema = _write_schema(
         tmp_path,
         ev_rows=[
-            _ev("evHf", "web1", "a claim never on the page", "",
-                locator_type="section", locator="3.2 Hydrology")
+            _ev(
+                "evHf",
+                "web1",
+                "a claim never on the page",
+                "",
+                locator_type="section",
+                locator="3.2 Hydrology",
+            )
         ],
-        src_rows=[dict(source_id="web1", method_type="synthesis", source_kind="website")],
+        src_rows=[
+            dict(source_id="web1", method_type="synthesis", source_kind="website")
+        ],
     )
     corpus = tmp_path / ".cache" / "corpus"
     corpus.mkdir(parents=True)
-    (corpus / "web1.html").write_text("<html><body><p>unrelated</p></body></html>", encoding="utf-8")
+    (corpus / "web1.html").write_text(
+        "<html><body><p>unrelated</p></body></html>", encoding="utf-8"
+    )
     with pytest.raises(ValueError, match="FABRICATED"):
         validate_all_sources(schema)
 

@@ -29,7 +29,7 @@ from pathlib import Path
 try:
     import fitz  # PyMuPDF
 except ImportError:
-    fitz = None
+    fitz = None  # ty: ignore[invalid-assignment]
 
 # Rows with these use_roles describe baseline dataset/mask layers, not a literature
 # claim — they have no quotable source text. Reported explicitly, never silent.
@@ -118,9 +118,7 @@ def validate_all_sources(schema_root: str | Path) -> None:
     # Only sources backing a non-exempt claim need a verifiable artifact; a source
     # referenced solely by baseline-layer (exempt) rows carries no quotable claim.
     referenced = {
-        r["source_id"]
-        for r in ev_rows
-        if r.get("use_role") not in EXEMPT_USE_ROLES
+        r["source_id"] for r in ev_rows if r.get("use_role") not in EXEMPT_USE_ROLES
     }
 
     # 1. Referential integrity + artifact presence.
@@ -225,7 +223,7 @@ def validate_all_sources(schema_root: str | Path) -> None:
             errors.append(
                 f"[{ev_id}] FABRICATED quote ({locator_type} locator "
                 f"{(ev.get('locator') or ev.get('page') or '')!r}) — not found in "
-                f"{path.name}:\n    \"{quote[:160]}\""
+                f'{path.name}:\n    "{quote[:160]}"'
             )
 
     if errors:

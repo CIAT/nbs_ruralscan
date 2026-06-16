@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 
 def _coerce(value: str):
@@ -74,7 +75,7 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
     except Exception:
         git_commit = "unknown"
 
-    nbs_stats = {}
+    nbs_stats: dict[str, dict[str, Any]] = {}
     with src_csv.open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
@@ -336,11 +337,12 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     """Write (or, under ``check``, compare) every JSON from its CSV. Returns the
     list of paths that were written / are stale."""
     schema_root = Path(schema_root)
-    
+
     # Run the strict source and quote validation guardrails first
     from nbs_ruralscan.schema_tools.validate_sources import validate_all_sources
+
     validate_all_sources(schema_root)
-    
+
     manifest = json.loads((schema_root / "structure" / "columns.json").read_text())
     changed: list[Path] = []
     for spec in manifest["tables"].values():

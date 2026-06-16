@@ -67,7 +67,9 @@ class EvidenceUnit:
     locator_type: str = "page"
     page: int | None = None  # required when locator_type == "page"
     locator: str | None = None  # section heading / "start-end" / "path:line" (non-page)
-    commit_sha: str | None = None  # required when locator_type == "file_line" (immutable pin)
+    commit_sha: str | None = (
+        None  # required when locator_type == "file_line" (immutable pin)
+    )
     relationship: dict[str, Any] | None = (
         None  # e.g. {"opt_low":0,"opt_high":10,"abs_max":44,"unit":"deg"}
     )
@@ -143,7 +145,9 @@ def validate(unit: EvidenceUnit) -> list[str]:
             errs.append("locator_type=page requires an integer page >= 1")
     elif unit.locator_type in LOCATOR_TYPE:
         if not (unit.locator or "").strip():
-            errs.append(f"locator_type={unit.locator_type} requires a non-empty `locator`")
+            errs.append(
+                f"locator_type={unit.locator_type} requires a non-empty `locator`"
+            )
         if unit.locator_type == "file_line" and not (unit.commit_sha or "").strip():
             errs.append("locator_type=file_line requires `commit_sha` (immutable pin)")
     if not (unit.quote or "").strip():

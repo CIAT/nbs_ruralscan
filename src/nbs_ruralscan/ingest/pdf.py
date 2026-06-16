@@ -131,10 +131,36 @@ def render_page_png(path: str | Path, page: int, *, dpi: int = 150) -> bytes:
 def build_index(
     path: str | Path, *, source_id: str | None = None, with_tables: bool = True
 ) -> DocIndex:
-    """Build a `DocIndex` from a PDF. Requires PyMuPDF (``pymupdf``)."""
+    """Build a `DocIndex` from a PDF, HTML, or Markdown file.
+
+    Dispatches by file extension:
+
+    - ``.pdf`` / ``.PDF`` → PyMuPDF-based extraction (this module).
+    - ``.html`` / ``.htm`` → :func:`nbs_ruralscan.ingest.html.build_html_index`.
+    - Anything else → :exc:`NotImplementedError`.
+
+    Parameters
+    ----------
+    path:
+        Path to the source artifact (PDF or cached HTML from ``acquire``).
+    source_id:
+        Override the default ``source_id`` (``path.stem`` when omitted).
+    with_tables:
+        Extract tables (PDF only; ignored for HTML).
+    """
+    path = Path(path)
+    suffix = path.suffix.lower()
+    if suffix in {".html", ".htm"}:
+        from .html import build_html_index
+
+        return build_html_index(path, source_id=source_id)
+    if suffix not in {".pdf"}:
+        raise NotImplementedError(
+            f"build_index does not support '{suffix}' files. "
+            "Supported extensions: .pdf, .html, .htm"
+        )
     import fitz  # PyMuPDF
 
-    path = Path(path)
     sid = source_id or path.stem
     doc = fitz.open(str(path))
     pages: list[str] = []

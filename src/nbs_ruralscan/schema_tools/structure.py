@@ -165,7 +165,9 @@ def validate_structure(schema_root: str | Path, *, strict: bool = False) -> Repo
             # column legitimately vanishes from the JSON). So validate column drift
             # on the CSV, and skip it on a JSON that has a sibling CSV — the CSV
             # already enforces the contract and JSON cannot introduce unknown columns.
-            csv_authoritative = path.suffix == ".json" and path.with_suffix(".csv").exists()
+            csv_authoritative = (
+                path.suffix == ".json" and path.with_suffix(".csv").exists()
+            )
             if not csv_authoritative:
                 for missing in sorted(required - colset):
                     rep.error(
