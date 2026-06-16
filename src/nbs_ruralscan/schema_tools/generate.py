@@ -336,6 +336,11 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     """Write (or, under ``check``, compare) every JSON from its CSV. Returns the
     list of paths that were written / are stale."""
     schema_root = Path(schema_root)
+    
+    # Run the strict source and quote validation guardrails first
+    from nbs_ruralscan.schema_tools.validate_sources import validate_all_sources
+    validate_all_sources(schema_root)
+    
     manifest = json.loads((schema_root / "structure" / "columns.json").read_text())
     changed: list[Path] = []
     for spec in manifest["tables"].values():

@@ -157,6 +157,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - Don't break the EvidenceUnit shape when adding expert-evidence capture — expert claims must land in the same EV rows as literature, via `evidence_type=expert`; only patch the schema if EV literally cannot represent something Namita needs.
 - Don't let `SRC.vars_extracted` diverge from actual `EV_evidence_register.json` variable listings.
 - Don't skip secondary suitability variables (like soil texture/drainage or distance to road) when they are quantified in paper texts.
+- **Don't hand-author evidence. Ever.** No quote, page, or EvidenceUnit may be typed from memory, an abstract, a search-result snippet, or model knowledge. Every EV row MUST come through the deterministic pipeline (`build_index` → `retrieve`/`package_for_extraction` → emit `EvidenceUnit` from the page-stamped passages → `validate_units` → `save_units`) over a **cached source artifact** in `.cache/corpus/` (PDF, or a saved `.txt`/`.html`/`.md` snapshot for web sources). Appending straight to `EV_*.csv`/`.json` or a recipe `evidence_ids` column is forbidden — that is exactly how the 2026-06 contamination happened (see `schema/registers/_quarantine/`). The guardrail `schema_tools/validate_sources.py` runs inside `generate.py` + CI and fails the build on any quote not found verbatim on its cited page; don't weaken or bypass it. If a source can't be cached (paywalled, dead URL), it can't be registered — leave it out.
+- Don't cite a URL/website as evidence without a saved snapshot AND the specific page/section the quote came from. A bare domain link is not provenance.
 
 ## When in doubt
 

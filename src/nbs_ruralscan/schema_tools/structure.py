@@ -160,12 +160,22 @@ def validate_structure(schema_root: str | Path, *, strict: bool = False) -> Repo
         for path in files:
             cols, rows = _read_rows(path)
             colset = set(cols)
-            for missing in sorted(required - colset):
-                rep.error(tname, f"{path.name}: missing required column '{missing}'")
-            for unknown in sorted(colset - allowed):
-                rep.error(
-                    tname, f"{path.name}: unknown column '{unknown}' (not in manifest)"
-                )
+            # The CSV is the source of truth for columns; JSON is generated from it
+            # (and intentionally drops all-empty cells, so an all-empty required
+            # column legitimately vanishes from the JSON). So validate column drift
+            # on the CSV, and skip it on a JSON that has a sibling CSV — the CSV
+            # already enforces the contract and JSON cannot introduce unknown columns.
+            csv_authoritative = path.suffix == ".json" and path.with_suffix(".csv").exists()
+            if not csv_authoritative:
+                for missing in sorted(required - colset):
+                    rep.error(
+                        tname, f"{path.name}: missing required column '{missing}'"
+                    )
+                for unknown in sorted(colset - allowed):
+                    rep.error(
+                        tname,
+                        f"{path.name}: unknown column '{unknown}' (not in manifest)",
+                    )
             for i, row in enumerate(rows):
                 for col in required & colset:
                     if _is_empty(row.get(col)):
