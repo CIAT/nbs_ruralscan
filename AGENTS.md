@@ -147,6 +147,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 ## Don't
 
+- Don't use browser subagents or make browser tool calls to verify, interrogate, or toggle controls on local web servers or websites (which consumes 1000+ credits). Instead, just capture a single screenshot if needed, or ask the user to test and verify UI changes manually.
 - Don't hardcode analytical rules in pipeline code; read from schema
 - Don't merge wireframe edits without preserving the agreed tab structure (see "What is locked") and the six Variable-Card slots
 - Don't expand variables into MCDA without correlation reduction

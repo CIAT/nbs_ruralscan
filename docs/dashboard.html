@@ -1304,16 +1304,16 @@
             <div style="display:flex; gap:16px; align-items:center; font-size:11.5px; border-left: 1px solid var(--border-color); padding-left: 16px; margin-left: 4px; flex-wrap: wrap;">
               <span style="color:var(--text-muted); font-weight:500;">Legend:</span>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge high audit-badge">✓</span>
-                <span style="color:var(--text-secondary);">Complete</span>
+                <span class="badge high audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">#</span>
+                <span style="color:var(--text-secondary);">&gt; 1 Source</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge medium audit-badge">⚠</span>
-                <span style="color:var(--text-secondary);">Seeded / Registered</span>
+                <span class="badge medium audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">1</span>
+                <span style="color:var(--text-secondary);">1 Source</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge low audit-badge">✗</span>
-                <span style="color:var(--text-secondary);">Pending Search</span>
+                <span class="badge low audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">0</span>
+                <span style="color:var(--text-secondary);">No Evidence</span>
               </div>
             </div>
 
@@ -2761,7 +2761,59 @@
         const selectedVal = scopeSelect ? scopeSelect.value : 'all';
         triggerOverviewFilter(selectedVal);
       });
+  }
+
+  // Categorize a source as Stock, Updated Lit, Grey Lit, or Tools
+  function getSourceCategory(sourceId, citation) {
+    const sid = (sourceId || '').toLowerCase();
+    const cit = (citation || '').toLowerCase();
+    
+    const toolsList = [
+      'invest_ecosystem_services', 'wanulcas_model', 'yieldsafe_model', 'fao_exact_carbon_tool', 
+      'fao_ruralinvest_cba', 'afolu_carbon_calculator', 'redd_abacus_sp', 'fao_undp_nap_forestry_guidelines', 
+      'gender_inclusion_toolbox', 'farmtree_platform', 'agroforestry_designer_toolkit', 
+      'regenworks_agroforestry', 'agroforestryx_design_tool', 'agroforstrechner_tool', 'wocat_slm_database'
+    ];
+    if (toolsList.includes(sid)) return 'tools';
+    
+    if (sid.startsWith('wri_') || sid.startsWith('wocat_') || sid.startsWith('wb_') || sid.startsWith('fao_') || sid.startsWith('tnc_') || sid.startsWith('gca_')) {
+      return 'grey';
     }
+    if (cit.includes('wocat') || cit.includes('world bank') || cit.includes('fao') || cit.includes('wri') || cit.includes('project appraisal') || cit.includes('appraisal document')) {
+      return 'grey';
+    }
+    
+    const stockList = [
+      'nath_2021', 'zomer_2014', 'nair_1993', 'haile_2024', 'yadav_2024', 'brandt_2015', 'chuma_2021', 
+      'haris_2021', 'wotlolan_2021', 'seja_2022', 'ahmad_2018', 'ahmad_2020', 'ahmad_goparaju_2017', 'mushtaq_2023'
+    ];
+    if (stockList.includes(sid)) return 'stock';
+    
+    return 'updated';
+  }
+
+  // Count unique source resources mapped to a given family, table target, and category
+  function getClaimsCount(familyId, targetKey, typeKey) {
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    const sources = dashboardData.registers.SRC_source_register || [];
+    
+    const matchingClaims = claims.filter(c => {
+      if (c.suitability_family_id !== familyId) return false;
+      
+      const dest = getDestTable(c);
+      let matchTarget = false;
+      if (targetKey === 't4') matchTarget = (dest === 't4_mappings');
+      else if (targetKey === 't3') matchTarget = (dest === 't3_hazards');
+      else if (targetKey === 't6') matchTarget = (dest === 't6_scorecard');
+      if (!matchTarget) return false;
+      
+      const s = sources.find(src => src.source_id === c.source_id);
+      const cat = getSourceCategory(c.source_id, s ? s.citation : '');
+      return (cat === typeKey);
+    });
+    
+    const uniqueSourceIds = new Set(matchingClaims.map(c => c.source_id));
+    return uniqueSourceIds.size;
   }
 
   // Resolve which target table a claim maps to, based on database evidence links & fallbacks
@@ -3000,20 +3052,20 @@
     }
 
     const renderCell = (statusKey, targetKey, typeKey) => {
-      const status = discoveryStatusDb[statusKey];
-      const val = (status && status[targetKey] && status[targetKey][typeKey]) || 'pending';
+      const count = getClaimsCount(statusKey, targetKey, typeKey);
       
       let badgeClass = 'low';
-      let symbol = '✗';
-      let titleText = 'Pending Search';
-      if (val === 'complete') {
+      let displayVal = count;
+      let titleText = `${count} source(s) providing evidence`;
+      
+      if (count > 1) {
         badgeClass = 'high';
-        symbol = '✓';
-        titleText = 'Complete';
-      } else if (val === 'seeded') {
+      } else if (count === 1) {
         badgeClass = 'medium';
-        symbol = '⚠';
-        titleText = 'Seeded / Registered';
+      } else {
+        badgeClass = 'low';
+        displayVal = '0';
+        titleText = 'No sources providing evidence';
       }
       
       const typeLabel = typeKey === 'stock' ? 'Stock Papers'
@@ -3025,7 +3077,7 @@
                         : 'T6 Outcomes & Costing';
 
       return `<td style="text-align: center; border-left: ${typeKey === 'stock' ? '1px solid var(--border-color)' : 'none'};" title="${targetLabel} - ${typeLabel}: ${titleText}">
-        <span class="badge ${badgeClass} audit-badge">${symbol}</span>
+        <span class="badge ${badgeClass} audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">${displayVal}</span>
       </td>`;
     };
 
