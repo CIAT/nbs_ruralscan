@@ -1998,6 +1998,19 @@
               </span>
               <span id="search-inclusions-filter-badge" style="font-size: 11px; font-weight: 500; color: var(--accent-emerald); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 2px 8px; border-radius: 4px; display: none;"></span>
             </h3>
+            
+            <!-- Source category filter pills -->
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; background: rgba(255, 255, 255, 0.01); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color);">
+              <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; margin-left: 6px;">Filter Category:</span>
+              <div id="search-inclusions-category-pills" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="pill-btn active emerald" data-category="all" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">All Sources</button>
+                <button class="pill-btn emerald" data-category="stock" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Stock Papers</button>
+                <button class="pill-btn emerald" data-category="updated" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Updated Lit</button>
+                <button class="pill-btn emerald" data-category="grey" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Grey Lit</button>
+                <button class="pill-btn emerald" data-category="tools" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Tools &amp; Manuals</button>
+              </div>
+            </div>
+
             <div style="overflow-x: auto;">
               <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
                 <thead>
@@ -2063,6 +2076,7 @@
 
 <script>
   let dashboardData = null;
+  let activeSearchCategory = 'all';
   let sourcingGroupMode = 'method'; // 'method' or 'author'
 
   function getFriendlySourceName(sourceId, citation) {
@@ -2473,6 +2487,27 @@
     }
     setupAuditSortListeners();
 
+    // 6b2. Setup Search & Discovery Logs Category Filter Pills
+    const catPills = document.querySelectorAll('#search-inclusions-category-pills .pill-btn');
+    catPills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        catPills.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeSearchCategory = btn.dataset.category;
+        
+        const activeNbsBtn = document.querySelector('#search-pill-nbs .pill-btn.active');
+        const activeTableBtn = document.querySelector('#search-pill-table .pill-btn.active');
+        const activeSubNbsBtn = document.querySelector('#search-pill-sub-nbs .pill-btn.active');
+        
+        if (activeNbsBtn && activeTableBtn) {
+          const nbs = activeNbsBtn.dataset.nbs;
+          const table = activeTableBtn.dataset.table;
+          const subNbs = activeSubNbsBtn ? activeSubNbsBtn.dataset.subnbs : 'all';
+          renderSearchLog(`${nbs}_${table}`, subNbs);
+        }
+      });
+    });
+
     // 6c. Setup Search & Discovery Logs Pills Selection
     if (dashboardData.discovery_logs) {
       // Elements
@@ -2553,6 +2588,14 @@
 
       // Re-evaluate available logs and update selection
       function updateLogSelection() {
+        // Reset category filter pills to "All" on practice / sub-practice / table change
+        activeSearchCategory = 'all';
+        const catPillsList = document.querySelectorAll('#search-inclusions-category-pills .pill-btn');
+        catPillsList.forEach(b => {
+          if (b.dataset.category === 'all') b.classList.add('active');
+          else b.classList.remove('active');
+        });
+
         // Enforce logical constraints (Water Harvesting only has T4 Suitability)
         if (activeNbs === 'water_harvesting_conservation') {
           tablePills.forEach(btn => {
@@ -5366,22 +5409,40 @@
           if (resultsCount !== null && !resultsText) {
             resultsText = `${resultsCount} results`;
           }
-          if (!resultsText) {
-            if (contentLower.includes('multiple')) resultsText = 'Multiple';
-            else if (item.content) resultsText = item.content;
-          }
-
+          
+          // Determine if we should render a badge for the content
+          let badgeText = '';
+          let isBadge = false;
+          
           if (resultsText) {
-            resultsText = resultsText.replace(/\*\*([^*]+)\*\*/g, '$1');
+            badgeText = resultsText;
+            isBadge = true;
+          } else if (contentLower.includes('multiple')) {
+            badgeText = 'Multiple';
+            isBadge = true;
+          } else if (contentLower === 'n/a') {
+            badgeText = 'N/A';
+            isBadge = true;
+          } else if (/^\d{4}-\d{2}-\d{2}$/.test(item.content.trim())) {
+            // It's a date
+            badgeText = item.content.trim();
+            isBadge = true;
+          } else if (item.content.length < 15) {
+            badgeText = item.content;
+            isBadge = true;
+          }
+          
+          if (badgeText) {
+            badgeText = badgeText.replace(/\*\*([^*]+)\*\*/g, '$1');
           }
 
           html += `
-            <div style="background: var(--bg-tertiary); padding: 8px 10px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.02);">
+            <div style="background: var(--bg-tertiary); padding: 8px 10px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.02); word-break: break-word;">
               <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px;">
                 <div style="font-weight: 600; font-size: 11.5px; color: var(--text-primary); font-family: var(--font-outfit);">${item.name}</div>
-                ${resultsText ? `
+                ${isBadge && badgeText ? `
                   <span class="badge ${resultsCount !== null ? (resultsCount > 50 ? 'high' : 'medium') : 'low'}" style="font-size: 9.5px; padding: 1px 5px; white-space: nowrap;">
-                    ${resultsText}
+                    ${badgeText}
                   </span>
                 ` : ''}
               </div>
@@ -5397,17 +5458,22 @@
             `;
           }
 
-          if (filters.length > 0 || (item.content && item.content !== resultsText)) {
-            let cleanContent = item.content;
-            if (cleanContent && cleanContent === resultsText) cleanContent = '';
-            
-            const detailsContent = [
-              cleanContent ? `<strong>Summary:</strong> ${cleanContent}` : '',
-              ...filters.map(f => {
-                return f.replace(/`([^`]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size: 11px; background: var(--bg-secondary); padding: 1px 3px; border-radius: 3px; color: var(--accent-sky); word-break: break-all;">$1</code>')
-                        .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-              })
-            ].filter(Boolean).join('<br>');
+          if (!isBadge && item.content) {
+            let cleanContent = item.content
+              .replace(/`([^`\n]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size:11px; background:var(--bg-secondary); padding:2px 4px; border-radius:3px; color: var(--accent-sky); word-break: break-all;">$1</code>')
+              .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            html += `
+              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; word-break: break-word;">
+                ${cleanContent}
+              </div>
+            `;
+          }
+
+          if (filters.length > 0) {
+            const detailsContent = filters.map(f => {
+              return f.replace(/`([^`]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size: 11px; background: var(--bg-secondary); padding: 1px 3px; border-radius: 3px; color: var(--accent-sky); word-break: break-all;">$1</code>')
+                      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            }).join('<br>');
 
             html += `
               <details style="margin-top: 4px;">
@@ -5732,8 +5798,18 @@
     const inclusionsBody = document.getElementById('search-inclusions-table-body');
     if (inclusionsBody) {
       inclusionsBody.innerHTML = '';
-      if (filteredRows.length > 0) {
-        filteredRows.forEach(row => {
+      
+      let displayRows = filteredRows;
+      if (activeSearchCategory !== 'all') {
+        displayRows = filteredRows.filter(row => {
+          const s = (dashboardData.registers.SRC_source_register || []).find(src => src.source_id === row.sourceId);
+          const cat = getSourceCategory(row.sourceId, s ? s.citation : '');
+          return cat === activeSearchCategory;
+        });
+      }
+
+      if (displayRows.length > 0) {
+        displayRows.forEach(row => {
           const tr = document.createElement('tr');
           const tierClass = row.tier.toLowerCase() === 'high' ? 'high' : (row.tier.toLowerCase() === 'medium' ? 'medium' : 'low');
           
@@ -5751,7 +5827,7 @@
           inclusionsBody.appendChild(tr);
         });
       } else {
-        inclusionsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 16px;">No discovered sources matching this sub-practice selection.</td></tr>`;
+        inclusionsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 16px;">No discovered sources matching this selection &amp; category filter.</td></tr>`;
       }
     }
 
