@@ -10,6 +10,7 @@ enforces the hard rules before they're trusted.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
