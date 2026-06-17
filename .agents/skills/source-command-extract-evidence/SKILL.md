@@ -57,3 +57,31 @@ When extracting evidence supporting tables other than T4, consult the specific e
 - For T6 (scorecard / cost-effectiveness): [.agents/skills/extraction_contracts/T6_contract.md](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/.agents/skills/extraction_contracts/T6_contract.md)
 
 Reference: methodology/examples/t4_slice_agroforestry_F1_slope.md (the gold standard to reproduce).
+
+## Common extraction defects (2026-06 learnings — avoid these)
+
+Quote-verbatim does NOT mean the structured fields are faithful. Two adversarial verify
+waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
+
+1. **Smuggled numbers** — every value in `relationship` MUST appear in the SAME quote.
+   Do not import discount rates, time horizons, study counts (n), I² heterogeneity,
+   table-header units, or cross-row range endpoints from elsewhere in the paper.
+   (Deterministically caught by `schema_tools/check_numbers.py`.)
+2. **Lowest-rank-class misread as exclusion** — in AHP/land-suitability tables, the
+   bottom class (score 1 / "Low") is NOT a hard `abs_min`/`abs_max`. Only encode an
+   absolute limit when the text says excluded/unsuitable, not merely low-scoring.
+3. **Unit-from-quote-only** — if the quoted cell shows "873.60" with the unit in a
+   header row not in the quote, do not assert `unit`. Quote the header too, or omit unit.
+4. **Proxy ≠ canonical variable** — SOM≠soil_organic_carbon, NDVI≠tree_canopy_cover,
+   soil-moisture≠soil_drainage, frost-free-period / LST ≠ mean_annual_temperature. If the
+   paper measures a proxy, say so in `raw_name` and pick the closest canonical id with
+   `extraction_confidence` lowered — never silently relabel.
+5. **Contiguous single-passage quotes only** — never stitch text across passages/pages
+   (fails the page-level guardrail).
+6. **Family**: general cross-cutting envelope claims → `agroforestry__cross_family`, not a
+   default to F1. Family-specific only when the paper's system is that family.
+7. **cited_secondary REQUIRES `attribution`** (whose finding) — synthesis de-dups on it.
+
+The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
+`check_numbers.py`, and the adversarial relationship-verify. A subagent's own self-check
+is advisory — do not rely on it.

@@ -100,6 +100,15 @@ def main() -> int:
         low = sum(1 for r in ev if r.get("extraction_confidence") == "low")
         rel = sum(1 for r in ev if (r.get("relationship") or "").strip())
         print(f"    numeric (rel)   : {rel}")
+        try:
+            from nbs_ruralscan.schema_tools.check_numbers import check as _ckn
+
+            n_bad = len(_ckn(ROOT / "schema"))
+            print(
+                f"    number-prov flag: {n_bad} (numbers not traceable to quote — review)"
+            )
+        except Exception:
+            pass
         print(f"    flagged review  : {flagged}")
         print(f"    low confidence  : {low}")
         top = Counter(r.get("source_id", "?") for r in ev).most_common(5)
