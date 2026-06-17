@@ -3283,8 +3283,7 @@
       "opt_high": 5,
       "sub_low": 5,
       "sub_high": 15,
-      "abs_max": 15,
-      "unit": "degrees",
+      "unit": "degrees (inferred)",
       "direction": "lower_is_better"
     },
     "context": {
@@ -3295,12 +3294,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Slope\n29.6\n<5\n5–15\n> 15\n3\n2\n1\nHigh\nMedium\nLow",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Slope",
-    "attribution": "general — applies cross-family; AHP weight 29.6%",
+    "attribution": "[VERIFY-FLAG mismatch: abs_max=15 not supported: quote shows >15 as Low suitability (score 1), not a hard exclusion threshold; unit=\"] general — applies cross-family; AHP weight 29.6%",
     "locator_type": "page"
   },
   {
@@ -3313,7 +3312,7 @@
       "opt_low": 985,
       "sub_low": 965,
       "sub_high": 985,
-      "unit": "mm/yr",
+      "unit": "mm (annual inferred)",
       "direction": "higher_is_better"
     },
     "context": {
@@ -3324,12 +3323,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Rainfall\n10.4\n<965mm\n965-985mm\n>985mm\n1\n2\n3\nLow\nMedium\nHigh",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Rainfall",
-    "attribution": "general — applies cross-family; AHP weight 10.4%",
+    "attribution": "[VERIFY-FLAG mismatch: unit=\"mm/yr\" not stated in quote (quote says \"mm\" only; \"annual\" is inferred, not explicit); no upper bound on] general — applies cross-family; AHP weight 10.4%",
     "locator_type": "page"
   },
   {
@@ -3341,11 +3340,14 @@
     "relationship": {
       "opt_low": 6.6,
       "opt_high": 7.3,
-      "sub_low": 5.6,
-      "sub_high": 8.4,
-      "abs_min": 5.5,
-      "abs_max": 8.5,
-      "unit": "pH"
+      "sub_low_lower": 5.6,
+      "sub_high_lower": 6.5,
+      "sub_low_upper": 7.4,
+      "sub_high_upper": 8.4,
+      "abs_min_suitability_low": 5.5,
+      "abs_max_suitability_low": 8.5,
+      "unit": "pH",
+      "note": "boundaries at 5.5 and 8.5 are Low-class thresholds, not hard exclusions"
     },
     "context": {
       "country": "India",
@@ -3355,12 +3357,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "pH\n1\n6.6-7.3\n7.4-8.4, 6.5-5.6\n< 5.5, >8.5\n3\n2\n1\nHigh\nMedium\nLow",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "pH",
-    "attribution": "general — applies cross-family; FAO-based land evaluation",
+    "attribution": "[VERIFY-FLAG mismatch: abs_min=5.5 and abs_max=8.5 encoded as hard exclusions but quote assigns score=1 (Low suitability) to <5.5 and] general — applies cross-family; FAO-based land evaluation",
     "locator_type": "page"
   },
   {
@@ -3371,6 +3373,8 @@
     "variable": "soil_organic_carbon",
     "relationship": {
       "opt_low": 0.75,
+      "sub_low": 0.5,
+      "sub_high": 0.75,
       "unit": "%",
       "direction": "higher_is_better"
     },
@@ -3382,12 +3386,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Organic carbon (%)\n1\n>0.75\n0.75-.50\n< 0.50\n3\n2\n1\nHigh\nMedium\nLow",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Organic carbon (%)",
-    "attribution": "general — applies cross-family; FAO-based land evaluation",
+    "attribution": "[VERIFY-FLAG mismatch: sub_low=0.50 (medium lower bound explicitly stated in quote) omitted from relationship; quote supports a three] general — applies cross-family; FAO-based land evaluation",
     "locator_type": "page"
   },
   {
@@ -3442,8 +3446,9 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "household_income",
     "relationship": {
-      "opt_low": 1500,
-      "unit": "USD/season/acre"
+      "opt_low": 100000,
+      "unit": "INR/season/acre",
+      "note": "USD equivalent ~1500 is approximate; primary stated unit is Indian Rupees; variable should be farmer_profit or similar, not household_income"
     },
     "context": {
       "country": "India",
@@ -3453,13 +3458,13 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "crop_specific",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "a farmer can earn\na profit of at least 1/10 million Indian Rupees (roughly\n1500 USD) per season from one acre of land.",
     "page": 14,
     "reviewer_ok": false,
     "raw_name": "income generated from one acre",
     "taxon": "Carica papaya",
-    "attribution": "Mukesh 2012",
+    "attribution": "[VERIFY-FLAG mismatch: Variable labelled household_income but quote describes profit per acre per season, not household income; 1500 ] Mukesh 2012",
     "locator_type": "page"
   },
   {
@@ -3468,23 +3473,20 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "erosion_hazard",
-    "relationship": {
-      "direction": "steep_slope_increases_erosion_risk"
-    },
     "context": {
       "country": "India",
       "district": "Palamu, Jharkhand"
     },
     "use_role": "climate_risk",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "low soil nutri-\nent, wetness, rainfall, steep slope and high elevation which \nprovides the least favorable condition for the plant growth.",
     "page": 13,
     "reviewer_ok": false,
     "raw_name": "eroded sloppy land",
-    "attribution": "general — applies cross-family",
+    "attribution": "[VERIFY-FLAG unsupported: Quote describes unfavorable conditions for plant growth; does not mention erosion or erosion hazard; relations] general — applies cross-family",
     "locator_type": "page"
   },
   {
@@ -3853,7 +3855,7 @@
       "low": 0.53,
       "high": 1.4,
       "unit": "deg_C",
-      "horizon_year": 2030
+      "note": "horizon_year removed — not stated in quote; requires separate evidence unit or expanded quote with explicit year"
     },
     "context": {
       "region": "South Asia"
@@ -3862,11 +3864,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "the temperature increase was found very significant in the whole of South Asia with a range of 0.53 to 1.40 °C",
     "page": 12,
     "reviewer_ok": false,
     "raw_name": "temperature increase anomaly 2030",
+    "attribution": "[VERIFY-FLAG mismatch: horizon_year=2030 is not stated anywhere in the quote. Quote only says 'temperature increase... range of 0.53 ]",
     "locator_type": "page"
   },
   {
@@ -3899,8 +3902,9 @@
     "relationship": {
       "low": 3.1,
       "high": 7.4,
-      "unit": "pct_per_degC",
-      "direction": "negative"
+      "unit": "unspecified_per_degC",
+      "direction": "negative",
+      "note": "% numerator unit not stated in quote; claim is secondary — attributed to Zhao et al. 2017, not Ahmad 2020 original data"
     },
     "context": {
       "region": "South Asia"
@@ -3909,12 +3913,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "each degree rise of temperature will significantly reduce the average yield (3.1–7.4) in some of the important agricultural crops (Zhao et al. 2017)",
     "page": 12,
     "reviewer_ok": false,
     "raw_name": "average yield reduction per degree temperature rise",
-    "attribution": "Zhao et al. 2017",
+    "attribution": "[VERIFY-FLAG mismatch: unit=pct_per_degC is not stated in the quote. Quote says 'reduce the average yield (3.1–7.4)' — no percentage ] Zhao et al. 2017",
     "locator_type": "page"
   },
   {
@@ -4152,18 +4156,19 @@
     "variable": "mean_annual_temperature",
     "relationship": {
       "unit": "days",
-      "resolution_m": 30
+      "resolution_m": 30,
+      "variable_note": "frost_free_period, not mean_annual_temperature"
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Frost-free period SSURGO [62] Expected number of days between last freeze in spring and first freeze in fall, 30 m spatial resolution",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Frost-free period",
-    "attribution": "general — applies cross-family",
+    "attribution": "[VERIFY-FLAG mismatch: Variable tagged mean_annual_temperature but quote describes frost-free period (days between last spring freeze] general — applies cross-family",
     "locator_type": "page"
   },
   {
@@ -4601,7 +4606,6 @@
     "relationship": {
       "ghg_low": 0.6,
       "ghg_high": 2.72,
-      "unit": "tonne CO2e acre-1 yr-1",
       "area_million_acres": 15.3,
       "pct_ag_land": 5.0,
       "mt_co2e_yr_central": 25.46,
@@ -4612,11 +4616,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Alley Cropping 0.6–2.72 15.3 million 5.00% 25.46 [9.92–41.01]",
     "page": 15,
     "reviewer_ok": false,
     "raw_name": "Carbon sequestration — Alley Cropping (Table 3)",
+    "attribution": "[VERIFY-FLAG mismatch: unit 'tonne CO2e acre-1 yr-1' is not stated in the quoted table row — it is smuggled from the table header, wh]",
     "locator_type": "page"
   },
   {
@@ -4628,7 +4633,6 @@
     "relationship": {
       "ghg_low": 0.98,
       "ghg_high": 1.97,
-      "unit": "tonne CO2e acre-1 yr-1",
       "area_million_acres": 5.25,
       "pct_ag_land": 1.7,
       "mt_co2e_yr_central": 9.22,
@@ -4639,11 +4643,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Silvopasture 0.98–1.97 5.25 million 1.70% 9.22 [5.72–13.00]",
     "page": 15,
     "reviewer_ok": false,
     "raw_name": "Carbon sequestration — Silvopasture (Table 3)",
+    "attribution": "[VERIFY-FLAG mismatch: unit 'tonne CO2e acre-1 yr-1' not in quoted row — smuggled from table header absent from quote. Raw numbers ar]",
     "locator_type": "page"
   },
   {
@@ -4655,7 +4660,6 @@
     "relationship": {
       "ghg_low": 6.53,
       "ghg_high": 7.33,
-      "unit": "tonne CO2e acre-1 yr-1",
       "area_million_acres": 1.03,
       "pct_ag_land": 0.3,
       "mt_co2e_yr_central": 7.47,
@@ -4666,11 +4670,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Riparian Buffers 6.53–7.33 1.03 million 0.30% 7.47 [7.40–7.58]",
     "page": 15,
     "reviewer_ok": false,
     "raw_name": "Carbon sequestration — Riparian Buffers (Table 3)",
+    "attribution": "[VERIFY-FLAG mismatch: unit 'tonne CO2e acre-1 yr-1' not in quoted row — smuggled from table header absent from quote. Raw numbers ar]",
     "locator_type": "page"
   },
   {
@@ -4682,7 +4687,6 @@
     "relationship": {
       "ghg_low": 3.24,
       "ghg_high": 5.87,
-      "unit": "tonne CO2e acre-1 yr-1",
       "area_million_acres": 1.97,
       "pct_ag_land": 0.6,
       "mt_co2e_yr_central": 9.59,
@@ -4693,11 +4697,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Windbreaks 3.24–5.87 1.97 million 0.60% 9.59 [7.88–11.30]",
     "page": 15,
     "reviewer_ok": false,
     "raw_name": "Carbon sequestration — Windbreaks (Table 3)",
+    "attribution": "[VERIFY-FLAG mismatch: unit 'tonne CO2e acre-1 yr-1' not in quoted row — smuggled from table header absent from quote. Raw numbers ar]",
     "locator_type": "page"
   },
   {
@@ -4734,19 +4739,18 @@
       "low": 0.6,
       "high": 2.0,
       "unit": "% of farms",
-      "year": 2017,
-      "region": "US Midwest states"
+      "year": 2017
     },
     "use_role": "nbs_effect",
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "the proportion of farms reporting the use of an agroforestry practice in 2017 ranged between 0.6% and 2% [23].",
     "page": 3,
     "reviewer_ok": false,
     "raw_name": "US Midwest state-level adoption range 2017",
-    "attribution": "USDA Census of Agriculture 2017 [23]",
+    "attribution": "[VERIFY-FLAG mismatch: region 'US Midwest states' not stated in the quoted sentence — smuggled from context outside the quote. The qu] USDA Census of Agriculture 2017 [23]",
     "locator_type": "page"
   },
   {
@@ -4906,7 +4910,7 @@
     "variable": "distance_to_road",
     "relationship": {
       "very_high_suitability_threshold_km": "<5",
-      "marginal_threshold_km": ">30",
+      "unsuitable_threshold_km": ">30",
       "unit": "km"
     },
     "context": {
@@ -4917,12 +4921,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "More than ~46.6% of the area were classified as easily accessible by road (< 5 km) and were considered as very highly suitable for agroforestery. Only ~4.1% lands were classified as unsuitable because they were at more than 30 km from the road.",
     "page": 4,
     "reviewer_ok": false,
     "raw_name": "distance to road",
-    "attribution": "general — applies cross-family",
+    "attribution": "[VERIFY-FLAG mismatch: Quote says areas >30 km were 'classified as unsuitable' — relationship encodes this as 'marginal_threshold_km'] general — applies cross-family",
     "locator_type": "page"
   },
   {
@@ -4936,7 +4940,8 @@
       "distance_rivers_weight_pct": "20.1",
       "villages_airports_weight_pct": "15",
       "roads_weight_pct": "10",
-      "combined_top4_weight_pct": "84"
+      "combined_top4_weight_pct": "84",
+      "note": "These are AHP factor weights, not travel-time thresholds; variable should be relabelled to reflect factor-weight evidence"
     },
     "context": {
       "study_location": "eastern DR Congo",
@@ -4946,12 +4951,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Nine factors were combined to assess suitability for agroforestry, and from these factors, four had contributed up to 84% of the suitability. These were climate types (~28.9%), Euclidean distance to rivers (~20.1%), to local villages, local airports (15%) and roads (10%).",
     "page": 6,
     "reviewer_ok": false,
     "raw_name": "Euclidean distance to villages/airports/roads",
-    "attribution": "general — applies cross-family",
+    "attribution": "[VERIFY-FLAG mismatch: Variable is labelled 'accessibility_travel_time' but the quote describes AHP factor weights (%, contribution t] general — applies cross-family",
     "locator_type": "page"
   },
   {
@@ -5148,9 +5153,9 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "slope",
     "relationship": {
-      "opt_high": 4,
       "unit": "%",
-      "classes": "very_high:<4%, high:4-7%, medium:7-9%, low:>9%"
+      "classes": "very_high:<4%, high:4-7%, medium:7-9%, low:>9%",
+      "opt_high": null
     },
     "context": {
       "study_area": "Genale sub-basin, Oromia, Ethiopia",
@@ -5160,12 +5165,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "The slope data was derived from the Aster Digital Elevation Model (DEM) and subsequently categorized into four classifications: less than 4%, between 4% and 7%, between 7% and 9%, and greater than 9%. These categories were assigned ranks of 4, 3, 2, and 1, corresponding to very high, high, medium, and low suitability for plant growth, respectively",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Slope",
-    "attribution": "general — applies cross-family; GIS-AHP land suitability study",
+    "attribution": "[VERIFY-FLAG mismatch: opt_high: 4 encodes the rank value (1–4 ordinal scale), not a slope percentage. The quote's four slope classes] general — applies cross-family; GIS-AHP land suitability study",
     "locator_type": "page"
   },
   {
@@ -5200,10 +5205,10 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "annual_precipitation",
     "relationship": {
-      "abs_min": 600,
       "opt_low": 800,
       "opt_high": 1200,
-      "unit": "mm/year"
+      "unit": "mm",
+      "classes": "low:<600mm, medium:600-800mm, high:800-1200mm, very_high:>1200mm"
     },
     "context": {
       "study_area": "Genale sub-basin, Oromia, Ethiopia",
@@ -5213,12 +5218,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "rainfall map was categorized into four classes (<600mm, 600-800mm, 800mm-1200mm, >1200 mm), which were assigned ranks of 1, 2, 3, and 4, corresponding to low, medium, high and very high rainfall levels, respectively",
     "page": 8,
     "reviewer_ok": false,
     "raw_name": "Mean annual rainfall",
-    "attribution": "general — applies cross-family",
+    "attribution": "[VERIFY-FLAG mismatch: abs_min: 600 misreads the quote. The <600 mm class is explicitly assigned rank 1 (Low suitability), not exclud] general — applies cross-family",
     "locator_type": "page"
   },
   {
@@ -5228,11 +5233,11 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "annual_precipitation",
     "relationship": {
-      "abs_min": 600,
       "opt_low": 800,
       "opt_high": 1200,
-      "unit": "mm/year",
-      "ahp_weight_pct": 12
+      "unit": "mm",
+      "ahp_weight_pct": 12,
+      "classes": "low:<600mm, medium:600-800mm, high:800-1200mm, very_high:>1200mm"
     },
     "context": {
       "study_area": "Genale sub-basin, Oromia, Ethiopia"
@@ -5241,12 +5246,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Rainfall \n12 \n<600mm \n1 \nLow \n600mm-800mm \n2 \nMedium \n800mm-1200mm \n3 \nHigh \n>1200mm \n4 \nVery high",
     "page": 5,
     "reviewer_ok": false,
     "raw_name": "Rainfall",
-    "attribution": "general — applies cross-family; AHP weight 12%",
+    "attribution": "[VERIFY-FLAG mismatch: Same abs_min: 600 defect as ev_T4_precip_haile2024_1 — <600 mm = rank 1 (Low), not excluded. The 12 in the quo] general — applies cross-family; AHP weight 12%",
     "locator_type": "page"
   },
   {
@@ -5256,11 +5261,10 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "soil_ph",
     "relationship": {
-      "abs_min": 5.0,
-      "abs_max": 8.0,
       "opt_low": 6.6,
       "opt_high": 7.3,
-      "unit": "pH"
+      "unit": "pH",
+      "classes": "low:<5_OR_>8, medium:5.1-5.5_OR_8-8.3, high:7.4-8.4_OR_6.5-5.6, very_high:6.6-7.3"
     },
     "context": {
       "study_area": "Genale sub-basin, Oromia, Ethiopia"
@@ -5269,12 +5273,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Soil pH(H2O) \n20 \n<5OR >8 \n1 \nLow \n5.1-5.5 OR 8-8.3 \n2 \nMedium \n7.4-8.4 OR 6.5-5.6 \n3 \nHigh \n6.6-7.3 \n4 \nVery high",
     "page": 6,
     "reviewer_ok": false,
     "raw_name": "Soil pH(H2O)",
-    "attribution": "general — applies cross-family; FAO standards cited for plant growth",
+    "attribution": "[VERIFY-FLAG mismatch: abs_min: 5.0 and abs_max: 8.0 both misread the quote. The quote assigns <5 OR >8 to rank 1 (Low suitability), ] general — applies cross-family; FAO standards cited for plant growth",
     "locator_type": "page"
   },
   {
@@ -5284,9 +5288,8 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "soil_organic_carbon",
     "relationship": {
-      "abs_min": 0.5,
-      "opt_low": 0.7,
-      "unit": "%"
+      "unit": "%",
+      "classes": "low:<0.5, medium:0.5-0.7"
     },
     "context": {
       "study_area": "Genale sub-basin, Oromia, Ethiopia"
@@ -5295,12 +5298,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Soil Organic Carbon \n20 \n<0.5 \n1 \nLow \n0.5-0.7 \n2 \nMedium",
     "page": 5,
     "reviewer_ok": false,
     "raw_name": "Soil Organic Carbon",
-    "attribution": "general — applies cross-family; table continues on next page (0.7-0.75 high, >0.75 very high)",
+    "attribution": "[VERIFY-FLAG mismatch: abs_min: 0.5 misreads the quote — <0.5 = rank 1 (Low), not excluded. opt_low: 0.7 asserts an optimum lower bou] general — applies cross-family; table continues on next page (0.7-0.75 high, >0.75 very high)",
     "locator_type": "page"
   },
   {
@@ -5401,7 +5404,7 @@
     "relationship": {
       "range_lower_pct": 8,
       "range_upper_pct": 15,
-      "suitability_class": "S2 (moderately suitable, slope limiting)",
+      "limiting_factor": "slope (inhibiting)",
       "unit": "%"
     },
     "context": {
@@ -5412,12 +5415,13 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "species_specific",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "The slope factor which is inhibiting in land unit 3 is classified as a slightly slope class around 8% - 15%.",
     "page": 6,
     "reviewer_ok": false,
     "raw_name": "slope",
     "taxon": "Falcataria moluccana",
+    "attribution": "[VERIFY-FLAG mismatch: suitability_class 'S2 (moderately suitable, slope limiting)' is smuggled — quote says 'inhibiting' and 'slight]",
     "locator_type": "page"
   },
   {
@@ -5428,9 +5432,9 @@
     "variable": "slope",
     "relationship": {
       "threshold_pct": 45,
-      "direction": "above threshold — unsuitable for agricultural/forestry cultivation",
+      "direction": "above threshold",
       "unit": "%",
-      "suitability_class": "VII (unsuitable)"
+      "suitability_class": "VII"
     },
     "context": {
       "location": "Indonesia, Tanralili District, Maros Regency",
@@ -5440,11 +5444,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "in class VII, there are steep slopes, with a slope of more than 45%.",
     "page": 5,
     "reviewer_ok": false,
     "raw_name": "slope",
+    "attribution": "[VERIFY-FLAG mismatch: direction label 'unsuitable for agricultural/forestry cultivation' is not in the quote — quote only names clas]",
     "locator_type": "page"
   },
   {
@@ -5454,7 +5459,7 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "soil_drainage",
     "relationship": {
-      "suitability_class": "IV (limited cultivation — heavy restrictions)",
+      "suitability_class": "IV (subclass IVd)",
       "limiting_factor": "drainage"
     },
     "context": {
@@ -5465,11 +5470,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "In class IV, there is one land unit 6. The inhibiting factor is drainage, so it is included in the IVd sub-class.",
     "page": 3,
     "reviewer_ok": false,
     "raw_name": "drainage",
+    "attribution": "[VERIFY-FLAG mismatch: suitability_class parenthetical '(limited cultivation — heavy restrictions)' is not in the quote — quote says ]",
     "locator_type": "page"
   },
   {
@@ -5618,7 +5624,8 @@
         "S3": "1–3",
         "N1": "<1"
       },
-      "unit": "% organic matter"
+      "unit": "% soil organic matter",
+      "note": "variable should be soil_organic_matter, not soil_organic_carbon"
     },
     "context": {
       "livestock": "sheep and goats",
@@ -5629,12 +5636,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Av. Soil Organic Matter | >5 3–5 1–3 <1",
     "page": 10,
     "reviewer_ok": false,
     "raw_name": "Av. Soil Organic Matter",
-    "attribution": "SOM (loss-on-ignition), used as proxy for soil organic carbon suitability",
+    "attribution": "[VERIFY-FLAG mismatch: Quote says 'Soil Organic Matter' (SOM); variable encoded as 'soil_organic_carbon' (SOC). SOM ≠ SOC (SOM ≈ 1.72] SOM (loss-on-ignition), used as proxy for soil organic carbon suitability",
     "locator_type": "page"
   },
   {
@@ -5650,7 +5657,8 @@
         "S3": "5–10",
         "N1": "<5"
       },
-      "unit": "% volumetric soil moisture"
+      "unit": "% volumetric soil moisture",
+      "note": "variable should be soil_moisture_content, not soil_drainage"
     },
     "context": {
       "livestock": "sheep and goats",
@@ -5661,12 +5669,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Av. Soil moisture content (% | ) 20–30 10–20 5–10 <5",
     "page": 10,
     "reviewer_ok": false,
     "raw_name": "Av. Soil moisture content (%)",
-    "attribution": "Soil moisture content used as proxy for available water/drainage adequacy",
+    "attribution": "[VERIFY-FLAG mismatch: Quote measures 'Soil moisture content (%)'; variable encoded as 'soil_drainage'. Soil moisture content ≠ soil ] Soil moisture content used as proxy for available water/drainage adequacy",
     "locator_type": "page"
   },
   {
@@ -5682,7 +5690,8 @@
         "S3": "0.3–0.1",
         "N1": "<0.1"
       },
-      "unit": "NDVI dimensionless"
+      "unit": "NDVI dimensionless",
+      "note": "variable should be ndvi or vegetation_density, not tree_canopy_cover"
     },
     "context": {
       "livestock": "sheep and goats",
@@ -5693,12 +5702,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Av. NDVI-based vegetation | density >0.4 0.4–0.3 0.3–0.1 <0.1",
     "page": 10,
     "reviewer_ok": false,
     "raw_name": "Av. NDVI-based vegetation density",
-    "attribution": "NDVI used as proxy for vegetation/canopy density",
+    "attribution": "[VERIFY-FLAG mismatch: Quote measures 'NDVI-based vegetation density' (dimensionless NDVI); variable encoded as 'tree_canopy_cover'. ] NDVI used as proxy for vegetation/canopy density",
     "locator_type": "page"
   },
   {
@@ -5714,7 +5723,8 @@
         "S3": "3–5",
         "N1": ">5"
       },
-      "unit": "km from water source"
+      "unit": "M (units ambiguous — likely km)",
+      "note": "variable should be distance_to_water or water_accessibility, not distance_to_road"
     },
     "context": {
       "livestock": "sheep and goats",
@@ -5730,7 +5740,7 @@
     "page": 10,
     "reviewer_ok": false,
     "raw_name": "Water accessibility (M)",
-    "attribution": "Water accessibility distance — used as proxy for access constraint; not road distance",
+    "attribution": "[VERIFY-FLAG mismatch: Quote measures 'Water accessibility (M)' — proximity to water, not roads. Variable encoded as 'distance_to_roa] Water accessibility distance — used as proxy for access constraint; not road distance",
     "locator_type": "page"
   },
   {
@@ -5745,7 +5755,8 @@
       "from_value": "3.88 ± 1.41",
       "to_value": "9.42 ± 2.52",
       "unit": "%",
-      "p_value": 0.037
+      "p_value": 0.037,
+      "note": "variable should be soil_moisture_content, not soil_water_retention"
     },
     "context": {
       "system": "managed rangeland reserve",
@@ -5756,11 +5767,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Soil moisture showed a substantial seasonal increase, rising from 3.88 ± 1.41% in April to 9.42 ± 2.52% in November (Table 3). This 143% increase was statistically significant (p = 0.037)",
     "page": 11,
     "reviewer_ok": false,
     "raw_name": "soil moisture content seasonal change",
+    "attribution": "[VERIFY-FLAG mismatch: Quote reports seasonal change in measured 'soil moisture'; variable encoded as 'soil_water_retention' (a capac]",
     "locator_type": "page"
   },
   {
@@ -5841,8 +5853,7 @@
     "suitability_family_id": "agroforestry__silvopastoral",
     "variable": "food_security",
     "relationship": {
-      "direction": "variable",
-      "unit": "kg/ha/year"
+      "direction": "variable"
     },
     "context": {
       "system": "managed steppe rangeland reserve",
@@ -5852,11 +5863,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Net productivity (available forage) varied substantially across locations, with the highest yields recorded in the north and the lowest in the southern site.",
     "page": 13,
     "reviewer_ok": false,
     "raw_name": "available forage biomass",
+    "attribution": "[VERIFY-FLAG mismatch: Unit 'kg/ha/year' is not stated in this quote; it is smuggled from the adjacent table (ev_t6_foodsec_jawarneh2]",
     "locator_type": "page"
   },
   {
@@ -6140,22 +6152,19 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__silvopastoral",
     "variable": "protected_area_status",
-    "relationship": {
-      "strict_regime": "all protected areas excluded",
-      "relaxed_regime": "excluded unless LSU_density > 0 LSU/ha"
-    },
     "context": {
       "suitability_dimension": "operational_constraint",
       "note": "Two regimes tested across 4064 scenarios."
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Land protection status (strict versus relaxed): We hypothesised two protection regimes: strict versus relaxed. Initially, a protected areas map was created by merging the Natura 2000 sites (Birds and Habitats Directives; types B and C) [85], and the CDDA national designations (IUCN Ia–III and equivalent strict conservation categories) [86].",
     "page": 14,
     "reviewer_ok": false,
+    "attribution": "[VERIFY-FLAG unsupported: Quote only describes map construction methodology and names two hypothesised regimes; it never states the rela]",
     "locator_type": "page"
   },
   {
@@ -6679,10 +6688,10 @@
     "suitability_family_id": "agroforestry__silvopastoral",
     "variable": "slope",
     "relationship": {
-      "direction": "negative",
-      "threshold_optimal_max_pct": 3,
-      "threshold_suitable_max_pct": 20,
-      "threshold_unsuitable_min_pct": 45
+      "threshold_plane_max_pct": 3,
+      "threshold_smooth_wavy_max_pct": 8,
+      "threshold_mod_wavy_max_pct": 20,
+      "threshold_strong_wavy_max_pct": 45
     },
     "context": {
       "study_region": "Minas Gerais, Brazil",
@@ -6694,11 +6703,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "The slope values were then categorised into a plane (0 to 3%), smooth wavy (3 to 8%), moderately wavy to wavy (8 to 20%), strong wavy (20 to 45%), and mountainous to steep (> 45%)",
     "page": 2,
     "reviewer_ok": false,
     "raw_name": "terrain slope categories",
+    "attribution": "[VERIFY-FLAG mismatch: Suitability labels (optimal/suitable/unsuitable) smuggled — quote gives only terrain category names (plane, sm]",
     "locator_type": "page"
   },
   {
@@ -6710,8 +6720,7 @@
     "relationship": {
       "slope_weight_pct": 50,
       "soil_class_weight_pct": 39,
-      "lithology_weight_pct": 11,
-      "method": "AHP"
+      "lithology_weight_pct": 11
     },
     "context": {
       "study_region": "Minas Gerais, Brazil",
@@ -6721,11 +6730,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "considering weights of 50% (w1= 0,50) for slope, 39% (w2=0,39) for soil class, and 11% (w3= 0,11) for lithology",
     "page": 4,
     "reviewer_ok": false,
     "raw_name": "slope weight in PCU AHP",
+    "attribution": "[VERIFY-FLAG mismatch: method=AHP not stated in quote; quote only gives the three weights (50/39/11). AHP is smuggled from elsewhere.]",
     "locator_type": "page"
   },
   {
@@ -6735,7 +6745,6 @@
     "suitability_family_id": "agroforestry__silvopastoral",
     "variable": "slope",
     "relationship": {
-      "direction": "negative",
       "slope_weight_pct": 50,
       "data_source": "SRTM"
     },
@@ -6747,11 +6756,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "The slope is the main layer in the PCU spatial distribution. In addition to the high weight (50%), it is the layer with the highest resolution and detail and the only layer derived from numerical and continuous in­formation (i.e., SRTM).",
     "page": 5,
     "reviewer_ok": false,
     "raw_name": "slope as main PCU layer",
+    "attribution": "[VERIFY-FLAG mismatch: direction=negative not stated in this quote; quote only affirms high weight (50%) and SRTM source. Direction i]",
     "locator_type": "page"
   },
   {
@@ -6763,8 +6773,7 @@
     "relationship": {
       "direction": "positive",
       "score_high": 5,
-      "score_low": 1,
-      "note": "Drainage balance, clayey, deep, fertile → score≈5 (Oxisols/Nitosols); poor drainage (Spodzols/Histosols/Entisols) → score≈1"
+      "note": "Soils with drainage balance, more clayey, deeper, and fertile score closer to 5; poor drainage scores lower"
     },
     "context": {
       "study_region": "Minas Gerais, Brazil",
@@ -6775,12 +6784,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Soils are weighted according to drainage attributes, texture, effective depth, and fertility. Soils with drainage balance, more clayey texture, and more profound and fertile had notes closer to five",
     "page": 2,
     "reviewer_ok": false,
     "raw_name": "soil drainage attributes in PCU",
-    "attribution": "Costa et al. (2019)",
+    "attribution": "[VERIFY-FLAG mismatch: Note smuggles specific soil taxonomy names (Oxisols, Nitosols, Spodzols, Histosols, Entisols) absent from the ] Costa et al. (2019)",
     "locator_type": "page"
   },
   {
@@ -6791,9 +6800,8 @@
     "variable": "land_cover",
     "relationship": {
       "threshold_min": 3,
-      "scale_range": "1-5",
       "direction": "positive",
-      "note": "PCU ≥3 = agrosilvopastoral suitable; PCU <3 = conservation/exclusion"
+      "note": "PCU >=3 = agrosilvopastoral aptitude; PCU <3 = biodiversity conservation/exclusion"
     },
     "context": {
       "study_region": "Minas Gerais, Brazil",
@@ -6804,11 +6812,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Costa et al. (2019) divided the PCU into five classes regarding the potential for conservation use. This work adopted the most straightfor­ward division for analysing the fitness for use: PCU ≥3 indicated apti­tude for agrosilvopastoral activities and PCU<3 for biodiversity conservation",
     "page": 8,
     "reviewer_ok": false,
     "raw_name": "PCU aptitude threshold for agrosilvopastoral",
+    "attribution": "[VERIFY-FLAG mismatch: scale_range=1-5 not stated in this quote (comes from elsewhere in paper); smuggled. threshold_min=3 and the ap]",
     "locator_type": "page"
   },
   {
@@ -6845,7 +6854,7 @@
     "variable": "erosion_hazard",
     "relationship": {
       "direction": "positive",
-      "note": "Higher slope → greater erosion intensity; PCU scores explicitly reflect resistance to erosion; slope >45% = PCU 1.0-1.8 = severe restriction"
+      "note": "Higher slope -> greater erosion intensity; slope is dominant factor in PCU spatial distribution"
     },
     "context": {
       "study_region": "Minas Gerais, Brazil",
@@ -6855,11 +6864,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "The terrain slope is the main layer, with a high weight (50%) and the highest resolution and detail layer in the PCU spatial distribution. The slope determines the intensity of processes such as erosion and redis­tribution of sediments, local drainage capacity, and the amount and power of solar radiation",
     "page": 8,
     "reviewer_ok": false,
     "raw_name": "slope erosion intensity",
+    "attribution": "[VERIFY-FLAG mismatch: Note smuggles specific PCU score range (1.0-1.8) for slope >45% — not in this quote. Quote supports direction=]",
     "locator_type": "page"
   },
   {
@@ -6868,24 +6878,20 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__silvopastoral",
     "variable": "soil_water_retention",
-    "relationship": {
-      "direction": "positive",
-      "note": "PCU scores (1-5) reflect water recharge capacity; higher PCU = lower runoff rate, longer infiltration time"
-    },
     "context": {
       "study_region": "Minas Gerais, Brazil",
       "study_income_group": "upper_middle"
     },
     "use_role": "climate_risk",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "The water recharge and the erosion resistance considered the runoff rate and the time to water infiltration.",
     "page": 4,
     "reviewer_ok": false,
     "raw_name": "water recharge and runoff rate",
-    "attribution": "Costa et al. (2017)",
+    "attribution": "[VERIFY-FLAG mismatch: Note assigns PCU scale (1-5) and direction (higher PCU = lower runoff) to soil_water_retention — none of this ] Costa et al. (2017)",
     "locator_type": "page"
   },
   {
@@ -6923,7 +6929,8 @@
     "relationship": {
       "opt_high": 10,
       "mod_high": 20,
-      "abs_max": 40,
+      "marginal_high": 30,
+      "not_suitable_above": 40,
       "unit": "degrees",
       "direction": "lower_better"
     },
@@ -6931,13 +6938,13 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "crop_specific",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Slope (°)\tBelow 10\t17.4\t8\t0.271\t27.10\n10–20\t37.4\t5\n20–30\t15.23\t3\n30–40\t20.55\t2\nAbove 40\t9.42\t1",
     "page": 13,
     "reviewer_ok": false,
     "raw_name": "Slope (°)",
     "taxon": "Morus spp.",
-    "attribution": "AHP weights from expert interviews and literature (Bera 2002; FAO 2007; Handique et al. 2016; Uniyall 2014) as stated p.5",
+    "attribution": "[VERIFY-FLAG mismatch: abs_max: 40 is wrong — the quote has an 'Above 40' bin (score 1), so 40 is not the ceiling; values >40 exist a] AHP weights from expert interviews and literature (Bera 2002; FAO 2007; Handique et al. 2016; Uniyall 2014) as stated p.5",
     "locator_type": "page"
   },
   {
@@ -6950,21 +6957,21 @@
       "opt_low": 20,
       "opt_high": 24,
       "mod_high": 28,
-      "abs_min": 20,
-      "abs_max": 32,
+      "not_suitable_below": 20,
+      "not_suitable_above": 32,
       "unit": "degrees_C"
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "crop_specific",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Temperature °c\t20–24\t15.08\t7\t0.2287\t22.87\n24–28\t21.06\t4\n28–32\t62.22\t2\n< 20 and > 32\t0.9\t1",
     "page": 13,
     "reviewer_ok": false,
     "raw_name": "Temperature °c",
     "taxon": "Morus spp.",
-    "attribution": "AHP weights from expert interviews and literature (Bera 2002; FAO 2007; Handique et al. 2016; Uniyall 2014) as stated p.5",
+    "attribution": "[VERIFY-FLAG mismatch: abs_min: 20 is wrong — the quote has a '< 20' bin (score 1), meaning sub-20 values exist and are scored as not] AHP weights from expert interviews and literature (Bera 2002; FAO 2007; Handique et al. 2016; Uniyall 2014) as stated p.5",
     "locator_type": "page"
   },
   {
@@ -6977,21 +6984,21 @@
       "opt_low": 500,
       "opt_high": 750,
       "mod_high": 2000,
-      "abs_min": 500,
-      "abs_max": 3400,
+      "not_suitable_below": 500,
+      "not_suitable_above": 3400,
       "unit": "mm_yr"
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "crop_specific",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Rainfall (mm)\t500–750\t5.59\t7\t0.1498\t14.98\n750–2000\t17.75\t5\n2000–3400\t52.4\t3\n< 500 and > 3400\t23.26\t1",
     "page": 13,
     "reviewer_ok": false,
     "raw_name": "Rainfall (mm)",
     "taxon": "Morus spp.",
-    "attribution": "AHP weights from expert interviews and literature (Bera 2002; FAO 2007; Handique et al. 2016; Uniyall 2014) as stated p.5",
+    "attribution": "[VERIFY-FLAG mismatch: abs_min: 500 is wrong — the quote has a '< 500' bin (score 1), meaning values below 500 exist and score as not] AHP weights from expert interviews and literature (Bera 2002; FAO 2007; Handique et al. 2016; Uniyall 2014) as stated p.5",
     "locator_type": "page"
   },
   {
@@ -7003,6 +7010,7 @@
     "relationship": {
       "opt_low": 6.5,
       "opt_high": 7.5,
+      "mod_low": 5.5,
       "mod_high": 8.5,
       "abs_max": 9.5,
       "unit": "pH"
@@ -7011,13 +7019,13 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "crop_specific",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Soil pH\t6.5–7.5\t14.46\t8\t0.029\t2.9\n5.5–6.5, 7.5–8.5\t20.85\t7\n8.5–9.5\t46.1\t3\n> 4.5, < 9.5\t18.59\t1",
     "page": 13,
     "reviewer_ok": false,
     "raw_name": "Soil pH",
     "taxon": "Morus spp.",
-    "attribution": "AHP weights from expert interviews and literature (Bhandari et al. 2014; Bera 2002) as stated p.6",
+    "attribution": "[VERIFY-FLAG mismatch: Lower-side moderate class (5.5–6.5) is omitted — the quote shows a symmetric second bin '5.5–6.5, 7.5–8.5' (sc] AHP weights from expert interviews and literature (Bhandari et al. 2014; Bera 2002) as stated p.6",
     "locator_type": "page"
   },
   {
@@ -7050,7 +7058,14 @@
     "suitability_family_id": "agroforestry__shaded_perennial",
     "variable": "land_cover",
     "relationship": {
-      "highly_suitable_class": "Agriculture",
+      "highly_suitable_classes": [
+        "Agriculture",
+        "Scrubland"
+      ],
+      "marginal_classes": [
+        "Wasteland",
+        "Forest"
+      ],
       "not_suitable_classes": [
         "Water",
         "Built up area",
@@ -7062,13 +7077,13 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "crop_specific",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "LULC\tAgriculture\t17.73\t8\t0.179\t17.9\nScrubland\t9.88\t7\nWasteland\t6.02\t4\nWater\t0.59\t1\nBuilt up area\t2.44\t1\nSnow/glacier\t4.21\t1\nDense forest\t43.4\t1\nForest\t15.72\t2",
     "page": 13,
     "reviewer_ok": false,
     "raw_name": "LULC",
     "taxon": "Morus spp.",
-    "attribution": "AHP weights from expert interviews and literature (Bera 2002; FAO 2007; Handique et al. 2016; Uniyall 2014) as stated p.5",
+    "attribution": "[VERIFY-FLAG mismatch: 'Forest' (score 2, marginal) is incorrectly included in not_suitable_classes alongside score-1 classes. Scrubl] AHP weights from expert interviews and literature (Bera 2002; FAO 2007; Handique et al. 2016; Uniyall 2014) as stated p.5",
     "locator_type": "page"
   },
   {
@@ -7148,7 +7163,7 @@
     "suitability_family_id": "agroforestry__shaded_perennial",
     "variable": "annual_precipitation",
     "relationship": {
-      "abs_min": 1200,
+      "favorable_above": 1200,
       "unit": "mm_yr"
     },
     "use_role": "structural_suitability",
@@ -7156,12 +7171,12 @@
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
     "lineage_of": "Ahmad et al. (2019). Agroforestry suitability mapping of India. Agroforestry Systems 93(4):1319–1336.",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Agroforestry-friendly climates are characterized by mean annual precipitation exceeding 1200 mm and mean annual temperatures ranging from 20 to 30 °C (Ahmad et al., 2019).",
     "page": 17,
     "reviewer_ok": false,
     "raw_name": "mean annual precipitation (general agroforestry)",
-    "attribution": "Ahmad et al. 2019",
+    "attribution": "[VERIFY-FLAG mismatch: abs_min: 1200 overstates the quote. The quote says agroforestry-friendly climates are 'characterized by' preci] Ahmad et al. 2019",
     "locator_type": "page"
   },
   {
@@ -7174,20 +7189,21 @@
       "opt_low": 20,
       "opt_high": 24,
       "mod_high": 28,
-      "abs_min": 20,
-      "abs_max": 32,
+      "not_suitable_below": 20,
+      "not_suitable_above": 32,
       "unit": "degrees_C"
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "crop_specific",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "The mean temperature during the growing season (°C) was categorized into four groups: highly suitable (20–24), moderately suitable (24–28), marginally acceptable (28–32), and not suitable (< 20 and > 32)",
     "page": 17,
     "reviewer_ok": false,
     "raw_name": "mean temperature during growing season",
     "taxon": "Morus spp.",
+    "attribution": "[VERIFY-FLAG mismatch: abs_min: 20 and abs_max: 32 are wrong. The quote explicitly names '< 20 and > 32' as the 'not suitable' class ]",
     "locator_type": "page"
   },
   {
@@ -7200,20 +7216,21 @@
       "opt_low": 500,
       "opt_high": 750,
       "mod_high": 2000,
-      "abs_min": 500,
-      "abs_max": 3400,
+      "not_suitable_below": 500,
+      "not_suitable_above": 3400,
       "unit": "mm_yr"
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "crop_specific",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "The classification of rainfall maps was based on four categories: highly suitable (500–750 mm), moderately suitable (750–2000 mm), marginally acceptable (2000–3400 mm), and not suitable (< 500 and > 3400 mm).",
     "page": 17,
     "reviewer_ok": false,
     "raw_name": "rainfall classification",
     "taxon": "Morus spp.",
+    "attribution": "[VERIFY-FLAG mismatch: abs_min: 500 and abs_max: 3400 are wrong. The quote calls '< 500 and > 3400 mm' the 'not suitable' category — ]",
     "locator_type": "page"
   },
   {
@@ -7222,22 +7239,17 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__shaded_perennial",
     "variable": "slope",
-    "relationship": {
-      "highly_suitable_pct": 17.4,
-      "mod_suitable_pct": 37.4,
-      "marginal_pct": 15.23,
-      "unsuitable_pct": 29.97
-    },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "primary_measured",
     "claim_scope": "crop_specific",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "According to the reclassification map based on slope, 17.4% of the Anantnag district is deemed highly suitable for mulberry agroforestry. The majority of the land has moderate suitability (37.4%) and marginal suitability (15.23%) for mulberry production. However, a significant portion (29.97%) is deemed unsuitable for mulberry agroforestry",
     "page": 17,
     "reviewer_ok": false,
     "raw_name": "slope suitability area statistics",
     "taxon": "Morus spp.",
+    "attribution": "[VERIFY-FLAG unsupported: The relationship encodes study-area spatial statistics (% land in each suitability class) as if they constitut]",
     "locator_type": "page"
   },
   {
@@ -7338,24 +7350,19 @@
     "relationship": {
       "very_good_min": 5.5,
       "very_good_max": 7.2,
-      "good_lower_min": 4.6,
-      "good_lower_max": 5.5,
-      "good_upper_min": 7.2,
-      "good_upper_max": 7.4,
-      "moderate_min": 7.4,
-      "moderate_max": 7.6,
-      "variable_weight_pct": 25
+      "next_class_min": 7.2,
+      "next_class_max": 7.4
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Topsoil pH Nutrient availability in topsoil -log(H+) 4.6 to 7.6 5.5-7.2 7.2-7.4",
     "page": 11,
     "reviewer_ok": false,
     "raw_name": "Topsoil pH",
-    "attribution": "general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
+    "attribution": "[VERIFY-FLAG mismatch: Quote shows only two named ranges (5.5-7.2, 7.2-7.4); bounds 4.6-5.5 assigned as 'good_lower' and 7.4-7.6 assi] general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
     "locator_type": "page"
   },
   {
@@ -7447,20 +7454,20 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "tree_canopy_cover",
     "relationship": {
-      "suitable_classes": "Non-forest, Scrub, Open Forest",
-      "restricted_classes": "Water, Moderately Dense Forest, Very Dense Forest",
+      "suitable_classes": "Non-forest, Scrub, OF",
+      "restricted_classes": "Water, MDF & VDF",
       "variable_weight_pct": 50
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Forest Cover map Category Water, NF, Scrub, Forest Non-forest, Scrub, OF - - - Water, MDF & VDF 50%",
     "page": 11,
     "reviewer_ok": false,
     "raw_name": "Forest Cover map",
-    "attribution": "general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
+    "attribution": "[VERIFY-FLAG mismatch: Quote uses abbreviations 'OF', 'MDF', 'VDF'; relationship silently expands these to 'Open Forest', 'Moderately] general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
     "locator_type": "page"
   },
   {
@@ -7470,26 +7477,27 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "distance_to_road",
     "relationship": {
-      "very_good_max_km": 3,
-      "good_min_km": 3,
-      "good_max_km": 6,
-      "moderate_min_km": 6,
-      "moderate_max_km": 10,
-      "marginal_min_km": 10,
-      "marginal_max_km": 20,
-      "unsuitable_min_km": 20,
-      "variable_weight_pct": 34
+      "very_good_max_m_or_km_unresolved": 3,
+      "good_min": 3,
+      "good_max": 6,
+      "moderate_min": 6,
+      "moderate_max": 10,
+      "marginal_min": 10,
+      "marginal_max": 20,
+      "unsuitable_min": 20,
+      "variable_weight_pct": 34,
+      "unit_note": "quote header says 'm'; whether class bounds are m or km is unresolvable from quote alone"
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Distance from Roads m 0-43140 0-3 3-6 6-10 10-20 > 20 34%",
     "page": 11,
     "reviewer_ok": false,
     "raw_name": "Distance from Roads",
-    "attribution": "general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
+    "attribution": "[VERIFY-FLAG mismatch: Quote header states unit as 'm' (metres) with data range 0-43140 m; relationship encodes values with '_km' suf] general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
     "locator_type": "page"
   },
   {
@@ -7498,27 +7506,16 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "land_cover",
-    "relationship": {
-      "very_good_min": 0.6,
-      "very_good_max": 0.9,
-      "good_min": 0.4,
-      "good_max": 0.6,
-      "moderate_min": 0.2,
-      "moderate_max": 0.4,
-      "marginal_min": 0.1,
-      "marginal_max": 0.2,
-      "variable_weight_pct": 50
-    },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "NDVI Unitless 0 to 1 0.6-0.9 0.4-0.6 0.2-0.4 0.1-0.2 > 0.1 50% 10%",
     "page": 11,
     "reviewer_ok": false,
     "raw_name": "NDVI",
-    "attribution": "general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
+    "attribution": "[VERIFY-FLAG mismatch: Three defects: (1) variable is labelled 'land_cover' but quote describes NDVI — variable is mislabelled; (2) q] general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
     "locator_type": "page"
   },
   {
@@ -7628,18 +7625,18 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "adoption_rate",
     "relationship": {
-      "area_mha": 25.3
+      "area_million_unspecified_unit": 25.3
     },
     "use_role": "nbs_effect",
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Agroforestry systems, an essential land-use in India covering 25.3 million",
     "page": 20,
     "reviewer_ok": false,
     "raw_name": "agroforestry land-use area India",
-    "attribution": "Dhyani (2014); Purevtseren et al. (2017); IFSR 2019 cited in Nath et al. 2021",
+    "attribution": "[VERIFY-FLAG mismatch: Quote ends with '25.3 million' but does not state the unit; relationship encodes area_mha: 25.3 (million hecta] Dhyani (2014); Purevtseren et al. (2017); IFSR 2019 cited in Nath et al. 2021",
     "locator_type": "page"
   },
   {
@@ -7703,7 +7700,7 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "land_cover",
     "relationship": {
-      "direction": "silvoarable vs conventional arable compared"
+      "direction": "SAF compared to current agricultural land use / status quo"
     },
     "context": {
       "region": "Europe"
@@ -7712,11 +7709,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Current agricultural land use was also modeled to provide a comparison with the status quo.",
     "page": 3,
     "reviewer_ok": false,
     "raw_name": "current agricultural land use",
+    "attribution": "[VERIFY-FLAG mismatch: Relationship says 'silvoarable vs conventional arable compared' but quote only says 'current agricultural land]",
     "locator_type": "page"
   },
   {
@@ -7820,7 +7818,8 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "soil_water_retention",
     "relationship": {
-      "direction": "SAF assessed for nitrogen leaching via soil water exchange factor"
+      "variable_should_be": "nitrogen_leaching",
+      "direction": "SAF assessed for nitrogen leaching via annual soil water exchange factor"
     },
     "context": {
       "region": "Europe"
@@ -7829,12 +7828,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Nitrogen leaching was modeled using an equation proposed by Feldwisch et al. (1998), which uses an annual water exchange factor in the soil and the excess nitrogen potentially available for leaching.",
     "page": 3,
     "reviewer_ok": false,
     "raw_name": "nitrogen leaching",
-    "attribution": "Feldwisch et al., 1998",
+    "attribution": "[VERIFY-FLAG mismatch: Variable is 'soil_water_retention' but the quote is entirely about nitrogen leaching (Feldwisch equation, wate] Feldwisch et al., 1998",
     "locator_type": "page"
   },
   {
@@ -7867,21 +7866,19 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "biodiversity_outcome",
-    "relationship": {
-      "direction": "SAF increases share of habitat available to wildlife in agricultural landscapes"
-    },
     "context": {
       "region": "Europe"
     },
     "use_role": "nbs_effect",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "A broad evaluation of the effects of SAF implementation on landscape biodiversity was conducted, based on the share of habitats available to wildlife in an agricultural landscape, classifying",
     "page": 3,
     "reviewer_ok": false,
     "raw_name": "landscape biodiversity",
+    "attribution": "[VERIFY-FLAG unsupported: Quote is truncated mid-sentence ('...classifying'); the direction 'SAF increases share of habitat' is not stat]",
     "locator_type": "page"
   },
   {
@@ -7960,7 +7957,7 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "adoption_rate",
     "relationship": {
-      "direction": "subsidy schemes favour conventional arable; SAF adoption depends on policy context"
+      "direction": "subsidy schemes distort profitability toward arable; SAF remains preferable under all payment schemes including zero-subsidy"
     },
     "context": {
       "region": "Europe"
@@ -7969,11 +7966,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "the subsidiary schemes distort profitability in favor of arable systems. Nevertheless, the aggregate results for all 19 LTS show that the SAF alternatives were preferable to the status quo alternative under all payment schemes and especially when these are absent",
     "page": 6,
     "reviewer_ok": false,
     "raw_name": "subsidy payment schemes",
+    "attribution": "[VERIFY-FLAG mismatch: Relationship appends 'SAF adoption depends on policy context' but the quote says the opposite — SAF alternativ]",
     "locator_type": "page"
   },
   {
@@ -7983,7 +7981,7 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "adoption_rate",
     "relationship": {
-      "direction": "SAF adoption requires country/regional-level specification; general EU laws should not hamper"
+      "direction": "SAF adoption requires country/regional-level specification of economic and/or environmental purpose, based on local conditions, environmental hazards, and socio-economic requirements"
     },
     "context": {
       "region": "Europe"
@@ -7992,11 +7990,12 @@
     "evidence_type": "scoping_candidate",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "SAF should be implemented with a specific purpose — economic and/or environmental. This purpose needs to be specified at the country/regional level based on local conditions, environmental hazards and socio-economic requirements.",
     "page": 8,
     "reviewer_ok": false,
     "raw_name": "SAF implementation purpose",
+    "attribution": "[VERIFY-FLAG mismatch: Relationship appends 'general EU laws should not hamper' — this phrase is not present in the quote. Smuggled c]",
     "locator_type": "page"
   },
   {
@@ -8119,7 +8118,7 @@
     "relationship": {
       "abs_min": 770,
       "abs_max": 1111,
-      "unit": "mm/year"
+      "unit": "mm"
     },
     "context": {
       "location": "Uluguru Mountain, Morogoro, Tanzania",
@@ -8129,11 +8128,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Rainfall \n770 - 886 mm \n770 - 886 mm \n886 - 953 mm \n886 - 953 mm \n1023 - 1111 mm",
     "page": 11,
     "reviewer_ok": false,
     "raw_name": "Rainfall",
+    "attribution": "[VERIFY-FLAG mismatch: unit encoded as mm/year but quote only says 'mm'; annual context is from paper not this quote snippet]",
     "locator_type": "page",
     "selection_justification": "Rainfall was an AHP criterion for evaluating agroforestry land use suitability by land unit",
     "selection_justification_page": 11
@@ -8174,7 +8174,7 @@
     "variable": "land_cover",
     "relationship": {
       "threshold": 4.49,
-      "unit": "% suitability area, LU1 (slope 8-12%, elev 499-702 m)"
+      "unit": "% suitability area, LU1 (slope 8-12%)"
     },
     "context": {
       "land_unit": "LU1",
@@ -8186,11 +8186,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "The ratios of suitability on this Land map unit for settlement, conservation agriculture, agroforestry and forest were 45.74%, 49.78%, 4.49% and 0%.",
     "page": 12,
     "reviewer_ok": false,
     "raw_name": "compatible land use allocation",
+    "attribution": "[VERIFY-FLAG mismatch: unit label includes elevation range '499-702 m' which is not in this quote; smuggled from another table/row]",
     "locator_type": "page",
     "selection_justification": "AHP-weighted overlay of slope, temperature, rainfall, soil, SMI, LST criteria for agroforestry suitability by land unit",
     "selection_justification_page": 12
@@ -8203,7 +8204,7 @@
     "variable": "land_cover",
     "relationship": {
       "threshold": 46.42,
-      "unit": "% suitability area, LU2 (slope 12-20%, elev 702-882 m)"
+      "unit": "% suitability area, LU2 (slope 12-20%)"
     },
     "context": {
       "land_unit": "LU2",
@@ -8215,11 +8216,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "the compatible land use allocation on land map unit 2 produced the ratio of\n6.87%, 46.29%, 46.42% and 0.41% of coverage for settlement, conservation agri-\nculture, agroforestry and forest respectively.",
     "page": 12,
     "reviewer_ok": false,
     "raw_name": "compatible land use allocation",
+    "attribution": "[VERIFY-FLAG mismatch: unit label includes elevation range '702-882 m' which is not in this quote; smuggled from another table/row]",
     "locator_type": "page",
     "selection_justification": "AHP-weighted overlay of slope, temperature, rainfall, soil, SMI, LST criteria for agroforestry suitability by land unit",
     "selection_justification_page": 12
@@ -8232,7 +8234,7 @@
     "variable": "land_cover",
     "relationship": {
       "threshold": 11.32,
-      "unit": "% suitability area, LU3 (slope 20-28%, elev 882-1094 m)"
+      "unit": "% suitability area, LU3 (slope 20-28%)"
     },
     "context": {
       "land_unit": "LU3",
@@ -8244,11 +8246,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "a pro-\nposed land use with area coverage of 0.67%, 84.46%, 11.32% and 3.54% for set-\ntlement, conservation agriculture, agroforestry and forest respectively.",
     "page": 12,
     "reviewer_ok": false,
     "raw_name": "compatible land use allocation",
+    "attribution": "[VERIFY-FLAG mismatch: unit label includes elevation range '882-1094 m' which is not in this quote; smuggled from another table/row]",
     "locator_type": "page",
     "selection_justification": "AHP-weighted overlay of slope, temperature, rainfall, soil, SMI, LST criteria for agroforestry suitability by land unit",
     "selection_justification_page": 12
@@ -8261,7 +8264,7 @@
     "variable": "land_cover",
     "relationship": {
       "threshold": 3.83,
-      "unit": "% suitability area, LU4 (slope 28-38%, elev 1094-1341 m)"
+      "unit": "% suitability area, LU4 (slope 28-38%)"
     },
     "context": {
       "land_unit": "LU4",
@@ -8273,11 +8276,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "compatible land use area coverage dis-\ntribution ratio of 4.34%, 10.11%, 3.83% and 81.72% for settlement, conservation\nagriculture, agroforestry and forest respectively.",
     "page": 13,
     "reviewer_ok": false,
     "raw_name": "compatible land use allocation",
+    "attribution": "[VERIFY-FLAG mismatch: unit label includes elevation range '1094-1341 m' which is not in this quote; smuggled from another table/row]",
     "locator_type": "page",
     "selection_justification": "AHP-weighted overlay of slope, temperature, rainfall, soil, SMI, LST criteria for agroforestry suitability by land unit",
     "selection_justification_page": 13
@@ -8290,7 +8294,7 @@
     "variable": "land_cover",
     "relationship": {
       "threshold": 6.27,
-      "unit": "% suitability area, LU5 (slope 38-72%, elev 1341-1772 m)"
+      "unit": "% suitability area, LU5 (slope 38-72%)"
     },
     "context": {
       "land_unit": "LU5",
@@ -8302,11 +8306,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "compatible land use distribution ratio on this land map unit obtained\nthrough AHP is 0.47%, 5.70%, 6.27% and 87.55% for settlement, conservation\nagriculture, agroforestry and forest respectively.",
     "page": 13,
     "reviewer_ok": false,
     "raw_name": "compatible land use allocation",
+    "attribution": "[VERIFY-FLAG mismatch: unit label includes elevation range '1341-1772 m' which is not in this quote; smuggled from another table/row]",
     "locator_type": "page",
     "selection_justification": "AHP-weighted overlay of slope, temperature, rainfall, soil, SMI, LST criteria for agroforestry suitability by land unit",
     "selection_justification_page": 13
@@ -8369,7 +8374,7 @@
     "variable": "ecosystem_service",
     "relationship": {
       "threshold": 19.5,
-      "unit": "% of study area (6928 Ha total)"
+      "unit": "% of study area"
     },
     "context": {
       "location": "Uluguru Mountain, Morogoro, Tanzania",
@@ -8380,12 +8385,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "modelled",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "agroforestry, which occu-\npies 19.5% of the study area. Agroforestry has the potential to help restore tree\nloss while also benefiting the environment and the economy by increasing agri-\ncultural productivity, ecosystem facility, and human well-being (Ruheza et al.,\n2012). This land use type was proposed to be more suitable for land mapping units\n2 - 4 considering existing criteria.",
     "page": 16,
     "reviewer_ok": false,
     "raw_name": "agroforestry area allocation",
-    "attribution": "Ruheza et al., 2012",
+    "attribution": "[VERIFY-FLAG mismatch: unit label includes '6928 Ha total' which is not stated in this quote; smuggled from elsewhere in paper] Ruheza et al., 2012",
     "locator_type": "page",
     "selection_justification": "AHP+GIS combined spatial allocation result for agroforestry land use across study area",
     "selection_justification_page": 16
@@ -8513,7 +8518,8 @@
     "relationship": {
       "importance_pct": 53,
       "cluster": "N1",
-      "unit": "% RF importance"
+      "unit": "% importance (method not stated in quote)",
+      "note": "RF label removed — not supported by this quote; requires a quote explicitly naming the importance method"
     },
     "context": {
       "method": "Random Forest",
@@ -8525,12 +8531,13 @@
     "evidence_type": "ml_importance",
     "claim_basis": "figure_read",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "among the three initial attributes (N1), slope has the highest importance (53 %), followed by lithology (25 %) and soil classes (22 %)",
     "page": 4,
     "reviewer_ok": false,
     "raw_name": "slope",
     "observed_dataset": "SRTM USGS/SRTMGL1_003 30m",
+    "attribution": "[VERIFY-FLAG mismatch: Unit label '% RF importance' smuggles 'RF' (Random Forest) which is not stated in the quote. Quote says only ']",
     "locator_type": "page"
   },
   {
@@ -8562,9 +8569,9 @@
     "variable": "annual_precipitation",
     "relationship": {
       "direction": "restricts",
-      "baseline_pct": 80,
       "after_climate_pct": 48,
-      "unit": "% area suitable"
+      "unit": "% area suitable (watersheds)",
+      "note": "baseline_pct removed — not stated in this quote; requires a separate evidence unit with a direct citation giving the pre-climate-filter baseline"
     },
     "context": {
       "method": "Random Forest",
@@ -8575,12 +8582,13 @@
     "evidence_type": "ml_importance",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Adding climate attributes (N2) reduced the suitable area to 48 % of the watersheds.",
     "page": 4,
     "reviewer_ok": false,
     "raw_name": "climatic attributes",
     "observed_dataset": "WorldClim/BioclimVars",
+    "attribution": "[VERIFY-FLAG mismatch: baseline_pct=80 is not in the quote. Quote states only that adding climate attributes (N2) reduced suitable ar]",
     "locator_type": "page"
   },
   {
@@ -8899,23 +8907,20 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "F1_planted_silvoarable",
     "variable": "protected_area_status",
-    "relationship": {
-      "criterion": "No",
-      "meaning": "AFS sited outside protected areas only"
-    },
     "context": {
       "geographic_scope": "Brandenburg, Germany",
       "study_income_group": "high"
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Located in protected area",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Located in protected area",
+    "attribution": "[VERIFY-FLAG mismatch: Quote is the table-row label only ('Located in protected area'); the criterion value 'No' and the meaning 'AFS]",
     "locator_type": "page"
   },
   {
@@ -8950,8 +8955,7 @@
     "suitability_family_id": "F1_planted_silvoarable",
     "variable": "land_cover",
     "relationship": {
-      "criterion": "Top 10%",
-      "meaning": "largest parcels by area prioritised for AFS"
+      "criterion": "Top 10%"
     },
     "context": {
       "geographic_scope": "Brandenburg, Germany",
@@ -8961,11 +8965,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Size of agricultural parcel\nTop 10%",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Size of agricultural parcel: Top 10%",
+    "attribution": "[VERIFY-FLAG mismatch: Quote states 'Top 10%' without specifying the ranking criterion; 'largest parcels by area' is an unstated inte]",
     "locator_type": "page"
   },
   {
@@ -8975,7 +8980,6 @@
     "suitability_family_id": "F1_planted_silvoarable",
     "variable": "soil_drainage",
     "relationship": {
-      "soil_type": "Sandy soil",
       "standard_soil_value_pts_low": 30,
       "standard_soil_value_pts_high": 40
     },
@@ -8988,11 +8992,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Standard soil values\n30–40 pt",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Standard soil values for AFS",
+    "attribution": "[VERIFY-FLAG mismatch: 'Sandy soil' is not present in the quoted text ('Standard soil values / 30–40 pt'); it is smuggled from anothe]",
     "locator_type": "page"
   },
   {
@@ -9075,7 +9080,8 @@
     "suitability_family_id": "F1_planted_silvoarable",
     "variable": "adoption_rate",
     "relationship": {
-      "area_ha": 219
+      "area_ha": 219,
+      "note": "absolute area established, not a rate"
     },
     "context": {
       "geographic_scope": "Brandenburg, Germany",
@@ -9086,11 +9092,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "We identiﬁed and localized 219 ha\nof land where the agroforestry systems were established",
     "page": 12,
     "reviewer_ok": false,
     "raw_name": "established agroforestry area in Brandenburg",
+    "attribution": "[VERIFY-FLAG mismatch: Variable is labelled 'adoption_rate' but 219 ha is an absolute study-site area with no denominator; the quote ]",
     "locator_type": "page"
   },
   {
@@ -9316,20 +9323,21 @@
     "variable": "soil_ph",
     "relationship": {
       "lower": 5.0,
-      "upper": 14.0,
-      "unit": "pH"
+      "upper": null,
+      "unit": "pH",
+      "note": "upper bound 14.0 is physically impossible; likely OCR/table-parsing artifact — verify against source table"
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Tahitian chestnut\n(Inocarpus fagifer)\nivi\n5.0–14.0",
     "page": 6,
     "reviewer_ok": false,
     "raw_name": "Soil pH",
     "taxon": "Inocarpus fagifer",
-    "attribution": "Species Profiles for Pacific Island Agroforestry (Elevitch 1997-2019)",
+    "attribution": "[VERIFY-FLAG mismatch: Upper bound 14.0 exceeds physical pH scale maximum (pH 14 = pure lye; no soil attains this). Almost certainly ] Species Profiles for Pacific Island Agroforestry (Elevitch 1997-2019)",
     "locator_type": "page"
   },
   {
@@ -9741,18 +9749,16 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "tenure_security",
-    "relationship": {
-      "direction": "constrains_suitability"
-    },
     "use_role": "structural_suitability",
     "evidence_type": "scoping_candidate",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Land tenure, in Fiji in particular, is a challenging\npolicy issue because much of Fiji’s land is commu-\nnally owned.",
     "page": 9,
     "reviewer_ok": false,
     "raw_name": "Land tenure",
+    "attribution": "[VERIFY-FLAG unsupported: Quote describes a qualitative policy challenge (communal land tenure in Fiji) but asserts no quantitative shap]",
     "locator_type": "page"
   },
   {
@@ -9762,17 +9768,20 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "labour_availability",
     "relationship": {
-      "ahp_weight": 0.154
+      "ahp_weight": 0.154,
+      "applies_to": "maintenance_sub_criterion",
+      "note": "weight is for Maintenance (low labour requirements) sub-criterion, not labour_availability top-level variable"
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "0.154 for Maintenance (low\nlabour requirements)",
     "page": 12,
     "reviewer_ok": false,
     "raw_name": "Maintenance (low labour requirements)",
+    "attribution": "[VERIFY-FLAG mismatch: Weight 0.154 in the quote is the AHP sub-criterion weight for 'Maintenance' (a labour sub-category), not a wei]",
     "locator_type": "page"
   },
   {
@@ -9848,10 +9857,24 @@
     "relationship": {
       "variable": "Bio1_mean_annual_temperature",
       "unit": "degrees_C",
-      "suitability_4_very_high_group1": "18-20",
-      "suitability_4_very_high_group2_3": "20-22",
-      "suitability_1_low_all_groups": "24-50",
-      "direction": "optimum 18-24 C; suitability decreases above 24 C for all species groups"
+      "group1_temperate_warm": {
+        "18-20": 4,
+        "20-22": 3,
+        "22-24": 2,
+        "24-50": 1
+      },
+      "group2_temperate_hot": {
+        "18-20": 3,
+        "20-22": 4,
+        "22-24": 2,
+        "24-50": 1
+      },
+      "group3_arid_hot": {
+        "18-20": 3,
+        "20-22": 4,
+        "22-24": 2,
+        "24-50": 1
+      }
     },
     "context": {
       "region": "Punjab, India",
@@ -9863,12 +9886,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Bio1\n18–20\n4\n3\n3\n(in ◦C)\n20–22\n3\n4\n4\n22–24\n2\n2\n2\n24–50\n1\n1\n1",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Bio1 (Mean Annual Temperature)",
-    "attribution": "general agroforestry tree species for Punjab — applies cross-family; rankings from CABI digital library and Luna 1996 Plantation Trees",
+    "attribution": "[VERIFY-FLAG mismatch: Relationship selectively encodes group1 score=4 at 18-20 and group2/3 score=4 at 20-22, but omits group2=3 and] general agroforestry tree species for Punjab — applies cross-family; rankings from CABI digital library and Luna 1996 Plantation Trees",
     "locator_type": "page"
   },
   {
@@ -9897,8 +9920,7 @@
         "450-1000": 4,
         "1000-1700": 2,
         "1700-5000": 1
-      },
-      "AHP_weight": 0.054
+      }
     },
     "context": {
       "region": "Punjab, India",
@@ -9909,12 +9931,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Bio12\n0–450\n1\n1\n3\n(in mm)\n450–1000\n2\n2\n4\n1000–1700\n3\n4\n2\n1700–5000\n4\n3\n1",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "Bio12 (Mean Annual Precipitation)",
-    "attribution": "general agroforestry tree species for Punjab — applies cross-family; arid species suit <1000mm; temperate species >1000mm",
+    "attribution": "[VERIFY-FLAG mismatch: AHP_weight 0.054 is not present in this quote (page 7 suitability table). It appears in the page 6 AHP matrix ] general agroforestry tree species for Punjab — applies cross-family; arid species suit <1000mm; temperate species >1000mm",
     "locator_type": "page"
   },
   {
@@ -9943,8 +9965,7 @@
         "111-132": 4,
         "132-180": 3,
         "180-2000": 2
-      },
-      "AHP_weight": 0.099
+      }
     },
     "context": {
       "region": "Punjab, India",
@@ -9955,12 +9976,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "SOC\n(dg/kg)\n0–111\n4\n1\n1\n111–132\n3\n2\n4\n132–180\n2\n3\n3\n180–2000\n1\n4\n2",
     "page": 7,
     "reviewer_ok": false,
     "raw_name": "SOC (Soil Organic Carbon in dg/kg)",
-    "attribution": "general agroforestry tree species for Punjab — applies cross-family; rankings from CABI digital library and Luna 1996",
+    "attribution": "[VERIFY-FLAG mismatch: AHP_weight 0.099 is not present in this quote (page 7 suitability table). It appears in the page 6 AHP matrix ] general agroforestry tree species for Punjab — applies cross-family; rankings from CABI digital library and Luna 1996",
     "locator_type": "page"
   },
   {
@@ -9997,8 +10018,7 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "annual_precipitation",
     "relationship": {
-      "AHP_weight_Bio12_annual_precipitation": 0.054,
-      "note": "lowest-weighted variable among 7 in AHP model"
+      "AHP_weight_Bio12_annual_precipitation": 0.054
     },
     "context": {
       "region": "Punjab, India",
@@ -10008,12 +10028,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "high",
+    "extraction_confidence": "low",
     "quote": "Bio12\n0.167\n0.5\n1.25\n1\n0.25\n1\n0.5\n0.054",
     "page": 6,
     "reviewer_ok": false,
     "raw_name": "Bio12 AHP weight",
-    "attribution": "general agroforestry tree species for Punjab — applies cross-family",
+    "attribution": "[VERIFY-FLAG mismatch: Note claims Bio12 is 'lowest-weighted variable among 7 in AHP model' — this requires comparing all 7 weights, ] general agroforestry tree species for Punjab — applies cross-family",
     "locator_type": "page"
   },
   {
@@ -10097,31 +10117,20 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "soil_drainage",
-    "relationship": {
-      "proxy_variable": "bulk_density_cg_per_cm3",
-      "direction": "lower bulk density = better drainage and porosity; above 146 cg/cm3 = low suitability for all groups",
-      "suitability_breakpoints_cg_per_cm3": {
-        "0-134": "high to very_high",
-        "134-144": "high",
-        "144-146": "moderate",
-        "146-200": "low"
-      },
-      "AHP_weight": 0.064
-    },
     "context": {
       "region": "Punjab, India",
       "dataset": "ISRIC soil grids 250m"
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "Bulk Density: Bulk density is a crucial variable included in the model to assess soil compaction, drainage conditions, and overall soil quality [31]. It provides insights into the density and porosity of the soil, influencing root growth, water movement, and nutrient availability for tree species.",
     "page": 6,
     "reviewer_ok": false,
     "raw_name": "Bulk Density (cg/cm3)",
-    "attribution": "general agroforestry tree species for Punjab — applies cross-family",
+    "attribution": "[VERIFY-FLAG unsupported: Quote is narrative-only: describes bulk density as a proxy for drainage/compaction/porosity but states no nume] general agroforestry tree species for Punjab — applies cross-family",
     "locator_type": "page"
   },
   {
@@ -10218,6 +10227,7 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "mean_annual_temperature",
     "relationship": {
+      "variable": "agroforestry_system_type_suitability",
       "suitable_systems_for_temperate_BSh_Cwa": [
         "alley_cropping",
         "forest_farming",
@@ -10235,12 +10245,12 @@
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
-    "extraction_confidence": "medium",
+    "extraction_confidence": "low",
     "quote": "temperate agroforestry systems, including alley cropping, forest farming, riparian buffers, silvopasture, and windbreaks, are more suitable for this region rather than tropical agroforestry systems [50].",
     "page": 14,
     "reviewer_ok": false,
     "raw_name": "temperate agroforestry systems",
-    "attribution": "citing ref [50] — Ramachandran Nair, Mohan Kumar, Nair 2009 (agroforestry as carbon sequestration strategy, J Plant Nutr Soil Sci 172:10-23)",
+    "attribution": "[VERIFY-FLAG mismatch: Variable assigned is 'mean_annual_temperature' but quote describes agroforestry system type suitability (alley] citing ref [50] — Ramachandran Nair, Mohan Kumar, Nair 2009 (agroforestry as carbon sequestration strategy, J Plant Nutr Soil Sci 172:10-23)",
     "locator_type": "page"
   }
 ]
