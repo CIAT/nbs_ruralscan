@@ -1366,7 +1366,7 @@
               </div>
               <div style="display:flex; align-items:center; gap:8px; margin-left:14px; padding-left:14px; border-left:1px solid var(--border-color); flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:500;">Stage:</span>
-                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— shown PER TABLE (T4/T3/T6 rows). Filled = step done/present, hollow = not. E means evidence exists, NOT that coverage is complete (coverage = the count cells). S/V/R come from the enforced progress ledger; E is live from the register. R is empty everywhere — nothing human-reviewed yet.</span></span>
+                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— the 4 small dots inside EACH STOCK/LIT/GREY/TOOLS cell, per source category. S/V from the enforced progress ledger (amber S = search in progress); E (evidence present) + R (reviewed) live from the register. The big number = source count. R is empty everywhere — nothing human-reviewed yet.</span></span>
               </div>
             </div>
 
@@ -1380,7 +1380,6 @@
                 <!-- Level 1 header: Targets -->
                 <tr>
                   <th rowspan="2" id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
-                  <th rowspan="2" style="vertical-align: middle; text-align: center; width: 150px; border-left: 1px solid var(--border-color); font-size: 10px;" title="Pipeline stage PER TABLE (T4/T3/T6): S=searched · E=has extracted evidence · V=verify-flagged · R=reviewed. Filled=done/present, hollow=not.">Stage / table<br><span style="font-weight:400; color:var(--text-muted);">S·E·V·R</span></th>
                   <th colspan="4" id="audit-hdr-t4" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings</th>
                   <th colspan="4" id="audit-hdr-t3" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links</th>
                   <th colspan="4" id="audit-hdr-t6" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing</th>
@@ -3028,9 +3027,12 @@
     const sid = (sourceId || '').toLowerCase();
     const cit = (citation || '').toLowerCase();
 
-    // Use source_kind from register first (fastest, most reliable)
+    // Explicit source_category in the register is authoritative (accurate, not guessed).
     const srcReg = (dashboardData && dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
     const srcMeta = srcReg.find(s => s.source_id === sourceId);
+    if (srcMeta && srcMeta.source_category) {
+      return { stock: 'stock', updated_lit: 'updated', grey: 'grey', tool: 'tools' }[srcMeta.source_category] || 'updated';
+    }
     if (srcMeta && srcMeta.source_kind === 'grey_lit') return 'grey';
 
     const toolsList = [
@@ -3245,15 +3247,21 @@
   }
   // Read an authored stage status from the enforced progress ledger (NOT inferred).
   // ledger is keyed (nbs_id, table); stages: searched/screened/extracted/verified/reviewed.
-  function ledgerStage(nbsId, table, stage) {
+  // Ledger is keyed (nbs_id, table[T4/T3/T6], category[stock/updated_lit/grey/tool]).
+  function ledgerStage(nbsId, table, category, stage) {
     const led = (dashboardData && dashboardData.progress_ledger) || [];
-    const row = led.find(r => r.nbs_id === nbsId && r.table === table);
+    const row = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category);
     return row ? (row[stage] || 'not_started') : 'not_started';
   }
-  function ledgerCategories(nbsId, table) {
-    const led = (dashboardData && dashboardData.progress_ledger) || [];
-    const row = led.find(r => r.nbs_id === nbsId && r.table === table);
-    return row ? (row.searched_categories || '') : '';
+  // dashboard typeKey -> ledger category enum
+  const _catKey = { stock: 'stock', updated: 'updated_lit', grey: 'grey', tools: 'tool' };
+  // count reviewer_ok units in a (family, target, type) cell
+  function cellReviewed(familyId, targetKey, typeKey) {
+    const role = { t4: 'structural_suitability', t3: 'climate_risk', t6: 'nbs_effect' }[targetKey];
+    const ev = (dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
+    return ev.some(c => c.suitability_family_id === familyId && (c.use_role || '') === role
+      && getSourceCategory(c.source_id, '') === typeKey
+      && (c.reviewer_ok === true || c.reviewer_ok === 'true'));
   }
 
   // Render a stage dot: filled (on) or hollow (off)
@@ -3343,7 +3351,7 @@
     });
 
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="14" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
+      body.innerHTML = '<tr><td colspan="13" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
       return;
     }
 
@@ -3372,8 +3380,25 @@
                         : targetKey === 't3' ? 'T3 Hazards'
                         : 'T6 Outcomes & Costing';
 
+      // per-cell stage S·E·V·R for (family × table × category)
+      const _nbs = statusKey.split('__')[0];
+      const _tbl = targetKey.toUpperCase();
+      const _cat = _catKey[typeKey];
+      const _ss = ledgerStage(_nbs, _tbl, _cat, 'searched');
+      const _e = count > 0;
+      const _v = ledgerStage(_nbs, _tbl, _cat, 'verified') === 'done' && _e;
+      const _r = cellReviewed(statusKey, targetKey, typeKey);
+      const _dot = (state, color, lbl, tip) =>
+        `<span title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:11px;height:11px;border-radius:50%;font-size:6.5px;font-weight:700;margin:0 0.5px;${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
+      const sevr = `<div style="margin-top:3px;white-space:nowrap;line-height:1;">`
+        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', '#0ea5e9', 'S', `${typeLabel} Searched: ${_ss}`)
+        + _dot(_e ? 'full' : 'none', '#10b981', 'E', `Extracted: ${count} source(s)`)
+        + _dot(_v ? 'full' : 'none', '#818cf8', 'V', `Verified: ${_v ? 'verify pass run' : 'not run / no evidence'}`)
+        + _dot(_r ? 'full' : 'none', '#10b981', 'R', `Reviewed: ${_r ? 'yes' : 'not yet'}`)
+        + `</div>`;
       return `<td style="text-align: center; border-left: ${typeKey === 'stock' ? '1px solid var(--border-color)' : 'none'};" title="${targetLabel} - ${typeLabel}: ${titleText}">
         <span class="badge ${badgeClass} audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">${displayVal}</span>
+        ${sevr}
       </td>`;
     };
 
@@ -3386,28 +3411,6 @@
                             .replace(/_/g, ' ')
                             .replace(/\b\w/g, c => c.toUpperCase());
       const subpracticesNames = r.subpractices.map(s => s.name).join(', ');
-      const _stageTables = [['T4', 'structural_suitability'], ['T3', 'climate_risk'], ['T6', 'nbs_effect']];
-      const _sdot = (on, color, lbl, tip) =>
-        `<span title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:8px;font-weight:700;margin:0 1px;${on ? `background:${color};color:#fff;` : 'background:transparent;border:1.3px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
-      const stageTd = `<td style="vertical-align: middle; border-left: 1px solid var(--border-color); padding: 6px 8px;">
-        ${_stageTables.map(([t, role]) => {
-          const cs = getCellStage(r.familyId, role);            // per-family evidence facts
-          const s = ledgerStage(r.nbsId, t, 'searched') === 'done';     // authored, enforced
-          const verifiedRun = ledgerStage(r.nbsId, t, 'verified') === 'done';
-          const reviewedRun = ledgerStage(r.nbsId, t, 'reviewed') === 'done';
-          const e = cs.n > 0;                                   // this family×table has evidence
-          const v = verifiedRun && e;                           // verify pass run AND family has evidence
-          const rev = reviewedRun && e;
-          const cats = ledgerCategories(r.nbsId, t);
-          return `<div style="display:flex;align-items:center;gap:2px;margin:2px 0;white-space:nowrap;">
-            <span style="width:18px;font-size:9px;color:var(--text-muted);font-weight:600;">${t}</span>
-            ${_sdot(s, '#0ea5e9', 'S', t + ' Searched (ledger): ' + (s ? ('done — categories: ' + (cats || 'n/a')) : 'not done'))}
-            ${_sdot(e, '#10b981', 'E', t + ' Extracted: ' + cs.n + ' evidence unit(s) for this family. Coverage = the count cells, not a completeness claim.')}
-            ${_sdot(v, '#818cf8', 'V', v ? t + ' Verified (ledger): verify pass run over this family evidence' : t + ' Verify: not run / no evidence')}
-            ${_sdot(rev, '#10b981', 'R', t + ' Reviewed (ledger): ' + (rev ? 'human sign-off' : 'not reviewed yet'))}
-          </div>`;
-        }).join('')}
-      </td>`;
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -3417,7 +3420,6 @@
             Subpractices: ${subpracticesNames}
           </div>
         </td>
-        ${stageTd}
         ${renderCell(r.familyId, 't4', 'stock')}
         ${renderCell(r.familyId, 't4', 'updated')}
         ${renderCell(r.familyId, 't4', 'grey')}
