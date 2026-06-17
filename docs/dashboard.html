@@ -1365,7 +1365,7 @@
               </div>
               <div style="display:flex; align-items:center; gap:8px; margin-left:14px; padding-left:14px; border-left:1px solid var(--border-color); flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:500;">Stage:</span>
-                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted · <b style="color:#818cf8;">V</b>erified · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">(filled = done, hollow = pending). The cell numbers = per-table extraction (T4/T3/T6); S·E·V·R = the family's overall lifecycle.</span></span>
+                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#f43f5e;">V</b>erify-flagged · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— shown PER TABLE (T4/T3/T6 rows). Filled = step done/present, hollow = not. E means evidence exists, NOT that coverage is complete (coverage = the count cells). R is empty everywhere — nothing human-reviewed yet.</span></span>
               </div>
             </div>
 
@@ -1379,7 +1379,7 @@
                 <!-- Level 1 header: Targets -->
                 <tr>
                   <th rowspan="2" id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
-                  <th rowspan="2" style="vertical-align: middle; text-align: center; width: 80px; border-left: 1px solid var(--border-color); font-size: 10px;" title="Pipeline stage dots per family: S=logged in discovery log · E=sources extracted/registered · V=EV rows exist with verify pass · R=human reviewer_ok">Stage<br><span style="font-weight:400; color:var(--text-muted);">S·E·V·R</span></th>
+                  <th rowspan="2" style="vertical-align: middle; text-align: center; width: 150px; border-left: 1px solid var(--border-color); font-size: 10px;" title="Pipeline stage PER TABLE (T4/T3/T6): S=searched · E=has extracted evidence · V=verify-flagged · R=reviewed. Filled=done/present, hollow=not.">Stage / table<br><span style="font-weight:400; color:var(--text-muted);">S·E·V·R</span></th>
                   <th colspan="4" id="audit-hdr-t4" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings</th>
                   <th colspan="4" id="audit-hdr-t3" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links</th>
                   <th colspan="4" id="audit-hdr-t6" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing</th>
@@ -3225,51 +3225,30 @@
   let auditSortCol = 'family'; // 'family', 't4', 't3', 't6'
   let auditSortDir = 'asc';
 
-  // Stage-dot helper: returns {s, e, v, r} booleans for a suitability family.
-  // S: family has any source logged in a discovery log inclusion table.
-  // E: at least one SRC row links to this family's NbS with extraction_status complete/swept/signed_off.
-  // V (verify proxy): family has ≥1 EV row where attribution contains "[VERIFY-FLAG" OR
-  //    (extraction_confidence is non-empty AND attribution is non-empty) — i.e. a verify/attribution
-  //    pass was run over at least one extracted row. See methodology/T4_generation_method.md §3.
-  // R: at least one EV row for this family has reviewer_ok=true.
-  function getFamilyStageStatus(familyId) {
+  // Stage status PER (family × table). Honest definitions — no completeness claims:
+  //  S (searched): a discovery log exists for this NbS × table (the search/screening was run).
+  //  E (extracted): ≥1 EV row exists for this family × table (extraction produced output here;
+  //                 coverage is the count cells, NOT a "finished" claim).
+  //  V (verify-flagged): ≥1 of those rows was flagged by the relationship-verify pass. Hollow means
+  //                 either verified-clean OR not-yet-verified (we cannot distinguish per row).
+  //  R (reviewed): ≥1 of those rows has reviewer_ok=true (human sign-off).
+  function getCellStage(familyId, useRole) {
     const ev = (dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
-    const src = (dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
+    const rows = ev.filter(c => c.suitability_family_id === familyId && (c.use_role || '') === useRole);
+    return {
+      n: rows.length,
+      e: rows.length > 0,
+      v: rows.some(c => (c.attribution || '').includes('[VERIFY-FLAG')),
+      r: rows.some(c => c.reviewer_ok === true || c.reviewer_ok === 'true'),
+    };
+  }
+  function isSearched(nbsId, table) {
     const dl = (dashboardData && dashboardData.discovery_logs) || {};
-    // Derive NbS id from familyId (e.g. "agroforestry__planted_silvoarable" → "agroforestry")
-    const nbsId = familyId.split('__')[0];
-
-    // S: any discovery log has this family's NbS in its source list
-    let stageS = false;
-    Object.values(dl).forEach(log => {
-      if (stageS) return;
-      const sections = log.sections || {};
-      const incKey = Object.keys(sections).find(k => k.toLowerCase().includes('inclusion'));
-      if (!incKey) return;
-      const text = sections[incKey] || '';
-      // Quick check: if any line in the inclusion table is a data row (starts with |, not header/divider)
-      stageS = text.split('\n').some(line => line.startsWith('|') && !line.includes('source_id') && !line.includes('---|'));
+    const want = `${nbsId}_${table}`.toLowerCase();
+    return Object.keys(dl).some(k => {
+      const kk = k.toLowerCase();
+      return kk === want || (kk.startsWith(nbsId.toLowerCase()) && kk.endsWith(table.toLowerCase()));
     });
-
-    // E: at least one registered SRC row covers this NbS with a complete extraction
-    const stageE = src.some(s => {
-      const nbs = (s.nbs_ids || '').split(';').map(x => x.trim());
-      return nbs.includes(nbsId) && ['complete','swept','signed_off'].includes(s.extraction_status || '');
-    });
-
-    // V (verify proxy): ≥1 EV row for this family has been through a verification/attribution pass.
-    // Heuristic: row has attribution containing "[VERIFY-FLAG" (flag was written during verify pass)
-    // OR row has non-empty attribution AND non-empty extraction_confidence (attribution pass ran).
-    const familyEv = ev.filter(c => c.suitability_family_id === familyId);
-    const stageV = familyEv.some(c =>
-      (c.attribution || '').includes('[VERIFY-FLAG') ||
-      ((c.attribution || '').trim() !== '' && (c.extraction_confidence || '').trim() !== '')
-    );
-
-    // R: any EV row for this family has reviewer_ok=true
-    const stageR = familyEv.some(c => c.reviewer_ok === true || c.reviewer_ok === 'true');
-
-    return { s: stageS, e: stageE, v: stageV, r: stageR };
   }
 
   // Render a stage dot: filled (on) or hollow (off)
@@ -3402,14 +3381,21 @@
                             .replace(/_/g, ' ')
                             .replace(/\b\w/g, c => c.toUpperCase());
       const subpracticesNames = r.subpractices.map(s => s.name).join(', ');
-      const stg = getFamilyStageStatus(r.familyId);
-      const stageTd = `<td style="text-align: center; vertical-align: middle; border-left: 1px solid var(--border-color); padding: 8px 6px;">
-        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1px;">
-          ${renderStageDot('S', stg.s, '#0ea5e9', 'S: logged in a discovery log')}
-          ${renderStageDot('E', stg.e, '#10b981', 'E: at least one source extracted &amp; registered in SRC')}
-          ${renderStageDot('V', stg.v, '#818cf8', 'V (proxy): EV rows exist with attribution/verify pass — see methodology/T4_generation_method.md §3')}
-          ${renderStageDot('R', stg.r, '#10b981', 'R: at least one EV row has reviewer_ok=true')}
-        </div>
+      const _stageTables = [['T4', 'structural_suitability'], ['T3', 'climate_risk'], ['T6', 'nbs_effect']];
+      const _sdot = (on, color, lbl, tip) =>
+        `<span title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:8px;font-weight:700;margin:0 1px;${on ? `background:${color};color:#fff;` : 'background:transparent;border:1.3px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
+      const stageTd = `<td style="vertical-align: middle; border-left: 1px solid var(--border-color); padding: 6px 8px;">
+        ${_stageTables.map(([t, role]) => {
+          const cs = getCellStage(r.familyId, role);
+          const s = isSearched(r.nbsId, t);
+          return `<div style="display:flex;align-items:center;gap:2px;margin:2px 0;white-space:nowrap;">
+            <span style="width:18px;font-size:9px;color:var(--text-muted);font-weight:600;">${t}</span>
+            ${_sdot(s, '#0ea5e9', 'S', t + ' Searched — discovery log exists for this NbS×table')}
+            ${_sdot(cs.e, '#10b981', 'E', t + ' Extracted: ' + cs.n + ' evidence unit(s). Coverage = the count cells, not a completeness claim.')}
+            ${_sdot(cs.v, '#f43f5e', 'V', cs.v ? t + ' Verify: pass flagged ≥1 unit here' : t + ' Verify: no flags (verified-clean or not yet verified)')}
+            ${_sdot(cs.r, '#10b981', 'R', t + ' Reviewed: ' + (cs.r ? 'has human sign-off' : 'not reviewed yet'))}
+          </div>`;
+        }).join('')}
       </td>`;
 
       const tr = document.createElement('tr');
