@@ -158,6 +158,15 @@ def validate(unit: EvidenceUnit) -> list[str]:
             errs.append(
                 f"evidence_type={unit.evidence_type} may not carry shape params (selection-only)"
             )
+    # a cited/secondary claim must record WHOSE finding it is (synthesis de-dups on
+    # this to avoid counting one primary study three times via three reviews citing it)
+    if unit.claim_basis == "cited_secondary" and not (
+        (unit.attribution or "").strip() or (unit.lineage_of or "").strip()
+    ):
+        errs.append(
+            "claim_basis=cited_secondary requires `attribution` (who the source "
+            "cites) or `lineage_of` — provenance of the original claim"
+        )
     # species/crop claims must name the taxon
     if (
         unit.claim_scope in {"species_specific", "crop_specific"}
