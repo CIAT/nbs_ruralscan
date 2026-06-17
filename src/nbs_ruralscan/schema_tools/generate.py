@@ -343,6 +343,17 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
 
     validate_all_sources(schema_root)
 
+    # Enforce the progress ledger: its stage claims must reconcile with the register
+    # (no unproven "done", no evidence for an unstamped stage, valid stage order).
+    from nbs_ruralscan.schema_tools.ledger import check as _ledger_check
+
+    _ledger_errs = _ledger_check(schema_root)
+    if _ledger_errs:
+        raise ValueError(
+            "PROGRESS LEDGER FAILED: stage claims do not reconcile with the register:\n"
+            + "\n".join(f"  - {e}" for e in _ledger_errs)
+        )
+
     manifest = json.loads((schema_root / "structure" / "columns.json").read_text())
     changed: list[Path] = []
     for spec in manifest["tables"].values():
