@@ -1227,7 +1227,8 @@
           <span style="font-size:12.5px; font-weight:700; font-family:var(--font-outfit); color:var(--accent-rose);">&#9872; VERIFY-FLAG Worklist</span>
           <span style="font-size:11px; color:var(--text-muted);">All EV rows flagged during the verification pass — review before accepting any threshold</span>
           <div style="width:100%; margin-top:4px; margin-bottom:2px; padding:6px 10px; background:rgba(244,63,94,0.05); border:1px solid rgba(244,63,94,0.2); border-radius:4px; font-size:10.5px; color:var(--text-muted);">
-            <strong>Read-only triage list</strong> — resolving a flag (accept correction / mark reviewed / drop) is a pipeline step, not editable here. Use <code style="font-size:10px;">uv run python3 src/nbs_ruralscan/schema_tools/generate.py schema</code> after editing the source CSV.
+            <strong>Read-only triage view.</strong> &nbsp;<b style="color:#f43f5e;">mismatch</b> = a number/label contradicted the quote (auto-corrected to the quote-faithful subset). &nbsp;<b style="color:#f59e0b;">unsupported</b> = the relationship asserted a number the quote did not contain (stripped). All flagged units are confidence=low until reviewed.
+            <br><strong>To make + log decisions</strong> (a static page can't write the register): &nbsp;1) <code style="font-size:10px;">review.py export</code> → fills <code style="font-size:10px;">pipeline/review/flag_worklist.csv</code> &nbsp;2) set each row's <code style="font-size:10px;">decision</code> = <b>ok</b> (evidence stands → reviewer_ok) or <b>drop</b> (remove) &nbsp;3) <code style="font-size:10px;">review.py apply</code> → writes it back &nbsp;4) <code style="font-size:10px;">generate.py schema</code> to re-gate, then <code style="font-size:10px;">ledger.py mark … --stage reviewed --status done</code>.
           </div>
           <div style="margin-left:auto; display:flex; gap:6px; flex-wrap:wrap;" id="vf-verdict-filters">
             <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:10px; padding:2px 8px; border-radius:4px;">All</button>
@@ -1365,7 +1366,7 @@
               </div>
               <div style="display:flex; align-items:center; gap:8px; margin-left:14px; padding-left:14px; border-left:1px solid var(--border-color); flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:500;">Stage:</span>
-                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#f43f5e;">V</b>erify-flagged · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— shown PER TABLE (T4/T3/T6 rows). Filled = step done/present, hollow = not. E means evidence exists, NOT that coverage is complete (coverage = the count cells). R is empty everywhere — nothing human-reviewed yet.</span></span>
+                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— shown PER TABLE (T4/T3/T6 rows). Filled = step done/present, hollow = not. E means evidence exists, NOT that coverage is complete (coverage = the count cells). S/V/R come from the enforced progress ledger; E is live from the register. R is empty everywhere — nothing human-reviewed yet.</span></span>
               </div>
             </div>
 
@@ -2504,7 +2505,7 @@
       }
       // Truncate quote
       const quote = (ev.quote || '').replace(/\n/g, ' ').trim();
-      const quoteTrunc = quote.length > 120 ? quote.slice(0, 120) + '…' : quote;
+      const quoteTrunc = quote.length > 320 ? quote.slice(0, 320) + '…' : quote;
       // Verdict badge colour
       const vColour = verdict === 'unsupported' ? 'var(--accent-rose)' : verdict === 'mismatch' ? 'var(--accent-amber)' : 'var(--text-secondary)';
       const tr = document.createElement('tr');
@@ -3242,13 +3243,17 @@
       r: rows.some(c => c.reviewer_ok === true || c.reviewer_ok === 'true'),
     };
   }
-  function isSearched(nbsId, table) {
-    const dl = (dashboardData && dashboardData.discovery_logs) || {};
-    const want = `${nbsId}_${table}`.toLowerCase();
-    return Object.keys(dl).some(k => {
-      const kk = k.toLowerCase();
-      return kk === want || (kk.startsWith(nbsId.toLowerCase()) && kk.endsWith(table.toLowerCase()));
-    });
+  // Read an authored stage status from the enforced progress ledger (NOT inferred).
+  // ledger is keyed (nbs_id, table); stages: searched/screened/extracted/verified/reviewed.
+  function ledgerStage(nbsId, table, stage) {
+    const led = (dashboardData && dashboardData.progress_ledger) || [];
+    const row = led.find(r => r.nbs_id === nbsId && r.table === table);
+    return row ? (row[stage] || 'not_started') : 'not_started';
+  }
+  function ledgerCategories(nbsId, table) {
+    const led = (dashboardData && dashboardData.progress_ledger) || [];
+    const row = led.find(r => r.nbs_id === nbsId && r.table === table);
+    return row ? (row.searched_categories || '') : '';
   }
 
   // Render a stage dot: filled (on) or hollow (off)
@@ -3386,14 +3391,20 @@
         `<span title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;font-size:8px;font-weight:700;margin:0 1px;${on ? `background:${color};color:#fff;` : 'background:transparent;border:1.3px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
       const stageTd = `<td style="vertical-align: middle; border-left: 1px solid var(--border-color); padding: 6px 8px;">
         ${_stageTables.map(([t, role]) => {
-          const cs = getCellStage(r.familyId, role);
-          const s = isSearched(r.nbsId, t);
+          const cs = getCellStage(r.familyId, role);            // per-family evidence facts
+          const s = ledgerStage(r.nbsId, t, 'searched') === 'done';     // authored, enforced
+          const verifiedRun = ledgerStage(r.nbsId, t, 'verified') === 'done';
+          const reviewedRun = ledgerStage(r.nbsId, t, 'reviewed') === 'done';
+          const e = cs.n > 0;                                   // this family×table has evidence
+          const v = verifiedRun && e;                           // verify pass run AND family has evidence
+          const rev = reviewedRun && e;
+          const cats = ledgerCategories(r.nbsId, t);
           return `<div style="display:flex;align-items:center;gap:2px;margin:2px 0;white-space:nowrap;">
             <span style="width:18px;font-size:9px;color:var(--text-muted);font-weight:600;">${t}</span>
-            ${_sdot(s, '#0ea5e9', 'S', t + ' Searched — discovery log exists for this NbS×table')}
-            ${_sdot(cs.e, '#10b981', 'E', t + ' Extracted: ' + cs.n + ' evidence unit(s). Coverage = the count cells, not a completeness claim.')}
-            ${_sdot(cs.v, '#f43f5e', 'V', cs.v ? t + ' Verify: pass flagged ≥1 unit here' : t + ' Verify: no flags (verified-clean or not yet verified)')}
-            ${_sdot(cs.r, '#10b981', 'R', t + ' Reviewed: ' + (cs.r ? 'has human sign-off' : 'not reviewed yet'))}
+            ${_sdot(s, '#0ea5e9', 'S', t + ' Searched (ledger): ' + (s ? ('done — categories: ' + (cats || 'n/a')) : 'not done'))}
+            ${_sdot(e, '#10b981', 'E', t + ' Extracted: ' + cs.n + ' evidence unit(s) for this family. Coverage = the count cells, not a completeness claim.')}
+            ${_sdot(v, '#818cf8', 'V', v ? t + ' Verified (ledger): verify pass run over this family evidence' : t + ' Verify: not run / no evidence')}
+            ${_sdot(rev, '#10b981', 'R', t + ' Reviewed (ledger): ' + (rev ? 'human sign-off' : 'not reviewed yet'))}
           </div>`;
         }).join('')}
       </td>`;

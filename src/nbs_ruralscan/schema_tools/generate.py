@@ -259,7 +259,12 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "global_tables": {},
         "recipes": {},
         "discovery_logs": _parse_discovery_logs(schema_root),
+        "progress_ledger": [],
     }
+
+    ledger_csv = schema_root.parent / "pipeline" / "progress_ledger.csv"
+    if ledger_csv.exists():
+        data["progress_ledger"] = _csv_to_rows(ledger_csv)
 
     # Read registers
     for reg in registers:
@@ -304,7 +309,13 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
 
     if check and current_data:
         identical = True
-        for key in ["registers", "global_tables", "recipes", "discovery_logs"]:
+        for key in [
+            "registers",
+            "global_tables",
+            "recipes",
+            "discovery_logs",
+            "progress_ledger",
+        ]:
             if current_data.get(key) != data.get(key):
                 identical = False
                 break
@@ -314,7 +325,13 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     # Avoid updating timestamp if nothing has changed
     if current_data and current_data.get("git_commit") == git_commit:
         identical = True
-        for key in ["registers", "global_tables", "recipes", "discovery_logs"]:
+        for key in [
+            "registers",
+            "global_tables",
+            "recipes",
+            "discovery_logs",
+            "progress_ledger",
+        ]:
             if current_data.get(key) != data.get(key):
                 identical = False
                 break
