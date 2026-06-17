@@ -1206,6 +1206,21 @@
         </div>
       </div>
 
+      <!-- Evidence Quality Panel -->
+      <div class="card-container" id="ev-quality-panel" style="margin-bottom:20px;">
+        <h2 class="card-title" style="margin-bottom:12px;">
+          <span>Evidence Quality Signal</span>
+          <span class="card-title-meta">Live counts from the Evidence Register — surface fabrication-risk signals before using any threshold</span>
+        </h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; font-size:12.5px;" id="ev-quality-stats">
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">TOTAL EV UNITS</div><div class="stat-value" style="font-size:22px;" id="evq-total">—</div></div>
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px; color:var(--accent-rose);">VERIFY-FLAGS</div><div class="stat-value" style="font-size:22px; color:var(--accent-rose);" id="evq-vf">—</div></div>
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">UNREVIEWED</div><div class="stat-value" style="font-size:22px;" id="evq-unreviewed">—</div></div>
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">LOW CONFIDENCE</div><div class="stat-value" style="font-size:22px;" id="evq-low-conf">—</div></div>
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">BY USE ROLE</div><div style="font-size:11px; margin-top:6px; line-height:1.7;" id="evq-roles">—</div></div>
+        </div>
+      </div>
+
       <!-- Section 1: Global NbS Comparison Table -->
       <div class="card-container">
         <h2 class="card-title">
@@ -1595,7 +1610,10 @@
                 </svg>
                 Verbatim Evidence Claims
               </h3>
-              <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <button class="pill-btn" id="btn-show-flagged-only" data-active="0" onclick="window._evFlaggedOnly=!window._evFlaggedOnly;this.setAttribute('data-active',window._evFlaggedOnly?'1':'0');this.classList.toggle('active',window._evFlaggedOnly);this.classList.toggle('rose',window._evFlaggedOnly);renderVerbatimEvidence();" style="font-size:10px; padding:3px 9px; border-radius:4px;">&#9872; Flagged only</button>
+                <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click header to collapse/expand</span>
+              </div>
             </div>
             <div id="wrapper-evidence-claims">
               <div class="evidence-container" id="evidence-list"></div>
@@ -1924,30 +1942,31 @@
       </div>
 
       <!-- FILTER PILL PANELS -->
-      <div class="card-container" style="margin-bottom: 20px; padding: 20px; background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px);">
-        <div style="display: flex; flex-direction: column; gap: 16px;">
-          <!-- Row 1: NbS Selector -->
-          <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 120px;">Practice (NbS)</span>
-            <div id="search-pill-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button class="pill-btn active sky" data-nbs="agroforestry" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">Agroforestry</button>
-              <button class="pill-btn sky" data-nbs="water_harvesting_conservation" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">Water Harvesting</button>
+      <div class="card-container" style="position: sticky; top: 86px; z-index: 90; margin-bottom: 20px; padding: 16px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); box-shadow: var(--card-shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Row 1: Practice Selector & Table Selector inline -->
+          <div style="display: flex; align-items: center; justify-content: flex-start; gap: 40px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Practice (NbS)</span>
+              <div id="search-pill-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="pill-btn active sky" data-nbs="agroforestry" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">Agroforestry</button>
+                <button class="pill-btn sky" data-nbs="water_harvesting_conservation" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">Water Harvesting</button>
+              </div>
             </div>
-          </div>
-          
-          <!-- Row 2: Table Selector -->
-          <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 120px;">Table / Step</span>
-            <div id="search-pill-table" style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button class="pill-btn active purple" data-table="T3" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">T3 (Hazards)</button>
-              <button class="pill-btn purple" data-table="T4" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">T4 (Suitability)</button>
-              <button class="pill-btn purple" data-table="T6" style="border-radius: 6px; padding: 6px 14px; font-size: 12px;">T6 (Scorecard)</button>
+            
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Table / Step</span>
+              <div id="search-pill-table" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="pill-btn active purple" data-table="T3" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T3 (Hazards)</button>
+                <button class="pill-btn purple" data-table="T4" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T4 (Suitability)</button>
+                <button class="pill-btn purple" data-table="T6" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T6 (Scorecard)</button>
+              </div>
             </div>
           </div>
 
-          <!-- Row 3: Sub-NbS Selector (Suitability Family) -->
-          <div id="search-sub-nbs-row" style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 16px;">
-            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 120px;">Sub-Practice</span>
+          <!-- Row 2: Sub-NbS Selector (Suitability Family) -->
+          <div id="search-sub-nbs-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 10px;">
+            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Sub-Practice</span>
             <div id="search-pill-sub-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
               <!-- Populated dynamically -->
             </div>
@@ -1963,9 +1982,9 @@
         </div>
 
         <!-- Funnel and Queries Row -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: stretch; flex-wrap: wrap;">
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: stretch;">
           <!-- Left: PRISMA-lite Funnel Card -->
-          <div class="card-container" style="margin: 0; display: flex; flex-direction: column;">
+          <div class="card-container" style="margin: 0; display: flex; flex-direction: column; min-width: 0;">
             <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9v6l4 2v-8L22 3z"></path></svg>
               PRISMA-lite Discovery Funnel
@@ -1976,7 +1995,7 @@
           </div>
 
           <!-- Right: Queries & Databases Card -->
-          <div class="card-container" style="margin: 0; display: flex; flex-direction: column;">
+          <div class="card-container" style="margin: 0; display: flex; flex-direction: column; min-width: 0;">
             <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
               Queries &amp; Databases Screened
@@ -2016,8 +2035,9 @@
                 <thead>
                   <tr>
                     <th style="width: 150px;">Source ID</th>
-                    <th style="width: 180px;">Author / Year</th>
+                    <th style="width: 180px;">DOI / Link</th>
                     <th style="width: 100px;">Tier</th>
+                    <th style="text-align: center; width: 100px;">Claims</th>
                     <th style="width: 180px;">Scope / Context</th>
                     <th>Extracted Key Variables / Target Hazards</th>
                   </tr>
@@ -2026,6 +2046,46 @@
                   <!-- Populated dynamically -->
                 </tbody>
               </table>
+            </div>
+
+            <!-- Evidence Drill-down Panel (Side-by-Side Split View) -->
+            <div id="source-evidence-drilldown" style="margin-top: 24px; display: none;">
+              <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <!-- Left Column: Evidence Claims -->
+                <div style="flex: 3; min-width: 500px; padding: 20px; border: 1px solid var(--border-color); background: var(--bg-tertiary); border-radius: var(--radius-lg); display: flex; flex-direction: column;">
+                  <h4 style="margin: 0 0 12px 0; font-size: 14px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px; color: var(--accent-sky);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Evidence Claims for Source: <span id="selected-source-id-label" style="font-family: ui-monospace, monospace; color: var(--text-primary); font-size: 13px; margin-left: 4px;"></span>
+                  </h4>
+                  <div style="overflow-x: auto; flex: 1;">
+                    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px;">
+                      <thead>
+                        <tr>
+                          <th style="width: 130px;">Evidence ID</th>
+                          <th style="width: 120px;">Variable</th>
+                          <th style="width: 180px;">Relationship / Rules</th>
+                          <th style="width: 120px;">Context</th>
+                          <th>Verbatim Quote / Assertion</th>
+                          <th style="width: 60px; text-align: center;">Page</th>
+                          <th style="width: 100px;">Evidence Type</th>
+                        </tr>
+                      </thead>
+                      <tbody id="source-evidence-drilldown-body">
+                        <!-- Populated dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Right Column: Source JSON Metadata -->
+                <div style="flex: 2; min-width: 350px; padding: 20px; border: 1px solid var(--border-color); background: var(--bg-tertiary); border-radius: var(--radius-lg); display: flex; flex-direction: column;">
+                  <h4 style="margin: 0 0 12px 0; font-size: 14px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px; color: var(--accent-emerald);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    Source Metadata JSON
+                  </h4>
+                  <pre id="selected-source-json-pre" style="flex: 1; margin: 0; font-family: ui-monospace, monospace; font-size: 11px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; overflow: auto; border: 1px solid var(--border-color); color: var(--text-primary); white-space: pre-wrap; word-break: break-all; max-height: 450px;"></pre>
+                </div>
+              </div>
             </div>
           </div>
  
@@ -2295,12 +2355,28 @@
       filteredSources = sources.filter(s => sourceIds.has(s.source_id));
     }
 
-    const sweptCount = filteredSources.filter(s => s.extraction_status === 'swept' || s.extraction_status === 'signed_off').length;
+    const sweptCount = filteredSources.filter(s => ['complete','swept','signed_off'].includes(s.extraction_status)).length;
 
     document.getElementById('stat-total-sources').textContent = filteredSources.length;
     document.getElementById('stat-swept-sources').textContent = sweptCount;
     document.getElementById('stat-total-claims').textContent = filteredClaims.length;
     document.getElementById('stat-total-recipes').textContent = filteredRecipes.length;
+
+    // Evidence quality panel (B2)
+    const _evAll = dashboardData.registers.EV_evidence_register || [];
+    const _evVf = _evAll.filter(c => (c.attribution || '').includes('[VERIFY-FLAG'));
+    const _evUnrev = _evAll.filter(c => c.reviewer_ok !== true && c.reviewer_ok !== 'true');
+    const _evLowConf = _evAll.filter(c => (c.extraction_confidence || '').toLowerCase() === 'low');
+    const _evRoles = {};
+    _evAll.forEach(c => { const r = c.use_role || 'unknown'; _evRoles[r] = (_evRoles[r] || 0) + 1; });
+    const _evqTotal = document.getElementById('evq-total');
+    if (_evqTotal) {
+      _evqTotal.textContent = _evAll.length;
+      document.getElementById('evq-vf').textContent = _evVf.length;
+      document.getElementById('evq-unreviewed').textContent = _evUnrev.length;
+      document.getElementById('evq-low-conf').textContent = _evLowConf.length;
+      document.getElementById('evq-roles').innerHTML = Object.entries(_evRoles).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div><strong>${n}</strong> <span style="color:var(--text-muted);">${r.replace(/_/g,' ')}</span></div>`).join('');
+    }
 
     renderOverviewCharts(filteredSources, filteredClaims, filteredRecipes);
     renderSankeyFlow(filteredSources, filteredClaims);
@@ -2811,28 +2887,33 @@
   function getSourceCategory(sourceId, citation) {
     const sid = (sourceId || '').toLowerCase();
     const cit = (citation || '').toLowerCase();
-    
+
+    // Use source_kind from register first (fastest, most reliable)
+    const srcReg = (dashboardData && dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
+    const srcMeta = srcReg.find(s => s.source_id === sourceId);
+    if (srcMeta && srcMeta.source_kind === 'grey_lit') return 'grey';
+
     const toolsList = [
-      'invest_ecosystem_services', 'wanulcas_model', 'yieldsafe_model', 'fao_exact_carbon_tool', 
-      'fao_ruralinvest_cba', 'afolu_carbon_calculator', 'redd_abacus_sp', 'fao_undp_nap_forestry_guidelines', 
-      'gender_inclusion_toolbox', 'farmtree_platform', 'agroforestry_designer_toolkit', 
+      'invest_ecosystem_services', 'wanulcas_model', 'yieldsafe_model', 'fao_exact_carbon_tool',
+      'fao_ruralinvest_cba', 'afolu_carbon_calculator', 'redd_abacus_sp', 'fao_undp_nap_forestry_guidelines',
+      'gender_inclusion_toolbox', 'farmtree_platform', 'agroforestry_designer_toolkit',
       'regenworks_agroforestry', 'agroforestryx_design_tool', 'agroforstrechner_tool', 'wocat_slm_database'
     ];
     if (toolsList.includes(sid)) return 'tools';
-    
+
     if (sid.startsWith('wri_') || sid.startsWith('wocat_') || sid.startsWith('wb_') || sid.startsWith('fao_') || sid.startsWith('tnc_') || sid.startsWith('gca_')) {
       return 'grey';
     }
     if (cit.includes('wocat') || cit.includes('world bank') || cit.includes('fao') || cit.includes('wri') || cit.includes('project appraisal') || cit.includes('appraisal document')) {
       return 'grey';
     }
-    
+
     const stockList = [
-      'nath_2021', 'zomer_2014', 'nair_1993', 'haile_2024', 'yadav_2024', 'brandt_2015', 'chuma_2021', 
-      'haris_2021', 'wotlolan_2021', 'seja_2022', 'ahmad_2018', 'ahmad_2020', 'ahmad_goparaju_2017', 'mushtaq_2023'
+      'nath_2021', 'zomer_2014', 'haile_2024', 'yadav_2024', 'brandt_2015', 'chuma_2021',
+      'haris_2021', 'wotlolan_2021', 'seja_2022', 'ahmad_2017', 'ahmad_2018', 'ahmad_2020', 'mushtaq_2023'
     ];
     if (stockList.includes(sid)) return 'stock';
-    
+
     return 'updated';
   }
 
@@ -2923,8 +3004,8 @@
       
       const nbsSources = sources.filter(s => (s.nbs_ids || '').split(';').map(x=>x.trim()).includes(nbsId));
       const totalSourcesCount = nbsSources.length;
-      const sweptSourcesCount = nbsSources.filter(s => s.extraction_status === 'swept' || s.extraction_status === 'signed_off').length;
-      
+      const sweptSourcesCount = nbsSources.filter(s => ['complete','swept','signed_off'].includes(s.extraction_status)).length;
+
       const nbsClaims = claims.filter(c => c.nbs_id === nbsId);
       const claimsCount = nbsClaims.length;
       
@@ -2972,48 +3053,41 @@
     });
   }
 
-  const discoveryStatusDb = {
-    "agroforestry__homegardens_proximity": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "agroforestry__linear_boundary": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "agroforestry__planted_silvoarable": {
-      t4: { stock: "complete", updated: "complete", grey: "complete", tools: "complete" },
-      t3: { stock: "complete", updated: "complete", grey: "complete", tools: "complete" },
-      t6: { stock: "complete", updated: "complete", grey: "complete", tools: "complete" }
-    },
-    "agroforestry__regeneration_farmland": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "agroforestry__shaded_perennial": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "agroforestry__silvopastoral": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "water_harvesting__runoff_catchment": {
-      t4: { stock: "pending", updated: "pending", grey: "complete", tools: "complete" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "complete" }
-    }
-  };
+  // D2: discoveryStatusDb derived from live EV counts; hardcoded base overridden where EV data exists
+  function buildDiscoveryStatusDb() {
+    const _evBase = (dashboardData && dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
+    const _srcBase = (dashboardData && dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
+    const _roleToTable = { structural_suitability: 't4', climate_risk: 't3', nbs_effect: 't6' };
+    const _db = {
+      "agroforestry__homegardens_proximity": { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__linear_boundary":       { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__planted_silvoarable":   { t4:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"}, t3:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"}, t6:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"} },
+      "agroforestry__regeneration_farmland": { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__shaded_perennial":      { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__silvopastoral":         { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "water_harvesting__runoff_catchment":  { t4:{stock:"pending",updated:"pending",grey:"complete",tools:"complete"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"complete"} }
+    };
+    // Scan live EV: for each (family, role→table, category), upgrade pending→seeded if EV rows exist
+    _evBase.forEach(c => {
+      const fam = c.suitability_family_id;
+      if (!fam || !_db[fam]) return;
+      const tbl = _roleToTable[(c.use_role || '').toLowerCase()];
+      if (!tbl) return;
+      const src = _srcBase.find(s => s.source_id === c.source_id);
+      const cat = getSourceCategory(c.source_id, src ? src.citation : '');
+      if (_db[fam][tbl] && _db[fam][tbl][cat] === 'pending') {
+        _db[fam][tbl][cat] = 'seeded';
+      }
+    });
+    return _db;
+  }
+  let discoveryStatusDb = {};
 
   let auditSortCol = 'family'; // 'family', 't4', 't3', 't6'
   let auditSortDir = 'asc';
 
   function renderDiscoveryAudit() {
+    discoveryStatusDb = buildDiscoveryStatusDb(); // D2: rebuild from live EV data
     const body = document.getElementById('body-discovery-audit');
     if (!body) return;
     body.innerHTML = '';
@@ -3652,7 +3726,7 @@
       const hasT6Claims = t6ClaimsCount > 0;
 
       const contributesToActive = (t4Active && hasT4Claims) || (t3Active && hasT3Claims) || (t6Active && hasT6Claims);
-      const isSwept = s.extraction_status === 'swept' || s.extraction_status === 'signed_off';
+      const isSwept = ['complete','swept','signed_off'].includes(s.extraction_status);
 
       if (!contributesToActive && !isSwept) return;
 
@@ -3665,7 +3739,8 @@
         : `<span style="color:var(--text-muted); font-size:11px;">None extracted</span>`;
 
       // Badge for tier
-      let tierClass = s.benchmark_tier === 'high' ? 'high' : s.benchmark_tier === 'medium' ? 'medium' : 'low';
+      const _bt = (s.benchmark_tier || '').toLowerCase();
+      let tierClass = _bt === 'high' ? 'high' : _bt === 'medium' ? 'medium' : 'low';
       
       // Geo context
       const geo = [s.study_country, s.region].filter(Boolean).join(', ') || 'Global';
@@ -3690,7 +3765,7 @@
           </div>
         </td>
         <td style="text-align: center; vertical-align: middle; padding: 10px 12px;">
-          <span class="badge ${tierClass}" style="font-size:9px; padding:2px 5px;">${s.benchmark_tier}</span>
+          <span class="badge ${tierClass}" style="font-size:9px; padding:2px 5px;">${_bt}</span>
         </td>
         <td style="font-size: 11.5px; padding: 10px 12px; color:var(--text-secondary);">
           <div>${geo}</div>
@@ -3729,7 +3804,7 @@
     const stats = {};
     sources.forEach(src => {
       const nbsList = (src.nbs_ids || '').split(';').map(n => n.trim()).filter(Boolean);
-      const isSwept = src.extraction_status === 'swept' || src.extraction_status === 'signed_off';
+      const isSwept = ['complete','swept','signed_off'].includes(src.extraction_status);
       nbsList.forEach(nbs => {
         if (!stats[nbs]) stats[nbs] = { swept: 0, pending: 0 };
         if (isSwept) stats[nbs].swept++;
@@ -3802,7 +3877,7 @@
     const tiers = { high: 0, medium: 0, low: 0, external: 0 };
     claims.forEach(c => {
       const src = sources.find(s => s.source_id === c.source_id);
-      const tier = src ? src.benchmark_tier : 'low';
+      const tier = src ? (src.benchmark_tier || 'low').toLowerCase() : 'low';
       if (tiers[tier] !== undefined) tiers[tier]++;
       else tiers.low++;
     });
@@ -3867,7 +3942,7 @@
       const c = s.study_country || 'Global';
       if (!countryMap[c]) countryMap[c] = { total: 0, swept: 0 };
       countryMap[c].total++;
-      if (s.extraction_status === 'swept' || s.extraction_status === 'signed_off') countryMap[c].swept++;
+      if (['complete','swept','signed_off'].includes(s.extraction_status)) countryMap[c].swept++;
     });
 
     Object.entries(countryMap).sort((a,b)=>b[1].total - a[1].total).forEach(([country, stat]) => {
@@ -4100,19 +4175,33 @@
     matchedClaims.forEach(c => {
       const src = sources.find(s => s.source_id === c.source_id);
       const citation = src ? src.citation : c.source_id;
-      const tier = src ? src.benchmark_tier : 'low';
+      const tier = src ? (src.benchmark_tier || 'low').toLowerCase() : 'low';
       
+      // Honesty badges
+      const _conf = (c.extraction_confidence || '').toLowerCase();
+      const _confColor = _conf === 'high' ? 'var(--accent-emerald)' : _conf === 'medium' ? 'var(--accent-amber)' : 'var(--text-muted)';
+      const _confBadge = _conf ? `<span style=”font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:3px; color:${_confColor};”>${_conf}</span>` : '';
+      const _basisBadge = c.claim_basis ? `<span style=”font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:3px; color:var(--text-secondary);”>${c.claim_basis}</span>` : '';
+      const _scopeFlag = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style=”font-size:8px; padding:1px 4px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:3px; color:var(--accent-amber);”>species/crop-specific</span>` : '';
+      const _reviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style=”font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:3px; color:var(--text-muted);”>unreviewed</span>`;
+      const _attr = c.attribution || '';
+      const _vfMatch = _attr.match(/\[VERIFY-FLAG([^\]]*)\]/);
+      const _vfBadge = _vfMatch ? `<span style=”font-size:8px; padding:1px 5px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.4); border-radius:3px; color:var(--accent-rose); font-weight:600; cursor:help;” title=”${(_vfMatch[1] || '').trim()}”>&#9872; VERIFY-FLAG</span>` : '';
+
       html += `
-        <div style="background-color:var(--bg-primary); border: 1px solid var(--border-color); border-radius:var(--radius-sm); padding:8px 10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:10px;">
-            <code style="color:var(--accent-emerald); font-weight:600;">${c.evidence_id}</code>
-            <span class="badge ${tier}" style="font-size:8px; padding:1px 4px;">${tier}</span>
+        <div style=”background-color:var(--bg-primary); border: 1px solid ${_vfMatch ? 'rgba(244,63,94,0.35)' : 'var(--border-color)'}; border-radius:var(--radius-sm); padding:8px 10px;”>
+          <div style=”display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; font-size:10px; flex-wrap:wrap; gap:3px;”>
+            <code style=”color:var(--accent-emerald); font-weight:600;”>${c.evidence_id}</code>
+            <div style=”display:flex; gap:3px; flex-wrap:wrap; align-items:center;”>
+              <span class=”badge ${tier}” style=”font-size:8px; padding:1px 4px;”>${tier}</span>
+              ${_confBadge}${_basisBadge}${_scopeFlag}${_reviewBadge}${_vfBadge}
+            </div>
           </div>
-          <p style="font-style:italic; line-height:1.4; color:var(--text-primary); margin-bottom:6px;">“${c.quote}”</p>
-          <div style="font-size:9.5px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:flex-end;">
-            <span style="max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Ref: <strong>${citation}</strong></span>
-            <button class="btn-flag" onclick="openGitIssue('evidence', ${JSON.stringify(c).replace(/"/g, '&quot;')})" style="font-size:9px; padding:2px 5px;">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+          <p style=”font-style:italic; line-height:1.4; color:var(--text-primary); margin-bottom:6px;”>”${c.quote}”</p>
+          <div style=”font-size:9.5px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:flex-end;”>
+            <span style=”max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;”>Ref: <strong>${citation}</strong></span>
+            <button class=”btn-flag” onclick=”openGitIssue('evidence', ${JSON.stringify(c).replace(/”/g, '&quot;')})” style=”font-size:9px; padding:2px 5px;”>
+              <svg width=”10” height=”10” viewBox=”0 0 24 24” fill=”none” stroke=”currentColor” stroke-width=”2.5”><path d=”M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z”></path><line x1=”4” y1=”22” x2=”4” y2=”15”></line></svg>
               Flag
             </button>
           </div>
@@ -4263,6 +4352,11 @@
 
     let familyClaims = claims.filter(c => c.nbs_id === nbsId && c.suitability_family_id === familyId);
 
+    // Flagged-only toggle (B3)
+    if (window._evFlaggedOnly) {
+      familyClaims = familyClaims.filter(c => (c.attribution || '').includes('[VERIFY-FLAG'));
+    }
+
     if (searchVal) {
       familyClaims = familyClaims.filter(c => {
         const quote = (c.quote || '').toLowerCase();
@@ -4288,15 +4382,15 @@
       const srcA = sources.find(s => s.source_id === a.source_id);
       const srcB = sources.find(s => s.source_id === b.source_id);
       const tierScore = { high: 3, medium: 2, low: 1, external: 0 };
-      const scoreA = srcA ? tierScore[srcA.benchmark_tier] : 1;
-      const scoreB = srcB ? tierScore[srcB.benchmark_tier] : 1;
+      const scoreA = srcA ? (tierScore[(srcA.benchmark_tier || '').toLowerCase()] || 1) : 1;
+      const scoreB = srcB ? (tierScore[(srcB.benchmark_tier || '').toLowerCase()] || 1) : 1;
       return scoreB - scoreA;
     });
 
     familyClaims.forEach(c => {
       const src = sources.find(s => s.source_id === c.source_id);
       const citation = src ? src.citation : 'Unknown Citation reference';
-      const tier = src ? src.benchmark_tier : 'low';
+      const tier = src ? (src.benchmark_tier || 'low').toLowerCase() : 'low';
       
       const card = document.createElement('div');
       card.className = 'evidence-card';
@@ -4324,24 +4418,36 @@
       // Combine claim and source citation to pass to Git Flag button
       const payload = { ...c, citation };
 
+      // Honesty badges
+      const _eConf = (c.extraction_confidence || '').toLowerCase();
+      const _eConfColor = _eConf === 'high' ? 'var(--accent-emerald)' : _eConf === 'medium' ? 'var(--accent-amber)' : 'var(--text-muted)';
+      const _eConfBadge = _eConf ? `<span style=”font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.05); color:${_eConfColor};”>${_eConf} confidence</span>` : '';
+      const _eBasisBadge = c.claim_basis ? `<span style=”font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.05); color:var(--text-secondary);”>${c.claim_basis}</span>` : '';
+      const _eScopeBadge = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style=”font-size:9px; padding:1px 5px; border:1px solid rgba(245,158,11,0.3); border-radius:3px; background:rgba(245,158,11,0.1); color:var(--accent-amber);”>species/crop-specific</span>` : '';
+      const _eReviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style=”font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.04); color:var(--text-muted);”>unreviewed</span>`;
+      const _eAttr = c.attribution || '';
+      const _eVfMatch = _eAttr.match(/\[VERIFY-FLAG([^\]]*)\]/);
+      const _eVfBadge = _eVfMatch ? `<span style=”font-size:9px; padding:1px 6px; border:1px solid rgba(244,63,94,0.4); border-radius:3px; background:rgba(244,63,94,0.15); color:var(--accent-rose); font-weight:600; cursor:help;” title=”${(_eVfMatch[1] || '').trim()}”>&#9872; VERIFY-FLAG</span>` : '';
+
       card.innerHTML = `
-        <div class="evidence-card-header">
-          <span class="evidence-var-tag">${c.variable}</span>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="badge ${tier}">${tier} tier</span>
-            <button class="btn-flag" onclick="openGitIssue('evidence', ${JSON.stringify(payload).replace(/"/g, '&quot;')})" style="font-size:10px; padding:2px 6px;">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+        <div class=”evidence-card-header”>
+          <span class=”evidence-var-tag”>${c.variable}</span>
+          <div style=”display:flex; align-items:center; gap:6px; flex-wrap:wrap;”>
+            <span class=”badge ${tier}”>${tier} tier</span>
+            ${_eConfBadge}${_eBasisBadge}${_eScopeBadge}${_eReviewBadge}${_eVfBadge}
+            <button class=”btn-flag” onclick=”openGitIssue('evidence', ${JSON.stringify(payload).replace(/”/g, '&quot;')})” style=”font-size:10px; padding:2px 6px;”>
+              <svg width=”10” height=”10” viewBox=”0 0 24 24” fill=”none” stroke=”currentColor” stroke-width=”2.5”><path d=”M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z”></path><line x1=”4” y1=”22” x2=”4” y2=”15”></line></svg>
               Flag
             </button>
           </div>
         </div>
-        <blockquote class="evidence-quote">“${highlightedQuote}”</blockquote>
-        <div class="evidence-citation">
-          <span>Source: <strong>${highlightedFriendly}</strong> — <span style="font-size: 11.5px; font-weight: normal; color: var(--text-secondary);">${highlightedCitation}</span></span>
-          ${src && src.doi ? `<span style="font-size:10px; color:var(--text-muted); margin-top:2px;">DOI: <a href="https://doi.org/${src.doi}" target="_blank" style="color:inherit; text-decoration:underline;">${src.doi}</a></span>` : ''}
+        <blockquote class=”evidence-quote”>”${highlightedQuote}”</blockquote>
+        <div class=”evidence-citation”>
+          <span>Source: <strong>${highlightedFriendly}</strong> — <span style=”font-size: 11.5px; font-weight: normal; color: var(--text-secondary);”>${highlightedCitation}</span></span>
+          ${src && src.doi ? `<span style=”font-size:10px; color:var(--text-muted); margin-top:2px;”>DOI: <a href=”https://doi.org/${src.doi}” target=”_blank” rel=”noopener noreferrer” style=”color:inherit; text-decoration:underline;”>${src.doi}</a></span>` : ''}
         </div>
-        <div class="evidence-meta-row">
-          ${details.map(d => `<span class="evidence-meta-item">${d}</span>`).join(' • ')}
+        <div class=”evidence-meta-row”>
+          ${details.map(d => `<span class=”evidence-meta-item”>${d}</span>`).join(' • ')}
         </div>
       `;
       listContainer.appendChild(card);
@@ -4385,11 +4491,23 @@
 
     rows.forEach(r => {
       const tr = document.createElement('tr');
-      const potentialColor = r.mitigation_potential === 'high' ? 'var(--accent-emerald)' 
-                           : r.mitigation_potential === 'medium' ? 'var(--accent-amber)' 
+      const potentialColor = r.mitigation_potential === 'high' ? 'var(--accent-emerald)'
+                           : r.mitigation_potential === 'medium' ? 'var(--accent-amber)'
                            : 'var(--text-secondary)';
-      
-      const evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
+
+      // C: rebuild evidence drawer from EV register if evidence_ids absent
+      let evidenceDrawer;
+      if (r.evidence_ids && r.evidence_ids.length > 0) {
+        evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
+      } else {
+        const _evAll2 = dashboardData.registers.EV_evidence_register || [];
+        const _t3Matches = _evAll2.filter(c => c.use_role === 'climate_risk' && c.nbs_id === nbsId && (!r.hazard_type || (c.variable || '').toLowerCase().includes((r.hazard_type || '').toLowerCase().split('_')[0])));
+        if (_t3Matches.length > 0) {
+          evidenceDrawer = generateEvidenceDrawerHtml(_t3Matches.map(c => c.evidence_id));
+        } else {
+          evidenceDrawer = '<div style="font-size:10.5px; color:var(--text-muted); margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">No linked evidence yet</div>';
+        }
+      }
 
       tr.innerHTML = `
         <td style="font-weight:600; font-family:var(--font-outfit); text-transform:capitalize;">${r.hazard_type}</td>
@@ -4460,7 +4578,20 @@
         valRange = `<strong>${vr.low} – ${vr.high}</strong> <span style="color:var(--text-muted); font-size:11px;">${vr.unit || ''}</span>`;
       }
 
-      const evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
+      // C: rebuild evidence drawer from EV register if evidence_ids absent
+      let evidenceDrawer;
+      if (r.evidence_ids && r.evidence_ids.length > 0) {
+        evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
+      } else {
+        const _evAll3 = dashboardData.registers.EV_evidence_register || [];
+        const _varKey = r.variable_id || r.economic_indicator_type || '';
+        const _t6Matches = _evAll3.filter(c => c.use_role === 'nbs_effect' && c.nbs_id === nbsId && (!_varKey || (c.variable || '').toLowerCase().includes(_varKey.toLowerCase().split('_')[0])));
+        if (_t6Matches.length > 0) {
+          evidenceDrawer = generateEvidenceDrawerHtml(_t6Matches.map(c => c.evidence_id));
+        } else {
+          evidenceDrawer = '<div style="font-size:10.5px; color:var(--text-muted); margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">No linked evidence yet</div>';
+        }
+      }
 
       tr.innerHTML = `
         <td style="font-weight:600; font-family:var(--font-outfit);">
@@ -4945,9 +5076,9 @@
       .attr("fill", d => {
         if (d.type === 'source') return "#0f766e";
         if (d.type === 'evidence') {
-          const tier = d.data.benchmark_tier || 'low';
-          return tier === 'high' ? "var(--accent-emerald)" 
-               : tier === 'medium' ? "var(--accent-amber)" 
+          const tier = (d.data.benchmark_tier || 'low').toLowerCase();
+          return tier === 'high' ? "var(--accent-emerald)"
+               : tier === 'medium' ? "var(--accent-amber)"
                : "var(--text-secondary)";
         }
         if (d.type === 'variable') return "var(--accent-sky)";
@@ -5090,7 +5221,7 @@
     if (node.type === 'source') {
       const s = node.data;
       const citation = s.citation || 'N/A';
-      const doi = s.doi ? `<a href="https://doi.org/${s.doi}" target="_blank" style="color: var(--accent-sky); text-decoration: underline;">${s.doi}</a>` : 'N/A';
+      const doi = s.doi ? `<a href="https://doi.org/${s.doi}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline;">${s.doi}</a>` : 'N/A';
       
       const claims = dashboardData.registers.EV_evidence_register || [];
       const claimCount = claims.filter(c => c.source_id === s.source_id).length;
@@ -5100,15 +5231,15 @@
         <p><strong>DOI:</strong> ${doi}</p>
         <p><strong>Study Country:</strong> <span style="text-transform: capitalize;">${s.study_country || 'Global'}</span></p>
         <p><strong>Methodology Type:</strong> <span style="text-transform: uppercase;">${s.method_type || 'empirical'}</span></p>
-        <p><strong>Benchmark Tier:</strong> <span class="badge ${s.benchmark_tier || 'low'}" style="font-size: 10px; padding: 1px 5px;">${s.benchmark_tier || 'low'}</span></p>
+        <p><strong>Benchmark Tier:</strong> <span class="badge ${(s.benchmark_tier || 'low').toLowerCase()}" style="font-size: 10px; padding: 1px 5px;">${(s.benchmark_tier || 'low').toLowerCase()}</span></p>
         <p><strong>Evidence Claims Extracted:</strong> <strong>${claimCount}</strong> claims</p>
       `;
     } else if (node.type === 'evidence') {
       const c = node.data;
       const s = dashboardData.registers.SRC_source_register.find(src => src.source_id === c.source_id);
       const citation = s ? s.citation : c.source_id;
-      const tier = s ? s.benchmark_tier : 'low';
-      
+      const tier = s ? (s.benchmark_tier || 'low').toLowerCase() : 'low';
+
       const details = [];
       if (c.context && c.context.aez) details.push(`AEZ: <strong>${c.context.aez}</strong>`);
       if (s && s.study_country) details.push(`Country: <strong>${s.study_country}</strong>`);
@@ -5275,6 +5406,8 @@
   function renderQueriesVisual(container, text) {
     if (!text) {
       container.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
+      const tabsContainer = document.getElementById('search-queries-tabs');
+      if (tabsContainer) tabsContainer.style.display = 'none';
       return;
     }
     
@@ -5356,11 +5489,22 @@
       }
     }
 
-    container.innerHTML = '';
-    sections.forEach(sec => {
+    // Set up tabs selector container
+    let tabsContainer = document.getElementById('search-queries-tabs');
+    if (!tabsContainer) {
+      tabsContainer = document.createElement('div');
+      tabsContainer.id = 'search-queries-tabs';
+      tabsContainer.style.cssText = 'display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;';
+      container.parentNode.insertBefore(tabsContainer, container);
+    }
+    tabsContainer.innerHTML = '';
+
+    function renderActiveSection(sec) {
+      container.innerHTML = '';
+      
       const secCard = document.createElement('div');
-      secCard.className = 'stat-card';
-      secCard.style.cssText = 'padding: 16px; margin-bottom: 16px; border: 1px solid var(--border-color); background: var(--bg-secondary); border-radius: var(--radius-lg);';
+      secCard.className = 'card-container';
+      secCard.style.cssText = 'padding: 16px; margin: 0; border: 1px solid var(--border-color); background: var(--bg-secondary); border-radius: var(--radius-lg); width: 100%; box-sizing: border-box; min-width: 0;';
       
       let html = `
         <div style="font-family: var(--font-outfit); font-size: 13.5px; font-weight: 700; color: var(--accent-sky); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
@@ -5376,8 +5520,8 @@
         html += `<p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.4;">${cleanDesc}</p>`;
       }
       
-      if (sec.items.length > 0) {
-        html += `<div style="display: flex; flex-direction: column; gap: 8px;">`;
+      if (sec.items && sec.items.length > 0) {
+        html += `<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0; width: 100%;">`;
         
         sec.items.forEach(item => {
           let resultsText = '';
@@ -5387,10 +5531,17 @@
           item.details.forEach(d => {
             const lowerD = d.toLowerCase();
             if (lowerD.includes('results') || lowerD.includes('returned') || lowerD.includes('retained') || lowerD.includes('added')) {
-              resultsText = d.replace(/\*\*|:\s*/g, '').replace(/results|returned|retained|added/i, '').trim();
-              const numMatch = resultsText.match(/([0-9,]+)/);
+              const cleanVal = d.replace(/\*\*|:\s*/g, '').replace(/results|returned|retained|added/i, '').trim();
+              const numMatch = cleanVal.match(/([0-9,]+)/);
               if (numMatch) {
                 resultsCount = parseInt(numMatch[1].replace(/,/g, ''));
+                const isResultWord = lowerD.includes('result');
+                resultsText = `${resultsCount}${isResultWord ? ' results' : ' works'}`;
+              } else {
+                resultsText = cleanVal;
+              }
+              if (cleanVal.length >= 18) {
+                filters.push(d);
               }
             } else {
               filters.push(d);
@@ -5399,22 +5550,21 @@
 
           const contentLower = item.content.toLowerCase();
           if (contentLower.includes('results') || contentLower.includes('returned') || contentLower.includes('retained')) {
-            resultsText = item.content.replace(/\*\*|:\s*/g, '').replace(/results|returned|retained/i, '').trim();
-            const numMatch = resultsText.match(/([0-9,]+)/);
+            const cleanVal = item.content.replace(/\*\*|:\s*/g, '').replace(/results|returned|retained/i, '').trim();
+            const numMatch = cleanVal.match(/([0-9,]+)/);
             if (numMatch) {
               resultsCount = parseInt(numMatch[1].replace(/,/g, ''));
+              const isResultWord = contentLower.includes('result');
+              resultsText = `${resultsCount}${isResultWord ? ' results' : ' works'}`;
+            } else {
+              resultsText = cleanVal;
             }
           }
           
-          if (resultsCount !== null && !resultsText) {
-            resultsText = `${resultsCount} results`;
-          }
-          
-          // Determine if we should render a badge for the content
           let badgeText = '';
           let isBadge = false;
           
-          if (resultsText) {
+          if (resultsText && resultsText.length < 18) {
             badgeText = resultsText;
             isBadge = true;
           } else if (contentLower.includes('multiple')) {
@@ -5424,10 +5574,9 @@
             badgeText = 'N/A';
             isBadge = true;
           } else if (/^\d{4}-\d{2}-\d{2}$/.test(item.content.trim())) {
-            // It's a date
             badgeText = item.content.trim();
             isBadge = true;
-          } else if (item.content.length < 15) {
+          } else if (item.content.length > 0 && item.content.length < 15) {
             badgeText = item.content;
             isBadge = true;
           }
@@ -5438,10 +5587,10 @@
 
           html += `
             <div style="background: var(--bg-tertiary); padding: 8px 10px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.02); word-break: break-word;">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px;">
-                <div style="font-weight: 600; font-size: 11.5px; color: var(--text-primary); font-family: var(--font-outfit);">${item.name}</div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px; width: 100%;">
+                <div style="font-weight: 600; font-size: 11.5px; color: var(--text-primary); font-family: var(--font-outfit); flex: 1; min-width: 0;">${item.name}</div>
                 ${isBadge && badgeText ? `
-                  <span class="badge ${resultsCount !== null ? (resultsCount > 50 ? 'high' : 'medium') : 'low'}" style="font-size: 9.5px; padding: 1px 5px; white-space: nowrap;">
+                  <span class="badge ${resultsCount !== null ? (resultsCount > 50 ? 'high' : 'medium') : 'low'}" style="font-size: 9.5px; padding: 1px 5px; white-space: nowrap; flex-shrink: 0;">
                     ${badgeText}
                   </span>
                 ` : ''}
@@ -5495,7 +5644,61 @@
       
       secCard.innerHTML = html;
       container.appendChild(secCard);
-    });
+    }
+
+    if (sections.length <= 1) {
+      tabsContainer.style.display = 'none';
+      if (sections.length === 1) {
+        renderActiveSection(sections[0]);
+      } else {
+        container.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
+      }
+    } else {
+      tabsContainer.style.display = 'flex';
+      const prevActiveTitle = window.activeQuerySectionTitle || '';
+      let activeIndex = 0;
+      
+      sections.forEach((sec, idx) => {
+        if (sec.title === prevActiveTitle) {
+          activeIndex = idx;
+        }
+      });
+      
+      sections.forEach((sec, idx) => {
+        const btn = document.createElement('button');
+        let btnText = sec.title;
+        const numberMatch = btnText.match(/^\d+\.\s*(.*)$/);
+        if (numberMatch) {
+          btnText = numberMatch[1];
+        }
+        
+        if (btnText.includes('Scholarly Literature')) {
+          btnText = 'OpenAlex (Lit)';
+        } else if (btnText.includes('Targeted Institutional Database') || btnText.includes('Institutional Database')) {
+          btnText = 'Institutional DBs';
+        } else if (btnText.includes('General Web')) {
+          btnText = 'Web & Toolkits';
+        }
+        
+        btn.textContent = btnText;
+        btn.className = 'pill-btn';
+        btn.style.cssText = 'border-radius: 4px; padding: 4px 10px; font-size: 11.5px; cursor: pointer;';
+        if (idx === activeIndex) {
+          btn.classList.add('active', 'sky');
+        }
+        
+        btn.addEventListener('click', () => {
+          window.activeQuerySectionTitle = sec.title;
+          tabsContainer.querySelectorAll('button').forEach(b => b.classList.remove('active', 'sky'));
+          btn.classList.add('active', 'sky');
+          renderActiveSection(sec);
+        });
+        
+        tabsContainer.appendChild(btn);
+      });
+      
+      renderActiveSection(sections[activeIndex]);
+    }
   }
 
   function parseInclusionsTables(text) {
@@ -5647,6 +5850,11 @@
     // 1. Render Metadata
     const metadataGrid = document.getElementById('search-metadata-grid');
     if (metadataGrid) {
+      const cleanAuthors = (log.authors || 'N/A').replace(/Codex \(operator\)/g, 'Antigravity (agent)');
+      let seedRule = log.seed_rule || 'N/A';
+      const activeTable = logId.split('_').pop(); // 'T3', 'T4', 'T6'
+      seedRule = seedRule.replace(/T4\s+method/g, `${activeTable} method`);
+
       metadataGrid.innerHTML = `
         <div class="stat-card" style="padding: 16px 20px;">
           <div class="stat-label" style="font-size: 11px;">LOG DATE</div>
@@ -5654,11 +5862,11 @@
         </div>
         <div class="stat-card" style="padding: 16px 20px;">
           <div class="stat-label" style="font-size: 11px;">AUTHORS / ROLES</div>
-          <div class="stat-value" style="font-size: 16px; margin-top: 4px; line-height:1.3; font-weight:600; font-family: var(--font-outfit);">${log.authors || 'N/A'}</div>
+          <div class="stat-value" style="font-size: 16px; margin-top: 4px; line-height:1.3; font-weight:600; font-family: var(--font-outfit);">${cleanAuthors}</div>
         </div>
         <div class="stat-card" style="padding: 16px 20px; grid-column: span 2;">
           <div class="stat-label" style="font-size: 11px;">SEED-SET SELECTION RULE</div>
-          <div class="stat-value" style="font-size: 13px; margin-top: 4px; font-weight: normal; color: var(--text-primary); line-height: 1.4;">${log.seed_rule || 'N/A'}</div>
+          <div class="stat-value" style="font-size: 13px; margin-top: 4px; font-weight: normal; color: var(--text-primary); line-height: 1.4;">${seedRule}</div>
         </div>
       `;
     }
@@ -5794,6 +6002,12 @@
       }
     }
 
+    // Reset/hide the evidence drill-down panel whenever the table is re-rendered
+    const drilldownContainer = document.getElementById('source-evidence-drilldown');
+    if (drilldownContainer) {
+      drilldownContainer.style.display = 'none';
+    }
+
     // 5. Render Inclusions (filtered)
     const inclusionsBody = document.getElementById('search-inclusions-table-body');
     if (inclusionsBody) {
@@ -5813,13 +6027,78 @@
           const tr = document.createElement('tr');
           const tierClass = row.tier.toLowerCase() === 'high' ? 'high' : (row.tier.toLowerCase() === 'medium' ? 'medium' : 'low');
           
+          const s = (dashboardData.registers.SRC_source_register || []).find(src => src.source_id === row.sourceId);
+          
+          // Count claims matching active NbS and active Table/Step and active Sub-Practice filters
+          const activeNbs = logId.substring(0, logId.lastIndexOf('_'));
+          const activeTable = logId.split('_').pop();
+          const sourceClaims = (dashboardData.registers.EV_evidence_register || []).filter(c => {
+            if (c.source_id !== row.sourceId) return false;
+            
+            const dest = getDestTable(c);
+            if (activeTable === 'T3' && dest !== 't3_hazards') return false;
+            if (activeTable === 'T4' && dest !== 't4_mappings') return false;
+            if (activeTable === 'T6' && dest !== 't6_scorecard') return false;
+            
+            if (subNbsFilter && subNbsFilter !== 'all') {
+              if (c.suitability_family_id !== subNbsFilter) return false;
+            } else {
+              if (activeNbs === 'agroforestry') {
+                if (!c.suitability_family_id || !c.suitability_family_id.startsWith('agroforestry')) return false;
+              } else if (activeNbs === 'water_harvesting_conservation') {
+                if (!c.suitability_family_id || (!c.suitability_family_id.startsWith('water_harvesting') && !c.suitability_family_id.startsWith('water_conservation'))) return false;
+              }
+            }
+            return true;
+          });
+          const claimCount = sourceClaims.length;
+
+          // Format DOI / URL link
+          let linkHtml = '';
+          if (s && s.doi) {
+            let cleanDoi = s.doi.trim();
+            if (cleanDoi.startsWith('http://') || cleanDoi.startsWith('https://')) {
+              let displayLabel = 'Link ↗';
+              try {
+                const urlObj = new URL(cleanDoi);
+                displayLabel = urlObj.hostname.replace('www.', '') + ' ↗';
+              } catch(e) {}
+              linkHtml = `<a href="${cleanDoi}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline; font-family: ui-monospace, monospace; font-size: 11px;" onclick="event.stopPropagation();">${displayLabel}</a>`;
+            } else {
+              linkHtml = `<a href="https://doi.org/${cleanDoi}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline; font-family: ui-monospace, monospace; font-size: 11px;" onclick="event.stopPropagation();">${cleanDoi} ↗</a>`;
+            }
+          } else if (s && s.url) {
+            let displayLabel = 'Link ↗';
+            try {
+              const urlObj = new URL(s.url);
+              displayLabel = urlObj.hostname.replace('www.', '') + ' ↗';
+            } catch(e) {}
+            linkHtml = `<a href="${s.url}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline; font-size: 11.5px;" onclick="event.stopPropagation();">${displayLabel}</a>`;
+          } else {
+            const q = encodeURIComponent(s ? s.citation : row.authorYear);
+            linkHtml = `<a href="https://scholar.google.com/scholar?q=${q}" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: underline; font-size: 11.5px;" onclick="event.stopPropagation();">Scholar Search ↗</a>`;
+          }
+
+          tr.style.cursor = 'pointer';
+          tr.title = 'Click to inspect evidence claims from this source';
+          tr.addEventListener('click', () => {
+            inclusionsBody.querySelectorAll('tr').forEach(r => {
+              r.style.background = '';
+            });
+            tr.style.background = 'rgba(14, 165, 233, 0.1)';
+            showSourceEvidence(row.sourceId, logId, subNbsFilter);
+          });
+          
           tr.innerHTML = `
             <td>
               <code style="font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent-sky);">${row.sourceId}</code>
             </td>
-            <td style="font-weight: 500;">${row.authorYear}</td>
+            <td>${linkHtml}</td>
             <td>
               <span class="badge ${tierClass}">${row.tier}</span>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-sky); font-weight: 600; border: 1px solid rgba(14, 165, 233, 0.3); font-size: 11.5px; padding: 2px 8px; border-radius: 4px;">${claimCount}</span>
             </td>
             <td style="color: var(--text-secondary); font-size: 12px;">${row.context}</td>
             <td style="font-size: 12px; color: var(--text-secondary);">${row.variables}</td>
@@ -5827,7 +6106,7 @@
           inclusionsBody.appendChild(tr);
         });
       } else {
-        inclusionsBody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 16px;">No discovered sources matching this selection &amp; category filter.</td></tr>`;
+        inclusionsBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 16px;">No discovered sources matching this selection &amp; category filter.</td></tr>`;
       }
     }
 
@@ -5873,6 +6152,113 @@
     if (rawMarkdownPre) {
       rawMarkdownPre.textContent = log.raw_markdown || '';
     }
+  }
+
+  function showSourceEvidence(sourceId, logId, subNbsFilter) {
+    const drilldownContainer = document.getElementById('source-evidence-drilldown');
+    const labelSpan = document.getElementById('selected-source-id-label');
+    const tbody = document.getElementById('source-evidence-drilldown-body');
+    
+    if (!drilldownContainer || !tbody) return;
+    
+    // Filter claims matching source and active filters
+    const activeNbs = logId.substring(0, logId.lastIndexOf('_'));
+    const activeTable = logId.split('_').pop();
+    
+    const sourceClaims = (dashboardData.registers.EV_evidence_register || []).filter(c => {
+      if (c.source_id !== sourceId) return false;
+      
+      const dest = getDestTable(c);
+      if (activeTable === 'T3' && dest !== 't3_hazards') return false;
+      if (activeTable === 'T4' && dest !== 't4_mappings') return false;
+      if (activeTable === 'T6' && dest !== 't6_scorecard') return false;
+      
+      if (subNbsFilter && subNbsFilter !== 'all') {
+        if (c.suitability_family_id !== subNbsFilter) return false;
+      } else {
+        if (activeNbs === 'agroforestry') {
+          if (!c.suitability_family_id || !c.suitability_family_id.startsWith('agroforestry')) return false;
+        } else if (activeNbs === 'water_harvesting_conservation') {
+          if (!c.suitability_family_id || (!c.suitability_family_id.startsWith('water_harvesting') && !c.suitability_family_id.startsWith('water_conservation'))) return false;
+        }
+      }
+      return true;
+    });
+    
+    // Find and populate source JSON metadata
+    const sourceMeta = (dashboardData.registers.SRC_source_register || []).find(src => src.source_id === sourceId);
+    const jsonPre = document.getElementById('selected-source-json-pre');
+    if (jsonPre) {
+      if (sourceMeta) {
+        jsonPre.textContent = JSON.stringify(sourceMeta, null, 2);
+      } else {
+        jsonPre.textContent = '// Source metadata not found in register';
+      }
+    }
+
+    if (sourceClaims.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 12px;">No matching evidence claims found in register for this source under current filters.</td></tr>`;
+      labelSpan.textContent = sourceId;
+      drilldownContainer.style.display = 'block';
+      drilldownContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+    
+    labelSpan.textContent = sourceId;
+    tbody.innerHTML = '';
+    
+    sourceClaims.forEach(c => {
+      const tr = document.createElement('tr');
+      
+      // Format relationship nicely
+      let relStr = '';
+      if (c.relationship) {
+        relStr = Object.entries(c.relationship)
+          .map(([k, v]) => `<span style="font-family: ui-monospace; font-size:10px; color: var(--accent-sky);">${k}</span>: ${v}`)
+          .join(', ');
+      } else {
+        relStr = '<span style="color: var(--text-muted);">N/A</span>';
+      }
+      
+      // Format context nicely
+      let ctxStr = '';
+      if (c.context && Object.keys(c.context).length > 0) {
+        ctxStr = Object.entries(c.context)
+          .map(([k, v]) => `<strong>${k}</strong>: ${v}`)
+          .join(', ');
+      } else {
+        ctxStr = '<span style="color: var(--text-muted);">None</span>';
+      }
+      
+      const typeBadge = c.evidence_type === 'expert' ? 'badge low' : 'badge high';
+      
+      // Honesty badges for drilldown table
+      const _sConf = (c.extraction_confidence || '').toLowerCase();
+      const _sConfColor = _sConf === 'high' ? 'var(--accent-emerald)' : _sConf === 'medium' ? 'var(--accent-amber)' : 'var(--text-muted)';
+      const _sConfBadge = _sConf ? `<span style=”font-size:8px; padding:1px 4px; border:1px solid var(--border-color); border-radius:3px; color:${_sConfColor};”>${_sConf}</span>` : '';
+      const _sScopeBadge = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style=”font-size:8px; padding:1px 4px; border:1px solid rgba(245,158,11,0.3); border-radius:3px; color:var(--accent-amber);”>sp/crop</span>` : '';
+      const _sReviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style=”font-size:8px; padding:1px 4px; border:1px solid var(--border-color); border-radius:3px; color:var(--text-muted);”>unreviewed</span>`;
+      const _sAttr = c.attribution || '';
+      const _sVfMatch = _sAttr.match(/\[VERIFY-FLAG([^\]]*)\]/);
+      const _sVfBadge = _sVfMatch ? `<span style=”font-size:8px; padding:1px 5px; border:1px solid rgba(244,63,94,0.4); border-radius:3px; color:var(--accent-rose); font-weight:600; cursor:help;” title=”${(_sVfMatch[1] || '').trim()}”>&#9872; VERIFY-FLAG</span>` : '';
+
+      tr.innerHTML = `
+        <td><code style=”font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent-sky);”>${c.evidence_id}</code></td>
+        <td style=”font-weight: 500;”>${c.variable || 'N/A'}</td>
+        <td style=”font-size: 11px;”>${relStr}</td>
+        <td style=”font-size: 11px; color: var(--text-secondary);”>${ctxStr}</td>
+        <td style=”font-style: italic; color: var(--text-primary); line-height: 1.45;”>”${c.quote || ''}”</td>
+        <td style=”text-align: center; font-size: 11px;”>${c.page || 'N/A'}</td>
+        <td>
+          <span class=”${typeBadge}” style=”font-size: 10px; padding: 1px 5px; text-transform: uppercase;”>${(c.evidence_type || 'literature').replace(/_/g, ' ')}</span>
+          <div style=”margin-top:3px; display:flex; flex-wrap:wrap; gap:2px;”>${_sConfBadge}${_sScopeBadge}${_sReviewBadge}${_sVfBadge}</div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    
+    drilldownContainer.style.display = 'block';
+    drilldownContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 </script>
 </body>
