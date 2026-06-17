@@ -1095,6 +1095,10 @@
       </svg>
       Search &amp; Discovery Logs
     </button>
+    <button class="tab-btn" data-tab="tab-qaqc" id="btn-qaqc">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+      QA / QC Flags
+    </button>
     <button class="tab-btn" data-tab="tab-interrogator" id="btn-interrogator">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"></circle>
@@ -1207,11 +1211,11 @@
       </div>
 
       <!-- Evidence Quality Panel -->
-      <div class="card-container" id="ev-quality-panel" style="margin-bottom:0; cursor:pointer; user-select:none;" onclick="toggleVfWorklist()" title="Click to expand/collapse VERIFY-FLAG worklist">
+      <div class="card-container" id="ev-quality-panel" style="margin-bottom:20px; cursor:pointer; user-select:none;" onclick="document.getElementById('btn-qaqc').click()" title="Open the QA / QC Flags tab">
         <h2 class="card-title" style="margin-bottom:12px;">
           <span>Evidence Quality Signal</span>
-          <span class="card-title-meta">Live counts from the Evidence Register — surface fabrication-risk signals before using any threshold</span>
-          <span id="evq-worklist-toggle-hint" style="float:right; font-size:11px; font-weight:400; color:var(--accent-rose); margin-left:auto; padding-left:12px;">&#9660; Show VERIFY-FLAG worklist</span>
+          <span class="card-title-meta">Live counts from the Evidence Register — full review in the QA / QC Flags tab</span>
+          <span id="evq-worklist-toggle-hint" style="float:right; font-size:11px; font-weight:400; color:var(--accent-rose); margin-left:auto; padding-left:12px;">&#9654; Open QA / QC Flags tab</span>
         </h2>
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; font-size:12.5px;" id="ev-quality-stats">
           <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">TOTAL EV UNITS</div><div class="stat-value" style="font-size:22px;" id="evq-total">—</div></div>
@@ -1219,39 +1223,6 @@
           <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">UNREVIEWED</div><div class="stat-value" style="font-size:22px;" id="evq-unreviewed">—</div></div>
           <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">LOW CONFIDENCE</div><div class="stat-value" style="font-size:22px;" id="evq-low-conf">—</div></div>
           <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">BY USE ROLE</div><div style="font-size:11px; margin-top:6px; line-height:1.7;" id="evq-roles">—</div></div>
-        </div>
-      </div>
-      <!-- VERIFY-FLAG Worklist Panel (expandable, triggered by clicking ev-quality-panel) -->
-      <div id="ev-vf-worklist" style="display:none; margin-bottom:20px; border:1px solid rgba(244,63,94,0.3); border-top:none; border-radius:0 0 var(--radius-lg) var(--radius-lg); background:var(--bg-secondary); padding:16px 20px;">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
-          <span style="font-size:12.5px; font-weight:700; font-family:var(--font-outfit); color:var(--accent-rose);">&#9872; VERIFY-FLAG Worklist</span>
-          <span style="font-size:11px; color:var(--text-muted);">All EV rows flagged during the verification pass — review before accepting any threshold</span>
-          <div style="width:100%; margin-top:4px; margin-bottom:2px; padding:6px 10px; background:rgba(244,63,94,0.05); border:1px solid rgba(244,63,94,0.2); border-radius:4px; font-size:10.5px; color:var(--text-muted);">
-            <strong>Read-only triage view.</strong> &nbsp;<b style="color:#f43f5e;">mismatch</b> = a number/label contradicted the quote (auto-corrected to the quote-faithful subset). &nbsp;<b style="color:#f59e0b;">unsupported</b> = the relationship asserted a number the quote did not contain (stripped). All flagged units are confidence=low until reviewed.
-            <br><strong>To make + log decisions</strong> (a static page can't write the register): &nbsp;1) <code style="font-size:10px;">review.py export</code> → fills <code style="font-size:10px;">pipeline/review/flag_worklist.csv</code> &nbsp;2) set each row's <code style="font-size:10px;">decision</code> = <b>ok</b> (evidence stands → reviewer_ok) or <b>drop</b> (remove) &nbsp;3) <code style="font-size:10px;">review.py apply</code> → writes it back &nbsp;4) <code style="font-size:10px;">generate.py schema</code> to re-gate, then <code style="font-size:10px;">ledger.py mark … --stage reviewed --status done</code>.
-          </div>
-          <div style="margin-left:auto; display:flex; gap:6px; flex-wrap:wrap;" id="vf-verdict-filters">
-            <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:10px; padding:2px 8px; border-radius:4px;">All</button>
-          </div>
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="data-table" style="width:100%; border-collapse:collapse; font-size:11.5px;">
-            <thead>
-              <tr>
-                <th style="width:130px;">Evidence ID</th>
-                <th style="width:120px;">Source</th>
-                <th style="width:90px;">Variable</th>
-                <th style="width:100px;">Use Role</th>
-                <th style="width:80px;">Verdict</th>
-                <th>Flag Reason</th>
-                <th style="width:180px; max-width:180px;">Quote (truncated)</th>
-                <th style="width:80px;">DOI</th>
-              </tr>
-            </thead>
-            <tbody id="ev-vf-worklist-body">
-              <!-- Populated by renderVfWorklist() -->
-            </tbody>
-          </table>
         </div>
       </div>
 
@@ -1958,6 +1929,39 @@
     </div>
 
     <!-- TAB 5: SEARCH & DISCOVERY LOGS -->
+    <div id="tab-qaqc" class="tab-content">
+      <div class="card-container">
+        <h2 class="card-title">
+          <span>&#9872; QA / QC — VERIFY-FLAG review</span>
+          <span class="card-title-meta">Every EV row flagged by the relationship-verify pass — work through these before any threshold is trusted</span>
+        </h2>
+        <div style="margin-bottom:14px; padding:10px 14px; background:rgba(244,63,94,0.05); border:1px solid rgba(244,63,94,0.2); border-radius:6px; font-size:11.5px; color:var(--text-secondary); line-height:1.6;">
+          <b style="color:#f43f5e;">mismatch</b> = a number/label in the relationship contradicted the quote (it was auto-corrected to the quote-faithful subset). &nbsp;<b style="color:#f59e0b;">unsupported</b> = the relationship asserted a number the quote did not contain (it was stripped). All flagged units are <b>confidence=low</b> until reviewed.
+          <br><strong>Make &amp; log decisions</strong> (the page is read-only; review happens in the pipeline): &nbsp;1) <code style="font-size:10.5px;">review.py export</code> &#8594; <code style="font-size:10.5px;">pipeline/review/flag_worklist.csv</code> &nbsp;2) set each row's <code style="font-size:10.5px;">decision</code> = <b>ok</b> (evidence stands &#8594; reviewer_ok) or <b>drop</b> (remove) &nbsp;3) <code style="font-size:10.5px;">review.py apply</code> &nbsp;4) <code style="font-size:10.5px;">generate.py schema</code> then <code style="font-size:10.5px;">ledger.py mark &#8230; --stage reviewed --status done</code>.
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;" id="vf-verdict-filters">
+          <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" style="width:100%; border-collapse:collapse; font-size:12px;">
+            <thead>
+              <tr>
+                <th style="width:160px;">Evidence ID</th>
+                <th style="width:120px;">Source</th>
+                <th style="width:110px;">Variable</th>
+                <th style="width:90px;">Role</th>
+                <th style="width:95px;">Verdict</th>
+                <th style="width:300px;">Flag Reason</th>
+                <th style="min-width:280px;">Quote</th>
+                <th style="width:70px;">DOI</th>
+              </tr>
+            </thead>
+            <tbody id="ev-vf-worklist-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <div id="tab-search" class="tab-content">
       <div class="card-container" style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
@@ -2277,6 +2281,7 @@
         btn.classList.add('active');
         const targetTab = btn.getAttribute('data-tab');
         document.getElementById(targetTab).classList.add('active');
+        if (targetTab === 'tab-qaqc' && typeof renderVfWorklist === 'function') renderVfWorklist();
       });
     });
 
