@@ -1207,10 +1207,11 @@
       </div>
 
       <!-- Evidence Quality Panel -->
-      <div class="card-container" id="ev-quality-panel" style="margin-bottom:20px;">
+      <div class="card-container" id="ev-quality-panel" style="margin-bottom:0; cursor:pointer; user-select:none;" onclick="toggleVfWorklist()" title="Click to expand/collapse VERIFY-FLAG worklist">
         <h2 class="card-title" style="margin-bottom:12px;">
           <span>Evidence Quality Signal</span>
           <span class="card-title-meta">Live counts from the Evidence Register — surface fabrication-risk signals before using any threshold</span>
+          <span id="evq-worklist-toggle-hint" style="float:right; font-size:11px; font-weight:400; color:var(--accent-rose); margin-left:auto; padding-left:12px;">&#9660; Show VERIFY-FLAG worklist</span>
         </h2>
         <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; font-size:12.5px;" id="ev-quality-stats">
           <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">TOTAL EV UNITS</div><div class="stat-value" style="font-size:22px;" id="evq-total">—</div></div>
@@ -1218,6 +1219,38 @@
           <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">UNREVIEWED</div><div class="stat-value" style="font-size:22px;" id="evq-unreviewed">—</div></div>
           <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">LOW CONFIDENCE</div><div class="stat-value" style="font-size:22px;" id="evq-low-conf">—</div></div>
           <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">BY USE ROLE</div><div style="font-size:11px; margin-top:6px; line-height:1.7;" id="evq-roles">—</div></div>
+        </div>
+      </div>
+      <!-- VERIFY-FLAG Worklist Panel (expandable, triggered by clicking ev-quality-panel) -->
+      <div id="ev-vf-worklist" style="display:none; margin-bottom:20px; border:1px solid rgba(244,63,94,0.3); border-top:none; border-radius:0 0 var(--radius-lg) var(--radius-lg); background:var(--bg-secondary); padding:16px 20px;">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+          <span style="font-size:12.5px; font-weight:700; font-family:var(--font-outfit); color:var(--accent-rose);">&#9872; VERIFY-FLAG Worklist</span>
+          <span style="font-size:11px; color:var(--text-muted);">All EV rows flagged during the verification pass — review before accepting any threshold</span>
+          <div style="width:100%; margin-top:4px; margin-bottom:2px; padding:6px 10px; background:rgba(244,63,94,0.05); border:1px solid rgba(244,63,94,0.2); border-radius:4px; font-size:10.5px; color:var(--text-muted);">
+            <strong>Read-only triage list</strong> — resolving a flag (accept correction / mark reviewed / drop) is a pipeline step, not editable here. Use <code style="font-size:10px;">uv run python3 src/nbs_ruralscan/schema_tools/generate.py schema</code> after editing the source CSV.
+          </div>
+          <div style="margin-left:auto; display:flex; gap:6px; flex-wrap:wrap;" id="vf-verdict-filters">
+            <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:10px; padding:2px 8px; border-radius:4px;">All</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" style="width:100%; border-collapse:collapse; font-size:11.5px;">
+            <thead>
+              <tr>
+                <th style="width:130px;">Evidence ID</th>
+                <th style="width:120px;">Source</th>
+                <th style="width:90px;">Variable</th>
+                <th style="width:100px;">Use Role</th>
+                <th style="width:80px;">Verdict</th>
+                <th>Flag Reason</th>
+                <th style="width:180px; max-width:180px;">Quote (truncated)</th>
+                <th style="width:80px;">DOI</th>
+              </tr>
+            </thead>
+            <tbody id="ev-vf-worklist-body">
+              <!-- Populated by renderVfWorklist() -->
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -1342,6 +1375,7 @@
                 <!-- Level 1 header: Targets -->
                 <tr>
                   <th rowspan="2" id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
+                  <th rowspan="2" style="vertical-align: middle; text-align: center; width: 80px; border-left: 1px solid var(--border-color); font-size: 10px;" title="Pipeline stage dots per family: S=logged in discovery log · E=sources extracted/registered · V=EV rows exist with verify pass · R=human reviewer_ok">Stage<br><span style="font-weight:400; color:var(--text-muted);">S·E·V·R</span></th>
                   <th colspan="4" id="audit-hdr-t4" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings</th>
                   <th colspan="4" id="audit-hdr-t3" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links</th>
                   <th colspan="4" id="audit-hdr-t6" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing</th>
@@ -2040,6 +2074,7 @@
                     <th style="text-align: center; width: 100px;">Claims</th>
                     <th style="width: 180px;">Scope / Context</th>
                     <th>Extracted Key Variables / Target Hazards</th>
+                    <th style="width: 150px; white-space: nowrap;" title="Pipeline stage: S=logged in discovery log, E=extracted/registered in SRC, X=EV rows extracted (n), F=flagged rows, R=human-reviewed">Stage</th>
                   </tr>
                 </thead>
                 <tbody id="search-inclusions-table-body">
@@ -2381,6 +2416,100 @@
     renderOverviewCharts(filteredSources, filteredClaims, filteredRecipes);
     renderSankeyFlow(filteredSources, filteredClaims);
     renderSankeyReview(filteredSources, filteredClaims);
+  }
+
+  // VERIFY-FLAG worklist toggle & renderer
+  window._vfVerdictFilter = 'all';
+  window._vfWorklistOpen = false;
+
+  function toggleVfWorklist() {
+    window._vfWorklistOpen = !window._vfWorklistOpen;
+    const panel = document.getElementById('ev-vf-worklist');
+    const hint = document.getElementById('evq-worklist-toggle-hint');
+    if (!panel) return;
+    if (window._vfWorklistOpen) {
+      panel.style.display = 'block';
+      if (hint) hint.textContent = '▲ Hide VERIFY-FLAG worklist';
+      renderVfWorklist();
+    } else {
+      panel.style.display = 'none';
+      if (hint) hint.textContent = '▼ Show VERIFY-FLAG worklist';
+    }
+  }
+
+  function renderVfWorklist() {
+    if (!dashboardData) return;
+    const evAll = dashboardData.registers.EV_evidence_register || [];
+    const srcAll = dashboardData.registers.SRC_source_register || [];
+
+    // Collect flagged rows and parse flag details
+    const flaggedRows = [];
+    evAll.forEach(ev => {
+      const attr = ev.attribution || '';
+      const idx = attr.indexOf('[VERIFY-FLAG ');
+      if (idx === -1) return;
+      const raw = attr.slice(idx + 13); // after '[VERIFY-FLAG '
+      const close = raw.indexOf(']');
+      const flagBody = close !== -1 ? raw.slice(0, close) : raw;
+      const colonIdx = flagBody.indexOf(': ');
+      const verdict = colonIdx !== -1 ? flagBody.slice(0, colonIdx).trim().toLowerCase() : flagBody.trim().toLowerCase();
+      const reason = colonIdx !== -1 ? flagBody.slice(colonIdx + 2).trim() : '';
+      flaggedRows.push({ ev, verdict, reason });
+    });
+
+    // Build verdict filter buttons (once, idempotent)
+    const filterDiv = document.getElementById('vf-verdict-filters');
+    if (filterDiv) {
+      const verdicts = ['all', ...new Set(flaggedRows.map(r => r.verdict)).values()];
+      filterDiv.innerHTML = verdicts.map(v => {
+        const active = window._vfVerdictFilter === v ? 'active rose' : '';
+        return `<button class="pill-btn ${active}" data-vf-verdict="${v}" onclick="window._vfVerdictFilter='${v}'; renderVfWorklist();" style="font-size:10px; padding:2px 8px; border-radius:4px; text-transform:capitalize;">${v === 'all' ? 'All (' + flaggedRows.length + ')' : v}</button>`;
+      }).join('');
+    }
+
+    // Filter
+    const visible = window._vfVerdictFilter === 'all'
+      ? flaggedRows
+      : flaggedRows.filter(r => r.verdict === window._vfVerdictFilter);
+
+    const tbody = document.getElementById('ev-vf-worklist-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (visible.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:14px;">No flagged EV rows for this verdict filter.</td></tr>`;
+      return;
+    }
+
+    visible.forEach(({ ev, verdict, reason }) => {
+      const src = srcAll.find(s => s.source_id === ev.source_id);
+      // DOI link
+      let doiHtml = '—';
+      if (src && src.doi) {
+        const doi = src.doi.trim();
+        const href = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
+        doiHtml = `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky); text-decoration:underline; font-size:10.5px;" onclick="event.stopPropagation();">${doi.startsWith('http') ? 'Link ↗' : doi.slice(0, 20) + '… ↗'}</a>`;
+      } else if (src && src.url) {
+        doiHtml = `<a href="${src.url}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky); text-decoration:underline; font-size:10.5px;" onclick="event.stopPropagation();">Link ↗</a>`;
+      }
+      // Truncate quote
+      const quote = (ev.quote || '').replace(/\n/g, ' ').trim();
+      const quoteTrunc = quote.length > 120 ? quote.slice(0, 120) + '…' : quote;
+      // Verdict badge colour
+      const vColour = verdict === 'unsupported' ? 'var(--accent-rose)' : verdict === 'mismatch' ? 'var(--accent-amber)' : 'var(--text-secondary)';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><code style="font-size:10.5px; font-family:ui-monospace,monospace; color:var(--accent-sky);">${ev.evidence_id || '—'}</code></td>
+        <td><code style="font-size:10px; font-family:ui-monospace,monospace; color:var(--text-secondary);">${ev.source_id || '—'}</code></td>
+        <td style="font-size:11px;">${ev.variable || '—'}</td>
+        <td style="font-size:10.5px; color:var(--text-muted);">${(ev.use_role || '—').replace(/_/g,' ')}</td>
+        <td><span style="font-size:10px; font-weight:700; color:${vColour}; text-transform:uppercase;">${verdict}</span></td>
+        <td style="font-size:11px; color:var(--text-secondary); max-width:260px; word-break:break-word;" title="${reason}">${reason || '—'}</td>
+        <td style="font-size:10.5px; color:var(--text-muted); max-width:180px; word-break:break-word;" title="${quote}">${quoteTrunc || '—'}</td>
+        <td>${doiHtml}</td>
+      `;
+      tbody.appendChild(tr);
+    });
   }
 
   function initDashboard() {
@@ -3086,6 +3215,61 @@
   let auditSortCol = 'family'; // 'family', 't4', 't3', 't6'
   let auditSortDir = 'asc';
 
+  // Stage-dot helper: returns {s, e, v, r} booleans for a suitability family.
+  // S: family has any source logged in a discovery log inclusion table.
+  // E: at least one SRC row links to this family's NbS with extraction_status complete/swept/signed_off.
+  // V (verify proxy): family has ≥1 EV row where attribution contains "[VERIFY-FLAG" OR
+  //    (extraction_confidence is non-empty AND attribution is non-empty) — i.e. a verify/attribution
+  //    pass was run over at least one extracted row. See methodology/T4_generation_method.md §3.
+  // R: at least one EV row for this family has reviewer_ok=true.
+  function getFamilyStageStatus(familyId) {
+    const ev = (dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
+    const src = (dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
+    const dl = (dashboardData && dashboardData.discovery_logs) || {};
+    // Derive NbS id from familyId (e.g. "agroforestry__planted_silvoarable" → "agroforestry")
+    const nbsId = familyId.split('__')[0];
+
+    // S: any discovery log has this family's NbS in its source list
+    let stageS = false;
+    Object.values(dl).forEach(log => {
+      if (stageS) return;
+      const sections = log.sections || {};
+      const incKey = Object.keys(sections).find(k => k.toLowerCase().includes('inclusion'));
+      if (!incKey) return;
+      const text = sections[incKey] || '';
+      // Quick check: if any line in the inclusion table is a data row (starts with |, not header/divider)
+      stageS = text.split('\n').some(line => line.startsWith('|') && !line.includes('source_id') && !line.includes('---|'));
+    });
+
+    // E: at least one registered SRC row covers this NbS with a complete extraction
+    const stageE = src.some(s => {
+      const nbs = (s.nbs_ids || '').split(';').map(x => x.trim());
+      return nbs.includes(nbsId) && ['complete','swept','signed_off'].includes(s.extraction_status || '');
+    });
+
+    // V (verify proxy): ≥1 EV row for this family has been through a verification/attribution pass.
+    // Heuristic: row has attribution containing "[VERIFY-FLAG" (flag was written during verify pass)
+    // OR row has non-empty attribution AND non-empty extraction_confidence (attribution pass ran).
+    const familyEv = ev.filter(c => c.suitability_family_id === familyId);
+    const stageV = familyEv.some(c =>
+      (c.attribution || '').includes('[VERIFY-FLAG') ||
+      ((c.attribution || '').trim() !== '' && (c.extraction_confidence || '').trim() !== '')
+    );
+
+    // R: any EV row for this family has reviewer_ok=true
+    const stageR = familyEv.some(c => c.reviewer_ok === true || c.reviewer_ok === 'true');
+
+    return { s: stageS, e: stageE, v: stageV, r: stageR };
+  }
+
+  // Render a stage dot: filled (on) or hollow (off)
+  function renderStageDot(label, on, color, tipText) {
+    const style = on
+      ? `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:${color};color:#fff;font-size:9px;font-weight:700;margin:1px;cursor:default;`
+      : `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:transparent;border:1.5px solid var(--border-color);color:var(--text-muted);font-size:9px;font-weight:700;margin:1px;cursor:default;`;
+    return `<span style="${style}" title="${tipText}">${label}</span>`;
+  }
+
   function renderDiscoveryAudit() {
     discoveryStatusDb = buildDiscoveryStatusDb(); // D2: rebuild from live EV data
     const body = document.getElementById('body-discovery-audit');
@@ -3165,7 +3349,7 @@
     });
 
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="13" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
+      body.innerHTML = '<tr><td colspan="14" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
       return;
     }
 
@@ -3208,6 +3392,15 @@
                             .replace(/_/g, ' ')
                             .replace(/\b\w/g, c => c.toUpperCase());
       const subpracticesNames = r.subpractices.map(s => s.name).join(', ');
+      const stg = getFamilyStageStatus(r.familyId);
+      const stageTd = `<td style="text-align: center; vertical-align: middle; border-left: 1px solid var(--border-color); padding: 8px 6px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:1px;">
+          ${renderStageDot('S', stg.s, '#0ea5e9', 'S: logged in a discovery log')}
+          ${renderStageDot('E', stg.e, '#10b981', 'E: at least one source extracted &amp; registered in SRC')}
+          ${renderStageDot('V', stg.v, '#818cf8', 'V (proxy): EV rows exist with attribution/verify pass — see methodology/T4_generation_method.md §3')}
+          ${renderStageDot('R', stg.r, '#10b981', 'R: at least one EV row has reviewer_ok=true')}
+        </div>
+      </td>`;
 
       const tr = document.createElement('tr');
       tr.innerHTML = `
@@ -3217,16 +3410,17 @@
             Subpractices: ${subpracticesNames}
           </div>
         </td>
+        ${stageTd}
         ${renderCell(r.familyId, 't4', 'stock')}
         ${renderCell(r.familyId, 't4', 'updated')}
         ${renderCell(r.familyId, 't4', 'grey')}
         ${renderCell(r.familyId, 't4', 'tools')}
-        
+
         ${renderCell(r.familyId, 't3', 'stock')}
         ${renderCell(r.familyId, 't3', 'updated')}
         ${renderCell(r.familyId, 't3', 'grey')}
         ${renderCell(r.familyId, 't3', 'tools')}
-        
+
         ${renderCell(r.familyId, 't6', 'stock')}
         ${renderCell(r.familyId, 't6', 'updated')}
         ${renderCell(r.familyId, 't6', 'grey')}
@@ -6079,6 +6273,24 @@
             linkHtml = `<a href="https://scholar.google.com/scholar?q=${q}" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: underline; font-size: 11.5px;" onclick="event.stopPropagation();">Scholar Search ↗</a>`;
           }
 
+          // Stage chip data: S=logged (always true here), E=in SRC register, X=ev count, F=flagged, R=reviewed
+          const allSourceEv = (dashboardData.registers.EV_evidence_register || []).filter(c => c.source_id === row.sourceId);
+          const stageE = !!s && ['complete','swept','signed_off'].includes(s.extraction_status || '');
+          const stageFlagCount = allSourceEv.filter(c => (c.attribution || '').includes('[VERIFY-FLAG')).length;
+          const stageR = allSourceEv.some(c => c.reviewer_ok === true || c.reviewer_ok === 'true');
+          const stageChipStyle = (on, color) => on
+            ? `display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:700;background:${color};color:#fff;margin:1px;`
+            : `display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:700;background:var(--bg-tertiary);color:var(--text-muted);margin:1px;border:1px solid var(--border-color);`;
+          const stageHtml = [
+            `<span style="${stageChipStyle(true,'#0ea5e9')}" title="S: logged in discovery log">S</span>`,
+            `<span style="${stageChipStyle(stageE,'#10b981')}" title="E: source registered &amp; extracted (SRC)">${stageE ? 'E' : 'E'}</span>`,
+            `<span style="${stageChipStyle(allSourceEv.length > 0,'#818cf8')}" title="X: ${allSourceEv.length} EV row(s) extracted">X${allSourceEv.length > 0 ? allSourceEv.length : ''}</span>`,
+            stageFlagCount > 0
+              ? `<span style="${stageChipStyle(true,'#f43f5e')}" title="${stageFlagCount} VERIFY-FLAG(s) in EV rows">⚑ ${stageFlagCount}</span>`
+              : `<span style="${stageChipStyle(false,'')}" title="No VERIFY-FLAGs">⚑</span>`,
+            `<span style="${stageChipStyle(stageR,'#10b981')}" title="R: human reviewer_ok=true on at least one EV row">R</span>`
+          ].join('');
+
           tr.style.cursor = 'pointer';
           tr.title = 'Click to inspect evidence claims from this source';
           tr.addEventListener('click', () => {
@@ -6088,7 +6300,7 @@
             tr.style.background = 'rgba(14, 165, 233, 0.1)';
             showSourceEvidence(row.sourceId, logId, subNbsFilter);
           });
-          
+
           tr.innerHTML = `
             <td>
               <code style="font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent-sky);">${row.sourceId}</code>
@@ -6102,11 +6314,12 @@
             </td>
             <td style="color: var(--text-secondary); font-size: 12px;">${row.context}</td>
             <td style="font-size: 12px; color: var(--text-secondary);">${row.variables}</td>
+            <td style="white-space: nowrap;">${stageHtml}</td>
           `;
           inclusionsBody.appendChild(tr);
         });
       } else {
-        inclusionsBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 16px;">No discovered sources matching this selection &amp; category filter.</td></tr>`;
+        inclusionsBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 16px;">No discovered sources matching this selection &amp; category filter.</td></tr>`;
       }
     }
 
