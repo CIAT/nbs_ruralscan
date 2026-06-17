@@ -152,6 +152,8 @@ def validate(unit: EvidenceUnit) -> list[str]:
             errs.append("locator_type=file_line requires `commit_sha` (immutable pin)")
     if not (unit.quote or "").strip():
         errs.append("quote must be a verbatim, non-empty string (provenance)")
+    elif len(re.sub(r"\W+", "", unit.quote)) < 12:
+        errs.append("quote too short to be a provenance anchor (need >=12 normalised chars)")
     # only literature/expert may carry shape params
     if unit.relationship and unit.evidence_type not in _SHAPE_OK:
         if _SHAPE_KEYS & set(unit.relationship):
