@@ -261,6 +261,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "discovery_logs": _parse_discovery_logs(schema_root),
         "progress_ledger": [],
         "qaqc_stats": {},
+        "review_log": [],
     }
 
     ledger_csv = schema_root.parent / "pipeline" / "progress_ledger.csv"
@@ -270,6 +271,9 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     from nbs_ruralscan.schema_tools import qaqc_stats as _qaqc
 
     data["qaqc_stats"] = _qaqc.compute()
+
+    review_log_csv = schema_root.parent / "pipeline" / "metrics" / "review_log.csv"
+    data["review_log"] = _csv_to_rows(review_log_csv) if review_log_csv.exists() else []
 
     # Read registers
     for reg in registers:

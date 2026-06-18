@@ -149,6 +149,53 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
     return {"ok": resolved, "dropped": dropped, "rows": len(kept), "reasons": dict(reasons)}
 
 
+def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
+    """Revert an ok-reviewed EV row back to flagged (clears reviewer_ok, restores the
+    [VERIFY-FLAG verdict: reason] from the review_log) so it re-enters the worklist.
+
+    Only ok-reviewed units (still in EV) can be reopened; dropped units are gone and
+    must be re-extracted. Logs a 'reopen' action for audit.
+    """
+    today = datetime.now(timezone.utc).date().isoformat()
+    # latest logged verdict+reason per evidence_id (for restoring the flag text)
+    last: dict[str, tuple[str, str]] = {}
+    if LOG.exists():
+        with LOG.open(newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                last[row["evidence_id"]] = (row.get("verdict", ""), row.get("reason", ""))
+    with EV.open(newline="", encoding="utf-8") as f:
+        rd = csv.DictReader(f)
+        cols = rd.fieldnames
+        rows = list(rd)
+    targets = set(evidence_ids)
+    reopened, logrows = 0, []
+    for r in rows:
+        if r["evidence_id"] not in targets:
+            continue
+        if (r.get("reviewer_ok") or "").lower() != "true":
+            continue
+        verdict, reason = last.get(r["evidence_id"], ("mismatch", "re-opened for review"))
+        r["reviewer_ok"] = "false"
+        # strip any prior [reviewed ...] tag, prepend a fresh VERIFY-FLAG
+        attr = re.sub(r"\[reviewed[^\]]*\]\s*", "", r.get("attribution", "")).strip()
+        r["attribution"] = (f"[VERIFY-FLAG {verdict}: {reason}] " + attr).strip()
+        reopened += 1
+        logrows.append([today, r["evidence_id"], r.get("source_id", ""), verdict, "reopen", "", "", reviewer])
+    with EV.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=cols)
+        w.writeheader()
+        w.writerows(rows)
+    if logrows:
+        LOG.parent.mkdir(parents=True, exist_ok=True)
+        new_file = not LOG.exists()
+        with LOG.open("a", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            if new_file:
+                w.writerow(["date", "evidence_id", "source_id", "verdict", "decision", "reason", "note", "reviewer"])
+            w.writerows(logrows)
+    return {"reopened": reopened}
+
+
 def apply() -> None:
     """Apply decisions from the filled worklist back into the EV register."""
     if not WORKLIST.exists():

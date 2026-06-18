@@ -133,6 +133,21 @@ class Handler(SimpleHTTPRequestHandler):
             _save(store)
             return self._json(200, {"ok": True, **res, "conflicts": conflicts})
 
+        if self.path == "/api/reopen":
+            eids = payload.get("evidence_ids") or ([payload["evidence_id"]] if payload.get("evidence_id") else [])
+            rev = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
+            if not eids:
+                return self._json(400, {"error": "evidence_id(s) required"})
+            from nbs_ruralscan.schema_tools.review import reopen_units
+            from nbs_ruralscan.schema_tools.generate import generate
+
+            try:
+                res = reopen_units(eids, rev)
+                generate(ROOT / "schema")
+            except Exception as e:  # noqa: BLE001
+                return self._json(500, {"error": str(e)})
+            return self._json(200, {"ok": True, **res})
+
         if self.path == "/api/clear":
             # Reset to-review. Scoped to ONE reviewer by default (you can't wipe others'
             # pending work); a full wipe requires reviewer="*". Always backs up first.

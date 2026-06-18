@@ -2520,6 +2520,37 @@
     hostEl.innerHTML=h;
   }
 
+  function reopenVf(eid){ if(!window._reviewApi){ alert('Re-open needs the live review server running.'); return; } if(!confirm('Re-open '+eid+' back into the AI-flagged worklist? (clears its reviewer_ok and restores the flag)'))return; var rev=(window._vfReviewer||'reviewer'); fetch('/api/reopen',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_ids:[eid],reviewer:rev})}).then(function(r){return r.json();}).then(function(res){ if(res&&res.error){ alert('Re-open failed: '+res.error); return; } fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ dashboardData=d; window._vfMode='flagged'; renderVfWorklist(); alert('Re-opened '+(res.reopened||0)+' unit(s) — now back in AI-flagged.'); }); }); }
+
+  function renderVfReviewed(host, rlAll){ rlAll=rlAll||[];
+    var me=(window._vfReviewer||'').trim();
+    var rows=rlAll.slice().reverse();
+    var mine=me?rows.filter(function(r){return (r.reviewer||'')===me;}):rows;
+    var evAll=(dashboardData.registers.EV_evidence_register)||[]; var present={};
+    evAll.forEach(function(e){ present[e.evidence_id]=(e.reviewer_ok===true||e.reviewer_ok==='true'); });
+    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+mine.length+'</b> review action(s) '+(me?('by '+vfEsc(me)+' '):' (all reviewers) ')+'<span style="color:var(--text-muted);">— from review_log; '+(me?'switch reviewer to see others':'set your handle to filter to yours')+'</span>';
+    host.innerHTML='';
+    if(!mine.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">No applied reviews yet'+(me?(' by '+vfEsc(me)):'')+'. Decisions appear here once you <b>Apply</b> them.</div>'; return; }
+    mine.forEach(function(r){
+      var dec=(r.decision||'').toLowerCase();
+      var col=dec==='ok'?'var(--accent-emerald)':dec==='drop'?'var(--accent-rose)':'var(--accent-amber)';
+      var action;
+      if(dec==='ok'){ action = present[r.evidence_id] ? ('<button onclick="reopenVf(\''+r.evidence_id+'\')" style="cursor:pointer; font-size:11px; padding:3px 12px; border-radius:4px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber);">↩ re-open</button>') : '<span style="color:var(--text-muted); font-size:10.5px;">no longer kept</span>'; }
+      else if(dec==='drop'){ action='<span style="color:var(--text-muted); font-size:10.5px;">removed — re-extract to restore</span>'; }
+      else { action='<span style="color:var(--text-muted); font-size:10.5px;">'+vfEsc(dec)+'</span>'; }
+      var card='<div style="border:1px solid var(--border-color); border-left:3px solid '+col+'; border-radius:8px; padding:10px 14px; margin-bottom:8px; background:var(--bg-secondary);">'
+        +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">'
+        +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(r.evidence_id||'')+'</code>'
+        +'<span style="font-weight:700; font-size:10px; color:'+col+'; text-transform:uppercase;">'+vfEsc(dec)+'</span>'
+        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(r.verdict||'')+(r.reason?(' · '+vfEsc((r.reason||'').replace(/_/g,' '))):'')+'</span>'
+        +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(r.reviewer||'')+' · '+vfEsc(r.date||'')+'</span></div>'
+        +(r.note?('<div style="font-size:11px; margin-top:5px; color:var(--text-secondary);">'+vfEsc(r.note)+'</div>'):'')
+        +'<div style="margin-top:7px; display:flex; align-items:center; gap:10px;"><span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(r.source_id||'')+'</span><span style="margin-left:auto;">'+action+'</span></div>'
+        +'</div>';
+      host.insertAdjacentHTML('beforeend',card);
+    });
+  }
+
   function renderVfWorklist() {
     if (!dashboardData) return;
     if (!window._vfDecisions){ try{ window._vfDecisions=JSON.parse(localStorage.getItem('vfDecisions')||'{}'); }catch(e){ window._vfDecisions={}; } }
@@ -2553,11 +2584,13 @@
         +_mkPills('family','Sub-practice',_famOpts,function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'emerald'); }
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
     passedAll=passedAll.filter(_inScope);
+    var rlAll=(dashboardData.review_log)||[];
     var mp=document.getElementById('vf-mode-pills');
-    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['stats','📊 Stats']];
+    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['reviewed','✓ My reviewed ('+rlAll.length+')'],['stats','📊 Stats']];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
+    if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block'; renderVfReviewed(host, rlAll); return; }
     if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block';
     var passed=(mode==='passed');
     var visible;
