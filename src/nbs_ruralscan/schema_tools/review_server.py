@@ -54,6 +54,22 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(200, {"ok": True})
         if self.path == "/api/state":
             return self._json(200, {"decisions": _load()})
+        if self.path.startswith("/api/pdf"):
+            from urllib.parse import urlparse, parse_qs
+            import re as _re
+            sid = parse_qs(urlparse(self.path).query).get("sid", [""])[0]
+            if not _re.fullmatch(r"[A-Za-z0-9_]+", sid or ""):
+                return self._json(400, {"error": "bad sid"})
+            pdf = ROOT / ".cache" / "corpus" / (sid + ".pdf")
+            if not pdf.exists():
+                return self._json(404, {"error": "no cached pdf"})
+            data = pdf.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/pdf")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
         return super().do_GET()
 
     def do_POST(self):  # noqa: N802

@@ -2487,11 +2487,11 @@
     visible.forEach(function(o){ var ev=o.ev, verdict=o.verdict, reason=o.reason; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
       var dec=(window._vfDecisions||{})[ev.evidence_id]||'';
       var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'page n/a');
-      var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'—';
+      var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';var relShown=rel?vfEsc(rel):'<span style="color:var(--text-muted);">(removed by the verify pass &mdash; the disputed value is in the reason below)</span>';
       var vc=verdict==='unsupported'?'var(--accent-rose)':verdict==='mismatch'?'var(--accent-amber)':'var(--text-secondary)';
       var doi=(src.doi||'').trim();
       var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI '+(doi.indexOf('http')===0?'link':vfEsc(doi))+' ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source link ↗</a>'):'');
-      var lib=src.library_path?('<span style="color:var(--text-muted);" title="OneDrive / SharePoint library">📄 '+vfEsc(src.library_path)+'</span>'):'';
+      var lib=src.library_path?('<span style="color:var(--text-muted);" title="OneDrive / SharePoint library">📄 '+vfEsc(src.library_path)+'</span>'):'';var pdfLink=window._reviewApi?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">📄 Open PDF '+vfEsc(page)+' ↗</a>'):lib;
       var okA=dec==='ok', dropA=dec==='drop';
       var card='<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:3px solid '+vc+'; border-radius:8px; padding:12px 14px; margin-bottom:10px; background:var(--bg-secondary);">'
         +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">'
@@ -2499,10 +2499,10 @@
         +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
         +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+'</span>'
         +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
-        +'<div style="font-size:11.5px; margin:4px 0;"><b style="color:var(--text-muted);">Encoded value (disputed):</b> <code style="font-size:11px; color:var(--text-primary);">'+vfEsc(rel)+'</code></div>'
+        +'<div style="font-size:11.5px; margin:4px 0;"><b style="color:var(--text-muted);">Encoded value (disputed):</b> <code style="font-size:11px; color:var(--text-primary);">'+relShown+'</code></div>'
         +'<div style="font-size:11.5px; margin:4px 0; color:'+vc+';"><b>Why flagged:</b> '+vfEsc(reason)+'</div>'
         +'<div style="font-size:11px; margin:6px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:7px 9px; border-radius:4px; max-height:130px; overflow:auto;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+'):</b> '+vfEsc(ev.quote||'')+'</div>'
-        +'<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; font-size:10.5px;">'+doiHtml+(doiHtml&&lib?' &nbsp;&nbsp; ':'')+lib
+        +'<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; font-size:10.5px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp;&nbsp; ':'')+pdfLink
         +'<span style="margin-left:auto; font-size:11px; color:var(--text-muted);">Decision:</span>'
         +'<button onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">ok</button>'
         +'<button onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">drop</button>'
