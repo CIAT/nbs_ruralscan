@@ -134,8 +134,23 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(200, {"ok": True, **res, "conflicts": conflicts})
 
         if self.path == "/api/clear":
-            _save({})
-            return self._json(200, {"ok": True})
+            # Reset to-review. Scoped to ONE reviewer by default (you can't wipe others'
+            # pending work); a full wipe requires reviewer="*". Always backs up first.
+            rev = (payload.get("reviewer") or "").strip()
+            store = _load()
+            if STORE.exists():
+                (STORE.parent / "decisions.bak.json").write_text(STORE.read_text())
+            if rev and rev != "*":
+                for eid in list(store):
+                    store[eid].pop(rev, None)
+                    if not store[eid]:
+                        store.pop(eid, None)
+                _save(store)
+                return self._json(200, {"ok": True, "cleared_for": rev})
+            if rev == "*":
+                _save({})
+                return self._json(200, {"ok": True, "cleared_for": "ALL"})
+            return self._json(400, {"error": "reviewer required (use '*' to clear all)"})
 
         return self._json(404, {"error": "not found"})
 
