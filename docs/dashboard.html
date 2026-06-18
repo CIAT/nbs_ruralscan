@@ -2640,9 +2640,10 @@
       var doi=(src.doi||'').trim();
       var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI '+(doi.indexOf('http')===0?'link':vfEsc(doi))+' ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source link ↗</a>'):'');
       var spUrl=vfSharePointUrl(src.library_path||'');
-      var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint — any team member with library access (no local server)">📄 SharePoint ↗</a>'):'';
-      var localLink=window._reviewApi?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="local cached PDF — jumps to page (this machine only)">📄 local PDF '+vfEsc(page)+' ↗</a>'):'';
-      var libTxt=(!spLink&&!localLink&&src.library_path)?('<span style="color:var(--text-muted);" title="library path (no SharePoint link)">📄 '+vfEsc(src.library_path)+'</span>'):(!spLink&&!localLink&&!src.library_path?'<span style="color:var(--text-muted);" title="no cached file / library path for this source">📄 no file</span>':'');
+      var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint — any team member with library access">📄 SharePoint ↗</a>'):'';
+      // local PDF only as a fallback when there is NO SharePoint link (e.g. not yet uploaded)
+      var localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);" title="local cached PDF — this machine only; not yet in SharePoint">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
+      var libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);" title="not in SharePoint and no local server">📄 not uploaded</span>':'';
       var pdfLink=[spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
       var okA=dec==='ok', dropA=dec==='drop';
       var _rc=passed?['confirmed_pass','missed_error','smuggled_number','wrong_variable','off_scope','other']:['smuggled_number','cross_row_stitch','wrong_variable','table_garble','off_scope','quote_too_narrow','false_flag','accepted_correction','other'];
