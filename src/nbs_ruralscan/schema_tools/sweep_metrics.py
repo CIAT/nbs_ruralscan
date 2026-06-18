@@ -20,6 +20,7 @@ from nbs_ruralscan.schema_tools.check_numbers import check as check_numbers
 
 ROOT = Path(__file__).resolve().parents[3]
 LEDGER = ROOT / "pipeline" / "metrics" / "sweep_log.csv"
+REVIEW_LOG = ROOT / "pipeline" / "metrics" / "review_log.csv"
 FIELDS = [
     "date",
     "label",
@@ -35,6 +36,18 @@ FIELDS = [
 ]
 
 
+def reason_tally() -> dict:
+    """Count review decisions by reason code from the review log (for the retrospective)."""
+    from collections import Counter
+    if not REVIEW_LOG.exists():
+        return {}
+    c = Counter()
+    with REVIEW_LOG.open(encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            c[(r.get("reason") or "unspecified")] += 1
+    return dict(c.most_common())
+
+
 def compute(label: str) -> dict:
     reg = ROOT / "schema" / "registers"
     with (reg / "EV_evidence_register.csv").open(encoding="utf-8") as f:
@@ -48,6 +61,7 @@ def compute(label: str) -> dict:
     unsupported = sum(1 for a in attrs if "[VERIFY-FLAG unsupported" in a)
     low = sum(1 for r in ev if r.get("extraction_confidence") == "low")
     nprov = len(check_numbers(ROOT / "schema"))
+    reviews_logged = sum(reason_tally().values())
 
     n_num = len(numeric) or 1
     return {
@@ -60,6 +74,7 @@ def compute(label: str) -> dict:
         "verify_mismatch": mismatch,
         "verify_unsupported": unsupported,
         "low_confidence": low,
+        "reviews_logged": reviews_logged,
         "numberprov_rate_pct": round(100 * nprov / n_num, 1),
         "verify_rate_pct": round(100 * (mismatch + unsupported) / n_num, 1),
     }
@@ -103,6 +118,11 @@ def main() -> int:
             except ValueError:
                 pass
         print(f"  {k:22} {cur!s:>8}")
+    rt = reason_tally()
+    if rt:
+        print("\nReview decisions by reason (route the top one to a spec rule / check / screening tweak):")
+        for k, v in rt.items():
+            print(f"  {k:22} {v}")
     if prev:
         print(
             "\nGoal: numberprov_rate_pct and verify_rate_pct should TREND DOWN each sweep.\n"

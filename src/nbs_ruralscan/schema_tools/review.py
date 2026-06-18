@@ -23,12 +23,15 @@ from __future__ import annotations
 
 import csv
 import re
+from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 WORKLIST = ROOT / "pipeline" / "review" / "flag_worklist.csv"
+LOG = ROOT / "pipeline" / "metrics" / "review_log.csv"
+REASON_CODES = ["smuggled_number","cross_row_stitch","wrong_variable","table_garble","off_scope","quote_too_narrow","false_flag","accepted_correction","other"]
 _FLAG_RE = re.compile(r"\[VERIFY-FLAG\s+(\w+):\s*(.*?)\]\s*", re.S)
 _WL_FIELDS = [
     "evidence_id",
@@ -86,30 +89,62 @@ def export() -> Path:
     return WORKLIST
 
 
+def _verdict_of(attr: str) -> str:
+    m = _FLAG_RE.search(attr or "")
+    return m.group(1) if m else ""
+
+
 def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
-    """Apply {evidence_id: 'ok'|'drop'} to the EV register. Returns a summary dict."""
+    """Apply decisions to EV. Each value is 'ok'|'drop' OR {'decision','reason'}.
+
+    Logs every decision (with reason code) to pipeline/metrics/review_log.csv so the
+    sweep retrospective can tally failure patterns and feed them back into the spec/checks.
+    """
     today = datetime.now(timezone.utc).date().isoformat()
+
+    def _norm(v):
+        if isinstance(v, dict):
+            return (str(v.get("decision", "")).strip().lower(), (v.get("reason") or "").strip())
+        return (str(v or "").strip().lower(), "")
+
     with EV.open(newline="", encoding="utf-8") as f:
         rd = csv.DictReader(f)
         cols = rd.fieldnames
         rows = list(rd)
     kept, dropped, resolved = [], 0, 0
+    reasons: Counter = Counter()
+    logrows = []
     for r in rows:
-        d = (decisions.get(r["evidence_id"]) or "").strip().lower()
-        if d == "drop":
+        dec, reason = _norm(decisions.get(r["evidence_id"]))
+        if not dec:
+            kept.append(r)
+            continue
+        verdict = _verdict_of(r.get("attribution", ""))
+        logrows.append([today, r["evidence_id"], r.get("source_id", ""), verdict, dec, reason, reviewer])
+        reasons[reason or "unspecified"] += 1
+        if dec == "drop":
             dropped += 1
             continue
-        if d == "ok":
+        if dec == "ok":
             r["reviewer_ok"] = "true"
             r["attribution"] = _FLAG_RE.sub("", r.get("attribution", "")).strip()
-            r["attribution"] = (f"[reviewed {today} by {reviewer}] " + (r["attribution"] or "")).strip()
+            tag = f"[reviewed {today} by {reviewer}" + (f"; reason:{reason}" if reason else "") + "]"
+            r["attribution"] = (tag + " " + (r["attribution"] or "")).strip()
             resolved += 1
         kept.append(r)
     with EV.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=cols)
         w.writeheader()
         w.writerows(kept)
-    return {"ok": resolved, "dropped": dropped, "rows": len(kept)}
+    if logrows:
+        LOG.parent.mkdir(parents=True, exist_ok=True)
+        new_file = not LOG.exists()
+        with LOG.open("a", newline="", encoding="utf-8") as f:
+            w = csv.writer(f)
+            if new_file:
+                w.writerow(["date", "evidence_id", "source_id", "verdict", "decision", "reason", "reviewer"])
+            w.writerows(logrows)
+    return {"ok": resolved, "dropped": dropped, "rows": len(kept), "reasons": dict(reasons)}
 
 
 def apply() -> None:
@@ -127,7 +162,7 @@ def apply() -> None:
         print("no decisions filled in the worklist — nothing to apply.")
         return
     reviewer = next((d.get("reviewer") for d in decisions.values() if d.get("reviewer")), "reviewer")
-    res = apply_decisions({eid: d["decision"] for eid, d in decisions.items()}, reviewer)
+    res = apply_decisions({eid: {"decision": d["decision"], "reason": d.get("reason", "")} for eid, d in decisions.items()}, reviewer)
     print(f"applied: {res['ok']} marked reviewed-ok (flag cleared), {res['dropped']} dropped. EV now {res['rows']} rows.")
     print(
         "Next: `generate.py schema` to rebuild + re-gate, then `ledger.py mark ... "

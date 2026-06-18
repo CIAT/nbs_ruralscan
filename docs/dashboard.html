@@ -2454,8 +2454,10 @@
     return '\u00B6 main text';
   }
   function setVfDecision(id,d){ if(!window._vfDecisions)window._vfDecisions={}; var val=(window._vfDecisions[id]===d?'':d); window._vfDecisions[id]=val; localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));
-    if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); }
+    if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reason:((window._vfReasons||{})[id]||''),reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); }
     renderVfWorklist(); }
+  function setVfReason(id,reason){ if(!window._vfReasons)window._vfReasons={}; window._vfReasons[id]=reason; localStorage.setItem('vfReasons',JSON.stringify(window._vfReasons));
+    if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:reason,reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
   function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); if(window._reviewApi){ fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var d={}; Object.keys(st.decisions||{}).forEach(function(k){ d[k]=st.decisions[k].decision; }); window._vfDecisions=d; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); }); }
   function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
     if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply decisions &amp; rebuild</b> to write them to the register + re-gate.'; }
@@ -2468,16 +2470,17 @@
       fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){ dashboardData=data; if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions & rebuild';} renderVfWorklist(); if(typeof triggerOverviewFilter==='function')triggerOverviewFilter(); if(typeof renderDiscoveryAudit==='function')renderDiscoveryAudit(); alert('Applied: '+(res.ok||0)+' ok, '+(res.dropped||0)+' dropped. Register rebuilt + re-gated.'); });
     }).catch(function(e){ alert('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions & rebuild';} }); }
   function downloadVfDecisions(){
-    var rows=window._vfFlagged||[]; var hdr=['evidence_id','source_id','variable','use_role','verdict','flag_reason','quote','relationship','decision','reviewer','note'];
+    var rows=window._vfFlagged||[]; var hdr=['evidence_id','source_id','variable','use_role','verdict','flag_reason','quote','relationship','decision','reason','reviewer','note'];
     function q(v){v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"';}
     var lines=[hdr.join(',')];
     rows.forEach(function(o){ var ev=o.ev; var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';
-      lines.push([ev.evidence_id,ev.source_id,ev.variable,ev.use_role,o.verdict,o.reason,(ev.quote||'').replace(/\n/g,' '),rel,((window._vfDecisions||{})[ev.evidence_id]||''),'',''].map(q).join(',')); });
+      lines.push([ev.evidence_id,ev.source_id,ev.variable,ev.use_role,o.verdict,o.reason,(ev.quote||'').replace(/\n/g,' '),rel,((window._vfDecisions||{})[ev.evidence_id]||''),((window._vfReasons||{})[ev.evidence_id]||''),'',''].map(q).join(',')); });
     var blob=new Blob([lines.join('\n')],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='flag_worklist.csv'; a.click();
   }
   function renderVfWorklist() {
     if (!dashboardData) return;
     if (!window._vfDecisions){ try{ window._vfDecisions=JSON.parse(localStorage.getItem('vfDecisions')||'{}'); }catch(e){ window._vfDecisions={}; } }
+    if (!window._vfReasons){ try{ window._vfReasons=JSON.parse(localStorage.getItem('vfReasons')||'{}'); }catch(e){ window._vfReasons={}; } }
     var evAll=dashboardData.registers.EV_evidence_register||[]; var srcAll=dashboardData.registers.SRC_source_register||[];
     var flaggedRows=[];
     evAll.forEach(function(ev){ var attr=ev.attribution||''; var idx=attr.indexOf('[VERIFY-FLAG '); if(idx===-1)return;
@@ -2502,6 +2505,9 @@
       var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI '+(doi.indexOf('http')===0?'link':vfEsc(doi))+' ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source link ↗</a>'):'');
       var lib=src.library_path?('<span style="color:var(--text-muted);" title="OneDrive / SharePoint library">📄 '+vfEsc(src.library_path)+'</span>'):'';var pdfLink=window._reviewApi?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">📄 Open PDF '+vfEsc(page)+' ↗</a>'):lib;
       var okA=dec==='ok', dropA=dec==='drop';
+      var _rc=['smuggled_number','cross_row_stitch','wrong_variable','table_garble','off_scope','quote_too_narrow','false_flag','accepted_correction','other'];
+      var _rsel=(window._vfReasons||{})[ev.evidence_id]||'';
+      var reasonSel='<select onchange="setVfReason(\''+ev.evidence_id+'\',this.value)" style="font-size:10.5px; padding:3px 6px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><option value="">reason…</option>'+_rc.map(function(rc){return '<option value="'+rc+'"'+(_rsel===rc?' selected':'')+'>'+rc.replace(/_/g,' ')+'</option>';}).join('')+'</select>';
       var card='<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:3px solid '+vc+'; border-radius:8px; padding:12px 14px; margin-bottom:10px; background:var(--bg-secondary);">'
         +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">'
         +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code>'
@@ -2512,7 +2518,7 @@
         +'<div style="font-size:11.5px; margin:4px 0; color:'+vc+';"><b>Why flagged:</b> '+vfEsc(reason)+'</div>'
         +'<div style="font-size:11px; margin:6px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:7px 9px; border-radius:4px; max-height:130px; overflow:auto;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
         +'<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; font-size:10.5px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp;&nbsp; ':'')+pdfLink
-        +'<span style="margin-left:auto; font-size:11px; color:var(--text-muted);">Decision:</span>'
+        +'<span style="margin-left:auto; font-size:11px; color:var(--text-muted);">Reason:</span>'+reasonSel+'<span style="font-size:11px; color:var(--text-muted);">Decision:</span>'
         +'<button onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">ok</button>'
         +'<button onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">drop</button>'
         +'</div></div>';

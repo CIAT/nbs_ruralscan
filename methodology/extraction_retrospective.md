@@ -35,6 +35,26 @@ relationship-faithfulness. We only improve if we (a) measure the flag rate every
 6. **Trend check.** If a rate did NOT fall vs last sweep, the spec change in step 4 was
    insufficient — tighten it before the next sweep.
 
+## QA/QC review feeds the loop (reason codes)
+
+Human verify-flag review (QA/QC tab / `review.py`) is the other signal source. Each decision
+carries a **reason code** — `smuggled_number · cross_row_stitch · wrong_variable ·
+table_garble · off_scope · quote_too_narrow · false_flag · accepted_correction · other` —
+logged to `pipeline/metrics/review_log.csv` on apply. In the retrospective:
+
+1. `sweep_metrics.py` prints the **review reason tally**.
+2. Route the **top reason** to its fix:
+   - `smuggled_number` → already caught by `check_numbers.py`; tighten extraction spec.
+   - `cross_row_stitch` / `table_garble` → improve `ingest/pdf.py` table handling + spec
+     ("quote a whole table row+header, never stitch rows").
+   - `wrong_variable` → VONT aliases + spec proxy rules (SOM≠SOC …).
+   - `quote_too_narrow` → spec: capture wider context.
+   - `off_scope` → tighten **screening** (down-weight that source class / venue).
+   - `false_flag` → loosen the verifier (it over-flagged).
+3. Re-measure next sweep — the routed reason's rate should fall.
+
+This turns QA/QC from "clean this batch" into "the pipeline learns from every review."
+
 ## Pre-LLM triage (efficiency)
 `check_numbers.py` is free and deterministic. Run it FIRST; only send its flagged units +
 the `extraction_confidence=low` ones to the (expensive) adversarial relationship-verify.
