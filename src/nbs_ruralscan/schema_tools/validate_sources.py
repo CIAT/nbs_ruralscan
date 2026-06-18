@@ -38,6 +38,10 @@ EXEMPT_USE_ROLES = {"dataset"}
 # Artifact extensions, in lookup priority.
 _PDF_EXT = ".pdf"
 _SNAPSHOT_EXT = (".txt", ".html", ".md")
+# The complete set of artifact formats we know how to acquire, cache, and verify.
+# A cached file with any other extension is an UNDEFINED FORMAT -> the build pauses
+# until a handling rule (acquire adapter + locator semantics + QA/QC rule) is defined.
+_KNOWN_EXT = {_PDF_EXT, *_SNAPSHOT_EXT}
 
 
 def _norm(text: str) -> str:
@@ -105,7 +109,8 @@ def validate_all_sources(schema_root: str | Path) -> None:
         return
 
     with src_csv.open(newline="", encoding="utf-8") as f:
-        src_ids = {row["source_id"] for row in csv.DictReader(f)}
+        src_by_id = {row["source_id"]: row for row in csv.DictReader(f)}
+    src_ids = set(src_by_id)
 
     with ev_csv.open(newline="", encoding="utf-8") as f:
         ev_rows = list(csv.DictReader(f))
@@ -226,6 +231,42 @@ def validate_all_sources(schema_root: str | Path) -> None:
                 f'{path.name}:\n    "{quote[:160]}"'
             )
 
+    # ---- Acquisition / cataloguing rule (locked process) ----------------------
+    # PDFs discovered as evidence must be catalogued in the SharePoint library; web /
+    # github evidence needs a url + a locator (where on the page); an unknown cached
+    # format is a hard pause until its handling rule is defined.
+    warnings: list[str] = []
+    if corpus.exists():
+        for p in sorted(corpus.glob("*")):
+            if p.is_file() and not p.name.startswith(".") and p.suffix.lower() not in _KNOWN_EXT:
+                errors.append(
+                    f"[{p.name}] UNDEFINED ARTIFACT FORMAT '{p.suffix}' in .cache/corpus — "
+                    "no handling rule exists. PAUSE: define an acquire adapter + locator "
+                    "semantics + a QA/QC rule for this format before registering its evidence."
+                )
+    for sid, (path, kind) in artifacts.items():
+        srow = src_by_id.get(sid, {})
+        if kind == "pdf" and not (srow.get("library_path") or "").strip():
+            warnings.append(
+                f"[{sid}] PDF cached but library_path is empty — catalogue it in the "
+                "SharePoint library (…/2_Technical_&_Data/library/<NbS>/) so the team can open it"
+            )
+        if kind == "snapshot":
+            if not (srow.get("url") or "").strip():
+                warnings.append(f"[{sid}] web/github snapshot has no url — record the source URL")
+            miss = [
+                e["evidence_id"]
+                for e in ev_rows
+                if e["source_id"] == sid
+                and e.get("use_role") not in EXEMPT_USE_ROLES
+                and not (e.get("locator") or "").strip()
+            ]
+            if miss:
+                warnings.append(
+                    f"[{sid}] {len(miss)} web/github evidence row(s) lack a locator "
+                    f"(where on the page: section / anchor / selector) — e.g. {miss[0]}"
+                )
+
     if errors:
         head = (
             f"GUARDRAIL FAILED: {len(errors)} evidence-provenance violation(s). "
@@ -238,6 +279,12 @@ def validate_all_sources(schema_root: str | Path) -> None:
         f"VERIFICATION SUCCESSFUL: {n_verified} EV quote(s) verified verbatim "
         f"against {len(artifacts)} cached source(s); {n_exempt} exempt (baseline layers)."
     )
+    if warnings:
+        print(
+            f"  PROVENANCE NOTES ({len(warnings)} — non-fatal cataloguing / locator gaps):"
+        )
+        for w in warnings:
+            print(f"    · {w}")
 
 
 if __name__ == "__main__":
