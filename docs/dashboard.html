@@ -2538,6 +2538,55 @@
 
   function challengeVf(eid, dec){ if(!window._reviewApi){ alert('Challenging an applied decision needs the live review server.'); return; } var rev=(window._vfReviewer||'').trim(); if(!rev){ alert('Set your reviewer handle first.'); return; } var reason=prompt('Reason for "'+dec+'"? (optional)')||''; fetch('/api/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:eid,decision:dec,reason:reason,reviewer:rev})}).then(function(r){return r.json();}).then(function(res){ if(res&&res.error){ alert('Challenge failed: '+res.error); return; } fetch('/api/state').then(function(r){return r.json();}).then(function(st){ window._vfAllReviews=st.decisions||{}; fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ dashboardData=_segregateDropped(d); if(res.conflict){ window._vfMode='flagged'; window._vfVerdictFilter='conflict'; } renderVfWorklist(); alert(res.conflict?('⚠ Conflict raised'+(res.reopened?' — re-opened into AI-flagged (Conflict filter) for consensus.':'.')):'Recorded — agrees with the existing decision.'); }); }); }); }
 
+  // Units resolved by < 2 reviewers (need a 2nd opinion). If a reviewer handle is set,
+  // exclude units that reviewer already reviewed (it's not THEIR 2nd opinion to give).
+  function _vf2ndList(){
+    var me=(window._vfReviewer||'').trim();
+    var evAll=(dashboardData.registers.EV_evidence_register)||[];
+    var dropped=(dashboardData._evDropped)||[];
+    var rl=(dashboardData.review_log)||[];
+    var revBy={}, prior={};
+    rl.forEach(function(r){ var d=(r.decision||'').toLowerCase(); if(d==='ok'||d==='drop'){ (revBy[r.evidence_id]=revBy[r.evidence_id]||{})[r.reviewer||'?']=true; prior[r.evidence_id]=r; } });
+    var resolved=evAll.filter(function(e){return e.reviewer_ok===true||e.reviewer_ok==='true';}).concat(dropped);
+    var byId={}; evAll.concat(dropped).forEach(function(e){ byId[e.evidence_id]=e; });
+    var store=(window._vfAllReviews||{});
+    return resolved.filter(function(e){ var id=e.evidence_id;
+      var nrev=Object.keys(revBy[id]||{}).length;
+      if(nrev>=2) return false;                                  // already has a 2nd opinion
+      if(me){ var meRl=revBy[id]&&revBy[id][me]; var meSt=store[id]&&store[id][me]&&store[id][me].decision; if(meRl||meSt) return false; }
+      return true;
+    }).map(function(e){ return {ev:e, prior:prior[e.evidence_id]||{}, dropped:((e.review_state||'')==='dropped')}; });
+  }
+
+  function renderVf2ndOpinion(host){
+    var me=(window._vfReviewer||'').trim();
+    var list=_vf2ndList();
+    var srcAll=(dashboardData.registers.SRC_source_register)||[];
+    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+list.length+'</b> unit(s) reviewed by only one person'+(me?(' and not by '+vfEsc(me)):'')+' <span style="color:var(--text-muted);">— give a 2nd opinion: agree (records) or disagree (raises a conflict).'+(me?'':' Set your handle first.')+'</span>';
+    host.innerHTML='';
+    if(!list.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(me?'Nothing awaiting your 2nd opinion.':'Set your reviewer handle to see units awaiting your 2nd opinion.')+'</div>'; return; }
+    list.forEach(function(o){ var ev=o.ev, pr=o.prior; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
+      var pdec=(pr.decision||'').toLowerCase(); var pcol=pdec==='ok'?'var(--accent-emerald)':'var(--accent-rose)';
+      var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'');
+      var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';
+      var spUrl=vfSharePointUrl(src.library_path||''); var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">📄 SharePoint ↗</a>'):'';
+      var card='<div style="border:1px solid var(--border-color); border-left:3px solid '+pcol+'; border-radius:8px; padding:11px 14px; margin-bottom:9px; background:var(--bg-secondary);">'
+        +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:5px;">'
+        +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code>'
+        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+(page?(' · '+vfEsc(page)):'')+(o.dropped?' · <span style="color:var(--accent-rose);">quarantined</span>':'')+'</span>'
+        +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
+        +'<div style="font-size:11.5px; margin:3px 0;"><b style="color:'+pcol+';">'+vfEsc((pr.reviewer||'someone'))+' said '+vfEsc(pdec.toUpperCase()||'?')+'</b>'+(pr.reason?(' <span style="color:var(--text-secondary);">· '+vfEsc((pr.reason||'').replace(/_/g,' '))+'</span>'):'')+(pr.note?(' <span style="color:var(--text-muted);">— '+vfEsc(pr.note)+'</span>'):'')+'</div>'
+        +(rel?('<div style="font-size:11px; margin:3px 0;"><b style="color:var(--text-muted);">Encoded value:</b> <code style="font-size:10.5px;">'+vfEsc(rel)+'</code></div>'):'')
+        +'<div style="font-size:11px; margin:5px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:6px 9px; border-radius:4px; max-height:120px; overflow:auto;"><b style="color:var(--text-muted);">Quote'+(page?(' ('+vfEsc(page)+')'):'')+':</b> '+vfEsc(ev.quote||'')+'</div>'
+        +'<div style="margin-top:7px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:10.5px;">'+spLink
+        +'<span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;"><span style="color:var(--text-muted);">your 2nd opinion:</span>'
+        +'<button onclick="challengeVf(\''+ev.evidence_id+'\',\'ok\')" title="agree it should be kept; disagreement with the prior call raises a conflict" style="cursor:pointer; font-size:11px; padding:3px 12px; border-radius:4px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald);">ok</button>'
+        +'<button onclick="challengeVf(\''+ev.evidence_id+'\',\'drop\')" title="agree it should be dropped; disagreement raises a conflict" style="cursor:pointer; font-size:11px; padding:3px 12px; border-radius:4px; border:1px solid var(--accent-rose); background:transparent; color:var(--accent-rose);">drop</button>'
+        +'</span></div></div>';
+      host.insertAdjacentHTML('beforeend',card);
+    });
+  }
+
   function renderVfReviewed(host, rlAll){ rlAll=rlAll||[];
     var me=(window._vfReviewer||'').trim();
     var rows=rlAll.slice().reverse();
@@ -2614,12 +2663,14 @@
     var _rlMe=(window._vfReviewer||'').trim();
     var _reviewedCount=(new Set((_rlMe?rlAll.filter(function(r){return (r.reviewer||'')===_rlMe;}):rlAll).map(function(r){return r.evidence_id;}))).size;
     var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+')';
+    var _2ndCount=(typeof _vf2ndList==='function')?_vf2ndList().length:0;
     var mp=document.getElementById('vf-mode-pills');
-    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['reviewed',_reviewedLbl],['stats','📊 Stats']];
+    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['second','🔁 2nd opinion ('+_2ndCount+')'],['reviewed',_reviewedLbl],['stats','📊 Stats']];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
     if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block'; renderVfReviewed(host, rlAll); return; }
+    if(mode==='second'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block'; renderVf2ndOpinion(host); return; }
     if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block';
     var passed=(mode==='passed');
     var visible;
