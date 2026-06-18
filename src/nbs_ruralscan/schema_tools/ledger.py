@@ -81,6 +81,8 @@ def derive_facts(schema_root: str | Path) -> dict[tuple, dict]:
         return facts
     with ev_csv.open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
+            if (r.get("review_state") or "") == "dropped":
+                continue  # soft-deleted — not active evidence
             tbl = _ROLE_INV.get(r.get("use_role", ""))
             if not tbl:
                 continue

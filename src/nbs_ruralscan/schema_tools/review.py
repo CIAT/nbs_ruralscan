@@ -125,10 +125,18 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
         logrows.append([today, r["evidence_id"], r.get("source_id", ""), verdict, dec, reason, note, who])
         reasons[reason or "unspecified"] += 1
         if dec == "drop":
+            # soft-delete: keep the row as a record, mark dropped (excluded from
+            # synthesis/support/counts; reversible via reopen_units).
+            r["review_state"] = "dropped"
+            r["attribution"] = _FLAG_RE.sub("", r.get("attribution", "")).strip()
+            tag = f"[dropped {today} by {who}" + (f"; reason:{reason}" if reason else "") + (f"; note:{note}" if note else "") + "]"
+            r["attribution"] = (tag + " " + (r["attribution"] or "")).strip()
             dropped += 1
+            kept.append(r)
             continue
         if dec == "ok":
             r["reviewer_ok"] = "true"
+            r["review_state"] = ""  # active (un-drops if it was previously dropped)
             r["attribution"] = _FLAG_RE.sub("", r.get("attribution", "")).strip()
             tag = f"[reviewed {today} by {who}" + (f"; reason:{reason}" if reason else "") + (f"; note:{note}" if note else "") + "]"
             r["attribution"] = (tag + " " + (r["attribution"] or "")).strip()
@@ -172,12 +180,15 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
     for r in rows:
         if r["evidence_id"] not in targets:
             continue
-        if (r.get("reviewer_ok") or "").lower() != "true":
+        was_ok = (r.get("reviewer_ok") or "").lower() == "true"
+        was_dropped = (r.get("review_state") or "") == "dropped"
+        if not (was_ok or was_dropped):
             continue
         verdict, reason = last.get(r["evidence_id"], ("mismatch", "re-opened for review"))
         r["reviewer_ok"] = "false"
-        # strip any prior [reviewed ...] tag, prepend a fresh VERIFY-FLAG
-        attr = re.sub(r"\[reviewed[^\]]*\]\s*", "", r.get("attribution", "")).strip()
+        r["review_state"] = ""  # un-drop / un-keep -> active + flagged again
+        # strip any prior [reviewed ...] / [dropped ...] tag, prepend a fresh VERIFY-FLAG
+        attr = re.sub(r"\[(reviewed|dropped)[^\]]*\]\s*", "", r.get("attribution", "")).strip()
         r["attribution"] = (f"[VERIFY-FLAG {verdict}: {reason}] " + attr).strip()
         reopened += 1
         logrows.append([today, r["evidence_id"], r.get("source_id", ""), verdict, "reopen", "", "", reviewer])

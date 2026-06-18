@@ -78,6 +78,9 @@ class EvidenceUnit:
     taxon: str | None = None
     lineage_of: str | None = None
     reviewer_ok: bool = False
+    # soft-delete: "" = active, "dropped" = removed in QA review but kept as a record
+    # (excluded from synthesis/support/counts; reversible). See review.apply_decisions.
+    review_state: str = ""
     # ── paper-first sweep (v0.2.5) — all optional, backwards compatible ──
     raw_name: str | None = None  # surface name from paper before harmonisation
     observed_dataset: str | None = None  # which dataset the paper actually used
