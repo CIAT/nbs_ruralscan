@@ -2444,6 +2444,15 @@
   }
 
   function vfEsc(v){ return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function vfLocHint(ev){
+    var cb=(ev.claim_basis||'');
+    if(cb==='table') return '\uD83D\uDCCA in a Table';
+    if(cb==='figure_read') return '\uD83D\uDCC8 in a Figure';
+    if((ev.locator_type||'')==='section' && ev.locator) return '\u00A7 '+ev.locator;
+    var q=ev.quote||''; var nl=(q.match(/\n/g)||[]).length; var nums=(q.match(/[0-9]/g)||[]).length;
+    if(nl>=3 && nums>=4) return '\uD83D\uDCCA likely a table (cells flattened)';
+    return '\u00B6 main text';
+  }
   function setVfDecision(id,d){ if(!window._vfDecisions)window._vfDecisions={}; var val=(window._vfDecisions[id]===d?'':d); window._vfDecisions[id]=val; localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));
     if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); }
     renderVfWorklist(); }
@@ -2497,11 +2506,11 @@
         +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">'
         +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code>'
         +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
-        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+'</span>'
+        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
         +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
         +'<div style="font-size:11.5px; margin:4px 0;"><b style="color:var(--text-muted);">Encoded value (disputed):</b> <code style="font-size:11px; color:var(--text-primary);">'+relShown+'</code></div>'
         +'<div style="font-size:11.5px; margin:4px 0; color:'+vc+';"><b>Why flagged:</b> '+vfEsc(reason)+'</div>'
-        +'<div style="font-size:11px; margin:6px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:7px 9px; border-radius:4px; max-height:130px; overflow:auto;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+'):</b> '+vfEsc(ev.quote||'')+'</div>'
+        +'<div style="font-size:11px; margin:6px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:7px 9px; border-radius:4px; max-height:130px; overflow:auto;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
         +'<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; font-size:10.5px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp;&nbsp; ':'')+pdfLink
         +'<span style="margin-left:auto; font-size:11px; color:var(--text-muted);">Decision:</span>'
         +'<button onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">ok</button>'
