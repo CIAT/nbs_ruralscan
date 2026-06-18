@@ -1926,7 +1926,7 @@
             <b style="color:var(--text-primary);">To review:</b> set your handle &#8594; choose <b style="color:var(--accent-emerald);">ok</b> (keep) or <b style="color:var(--accent-rose);">drop</b> (remove) + a reason &#8594; <b>Apply decisions &amp; rebuild</b> writes it to the register and re-gates.
             <span style="color:var(--text-muted);">No live server? Use <b>Download decisions CSV</b> &#8594; <code style="font-size:10.5px;">review.py apply</code>.</span>
           </div>
-          <details style="font-size:11.5px; color:var(--text-secondary);">
+          <details id="vf-reason-codes" style="font-size:11.5px; color:var(--text-secondary); border-radius:6px; padding:2px 4px;">
             <summary style="cursor:pointer; color:var(--accent-sky); font-weight:600; outline:none;">Reason codes — what each means</summary>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:4px 18px; margin-top:8px; line-height:1.5;">
               <div><b style="color:var(--text-primary);">smuggled_number</b> — number not in this quote</div>
@@ -2453,6 +2453,7 @@
   function vfEsc(v){ return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   // library_path (e.g. D591_Rural-Scan_NBS/2_Technical_&_Data/library/.../x.pdf) -> SharePoint web URL.
   // Works for any team member with access to the Alliance-ClimateActionNetZero library — no local server.
+  function vfShowReasonHelp(){ var d=document.getElementById('vf-reason-codes'); if(!d)return; d.open=true; d.scrollIntoView({behavior:'smooth',block:'center'}); d.style.transition='background .3s'; d.style.background='rgba(14,165,233,0.14)'; setTimeout(function(){ d.style.background=''; },1300); }
   function vfSharePointUrl(lp){ if(!lp)return ''; var base='https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/'+encodeURIComponent('Shared Documents')+'/ClimateActionNetZero/1_Projects/'; return base+lp.split('/').map(encodeURIComponent).join('/'); }
   function vfLocHint(ev){
     var cb=(ev.claim_basis||'');
@@ -2659,7 +2660,7 @@
         +'<div style="font-size:11.5px; margin:4px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
         +'<div style="font-size:11px; margin:6px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:7px 9px; border-radius:4px; max-height:130px; overflow:auto;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
         +reviewsLine+'<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; font-size:10.5px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp;&nbsp; ':'')+pdfLink
-        +'<span style="margin-left:auto; font-size:11px; color:var(--text-muted);">Reason:</span>'+reasonSel+noteInp+'<span style="font-size:11px; color:var(--text-muted);">Decision:</span>'
+        +'<a href="#" onclick="vfShowReasonHelp();return false;" title="what do these mean? click to jump to the reason-code definitions" style="margin-left:auto; font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+noteInp+'<span title="ok = keep the evidence (verifier was wrong, or a correction you accept) · drop = remove it from the register" style="font-size:11px; color:var(--text-muted); cursor:help; text-decoration:underline dotted;">Decision</span>'
         +'<button title="'+(passed?'confirm AI pass is correct':'evidence stands (false-positive flag, or correction accepted)')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">ok</button>'
         +'<button title="'+(passed?'AI missed an error — false negative; remove':'remove this unit from the register')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">drop</button>'
         +'</div></div>';
