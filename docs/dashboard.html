@@ -1941,6 +1941,7 @@
           <br><strong>Reason codes:</strong> <b>smuggled_number</b> number not in this quote · <b>cross_row_stitch</b> two table rows merged into a range · <b>wrong_variable</b> mis-labelled variable · <b>table_garble</b> mangled table · <b>off_scope</b> not a suitability claim (e.g. study-site descriptors, wrong crop) · <b>quote_too_narrow</b> too little context · <b>false_flag</b> verifier wrong → keep (ok) · <b>accepted_correction</b> fix accepted → ok · <b>other</b> (note).
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;" id="vf-mode-pills"></div>
+        <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:10px; align-items:center;" id="vf-scope"></div>
         <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;" id="vf-verdict-filters">
           <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button>
         </div>
@@ -2532,6 +2533,19 @@
     window._vfFlagged=flaggedRows;
     var flaggedIds={}; flaggedRows.forEach(function(r){flaggedIds[r.ev.evidence_id]=1;});
     var passedAll=evAll.filter(function(ev){ return !flaggedIds[ev.evidence_id] && (ev.use_role!=='dataset'); });
+    // scope filter — same NbS / Table / Sub-practice selectors as other sections
+    if(!window._vfScope)window._vfScope={nbs:'all',table:'all',family:'all'};
+    var _R2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
+    function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; return true; }
+    var scEl=document.getElementById('vf-scope');
+    if(scEl){ var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
+      var _famOpts=Array.from(new Set(evAll.filter(function(e){return window._vfScope.nbs==='all'||e.nbs_id===window._vfScope.nbs;}).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
+      var _mkSel=function(key,label,opts,fmt){ var cur=window._vfScope[key]; var ss='font-size:10.5px; padding:3px 6px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);'; return '<label style="font-size:10.5px; color:var(--text-muted); display:flex; align-items:center; gap:5px;">'+label+'<select onchange="window._vfScope.'+key+'=this.value; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="'+ss+'">'+['all'].concat(opts).map(function(o){return '<option value="'+vfEsc(o)+'"'+(cur===o?' selected':'')+'>'+(o==='all'?'All':vfEsc(fmt(o)))+'</option>';}).join('')+'</select></label>'; };
+      scEl.innerHTML=_mkSel('nbs','NbS',_nbsOpts,function(o){return o.replace(/_/g,' ');})
+        +_mkSel('table','Table',['T3','T4','T6'],function(o){return o;})
+        +_mkSel('family','Sub-practice',_famOpts,function(o){return o.split('__').pop().replace(/_/g,' ');}); }
+    flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
+    passedAll=passedAll.filter(_inScope);
     var mp=document.getElementById('vf-mode-pills');
     if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['stats','📊 Stats']];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
@@ -3466,15 +3480,15 @@
       const _v = ledgerStage(_nbs, _tbl, _cat, 'verified') === 'done' && _e;
       const _r = cellReviewed(statusKey, targetKey, typeKey);
       const _dot = (state, color, lbl, tip) =>
-        `<span title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:11px;height:11px;border-radius:50%;font-size:6.5px;font-weight:700;margin:0 0.5px;${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
-      const sevr = `<div style="margin-top:3px;white-space:nowrap;line-height:1;">`
+        `<span title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:11px;font-weight:700;margin:0 2px;${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
+      const sevr = `<div style="margin-top:6px;white-space:nowrap;line-height:1;">`
         + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', '#0ea5e9', 'S', `${typeLabel} Searched: ${_ss}`)
         + _dot(_e ? 'full' : 'none', '#10b981', 'E', `Extracted: ${count} source(s)`)
         + _dot(_v ? 'full' : 'none', '#818cf8', 'V', `Verified: ${_v ? 'verify pass run' : 'not run / no evidence'}`)
         + _dot(_r ? 'full' : 'none', '#10b981', 'R', `Reviewed: ${_r ? 'yes' : 'not yet'}`)
         + `</div>`;
       return `<td style="text-align: center; border-left: ${typeKey === 'stock' ? '1px solid var(--border-color)' : 'none'};" title="${targetLabel} - ${typeLabel}: ${titleText}">
-        <span class="badge ${badgeClass} audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">${displayVal}</span>
+        <span class="badge ${badgeClass} audit-badge" style="font-weight: 700; width: 24px; height: 24px; line-height: 24px; font-size: 13px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">${displayVal}</span>
         ${sevr}
       </td>`;
     };
