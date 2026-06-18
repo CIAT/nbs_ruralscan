@@ -81,7 +81,20 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
 6. **Family**: general cross-cutting envelope claims → `agroforestry__cross_family`, not a
    default to F1. Family-specific only when the paper's system is that family.
 7. **cited_secondary REQUIRES `attribution`** (whose finding) — synthesis de-dups on it.
+8. **Section-scope: a T4 quote must be a SUITABILITY claim** (2026-06-18 — 86% of QA drops
+   were `off_scope`). Do NOT extract a `structural_suitability` value from a section that is
+   not suitability reasoning: study-site / characteristics tables, methods / study-area
+   descriptions, carbon·CO2·biomass accounting, or generic intros / problem statements. A
+   verbatim number near a variable name is not a threshold if the section isn't analysing
+   suitability. (Carbon/biomass IS valid for T6 effects and fuel/biomass for T3 hazard —
+   the rule is T4-only.) Record `claim_basis` + `selection_justification`; if you can't say
+   why it's a suitability claim, don't extract it. Deterministically triaged by
+   `schema_tools/check_scope.py`. **Source-scope:** also confirm the paper is about the NbS
+   *practice* — a reforestation / forest-restoration / carbon-only paper is not agroforestry
+   suitability; scope-flag it at screening rather than mapping its rows to a family.
 
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
-`check_numbers.py`, and the adversarial relationship-verify. A subagent's own self-check
-is advisory — do not rely on it.
+`check_numbers.py`, `check_scope.py`, and the adversarial relationship-verify. A subagent's
+own self-check is advisory — do not rely on it. After a sweep, the learning loop is only
+honest if feedback is incorporated: `learnings.py` tracks `review_log` vs adjustments and
+the build flags unprocessed review decisions (run `/sweep-retro` → encode → `learnings.record`).
