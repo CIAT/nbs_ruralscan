@@ -1348,30 +1348,11 @@
           <div class="table-wrapper">
             <table class="data-table" id="table-discovery-audit">
               <thead>
-                <!-- Level 1 header: Targets -->
                 <tr>
-                  <th rowspan="2" id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
-                  <th colspan="4" id="audit-hdr-t4" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings</th>
-                  <th colspan="4" id="audit-hdr-t3" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links</th>
-                  <th colspan="4" id="audit-hdr-t6" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing</th>
-                </tr>
-                <!-- Level 2 header: Evidence Types -->
-                <tr>
-                  <!-- T4 Sub-columns -->
-                  <th style="font-size: 10px; text-align: center; border-left: 1px solid var(--border-color); padding: 6px;">Stock</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Lit</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Grey</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Tools</th>
-                  <!-- T3 Sub-columns -->
-                  <th style="font-size: 10px; text-align: center; border-left: 1px solid var(--border-color); padding: 6px;">Stock</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Lit</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Grey</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Tools</th>
-                  <!-- T6 Sub-columns -->
-                  <th style="font-size: 10px; text-align: center; border-left: 1px solid var(--border-color); padding: 6px;">Stock</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Lit</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Grey</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Tools</th>
+                  <th id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
+                  <th id="audit-hdr-t4" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t3" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t6" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
                 </tr>
               </thead>
               <tbody id="body-discovery-audit">
@@ -3483,7 +3464,7 @@
     });
 
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="13" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
+      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
       return;
     }
 
@@ -3528,11 +3509,15 @@
         + _dot(_v ? 'full' : 'none', '#818cf8', 'V', `Verified: ${_v ? 'verify pass run' : 'not run / no evidence'}`)
         + _dot(_r ? 'full' : 'none', '#10b981', 'R', `Reviewed: ${_r ? 'yes' : 'not yet'}`)
         + `</div>`;
-      return `<td style="text-align: center; border-left: ${typeKey === 'stock' ? '1px solid var(--border-color)' : 'none'};" title="${targetLabel} - ${typeLabel}: ${titleText}">
-        <span class="badge ${badgeClass} audit-badge" style="font-weight: 700; width: 24px; height: 24px; line-height: 24px; font-size: 13px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">${displayVal}</span>
+      const _short = typeKey === 'stock' ? 'Stock' : typeKey === 'updated' ? 'Lit' : typeKey === 'grey' ? 'Grey' : 'Tools';
+      return `<div title="${targetLabel} - ${typeLabel}: ${titleText}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
+        <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">${_short}</span>
+        <span class="badge ${badgeClass} audit-badge" style="font-weight:700; width:24px; height:24px; line-height:24px; font-size:13px; display:inline-block; text-align:center; border-radius:50%; padding:0;">${displayVal}</span>
         ${sevr}
-      </td>`;
+      </div>`;
     };
+    const renderTableCell = (statusKey, targetKey) =>
+      `<td style="padding:8px; vertical-align:top; border-left:1px solid var(--border-color);"><div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">${renderCell(statusKey, targetKey, 'stock')}${renderCell(statusKey, targetKey, 'updated')}${renderCell(statusKey, targetKey, 'grey')}${renderCell(statusKey, targetKey, 'tools')}</div></td>`;
 
     rows.forEach(r => {
       const recipe = dashboardData.recipes[r.nbsId];
@@ -3552,20 +3537,9 @@
             Subpractices: ${subpracticesNames}
           </div>
         </td>
-        ${renderCell(r.familyId, 't4', 'stock')}
-        ${renderCell(r.familyId, 't4', 'updated')}
-        ${renderCell(r.familyId, 't4', 'grey')}
-        ${renderCell(r.familyId, 't4', 'tools')}
-
-        ${renderCell(r.familyId, 't3', 'stock')}
-        ${renderCell(r.familyId, 't3', 'updated')}
-        ${renderCell(r.familyId, 't3', 'grey')}
-        ${renderCell(r.familyId, 't3', 'tools')}
-
-        ${renderCell(r.familyId, 't6', 'stock')}
-        ${renderCell(r.familyId, 't6', 'updated')}
-        ${renderCell(r.familyId, 't6', 'grey')}
-        ${renderCell(r.familyId, 't6', 'tools')}
+        ${renderTableCell(r.familyId, 't4')}
+        ${renderTableCell(r.familyId, 't3')}
+        ${renderTableCell(r.familyId, 't6')}
       `;
       body.appendChild(tr);
     });
