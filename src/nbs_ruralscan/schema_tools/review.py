@@ -86,6 +86,32 @@ def export() -> Path:
     return WORKLIST
 
 
+def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
+    """Apply {evidence_id: 'ok'|'drop'} to the EV register. Returns a summary dict."""
+    today = datetime.now(timezone.utc).date().isoformat()
+    with EV.open(newline="", encoding="utf-8") as f:
+        rd = csv.DictReader(f)
+        cols = rd.fieldnames
+        rows = list(rd)
+    kept, dropped, resolved = [], 0, 0
+    for r in rows:
+        d = (decisions.get(r["evidence_id"]) or "").strip().lower()
+        if d == "drop":
+            dropped += 1
+            continue
+        if d == "ok":
+            r["reviewer_ok"] = "true"
+            r["attribution"] = _FLAG_RE.sub("", r.get("attribution", "")).strip()
+            r["attribution"] = (f"[reviewed {today} by {reviewer}] " + (r["attribution"] or "")).strip()
+            resolved += 1
+        kept.append(r)
+    with EV.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=cols)
+        w.writeheader()
+        w.writerows(kept)
+    return {"ok": resolved, "dropped": dropped, "rows": len(kept)}
+
+
 def apply() -> None:
     """Apply decisions from the filled worklist back into the EV register."""
     if not WORKLIST.exists():
@@ -100,41 +126,9 @@ def apply() -> None:
     if not decisions:
         print("no decisions filled in the worklist — nothing to apply.")
         return
-    today = datetime.now(timezone.utc).date().isoformat()
-    with EV.open(newline="", encoding="utf-8") as f:
-        rd = csv.DictReader(f)
-        cols = rd.fieldnames
-        rows = list(rd)
-
-    kept, dropped, resolved = [], 0, 0
-    for r in rows:
-        d = decisions.get(r["evidence_id"])
-        if not d:
-            kept.append(r)
-            continue
-        dec = d["decision"].strip().lower()
-        if dec == "drop":
-            dropped += 1
-            continue
-        if dec == "ok":
-            r["reviewer_ok"] = "true"
-            # clear the [VERIFY-FLAG ...] marker; keep the rest of attribution
-            r["attribution"] = _FLAG_RE.sub("", r.get("attribution", "")).strip()
-            who = (d.get("reviewer") or "reviewer").strip()
-            r["attribution"] = (
-                f"[reviewed {today} by {who}] " + (r["attribution"] or "")
-            ).strip()
-            resolved += 1
-        kept.append(r)
-
-    with EV.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols)
-        w.writeheader()
-        w.writerows(kept)
-    print(
-        f"applied: {resolved} marked reviewed-ok (flag cleared), {dropped} dropped. "
-        f"EV now {len(kept)} rows."
-    )
+    reviewer = next((d.get("reviewer") for d in decisions.values() if d.get("reviewer")), "reviewer")
+    res = apply_decisions({eid: d["decision"] for eid, d in decisions.items()}, reviewer)
+    print(f"applied: {res['ok']} marked reviewed-ok (flag cleared), {res['dropped']} dropped. EV now {res['rows']} rows.")
     print(
         "Next: `generate.py schema` to rebuild + re-gate, then `ledger.py mark ... "
         "--stage reviewed --status done` for fully-reviewed tables."

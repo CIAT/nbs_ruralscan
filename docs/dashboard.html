@@ -1944,9 +1944,10 @@
         </div>
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
           <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
-          <button onclick="downloadVfDecisions()" style="font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download decisions CSV</button>
-          <button onclick="window._vfDecisions={}; localStorage.removeItem('vfDecisions'); renderVfWorklist();" style="font-size:11px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Clear</button>
-          <span style="font-size:10.5px; color:var(--text-muted);">Decisions save in your browser. Download &#8594; save as <code>pipeline/review/flag_worklist.csv</code> &#8594; <code>review.py apply</code>.</span>
+          <button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button>
+          <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download decisions CSV</button>
+          <button onclick="window._vfDecisions={}; localStorage.removeItem('vfDecisions'); if(window._reviewApi){fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});} renderVfWorklist();" style="font-size:11px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Clear</button>
+          <span id="vf-mode-hint" style="font-size:10.5px; color:var(--text-muted);">Static mode: decisions save in your browser. Download &#8594; save as <code>pipeline/review/flag_worklist.csv</code> &#8594; <code>review.py apply</code>.</span>
         </div>
         <div id="vf-cards"></div>
       </div>
@@ -2443,7 +2444,20 @@
   }
 
   function vfEsc(v){ return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  function setVfDecision(id,d){ if(!window._vfDecisions)window._vfDecisions={}; window._vfDecisions[id]=(window._vfDecisions[id]===d?'':d); localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions)); renderVfWorklist(); }
+  function setVfDecision(id,d){ if(!window._vfDecisions)window._vfDecisions={}; var val=(window._vfDecisions[id]===d?'':d); window._vfDecisions[id]=val; localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));
+    if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); }
+    renderVfWorklist(); }
+  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); if(window._reviewApi){ fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var d={}; Object.keys(st.decisions||{}).forEach(function(k){ d[k]=st.decisions[k].decision; }); window._vfDecisions=d; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); }); }
+  function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
+    if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply decisions &amp; rebuild</b> to write them to the register + re-gate.'; }
+    else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block'; } }
+  function applyVfDecisions(){ if(!window._reviewApi){ alert('No review server. Use Download decisions CSV + review.py apply.'); return; }
+    var btn=document.getElementById('vf-apply-btn'); if(btn){btn.disabled=true; btn.textContent='Applying…';}
+    fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer')})}).then(function(r){return r.json();}).then(function(res){
+      if(res.error){ alert('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions & rebuild';} return; }
+      window._vfDecisions={}; localStorage.removeItem('vfDecisions');
+      fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){ dashboardData=data; if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions & rebuild';} renderVfWorklist(); if(typeof triggerOverviewFilter==='function')triggerOverviewFilter(); if(typeof renderDiscoveryAudit==='function')renderDiscoveryAudit(); alert('Applied: '+(res.ok||0)+' ok, '+(res.dropped||0)+' dropped. Register rebuilt + re-gated.'); });
+    }).catch(function(e){ alert('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions & rebuild';} }); }
   function downloadVfDecisions(){
     var rows=window._vfFlagged||[]; var hdr=['evidence_id','source_id','variable','use_role','verdict','flag_reason','quote','relationship','decision','reviewer','note'];
     function q(v){v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"';}
@@ -2498,6 +2512,7 @@
   }
 
   function initDashboard() {
+    probeReviewApi();
     // 1. Meta fields
     const formattedDate = new Date(dashboardData.timestamp).toLocaleString();
     document.getElementById('meta-timestamp-val').textContent = formattedDate;
