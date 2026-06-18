@@ -1,7 +1,7 @@
 # Discovery Log — Agroforestry × T3 (NbS × Hazard × Farming System)
 
 **Date(s):** 2026-06-15
-**Author(s):** Pete Steward (Team Lead) · Codex (operator)
+**Author(s):** Pete Steward (Team Lead) · Antigravity (agent)
 **Seed-set rule:** T4 method §3 bounded, authority-weighted seed-set (v0.3.0) + disjoined synonyms.
 
 This log records the discovery of target candidate feeds intended to supply evidence for the NbS × Hazard × Farming System table (T3), specifically testing the boundaries of the biophysical hazard-mitigation relationships.
@@ -167,5 +167,5 @@ We identified several borderline cases that require collaborative feedback to de
 
 | Step / Audit | Date | Sign-off / Rationale |
 |---|---|---|
-| **Initial Discovery Log** | 2026-06-15 | Pete Steward (Team Lead) · Codex (operator) |
+| **Initial Discovery Log** | 2026-06-15 | Pete Steward (Team Lead) · Antigravity (agent) |
 | **Manual Search Audit Cross-Check** | 2026-06-15 | Pete Steward (Team Lead). Cross-checked against 10 Google Scholar meta-analyses (Patil 2025, Abebaw 2025, Kuyah 2019, Stubblefield 2026, Castle 2021, De Beenhouwer 2013, Ngaba 2024, Scordia 2023, Niether 2020, Baier 2023). Confirmed 8/10 are included/screened for T3, 1 is active under T6 (`castle_sr_2021`), and 1 is excluded (`Scordia 2023` - European Mediterranean focus, crop productivity vs biophysical hazard). Documented human-in-the-loop review. |
