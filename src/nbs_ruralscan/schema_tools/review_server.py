@@ -105,41 +105,37 @@ class Handler(SimpleHTTPRequestHandler):
             from nbs_ruralscan.schema_tools.review import apply_decisions
             from nbs_ruralscan.schema_tools.generate import generate
 
-            # CONSENSUS + QUORUM: commit a flag only when at least `min_reviewers` people
-            # have decided it AND they all agree. Below quorum -> stays pending (awaiting
-            # more reviews, still visible). Disagreement -> conflict (pending).
-            try:
-                min_reviewers = max(1, int(payload.get("min_reviewers", 1)))
-            except (TypeError, ValueError):
-                min_reviewers = 1
-            decisions, conflicts, awaiting = {}, [], []
+            # CONSENSUS: commit a flag when the reviewers who decided it AGREE; a
+            # disagreement is a conflict (left pending). Applied decisions are NOT deleted
+            # from the store — they persist as the review record so they can be viewed,
+            # re-reviewed by others, and a later disagreeing review re-opens the conflict.
+            decisions, conflicts = {}, []
             for eid, byrev in store.items():
                 decs = {rv: v for rv, v in byrev.items() if (v.get("decision") or "").strip()}
                 if not decs:
                     continue
                 vals = set(v["decision"] for v in decs.values())
-                if len(vals) > 1:
-                    conflicts.append({"evidence_id": eid, "reviews": {rv: v["decision"] for rv, v in decs.items()}})
-                elif len(decs) < min_reviewers:
-                    awaiting.append({"evidence_id": eid, "have": len(decs), "need": min_reviewers})
-                else:
+                if len(vals) == 1:
                     decisions[eid] = {
                         "decision": next(iter(vals)),
                         "reason": ";".join(sorted({v.get("reason", "") for v in decs.values() if v.get("reason")})),
                         "note": " | ".join(v.get("note", "") for v in decs.values() if v.get("note")),
                         "reviewer": ",".join(sorted(decs.keys())),
                     }
+                else:
+                    conflicts.append({"evidence_id": eid, "reviews": {rv: v["decision"] for rv, v in decs.items()}})
             if not decisions:
-                return self._json(200, {"applied": 0, "ok": True, "conflicts": conflicts, "awaiting": awaiting, "message": "nothing met quorum + agreement"})
+                return self._json(200, {"applied": 0, "ok": True, "conflicts": conflicts, "message": "no agreed units to apply"})
             try:
                 res = apply_decisions(decisions, "consensus")
                 generate(ROOT / "schema")
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"error": str(e)})
-            for eid in decisions:
-                store.pop(eid, None)  # keep conflicts + sub-quorum pending
+            for eid in decisions:  # mark applied; keep the record (history + re-review)
+                for rv in store.get(eid, {}):
+                    store[eid][rv]["applied"] = True
             _save(store)
-            return self._json(200, {"ok": True, **res, "conflicts": conflicts, "awaiting": awaiting})
+            return self._json(200, {"ok": True, **res, "conflicts": conflicts})
 
         if self.path == "/api/reopen":
             eids = payload.get("evidence_ids") or ([payload["evidence_id"]] if payload.get("evidence_id") else [])
