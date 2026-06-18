@@ -2611,8 +2611,11 @@
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
     passedAll=passedAll.filter(_inScope);
     var rlAll=(dashboardData.review_log)||[];
+    var _rlMe=(window._vfReviewer||'').trim();
+    var _reviewedCount=(new Set((_rlMe?rlAll.filter(function(r){return (r.reviewer||'')===_rlMe;}):rlAll).map(function(r){return r.evidence_id;}))).size;
+    var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+')';
     var mp=document.getElementById('vf-mode-pills');
-    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['reviewed','✓ My reviewed ('+rlAll.length+')'],['stats','📊 Stats']];
+    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['reviewed',_reviewedLbl],['stats','📊 Stats']];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
