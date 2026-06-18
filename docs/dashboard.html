@@ -1944,10 +1944,10 @@
           <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button>
         </div>
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
-          <label style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">Reviewer<input id="vf-reviewer" list="vf-reviewers" placeholder="git handle" onchange="window._vfReviewer=this.value.trim(); localStorage.setItem('vfReviewer',window._vfReviewer);" style="font-size:11px; padding:3px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); width:130px;"></label><datalist id="vf-reviewers"><option value="peetmate"></option></datalist><span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
+          <label style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">Reviewer<input id="vf-reviewer" list="vf-reviewers" placeholder="git handle" onchange="window._vfReviewer=this.value.trim(); localStorage.setItem('vfReviewer',window._vfReviewer);" style="font-size:11px; padding:3px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); width:130px;"></label><datalist id="vf-reviewers"><option value="peetmate"></option><option value="bensonkenduiywo"></option><option value="bjyberg"></option><option value="Namita-J"></option></datalist><span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
           <button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button>
           <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download decisions CSV</button>
-          <button onclick="window._vfDecisions={}; localStorage.removeItem('vfDecisions'); if(window._reviewApi){fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});} renderVfWorklist();" style="font-size:11px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Clear</button>
+          <button onclick="resetVfDecisions()" style="font-size:11px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset all → to-review</button>
           <span id="vf-mode-hint" style="font-size:10.5px; color:var(--text-muted);">Static mode: decisions save in your browser. Download &#8594; save as <code>pipeline/review/flag_worklist.csv</code> &#8594; <code>review.py apply</code>.</span>
         </div>
         <div id="vf-cards"></div>
@@ -2481,6 +2481,7 @@
       lines.push([ev.evidence_id,ev.source_id,ev.variable,ev.use_role,o.verdict,o.reason,(ev.quote||'').replace(/\n/g,' '),rel,((window._vfDecisions||{})[ev.evidence_id]||''),((window._vfReasons||{})[ev.evidence_id]||''),'',((window._vfNotes||{})[ev.evidence_id]||'')].map(q).join(',')); });
     var blob=new Blob([lines.join('\n')],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='flag_worklist.csv'; a.click();
   }
+  function resetVfDecisions(){ if(!confirm('Reset ALL decisions back to to-review? (clears your in-progress decisions)'))return; window._vfDecisions={}; window._vfReasons={}; window._vfNotes={}; window._vfAllReviews={}; localStorage.removeItem('vfDecisions'); localStorage.removeItem('vfReasons'); localStorage.removeItem('vfNotes'); if(window._reviewApi){ fetch('/api/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'}).then(function(){renderVfWorklist();}); } else { renderVfWorklist(); } }
   function renderVfWorklist() {
     if (!dashboardData) return;
     if (!window._vfDecisions){ try{ window._vfDecisions=JSON.parse(localStorage.getItem('vfDecisions')||'{}'); }catch(e){ window._vfDecisions={}; } }
@@ -2498,7 +2499,10 @@
     var fd=document.getElementById('vf-verdict-filters');
     if(fd){ var verdicts=['all'].concat(Array.from(new Set(flaggedRows.map(function(r){return r.verdict;}))));
       fd.innerHTML=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All ('+flaggedRows.length+')':v)+'</button>'; }).join(''); }
-    var visible=(!window._vfVerdictFilter||window._vfVerdictFilter==='all')?flaggedRows:flaggedRows.filter(function(r){return r.verdict===window._vfVerdictFilter;});
+    var visible;
+    if(window._vfVerdictFilter==='conflict'){ visible=flaggedRows.filter(function(r){ var a=(window._vfAllReviews||{})[r.ev.evidence_id]||{}; var ds=Object.keys(a).filter(function(k){return a[k].decision;}).map(function(k){return a[k].decision;}); return (new Set(ds)).size>1; }); }
+    else if(!window._vfVerdictFilter||window._vfVerdictFilter==='all'){ visible=flaggedRows; }
+    else { visible=flaggedRows.filter(function(r){return r.verdict===window._vfVerdictFilter;}); }
     var decided=flaggedRows.filter(function(r){return (window._vfDecisions||{})[r.ev.evidence_id];}).length;
     var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+decided+'</b> / '+flaggedRows.length+' decided';
     var host=document.getElementById('vf-cards'); if(!host)return; host.innerHTML='';

@@ -133,6 +133,10 @@ class Handler(SimpleHTTPRequestHandler):
             _save(store)
             return self._json(200, {"ok": True, **res, "conflicts": conflicts})
 
+        if self.path == "/api/clear":
+            _save({})
+            return self._json(200, {"ok": True})
+
         return self._json(404, {"error": "not found"})
 
     def log_message(self, *a):  # quieter
