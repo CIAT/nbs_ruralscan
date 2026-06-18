@@ -92,9 +92,16 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
    `schema_tools/check_scope.py`. **Source-scope:** also confirm the paper is about the NbS
    *practice* — a reforestation / forest-restoration / carbon-only paper is not agroforestry
    suitability; scope-flag it at screening rather than mapping its rows to a family.
+9. **Quote context — never an isolated cell** (2026-06-18 — ~11% of units were <=10 words).
+   The quote must carry the full threshold SENTENCE plus the table caption/header that
+   defines the variable & unit. A bare cell ("30-40 pt", "873.60", "5.1-8.5") can't prove
+   it's a suitability claim, what the number means, or species-vs-practice scope — and is
+   where table-garble / smuggled-unit / species-envelope defects hide. If the value is a
+   per-species table row, it's a species envelope (`claim_scope=species`), not a practice
+   row. Triaged by `schema_tools/check_quote.py`.
 
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
-`check_numbers.py`, `check_scope.py`, and the adversarial relationship-verify. A subagent's
+`check_numbers.py`, `check_scope.py`, `check_quote.py`, and the adversarial relationship-verify. A subagent's
 own self-check is advisory — do not rely on it. After a sweep, the learning loop is only
 honest if feedback is incorporated: `learnings.py` tracks `review_log` vs adjustments and
 the build flags unprocessed review decisions (run `/sweep-retro` → encode → `learnings.record`).

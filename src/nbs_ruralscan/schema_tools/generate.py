@@ -390,6 +390,14 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             f"  SCOPE NOTES ({len(_scope_flags)} active unit(s) with off-scope signals — "
             "run check_scope.py; the dominant QA defect)"
         )
+    from nbs_ruralscan.schema_tools.check_quote import check as _quote_check
+
+    _quote_flags = _quote_check(schema_root / "registers" / "EV_evidence_register.csv")
+    if _quote_flags:
+        print(
+            f"  QUOTE NOTES ({len(_quote_flags)} active unit(s) with too-narrow quotes — "
+            "run check_quote.py; re-extract with full context)"
+        )
     _ln = _learn_note()
     if _ln:
         print(f"  LEARNING-LOOP NOTE: {_ln}")
