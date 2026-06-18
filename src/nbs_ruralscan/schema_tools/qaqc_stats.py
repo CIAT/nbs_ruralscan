@@ -45,6 +45,7 @@ def compute(log_path: str | Path | None = None) -> dict:
     by_reason: Counter = Counter()
     by_verdict: Counter = Counter()
     tp = fp = tn = fn = 0
+    tp_removed = tp_corrected = 0
 
     for r in rows:
         verdict = (r.get("verdict") or "").strip().lower()
@@ -56,12 +57,14 @@ def compute(log_path: str | Path | None = None) -> dict:
         by_verdict[verdict or "pass"] += 1
         flagged = verdict in _FLAGGED
         if flagged:
-            if dec == "drop" or reason == "accepted_correction":
+            if dec == "drop":
                 tp += 1
+                tp_removed += 1  # caught a real error -> removed
             elif dec == "ok" and reason == "false_flag":
-                fp += 1
+                fp += 1  # AI was wrong -> false alarm
             elif dec == "ok":
-                tp += 1  # kept after a correction the reviewer accepted
+                tp += 1
+                tp_corrected += 1  # caught a real problem -> auto-fix accepted, kept
             # blank decision: undecided, not counted
         else:  # AI passed; this row is a human spot-check of a pass
             if dec == "drop" or reason == "missed_error":
@@ -76,7 +79,8 @@ def compute(log_path: str | Path | None = None) -> dict:
         "by_decision": dict(by_decision),
         "by_reason": dict(by_reason.most_common()),
         "by_verdict": dict(by_verdict),
-        "flag_eval": {"tp": tp, "fp": fp, "n": tp + fp, "precision_pct": _pct(tp, tp + fp)},
+        "flag_eval": {"tp": tp, "fp": fp, "n": tp + fp, "precision_pct": _pct(tp, tp + fp),
+                      "tp_removed": tp_removed, "tp_corrected": tp_corrected},
         "pass_eval": {"tn": tn, "fn": fn, "checked": tn + fn, "fn_rate_pct": _pct(fn, tn + fn)},
         # recall is unknowable until passes are spot-checked (no FN evidence otherwise)
         "recall_est_pct": _pct(tp, tp + fn) if (tn + fn) > 0 else None,
