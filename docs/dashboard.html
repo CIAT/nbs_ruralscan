@@ -2555,16 +2555,19 @@
     window._vfFlagged=flaggedRows;
     var flaggedIds={}; flaggedRows.forEach(function(r){flaggedIds[r.ev.evidence_id]=1;});
     var passedAll=evAll.filter(function(ev){ return !flaggedIds[ev.evidence_id] && (ev.use_role!=='dataset'); });
-    // scope filter — same NbS / Table / Sub-practice selectors as other sections
-    if(!window._vfScope)window._vfScope={nbs:'all',table:'all',family:'all'};
+    // scope filter — pills derived from the data model; NbS controls table + family options
+    var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
+    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'all',family:'all'};
     var _R2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
     function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; return true; }
     var scEl=document.getElementById('vf-scope');
-    if(scEl){ var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
-      var _famOpts=Array.from(new Set(evAll.filter(function(e){return window._vfScope.nbs==='all'||e.nbs_id===window._vfScope.nbs;}).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
+    if(scEl){ var _inNbs=function(e){ return window._vfScope.nbs==='all'||e.nbs_id===window._vfScope.nbs; };
+      var _famOpts=Array.from(new Set(evAll.filter(_inNbs).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
+      var _tblPresent=new Set(evAll.filter(_inNbs).map(function(e){return _R2T[e.use_role];}).filter(Boolean));
+      var _tblOpts=['T3','T4','T6'].filter(function(t){return _tblPresent.has(t);}); if(!_tblOpts.length)_tblOpts=['T3','T4','T6'];
       var _mkPills=function(key,label,opts,fmt,cls){ var cur=window._vfScope[key]; var btns=['all'].concat(opts).map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
       scEl.innerHTML=_mkPills('nbs','Practice (NbS)',_nbsOpts,function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'sky')
-        +_mkPills('table','Table / Step',['T3','T4','T6'],function(o){return o;},'purple')
+        +_mkPills('table','Table / Step',_tblOpts,function(o){return o;},'purple')
         +_mkPills('family','Sub-practice',_famOpts,function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'emerald'); }
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
     passedAll=passedAll.filter(_inScope);
