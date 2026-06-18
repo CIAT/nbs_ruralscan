@@ -1942,23 +1942,13 @@
         <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;" id="vf-verdict-filters">
           <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button>
         </div>
-        <div style="overflow-x:auto;">
-          <table class="data-table" style="width:100%; border-collapse:collapse; font-size:12px;">
-            <thead>
-              <tr>
-                <th style="width:160px;">Evidence ID</th>
-                <th style="width:120px;">Source</th>
-                <th style="width:110px;">Variable</th>
-                <th style="width:90px;">Role</th>
-                <th style="width:95px;">Verdict</th>
-                <th style="width:300px;">Flag Reason</th>
-                <th style="min-width:280px;">Quote</th>
-                <th style="width:70px;">DOI</th>
-              </tr>
-            </thead>
-            <tbody id="ev-vf-worklist-body"></tbody>
-          </table>
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
+          <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
+          <button onclick="downloadVfDecisions()" style="font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download decisions CSV</button>
+          <button onclick="window._vfDecisions={}; localStorage.removeItem('vfDecisions'); renderVfWorklist();" style="font-size:11px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Clear</button>
+          <span style="font-size:10.5px; color:var(--text-muted);">Decisions save in your browser. Download &#8594; save as <code>pipeline/review/flag_worklist.csv</code> &#8594; <code>review.py apply</code>.</span>
         </div>
+        <div id="vf-cards"></div>
       </div>
     </div>
 
@@ -2452,78 +2442,58 @@
     }
   }
 
+  function vfEsc(v){ return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function setVfDecision(id,d){ if(!window._vfDecisions)window._vfDecisions={}; window._vfDecisions[id]=(window._vfDecisions[id]===d?'':d); localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions)); renderVfWorklist(); }
+  function downloadVfDecisions(){
+    var rows=window._vfFlagged||[]; var hdr=['evidence_id','source_id','variable','use_role','verdict','flag_reason','quote','relationship','decision','reviewer','note'];
+    function q(v){v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"';}
+    var lines=[hdr.join(',')];
+    rows.forEach(function(o){ var ev=o.ev; var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';
+      lines.push([ev.evidence_id,ev.source_id,ev.variable,ev.use_role,o.verdict,o.reason,(ev.quote||'').replace(/\n/g,' '),rel,((window._vfDecisions||{})[ev.evidence_id]||''),'',''].map(q).join(',')); });
+    var blob=new Blob([lines.join('\n')],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='flag_worklist.csv'; a.click();
+  }
   function renderVfWorklist() {
     if (!dashboardData) return;
-    const evAll = dashboardData.registers.EV_evidence_register || [];
-    const srcAll = dashboardData.registers.SRC_source_register || [];
-
-    // Collect flagged rows and parse flag details
-    const flaggedRows = [];
-    evAll.forEach(ev => {
-      const attr = ev.attribution || '';
-      const idx = attr.indexOf('[VERIFY-FLAG ');
-      if (idx === -1) return;
-      const raw = attr.slice(idx + 13); // after '[VERIFY-FLAG '
-      const close = raw.indexOf(']');
-      const flagBody = close !== -1 ? raw.slice(0, close) : raw;
-      const colonIdx = flagBody.indexOf(': ');
-      const verdict = colonIdx !== -1 ? flagBody.slice(0, colonIdx).trim().toLowerCase() : flagBody.trim().toLowerCase();
-      const reason = colonIdx !== -1 ? flagBody.slice(colonIdx + 2).trim() : '';
-      flaggedRows.push({ ev, verdict, reason });
-    });
-
-    // Build verdict filter buttons (once, idempotent)
-    const filterDiv = document.getElementById('vf-verdict-filters');
-    if (filterDiv) {
-      const verdicts = ['all', ...new Set(flaggedRows.map(r => r.verdict)).values()];
-      filterDiv.innerHTML = verdicts.map(v => {
-        const active = window._vfVerdictFilter === v ? 'active rose' : '';
-        return `<button class="pill-btn ${active}" data-vf-verdict="${v}" onclick="window._vfVerdictFilter='${v}'; renderVfWorklist();" style="font-size:10px; padding:2px 8px; border-radius:4px; text-transform:capitalize;">${v === 'all' ? 'All (' + flaggedRows.length + ')' : v}</button>`;
-      }).join('');
-    }
-
-    // Filter
-    const visible = window._vfVerdictFilter === 'all'
-      ? flaggedRows
-      : flaggedRows.filter(r => r.verdict === window._vfVerdictFilter);
-
-    const tbody = document.getElementById('ev-vf-worklist-body');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-
-    if (visible.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:14px;">No flagged EV rows for this verdict filter.</td></tr>`;
-      return;
-    }
-
-    visible.forEach(({ ev, verdict, reason }) => {
-      const src = srcAll.find(s => s.source_id === ev.source_id);
-      // DOI link
-      let doiHtml = '—';
-      if (src && src.doi) {
-        const doi = src.doi.trim();
-        const href = doi.startsWith('http') ? doi : `https://doi.org/${doi}`;
-        doiHtml = `<a href="${href}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky); text-decoration:underline; font-size:10.5px;" onclick="event.stopPropagation();">${doi.startsWith('http') ? 'Link ↗' : doi.slice(0, 20) + '… ↗'}</a>`;
-      } else if (src && src.url) {
-        doiHtml = `<a href="${src.url}" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky); text-decoration:underline; font-size:10.5px;" onclick="event.stopPropagation();">Link ↗</a>`;
-      }
-      // Truncate quote
-      const quote = (ev.quote || '').replace(/\n/g, ' ').trim();
-      const quoteTrunc = quote.length > 320 ? quote.slice(0, 320) + '…' : quote;
-      // Verdict badge colour
-      const vColour = verdict === 'unsupported' ? 'var(--accent-rose)' : verdict === 'mismatch' ? 'var(--accent-amber)' : 'var(--text-secondary)';
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><code style="font-size:10.5px; font-family:ui-monospace,monospace; color:var(--accent-sky);">${ev.evidence_id || '—'}</code></td>
-        <td><code style="font-size:10px; font-family:ui-monospace,monospace; color:var(--text-secondary);">${ev.source_id || '—'}</code></td>
-        <td style="font-size:11px;">${ev.variable || '—'}</td>
-        <td style="font-size:10.5px; color:var(--text-muted);">${(ev.use_role || '—').replace(/_/g,' ')}</td>
-        <td><span style="font-size:10px; font-weight:700; color:${vColour}; text-transform:uppercase;">${verdict}</span></td>
-        <td style="font-size:11px; color:var(--text-secondary); max-width:260px; word-break:break-word;" title="${reason}">${reason || '—'}</td>
-        <td style="font-size:10.5px; color:var(--text-muted); max-width:180px; word-break:break-word;" title="${quote}">${quoteTrunc || '—'}</td>
-        <td>${doiHtml}</td>
-      `;
-      tbody.appendChild(tr);
+    if (!window._vfDecisions){ try{ window._vfDecisions=JSON.parse(localStorage.getItem('vfDecisions')||'{}'); }catch(e){ window._vfDecisions={}; } }
+    var evAll=dashboardData.registers.EV_evidence_register||[]; var srcAll=dashboardData.registers.SRC_source_register||[];
+    var flaggedRows=[];
+    evAll.forEach(function(ev){ var attr=ev.attribution||''; var idx=attr.indexOf('[VERIFY-FLAG '); if(idx===-1)return;
+      var raw=attr.slice(idx+13); var close=raw.indexOf(']'); var body=close!==-1?raw.slice(0,close):raw;
+      var ci=body.indexOf(': '); var verdict=(ci!==-1?body.slice(0,ci):body).trim().toLowerCase(); var reason=ci!==-1?body.slice(ci+2).trim():'';
+      flaggedRows.push({ev:ev,verdict:verdict,reason:reason}); });
+    window._vfFlagged=flaggedRows;
+    var fd=document.getElementById('vf-verdict-filters');
+    if(fd){ var verdicts=['all'].concat(Array.from(new Set(flaggedRows.map(function(r){return r.verdict;}))));
+      fd.innerHTML=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All ('+flaggedRows.length+')':v)+'</button>'; }).join(''); }
+    var visible=(!window._vfVerdictFilter||window._vfVerdictFilter==='all')?flaggedRows:flaggedRows.filter(function(r){return r.verdict===window._vfVerdictFilter;});
+    var decided=flaggedRows.filter(function(r){return (window._vfDecisions||{})[r.ev.evidence_id];}).length;
+    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+decided+'</b> / '+flaggedRows.length+' decided';
+    var host=document.getElementById('vf-cards'); if(!host)return; host.innerHTML='';
+    if(visible.length===0){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">No flagged rows for this filter.</div>'; return; }
+    visible.forEach(function(o){ var ev=o.ev, verdict=o.verdict, reason=o.reason; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
+      var dec=(window._vfDecisions||{})[ev.evidence_id]||'';
+      var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'page n/a');
+      var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'—';
+      var vc=verdict==='unsupported'?'var(--accent-rose)':verdict==='mismatch'?'var(--accent-amber)':'var(--text-secondary)';
+      var doi=(src.doi||'').trim();
+      var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI '+(doi.indexOf('http')===0?'link':vfEsc(doi))+' ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source link ↗</a>'):'');
+      var lib=src.library_path?('<span style="color:var(--text-muted);" title="OneDrive / SharePoint library">📄 '+vfEsc(src.library_path)+'</span>'):'';
+      var okA=dec==='ok', dropA=dec==='drop';
+      var card='<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:3px solid '+vc+'; border-radius:8px; padding:12px 14px; margin-bottom:10px; background:var(--bg-secondary);">'
+        +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">'
+        +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code>'
+        +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
+        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+'</span>'
+        +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
+        +'<div style="font-size:11.5px; margin:4px 0;"><b style="color:var(--text-muted);">Encoded value (disputed):</b> <code style="font-size:11px; color:var(--text-primary);">'+vfEsc(rel)+'</code></div>'
+        +'<div style="font-size:11.5px; margin:4px 0; color:'+vc+';"><b>Why flagged:</b> '+vfEsc(reason)+'</div>'
+        +'<div style="font-size:11px; margin:6px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:7px 9px; border-radius:4px; max-height:130px; overflow:auto;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+'):</b> '+vfEsc(ev.quote||'')+'</div>'
+        +'<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; font-size:10.5px;">'+doiHtml+(doiHtml&&lib?' &nbsp;&nbsp; ':'')+lib
+        +'<span style="margin-left:auto; font-size:11px; color:var(--text-muted);">Decision:</span>'
+        +'<button onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">ok</button>'
+        +'<button onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">drop</button>'
+        +'</div></div>';
+      host.insertAdjacentHTML('beforeend',card);
     });
   }
 
