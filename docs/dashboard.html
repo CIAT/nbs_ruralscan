@@ -2531,31 +2531,42 @@
 
   function reopenVf(eid){ if(!window._reviewApi){ alert('Re-open needs the live review server running.'); return; } if(!confirm('Re-open '+eid+' back into the AI-flagged worklist? (clears its reviewer_ok and restores the flag)'))return; var rev=(window._vfReviewer||'reviewer'); fetch('/api/reopen',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_ids:[eid],reviewer:rev})}).then(function(r){return r.json();}).then(function(res){ if(res&&res.error){ alert('Re-open failed: '+res.error); return; } fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ dashboardData=_segregateDropped(d); window._vfMode='flagged'; renderVfWorklist(); alert('Re-opened '+(res.reopened||0)+' unit(s) — now back in AI-flagged.'); }); }); }
 
+  function challengeVf(eid, dec){ if(!window._reviewApi){ alert('Challenging an applied decision needs the live review server.'); return; } var rev=(window._vfReviewer||'').trim(); if(!rev){ alert('Set your reviewer handle first.'); return; } var reason=prompt('Reason for "'+dec+'"? (optional)')||''; fetch('/api/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:eid,decision:dec,reason:reason,reviewer:rev})}).then(function(r){return r.json();}).then(function(res){ if(res&&res.error){ alert('Challenge failed: '+res.error); return; } fetch('/api/state').then(function(r){return r.json();}).then(function(st){ window._vfAllReviews=st.decisions||{}; fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ dashboardData=_segregateDropped(d); if(res.conflict){ window._vfMode='flagged'; window._vfVerdictFilter='conflict'; } renderVfWorklist(); alert(res.conflict?('⚠ Conflict raised'+(res.reopened?' — re-opened into AI-flagged (Conflict filter) for consensus.':'.')):'Recorded — agrees with the existing decision.'); }); }); }); }
+
   function renderVfReviewed(host, rlAll){ rlAll=rlAll||[];
     var me=(window._vfReviewer||'').trim();
     var rows=rlAll.slice().reverse();
-    var mine=me?rows.filter(function(r){return (r.reviewer||'')===me;}):rows;
+    var touchedByMe={}; if(me) rlAll.forEach(function(r){ if((r.reviewer||'')===me) touchedByMe[r.evidence_id]=true; });
     var evAll=(dashboardData.registers.EV_evidence_register)||[]; var present={};
     evAll.forEach(function(e){ present[e.evidence_id]=(e.reviewer_ok===true||e.reviewer_ok==='true'); });
     var dropped={}; ((dashboardData._evDropped)||[]).forEach(function(e){ dropped[e.evidence_id]=true; });
-    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+mine.length+'</b> review action(s) '+(me?('by '+vfEsc(me)+' '):' (all reviewers) ')+'<span style="color:var(--text-muted);">— from review_log; '+(me?'switch reviewer to see others':'set your handle to filter to yours')+'</span>';
+    // one card per unit (latest action), optionally filtered to units I've touched
+    var seen={}, units=[];
+    rows.forEach(function(r){ var id=r.evidence_id; if(me && !touchedByMe[id]) return; if(seen[id]) return; seen[id]=1; units.push(r); });
+    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+units.length+'</b> reviewed unit(s) '+(me?('touched by '+vfEsc(me)+' '):' (all reviewers) ')+'<span style="color:var(--text-muted);">— challenge with ok/drop to raise a conflict; '+(me?'switch reviewer to see others':'set your handle to filter to yours')+'</span>';
     host.innerHTML='';
-    if(!mine.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">No applied reviews yet'+(me?(' by '+vfEsc(me)):'')+'. Decisions appear here once you <b>Apply</b> them.</div>'; return; }
-    mine.forEach(function(r){
+    if(!units.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">No applied reviews yet'+(me?(' by '+vfEsc(me)):'')+'. Decisions appear here once you <b>Apply</b> them.</div>'; return; }
+    units.forEach(function(r){
+      var id=r.evidence_id;
       var dec=(r.decision||'').toLowerCase();
       var col=dec==='ok'?'var(--accent-emerald)':dec==='drop'?'var(--accent-rose)':'var(--accent-amber)';
-      var action;
-      if(dec==='ok'){ action = present[r.evidence_id] ? ('<button onclick="reopenVf(\''+r.evidence_id+'\')" style="cursor:pointer; font-size:11px; padding:3px 12px; border-radius:4px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber);">↩ re-open</button>') : '<span style="color:var(--text-muted); font-size:10.5px;">no longer kept</span>'; }
-      else if(dec==='drop'){ action = dropped[r.evidence_id] ? ('<button onclick="reopenVf(\''+r.evidence_id+'\')" style="cursor:pointer; font-size:11px; padding:3px 12px; border-radius:4px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber);">↩ re-open (restore)</button>') : '<span style="color:var(--text-muted); font-size:10.5px;">removed — re-extract to restore</span>'; }
-      else { action='<span style="color:var(--text-muted); font-size:10.5px;">'+vfEsc(dec)+'</span>'; }
-      var card='<div style="border:1px solid var(--border-color); border-left:3px solid '+col+'; border-radius:8px; padding:10px 14px; margin-bottom:8px; background:var(--bg-secondary);">'
+      // all reviewers' current decisions for this unit (from the persistent store)
+      var allr=(window._vfAllReviews||{})[id]||{}; var rk=Object.keys(allr).filter(function(k){return allr[k].decision;});
+      var conf=(new Set(rk.map(function(k){return allr[k].decision;}))).size>1;
+      var reviewsLine=rk.length?('<div style="font-size:10.5px; margin-top:5px;">'+(conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+rk.map(function(k){return vfEsc(k)+'='+vfEsc(allr[k].decision);}).join(' · ')+'</div>'):'';
+      var reopenBtn = (present[id]||dropped[id]) ? ('<button onclick="reopenVf(\''+id+'\')" title="clear the applied decision and send back to AI-flagged" style="cursor:pointer; font-size:11px; padding:3px 10px; border-radius:4px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber);">↩ re-open</button>') : '<span style="color:var(--text-muted); font-size:10.5px;">removed — re-extract</span>';
+      var challenge='<span style="font-size:10.5px; color:var(--text-muted);">challenge:</span>'
+        +'<button onclick="challengeVf(\''+id+'\',\'ok\')" title="record YOUR call = keep; disagreement raises a conflict" style="cursor:pointer; font-size:11px; padding:3px 11px; border-radius:4px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald);">ok</button>'
+        +'<button onclick="challengeVf(\''+id+'\',\'drop\')" title="record YOUR call = drop; disagreement raises a conflict" style="cursor:pointer; font-size:11px; padding:3px 11px; border-radius:4px; border:1px solid var(--accent-rose); background:transparent; color:var(--accent-rose);">drop</button>';
+      var card='<div style="border:1px solid var(--border-color); border-left:3px solid '+(conf?'var(--accent-rose)':col)+'; border-radius:8px; padding:10px 14px; margin-bottom:8px; background:var(--bg-secondary);">'
         +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">'
-        +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(r.evidence_id||'')+'</code>'
+        +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(id||'')+'</code>'
         +'<span style="font-weight:700; font-size:10px; color:'+col+'; text-transform:uppercase;">'+vfEsc(dec)+'</span>'
         +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(r.verdict||'')+(r.reason?(' · '+vfEsc((r.reason||'').replace(/_/g,' '))):'')+'</span>'
         +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(r.reviewer||'')+' · '+vfEsc(r.date||'')+'</span></div>'
         +(r.note?('<div style="font-size:11px; margin-top:5px; color:var(--text-secondary);">'+vfEsc(r.note)+'</div>'):'')
-        +'<div style="margin-top:7px; display:flex; align-items:center; gap:10px;"><span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(r.source_id||'')+'</span><span style="margin-left:auto;">'+action+'</span></div>'
+        +reviewsLine
+        +'<div style="margin-top:7px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(r.source_id||'')+'</span><span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;">'+challenge+reopenBtn+'</span></div>'
         +'</div>';
       host.insertAdjacentHTML('beforeend',card);
     });

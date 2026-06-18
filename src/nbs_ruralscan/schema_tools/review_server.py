@@ -137,6 +137,34 @@ class Handler(SimpleHTTPRequestHandler):
             _save(store)
             return self._json(200, {"ok": True, **res, "conflicts": conflicts})
 
+        if self.path == "/api/challenge":
+            # A reviewer records a decision on an already-applied unit. If it disagrees
+            # with the existing decision(s), it's a conflict -> auto-reopen into AI-flagged
+            # for consensus. If it agrees, just record it.
+            eid = payload.get("evidence_id")
+            dec = (payload.get("decision") or "").strip()
+            rev = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
+            if not eid or dec not in ("ok", "drop"):
+                return self._json(400, {"error": "evidence_id + decision(ok|drop) required"})
+            store = _load()
+            byrev = store.setdefault(eid, {})
+            byrev[rev] = {"decision": dec, "reason": payload.get("reason", ""), "note": payload.get("note", ""), "applied": False}
+            decs = {r: v["decision"] for r, v in byrev.items() if (v.get("decision") or "").strip()}
+            conflict = len(set(decs.values())) > 1
+            _save(store)
+            reopened = 0
+            if conflict:
+                from nbs_ruralscan.schema_tools.review import reopen_units
+                from nbs_ruralscan.schema_tools.generate import generate
+
+                try:
+                    res = reopen_units([eid], rev)
+                    generate(ROOT / "schema")
+                    reopened = res.get("reopened", 0)
+                except Exception as e:  # noqa: BLE001
+                    return self._json(500, {"error": str(e)})
+            return self._json(200, {"ok": True, "conflict": conflict, "reopened": reopened, "reviews": decs})
+
         if self.path == "/api/reopen":
             eids = payload.get("evidence_ids") or ([payload["evidence_id"]] if payload.get("evidence_id") else [])
             rev = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
