@@ -2613,8 +2613,8 @@
       if(fd){ fd.style.display='flex'; fd.style.gap='6px'; fd.style.flexWrap='wrap'; fd.style.alignItems='center';
         var verdicts=['all'].concat(Array.from(new Set(flaggedRows.map(function(r){return r.verdict;})))).concat(['conflict']);
         var vpills=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All ('+flaggedRows.length+')':v)+'</button>'; }).join('');
-        var _sts=[['all','All'],['todo','To-review ('+(flaggedRows.length-_decCount)+')'],['mine','My decisions ('+_decCount+')']];
-        var spills=_sts.map(function(s){ var a=window._vfFlagStatus===s[0]?'active emerald':''; return '<button class="pill-btn '+a+'" onclick="window._vfFlagStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join('');
+        var _sts=[['all','All',''],['todo','To-review ('+(flaggedRows.length-_decCount)+')','flagged units you have not decided yet'],['mine','In progress ('+_decCount+')','your un-applied clicks this session — they move to ✓ My reviewed once you Apply']];
+        var spills=_sts.map(function(s){ var a=window._vfFlagStatus===s[0]?'active emerald':''; return '<button class="pill-btn '+a+'" title="'+s[2]+'" onclick="window._vfFlagStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join('');
         fd.innerHTML=vpills+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+spills; }
       if(window._vfVerdictFilter==='conflict'){ visible=flaggedRows.filter(function(r){ var a=(window._vfAllReviews||{})[r.ev.evidence_id]||{}; var ds=Object.keys(a).filter(function(k){return a[k].decision;}).map(function(k){return a[k].decision;}); return (new Set(ds)).size>1; }); }
       else if(!window._vfVerdictFilter||window._vfVerdictFilter==='all'){ visible=flaggedRows; }
