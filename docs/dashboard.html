@@ -2569,7 +2569,7 @@
       var pdec=(pr.decision||'').toLowerCase(); var pcol=pdec==='ok'?'var(--accent-emerald)':'var(--accent-rose)';
       var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'');
       var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';
-      var spUrl=vfSharePointUrl(src.library_path||''); var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">📄 SharePoint ↗</a>'):'';
+      var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page; var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint'+(ev.page?(' — jumps to p.'+ev.page+' if it opens in a native PDF viewer; the SharePoint viewer ignores the page'):'')+'">📄 SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a>'):'';
       var card='<div style="border:1px solid var(--border-color); border-left:3px solid '+pcol+'; border-radius:8px; padding:11px 14px; margin-bottom:9px; background:var(--bg-secondary);">'
         +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:5px;">'
         +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code>'
@@ -2713,8 +2713,8 @@
       var vc=verdict==='unsupported'?'var(--accent-rose)':verdict==='mismatch'?'var(--accent-amber)':verdict==='pass'?'var(--accent-sky)':'var(--text-secondary)';
       var doi=(src.doi||'').trim();
       var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI '+(doi.indexOf('http')===0?'link':vfEsc(doi))+' ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source link ↗</a>'):'');
-      var spUrl=vfSharePointUrl(src.library_path||'');
-      var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint — any team member with library access">📄 SharePoint ↗</a>'):'';
+      var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
+      var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint (page jump only in a native PDF viewer)">📄 SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a>'):'';
       // local PDF only as a fallback when there is NO SharePoint link (e.g. not yet uploaded)
       var localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);" title="local cached PDF — this machine only; not yet in SharePoint">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
       var libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);" title="not in SharePoint and no local server">📄 not uploaded</span>':'';
