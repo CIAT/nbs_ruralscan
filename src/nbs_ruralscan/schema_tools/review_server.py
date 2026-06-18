@@ -80,17 +80,23 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(400, {"error": "bad json"})
 
         if self.path == "/api/decision":
+            # store is nested: {evidence_id: {reviewer: {decision, reason, note}}} — one per person.
             eid = payload.get("evidence_id")
             dec = payload.get("decision", "")
+            rev = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
             if not eid:
                 return self._json(400, {"error": "evidence_id required"})
             store = _load()
+            byrev = store.setdefault(eid, {})
             if dec in ("", None):
-                store.pop(eid, None)
+                byrev.pop(rev, None)
             else:
-                store[eid] = {"decision": dec, "reviewer": payload.get("reviewer", "reviewer"), "reason": payload.get("reason", ""), "note": payload.get("note", "")}
+                byrev[rev] = {"decision": dec, "reason": payload.get("reason", ""), "note": payload.get("note", "")}
+            if not byrev:
+                store.pop(eid, None)
             _save(store)
-            return self._json(200, {"ok": True, "decided": len(store)})
+            decided = sum(1 for e in store.values() for r in e.values() if r.get("decision"))
+            return self._json(200, {"ok": True, "decided": decided})
 
         if self.path == "/api/apply":
             store = _load()
@@ -99,15 +105,33 @@ class Handler(SimpleHTTPRequestHandler):
             from nbs_ruralscan.schema_tools.review import apply_decisions
             from nbs_ruralscan.schema_tools.generate import generate
 
-            decisions = {eid: {"decision": v["decision"], "reason": v.get("reason", ""), "note": v.get("note", "")} for eid, v in store.items()}
-            reviewer = next((v.get("reviewer") for v in store.values() if v.get("reviewer")), "reviewer")
+            # CONSENSUS: only apply a flag when every reviewer who decided it AGREES.
+            decisions, conflicts = {}, []
+            for eid, byrev in store.items():
+                decs = {rv: v for rv, v in byrev.items() if (v.get("decision") or "").strip()}
+                if not decs:
+                    continue
+                vals = set(v["decision"] for v in decs.values())
+                if len(vals) == 1:
+                    decisions[eid] = {
+                        "decision": next(iter(vals)),
+                        "reason": ";".join(sorted({v.get("reason", "") for v in decs.values() if v.get("reason")})),
+                        "note": " | ".join(v.get("note", "") for v in decs.values() if v.get("note")),
+                        "reviewer": ",".join(sorted(decs.keys())),
+                    }
+                else:
+                    conflicts.append({"evidence_id": eid, "reviews": {rv: v["decision"] for rv, v in decs.items()}})
+            if not decisions:
+                return self._json(200, {"applied": 0, "ok": True, "conflicts": conflicts, "message": "no consensus units to apply"})
             try:
-                res = apply_decisions(decisions, reviewer)
-                generate(ROOT / "schema")  # rebuild + re-gate (raises if a gate fails)
+                res = apply_decisions(decisions, "consensus")
+                generate(ROOT / "schema")
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"error": str(e)})
-            _save({})  # clear after successful apply
-            return self._json(200, {"ok": True, **res})
+            for eid in decisions:
+                store.pop(eid, None)  # keep conflicts pending for discussion
+            _save(store)
+            return self._json(200, {"ok": True, **res, "conflicts": conflicts})
 
         return self._json(404, {"error": "not found"})
 
