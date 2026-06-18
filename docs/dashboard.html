@@ -2555,11 +2555,17 @@
     var passed=(mode==='passed');
     var visible;
     if(passed){
-      if(fd)fd.style.display='none';
+      if(!window._vfPassStatus)window._vfPassStatus='unreviewed';
+      var _isRev=function(ev){ if(ev.reviewer_ok===true||ev.reviewer_ok==='true'||ev.reviewer_ok==='True')return true; var id=ev.evidence_id; if((window._vfDecisions||{})[id])return true; var a=(window._vfAllReviews||{})[id]||{}; return Object.keys(a).some(function(k){return a[k].decision;}); };
+      var _nRev=passedAll.filter(_isRev).length;
+      var _ps=window._vfPassStatus;
+      if(fd){ fd.style.display='flex'; var _sts=[['unreviewed','Not reviewed ('+(passedAll.length-_nRev)+')'],['reviewed','Reviewed ('+_nRev+')'],['all','All ('+passedAll.length+')']];
+        fd.innerHTML=_sts.map(function(s){ var a=_ps===s[0]?'active sky':''; return '<button class="pill-btn '+a+'" onclick="window._vfPassStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join(''); }
+      var pool=passedAll.filter(function(ev){ if(_ps==='all')return true; var r=_isRev(ev); return _ps==='reviewed'?r:!r; });
       var seed=window._vfPassSeed||0; var N=30;
-      var ranked=passedAll.map(function(ev){ var h=0,s=ev.evidence_id+'|'+seed; for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;} return {ev:ev,h:h>>>0}; }).sort(function(a,b){return a.h-b.h;});
+      var ranked=pool.map(function(ev){ var h=0,s=ev.evidence_id+'|'+seed; for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;} return {ev:ev,h:h>>>0}; }).sort(function(a,b){return a.h-b.h;});
       visible=ranked.slice(0,N).map(function(o){ return {ev:o.ev, verdict:'pass', reason:'AI accepted this extraction — spot-check: is the encoded value actually faithful to the quote?'}; });
-      var dc0=document.getElementById('vf-decided-count'); if(dc0) dc0.innerHTML='Sampling <b>'+visible.length+'</b> of '+passedAll.length+' AI-passed units &nbsp;<a href="#" onclick="window._vfPassSeed=(window._vfPassSeed||0)+1; renderVfWorklist(); return false;" style="color:var(--accent-sky);">↻ resample</a> &nbsp;<span style="color:var(--text-muted);">(ok = pass confirmed · drop = AI missed an error / false negative)</span>';
+      var dc0=document.getElementById('vf-decided-count'); if(dc0) dc0.innerHTML='Sampling <b>'+visible.length+'</b> of '+pool.length+' '+(_ps==='all'?'':(_ps+' '))+'AI-passed units &nbsp;<a href="#" onclick="window._vfPassSeed=(window._vfPassSeed||0)+1; renderVfWorklist(); return false;" style="color:var(--accent-sky);">↻ resample</a> &nbsp;<span style="color:var(--text-muted);">(ok = pass confirmed · drop = AI missed an error / false negative)</span>';
     } else {
       if(fd){ fd.style.display='flex'; var verdicts=['all'].concat(Array.from(new Set(flaggedRows.map(function(r){return r.verdict;})))).concat(['conflict']);
         fd.innerHTML=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All ('+flaggedRows.length+')':v)+'</button>'; }).join(''); }
