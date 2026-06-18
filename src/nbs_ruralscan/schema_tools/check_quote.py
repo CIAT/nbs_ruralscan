@@ -21,7 +21,19 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
-MIN_WORDS = 10
+MIN_WORDS = 15
+
+
+def _fragment(q: str) -> str | None:
+    """Why this quote reads as an incomplete fragment (or None if it's a full statement)."""
+    q = (q or "").strip()
+    if not q:
+        return None
+    if len(q.split()) < MIN_WORDS:
+        return f"<{MIN_WORDS}w"
+    if q[0].islower():
+        return "starts mid-sentence"  # no subject / lead-in captured
+    return None
 
 
 def check(ev_path: str | Path | None = None) -> list[dict]:
@@ -40,10 +52,11 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
                 continue
             if "[VERIFY-FLAG" in (r.get("attribution") or ""):
                 continue
-            q = (r.get("quote") or "").split()
-            if 0 < len(q) < MIN_WORDS:
+            why = _fragment(r.get("quote") or "")
+            if why:
+                q = (r.get("quote") or "").split()
                 flags.append(
-                    {"evidence_id": r["evidence_id"], "words": len(q), "quote": " ".join(q)}
+                    {"evidence_id": r["evidence_id"], "why": why, "words": len(q), "quote": " ".join(q)}
                 )
     return flags
 
@@ -51,11 +64,11 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
 def main(argv: list[str] | None = None) -> int:
     flags = check(argv[0] if argv else None)
     if not flags:
-        print(f"QUOTE CHECK: no active unreviewed quotes under {MIN_WORDS} words.")
+        print("QUOTE CHECK: no active unreviewed fragment quotes.")
         return 0
-    print(f"QUOTE CHECK (advisory): {len(flags)} quote(s) under {MIN_WORDS} words — re-extract with context:")
+    print(f"QUOTE CHECK (advisory): {len(flags)} fragment quote(s) — re-extract with full-sentence context:")
     for f in sorted(flags, key=lambda x: x["words"]):
-        print(f"  {f['words']:2}w  {f['evidence_id']}: {f['quote'][:70]}")
+        print(f"  {f['words']:2}w [{f['why']}]  {f['evidence_id']}: {f['quote'][:64]}")
     return 0
 
 
