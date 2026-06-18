@@ -1944,7 +1944,7 @@
           <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button>
         </div>
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
-          <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
+          <label style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">Reviewer<input id="vf-reviewer" list="vf-reviewers" placeholder="git handle" onchange="window._vfReviewer=this.value.trim(); localStorage.setItem('vfReviewer',window._vfReviewer);" style="font-size:11px; padding:3px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); width:130px;"></label><datalist id="vf-reviewers"><option value="peetmate"></option></datalist><span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
           <button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button>
           <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download decisions CSV</button>
           <button onclick="window._vfDecisions={}; localStorage.removeItem('vfDecisions'); if(window._reviewApi){fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'});} renderVfWorklist();" style="font-size:11px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Clear</button>
@@ -2485,6 +2485,8 @@
     if (!window._vfDecisions){ try{ window._vfDecisions=JSON.parse(localStorage.getItem('vfDecisions')||'{}'); }catch(e){ window._vfDecisions={}; } }
     if (!window._vfReasons){ try{ window._vfReasons=JSON.parse(localStorage.getItem('vfReasons')||'{}'); }catch(e){ window._vfReasons={}; } }
     if (!window._vfNotes){ try{ window._vfNotes=JSON.parse(localStorage.getItem('vfNotes')||'{}'); }catch(e){ window._vfNotes={}; } }
+    if (window._vfReviewer===undefined){ window._vfReviewer=localStorage.getItem('vfReviewer')||''; }
+    var _ri=document.getElementById('vf-reviewer'); if(_ri && !_ri.value && window._vfReviewer){ _ri.value=window._vfReviewer; }
     var evAll=dashboardData.registers.EV_evidence_register||[]; var srcAll=dashboardData.registers.SRC_source_register||[];
     var flaggedRows=[];
     evAll.forEach(function(ev){ var attr=ev.attribution||''; var idx=attr.indexOf('[VERIFY-FLAG '); if(idx===-1)return;
