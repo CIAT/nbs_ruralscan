@@ -380,6 +380,20 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             + "\n".join(f"  - {e}" for e in _ledger_errs)
         )
 
+    # Advisory (never fatal): off-scope extraction signals + unincorporated review feedback.
+    from nbs_ruralscan.schema_tools.check_scope import check as _scope_check
+    from nbs_ruralscan.schema_tools.learnings import coverage_note as _learn_note
+
+    _scope_flags = _scope_check(schema_root / "registers" / "EV_evidence_register.csv")
+    if _scope_flags:
+        print(
+            f"  SCOPE NOTES ({len(_scope_flags)} active unit(s) with off-scope signals — "
+            "run check_scope.py; the dominant QA defect)"
+        )
+    _ln = _learn_note()
+    if _ln:
+        print(f"  LEARNING-LOOP NOTE: {_ln}")
+
     manifest = json.loads((schema_root / "structure" / "columns.json").read_text())
     changed: list[Path] = []
     for spec in manifest["tables"].values():
