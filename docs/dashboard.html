@@ -2447,6 +2447,9 @@
   }
 
   function vfEsc(v){ return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  // library_path (e.g. D591_Rural-Scan_NBS/2_Technical_&_Data/library/.../x.pdf) -> SharePoint web URL.
+  // Works for any team member with access to the Alliance-ClimateActionNetZero library — no local server.
+  function vfSharePointUrl(lp){ if(!lp)return ''; var base='https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/'+encodeURIComponent('Shared Documents')+'/ClimateActionNetZero/1_Projects/'; return base+lp.split('/').map(encodeURIComponent).join('/'); }
   function vfLocHint(ev){
     var cb=(ev.claim_basis||'');
     if(cb==='table') return '\uD83D\uDCCA in a Table';
@@ -2561,7 +2564,11 @@
       var vc=verdict==='unsupported'?'var(--accent-rose)':verdict==='mismatch'?'var(--accent-amber)':verdict==='pass'?'var(--accent-sky)':'var(--text-secondary)';
       var doi=(src.doi||'').trim();
       var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI '+(doi.indexOf('http')===0?'link':vfEsc(doi))+' ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source link ↗</a>'):'');
-      var lib=src.library_path?('<span style="color:var(--text-muted);" title="OneDrive / SharePoint library">📄 '+vfEsc(src.library_path)+'</span>'):'';var pdfLink=window._reviewApi?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">📄 Open PDF '+vfEsc(page)+' ↗</a>'):lib;
+      var spUrl=vfSharePointUrl(src.library_path||'');
+      var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint — any team member with library access (no local server)">📄 SharePoint ↗</a>'):'';
+      var localLink=window._reviewApi?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="local cached PDF — jumps to page (this machine only)">📄 local PDF '+vfEsc(page)+' ↗</a>'):'';
+      var libTxt=(!spLink&&!localLink&&src.library_path)?('<span style="color:var(--text-muted);" title="library path (no SharePoint link)">📄 '+vfEsc(src.library_path)+'</span>'):(!spLink&&!localLink&&!src.library_path?'<span style="color:var(--text-muted);" title="no cached file / library path for this source">📄 no file</span>':'');
+      var pdfLink=[spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
       var okA=dec==='ok', dropA=dec==='drop';
       var _rc=passed?['confirmed_pass','missed_error','smuggled_number','wrong_variable','off_scope','other']:['smuggled_number','cross_row_stitch','wrong_variable','table_garble','off_scope','quote_too_narrow','false_flag','accepted_correction','other'];
       var _rcDesc={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim / not this NbS (e.g. study-site descriptors, urban, pure forestry)',quote_too_narrow:'quote too short to support the claim',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct — the encoded value is faithful to the quote (ok)',missed_error:'AI should have flagged this — a bad value slipped through (false negative) -> drop',other:'something else; explain in the note'};
