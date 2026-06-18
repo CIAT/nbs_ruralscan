@@ -260,11 +260,16 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "recipes": {},
         "discovery_logs": _parse_discovery_logs(schema_root),
         "progress_ledger": [],
+        "qaqc_stats": {},
     }
 
     ledger_csv = schema_root.parent / "pipeline" / "progress_ledger.csv"
     if ledger_csv.exists():
         data["progress_ledger"] = _csv_to_rows(ledger_csv)
+
+    from nbs_ruralscan.schema_tools import qaqc_stats as _qaqc
+
+    data["qaqc_stats"] = _qaqc.compute()
 
     # Read registers
     for reg in registers:

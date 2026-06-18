@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[3]
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 WORKLIST = ROOT / "pipeline" / "review" / "flag_worklist.csv"
 LOG = ROOT / "pipeline" / "metrics" / "review_log.csv"
-REASON_CODES = ["smuggled_number","cross_row_stitch","wrong_variable","table_garble","off_scope","quote_too_narrow","false_flag","accepted_correction","other"]
+REASON_CODES = ["smuggled_number","cross_row_stitch","wrong_variable","table_garble","off_scope","quote_too_narrow","false_flag","accepted_correction","confirmed_pass","missed_error","other"]
 _FLAG_RE = re.compile(r"\[VERIFY-FLAG\s+(\w+):\s*(.*?)\]\s*", re.S)
 _WL_FIELDS = [
     "evidence_id",
