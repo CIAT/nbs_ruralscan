@@ -88,7 +88,7 @@ class Handler(SimpleHTTPRequestHandler):
             if dec in ("", None):
                 store.pop(eid, None)
             else:
-                store[eid] = {"decision": dec, "reviewer": payload.get("reviewer", "reviewer"), "reason": payload.get("reason", "")}
+                store[eid] = {"decision": dec, "reviewer": payload.get("reviewer", "reviewer"), "reason": payload.get("reason", ""), "note": payload.get("note", "")}
             _save(store)
             return self._json(200, {"ok": True, "decided": len(store)})
 
@@ -99,7 +99,7 @@ class Handler(SimpleHTTPRequestHandler):
             from nbs_ruralscan.schema_tools.review import apply_decisions
             from nbs_ruralscan.schema_tools.generate import generate
 
-            decisions = {eid: {"decision": v["decision"], "reason": v.get("reason", "")} for eid, v in store.items()}
+            decisions = {eid: {"decision": v["decision"], "reason": v.get("reason", ""), "note": v.get("note", "")} for eid, v in store.items()}
             reviewer = next((v.get("reviewer") for v in store.values() if v.get("reviewer")), "reviewer")
             try:
                 res = apply_decisions(decisions, reviewer)

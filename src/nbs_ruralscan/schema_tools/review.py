@@ -104,8 +104,8 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
 
     def _norm(v):
         if isinstance(v, dict):
-            return (str(v.get("decision", "")).strip().lower(), (v.get("reason") or "").strip())
-        return (str(v or "").strip().lower(), "")
+            return (str(v.get("decision", "")).strip().lower(), (v.get("reason") or "").strip(), (v.get("note") or "").strip())
+        return (str(v or "").strip().lower(), "", "")
 
     with EV.open(newline="", encoding="utf-8") as f:
         rd = csv.DictReader(f)
@@ -115,12 +115,12 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
     reasons: Counter = Counter()
     logrows = []
     for r in rows:
-        dec, reason = _norm(decisions.get(r["evidence_id"]))
+        dec, reason, note = _norm(decisions.get(r["evidence_id"]))
         if not dec:
             kept.append(r)
             continue
         verdict = _verdict_of(r.get("attribution", ""))
-        logrows.append([today, r["evidence_id"], r.get("source_id", ""), verdict, dec, reason, reviewer])
+        logrows.append([today, r["evidence_id"], r.get("source_id", ""), verdict, dec, reason, note, reviewer])
         reasons[reason or "unspecified"] += 1
         if dec == "drop":
             dropped += 1
@@ -128,7 +128,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
         if dec == "ok":
             r["reviewer_ok"] = "true"
             r["attribution"] = _FLAG_RE.sub("", r.get("attribution", "")).strip()
-            tag = f"[reviewed {today} by {reviewer}" + (f"; reason:{reason}" if reason else "") + "]"
+            tag = f"[reviewed {today} by {reviewer}" + (f"; reason:{reason}" if reason else "") + (f"; note:{note}" if note else "") + "]"
             r["attribution"] = (tag + " " + (r["attribution"] or "")).strip()
             resolved += 1
         kept.append(r)
@@ -142,7 +142,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
         with LOG.open("a", newline="", encoding="utf-8") as f:
             w = csv.writer(f)
             if new_file:
-                w.writerow(["date", "evidence_id", "source_id", "verdict", "decision", "reason", "reviewer"])
+                w.writerow(["date", "evidence_id", "source_id", "verdict", "decision", "reason", "note", "reviewer"])
             w.writerows(logrows)
     return {"ok": resolved, "dropped": dropped, "rows": len(kept), "reasons": dict(reasons)}
 
@@ -162,7 +162,7 @@ def apply() -> None:
         print("no decisions filled in the worklist — nothing to apply.")
         return
     reviewer = next((d.get("reviewer") for d in decisions.values() if d.get("reviewer")), "reviewer")
-    res = apply_decisions({eid: {"decision": d["decision"], "reason": d.get("reason", "")} for eid, d in decisions.items()}, reviewer)
+    res = apply_decisions({eid: {"decision": d["decision"], "reason": d.get("reason", ""), "note": d.get("note", "")} for eid, d in decisions.items()}, reviewer)
     print(f"applied: {res['ok']} marked reviewed-ok (flag cleared), {res['dropped']} dropped. EV now {res['rows']} rows.")
     print(
         "Next: `generate.py schema` to rebuild + re-gate, then `ledger.py mark ... "
