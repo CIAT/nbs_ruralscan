@@ -1077,6 +1077,11 @@
     </a>
   </div>
 </header>
+<div id="readonly-banner" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:9px 16px; background:rgba(245,158,11,0.12); border-bottom:1px solid rgba(245,158,11,0.35); color:var(--text-primary); font-size:12.5px;">
+  <span style="font-size:15px;">&#9888;&#65039;</span>
+  <span><b>Read-only preview.</b> You're viewing the public dashboard on GitHub Pages — QA review decisions <b>won't save here</b>. To make edits, run it locally.</span>
+  <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer" style="margin-left:auto; font-weight:600; color:var(--accent-sky); text-decoration:none; white-space:nowrap;">&#9432; How to review locally &#8594;</a>
+</div>
 
 <main class="main-container">
   
@@ -2491,7 +2496,8 @@
     if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:reason,note:((window._vfNotes||{})[id]||''),reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
   function setVfNote(id,note){ if(!window._vfNotes)window._vfNotes={}; window._vfNotes[id]=note; localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes));
     if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:((window._vfReasons||{})[id]||''),note:note,reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
-  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); if(window._reviewApi){ if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); }); }
+  function _vfToggleBanner(){ var b=document.getElementById('readonly-banner'); if(b)b.style.display=window._reviewApi?'none':'flex'; }
+  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
   function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
     if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply decisions &amp; rebuild</b> to write them to the register + re-gate.'; }
     else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block'; } }
