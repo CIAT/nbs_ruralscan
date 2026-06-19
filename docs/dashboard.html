@@ -1915,9 +1915,10 @@
     <!-- TAB 5: SEARCH & DISCOVERY LOGS -->
     <div id="tab-qaqc" class="tab-content">
       <div class="card-container">
-        <h2 class="card-title">
+        <h2 class="card-title" style="display:flex; align-items:center; gap:12px;">
           <span>&#9872; QA / QC — VERIFY-FLAG review</span>
-          <span class="card-title-meta">Every EV row flagged by the relationship-verify pass — work through these before any threshold is trusted</span>
+          <span class="card-title-meta" style="flex:1;">Every EV row flagged by the relationship-verify pass — work through these before any threshold is trusted</span>
+          <button id="vf-stats-btn" onclick="window._vfMode='stats'; renderVfWorklist();" title="AI verify-flag performance metrics — analytics, not a review queue" style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald); cursor:pointer;">📊 Stats</button>
         </h2>
         <div style="margin-bottom:14px; display:flex; flex-direction:column; gap:9px;">
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -2747,9 +2748,8 @@
     var _2ndCount=(typeof _vf2ndList==='function')?_vf2ndList().length:0;
     var mp=document.getElementById('vf-mode-pills');
     if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['second','🔁 2nd opinion ('+_2ndCount+')'],['reviewed',_reviewedLbl]];
-      var pills=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join('');
-      var statsBtn='<span style="width:1px; height:20px; background:var(--border-color); margin:0 4px; align-self:center;"></span><button class="pill-btn '+(mode==='stats'?'active emerald':'')+'" onclick="window._vfMode=\'stats\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;" title="AI verify-flag performance metrics — analytics, not a review queue">📊 Stats</button>';
-      mp.innerHTML=pills+statsBtn; }
+      mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
+    var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
     if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfReviewed(host, rlAll);} return; }
