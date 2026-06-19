@@ -120,6 +120,12 @@ Includes:
 - **Pipeline Architecture (v0.4)** — one-page methodology architecture diagram
 - **Data Schema (v0.3.0)** — the T0–T7 ERD, field-level spec, evidence/config
   registers, and draft-0 example tables (structure frozen + machine-validated)
+- **[Evidence & Literature Dashboard](https://ciat.github.io/nbs_ruralscan/dashboard.html)**
+  — browse the SRC/EV evidence registers, the literature interrogator, the
+  ontology/network views, the stocktake benchmark, and the search & discovery
+  logs. Includes a **QA/QC review** workflow (public view is read-only; running
+  the local `review_server.py` enables reviewer edits — see
+  [`docs/REVIEWER_GUIDE.md`](./docs/REVIEWER_GUIDE.md)).
 
 Demonstrators use mock Sierra Leone / agroforestry data.
 
@@ -193,6 +199,7 @@ asking Claude Code to do it for you. Raise the PR via the GitHub UI or
 | Author or update a Variable Card                                 | [`.claude/commands/update-variable-card.md`](./.claude/commands/update-variable-card.md) + the issue template                                      |
 | Understand a module's I/O contract                               | [`methodology/modules/`](./methodology/modules/)                                                                                                   |
 | Look at the live demonstrators                                   | https://ciat.github.io/nbs_ruralscan/                                                                                                              |
+| Browse evidence registers / run QA review                        | [Evidence Dashboard](https://ciat.github.io/nbs_ruralscan/dashboard.html) + [`docs/REVIEWER_GUIDE.md`](./docs/REVIEWER_GUIDE.md)                    |
 
 If you're brand new, **read AGENTS.md and PLAYBOOK.md before your first issue.**
 Together they're about 15 minutes. They'll save you days of misunderstanding the
