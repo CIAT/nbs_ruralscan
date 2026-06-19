@@ -406,8 +406,14 @@ A reproducible five-step screening pipeline, applied per NbS × table:
    shape-bearing claims; ML or scoping-candidate okay for selection-only). Hard cap ~20 sources
    per NbS × table; lift only with a recorded justification.
 
-After screening: extract paper-first (§3 above), dedupe lineage cascades via `lineage_of`,
-record disagreement (don't silently average).
+**Search & Translation Logic:**
+- **Title-Only Filtering**: Programmatic queries target title-only fields (e.g., `display_name.search` in OpenAlex) rather than full-text searches to avoid high-citation noise and non-specific results.
+- **Multilingual AGROVOC Integration**: Query terms incorporate synonyms, sub-practice names, and translations derived from the FAO AGROVOC thesaurus across four languages (English, Spanish, French, Portuguese) to ensure LDC context relevance.
+- **General Web & Repository Searches**: For discovering standalone methodological tools, modeling packages, or code repositories (e.g., on GitHub, GitLab, or personal/academic websites), general web searches and meta-directories (such as the Nature-Positive Agrifood Systems Toolkit) are essential. Because these resources are often hosted outside of major institutional databases, general searches prevent artificial constraints on discovery. The screening phase (using the six-axis credibility rubric) is used to filter out low-quality results.
+- **Organization-Neutral Queries**: Web and database search strings must remain organization-neutral and focus on functional keywords (e.g., `agroforestry hazard mitigation guidelines manual` or `agroforestry climate adaptation manual`) to avoid over-constraining search results. Evaluation of institutional authority (e.g., prioritizing WOCAT, FAO, or World Bank publications) is performed during the relevance and credibility screening stages, not within the query strings themselves.
+- **Human-in-the-Loop Triage**: Borderline papers are flagged and reviewed collaboratively (e.g., rejecting urban forestry and pure physiology, accepting mechanical wind models or temperate baselines) to establish clear task boundaries.
+
+After screening: register in the Source Register (SRC), extract paper-first (§3 above), dedupe lineage cascades via `lineage_of`, and record disagreement (don't silently average). For non-English studies, the extraction logs verbatim quotes in their native language followed by a bracketed English translation: `"[Native Text] (English: [Translated Text])"`.
 
 ### Reproducible discovery log (PRISMA-lite, v0.2.7)
 

@@ -59,6 +59,9 @@ def synthesise_family(
     canonical_units = canonical_units or {}
     dataset_ids = dataset_ids or {}
 
+    # exclude soft-deleted (QA-dropped) units from all synthesis + support
+    units = [u for u in units if getattr(u, "review_state", "") != "dropped"]
+
     # support is measured over the structural-suitability candidates (what T4 considers)
     t4_units = [u for u in units if u.use_role == "structural_suitability"]
     var_support = variable_support(t4_units, corpus_n, tiers=tiers)

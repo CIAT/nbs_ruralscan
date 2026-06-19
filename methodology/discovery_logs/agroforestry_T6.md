@@ -1,7 +1,7 @@
 # Discovery log — Agroforestry × T6 (NbS Scorecard)
 
 **Date(s):** 2026-06-10
-**Author(s):** Pete Steward (Team Lead) · Codex (operator)
+**Author(s):** Pete Steward (Team Lead) · Antigravity (agent)
 **Seed-set rule:** T4 method §3 bounded, authority-weighted seed-set (v0.3.0).
 
 This log records the discovery of the target **corpus feeds** intended to supply evidence for the NbS Scorecard table (T6), covering qualitative benefits/trade-offs, cost indicators, and cost-effectiveness ratios.

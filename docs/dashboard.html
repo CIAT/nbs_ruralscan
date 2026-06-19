@@ -839,6 +839,12 @@
     font-weight: 500;
     transition: all 0.2s;
   }
+  .pill-btn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.05);
+  }
   .pill-btn:hover {
     background: rgba(255,255,255,0.04);
     color: var(--text-primary);
@@ -964,6 +970,66 @@
     text-anchor: middle;
     fill: var(--text-primary);
   }
+
+  /* Search & Discovery Funnel CSS */
+  .funnel-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 8px;
+    position: relative;
+  }
+  .funnel-label {
+    width: 160px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+    padding-right: 16px;
+    flex-shrink: 0;
+    font-family: var(--font-outfit);
+  }
+  .funnel-bar-wrapper {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .funnel-bar {
+    height: 32px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 16px;
+    color: #ffffff;
+    font-family: var(--font-outfit);
+    font-size: 13px;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: var(--transition);
+    cursor: pointer;
+  }
+  .funnel-bar span {
+    text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+  .funnel-bar:hover {
+    transform: scale(1.02) translateX(4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    filter: brightness(1.1);
+  }
+  .funnel-notes {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    margin-left: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    max-height: 32px;
+    line-height: 1.4;
+  }
 </style>
 </head>
 <body data-theme="dark">
@@ -980,6 +1046,10 @@
     <span class="brand-subtitle">Evidence &amp; Literature Interrogation Dashboard</span>
   </div>
   <div class="header-actions">
+    <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); margin-right:10px;" title="Your reviewer identity — every QA decision is attributed to this handle">&#128100; Reviewer
+      <select id="vf-reviewer" onchange="if(this.value==='__other__'){var h=prompt('Git handle:');setVfReviewer((h||'').trim());}else{setVfReviewer(this.value);}" style="font-size:12px; padding:4px 9px; border-radius:5px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); font-weight:600;"><option value="">— pick reviewer —</option><option value="peetmate">peetmate</option><option value="bensonkenduiywo">bensonkenduiywo</option><option value="bjyberg">bjyberg</option><option value="Namita-J">Namita-J</option><option value="__other__">Other…</option></select>
+      <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer" title="How to review locally — clone, run the server, make decisions, push" style="font-size:11px; color:var(--accent-sky); text-decoration:none; white-space:nowrap;">&#9432; how to review</a>
+    </label>
     <button class="btn-theme-toggle" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Theme">
       <!-- Dark mode (Sun) icon -->
       <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
@@ -1019,6 +1089,19 @@
         <rect x="3" y="16" width="7" height="5"></rect>
       </svg>
       Registers Overview
+    </button>
+    <button class="tab-btn" data-tab="tab-search" id="btn-search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        <line x1="8" y1="11" x2="14" y2="11"></line>
+        <line x1="11" y1="8" x2="11" y2="14"></line>
+      </svg>
+      Search &amp; Discovery Logs
+    </button>
+    <button class="tab-btn" data-tab="tab-qaqc" id="btn-qaqc">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+      QA / QC Flags
     </button>
     <button class="tab-btn" data-tab="tab-interrogator" id="btn-interrogator">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1131,6 +1214,22 @@
         </div>
       </div>
 
+      <!-- Evidence Quality Panel -->
+      <div class="card-container" id="ev-quality-panel" style="margin-bottom:20px; cursor:pointer; user-select:none;" onclick="document.getElementById('btn-qaqc').click()" title="Open the QA / QC Flags tab">
+        <h2 class="card-title" style="margin-bottom:12px;">
+          <span>Evidence Quality Signal</span>
+          <span class="card-title-meta">Live counts from the Evidence Register — full review in the QA / QC Flags tab</span>
+          <span id="evq-worklist-toggle-hint" style="float:right; font-size:11px; font-weight:400; color:var(--accent-rose); margin-left:auto; padding-left:12px;">&#9654; Open QA / QC Flags tab</span>
+        </h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; font-size:12.5px;" id="ev-quality-stats">
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">TOTAL EV UNITS</div><div class="stat-value" style="font-size:22px;" id="evq-total">—</div></div>
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px; color:var(--accent-rose);">VERIFY-FLAGS</div><div class="stat-value" style="font-size:22px; color:var(--accent-rose);" id="evq-vf">—</div></div>
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">UNREVIEWED</div><div class="stat-value" style="font-size:22px;" id="evq-unreviewed">—</div></div>
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">LOW CONFIDENCE</div><div class="stat-value" style="font-size:22px;" id="evq-low-conf">—</div></div>
+          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">BY USE ROLE</div><div style="font-size:11px; margin-top:6px; line-height:1.7;" id="evq-roles">—</div></div>
+        </div>
+      </div>
+
       <!-- Section 1: Global NbS Comparison Table -->
       <div class="card-container">
         <h2 class="card-title">
@@ -1229,16 +1328,20 @@
             <div style="display:flex; gap:16px; align-items:center; font-size:11.5px; border-left: 1px solid var(--border-color); padding-left: 16px; margin-left: 4px; flex-wrap: wrap;">
               <span style="color:var(--text-muted); font-weight:500;">Legend:</span>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge high audit-badge">✓</span>
-                <span style="color:var(--text-secondary);">Complete</span>
+                <span class="badge high audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">#</span>
+                <span style="color:var(--text-secondary);">&gt; 1 Source</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge medium audit-badge">⚠</span>
-                <span style="color:var(--text-secondary);">Seeded / Registered</span>
+                <span class="badge medium audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">1</span>
+                <span style="color:var(--text-secondary);">1 Source</span>
               </div>
               <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge low audit-badge">✗</span>
-                <span style="color:var(--text-secondary);">Pending Search</span>
+                <span class="badge low audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">0</span>
+                <span style="color:var(--text-secondary);">No Evidence</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; margin-left:14px; padding-left:14px; border-left:1px solid var(--border-color); flex-wrap:wrap;">
+                <span style="color:var(--text-muted); font-weight:500;">Stage:</span>
+                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— the 4 small dots inside EACH STOCK/LIT/GREY/TOOLS cell, per source category. S/V from the enforced progress ledger (amber S = search in progress); E (evidence present) + R (reviewed) live from the register. The big number = source count. R is empty everywhere — nothing human-reviewed yet.</span></span>
               </div>
             </div>
 
@@ -1249,30 +1352,11 @@
           <div class="table-wrapper">
             <table class="data-table" id="table-discovery-audit">
               <thead>
-                <!-- Level 1 header: Targets -->
                 <tr>
-                  <th rowspan="2" id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
-                  <th colspan="4" id="audit-hdr-t4" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings</th>
-                  <th colspan="4" id="audit-hdr-t3" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links</th>
-                  <th colspan="4" id="audit-hdr-t6" class="sortable-header" style="text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing</th>
-                </tr>
-                <!-- Level 2 header: Evidence Types -->
-                <tr>
-                  <!-- T4 Sub-columns -->
-                  <th style="font-size: 10px; text-align: center; border-left: 1px solid var(--border-color); padding: 6px;">Stock</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Lit</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Grey</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Tools</th>
-                  <!-- T3 Sub-columns -->
-                  <th style="font-size: 10px; text-align: center; border-left: 1px solid var(--border-color); padding: 6px;">Stock</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Lit</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Grey</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Tools</th>
-                  <!-- T6 Sub-columns -->
-                  <th style="font-size: 10px; text-align: center; border-left: 1px solid var(--border-color); padding: 6px;">Stock</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Lit</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Grey</th>
-                  <th style="font-size: 10px; text-align: center; padding: 6px;">Tools</th>
+                  <th id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
+                  <th id="audit-hdr-t4" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t3" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t6" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
                 </tr>
               </thead>
               <tbody id="body-discovery-audit">
@@ -1520,7 +1604,10 @@
                 </svg>
                 Verbatim Evidence Claims
               </h3>
-              <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <button class="pill-btn" id="btn-show-flagged-only" data-active="0" onclick="window._evFlaggedOnly=!window._evFlaggedOnly;this.setAttribute('data-active',window._evFlaggedOnly?'1':'0');this.classList.toggle('active',window._evFlaggedOnly);this.classList.toggle('rose',window._evFlaggedOnly);renderVerbatimEvidence();" style="font-size:10px; padding:3px 9px; border-radius:4px;">&#9872; Flagged only</button>
+                <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click header to collapse/expand</span>
+              </div>
             </div>
             <div id="wrapper-evidence-claims">
               <div class="evidence-container" id="evidence-list"></div>
@@ -1826,6 +1913,279 @@
       </div>
     </div>
 
+    <!-- TAB 5: SEARCH & DISCOVERY LOGS -->
+    <div id="tab-qaqc" class="tab-content">
+      <div class="card-container">
+        <h2 class="card-title" style="display:flex; align-items:center; gap:12px;">
+          <span>&#9872; QA / QC — VERIFY-FLAG review</span>
+          <span class="card-title-meta" style="flex:1;">Every EV row flagged by the relationship-verify pass — work through these before any threshold is trusted</span>
+          <button id="vf-stats-btn" onclick="toggleVfStats()" title="AI verify-flag performance metrics — click to open, click again to return to review" style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald); cursor:pointer;">📊 Stats</button>
+        </h2>
+        <div style="margin-bottom:14px; display:flex; flex-direction:column; gap:9px;">
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.25); color:var(--text-secondary);"><b style="color:#f43f5e;">MISMATCH</b> — a value contradicted the quote (auto-corrected)</span>
+            <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); color:var(--text-secondary);"><b style="color:#f59e0b;">UNSUPPORTED</b> — a value the quote never contained (stripped)</span>
+            <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:var(--bg-secondary); border:1px solid var(--border-color); color:var(--text-muted);">flagged = <b>confidence-low</b> until reviewed</span>
+          </div>
+          <div style="font-size:11.5px; color:var(--text-secondary); line-height:1.6;">
+            <b style="color:var(--text-primary);">To review:</b> set your handle &#8594; choose <b style="color:var(--accent-emerald);">ok</b> (keep) or <b style="color:var(--accent-rose);">drop</b> (remove) + a reason &#8594; <b>Apply decisions &amp; rebuild</b> writes it to the register and re-gates.
+            <span style="color:var(--text-muted);">No live server? Use <b>Download decisions CSV</b> &#8594; <code style="font-size:10.5px;">review.py apply</code>.</span>
+          </div>
+          <details id="vf-reason-codes" style="font-size:11.5px; color:var(--text-secondary); border-radius:6px; padding:2px 4px;">
+            <summary style="cursor:pointer; color:var(--accent-sky); font-weight:600; outline:none;">Reason codes — what each means</summary>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:4px 18px; margin-top:8px; line-height:1.5;">
+              <div><b style="color:var(--text-primary);">smuggled_number</b> — number not in this quote</div>
+              <div><b style="color:var(--text-primary);">cross_row_stitch</b> — two table rows merged into a range</div>
+              <div><b style="color:var(--text-primary);">wrong_variable</b> — mis-labelled variable (SOM&#8800;SOC)</div>
+              <div><b style="color:var(--text-primary);">wrong_practice</b> — wrong NbS/practice (reforestation, pure forestry, carbon-only)</div>
+              <div><b style="color:var(--text-primary);">species_envelope</b> — per-species range, not a practice rule</div>
+              <div><b style="color:var(--text-primary);">table_garble</b> — mangled table extraction</div>
+              <div><b style="color:var(--text-primary);">off_scope</b> — not a suitability claim (site descriptors, wrong crop)</div>
+              <div><b style="color:var(--text-primary);">quote_too_narrow</b> — too little context</div>
+              <div><b style="color:var(--accent-emerald);">false_flag</b> — verifier wrong &#8594; keep (ok)</div>
+              <div><b style="color:var(--accent-emerald);">accepted_correction</b> — fix accepted &#8594; ok</div>
+              <div><b style="color:var(--accent-emerald);">confirmed_pass</b> — AI pass was correct &#8594; ok <span style="color:var(--text-muted);">(passed mode)</span></div>
+              <div><b style="color:var(--accent-rose);">missed_error</b> — AI missed it &#8594; drop <span style="color:var(--text-muted);">(passed mode)</span></div>
+              <div><b style="color:var(--text-primary);">other</b> — explain in the note</div>
+            </div>
+          </details>
+        </div>
+        <div style="display:flex; gap:18px; align-items:flex-start; margin-top:6px;">
+          <div id="vf-sidebar" style="flex:0 0 230px; position:sticky; top:8px; align-self:flex-start; max-height:92vh; overflow:auto; padding-right:6px; display:flex; flex-direction:column; gap:14px;">
+            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="which set of units to work on">View</div><div id="vf-mode-pills" style="display:flex; gap:6px; flex-wrap:wrap;"></div></div>
+            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="narrow to a practice / table / sub-practice">Scope</div><div id="vf-scope" style="display:flex; gap:8px; flex-wrap:wrap;"></div></div>
+            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
+              <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
+              <button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button>
+              <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
+              <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
+              <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4;"></span>
+            </div>
+          </div>
+          <div id="vf-main" style="flex:1; min-width:0;">
+            <div id="vf-filterbar" style="position:sticky; top:0; z-index:20; background:var(--bg-primary); padding:8px 0 9px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700;" title="filter the current view by verdict, your status, or tables-only">Filter</span>
+              <div id="vf-verdict-filters" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"><button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button></div>
+            </div>
+            <div id="vf-cards" style="margin-top:12px;"></div>
+            <div id="vf-stats" style="display:none; margin-top:12px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-search" class="tab-content">
+      <div class="card-container" style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <h2 class="card-title" style="margin: 0; display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Search &amp; Discovery Logs</span>
+            <span class="card-title-meta" style="margin-left: 8px;">PRISMA-lite funnels, AGROVOC search queries, and borderline edge-case triage decisions.</span>
+          </h2>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <select id="select-search-log" style="display: none;"></select>
+            <div class="pill-toggle-container" style="display: flex; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 2px;">
+              <button class="pill-btn active sky" id="btn-search-view-structured" style="border-radius: 4px; padding: 6px 12px; font-size: 12px; border: none; cursor: pointer;">Structured View</button>
+              <button class="pill-btn" id="btn-search-view-raw" style="border-radius: 4px; padding: 6px 12px; font-size: 12px; border: none; cursor: pointer; background: transparent; color: var(--text-secondary);">Raw Markdown</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTER PILL PANELS -->
+      <div class="card-container" style="position: sticky; top: 86px; z-index: 90; margin-bottom: 20px; padding: 16px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); box-shadow: var(--card-shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Row 1: Practice Selector & Table Selector inline -->
+          <div style="display: flex; align-items: center; justify-content: flex-start; gap: 40px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Practice (NbS)</span>
+              <div id="search-pill-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="pill-btn active sky" data-nbs="agroforestry" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">Agroforestry</button>
+                <button class="pill-btn sky" data-nbs="water_harvesting_conservation" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">Water Harvesting</button>
+              </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Table / Step</span>
+              <div id="search-pill-table" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="pill-btn active purple" data-table="T3" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T3 (Hazards)</button>
+                <button class="pill-btn purple" data-table="T4" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T4 (Suitability)</button>
+                <button class="pill-btn purple" data-table="T6" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T6 (Scorecard)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Sub-NbS Selector (Suitability Family) -->
+          <div id="search-sub-nbs-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 10px;">
+            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Sub-Practice</span>
+            <div id="search-pill-sub-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STRUCTURED PANEL -->
+      <div id="search-structured-panel" style="display: flex; flex-direction: column; gap: 20px;">
+        <!-- Metadata Info Grid -->
+        <div class="stats-grid" id="search-metadata-grid">
+          <!-- Populated dynamically -->
+        </div>
+
+        <!-- Funnel and Queries Row -->
+        <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: stretch;">
+          <!-- Left: PRISMA-lite Funnel Card -->
+          <div class="card-container" style="margin: 0; display: flex; flex-direction: column; min-width: 0;">
+            <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9v6l4 2v-8L22 3z"></path></svg>
+              PRISMA-lite Discovery Funnel
+            </h3>
+            <div id="search-funnel-container" style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px; min-height: 320px; padding: 10px 0;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Right: Queries & Databases Card -->
+          <div class="card-container" style="margin: 0; display: flex; flex-direction: column; min-width: 0;">
+            <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+              Queries &amp; Databases Screened
+            </h3>
+            <div id="search-queries-container" style="flex: 1; overflow-y: auto; max-height: 550px; display: flex; flex-direction: column; gap: 12px; font-size: 12.5px;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Inclusions & Exclusions/Borderline Review Grid -->
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Inclusions Section -->
+          <div class="card-container" style="margin: 0;">
+            <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-emerald);"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                Discovered and Registered Sources
+              </span>
+              <span id="search-inclusions-filter-badge" style="font-size: 11px; font-weight: 500; color: var(--accent-emerald); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 2px 8px; border-radius: 4px; display: none;"></span>
+            </h3>
+            
+            <!-- Source category filter pills -->
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; background: rgba(255, 255, 255, 0.01); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color);">
+              <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; margin-left: 6px;">Filter Category:</span>
+              <div id="search-inclusions-category-pills" style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button class="pill-btn active emerald" data-category="all" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">All Sources</button>
+                <button class="pill-btn emerald" data-category="stock" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Stock Papers</button>
+                <button class="pill-btn emerald" data-category="updated" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Updated Lit</button>
+                <button class="pill-btn emerald" data-category="grey" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Grey Lit</button>
+                <button class="pill-btn emerald" data-category="tools" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Tools &amp; Manuals</button>
+              </div>
+            </div>
+
+            <div style="font-size: 11.5px; color: var(--text-secondary); background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; line-height: 1.7;">
+              <b style="color:var(--text-muted);">Stage</b> &nbsp;<b style="color:#0ea5e9;">S</b> logged in a discovery log · <b style="color:#10b981;">E</b> registered in the source register · <b style="color:#818cf8;">X<i>n</i></b> n evidence claims extracted · <b style="color:#f43f5e;">⚑</b> claims flagged for review · <b style="color:#10b981;">R</b> human-reviewed. &nbsp;Filled = done, hollow = not yet.
+              <br><b style="color:var(--text-muted);">Tier</b> = source credibility (High / Medium / Low) from the screening rubric (evidence strength · transparency · venue · context · recency).
+              <br><b style="color:var(--text-muted);">"Scholar Search" + 0 claims</b> = a source that was <i>logged during search</i> but never registered/extracted (no DOI recorded), so the link falls back to a Google Scholar lookup. These are search candidates, not part of the evidence base yet.
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                  <tr>
+                    <th style="width: 150px;">Source ID</th>
+                    <th style="width: 180px;">DOI / Link</th>
+                    <th style="width: 100px;">Tier</th>
+                    <th style="text-align: center; width: 100px;">Claims</th>
+                    <th style="width: 180px;">Scope / Context</th>
+                    <th>Extracted Key Variables / Target Hazards</th>
+                    <th style="width: 150px; white-space: nowrap;" title="Pipeline stage: S=logged in discovery log, E=extracted/registered in SRC, X=EV rows extracted (n), F=flagged rows, R=human-reviewed">Stage</th>
+                  </tr>
+                </thead>
+                <tbody id="search-inclusions-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Evidence Drill-down Panel (Side-by-Side Split View) -->
+            <div id="source-evidence-drilldown" style="margin-top: 24px; display: none;">
+              <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <!-- Left Column: Evidence Claims -->
+                <div style="flex: 3; min-width: 500px; padding: 20px; border: 1px solid var(--border-color); background: var(--bg-tertiary); border-radius: var(--radius-lg); display: flex; flex-direction: column;">
+                  <h4 style="margin: 0 0 12px 0; font-size: 14px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px; color: var(--accent-sky);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Evidence Claims for Source: <span id="selected-source-id-label" style="font-family: ui-monospace, monospace; color: var(--text-primary); font-size: 13px; margin-left: 4px;"></span>
+                  </h4>
+                  <div style="overflow-x: auto; flex: 1;">
+                    <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px;">
+                      <thead>
+                        <tr>
+                          <th style="width: 130px;">Evidence ID</th>
+                          <th style="width: 120px;">Variable</th>
+                          <th style="width: 180px;">Relationship / Rules</th>
+                          <th style="width: 120px;">Context</th>
+                          <th>Verbatim Quote / Assertion</th>
+                          <th style="width: 60px; text-align: center;">Page</th>
+                          <th style="width: 100px;">Evidence Type</th>
+                        </tr>
+                      </thead>
+                      <tbody id="source-evidence-drilldown-body">
+                        <!-- Populated dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Right Column: Source JSON Metadata -->
+                <div style="flex: 2; min-width: 350px; padding: 20px; border: 1px solid var(--border-color); background: var(--bg-tertiary); border-radius: var(--radius-lg); display: flex; flex-direction: column;">
+                  <h4 style="margin: 0 0 12px 0; font-size: 14px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px; color: var(--accent-emerald);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                    Source Metadata JSON
+                  </h4>
+                  <pre id="selected-source-json-pre" style="flex: 1; margin: 0; font-family: ui-monospace, monospace; font-size: 11px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; overflow: auto; border: 1px solid var(--border-color); color: var(--text-primary); white-space: pre-wrap; word-break: break-all; max-height: 450px;"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+ 
+          <!-- Exclusions and Borderline Cases Section -->
+          <div class="card-container" style="margin: 0;">
+            <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+              <span style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-amber);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                Borderline &amp; Triage Decisions (Human-in-the-Loop Review)
+              </span>
+              <span id="search-exclusions-filter-badge" style="font-size: 11px; font-weight: 500; color: var(--accent-amber); background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); padding: 2px 8px; border-radius: 4px; display: none;"></span>
+            </h3>
+            <div style="overflow-x: auto;">
+              <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                  <tr>
+                    <th style="width: 130px;">Decision</th>
+                    <th style="width: 200px;">Category / Source</th>
+                    <th style="width: 280px;">Ambiguity / Reasoning</th>
+                    <th>Proposal &amp; Context Boundary Alignment</th>
+                  </tr>
+                </thead>
+                <tbody id="search-exclusions-table-body">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RAW PANEL -->
+      <div id="search-raw-panel" style="display: none;">
+        <div class="card-container" style="margin: 0;">
+          <pre id="search-raw-markdown" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12.5px; line-height: 1.5; padding: 16px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; overflow-x: auto; white-space: pre-wrap; color: var(--text-primary); max-height: 800px; overflow-y: auto;"></pre>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <div class="meta-timestamp">
@@ -1837,6 +2197,7 @@
 
 <script>
   let dashboardData = null;
+  let activeSearchCategory = 'all';
   let sourcingGroupMode = 'method'; // 'method' or 'author'
 
   function getFriendlySourceName(sourceId, citation) {
@@ -1932,6 +2293,7 @@
         btn.classList.add('active');
         const targetTab = btn.getAttribute('data-tab');
         document.getElementById(targetTab).classList.add('active');
+        if (targetTab === 'tab-qaqc' && typeof renderVfWorklist === 'function') renderVfWorklist();
       });
     });
 
@@ -1942,7 +2304,7 @@
         return response.json();
       })
       .then(data => {
-        dashboardData = data;
+        dashboardData = _segregateDropped(data);
         document.getElementById('loading-container').style.display = 'none';
         document.getElementById('dashboard-content').style.display = 'block';
         
@@ -2055,19 +2417,387 @@
       filteredSources = sources.filter(s => sourceIds.has(s.source_id));
     }
 
-    const sweptCount = filteredSources.filter(s => s.extraction_status === 'swept' || s.extraction_status === 'signed_off').length;
+    const sweptCount = filteredSources.filter(s => ['complete','swept','signed_off'].includes(s.extraction_status)).length;
 
     document.getElementById('stat-total-sources').textContent = filteredSources.length;
     document.getElementById('stat-swept-sources').textContent = sweptCount;
     document.getElementById('stat-total-claims').textContent = filteredClaims.length;
     document.getElementById('stat-total-recipes').textContent = filteredRecipes.length;
 
+    // Evidence quality panel (B2)
+    const _evAll = dashboardData.registers.EV_evidence_register || [];
+    const _evVf = _evAll.filter(c => (c.attribution || '').includes('[VERIFY-FLAG'));
+    const _evUnrev = _evAll.filter(c => c.reviewer_ok !== true && c.reviewer_ok !== 'true');
+    const _evLowConf = _evAll.filter(c => (c.extraction_confidence || '').toLowerCase() === 'low');
+    const _evRoles = {};
+    _evAll.forEach(c => { const r = c.use_role || 'unknown'; _evRoles[r] = (_evRoles[r] || 0) + 1; });
+    const _evqTotal = document.getElementById('evq-total');
+    if (_evqTotal) {
+      _evqTotal.textContent = _evAll.length;
+      document.getElementById('evq-vf').textContent = _evVf.length;
+      document.getElementById('evq-unreviewed').textContent = _evUnrev.length;
+      document.getElementById('evq-low-conf').textContent = _evLowConf.length;
+      document.getElementById('evq-roles').innerHTML = Object.entries(_evRoles).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div><strong>${n}</strong> <span style="color:var(--text-muted);">${r.replace(/_/g,' ')}</span></div>`).join('');
+    }
+
     renderOverviewCharts(filteredSources, filteredClaims, filteredRecipes);
     renderSankeyFlow(filteredSources, filteredClaims);
     renderSankeyReview(filteredSources, filteredClaims);
   }
 
+  // VERIFY-FLAG worklist toggle & renderer
+  window._vfVerdictFilter = 'all';
+  window._vfWorklistOpen = false;
+
+  function toggleVfWorklist() {
+    window._vfWorklistOpen = !window._vfWorklistOpen;
+    const panel = document.getElementById('ev-vf-worklist');
+    const hint = document.getElementById('evq-worklist-toggle-hint');
+    if (!panel) return;
+    if (window._vfWorklistOpen) {
+      panel.style.display = 'block';
+      if (hint) hint.textContent = '▲ Hide VERIFY-FLAG worklist';
+      renderVfWorklist();
+    } else {
+      panel.style.display = 'none';
+      if (hint) hint.textContent = '▼ Show VERIFY-FLAG worklist';
+    }
+  }
+
+  function vfEsc(v){ return (v==null?'':String(v)).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  // library_path (e.g. D591_Rural-Scan_NBS/2_Technical_&_Data/library/.../x.pdf) -> SharePoint web URL.
+  // Works for any team member with access to the Alliance-ClimateActionNetZero library — no local server.
+  // soft-deleted (QA-dropped) EV rows are moved out of the analytical register into
+  // data._evDropped so every count/synthesis view excludes them; QA views read _evDropped.
+  function _segregateDropped(data){ try{ var ev=(data&&data.registers&&data.registers.EV_evidence_register)||[]; data._evDropped=ev.filter(function(r){return (r.review_state||'')==='dropped';}); data.registers.EV_evidence_register=ev.filter(function(r){return (r.review_state||'')!=='dropped';}); }catch(e){} return data; }
+  function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.innerHTML='<img src="/api/crop?eid='+encodeURIComponent(eid)+'" style="max-width:100%; border:1px solid var(--border-color); border-radius:4px;" alt="table region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));">'; box.dataset.loaded='1'; } box.style.display='block'; btn.textContent='📷 hide table region'; } else { box.style.display='none'; btn.textContent='📷 show table region'; } }
+  function toggleVfStats(){ if(window._vfMode==='stats'){ window._vfMode=window._vfLastReviewMode||'flagged'; } else { window._vfLastReviewMode=(window._vfMode&&window._vfMode!=='stats')?window._vfMode:'flagged'; window._vfMode='stats'; } renderVfWorklist(); }
+  function vfShowReasonHelp(){ var d=document.getElementById('vf-reason-codes'); if(!d)return; d.open=true; d.scrollIntoView({behavior:'smooth',block:'center'}); d.style.transition='background .3s'; d.style.background='rgba(14,165,233,0.14)'; setTimeout(function(){ d.style.background=''; },1300); }
+  function vfSharePointUrl(lp){ if(!lp)return ''; var base='https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/'+encodeURIComponent('Shared Documents')+'/ClimateActionNetZero/1_Projects/'; return base+lp.split('/').map(encodeURIComponent).join('/'); }
+  function vfLocHint(ev){
+    var cb=(ev.claim_basis||'');
+    if(cb==='table') return '\uD83D\uDCCA in a Table';
+    if(cb==='figure_read') return '\uD83D\uDCC8 in a Figure';
+    if((ev.locator_type||'')==='section' && ev.locator) return '\u00A7 '+ev.locator;
+    var q=ev.quote||''; var nl=(q.match(/\n/g)||[]).length; var nums=(q.match(/[0-9]/g)||[]).length;
+    if(nl>=3 && nums>=4) return '\uD83D\uDCCA likely a table (cells flattened)';
+    return '\u00B6 main text';
+  }
+  function setVfDecision(id,d){ if(!window._vfDecisions)window._vfDecisions={}; var val=(window._vfDecisions[id]===d?'':d); window._vfDecisions[id]=val; localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));
+    { var me=(window._vfReviewer||'reviewer'); if(!window._vfAllReviews)window._vfAllReviews={}; window._vfAllReviews[id]=window._vfAllReviews[id]||{}; if(val){window._vfAllReviews[id][me]={decision:val,reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||'')};}else{delete window._vfAllReviews[id][me];} }
+    if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||''),reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); }
+    renderVfWorklist(); }
+  function setVfReason(id,reason){ if(!window._vfReasons)window._vfReasons={}; window._vfReasons[id]=reason; localStorage.setItem('vfReasons',JSON.stringify(window._vfReasons));
+    if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:reason,note:((window._vfNotes||{})[id]||''),reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
+  function setVfNote(id,note){ if(!window._vfNotes)window._vfNotes={}; window._vfNotes[id]=note; localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes));
+    if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:((window._vfReasons||{})[id]||''),note:note,reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
+  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); if(window._reviewApi){ if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); }); }
+  function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
+    if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply decisions &amp; rebuild</b> to write them to the register + re-gate.'; }
+    else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block'; } }
+  function applyVfDecisions(){ if(!window._reviewApi){ alert('No review server. Use Download decisions CSV + review.py apply.'); return; }
+    var btn=document.getElementById('vf-apply-btn'); if(btn){btn.disabled=true; btn.textContent='Applying…';}
+    fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer')})}).then(function(r){return r.json();}).then(function(res){
+      if(res.error){ alert('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions & rebuild';} return; }
+      fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d));
+        fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){ dashboardData=_segregateDropped(data); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions & rebuild';} renderVfWorklist(); if(typeof triggerOverviewFilter==='function')triggerOverviewFilter(); if(typeof renderDiscoveryAudit==='function')renderDiscoveryAudit();
+          var cf=(res.conflicts||[]);
+          alert('Applied: '+(res.ok||0)+' ok, '+(res.dropped||0)+' dropped.'
+            +(cf.length?('\n\u26a0 '+cf.length+' CONFLICT(s) pending \u2014 reviewers disagree: '+cf.map(function(c){return c.evidence_id;}).join(', ')):' No conflicts.')
+            +'\nRegister rebuilt + re-gated.'); });
+      });
+    }).catch(function(e){ alert('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions & rebuild';} }); }
+  function downloadVfDecisions(){
+    var rows=window._vfFlagged||[]; var hdr=['evidence_id','source_id','variable','use_role','verdict','flag_reason','quote','relationship','decision','reason','reviewer','note'];
+    function q(v){v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"';}
+    var lines=[hdr.join(',')];
+    rows.forEach(function(o){ var ev=o.ev; var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';
+      lines.push([ev.evidence_id,ev.source_id,ev.variable,ev.use_role,o.verdict,o.reason,(ev.quote||'').replace(/\n/g,' '),rel,((window._vfDecisions||{})[ev.evidence_id]||''),((window._vfReasons||{})[ev.evidence_id]||''),'',((window._vfNotes||{})[ev.evidence_id]||'')].map(q).join(',')); });
+    var blob=new Blob([lines.join('\n')],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='flag_worklist.csv'; a.click();
+  }
+  function setVfReviewer(v){ v=(v||'').trim(); window._vfReviewer=v; localStorage.setItem('vfReviewer',v); var sel=document.getElementById('vf-reviewer'); if(sel&&v){ if(!Array.prototype.some.call(sel.options,function(o){return o.value===v;})){ var op=document.createElement('option'); op.value=v; op.textContent=v; sel.insertBefore(op,sel.options[sel.options.length-1]); } sel.value=v; } var all=window._vfAllReviews||{}; var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][v]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }
+  function resetVfDecisions(){ var me=(window._vfReviewer||'').trim(); if(!me){ alert('Set your reviewer handle first — reset only clears YOUR decisions.'); return; } var n=Object.keys(window._vfDecisions||{}).length; if(!confirm('Reset YOUR '+n+' in-progress decision(s) back to to-review?\n\nOther reviewers'+String.fromCharCode(39)+' decisions are untouched. Already-applied/committed decisions are NOT affected.'))return; window._vfDecisions={}; window._vfReasons={}; window._vfNotes={}; if(window._vfAllReviews){ Object.keys(window._vfAllReviews).forEach(function(eid){ if(window._vfAllReviews[eid]){ delete window._vfAllReviews[eid][me]; if(!Object.keys(window._vfAllReviews[eid]).length) delete window._vfAllReviews[eid]; } }); } localStorage.removeItem('vfDecisions'); localStorage.removeItem('vfReasons'); localStorage.removeItem('vfNotes'); if(window._reviewApi){ fetch('/api/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:me})}).then(function(){renderVfWorklist();}); } else { renderVfWorklist(); } }
+  function renderQaqcStats(hostEl){
+    var s=(dashboardData&&dashboardData.qaqc_stats)||{};
+    var fe=s.flag_eval||{}, pe=s.pass_eval||{};
+    var live=0; var allr=window._vfAllReviews||{}; Object.keys(allr).forEach(function(eid){ Object.keys(allr[eid]).forEach(function(rv){ if(allr[eid][rv].decision)live++; }); });
+    function pct(v){ return (v===null||v===undefined)?'<span style="color:var(--text-muted);">n/a</span>':('<b>'+v+'%</b>'); }
+    function cell(n,lbl,col){ return '<td style="padding:10px 14px; text-align:center; border:1px solid var(--border-color);"><div style="font-size:20px; font-weight:700; color:'+col+';">'+n+'</div><div style="font-size:10px; color:var(--text-muted);">'+lbl+'</div></td>'; }
+    var matrix='<div style="margin:8px 0; font-size:11px;">'
+      +'<div style="font-size:10.5px; color:var(--accent-amber); font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">When the AI flagged ('+(fe.n||0)+')</div>'
+      +'<table style="border-collapse:collapse;"><tr>'+cell((fe.tp_removed||0),'caught → removed','var(--accent-emerald)')+cell((fe.tp_corrected||0),'caught → corrected (kept)','var(--accent-emerald)')+cell(fe.fp||0,'false alarm (kept)','var(--accent-rose)')+'</tr></table>'
+      +'<div style="font-size:10px; color:var(--text-muted); margin:2px 0 10px;">first two = real catches (TP) · false alarm = AI was wrong (FP)</div>'
+      +'<div style="font-size:10.5px; color:var(--accent-sky); font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">When the AI passed &amp; a human spot-checked ('+(pe.checked||0)+')</div>'
+      +'<table style="border-collapse:collapse;"><tr>'+cell(pe.tn||0,'confirmed good','var(--accent-emerald)')+cell(pe.fn||0,'missed error (FN)','var(--accent-rose)')+'</tr></table>'
+      +'<div style="font-size:10px; color:var(--text-muted); margin-top:2px;">'+((pe.checked||0)===0?'no passes spot-checked yet → miss rate unknown':'missed = AI let a bad value through')+'</div>'
+      +'</div>';
+    function kv(k,v){ return '<div style="display:flex; justify-content:space-between; gap:18px; padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:var(--text-secondary);">'+k+'</span><span style="color:var(--text-primary); font-weight:600;">'+v+'</span></div>'; }
+    function tally(obj){ obj=obj||{}; var ks=Object.keys(obj); if(!ks.length)return '<span style="color:var(--text-muted);">none yet</span>'; return ks.map(function(k){return '<div style="display:flex; justify-content:space-between; gap:14px; padding:2px 0;"><span style="color:var(--text-secondary);">'+k.replace(/_/g,' ')+'</span><span style="font-weight:600;">'+obj[k]+'</span></div>';}).join(''); }
+    var h='<div style="font-size:11px; color:var(--text-muted); margin-bottom:12px;">Measured from <code>pipeline/metrics/review_log.csv</code> (applied/logged decisions only). The AI is <b>not</b> assumed correct — these numbers show how often its verify-flags were right and how many errors it let through.</div>'
+      +'<div style="display:flex; gap:24px; flex-wrap:wrap;">'
+      +'<div style="flex:1; min-width:340px;"><h3 style="font-size:12px; color:var(--text-secondary); margin:0 0 6px;">AI verify-flag confusion matrix</h3>'+matrix
+      +'<div style="margin-top:10px;">'+kv('Flag precision (of flags, % real)',pct(fe.precision_pct)+' <span style="color:var(--text-muted); font-size:10px;">('+(fe.tp||0)+'/'+(fe.n||0)+')</span>')
+      +kv('Recall — estimate only',pct(s.recall_est_pct)+' <span style="color:var(--text-muted); font-size:10px;">(FN from sampled passes)</span>')
+      +kv('Pass FN-rate (of checked passes)',pct(pe.fn_rate_pct)+' <span style="color:var(--text-muted); font-size:10px;">('+(pe.fn||0)+'/'+(pe.checked||0)+')</span>')
+      +kv('Errors caught by AI',(s.errors_caught||0))
+      +kv('Errors AI missed (in sample)',(s.errors_missed_in_sample||0))+'</div>'
+      +'<div style="font-size:10px; color:var(--text-muted); margin-top:8px; line-height:1.5;">Recall/FN are <b>estimates</b>: false negatives only surface where someone spot-checked an AI-passed unit. Sample more passes to tighten them.</div></div>'
+      +'<div style="flex:1; min-width:260px;"><h3 style="font-size:12px; color:var(--text-secondary); margin:0 0 6px;">Review effort</h3>'
+      +kv('Total reviews logged',(s.total_reviews||0))+kv('Reviewers',(s.n_reviewers||0))+kv('Decisions in browser (not yet applied)',live)
+      +'<h4 style="font-size:11px; color:var(--text-muted); margin:12px 0 4px;">By reviewer</h4>'+tally(s.by_reviewer)
+      +'<h4 style="font-size:11px; color:var(--text-muted); margin:12px 0 4px;">By reason code</h4>'+tally(s.by_reason)
+      +'<h4 style="font-size:11px; color:var(--text-muted); margin:12px 0 4px;">By decision</h4>'+tally(s.by_decision)+'</div></div>';
+    hostEl.innerHTML=h;
+  }
+
+  function reopenVf(eid){ if(!window._reviewApi){ alert('Re-open needs the live review server running.'); return; } if(!confirm('Re-open '+eid+' back into the AI-flagged worklist? (clears its reviewer_ok and restores the flag)'))return; var rev=(window._vfReviewer||'reviewer'); fetch('/api/reopen',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_ids:[eid],reviewer:rev})}).then(function(r){return r.json();}).then(function(res){ if(res&&res.error){ alert('Re-open failed: '+res.error); return; } fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ dashboardData=_segregateDropped(d); window._vfMode='flagged'; renderVfWorklist(); alert('Re-opened '+(res.reopened||0)+' unit(s) — now back in AI-flagged.'); }); }); }
+
+  function challengeVf(eid, dec){ if(!window._reviewApi){ alert('Challenging an applied decision needs the live review server.'); return; } var rev=(window._vfReviewer||'').trim(); if(!rev){ alert('Set your reviewer handle first.'); return; } var reason=prompt('Reason for "'+dec+'"? (optional)')||''; fetch('/api/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:eid,decision:dec,reason:reason,reviewer:rev})}).then(function(r){return r.json();}).then(function(res){ if(res&&res.error){ alert('Challenge failed: '+res.error); return; } fetch('/api/state').then(function(r){return r.json();}).then(function(st){ window._vfAllReviews=st.decisions||{}; fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ dashboardData=_segregateDropped(d); if(res.conflict){ window._vfMode='flagged'; window._vfVerdictFilter='conflict'; } renderVfWorklist(); alert(res.conflict?('⚠ Conflict raised'+(res.reopened?' — re-opened into AI-flagged (Conflict filter) for consensus.':'.')):'Recorded — agrees with the existing decision.'); }); }); }); }
+
+  // Units resolved by < 2 reviewers (need a 2nd opinion). If a reviewer handle is set,
+  // exclude units that reviewer already reviewed (it's not THEIR 2nd opinion to give).
+  function _vf2ndList(){
+    var me=(window._vfReviewer||'').trim();
+    var evAll=(dashboardData.registers.EV_evidence_register)||[];
+    var dropped=(dashboardData._evDropped)||[];
+    var rl=(dashboardData.review_log)||[];
+    var revBy={}, prior={};
+    rl.forEach(function(r){ var d=(r.decision||'').toLowerCase(); if(d==='ok'||d==='drop'){ (revBy[r.evidence_id]=revBy[r.evidence_id]||{})[r.reviewer||'?']=true; prior[r.evidence_id]=r; } });
+    var resolved=evAll.filter(function(e){return e.reviewer_ok===true||e.reviewer_ok==='true';}).concat(dropped);
+    var byId={}; evAll.concat(dropped).forEach(function(e){ byId[e.evidence_id]=e; });
+    var store=(window._vfAllReviews||{});
+    return resolved.filter(function(e){ var id=e.evidence_id;
+      var nrev=Object.keys(revBy[id]||{}).length;
+      if(nrev>=2) return false;                                  // already has a 2nd opinion
+      if(me){ var meRl=revBy[id]&&revBy[id][me]; var meSt=store[id]&&store[id][me]&&store[id][me].decision; if(meRl||meSt) return false; }
+      return true;
+    }).map(function(e){ return {ev:e, prior:prior[e.evidence_id]||{}, dropped:((e.review_state||'')==='dropped')}; });
+  }
+
+  function renderVf2ndOpinion(host){
+    var me=(window._vfReviewer||'').trim();
+    var list=_vf2ndList();
+    var srcAll=(dashboardData.registers.SRC_source_register)||[];
+    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+list.length+'</b> unit(s) reviewed by only one person'+(me?(' and not by '+vfEsc(me)):'')+' <span style="color:var(--text-muted);">— give a 2nd opinion: agree (records) or disagree (raises a conflict).'+(me?'':' Set your handle first.')+'</span>';
+    host.innerHTML='';
+    if(!list.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(me?'Nothing awaiting your 2nd opinion.':'Set your reviewer handle to see units awaiting your 2nd opinion.')+'</div>'; return; }
+    list.forEach(function(o){ var ev=o.ev, pr=o.prior; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
+      var pdec=(pr.decision||'').toLowerCase(); var pcol=pdec==='ok'?'var(--accent-emerald)':'var(--accent-rose)';
+      var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'');
+      var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';
+      var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page; var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint'+(ev.page?(' — jumps to p.'+ev.page+' if it opens in a native PDF viewer; the SharePoint viewer ignores the page'):'')+'">📄 SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a>'):'';
+      var card='<div style="border:1px solid var(--border-color); border-left:3px solid '+pcol+'; border-radius:8px; padding:11px 14px; margin-bottom:9px; background:var(--bg-secondary);">'
+        +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:5px;">'
+        +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code>'
+        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+(page?(' · '+vfEsc(page)):'')+(o.dropped?' · <span style="color:var(--accent-rose);">quarantined</span>':'')+'</span>'
+        +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
+        +'<div style="font-size:11.5px; margin:3px 0;"><b style="color:'+pcol+';">'+vfEsc((pr.reviewer||'someone'))+' said '+vfEsc(pdec.toUpperCase()||'?')+'</b>'+(pr.reason?(' <span style="color:var(--text-secondary);">· '+vfEsc((pr.reason||'').replace(/_/g,' '))+'</span>'):'')+(pr.note?(' <span style="color:var(--text-muted);">— '+vfEsc(pr.note)+'</span>'):'')+'</div>'
+        +(rel?('<div style="font-size:11px; margin:3px 0;"><b style="color:var(--text-muted);">Encoded value:</b> <code style="font-size:10.5px;">'+vfEsc(rel)+'</code></div>'):'')
+        +'<div style="font-size:11px; margin:5px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:6px 9px; border-radius:4px; max-height:120px; overflow:auto;"><b style="color:var(--text-muted);">Quote'+(page?(' ('+vfEsc(page)+')'):'')+':</b> '+vfEsc(ev.quote||'')+'</div>'
+        +'<div style="margin-top:7px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:10.5px;">'+spLink
+        +'<span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;"><span style="color:var(--text-muted);">your 2nd opinion:</span>'
+        +'<button onclick="challengeVf(\''+ev.evidence_id+'\',\'ok\')" title="agree it should be kept; disagreement with the prior call raises a conflict" style="cursor:pointer; font-size:11px; padding:3px 12px; border-radius:4px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald);">ok</button>'
+        +'<button onclick="challengeVf(\''+ev.evidence_id+'\',\'drop\')" title="agree it should be dropped; disagreement raises a conflict" style="cursor:pointer; font-size:11px; padding:3px 12px; border-radius:4px; border:1px solid var(--accent-rose); background:transparent; color:var(--accent-rose);">drop</button>'
+        +'</span></div></div>';
+      host.insertAdjacentHTML('beforeend',card);
+    });
+  }
+
+  function renderVfReviewed(host, rlAll){ rlAll=rlAll||[];
+    var me=(window._vfReviewer||'').trim();
+    var rows=rlAll.slice().reverse();
+    var touchedByMe={}; if(me) rlAll.forEach(function(r){ if((r.reviewer||'')===me) touchedByMe[r.evidence_id]=true; });
+    var evAll=(dashboardData.registers.EV_evidence_register)||[]; var present={};
+    evAll.forEach(function(e){ present[e.evidence_id]=(e.reviewer_ok===true||e.reviewer_ok==='true'); });
+    var dropped={}; ((dashboardData._evDropped)||[]).forEach(function(e){ dropped[e.evidence_id]=true; });
+    // one card per unit (latest action), optionally filtered to units I've touched
+    var seen={}, units=[];
+    rows.forEach(function(r){ var id=r.evidence_id; if(me && !touchedByMe[id]) return; if(seen[id]) return; seen[id]=1; units.push(r); });
+    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+units.length+'</b> reviewed unit(s) '+(me?('touched by '+vfEsc(me)+' '):' (all reviewers) ')+'<span style="color:var(--text-muted);">— challenge with ok/drop to raise a conflict; '+(me?'switch reviewer to see others':'set your handle to filter to yours')+'</span>';
+    host.innerHTML='';
+    if(!units.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">No applied reviews yet'+(me?(' by '+vfEsc(me)):'')+'. Decisions appear here once you <b>Apply</b> them.</div>'; return; }
+    units.forEach(function(r){
+      var id=r.evidence_id;
+      var dec=(r.decision||'').toLowerCase();
+      var col=dec==='ok'?'var(--accent-emerald)':dec==='drop'?'var(--accent-rose)':'var(--accent-amber)';
+      // all reviewers' current decisions for this unit (from the persistent store)
+      var allr=(window._vfAllReviews||{})[id]||{}; var rk=Object.keys(allr).filter(function(k){return allr[k].decision;});
+      var conf=(new Set(rk.map(function(k){return allr[k].decision;}))).size>1;
+      var reviewsLine=rk.length?('<div style="font-size:10.5px; margin-top:5px;">'+(conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+rk.map(function(k){return vfEsc(k)+'='+vfEsc(allr[k].decision);}).join(' · ')+'</div>'):'';
+      var reopenBtn = (present[id]||dropped[id]) ? ('<button onclick="reopenVf(\''+id+'\')" title="clear the applied decision and send back to AI-flagged" style="cursor:pointer; font-size:11px; padding:3px 10px; border-radius:4px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber);">↩ re-open</button>') : '<span style="color:var(--text-muted); font-size:10.5px;">removed — re-extract</span>';
+      var challenge='<span style="font-size:10.5px; color:var(--text-muted);">challenge:</span>'
+        +'<button onclick="challengeVf(\''+id+'\',\'ok\')" title="record YOUR call = keep; disagreement raises a conflict" style="cursor:pointer; font-size:11px; padding:3px 11px; border-radius:4px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald);">ok</button>'
+        +'<button onclick="challengeVf(\''+id+'\',\'drop\')" title="record YOUR call = drop; disagreement raises a conflict" style="cursor:pointer; font-size:11px; padding:3px 11px; border-radius:4px; border:1px solid var(--accent-rose); background:transparent; color:var(--accent-rose);">drop</button>';
+      var card='<div style="border:1px solid var(--border-color); border-left:3px solid '+(conf?'var(--accent-rose)':col)+'; border-radius:8px; padding:10px 14px; margin-bottom:8px; background:var(--bg-secondary);">'
+        +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">'
+        +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(id||'')+'</code>'
+        +'<span style="font-weight:700; font-size:10px; color:'+col+'; text-transform:uppercase;">'+vfEsc(dec)+'</span>'
+        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(r.verdict||'')+(r.reason?(' · '+vfEsc((r.reason||'').replace(/_/g,' '))):'')+'</span>'
+        +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(r.reviewer||'')+' · '+vfEsc(r.date||'')+'</span></div>'
+        +(r.note?('<div style="font-size:11px; margin-top:5px; color:var(--text-secondary);">'+vfEsc(r.note)+'</div>'):'')
+        +reviewsLine
+        +'<div style="margin-top:7px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;"><span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(r.source_id||'')+'</span><span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;">'+challenge+reopenBtn+'</span></div>'
+        +'</div>';
+      host.insertAdjacentHTML('beforeend',card);
+    });
+  }
+
+  function _vfTabular(q){ q=q||''; return /\d+\s*[–-]\s*\d+/.test(q)||((q).match(/\d+(\.\d+)?/g)||[]).length>=3||q.indexOf('\n')>=0; }
+  function _vfVerdictColor(v){ return v==='unsupported'?'var(--accent-rose)':v==='mismatch'?'var(--accent-amber)':v==='pass'?'var(--accent-sky)':v==='scope'?'var(--accent-amber)':'var(--text-secondary)'; }
+
+  function vfListRow(o){ var ev=o.ev; var dec=(window._vfDecisions||{})[ev.evidence_id]||''; var sel=window._vfSelected===ev.evidence_id;
+    var allr=(window._vfAllReviews||{})[ev.evidence_id]||{}; var rk=Object.keys(allr).filter(function(k){return allr[k].decision;}); var conf=(new Set(rk.map(function(k){return allr[k].decision;}))).size>1;
+    return '<div data-vfid="'+ev.evidence_id+'" onclick="selectVf(\''+ev.evidence_id+'\')" style="cursor:pointer; padding:7px 9px; border-bottom:1px solid var(--border-color); border-left:3px solid '+(sel?'var(--accent-sky)':'transparent')+'; background:'+(sel?'rgba(255,255,255,0.03)':'transparent')+';">'
+      +'<div style="display:flex; align-items:center; gap:6px;"><span style="font-weight:700; font-size:9px; color:'+_vfVerdictColor(o.verdict)+'; text-transform:uppercase;">'+vfEsc(o.verdict)+'</span>'
+      +(dec?('<span style="color:'+(dec==='ok'?'var(--accent-emerald)':'var(--accent-rose)')+'; font-size:10px; font-weight:700;">'+dec+'</span>'):'')
+      +(conf?'<span style="color:var(--accent-rose); font-size:10px;" title="conflict">⚠</span>':'')
+      +(_vfTabular(ev.quote)?'<span style="margin-left:auto; font-size:9px; color:var(--text-muted);">📷</span>':'')+'</div>'
+      +'<div style="font-size:11px; color:var(--text-primary); margin-top:2px; line-height:1.25;">'+vfEsc(ev.variable||'')+'</div>'
+      +'<code style="font-size:9px; color:var(--text-muted);">'+vfEsc(ev.evidence_id||'')+'</code></div>';
+  }
+
+  function vfDetailHtml(o, passed){ var ev=o.ev, verdict=o.verdict, reason=o.reason; var srcAll=(dashboardData.registers.SRC_source_register)||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
+    var dec=(window._vfDecisions||{})[ev.evidence_id]||'';
+    var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'page n/a');
+    var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';var relShown=rel?vfEsc(rel):'<span style="color:var(--text-muted);">(removed by the verify pass — disputed value is in the reason below)</span>';
+    var vc=_vfVerdictColor(verdict);
+    var doi=(src.doi||'').trim();
+    var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source ↗</a>'):'');
+    var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
+    var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint">📄 SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a>'):'';
+    var localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
+    var libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
+    var pdfLink=[spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
+    var okA=dec==='ok', dropA=dec==='drop';
+    var _rc=passed?['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','other']:['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','quote_too_narrow','false_flag','accepted_correction','other'];
+    var _rcDesc={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
+    var _rsel=(window._vfReasons||{})[ev.evidence_id]||'';
+    var _nval=(window._vfNotes||{})[ev.evidence_id]||'';
+    var noteInp='<textarea rows="2" placeholder="note (required for other)" onchange="setVfNote(\''+ev.evidence_id+'\',this.value)" style="font-size:10.5px; padding:5px 7px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); width:100%; resize:vertical; font-family:inherit; box-sizing:border-box;">'+vfEsc(_nval)+'</textarea>';
+    var reasonSel='<select onchange="setVfReason(\''+ev.evidence_id+'\',this.value)" style="font-size:10.5px; padding:4px 7px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><option value="">reason…</option>'+_rc.map(function(rc){return '<option value="'+rc+'" title="'+vfEsc(_rcDesc[rc])+'"'+(_rsel===rc?' selected':'')+'>'+rc.replace(/_/g,' ')+'</option>';}).join('')+'</select>';
+    var _allr=(window._vfAllReviews||{})[ev.evidence_id]||{};
+    var _rk=Object.keys(_allr).filter(function(rv){return _allr[rv].decision;});
+    var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
+    var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
+    var cropImg=(window._reviewApi && _vfTabular(ev.quote))?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show table region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
+    return '<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:3px solid '+vc+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
+      +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
+      +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
+      +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
+      +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
+      +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
+      +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> <code style="font-size:11px; color:var(--text-primary);">'+relShown+'</code></div>'
+      +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
+      +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
+      +cropImg
+      +reviewsLine
+      +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px; font-size:10.5px; border-top:1px solid var(--border-color); padding-top:10px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp; ':'')+pdfLink+'</div>'
+      +'<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;">'
+      +'<a href="#" onclick="vfShowReasonHelp();return false;" title="reason-code definitions" style="font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+'<span style="font-size:11px; color:var(--text-muted); margin-left:auto;" title="ok = keep · drop = remove">Decision:</span>'
+      +'<button title="'+(passed?'confirm AI pass is correct':'evidence stands (keep)')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:12px; padding:5px 18px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">ok</button>'
+      +'<button title="'+(passed?'AI missed an error — drop':'remove from register')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:12px; padding:5px 18px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">drop</button></div>'
+      +'<div style="margin-top:8px;">'+noteInp+'</div></div>';
+  }
+
+  function vfRenderDetail(visible, passed){ var el=document.getElementById('vf-detail'); if(!el)return;
+    var o=visible.find(function(x){return x.ev.evidence_id===window._vfSelected;})||visible[0];
+    if(!o){ el.innerHTML='<div style="color:var(--text-muted); padding:24px; text-align:center;">No flag selected.</div>'; return; }
+    el.innerHTML=vfDetailHtml(o, passed);
+  }
+
+  function selectVf(eid){ window._vfSelected=eid;
+    document.querySelectorAll('#vf-list [data-vfid]').forEach(function(el){ var s=el.getAttribute('data-vfid')===eid; el.style.borderLeftColor=s?'var(--accent-sky)':'transparent'; el.style.background=s?'rgba(255,255,255,0.03)':'transparent'; });
+    vfRenderDetail(window._vfVisible||[], window._vfMode==='passed');
+  }
+
+  function renderVfWorklist() {
+    if (!dashboardData) return;
+    if (!window._vfDecisions){ try{ window._vfDecisions=JSON.parse(localStorage.getItem('vfDecisions')||'{}'); }catch(e){ window._vfDecisions={}; } }
+    if (!window._vfReasons){ try{ window._vfReasons=JSON.parse(localStorage.getItem('vfReasons')||'{}'); }catch(e){ window._vfReasons={}; } }
+    if (!window._vfNotes){ try{ window._vfNotes=JSON.parse(localStorage.getItem('vfNotes')||'{}'); }catch(e){ window._vfNotes={}; } }
+    if (window._vfReviewer===undefined){ window._vfReviewer=localStorage.getItem('vfReviewer')||''; }
+    var _ri=document.getElementById('vf-reviewer'); if(_ri && !_ri.value && window._vfReviewer){ _ri.value=window._vfReviewer; }
+    var evAll=dashboardData.registers.EV_evidence_register||[]; var srcAll=dashboardData.registers.SRC_source_register||[];
+    var mode=window._vfMode||'flagged';
+    var flaggedRows=[];
+    evAll.forEach(function(ev){ var attr=ev.attribution||''; var idx=attr.indexOf('[VERIFY-FLAG '); if(idx===-1)return;
+      var raw=attr.slice(idx+13); var close=raw.indexOf(']'); var body=close!==-1?raw.slice(0,close):raw;
+      var ci=body.indexOf(': '); var verdict=(ci!==-1?body.slice(0,ci):body).trim().toLowerCase(); var reason=ci!==-1?body.slice(ci+2).trim():'';
+      flaggedRows.push({ev:ev,verdict:verdict,reason:reason}); });
+    window._vfFlagged=flaggedRows;
+    var flaggedIds={}; flaggedRows.forEach(function(r){flaggedIds[r.ev.evidence_id]=1;});
+    var passedAll=evAll.filter(function(ev){ return !flaggedIds[ev.evidence_id] && (ev.use_role!=='dataset'); });
+    // scope filter — pills derived from the data model; NbS controls table + family options
+    var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
+    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'all',family:'all'};
+    var _R2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
+    function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; return true; }
+    var scEl=document.getElementById('vf-scope');
+    if(scEl){ var _inNbs=function(e){ return window._vfScope.nbs==='all'||e.nbs_id===window._vfScope.nbs; };
+      var _famOpts=Array.from(new Set(evAll.filter(_inNbs).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
+      var _tblPresent=new Set(evAll.filter(_inNbs).map(function(e){return _R2T[e.use_role];}).filter(Boolean));
+      var _tblOpts=['T3','T4','T6'].filter(function(t){return _tblPresent.has(t);}); if(!_tblOpts.length)_tblOpts=['T3','T4','T6'];
+      var _mkPills=function(key,label,opts,fmt,cls){ var cur=window._vfScope[key]; var btns=['all'].concat(opts).map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
+      scEl.innerHTML=_mkPills('nbs','Practice (NbS)',_nbsOpts,function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'sky')
+        +_mkPills('table','Table / Step',_tblOpts,function(o){return o;},'purple')
+        +_mkPills('family','Sub-practice',_famOpts,function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'emerald'); }
+    flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
+    passedAll=passedAll.filter(_inScope);
+    var rlAll=(dashboardData.review_log)||[];
+    var _rlMe=(window._vfReviewer||'').trim();
+    var _reviewedCount=(new Set((_rlMe?rlAll.filter(function(r){return (r.reviewer||'')===_rlMe;}):rlAll).map(function(r){return r.evidence_id;}))).size;
+    var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+')';
+    var _2ndCount=(typeof _vf2ndList==='function')?_vf2ndList().length:0;
+    var mp=document.getElementById('vf-mode-pills');
+    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['second','🔁 2nd opinion ('+_2ndCount+')'],['reviewed',_reviewedLbl]];
+      mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
+    var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; _sb.textContent=_on?'← Back to review':'📊 Stats'; }
+    var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
+    if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
+    if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfReviewed(host, rlAll);} return; }
+    if(mode==='second'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVf2ndOpinion(host);} return; }
+    if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block';
+    var passed=(mode==='passed');
+    var _tblPill='<button class="pill-btn '+(window._vfTablesOnly?'active sky':'')+'" onclick="window._vfTablesOnly=!window._vfTablesOnly; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;" title="only units whose quote is tabular (📷)">📷 tables</button>';
+    var visible;
+    if(passed){
+      if(!window._vfPassStatus)window._vfPassStatus='unreviewed';
+      var _isRev=function(ev){ if(ev.reviewer_ok===true||ev.reviewer_ok==='true'||ev.reviewer_ok==='True')return true; var id=ev.evidence_id; if((window._vfDecisions||{})[id])return true; var a=(window._vfAllReviews||{})[id]||{}; return Object.keys(a).some(function(k){return a[k].decision;}); };
+      var _nRev=passedAll.filter(_isRev).length;
+      var _ps=window._vfPassStatus;
+      if(fd){ fd.style.display='flex'; var _sts=[['unreviewed','Not reviewed ('+(passedAll.length-_nRev)+')'],['reviewed','Reviewed ('+_nRev+')'],['all','All ('+passedAll.length+')']];
+        fd.innerHTML=_sts.map(function(s){ var a=_ps===s[0]?'active sky':''; return '<button class="pill-btn '+a+'" onclick="window._vfPassStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join('')+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+_tblPill; }
+      var pool=passedAll.filter(function(ev){ if(_ps==='all')return true; var r=_isRev(ev); return _ps==='reviewed'?r:!r; });
+      var seed=window._vfPassSeed||0; var N=30;
+      var ranked=pool.map(function(ev){ var h=0,s=ev.evidence_id+'|'+seed; for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;} return {ev:ev,h:h>>>0}; }).sort(function(a,b){return a.h-b.h;});
+      visible=ranked.slice(0,N).map(function(o){ return {ev:o.ev, verdict:'pass', reason:'AI accepted this extraction — spot-check: is the encoded value actually faithful to the quote?'}; });
+      var dc0=document.getElementById('vf-decided-count'); if(dc0) dc0.innerHTML='Sampling <b>'+visible.length+'</b> of '+pool.length+' '+(_ps==='all'?'':(_ps+' '))+'AI-passed units &nbsp;<a href="#" onclick="window._vfPassSeed=(window._vfPassSeed||0)+1; renderVfWorklist(); return false;" style="color:var(--accent-sky);">↻ resample</a> &nbsp;<span style="color:var(--text-muted);">(ok = pass confirmed · drop = AI missed an error / false negative)</span>';
+    } else {
+      if(!window._vfFlagStatus)window._vfFlagStatus='all';
+      var _myDec=function(id){ return !!(window._vfDecisions||{})[id]; };
+      var _decCount=flaggedRows.filter(function(r){return _myDec(r.ev.evidence_id);}).length;
+      if(fd){ fd.style.display='flex'; fd.style.gap='6px'; fd.style.flexWrap='wrap'; fd.style.alignItems='center';
+        var verdicts=['all'].concat(Array.from(new Set(flaggedRows.map(function(r){return r.verdict;})))).concat(['conflict']);
+        var vpills=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; var n=(v==='all')?0:flaggedRows.filter(function(r){return v==='conflict'?((function(){var a=(window._vfAllReviews||{})[r.ev.evidence_id]||{};var ds=Object.keys(a).filter(function(k){return a[k].decision;}).map(function(k){return a[k].decision;});return (new Set(ds)).size>1;})()):r.verdict===v;}).length; return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All':(v+' ('+n+')'))+'</button>'; }).join('');
+        var _sts=[['all','All',''],['todo','To-review ('+(flaggedRows.length-_decCount)+')','flagged units you have not decided yet'],['mine','In progress ('+_decCount+')','your un-applied clicks this session — they move to ✓ My reviewed once you Apply']];
+        var spills=_sts.map(function(s){ var a=window._vfFlagStatus===s[0]?'active emerald':''; return '<button class="pill-btn '+a+'" title="'+s[2]+'" onclick="window._vfFlagStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join('');
+        fd.innerHTML=vpills+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+spills+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+_tblPill; }
+      if(window._vfVerdictFilter==='conflict'){ visible=flaggedRows.filter(function(r){ var a=(window._vfAllReviews||{})[r.ev.evidence_id]||{}; var ds=Object.keys(a).filter(function(k){return a[k].decision;}).map(function(k){return a[k].decision;}); return (new Set(ds)).size>1; }); }
+      else if(!window._vfVerdictFilter||window._vfVerdictFilter==='all'){ visible=flaggedRows; }
+      else { visible=flaggedRows.filter(function(r){return r.verdict===window._vfVerdictFilter;}); }
+      var _fs=window._vfFlagStatus||'all';
+      if(_fs==='mine'){ visible=visible.filter(function(r){return _myDec(r.ev.evidence_id);}); }
+      else if(_fs==='todo'){ visible=visible.filter(function(r){return !_myDec(r.ev.evidence_id);}); }
+      var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+_decCount+'</b> / '+flaggedRows.length+' decided';
+    }
+    if(window._vfTablesOnly){ visible=visible.filter(function(r){return _vfTabular(r.ev.quote);}); }
+    if(!host)return; host.innerHTML='';
+    if(!visible.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(passed?'No AI-passed units to sample.':'No flags for this filter.')+'</div>'; return; }
+    visible.forEach(function(o){ host.insertAdjacentHTML('beforeend', vfDetailHtml(o, passed)); });
+  }
+
   function initDashboard() {
+    probeReviewApi();
     // 1. Meta fields
     const formattedDate = new Date(dashboardData.timestamp).toLocaleString();
     document.getElementById('meta-timestamp-val').textContent = formattedDate;
@@ -2247,6 +2977,271 @@
     }
     setupAuditSortListeners();
 
+    // 6b2. Setup Search & Discovery Logs Category Filter Pills
+    const catPills = document.querySelectorAll('#search-inclusions-category-pills .pill-btn');
+    catPills.forEach(btn => {
+      btn.addEventListener('click', () => {
+        catPills.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeSearchCategory = btn.dataset.category;
+        
+        const activeNbsBtn = document.querySelector('#search-pill-nbs .pill-btn.active');
+        const activeTableBtn = document.querySelector('#search-pill-table .pill-btn.active');
+        const activeSubNbsBtn = document.querySelector('#search-pill-sub-nbs .pill-btn.active');
+        
+        if (activeNbsBtn && activeTableBtn) {
+          const nbs = activeNbsBtn.dataset.nbs;
+          const table = activeTableBtn.dataset.table;
+          const subNbs = activeSubNbsBtn ? activeSubNbsBtn.dataset.subnbs : 'all';
+          renderSearchLog(`${nbs}_${table}`, subNbs);
+        }
+      });
+    });
+
+    // 6c. Setup Search & Discovery Logs Pills Selection
+    if (dashboardData.discovery_logs) {
+      // Elements
+      const nbsPills = document.querySelectorAll('#search-pill-nbs .pill-btn');
+      const tablePills = document.querySelectorAll('#search-pill-table .pill-btn');
+      const subNbsContainer = document.getElementById('search-pill-sub-nbs');
+      const subNbsRow = document.getElementById('search-sub-nbs-row');
+      const selectSearchLog = document.getElementById('select-search-log');
+
+      // Define Sub-NbS mapping definitions
+      const subNbsDefinitions = {
+        'agroforestry': [
+          { id: 'all', name: 'All Sub-Practices' },
+          { id: 'agroforestry__planted_silvoarable', name: 'Planted Silvoarable (F1)' },
+          { id: 'agroforestry__regeneration_farmland', name: 'Regeneration Farmland (F2)' },
+          { id: 'agroforestry__silvopastoral', name: 'Silvopastoral (F3)' },
+          { id: 'agroforestry__linear_boundary', name: 'Linear Boundary (F4)' },
+          { id: 'agroforestry__shaded_perennial', name: 'Shaded Perennial (F5)' },
+          { id: 'agroforestry__homegardens_proximity', name: 'Homegardens (F6)' }
+        ],
+        'water_harvesting_conservation': [
+          { id: 'all', name: 'All Sub-Practices' },
+          { id: 'water_harvesting__runoff_catchment', name: 'Runoff Catchment (F1)' }
+        ]
+      };
+
+      // Current active states
+      let activeNbs = 'agroforestry';
+      let activeTable = 'T3';
+      let activeSubNbs = 'all';
+
+      // Updates option elements inside the hidden select (for backwards compatibility if any other code references it)
+      function syncHiddenSelect(logId) {
+        if (!selectSearchLog) return;
+        selectSearchLog.innerHTML = '';
+        const opt = document.createElement('option');
+        opt.value = logId;
+        opt.textContent = logId;
+        selectSearchLog.appendChild(opt);
+        selectSearchLog.value = logId;
+      }
+
+      // Populate Sub-NbS Pills dynamically based on active NbS
+      function renderSubNbsPills() {
+        if (!subNbsContainer) return;
+        subNbsContainer.innerHTML = '';
+        
+        const list = subNbsDefinitions[activeNbs] || [];
+        
+        // Show/hide Sub-Practice row depending on availability (or keep it shown)
+        if (list.length <= 1) {
+          subNbsRow.style.display = 'none';
+          activeSubNbs = 'all';
+          return;
+        } else {
+          subNbsRow.style.display = 'flex';
+        }
+
+        list.forEach((sub, idx) => {
+          const btn = document.createElement('button');
+          btn.className = 'pill-btn emerald' + (activeSubNbs === sub.id ? ' active' : '');
+          btn.style.borderRadius = '6px';
+          btn.style.padding = '5px 12px';
+          btn.style.fontSize = '11.5px';
+          btn.textContent = sub.name;
+          btn.dataset.subnbs = sub.id;
+          
+          btn.addEventListener('click', () => {
+            document.querySelectorAll('#search-pill-sub-nbs .pill-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeSubNbs = sub.id;
+            updateLogSelection();
+          });
+          
+          subNbsContainer.appendChild(btn);
+        });
+      }
+
+      // Re-evaluate available logs and update selection
+      function updateLogSelection() {
+        // Reset category filter pills to "All" on practice / sub-practice / table change
+        activeSearchCategory = 'all';
+        const catPillsList = document.querySelectorAll('#search-inclusions-category-pills .pill-btn');
+        catPillsList.forEach(b => {
+          if (b.dataset.category === 'all') b.classList.add('active');
+          else b.classList.remove('active');
+        });
+
+        // Enforce logical constraints (Water Harvesting only has T4 Suitability)
+        if (activeNbs === 'water_harvesting_conservation') {
+          tablePills.forEach(btn => {
+            const tableVal = btn.dataset.table;
+            if (tableVal !== 'T4') {
+              btn.classList.add('disabled');
+              btn.classList.remove('active');
+            } else {
+              btn.classList.remove('disabled');
+              btn.classList.add('active');
+            }
+          });
+          activeTable = 'T4';
+        } else {
+          tablePills.forEach(btn => {
+            btn.classList.remove('disabled');
+            if (btn.dataset.table === activeTable) {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          });
+        }
+
+        // Determine log key (e.g. "agroforestry_T3")
+        let logId = `${activeNbs}_${activeTable}`;
+        
+        // Check if log exists in data
+        const logExists = dashboardData.discovery_logs && dashboardData.discovery_logs[logId];
+        
+        // Structured Panel Container reference
+        const structPanel = document.getElementById('search-structured-panel');
+        const rawPanel = document.getElementById('search-raw-panel');
+        
+        if (logExists) {
+          syncHiddenSelect(logId);
+          // Hide no-log placeholder if exists
+          const placeholder = document.getElementById('search-no-log-placeholder');
+          if (placeholder) placeholder.style.display = 'none';
+          
+          if (document.getElementById('btn-search-view-structured').classList.contains('active')) {
+            structPanel.style.display = 'flex';
+            rawPanel.style.display = 'none';
+          } else {
+            structPanel.style.display = 'none';
+            rawPanel.style.display = 'block';
+          }
+          
+          renderSearchLog(logId, activeSubNbs);
+        } else {
+          // Render placeholder warning that log doesn't exist
+          structPanel.style.display = 'none';
+          rawPanel.style.display = 'none';
+          
+          let placeholder = document.getElementById('search-no-log-placeholder');
+          if (!placeholder) {
+            placeholder = document.createElement('div');
+            placeholder.id = 'search-no-log-placeholder';
+            placeholder.className = 'card-container';
+            placeholder.style.textAlign = 'center';
+            placeholder.style.padding = '40px 20px';
+            placeholder.style.background = 'rgba(239, 68, 68, 0.05)';
+            placeholder.style.border = '1px dashed rgba(239, 68, 68, 0.2)';
+            placeholder.style.borderRadius = '8px';
+            placeholder.style.margin = '20px 0';
+            structPanel.parentNode.insertBefore(placeholder, structPanel);
+          }
+          placeholder.style.display = 'block';
+          placeholder.innerHTML = `
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="1.5" style="margin-bottom: 16px; opacity: 0.8;">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3 style="margin: 0 0 8px 0; font-family: var(--font-outfit); font-size: 16px; color: var(--text-primary);">Search Log Not Found</h3>
+            <p style="margin: 0; font-size: 13px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.5;">
+              No Search &amp; Discovery Log exists for this selection combination (<strong>${activeNbs === 'agroforestry' ? 'Agroforestry' : 'Water Harvesting'}</strong> × <strong>${activeTable}</strong>). 
+              Please try selecting a different Table or Practice.
+            </p>
+          `;
+        }
+      }
+
+      // Setup NbS Pills click listeners
+      nbsPills.forEach(btn => {
+        btn.addEventListener('click', () => {
+          nbsPills.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeNbs = btn.dataset.nbs;
+          
+          // Re-populate Sub-NbS list
+          activeSubNbs = 'all';
+          renderSubNbsPills();
+          updateLogSelection();
+        });
+      });
+
+      // Setup Table Pills click listeners
+      tablePills.forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (btn.classList.contains('disabled')) return;
+          tablePills.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          activeTable = btn.dataset.table;
+          updateLogSelection();
+        });
+      });
+
+      // Toggle views
+      const btnViewStruct = document.getElementById('btn-search-view-structured');
+      const btnViewRaw = document.getElementById('btn-search-view-raw');
+      const structPanel = document.getElementById('search-structured-panel');
+      const rawPanel = document.getElementById('search-raw-panel');
+
+      if (btnViewStruct && btnViewRaw && structPanel && rawPanel) {
+        btnViewStruct.addEventListener('click', () => {
+          btnViewStruct.classList.add('active', 'sky');
+          btnViewStruct.style.background = '';
+          btnViewStruct.style.color = '';
+          
+          btnViewRaw.classList.remove('active', 'sky');
+          btnViewRaw.style.background = 'transparent';
+          btnViewRaw.style.color = 'var(--text-muted)';
+          
+          const logId = `${activeNbs}_${activeTable}`;
+          const logExists = dashboardData.discovery_logs && dashboardData.discovery_logs[logId];
+          
+          if (logExists) {
+            structPanel.style.display = 'flex';
+          }
+          rawPanel.style.display = 'none';
+        });
+
+        btnViewRaw.addEventListener('click', () => {
+          btnViewRaw.classList.add('active', 'sky');
+          btnViewRaw.style.background = '';
+          btnViewRaw.style.color = '';
+          
+          btnViewStruct.classList.remove('active', 'sky');
+          btnViewStruct.style.background = 'transparent';
+          btnViewStruct.style.color = 'var(--text-muted)';
+          
+          structPanel.style.display = 'none';
+          const logId = `${activeNbs}_${activeTable}`;
+          const logExists = dashboardData.discovery_logs && dashboardData.discovery_logs[logId];
+          if (logExists) {
+            rawPanel.style.display = 'block';
+          }
+        });
+      }
+
+      // Initial execution
+      renderSubNbsPills();
+      updateLogSelection();
+    }
+
     // 7. Initialize Sankey target table toggle click listeners
     const sankeyToggles = ['toggle-sankey-t4', 'toggle-sankey-t3', 'toggle-sankey-t6'];
     sankeyToggles.forEach(id => {
@@ -2300,6 +3295,67 @@
         triggerOverviewFilter(selectedVal);
       });
     }
+  }
+
+  // Categorize a source as Stock, Updated Lit, Grey Lit, or Tools
+  function getSourceCategory(sourceId, citation) {
+    const sid = (sourceId || '').toLowerCase();
+    const cit = (citation || '').toLowerCase();
+
+    // Explicit source_category in the register is authoritative (accurate, not guessed).
+    const srcReg = (dashboardData && dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
+    const srcMeta = srcReg.find(s => s.source_id === sourceId);
+    if (srcMeta && srcMeta.source_category) {
+      return { stock: 'stock', updated_lit: 'updated', grey: 'grey', tool: 'tools' }[srcMeta.source_category] || 'updated';
+    }
+    if (srcMeta && srcMeta.source_kind === 'grey_lit') return 'grey';
+
+    const toolsList = [
+      'invest_ecosystem_services', 'wanulcas_model', 'yieldsafe_model', 'fao_exact_carbon_tool',
+      'fao_ruralinvest_cba', 'afolu_carbon_calculator', 'redd_abacus_sp', 'fao_undp_nap_forestry_guidelines',
+      'gender_inclusion_toolbox', 'farmtree_platform', 'agroforestry_designer_toolkit',
+      'regenworks_agroforestry', 'agroforestryx_design_tool', 'agroforstrechner_tool', 'wocat_slm_database'
+    ];
+    if (toolsList.includes(sid)) return 'tools';
+
+    if (sid.startsWith('wri_') || sid.startsWith('wocat_') || sid.startsWith('wb_') || sid.startsWith('fao_') || sid.startsWith('tnc_') || sid.startsWith('gca_')) {
+      return 'grey';
+    }
+    if (cit.includes('wocat') || cit.includes('world bank') || cit.includes('fao') || cit.includes('wri') || cit.includes('project appraisal') || cit.includes('appraisal document')) {
+      return 'grey';
+    }
+
+    const stockList = [
+      'nath_2021', 'zomer_2014', 'haile_2024', 'yadav_2024', 'brandt_2015', 'chuma_2021',
+      'haris_2021', 'wotlolan_2021', 'seja_2022', 'ahmad_2017', 'ahmad_2018', 'ahmad_2020', 'mushtaq_2023'
+    ];
+    if (stockList.includes(sid)) return 'stock';
+
+    return 'updated';
+  }
+
+  // Count unique source resources mapped to a given family, table target, and category
+  function getClaimsCount(familyId, targetKey, typeKey) {
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    const sources = dashboardData.registers.SRC_source_register || [];
+    
+    const matchingClaims = claims.filter(c => {
+      if (c.suitability_family_id !== familyId) return false;
+      
+      const dest = getDestTable(c);
+      let matchTarget = false;
+      if (targetKey === 't4') matchTarget = (dest === 't4_mappings');
+      else if (targetKey === 't3') matchTarget = (dest === 't3_hazards');
+      else if (targetKey === 't6') matchTarget = (dest === 't6_scorecard');
+      if (!matchTarget) return false;
+      
+      const s = sources.find(src => src.source_id === c.source_id);
+      const cat = getSourceCategory(c.source_id, s ? s.citation : '');
+      return (cat === typeKey);
+    });
+    
+    const uniqueSourceIds = new Set(matchingClaims.map(c => c.source_id));
+    return uniqueSourceIds.size;
   }
 
   // Resolve which target table a claim maps to, based on database evidence links & fallbacks
@@ -2365,8 +3421,8 @@
       
       const nbsSources = sources.filter(s => (s.nbs_ids || '').split(';').map(x=>x.trim()).includes(nbsId));
       const totalSourcesCount = nbsSources.length;
-      const sweptSourcesCount = nbsSources.filter(s => s.extraction_status === 'swept' || s.extraction_status === 'signed_off').length;
-      
+      const sweptSourcesCount = nbsSources.filter(s => ['complete','swept','signed_off'].includes(s.extraction_status)).length;
+
       const nbsClaims = claims.filter(c => c.nbs_id === nbsId);
       const claimsCount = nbsClaims.length;
       
@@ -2414,48 +3470,85 @@
     });
   }
 
-  const discoveryStatusDb = {
-    "agroforestry__homegardens_proximity": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "agroforestry__linear_boundary": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "agroforestry__planted_silvoarable": {
-      t4: { stock: "complete", updated: "complete", grey: "complete", tools: "complete" },
-      t3: { stock: "seeded", updated: "seeded", grey: "pending", tools: "seeded" },
-      t6: { stock: "seeded", updated: "seeded", grey: "complete", tools: "seeded" }
-    },
-    "agroforestry__regeneration_farmland": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "agroforestry__shaded_perennial": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "agroforestry__silvopastoral": {
-      t4: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" }
-    },
-    "water_harvesting__runoff_catchment": {
-      t4: { stock: "pending", updated: "pending", grey: "complete", tools: "complete" },
-      t3: { stock: "pending", updated: "pending", grey: "pending", tools: "pending" },
-      t6: { stock: "pending", updated: "pending", grey: "pending", tools: "complete" }
-    }
-  };
+  // D2: discoveryStatusDb derived from live EV counts; hardcoded base overridden where EV data exists
+  function buildDiscoveryStatusDb() {
+    const _evBase = (dashboardData && dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
+    const _srcBase = (dashboardData && dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
+    const _roleToTable = { structural_suitability: 't4', climate_risk: 't3', nbs_effect: 't6' };
+    const _db = {
+      "agroforestry__homegardens_proximity": { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__linear_boundary":       { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__planted_silvoarable":   { t4:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"}, t3:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"}, t6:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"} },
+      "agroforestry__regeneration_farmland": { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__shaded_perennial":      { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__silvopastoral":         { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "water_harvesting__runoff_catchment":  { t4:{stock:"pending",updated:"pending",grey:"complete",tools:"complete"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"complete"} }
+    };
+    // Scan live EV: for each (family, role→table, category), upgrade pending→seeded if EV rows exist
+    _evBase.forEach(c => {
+      const fam = c.suitability_family_id;
+      if (!fam || !_db[fam]) return;
+      const tbl = _roleToTable[(c.use_role || '').toLowerCase()];
+      if (!tbl) return;
+      const src = _srcBase.find(s => s.source_id === c.source_id);
+      const cat = getSourceCategory(c.source_id, src ? src.citation : '');
+      if (_db[fam][tbl] && _db[fam][tbl][cat] === 'pending') {
+        _db[fam][tbl][cat] = 'seeded';
+      }
+    });
+    return _db;
+  }
+  let discoveryStatusDb = {};
 
   let auditSortCol = 'family'; // 'family', 't4', 't3', 't6'
   let auditSortDir = 'asc';
 
+  // Stage status PER (family × table). Honest definitions — no completeness claims:
+  //  S (searched): a discovery log exists for this NbS × table (the search/screening was run).
+  //  E (extracted): ≥1 EV row exists for this family × table (extraction produced output here;
+  //                 coverage is the count cells, NOT a "finished" claim).
+  //  V (verify-flagged): ≥1 of those rows was flagged by the relationship-verify pass. Hollow means
+  //                 either verified-clean OR not-yet-verified (we cannot distinguish per row).
+  //  R (reviewed): ≥1 of those rows has reviewer_ok=true (human sign-off).
+  function getCellStage(familyId, useRole) {
+    const ev = (dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
+    const rows = ev.filter(c => c.suitability_family_id === familyId && (c.use_role || '') === useRole);
+    return {
+      n: rows.length,
+      e: rows.length > 0,
+      v: rows.some(c => (c.attribution || '').includes('[VERIFY-FLAG')),
+      r: rows.some(c => c.reviewer_ok === true || c.reviewer_ok === 'true'),
+    };
+  }
+  // Read an authored stage status from the enforced progress ledger (NOT inferred).
+  // ledger is keyed (nbs_id, table); stages: searched/screened/extracted/verified/reviewed.
+  // Ledger is keyed (nbs_id, table[T4/T3/T6], category[stock/updated_lit/grey/tool]).
+  function ledgerStage(nbsId, table, category, stage) {
+    const led = (dashboardData && dashboardData.progress_ledger) || [];
+    const row = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category);
+    return row ? (row[stage] || 'not_started') : 'not_started';
+  }
+  // dashboard typeKey -> ledger category enum
+  const _catKey = { stock: 'stock', updated: 'updated_lit', grey: 'grey', tools: 'tool' };
+  // count reviewer_ok units in a (family, target, type) cell
+  function cellReviewed(familyId, targetKey, typeKey) {
+    const role = { t4: 'structural_suitability', t3: 'climate_risk', t6: 'nbs_effect' }[targetKey];
+    const ev = (dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
+    return ev.some(c => c.suitability_family_id === familyId && (c.use_role || '') === role
+      && getSourceCategory(c.source_id, '') === typeKey
+      && (c.reviewer_ok === true || c.reviewer_ok === 'true'));
+  }
+
+  // Render a stage dot: filled (on) or hollow (off)
+  function renderStageDot(label, on, color, tipText) {
+    const style = on
+      ? `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:${color};color:#fff;font-size:9px;font-weight:700;margin:1px;cursor:default;`
+      : `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:transparent;border:1.5px solid var(--border-color);color:var(--text-muted);font-size:9px;font-weight:700;margin:1px;cursor:default;`;
+    return `<span style="${style}" title="${tipText}">${label}</span>`;
+  }
+
   function renderDiscoveryAudit() {
+    discoveryStatusDb = buildDiscoveryStatusDb(); // D2: rebuild from live EV data
     const body = document.getElementById('body-discovery-audit');
     if (!body) return;
     body.innerHTML = '';
@@ -2533,25 +3626,25 @@
     });
 
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="13" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
+      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
       return;
     }
 
     const renderCell = (statusKey, targetKey, typeKey) => {
-      const status = discoveryStatusDb[statusKey];
-      const val = (status && status[targetKey] && status[targetKey][typeKey]) || 'pending';
+      const count = getClaimsCount(statusKey, targetKey, typeKey);
       
       let badgeClass = 'low';
-      let symbol = '✗';
-      let titleText = 'Pending Search';
-      if (val === 'complete') {
+      let displayVal = count;
+      let titleText = `${count} source(s) providing evidence`;
+      
+      if (count > 1) {
         badgeClass = 'high';
-        symbol = '✓';
-        titleText = 'Complete';
-      } else if (val === 'seeded') {
+      } else if (count === 1) {
         badgeClass = 'medium';
-        symbol = '⚠';
-        titleText = 'Seeded / Registered';
+      } else {
+        badgeClass = 'low';
+        displayVal = '0';
+        titleText = 'No sources providing evidence';
       }
       
       const typeLabel = typeKey === 'stock' ? 'Stock Papers'
@@ -2562,10 +3655,31 @@
                         : targetKey === 't3' ? 'T3 Hazards'
                         : 'T6 Outcomes & Costing';
 
-      return `<td style="text-align: center; border-left: ${typeKey === 'stock' ? '1px solid var(--border-color)' : 'none'};" title="${targetLabel} - ${typeLabel}: ${titleText}">
-        <span class="badge ${badgeClass} audit-badge">${symbol}</span>
-      </td>`;
+      // per-cell stage S·E·V·R for (family × table × category)
+      const _nbs = statusKey.split('__')[0];
+      const _tbl = targetKey.toUpperCase();
+      const _cat = _catKey[typeKey];
+      const _ss = ledgerStage(_nbs, _tbl, _cat, 'searched');
+      const _e = count > 0;
+      const _v = ledgerStage(_nbs, _tbl, _cat, 'verified') === 'done' && _e;
+      const _r = cellReviewed(statusKey, targetKey, typeKey);
+      const _dot = (state, color, lbl, tip) =>
+        `<span title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:11px;font-weight:700;margin:0 2px;${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
+      const sevr = `<div style="margin-top:6px;white-space:nowrap;line-height:1;">`
+        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', '#0ea5e9', 'S', `${typeLabel} Searched: ${_ss}`)
+        + _dot(_e ? 'full' : 'none', '#10b981', 'E', `Extracted: ${count} source(s)`)
+        + _dot(_v ? 'full' : 'none', '#818cf8', 'V', `Verified: ${_v ? 'verify pass run' : 'not run / no evidence'}`)
+        + _dot(_r ? 'full' : 'none', '#10b981', 'R', `Reviewed: ${_r ? 'yes' : 'not yet'}`)
+        + `</div>`;
+      const _short = typeKey === 'stock' ? 'Stock' : typeKey === 'updated' ? 'Lit' : typeKey === 'grey' ? 'Grey' : 'Tools';
+      return `<div title="${targetLabel} - ${typeLabel}: ${titleText}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
+        <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">${_short}</span>
+        <span class="badge ${badgeClass} audit-badge" style="font-weight:700; width:24px; height:24px; line-height:24px; font-size:13px; display:inline-block; text-align:center; border-radius:50%; padding:0;">${displayVal}</span>
+        ${sevr}
+      </div>`;
     };
+    const renderTableCell = (statusKey, targetKey) =>
+      `<td style="padding:8px; vertical-align:top; border-left:1px solid var(--border-color);"><div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">${renderCell(statusKey, targetKey, 'stock')}${renderCell(statusKey, targetKey, 'updated')}${renderCell(statusKey, targetKey, 'grey')}${renderCell(statusKey, targetKey, 'tools')}</div></td>`;
 
     rows.forEach(r => {
       const recipe = dashboardData.recipes[r.nbsId];
@@ -2585,20 +3699,9 @@
             Subpractices: ${subpracticesNames}
           </div>
         </td>
-        ${renderCell(r.familyId, 't4', 'stock')}
-        ${renderCell(r.familyId, 't4', 'updated')}
-        ${renderCell(r.familyId, 't4', 'grey')}
-        ${renderCell(r.familyId, 't4', 'tools')}
-        
-        ${renderCell(r.familyId, 't3', 'stock')}
-        ${renderCell(r.familyId, 't3', 'updated')}
-        ${renderCell(r.familyId, 't3', 'grey')}
-        ${renderCell(r.familyId, 't3', 'tools')}
-        
-        ${renderCell(r.familyId, 't6', 'stock')}
-        ${renderCell(r.familyId, 't6', 'updated')}
-        ${renderCell(r.familyId, 't6', 'grey')}
-        ${renderCell(r.familyId, 't6', 'tools')}
+        ${renderTableCell(r.familyId, 't4')}
+        ${renderTableCell(r.familyId, 't3')}
+        ${renderTableCell(r.familyId, 't6')}
       `;
       body.appendChild(tr);
     });
@@ -3094,7 +4197,7 @@
       const hasT6Claims = t6ClaimsCount > 0;
 
       const contributesToActive = (t4Active && hasT4Claims) || (t3Active && hasT3Claims) || (t6Active && hasT6Claims);
-      const isSwept = s.extraction_status === 'swept' || s.extraction_status === 'signed_off';
+      const isSwept = ['complete','swept','signed_off'].includes(s.extraction_status);
 
       if (!contributesToActive && !isSwept) return;
 
@@ -3107,7 +4210,8 @@
         : `<span style="color:var(--text-muted); font-size:11px;">None extracted</span>`;
 
       // Badge for tier
-      let tierClass = s.benchmark_tier === 'high' ? 'high' : s.benchmark_tier === 'medium' ? 'medium' : 'low';
+      const _bt = (s.benchmark_tier || '').toLowerCase();
+      let tierClass = _bt === 'high' ? 'high' : _bt === 'medium' ? 'medium' : 'low';
       
       // Geo context
       const geo = [s.study_country, s.region].filter(Boolean).join(', ') || 'Global';
@@ -3132,7 +4236,7 @@
           </div>
         </td>
         <td style="text-align: center; vertical-align: middle; padding: 10px 12px;">
-          <span class="badge ${tierClass}" style="font-size:9px; padding:2px 5px;">${s.benchmark_tier}</span>
+          <span class="badge ${tierClass}" style="font-size:9px; padding:2px 5px;">${_bt}</span>
         </td>
         <td style="font-size: 11.5px; padding: 10px 12px; color:var(--text-secondary);">
           <div>${geo}</div>
@@ -3171,7 +4275,7 @@
     const stats = {};
     sources.forEach(src => {
       const nbsList = (src.nbs_ids || '').split(';').map(n => n.trim()).filter(Boolean);
-      const isSwept = src.extraction_status === 'swept' || src.extraction_status === 'signed_off';
+      const isSwept = ['complete','swept','signed_off'].includes(src.extraction_status);
       nbsList.forEach(nbs => {
         if (!stats[nbs]) stats[nbs] = { swept: 0, pending: 0 };
         if (isSwept) stats[nbs].swept++;
@@ -3244,7 +4348,7 @@
     const tiers = { high: 0, medium: 0, low: 0, external: 0 };
     claims.forEach(c => {
       const src = sources.find(s => s.source_id === c.source_id);
-      const tier = src ? src.benchmark_tier : 'low';
+      const tier = src ? (src.benchmark_tier || 'low').toLowerCase() : 'low';
       if (tiers[tier] !== undefined) tiers[tier]++;
       else tiers.low++;
     });
@@ -3309,7 +4413,7 @@
       const c = s.study_country || 'Global';
       if (!countryMap[c]) countryMap[c] = { total: 0, swept: 0 };
       countryMap[c].total++;
-      if (s.extraction_status === 'swept' || s.extraction_status === 'signed_off') countryMap[c].swept++;
+      if (['complete','swept','signed_off'].includes(s.extraction_status)) countryMap[c].swept++;
     });
 
     Object.entries(countryMap).sort((a,b)=>b[1].total - a[1].total).forEach(([country, stat]) => {
@@ -3542,19 +4646,33 @@
     matchedClaims.forEach(c => {
       const src = sources.find(s => s.source_id === c.source_id);
       const citation = src ? src.citation : c.source_id;
-      const tier = src ? src.benchmark_tier : 'low';
+      const tier = src ? (src.benchmark_tier || 'low').toLowerCase() : 'low';
       
+      // Honesty badges
+      const _conf = (c.extraction_confidence || '').toLowerCase();
+      const _confColor = _conf === 'high' ? 'var(--accent-emerald)' : _conf === 'medium' ? 'var(--accent-amber)' : 'var(--text-muted)';
+      const _confBadge = _conf ? `<span style=”font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:3px; color:${_confColor};”>${_conf}</span>` : '';
+      const _basisBadge = c.claim_basis ? `<span style=”font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:3px; color:var(--text-secondary);”>${c.claim_basis}</span>` : '';
+      const _scopeFlag = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style=”font-size:8px; padding:1px 4px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:3px; color:var(--accent-amber);”>species/crop-specific</span>` : '';
+      const _reviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style=”font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:3px; color:var(--text-muted);”>unreviewed</span>`;
+      const _attr = c.attribution || '';
+      const _vfMatch = _attr.match(/\[VERIFY-FLAG([^\]]*)\]/);
+      const _vfBadge = _vfMatch ? `<span style=”font-size:8px; padding:1px 5px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.4); border-radius:3px; color:var(--accent-rose); font-weight:600; cursor:help;” title=”${(_vfMatch[1] || '').trim()}”>&#9872; VERIFY-FLAG</span>` : '';
+
       html += `
-        <div style="background-color:var(--bg-primary); border: 1px solid var(--border-color); border-radius:var(--radius-sm); padding:8px 10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; font-size:10px;">
-            <code style="color:var(--accent-emerald); font-weight:600;">${c.evidence_id}</code>
-            <span class="badge ${tier}" style="font-size:8px; padding:1px 4px;">${tier}</span>
+        <div style=”background-color:var(--bg-primary); border: 1px solid ${_vfMatch ? 'rgba(244,63,94,0.35)' : 'var(--border-color)'}; border-radius:var(--radius-sm); padding:8px 10px;”>
+          <div style=”display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; font-size:10px; flex-wrap:wrap; gap:3px;”>
+            <code style=”color:var(--accent-emerald); font-weight:600;”>${c.evidence_id}</code>
+            <div style=”display:flex; gap:3px; flex-wrap:wrap; align-items:center;”>
+              <span class=”badge ${tier}” style=”font-size:8px; padding:1px 4px;”>${tier}</span>
+              ${_confBadge}${_basisBadge}${_scopeFlag}${_reviewBadge}${_vfBadge}
+            </div>
           </div>
-          <p style="font-style:italic; line-height:1.4; color:var(--text-primary); margin-bottom:6px;">“${c.quote}”</p>
-          <div style="font-size:9.5px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:flex-end;">
-            <span style="max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Ref: <strong>${citation}</strong></span>
-            <button class="btn-flag" onclick="openGitIssue('evidence', ${JSON.stringify(c).replace(/"/g, '&quot;')})" style="font-size:9px; padding:2px 5px;">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+          <p style=”font-style:italic; line-height:1.4; color:var(--text-primary); margin-bottom:6px;”>”${c.quote}”</p>
+          <div style=”font-size:9.5px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:flex-end;”>
+            <span style=”max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;”>Ref: <strong>${citation}</strong></span>
+            <button class=”btn-flag” onclick=”openGitIssue('evidence', ${JSON.stringify(c).replace(/”/g, '&quot;')})” style=”font-size:9px; padding:2px 5px;”>
+              <svg width=”10” height=”10” viewBox=”0 0 24 24” fill=”none” stroke=”currentColor” stroke-width=”2.5”><path d=”M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z”></path><line x1=”4” y1=”22” x2=”4” y2=”15”></line></svg>
               Flag
             </button>
           </div>
@@ -3705,6 +4823,11 @@
 
     let familyClaims = claims.filter(c => c.nbs_id === nbsId && c.suitability_family_id === familyId);
 
+    // Flagged-only toggle (B3)
+    if (window._evFlaggedOnly) {
+      familyClaims = familyClaims.filter(c => (c.attribution || '').includes('[VERIFY-FLAG'));
+    }
+
     if (searchVal) {
       familyClaims = familyClaims.filter(c => {
         const quote = (c.quote || '').toLowerCase();
@@ -3730,15 +4853,15 @@
       const srcA = sources.find(s => s.source_id === a.source_id);
       const srcB = sources.find(s => s.source_id === b.source_id);
       const tierScore = { high: 3, medium: 2, low: 1, external: 0 };
-      const scoreA = srcA ? tierScore[srcA.benchmark_tier] : 1;
-      const scoreB = srcB ? tierScore[srcB.benchmark_tier] : 1;
+      const scoreA = srcA ? (tierScore[(srcA.benchmark_tier || '').toLowerCase()] || 1) : 1;
+      const scoreB = srcB ? (tierScore[(srcB.benchmark_tier || '').toLowerCase()] || 1) : 1;
       return scoreB - scoreA;
     });
 
     familyClaims.forEach(c => {
       const src = sources.find(s => s.source_id === c.source_id);
       const citation = src ? src.citation : 'Unknown Citation reference';
-      const tier = src ? src.benchmark_tier : 'low';
+      const tier = src ? (src.benchmark_tier || 'low').toLowerCase() : 'low';
       
       const card = document.createElement('div');
       card.className = 'evidence-card';
@@ -3766,24 +4889,36 @@
       // Combine claim and source citation to pass to Git Flag button
       const payload = { ...c, citation };
 
+      // Honesty badges
+      const _eConf = (c.extraction_confidence || '').toLowerCase();
+      const _eConfColor = _eConf === 'high' ? 'var(--accent-emerald)' : _eConf === 'medium' ? 'var(--accent-amber)' : 'var(--text-muted)';
+      const _eConfBadge = _eConf ? `<span style=”font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.05); color:${_eConfColor};”>${_eConf} confidence</span>` : '';
+      const _eBasisBadge = c.claim_basis ? `<span style=”font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.05); color:var(--text-secondary);”>${c.claim_basis}</span>` : '';
+      const _eScopeBadge = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style=”font-size:9px; padding:1px 5px; border:1px solid rgba(245,158,11,0.3); border-radius:3px; background:rgba(245,158,11,0.1); color:var(--accent-amber);”>species/crop-specific</span>` : '';
+      const _eReviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style=”font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.04); color:var(--text-muted);”>unreviewed</span>`;
+      const _eAttr = c.attribution || '';
+      const _eVfMatch = _eAttr.match(/\[VERIFY-FLAG([^\]]*)\]/);
+      const _eVfBadge = _eVfMatch ? `<span style=”font-size:9px; padding:1px 6px; border:1px solid rgba(244,63,94,0.4); border-radius:3px; background:rgba(244,63,94,0.15); color:var(--accent-rose); font-weight:600; cursor:help;” title=”${(_eVfMatch[1] || '').trim()}”>&#9872; VERIFY-FLAG</span>` : '';
+
       card.innerHTML = `
-        <div class="evidence-card-header">
-          <span class="evidence-var-tag">${c.variable}</span>
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span class="badge ${tier}">${tier} tier</span>
-            <button class="btn-flag" onclick="openGitIssue('evidence', ${JSON.stringify(payload).replace(/"/g, '&quot;')})" style="font-size:10px; padding:2px 6px;">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+        <div class=”evidence-card-header”>
+          <span class=”evidence-var-tag”>${c.variable}</span>
+          <div style=”display:flex; align-items:center; gap:6px; flex-wrap:wrap;”>
+            <span class=”badge ${tier}”>${tier} tier</span>
+            ${_eConfBadge}${_eBasisBadge}${_eScopeBadge}${_eReviewBadge}${_eVfBadge}
+            <button class=”btn-flag” onclick=”openGitIssue('evidence', ${JSON.stringify(payload).replace(/”/g, '&quot;')})” style=”font-size:10px; padding:2px 6px;”>
+              <svg width=”10” height=”10” viewBox=”0 0 24 24” fill=”none” stroke=”currentColor” stroke-width=”2.5”><path d=”M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z”></path><line x1=”4” y1=”22” x2=”4” y2=”15”></line></svg>
               Flag
             </button>
           </div>
         </div>
-        <blockquote class="evidence-quote">“${highlightedQuote}”</blockquote>
-        <div class="evidence-citation">
-          <span>Source: <strong>${highlightedFriendly}</strong> — <span style="font-size: 11.5px; font-weight: normal; color: var(--text-secondary);">${highlightedCitation}</span></span>
-          ${src && src.doi ? `<span style="font-size:10px; color:var(--text-muted); margin-top:2px;">DOI: <a href="https://doi.org/${src.doi}" target="_blank" style="color:inherit; text-decoration:underline;">${src.doi}</a></span>` : ''}
+        <blockquote class=”evidence-quote”>”${highlightedQuote}”</blockquote>
+        <div class=”evidence-citation”>
+          <span>Source: <strong>${highlightedFriendly}</strong> — <span style=”font-size: 11.5px; font-weight: normal; color: var(--text-secondary);”>${highlightedCitation}</span></span>
+          ${src && src.doi ? `<span style=”font-size:10px; color:var(--text-muted); margin-top:2px;”>DOI: <a href=”https://doi.org/${src.doi}” target=”_blank” rel=”noopener noreferrer” style=”color:inherit; text-decoration:underline;”>${src.doi}</a></span>` : ''}
         </div>
-        <div class="evidence-meta-row">
-          ${details.map(d => `<span class="evidence-meta-item">${d}</span>`).join(' • ')}
+        <div class=”evidence-meta-row”>
+          ${details.map(d => `<span class=”evidence-meta-item”>${d}</span>`).join(' • ')}
         </div>
       `;
       listContainer.appendChild(card);
@@ -3827,11 +4962,23 @@
 
     rows.forEach(r => {
       const tr = document.createElement('tr');
-      const potentialColor = r.mitigation_potential === 'high' ? 'var(--accent-emerald)' 
-                           : r.mitigation_potential === 'medium' ? 'var(--accent-amber)' 
+      const potentialColor = r.mitigation_potential === 'high' ? 'var(--accent-emerald)'
+                           : r.mitigation_potential === 'medium' ? 'var(--accent-amber)'
                            : 'var(--text-secondary)';
-      
-      const evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
+
+      // C: rebuild evidence drawer from EV register if evidence_ids absent
+      let evidenceDrawer;
+      if (r.evidence_ids && r.evidence_ids.length > 0) {
+        evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
+      } else {
+        const _evAll2 = dashboardData.registers.EV_evidence_register || [];
+        const _t3Matches = _evAll2.filter(c => c.use_role === 'climate_risk' && c.nbs_id === nbsId && (!r.hazard_type || (c.variable || '').toLowerCase().includes((r.hazard_type || '').toLowerCase().split('_')[0])));
+        if (_t3Matches.length > 0) {
+          evidenceDrawer = generateEvidenceDrawerHtml(_t3Matches.map(c => c.evidence_id));
+        } else {
+          evidenceDrawer = '<div style="font-size:10.5px; color:var(--text-muted); margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">No linked evidence yet</div>';
+        }
+      }
 
       tr.innerHTML = `
         <td style="font-weight:600; font-family:var(--font-outfit); text-transform:capitalize;">${r.hazard_type}</td>
@@ -3902,7 +5049,20 @@
         valRange = `<strong>${vr.low} – ${vr.high}</strong> <span style="color:var(--text-muted); font-size:11px;">${vr.unit || ''}</span>`;
       }
 
-      const evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
+      // C: rebuild evidence drawer from EV register if evidence_ids absent
+      let evidenceDrawer;
+      if (r.evidence_ids && r.evidence_ids.length > 0) {
+        evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
+      } else {
+        const _evAll3 = dashboardData.registers.EV_evidence_register || [];
+        const _varKey = r.variable_id || r.economic_indicator_type || '';
+        const _t6Matches = _evAll3.filter(c => c.use_role === 'nbs_effect' && c.nbs_id === nbsId && (!_varKey || (c.variable || '').toLowerCase().includes(_varKey.toLowerCase().split('_')[0])));
+        if (_t6Matches.length > 0) {
+          evidenceDrawer = generateEvidenceDrawerHtml(_t6Matches.map(c => c.evidence_id));
+        } else {
+          evidenceDrawer = '<div style="font-size:10.5px; color:var(--text-muted); margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">No linked evidence yet</div>';
+        }
+      }
 
       tr.innerHTML = `
         <td style="font-weight:600; font-family:var(--font-outfit);">
@@ -4387,9 +5547,9 @@
       .attr("fill", d => {
         if (d.type === 'source') return "#0f766e";
         if (d.type === 'evidence') {
-          const tier = d.data.benchmark_tier || 'low';
-          return tier === 'high' ? "var(--accent-emerald)" 
-               : tier === 'medium' ? "var(--accent-amber)" 
+          const tier = (d.data.benchmark_tier || 'low').toLowerCase();
+          return tier === 'high' ? "var(--accent-emerald)"
+               : tier === 'medium' ? "var(--accent-amber)"
                : "var(--text-secondary)";
         }
         if (d.type === 'variable') return "var(--accent-sky)";
@@ -4532,7 +5692,7 @@
     if (node.type === 'source') {
       const s = node.data;
       const citation = s.citation || 'N/A';
-      const doi = s.doi ? `<a href="https://doi.org/${s.doi}" target="_blank" style="color: var(--accent-sky); text-decoration: underline;">${s.doi}</a>` : 'N/A';
+      const doi = s.doi ? `<a href="https://doi.org/${s.doi}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline;">${s.doi}</a>` : 'N/A';
       
       const claims = dashboardData.registers.EV_evidence_register || [];
       const claimCount = claims.filter(c => c.source_id === s.source_id).length;
@@ -4542,15 +5702,15 @@
         <p><strong>DOI:</strong> ${doi}</p>
         <p><strong>Study Country:</strong> <span style="text-transform: capitalize;">${s.study_country || 'Global'}</span></p>
         <p><strong>Methodology Type:</strong> <span style="text-transform: uppercase;">${s.method_type || 'empirical'}</span></p>
-        <p><strong>Benchmark Tier:</strong> <span class="badge ${s.benchmark_tier || 'low'}" style="font-size: 10px; padding: 1px 5px;">${s.benchmark_tier || 'low'}</span></p>
+        <p><strong>Benchmark Tier:</strong> <span class="badge ${(s.benchmark_tier || 'low').toLowerCase()}" style="font-size: 10px; padding: 1px 5px;">${(s.benchmark_tier || 'low').toLowerCase()}</span></p>
         <p><strong>Evidence Claims Extracted:</strong> <strong>${claimCount}</strong> claims</p>
       `;
     } else if (node.type === 'evidence') {
       const c = node.data;
       const s = dashboardData.registers.SRC_source_register.find(src => src.source_id === c.source_id);
       const citation = s ? s.citation : c.source_id;
-      const tier = s ? s.benchmark_tier : 'low';
-      
+      const tier = s ? (s.benchmark_tier || 'low').toLowerCase() : 'low';
+
       const details = [];
       if (c.context && c.context.aez) details.push(`AEZ: <strong>${c.context.aez}</strong>`);
       if (s && s.study_country) details.push(`Country: <strong>${s.study_country}</strong>`);
@@ -4668,6 +5828,927 @@
 
     html += '</div>';
     panel.innerHTML = html;
+  }
+
+  // Helpers for Search & Discovery Logs tab rendering
+  function parseMultipleMarkdownTables(text) {
+    if (!text) return [];
+    const lines = text.split('\n').map(l => l.trim());
+    const tables = [];
+    let currentTable = null;
+    let currentTitle = "Funnel";
+    
+    lines.forEach(line => {
+      if (line.startsWith('###') || line.startsWith('##')) {
+        currentTitle = line.replace(/^#+\s+/, '').trim();
+      } else if (line.startsWith('|')) {
+        if (!currentTable) {
+          currentTable = { title: currentTitle, headers: [], rows: [], rawLines: [] };
+          tables.push(currentTable);
+        }
+        currentTable.rawLines.push(line);
+      } else {
+        currentTable = null;
+      }
+    });
+    
+    tables.forEach(t => {
+      const tLines = t.rawLines;
+      if (tLines.length >= 2) {
+        t.headers = tLines[0].split('|').map(c => c.trim()).filter((c, i) => i > 0 && i < tLines[0].split('|').length - 1);
+        for (let i = 2; i < tLines.length; i++) {
+          const cells = tLines[i].split('|').map(c => c.trim());
+          const rowCells = cells.filter((c, idx) => idx > 0 && idx < cells.length - 1);
+          if (rowCells.length > 0 && !rowCells[0].toLowerCase().includes('stage') && !rowCells[0].includes('---')) {
+            t.rows.push(rowCells);
+          }
+        }
+      }
+    });
+    
+    return tables.filter(t => t.rows.length > 0);
+  }
+
+  function parseMarkdownTable(text) {
+    const tables = parseMultipleMarkdownTables(text);
+    return tables.length > 0 ? tables[0] : null;
+  }
+
+  function renderQueriesVisual(container, text) {
+    if (!text) {
+      container.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
+      const tabsContainer = document.getElementById('search-queries-tabs');
+      if (tabsContainer) tabsContainer.style.display = 'none';
+      return;
+    }
+    
+    const lines = text.split('\n');
+    const sections = [];
+    let currentSection = null;
+    
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('###')) {
+        const title = trimmed.replace(/^###\s+/, '').trim();
+        currentSection = {
+          title: title,
+          description: '',
+          items: []
+        };
+        sections.push(currentSection);
+      } else if (currentSection) {
+        if (trimmed.startsWith('*') || trimmed.startsWith('-')) {
+          const match = trimmed.match(/^[\*\-\s]+\*\*([^*]+)\*\*:(.*)$/);
+          if (match) {
+            currentSection.items.push({
+              name: match[1].trim(),
+              content: match[2].trim(),
+              details: []
+            });
+          } else {
+            const cleanLine = trimmed.replace(/^[\*\-\s]+/, '').trim();
+            if (currentSection.items.length > 0) {
+              currentSection.items[currentSection.items.length - 1].details.push(cleanLine);
+            } else {
+              currentSection.description += (currentSection.description ? '<br>' : '') + cleanLine;
+            }
+          }
+        } else if (trimmed !== '') {
+          if (trimmed.startsWith('---')) return;
+          currentSection.description += (currentSection.description ? '<br>' : '') + trimmed;
+        }
+      } else {
+        if (trimmed !== '' && !trimmed.startsWith('---')) {
+          currentSection = {
+            title: "General Sources & Background",
+            description: trimmed,
+            items: []
+          };
+          sections.push(currentSection);
+        }
+      }
+    });
+
+    if (sections.length === 0) {
+      const items = [];
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('*') || trimmed.startsWith('-')) {
+          const cleanLine = trimmed.replace(/^[\*\-\s]+/, '').trim();
+          const boldMatch = cleanLine.match(/^\*\*([^*]+)\*\*(.*)$/);
+          if (boldMatch) {
+            items.push({
+              name: boldMatch[1].trim(),
+              content: boldMatch[2].trim(),
+              details: []
+            });
+          } else {
+            items.push({
+              name: "Database Source",
+              content: cleanLine,
+              details: []
+            });
+          }
+        }
+      });
+      if (items.length > 0) {
+        sections.push({
+          title: "Sources Queried",
+          description: "",
+          items: items
+        });
+      }
+    }
+
+    // Set up tabs selector container
+    let tabsContainer = document.getElementById('search-queries-tabs');
+    if (!tabsContainer) {
+      tabsContainer = document.createElement('div');
+      tabsContainer.id = 'search-queries-tabs';
+      tabsContainer.style.cssText = 'display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;';
+      container.parentNode.insertBefore(tabsContainer, container);
+    }
+    tabsContainer.innerHTML = '';
+
+    function renderActiveSection(sec) {
+      container.innerHTML = '';
+      
+      const secCard = document.createElement('div');
+      secCard.className = 'card-container';
+      secCard.style.cssText = 'padding: 16px; margin: 0; border: 1px solid var(--border-color); background: var(--bg-secondary); border-radius: var(--radius-lg); width: 100%; box-sizing: border-box; min-width: 0;';
+      
+      let html = `
+        <div style="font-family: var(--font-outfit); font-size: 13.5px; font-weight: 700; color: var(--accent-sky); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; display: flex; align-items: center; gap: 8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          ${sec.title}
+        </div>
+      `;
+      
+      if (sec.description) {
+        let cleanDesc = sec.description
+          .replace(/`([^`\n]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size:11px; background:var(--bg-tertiary); padding:2px 4px; border-radius:3px; color: var(--accent-sky); word-break: break-all;">$1</code>')
+          .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        html += `<p style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.4;">${cleanDesc}</p>`;
+      }
+      
+      if (sec.items && sec.items.length > 0) {
+        html += `<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0; width: 100%;">`;
+        
+        sec.items.forEach(item => {
+          let resultsText = '';
+          let resultsCount = null;
+          let filters = [];
+          
+          item.details.forEach(d => {
+            const lowerD = d.toLowerCase();
+            if (lowerD.includes('results') || lowerD.includes('returned') || lowerD.includes('retained') || lowerD.includes('added')) {
+              const cleanVal = d.replace(/\*\*|:\s*/g, '').replace(/results|returned|retained|added/i, '').trim();
+              const numMatch = cleanVal.match(/([0-9,]+)/);
+              if (numMatch) {
+                resultsCount = parseInt(numMatch[1].replace(/,/g, ''));
+                const isResultWord = lowerD.includes('result');
+                resultsText = `${resultsCount}${isResultWord ? ' results' : ' works'}`;
+              } else {
+                resultsText = cleanVal;
+              }
+              if (cleanVal.length >= 18) {
+                filters.push(d);
+              }
+            } else {
+              filters.push(d);
+            }
+          });
+
+          const contentLower = item.content.toLowerCase();
+          if (contentLower.includes('results') || contentLower.includes('returned') || contentLower.includes('retained')) {
+            const cleanVal = item.content.replace(/\*\*|:\s*/g, '').replace(/results|returned|retained/i, '').trim();
+            const numMatch = cleanVal.match(/([0-9,]+)/);
+            if (numMatch) {
+              resultsCount = parseInt(numMatch[1].replace(/,/g, ''));
+              const isResultWord = contentLower.includes('result');
+              resultsText = `${resultsCount}${isResultWord ? ' results' : ' works'}`;
+            } else {
+              resultsText = cleanVal;
+            }
+          }
+          
+          let badgeText = '';
+          let isBadge = false;
+          
+          if (resultsText && resultsText.length < 18) {
+            badgeText = resultsText;
+            isBadge = true;
+          } else if (contentLower.includes('multiple')) {
+            badgeText = 'Multiple';
+            isBadge = true;
+          } else if (contentLower === 'n/a') {
+            badgeText = 'N/A';
+            isBadge = true;
+          } else if (/^\d{4}-\d{2}-\d{2}$/.test(item.content.trim())) {
+            badgeText = item.content.trim();
+            isBadge = true;
+          } else if (item.content.length > 0 && item.content.length < 15) {
+            badgeText = item.content;
+            isBadge = true;
+          }
+          
+          if (badgeText) {
+            badgeText = badgeText.replace(/\*\*([^*]+)\*\*/g, '$1');
+          }
+
+          html += `
+            <div style="background: var(--bg-tertiary); padding: 8px 10px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.02); word-break: break-word;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px; width: 100%;">
+                <div style="font-weight: 600; font-size: 11.5px; color: var(--text-primary); font-family: var(--font-outfit); flex: 1; min-width: 0;">${item.name}</div>
+                ${isBadge && badgeText ? `
+                  <span class="badge ${resultsCount !== null ? (resultsCount > 50 ? 'high' : 'medium') : 'low'}" style="font-size: 9.5px; padding: 1px 5px; white-space: nowrap; flex-shrink: 0;">
+                    ${badgeText}
+                  </span>
+                ` : ''}
+              </div>
+          `;
+
+          if (resultsCount !== null && resultsCount > 0) {
+            const logVal = Math.log10(resultsCount);
+            const barPct = Math.min(100, Math.max(10, (logVal / 4.5) * 100));
+            html += `
+              <div style="height: 5px; width: 100%; background: var(--bg-secondary); border-radius: 2.5px; margin: 4px 0 6px 0; overflow: hidden;">
+                <div style="height: 100%; width: ${barPct}%; background: linear-gradient(90deg, var(--accent-sky), #3b82f6); border-radius: 2.5px;"></div>
+              </div>
+            `;
+          }
+
+          if (!isBadge && item.content) {
+            let cleanContent = item.content
+              .replace(/`([^`\n]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size:11px; background:var(--bg-secondary); padding:2px 4px; border-radius:3px; color: var(--accent-sky); word-break: break-all;">$1</code>')
+              .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            html += `
+              <div style="font-size: 11px; color: var(--text-secondary); margin-top: 4px; line-height: 1.4; word-break: break-word;">
+                ${cleanContent}
+              </div>
+            `;
+          }
+
+          if (filters.length > 0) {
+            const detailsContent = filters.map(f => {
+              return f.replace(/`([^`]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size: 11px; background: var(--bg-secondary); padding: 1px 3px; border-radius: 3px; color: var(--accent-sky); word-break: break-all;">$1</code>')
+                      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            }).join('<br>');
+
+            html += `
+              <details style="margin-top: 4px;">
+                <summary style="font-size: 10.5px; color: var(--text-muted); cursor: pointer; user-select: none; outline: none;">
+                  Inspect Search Parameters & Strings
+                </summary>
+                <div style="margin-top: 4px; padding: 6px 8px; background: var(--bg-secondary); border-radius: 4px; font-size: 10.5px; color: var(--text-secondary); line-height: 1.4; border-left: 2px solid var(--accent-sky); word-break: break-word;">
+                  ${detailsContent}
+                </div>
+              </details>
+            `;
+          }
+
+          html += `</div>`;
+        });
+        
+        html += `</div>`;
+      }
+      
+      secCard.innerHTML = html;
+      container.appendChild(secCard);
+    }
+
+    if (sections.length <= 1) {
+      tabsContainer.style.display = 'none';
+      if (sections.length === 1) {
+        renderActiveSection(sections[0]);
+      } else {
+        container.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
+      }
+    } else {
+      tabsContainer.style.display = 'flex';
+      const prevActiveTitle = window.activeQuerySectionTitle || '';
+      let activeIndex = 0;
+      
+      sections.forEach((sec, idx) => {
+        if (sec.title === prevActiveTitle) {
+          activeIndex = idx;
+        }
+      });
+      
+      sections.forEach((sec, idx) => {
+        const btn = document.createElement('button');
+        let btnText = sec.title;
+        const numberMatch = btnText.match(/^\d+\.\s*(.*)$/);
+        if (numberMatch) {
+          btnText = numberMatch[1];
+        }
+        
+        if (btnText.includes('Scholarly Literature')) {
+          btnText = 'OpenAlex (Lit)';
+        } else if (btnText.includes('Targeted Institutional Database') || btnText.includes('Institutional Database')) {
+          btnText = 'Institutional DBs';
+        } else if (btnText.includes('General Web')) {
+          btnText = 'Web & Toolkits';
+        }
+        
+        btn.textContent = btnText;
+        btn.className = 'pill-btn';
+        btn.style.cssText = 'border-radius: 4px; padding: 4px 10px; font-size: 11.5px; cursor: pointer;';
+        if (idx === activeIndex) {
+          btn.classList.add('active', 'sky');
+        }
+        
+        btn.addEventListener('click', () => {
+          window.activeQuerySectionTitle = sec.title;
+          tabsContainer.querySelectorAll('button').forEach(b => b.classList.remove('active', 'sky'));
+          btn.classList.add('active', 'sky');
+          renderActiveSection(sec);
+        });
+        
+        tabsContainer.appendChild(btn);
+      });
+      
+      renderActiveSection(sections[activeIndex]);
+    }
+  }
+
+  function parseInclusionsTables(text) {
+    if (!text) return [];
+    const lines = text.split('\n').map(l => l.trim());
+    const allRows = [];
+    
+    lines.forEach(line => {
+      if (line.startsWith('|') && !line.includes('source_id') && !line.includes('---|')) {
+        const cells = line.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1);
+        if (cells.length >= 5) {
+          allRows.push({
+            sourceId: cells[0].replace(/`/g, '').trim(),
+            authorYear: cells[1].trim(),
+            tier: cells[2].trim(),
+            context: cells[3].trim(),
+            variables: cells[4].trim()
+          });
+        }
+      }
+    });
+    return allRows;
+  }
+
+  function parseBorderlineCases(text) {
+    if (!text) return [];
+    const lines = text.split('\n');
+    const cases = [];
+    let currentType = ''; 
+    let currentCase = null;
+    
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('###')) {
+        if (trimmed.toLowerCase().includes('exclusion') || trimmed.toLowerCase().includes('reject')) {
+          currentType = 'Exclude';
+        } else if (trimmed.toLowerCase().includes('inclusion') || trimmed.toLowerCase().includes('accept')) {
+          currentType = 'Include';
+        }
+      } else if (trimmed.startsWith('*') && trimmed.includes('**')) {
+        if (currentCase) {
+          cases.push(currentCase);
+        }
+        const title = trimmed.replace(/^[\*\-\s]+/, '').replace(/\*\*/g, '').replace(/:$/, '').trim();
+        currentCase = {
+          type: currentType || 'Review',
+          title: title,
+          candidate: '',
+          ambiguity: '',
+          proposal: ''
+        };
+      } else if (trimmed.startsWith('-') && currentCase) {
+        if (trimmed.toLowerCase().includes('*candidate*:') || trimmed.toLowerCase().includes('candidate:')) {
+          currentCase.candidate = trimmed.split(/candidate\*:|candidate:/i)[1].trim();
+        } else if (trimmed.toLowerCase().includes('*ambiguity*:') || trimmed.toLowerCase().includes('ambiguity:')) {
+          currentCase.ambiguity = trimmed.split(/ambiguity\*:|ambiguity:/i)[1].trim();
+        } else if (trimmed.toLowerCase().includes('*proposal*:') || trimmed.toLowerCase().includes('proposal:')) {
+          currentCase.proposal = trimmed.split(/proposal\*:|proposal:/i)[1].trim();
+        }
+      }
+    });
+    
+    if (currentCase) {
+      cases.push(currentCase);
+    }
+    return cases;
+  }
+
+  function renderMarkdownText(text) {
+    if (!text) return '';
+    
+    let html = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+      
+    html = html.replace(/`([^`\n]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size: 11.5px; background: var(--bg-tertiary); padding: 2px 4px; border-radius: 4px; color: var(--accent-sky); word-break: break-all;">$1</code>');
+    html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/^\s*[\-\*]\s+(.+)$/gm, '<li style="margin-left: 16px; margin-bottom: 4px;">$1</li>');
+    html = html.replace(/^\s*###\s+(.+)$/gm, '<h4 style="margin: 12px 0 6px 0; font-family: var(--font-outfit); font-size: 13.5px; color: var(--text-primary); border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">$1</h4>');
+    
+    html = html.split('\n').map(line => {
+      if (line.trim().startsWith('<li') || line.trim().startsWith('<h4') || line.trim() === '') {
+        return line;
+      }
+      return `<p style="margin-bottom: 8px; line-height: 1.5; color: var(--text-secondary);">${line}</p>`;
+    }).join('\n');
+    
+    return html;
+  }
+
+  function renderSearchLog(logId, subNbsFilter = 'all') {
+    if (!dashboardData || !dashboardData.discovery_logs) return;
+    const log = dashboardData.discovery_logs[logId];
+    if (!log) return;
+
+    // Parse Inclusions and Exclusions first so we can use their counts dynamically
+    const inclusionsKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('inclusion'));
+    const inclusionsRows = inclusionsKey ? parseInclusionsTables(log.sections[inclusionsKey]) : [];
+    
+    let filteredRows = inclusionsRows;
+    if (subNbsFilter && subNbsFilter !== 'all') {
+      filteredRows = inclusionsRows.filter(row => {
+        // Check if source exists in evidence register and has matching suitability_family_id
+        const matchingClaims = (dashboardData.registers.EV_evidence_register || []).filter(
+          c => c.source_id === row.sourceId
+        );
+        if (matchingClaims.length > 0) {
+          return matchingClaims.some(c => c.suitability_family_id === subNbsFilter);
+        }
+        
+        // Fallback keywords check
+        const searchSpace = `${row.sourceId} ${row.authorYear} ${row.context} ${row.variables}`.toLowerCase();
+        const keywordMap = {
+          'agroforestry__planted_silvoarable': ['planted', 'silvoarable', 'alley', 'f1', 'arable'],
+          'agroforestry__regeneration_farmland': ['regeneration', 'fmnr', 'anr', 'natural', 'f2'],
+          'agroforestry__silvopastoral': ['silvopastoral', 'silvopasture', 'grazing', 'pastoral', 'f3'],
+          'agroforestry__linear_boundary': ['linear', 'boundary', 'windbreak', 'shelterbelt', 'f4'],
+          'agroforestry__shaded_perennial': ['shade', 'shaded', 'perennial', 'coffee', 'cacao', 'f5'],
+          'agroforestry__homegardens_proximity': ['homegarden', 'f6', 'multistrata'],
+          'water_harvesting__runoff_catchment': ['catchment', 'runoff', 'macrocatchment', 'check dam']
+        };
+        const keywords = keywordMap[subNbsFilter] || [];
+        return keywords.some(k => searchSpace.includes(k));
+      });
+    }
+
+    const exclusionsKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('exclusion') || k.toLowerCase().includes('borderline'));
+    const cases = exclusionsKey ? parseBorderlineCases(log.sections[exclusionsKey]) : [];
+    
+    let filteredCases = cases;
+    if (subNbsFilter && subNbsFilter !== 'all') {
+      filteredCases = cases.filter(c => {
+        const searchSpace = `${c.title} ${c.candidate} ${c.ambiguity} ${c.proposal}`.toLowerCase();
+        const keywordMap = {
+          'agroforestry__planted_silvoarable': ['planted', 'silvoarable', 'alley', 'f1', 'arable', 'poplar', 'boreal', 'temperate'],
+          'agroforestry__regeneration_farmland': ['regeneration', 'fmnr', 'anr', 'natural', 'f2'],
+          'agroforestry__silvopastoral': ['silvopastoral', 'silvopasture', 'grazing', 'pastoral', 'f3'],
+          'agroforestry__linear_boundary': ['linear', 'boundary', 'windbreak', 'shelterbelt', 'f4', 'wind tunnel'],
+          'agroforestry__shaded_perennial': ['shade', 'shaded', 'perennial', 'coffee', 'cacao', 'f5'],
+          'agroforestry__homegardens_proximity': ['homegarden', 'f6', 'multistrata'],
+          'water_harvesting__runoff_catchment': ['catchment', 'runoff', 'macrocatchment', 'check dam']
+        };
+        const keywords = keywordMap[subNbsFilter] || [];
+        return keywords.some(k => searchSpace.includes(k));
+      });
+    }
+
+    // 1. Render Metadata
+    const metadataGrid = document.getElementById('search-metadata-grid');
+    if (metadataGrid) {
+      const cleanAuthors = (log.authors || 'N/A').replace(/Codex \(operator\)/g, 'Antigravity (agent)');
+      let seedRule = log.seed_rule || 'N/A';
+      const activeTable = logId.split('_').pop(); // 'T3', 'T4', 'T6'
+      seedRule = seedRule.replace(/T4\s+method/g, `${activeTable} method`);
+
+      metadataGrid.innerHTML = `
+        <div class="stat-card" style="padding: 16px 20px;">
+          <div class="stat-label" style="font-size: 11px;">LOG DATE</div>
+          <div class="stat-value" style="font-size: 18px; margin-top: 4px; font-family: var(--font-outfit);">${log.date || 'N/A'}</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 20px;">
+          <div class="stat-label" style="font-size: 11px;">AUTHORS / ROLES</div>
+          <div class="stat-value" style="font-size: 16px; margin-top: 4px; line-height:1.3; font-weight:600; font-family: var(--font-outfit);">${cleanAuthors}</div>
+        </div>
+        <div class="stat-card" style="padding: 16px 20px; grid-column: span 2;">
+          <div class="stat-label" style="font-size: 11px;">SEED-SET SELECTION RULE</div>
+          <div class="stat-value" style="font-size: 13px; margin-top: 4px; font-weight: normal; color: var(--text-primary); line-height: 1.4;">${seedRule}</div>
+        </div>
+      `;
+    }
+
+    // 2. Render PRISMA Funnel
+    const funnelContainer = document.getElementById('search-funnel-container');
+    if (funnelContainer) {
+      funnelContainer.innerHTML = '';
+      const funnelSectionKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('funnel') || k.toLowerCase().includes('prisma'));
+      const tables = funnelSectionKey ? parseMultipleMarkdownTables(log.sections[funnelSectionKey]) : [];
+
+      if (tables.length > 0) {
+        window.activeFunnelTabs = window.activeFunnelTabs || {};
+        let activeIdx = window.activeFunnelTabs[logId];
+        if (activeIdx === undefined || activeIdx >= tables.length) {
+          activeIdx = 0;
+          window.activeFunnelTabs[logId] = 0;
+        }
+
+        // Render sub-tabs if there are multiple tables
+        if (tables.length > 1) {
+          const tabWrapper = document.createElement('div');
+          tabWrapper.style.cssText = 'display: flex; gap: 6px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; flex-wrap: wrap;';
+          
+          tables.forEach((t, tIdx) => {
+            const tabBtn = document.createElement('button');
+            tabBtn.className = 'pill-btn';
+            tabBtn.textContent = t.title;
+            tabBtn.style.cssText = 'padding: 4px 10px; font-size: 11px; border-radius: var(--radius-sm); border: 1px solid var(--border-color); cursor: pointer; transition: all 0.2s;';
+            
+            if (tIdx === activeIdx) {
+              tabBtn.style.background = 'var(--accent-purple)';
+              tabBtn.style.color = '#ffffff';
+              tabBtn.style.borderColor = 'var(--accent-purple)';
+            } else {
+              tabBtn.style.background = 'var(--bg-tertiary)';
+              tabBtn.style.color = 'var(--text-secondary)';
+            }
+            
+            tabBtn.onclick = () => {
+              window.activeFunnelTabs[logId] = tIdx;
+              renderSearchLog(logId, subNbsFilter);
+            };
+            tabWrapper.appendChild(tabBtn);
+          });
+          funnelContainer.appendChild(tabWrapper);
+        }
+
+        const activeTable = tables[activeIdx];
+        
+        // Render active funnel title
+        const funnelTitle = document.createElement('div');
+        funnelTitle.style.cssText = 'font-size: 12.5px; font-weight: 700; font-family: var(--font-outfit); color: var(--text-primary); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;';
+        funnelTitle.innerHTML = `
+          <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent-purple);"></span>
+          ${activeTable.title}
+        `;
+        funnelContainer.appendChild(funnelTitle);
+
+        const stages = activeTable.rows.map((row, idx) => {
+          const stageRaw = row[0].replace(/\*\*/g, '').trim();
+          let count = parseInt(row[1].replace(/[^0-9]/g, '')) || 0;
+          const notes = row[2] || '';
+          
+          // Dynamically compute the final inclusion count based on the filtered list, but ONLY for the final stage or table containing inclusion counts
+          const isFinalRow = idx === activeTable.rows.length - 1;
+          const isIncludedRow = stageRaw.toLowerCase().includes('include') || stageRaw.toLowerCase().includes('src') || stageRaw.toLowerCase().includes('registered');
+          if (isFinalRow && isIncludedRow) {
+            count = filteredRows.length;
+          }
+          return { stageRaw, count, notes };
+        });
+        
+        const maxCount = Math.max(...stages.map(s => s.count)) || 1;
+        
+        stages.forEach((s, idx) => {
+          const pct = Math.max(15, (s.count / maxCount) * 100);
+          let gradient = 'linear-gradient(90deg, #0ea5e9, #0284c7)';
+          if (idx === 1) gradient = 'linear-gradient(90deg, #60a5fa, #2563eb)';
+          if (idx === 2) gradient = 'linear-gradient(90deg, #818cf8, #4f46e5)';
+          if (idx === 3) gradient = 'linear-gradient(90deg, #c084fc, #9333ea)';
+          if (idx === 4) gradient = 'linear-gradient(90deg, #10b981, #059669)';
+
+          const rowDiv = document.createElement('div');
+          rowDiv.className = 'funnel-row';
+          rowDiv.innerHTML = `
+            <div class="funnel-label">${s.stageRaw}</div>
+            <div class="funnel-bar-wrapper">
+              <div class="funnel-bar" style="width: ${pct}%; background: ${gradient};" title="${s.stageRaw}: ${s.count} (${s.notes})">
+                <span>${s.count}</span>
+              </div>
+              <div class="funnel-notes" title="${s.notes}">${s.notes}</div>
+            </div>
+          `;
+          funnelContainer.appendChild(rowDiv);
+        });
+      } else {
+        funnelContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 13px;">No funnel data available for this log.</div>`;
+      }
+    }
+
+    // 3. Render Queries & Databases
+    const queriesContainer = document.getElementById('search-queries-container');
+    if (queriesContainer) {
+      const queriesKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('source') || k.toLowerCase().includes('queried') || k.toLowerCase().includes('database'));
+      if (queriesKey) {
+        renderQueriesVisual(queriesContainer, log.sections[queriesKey]);
+      } else {
+        queriesContainer.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
+      }
+    }
+
+    // 4. Update dynamic filter badges
+    const incBadge = document.getElementById('search-inclusions-filter-badge');
+    if (incBadge) {
+      if (subNbsFilter && subNbsFilter !== 'all') {
+        const subName = document.querySelector(`#search-pill-sub-nbs .pill-btn[data-subnbs="${subNbsFilter}"]`)?.textContent || 'Filtered';
+        incBadge.textContent = `Filtered: ${subName}`;
+        incBadge.style.display = 'inline-block';
+      } else {
+        incBadge.style.display = 'none';
+      }
+    }
+
+    const excBadge = document.getElementById('search-exclusions-filter-badge');
+    if (excBadge) {
+      if (subNbsFilter && subNbsFilter !== 'all') {
+        const subName = document.querySelector(`#search-pill-sub-nbs .pill-btn[data-subnbs="${subNbsFilter}"]`)?.textContent || 'Filtered';
+        excBadge.textContent = `Filtered: ${subName}`;
+        excBadge.style.display = 'inline-block';
+      } else {
+        excBadge.style.display = 'none';
+      }
+    }
+
+    // Reset/hide the evidence drill-down panel whenever the table is re-rendered
+    const drilldownContainer = document.getElementById('source-evidence-drilldown');
+    if (drilldownContainer) {
+      drilldownContainer.style.display = 'none';
+    }
+
+    // 5. Render Inclusions (filtered)
+    const inclusionsBody = document.getElementById('search-inclusions-table-body');
+    if (inclusionsBody) {
+      inclusionsBody.innerHTML = '';
+      
+      let displayRows = filteredRows;
+      if (activeSearchCategory !== 'all') {
+        displayRows = filteredRows.filter(row => {
+          const s = (dashboardData.registers.SRC_source_register || []).find(src => src.source_id === row.sourceId);
+          const cat = getSourceCategory(row.sourceId, s ? s.citation : '');
+          return cat === activeSearchCategory;
+        });
+      }
+
+      if (displayRows.length > 0) {
+        displayRows.forEach(row => {
+          const tr = document.createElement('tr');
+          const tierClass = row.tier.toLowerCase() === 'high' ? 'high' : (row.tier.toLowerCase() === 'medium' ? 'medium' : 'low');
+          
+          const s = (dashboardData.registers.SRC_source_register || []).find(src => src.source_id === row.sourceId);
+          
+          // Count claims matching active NbS and active Table/Step and active Sub-Practice filters
+          const activeNbs = logId.substring(0, logId.lastIndexOf('_'));
+          const activeTable = logId.split('_').pop();
+          const sourceClaims = (dashboardData.registers.EV_evidence_register || []).filter(c => {
+            if (c.source_id !== row.sourceId) return false;
+            
+            const dest = getDestTable(c);
+            if (activeTable === 'T3' && dest !== 't3_hazards') return false;
+            if (activeTable === 'T4' && dest !== 't4_mappings') return false;
+            if (activeTable === 'T6' && dest !== 't6_scorecard') return false;
+            
+            if (subNbsFilter && subNbsFilter !== 'all') {
+              if (c.suitability_family_id !== subNbsFilter) return false;
+            } else {
+              if (activeNbs === 'agroforestry') {
+                if (!c.suitability_family_id || !c.suitability_family_id.startsWith('agroforestry')) return false;
+              } else if (activeNbs === 'water_harvesting_conservation') {
+                if (!c.suitability_family_id || (!c.suitability_family_id.startsWith('water_harvesting') && !c.suitability_family_id.startsWith('water_conservation'))) return false;
+              }
+            }
+            return true;
+          });
+          const claimCount = sourceClaims.length;
+
+          // Format DOI / URL link
+          let linkHtml = '';
+          if (s && s.doi) {
+            let cleanDoi = s.doi.trim();
+            if (cleanDoi.startsWith('http://') || cleanDoi.startsWith('https://')) {
+              let displayLabel = 'Link ↗';
+              try {
+                const urlObj = new URL(cleanDoi);
+                displayLabel = urlObj.hostname.replace('www.', '') + ' ↗';
+              } catch(e) {}
+              linkHtml = `<a href="${cleanDoi}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline; font-family: ui-monospace, monospace; font-size: 11px;" onclick="event.stopPropagation();">${displayLabel}</a>`;
+            } else {
+              linkHtml = `<a href="https://doi.org/${cleanDoi}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline; font-family: ui-monospace, monospace; font-size: 11px;" onclick="event.stopPropagation();">${cleanDoi} ↗</a>`;
+            }
+          } else if (s && s.url) {
+            let displayLabel = 'Link ↗';
+            try {
+              const urlObj = new URL(s.url);
+              displayLabel = urlObj.hostname.replace('www.', '') + ' ↗';
+            } catch(e) {}
+            linkHtml = `<a href="${s.url}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline; font-size: 11.5px;" onclick="event.stopPropagation();">${displayLabel}</a>`;
+          } else {
+            const q = encodeURIComponent(s ? s.citation : row.authorYear);
+            linkHtml = `<a href="https://scholar.google.com/scholar?q=${q}" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: underline; font-size: 11.5px;" onclick="event.stopPropagation();">Scholar Search ↗</a>`;
+          }
+
+          // Stage chip data: S=logged (always true here), E=in SRC register, X=ev count, F=flagged, R=reviewed
+          const allSourceEv = (dashboardData.registers.EV_evidence_register || []).filter(c => c.source_id === row.sourceId);
+          const stageE = !!s && ['complete','swept','signed_off'].includes(s.extraction_status || '');
+          const stageFlagCount = allSourceEv.filter(c => (c.attribution || '').includes('[VERIFY-FLAG')).length;
+          const stageR = allSourceEv.some(c => c.reviewer_ok === true || c.reviewer_ok === 'true');
+          const stageChipStyle = (on, color) => on
+            ? `display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:700;background:${color};color:#fff;margin:1px;`
+            : `display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:700;background:var(--bg-tertiary);color:var(--text-muted);margin:1px;border:1px solid var(--border-color);`;
+          const stageHtml = [
+            `<span style="${stageChipStyle(true,'#0ea5e9')}" title="S: logged in discovery log">S</span>`,
+            `<span style="${stageChipStyle(stageE,'#10b981')}" title="E: source registered &amp; extracted (SRC)">${stageE ? 'E' : 'E'}</span>`,
+            `<span style="${stageChipStyle(allSourceEv.length > 0,'#818cf8')}" title="X: ${allSourceEv.length} EV row(s) extracted">X${allSourceEv.length > 0 ? allSourceEv.length : ''}</span>`,
+            stageFlagCount > 0
+              ? `<span style="${stageChipStyle(true,'#f43f5e')}" title="${stageFlagCount} VERIFY-FLAG(s) in EV rows">⚑ ${stageFlagCount}</span>`
+              : `<span style="${stageChipStyle(false,'')}" title="No VERIFY-FLAGs">⚑</span>`,
+            `<span style="${stageChipStyle(stageR,'#10b981')}" title="R: human reviewer_ok=true on at least one EV row">R</span>`
+          ].join('');
+
+          tr.style.cursor = 'pointer';
+          tr.title = 'Click to inspect evidence claims from this source';
+          tr.addEventListener('click', () => {
+            inclusionsBody.querySelectorAll('tr').forEach(r => {
+              r.style.background = '';
+            });
+            tr.style.background = 'rgba(14, 165, 233, 0.1)';
+            showSourceEvidence(row.sourceId, logId, subNbsFilter);
+          });
+
+          tr.innerHTML = `
+            <td>
+              <code style="font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent-sky);">${row.sourceId}</code>
+            </td>
+            <td>${linkHtml}</td>
+            <td>
+              <span class="badge ${tierClass}">${row.tier}</span>
+            </td>
+            <td style="text-align: center;">
+              <span class="badge" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-sky); font-weight: 600; border: 1px solid rgba(14, 165, 233, 0.3); font-size: 11.5px; padding: 2px 8px; border-radius: 4px;">${claimCount}</span>
+            </td>
+            <td style="color: var(--text-secondary); font-size: 12px;">${row.context}</td>
+            <td style="font-size: 12px; color: var(--text-secondary);">${row.variables}</td>
+            <td style="white-space: nowrap;">${stageHtml}</td>
+          `;
+          inclusionsBody.appendChild(tr);
+        });
+      } else {
+        inclusionsBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 16px;">No discovered sources matching this selection &amp; category filter.</td></tr>`;
+      }
+    }
+
+    // 6. Render Exclusions / Borderline Cases (filtered)
+    const exclusionsBody = document.getElementById('search-exclusions-table-body');
+    if (exclusionsBody) {
+      exclusionsBody.innerHTML = '';
+      if (filteredCases.length > 0) {
+        filteredCases.forEach(c => {
+          const tr = document.createElement('tr');
+          const badgeClass = c.type === 'Include' ? 'high' : 'low';
+          const badgeText = c.type === 'Include' ? 'INCLUDED' : 'EXCLUDED';
+          
+          const formatText = (t) => {
+            return t.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                    .replace(/`([^`]+)`/g, '<code style="font-family: ui-monospace, monospace; font-size:11px; background:var(--bg-tertiary); padding:2px 4px; border-radius:3px; color: var(--accent-sky);">$1</code>');
+          };
+          
+          tr.innerHTML = `
+            <td>
+              <span class="badge ${badgeClass}" style="white-space: nowrap;">${badgeText}</span>
+            </td>
+            <td>
+              <div style="font-weight: 600; font-size: 12.5px; font-family: var(--font-outfit); color: var(--text-primary);">${c.title}</div>
+              <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.4;">Candidate: ${formatText(c.candidate)}</div>
+            </td>
+            <td style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">
+              ${formatText(c.ambiguity)}
+            </td>
+            <td style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.4;">
+              ${formatText(c.proposal)}
+            </td>
+          `;
+          exclusionsBody.appendChild(tr);
+        });
+      } else {
+        exclusionsBody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 16px;">No borderline exclusions/inclusions recorded for this sub-practice selection.</td></tr>`;
+      }
+    }
+
+    // 7. Render Raw Markdown
+    const rawMarkdownPre = document.getElementById('search-raw-markdown');
+    if (rawMarkdownPre) {
+      rawMarkdownPre.textContent = log.raw_markdown || '';
+    }
+  }
+
+  function showSourceEvidence(sourceId, logId, subNbsFilter) {
+    const drilldownContainer = document.getElementById('source-evidence-drilldown');
+    const labelSpan = document.getElementById('selected-source-id-label');
+    const tbody = document.getElementById('source-evidence-drilldown-body');
+    
+    if (!drilldownContainer || !tbody) return;
+    
+    // Filter claims matching source and active filters
+    const activeNbs = logId.substring(0, logId.lastIndexOf('_'));
+    const activeTable = logId.split('_').pop();
+    
+    const sourceClaims = (dashboardData.registers.EV_evidence_register || []).filter(c => {
+      if (c.source_id !== sourceId) return false;
+      
+      const dest = getDestTable(c);
+      if (activeTable === 'T3' && dest !== 't3_hazards') return false;
+      if (activeTable === 'T4' && dest !== 't4_mappings') return false;
+      if (activeTable === 'T6' && dest !== 't6_scorecard') return false;
+      
+      if (subNbsFilter && subNbsFilter !== 'all') {
+        if (c.suitability_family_id !== subNbsFilter) return false;
+      } else {
+        if (activeNbs === 'agroforestry') {
+          if (!c.suitability_family_id || !c.suitability_family_id.startsWith('agroforestry')) return false;
+        } else if (activeNbs === 'water_harvesting_conservation') {
+          if (!c.suitability_family_id || (!c.suitability_family_id.startsWith('water_harvesting') && !c.suitability_family_id.startsWith('water_conservation'))) return false;
+        }
+      }
+      return true;
+    });
+    
+    // Find and populate source JSON metadata
+    const sourceMeta = (dashboardData.registers.SRC_source_register || []).find(src => src.source_id === sourceId);
+    const jsonPre = document.getElementById('selected-source-json-pre');
+    if (jsonPre) {
+      if (sourceMeta) {
+        jsonPre.textContent = JSON.stringify(sourceMeta, null, 2);
+      } else {
+        jsonPre.textContent = '// Source metadata not found in register';
+      }
+    }
+
+    if (sourceClaims.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 12px;">No matching evidence claims found in register for this source under current filters.</td></tr>`;
+      labelSpan.textContent = sourceId;
+      drilldownContainer.style.display = 'block';
+      drilldownContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+    
+    labelSpan.textContent = sourceId;
+    tbody.innerHTML = '';
+    
+    sourceClaims.forEach(c => {
+      const tr = document.createElement('tr');
+      
+      // Format relationship nicely
+      let relStr = '';
+      if (c.relationship) {
+        relStr = Object.entries(c.relationship)
+          .map(([k, v]) => `<span style="font-family: ui-monospace; font-size:10px; color: var(--accent-sky);">${k}</span>: ${v}`)
+          .join(', ');
+      } else {
+        relStr = '<span style="color: var(--text-muted);">N/A</span>';
+      }
+      
+      // Format context nicely
+      let ctxStr = '';
+      if (c.context && Object.keys(c.context).length > 0) {
+        ctxStr = Object.entries(c.context)
+          .map(([k, v]) => `<strong>${k}</strong>: ${v}`)
+          .join(', ');
+      } else {
+        ctxStr = '<span style="color: var(--text-muted);">None</span>';
+      }
+      
+      const typeBadge = c.evidence_type === 'expert' ? 'badge low' : 'badge high';
+      
+      // Honesty badges for drilldown table
+      const _sConf = (c.extraction_confidence || '').toLowerCase();
+      const _sConfColor = _sConf === 'high' ? 'var(--accent-emerald)' : _sConf === 'medium' ? 'var(--accent-amber)' : 'var(--text-muted)';
+      const _sConfBadge = _sConf ? `<span style=”font-size:8px; padding:1px 4px; border:1px solid var(--border-color); border-radius:3px; color:${_sConfColor};”>${_sConf}</span>` : '';
+      const _sScopeBadge = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style=”font-size:8px; padding:1px 4px; border:1px solid rgba(245,158,11,0.3); border-radius:3px; color:var(--accent-amber);”>sp/crop</span>` : '';
+      const _sReviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style=”font-size:8px; padding:1px 4px; border:1px solid var(--border-color); border-radius:3px; color:var(--text-muted);”>unreviewed</span>`;
+      const _sAttr = c.attribution || '';
+      const _sVfMatch = _sAttr.match(/\[VERIFY-FLAG([^\]]*)\]/);
+      const _sVfBadge = _sVfMatch ? `<span style=”font-size:8px; padding:1px 5px; border:1px solid rgba(244,63,94,0.4); border-radius:3px; color:var(--accent-rose); font-weight:600; cursor:help;” title=”${(_sVfMatch[1] || '').trim()}”>&#9872; VERIFY-FLAG</span>` : '';
+
+      tr.innerHTML = `
+        <td><code style=”font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent-sky);”>${c.evidence_id}</code></td>
+        <td style=”font-weight: 500;”>${c.variable || 'N/A'}</td>
+        <td style=”font-size: 11px;”>${relStr}</td>
+        <td style=”font-size: 11px; color: var(--text-secondary);”>${ctxStr}</td>
+        <td style=”font-style: italic; color: var(--text-primary); line-height: 1.45;”>”${c.quote || ''}”</td>
+        <td style=”text-align: center; font-size: 11px;”>${c.page || 'N/A'}</td>
+        <td>
+          <span class=”${typeBadge}” style=”font-size: 10px; padding: 1px 5px; text-transform: uppercase;”>${(c.evidence_type || 'literature').replace(/_/g, ' ')}</span>
+          <div style=”margin-top:3px; display:flex; flex-wrap:wrap; gap:2px;”>${_sConfBadge}${_sScopeBadge}${_sReviewBadge}${_sVfBadge}</div>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    
+    drilldownContainer.style.display = 'block';
+    drilldownContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 </script>
 </body>

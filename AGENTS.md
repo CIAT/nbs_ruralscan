@@ -65,6 +65,7 @@ These decisions are structural. If you want to change them, raise an issue and t
 - **Suitability is reasoned per *suitability family*, not per whole NbS.** Families group subpractices by their **shared dominant limiting factor** (agroforestry F1 planted silvoarable · F2 regeneration-based · F3 silvopastoral · F4 linear · F5 shaded perennial-crop). T4 keys to `suitability_family_id`. Grouping carries a documented rationale; don't lump by appearance. **Scheme drafted for sign-off in `methodology/families/agroforestry.md`** *(pending Namita + MFL review)*. F5's understorey crop is a **parameter, not a sub-family** (run per crop, max + retain driver).
 - **Every family carries a `spatial_product_type`** (`area_suitability` | `applicability_zone` | `zonal_linear` | `qualitative_only`). Linear/point practices are **not** reported as pixel area (over-estimation grows with coarseness). Run coarseness is also bounded **per variable** by `min_meaningful_resolution_m` (slope ≈ 30–90 m); scale-dependent derivatives are **derive-then-aggregate**, never resample-then-derive.
 - **Evidence-first / provenance.** Analytical values in T3/T4/T6 trace to evidence units (source · tier · page · quote). Never PDF → threshold in one step. `claim_scope` separates **species/crop-specific** claims from **practice/technology** ones — species envelopes never define a practice row. See `methodology/T4_generation_method.md`.
+- **Acquisition & cataloguing (locked).** Evidence the AI discovers must be acquirable by the whole team, not only on the discoverer's laptop. **PDFs** → upload to the SharePoint library (`…/2_Technical_&_Data/library/<NbS>/`) and set `SRC.library_path` (the QA/QC dashboard builds the team-openable SharePoint link from it); also cache `.cache/corpus/<sid>.pdf` for the guardrail. **Websites / GitHub** → set `SRC.url` + save a snapshot (`.txt`/`.html`/`.md`) in `.cache/corpus/`, and give every EV row a **locator** (`locator_type` + `locator` = *where on the page*: section / anchor / selector / `file:line`). **A format with no handling rule → PAUSE**: define the acquire adapter + locator semantics + a QA/QC rule before registering anything from it — don't improvise. `validate_sources.py` audits all three (missing `library_path` / `url` / locator = non-fatal notes; an unknown `.cache/corpus` extension = hard fail).
 - **Constrain by observed distribution, not a modelled niche, where data exist.** Where a family is gated by an existing host system (a crop, land use, grazing), use the host's observed distribution/production (MapSPAM, EO maps, ag-stats) as the gating layer; niche/envelope modelling is the fallback. Method §2.5.
 - **Context-aware datasets (BIND) + most-specific-context-wins.** A global recipe binds each variable to a default dataset; country/AEZ/region overrides refine it (`requires_upload` flags a better local dataset for the user to supply). Resolver: `src/nbs_ruralscan/runtime/binding.py`. Relationship *params* refine in parallel via `T4.context_overrides`.
 - **Flag sensitive variables, don't resolve them.** `VONT.context_sensitivity` (`low`/`medium`/`high`) marks nationally-derived / sovereignty-sensitive variables (population, poverty, production) so the scoping output recommends a country-endorsed source. **Scoping flags; feasibility validates** — the tool does not negotiate or validate national data (the scope line). Method §2.6, M6.
@@ -74,6 +75,10 @@ These decisions are structural. If you want to change them, raise an issue and t
 - **Bounded, authority-weighted discovery seed-set per NbS** (T4 method §3): WB rural-NbS catalogue · GEF / NBS Invest · IPCC · FAO · WRI · major meta-analyses · MEL/MELIA reports · CSA adoption & barriers dataset. Don't sweep 100k abstracts. Tie selection to `SRC.benchmark_tier`. **Corpus differs per table** — sequence T6/T3 discovery after T4. Read each paper once: extract T3/T4/T5/T6 variables in a single pass.
 - **Adoption / dis-adoption + MEL/MELIA are observed-reality evidence**, not a separate stream (v0.3.0). They extend "constrain by observed distribution" to the human-system side and feed `system_constraint` / `operational_constraint` T4 variables + T6 conditionality. Ingest via the per-paper sweep with `SRC.method_type = adoption_study` / `mel_report` (added in v0.3.0).
 - **Screening SOP + six-axis credibility rubric** (v0.3.0, T4 method §3): five-step funnel (frame → source-type triage → relevance → six-axis credibility → saturation stop, cap ~10–20 sources per NbS × table). Diamond source classes — **WOCAT** (SLM technologies DB, LMIC-grounded), **Evidence Gap Maps** (3ie/Campbell/CEE), **WB project evidence** (PADs, ICRs, IEG) + TORs-named tools (D4R, AAAA, MapAWD), **ICRAF/TECA** practice DBs (excluding crop-specific Ecocrop models for general practices). Six axes: evidence strength (validated models/performance metrics upweighted; unvalidated caps at Med/Low) · methodological transparency · authority & venue (`venue_type`) · context/transferability (`study_income_group`, LMIC tie-break) · recency (offset by `is_seminal`) · seminality — minus an independence/COI discount. The C/I/D rubric is one summary view of the six. Both produce `benchmark_tier`.
+- **Iterative-learning loop (locked process).** After EVERY extraction sweep run the retrospective (`methodology/extraction_retrospective.md`, slash `/sweep-retro`): measure with `schema_tools/sweep_metrics.py` (ledger `pipeline/metrics/sweep_log.csv`), then encode each new defect into the extract-evidence skill's catalogue + a deterministic check (`check_numbers.py` for smuggled numbers; `check_scope.py` for off-scope T4 extraction — the dominant 2026-06-18 defect: suitability vars pulled from site-descriptor/methods/carbon-biomass sections; `check_quote.py` for too-narrow quotes — isolated table cells lacking the threshold sentence + header). `numberprov_rate_pct`, `verify_rate_pct`, and the `off_scope` rate must trend DOWN sweep-over-sweep; if not, tighten the spec. **Incorporation is tracked, not claimed:** `schema_tools/learnings.py` holds a cursor (`pipeline/metrics/learnings_log.csv`) of how many `review_log` decisions have been turned into adjustments; `generate.py` prints a build note for any unprocessed review feedback until `learnings.record` advances it. This is how the pipeline gets measurably better each round.
+- **QA/QC review system (locked).** Human review of flagged evidence happens in the dashboard QA/QC tab + a local `schema_tools/review_server.py` (`:8765`, run `uv run python3 -m nbs_ruralscan.schema_tools.review_server`). Modes: **AI-flagged** (open queue, nobody reviewed) · **AI-passed sample** (spot-check false negatives) · **2nd opinion** (resolved by one reviewer, needs another, per-reviewer) · **My reviewed** (applied history) · **Stats** (AI confusion matrix from `review_log.csv`). Decisions key `(evidence_id × reviewer)` in `pipeline/review/decisions.json`; **Apply** = consensus (agree→write register + `review_log`; disagree→conflict pending). Applied decisions are **viewable, re-openable, and challengeable** (a 2nd reviewer's disagreement auto-reopens a conflict). Reason codes incl. `wrong_practice` (mapped to wrong NbS) and `species_envelope` (per-species row ≠ practice rule). Tabular quotes get an on-demand **table screengrab** (`/api/crop`, page-region render from the cached PDF). Full map: memory `project_qaqc_review_system.md`.
+- **Soft-delete / quarantine (locked).** A QA `drop` is **never a hard delete** — it sets EV `review_state=dropped`: the row stays as a restorable record, excluded from synthesis (`synthesise_family`), the progress ledger, and dashboard counts (`_segregateDropped`). Reversible via `review.reopen_units` / the dashboard re-open. `ruleset_version` stamps which extraction ruleset a unit was (re-)evaluated under, so re-evals are auditable. Hard-deleting evidence is forbidden; recover any historic hard-delete from git as a `review_state=dropped` row (as done 2026-06-18).
+- **Progress ledger (locked, orchestrator-owned + register-enforced).** Project progress lives in `pipeline/progress_ledger.csv`, per (NbS × table), with the lifecycle stages searched · screened · extracted · verified · reviewed (+ `searched_categories` for stock/lit/grey/tools). It is **stamped by the pipeline STEP that did the work** — `schema_tools/ledger.py mark(...)` — never inferred from artifact presence and never hand-claimed. `ledger.check` runs inside `generate.py` + CI and **fails the build** if a claim doesn't reconcile with the register (no `extracted=done` without EV rows; no EV rows for an unstamped stage; `reviewed=done` needs `reviewer_ok`; stage order enforced). After each sweep, the orchestrator updates the ledger as part of the retrospective. The dashboard READS the ledger for stage status (it must not re-infer). You cannot claim progress you can't prove.
 - **Reproducible discovery log** (v0.2.7) — per NbS × table, PRISMA-lite markdown under `methodology/discovery_logs/<nbs>_<table>.md`: date, search strings, sources queried, counts at each funnel stage (returned → screened → included). Not a schema register at this phase — narrative audit trail.
 - **T5 ratification (v0.3.0)** — 5 themes: `climate_hazard` · `nbs_response` · `people_production` · `equity_inclusion` · `context` (renamed from `equity_gender`; dropped `infrastructure`). `T5.mcda_role` = `priority` | `descriptor`; **T6 effect rows link only to `priority` rows**. 16 rows: 12 priorities + 4 descriptors (added `iplc_lands` under `equity_inclusion`). Spatial-grain rule (≥admin1 for MCDA differentiation; admin0 → qualified flag) derived from `T1.grain_type` + `T1.admin_level`. Proximate-over-distal principle. Companion: `methodology/opportunity_space_T5.md`.
 - **Farming-system vocab is EO-derived (v0.3.0)** — 6 T7 classes: `cropping_rainfed` · `cropping_irrigated` · `mixed_crop_livestock` · `agro_pastoral` · `pastoral_rangeland` · `tree_perennial`. Derived at scoping grade from GLAD/WorldCereal · GLW · GMIA · Hansen/MapSPAM. BIND-overridable. Distinct from `aez`. Dixon farming-systems vocabulary = crosswalk only (`schema/registers/FS_DIXON_CROSSWALK.md`).
@@ -139,10 +144,15 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - **Replication for Synthesis**: Do not skip extracting similar thresholds across papers to avoid "redundant entries." The synthesis engine counts the number of unique sources (`n_sources`) to calculate consensus weights and median bounds. Every distinct literature threshold must have its own `EvidenceUnit` in `EV_evidence_register.json`.
 - **Source-Evidence Variable Agreement**: The `vars_extracted` list for each paper in `SRC_source_register.json` must exactly match the variables that have actual evidence rows in `EV_evidence_register.json` (excluding baseline map/mask layers). Run the discrepancy script to align them.
 - **Full-Variable Sweeps**: When sweeping a source, extract all suitability parameters, enablers, and costs mapping to any variable in the target recipe (including `soil_texture`, `soil_drainage`, `distance_to_road`, and `tree_canopy_cover`), not just the core five biophysical variables.
+- **Title-only Multilingual Search**: Formulate disjoined search strings targeting title-only fields (e.g., `display_name.search` in OpenAlex) using AGROVOC synonyms in English, Spanish, French, and Portuguese to avoid full-text search noise.
+- **Human-in-the-Loop Triage**: Always validate borderline inclusions/exclusions with a human-in-the-loop review before registration to align on study boundaries (e.g., rejecting urban shade/pure forestry, accepting temperate baselines).
+- **Living Database Model**: Maintain the decoupled SRC ➔ EV ➔ Synthesis pipeline. Adding more evidence later is append-only (new source rows, new evidence rows); the synthesis engine dynamically recalculates consensus weights and median bounds.
+- **Multilingual Quotes**: Verbatim quotes from non-English sources must be saved in their native language followed by bracketed English translation: `"[Native Text] (English: [Translated Text])"`.
 - If using/directly importing a python module, check that it is included in `pyproject.toml` and use `uv add <module_name>` if missing.
 
 ## Don't
 
+- Don't use browser subagents or make browser tool calls to verify, interrogate, or toggle controls on local web servers or websites (which consumes 1000+ credits). Instead, just capture a single screenshot if needed, or ask the user to test and verify UI changes manually.
 - Don't hardcode analytical rules in pipeline code; read from schema
 - Don't merge wireframe edits without preserving the agreed tab structure (see "What is locked") and the six Variable-Card slots
 - Don't expand variables into MCDA without correlation reduction
@@ -152,6 +162,11 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - Don't break the EvidenceUnit shape when adding expert-evidence capture — expert claims must land in the same EV rows as literature, via `evidence_type=expert`; only patch the schema if EV literally cannot represent something Namita needs.
 - Don't let `SRC.vars_extracted` diverge from actual `EV_evidence_register.json` variable listings.
 - Don't skip secondary suitability variables (like soil texture/drainage or distance to road) when they are quantified in paper texts.
+- **Don't hand-author evidence. Ever.** No quote, page, or EvidenceUnit may be typed from memory, an abstract, a search-result snippet, or model knowledge. Every EV row MUST come through the deterministic pipeline (`build_index` → `retrieve`/`package_for_extraction` → emit `EvidenceUnit` from the page-stamped passages → `validate_units` → `save_units`) over a **cached source artifact** in `.cache/corpus/` (PDF, or a saved `.txt`/`.html`/`.md` snapshot for web sources). Appending straight to `EV_*.csv`/`.json` or a recipe `evidence_ids` column is forbidden — that is exactly how the 2026-06 contamination happened (see `schema/registers/_quarantine/`). The guardrail `schema_tools/validate_sources.py` runs inside `generate.py` + CI and fails the build on any quote not found verbatim on its cited page; don't weaken or bypass it. If a source can't be cached (paywalled, dead URL), it can't be registered — leave it out.
+- Don't cite a URL/website as evidence without a saved snapshot AND the specific page/section the quote came from. A bare domain link is not provenance.
+- Don't register AI-discovered evidence the team can't open: a **PDF** must be uploaded to the SharePoint library with `SRC.library_path` set; a **web/github** source must have `SRC.url` + a cached snapshot + an EV `locator`. Hit a format with no handling rule → **stop and define the rule** (adapter + locator + QA/QC check), don't shoehorn it into an existing one.
+- **Verbatim ≠ faithful.** A real quote does not make the encoded `relationship` numbers or the `variable` label right. ~34-51% of numeric units in the 2026-06 sweep had smuggled/misread numbers. Every number in `relationship` must appear in its quote (`schema_tools/check_numbers.py` flags violations); never read an AHP "low/score-1" class as a hard `abs_min`/`abs_max`; never relabel a proxy (SOM, NDVI, soil-moisture, LST) as a canonical variable silently. See the defect catalogue in the extract-evidence skill.
+- **Extraction subagents: staging-only, never git.** A subagent may write ONLY to `pipeline/staging/`; it must never edit registers/recipes/schema or run any `git` command (one stray `git checkout` wiped uncommitted work). The trustworthy gates are central (`validate_sources.py`, `check_numbers.py`, the relationship-verify) — a subagent's self-check is advisory. Commit working state often so it can't be lost.
 
 ## When in doubt
 
@@ -159,3 +174,72 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - Read the most recent `5_Meetings/` transcript for current discussion state
 - Read the closest AGENTS.md/CLAUDE.md to where you're working (subfolder memory takes precedence)
 - Ask in the Teams `NbS Rural Scan Task Force` channel
+
+---
+
+# CAVEMAN FULL — ANTIGRAVITY AGENT
+
+You are an expert software engineer and scientific coding assistant.
+
+Operate with maximum efficiency.
+
+## Core behaviour
+
+- No introductions.
+- No filler.
+- No motivational language.
+- No repeating the user's request.
+- Be direct, skeptical, and evidence-led.
+- Assume the user is technically competent.
+- Prefer bullets over paragraphs.
+- Prefer commands/code before explanation.
+- Use concise status updates only when useful.
+- Never sacrifice correctness for brevity.
+- If uncertainty exists, state it clearly.
+
+## Working rules
+
+- Always read relevant files before editing.
+- Never assume code behaviour.
+- Create a short plan before modifications.
+- Prefer minimal, targeted diffs.
+- Preserve existing structure unless there is a clear reason to change it.
+- Do not rewrite large sections unnecessarily.
+- Do not introduce new dependencies without justification.
+- Run tests, checks, or reproducible validation after changes.
+- Verify with evidence, not confidence.
+- Report what changed, what was tested, and what remains uncertain.
+
+## Debugging protocol
+
+When debugging, always provide:
+
+1. Root cause
+2. Fix
+3. Verification
+4. Remaining risk
+
+## Coding protocol
+
+When coding, follow:
+
+1. Plan
+2. Implement
+3. Test
+4. Report
+
+## Response format
+
+Use this structure unless inappropriate:
+
+PLAN
+- Brief plan.
+
+ACTION
+- What was done or should be run.
+
+VERIFY
+- Evidence, tests, checks, or expected outputs.
+
+NEXT
+- Only include if another action is genuinely needed.

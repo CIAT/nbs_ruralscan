@@ -10,6 +10,7 @@ enforces the hard rules before they're trusted.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -40,6 +41,10 @@ CLAIM_BASIS = {
 }
 CLAIM_SCOPE = {"practice_technology", "species_specific", "crop_specific"}
 CONFIDENCE = {"high", "medium", "low"}
+# How a quote is located in its cached artifact. page → PDF page (int); section →
+# heading in a web/markdown snapshot; char_span → "start-end" offsets; file_line →
+# "path:line[-line]" in a codebase, which MUST be pinned to an immutable commit_sha.
+LOCATOR_TYPE = {"page", "section", "char_span", "file_line"}
 
 # evidence_types allowed to carry shape-bearing relationship params
 _SHAPE_OK = {"literature_relationship", "expert"}
@@ -58,7 +63,14 @@ class EvidenceUnit:
     claim_scope: str
     extraction_confidence: str
     quote: str
-    page: int
+    # ── provenance locator (v0.3.1 — generalised beyond PDF pages) ──
+    # locator_type selects which anchor applies; the verifier checks the quote at it.
+    locator_type: str = "page"
+    page: int | None = None  # required when locator_type == "page"
+    locator: str | None = None  # section heading / "start-end" / "path:line" (non-page)
+    commit_sha: str | None = (
+        None  # required when locator_type == "file_line" (immutable pin)
+    )
     relationship: dict[str, Any] | None = (
         None  # e.g. {"opt_low":0,"opt_high":10,"abs_max":44,"unit":"deg"}
     )
@@ -66,6 +78,9 @@ class EvidenceUnit:
     taxon: str | None = None
     lineage_of: str | None = None
     reviewer_ok: bool = False
+    # soft-delete: "" = active, "dropped" = removed in QA review but kept as a record
+    # (excluded from synthesis/support/counts; reversible). See review.apply_decisions.
+    review_state: str = ""
     # ── paper-first sweep (v0.2.5) — all optional, backwards compatible ──
     raw_name: str | None = None  # surface name from paper before harmonisation
     observed_dataset: str | None = None  # which dataset the paper actually used
@@ -112,7 +127,7 @@ def validate(unit: EvidenceUnit) -> list[str]:
         "claim_scope",
         "extraction_confidence",
         "quote",
-        "page",
+        "locator_type",
     ]
     for f in req:
         if getattr(unit, f) in (None, ""):
@@ -123,20 +138,43 @@ def validate(unit: EvidenceUnit) -> list[str]:
         ("claim_basis", CLAIM_BASIS),
         ("claim_scope", CLAIM_SCOPE),
         ("extraction_confidence", CONFIDENCE),
+        ("locator_type", LOCATOR_TYPE),
     ]:
         v = getattr(unit, fname)
         if v and v not in allowed:
             errs.append(f"{fname}={v!r} not in {sorted(allowed)}")
-    if isinstance(unit.page, int) and unit.page < 1:
-        errs.append("page must be >= 1")
+    # locator rules — the quote must be anchored, and the anchor must match its type
+    if unit.locator_type == "page":
+        if not isinstance(unit.page, int) or unit.page < 1:
+            errs.append("locator_type=page requires an integer page >= 1")
+    elif unit.locator_type in LOCATOR_TYPE:
+        if not (unit.locator or "").strip():
+            errs.append(
+                f"locator_type={unit.locator_type} requires a non-empty `locator`"
+            )
+        if unit.locator_type == "file_line" and not (unit.commit_sha or "").strip():
+            errs.append("locator_type=file_line requires `commit_sha` (immutable pin)")
     if not (unit.quote or "").strip():
         errs.append("quote must be a verbatim, non-empty string (provenance)")
+    elif len(re.sub(r"\W+", "", unit.quote)) < 12:
+        errs.append(
+            "quote too short to be a provenance anchor (need >=12 normalised chars)"
+        )
     # only literature/expert may carry shape params
     if unit.relationship and unit.evidence_type not in _SHAPE_OK:
         if _SHAPE_KEYS & set(unit.relationship):
             errs.append(
                 f"evidence_type={unit.evidence_type} may not carry shape params (selection-only)"
             )
+    # a cited/secondary claim must record WHOSE finding it is (synthesis de-dups on
+    # this to avoid counting one primary study three times via three reviews citing it)
+    if unit.claim_basis == "cited_secondary" and not (
+        (unit.attribution or "").strip() or (unit.lineage_of or "").strip()
+    ):
+        errs.append(
+            "claim_basis=cited_secondary requires `attribution` (who the source "
+            "cites) or `lineage_of` — provenance of the original claim"
+        )
     # species/crop claims must name the taxon
     if (
         unit.claim_scope in {"species_specific", "crop_specific"}

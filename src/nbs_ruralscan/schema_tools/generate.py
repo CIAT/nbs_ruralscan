@@ -26,6 +26,7 @@ from datetime import datetime, timezone
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 
 def _coerce(value: str):
@@ -69,23 +70,27 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            check=True
+            check=True,
         ).stdout.strip()
     except Exception:
         git_commit = "unknown"
 
-    nbs_stats = {}
+    nbs_stats: dict[str, dict[str, Any]] = {}
     with src_csv.open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             if not row.get("source_id"):
                 continue
-            nbs_ids = [n.strip() for n in row.get("nbs_ids", "").split(";") if n.strip()]
+            nbs_ids = [
+                n.strip() for n in row.get("nbs_ids", "").split(";") if n.strip()
+            ]
             status = row.get("extraction_status", "pending") or "pending"
             tier = row.get("benchmark_tier", "low") or "low"
             method = row.get("method_type", "empirical") or "empirical"
             country = row.get("study_country", "") or ""
-            vars_list = [v.strip() for v in row.get("vars_extracted", "").split(";") if v.strip()]
+            vars_list = [
+                v.strip() for v in row.get("vars_extracted", "").split(";") if v.strip()
+            ]
 
             for nbs in nbs_ids:
                 if nbs not in nbs_stats:
@@ -95,7 +100,7 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
                         "benchmark_tiers": Counter(),
                         "method_types": Counter(),
                         "variables_extracted": set(),
-                        "countries": set()
+                        "countries": set(),
                     }
                 s = nbs_stats[nbs]
                 s["total_sources"] += 1
@@ -115,13 +120,13 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
             "benchmark_tiers": dict(s["benchmark_tiers"]),
             "method_types": dict(s["method_types"]),
             "variables_extracted": sorted(list(s["variables_extracted"])),
-            "countries": sorted(list(s["countries"]))
+            "countries": sorted(list(s["countries"])),
         }
 
     report_data = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "git_commit": git_commit,
-        "nbs_progress": formatted_stats
+        "nbs_progress": formatted_stats,
     }
 
     dest_path = schema_root.parent / "docs" / "progress.json"
@@ -138,7 +143,11 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
         if current_data.get("nbs_progress") == report_data.get("nbs_progress"):
             return []
 
-    if current_data and current_data.get("git_commit") == git_commit and current_data.get("nbs_progress") == formatted_stats:
+    if (
+        current_data
+        and current_data.get("git_commit") == git_commit
+        and current_data.get("nbs_progress") == formatted_stats
+    ):
         report_data["timestamp"] = current_data["timestamp"]
 
     text = json.dumps(report_data, ensure_ascii=False, indent=2) + "\n"
@@ -151,6 +160,67 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
     if not check:
         dest_path.write_text(text)
     return changed
+
+
+def _parse_discovery_logs(schema_root: Path) -> dict[str, dict]:
+    """Parses all PRISMA markdown logs under methodology/discovery_logs/ into structured objects."""
+    logs_dir = schema_root.parent / "methodology" / "discovery_logs"
+    parsed_logs = {}
+    if not logs_dir.exists():
+        return parsed_logs
+
+    for item in sorted(logs_dir.iterdir()):
+        if item.is_file() and item.suffix == ".md" and item.name != "README.md":
+            log_id = item.stem
+            try:
+                content = item.read_text(encoding="utf-8")
+                lines = content.splitlines()
+
+                title = ""
+                date_str = ""
+                authors_str = ""
+                seed_rule = ""
+
+                for line in lines:
+                    if line.startswith("# "):
+                        title = line[2:].strip()
+                    elif line.startswith("**Date(s):**"):
+                        date_str = line.split("**Date(s):**")[1].strip()
+                    elif line.startswith("**Author(s):**"):
+                        authors_str = line.split("**Author(s):**")[1].strip()
+                    elif line.startswith("**Seed-set rule:**"):
+                        seed_rule = line.split("**Seed-set rule:**")[1].strip()
+
+                # Extract sections split by ## headings
+                sections = {}
+                current_section = None
+                current_lines = []
+
+                for line in lines:
+                    if line.startswith("## "):
+                        if current_section:
+                            sections[current_section] = "\n".join(current_lines).strip()
+                        current_section = line[3:].strip()
+                        current_lines = []
+                    elif current_section is not None:
+                        current_lines.append(line)
+
+                if current_section and current_lines:
+                    sections[current_section] = "\n".join(current_lines).strip()
+
+                parsed_logs[log_id] = {
+                    "id": log_id,
+                    "title": title,
+                    "date": date_str,
+                    "authors": authors_str,
+                    "seed_rule": seed_rule,
+                    "sections": sections,
+                    "raw_markdown": content,
+                }
+            except Exception as e:
+                print(f"Error parsing discovery log {item.name}: {e}")
+
+    return parsed_logs
 
 
 def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path]:
@@ -177,7 +247,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            check=True
+            check=True,
         ).stdout.strip()
     except Exception:
         git_commit = "unknown"
@@ -187,8 +257,23 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "git_commit": git_commit,
         "registers": {},
         "global_tables": {},
-        "recipes": {}
+        "recipes": {},
+        "discovery_logs": _parse_discovery_logs(schema_root),
+        "progress_ledger": [],
+        "qaqc_stats": {},
+        "review_log": [],
     }
+
+    ledger_csv = schema_root.parent / "pipeline" / "progress_ledger.csv"
+    if ledger_csv.exists():
+        data["progress_ledger"] = _csv_to_rows(ledger_csv)
+
+    from nbs_ruralscan.schema_tools import qaqc_stats as _qaqc
+
+    data["qaqc_stats"] = _qaqc.compute()
+
+    review_log_csv = schema_root.parent / "pipeline" / "metrics" / "review_log.csv"
+    data["review_log"] = _csv_to_rows(review_log_csv) if review_log_csv.exists() else []
 
     # Read registers
     for reg in registers:
@@ -233,7 +318,13 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
 
     if check and current_data:
         identical = True
-        for key in ["registers", "global_tables", "recipes"]:
+        for key in [
+            "registers",
+            "global_tables",
+            "recipes",
+            "discovery_logs",
+            "progress_ledger",
+        ]:
             if current_data.get(key) != data.get(key):
                 identical = False
                 break
@@ -243,7 +334,13 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     # Avoid updating timestamp if nothing has changed
     if current_data and current_data.get("git_commit") == git_commit:
         identical = True
-        for key in ["registers", "global_tables", "recipes"]:
+        for key in [
+            "registers",
+            "global_tables",
+            "recipes",
+            "discovery_logs",
+            "progress_ledger",
+        ]:
             if current_data.get(key) != data.get(key):
                 identical = False
                 break
@@ -266,6 +363,45 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     """Write (or, under ``check``, compare) every JSON from its CSV. Returns the
     list of paths that were written / are stale."""
     schema_root = Path(schema_root)
+
+    # Run the strict source and quote validation guardrails first
+    from nbs_ruralscan.schema_tools.validate_sources import validate_all_sources
+
+    validate_all_sources(schema_root)
+
+    # Enforce the progress ledger: its stage claims must reconcile with the register
+    # (no unproven "done", no evidence for an unstamped stage, valid stage order).
+    from nbs_ruralscan.schema_tools.ledger import check as _ledger_check
+
+    _ledger_errs = _ledger_check(schema_root)
+    if _ledger_errs:
+        raise ValueError(
+            "PROGRESS LEDGER FAILED: stage claims do not reconcile with the register:\n"
+            + "\n".join(f"  - {e}" for e in _ledger_errs)
+        )
+
+    # Advisory (never fatal): off-scope extraction signals + unincorporated review feedback.
+    from nbs_ruralscan.schema_tools.check_scope import check as _scope_check
+    from nbs_ruralscan.schema_tools.learnings import coverage_note as _learn_note
+
+    _scope_flags = _scope_check(schema_root / "registers" / "EV_evidence_register.csv")
+    if _scope_flags:
+        print(
+            f"  SCOPE NOTES ({len(_scope_flags)} active unit(s) with off-scope signals — "
+            "run check_scope.py; the dominant QA defect)"
+        )
+    from nbs_ruralscan.schema_tools.check_quote import check as _quote_check
+
+    _quote_flags = _quote_check(schema_root / "registers" / "EV_evidence_register.csv")
+    if _quote_flags:
+        print(
+            f"  QUOTE NOTES ({len(_quote_flags)} active unit(s) with too-narrow quotes — "
+            "run check_quote.py; re-extract with full context)"
+        )
+    _ln = _learn_note()
+    if _ln:
+        print(f"  LEARNING-LOOP NOTE: {_ln}")
+
     manifest = json.loads((schema_root / "structure" / "columns.json").read_text())
     changed: list[Path] = []
     for spec in manifest["tables"].values():

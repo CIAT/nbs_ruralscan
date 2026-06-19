@@ -17,27 +17,103 @@
       "location": "recipes/<nbs_id>/T0_nbs_registry.{csv,json}",
       "per_nbs": true,
       "primary_key": "nbs_id",
-      "required": ["nbs_id", "nbs_name", "cluster", "description_short", "description_technical", "farming_systems_applicable", "implementation_scale", "establishment_period_years", "economic_archetype", "recurrent_cost_level", "time_to_benefit_years", "carbon_credit_eligible", "is_active", "evidence_quality", "primary_references"],
-      "optional": ["aliases", "upfront_cost_usd_ha"],
+      "required": [
+        "nbs_id",
+        "nbs_name",
+        "cluster",
+        "description_short",
+        "description_technical",
+        "farming_systems_applicable",
+        "implementation_scale",
+        "establishment_period_years",
+        "economic_archetype",
+        "recurrent_cost_level",
+        "time_to_benefit_years",
+        "carbon_credit_eligible",
+        "is_active",
+        "evidence_quality",
+        "primary_references"
+      ],
+      "optional": [
+        "aliases",
+        "upfront_cost_usd_ha"
+      ],
       "conditional": [],
       "derived": [],
-      "fk": {"farming_systems_applicable": {"targets": ["T7.context_id"], "literals": ["all"]}}
+      "fk": {
+        "farming_systems_applicable": {
+          "targets": [
+            "T7.context_id"
+          ],
+          "literals": [
+            "all"
+          ]
+        }
+      }
     },
     "T1": {
       "name": "Data Registry",
       "location": "T1_data_registry.{csv,json}",
       "per_nbs": false,
       "primary_key": "dataset_id",
-      "required": ["dataset_id", "dataset_name", "description", "analytical_module", "grain_type", "geographic_coverage", "data_format", "access_type", "license", "citation", "version", "limitations"],
-      "optional": ["time_period", "download_url", "gee_asset_id", "doi", "preprocessing_notes", "access_params"],
-      "conditional": ["hazard_type", "scenario_type", "spatial_resolution_m", "admin_level"],
+      "required": [
+        "dataset_id",
+        "dataset_name",
+        "description",
+        "analytical_module",
+        "grain_type",
+        "geographic_coverage",
+        "data_format",
+        "access_type",
+        "license",
+        "citation",
+        "version",
+        "limitations"
+      ],
+      "optional": [
+        "time_period",
+        "download_url",
+        "gee_asset_id",
+        "doi",
+        "preprocessing_notes",
+        "access_params"
+      ],
+      "conditional": [
+        "hazard_type",
+        "scenario_type",
+        "spatial_resolution_m",
+        "admin_level"
+      ],
       "derived": [],
       "fk": {},
       "enum_values": {
-        "hazard_type": ["drought", "flood", "heat_stress", "fire", "wind_cyclone", "waterlogging", "frost", "multi"],
-        "scenario_type": ["baseline", "future_ssp126", "future_ssp245", "future_ssp585", "multi_scenario"],
-        "grain_type": ["grid", "admin", "vector"],
-        "admin_level": ["admin0", "admin1", "admin2"]
+        "hazard_type": [
+          "drought",
+          "flood",
+          "heat_stress",
+          "fire",
+          "wind_cyclone",
+          "waterlogging",
+          "frost",
+          "multi"
+        ],
+        "scenario_type": [
+          "baseline",
+          "future_ssp126",
+          "future_ssp245",
+          "future_ssp585",
+          "multi_scenario"
+        ],
+        "grain_type": [
+          "grid",
+          "admin",
+          "vector"
+        ],
+        "admin_level": [
+          "admin0",
+          "admin1",
+          "admin2"
+        ]
       }
     },
     "T2": {
@@ -45,14 +121,50 @@
       "location": "T2_climate_risk.{csv,json}",
       "per_nbs": false,
       "primary_key": "variable_id",
-      "required": ["variable_id", "dataset_id", "risk_component", "variable", "scenario_type", "use_in_simplified_mode", "use_in_advanced_mode", "double_count_risk", "normalisation_method", "weight_default", "weight_adjustable", "directionality", "evidence_ids"],
-      "optional": ["normalisation_params", "justification"],
-      "conditional": ["hazard_type"],
+      "required": [
+        "variable_id",
+        "dataset_id",
+        "risk_component",
+        "variable",
+        "scenario_type",
+        "use_in_simplified_mode",
+        "use_in_advanced_mode",
+        "double_count_risk",
+        "normalisation_method",
+        "weight_default",
+        "weight_adjustable",
+        "directionality",
+        "evidence_ids"
+      ],
+      "optional": [
+        "normalisation_params",
+        "justification"
+      ],
+      "conditional": [
+        "hazard_type"
+      ],
       "derived": [],
-      "fk": {"dataset_id": "T1.dataset_id", "variable": "VONT.canonical_variable_id", "evidence_ids": "EV.evidence_id"},
+      "fk": {
+        "dataset_id": "T1.dataset_id",
+        "variable": "VONT.canonical_variable_id",
+        "evidence_ids": "EV.evidence_id"
+      },
       "enum_values": {
-        "hazard_type": ["drought", "flood", "heat_stress", "fire", "wind_cyclone", "waterlogging", "frost"],
-        "scenario_type": ["baseline", "future_ssp126", "future_ssp245", "future_ssp585"]
+        "hazard_type": [
+          "drought",
+          "flood",
+          "heat_stress",
+          "fire",
+          "wind_cyclone",
+          "waterlogging",
+          "frost"
+        ],
+        "scenario_type": [
+          "baseline",
+          "future_ssp126",
+          "future_ssp245",
+          "future_ssp585"
+        ]
       }
     },
     "T3": {
@@ -60,13 +172,49 @@
       "location": "recipes/<nbs_id>/T3_nbs_hazard_farming.{csv,json}",
       "per_nbs": true,
       "primary_key": "record_id",
-      "required": ["record_id", "nbs_id", "hazard_type", "farming_system", "mitigation_potential", "risk_role", "mitigation_mechanism", "confidence", "timescale_of_effect", "landscape_scale_only", "evidence_ids"],
-      "optional": ["caveats", "justification"],
-      "conditional": ["asset_risk_weight"],
+      "required": [
+        "record_id",
+        "nbs_id",
+        "hazard_type",
+        "farming_system",
+        "mitigation_potential",
+        "risk_role",
+        "mitigation_mechanism",
+        "confidence",
+        "timescale_of_effect",
+        "landscape_scale_only",
+        "evidence_ids"
+      ],
+      "optional": [
+        "caveats",
+        "justification"
+      ],
+      "conditional": [
+        "asset_risk_weight"
+      ],
       "derived": [],
-      "fk": {"nbs_id": "T0.nbs_id", "farming_system": {"targets": ["T7.context_id"], "literals": ["all"]}, "evidence_ids": "EV.evidence_id"},
+      "fk": {
+        "nbs_id": "T0.nbs_id",
+        "farming_system": {
+          "targets": [
+            "T7.context_id"
+          ],
+          "literals": [
+            "all"
+          ]
+        },
+        "evidence_ids": "EV.evidence_id"
+      },
       "enum_values": {
-        "hazard_type": ["drought", "flood", "heat_stress", "fire", "wind_cyclone", "waterlogging", "frost"]
+        "hazard_type": [
+          "drought",
+          "flood",
+          "heat_stress",
+          "fire",
+          "wind_cyclone",
+          "waterlogging",
+          "frost"
+        ]
       }
     },
     "T4": {
@@ -74,14 +222,61 @@
       "location": "recipes/<nbs_id>/T4_suitability_mappings.{csv,json}",
       "per_nbs": true,
       "primary_key": "mapping_id",
-      "required": ["mapping_id", "nbs_id", "suitability_family_id", "dataset_id", "variable", "suitability_dimension", "relationship_type", "relationship_params", "is_scenario_candidate", "has_future_projection", "weight_default", "weight_adjustable", "evidence_ids"],
-      "optional": ["uncertainty_pct", "context_overrides", "n_sources", "corpus_n", "justification"],
-      "conditional": ["scenario_label", "scenario_description", "baseline_dataset_id", "future_dataset_ids"],
-      "derived": ["paper_support_pct"],
-      "fk": {"nbs_id": "T0.nbs_id", "suitability_family_id": "FAM.suitability_family_id", "dataset_id": "T1.dataset_id", "variable": "VONT.canonical_variable_id", "evidence_ids": "EV.evidence_id"},
+      "required": [
+        "mapping_id",
+        "nbs_id",
+        "suitability_family_id",
+        "dataset_id",
+        "variable",
+        "suitability_dimension",
+        "relationship_type",
+        "relationship_params",
+        "is_scenario_candidate",
+        "has_future_projection",
+        "weight_default",
+        "weight_adjustable",
+        "evidence_ids"
+      ],
+      "optional": [
+        "uncertainty_pct",
+        "context_overrides",
+        "n_sources",
+        "corpus_n",
+        "justification"
+      ],
+      "conditional": [
+        "scenario_label",
+        "scenario_description",
+        "baseline_dataset_id",
+        "future_dataset_ids"
+      ],
+      "derived": [
+        "paper_support_pct"
+      ],
+      "fk": {
+        "nbs_id": "T0.nbs_id",
+        "suitability_family_id": "FAM.suitability_family_id",
+        "dataset_id": "T1.dataset_id",
+        "variable": "VONT.canonical_variable_id",
+        "evidence_ids": "EV.evidence_id"
+      },
       "enum_values": {
-        "suitability_dimension": ["biophysical_constraint", "system_constraint", "operational_constraint"],
-        "relationship_type": ["trapezoidal", "gaussian", "linear_increasing", "linear_decreasing", "sigmoid", "inverted_sigmoid", "threshold", "ranked_classes", "piecewise"]
+        "suitability_dimension": [
+          "biophysical_constraint",
+          "system_constraint",
+          "operational_constraint"
+        ],
+        "relationship_type": [
+          "trapezoidal",
+          "gaussian",
+          "linear_increasing",
+          "linear_decreasing",
+          "sigmoid",
+          "inverted_sigmoid",
+          "threshold",
+          "ranked_classes",
+          "piecewise"
+        ]
       }
     },
     "T5": {
@@ -89,14 +284,44 @@
       "location": "T5_opportunity_space.{csv,json}",
       "per_nbs": false,
       "primary_key": "variable_id",
-      "required": ["variable_id", "variable", "mcda_role", "theme", "dataset_id", "directionality_of_concern", "ttl_priority_label", "ttl_priority_description", "is_climate_risk_component", "aggregation_method", "normalisation_method", "weight_default", "has_future_projection", "is_active"],
-      "optional": ["evidence_ids"],
+      "required": [
+        "variable_id",
+        "variable",
+        "mcda_role",
+        "theme",
+        "dataset_id",
+        "directionality_of_concern",
+        "ttl_priority_label",
+        "ttl_priority_description",
+        "is_climate_risk_component",
+        "aggregation_method",
+        "normalisation_method",
+        "weight_default",
+        "has_future_projection",
+        "is_active"
+      ],
+      "optional": [
+        "evidence_ids"
+      ],
       "conditional": [],
       "derived": [],
-      "fk": {"variable": "VONT.canonical_variable_id", "dataset_id": "T1.dataset_id", "evidence_ids": "EV.evidence_id"},
+      "fk": {
+        "variable": "VONT.canonical_variable_id",
+        "dataset_id": "T1.dataset_id",
+        "evidence_ids": "EV.evidence_id"
+      },
       "enum_values": {
-        "mcda_role": ["priority", "descriptor"],
-        "theme": ["climate_hazard", "nbs_response", "people_production", "equity_inclusion", "context"]
+        "mcda_role": [
+          "priority",
+          "descriptor"
+        ],
+        "theme": [
+          "climate_hazard",
+          "nbs_response",
+          "people_production",
+          "equity_inclusion",
+          "context"
+        ]
       }
     },
     "T6": {
@@ -104,13 +329,64 @@
       "location": "recipes/<nbs_id>/T6_nbs_scorecard.{csv,json}",
       "per_nbs": true,
       "primary_key": "record_id",
-      "required": ["record_id", "nbs_id", "variable_id", "variable_type", "effect_direction", "effect_confidence", "effect_mechanism", "timescale_of_effect", "evidence_ids"],
-      "optional": ["conditionality", "economic_archetype_id", "justification"],
-      "conditional": ["economic_indicator_type", "economic_value_range"],
+      "required": [
+        "record_id",
+        "nbs_id",
+        "variable_id",
+        "variable_type",
+        "effect_direction",
+        "effect_confidence",
+        "effect_mechanism",
+        "timescale_of_effect",
+        "evidence_ids"
+      ],
+      "optional": [
+        "conditionality",
+        "economic_archetype_id",
+        "justification"
+      ],
+      "conditional": [
+        "economic_indicator_type",
+        "economic_value_range"
+      ],
       "derived": [],
-      "fk": {"nbs_id": "T0.nbs_id", "variable_id": {"targets": ["T5.variable_id", "T3.hazard_type"], "literals": ["establishment_cost", "recurrent_cost", "income_potential", "cost_reduction", "market_access", "carbon_revenue", "subsidy_dependency", "cost_per_beneficiary", "cost_per_hectare_restored", "cost_per_tco2e_avoided", "cost_per_farmer_reached"]}, "evidence_ids": "EV.evidence_id"},
+      "fk": {
+        "nbs_id": "T0.nbs_id",
+        "variable_id": {
+          "targets": [
+            "T5.variable_id",
+            "T3.hazard_type"
+          ],
+          "literals": [
+            "establishment_cost",
+            "recurrent_cost",
+            "income_potential",
+            "cost_reduction",
+            "market_access",
+            "carbon_revenue",
+            "subsidy_dependency",
+            "cost_per_beneficiary",
+            "cost_per_hectare_restored",
+            "cost_per_tco2e_avoided",
+            "cost_per_farmer_reached"
+          ]
+        },
+        "evidence_ids": "EV.evidence_id"
+      },
       "enum_values": {
-        "economic_indicator_type": ["establishment_cost", "recurrent_cost", "income_potential", "cost_reduction", "market_access", "carbon_revenue", "subsidy_dependency", "cost_per_beneficiary", "cost_per_hectare_restored", "cost_per_tco2e_avoided", "cost_per_farmer_reached"]
+        "economic_indicator_type": [
+          "establishment_cost",
+          "recurrent_cost",
+          "income_potential",
+          "cost_reduction",
+          "market_access",
+          "carbon_revenue",
+          "subsidy_dependency",
+          "cost_per_beneficiary",
+          "cost_per_hectare_restored",
+          "cost_per_tco2e_avoided",
+          "cost_per_farmer_reached"
+        ]
       }
     },
     "T7": {
@@ -118,27 +394,114 @@
       "location": "T7_geographic_context.{csv,json}",
       "per_nbs": false,
       "primary_key": "context_id",
-      "required": ["context_id", "context_type", "context_name", "dataset_id", "geometry_field", "value_in_dataset", "description", "is_active"],
-      "optional": ["parent_context_id"],
+      "required": [
+        "context_id",
+        "context_type",
+        "context_name",
+        "dataset_id",
+        "geometry_field",
+        "value_in_dataset",
+        "description",
+        "is_active"
+      ],
+      "optional": [
+        "parent_context_id"
+      ],
       "conditional": [],
       "derived": [],
-      "fk": {"dataset_id": "T1.dataset_id"}
+      "fk": {
+        "dataset_id": "T1.dataset_id"
+      }
     },
     "SRC": {
       "name": "Source Register",
       "location": "registers/SRC_source_register.{csv,json}",
       "per_nbs": false,
       "primary_key": "source_id",
-      "required": ["source_id", "citation", "benchmark_tier"],
-      "optional": ["doi", "study_country", "region", "coords", "aez", "farming_system", "method_type", "spatial_scale", "analysis_resolution_m", "nbs_ids", "vars_extracted", "extraction_status", "extraction_status_by_family", "extraction_date", "extraction_run_id", "extractor", "study_income_group", "is_seminal", "venue_type"],
+      "required": [
+        "source_id",
+        "citation",
+        "benchmark_tier",
+        "source_kind"
+      ],
+      "optional": [
+        "doi",
+        "study_country",
+        "region",
+        "coords",
+        "aez",
+        "farming_system",
+        "method_type",
+        "spatial_scale",
+        "analysis_resolution_m",
+        "nbs_ids",
+        "vars_extracted",
+        "extraction_status",
+        "extraction_status_by_family",
+        "extraction_date",
+        "extraction_run_id",
+        "extractor",
+        "study_income_group",
+        "is_seminal",
+        "venue_type",
+        "url",
+        "artifact_sha1",
+        "retrieved_at",
+        "access_status",
+        "source_category",
+        "library_path"
+      ],
       "conditional": [],
       "derived": [],
-      "fk": {"aez": "T7.context_id", "farming_system": "T7.context_id", "nbs_ids": "T0.nbs_id", "vars_extracted": "VONT.canonical_variable_id"},
+      "fk": {
+        "aez": "T7.context_id",
+        "farming_system": "T7.context_id",
+        "nbs_ids": "T0.nbs_id",
+        "vars_extracted": "VONT.canonical_variable_id"
+      },
       "enum_values": {
-        "benchmark_tier": ["high", "medium", "low", "external"],
-        "extraction_status": ["pending", "in_progress", "swept", "signed_off"],
-        "study_income_group": ["low", "lower_middle", "upper_middle", "high"],
-        "venue_type": ["peer_reviewed_journal", "institutional_report", "preprint", "grey"]
+        "benchmark_tier": [
+          "high",
+          "medium",
+          "low",
+          "external"
+        ],
+        "extraction_status": [
+          "pending",
+          "in_progress",
+          "swept",
+          "signed_off"
+        ],
+        "study_income_group": [
+          "low",
+          "lower_middle",
+          "upper_middle",
+          "high"
+        ],
+        "venue_type": [
+          "peer_reviewed_journal",
+          "institutional_report",
+          "preprint",
+          "grey"
+        ],
+        "source_kind": [
+          "paper",
+          "grey_lit",
+          "website",
+          "tool",
+          "codebase"
+        ],
+        "access_status": [
+          "open_access",
+          "paywalled",
+          "unknown"
+        ],
+        "source_category": [
+          "stock",
+          "updated_lit",
+          "grey",
+          "tool"
+        ]
       }
     },
     "EV": {
@@ -146,24 +509,93 @@
       "location": "registers/EV_evidence_register.{csv,json}",
       "per_nbs": false,
       "primary_key": "evidence_id",
-      "required": ["evidence_id", "source_id", "nbs_id", "suitability_family_id", "variable", "use_role", "evidence_type", "claim_basis", "claim_scope", "extraction_confidence", "quote", "page"],
-      "optional": ["relationship", "context", "lineage_of", "reviewer_ok", "raw_name", "observed_dataset", "attribution", "justification_quote", "justification_page", "selection_justification", "selection_justification_page"],
-      "conditional": ["taxon"],
+      "required": [
+        "evidence_id",
+        "source_id",
+        "nbs_id",
+        "suitability_family_id",
+        "variable",
+        "use_role",
+        "evidence_type",
+        "claim_basis",
+        "claim_scope",
+        "extraction_confidence",
+        "quote",
+        "locator_type"
+      ],
+      "optional": [
+        "relationship",
+        "context",
+        "lineage_of",
+        "reviewer_ok",
+        "raw_name",
+        "observed_dataset",
+        "attribution",
+        "justification_quote",
+        "justification_page",
+        "selection_justification",
+        "selection_justification_page",
+        "review_state",
+        "ruleset_version"
+      ],
+      "conditional": [
+        "taxon",
+        "page",
+        "locator",
+        "commit_sha"
+      ],
       "derived": [],
-      "fk": {"source_id": "SRC.source_id", "nbs_id": "T0.nbs_id", "suitability_family_id": "FAM.suitability_family_id", "variable": "VONT.canonical_variable_id"}
+      "fk": {
+        "source_id": "SRC.source_id",
+        "nbs_id": "T0.nbs_id",
+        "suitability_family_id": "FAM.suitability_family_id",
+        "variable": "VONT.canonical_variable_id"
+      },
+      "enum_values": {
+        "locator_type": [
+          "page",
+          "section",
+          "char_span",
+          "file_line"
+        ]
+      }
     },
     "VONT": {
       "name": "Variable Ontology",
       "location": "registers/VONT_variable_ontology.{csv,json}",
       "per_nbs": false,
       "primary_key": "canonical_variable_id",
-      "required": ["canonical_variable_id", "label", "canonical_unit", "group_id", "candidate_dataset_ids", "min_meaningful_resolution_m", "resolution_sensitivity", "derive_then_aggregate"],
-      "optional": ["aliases", "unit_conversions", "context_sensitivity", "review_status", "raised_by", "raised_date", "composite_of", "comment"],
+      "required": [
+        "canonical_variable_id",
+        "label",
+        "canonical_unit",
+        "group_id",
+        "candidate_dataset_ids",
+        "min_meaningful_resolution_m",
+        "resolution_sensitivity",
+        "derive_then_aggregate"
+      ],
+      "optional": [
+        "aliases",
+        "unit_conversions",
+        "context_sensitivity",
+        "review_status",
+        "raised_by",
+        "raised_date",
+        "composite_of",
+        "comment"
+      ],
       "conditional": [],
       "derived": [],
-      "fk": {"composite_of": "VONT.canonical_variable_id"},
+      "fk": {
+        "composite_of": "VONT.canonical_variable_id"
+      },
       "enum_values": {
-        "review_status": ["canonical", "pending_review", "rejected"]
+        "review_status": [
+          "canonical",
+          "pending_review",
+          "rejected"
+        ]
       }
     },
     "BIND": {
@@ -171,22 +603,50 @@
       "location": "registers/BIND_dataset_binding.{csv,json}",
       "per_nbs": false,
       "primary_key": "binding_id",
-      "required": ["binding_id", "variable", "scope_type", "preference_rank", "status"],
-      "optional": ["dataset_id", "fitness_note", "band"],
-      "conditional": ["scope_id"],
+      "required": [
+        "binding_id",
+        "variable",
+        "scope_type",
+        "preference_rank",
+        "status"
+      ],
+      "optional": [
+        "dataset_id",
+        "fitness_note",
+        "band"
+      ],
+      "conditional": [
+        "scope_id"
+      ],
       "derived": [],
-      "fk": {"variable": "VONT.canonical_variable_id", "scope_id": "T7.context_id", "dataset_id": "T1.dataset_id"}
+      "fk": {
+        "variable": "VONT.canonical_variable_id",
+        "scope_id": "T7.context_id",
+        "dataset_id": "T1.dataset_id"
+      }
     },
     "FAM": {
       "name": "Subpractice / Suitability-Family Registry",
       "location": "registers/FAM_family_registry.{csv,json}",
       "per_nbs": false,
       "primary_key": "subpractice_id",
-      "required": ["subpractice_id", "nbs_id", "name", "definition", "suitability_family_id", "dominant_limiting_factor", "spatial_product_type", "grouping_rationale", "references"],
+      "required": [
+        "subpractice_id",
+        "nbs_id",
+        "name",
+        "definition",
+        "suitability_family_id",
+        "dominant_limiting_factor",
+        "spatial_product_type",
+        "grouping_rationale",
+        "references"
+      ],
       "optional": [],
       "conditional": [],
       "derived": [],
-      "fk": {"nbs_id": "T0.nbs_id"}
+      "fk": {
+        "nbs_id": "T0.nbs_id"
+      }
     }
   }
 }
