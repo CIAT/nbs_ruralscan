@@ -2598,7 +2598,7 @@
         +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+(page?(' · '+vfEsc(page)):'')+(o.dropped?' · <span style="color:var(--accent-rose);">quarantined</span>':'')+'</span>'
         +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
         +'<div style="font-size:11.5px; margin:3px 0;"><b style="color:'+pcol+';">'+vfEsc((pr.reviewer||'someone'))+' said '+vfEsc(pdec.toUpperCase()||'?')+'</b>'+(pr.reason?(' <span style="color:var(--text-secondary);">· '+vfEsc((pr.reason||'').replace(/_/g,' '))+'</span>'):'')+(pr.note?(' <span style="color:var(--text-muted);">— '+vfEsc(pr.note)+'</span>'):'')+'</div>'
-        +(rel?('<div style="font-size:11px; margin:3px 0;"><b style="color:var(--text-muted);">Encoded value:</b> <code style="font-size:10.5px;">'+vfEsc(rel)+'</code></div>'):'')
+        +(rel?('<div style="font-size:11px; margin:3px 0;"><b style="color:var(--text-muted);">Encoded value:</b> '+vfRelHtml(ev)+'</div>'):'')
         +'<div style="font-size:11px; margin:5px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:6px 9px; border-radius:4px; max-height:120px; overflow:auto;"><b style="color:var(--text-muted);">Quote'+(page?(' ('+vfEsc(page)+')'):'')+':</b> '+vfEsc(ev.quote||'')+'</div>'
         +'<div style="margin-top:7px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:10.5px;">'+spLink
         +'<span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;"><span style="color:var(--text-muted);">your 2nd opinion:</span>'
@@ -2648,6 +2648,15 @@
     });
   }
 
+  function vfRelHtml(ev){ var r=ev.relationship; var o=null;
+    if(r){ if(typeof r==='object')o=r; else { try{ o=JSON.parse(r); }catch(e){} } }
+    if(o && typeof o==='object' && !Array.isArray(o)){
+      var keys=Object.keys(o); if(!keys.length) return '<span style="color:var(--text-muted);">(none)</span>';
+      return '<div style="display:flex; flex-wrap:wrap; gap:3px 16px; margin-top:4px;">'+keys.map(function(k){ var v=o[k]; v=(v&&typeof v==='object')?JSON.stringify(v):String(v); return '<span style="font-size:11.5px;"><span style="color:var(--text-muted);">'+vfEsc(k.replace(/_/g,' '))+':</span> <b style="color:var(--text-primary);">'+vfEsc(v)+'</b></span>'; }).join('')+'</div>';
+    }
+    if(r) return '<code style="font-size:10.5px;">'+vfEsc(typeof r==='string'?r:JSON.stringify(r))+'</code>';
+    return '<span style="color:var(--text-muted);">(removed by the verify pass — the disputed value is in the reason below)</span>';
+  }
   function _vfTabular(q){ q=q||''; return /\d+\s*[–-]\s*\d+/.test(q)||((q).match(/\d+(\.\d+)?/g)||[]).length>=3||q.indexOf('\n')>=0; }
   function _vfVerdictColor(v){ return v==='unsupported'?'var(--accent-rose)':v==='mismatch'?'var(--accent-amber)':v==='pass'?'var(--accent-sky)':v==='scope'?'var(--accent-amber)':'var(--text-secondary)'; }
 
@@ -2692,7 +2701,7 @@
       +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
       +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
-      +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> <code style="font-size:11px; color:var(--text-primary);">'+relShown+'</code></div>'
+      +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> '+vfRelHtml(ev)+'</div>'
       +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
       +cropImg
