@@ -1957,6 +1957,10 @@
           <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions are untouched" style="font-size:11px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
           <span id="vf-mode-hint" style="font-size:10.5px; color:var(--text-muted);">Static mode: decisions save in your browser. Download &#8594; save as <code>pipeline/review/flag_worklist.csv</code> &#8594; <code>review.py apply</code>.</span>
         </div>
+        <div id="vf-split" style="display:none; gap:14px; margin-top:4px;">
+          <div id="vf-list" style="flex:0 0 300px; max-height:78vh; overflow:auto; border:1px solid var(--border-color); border-radius:8px;"></div>
+          <div id="vf-detail" style="flex:1; min-width:0; position:sticky; top:8px; align-self:flex-start; max-height:88vh; overflow:auto;"></div>
+        </div>
         <div id="vf-cards"></div>
         <div id="vf-stats" style="display:none;"></div>
       </div>
@@ -2629,6 +2633,74 @@
     });
   }
 
+  function _vfTabular(q){ q=q||''; return /\d+\s*[–-]\s*\d+/.test(q)||((q).match(/\d+(\.\d+)?/g)||[]).length>=3||q.indexOf('\n')>=0; }
+  function _vfVerdictColor(v){ return v==='unsupported'?'var(--accent-rose)':v==='mismatch'?'var(--accent-amber)':v==='pass'?'var(--accent-sky)':v==='scope'?'var(--accent-amber)':'var(--text-secondary)'; }
+
+  function vfListRow(o){ var ev=o.ev; var dec=(window._vfDecisions||{})[ev.evidence_id]||''; var sel=window._vfSelected===ev.evidence_id;
+    var allr=(window._vfAllReviews||{})[ev.evidence_id]||{}; var rk=Object.keys(allr).filter(function(k){return allr[k].decision;}); var conf=(new Set(rk.map(function(k){return allr[k].decision;}))).size>1;
+    return '<div data-vfid="'+ev.evidence_id+'" onclick="selectVf(\''+ev.evidence_id+'\')" style="cursor:pointer; padding:7px 9px; border-bottom:1px solid var(--border-color); border-left:3px solid '+(sel?'var(--accent-sky)':'transparent')+'; background:'+(sel?'rgba(255,255,255,0.03)':'transparent')+';">'
+      +'<div style="display:flex; align-items:center; gap:6px;"><span style="font-weight:700; font-size:9px; color:'+_vfVerdictColor(o.verdict)+'; text-transform:uppercase;">'+vfEsc(o.verdict)+'</span>'
+      +(dec?('<span style="color:'+(dec==='ok'?'var(--accent-emerald)':'var(--accent-rose)')+'; font-size:10px; font-weight:700;">'+dec+'</span>'):'')
+      +(conf?'<span style="color:var(--accent-rose); font-size:10px;" title="conflict">⚠</span>':'')
+      +(_vfTabular(ev.quote)?'<span style="margin-left:auto; font-size:9px; color:var(--text-muted);">📷</span>':'')+'</div>'
+      +'<div style="font-size:11px; color:var(--text-primary); margin-top:2px; line-height:1.25;">'+vfEsc(ev.variable||'')+'</div>'
+      +'<code style="font-size:9px; color:var(--text-muted);">'+vfEsc(ev.evidence_id||'')+'</code></div>';
+  }
+
+  function vfDetailHtml(o, passed){ var ev=o.ev, verdict=o.verdict, reason=o.reason; var srcAll=(dashboardData.registers.SRC_source_register)||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
+    var dec=(window._vfDecisions||{})[ev.evidence_id]||'';
+    var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'page n/a');
+    var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';var relShown=rel?vfEsc(rel):'<span style="color:var(--text-muted);">(removed by the verify pass — disputed value is in the reason below)</span>';
+    var vc=_vfVerdictColor(verdict);
+    var doi=(src.doi||'').trim();
+    var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source ↗</a>'):'');
+    var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
+    var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint">📄 SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a>'):'';
+    var localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
+    var libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
+    var pdfLink=[spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
+    var okA=dec==='ok', dropA=dec==='drop';
+    var _rc=passed?['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','other']:['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','quote_too_narrow','false_flag','accepted_correction','other'];
+    var _rcDesc={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
+    var _rsel=(window._vfReasons||{})[ev.evidence_id]||'';
+    var _nval=(window._vfNotes||{})[ev.evidence_id]||'';
+    var noteInp='<textarea rows="2" placeholder="note (required for other)" onchange="setVfNote(\''+ev.evidence_id+'\',this.value)" style="font-size:10.5px; padding:5px 7px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); width:100%; resize:vertical; font-family:inherit; box-sizing:border-box;">'+vfEsc(_nval)+'</textarea>';
+    var reasonSel='<select onchange="setVfReason(\''+ev.evidence_id+'\',this.value)" style="font-size:10.5px; padding:4px 7px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><option value="">reason…</option>'+_rc.map(function(rc){return '<option value="'+rc+'" title="'+vfEsc(_rcDesc[rc])+'"'+(_rsel===rc?' selected':'')+'>'+rc.replace(/_/g,' ')+'</option>';}).join('')+'</select>';
+    var _allr=(window._vfAllReviews||{})[ev.evidence_id]||{};
+    var _rk=Object.keys(_allr).filter(function(rv){return _allr[rv].decision;});
+    var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
+    var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
+    var cropImg=(window._reviewApi && _vfTabular(ev.quote))?('<div style="margin-top:8px;"><div style="font-size:10px; color:var(--text-muted); margin-bottom:3px;">📷 table region (from the page):</div><img src="/api/crop?eid='+encodeURIComponent(ev.evidence_id)+'" style="max-width:100%; border:1px solid var(--border-color); border-radius:4px;" alt="table region" onerror="this.parentNode.style.display=\'none\';"></div>'):'';
+    return '<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:3px solid '+vc+'; border-radius:8px; padding:14px 16px; background:var(--bg-secondary);">'
+      +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
+      +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
+      +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
+      +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
+      +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
+      +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> <code style="font-size:11px; color:var(--text-primary);">'+relShown+'</code></div>'
+      +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
+      +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
+      +cropImg
+      +reviewsLine
+      +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px; font-size:10.5px; border-top:1px solid var(--border-color); padding-top:10px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp; ':'')+pdfLink+'</div>'
+      +'<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;">'
+      +'<a href="#" onclick="vfShowReasonHelp();return false;" title="reason-code definitions" style="font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+'<span style="font-size:11px; color:var(--text-muted); margin-left:auto;" title="ok = keep · drop = remove">Decision:</span>'
+      +'<button title="'+(passed?'confirm AI pass is correct':'evidence stands (keep)')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:12px; padding:5px 18px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">ok</button>'
+      +'<button title="'+(passed?'AI missed an error — drop':'remove from register')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:12px; padding:5px 18px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">drop</button></div>'
+      +'<div style="margin-top:8px;">'+noteInp+'</div></div>';
+  }
+
+  function vfRenderDetail(visible, passed){ var el=document.getElementById('vf-detail'); if(!el)return;
+    var o=visible.find(function(x){return x.ev.evidence_id===window._vfSelected;})||visible[0];
+    if(!o){ el.innerHTML='<div style="color:var(--text-muted); padding:24px; text-align:center;">No flag selected.</div>'; return; }
+    el.innerHTML=vfDetailHtml(o, passed);
+  }
+
+  function selectVf(eid){ window._vfSelected=eid;
+    document.querySelectorAll('#vf-list [data-vfid]').forEach(function(el){ var s=el.getAttribute('data-vfid')===eid; el.style.borderLeftColor=s?'var(--accent-sky)':'transparent'; el.style.background=s?'rgba(255,255,255,0.03)':'transparent'; });
+    vfRenderDetail(window._vfVisible||[], window._vfMode==='passed');
+  }
+
   function renderVfWorklist() {
     if (!dashboardData) return;
     if (!window._vfDecisions){ try{ window._vfDecisions=JSON.parse(localStorage.getItem('vfDecisions')||'{}'); }catch(e){ window._vfDecisions={}; } }
@@ -2670,12 +2742,14 @@
     var mp=document.getElementById('vf-mode-pills');
     if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['second','🔁 2nd opinion ('+_2ndCount+')'],['reviewed',_reviewedLbl],['stats','📊 Stats']];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
-    var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
-    if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
-    if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block'; renderVfReviewed(host, rlAll); return; }
-    if(mode==='second'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block'; renderVf2ndOpinion(host); return; }
-    if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block';
+    var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats'); var splitEl=document.getElementById('vf-split');
+    var _hideAll=function(){ if(host)host.style.display='none'; if(statsHost)statsHost.style.display='none'; if(splitEl)splitEl.style.display='none'; };
+    if(mode==='stats'){ if(fd)fd.style.display='none'; _hideAll(); var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
+    if(mode==='reviewed'){ if(fd)fd.style.display='none'; _hideAll(); if(host){host.style.display='block'; renderVfReviewed(host, rlAll);} return; }
+    if(mode==='second'){ if(fd)fd.style.display='none'; _hideAll(); if(host){host.style.display='block'; renderVf2ndOpinion(host);} return; }
+    _hideAll(); if(splitEl)splitEl.style.display='flex';
     var passed=(mode==='passed');
+    var _tblPill='<button class="pill-btn '+(window._vfTablesOnly?'active sky':'')+'" onclick="window._vfTablesOnly=!window._vfTablesOnly; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;" title="only units whose quote is tabular (📷)">📷 tables</button>';
     var visible;
     if(passed){
       if(!window._vfPassStatus)window._vfPassStatus='unreviewed';
@@ -2683,7 +2757,7 @@
       var _nRev=passedAll.filter(_isRev).length;
       var _ps=window._vfPassStatus;
       if(fd){ fd.style.display='flex'; var _sts=[['unreviewed','Not reviewed ('+(passedAll.length-_nRev)+')'],['reviewed','Reviewed ('+_nRev+')'],['all','All ('+passedAll.length+')']];
-        fd.innerHTML=_sts.map(function(s){ var a=_ps===s[0]?'active sky':''; return '<button class="pill-btn '+a+'" onclick="window._vfPassStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join(''); }
+        fd.innerHTML=_sts.map(function(s){ var a=_ps===s[0]?'active sky':''; return '<button class="pill-btn '+a+'" onclick="window._vfPassStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join('')+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+_tblPill; }
       var pool=passedAll.filter(function(ev){ if(_ps==='all')return true; var r=_isRev(ev); return _ps==='reviewed'?r:!r; });
       var seed=window._vfPassSeed||0; var N=30;
       var ranked=pool.map(function(ev){ var h=0,s=ev.evidence_id+'|'+seed; for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;} return {ev:ev,h:h>>>0}; }).sort(function(a,b){return a.h-b.h;});
@@ -2698,7 +2772,7 @@
         var vpills=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All ('+flaggedRows.length+')':v)+'</button>'; }).join('');
         var _sts=[['all','All',''],['todo','To-review ('+(flaggedRows.length-_decCount)+')','flagged units you have not decided yet'],['mine','In progress ('+_decCount+')','your un-applied clicks this session — they move to ✓ My reviewed once you Apply']];
         var spills=_sts.map(function(s){ var a=window._vfFlagStatus===s[0]?'active emerald':''; return '<button class="pill-btn '+a+'" title="'+s[2]+'" onclick="window._vfFlagStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join('');
-        fd.innerHTML=vpills+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+spills; }
+        fd.innerHTML=vpills+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+spills+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+_tblPill; }
       if(window._vfVerdictFilter==='conflict'){ visible=flaggedRows.filter(function(r){ var a=(window._vfAllReviews||{})[r.ev.evidence_id]||{}; var ds=Object.keys(a).filter(function(k){return a[k].decision;}).map(function(k){return a[k].decision;}); return (new Set(ds)).size>1; }); }
       else if(!window._vfVerdictFilter||window._vfVerdictFilter==='all'){ visible=flaggedRows; }
       else { visible=flaggedRows.filter(function(r){return r.verdict===window._vfVerdictFilter;}); }
@@ -2707,49 +2781,14 @@
       else if(_fs==='todo'){ visible=visible.filter(function(r){return !_myDec(r.ev.evidence_id);}); }
       var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+_decCount+'</b> / '+flaggedRows.length+' decided';
     }
-    if(!host)return; host.innerHTML='';
-    if(visible.length===0){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(passed?'No AI-passed units to sample.':'No flagged rows for this filter.')+'</div>'; return; }
-    visible.forEach(function(o){ var ev=o.ev, verdict=o.verdict, reason=o.reason; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
-      var dec=(window._vfDecisions||{})[ev.evidence_id]||'';
-      var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'page n/a');
-      var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';var relShown=rel?vfEsc(rel):'<span style="color:var(--text-muted);">(removed by the verify pass &mdash; the disputed value is in the reason below)</span>';
-      var vc=verdict==='unsupported'?'var(--accent-rose)':verdict==='mismatch'?'var(--accent-amber)':verdict==='pass'?'var(--accent-sky)':'var(--text-secondary)';
-      var doi=(src.doi||'').trim();
-      var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI '+(doi.indexOf('http')===0?'link':vfEsc(doi))+' ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source link ↗</a>'):'');
-      var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
-      var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint (page jump only in a native PDF viewer)">📄 SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a>'):'';
-      // local PDF only as a fallback when there is NO SharePoint link (e.g. not yet uploaded)
-      var localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);" title="local cached PDF — this machine only; not yet in SharePoint">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
-      var libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);" title="not in SharePoint and no local server">📄 not uploaded</span>':'';
-      var pdfLink=[spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
-      var okA=dec==='ok', dropA=dec==='drop';
-      var _rc=passed?['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','other']:['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','quote_too_narrow','false_flag','accepted_correction','other'];
-      var _rcDesc={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice — the paper is about something else (e.g. reforestation, pure forestry, carbon-only), not this practice',species_envelope:'a per-species envelope (e.g. one tree species pH/temp range), not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim + context',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct — the encoded value is faithful to the quote (ok)',missed_error:'AI should have flagged this — a bad value slipped through (false negative) -> drop',other:'something else; explain in the note'};
-      var _rsel=(window._vfReasons||{})[ev.evidence_id]||'';
-      var _nval=(window._vfNotes||{})[ev.evidence_id]||'';
-      var noteInp='<textarea rows="1" placeholder="note (required for other) — click to expand" onchange="setVfNote(\''+ev.evidence_id+'\',this.value)" onfocus="this.rows=4;this.style.width=\'300px\';" onblur="if(!this.value.trim()){this.rows=1;this.style.width=\'150px\';}" style="font-size:10.5px; padding:4px 6px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); width:150px; resize:both; vertical-align:middle; font-family:inherit; transition:width .12s ease;">'+vfEsc(_nval)+'</textarea>';
-      var reasonSel='<select title="why this flag is right/wrong; drives the learning loop" onchange="setVfReason(\''+ev.evidence_id+'\',this.value)" style="font-size:10.5px; padding:3px 6px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><option value="">reason…</option>'+_rc.map(function(rc){return '<option value="'+rc+'" title="'+vfEsc(_rcDesc[rc])+'"'+(_rsel===rc?' selected':'')+'>'+rc.replace(/_/g,' ')+'</option>';}).join('')+'</select>';
-      var _allr=(window._vfAllReviews||{})[ev.evidence_id]||{};
-      var _rk=Object.keys(_allr).filter(function(rv){return _allr[rv].decision;});
-      var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
-      var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:6px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">\u26A0 CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' \u00B7 ')+'</div>'):'';
-      var card='<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:3px solid '+vc+'; border-radius:8px; padding:12px 14px; margin-bottom:10px; background:var(--bg-secondary);">'
-        +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px;">'
-        +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code>'
-        +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
-        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
-        +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
-        +'<div style="font-size:11.5px; margin:4px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> <code style="font-size:11px; color:var(--text-primary);">'+relShown+'</code></div>'
-        +'<div style="font-size:11.5px; margin:4px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
-        +'<div style="font-size:11px; margin:6px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:7px 9px; border-radius:4px; max-height:130px; overflow:auto;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
-        +((window._reviewApi && (/\d+\s*[–-]\s*\d+/.test(ev.quote||'')||((ev.quote||'').match(/\d+(\.\d+)?/g)||[]).length>=3||(ev.quote||'').indexOf('\n')>=0))?('<div style="margin-top:6px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show table region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'')
-        +reviewsLine+'<div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px; font-size:10.5px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp;&nbsp; ':'')+pdfLink
-        +'<a href="#" onclick="vfShowReasonHelp();return false;" title="what do these mean? click to jump to the reason-code definitions" style="margin-left:auto; font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+noteInp+'<span title="ok = keep the evidence (verifier was wrong, or a correction you accept) · drop = remove it from the register" style="font-size:11px; color:var(--text-muted); cursor:help; text-decoration:underline dotted;">Decision</span>'
-        +'<button title="'+(passed?'confirm AI pass is correct':'evidence stands (false-positive flag, or correction accepted)')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">ok</button>'
-        +'<button title="'+(passed?'AI missed an error — false negative; remove':'remove this unit from the register')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:11px; padding:3px 14px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">drop</button>'
-        +'</div></div>';
-      host.insertAdjacentHTML('beforeend',card);
-    });
+    if(window._vfTablesOnly){ visible=visible.filter(function(r){return _vfTabular(r.ev.quote);}); }
+    window._vfVisible=visible;
+    var listEl=document.getElementById('vf-list');
+    var ids=visible.map(function(o){return o.ev.evidence_id;});
+    if(!window._vfSelected || ids.indexOf(window._vfSelected)<0) window._vfSelected=ids[0]||null;
+    if(listEl){ listEl.innerHTML = visible.length ? visible.map(vfListRow).join('') : '<div style="color:var(--text-muted); padding:14px; font-size:11px;">'+(passed?'No AI-passed units.':'No flags for this filter.')+'</div>'; }
+    vfRenderDetail(visible, passed);
+    return;
   }
 
   function initDashboard() {
