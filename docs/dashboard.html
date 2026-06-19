@@ -1077,6 +1077,11 @@
     </a>
   </div>
 </header>
+<div id="readonly-banner" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:9px 16px; background:rgba(245,158,11,0.12); border-bottom:1px solid rgba(245,158,11,0.35); color:var(--text-primary); font-size:12.5px;">
+  <span style="font-size:15px;">&#9888;&#65039;</span>
+  <span><b>Read-only preview.</b> You're viewing the public dashboard on GitHub Pages — QA review decisions <b>won't save here</b>. To make edits, run it locally.</span>
+  <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer" style="margin-left:auto; font-weight:600; color:var(--accent-sky); text-decoration:none; white-space:nowrap;">&#9432; How to review locally &#8594;</a>
+</div>
 
 <main class="main-container">
   
@@ -1089,6 +1094,10 @@
         <rect x="3" y="16" width="7" height="5"></rect>
       </svg>
       Registers Overview
+    </button>
+    <button class="tab-btn" data-tab="tab-stocktake" id="btn-stocktake">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="10" width="3" height="7"></rect><rect x="12" y="6" width="3" height="11"></rect><rect x="17" y="13" width="3" height="4"></rect></svg>
+      Stocktake
     </button>
     <button class="tab-btn" data-tab="tab-search" id="btn-search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1974,6 +1983,17 @@
       </div>
     </div>
 
+    <div id="tab-stocktake" class="tab-content">
+      <div class="card-container">
+        <h2 class="card-title" style="display:flex; align-items:center; gap:10px;">
+          <span>&#128218; Stocktake — OpenAlex benchmark</span>
+          <span class="card-title-meta" style="flex:1;">220 peer-reviewed sources from the pre-repo OpenAlex search, scored on the C/I/D benchmark (Content · Impact · Data). This is the literature stocktake; the in-repo paper-first / WOCAT sweeps live under <b>Search &amp; Discovery Logs</b>.</span>
+        </h2>
+        <div id="stk-filters" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:12px 0;"></div>
+        <div id="stk-body"></div>
+      </div>
+    </div>
+
     <div id="tab-search" class="tab-content">
       <div class="card-container" style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
@@ -2294,6 +2314,7 @@
         const targetTab = btn.getAttribute('data-tab');
         document.getElementById(targetTab).classList.add('active');
         if (targetTab === 'tab-qaqc' && typeof renderVfWorklist === 'function') renderVfWorklist();
+        if (targetTab === 'tab-stocktake' && typeof renderStocktake === 'function') renderStocktake();
       });
     });
 
@@ -2491,7 +2512,8 @@
     if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:reason,note:((window._vfNotes||{})[id]||''),reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
   function setVfNote(id,note){ if(!window._vfNotes)window._vfNotes={}; window._vfNotes[id]=note; localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes));
     if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:((window._vfReasons||{})[id]||''),note:note,reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
-  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); if(window._reviewApi){ if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); }); }
+  function _vfToggleBanner(){ var b=document.getElementById('readonly-banner'); if(b)b.style.display=window._reviewApi?'none':'flex'; }
+  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
   function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
     if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply decisions &amp; rebuild</b> to write them to the register + re-gate.'; }
     else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block'; } }
@@ -2592,7 +2614,7 @@
         +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+(page?(' · '+vfEsc(page)):'')+(o.dropped?' · <span style="color:var(--accent-rose);">quarantined</span>':'')+'</span>'
         +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
         +'<div style="font-size:11.5px; margin:3px 0;"><b style="color:'+pcol+';">'+vfEsc((pr.reviewer||'someone'))+' said '+vfEsc(pdec.toUpperCase()||'?')+'</b>'+(pr.reason?(' <span style="color:var(--text-secondary);">· '+vfEsc((pr.reason||'').replace(/_/g,' '))+'</span>'):'')+(pr.note?(' <span style="color:var(--text-muted);">— '+vfEsc(pr.note)+'</span>'):'')+'</div>'
-        +(rel?('<div style="font-size:11px; margin:3px 0;"><b style="color:var(--text-muted);">Encoded value:</b> <code style="font-size:10.5px;">'+vfEsc(rel)+'</code></div>'):'')
+        +(rel?('<div style="font-size:11px; margin:3px 0;"><b style="color:var(--text-muted);">Encoded value:</b> '+vfRelHtml(ev)+'</div>'):'')
         +'<div style="font-size:11px; margin:5px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:6px 9px; border-radius:4px; max-height:120px; overflow:auto;"><b style="color:var(--text-muted);">Quote'+(page?(' ('+vfEsc(page)+')'):'')+':</b> '+vfEsc(ev.quote||'')+'</div>'
         +'<div style="margin-top:7px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:10.5px;">'+spLink
         +'<span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px;"><span style="color:var(--text-muted);">your 2nd opinion:</span>'
@@ -2642,6 +2664,15 @@
     });
   }
 
+  function vfRelHtml(ev){ var r=ev.relationship; var o=null;
+    if(r){ if(typeof r==='object')o=r; else { try{ o=JSON.parse(r); }catch(e){} } }
+    if(o && typeof o==='object' && !Array.isArray(o)){
+      var keys=Object.keys(o); if(!keys.length) return '<span style="color:var(--text-muted);">(none)</span>';
+      return '<div style="display:flex; flex-wrap:wrap; gap:3px 16px; margin-top:4px;">'+keys.map(function(k){ var v=o[k]; v=(v&&typeof v==='object')?JSON.stringify(v):String(v); return '<span style="font-size:11.5px;"><span style="color:var(--text-muted);">'+vfEsc(k.replace(/_/g,' '))+':</span> <b style="color:var(--text-primary);">'+vfEsc(v)+'</b></span>'; }).join('')+'</div>';
+    }
+    if(r) return '<code style="font-size:10.5px;">'+vfEsc(typeof r==='string'?r:JSON.stringify(r))+'</code>';
+    return '<span style="color:var(--text-muted);">(removed by the verify pass — the disputed value is in the reason below)</span>';
+  }
   function _vfTabular(q){ q=q||''; return /\d+\s*[–-]\s*\d+/.test(q)||((q).match(/\d+(\.\d+)?/g)||[]).length>=3||q.indexOf('\n')>=0; }
   function _vfVerdictColor(v){ return v==='unsupported'?'var(--accent-rose)':v==='mismatch'?'var(--accent-amber)':v==='pass'?'var(--accent-sky)':v==='scope'?'var(--accent-amber)':'var(--text-secondary)'; }
 
@@ -2686,7 +2717,7 @@
       +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
       +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
-      +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> <code style="font-size:11px; color:var(--text-primary);">'+relShown+'</code></div>'
+      +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> '+vfRelHtml(ev)+'</div>'
       +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
       +cropImg
@@ -3545,6 +3576,30 @@
       ? `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:${color};color:#fff;font-size:9px;font-weight:700;margin:1px;cursor:default;`
       : `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:transparent;border:1.5px solid var(--border-color);color:var(--text-muted);font-size:9px;font-weight:700;margin:1px;cursor:default;`;
     return `<span style="${style}" title="${tipText}">${label}</span>`;
+  }
+
+  function renderStocktake(){
+    if(!dashboardData||!dashboardData.stocktake)return;
+    var rows=(dashboardData.stocktake.peer_reviewed)||[];
+    if(window._stkNbs===undefined)window._stkNbs='all';
+    if(window._stkTier===undefined)window._stkTier='all';
+    var practices=Array.from(new Set(rows.map(function(r){return r.NbS_Practice;}).filter(Boolean))).sort();
+    function pill(key,val,lbl,cls){ var on=(window['_stk'+key]===val); return '<button class="pill-btn '+(on?('active '+cls):'')+'" onclick="window._stk'+key+'=\''+val.replace(/'/g,"")+'\'; renderStocktake();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+vfEsc(lbl)+'</button>'; }
+    var fz=document.getElementById('stk-filters');
+    if(fz){ fz.innerHTML='<span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Practice</span>'+pill('Nbs','all','All ('+rows.length+')','sky')+practices.map(function(p){return pill('Nbs',p,p+' ('+rows.filter(function(r){return r.NbS_Practice===p;}).length+')','sky');}).join('')+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 4px;"></span><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Benchmark</span>'+['all','High','Medium','Low'].map(function(t){return pill('Tier',t,t==='all'?'All':t,t==='High'?'emerald':t==='Low'?'rose':'amber');}).join(''); }
+    var vis=rows.filter(function(r){ if(window._stkNbs!=='all'&&r.NbS_Practice!==window._stkNbs)return false; if(window._stkTier!=='all'&&r.Final_Benchmark!==window._stkTier)return false; return true; });
+    var tcol={High:'var(--accent-emerald)',Medium:'var(--accent-amber)',Low:'var(--accent-rose)'};
+    var body=document.getElementById('stk-body'); if(!body)return;
+    var rowsHtml=vis.map(function(r){ var doi=(r.doi_extracted||'').trim(); var doiL=doi?(' <a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">↗</a>'):'';
+      return '<tr style="border-bottom:1px solid var(--border-color);">'
+        +'<td style="padding:8px 10px; font-size:11.5px; color:var(--text-primary); max-width:360px;">'+vfEsc(r.oa_title||'(untitled)')+doiL+'<div style="font-size:10px; color:var(--text-muted);">'+vfEsc(r.journal_name||'')+'</div></td>'
+        +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary); white-space:nowrap;">'+vfEsc(r.NbS_Practice||'')+'</td>'
+        +'<td style="padding:8px 10px; white-space:nowrap;"><span style="font-size:10px; font-weight:700; color:'+(tcol[r.Final_Benchmark]||'var(--text-muted)')+';">'+vfEsc(r.Final_Benchmark||'')+'</span></td>'
+        +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary); text-align:right;">'+vfEsc(String(r.cited_by_count||''))+'</td>'
+        +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted); max-width:240px;">'+vfEsc((r.Input_Variables||'').slice(0,110))+'</td>'
+        +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted);">'+vfEsc(r.Spatial_Method||'')+'</td>'
+        +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted);">'+vfEsc(r.Tool||'')+'</td></tr>'; }).join('');
+    body.innerHTML='<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Showing <b>'+vis.length+'</b> of '+rows.length+' peer-reviewed sources.</div><div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid var(--border-color); text-align:left;">'+['Title / journal','Practice','Tier','Cites','Input variables','Spatial method','Tool'].map(function(h){return '<th style="padding:6px 10px; font-size:9.5px; color:var(--text-muted); text-transform:uppercase;">'+h+'</th>';}).join('')+'</tr></thead><tbody>'+rowsHtml+'</tbody></table></div>';
   }
 
   function renderDiscoveryAudit() {

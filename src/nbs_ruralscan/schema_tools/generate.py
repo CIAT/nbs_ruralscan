@@ -275,6 +275,38 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     review_log_csv = schema_root.parent / "pipeline" / "metrics" / "review_log.csv"
     data["review_log"] = _csv_to_rows(review_log_csv) if review_log_csv.exists() else []
 
+    # Stocktake (pre-repo OpenAlex + C/I/D benchmark) — trimmed display set; full CSV in
+    # reference/stocktake/. Distinct from the in-repo discovery logs.
+    data["stocktake"] = {"peer_reviewed": [], "grey_lit": []}
+    _stk_dir = schema_root.parent / "reference" / "stocktake"
+    _stk_cols = [
+        "oa_title",
+        "NbS_Practice",
+        "NbS_Cluster",
+        "NbS_Subpractice",
+        "Final_Benchmark",
+        "cited_by_count",
+        "journal_name",
+        "citations_per_year",
+        "doi_extracted",
+        "Input_Variables",
+        "Spatial_Method",
+        "Method_Validation",
+        "Tool",
+        "Geographic_Scope",
+        "Output",
+        "Combined_Score",
+    ]
+    _pr = _stk_dir / "peer_reviewed_benchmarked.csv"
+    if _pr.exists():
+        import csv as _stkcsv
+
+        with _pr.open(newline="", encoding="utf-8") as f:
+            data["stocktake"]["peer_reviewed"] = [
+                {k: (r.get(k, "") or "") for k in _stk_cols}
+                for r in _stkcsv.DictReader(f)
+            ]
+
     # Read registers
     for reg in registers:
         csv_path = schema_root / "registers" / f"{reg}.csv"
