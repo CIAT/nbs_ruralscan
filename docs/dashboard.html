@@ -1948,26 +1948,14 @@
             </div>
           </details>
         </div>
-        <div style="display:flex; gap:18px; align-items:flex-start; margin-top:4px;">
-          <div id="vf-sidebar" style="flex:0 0 250px; position:sticky; top:8px; align-self:flex-start; max-height:92vh; overflow:auto; padding-right:6px; display:flex; flex-direction:column; gap:12px;">
-            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="vf-mode-pills"></div>
-            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;" id="vf-scope"></div>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="vf-verdict-filters">
-              <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button>
-            </div>
-            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
-              <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
-              <button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button>
-              <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download decisions CSV</button>
-              <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions are untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
-              <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4;">Static mode: decisions save in your browser. Download &#8594; <code>review.py apply</code>.</span>
-            </div>
-          </div>
-          <div id="vf-main" style="flex:1; min-width:0;">
-            <div id="vf-cards"></div>
-            <div id="vf-stats" style="display:none;"></div>
-          </div>
+        <div id="vf-controls" style="position:sticky; top:0; z-index:30; background:var(--bg-primary); padding:10px 0 8px; margin-top:4px; border-bottom:1px solid var(--border-color);">
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:7px;"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; min-width:44px;" title="which set of units to work on">View</span><div id="vf-mode-pills" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"></div></div>
+          <div style="display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap; margin-bottom:7px;"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; min-width:44px; padding-top:4px;" title="narrow the view to a practice / table / sub-practice">Scope</span><div id="vf-scope" style="display:flex; gap:10px; flex-wrap:wrap; flex:1;"></div></div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; min-width:44px;" title="filter the flags by verdict, your review status, or tables-only">Filter</span><div id="vf-verdict-filters" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"><button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button></div></div>
+          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;"><span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span><button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button><button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button><button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button><span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted);"></span></div>
         </div>
+        <div id="vf-cards" style="margin-top:12px;"></div>
+        <div id="vf-stats" style="display:none; margin-top:12px;"></div>
       </div>
     </div>
 
@@ -2745,8 +2733,10 @@
     var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+')';
     var _2ndCount=(typeof _vf2ndList==='function')?_vf2ndList().length:0;
     var mp=document.getElementById('vf-mode-pills');
-    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['second','🔁 2nd opinion ('+_2ndCount+')'],['reviewed',_reviewedLbl],['stats','📊 Stats']];
-      mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
+    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['second','🔁 2nd opinion ('+_2ndCount+')'],['reviewed',_reviewedLbl]];
+      var pills=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join('');
+      var statsBtn='<span style="width:1px; height:20px; background:var(--border-color); margin:0 4px; align-self:center;"></span><button class="pill-btn '+(mode==='stats'?'active emerald':'')+'" onclick="window._vfMode=\'stats\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;" title="AI verify-flag performance metrics — analytics, not a review queue">📊 Stats</button>';
+      mp.innerHTML=pills+statsBtn; }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
     if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfReviewed(host, rlAll);} return; }
