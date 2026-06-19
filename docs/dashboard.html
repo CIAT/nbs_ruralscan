@@ -1918,7 +1918,7 @@
         <h2 class="card-title" style="display:flex; align-items:center; gap:12px;">
           <span>&#9872; QA / QC — VERIFY-FLAG review</span>
           <span class="card-title-meta" style="flex:1;">Every EV row flagged by the relationship-verify pass — work through these before any threshold is trusted</span>
-          <button id="vf-stats-btn" onclick="window._vfMode='stats'; renderVfWorklist();" title="AI verify-flag performance metrics — analytics, not a review queue" style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald); cursor:pointer;">📊 Stats</button>
+          <button id="vf-stats-btn" onclick="toggleVfStats()" title="AI verify-flag performance metrics — click to open, click again to return to review" style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald); cursor:pointer;">📊 Stats</button>
         </h2>
         <div style="margin-bottom:14px; display:flex; flex-direction:column; gap:9px;">
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
@@ -2470,6 +2470,7 @@
   // data._evDropped so every count/synthesis view excludes them; QA views read _evDropped.
   function _segregateDropped(data){ try{ var ev=(data&&data.registers&&data.registers.EV_evidence_register)||[]; data._evDropped=ev.filter(function(r){return (r.review_state||'')==='dropped';}); data.registers.EV_evidence_register=ev.filter(function(r){return (r.review_state||'')!=='dropped';}); }catch(e){} return data; }
   function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.innerHTML='<img src="/api/crop?eid='+encodeURIComponent(eid)+'" style="max-width:100%; border:1px solid var(--border-color); border-radius:4px;" alt="table region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));">'; box.dataset.loaded='1'; } box.style.display='block'; btn.textContent='📷 hide table region'; } else { box.style.display='none'; btn.textContent='📷 show table region'; } }
+  function toggleVfStats(){ if(window._vfMode==='stats'){ window._vfMode=window._vfLastReviewMode||'flagged'; } else { window._vfLastReviewMode=(window._vfMode&&window._vfMode!=='stats')?window._vfMode:'flagged'; window._vfMode='stats'; } renderVfWorklist(); }
   function vfShowReasonHelp(){ var d=document.getElementById('vf-reason-codes'); if(!d)return; d.open=true; d.scrollIntoView({behavior:'smooth',block:'center'}); d.style.transition='background .3s'; d.style.background='rgba(14,165,233,0.14)'; setTimeout(function(){ d.style.background=''; },1300); }
   function vfSharePointUrl(lp){ if(!lp)return ''; var base='https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/'+encodeURIComponent('Shared Documents')+'/ClimateActionNetZero/1_Projects/'; return base+lp.split('/').map(encodeURIComponent).join('/'); }
   function vfLocHint(ev){
@@ -2749,7 +2750,7 @@
     var mp=document.getElementById('vf-mode-pills');
     if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['second','🔁 2nd opinion ('+_2ndCount+')'],['reviewed',_reviewedLbl]];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
-    var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; }
+    var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; _sb.textContent=_on?'← Back to review':'📊 Stats'; }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
     if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfReviewed(host, rlAll);} return; }
