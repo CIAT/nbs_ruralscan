@@ -255,7 +255,7 @@ class Handler(SimpleHTTPRequestHandler):
 
         return self._json(404, {"error": "not found"})
 
-    def log_message(self, *a):  # quieter
+    def log_message(self, *a):  # quieter  # ty: ignore[invalid-method-override]
         pass
 
 

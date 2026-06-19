@@ -110,7 +110,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
 
     with EV.open(newline="", encoding="utf-8") as f:
         rd = csv.DictReader(f)
-        cols = rd.fieldnames
+        cols = list(rd.fieldnames or [])
         rows = list(rd)
     kept, dropped, resolved = [], 0, 0
     reasons: Counter = Counter()
@@ -173,7 +173,7 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
                 last[row["evidence_id"]] = (row.get("verdict", ""), row.get("reason", ""))
     with EV.open(newline="", encoding="utf-8") as f:
         rd = csv.DictReader(f)
-        cols = rd.fieldnames
+        cols = list(rd.fieldnames or [])
         rows = list(rd)
     targets = set(evidence_ids)
     reopened, logrows = 0, []
@@ -221,7 +221,7 @@ def apply() -> None:
     if not decisions:
         print("no decisions filled in the worklist — nothing to apply.")
         return
-    reviewer = next((d.get("reviewer") for d in decisions.values() if d.get("reviewer")), "reviewer")
+    reviewer = next((d.get("reviewer") for d in decisions.values() if d.get("reviewer")), "reviewer") or "reviewer"
     res = apply_decisions({eid: {"decision": d["decision"], "reason": d.get("reason", ""), "note": d.get("note", "")} for eid, d in decisions.items()}, reviewer)
     print(f"applied: {res['ok']} marked reviewed-ok (flag cleared), {res['dropped']} dropped. EV now {res['rows']} rows.")
     print(
