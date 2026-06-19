@@ -1945,24 +1945,27 @@
             </div>
           </details>
         </div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;" id="vf-mode-pills"></div>
-        <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:10px; align-items:center;" id="vf-scope"></div>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;" id="vf-verdict-filters">
-          <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button>
+        <div style="display:flex; gap:18px; align-items:flex-start; margin-top:4px;">
+          <div id="vf-sidebar" style="flex:0 0 250px; position:sticky; top:8px; align-self:flex-start; max-height:92vh; overflow:auto; padding-right:6px; display:flex; flex-direction:column; gap:12px;">
+            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="vf-mode-pills"></div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:flex-start;" id="vf-scope"></div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;" id="vf-verdict-filters">
+              <button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button>
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
+              <label style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">Reviewer<select id="vf-reviewer" onchange="if(this.value==='__other__'){var h=prompt('Git handle:');setVfReviewer((h||'').trim());}else{setVfReviewer(this.value);}" style="font-size:11px; padding:3px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><option value="">— pick reviewer —</option><option value="peetmate">peetmate</option><option value="bensonkenduiywo">bensonkenduiywo</option><option value="bjyberg">bjyberg</option><option value="Namita-J">Namita-J</option><option value="__other__">Other…</option></select></label>
+              <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
+              <button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button>
+              <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download decisions CSV</button>
+              <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions are untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
+              <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4;">Static mode: decisions save in your browser. Download &#8594; <code>review.py apply</code>.</span>
+            </div>
+          </div>
+          <div id="vf-main" style="flex:1; min-width:0;">
+            <div id="vf-cards"></div>
+            <div id="vf-stats" style="display:none;"></div>
+          </div>
         </div>
-        <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;">
-          <label style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">Reviewer<select id="vf-reviewer" onchange="if(this.value==='__other__'){var h=prompt('Git handle:');setVfReviewer((h||'').trim());}else{setVfReviewer(this.value);}" style="font-size:11px; padding:3px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><option value="">— pick reviewer —</option><option value="peetmate">peetmate</option><option value="bensonkenduiywo">bensonkenduiywo</option><option value="bjyberg">bjyberg</option><option value="Namita-J">Namita-J</option><option value="__other__">Other…</option></select></label><span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
-          <button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button>
-          <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:5px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download decisions CSV</button>
-          <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions are untouched" style="font-size:11px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
-          <span id="vf-mode-hint" style="font-size:10.5px; color:var(--text-muted);">Static mode: decisions save in your browser. Download &#8594; save as <code>pipeline/review/flag_worklist.csv</code> &#8594; <code>review.py apply</code>.</span>
-        </div>
-        <div id="vf-split" style="display:none; gap:14px; margin-top:4px;">
-          <div id="vf-list" style="flex:0 0 300px; max-height:78vh; overflow:auto; border:1px solid var(--border-color); border-radius:8px;"></div>
-          <div id="vf-detail" style="flex:1; min-width:0; position:sticky; top:8px; align-self:flex-start; max-height:88vh; overflow:auto;"></div>
-        </div>
-        <div id="vf-cards"></div>
-        <div id="vf-stats" style="display:none;"></div>
       </div>
     </div>
 
@@ -2670,8 +2673,8 @@
     var _rk=Object.keys(_allr).filter(function(rv){return _allr[rv].decision;});
     var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
-    var cropImg=(window._reviewApi && _vfTabular(ev.quote))?('<div style="margin-top:8px;"><div style="font-size:10px; color:var(--text-muted); margin-bottom:3px;">📷 table region (from the page):</div><img src="/api/crop?eid='+encodeURIComponent(ev.evidence_id)+'" style="max-width:100%; border:1px solid var(--border-color); border-radius:4px;" alt="table region" onerror="this.parentNode.style.display=\'none\';"></div>'):'';
-    return '<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:3px solid '+vc+'; border-radius:8px; padding:14px 16px; background:var(--bg-secondary);">'
+    var cropImg=(window._reviewApi && _vfTabular(ev.quote))?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show table region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
+    return '<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:3px solid '+vc+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
       +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
       +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
       +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
@@ -2742,12 +2745,11 @@
     var mp=document.getElementById('vf-mode-pills');
     if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['second','🔁 2nd opinion ('+_2ndCount+')'],['reviewed',_reviewedLbl],['stats','📊 Stats']];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
-    var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats'); var splitEl=document.getElementById('vf-split');
-    var _hideAll=function(){ if(host)host.style.display='none'; if(statsHost)statsHost.style.display='none'; if(splitEl)splitEl.style.display='none'; };
-    if(mode==='stats'){ if(fd)fd.style.display='none'; _hideAll(); var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
-    if(mode==='reviewed'){ if(fd)fd.style.display='none'; _hideAll(); if(host){host.style.display='block'; renderVfReviewed(host, rlAll);} return; }
-    if(mode==='second'){ if(fd)fd.style.display='none'; _hideAll(); if(host){host.style.display='block'; renderVf2ndOpinion(host);} return; }
-    _hideAll(); if(splitEl)splitEl.style.display='flex';
+    var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
+    if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
+    if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfReviewed(host, rlAll);} return; }
+    if(mode==='second'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVf2ndOpinion(host);} return; }
+    if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block';
     var passed=(mode==='passed');
     var _tblPill='<button class="pill-btn '+(window._vfTablesOnly?'active sky':'')+'" onclick="window._vfTablesOnly=!window._vfTablesOnly; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;" title="only units whose quote is tabular (📷)">📷 tables</button>';
     var visible;
@@ -2782,13 +2784,9 @@
       var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+_decCount+'</b> / '+flaggedRows.length+' decided';
     }
     if(window._vfTablesOnly){ visible=visible.filter(function(r){return _vfTabular(r.ev.quote);}); }
-    window._vfVisible=visible;
-    var listEl=document.getElementById('vf-list');
-    var ids=visible.map(function(o){return o.ev.evidence_id;});
-    if(!window._vfSelected || ids.indexOf(window._vfSelected)<0) window._vfSelected=ids[0]||null;
-    if(listEl){ listEl.innerHTML = visible.length ? visible.map(vfListRow).join('') : '<div style="color:var(--text-muted); padding:14px; font-size:11px;">'+(passed?'No AI-passed units.':'No flags for this filter.')+'</div>'; }
-    vfRenderDetail(visible, passed);
-    return;
+    if(!host)return; host.innerHTML='';
+    if(!visible.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(passed?'No AI-passed units to sample.':'No flags for this filter.')+'</div>'; return; }
+    visible.forEach(function(o){ host.insertAdjacentHTML('beforeend', vfDetailHtml(o, passed)); });
   }
 
   function initDashboard() {
