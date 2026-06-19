@@ -1948,14 +1948,27 @@
             </div>
           </details>
         </div>
-        <div id="vf-controls" style="position:sticky; top:0; z-index:30; background:var(--bg-primary); padding:10px 0 8px; margin-top:4px; border-bottom:1px solid var(--border-color);">
-          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:7px;"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; min-width:44px;" title="which set of units to work on">View</span><div id="vf-mode-pills" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"></div></div>
-          <div style="display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap; margin-bottom:7px;"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; min-width:44px; padding-top:4px;" title="narrow the view to a practice / table / sub-practice">Scope</span><div id="vf-scope" style="display:flex; gap:10px; flex-wrap:wrap; flex:1;"></div></div>
-          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px;"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; min-width:44px;" title="filter the flags by verdict, your review status, or tables-only">Filter</span><div id="vf-verdict-filters" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"><button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button></div></div>
-          <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;"><span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span><button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button><button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button><button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button><span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted);"></span></div>
+        <div style="display:flex; gap:18px; align-items:flex-start; margin-top:6px;">
+          <div id="vf-sidebar" style="flex:0 0 230px; position:sticky; top:8px; align-self:flex-start; max-height:92vh; overflow:auto; padding-right:6px; display:flex; flex-direction:column; gap:14px;">
+            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="which set of units to work on">View</div><div id="vf-mode-pills" style="display:flex; gap:6px; flex-wrap:wrap;"></div></div>
+            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="narrow to a practice / table / sub-practice">Scope</div><div id="vf-scope" style="display:flex; gap:8px; flex-wrap:wrap;"></div></div>
+            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
+              <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
+              <button id="vf-apply-btn" onclick="applyVfDecisions()" style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions &amp; rebuild</button>
+              <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
+              <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
+              <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4;"></span>
+            </div>
+          </div>
+          <div id="vf-main" style="flex:1; min-width:0;">
+            <div id="vf-filterbar" style="position:sticky; top:0; z-index:20; background:var(--bg-primary); padding:8px 0 9px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700;" title="filter the current view by verdict, your status, or tables-only">Filter</span>
+              <div id="vf-verdict-filters" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"><button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button></div>
+            </div>
+            <div id="vf-cards" style="margin-top:12px;"></div>
+            <div id="vf-stats" style="display:none; margin-top:12px;"></div>
+          </div>
         </div>
-        <div id="vf-cards" style="margin-top:12px;"></div>
-        <div id="vf-stats" style="display:none; margin-top:12px;"></div>
       </div>
     </div>
 
