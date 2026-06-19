@@ -54,6 +54,58 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(200, {"ok": True})
         if self.path == "/api/state":
             return self._json(200, {"decisions": _load()})
+        if self.path.startswith("/api/crop"):
+            # render a page-region screengrab around an EV unit's quote (table view).
+            from urllib.parse import urlparse, parse_qs
+            import csv as _csv
+            import re as _re
+
+            eid = parse_qs(urlparse(self.path).query).get("eid", [""])[0]
+            if not _re.fullmatch(r"[A-Za-z0-9_]+", eid or ""):
+                return self._json(400, {"error": "bad eid"})
+            ev_csv = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
+            row = None
+            with ev_csv.open(newline="", encoding="utf-8") as f:
+                for r in _csv.DictReader(f):
+                    if r["evidence_id"] == eid:
+                        row = r
+                        break
+            if not row:
+                return self._json(404, {"error": "no such evidence_id"})
+            pdf = ROOT / ".cache" / "corpus" / (row["source_id"] + ".pdf")
+            if not pdf.exists():
+                return self._json(404, {"error": "no cached pdf"})
+            try:
+                import fitz  # PyMuPDF
+
+                doc = fitz.open(str(pdf))
+                pno = int(row["page"]) if (row.get("page") or "").isdigit() else 1
+                page = doc[max(0, min(pno - 1, len(doc) - 1))]
+                quote = " ".join((row.get("quote") or "").split())
+                # try a few distinctive snippets to locate the quote on the page
+                rects = []
+                for snip in (quote[:28], quote[28:56], quote[-28:]):
+                    if len(snip) >= 8:
+                        rects = page.search_for(snip)
+                        if rects:
+                            break
+                if rects:
+                    y0 = max(0, min(r.y0 for r in rects) - 175)
+                    y1 = min(page.rect.height, max(r.y1 for r in rects) + 55)
+                    clip = fitz.Rect(0, y0, page.rect.width, y1)
+                else:
+                    clip = page.rect  # fallback: whole page
+                pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), clip=clip)
+                data = pix.tobytes("png")
+                doc.close()
+            except Exception as e:  # noqa: BLE001
+                return self._json(500, {"error": f"crop failed: {e}"})
+            self.send_response(200)
+            self.send_header("Content-Type", "image/png")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
         if self.path.startswith("/api/pdf"):
             from urllib.parse import urlparse, parse_qs
             import re as _re
