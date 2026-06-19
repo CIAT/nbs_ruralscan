@@ -120,7 +120,9 @@ def main(argv: list[str] | None = None) -> int:
         print()
     else:
         row = record(args.adjustment, args.commit, args.note)
-        print(f"recorded learning: reviewed_through={row['reviewed_through']} · {row['adjustment']}")
+        print(
+            f"recorded learning: reviewed_through={row['reviewed_through']} · {row['adjustment']}"
+        )
     return 0
 
 

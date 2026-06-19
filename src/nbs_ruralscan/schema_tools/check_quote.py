@@ -56,7 +56,12 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
             if why:
                 q = (r.get("quote") or "").split()
                 flags.append(
-                    {"evidence_id": r["evidence_id"], "why": why, "words": len(q), "quote": " ".join(q)}
+                    {
+                        "evidence_id": r["evidence_id"],
+                        "why": why,
+                        "words": len(q),
+                        "quote": " ".join(q),
+                    }
                 )
     return flags
 
@@ -66,7 +71,9 @@ def main(argv: list[str] | None = None) -> int:
     if not flags:
         print("QUOTE CHECK: no active unreviewed fragment quotes.")
         return 0
-    print(f"QUOTE CHECK (advisory): {len(flags)} fragment quote(s) — re-extract with full-sentence context:")
+    print(
+        f"QUOTE CHECK (advisory): {len(flags)} fragment quote(s) — re-extract with full-sentence context:"
+    )
     for f in sorted(flags, key=lambda x: x["words"]):
         print(f"  {f['words']:2}w [{f['why']}]  {f['evidence_id']}: {f['quote'][:64]}")
     return 0

@@ -132,8 +132,15 @@ def coverage_warnings(schema_root: str | Path) -> list[str]:
 
 
 def mark(
-    nbs: str, table: str, category: str, stage: str, status: str,
-    *, run_id: str = "", by: str = "orchestrator", note: str = "",
+    nbs: str,
+    table: str,
+    category: str,
+    stage: str,
+    status: str,
+    *,
+    run_id: str = "",
+    by: str = "orchestrator",
+    note: str = "",
 ) -> None:
     if table not in TABLES:
         raise ValueError(f"table must be one of {TABLES}")
@@ -145,12 +152,21 @@ def mark(
         raise ValueError(f"status must be one of {sorted(STATUSES)}")
     rows = _rows()
     row = next(
-        (r for r in rows if r["nbs_id"] == nbs and r["table"] == table and r["category"] == category),
+        (
+            r
+            for r in rows
+            if r["nbs_id"] == nbs and r["table"] == table and r["category"] == category
+        ),
         None,
     )
     if row is None:
         row = {k: "" for k in FIELDS}
-        row.update(nbs_id=nbs, table=table, category=category, **{s: "not_started" for s in STAGES})
+        row.update(
+            nbs_id=nbs,
+            table=table,
+            category=category,
+            **{s: "not_started" for s in STAGES},
+        )
         rows.append(row)
     row[stage] = status
     row["last_run_id"] = run_id or row.get("last_run_id", "")
@@ -170,7 +186,10 @@ def _show() -> None:
     print(f"{'nbs·table·category':40}  " + " ".join(f"{s[:4]}" for s in STAGES))
     for r in sorted(rows, key=lambda x: (x["nbs_id"], x["table"], x["category"])):
         key = f"{r['nbs_id']}·{r['table']}·{r['category']}"
-        print(f"{key:40}  " + "    ".join(tick.get(r.get(s) or "not_started", "?") for s in STAGES))
+        print(
+            f"{key:40}  "
+            + "    ".join(tick.get(r.get(s) or "not_started", "?") for s in STAGES)
+        )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -197,9 +216,19 @@ def main(argv: list[str] | None = None) -> int:
         _show()
         return 0
     if args.cmd == "mark":
-        mark(args.nbs, args.table, args.category, args.stage, args.status,
-             run_id=args.run_id, by=args.by, note=args.note)
-        print(f"marked {args.nbs}·{args.table}·{args.category} {args.stage}={args.status}")
+        mark(
+            args.nbs,
+            args.table,
+            args.category,
+            args.stage,
+            args.status,
+            run_id=args.run_id,
+            by=args.by,
+            note=args.note,
+        )
+        print(
+            f"marked {args.nbs}·{args.table}·{args.category} {args.stage}={args.status}"
+        )
         return 0
     errs = check(args.schema_root)
     warns = coverage_warnings(args.schema_root)
@@ -210,7 +239,9 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     print("LEDGER OK: claims reconcile with the register.")
     if warns:
-        print(f"  ({len(warns)} coverage note(s) — evidence in not-fully-searched categories):")
+        print(
+            f"  ({len(warns)} coverage note(s) — evidence in not-fully-searched categories):"
+        )
         for w in warns:
             print(f"    · {w}")
     return 0

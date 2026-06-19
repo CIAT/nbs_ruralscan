@@ -111,6 +111,7 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path.startswith("/api/pdf"):
             from urllib.parse import urlparse, parse_qs
             import re as _re
+
             sid = parse_qs(urlparse(self.path).query).get("sid", [""])[0]
             if not _re.fullmatch(r"[A-Za-z0-9_]+", sid or ""):
                 return self._json(400, {"error": "bad sid"})
@@ -145,11 +146,17 @@ class Handler(SimpleHTTPRequestHandler):
             if dec in ("", None):
                 byrev.pop(rev, None)
             else:
-                byrev[rev] = {"decision": dec, "reason": payload.get("reason", ""), "note": payload.get("note", "")}
+                byrev[rev] = {
+                    "decision": dec,
+                    "reason": payload.get("reason", ""),
+                    "note": payload.get("note", ""),
+                }
             if not byrev:
                 store.pop(eid, None)
             _save(store)
-            decided = sum(1 for e in store.values() for r in e.values() if r.get("decision"))
+            decided = sum(
+                1 for e in store.values() for r in e.values() if r.get("decision")
+            )
             return self._json(200, {"ok": True, "decided": decided})
 
         if self.path == "/api/apply":
@@ -165,21 +172,48 @@ class Handler(SimpleHTTPRequestHandler):
             # re-reviewed by others, and a later disagreeing review re-opens the conflict.
             decisions, conflicts = {}, []
             for eid, byrev in store.items():
-                decs = {rv: v for rv, v in byrev.items() if (v.get("decision") or "").strip()}
+                decs = {
+                    rv: v
+                    for rv, v in byrev.items()
+                    if (v.get("decision") or "").strip()
+                }
                 if not decs:
                     continue
                 vals = set(v["decision"] for v in decs.values())
                 if len(vals) == 1:
                     decisions[eid] = {
                         "decision": next(iter(vals)),
-                        "reason": ";".join(sorted({v.get("reason", "") for v in decs.values() if v.get("reason")})),
-                        "note": " | ".join(v.get("note", "") for v in decs.values() if v.get("note")),
+                        "reason": ";".join(
+                            sorted(
+                                {
+                                    v.get("reason", "")
+                                    for v in decs.values()
+                                    if v.get("reason")
+                                }
+                            )
+                        ),
+                        "note": " | ".join(
+                            v.get("note", "") for v in decs.values() if v.get("note")
+                        ),
                         "reviewer": ",".join(sorted(decs.keys())),
                     }
                 else:
-                    conflicts.append({"evidence_id": eid, "reviews": {rv: v["decision"] for rv, v in decs.items()}})
+                    conflicts.append(
+                        {
+                            "evidence_id": eid,
+                            "reviews": {rv: v["decision"] for rv, v in decs.items()},
+                        }
+                    )
             if not decisions:
-                return self._json(200, {"applied": 0, "ok": True, "conflicts": conflicts, "message": "no agreed units to apply"})
+                return self._json(
+                    200,
+                    {
+                        "applied": 0,
+                        "ok": True,
+                        "conflicts": conflicts,
+                        "message": "no agreed units to apply",
+                    },
+                )
             try:
                 res = apply_decisions(decisions, "consensus")
                 generate(ROOT / "schema")
@@ -199,11 +233,22 @@ class Handler(SimpleHTTPRequestHandler):
             dec = (payload.get("decision") or "").strip()
             rev = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
             if not eid or dec not in ("ok", "drop"):
-                return self._json(400, {"error": "evidence_id + decision(ok|drop) required"})
+                return self._json(
+                    400, {"error": "evidence_id + decision(ok|drop) required"}
+                )
             store = _load()
             byrev = store.setdefault(eid, {})
-            byrev[rev] = {"decision": dec, "reason": payload.get("reason", ""), "note": payload.get("note", ""), "applied": False}
-            decs = {r: v["decision"] for r, v in byrev.items() if (v.get("decision") or "").strip()}
+            byrev[rev] = {
+                "decision": dec,
+                "reason": payload.get("reason", ""),
+                "note": payload.get("note", ""),
+                "applied": False,
+            }
+            decs = {
+                r: v["decision"]
+                for r, v in byrev.items()
+                if (v.get("decision") or "").strip()
+            }
             conflict = len(set(decs.values())) > 1
             _save(store)
             reopened = 0
@@ -217,10 +262,20 @@ class Handler(SimpleHTTPRequestHandler):
                     reopened = res.get("reopened", 0)
                 except Exception as e:  # noqa: BLE001
                     return self._json(500, {"error": str(e)})
-            return self._json(200, {"ok": True, "conflict": conflict, "reopened": reopened, "reviews": decs})
+            return self._json(
+                200,
+                {
+                    "ok": True,
+                    "conflict": conflict,
+                    "reopened": reopened,
+                    "reviews": decs,
+                },
+            )
 
         if self.path == "/api/reopen":
-            eids = payload.get("evidence_ids") or ([payload["evidence_id"]] if payload.get("evidence_id") else [])
+            eids = payload.get("evidence_ids") or (
+                [payload["evidence_id"]] if payload.get("evidence_id") else []
+            )
             rev = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
             if not eids:
                 return self._json(400, {"error": "evidence_id(s) required"})
@@ -251,7 +306,9 @@ class Handler(SimpleHTTPRequestHandler):
             if rev == "*":
                 _save({})
                 return self._json(200, {"ok": True, "cleared_for": "ALL"})
-            return self._json(400, {"error": "reviewer required (use '*' to clear all)"})
+            return self._json(
+                400, {"error": "reviewer required (use '*' to clear all)"}
+            )
 
         return self._json(404, {"error": "not found"})
 
@@ -265,7 +322,9 @@ def main() -> int:
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
     handler = partial(Handler, directory=str(DOCS))
     srv = ThreadingHTTPServer(("127.0.0.1", port), handler)
-    print(f"QA/QC review server → http://localhost:{port}/dashboard.html  (Ctrl-C to stop)")
+    print(
+        f"QA/QC review server → http://localhost:{port}/dashboard.html  (Ctrl-C to stop)"
+    )
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

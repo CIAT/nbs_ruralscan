@@ -31,7 +31,21 @@ ROOT = Path(__file__).resolve().parents[3]
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 WORKLIST = ROOT / "pipeline" / "review" / "flag_worklist.csv"
 LOG = ROOT / "pipeline" / "metrics" / "review_log.csv"
-REASON_CODES = ["smuggled_number","cross_row_stitch","wrong_variable","wrong_practice","species_envelope","table_garble","off_scope","quote_too_narrow","false_flag","accepted_correction","confirmed_pass","missed_error","other"]
+REASON_CODES = [
+    "smuggled_number",
+    "cross_row_stitch",
+    "wrong_variable",
+    "wrong_practice",
+    "species_envelope",
+    "table_garble",
+    "off_scope",
+    "quote_too_narrow",
+    "false_flag",
+    "accepted_correction",
+    "confirmed_pass",
+    "missed_error",
+    "other",
+]
 _FLAG_RE = re.compile(r"\[VERIFY-FLAG\s+(\w+):\s*(.*?)\]\s*", re.S)
 _WL_FIELDS = [
     "evidence_id",
@@ -104,8 +118,12 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
 
     def _norm(v):
         if isinstance(v, dict):
-            return (str(v.get("decision", "")).strip().lower(), (v.get("reason") or "").strip(),
-                    (v.get("note") or "").strip(), (v.get("reviewer") or "").strip())
+            return (
+                str(v.get("decision", "")).strip().lower(),
+                (v.get("reason") or "").strip(),
+                (v.get("note") or "").strip(),
+                (v.get("reviewer") or "").strip(),
+            )
         return (str(v or "").strip().lower(), "", "", "")
 
     with EV.open(newline="", encoding="utf-8") as f:
@@ -122,14 +140,30 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             kept.append(r)
             continue
         verdict = _verdict_of(r.get("attribution", ""))
-        logrows.append([today, r["evidence_id"], r.get("source_id", ""), verdict, dec, reason, note, who])
+        logrows.append(
+            [
+                today,
+                r["evidence_id"],
+                r.get("source_id", ""),
+                verdict,
+                dec,
+                reason,
+                note,
+                who,
+            ]
+        )
         reasons[reason or "unspecified"] += 1
         if dec == "drop":
             # soft-delete: keep the row as a record, mark dropped (excluded from
             # synthesis/support/counts; reversible via reopen_units).
             r["review_state"] = "dropped"
             r["attribution"] = _FLAG_RE.sub("", r.get("attribution", "")).strip()
-            tag = f"[dropped {today} by {who}" + (f"; reason:{reason}" if reason else "") + (f"; note:{note}" if note else "") + "]"
+            tag = (
+                f"[dropped {today} by {who}"
+                + (f"; reason:{reason}" if reason else "")
+                + (f"; note:{note}" if note else "")
+                + "]"
+            )
             r["attribution"] = (tag + " " + (r["attribution"] or "")).strip()
             dropped += 1
             kept.append(r)
@@ -138,7 +172,12 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             r["reviewer_ok"] = "true"
             r["review_state"] = ""  # active (un-drops if it was previously dropped)
             r["attribution"] = _FLAG_RE.sub("", r.get("attribution", "")).strip()
-            tag = f"[reviewed {today} by {who}" + (f"; reason:{reason}" if reason else "") + (f"; note:{note}" if note else "") + "]"
+            tag = (
+                f"[reviewed {today} by {who}"
+                + (f"; reason:{reason}" if reason else "")
+                + (f"; note:{note}" if note else "")
+                + "]"
+            )
             r["attribution"] = (tag + " " + (r["attribution"] or "")).strip()
             resolved += 1
         kept.append(r)
@@ -152,9 +191,25 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
         with LOG.open("a", newline="", encoding="utf-8") as f:
             w = csv.writer(f)
             if new_file:
-                w.writerow(["date", "evidence_id", "source_id", "verdict", "decision", "reason", "note", "reviewer"])
+                w.writerow(
+                    [
+                        "date",
+                        "evidence_id",
+                        "source_id",
+                        "verdict",
+                        "decision",
+                        "reason",
+                        "note",
+                        "reviewer",
+                    ]
+                )
             w.writerows(logrows)
-    return {"ok": resolved, "dropped": dropped, "rows": len(kept), "reasons": dict(reasons)}
+    return {
+        "ok": resolved,
+        "dropped": dropped,
+        "rows": len(kept),
+        "reasons": dict(reasons),
+    }
 
 
 def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
@@ -170,7 +225,10 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
     if LOG.exists():
         with LOG.open(newline="", encoding="utf-8") as f:
             for row in csv.DictReader(f):
-                last[row["evidence_id"]] = (row.get("verdict", ""), row.get("reason", ""))
+                last[row["evidence_id"]] = (
+                    row.get("verdict", ""),
+                    row.get("reason", ""),
+                )
     with EV.open(newline="", encoding="utf-8") as f:
         rd = csv.DictReader(f)
         cols = list(rd.fieldnames or [])
@@ -184,14 +242,29 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
         was_dropped = (r.get("review_state") or "") == "dropped"
         if not (was_ok or was_dropped):
             continue
-        verdict, reason = last.get(r["evidence_id"], ("mismatch", "re-opened for review"))
+        verdict, reason = last.get(
+            r["evidence_id"], ("mismatch", "re-opened for review")
+        )
         r["reviewer_ok"] = "false"
         r["review_state"] = ""  # un-drop / un-keep -> active + flagged again
         # strip any prior [reviewed ...] / [dropped ...] tag, prepend a fresh VERIFY-FLAG
-        attr = re.sub(r"\[(reviewed|dropped)[^\]]*\]\s*", "", r.get("attribution", "")).strip()
+        attr = re.sub(
+            r"\[(reviewed|dropped)[^\]]*\]\s*", "", r.get("attribution", "")
+        ).strip()
         r["attribution"] = (f"[VERIFY-FLAG {verdict}: {reason}] " + attr).strip()
         reopened += 1
-        logrows.append([today, r["evidence_id"], r.get("source_id", ""), verdict, "reopen", "", "", reviewer])
+        logrows.append(
+            [
+                today,
+                r["evidence_id"],
+                r.get("source_id", ""),
+                verdict,
+                "reopen",
+                "",
+                "",
+                reviewer,
+            ]
+        )
     with EV.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=cols)
         w.writeheader()
@@ -202,7 +275,18 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
         with LOG.open("a", newline="", encoding="utf-8") as f:
             w = csv.writer(f)
             if new_file:
-                w.writerow(["date", "evidence_id", "source_id", "verdict", "decision", "reason", "note", "reviewer"])
+                w.writerow(
+                    [
+                        "date",
+                        "evidence_id",
+                        "source_id",
+                        "verdict",
+                        "decision",
+                        "reason",
+                        "note",
+                        "reviewer",
+                    ]
+                )
             w.writerows(logrows)
     return {"reopened": reopened}
 
@@ -221,9 +305,27 @@ def apply() -> None:
     if not decisions:
         print("no decisions filled in the worklist — nothing to apply.")
         return
-    reviewer = next((d.get("reviewer") for d in decisions.values() if d.get("reviewer")), "reviewer") or "reviewer"
-    res = apply_decisions({eid: {"decision": d["decision"], "reason": d.get("reason", ""), "note": d.get("note", "")} for eid, d in decisions.items()}, reviewer)
-    print(f"applied: {res['ok']} marked reviewed-ok (flag cleared), {res['dropped']} dropped. EV now {res['rows']} rows.")
+    reviewer = (
+        next(
+            (d.get("reviewer") for d in decisions.values() if d.get("reviewer")),
+            "reviewer",
+        )
+        or "reviewer"
+    )
+    res = apply_decisions(
+        {
+            eid: {
+                "decision": d["decision"],
+                "reason": d.get("reason", ""),
+                "note": d.get("note", ""),
+            }
+            for eid, d in decisions.items()
+        },
+        reviewer,
+    )
+    print(
+        f"applied: {res['ok']} marked reviewed-ok (flag cleared), {res['dropped']} dropped. EV now {res['rows']} rows."
+    )
     print(
         "Next: `generate.py schema` to rebuild + re-gate, then `ledger.py mark ... "
         "--stage reviewed --status done` for fully-reviewed tables."

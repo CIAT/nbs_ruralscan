@@ -39,6 +39,7 @@ FIELDS = [
 def reason_tally() -> dict:
     """Count review decisions by reason code from the review log (for the retrospective)."""
     from collections import Counter
+
     if not REVIEW_LOG.exists():
         return {}
     c = Counter()
@@ -120,7 +121,9 @@ def main() -> int:
         print(f"  {k:22} {cur!s:>8}")
     rt = reason_tally()
     if rt:
-        print("\nReview decisions by reason (route the top one to a spec rule / check / screening tweak):")
+        print(
+            "\nReview decisions by reason (route the top one to a spec rule / check / screening tweak):"
+        )
         for k, v in rt.items():
             print(f"  {k:22} {v}")
     if prev:

@@ -87,7 +87,9 @@ def main(argv: list[str] | None = None) -> int:
     from collections import Counter
 
     by = Counter(f["signal"] for f in flags)
-    print(f"SCOPE CHECK (advisory): {len(flags)} unit(s) with off-scope signals — review:")
+    print(
+        f"SCOPE CHECK (advisory): {len(flags)} unit(s) with off-scope signals — review:"
+    )
     for sig, n in by.most_common():
         print(f"  {n}  {sig}")
     for f in flags:

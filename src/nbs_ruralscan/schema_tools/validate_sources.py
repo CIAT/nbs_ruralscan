@@ -238,7 +238,11 @@ def validate_all_sources(schema_root: str | Path) -> None:
     warnings: list[str] = []
     if corpus.exists():
         for p in sorted(corpus.glob("*")):
-            if p.is_file() and not p.name.startswith(".") and p.suffix.lower() not in _KNOWN_EXT:
+            if (
+                p.is_file()
+                and not p.name.startswith(".")
+                and p.suffix.lower() not in _KNOWN_EXT
+            ):
                 errors.append(
                     f"[{p.name}] UNDEFINED ARTIFACT FORMAT '{p.suffix}' in .cache/corpus — "
                     "no handling rule exists. PAUSE: define an acquire adapter + locator "
@@ -253,7 +257,9 @@ def validate_all_sources(schema_root: str | Path) -> None:
             )
         if kind == "snapshot":
             if not (srow.get("url") or "").strip():
-                warnings.append(f"[{sid}] web/github snapshot has no url — record the source URL")
+                warnings.append(
+                    f"[{sid}] web/github snapshot has no url — record the source URL"
+                )
             miss = [
                 e["evidence_id"]
                 for e in ev_rows

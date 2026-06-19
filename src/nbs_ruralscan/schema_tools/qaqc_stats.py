@@ -79,9 +79,20 @@ def compute(log_path: str | Path | None = None) -> dict:
         "by_decision": dict(by_decision),
         "by_reason": dict(by_reason.most_common()),
         "by_verdict": dict(by_verdict),
-        "flag_eval": {"tp": tp, "fp": fp, "n": tp + fp, "precision_pct": _pct(tp, tp + fp),
-                      "tp_removed": tp_removed, "tp_corrected": tp_corrected},
-        "pass_eval": {"tn": tn, "fn": fn, "checked": tn + fn, "fn_rate_pct": _pct(fn, tn + fn)},
+        "flag_eval": {
+            "tp": tp,
+            "fp": fp,
+            "n": tp + fp,
+            "precision_pct": _pct(tp, tp + fp),
+            "tp_removed": tp_removed,
+            "tp_corrected": tp_corrected,
+        },
+        "pass_eval": {
+            "tn": tn,
+            "fn": fn,
+            "checked": tn + fn,
+            "fn_rate_pct": _pct(fn, tn + fn),
+        },
         # recall is unknowable until passes are spot-checked (no FN evidence otherwise)
         "recall_est_pct": _pct(tp, tp + fn) if (tn + fn) > 0 else None,
         "errors_caught": tp,
