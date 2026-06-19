@@ -1050,6 +1050,16 @@
       <select id="vf-reviewer" onchange="if(this.value==='__other__'){var h=prompt('Git handle:');setVfReviewer((h||'').trim());}else{setVfReviewer(this.value);}" style="font-size:12px; padding:4px 9px; border-radius:5px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); font-weight:600;"><option value="">— pick reviewer —</option><option value="peetmate">peetmate</option><option value="bensonkenduiywo">bensonkenduiywo</option><option value="bjyberg">bjyberg</option><option value="Namita-J">Namita-J</option><option value="__other__">Other…</option></select>
       <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer" title="How to review locally — clone, run the server, make decisions, push" style="font-size:11px; color:var(--accent-sky); text-decoration:none; white-space:nowrap;">&#9432; how to review</a>
     </label>
+    <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); margin-right:10px;" title="Open a GitHub issue of the chosen type">&#128027; Report issue
+      <select onchange="if(this.value){window.open(this.value,'_blank','noopener');this.selectedIndex=0;}" style="font-size:12px; padding:4px 9px; border-radius:5px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">
+        <option value="">— type —</option>
+        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new?template=bug.md">🐛 Bug</option>
+        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new?template=ux.md">🎨 UI / UX improvement</option>
+        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new?template=feature.md">✨ Feature request</option>
+        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new?template=data-discovery.md">📄 Data / evidence issue</option>
+        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new/choose">Other / choose…</option>
+      </select>
+    </label>
     <button class="btn-theme-toggle" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Theme">
       <!-- Dark mode (Sun) icon -->
       <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
@@ -1095,9 +1105,9 @@
       </svg>
       Registers Overview
     </button>
-    <button class="tab-btn" data-tab="tab-stocktake" id="btn-stocktake">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="10" width="3" height="7"></rect><rect x="12" y="6" width="3" height="11"></rect><rect x="17" y="13" width="3" height="4"></rect></svg>
-      Stocktake
+    <button class="tab-btn" data-tab="tab-qaqc" id="btn-qaqc">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+      QA / QC Flags
     </button>
     <button class="tab-btn" data-tab="tab-search" id="btn-search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1107,10 +1117,6 @@
         <line x1="11" y1="8" x2="11" y2="14"></line>
       </svg>
       Search &amp; Discovery Logs
-    </button>
-    <button class="tab-btn" data-tab="tab-qaqc" id="btn-qaqc">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-      QA / QC Flags
     </button>
     <button class="tab-btn" data-tab="tab-interrogator" id="btn-interrogator">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1135,6 +1141,10 @@
         <path d="M6 9v6"></path>
       </svg>
       Evidence Network
+    </button>
+    <button class="tab-btn" data-tab="tab-stocktake" id="btn-stocktake">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="10" width="3" height="7"></rect><rect x="12" y="6" width="3" height="11"></rect><rect x="17" y="13" width="3" height="4"></rect></svg>
+      Stocktake
     </button>
   </nav>
 
