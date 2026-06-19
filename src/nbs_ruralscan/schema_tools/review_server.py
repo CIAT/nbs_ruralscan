@@ -82,20 +82,22 @@ class Handler(SimpleHTTPRequestHandler):
                 pno = int(row["page"]) if (row.get("page") or "").isdigit() else 1
                 page = doc[max(0, min(pno - 1, len(doc) - 1))]
                 quote = " ".join((row.get("quote") or "").split())
-                # try a few distinctive snippets to locate the quote on the page
+                # locate the WHOLE quote span: search several snippets across it and union
+                # all hit rects (a table quote spans caption -> header -> data rows).
                 rects = []
-                for snip in (quote[:28], quote[28:56], quote[-28:]):
+                for i in range(0, max(1, len(quote)), 38):
+                    snip = quote[i : i + 30].strip()
                     if len(snip) >= 8:
-                        rects = page.search_for(snip)
-                        if rects:
-                            break
+                        rects += page.search_for(snip)
                 if rects:
-                    y0 = max(0, min(r.y0 for r in rects) - 175)
-                    y1 = min(page.rect.height, max(r.y1 for r in rects) + 55)
+                    y0 = max(0, min(r.y0 for r in rects) - 80)
+                    y1 = min(page.rect.height, max(r.y1 for r in rects) + 45)
                     clip = fitz.Rect(0, y0, page.rect.width, y1)
                 else:
                     clip = page.rect  # fallback: whole page
-                pix = page.get_pixmap(matrix=fitz.Matrix(2, 2), clip=clip)
+                # cap output height (~1500px) so the PNG stays viewable / not huge
+                scale = max(1.0, min(2.0, 1500.0 / max(1.0, clip.height)))
+                pix = page.get_pixmap(matrix=fitz.Matrix(scale, scale), clip=clip)
                 data = pix.tobytes("png")
                 doc.close()
             except Exception as e:  # noqa: BLE001
