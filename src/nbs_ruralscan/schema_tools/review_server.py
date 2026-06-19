@@ -89,14 +89,28 @@ class Handler(SimpleHTTPRequestHandler):
                     snip = quote[i : i + 30].strip()
                     if len(snip) >= 8:
                         rects += page.search_for(snip)
+                clip = None
+                # 1) prefer the FULL detected table bbox (includes its column-header row,
+                #    which a quote deep in the table sits far below).
                 if rects:
-                    y0 = max(0, min(r.y0 for r in rects) - 80)
-                    y1 = min(page.rect.height, max(r.y1 for r in rects) + 45)
+                    try:
+                        for t in page.find_tables().tables or []:
+                            tb = fitz.Rect(t.bbox)
+                            if any(tb.intersects(r) for r in rects):
+                                clip = tb + (-10, -14, 10, 10)  # small pad incl header
+                                break
+                    except Exception:  # noqa: BLE001
+                        clip = None
+                # 2) fallback: a band around the quote, reaching well up for the header.
+                if clip is None and rects:
+                    y0 = max(0, min(r.y0 for r in rects) - 230)
+                    y1 = min(page.rect.height, max(r.y1 for r in rects) + 60)
                     clip = fitz.Rect(0, y0, page.rect.width, y1)
-                else:
-                    clip = page.rect  # fallback: whole page
-                # cap output height (~1500px) so the PNG stays viewable / not huge
-                scale = max(1.0, min(2.0, 1500.0 / max(1.0, clip.height)))
+                elif clip is None:
+                    clip = page.rect  # whole page
+                clip = clip & page.rect  # keep within the page
+                # cap output height (~1800px) so the PNG stays viewable / not huge
+                scale = max(1.0, min(2.0, 1800.0 / max(1.0, clip.height)))
                 pix = page.get_pixmap(matrix=fitz.Matrix(scale, scale), clip=clip)
                 data = pix.tobytes("png")
                 doc.close()

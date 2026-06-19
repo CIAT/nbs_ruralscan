@@ -2803,7 +2803,10 @@
     var visible;
     if(passed){
       if(!window._vfPassStatus)window._vfPassStatus='unreviewed';
-      var _isRev=function(ev){ if(ev.reviewer_ok===true||ev.reviewer_ok==='true'||ev.reviewer_ok==='True')return true; var id=ev.evidence_id; if((window._vfDecisions||{})[id])return true; var a=(window._vfAllReviews||{})[id]||{}; return Object.keys(a).some(function(k){return a[k].decision;}); };
+      var _me=(window._vfReviewer||'').trim();
+      // reviewed = the CURRENT reviewer has a decision (pending or in the store) — NOT
+      // reviewer_ok (someone else's applied review) and NOT any-other-reviewer.
+      var _isRev=function(ev){ var id=ev.evidence_id; if((window._vfDecisions||{})[id])return true; var a=(window._vfAllReviews||{})[id]||{}; return !!(_me && a[_me] && a[_me].decision); };
       var _nRev=passedAll.filter(_isRev).length;
       var _ps=window._vfPassStatus;
       if(fd){ fd.style.display='flex'; var _sts=[['unreviewed','Not reviewed ('+(passedAll.length-_nRev)+')'],['reviewed','Reviewed ('+_nRev+')'],['all','All ('+passedAll.length+')']];
