@@ -119,6 +119,18 @@ def validate_all_sources(schema_root: str | Path) -> None:
         print("VERIFICATION: EV register is empty — nothing to verify.")
         return
 
+    # The cached corpus (.cache/corpus/*.pdf|.txt|...) is gitignored — present locally and
+    # pre-commit, ABSENT on CI. Without it no quote can be checked, so skip (don't fail):
+    # this guardrail is enforced where the source artifacts live (local / pre-push), and a
+    # committer with the corpus catches violations before they ever reach CI.
+    if not corpus.exists():
+        print(
+            f"VERIFICATION SKIPPED: no cached corpus dir at {corpus} — quote verification "
+            "runs where the source artifacts are present (local / pre-commit), not on CI. "
+            "(An existing-but-empty corpus still verifies + fails on missing artifacts.)"
+        )
+        return
+
     errors: list[str] = []
     # Only sources backing a non-exempt claim need a verifiable artifact; a source
     # referenced solely by baseline-layer (exempt) rows carries no quotable claim.
