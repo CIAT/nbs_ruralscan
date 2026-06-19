@@ -1095,6 +1095,10 @@
       </svg>
       Registers Overview
     </button>
+    <button class="tab-btn" data-tab="tab-stocktake" id="btn-stocktake">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="10" width="3" height="7"></rect><rect x="12" y="6" width="3" height="11"></rect><rect x="17" y="13" width="3" height="4"></rect></svg>
+      Stocktake
+    </button>
     <button class="tab-btn" data-tab="tab-search" id="btn-search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"></circle>
@@ -1979,6 +1983,17 @@
       </div>
     </div>
 
+    <div id="tab-stocktake" class="tab-content">
+      <div class="card-container">
+        <h2 class="card-title" style="display:flex; align-items:center; gap:10px;">
+          <span>&#128218; Stocktake — OpenAlex benchmark</span>
+          <span class="card-title-meta" style="flex:1;">220 peer-reviewed sources from the pre-repo OpenAlex search, scored on the C/I/D benchmark (Content · Impact · Data). This is the literature stocktake; the in-repo paper-first / WOCAT sweeps live under <b>Search &amp; Discovery Logs</b>.</span>
+        </h2>
+        <div id="stk-filters" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:12px 0;"></div>
+        <div id="stk-body"></div>
+      </div>
+    </div>
+
     <div id="tab-search" class="tab-content">
       <div class="card-container" style="margin-bottom: 16px;">
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
@@ -2299,6 +2314,7 @@
         const targetTab = btn.getAttribute('data-tab');
         document.getElementById(targetTab).classList.add('active');
         if (targetTab === 'tab-qaqc' && typeof renderVfWorklist === 'function') renderVfWorklist();
+        if (targetTab === 'tab-stocktake' && typeof renderStocktake === 'function') renderStocktake();
       });
     });
 
@@ -3560,6 +3576,30 @@
       ? `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:${color};color:#fff;font-size:9px;font-weight:700;margin:1px;cursor:default;`
       : `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:transparent;border:1.5px solid var(--border-color);color:var(--text-muted);font-size:9px;font-weight:700;margin:1px;cursor:default;`;
     return `<span style="${style}" title="${tipText}">${label}</span>`;
+  }
+
+  function renderStocktake(){
+    if(!dashboardData||!dashboardData.stocktake)return;
+    var rows=(dashboardData.stocktake.peer_reviewed)||[];
+    if(window._stkNbs===undefined)window._stkNbs='all';
+    if(window._stkTier===undefined)window._stkTier='all';
+    var practices=Array.from(new Set(rows.map(function(r){return r.NbS_Practice;}).filter(Boolean))).sort();
+    function pill(key,val,lbl,cls){ var on=(window['_stk'+key]===val); return '<button class="pill-btn '+(on?('active '+cls):'')+'" onclick="window._stk'+key+'=\''+val.replace(/'/g,"")+'\'; renderStocktake();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+vfEsc(lbl)+'</button>'; }
+    var fz=document.getElementById('stk-filters');
+    if(fz){ fz.innerHTML='<span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Practice</span>'+pill('Nbs','all','All ('+rows.length+')','sky')+practices.map(function(p){return pill('Nbs',p,p+' ('+rows.filter(function(r){return r.NbS_Practice===p;}).length+')','sky');}).join('')+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 4px;"></span><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Benchmark</span>'+['all','High','Medium','Low'].map(function(t){return pill('Tier',t,t==='all'?'All':t,t==='High'?'emerald':t==='Low'?'rose':'amber');}).join(''); }
+    var vis=rows.filter(function(r){ if(window._stkNbs!=='all'&&r.NbS_Practice!==window._stkNbs)return false; if(window._stkTier!=='all'&&r.Final_Benchmark!==window._stkTier)return false; return true; });
+    var tcol={High:'var(--accent-emerald)',Medium:'var(--accent-amber)',Low:'var(--accent-rose)'};
+    var body=document.getElementById('stk-body'); if(!body)return;
+    var rowsHtml=vis.map(function(r){ var doi=(r.doi_extracted||'').trim(); var doiL=doi?(' <a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">↗</a>'):'';
+      return '<tr style="border-bottom:1px solid var(--border-color);">'
+        +'<td style="padding:8px 10px; font-size:11.5px; color:var(--text-primary); max-width:360px;">'+vfEsc(r.oa_title||'(untitled)')+doiL+'<div style="font-size:10px; color:var(--text-muted);">'+vfEsc(r.journal_name||'')+'</div></td>'
+        +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary); white-space:nowrap;">'+vfEsc(r.NbS_Practice||'')+'</td>'
+        +'<td style="padding:8px 10px; white-space:nowrap;"><span style="font-size:10px; font-weight:700; color:'+(tcol[r.Final_Benchmark]||'var(--text-muted)')+';">'+vfEsc(r.Final_Benchmark||'')+'</span></td>'
+        +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary); text-align:right;">'+vfEsc(String(r.cited_by_count||''))+'</td>'
+        +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted); max-width:240px;">'+vfEsc((r.Input_Variables||'').slice(0,110))+'</td>'
+        +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted);">'+vfEsc(r.Spatial_Method||'')+'</td>'
+        +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted);">'+vfEsc(r.Tool||'')+'</td></tr>'; }).join('');
+    body.innerHTML='<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Showing <b>'+vis.length+'</b> of '+rows.length+' peer-reviewed sources.</div><div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid var(--border-color); text-align:left;">'+['Title / journal','Practice','Tier','Cites','Input variables','Spatial method','Tool'].map(function(h){return '<th style="padding:6px 10px; font-size:9.5px; color:var(--text-muted); text-transform:uppercase;">'+h+'</th>';}).join('')+'</tr></thead><tbody>'+rowsHtml+'</tbody></table></div>';
   }
 
   function renderDiscoveryAudit() {
