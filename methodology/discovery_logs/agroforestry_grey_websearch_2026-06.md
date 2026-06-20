@@ -21,16 +21,16 @@ Acquire adapter: `nbs_ruralscan.ingest.acquire` (writes `{sid}.pdf` + `{sid}.met
 
 | source | status | note |
 |---|---|---|
-| **inab_landcap_guatemala** | acquired + **extracted** | INAB national land-capability manual (ES); slope×soil-depth → agroforestry classes Aa/Ap/Ss |
-| **wri_roam_india** | acquired, **deferred** | ROAM India atlas/methods; poor text layer (garbled), no biophysical thresholds via flat text — needs table parse |
-| **crs_fmnr_niger_2025** | acquired, **held** | FMNR scaling brief; only governance/tenure/labor enabling-conditions → no clean VONT canonical (see below). NGO advocacy → positive-bias. |
+| **inab_landcap_guatemala** | acquired + **extracted** (50 EV) | INAB national land-capability manual (ES); slope×soil-depth → agroforestry classes Aa/Ap/Ss |
+| **crs_fmnr_niger_2025** | acquired + **extracted** (17 EV) | FMNR scaling brief; enabling-conditions mapped to NEW VONT canonicals (tenure/governance/labour/rootstock); all low-conf (NGO advocacy → positive-bias) |
+| **wri_roam_india** | acquired, **dropped (off-NbS)** | Table-parse succeeded (`find_tables` recovers p4 exclusion criteria, p29 carbon-by-forest-type) — but content is **forest-landscape restoration, not agroforestry** (excludes grasslands/irrigated cropland — wrong for AF). Per scope discipline, not merged. Seeds a future forest-restoration recipe. |
 | icraf_tik_ethiopia | acquire_failed | HTTP 403 (cifor-icraf.org) — manual download needed |
 | usda_nac_silvopasture_2025 | acquire_failed | HTTP 403 (fs.usda.gov) — manual download needed |
 
 ## Extracted → register
 - **INAB Guatemala: 50 EvidenceUnits**, all verbatim-verified (Spanish native quote + bracketed English), 0 number/scope/quote flags. Variables `slope` (%) + `soil_depth_to_bedrock` (cm), `claim_basis=table`, `claim_scope=practice_technology`, across families planted_silvoarable (Aa) · shaded_perennial (Ap) · silvopastoral (Ss), 7 regional matrices. `source_category=grey`, tier=Medium (govt land-capability manual; low advocacy bias but not peer-reviewed).
 
-## Held / flagged
-- **CRS FMNR** held: its useful content is operational/enabling-environment (land tenure, governance/extension, labor, rootstock presence) which the current VONT cannot hold without silent proxy-relabelling (`protected_area_status`/`distance_to_road` were force-fit by the extractor — rejected per the no-silent-relabel rule). **PAUSE + define VONT canonicals** (e.g. `land_tenure_security`, `governance_extension_access`, `labor_availability`, `rootstock_presence`) before merging FMNR enabling-condition evidence.
-- **Grey-lit positive-bias** (memory `feedback_grey_lit_positive_bias_discount`): grey over-states benefits + is not peer-reviewed → synthesis must discount, especially T6 benefit claims. Not yet implemented in `synthesis.py` — flagged for a spec.
+## Resolved this round
+- **VONT canonicals added** (`pending_review`) so FMNR enabling-conditions have a proper home — no more silent proxy-relabel: `land_tenure_security`, `governance_extension_access`, `labor_availability`, `rootstock_presence`. CRS re-extracted against them (17 EV merged). Still-unmapped conditions (social-capital/dialogue, vulnerability, education, market-access-distance) were **skipped not force-fit** — flagged as future canonical candidates (`market_access_distance`, `social_capital`).
+- **Grey-lit positive-bias** → **issue #63** opened (synthesis discount spec). Memory `feedback_grey_lit_positive_bias_discount`. Not yet in `synthesis.py`. All CRS units carry `extraction_confidence=low`.
 - Tools/methods surfaced (for a tools register, not threshold EV): WOCAT Mapping Tool · Decision-Support Framework · Apps · Carbon Benefits Project; CIFOR-ICRAF SPACIAL dashboards; WRI FLR Opportunity Atlas; ROAM; Guinea ZAE atlas.
