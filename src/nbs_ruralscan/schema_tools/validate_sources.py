@@ -250,6 +250,11 @@ def validate_all_sources(schema_root: str | Path) -> None:
     warnings: list[str] = []
     if corpus.exists():
         for p in sorted(corpus.glob("*")):
+            # `acquire.py` writes a `{source_id}.meta.json` provenance sidecar beside each
+            # fetched artifact — it pairs with a real .pdf/.txt/.html/.md, is never itself
+            # cited as evidence, so it is not an "undefined format". Skip it.
+            if p.name.endswith(".meta.json"):
+                continue
             if (
                 p.is_file()
                 and not p.name.startswith(".")
