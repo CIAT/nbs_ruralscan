@@ -2857,7 +2857,7 @@
     if(!visible.length){
       if((window._vfScope||{}).source==='tool'){
         var _nTool=((dashboardData.registers||{}).TOOL_tool_registry||[]).length;
-        host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-emerald);">Tools / methodology are catalogued, not evidence-reviewed here.</b><br>A tool is not a variable×threshold claim, so tools carry no EV rows. <b>'+_nTool+'</b> tool(s) live in the <code>TOOL_tool_registry</code> (see the Tools tab). Where a tool\'s docs/code state a reusable threshold, that single claim is extracted to EV and would appear under its source\'s channel.</div>';
+        host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-amber);">No tool-derived evidence extracted yet.</b><br>Tools / methods / codebases <b>are evidence-reviewable like any source</b> — their thresholds, weights and criteria become EV rows (provenance via <code>locator=file_line</code>+<code>commit_sha</code> for code, or section/anchor for docs) and are reviewed here under this channel. This is empty only because no tool has been extracted yet. <b>'+_nTool+'</b> tool(s) are catalogued (metadata) in <code>TOOL_tool_registry</code>; extracting their claims will populate this channel.</div>';
         return;
       }
       host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(passed?'No AI-passed units to sample.':'No flags for this filter.')+'</div>'; return; }
