@@ -20,7 +20,13 @@ Workflow:
 4. validate_units(units) must return {} before save_units(units, path).
 5. Report units, conflicts, anything pending (OCR / figure-only).
 
-Hard rules: quote+page mandatory; null when the source is silent (no inference). Tag use_role
+Hard rules: quote+page mandatory; null when the source is silent (no inference). **PICOS — the NbS
+practice must be evidenced IN the source before you tag it.** Only set `nbs_id` / `suitability_family_id`
+if the practice (or its sub-practice) is explicitly present in the passage/source — never infer it from a
+demo dataset, worked example, file/paper title, or the sweep's current focus. A generic method demoed on
+agroforestry is not agroforestry evidence; a coffee case study does not make a generic variable a coffee
+claim. If the practice isn't stated, leave it `cross`/agnostic or skip the row. (Same discipline as
+`claim_scope`: species ≠ practice.) Tag use_role
 (structural_suitability=T4 | climate_risk=T2 | priority_need=T5 | nbs_effect=T6 | dataset=T1);
 evidence_type (only literature_relationship/expert carry shape params); claim_basis; claim_scope
 (species/crop claims need taxon and must NOT define a practice row). Set lineage_of when a value is
