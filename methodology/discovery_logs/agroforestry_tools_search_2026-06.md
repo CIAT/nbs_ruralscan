@@ -49,3 +49,11 @@ The first pass missed almost all ICRAF/CIFOR methods — a search-coverage failu
 - **Still queued (insufficient verified detail — don't register from snippets):** "framework for targeting and scaling-out interventions in agricultural systems" (2014) · "rapid country-level AFOLU mitigation options" (2020) · GTKP resource list (403) · saraheb3 GEE code deep-read to fill `variables_used`/`weighting`.
 - 11 TOOL rows. CGSpace (open DSpace API) confirmed as the productive grey/method channel — `hdl.handle.net/10568/*` resolvable, acquirable via `ingest.acquire` when EV-grade detail is needed.
 - **Still queued:** GTKP resource list (403 on probe — needs another route) · the real practice-suitability code (saraheb3 GEE variants) deep-read.
+
+## First tool-EV extracted (2026-06-21) — proves tools are evidence-reviewable
+- **spatMCDA.R: no extractable claims** — it computes weights from data at runtime (CRITIC/Entropy), AHP auto-derived, quartile natural-breaks classification. A generic engine makes no practice claim → correctly yields zero EV (not a failure).
+- **saraheb3 GEE tool README → 2 EV rows** (the demonstrator): AF-explicit, states *defined* practice criteria. Extracted via the deterministic pipeline over a cached `.html` snapshot:
+  - `ev_production_gap_saraheb3_tool` — economic-viability criterion: "more marginal for conventional agriculture → more suitable for agroforestry" (inverse).
+  - `ev_soil_erosion_risk_saraheb3_tool` — environmental-priority criterion (erosion/water-quality/soil-carbon).
+  - `source_category=tool`, `claim_basis=expert_assertion` (tool design choice, not a measured finding — weighted down in synthesis), `locator_type=section` + `commit_sha` pin. Verified verbatim against the cached snapshot (512/512). Linked from the TOOL row via `source_id`+`evidence_ids`.
+- **Confirms the corrected model:** a tool is a SOURCE → SRC(tool)+TOOL(metadata)+EV(its claims), QA-reviewed under the tool channel. Capability (non-page/section/file_line locator) works end-to-end. Ledger `agroforestry·T4·tool` stamped.
