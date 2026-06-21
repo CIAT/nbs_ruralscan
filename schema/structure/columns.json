@@ -647,6 +647,54 @@
       "fk": {
         "nbs_id": "T0.nbs_id"
       }
+    },
+    "TOOL": {
+      "name": "Tools / Methods Registry",
+      "location": "registers/TOOL_tool_registry.{csv,json}",
+      "per_nbs": false,
+      "primary_key": "tool_id",
+      "required": [
+        "tool_id",
+        "name",
+        "tool_type",
+        "url"
+      ],
+      "optional": [
+        "organisation",
+        "repo_commit",
+        "license",
+        "language",
+        "nbs_ids",
+        "spatial_method",
+        "membership_functions",
+        "weighting_scheme",
+        "variables_used",
+        "datasets_used",
+        "workflow_summary",
+        "validation",
+        "benchmark_tier",
+        "combined_score",
+        "maturity",
+        "source_id",
+        "evidence_ids",
+        "locator",
+        "review_status",
+        "notes"
+      ],
+      "conditional": [],
+      "derived": [],
+      "fk": {
+        "source_id": "SRC.source_id"
+      },
+      "enum_values": {
+        "tool_type": ["codebase", "platform", "method_framework", "r_package", "gee_app", "webgis"],
+        "language": ["python", "r", "gee_js", "javascript", "other", "na"],
+        "spatial_method": ["mcda_ahp", "fuzzy", "rule_based", "ml", "optimization", "process_model", "other"],
+        "validation": ["validated", "partial", "unvalidated"],
+        "benchmark_tier": ["High", "Medium", "Low"],
+        "maturity": ["active", "archived", "prototype"],
+        "review_status": ["canonical", "pending_review", "rejected"]
+      }
     }
   }
 }

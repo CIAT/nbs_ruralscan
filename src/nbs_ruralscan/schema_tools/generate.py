@@ -231,6 +231,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "FAM_family_registry",
         "VONT_variable_ontology",
         "BIND_dataset_binding",
+        "TOOL_tool_registry",
     ]
     global_tables = [
         "T1_data_registry",

@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-20T13:56:27.761282+00:00",
-  "git_commit": "dfdd8a077f76e63b4c7cada725a74ca3cbb6e77e",
+  "timestamp": "2026-06-21T19:53:05.009521+00:00",
+  "git_commit": "53279da4afbee5f22d20bf9d4117af5de9b7fe38",
   "registers": {
     "SRC_source_register": [
       {
@@ -16542,6 +16542,161 @@
         "status": "catalogued",
         "fitness_note": "LandMark IPLC vector layer. Marks IPLC overlap with M1 opportunity-space mask for equity priority + FPIC/ESS7 flag. Coverage patchy - absence != no IPLC presence."
       }
+    ],
+    "TOOL_tool_registry": [
+      {
+        "tool_id": "spatmcda_r",
+        "name": "spatMCDA — reference MCDA implementation",
+        "tool_type": "r_package",
+        "url": "https://github.com/CIAT/nbs_ruralscan/blob/main/reference/R/spatMCDA.R",
+        "organisation": "Alliance Bioversity-CIAT (B. Kenduiywo)",
+        "language": "r",
+        "spatial_method": "mcda_ahp",
+        "weighting_scheme": "ahp|critic|entropy",
+        "workflow_summary": "Generic spatial MCDA engine: CRITIC+Entropy+AHP criterion weighting -> continuous + 4-class suitability (terra/sf). NbS-agnostic.",
+        "validation": "partial",
+        "maturity": "active",
+        "locator": "reference/R/spatMCDA.R",
+        "review_status": "canonical",
+        "notes": "NbS-AGNOSTIC reference MCDA engine (B. Kenduiywo; AGENTS framework primitive). The committed script demos an agroforestry example, but the tool is generic — applies to any NbS. Do NOT read the demo title as an agroforestry association."
+      },
+      {
+        "tool_id": "saraheb3_af_midwest",
+        "name": "Agroforestry social-ecological suitability (US Midwest)",
+        "tool_type": "codebase",
+        "url": "https://github.com/saraheb3/AgroforestrySuitability",
+        "organisation": "academic (Eberle et al.)",
+        "license": "CC0-1.0",
+        "language": "gee_js",
+        "nbs_ids": "agroforestry",
+        "spatial_method": "rule_based",
+        "workflow_summary": "Social-ecological multi-criteria suitability mapping for agroforestry",
+        "validation": "partial",
+        "maturity": "active",
+        "review_status": "pending_review",
+        "notes": "Accompanies IOP paper 'Mapping the social-ecological suitability of agroforestry in the US Midwest' (10.1088/1748-9326/adab09). GEE variant: saraheb3/AgroforestrySuitability_GEE."
+      },
+      {
+        "tool_id": "joshbrew_inat_af",
+        "name": "Agroforestry Suitability Mapping with iNaturalist",
+        "tool_type": "codebase",
+        "url": "https://github.com/joshbrew/Agroforestry_Suitability_Mapping_with_iNaturalist",
+        "organisation": "independent",
+        "license": "MIT",
+        "language": "python",
+        "nbs_ids": "agroforestry",
+        "spatial_method": "ml",
+        "weighting_scheme": "eta_squared",
+        "datasets_used": "terraclimate|glim|hydrosheds|soilgrids250|mcd12q1|gbif_inaturalist",
+        "workflow_summary": "eta-squared empirical weighting blended with XGBoost/ExtraTrees ML on iNaturalist/GBIF occurrences",
+        "validation": "unvalidated",
+        "maturity": "active",
+        "review_status": "pending_review",
+        "notes": "Species-occurrence-driven (iNaturalist/GBIF) -> species_envelope flavour; outputs are species, not practice-level."
+      },
+      {
+        "tool_id": "icraf_spacial",
+        "name": "CIFOR-ICRAF SPACIAL Dashboards",
+        "tool_type": "webgis",
+        "url": "https://dashboards.icraf.org/",
+        "organisation": "CIFOR-ICRAF",
+        "language": "na",
+        "spatial_method": "rule_based",
+        "workflow_summary": "Interactive spatial dashboards for land-use / restoration / agroforestry decision support",
+        "validation": "unvalidated",
+        "maturity": "active",
+        "review_status": "pending_review",
+        "notes": "CIFOR-ICRAF interactive spatial dashboards. Scope NOT verified as agroforestry-specific (landing page unreachable on probe); ICRAF's agroforestry brand is not evidence the dashboards are agroforestry-scoped (PICOS). Tag left blank pending verification."
+      },
+      {
+        "tool_id": "wri_flr_atlas",
+        "name": "WRI Atlas of Forest Landscape Restoration Opportunity",
+        "tool_type": "platform",
+        "url": "https://www.wri.org/data/methodology-data-atlas-forest-landscape-restoration-opportunity",
+        "organisation": "WRI",
+        "language": "na",
+        "spatial_method": "rule_based",
+        "workflow_summary": "Global/national forest landscape restoration opportunity mapping (methodology + data)",
+        "validation": "partial",
+        "maturity": "active",
+        "review_status": "pending_review",
+        "notes": "Forest-landscape restoration scope (not pure agroforestry) -> relevant to a future restoration recipe."
+      },
+      {
+        "tool_id": "iucn_wri_roam",
+        "name": "Restoration Opportunities Assessment Methodology (ROAM)",
+        "tool_type": "method_framework",
+        "url": "https://portals.iucn.org/library/sites/library/files/documents/2014-030.pdf",
+        "organisation": "IUCN & WRI",
+        "language": "na",
+        "spatial_method": "rule_based",
+        "weighting_scheme": "expert",
+        "workflow_summary": "Phased restoration opportunity assessment; multi-criteria suitability mapping + stakeholder-defined rules",
+        "validation": "partial",
+        "benchmark_tier": "High",
+        "combined_score": 2.5,
+        "maturity": "active",
+        "review_status": "pending_review",
+        "notes": "In stocktake grey-23 (High tier). India ROAM technical note acquired (wri_roam_india) - forest-restoration scope."
+      },
+      {
+        "tool_id": "d4r_diversity_restoration",
+        "name": "Diversity for Restoration (D4R)",
+        "tool_type": "webgis",
+        "url": "https://alliancebioversityciat.org/tools-innovations/diversity-restoration-d4r",
+        "organisation": "Alliance Bioversity-CIAT + CIFOR-ICRAF",
+        "language": "na",
+        "spatial_method": "optimization",
+        "workflow_summary": "Online DSS: habitat-suitability models (present+projected climate) + functional traits + local knowledge -> optimised, complementary species portfolios + seed-zone maps for restoration",
+        "validation": "partial",
+        "maturity": "active",
+        "review_status": "pending_review",
+        "notes": "Our-org tool (named in TORs). SPECIES-LEVEL (habitat suitability per species, seed sourcing) -> species-envelope realm, not practice-level spatial suitability; keep claim_scope discipline. nbs_ids blank: restoration species selection generally, not a single NbS practice. Sister tool: Diversity for Agroforestry."
+      },
+      {
+        "tool_id": "d4ag_diversity_agroforestry",
+        "name": "Diversity for Agroforestry (D4Ag)",
+        "tool_type": "webgis",
+        "url": "https://alliancebioversityciat.org/tools-innovations/diversity-restoration-d4r",
+        "organisation": "Alliance Bioversity-CIAT + CIFOR-ICRAF",
+        "language": "na",
+        "nbs_ids": "agroforestry",
+        "spatial_method": "optimization",
+        "workflow_summary": "D4R sister tool: tree-species recommendations + planting designs for cacao and coffee agroforestry systems",
+        "validation": "partial",
+        "maturity": "active",
+        "review_status": "pending_review",
+        "notes": "PICOS-clean: explicitly agroforestry (cacao/coffee AF). Species-level recommendations -> species-envelope; distinct from practice-level suitability. Verify exact URL/scope on review."
+      },
+      {
+        "tool_id": "biodiversityr",
+        "name": "BiodiversityR",
+        "tool_type": "r_package",
+        "url": "https://cran.r-project.org/package=BiodiversityR",
+        "organisation": "CIFOR-ICRAF (R. Kindt)",
+        "license": "GPL",
+        "language": "r",
+        "spatial_method": "ml",
+        "workflow_summary": "Ensemble species-distribution / suitability modelling + mapping + community-ecology stats (R-Commander GUI). CRAN.",
+        "validation": "partial",
+        "maturity": "active",
+        "review_status": "pending_review",
+        "notes": "SPECIES-LEVEL ensemble SDM (species-envelope), NbS-agnostic -> distinct from practice-level suitability. Maintainer R. Kindt (ICRAF). Companion species DBs (TreeGOER, GlobUNT, EcoregionsTreeFinder, Agroforestry Species Switchboard) are REPOSITORIES/grey sources, not tools."
+      },
+      {
+        "tool_id": "esi_ibsti_targeting",
+        "name": "Extrapolation Suitability Index (ESI) + Impact-Based Spatial Targeting Index (IBSTI)",
+        "tool_type": "method_framework",
+        "url": "https://cgspace.cgiar.org/search?query=extrapolation%20suitability%20index%20IBSTI",
+        "organisation": "CGIAR (incl. CIFOR-ICRAF / Alliance)",
+        "language": "na",
+        "spatial_method": "other",
+        "workflow_summary": "Method to delineate where an agronomic technology package is suitable (ESI, correlation-aware) and prioritise scaling-out (IBSTI = suitability x impact). General ag-tech targeting; agroforestry is one applicable package.",
+        "validation": "partial",
+        "maturity": "active",
+        "review_status": "pending_review",
+        "notes": "Practice/technology-level spatial targeting method (NOT species). nbs_ids blank: general ag-technology-package targeting, AF is one application (PICOS). From CGSpace method search; acquire the source doc + verify before promoting beyond pending_review."
+      }
     ]
   },
   "global_tables": {
@@ -19760,6 +19915,21 @@
         "Extraction outcome (2026-06-19, run `openalex_af_2026-06`)": "Of the 6 selected, **4 acquired** (2 acquire-failed: olive–maize 403, Gedeo coffee landing-only). All 4 extracted via the deterministic pipeline (`build_index` → `package_for_extraction` → page-stamped `EvidenceUnit` → `validate_units` → staging), then centrally gated (verbatim quote + `check_numbers` + `check_scope` + `check_quote`).\n\n| source_id | tier | family | units | notes |\n|---|---|---|---|---|\n| abigaba_2024 | Medium | shaded_perennial | 9 | coffee/banana climate optima = `species_specific` (taxon); shade-cover thresholds = practice |\n| affan_2024 | Low | shaded_perennial | 8 | FAO S1–N soil-quality bands; coffee pH/temp = species; slope/texture = practice |\n| mantino_2026 | Medium | silvopastoral | 3 | mostly qualitative; SOC + canopy are T6 effects; GIS criteria cited to Gabourel-Landaverde 2025 (not reproduced) |\n| singh_2026 | Medium | planted_silvoarable | 11 | general AF MCDM/ML; soil_ph has numeric classes; ML feature weights tagged `ml_importance` (no shape params) |\n\n**Total: 31 EvidenceUnits, 443/443 verbatim-verified, 0 number/scope/quote flags.** SRC `source_category=updated_lit`. Ledger: agroforestry·T4/T6·updated_lit stamped (searched=in_progress — capped, 23 deferred; screened=done; verified=in_progress — central guardrail passed, pending QA-review sign-off).\n\n**Follow-ups:** (a) catalogue the 4 PDFs to the SharePoint library + set `library_path` (provenance note); (b) work the 23 deferred candidates; (c) re-run synthesis if these should refresh T4 mapping params (held — alters analytical values)."
       },
       "raw_markdown": "# Agroforestry — focused OpenAlex sweep (2026-06)\n\n**Date(s):** June 2026.\n**Author(s):** Pete Steward (orchestrated).\n**Purpose:** A focused, capped OpenAlex search for **high-value agroforestry-suitability papers MISSED by the stocktake** — recent (≥2024, beyond the stocktake window) or otherwise not caught. **Separate from the stocktake** (which was its own OpenAlex run, Apr–Jun 2026; see the Stocktake tab / `reference/stocktake/`).\n\n**Keyword basis:** derived from the 5 High-tier AF stocktake papers (suitability mapping · spatial priority indicators · climate-smart targeting · silvoarable) → `agroforestry × (suitability | land evaluation | priority areas | multicriteria/GIS | silvopasture | opportunity mapping)`. OpenAlex title-search, `from_publication_date:2024-01-01`, `type:article`, sorted by citations.\n\n**Caps (bounded sweep):** retrieve ≤200/query · screen ≤50 abstracts · acquire+extract ≤15. Actual: 6 queries.\n\n## PRISMA-lite counts\n- **Retrieved (unique):** 31\n- **After dedup vs the 220-row stocktake:** 29\n- **Screened:** 29 (all; small pool)\n- **Selected (high-value / novel, all open-access):** 6 → acquire + extract\n- **Deferred (backlog for a later pass):** 23 — kept in `reference/discovery/openalex_candidates.csv` (status column)\n\n## Resumability\n`reference/discovery/openalex_candidates.csv` is the **candidate ledger** (title · year · cites · OA · doi · venue · status · sweep). Future sweeps dedup against this **and** the stocktake, and work the `deferred` backlog. Status: `selected` → extracting; `deferred` → not yet screened-in; later `extracted` / `rejected`.\n\n## Selected for extraction (6, all OA)\n1. The potential of agroforestry to buffer climate change impacts on suitability (2024, 17 cites)\n2. Scaling agroforestry land suitability analysis in Odisha — machine learning (2026)\n3. Enhancing ecosystem services to mitigate agro-environmental pressures (2026)\n4. Assessing soil & land suitability of an olive–maize agroforestry system (2024)\n5. Enhancing coffee agroforestry suitability using geospatial analysis (2024)\n6. Soil quality in land-suitability analysis of coffee agroforestry (2024)\n\n## Extraction outcome (2026-06-19, run `openalex_af_2026-06`)\nOf the 6 selected, **4 acquired** (2 acquire-failed: olive–maize 403, Gedeo coffee landing-only). All 4 extracted via the deterministic pipeline (`build_index` → `package_for_extraction` → page-stamped `EvidenceUnit` → `validate_units` → staging), then centrally gated (verbatim quote + `check_numbers` + `check_scope` + `check_quote`).\n\n| source_id | tier | family | units | notes |\n|---|---|---|---|---|\n| abigaba_2024 | Medium | shaded_perennial | 9 | coffee/banana climate optima = `species_specific` (taxon); shade-cover thresholds = practice |\n| affan_2024 | Low | shaded_perennial | 8 | FAO S1–N soil-quality bands; coffee pH/temp = species; slope/texture = practice |\n| mantino_2026 | Medium | silvopastoral | 3 | mostly qualitative; SOC + canopy are T6 effects; GIS criteria cited to Gabourel-Landaverde 2025 (not reproduced) |\n| singh_2026 | Medium | planted_silvoarable | 11 | general AF MCDM/ML; soil_ph has numeric classes; ML feature weights tagged `ml_importance` (no shape params) |\n\n**Total: 31 EvidenceUnits, 443/443 verbatim-verified, 0 number/scope/quote flags.** SRC `source_category=updated_lit`. Ledger: agroforestry·T4/T6·updated_lit stamped (searched=in_progress — capped, 23 deferred; screened=done; verified=in_progress — central guardrail passed, pending QA-review sign-off).\n\n**Follow-ups:** (a) catalogue the 4 PDFs to the SharePoint library + set `library_path` (provenance note); (b) work the 23 deferred candidates; (c) re-run synthesis if these should refresh T4 mapping params (held — alters analytical values).\n"
+    },
+    "agroforestry_tools_search_2026-06": {
+      "id": "agroforestry_tools_search_2026-06",
+      "title": "Agroforestry — tools / methods + codebase search (2026-06)",
+      "date": "",
+      "authors": "",
+      "seed_rule": "",
+      "sections": {
+        "Search": "- **GitHub** (`gh search repos`): `agroforestry suitability`, `land-suitability AHP`, `MCDA suitability mapping`, `silvopasture GIS`, `ecocrop suitability`, `fuzzy land evaluation`, `tree planting suitability`. Most multi-term queries returned nothing; `agroforestry suitability` surfaced the live codebases below.\n- **Web/platform** (carried from the grey websearch): WOCAT tools, CIFOR-ICRAF SPACIAL, WRI FLR Atlas, ROAM.\n- **In-repo:** the inherited `reference/R/spatMCDA.R` reference engine.",
+        "Registered (7, all `review_status=pending_review` except the canonical reference)": "| tool_id | type | method | note |\n|---|---|---|---|\n| `spatmcda_r` | r_package | AHP+CRITIC+entropy × 5 fuzzy membership | **canonical** inherited framework engine |\n| `saraheb3_af_midwest` | codebase (GEE) | social-ecological MCDA | accompanies IOP Midwest AF paper; CC0 |\n| `joshbrew_inat_af` | codebase (Python) | ML (XGBoost/ExtraTrees) + eta² weighting | iNaturalist/GBIF-driven → species-envelope flavour, not practice |\n| `icraf_spacial` | webgis | dashboards | CIFOR-ICRAF; nbs_ids blank (scope unverified) |\n| `wri_flr_atlas` | platform | FLR opportunity mapping | forest-restoration scope |\n| `iucn_wri_roam` | method_framework | phased MCDA + stakeholder rules | High tier (stocktake-23) |",
+        "Notes / next": "- **WOCAT is NOT a tool — it's a grey-lit repository.** Removed from this register; it belongs to the grey-lit channel (search the SLM-technologies DB → each tech = a grey SRC/EV source, like CGSpace). Its companion *Mapping Tool / Decision-Support Framework / Apps* could be separate TOOL entries if specifically catalogued, but the database itself is a source, not a tool. **Repository ≠ tool:** databases/portals (search → grey-lit) vs tools/methods/codebases (compute → TOOL register).\n- **GAP — ICRAF/CIFOR methodologies under-found (concern, 2026-06-21).** CIFOR-ICRAF demonstrably publish AF suitability / land-health / restoration-targeting methodologies; this first pass surfaced almost none → a **search-coverage failure, not absence**. Next iteration must hit CGSpace (open DSpace API), `data.worldagroforestry.org`, the ICRAF/CIFOR GitHub orgs, and named ICRAF method docs directly.\n- `gh search repos` multi-term queries are unreliable — single strong terms work better; a deeper GitHub pass (R `spatMCDA`-likes, GEE suitability scripts, FAO land-eval implementations) is worth a second iteration.\n- Capture model = catalogue rows; where a tool's docs/code state a reusable threshold/default, extract to EV (`locator_type=file_line` + `commit_sha`) and link via `evidence_ids` — none done yet.\n- `joshbrew_inat_af` and species-occurrence tools produce species envelopes — keep distinct from practice-level suitability (claim_scope discipline).",
+        "ICRAF / CIFOR / Alliance deeper pass (2026-06-21, after gap flagged)": "The first pass missed almost all ICRAF/CIFOR methods — a search-coverage failure. Targeted pass surfaced:\n- **Registered now:** `d4r_diversity_restoration` (Diversity for Restoration — our-org DSS: habitat suitability + trait optimisation + seed zones; species-level) + `d4ag_diversity_agroforestry` (sister tool, explicit cacao/coffee AF). D4R is named in the project TORs.\n- **Queued candidates (next iteration):**\n  - **Global Tree Knowledge Platform (GTKP)** — `cifor-icraf.org/gtkp/` — interlinked DBs, maps, guidelines, **R packages**, DSS. Likely several registrable tools.\n  - **SPACIAL Lab** outputs — EO/geoinformatics AF targeting (the team behind `icraf_spacial`); chase their code/methods.\n  - **Agroforestry Species Switchboard** (v4, 170k spp) + **GlobalUsefulNativeTrees** (14k spp) — species DBs → repository/species-envelope (grey/repo, not practice tools).\n  - **CGSpace** (open DSpace API, ~3,025 hits for the query): method candidates — \"Remote Sensing & Climate Data for Targeting Landscape Restoration in Africa\", \"spatially-explicit threat assessment to target food-tree species (Burkina Faso)\", \"extrapolation suitability index (ESI) + impact-based spatial targeting index (IBSTI)\".\n- **Note:** several are species-level (Switchboard, GlobUNT, D4R) → species-envelope, keep distinct from practice-level suitability. ICRAF GitHub org name still unconfirmed (`gh search --owner` failed for guessed names) — find the real org before a code pass.",
+        "Deeper iteration results (2026-06-21)": "- **GitHub:** `CIFOR-ICRAF` and `icraf` orgs exist but have **0 public repos** — their code is not on a public GitHub org. So no codebase pass there; their assets are web platforms + CRAN R packages.\n- **Registered this iteration:** `biodiversityr` (R. Kindt's CRAN ensemble-SDM/suitability package — species-level, NbS-agnostic) · `esi_ibsti_targeting` (ESI + IBSTI practice/technology-level spatial-targeting method).\n- **KEY FINDING — ICRAF spatial tooling is mostly SPECIES-LEVEL** (Roeland Kindt's stack: BiodiversityR ensemble SDM + species DBs). That is **species-envelope, not practice-level NbS suitability** — useful but `claim_scope=species`, must not define practice rows. The genuine *practice/targeting* methods are fewer (ESI/IBSTI, ROAM, RS restoration targeting).\n- **Repositories / species DBs (NOT tools — grey/species sources):** TreeGOER (48,129 spp env ranges) · GlobalUsefulNativeTrees (14,014 spp) · EcoregionsTreeFinder · Agroforestry Species Switchboard (v4, 170k spp). Search these as species/grey sources, don't catalogue as tools.\n- **CGSpace method candidates (next, ~3,025 hits):** \"Remote Sensing & Climate Data for Targeting Landscape Restoration in Africa\" (2019) · \"A framework for targeting and scaling-out interventions in agricultural systems\" (2014) · \"Framework for rapid country-level analysis of AFOLU mitigation options\" (2020). Acquire + verify before registering.\n- **Still queued:** GTKP resource list (403 on probe — needs another route) · the real practice-suitability code (saraheb3 GEE variants) deep-read."
+      },
+      "raw_markdown": "# Agroforestry — tools / methods + codebase search (2026-06)\n\n**Channel:** tool (`SRC.source_category = tool`) → lands in the **TOOL_tool_registry** (not EV; a tool's signal is method/variables/weights, not a variable×threshold claim). **Run:** `tool_af_2026-06`.\n\nFirst pass of the dedicated tool/method + codebase discovery channel (issue #65). Scope: GitHub codebases + tool-platform docs + method frameworks.\n\n## Search\n- **GitHub** (`gh search repos`): `agroforestry suitability`, `land-suitability AHP`, `MCDA suitability mapping`, `silvopasture GIS`, `ecocrop suitability`, `fuzzy land evaluation`, `tree planting suitability`. Most multi-term queries returned nothing; `agroforestry suitability` surfaced the live codebases below.\n- **Web/platform** (carried from the grey websearch): WOCAT tools, CIFOR-ICRAF SPACIAL, WRI FLR Atlas, ROAM.\n- **In-repo:** the inherited `reference/R/spatMCDA.R` reference engine.\n\n## Registered (7, all `review_status=pending_review` except the canonical reference)\n| tool_id | type | method | note |\n|---|---|---|---|\n| `spatmcda_r` | r_package | AHP+CRITIC+entropy × 5 fuzzy membership | **canonical** inherited framework engine |\n| `saraheb3_af_midwest` | codebase (GEE) | social-ecological MCDA | accompanies IOP Midwest AF paper; CC0 |\n| `joshbrew_inat_af` | codebase (Python) | ML (XGBoost/ExtraTrees) + eta² weighting | iNaturalist/GBIF-driven → species-envelope flavour, not practice |\n| `icraf_spacial` | webgis | dashboards | CIFOR-ICRAF; nbs_ids blank (scope unverified) |\n| `wri_flr_atlas` | platform | FLR opportunity mapping | forest-restoration scope |\n| `iucn_wri_roam` | method_framework | phased MCDA + stakeholder rules | High tier (stocktake-23) |\n\n## Notes / next\n- **WOCAT is NOT a tool — it's a grey-lit repository.** Removed from this register; it belongs to the grey-lit channel (search the SLM-technologies DB → each tech = a grey SRC/EV source, like CGSpace). Its companion *Mapping Tool / Decision-Support Framework / Apps* could be separate TOOL entries if specifically catalogued, but the database itself is a source, not a tool. **Repository ≠ tool:** databases/portals (search → grey-lit) vs tools/methods/codebases (compute → TOOL register).\n- **GAP — ICRAF/CIFOR methodologies under-found (concern, 2026-06-21).** CIFOR-ICRAF demonstrably publish AF suitability / land-health / restoration-targeting methodologies; this first pass surfaced almost none → a **search-coverage failure, not absence**. Next iteration must hit CGSpace (open DSpace API), `data.worldagroforestry.org`, the ICRAF/CIFOR GitHub orgs, and named ICRAF method docs directly.\n- `gh search repos` multi-term queries are unreliable — single strong terms work better; a deeper GitHub pass (R `spatMCDA`-likes, GEE suitability scripts, FAO land-eval implementations) is worth a second iteration.\n- Capture model = catalogue rows; where a tool's docs/code state a reusable threshold/default, extract to EV (`locator_type=file_line` + `commit_sha`) and link via `evidence_ids` — none done yet.\n- `joshbrew_inat_af` and species-occurrence tools produce species envelopes — keep distinct from practice-level suitability (claim_scope discipline).\n\n## ICRAF / CIFOR / Alliance deeper pass (2026-06-21, after gap flagged)\nThe first pass missed almost all ICRAF/CIFOR methods — a search-coverage failure. Targeted pass surfaced:\n- **Registered now:** `d4r_diversity_restoration` (Diversity for Restoration — our-org DSS: habitat suitability + trait optimisation + seed zones; species-level) + `d4ag_diversity_agroforestry` (sister tool, explicit cacao/coffee AF). D4R is named in the project TORs.\n- **Queued candidates (next iteration):**\n  - **Global Tree Knowledge Platform (GTKP)** — `cifor-icraf.org/gtkp/` — interlinked DBs, maps, guidelines, **R packages**, DSS. Likely several registrable tools.\n  - **SPACIAL Lab** outputs — EO/geoinformatics AF targeting (the team behind `icraf_spacial`); chase their code/methods.\n  - **Agroforestry Species Switchboard** (v4, 170k spp) + **GlobalUsefulNativeTrees** (14k spp) — species DBs → repository/species-envelope (grey/repo, not practice tools).\n  - **CGSpace** (open DSpace API, ~3,025 hits for the query): method candidates — \"Remote Sensing & Climate Data for Targeting Landscape Restoration in Africa\", \"spatially-explicit threat assessment to target food-tree species (Burkina Faso)\", \"extrapolation suitability index (ESI) + impact-based spatial targeting index (IBSTI)\".\n- **Note:** several are species-level (Switchboard, GlobUNT, D4R) → species-envelope, keep distinct from practice-level suitability. ICRAF GitHub org name still unconfirmed (`gh search --owner` failed for guessed names) — find the real org before a code pass.\n\n## Deeper iteration results (2026-06-21)\n- **GitHub:** `CIFOR-ICRAF` and `icraf` orgs exist but have **0 public repos** — their code is not on a public GitHub org. So no codebase pass there; their assets are web platforms + CRAN R packages.\n- **Registered this iteration:** `biodiversityr` (R. Kindt's CRAN ensemble-SDM/suitability package — species-level, NbS-agnostic) · `esi_ibsti_targeting` (ESI + IBSTI practice/technology-level spatial-targeting method).\n- **KEY FINDING — ICRAF spatial tooling is mostly SPECIES-LEVEL** (Roeland Kindt's stack: BiodiversityR ensemble SDM + species DBs). That is **species-envelope, not practice-level NbS suitability** — useful but `claim_scope=species`, must not define practice rows. The genuine *practice/targeting* methods are fewer (ESI/IBSTI, ROAM, RS restoration targeting).\n- **Repositories / species DBs (NOT tools — grey/species sources):** TreeGOER (48,129 spp env ranges) · GlobalUsefulNativeTrees (14,014 spp) · EcoregionsTreeFinder · Agroforestry Species Switchboard (v4, 170k spp). Search these as species/grey sources, don't catalogue as tools.\n- **CGSpace method candidates (next, ~3,025 hits):** \"Remote Sensing & Climate Data for Targeting Landscape Restoration in Africa\" (2019) · \"A framework for targeting and scaling-out interventions in agricultural systems\" (2014) · \"Framework for rapid country-level analysis of AFOLU mitigation options\" (2020). Acquire + verify before registering.\n- **Still queued:** GTKP resource list (403 on probe — needs another route) · the real practice-suitability code (saraheb3 GEE variants) deep-read.\n"
     },
     "water_harvesting_conservation_T4": {
       "id": "water_harvesting_conservation_T4",
