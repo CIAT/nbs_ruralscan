@@ -2704,7 +2704,7 @@
   function _vfChanMeta(key){ return ({
       stock:{label:'Stocktake', color:'#a78bfa'},
       updated_lit:{label:'Peer-reviewed · OpenAlex', color:'#38bdf8'},
-      grey:{label:'Grey lit · CGSpace/WOCAT/report', color:'#fbbf24'},
+      grey:{label:'Grey lit · CGSpace / project report', color:'#fbbf24'},
       tool:{label:'Tool / methodology', color:'#34d399'},
       unknown:{label:'Unspecified source', color:'var(--text-muted)'}
     })[key]||{label:key, color:'var(--text-muted)'}; }
@@ -2791,9 +2791,10 @@
       var _famOpts=Array.from(new Set(evAll.filter(_inNbs).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
       var _tblPresent=new Set(evAll.filter(_inNbs).map(function(e){return _R2T[e.use_role];}).filter(Boolean));
       var _tblOpts=['T3','T4','T6'].filter(function(t){return _tblPresent.has(t);}); if(!_tblOpts.length)_tblOpts=['T3','T4','T6'];
-      var _srcOrder=['stock','updated_lit','grey','tool','unknown'];
+      // Always show the 4 canonical channels (Tool is its own chip, distinct from Grey)
+      // even when a channel has no evidence yet; append 'unknown' only if data has it.
       var _srcPresent=new Set(evAll.filter(_inNbs).map(_vfChanKey));
-      var _srcOpts=_srcOrder.filter(function(s){return _srcPresent.has(s);});
+      var _srcOpts=['stock','updated_lit','grey','tool'].concat(_srcPresent.has('unknown')?['unknown']:[]);
       var _mkPills=function(key,label,opts,fmt,cls){ var cur=window._vfScope[key]; var btns=['all'].concat(opts).map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
       scEl.innerHTML=_mkPills('nbs','Practice (NbS)',_nbsOpts,function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'sky')
         +_mkPills('table','Table / Step',_tblOpts,function(o){return o;},'purple')
@@ -2853,7 +2854,13 @@
     }
     if(window._vfTablesOnly){ visible=visible.filter(function(r){return _vfTabular(r.ev.quote);}); }
     if(!host)return; host.innerHTML='';
-    if(!visible.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(passed?'No AI-passed units to sample.':'No flags for this filter.')+'</div>'; return; }
+    if(!visible.length){
+      if((window._vfScope||{}).source==='tool'){
+        var _nTool=((dashboardData.registers||{}).TOOL_tool_registry||[]).length;
+        host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-emerald);">Tools / methodology are catalogued, not evidence-reviewed here.</b><br>A tool is not a variable×threshold claim, so tools carry no EV rows. <b>'+_nTool+'</b> tool(s) live in the <code>TOOL_tool_registry</code> (see the Tools tab). Where a tool\'s docs/code state a reusable threshold, that single claim is extracted to EV and would appear under its source\'s channel.</div>';
+        return;
+      }
+      host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(passed?'No AI-passed units to sample.':'No flags for this filter.')+'</div>'; return; }
     visible.forEach(function(o){ host.insertAdjacentHTML('beforeend', vfDetailHtml(o, passed)); });
   }
 
