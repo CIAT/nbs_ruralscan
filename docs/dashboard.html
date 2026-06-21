@@ -2697,7 +2697,19 @@
       +'<code style="font-size:9px; color:var(--text-muted);">'+vfEsc(ev.evidence_id||'')+'</code></div>';
   }
 
+  // --- Source channel (which discovery pipeline an EV row came from) ---
+  // Authoritative from SRC.source_category; friendly labels for the QA/QC view.
+  function _vfSrcCatMap(){ if(window.__vfSrcCat)return window.__vfSrcCat; var m={}; ((dashboardData.registers.SRC_source_register)||[]).forEach(function(s){ m[s.source_id]=(s.source_category||'').trim(); }); window.__vfSrcCat=m; return m; }
+  function _vfChanKey(ev){ var c=_vfSrcCatMap()[ev.source_id]||''; return c||'unknown'; }
+  function _vfChanMeta(key){ return ({
+      stock:{label:'Stocktake', color:'#a78bfa'},
+      updated_lit:{label:'Peer-reviewed · OpenAlex', color:'#38bdf8'},
+      grey:{label:'Grey lit · CGSpace/WOCAT/report', color:'#fbbf24'},
+      tool:{label:'Tool / methodology', color:'#34d399'},
+      unknown:{label:'Unspecified source', color:'var(--text-muted)'}
+    })[key]||{label:key, color:'var(--text-muted)'}; }
   function vfDetailHtml(o, passed){ var ev=o.ev, verdict=o.verdict, reason=o.reason; var srcAll=(dashboardData.registers.SRC_source_register)||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
+    var _chan=_vfChanMeta(_vfChanKey(ev)); var _chanBadge='<span title="source channel (SRC.source_category)" style="font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_chan.color+'; border:1px solid '+_chan.color+'; border-radius:3px; padding:1px 6px;">'+vfEsc(_chan.label)+'</span>';
     var dec=(window._vfDecisions||{})[ev.evidence_id]||'';
     var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'page n/a');
     var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';var relShown=rel?vfEsc(rel):'<span style="color:var(--text-muted);">(removed by the verify pass — disputed value is in the reason below)</span>';
@@ -2726,7 +2738,7 @@
       +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
       +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
-      +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
+      +'<span style="margin-left:auto; display:flex; align-items:center; gap:8px;">'+_chanBadge+'<span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></span></div>'
       +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> '+vfRelHtml(ev)+'</div>'
       +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
@@ -2770,18 +2782,23 @@
     var passedAll=evAll.filter(function(ev){ return !flaggedIds[ev.evidence_id] && (ev.use_role!=='dataset'); });
     // scope filter — pills derived from the data model; NbS controls table + family options
     var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
-    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'all',family:'all'};
+    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'all',family:'all',source:'all'};
+    if(window._vfScope.source===undefined)window._vfScope.source='all';
     var _R2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
-    function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; return true; }
+    function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; if(sc.source!=='all'&&_vfChanKey(ev)!==sc.source)return false; return true; }
     var scEl=document.getElementById('vf-scope');
     if(scEl){ var _inNbs=function(e){ return window._vfScope.nbs==='all'||e.nbs_id===window._vfScope.nbs; };
       var _famOpts=Array.from(new Set(evAll.filter(_inNbs).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
       var _tblPresent=new Set(evAll.filter(_inNbs).map(function(e){return _R2T[e.use_role];}).filter(Boolean));
       var _tblOpts=['T3','T4','T6'].filter(function(t){return _tblPresent.has(t);}); if(!_tblOpts.length)_tblOpts=['T3','T4','T6'];
+      var _srcOrder=['stock','updated_lit','grey','tool','unknown'];
+      var _srcPresent=new Set(evAll.filter(_inNbs).map(_vfChanKey));
+      var _srcOpts=_srcOrder.filter(function(s){return _srcPresent.has(s);});
       var _mkPills=function(key,label,opts,fmt,cls){ var cur=window._vfScope[key]; var btns=['all'].concat(opts).map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
       scEl.innerHTML=_mkPills('nbs','Practice (NbS)',_nbsOpts,function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'sky')
         +_mkPills('table','Table / Step',_tblOpts,function(o){return o;},'purple')
-        +_mkPills('family','Sub-practice',_famOpts,function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'emerald'); }
+        +_mkPills('family','Sub-practice',_famOpts,function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'emerald')
+        +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber'); }
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
     passedAll=passedAll.filter(_inScope);
     var rlAll=(dashboardData.review_log)||[];
