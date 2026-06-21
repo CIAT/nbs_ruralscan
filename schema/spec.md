@@ -741,6 +741,44 @@ governs `T4.context_overrides`.
 
 ---
 
+### TOOL — Tools / Methods registry
+
+*Added v0.3.2.* Catalogues the **tools, codebases, and method frameworks** that implement (or inform) spatial NbS
+prioritisation — the output of the dedicated tool/method + codebase discovery channel (`SRC.source_category = tool`).
+A tool's contribution is **not a `variable × threshold` claim** (so it does not belong in EV); it is *which variables,
+weighting scheme, membership functions, datasets, and workflow* a tool uses, plus its maturity, licence, and C/I/D
+benchmark. Where a tool's docs/code *do* state a reusable threshold or default, that single claim is extracted to EV
+(with `locator_type = file_line` + `commit_sha` for code provenance) and linked back here via `evidence_ids`.
+
+| Field | Type | Req | Description | Example |
+|---|---|---|---|---|
+| `tool_id` | string | Required | Unique id (snake_case). | `icraf_spacial_dashboards` |
+| `name` | string | Required | Display name. | `CIFOR-ICRAF SPACIAL Dashboards` |
+| `tool_type` | enum | Required | `codebase` \| `platform` \| `method_framework` \| `r_package` \| `gee_app` \| `webgis`. | `webgis` |
+| `url` | string | Required | Repo or platform URL. | `https://dashboards.icraf.org/` |
+| `organisation` | string | Optional | Authoring body. | `CIFOR-ICRAF` |
+| `repo_commit` | string | Optional | Commit SHA pin (code provenance, immutable). | `a1b2c3d` |
+| `license` | string | Optional | SPDX or stated licence. | `MIT` |
+| `language` | enum | Optional | `python` \| `r` \| `gee_js` \| `javascript` \| `other` \| `na`. | `python` |
+| `nbs_ids` | string | Optional | Pipe-delimited NbS targeted. | `agroforestry` |
+| `spatial_method` | enum | Optional | `mcda_ahp` \| `fuzzy` \| `rule_based` \| `ml` \| `optimization` \| `process_model` \| `other`. | `mcda_ahp` |
+| `membership_functions` | string | Optional | Which of the 5 fuzzy primitives it uses. | `sigmoid\|linear` |
+| `weighting_scheme` | string | Optional | `ahp` / `critic` / `entropy` / `equal` / `expert` …. | `ahp` |
+| `variables_used` | string | Optional | Pipe-delimited → VONT canonicals. | `slope\|annual_precipitation` |
+| `datasets_used` | string | Optional | Pipe-delimited → BIND/T1. | `srtm_dem_90m` |
+| `workflow_summary` | string | Optional | One-line method/workflow. | `AHP weights × fuzzy membership overlay` |
+| `validation` | enum | Optional | `validated` \| `partial` \| `unvalidated` (six-axis evidence strength). | `partial` |
+| `benchmark_tier` | enum | Optional | `High` \| `Medium` \| `Low` (C/I/D). | `Medium` |
+| `combined_score` | string | Optional | C/I/D combined score. | `2.5` |
+| `maturity` | enum | Optional | `active` \| `archived` \| `prototype`. | `active` |
+| `source_id` | string | Optional | FK → SRC (cached doc/snapshot backing it). | `icraf_spacial_2024` |
+| `evidence_ids` | string | Optional | Pipe-delimited EV rows extracted from it. | `ev_slope_x` |
+| `locator` | string | Optional | Where the key method lives (`file:line` / section / anchor). | `src/mcda.R:120` |
+| `review_status` | enum | Optional | `canonical` \| `pending_review` \| `rejected`. | `pending_review` |
+| `notes` | string | Optional | Free text. | — |
+
+---
+
 ## Implementation notes
 
 **File formats.** Each table is a CSV (the **human-editable source of truth**) plus a typed JSON
