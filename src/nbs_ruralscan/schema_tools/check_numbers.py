@@ -20,7 +20,8 @@ import json
 import re
 from pathlib import Path
 
-_NUM = re.compile(r"\d+(?:\.\d+)?")
+# capture leading-dot decimals too (".13" as written in papers, not just "0.13")
+_NUM = re.compile(r"\d*\.\d+|\d+")
 
 
 def _nums(text: str) -> set[str]:
@@ -30,6 +31,17 @@ def _nums(text: str) -> set[str]:
         out.add(m)
         if "." in m:
             out.add(m.rstrip("0").rstrip("."))  # 25.0 -> 25
+    return out
+
+
+def _floats(toks: set[str]) -> set[float]:
+    """Parseable numeric tokens as floats — so 250.0 ≡ 250.00 ≡ 250 and .13 ≡ 0.13."""
+    out: set[float] = set()
+    for t in toks:
+        try:
+            out.add(float(t))
+        except ValueError:
+            pass
     return out
 
 
@@ -66,7 +78,13 @@ def check(schema_root: str | Path) -> list[dict]:
             if not rel:
                 continue
             q = _nums(r.get("quote", ""))
-            missing = sorted(n for n in _rel_nums(rel) if n not in q)
+            qf = _floats(q)
+            # a relationship number is "missing" only if neither its string nor its float
+            # value appears in the quote — suppresses pure decimal-formatting false positives
+            # (250.0 vs 250.00, .13 vs 0.13) while still flagging real conversions/expansions.
+            missing = sorted(
+                n for n in _rel_nums(rel) if n not in q and not (_floats({n}) & qf)
+            )
             if missing:
                 flagged.append(
                     {
