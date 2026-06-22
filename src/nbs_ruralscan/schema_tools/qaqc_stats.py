@@ -39,6 +39,11 @@ def compute(log_path: str | Path | None = None) -> dict:
     if path.exists():
         with path.open(newline="", encoding="utf-8") as f:
             rows = list(csv.DictReader(f))
+    # De-dup: the log appends on every apply run, so raw rows over-count a re-applied
+    # decision (220 raw -> 68 distinct, 2026-06-22). Count distinct reviews.
+    from nbs_ruralscan.schema_tools.review import latest_review_rows
+
+    rows = latest_review_rows(rows)
 
     by_reviewer: Counter = Counter()
     by_decision: Counter = Counter()
@@ -46,6 +51,7 @@ def compute(log_path: str | Path | None = None) -> dict:
     by_verdict: Counter = Counter()
     tp = fp = tn = fn = 0
     tp_removed = tp_corrected = 0
+    queried = 0  # 'query' = tentatively kept + open question — a 3rd outcome, not good/bad
 
     for r in rows:
         verdict = (r.get("verdict") or "").strip().lower()
@@ -55,6 +61,10 @@ def compute(log_path: str | Path | None = None) -> dict:
         by_decision[dec or "blank"] += 1
         by_reason[reason or "unspecified"] += 1
         by_verdict[verdict or "pass"] += 1
+        if dec in ("flag", "query"):
+            # tentatively kept, unresolved — exclude from the good/bad confusion matrix
+            queried += 1
+            continue
         flagged = verdict in _FLAGGED
         if flagged:
             if dec == "drop":
@@ -74,6 +84,7 @@ def compute(log_path: str | Path | None = None) -> dict:
 
     return {
         "total_reviews": len(rows),
+        "queried": queried,
         "n_reviewers": len(by_reviewer),
         "by_reviewer": dict(by_reviewer.most_common()),
         "by_decision": dict(by_decision),
