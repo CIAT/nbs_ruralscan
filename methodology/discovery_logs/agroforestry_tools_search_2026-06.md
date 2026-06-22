@@ -58,6 +58,18 @@ The first pass missed almost all ICRAF/CIFOR methods — a search-coverage failu
   - `source_category=tool`, `claim_basis=expert_assertion` (tool design choice, not a measured finding — weighted down in synthesis), `locator_type=section` + `commit_sha` pin. Verified verbatim against the cached snapshot (512/512). Linked from the TOOL row via `source_id`+`evidence_ids`.
 - **Confirms the corrected model:** a tool is a SOURCE → SRC(tool)+TOOL(metadata)+EV(its claims), QA-reviewed under the tool channel. Capability (non-page/section/file_line locator) works end-to-end. Ledger `agroforestry·T4·tool` stamped.
 
+## saraheb3 code-level extraction (2026-06-22) — file_line tool evidence
+Interrogated the actual GEE scripts (not just the README — per the tool-interrogation default). `gee_script/Agroforestry-Suitability-Map` hardcodes **per-practice default environmental-priority sub-criterion weights** → 12 EV + 1 CDL crop-eligibility, source `saraheb3_af_map`, `locator_type=file_line` + `commit_sha` (the code-provenance path, proven end-to-end; 525/525 verbatim).
+
+| practice → family | water-erosion (soil_erosion_risk) | wind (soil_erosion_wind) | SOC (carbon_seq) | line |
+|---|---|---|---|---|
+| Alley Cropping → planted_silvoarable | 5 | 5 | 5 | L497-499 |
+| Riparian buffers → linear_boundary | 3 | 2 | 4 | L506-508 |
+| Silvopasture → silvopastoral | 4 | 3 | 3 | L515-517 |
+| Windbreaks → linear_boundary | 1 | 5 | 5 | L524-526 |
+
+`claim_basis=expert_assertion` (tool design defaults, user-adjustable). Tree-growth per-species scripts **ignored** (species envelopes).
+
 ## saraheb3 buffer scripts + app (2026-06-22) — geometry + weight scales (documented, not forced into EV)
 Interrogated the two buffer scripts + the GEE app. They yield **practice geometry + weight-scale metadata**, NOT variable×threshold claims — so they are documented here rather than force-fit into EV rows (PICOS / claim_scope discipline: don't invent a variable for a geometry/UI parameter).
 
