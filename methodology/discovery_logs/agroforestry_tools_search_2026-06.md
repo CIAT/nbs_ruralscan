@@ -57,3 +57,16 @@ The first pass missed almost all ICRAF/CIFOR methods — a search-coverage failu
   - `ev_soil_erosion_risk_saraheb3_tool` — environmental-priority criterion (erosion/water-quality/soil-carbon).
   - `source_category=tool`, `claim_basis=expert_assertion` (tool design choice, not a measured finding — weighted down in synthesis), `locator_type=section` + `commit_sha` pin. Verified verbatim against the cached snapshot (512/512). Linked from the TOOL row via `source_id`+`evidence_ids`.
 - **Confirms the corrected model:** a tool is a SOURCE → SRC(tool)+TOOL(metadata)+EV(its claims), QA-reviewed under the tool channel. Capability (non-page/section/file_line locator) works end-to-end. Ledger `agroforestry·T4·tool` stamped.
+
+## saraheb3 buffer scripts + app (2026-06-22) — geometry + weight scales (documented, not forced into EV)
+Interrogated the two buffer scripts + the GEE app. They yield **practice geometry + weight-scale metadata**, NOT variable×threshold claims — so they are documented here rather than force-fit into EV rows (PICOS / claim_scope discipline: don't invent a variable for a geometry/UI parameter).
+
+**Linear-practice geometry (candidate recipe `spatial_product_type=zonal_linear` params for `agroforestry__linear_boundary`):**
+- `Field-Buffer-Areas` (windbreaks): `feature.buffer({'distance':-10})` (L30) → a **10 m inward field-edge strip**; `ACRES≥10` (L27) min field size. CDL annual-cropland gate (L13).
+- `Riparian-Buffer-Areas`: `maxDistance:30 //meters` (L51) → **30 m riparian buffer** from streams/water. CDL gate (L13).
+
+**Weight scales (from the app sliders) — refine the map-script weight interpretation:**
+- 4 top-level criteria (Env-priority · Tree-suitability · Social-feasibility · Economic-viability): sliders **0–5, default 1** (L253-256).
+- Env-priority sub-criteria: wind-erosion (WEI) & water-erosion sliders **0–10**, SOC **0–10** (L268-285); surface/ground water-quality **0–5, step 0.5**. So the `saraheb3_af_map` per-practice weights (e.g. WaterErosion=5) sit on a **0–10** scale for erosion/SOC (mid), not 0–5. App also loads **region-specific (HUC) default weight sets** on top of the per-practice defaults.
+
+**Not registered as EV:** buffer widths (geometry) + slider ranges (UI scale) are not per-pixel suitability variables; the weight values themselves are already captured as `saraheb3_af_map` EV (#84). Scale digits can't live in EV `relationship` anyway (check_numbers requires every number to be in the quote, and the quote is a single weight line). Tree-growth per-species scripts remain ignored (species envelopes).
