@@ -40,10 +40,14 @@ FIELDS = [
 
 
 def _review_rows() -> list[dict]:
+    # De-dup to distinct reviews (latest per evidence_id × reviewer). The raw log APPENDS
+    # on every apply run, so raw counts over-state reviews ~3x (220 raw → 68 distinct, 2026-06-22).
+    from nbs_ruralscan.schema_tools.review import latest_review_rows
+
     if not REVIEW_LOG.exists():
         return []
     with REVIEW_LOG.open(encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+        return latest_review_rows(list(csv.DictReader(f)))
 
 
 def _learnings_rows() -> list[dict]:
@@ -59,13 +63,18 @@ def status() -> dict:
     reviewed_through = max((int(r.get("reviewed_through") or 0) for r in ll), default=0)
     reasons = Counter(r.get("reason") or "unspecified" for r in rl)
     drops = sum(1 for r in rl if (r.get("decision") or "").lower() == "drop")
+    queried = sum(
+        1 for r in rl if (r.get("decision") or "").lower() in ("flag", "query")
+    )
+    oks = sum(1 for r in rl if (r.get("decision") or "").lower() == "ok")
     off = reasons.get("off_scope", 0)
     return {
-        "review_log_rows": len(rl),
+        "distinct_reviews": len(rl),  # distinct (evidence × reviewer), de-duped
+        "decisions": {"ok": oks, "drop": drops, "query": queried},
         "reviewed_through": reviewed_through,
         "unprocessed": max(0, len(rl) - reviewed_through),
         "dominant_reason": (reasons.most_common(1)[0][0] if reasons else ""),
-        "off_scope_rate_pct": (round(100 * off / drops, 1) if drops else None),
+        "off_scope_rate_pct_of_drops": (round(100 * off / drops, 1) if drops else None),
     }
 
 
@@ -86,9 +95,9 @@ def record(adjustment: str, commit: str = "", note: str = "") -> dict:
     new = not LEARNINGS_LOG.exists()
     row = {
         "date": datetime.now(timezone.utc).date().isoformat(),
-        "reviewed_through": s["review_log_rows"],
+        "reviewed_through": s["distinct_reviews"],
         "dominant_reason": s["dominant_reason"],
-        "off_scope_rate_pct": s["off_scope_rate_pct"],
+        "off_scope_rate_pct": s["off_scope_rate_pct_of_drops"],
         "adjustment": adjustment,
         "commit": commit,
         "note": note,

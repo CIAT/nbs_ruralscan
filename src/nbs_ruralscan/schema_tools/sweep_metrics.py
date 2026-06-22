@@ -40,12 +40,16 @@ def reason_tally() -> dict:
     """Count review decisions by reason code from the review log (for the retrospective)."""
     from collections import Counter
 
+    from nbs_ruralscan.schema_tools.review import latest_review_rows
+
     if not REVIEW_LOG.exists():
         return {}
     c = Counter()
     with REVIEW_LOG.open(encoding="utf-8") as f:
-        for r in csv.DictReader(f):
-            c[(r.get("reason") or "unspecified")] += 1
+        rows = list(csv.DictReader(f))
+    # de-dup: the log appends on every apply run; count distinct reviews, not raw rows.
+    for r in latest_review_rows(rows):
+        c[(r.get("reason") or "unspecified")] += 1
     return dict(c.most_common())
 
 

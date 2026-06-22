@@ -108,6 +108,25 @@ def _verdict_of(attr: str) -> str:
     return m.group(1) if m else ""
 
 
+def latest_review_rows(rows: list[dict] | None = None) -> list[dict]:
+    """De-dup the review log to one row per (evidence_id, reviewer) — the LATEST.
+
+    ``apply_decisions`` APPENDS a row on every run, so the raw log over-counts a
+    re-applied decision many times (220 raw rows vs 68 distinct reviews, 2026-06-22).
+    Metrics (learnings, qaqc_stats, sweep_metrics) must count distinct reviews, not
+    appended rows. File order is chronological, so the last write wins.
+    """
+    if rows is None:
+        rows = []
+        if LOG.exists():
+            with LOG.open(newline="", encoding="utf-8") as f:
+                rows = list(csv.DictReader(f))
+    latest: dict[tuple[str, str], dict] = {}
+    for r in rows:
+        latest[(r.get("evidence_id", ""), (r.get("reviewer") or "").strip())] = r
+    return list(latest.values())
+
+
 def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
     """Apply decisions to EV. Each value is 'ok'|'drop' OR {'decision','reason'}.
 
