@@ -2561,8 +2561,8 @@
       +'<table style="border-collapse:collapse;"><tr>'+cell((fe.tp_removed||0),'caught → removed','var(--accent-emerald)')+cell((fe.tp_corrected||0),'caught → corrected (kept)','var(--accent-emerald)')+cell(fe.fp||0,'false alarm (kept)','var(--accent-rose)')+'</tr></table>'
       +'<div style="font-size:10px; color:var(--text-muted); margin:2px 0 10px;">first two = real catches (TP) · false alarm = AI was wrong (FP)</div>'
       +'<div style="font-size:10.5px; color:var(--accent-sky); font-weight:700; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">When the AI passed &amp; a human spot-checked ('+(pe.checked||0)+')</div>'
-      +'<table style="border-collapse:collapse;"><tr>'+cell(pe.tn||0,'confirmed good','var(--accent-emerald)')+cell(pe.fn||0,'missed error (FN)','var(--accent-rose)')+'</tr></table>'
-      +'<div style="font-size:10px; color:var(--text-muted); margin-top:2px;">'+((pe.checked||0)===0?'no passes spot-checked yet → miss rate unknown':'missed = AI let a bad value through')+'</div>'
+      +'<table style="border-collapse:collapse;"><tr>'+cell(pe.tn||0,'confirmed good (TN)','var(--accent-emerald)')+cell(pe.fn||0,'missed number/rel. error (FN)','var(--accent-rose)')+cell(pe.out_of_remit||0,'scope/quality drop (outside verify remit)','var(--accent-amber)')+'</tr></table>'
+      +'<div style="font-size:10px; color:var(--text-muted); margin-top:2px;">'+((pe.checked||0)===0?'no passes spot-checked yet → miss rate unknown':'FN = verify pass let a <b>number/relationship</b> error through (its job) · the amber column is <b>scope/quality</b> (off-scope, wrong-practice, …) — a different failure caught by check_scope/check_quote, NOT the verify pass')+'</div>'
       +'</div>';
     function kv(k,v){ return '<div style="display:flex; justify-content:space-between; gap:18px; padding:3px 0; border-bottom:1px solid rgba(255,255,255,0.04);"><span style="color:var(--text-secondary);">'+k+'</span><span style="color:var(--text-primary); font-weight:600;">'+v+'</span></div>'; }
     function tally(obj){ obj=obj||{}; var ks=Object.keys(obj); if(!ks.length)return '<span style="color:var(--text-muted);">none yet</span>'; return ks.map(function(k){return '<div style="display:flex; justify-content:space-between; gap:14px; padding:2px 0;"><span style="color:var(--text-secondary);">'+k.replace(/_/g,' ')+'</span><span style="font-weight:600;">'+obj[k]+'</span></div>';}).join(''); }
@@ -2571,9 +2571,11 @@
       +'<div style="flex:1; min-width:340px;"><h3 style="font-size:12px; color:var(--text-secondary); margin:0 0 6px;">AI verify-flag confusion matrix</h3>'+matrix
       +'<div style="margin-top:10px;">'+kv('Flag precision (of flags, % real)',pct(fe.precision_pct)+' <span style="color:var(--text-muted); font-size:10px;">('+(fe.tp||0)+'/'+(fe.n||0)+')</span>')
       +kv('Recall — estimate only',pct(s.recall_est_pct)+' <span style="color:var(--text-muted); font-size:10px;">(FN from sampled passes)</span>')
-      +kv('Pass FN-rate (of checked passes)',pct(pe.fn_rate_pct)+' <span style="color:var(--text-muted); font-size:10px;">('+(pe.fn||0)+'/'+(pe.checked||0)+')</span>')
+      +kv('Pass FN-rate (number/rel. only)',pct(pe.fn_rate_pct)+' <span style="color:var(--text-muted); font-size:10px;">('+(pe.fn||0)+'/'+((pe.tn||0)+(pe.fn||0))+')</span>')
       +kv('Errors caught by AI',(s.errors_caught||0))
-      +kv('Errors AI missed (in sample)',(s.errors_missed_in_sample||0))+'</div>'
+      +kv('Verify-remit errors AI missed (sample)',(s.errors_missed_in_sample||0))
+      +kv('Scope/quality drops (outside verify remit)',(pe.out_of_remit||0))
+      +kv('⚑ Queried (tentative + open question)',(s.queried||0))+'</div>'
       +'<div style="font-size:10px; color:var(--text-muted); margin-top:8px; line-height:1.5;">Recall/FN are <b>estimates</b>: false negatives only surface where someone spot-checked an AI-passed unit. Sample more passes to tighten them.</div></div>'
       +'<div style="flex:1; min-width:260px;"><h3 style="font-size:12px; color:var(--text-secondary); margin:0 0 6px;">Review effort</h3>'
       +kv('Distinct reviews',(s.total_reviews||0))+kv('⚑ Queried (tentative + open question)',(s.queried||0))+kv('Reviewers',(s.n_reviewers||0))+kv('Decisions in browser (not yet applied)',live)
