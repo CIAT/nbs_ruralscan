@@ -2805,8 +2805,11 @@
       var _srcPresent=new Set(evAll.filter(_inNbs).map(_vfChanKey));
       var _srcOpts=['stock','updated_lit','grey','tool'].concat(_srcPresent.has('unknown')?['unknown']:[]);
       var _mkPills=function(key,label,opts,fmt,cls){ var cur=window._vfScope[key]; var btns=['all'].concat(opts).map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
+      var _tblName={T3:'T3 · Hazard response',T4:'T4 · Suitability',T6:'T6 · Outcomes & cost'};
+      var _tblLegend='<div style="font-size:9.5px; color:var(--text-muted); margin:1px 0 2px 90px; line-height:1.4;"><b>T4</b> Suitability = where the NbS can establish · <b>T3</b> Hazard response = which climate hazards it mitigates · <b>T6</b> Outcomes &amp; cost = effects, benefits, economics</div>';
       scEl.innerHTML=_mkPills('nbs','Practice (NbS)',_nbsOpts,function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'sky')
-        +_mkPills('table','Table / Step',_tblOpts,function(o){return o;},'purple')
+        +_mkPills('table','Step (table)',_tblOpts,function(o){return _tblName[o]||o;},'purple')
+        +_tblLegend
         +_mkPills('family','Sub-practice',_famOpts,function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'emerald')
         +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber'); }
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
