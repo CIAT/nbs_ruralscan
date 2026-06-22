@@ -2681,7 +2681,7 @@
       return '<div style="display:flex; flex-wrap:wrap; gap:3px 16px; margin-top:4px;">'+keys.map(function(k){ var v=o[k]; v=(v&&typeof v==='object')?JSON.stringify(v):String(v); return '<span style="font-size:11.5px;"><span style="color:var(--text-muted);">'+vfEsc(k.replace(/_/g,' '))+':</span> <b style="color:var(--text-primary);">'+vfEsc(v)+'</b></span>'; }).join('')+'</div>';
     }
     if(r) return '<code style="font-size:10.5px;">'+vfEsc(typeof r==='string'?r:JSON.stringify(r))+'</code>';
-    return '<span style="color:var(--text-muted);">(removed by the verify pass — the disputed value is in the reason below)</span>';
+    return '<span style="color:var(--text-muted);">(no encoded value — qualitative claim; judge the variable + quote)</span>';
   }
   function _vfTabular(q){ q=q||''; return /\d+\s*[–-]\s*\d+/.test(q)||((q).match(/\d+(\.\d+)?/g)||[]).length>=3||q.indexOf('\n')>=0; }
   function _vfVerdictColor(v){ return v==='unsupported'?'var(--accent-rose)':v==='mismatch'?'var(--accent-amber)':v==='pass'?'var(--accent-sky)':v==='scope'?'var(--accent-amber)':'var(--text-secondary)'; }
@@ -2714,6 +2714,12 @@
     var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'page n/a');
     var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';var relShown=rel?vfEsc(rel):'<span style="color:var(--text-muted);">(removed by the verify pass — disputed value is in the reason below)</span>';
     var vc=_vfVerdictColor(verdict);
+    // AI's call on this record: passed = AI INCLUDED it (green); flagged = AI marked it for removal (red).
+    var _aiInc=passed; var _aiCol=_aiInc?'var(--accent-emerald)':'var(--accent-rose)';
+    var _aiBadge='<span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#fff; background:'+_aiCol+'; border-radius:3px; padding:2px 8px;">'+(_aiInc?'✓ AI included':'⚑ AI flagged')+'</span>';
+    var _decLegend=_aiInc
+      ? 'AI <b style="color:var(--accent-emerald);">included</b> this extraction. &nbsp;<b style="color:var(--accent-emerald);">ok</b> = keep it · <b style="color:var(--accent-rose);">drop</b> = remove (you caught an error the AI missed).'
+      : 'AI <b style="color:var(--accent-rose);">flagged</b> this for removal. &nbsp;<b style="color:var(--accent-emerald);">ok</b> = keep it (the flag was wrong) · <b style="color:var(--accent-rose);">drop</b> = remove (confirm the flag).';
     var doi=(src.doi||'').trim();
     var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source ↗</a>'):'');
     var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
@@ -2733,10 +2739,11 @@
     var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
     var cropImg=(window._reviewApi && _vfTabular(ev.quote))?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show table region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
-    return '<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:3px solid '+vc+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
+    return '<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:4px solid '+_aiCol+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
       +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
+      +_aiBadge
       +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
-      +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;">'+vfEsc(verdict)+'</span>'
+      +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;" title="AI verify verdict">'+vfEsc(verdict)+'</span>'
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
       +'<span style="margin-left:auto; display:flex; align-items:center; gap:8px;">'+_chanBadge+'<span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></span></div>'
       +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> '+vfRelHtml(ev)+'</div>'
@@ -2745,10 +2752,11 @@
       +cropImg
       +reviewsLine
       +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px; font-size:10.5px; border-top:1px solid var(--border-color); padding-top:10px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp; ':'')+pdfLink+'</div>'
+      +'<div style="font-size:10.5px; color:var(--text-secondary); margin-top:10px; padding:7px 10px; background:rgba(255,255,255,0.02); border-radius:4px; border-left:2px solid '+_aiCol+';">'+_decLegend+'</div>'
       +'<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;">'
-      +'<a href="#" onclick="vfShowReasonHelp();return false;" title="reason-code definitions" style="font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+'<span style="font-size:11px; color:var(--text-muted); margin-left:auto;" title="ok = keep · drop = remove">Decision:</span>'
-      +'<button title="'+(passed?'confirm AI pass is correct':'evidence stands (keep)')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:12px; padding:5px 18px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">ok</button>'
-      +'<button title="'+(passed?'AI missed an error — drop':'remove from register')+'" onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:12px; padding:5px 18px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">drop</button></div>'
+      +'<a href="#" onclick="vfShowReasonHelp();return false;" title="reason-code definitions" style="font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+'<span style="font-size:11px; color:var(--text-muted); margin-left:auto; font-weight:700;">Your decision:</span>'
+      +'<button title="keep this record in the evidence register" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">✓ ok — keep</button>'
+      +'<button title="remove this record from the evidence register (soft-delete / quarantine)" onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">✕ drop — remove</button></div>'
       +'<div style="margin-top:8px;">'+noteInp+'</div></div>';
   }
 
