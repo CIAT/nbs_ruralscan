@@ -68,4 +68,17 @@ Interrogated the actual GEE scripts (not just the README — per the tool-interr
 | Silvopasture → silvopastoral | 4 | 3 | 3 | L515-517 |
 | Windbreaks → linear_boundary | 1 | 5 | 5 | L524-526 |
 
-`claim_basis=expert_assertion` (tool design defaults, user-adjustable). Tree-growth per-species scripts **ignored** (species envelopes). **Still queued:** Field-Buffer + Riparian-Buffer scripts (linear geometry) + the app (user-facing weight ranges).
+`claim_basis=expert_assertion` (tool design defaults, user-adjustable). Tree-growth per-species scripts **ignored** (species envelopes).
+
+## saraheb3 buffer scripts + app (2026-06-22) — geometry + weight scales (documented, not forced into EV)
+Interrogated the two buffer scripts + the GEE app. They yield **practice geometry + weight-scale metadata**, NOT variable×threshold claims — so they are documented here rather than force-fit into EV rows (PICOS / claim_scope discipline: don't invent a variable for a geometry/UI parameter).
+
+**Linear-practice geometry (candidate recipe `spatial_product_type=zonal_linear` params for `agroforestry__linear_boundary`):**
+- `Field-Buffer-Areas` (windbreaks): `feature.buffer({'distance':-10})` (L30) → a **10 m inward field-edge strip**; `ACRES≥10` (L27) min field size. CDL annual-cropland gate (L13).
+- `Riparian-Buffer-Areas`: `maxDistance:30 //meters` (L51) → **30 m riparian buffer** from streams/water. CDL gate (L13).
+
+**Weight scales (from the app sliders) — refine the map-script weight interpretation:**
+- 4 top-level criteria (Env-priority · Tree-suitability · Social-feasibility · Economic-viability): sliders **0–5, default 1** (L253-256).
+- Env-priority sub-criteria: wind-erosion (WEI) & water-erosion sliders **0–10**, SOC **0–10** (L268-285); surface/ground water-quality **0–5, step 0.5**. So the `saraheb3_af_map` per-practice weights (e.g. WaterErosion=5) sit on a **0–10** scale for erosion/SOC (mid), not 0–5. App also loads **region-specific (HUC) default weight sets** on top of the per-practice defaults.
+
+**Not registered as EV:** buffer widths (geometry) + slider ranges (UI scale) are not per-pixel suitability variables; the weight values themselves are already captured as `saraheb3_af_map` EV (#84). Scale digits can't live in EV `relationship` anyway (check_numbers requires every number to be in the quote, and the quote is a single weight line). Tree-growth per-species scripts remain ignored (species envelopes).
