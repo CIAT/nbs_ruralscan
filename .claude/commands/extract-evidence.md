@@ -32,4 +32,6 @@ evidence_type (only literature_relationship/expert carry shape params); claim_ba
 (species/crop claims need taxon and must NOT define a practice row). Set lineage_of when a value is
 cited from another source. Capture exclusion/failure thresholds too. No silent unit harmonisation.
 
+**Tool / codebase sources (default behaviour):** a tool is a source — interrogate its **actual code/scripts**, not just the README/landing/abstract. Cache the relevant source file(s); extract hardcoded thresholds / default weights / criteria / exclusion rules as EV with `locator_type=file_line` + `commit_sha` + `locator="path:Lstart-Lend"` (the dashboard deep-links to the lines). `claim_basis=expert_assertion` (tool design choice). Ignore species-specific / off-scope files (`claim_scope`). Skip data-driven engines that hardcode nothing.
+
 Reference: methodology/examples/t4_slice_agroforestry_F1_slope.md (the gold standard to reproduce).
