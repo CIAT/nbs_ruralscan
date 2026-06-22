@@ -109,9 +109,37 @@ class Handler(SimpleHTTPRequestHandler):
                 elif clip is None:
                     clip = page.rect  # whole page
                 clip = clip & page.rect  # keep within the page
-                # cap output height (~1800px) so the PNG stays viewable / not huge
-                scale = max(1.0, min(2.0, 1800.0 / max(1.0, clip.height)))
-                pix = page.get_pixmap(matrix=fitz.Matrix(scale, scale), clip=clip)
+                # Detect a rotated (sideways) table so we can render it upright. Wide
+                # landscape tables on a portrait page have vertical writing direction.
+                rot = 0
+                try:
+                    td = page.get_text("dict", clip=clip)
+                    vert = horiz = 0
+                    ysign = 0.0
+                    for b in td.get("blocks", []):
+                        for ln in b.get("lines", []):
+                            dx, dy = ln.get("dir", (1.0, 0.0))
+                            if abs(dy) > abs(dx):
+                                vert += 1
+                                ysign += dy
+                            else:
+                                horiz += 1
+                    if vert > horiz and vert > 0:
+                        # dir (0,-1) reads bottom→top → rotate 90; (0,1) → 270
+                        rot = 90 if ysign < 0 else 270
+                except Exception:  # noqa: BLE001
+                    rot = 0
+                # an explicit ?rot= override from the client wins (manual correction)
+                _rq = parse_qs(urlparse(self.path).query).get("rot", [""])[0]
+                if _rq in ("0", "90", "180", "270"):
+                    rot = int(_rq)
+                # render at higher resolution (~2600px on the long edge) for readability
+                long_edge = max(clip.width, clip.height, 1.0)
+                scale = max(1.5, min(4.0, 2600.0 / long_edge))
+                mat = fitz.Matrix(scale, scale)
+                if rot:
+                    mat = mat.prerotate(rot)
+                pix = page.get_pixmap(matrix=mat, clip=clip)
                 data = pix.tobytes("png")
                 doc.close()
             except Exception as e:  # noqa: BLE001
