@@ -174,6 +174,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             # flag (if any) is kept so the record stays in the queue for resolution; the
             # query + note (the question) are stamped + logged.
             r["review_state"] = ""
+            r["reviewer_ok"] = "false"  # unresolved (also un-resolves a prior ok if re-cast)
             tag = (
                 f"[query {today} by {who}"
                 + (f"; reason:{reason}" if reason else "")
