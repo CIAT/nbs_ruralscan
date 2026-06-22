@@ -743,12 +743,18 @@ governs `T4.context_overrides`.
 
 ### TOOL — Tools / Methods registry
 
-*Added v0.3.2.* Catalogues the **tools, codebases, and method frameworks** that implement (or inform) spatial NbS
-prioritisation — the output of the dedicated tool/method + codebase discovery channel (`SRC.source_category = tool`).
-A tool's contribution is **not a `variable × threshold` claim** (so it does not belong in EV); it is *which variables,
-weighting scheme, membership functions, datasets, and workflow* a tool uses, plus its maturity, licence, and C/I/D
-benchmark. Where a tool's docs/code *do* state a reusable threshold or default, that single claim is extracted to EV
-(with `locator_type = file_line` + `commit_sha` for code provenance) and linked back here via `evidence_ids`.
+*Added v0.3.2 (clarified v0.3.3).* Catalogues the **tools, codebases, and method frameworks** that implement (or
+inform) spatial NbS prioritisation — the output of the dedicated tool/method + codebase discovery channel
+(`SRC.source_category = tool`).
+
+**A tool is a source, evidence-reviewed like any other.** Its thresholds, weights, membership functions, and criteria
+*are* extractable claims → **EV rows** (provenance via `locator_type = file_line` + `commit_sha` for code, or
+`section`/anchor for a method doc), reviewed in QA/QC under the `tool` channel. So a tool also gets a **SRC** row
+(`source_category = tool`, `source_kind = website`/codebase). **TOOL is the metadata layer that *extends* SRC for
+tools** — *which* variables/weighting/membership/datasets/workflow it uses, plus maturity, licence, C/I/D — it does
+**not** replace evidence extraction. Link a tool's EV rows back via `evidence_ids`. A tool's hard-coded parameter is a
+design choice, not a literature finding, so its EV rows carry `claim_basis = tool_default` (or `expert_assertion`) —
+captured, then weighted accordingly in synthesis.
 
 | Field | Type | Req | Description | Example |
 |---|---|---|---|---|
