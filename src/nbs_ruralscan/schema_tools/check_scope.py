@@ -42,6 +42,37 @@ _SIGNALS: dict[str, re.Pattern] = {
         r"|threatens? (food|livelihood)",
         re.I,
     ),
+    # results/output description: describing a produced map/zones, not a suitability RULE
+    # ("mapped suitability for an area", "zones being described") — added 2026-06-22 from review.
+    "results_description": re.compile(
+        r"(map|maps|mapped|classified|delineated|categori[sz]ed) (the |as |into )?"
+        r"(suitab|priority|potential|zones?|areas?)"
+        r"|suitability map (shows|indicates|reveals|identif)"
+        r"|the (resulting )?map (shows|reveals|identif)"
+        r"|(zones?|areas?|regions?) (were|are|was|is) "
+        r"(classified|identified|delineated|mapped|categori[sz]ed)"
+        r"|potential (zones?|areas?) for (agroforestry|implementation)",
+        re.I,
+    ),
+    # trend/distribution description: a global/temporal trend, not a per-pixel suitability rule
+    # ("biomass distribution", "tree cover global trend") — added 2026-06-22 from review.
+    "trend_description": re.compile(
+        r"global trend|over the (past|last) (few )?(decades?|years?|century)"
+        r"|(tree cover|forest cover|biomass|vegetation) (has |have )?"
+        r"(increased|declined|decreased|changed|expanded)"
+        r"|distribution of (tree|forest|biomass|carbon)|(historical|temporal) (trend|change)",
+        re.I,
+    ),
+    # speculation/assumption, not measured/used evidence ("may still deter", "reflection and
+    # assumption", "hand-wavy assumed causation") — added 2026-06-22 from review.
+    "speculation": re.compile(
+        r"\bwe assume\b|\bassumption\b|\bassumed\b"
+        r"|may (still )?(deter|help|improve|reduce|increase|affect|enhance)"
+        r"|could (potentially|possibly|help|improve|enhance)"
+        r"|might (be|help|deter|affect|improve)|it is (likely|possible) that"
+        r"|we (believe|expect|hypothesi)|is (a )?reflection|hand-?wavy|speculat",
+        re.I,
+    ),
 }
 
 
