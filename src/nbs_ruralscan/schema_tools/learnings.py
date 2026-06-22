@@ -63,7 +63,9 @@ def status() -> dict:
     reviewed_through = max((int(r.get("reviewed_through") or 0) for r in ll), default=0)
     reasons = Counter(r.get("reason") or "unspecified" for r in rl)
     drops = sum(1 for r in rl if (r.get("decision") or "").lower() == "drop")
-    queried = sum(1 for r in rl if (r.get("decision") or "").lower() in ("flag", "query"))
+    queried = sum(
+        1 for r in rl if (r.get("decision") or "").lower() in ("flag", "query")
+    )
     oks = sum(1 for r in rl if (r.get("decision") or "").lower() == "ok")
     off = reasons.get("off_scope", 0)
     return {

@@ -51,7 +51,9 @@ def compute(log_path: str | Path | None = None) -> dict:
     by_verdict: Counter = Counter()
     tp = fp = tn = fn = 0
     tp_removed = tp_corrected = 0
-    queried = 0  # 'query' = tentatively kept + open question — a 3rd outcome, not good/bad
+    queried = (
+        0  # 'query' = tentatively kept + open question — a 3rd outcome, not good/bad
+    )
 
     for r in rows:
         verdict = (r.get("verdict") or "").strip().lower()
