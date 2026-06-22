@@ -2717,9 +2717,10 @@
     // AI's call on this record: passed = AI INCLUDED it (green); flagged = AI marked it for removal (red).
     var _aiInc=passed; var _aiCol=_aiInc?'var(--accent-emerald)':'var(--accent-rose)';
     var _aiBadge='<span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#fff; background:'+_aiCol+'; border-radius:3px; padding:2px 8px;">'+(_aiInc?'✓ AI included':'⚑ AI flagged')+'</span>';
-    var _decLegend=_aiInc
-      ? 'AI <b style="color:var(--accent-emerald);">included</b> this extraction. &nbsp;<b style="color:var(--accent-emerald);">ok</b> = keep it · <b style="color:var(--accent-rose);">drop</b> = remove (you caught an error the AI missed).'
-      : 'AI <b style="color:var(--accent-rose);">flagged</b> this for removal. &nbsp;<b style="color:var(--accent-emerald);">ok</b> = keep it (the flag was wrong) · <b style="color:var(--accent-rose);">drop</b> = remove (confirm the flag).';
+    var _qLeg=' · <b style="color:var(--accent-amber);">⚑ query</b> = keep tentatively but raise an open question (write it in the note).';
+    var _decLegend=(_aiInc
+      ? 'AI <b style="color:var(--accent-emerald);">included</b> this extraction. &nbsp;<b style="color:var(--accent-emerald);">ok</b> = keep it · <b style="color:var(--accent-rose);">drop</b> = remove (you caught an error the AI missed)'
+      : 'AI <b style="color:var(--accent-rose);">flagged</b> this for removal. &nbsp;<b style="color:var(--accent-emerald);">ok</b> = keep it (the flag was wrong) · <b style="color:var(--accent-rose);">drop</b> = remove (confirm the flag)')+_qLeg;
     var doi=(src.doi||'').trim();
     var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source ↗</a>'):'');
     var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
@@ -2727,7 +2728,7 @@
     var localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
     var libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
     var pdfLink=[spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
-    var okA=dec==='ok', dropA=dec==='drop';
+    var okA=dec==='ok', dropA=dec==='drop', queryA=(dec==='flag'||dec==='query');
     var _rc=passed?['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','other']:['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','quote_too_narrow','false_flag','accepted_correction','other'];
     var _rcDesc={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
     var _rsel=(window._vfReasons||{})[ev.evidence_id]||'';
@@ -2756,7 +2757,8 @@
       +'<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;">'
       +'<a href="#" onclick="vfShowReasonHelp();return false;" title="reason-code definitions" style="font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+'<span style="font-size:11px; color:var(--text-muted); margin-left:auto; font-weight:700;">Your decision:</span>'
       +'<button title="keep this record in the evidence register" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">✓ ok — keep</button>'
-      +'<button title="remove this record from the evidence register (soft-delete / quarantine)" onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">✕ drop — remove</button></div>'
+      +'<button title="remove this record from the evidence register (soft-delete / quarantine)" onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">✕ drop — remove</button>'
+      +'<button title="tentatively keep, but raise an open question for further review — write the question in the note below" onclick="if(!((window._vfNotes||{})[\''+ev.evidence_id+'\']||\'\').trim()){alert(\'Write your question in the note box first — a query needs a note.\');return;} setVfDecision(\''+ev.evidence_id+'\',\'flag\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-amber); background:'+(queryA?'var(--accent-amber)':'transparent')+'; color:'+(queryA?'#fff':'var(--accent-amber)')+';">⚑ query</button></div>'
       +'<div style="margin-top:8px;">'+noteInp+'</div></div>';
   }
 

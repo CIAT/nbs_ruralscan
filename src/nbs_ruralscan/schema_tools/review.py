@@ -130,7 +130,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
         rd = csv.DictReader(f)
         cols = list(rd.fieldnames or [])
         rows = list(rd)
-    kept, dropped, resolved = [], 0, 0
+    kept, dropped, resolved, queried = [], 0, 0, 0
     reasons: Counter = Counter()
     logrows = []
     for r in rows:
@@ -166,6 +166,22 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             )
             r["attribution"] = (tag + " " + (r["attribution"] or "")).strip()
             dropped += 1
+            kept.append(r)
+            continue
+        if dec in ("flag", "query"):
+            # tentatively accepted + open question for further review: stays ACTIVE
+            # (included, like ok) but reviewer_ok is NOT set — it's unresolved. The verify
+            # flag (if any) is kept so the record stays in the queue for resolution; the
+            # query + note (the question) are stamped + logged.
+            r["review_state"] = ""
+            tag = (
+                f"[query {today} by {who}"
+                + (f"; reason:{reason}" if reason else "")
+                + (f"; note:{note}" if note else "")
+                + "]"
+            )
+            r["attribution"] = (tag + " " + (r.get("attribution") or "")).strip()
+            queried += 1
             kept.append(r)
             continue
         if dec == "ok":
@@ -207,6 +223,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
     return {
         "ok": resolved,
         "dropped": dropped,
+        "queried": queried,
         "rows": len(kept),
         "reasons": dict(reasons),
     }
