@@ -26,6 +26,18 @@ ROOT = Path(__file__).resolve().parents[3]
 LOG = ROOT / "pipeline" / "metrics" / "review_log.csv"
 
 _FLAGGED = {"mismatch", "unsupported"}
+# The verify-flag pass only checks NUMBER/RELATIONSHIP provenance. A pass it "let through"
+# is only a false negative if the human dropped it for a reason WITHIN that remit. Drops for
+# SCOPE/quality reasons (off_scope, wrong_practice, …) are a different failure class the verify
+# pass never checks (that's check_scope/check_quote) — counting them as FN unfairly blames it.
+_VERIFY_REMIT = {
+    "smuggled_number",
+    "cross_row_stitch",
+    "wrong_variable",
+    "table_garble",
+    "missed_error",
+}
+_SCOPE_QUALITY = {"off_scope", "wrong_practice", "species_envelope", "quote_too_narrow"}
 
 
 def _pct(n: int, d: int) -> float | None:
@@ -51,6 +63,9 @@ def compute(log_path: str | Path | None = None) -> dict:
     by_verdict: Counter = Counter()
     tp = fp = tn = fn = 0
     tp_removed = tp_corrected = 0
+    out_of_remit = (
+        0  # AI passed; human dropped for SCOPE/quality (not the verify pass's job)
+    )
     queried = (
         0  # 'query' = tentatively kept + open question — a 3rd outcome, not good/bad
     )
@@ -79,10 +94,17 @@ def compute(log_path: str | Path | None = None) -> dict:
                 tp_corrected += 1  # caught a real problem -> auto-fix accepted, kept
             # blank decision: undecided, not counted
         else:  # AI passed; this row is a human spot-check of a pass
-            if dec == "drop" or reason == "missed_error":
-                fn += 1
-            elif dec == "ok":
+            if dec == "ok":
                 tn += 1
+            elif dec == "drop":
+                if reason in _SCOPE_QUALITY:
+                    # scope/quality issue — outside the verify pass's remit, NOT an FN
+                    out_of_remit += 1
+                elif reason in _VERIFY_REMIT:
+                    fn += 1  # verify pass genuinely let a number/relationship error through
+                else:
+                    # blank / 'other' / unspecified — ambiguous; don't blame the verify pass
+                    out_of_remit += 1
 
     return {
         "total_reviews": len(rows),
@@ -103,8 +125,9 @@ def compute(log_path: str | Path | None = None) -> dict:
         "pass_eval": {
             "tn": tn,
             "fn": fn,
-            "checked": tn + fn,
-            "fn_rate_pct": _pct(fn, tn + fn),
+            "out_of_remit": out_of_remit,  # scope/quality drops — not the verify pass's job
+            "checked": tn + fn + out_of_remit,
+            "fn_rate_pct": _pct(fn, tn + fn),  # FN only over verify-relevant passes
         },
         # recall is unknowable until passes are spot-checked (no FN evidence otherwise)
         "recall_est_pct": _pct(tp, tp + fn) if (tn + fn) > 0 else None,
