@@ -1144,7 +1144,7 @@
     </button>
     <button class="tab-btn" data-tab="tab-stocktake" id="btn-stocktake">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="10" width="3" height="7"></rect><rect x="12" y="6" width="3" height="11"></rect><rect x="17" y="13" width="3" height="4"></rect></svg>
-      Stocktake
+      Stocktake &amp; Tools
     </button>
   </nav>
 
@@ -1996,8 +1996,8 @@
     <div id="tab-stocktake" class="tab-content">
       <div class="card-container">
         <h2 class="card-title" style="display:flex; align-items:center; gap:10px;">
-          <span>&#128218; Stocktake — OpenAlex benchmark</span>
-          <span class="card-title-meta" style="flex:1;">220 peer-reviewed sources from the pre-repo OpenAlex search, scored on the C/I/D benchmark (Content · Impact · Data). This is the literature stocktake; the in-repo paper-first / WOCAT sweeps live under <b>Search &amp; Discovery Logs</b>.</span>
+          <span>&#128218; Stocktake &amp; Tools</span>
+          <span class="card-title-meta" style="flex:1;">Catalogues of what's out there: <b>Peer-reviewed</b> = 220 sources from the pre-repo OpenAlex search (C/I/D benchmark); <b>Tools / methods</b> = the in-repo <code>TOOL_tool_registry</code> (codebases · platforms · method frameworks). In-repo paper-first / grey sweeps live under <b>Search &amp; Discovery Logs</b>.</span>
         </h2>
         <div id="stk-filters" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:12px 0;"></div>
         <div id="stk-body"></div>
@@ -2857,7 +2857,7 @@
     if(!visible.length){
       if((window._vfScope||{}).source==='tool'){
         var _nTool=((dashboardData.registers||{}).TOOL_tool_registry||[]).length;
-        host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-amber);">No tool-derived evidence extracted yet.</b><br>Tools / methods / codebases <b>are evidence-reviewable like any source</b> — their thresholds, weights and criteria become EV rows (provenance via <code>locator=file_line</code>+<code>commit_sha</code> for code, or section/anchor for docs) and are reviewed here under this channel. This is empty only because no tool has been extracted yet. <b>'+_nTool+'</b> tool(s) are catalogued (metadata) in <code>TOOL_tool_registry</code>; extracting their claims will populate this channel.</div>';
+        host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-amber);">No tool-derived evidence extracted yet.</b><br>Tools / methods / codebases <b>are evidence-reviewable like any source</b> — their thresholds, weights and criteria become EV rows (provenance via <code>locator=file_line</code>+<code>commit_sha</code> for code, or section/anchor for docs) and are reviewed here under this channel. This is empty only because no tool has been extracted yet. <b>'+_nTool+'</b> tool(s) are catalogued in <code>TOOL_tool_registry</code> — browse them under <b>Stocktake &amp; Tools → Tools / methods</b>; extracting their criteria populates this channel.</div>';
         return;
       }
       host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(passed?'No AI-passed units to sample.':'No flags for this filter.')+'</div>'; return; }
@@ -3616,17 +3616,43 @@
   }
 
   function renderStocktake(){
-    if(!dashboardData||!dashboardData.stocktake)return;
-    var rows=(dashboardData.stocktake.peer_reviewed)||[];
+    if(!dashboardData)return;
+    if(window._stkClass===undefined)window._stkClass='peer';
     if(window._stkNbs===undefined)window._stkNbs='all';
     if(window._stkTier===undefined)window._stkTier='all';
-    var practices=Array.from(new Set(rows.map(function(r){return r.NbS_Practice;}).filter(Boolean))).sort();
-    function pill(key,val,lbl,cls){ var on=(window['_stk'+key]===val); return '<button class="pill-btn '+(on?('active '+cls):'')+'" onclick="window._stk'+key+'=\''+val.replace(/'/g,"")+'\'; renderStocktake();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+vfEsc(lbl)+'</button>'; }
-    var fz=document.getElementById('stk-filters');
-    if(fz){ fz.innerHTML='<span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Practice</span>'+pill('Nbs','all','All ('+rows.length+')','sky')+practices.map(function(p){return pill('Nbs',p,p+' ('+rows.filter(function(r){return r.NbS_Practice===p;}).length+')','sky');}).join('')+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 4px;"></span><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Benchmark</span>'+['all','High','Medium','Low'].map(function(t){return pill('Tier',t,t==='all'?'All':t,t==='High'?'emerald':t==='Low'?'rose':'amber');}).join(''); }
-    var vis=rows.filter(function(r){ if(window._stkNbs!=='all'&&r.NbS_Practice!==window._stkNbs)return false; if(window._stkTier!=='all'&&r.Final_Benchmark!==window._stkTier)return false; return true; });
     var tcol={High:'var(--accent-emerald)',Medium:'var(--accent-amber)',Low:'var(--accent-rose)'};
+    var peer=((dashboardData.stocktake||{}).peer_reviewed)||[];
+    var tools=((dashboardData.registers||{}).TOOL_tool_registry)||[];
+    function pill(key,val,lbl,cls){ var on=(window['_stk'+key]===val); return '<button class="pill-btn '+(on?('active '+cls):'')+'" onclick="window._stk'+key+'=\''+val.replace(/'/g,"")+'\'; renderStocktake();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+vfEsc(lbl)+'</button>'; }
+    function cpill(val,lbl){ var on=window._stkClass===val; return '<button class="pill-btn '+(on?'active purple':'')+'" onclick="window._stkClass=\''+val+'\'; window._stkNbs=\'all\'; window._stkTier=\'all\'; renderStocktake();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+vfEsc(lbl)+'</button>'; }
+    var SEP='<span style="width:1px; height:18px; background:var(--border-color); margin:0 4px;"></span>';
+    var LBL=function(t){return '<span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">'+t+'</span>';};
+    var clsBar='<div style="display:flex; gap:6px; align-items:center; width:100%; margin-bottom:6px;">'+LBL('Source class')+cpill('peer','Peer-reviewed ('+peer.length+')')+cpill('tools','Tools / methods ('+tools.length+')')+'</div>';
+    var fz=document.getElementById('stk-filters');
     var body=document.getElementById('stk-body'); if(!body)return;
+    // ---- Tools / methods class: render the TOOL registry ----
+    if(window._stkClass==='tools'){
+      var types=Array.from(new Set(tools.map(function(r){return r.tool_type;}).filter(Boolean))).sort();
+      if(fz){ fz.innerHTML=clsBar+LBL('Type')+pill('Nbs','all','All ('+tools.length+')','sky')+types.map(function(t){return pill('Nbs',t,t.replace(/_/g,' ')+' ('+tools.filter(function(r){return r.tool_type===t;}).length+')','sky');}).join('')+SEP+LBL('Benchmark')+['all','High','Medium','Low'].map(function(t){return pill('Tier',t,t==='all'?'All':t,t==='High'?'emerald':t==='Low'?'rose':'amber');}).join(''); }
+      var tv=tools.filter(function(r){ if(window._stkNbs!=='all'&&r.tool_type!==window._stkNbs)return false; if(window._stkTier!=='all'&&r.benchmark_tier!==window._stkTier)return false; return true; });
+      var trh=tv.map(function(r){ var url=(r.url||'').trim(); var link=url?(' <a href="'+vfEsc(url)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">↗</a>'):''; var ev=(r.evidence_ids||'').trim(); var nev=ev?ev.split('|').filter(Boolean).length:0;
+        var meth=[r.spatial_method,r.weighting_scheme].filter(Boolean).join(' · ').replace(/_/g,' ');
+        return '<tr style="border-bottom:1px solid var(--border-color);">'
+          +'<td style="padding:8px 10px; font-size:11.5px; color:var(--text-primary); max-width:320px;">'+vfEsc(r.name||r.tool_id||'')+link+'<div style="font-size:10px; color:var(--text-muted);">'+vfEsc(r.organisation||'')+'</div></td>'
+          +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary); white-space:nowrap;">'+vfEsc((r.tool_type||'').replace(/_/g,' '))+'</td>'
+          +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary);">'+vfEsc(r.nbs_ids||'—')+'</td>'
+          +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted); max-width:220px;">'+vfEsc(meth||'')+'</td>'
+          +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted); white-space:nowrap;">'+vfEsc(r.validation||'')+'</td>'
+          +'<td style="padding:8px 10px; white-space:nowrap;"><span style="font-size:10px; font-weight:700; color:'+(tcol[r.benchmark_tier]||'var(--text-muted)')+';">'+vfEsc(r.benchmark_tier||'—')+'</span></td>'
+          +'<td style="padding:8px 10px; font-size:10.5px; color:'+(nev?'var(--accent-emerald)':'var(--text-muted)')+'; text-align:right;">'+(nev?(nev+' EV'):'—')+'</td></tr>'; }).join('');
+      body.innerHTML='<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Showing <b>'+tv.length+'</b> of '+tools.length+' tools / methods catalogued in <code>TOOL_tool_registry</code>. A tool is a source: where it states a reusable criterion, that claim is extracted to EV (the <b>EV</b> column) and QA-reviewed under the <b>Tool</b> source channel.</div><div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid var(--border-color); text-align:left;">'+['Tool / organisation','Type','NbS','Method / weighting','Validation','Tier','Evidence'].map(function(h){return '<th style="padding:6px 10px; font-size:9.5px; color:var(--text-muted); text-transform:uppercase;">'+h+'</th>';}).join('')+'</tr></thead><tbody>'+trh+'</tbody></table></div>';
+      return;
+    }
+    // ---- Peer-reviewed class (default) ----
+    var rows=peer;
+    var practices=Array.from(new Set(rows.map(function(r){return r.NbS_Practice;}).filter(Boolean))).sort();
+    if(fz){ fz.innerHTML=clsBar+LBL('Practice')+pill('Nbs','all','All ('+rows.length+')','sky')+practices.map(function(p){return pill('Nbs',p,p+' ('+rows.filter(function(r){return r.NbS_Practice===p;}).length+')','sky');}).join('')+SEP+LBL('Benchmark')+['all','High','Medium','Low'].map(function(t){return pill('Tier',t,t==='all'?'All':t,t==='High'?'emerald':t==='Low'?'rose':'amber');}).join(''); }
+    var vis=rows.filter(function(r){ if(window._stkNbs!=='all'&&r.NbS_Practice!==window._stkNbs)return false; if(window._stkTier!=='all'&&r.Final_Benchmark!==window._stkTier)return false; return true; });
     var rowsHtml=vis.map(function(r){ var doi=(r.doi_extracted||'').trim(); var doiL=doi?(' <a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">↗</a>'):'';
       return '<tr style="border-bottom:1px solid var(--border-color);">'
         +'<td style="padding:8px 10px; font-size:11.5px; color:var(--text-primary); max-width:360px;">'+vfEsc(r.oa_title||'(untitled)')+doiL+'<div style="font-size:10px; color:var(--text-muted);">'+vfEsc(r.journal_name||'')+'</div></td>'
