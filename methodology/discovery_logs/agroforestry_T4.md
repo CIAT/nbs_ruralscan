@@ -186,3 +186,19 @@ When these land, this log gets a §"Phase 2 amendments" with the additional sour
 | Paper-first sweep (F1 v0.3.0) | Pete Steward (2026-06-06) — operator-level only; QA pass pending |
 | Phase 2 Ingestion (Issue #24) | Pete Steward (2026-06-09) — database-first sweep |
 | QA / dataset-fitness review | **Benson Kenduiywo (pending)** — flag this log when developmental dataset bindings land. |
+
+## Relationship re-extraction — singh_2026 (2026-06-23)
+
+QA (2026-06-23) flagged 7 `singh_2026` (Odisha AF suitability, Singh et al. 2026, Front. Remote Sens.) rows as `relationship_missed` — the variable was captured but the membership curve was not. Re-extracted **Table 1** ("Agroforestry classes/fuzzy scale for continuous data", p4) via the deterministic pipeline (`build_index` → page-stamped passage → emit → `validate_units` → verbatim guardrail):
+
+| variable | use_role | relationship (verbatim, Table 1) |
+|---|---|---|
+| slope | structural_suitability | sigmoidal decreasing (negative) |
+| mean_annual_temperature | structural_suitability | monotonically increasing linear (positive) |
+| annual_precipitation (rainfall) | structural_suitability | sigmoidal increasing (positive) |
+| soil_texture_hsg | structural_suitability | Fine (VH) / Fine-to-course (H) / Course (Mod) |
+| soil_drainage | structural_suitability | Very well (VH) / Well (H) / Mod well (Mod) |
+| distance_to_road | **operational_risk** | monotonically decreasing linear (negative) |
+| accessibility_travel_time (dist. from settlement) | **operational_risk** | monotonically decreasing linear (negative) |
+
+All 7 verified verbatim against p4; 0 number-provenance flags (shape/class membership, no smuggled numbers). Distance vars routed to `operational_risk` per the 2026-06-23 hard/soft split (M2b lever, off the T4 suitability surface).

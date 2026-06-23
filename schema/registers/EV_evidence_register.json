@@ -11115,6 +11115,15 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "soil_drainage",
+    "relationship": {
+      "classes": {
+        "very_high": "Very well",
+        "high": "Well",
+        "moderate": "Mod well"
+      },
+      "direction": "better_drained_more_suitable",
+      "note": "the study criteria table categorical membership"
+    },
     "context": {
       "study_country": "India",
       "study_region": "Odisha",
@@ -11126,14 +11135,14 @@
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "TABLE 1 List of variables used in the study for agroforestry suitability mapping.\nCriteria\nVariables\nUnit\nAgroforestry classes/fuzzy scale for continuous data\nData sources\nVery High\nHigh\nModerate\nLow\nSoil\nSoil type\nCode\nFine loamy, clayey\nFine mixed\nCourse loamy, sandy loam\nClay sandy, sandy\nNBSS & LUP\nDepth\nMod deep\nMod shallow\nShallow\n-\nTexture\nFine\nFine to course\nCourse\n-\nSoil drainage\nVery well\nWell\nMod well\n-\npH\n−log(H+)\n6.5–7.5\n5.5–6.5\n7.5–8.5\n-\nTopography\nSlope\nDegree\nSigmoidal decreasing\nALOS PALSAR\nClimate\nAnnual mean temperature\n°C\nMonotonically increasing linear\nWorldclim\nAnnual min. temperature\nAnnual max. temperature\nRainfall\nMm\nSigmoidal increasing\nCHIRPS\nSocioeconomic\nDistance from forest\nmeter\nMonotonically decreasing linear\nLULC\nDistance from settlement\nDistance from waterbody\nDistance from cropland\nDistance from road\nORSAC",
+    "quote": "Soil drainage\nVery well\nWell\nMod well",
     "page": 4,
     "reviewer_ok": false,
-    "raw_name": "Soil drainage",
+    "raw_name": "soil drainage class",
     "observed_dataset": "NBSS-LUP soil survey database",
-    "attribution": "[query 2026-06-23 by peetmate; reason:other; note:there is some information on drainage, but agree is it is too qualitative to use. But you missed the directionality of the relationship which is a BIG miss.\n\nAdd issue for this type of error - directionality/relationship missed.] Singh et al. 2022 (pre-trained model applied here to Odisha scale-up)",
+    "attribution": "Singh et al. 2026, Table 1",
     "locator_type": "page",
-    "ruleset_version": "2026-06-19.openalex-af"
+    "ruleset_version": "2026-06-23.relationship-reextract"
   },
   {
     "evidence_id": "ev_soil_texture_singh26",
@@ -11141,6 +11150,15 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "soil_texture_hsg",
+    "relationship": {
+      "classes": {
+        "very_high": "Fine",
+        "high": "Fine to course",
+        "moderate": "Course"
+      },
+      "direction": "finer_more_suitable",
+      "note": "the study criteria table categorical membership"
+    },
     "context": {
       "study_country": "India",
       "study_region": "Odisha",
@@ -11152,14 +11170,14 @@
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "TABLE 1 List of variables used in the study for agroforestry suitability mapping.\nCriteria\nVariables\nUnit\nAgroforestry classes/fuzzy scale for continuous data\nData sources\nVery High\nHigh\nModerate\nLow\nSoil\nSoil type\nCode\nFine loamy, clayey\nFine mixed\nCourse loamy, sandy loam\nClay sandy, sandy\nNBSS & LUP\nDepth\nMod deep\nMod shallow\nShallow\n-\nTexture\nFine\nFine to course\nCourse\n-\nSoil drainage\nVery well\nWell\nMod well\n-\npH\n−log(H+)\n6.5–7.5\n5.5–6.5\n7.5–8.5\n-\nTopography\nSlope\nDegree\nSigmoidal decreasing\nALOS PALSAR\nClimate\nAnnual mean temperature\n°C\nMonotonically increasing linear\nWorldclim\nAnnual min. temperature\nAnnual max. temperature\nRainfall\nMm\nSigmoidal increasing\nCHIRPS\nSocioeconomic\nDistance from forest\nmeter\nMonotonically decreasing linear\nLULC\nDistance from settlement\nDistance from waterbody\nDistance from cropland\nDistance from road\nORSAC",
+    "quote": "Texture\nFine\nFine to course\nCourse",
     "page": 4,
     "reviewer_ok": false,
-    "raw_name": "Texture",
+    "raw_name": "soil texture class",
     "observed_dataset": "NBSS-LUP soil survey database",
-    "attribution": "[query 2026-06-23 by peetmate; reason:other; note:very high = fine texture, high = fine to couse, moderate - source -> missed] Singh et al. 2022 (pre-trained model applied here to Odisha scale-up)",
+    "attribution": "Singh et al. 2026, Table 1",
     "locator_type": "page",
-    "ruleset_version": "2026-06-19.openalex-af"
+    "ruleset_version": "2026-06-23.relationship-reextract"
   },
   {
     "evidence_id": "ev_slope_singh26",
@@ -11167,6 +11185,11 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "slope",
+    "relationship": {
+      "shape": "sigmoidal_decreasing",
+      "direction": "negative",
+      "note": "the study criteria table fuzzy membership — suitability decreases with slope"
+    },
     "context": {
       "study_country": "India",
       "study_region": "Odisha",
@@ -11179,14 +11202,14 @@
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
-    "quote": "TABLE 1 List of variables used in the study for agroforestry suitability mapping.\nCriteria\nVariables\nUnit\nAgroforestry classes/fuzzy scale for continuous data\nData sources\nVery High\nHigh\nModerate\nLow\nSoil\nSoil type\nCode\nFine loamy, clayey\nFine mixed\nCourse loamy, sandy loam\nClay sandy, sandy\nNBSS & LUP\nDepth\nMod deep\nMod shallow\nShallow\n-\nTexture\nFine\nFine to course\nCourse\n-\nSoil drainage\nVery well\nWell\nMod well\n-\npH\n−log(H+)\n6.5–7.5\n5.5–6.5\n7.5–8.5\n-\nTopography\nSlope\nDegree\nSigmoidal decreasing\nALOS PALSAR\nClimate\nAnnual mean temperature\n°C\nMonotonically increasing linear\nWorldclim\nAnnual min. temperature\nAnnual max. temperature\nRainfall\nMm\nSigmoidal increasing\nCHIRPS\nSocioeconomic\nDistance from forest\nmeter\nMonotonically decreasing linear\nLULC\nDistance from settlement\nDistance from waterbody\nDistance from cropland\nDistance from road\nORSAC",
+    "quote": "Slope\nDegree\nSigmoidal decreasing\nALOS PALSAR",
     "page": 4,
     "reviewer_ok": false,
-    "raw_name": "Slope",
+    "raw_name": "slope (Degree), sigmoidal decreasing",
     "observed_dataset": "ALOS PALSAR DEM 12.5 m",
-    "attribution": "[query 2026-06-23 by peetmate; reason:other; note:mathematical relationship missed] Singh et al. 2022 (pre-trained model applied here to Odisha scale-up)",
+    "attribution": "Singh et al. 2026, Table 1",
     "locator_type": "page",
-    "ruleset_version": "2026-06-19.openalex-af"
+    "ruleset_version": "2026-06-23.relationship-reextract"
   },
   {
     "evidence_id": "ev_mat_singh26",
@@ -11194,6 +11217,11 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "mean_annual_temperature",
+    "relationship": {
+      "shape": "monotonic_increasing_linear",
+      "direction": "positive",
+      "note": "the study criteria table fuzzy membership"
+    },
     "context": {
       "study_country": "India",
       "study_region": "Odisha",
@@ -11206,14 +11234,14 @@
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
-    "quote": "TABLE 1 List of variables used in the study for agroforestry suitability mapping.\nCriteria\nVariables\nUnit\nAgroforestry classes/fuzzy scale for continuous data\nData sources\nVery High\nHigh\nModerate\nLow\nSoil\nSoil type\nCode\nFine loamy, clayey\nFine mixed\nCourse loamy, sandy loam\nClay sandy, sandy\nNBSS & LUP\nDepth\nMod deep\nMod shallow\nShallow\n-\nTexture\nFine\nFine to course\nCourse\n-\nSoil drainage\nVery well\nWell\nMod well\n-\npH\n−log(H+)\n6.5–7.5\n5.5–6.5\n7.5–8.5\n-\nTopography\nSlope\nDegree\nSigmoidal decreasing\nALOS PALSAR\nClimate\nAnnual mean temperature\n°C\nMonotonically increasing linear\nWorldclim\nAnnual min. temperature\nAnnual max. temperature\nRainfall\nMm\nSigmoidal increasing\nCHIRPS\nSocioeconomic\nDistance from forest\nmeter\nMonotonically decreasing linear\nLULC\nDistance from settlement\nDistance from waterbody\nDistance from cropland\nDistance from road\nORSAC",
+    "quote": "Annual mean temperature\n°C\nMonotonically increasing linear\nWorldclim",
     "page": 4,
     "reviewer_ok": false,
-    "raw_name": "Annual mean temperature",
+    "raw_name": "annual mean temperature (°C), monotonically increasing linear",
     "observed_dataset": "WorldClim v2 (~1 km)",
-    "attribution": "[query 2026-06-23 by peetmate; reason:other; note:Suitability mathematical relationship missed] Singh et al. 2022 (pre-trained model applied here to Odisha scale-up)",
+    "attribution": "Singh et al. 2026, Table 1",
     "locator_type": "page",
-    "ruleset_version": "2026-06-19.openalex-af"
+    "ruleset_version": "2026-06-23.relationship-reextract"
   },
   {
     "evidence_id": "ev_precip_singh26",
@@ -11221,6 +11249,11 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "annual_precipitation",
+    "relationship": {
+      "shape": "sigmoidal_increasing",
+      "direction": "positive",
+      "note": "the study criteria table fuzzy membership (rainfall)"
+    },
     "context": {
       "study_country": "India",
       "study_region": "Odisha",
@@ -11233,14 +11266,14 @@
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
-    "quote": "TABLE 1 List of variables used in the study for agroforestry suitability mapping.\nCriteria\nVariables\nUnit\nAgroforestry classes/fuzzy scale for continuous data\nData sources\nVery High\nHigh\nModerate\nLow\nSoil\nSoil type\nCode\nFine loamy, clayey\nFine mixed\nCourse loamy, sandy loam\nClay sandy, sandy\nNBSS & LUP\nDepth\nMod deep\nMod shallow\nShallow\n-\nTexture\nFine\nFine to course\nCourse\n-\nSoil drainage\nVery well\nWell\nMod well\n-\npH\n−log(H+)\n6.5–7.5\n5.5–6.5\n7.5–8.5\n-\nTopography\nSlope\nDegree\nSigmoidal decreasing\nALOS PALSAR\nClimate\nAnnual mean temperature\n°C\nMonotonically increasing linear\nWorldclim\nAnnual min. temperature\nAnnual max. temperature\nRainfall\nMm\nSigmoidal increasing\nCHIRPS\nSocioeconomic\nDistance from forest\nmeter\nMonotonically decreasing linear\nLULC\nDistance from settlement\nDistance from waterbody\nDistance from cropland\nDistance from road\nORSAC",
+    "quote": "Rainfall\nMm\nSigmoidal increasing\nCHIRPS",
     "page": 4,
     "reviewer_ok": false,
-    "raw_name": "Rainfall",
+    "raw_name": "rainfall (mm), sigmoidal increasing",
     "observed_dataset": "CHIRPS 0.05°",
-    "attribution": "[query 2026-06-23 by peetmate; reason:other; note:Again there is relationship presented for suitability and the variable, this is VERY IMPORTANT TO CAPTURE AND HAS BEEN MISSED!] Singh et al. 2022 (pre-trained model applied here to Odisha scale-up)",
+    "attribution": "Singh et al. 2026, Table 1",
     "locator_type": "page",
-    "ruleset_version": "2026-06-19.openalex-af"
+    "ruleset_version": "2026-06-23.relationship-reextract"
   },
   {
     "evidence_id": "ev_dist_road_qual_singh26",
@@ -11248,6 +11281,11 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "distance_to_road",
+    "relationship": {
+      "shape": "monotonic_decreasing_linear",
+      "direction": "negative",
+      "note": "the study criteria table — socioeconomic distance vars; suitability declines with distance from road"
+    },
     "context": {
       "study_country": "India",
       "study_region": "Odisha",
@@ -11260,14 +11298,14 @@
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
-    "quote": "TABLE 1 List of variables used in the study for agroforestry suitability mapping.\nCriteria\nVariables\nUnit\nAgroforestry classes/fuzzy scale for continuous data\nData sources\nVery High\nHigh\nModerate\nLow\nSoil\nSoil type\nCode\nFine loamy, clayey\nFine mixed\nCourse loamy, sandy loam\nClay sandy, sandy\nNBSS & LUP\nDepth\nMod deep\nMod shallow\nShallow\n-\nTexture\nFine\nFine to course\nCourse\n-\nSoil drainage\nVery well\nWell\nMod well\n-\npH\n−log(H+)\n6.5–7.5\n5.5–6.5\n7.5–8.5\n-\nTopography\nSlope\nDegree\nSigmoidal decreasing\nALOS PALSAR\nClimate\nAnnual mean temperature\n°C\nMonotonically increasing linear\nWorldclim\nAnnual min. temperature\nAnnual max. temperature\nRainfall\nMm\nSigmoidal increasing\nCHIRPS\nSocioeconomic\nDistance from forest\nmeter\nMonotonically decreasing linear\nLULC\nDistance from settlement\nDistance from waterbody\nDistance from cropland\nDistance from road\nORSAC",
+    "quote": "Distance from forest\nmeter\nMonotonically decreasing linear\nLULC\nDistance from settlement\nDistance from waterbody\nDistance from cropland\nDistance from road",
     "page": 4,
     "reviewer_ok": false,
-    "raw_name": "Distance from road",
+    "raw_name": "distance from road (m), monotonically decreasing linear",
     "observed_dataset": "ORSAC LULC-derived Euclidean distance",
-    "attribution": "[query 2026-06-23 by peetmate; note:THere are relationships for distance from forest, settlement, waterbody, cropland and road that is montotonically decreasing linear. This is an important relationship to capture and exactly th einformation we need for the suitability mapping.\n\nAlso note there is no reason that corresponds to this type of issues, please create one.] Singh et al. 2022 (pre-trained model applied here to Odisha scale-up)",
+    "attribution": "Singh et al. 2026, Table 1",
     "locator_type": "page",
-    "ruleset_version": "2026-06-19.openalex-af"
+    "ruleset_version": "2026-06-23.relationship-reextract"
   },
   {
     "evidence_id": "ev_dist_road_ml_singh26",
@@ -11308,6 +11346,11 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "accessibility_travel_time",
+    "relationship": {
+      "shape": "monotonic_decreasing_linear",
+      "direction": "negative",
+      "note": "the study criteria table — socioeconomic distance vars; suitability declines with distance from settlement"
+    },
     "context": {
       "study_country": "India",
       "study_region": "Odisha",
@@ -11320,14 +11363,14 @@
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "low",
-    "quote": "TABLE 1 List of variables used in the study for agroforestry suitability mapping.\nCriteria\nVariables\nUnit\nAgroforestry classes/fuzzy scale for continuous data\nData sources\nVery High\nHigh\nModerate\nLow\nSoil\nSoil type\nCode\nFine loamy, clayey\nFine mixed\nCourse loamy, sandy loam\nClay sandy, sandy\nNBSS & LUP\nDepth\nMod deep\nMod shallow\nShallow\n-\nTexture\nFine\nFine to course\nCourse\n-\nSoil drainage\nVery well\nWell\nMod well\n-\npH\n−log(H+)\n6.5–7.5\n5.5–6.5\n7.5–8.5\n-\nTopography\nSlope\nDegree\nSigmoidal decreasing\nALOS PALSAR\nClimate\nAnnual mean temperature\n°C\nMonotonically increasing linear\nWorldclim\nAnnual min. temperature\nAnnual max. temperature\nRainfall\nMm\nSigmoidal increasing\nCHIRPS\nSocioeconomic\nDistance from forest\nmeter\nMonotonically decreasing linear\nLULC\nDistance from settlement\nDistance from waterbody\nDistance from cropland\nDistance from road\nORSAC",
+    "quote": "Distance from forest\nmeter\nMonotonically decreasing linear\nLULC\nDistance from settlement",
     "page": 4,
     "reviewer_ok": false,
-    "raw_name": "Distance from settlement",
+    "raw_name": "distance from settlement (m), monotonically decreasing linear",
     "observed_dataset": "ORSAC LULC-derived Euclidean distance to built-up areas",
-    "attribution": "[query 2026-06-23 by peetmate; reason:other; note:mathematical relationship missing] Singh et al. 2022 (pre-trained model applied here to Odisha scale-up)",
+    "attribution": "Singh et al. 2026, Table 1",
     "locator_type": "page",
-    "ruleset_version": "2026-06-19.openalex-af"
+    "ruleset_version": "2026-06-23.relationship-reextract"
   },
   {
     "evidence_id": "ev_dist_settlement_ml_singh26",
