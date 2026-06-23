@@ -71,7 +71,7 @@ class Resolution:
 def load_bindings(schema_root: str | Path) -> list[Binding]:
     """Load the BIND registry (JSON) into `Binding` objects."""
     path = Path(schema_root) / "registers" / "BIND_dataset_binding.json"
-    rows = json.loads(path.read_text())
+    rows = json.loads(path.read_text(encoding="utf-8"))
     return [
         Binding(
             binding_id=r["binding_id"],

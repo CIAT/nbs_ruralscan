@@ -110,5 +110,7 @@ def save_family(result: FamilyResult, path: str | Path) -> Path:
     """Write the enriched T4 rows for a family to JSON (the recipe's T4 slice)."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(result.rows, ensure_ascii=False, indent=2))
+    path.write_text(
+        json.dumps(result.rows, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     return path

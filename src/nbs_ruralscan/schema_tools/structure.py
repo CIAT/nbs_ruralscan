@@ -55,7 +55,7 @@ class Report:
 
 def _load_manifest(schema_root: Path) -> dict:
     mpath = schema_root / "structure" / "columns.json"
-    return json.loads(mpath.read_text())
+    return json.loads(mpath.read_text(encoding="utf-8"))
 
 
 def _find_files(schema_root: Path, location: str) -> list[Path]:
@@ -74,7 +74,7 @@ def _find_files(schema_root: Path, location: str) -> list[Path]:
 def _read_rows(path: Path) -> tuple[list[str], list[dict]]:
     """Return (columns, rows) from a JSON array-of-objects or a CSV."""
     if path.suffix == ".json":
-        data = json.loads(path.read_text())
+        data = json.loads(path.read_text(encoding="utf-8"))
         if isinstance(data, dict):  # tolerate {"rows": [...]} or {table: [...]}
             data = next((v for v in data.values() if isinstance(v, list)), [])
         cols: list[str] = []
@@ -83,7 +83,7 @@ def _read_rows(path: Path) -> tuple[list[str], list[dict]]:
                 if k not in cols:
                     cols.append(k)
         return cols, list(data)
-    with path.open(newline="") as fh:
+    with path.open(newline="", encoding="utf-8") as fh:
         reader = csv.DictReader(fh)
         cols = list(reader.fieldnames or [])
         return cols, [dict(r) for r in reader]

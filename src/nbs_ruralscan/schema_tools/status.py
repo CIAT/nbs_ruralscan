@@ -55,7 +55,7 @@ def main() -> int:
     if staging.exists():
         for f in staging.glob("*.json"):
             try:
-                rows = json.loads(f.read_text())
+                rows = json.loads(f.read_text(encoding="utf-8"))
             except Exception:
                 continue
             staged_units += len(rows)

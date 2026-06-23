@@ -142,7 +142,11 @@ def acquire(
 
     if artifact_path.exists() and not overwrite:
         # Already cached — load existing meta
-        meta = json.loads(meta_path.read_text()) if meta_path.exists() else {}
+        meta = (
+            json.loads(meta_path.read_text(encoding="utf-8"))
+            if meta_path.exists()
+            else {}
+        )
         return AcquireResult(
             ok=True,
             source_id=source_id,
@@ -194,7 +198,9 @@ def acquire(
         "bytes": len(body),
         "commit_sha": commit_sha,
     }
-    meta_path.write_text(json.dumps(meta, indent=2, ensure_ascii=False))
+    meta_path.write_text(
+        json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
 
     return AcquireResult(
         ok=True,
@@ -255,7 +261,7 @@ def main() -> None:
     if result.reason == "already_cached":
         print(f"cached  {result.source_id} → {result.artifact_path}")
     else:
-        meta = json.loads(result.meta_path.read_text())  # ty: ignore[unresolved-attribute]
+        meta = json.loads(result.meta_path.read_text(encoding="utf-8"))  # ty: ignore[unresolved-attribute]
         print(
             f"fetched {result.source_id} → {result.artifact_path} "
             f"({meta['bytes']} bytes, sha1={meta['sha1'][:12]})"
