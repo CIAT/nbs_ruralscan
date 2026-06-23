@@ -31,6 +31,7 @@ FIELDS = [
     "verify_mismatch",
     "verify_unsupported",
     "low_confidence",
+    "reviews_logged",
     "numberprov_rate_pct",
     "verify_rate_pct",
 ]
@@ -102,11 +103,17 @@ def main() -> int:
     prev = _last()
     row = compute(args.label)
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
-    new = not LEDGER.exists()
-    with LEDGER.open("a", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
-        if new:
-            w.writeheader()
+    # Read any existing rows, then rewrite the whole file with the current FIELDS header —
+    # self-heals a stale header (e.g. a column added later) instead of blind-appending a
+    # row whose width no longer matches the header.
+    existing = (
+        list(csv.DictReader(LEDGER.open(encoding="utf-8"))) if LEDGER.exists() else []
+    )
+    with LEDGER.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=FIELDS, extrasaction="ignore")
+        w.writeheader()
+        for r in existing:
+            w.writerow({k: r.get(k, "") for k in FIELDS})
         w.writerow(row)
 
     print(f"\n=== sweep '{args.label}' logged to {LEDGER.relative_to(ROOT)} ===")

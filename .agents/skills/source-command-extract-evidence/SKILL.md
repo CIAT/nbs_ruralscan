@@ -99,9 +99,36 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
    where table-garble / smuggled-unit / species-envelope defects hide. If the value is a
    per-species table row, it's a species envelope (`claim_scope=species`), not a practice
    row. Triaged by `schema_tools/check_quote.py`.
+10. **Soft enabling-environment ≠ T4 structural suitability → `wrong_table`** (2026-06-23,
+    RE-RATIFIED, reverses 2026-06-22). `market_access`/`accessibility_travel_time` ·
+    `market_value_chain` · `tenure_security` · `extension_governance` ·
+    `finance_credit_access` · `labour_availability` · `distance_to_road` are **soft,
+    investment-addressable** factors → they belong to the **M2b Stream-B operational-risk
+    filter + Module-6 next-steps, NOT T4**. Do NOT emit them as `use_role=structural_suitability`.
+    Only HARD legal masks (protected areas, water bodies, urban) stay in T4. (~13 such rows
+    flagged in 2026-06-23 QA.) Until a M2b `use_role` exists, don't extract these as T4 at all.
+11. **Wrong practice ≠ agroforestry → `wrong_practice`** (PICOS, deterministically caught by
+    `schema_tools/check_picos.py`). Reforestation, afforestation, pure forestry/plantation,
+    "climate-smart agriculture"/CSA umbrella, generic forest restoration are NOT agroforestry.
+    The practice must be EVIDENCED in the source — don't borrow the AF tag from the sweep's
+    focus, a demo dataset, or a file title. No AF/silvo signal in the source → blank `nbs_id`.
+12. **Capture the relationship — don't drop the curve → `relationship_missed`** (2026-06-23).
+    When a source gives a suitability *relationship* (membership curve, monotonic decline with
+    distance, "very high = fine texture, high = fine-to-coarse", a min/opt/max band), that
+    directionality IS the evidence — encode it in `relationship`. Capturing the variable name
+    but losing the curve is a BIG miss (singh26: distance/precip/MAT/slope/soil-texture/
+    soil-drainage relationships all dropped). Read the membership/classification logic.
+13. **Speculation ≠ evidence → `speculative_evidence`** ("may still deter", "could
+    potentially", "we assume", "is a reflection", hand-wavy assumed causation — not measured
+    or used in the analysis). **Tool weights need scale context → `uninterpretable_weight`**:
+    a bare "5" is uninterpretable ("5 out of what?") — the quote/`attribution` must carry the
+    scale (e.g. "0–10", "region-specific HUC default") and what is weighted; land_cover with no
+    class list (which classes in/out) is likewise unreviewable. **No caption/context, or a
+    failed table screengrab → `insufficient_context`**: flag for the human, don't guess.
 
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
-`check_numbers.py`, `check_scope.py`, `check_quote.py`, and the adversarial relationship-verify. A subagent's
+`check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
+`quarantine.py` (auto-soft-deletes off-scope + wrong-practice on build, reversible), and the adversarial relationship-verify. A subagent's
 own self-check is advisory — do not rely on it. After a sweep, the learning loop is only
 honest if feedback is incorporated: `learnings.py` tracks `review_log` vs adjustments and
 the build flags unprocessed review decisions (run `/sweep-retro` → encode → `learnings.record`).
