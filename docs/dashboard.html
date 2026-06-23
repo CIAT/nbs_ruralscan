@@ -1980,6 +1980,7 @@
               <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
               <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4;"></span>
             </div>
+            <div id="vf-bulk" style="border-top:1px solid var(--border-color); padding-top:12px;"></div>
           </div>
           <div id="vf-main" style="flex:1; min-width:0;">
             <div id="vf-filterbar" style="position:sticky; top:0; z-index:20; background:var(--bg-primary); padding:8px 0 9px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -2846,7 +2847,7 @@
       if(fd){ fd.style.display='flex'; var _sts=[['unreviewed','Not reviewed ('+(passedAll.length-_nRev)+')'],['reviewed','Reviewed ('+_nRev+')'],['all','All ('+passedAll.length+')']];
         fd.innerHTML=_sts.map(function(s){ var a=_ps===s[0]?'active sky':''; return '<button class="pill-btn '+a+'" onclick="window._vfPassStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join('')+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+_tblPill; }
       var pool=passedAll.filter(function(ev){ if(_ps==='all')return true; var r=_isRev(ev); return _ps==='reviewed'?r:!r; });
-      var seed=window._vfPassSeed||0; var N=30;
+      if(window._vfPassSeed===undefined)window._vfPassSeed=Math.floor(Math.random()*1e9); var seed=window._vfPassSeed; var N=30;
       var ranked=pool.map(function(ev){ var h=0,s=ev.evidence_id+'|'+seed; for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;} return {ev:ev,h:h>>>0}; }).sort(function(a,b){return a.h-b.h;});
       visible=ranked.slice(0,N).map(function(o){ return {ev:o.ev, verdict:'pass', reason:'AI accepted this extraction — spot-check: is the encoded value actually faithful to the quote?'}; });
       var dc0=document.getElementById('vf-decided-count'); if(dc0) dc0.innerHTML='Sampling <b>'+visible.length+'</b> of '+pool.length+' '+(_ps==='all'?'':(_ps+' '))+'AI-passed units &nbsp;<a href="#" onclick="window._vfPassSeed=(window._vfPassSeed||0)+1; renderVfWorklist(); return false;" style="color:var(--accent-sky);">↻ resample</a> &nbsp;<span style="color:var(--text-muted);">(ok = pass confirmed · drop = AI missed an error / false negative)</span>';
@@ -2869,6 +2870,7 @@
       var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+_decCount+'</b> / '+flaggedRows.length+' decided';
     }
     if(window._vfTablesOnly){ visible=visible.filter(function(r){return _vfTabular(r.ev.quote);}); }
+    _vfRenderBulk(evAll);
     if(!host)return; host.innerHTML='';
     if(!visible.length){
       if((window._vfScope||{}).source==='tool'){
@@ -2878,6 +2880,68 @@
       }
       host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(passed?'No AI-passed units to sample.':'No flags for this filter.')+'</div>'; return; }
     visible.forEach(function(o){ host.insertAdjacentHTML('beforeend', vfDetailHtml(o, passed)); });
+  }
+
+  // Active EV rows (not dropped/dataset/reviewer_ok) for a single source_id, scoped to the
+  // current NbS, narrowed by scope: whole source | a single page | tabular-only quotes.
+  function _vfBulkRows(evAll, sid, scope){
+    var nbs=(window._vfScope||{}).nbs||'all';
+    return (evAll||[]).filter(function(e){
+      if(e.source_id!==sid)return false;
+      if(nbs!=='all'&&e.nbs_id!==nbs)return false;
+      if(e.use_role==='dataset')return false;
+      if(e.reviewer_ok===true||e.reviewer_ok==='true')return false;
+      if(scope==='tabular')return _vfTabular(e.quote);
+      if(scope==='page'){ var p=(window._vfBulkPage||'').trim(); return p!==''&&String(e.page||'')===p; }
+      return true;
+    });
+  }
+  // "⚑ Bulk by source" sidebar panel — flag every active record from one source at once
+  // (so a bad source need not be reviewed entry-by-entry). Sets your decisions; Apply commits.
+  function _vfRenderBulk(evAll){
+    var box=document.getElementById('vf-bulk'); if(!box)return;
+    var nbs=(window._vfScope||{}).nbs||'all';
+    var bySrc={}; (evAll||[]).forEach(function(e){ if(nbs!=='all'&&e.nbs_id!==nbs)return; if(e.use_role==='dataset')return; if(e.reviewer_ok===true||e.reviewer_ok==='true')return; var s=e.source_id||'(none)'; bySrc[s]=(bySrc[s]||0)+1; });
+    var srcs=Object.keys(bySrc).sort();
+    if(!srcs.length){ box.innerHTML='<div style="font-size:10px; color:var(--text-muted);">No active source to bulk-flag in this scope.</div>'; return; }
+    var cur=(window._vfBulkSrc&&bySrc[window._vfBulkSrc])?window._vfBulkSrc:srcs[0]; window._vfBulkSrc=cur;
+    var scope=window._vfBulkScope||'whole'; window._vfBulkScope=scope;
+    var n=_vfBulkRows(evAll,cur,scope).length;
+    var opts=srcs.map(function(s){ return '<option value="'+vfEsc(s)+'"'+(s===cur?' selected':'')+'>'+vfEsc(s)+' ('+bySrc[s]+')</option>'; }).join('');
+    var scopePills=[['whole','whole source'],['page','by page'],['tabular','tables only']].map(function(p){ var a=scope===p[0]?'active sky':''; return '<button class="pill-btn '+a+'" onclick="window._vfBulkScope=\''+p[0]+'\'; renderVfWorklist();" style="font-size:10px; padding:3px 7px; border-radius:4px;">'+p[1]+'</button>'; }).join('');
+    var pageInp=scope==='page'?('<input placeholder="page e.g. 4" value="'+vfEsc(window._vfBulkPage||'')+'" oninput="window._vfBulkPage=this.value; var s=document.getElementById(\'vf-bulk-n\'); if(s)s.textContent=_vfBulkRows(dashboardData.registers.EV_evidence_register||[],window._vfBulkSrc,\'page\').length;" style="width:100%; box-sizing:border-box; font-size:11px; padding:4px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'):'';
+    box.innerHTML=''
+      +'<div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">&#9873; Bulk by source</div>'
+      +'<select onchange="window._vfBulkSrc=this.value; renderVfWorklist();" style="width:100%; box-sizing:border-box; font-size:11px; padding:4px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'+opts+'</select>'
+      +'<div style="display:flex; gap:4px; margin-bottom:6px;">'+scopePills+'</div>'
+      +pageInp
+      +'<input placeholder="reason / note (required)" value="'+vfEsc(window._vfBulkNote||'')+'" oninput="window._vfBulkNote=this.value;" style="width:100%; box-sizing:border-box; font-size:11px; padding:4px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'
+      +'<div style="font-size:10px; color:var(--text-secondary); margin-bottom:6px;">will flag <b id="vf-bulk-n">'+n+'</b> active record(s)</div>'
+      +'<div style="display:flex; gap:6px;">'
+        +'<button onclick="vfBulkFlag(\'drop\')" title="remove all matching records (soft-delete on Apply)" style="flex:1; font-size:11px; padding:6px; border-radius:4px; border:1px solid var(--accent-rose); background:transparent; color:var(--accent-rose); cursor:pointer;">&#9873; drop all</button>'
+        +'<button onclick="vfBulkFlag(\'flag\')" title="tentatively keep all + raise for reconsideration" style="flex:1; font-size:11px; padding:6px; border-radius:4px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber); cursor:pointer;">&#9873; query all</button>'
+      +'</div>';
+  }
+  function vfBulkFlag(decision){
+    var sid=window._vfBulkSrc; var scope=window._vfBulkScope||'whole';
+    var note=(window._vfBulkNote||'').trim();
+    if(!note){ alert('Write a reason/note first — a bulk flag needs a justification.'); return; }
+    var rows=_vfBulkRows(dashboardData.registers.EV_evidence_register||[],sid,scope);
+    if(!rows.length){ alert('No active records match that source/scope.'); return; }
+    var verb=decision==='drop'?'DROP':'QUERY (tentatively keep + flag for reconsideration)';
+    var where=scope==='page'?(' on page '+(window._vfBulkPage||'')):(scope==='tabular'?' (tabular records only)':'');
+    if(!confirm(verb+' all '+rows.length+' active record(s) from "'+sid+'"'+where+'?\n\nThis sets YOUR decision on each — review the queue, then Apply to commit.'))return;
+    var me=(window._vfReviewer||'reviewer');
+    if(!window._vfDecisions)window._vfDecisions={}; if(!window._vfReasons)window._vfReasons={}; if(!window._vfNotes)window._vfNotes={}; if(!window._vfAllReviews)window._vfAllReviews={};
+    rows.forEach(function(e){ var id=e.evidence_id; window._vfDecisions[id]=decision; window._vfReasons[id]='other'; window._vfNotes[id]=note;
+      window._vfAllReviews[id]=window._vfAllReviews[id]||{}; window._vfAllReviews[id][me]={decision:decision,reason:'other',note:note};
+      if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:decision,reason:'other',note:note,reviewer:me})}).catch(function(){}); }
+    });
+    localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));
+    localStorage.setItem('vfReasons',JSON.stringify(window._vfReasons));
+    localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes));
+    renderVfWorklist();
+    alert('Flagged '+rows.length+' record(s) from "'+sid+'" as '+decision+'. Now Apply (sidebar) to commit.');
   }
 
   function initDashboard() {
