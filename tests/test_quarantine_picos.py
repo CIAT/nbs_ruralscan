@@ -3,7 +3,23 @@
 import csv
 import json
 
-from nbs_ruralscan.schema_tools import check_picos, quarantine
+from nbs_ruralscan.schema_tools import check_picos, check_scope, quarantine
+
+
+def test_check_scope_allocation_result_signal():
+    # AHP land-use allocation OUTPUT is off-scope (a result, not a suitability rule)...
+    alloc = (
+        "the compatible land use allocation on land map unit 2 produced the ratio "
+        "of 6.87%, 46.29%, 46.42% and 0.41% for settlement, conservation agriculture, "
+        "agroforestry and forest respectively."
+    )
+    assert any(p.search(alloc) for p in check_scope._SIGNALS.values())
+    # ...but a genuine slope-threshold suitability quote must stay CLEAN (no false positive).
+    legit = (
+        "Agroforestry is suitable on slopes up to 20% for agroforestry establishment."
+    )
+    assert not any(p.search(legit) for p in check_scope._SIGNALS.values())
+
 
 _FIELDS = [
     "evidence_id",

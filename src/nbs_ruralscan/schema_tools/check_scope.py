@@ -54,6 +54,15 @@ _SIGNALS: dict[str, re.Pattern] = {
         r"|potential (zones?|areas?) for (agroforestry|implementation)",
         re.I,
     ),
+    # allocation/area-share OUTPUT of an MCDA/AHP run ("X% of the land unit was allocated to
+    # agroforestry", "distribution ratio ... for ... agroforestry") — a produced result, not a
+    # per-pixel suitability criterion. Added 2026-06-23 (seja2022 land_cover; AHP allocation).
+    "allocation_result": re.compile(
+        r"land[- ]use allocation|allocat(ed|ion) (to|of)"
+        r"|(distribution|coverage|allocation) ratio"
+        r"|produced the ratio|ratio of [\d.,%\s]+for",
+        re.I,
+    ),
     # trend/distribution description: a global/temporal trend, not a per-pixel suitability rule
     # ("biomass distribution", "tree cover global trend") — added 2026-06-22 from review.
     "trend_description": re.compile(
