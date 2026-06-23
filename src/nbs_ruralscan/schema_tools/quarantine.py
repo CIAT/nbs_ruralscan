@@ -46,7 +46,7 @@ def _human_touched(schema_root: Path) -> set[str]:
     dj = schema_root.parent / "pipeline" / "review" / "decisions.json"
     if dj.exists():
         try:
-            touched.update(json.loads(dj.read_text()).keys())
+            touched.update(json.loads(dj.read_text(encoding="utf-8")).keys())
         except (json.JSONDecodeError, OSError):
             pass
     return touched

@@ -29,7 +29,7 @@ STORE = ROOT / "pipeline" / "review" / "decisions.json"
 def _load() -> dict:
     if STORE.exists():
         try:
-            return json.loads(STORE.read_text())
+            return json.loads(STORE.read_text(encoding="utf-8"))
         except Exception:
             return {}
     return {}
@@ -37,7 +37,7 @@ def _load() -> dict:
 
 def _save(d: dict) -> None:
     STORE.parent.mkdir(parents=True, exist_ok=True)
-    STORE.write_text(json.dumps(d, indent=2))
+    STORE.write_text(json.dumps(d, indent=2), encoding="utf-8")
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -347,7 +347,9 @@ class Handler(SimpleHTTPRequestHandler):
             rev = (payload.get("reviewer") or "").strip()
             store = _load()
             if STORE.exists():
-                (STORE.parent / "decisions.bak.json").write_text(STORE.read_text())
+                (STORE.parent / "decisions.bak.json").write_text(
+                    STORE.read_text(encoding="utf-8")
+                )
             if rev and rev != "*":
                 for eid in list(store):
                     store[eid].pop(rev, None)

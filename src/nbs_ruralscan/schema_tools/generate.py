@@ -40,7 +40,7 @@ def _coerce(value: str):
 
 
 def _csv_to_rows(path: Path) -> list[dict]:
-    with path.open(newline="") as fh:
+    with path.open(newline="", encoding="utf-8") as fh:
         rows = []
         for raw in csv.DictReader(fh):
             row = {k: _coerce(v) for k, v in raw.items() if v is not None}
@@ -135,7 +135,7 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
     current_data = None
     if dest_path.exists():
         try:
-            current_data = json.loads(dest_path.read_text())
+            current_data = json.loads(dest_path.read_text(encoding="utf-8"))
         except Exception:
             pass
 
@@ -151,14 +151,14 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
         report_data["timestamp"] = current_data["timestamp"]
 
     text = json.dumps(report_data, ensure_ascii=False, indent=2) + "\n"
-    current = dest_path.read_text() if dest_path.exists() else None
+    current = dest_path.read_text(encoding="utf-8") if dest_path.exists() else None
 
     if text == current:
         return []
 
     changed = [dest_path]
     if not check:
-        dest_path.write_text(text)
+        dest_path.write_text(text, encoding="utf-8")
     return changed
 
 
@@ -345,7 +345,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     current_data = None
     if dest_path.exists():
         try:
-            current_data = json.loads(dest_path.read_text())
+            current_data = json.loads(dest_path.read_text(encoding="utf-8"))
         except Exception:
             pass
 
@@ -381,14 +381,14 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
             data["timestamp"] = current_data["timestamp"]
 
     text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
-    current = dest_path.read_text() if dest_path.exists() else None
+    current = dest_path.read_text(encoding="utf-8") if dest_path.exists() else None
 
     if text == current:
         return []
 
     changed = [dest_path]
     if not check:
-        dest_path.write_text(text)
+        dest_path.write_text(text, encoding="utf-8")
     return changed
 
 
@@ -454,7 +454,9 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     if _ln:
         print(f"  LEARNING-LOOP NOTE: {_ln}")
 
-    manifest = json.loads((schema_root / "structure" / "columns.json").read_text())
+    manifest = json.loads(
+        (schema_root / "structure" / "columns.json").read_text(encoding="utf-8")
+    )
     changed: list[Path] = []
     for spec in manifest["tables"].values():
         for csv_path in _csv_files(schema_root, spec["location"]):
@@ -462,12 +464,14 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             text = (
                 json.dumps(_csv_to_rows(csv_path), ensure_ascii=False, indent=2) + "\n"
             )
-            current = json_path.read_text() if json_path.exists() else None
+            current = (
+                json_path.read_text(encoding="utf-8") if json_path.exists() else None
+            )
             if text == current:
                 continue
             changed.append(json_path)
             if not check:
-                json_path.write_text(text)
+                json_path.write_text(text, encoding="utf-8")
 
     # Compile the progress.json report
     changed.extend(generate_progress_report(schema_root, check=check))

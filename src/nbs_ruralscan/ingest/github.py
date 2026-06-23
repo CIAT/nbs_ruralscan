@@ -128,7 +128,9 @@ def acquire_file(
         "sha1": sha1,
         "fetched_at": datetime.now(tz=timezone.utc).isoformat(),
     }
-    (corpus / f"{sid}.meta.json").write_text(json.dumps(meta, indent=2))
+    (corpus / f"{sid}.meta.json").write_text(
+        json.dumps(meta, indent=2), encoding="utf-8"
+    )
     return AcquiredFile(
         source_id=sid,
         repo=repo,
@@ -170,7 +172,7 @@ def interrogate(
     for path in files:
         af = acquire_file(repo, commit, path, corpus_dir)
         acquired.append(asdict(af))
-        text = Path(af.cached).read_text(errors="replace")
+        text = Path(af.cached).read_text(encoding="utf-8", errors="replace")
         for c in scan_candidates(text, path):
             c["source_id"] = af.source_id
             c["commit"] = commit

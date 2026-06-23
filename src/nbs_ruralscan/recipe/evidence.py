@@ -365,7 +365,8 @@ def save_units(units: list[EvidenceUnit], path: str | Path) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        json.dumps([u.to_dict() for u in units], ensure_ascii=False, indent=2)
+        json.dumps([u.to_dict() for u in units], ensure_ascii=False, indent=2),
+        encoding="utf-8",
     )
     return path
 
@@ -375,7 +376,7 @@ def load_units(path: str | Path) -> list[EvidenceUnit]:
     path = Path(path)
     if not path.exists():
         return []
-    rows = json.loads(path.read_text())
+    rows = json.loads(path.read_text(encoding="utf-8"))
     units: list[EvidenceUnit] = []
     for r in rows:
         # drop any keys not in the dataclass (forward-compat)
@@ -403,7 +404,7 @@ def already_extracted(
     path = Path(ev_register)
     if not path.exists():
         return []
-    with path.open(newline="") as f:
+    with path.open(newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         return [
             row["evidence_id"]

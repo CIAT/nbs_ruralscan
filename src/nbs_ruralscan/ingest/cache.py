@@ -27,7 +27,9 @@ def cache_path(source_id: str, cache_dir: Path | str = DEFAULT_CACHE) -> Path:
 def save_index(index: DocIndex, cache_dir: Path | str = DEFAULT_CACHE) -> Path:
     p = cache_path(index.source_id, cache_dir)
     p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(json.dumps(index.to_dict(), ensure_ascii=False, indent=2))
+    p.write_text(
+        json.dumps(index.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     return p
 
 
@@ -37,4 +39,4 @@ def load_index(
     p = cache_path(source_id, cache_dir)
     if not p.exists():
         return None
-    return DocIndex.from_dict(json.loads(p.read_text()))
+    return DocIndex.from_dict(json.loads(p.read_text(encoding="utf-8")))
