@@ -106,7 +106,9 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     investment-addressable** factors → they belong to the **M2b Stream-B operational-risk
     filter + Module-6 next-steps, NOT T4**. Do NOT emit them as `use_role=structural_suitability`.
     Only HARD legal masks (protected areas, water bodies, urban) stay in T4. (~13 such rows
-    flagged in 2026-06-23 QA.) Until a M2b `use_role` exists, don't extract these as T4 at all.
+    flagged in 2026-06-23 QA.) Extract with **`use_role=operational_risk`** (the M2b enum
+    member, 2026-06-23) — synthesised into a flagged `operational_constraint` recipe section,
+    kept OUT of the T4 suitability surface (var_support/selection use structural only).
 11. **Wrong practice ≠ agroforestry → `wrong_practice`** (PICOS, deterministically caught by
     `schema_tools/check_picos.py`). Reforestation, afforestation, pure forestry/plantation,
     "climate-smart agriculture"/CSA umbrella, generic forest restoration are NOT agroforestry.

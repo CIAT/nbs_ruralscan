@@ -24,6 +24,11 @@ USE_ROLE = {
     "priority_need",
     "nbs_effect",
     "dataset",
+    # M2b Stream-B operational / enabling-environment lever (soft, investment-addressable:
+    # tenure/market/road/extension/finance/labour/access). NOT structural suitability
+    # (2026-06-23 re-ratification) — kept out of the T4 MCDA support/selection surface,
+    # emitted into the recipe as a flagged operational_constraint section.
+    "operational_risk",
 }
 EVIDENCE_TYPE = {
     "literature_relationship",
