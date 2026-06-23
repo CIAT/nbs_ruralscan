@@ -655,7 +655,7 @@ One row per **atomic claim**. The structured replacement for free-text justifica
 | `variable` | string | Required | FK → Variable Ontology (canonical). | `slope` |
 | `relationship` | object | Optional | Extracted thresholds/shape. | `{opt_low:0,opt_high:10,abs_max:44,unit:"deg"}` |
 | `context` | object | Optional | AEZ/farming system the claim applies to. | `{aez:"humid_tropics"}` |
-| `use_role` | enum | Required | Which table it feeds. `structural_suitability`(T4) \| `climate_risk`(T2) \| `priority_need`(T5) \| `nbs_effect`(T6) \| `dataset`(T1). | `structural_suitability` |
+| `use_role` | enum | Required | Which table it feeds. `structural_suitability`(T4) \| `climate_risk`(T2) \| `priority_need`(T5) \| `nbs_effect`(T6) \| `dataset`(T1) \| `operational_risk`(M2b Stream-B — soft enabling-environment levers; emitted into the recipe as a flagged `operational_constraint` section, **kept out of the T4 suitability surface**; 2026-06-23). | `structural_suitability` |
 | `evidence_type` | enum | Required | `literature_relationship` \| `ml_importance` \| `scoping_candidate` \| `expert`. Only literature/expert carry shape params. | `literature_relationship` |
 | `claim_basis` | enum | Required | `primary_measured` \| `modelled` \| `cited_secondary` \| `expert_assertion` \| `table` \| `figure_read`. Claim strength within source. | `table` |
 | `claim_scope` | enum | Required | `practice_technology` \| `species_specific` \| `crop_specific`. Species/crop claims must not set practice rows. | `practice_technology` |

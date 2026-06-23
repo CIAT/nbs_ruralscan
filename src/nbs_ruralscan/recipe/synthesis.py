@@ -184,11 +184,16 @@ def synthesise_t4_row(
     """Reconcile evidence units for one (family × variable) into a T4 row."""
     rep = SynthesisReport()
 
-    # 1) scope filter — practice-level T4 only
+    # 1) scope filter — practice-level suitability + M2b operational levers.
+    # operational_risk vars (enabling-environment) are distinct variables from the structural
+    # ones, so they synthesise into their own rows; family.py keeps them OUT of the MCDA
+    # support/selection surface (var_support is built over structural_suitability only) and
+    # they carry suitability_dimension=operational_constraint as the flagged M2b section.
+    _EMITTABLE_ROLES = {"structural_suitability", "operational_risk"}
     kept: list[EvidenceUnit] = []
     for u in units:
-        if u.use_role != "structural_suitability":
-            rep.dropped.append((u.evidence_id, f"use_role={u.use_role} (not T4)"))
+        if u.use_role not in _EMITTABLE_ROLES:
+            rep.dropped.append((u.evidence_id, f"use_role={u.use_role} (not T4/M2b)"))
         elif u.claim_scope == "species_specific" or (
             u.claim_scope == "crop_specific" and not allow_crop_scope
         ):
