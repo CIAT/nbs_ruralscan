@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-23T11:23:17.256647+00:00",
-  "git_commit": "e22d21b3e4f03b5e4b314347795f105c48057106",
+  "timestamp": "2026-06-23T11:39:53.585838+00:00",
+  "git_commit": "947a60320d736e31badbe0a7fbaae9836626bf70",
   "registers": {
     "SRC_source_register": [
       {
@@ -718,6 +718,27 @@
         "retrieved_at": "2026-06-22",
         "access_status": "open_access",
         "source_category": "tool"
+      },
+      {
+        "source_id": "cgspace_singh_southasia_2020",
+        "citation": "Singh et al. (2020). Quantification of the Land Potential for Scaling Agroforestry in South Asia. KN - J. Cartography & Geographic Information 70:71-89.",
+        "doi": "10.1007/s42489-020-00045-0",
+        "benchmark_tier": "Medium",
+        "study_country": "South Asia",
+        "region": "South Asia",
+        "method_type": "fao_landeval",
+        "nbs_ids": "agroforestry",
+        "vars_extracted": "land_cover|soil_texture_hsg|tree_canopy_cover",
+        "extraction_status": "complete",
+        "extraction_date": "2026-06-23",
+        "extraction_run_id": "cgspace_af_2026-06",
+        "extractor": "claude_sonnet",
+        "source_kind": "paper",
+        "url": "https://doi.org/10.1007/s42489-020-00045-0",
+        "artifact_sha1": "fbc9db79491103ac7fa0b973cc035dc444eca04a",
+        "retrieved_at": "2026-06-23",
+        "access_status": "open_access",
+        "source_category": "updated_lit"
       }
     ],
     "EV_evidence_register": [
@@ -14319,6 +14340,142 @@
         "locator": "gee_script/Agroforestry-Suitability-Map:L142",
         "commit_sha": "af338e8251c6bde4fa46caccf4e92124f80d7623",
         "ruleset_version": "2026-06-22.tool-code"
+      },
+      {
+        "evidence_id": "cgspace_singh_southasia_2020__soil_texture_hsg__01",
+        "source_id": "cgspace_singh_southasia_2020",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "soil_texture_hsg",
+        "context": {
+          "region": "South Asia",
+          "dataset": "HWSD"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "low suitable for plant growth (Fischer et al. 2008). Class 5 is non-soil, class 6 is permanent frost and class 7 is water areas (Fischer et al. 2008).",
+        "page": 3,
+        "reviewer_ok": false,
+        "raw_name": "harmonized soil data suitability classes",
+        "attribution": "Fischer et al. 2008",
+        "locator_type": "page",
+        "ruleset_version": "2026-06-23.cgspace-oa"
+      },
+      {
+        "evidence_id": "cgspace_singh_southasia_2020__soil_texture_hsg__02",
+        "source_id": "cgspace_singh_southasia_2020",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "soil_texture_hsg",
+        "relationship": {
+          "direction": "positive",
+          "classes_suitable": "1-4",
+          "classes_not_suitable": "5-7",
+          "note": "current study used HWSD soil-quality class 1 to 4 as AF-suitable, class 5 to 7 not suitable (constraints)"
+        },
+        "context": {
+          "region": "South Asia",
+          "dataset": "HWSD",
+          "system": "FAO land suitability criteria"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "The current study utilized class 1 to class 4 for agroforestry suitability mapping whereas class 5 to class 7 were categorized not suitable due to difficulties/constraints.",
+        "page": 3,
+        "reviewer_ok": false,
+        "raw_name": "harmonized soil data suitability classes 1-4",
+        "locator_type": "page",
+        "ruleset_version": "2026-06-23.cgspace-oa"
+      },
+      {
+        "evidence_id": "cgspace_singh_southasia_2020__land_cover__01",
+        "source_id": "cgspace_singh_southasia_2020",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "land_cover",
+        "relationship": {
+          "direction": "positive",
+          "classes_suitable": "1-4",
+          "classes_not_suitable": "5-7",
+          "note": "FAO LCCS land-cover class 1 to 4 used as AF-suitable, class 5 to 7 not suitable"
+        },
+        "context": {
+          "region": "South Asia",
+          "dataset": "VEGA 2000",
+          "system": "FAO LCCS"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "The current study utilized class 1 to class 4 for agroforestry suitability mapping whereas class 5 to class 7 were categorized not suitable due to difficulties/constraints.",
+        "page": 3,
+        "reviewer_ok": false,
+        "raw_name": "VEGA 2000 land cover LCCS classes",
+        "attribution": "VEGA 2000 land-cover dataset",
+        "locator_type": "page",
+        "ruleset_version": "2026-06-23.cgspace-oa"
+      },
+      {
+        "evidence_id": "cgspace_singh_southasia_2020__land_cover__02",
+        "source_id": "cgspace_singh_southasia_2020",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "land_cover",
+        "relationship": {
+          "direction": "positive",
+          "note": "composite index result: 69% of South Asia ≥55% AF suitability; 76% of agriculture area ≥65% suitable; derived from integrated land+climate+soil+topography model"
+        },
+        "context": {
+          "region": "South Asia",
+          "note": "composite multi-factor result, not a single-variable threshold"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "approximately 69% of the total geographical area retains 55% and greater suitability for agroforestry. The total agriculture area (Tateishi et al. 2011) was reported as approximately 51.6% of the total geographical land area (excluding the not suitable area: Table 2), whereas significantly high percent (76%) of these areas is found to be highly suitable (≥ 65%) for agroforestry (Table 3).",
+        "page": 6,
+        "reviewer_ok": false,
+        "raw_name": "overall land suitability for agroforestry",
+        "locator_type": "page",
+        "ruleset_version": "2026-06-23.cgspace-oa"
+      },
+      {
+        "evidence_id": "cgspace_singh_southasia_2020__tree_canopy_cover__01",
+        "source_id": "cgspace_singh_southasia_2020",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "tree_canopy_cover",
+        "relationship": {
+          "direction": "positive",
+          "note": "observed tree-cover distribution: 73.4% tree-absent, 7.1% at 1-10%, 19.5% above 10%; signals AF opportunity space, not a suitability threshold"
+        },
+        "context": {
+          "region": "South Asia",
+          "year": 2000,
+          "dataset": "Hansen et al. 2013 tree cover"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "table",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "The tree cover absent (0%) and tree cover 1–10% areas are approximately 73.4% and 7.1% respectively, of the total land area. Tree cover percent greater than 10% (which represents the forest as per definition by FAO 2010) occupied 19.5% of the total geographical area.",
+        "page": 7,
+        "reviewer_ok": false,
+        "raw_name": "tree cover percent distribution",
+        "attribution": "South Asia tree-cover, year 2000",
+        "locator_type": "page",
+        "ruleset_version": "2026-06-23.cgspace-oa"
       }
     ],
     "FAM_family_registry": [
@@ -20288,6 +20445,20 @@
         "Next Steps": "1. **Document Ingestion**: Index the PDFs for the registered pending sources into the vectorless parser.\n2. **Single-Pass Extraction**: Run the extraction tool on the indexes to capture T6 economic scorecard variables and write atomic evidence units to `EV_evidence_register.json`."
       },
       "raw_markdown": "# Discovery log — Agroforestry × T6 (NbS Scorecard)\n\n**Date(s):** 2026-06-10\n**Author(s):** Pete Steward (Team Lead) · Antigravity (agent)\n**Seed-set rule:** T4 method §3 bounded, authority-weighted seed-set (v0.3.0).\n\nThis log records the discovery of the target **corpus feeds** intended to supply evidence for the NbS Scorecard table (T6), covering qualitative benefits/trade-offs, cost indicators, and cost-effectiveness ratios.\n\n---\n\n## Sources & Databases Queried\n\n### 1. OpenAlex (Scholarly Literature)\n*   **Search String**: `agroforestry AND (cost OR benefit OR revenue OR income OR profitability OR investment OR \"cost-effectiveness\" OR \"cost-benefit\") AND (\"systematic review\" OR \"meta-analysis\" OR \"evidence gap map\" OR \"economic evaluation\")`\n*   **Target**: Systematic reviews, meta-analyses, and economic evaluations mapping costs, revenue, benefits, and adoption economics to agroforestry practices.\n*   **Date of Search**: 2026-06-10\n*   **Results Returned**: **19,261 works**\n\n### 2. CGSpace (CGIAR Research Repository)\n*   **Search String**: `site:cgspace.cgiar.org \"Evert Thomas\" OR \"Hannes Gaisberger\" OR \"Chris Kettle\"`\n*   **Target**: Technical manuals, feasibility briefs, and scaling reports authored by team members focusing on seed supply networks, nursery costs, and livelihood feasibility enablers.\n*   **Date of Search**: 2026-06-10\n*   **Results Returned**: Multiple regional guides and technical papers (e.g. Colombian and Peruvian dry forest atlases).\n\n### 3. Institutional Cost-Effectiveness Reports\n*   **Selected Target Feed**: WRI Growing Resilience (Collins et al., 2025) on Sub-Saharan Africa climate-resilience cost-effectiveness. (Already registered and active in the repository as `wri_2025`).\n\n---\n\n## PRISMA-lite Funnel Counts\n\n| Funnel Stage | Count | Notes / Criteria |\n|---|---:|---|\n| **Raw Database Returns** | **19,261+** | Total matches from OpenAlex keyword queries. |\n| **Synthesis & EGM Filter** | **42** | Filtered for systematic maps, reviews, or economic meta-evaluations. |\n| **Relevance Screen** | **9** | Screened for practice (agroforestry) and target (scorecard effects, cost indicators). |\n| **Credibility Screen (Six-Axis)** | **5** | Rated High-tier based on evidence strength, transparency, and authority. |\n| **Included in SRC Register** | **4** | Added to `schema/registers/SRC_source_register.json` with `\"extraction_status\": \"pending\"` (excludes `wri_2025` which is already active). |\n\n---\n\n## Final Inclusions\n\nThe following candidate feeds are registered in the Source Register for extraction:\n\n| `source_id` | Author / Year | Benchmark Tier | Scope / Context | Key Target Variables |\n|---|---|---|---|---|\n| `miller_egm_2020` | Miller 2020 | High | Global / LMICs | Crop-pasture yields, net farm returns |\n| `castle_sr_2021` | Castle 2021 | High | Global / LMICs | Yield trade-offs, labor demand, economic benefits |\n| `wb_kcsap_2016` | World Bank 2016 | High | National / Kenya | Establishment costs, cost per farmer |\n| `wb_fsrp_2022` | World Bank 2022 | High | Regional / East Africa | Livelihood enablers, benefit-cost indicators |\n| `wri_2025` | Collins 2025 | High | Sub-Saharan Africa | Cost-effectiveness, cost per beneficiary |\n\n---\n\n## Exclusions & Boundaries\n\n*   **Species-Specific Economic Database Tools (e.g., FAO Ecocrop)**: Excluded because crop physiological requirements do not inform practice-level economic costs or general scorecard benefits.\n*   **Advocacy Project Literature**: Standard grey lit from promotional NGOs is excluded to avoid low-transparency or biased cost estimates (Conflict of Interest discount applied).\n\n---\n\n## Next Steps\n\n1. **Document Ingestion**: Index the PDFs for the registered pending sources into the vectorless parser.\n2. **Single-Pass Extraction**: Run the extraction tool on the indexes to capture T6 economic scorecard variables and write atomic evidence units to `EV_evidence_register.json`.\n"
+    },
+    "agroforestry_cgspace_2026-06": {
+      "id": "agroforestry_cgspace_2026-06",
+      "title": "Agroforestry — CGSpace (CGIAR DSpace) discovery (2026-06)",
+      "date": "",
+      "authors": "",
+      "seed_rule": "",
+      "sections": {
+        "Why CGSpace": "CGIAR's institutional repository — the home of ICRAF/CIFOR/Alliance outputs. Open DSpace API (`/discover/search/objects?query=…`); PDFs via item → bundles → ORIGINAL bitstream → `/content`.",
+        "Queries (4) + screening": "- \"agroforestry land suitability mapping criteria\"; \"agroforestry suitability soil slope rainfall classes\"; \"silvopastoral/silvopasture land suitability\"; \"land evaluation agroforestry FAO suitability classes S1 S2\". ~20 unique items screened.",
+        "Finding — one on-scope study extracted (via OA); the rest paywalled-on-CGSpace / off-scope / wrong-NbS": "- **EXTRACTED via OA copy:** *Quantification of Land Potential for Scaling Agroforestry in South Asia* (`10568/113409`) — **metadata-only on CGSpace** (no ORIGINAL bitstream; full text behind the Springer DOI 10.1007/s42489-020-00045-0), BUT OpenAlex/Unpaywall flagged it **hybrid OA, CC-BY** → fetched the Springer OA PDF (`source_id=cgspace_singh_southasia_2020`). **5 EV merged:** HWSD soil class 1-4 suitable / 5-7 not (cited Fischer 2008 + paper-own), FAO-LCCS land-cover class boundary, composite-index result (69% ≥55% suitable), observed tree-cover distribution (AF opportunity signal). `claim_basis` mixes `cited_secondary` (GAEZ/HWSD class defs) + `modelled`/`table`. **Gap:** Table 2 (per-variable weights — slope/precip/temp/soil/land-cover) is a garbled table, not text-extractable (needs OCR/table parse); slope/precip/temp are otherwise only dataset-described (off-scope) so skipped. Lesson: even a \"suitability mapping\" paper buries its thresholds in a weight table.\n- **Off-scope (acquired + screened, then dropped):** *Biophysical characterization: SI-MFS sites, Ethiopia* (`10568/135324`, open PDF) reads as **methods / study-site characterization** (\"3. Data and methods… topography of the study site was characterized… slope maps generated using DEM\"), not AF suitability *rules*. The slope/rainfall are site descriptors — the off-scope defect (`check_scope` study_site). Not extracted; cache removed.\n- **Wrong-NbS / restoration (don't-lump):** FLR Lake Ziway Ethiopia (`132558`), Land Restoration Chad (`117682`), degraded-land prioritization Colombia (`110304`), NbS Dolo Ado (`155265`) — restoration/NbS-broad, AF is one of several land uses.\n- **Targeting frameworks → TOOL candidates (not EV):** silvopastoral spatial-targeting reports — N Laos (`10568/169649`), Ghana small-ruminant (`10568/180294`) — are *targeting methods* (like ROAM/ESI-IBSTI), better suited to the TOOL register than threshold-EV.",
+        "Conclusion": "**5 EV extracted** (one study, via its OA copy). CGSpace itself mostly hosts metadata-only journal records + reports / restoration-potential / targeting frameworks; few apply explicit AF suitability classes with variable thresholds (query 4: none apply FAO S1–N with cutoffs). Net: low yield for AF thresholds vs the **OpenAlex peer-reviewed** channel — but the CGSpace→OA-copy route works for metadata-only hybrid-OA records. **Next:** (a) Table-2 weights of `113409` need OCR/table parse to recover slope/precip/temp/soil weights; (b) register the silvopastoral targeting reports in the TOOL register if wanted; (c) WOCAT (token-walled) for SLM-tech grey."
+      },
+      "raw_markdown": "# Agroforestry — CGSpace (CGIAR DSpace) discovery (2026-06)\n\n**Channel:** grey/lit · CGSpace open DSpace REST API (`cgspace.cgiar.org/server/api`, no auth). **Run:** `cgspace_af_2026-06`. PRISMA-lite, read-only discovery + screening.\n\n## Why CGSpace\nCGIAR's institutional repository — the home of ICRAF/CIFOR/Alliance outputs. Open DSpace API (`/discover/search/objects?query=…`); PDFs via item → bundles → ORIGINAL bitstream → `/content`.\n\n## Queries (4) + screening\n- \"agroforestry land suitability mapping criteria\"; \"agroforestry suitability soil slope rainfall classes\"; \"silvopastoral/silvopasture land suitability\"; \"land evaluation agroforestry FAO suitability classes S1 S2\". ~20 unique items screened.\n\n## Finding — one on-scope study extracted (via OA); the rest paywalled-on-CGSpace / off-scope / wrong-NbS\n- **EXTRACTED via OA copy:** *Quantification of Land Potential for Scaling Agroforestry in South Asia* (`10568/113409`) — **metadata-only on CGSpace** (no ORIGINAL bitstream; full text behind the Springer DOI 10.1007/s42489-020-00045-0), BUT OpenAlex/Unpaywall flagged it **hybrid OA, CC-BY** → fetched the Springer OA PDF (`source_id=cgspace_singh_southasia_2020`). **5 EV merged:** HWSD soil class 1-4 suitable / 5-7 not (cited Fischer 2008 + paper-own), FAO-LCCS land-cover class boundary, composite-index result (69% ≥55% suitable), observed tree-cover distribution (AF opportunity signal). `claim_basis` mixes `cited_secondary` (GAEZ/HWSD class defs) + `modelled`/`table`. **Gap:** Table 2 (per-variable weights — slope/precip/temp/soil/land-cover) is a garbled table, not text-extractable (needs OCR/table parse); slope/precip/temp are otherwise only dataset-described (off-scope) so skipped. Lesson: even a \"suitability mapping\" paper buries its thresholds in a weight table.\n- **Off-scope (acquired + screened, then dropped):** *Biophysical characterization: SI-MFS sites, Ethiopia* (`10568/135324`, open PDF) reads as **methods / study-site characterization** (\"3. Data and methods… topography of the study site was characterized… slope maps generated using DEM\"), not AF suitability *rules*. The slope/rainfall are site descriptors — the off-scope defect (`check_scope` study_site). Not extracted; cache removed.\n- **Wrong-NbS / restoration (don't-lump):** FLR Lake Ziway Ethiopia (`132558`), Land Restoration Chad (`117682`), degraded-land prioritization Colombia (`110304`), NbS Dolo Ado (`155265`) — restoration/NbS-broad, AF is one of several land uses.\n- **Targeting frameworks → TOOL candidates (not EV):** silvopastoral spatial-targeting reports — N Laos (`10568/169649`), Ghana small-ruminant (`10568/180294`) — are *targeting methods* (like ROAM/ESI-IBSTI), better suited to the TOOL register than threshold-EV.\n\n## Conclusion\n**5 EV extracted** (one study, via its OA copy). CGSpace itself mostly hosts metadata-only journal records + reports / restoration-potential / targeting frameworks; few apply explicit AF suitability classes with variable thresholds (query 4: none apply FAO S1–N with cutoffs). Net: low yield for AF thresholds vs the **OpenAlex peer-reviewed** channel — but the CGSpace→OA-copy route works for metadata-only hybrid-OA records. **Next:** (a) Table-2 weights of `113409` need OCR/table parse to recover slope/precip/temp/soil weights; (b) register the silvopastoral targeting reports in the TOOL register if wanted; (c) WOCAT (token-walled) for SLM-tech grey.\n"
     },
     "agroforestry_grey_websearch_2026-06": {
       "id": "agroforestry_grey_websearch_2026-06",
