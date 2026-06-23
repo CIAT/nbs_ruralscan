@@ -109,6 +109,16 @@ class Handler(SimpleHTTPRequestHandler):
                 elif clip is None:
                     clip = page.rect  # whole page
                 clip = clip & page.rect  # keep within the page
+                # Guard against a too-small crop: a narrow cell hit (e.g. "CUADRO 4" with no
+                # caption) yields an unreviewable thumbnail. Widen to a full-width band around
+                # the hits (or the whole page) so the reviewer gets context. (2026-06-23 inab.)
+                if clip.width < page.rect.width * 0.45 or clip.height < 90:
+                    if rects:
+                        y0 = max(0, min(r.y0 for r in rects) - 260)
+                        y1 = min(page.rect.height, max(r.y1 for r in rects) + 120)
+                        clip = fitz.Rect(0, y0, page.rect.width, y1) & page.rect
+                    else:
+                        clip = page.rect
                 # Detect a rotated (sideways) table so we can render it upright. Wide
                 # landscape tables on a portrait page have vertical writing direction.
                 rot = 0

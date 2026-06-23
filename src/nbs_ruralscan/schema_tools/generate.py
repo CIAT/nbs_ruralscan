@@ -431,6 +431,25 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             f"  QUOTE NOTES ({len(_quote_flags)} active unit(s) with too-narrow quotes — "
             "run check_quote.py; re-extract with full context)"
         )
+    from nbs_ruralscan.schema_tools.check_picos import check as _picos_check
+
+    _picos_flags = _picos_check(schema_root / "registers" / "EV_evidence_register.csv")
+    if _picos_flags:
+        print(
+            f"  PICOS NOTES ({len(_picos_flags)} active AF unit(s) with wrong-practice "
+            "signals — run check_picos.py; the practice must be evidenced in the source)"
+        )
+    # Guard B (2026-06-23): auto-quarantine off-scope/wrong-practice on the WRITE path only —
+    # soft-delete (reversible) so junk stops reaching the worklist; never mutate on --check.
+    if not check:
+        from nbs_ruralscan.schema_tools.quarantine import apply as _quarantine_apply
+
+        _q = _quarantine_apply(schema_root)
+        if _q:
+            print(
+                f"  AUTO-QUARANTINE: soft-dropped {len(_q)} off-scope/wrong-practice "
+                "unit(s) (review_state=dropped, reversible via the QA dashboard)"
+            )
     _ln = _learn_note()
     if _ln:
         print(f"  LEARNING-LOOP NOTE: {_ln}")
