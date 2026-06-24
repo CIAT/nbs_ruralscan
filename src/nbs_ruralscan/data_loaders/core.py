@@ -20,7 +20,6 @@ import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import geopandas as gpd
 import rioxarray  # noqa: F401  (registers the .rio accessor)
 import xarray as xr
 from rasterio.enums import Resampling
@@ -79,11 +78,17 @@ class TargetGrid:
 
 
 def download(url: str, name: str | None = None) -> Path:
-    """Fetch ``url`` into DATA_DIR once; return the local path. stdlib only."""
+    """Fetch ``url`` into DATA_DIR once; return the local path. stdlib only.
+
+    Downloads to a sibling ``.part`` then atomically renames, so an interrupted
+    transfer never leaves a truncated file that ``p.exists()`` would trust.
+    """
     p = DATA_DIR / (name or url.split("/")[-1].split("?")[0])
     if not p.exists():
         p.parent.mkdir(parents=True, exist_ok=True)
-        urllib.request.urlretrieve(url, p)
+        tmp = p.with_name(p.name + ".part")
+        urllib.request.urlretrieve(url, tmp)
+        tmp.replace(p)
     return p
 
 
@@ -118,42 +123,30 @@ def ee_to_xarray(image, grid: TargetGrid) -> xr.DataArray:
 # --- provenance + cache ---------------------------------------------------------
 
 
-def _stamp(da: xr.DataArray, dataset_id: str) -> xr.DataArray:
-    # Only dataset_id — everything else (citation, license, ...) is recoverable from T1.
-    da.attrs["dataset_id"] = dataset_id
-    return da
-
-
 def _cache_key(dataset_id: str, grid: TargetGrid | None, kw: dict) -> str:
     raw = f"{dataset_id}|{grid.key if grid else ''}|{sorted(kw.items())}"
     return f"{dataset_id}__{hashlib.sha1(raw.encode()).hexdigest()[:8]}"
 
 
 def load(dataset_id: str, grid: TargetGrid | None = None, **kw):
-    """Dispatch to ``datasets/<dataset_id>.load`` with disk caching + provenance.
+    """Dispatch to ``datasets/<dataset_id>.load``; cache raster outputs as COG.
 
-    Raster loaders take ``grid``; vector loaders (boundaries) ignore it and use kwargs
-    like ``region`` / ``level``. Caching keys on dataset + grid + kwargs.
+    Raster loaders take ``grid`` and their grid-aligned result is cached as a COG in
+    CACHE_DIR (keyed on dataset + grid + kwargs). Vector loaders (boundaries) ignore
+    ``grid``, use kwargs like ``region`` / ``level``, and persist their own store under
+    ``data/`` — so they read straight from there and aren't re-cached here.
     """
-    key = _cache_key(dataset_id, grid, kw)
-    cog, pq = CACHE_DIR / f"{key}.tif", CACHE_DIR / f"{key}.parquet"
-    if cog.exists():
-        da = rioxarray.open_rasterio(
-            cog, masked=True
-        )  # dataset_id read back from GDAL tags
+    cog = CACHE_DIR / f"{_cache_key(dataset_id, grid, kw)}.tif"
+    if cog.exists():  # dataset_id read back from the GDAL tags
+        da = rioxarray.open_rasterio(cog, masked=True)
         assert isinstance(da, xr.DataArray)
         return da
-    if pq.exists():
-        return gpd.read_parquet(pq)
 
-    mod = importlib.import_module(f"{__package__}.datasets.{dataset_id}")
-    result = mod.load(grid=grid, **kw)
-
-    CACHE_DIR.mkdir(parents=True, exist_ok=True)
-    if isinstance(result, xr.DataArray):
-        result = _stamp(result, dataset_id)
-        # dataset_id -> GDAL metadata tag, so it survives the COG round-trip
+    result = importlib.import_module(f"{__package__}.datasets.{dataset_id}").load(
+        grid=grid, **kw
+    )
+    if isinstance(result, xr.DataArray):  # cache rasters; vectors self-persist in data/
+        result.attrs["dataset_id"] = dataset_id  # only id; rest recoverable from T1
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
         result.rio.to_raster(cog, driver="COG", tags={"dataset_id": dataset_id})
-    elif isinstance(result, gpd.GeoDataFrame):
-        result.to_parquet(pq)
     return result

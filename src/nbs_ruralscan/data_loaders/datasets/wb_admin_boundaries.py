@@ -21,18 +21,14 @@ _URLS = {
     2: "https://datacatalogfiles.worldbank.org/ddh-published/0038272/2/DR0095370/World%20Bank%20Official%20Boundaries%20%28GeoPackage%29/World%20Bank%20Official%20Boundaries%20-%20Admin%202.gpkg",
 }
 _STORE = DATA_DIR / "wb_admin_boundaries"
-# ISO3 country code (uppercase) — the schema convention (spec.md). The WB admin-0 file
-# carries it as `ISO_A3` (clean ISO3); NOT `WB_A3`, which deviates (ROM/DRC/TMP, NaNs).
-_ISO_COLS = ("ISO_A3", "ISO3", "iso3", "ISO3166_1_Alpha_3")
-
-
-def _partition(level: int) -> Path:
-    return _STORE / f"admin_level={level}" / "boundaries.parquet"
+# WB admin files carry clean ISO3 here (uppercase, the schema convention). NOT WB_A3,
+# which deviates for disputed territories (ROM/DRC/TMP) and has NaNs.
+_ISO_COL = "ISO_A3"
 
 
 def _build(level: int) -> Path:
-    """Download one level's GeoPackage and convert to sorted, bbox-covered, zstd GeoParquet."""
-    out = _partition(level)
+    """Download one level's GeoPackage; convert to sorted, bbox-covered, zstd GeoParquet."""
+    out = _STORE / f"admin_level={level}" / "boundaries.parquet"
     if out.exists():
         return out
     gdf = gpd.read_file(download(_URLS[level], name=f"wb_admin{level}.gpkg"))
@@ -47,17 +43,18 @@ def load(
 ) -> gpd.GeoDataFrame:
     gdf = gpd.read_parquet(_build(level))
     if region:
-        col = next((c for c in _ISO_COLS if c in gdf.columns), None)
-        if col is None:
+        if _ISO_COL not in gdf.columns:
             raise ValueError(
-                f"no ISO3 column in admin{level}; columns: {list(gdf.columns)}"
+                f"no {_ISO_COL} in admin{level}; columns: {list(gdf.columns)}"
             )
-        wanted = {region} if isinstance(region, str) else set(region)
-        wanted = {r.upper() for r in wanted}
-        unknown = wanted - set(gdf[col].astype(str).str.upper())
+        wanted = (
+            {region.upper()} if isinstance(region, str) else {r.upper() for r in region}
+        )
+        codes = gdf[_ISO_COL].astype(str).str.upper()
+        unknown = wanted - set(codes)
         if unknown:
             raise ValueError(
-                f"unknown {col} code(s) in admin{level}: {sorted(unknown)}"
+                f"unknown {_ISO_COL} code(s) in admin{level}: {sorted(unknown)}"
             )
-        gdf = gdf[gdf[col].astype(str).str.upper().isin(wanted)]
+        gdf = gdf[codes.isin(wanted)]
     return gdf
