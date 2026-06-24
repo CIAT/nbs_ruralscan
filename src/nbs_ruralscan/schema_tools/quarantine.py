@@ -130,7 +130,7 @@ def apply(schema_root: str | Path = "schema") -> list[dict]:
         applied.append(c)
     if applied:
         with ev.open("w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, fieldnames=fields)
+            w = csv.DictWriter(f, fieldnames=fields, extrasaction="ignore")
             w.writeheader()
             w.writerows(rows)
     return applied
