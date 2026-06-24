@@ -37,3 +37,6 @@ def test_apply_survives_ragged_row(tmp_path, monkeypatch):
     assert by["e1"]["review_state"] == "dropped"
     # the None overflow was dropped on write (extrasaction="ignore"), not crashed on
     assert None not in rows[0]
+    # writers emit LF, not CRLF (lineterminator="\n") — no Windows CRLF churn (#104 class)
+    assert b"\r" not in ev.read_bytes()
+    assert b"\r" not in (tmp_path / "review_log.csv").read_bytes()

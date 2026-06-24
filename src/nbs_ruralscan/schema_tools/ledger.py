@@ -50,7 +50,7 @@ def _rows() -> list[dict]:
 def _write(rows: list[dict]) -> None:
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
     with LEDGER.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
+        w = csv.DictWriter(f, fieldnames=FIELDS, lineterminator="\n")
         w.writeheader()
         for r in rows:
             w.writerow({k: r.get(k, "") for k in FIELDS})
