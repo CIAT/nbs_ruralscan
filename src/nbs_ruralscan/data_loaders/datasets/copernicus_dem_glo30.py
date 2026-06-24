@@ -19,7 +19,7 @@ from __future__ import annotations
 from ..core import TargetGrid, ee_to_xarray
 
 
-def load(grid: TargetGrid, variable: str = "elevation", **kw):
+def load(grid: TargetGrid, variable: str = "elevation"):
     import ee
 
     # GLO-30 is a tiled ImageCollection (band "DEM"); mosaic to a single image first.
