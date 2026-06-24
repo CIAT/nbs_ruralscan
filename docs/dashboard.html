@@ -2859,10 +2859,12 @@
       if(fd){ fd.style.display='flex'; var _sts=[['unreviewed','Not reviewed ('+(passedAll.length-_nRev)+')'],['reviewed','Reviewed ('+_nRev+')'],['all','All ('+passedAll.length+')']];
         fd.innerHTML=_sts.map(function(s){ var a=_ps===s[0]?'active sky':''; return '<button class="pill-btn '+a+'" onclick="window._vfPassStatus=\''+s[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+s[1]+'</button>'; }).join('')+'<span style="width:1px; height:18px; background:var(--border-color); margin:0 5px;"></span>'+_tblPill; }
       var pool=passedAll.filter(function(ev){ if(_ps==='all')return true; var r=_isRev(ev); return _ps==='reviewed'?r:!r; });
-      if(window._vfPassSeed===undefined)window._vfPassSeed=Math.floor(Math.random()*1e9); var seed=window._vfPassSeed; var N=30;
+      if(window._vfPassSeed===undefined)window._vfPassSeed=Math.floor(Math.random()*1e9); var seed=window._vfPassSeed; var N=window._vfPassN||30;
       var ranked=pool.map(function(ev){ var h=0,s=ev.evidence_id+'|'+seed; for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;} return {ev:ev,h:h>>>0}; }).sort(function(a,b){return a.h-b.h;});
       visible=ranked.slice(0,N).map(function(o){ return {ev:o.ev, verdict:'pass', reason:'AI accepted this extraction — spot-check: is the encoded value actually faithful to the quote?'}; });
-      var dc0=document.getElementById('vf-decided-count'); if(dc0) dc0.innerHTML='Sampling <b>'+visible.length+'</b> of '+pool.length+' '+(_ps==='all'?'':(_ps+' '))+'AI-passed units &nbsp;<a href="#" onclick="window._vfPassSeed=(window._vfPassSeed||0)+1; renderVfWorklist(); return false;" style="color:var(--accent-sky);">↻ resample</a> &nbsp;<span style="color:var(--text-muted);">(ok = pass confirmed · drop = AI missed an error / false negative)</span>';
+      // sample-size controls: pull more from the pool (+30 / all) when the cap is hiding units
+      var _more=pool.length>visible.length?(' &nbsp;<a href="#" onclick="window._vfPassN=('+'window._vfPassN'+'||30)+30; renderVfWorklist(); return false;" style="color:var(--accent-emerald);">+30 more</a> &nbsp;<a href="#" onclick="window._vfPassN='+pool.length+'; renderVfWorklist(); return false;" style="color:var(--accent-emerald);">review all '+pool.length+'</a>'):'';
+      var dc0=document.getElementById('vf-decided-count'); if(dc0) dc0.innerHTML='Sampling <b>'+visible.length+'</b> of '+pool.length+' '+(_ps==='all'?'':(_ps+' '))+'AI-passed units &nbsp;<a href="#" onclick="window._vfPassSeed=(window._vfPassSeed||0)+1; renderVfWorklist(); return false;" style="color:var(--accent-sky);">↻ resample</a>'+_more+' &nbsp;<span style="color:var(--text-muted);">(ok = pass confirmed · drop = AI missed an error / false negative)</span>';
     } else {
       if(!window._vfFlagStatus)window._vfFlagStatus='all';
       var _myDec=function(id){ return !!(window._vfDecisions||{})[id]; };
@@ -2890,7 +2892,14 @@
         host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-amber);">No tool-derived evidence extracted yet.</b><br>Tools / methods / codebases <b>are evidence-reviewable like any source</b> — their thresholds, weights and criteria become EV rows (provenance via <code>locator=file_line</code>+<code>commit_sha</code> for code, or section/anchor for docs) and are reviewed here under this channel. This is empty only because no tool has been extracted yet. <b>'+_nTool+'</b> tool(s) are catalogued in <code>TOOL_tool_registry</code> — browse them under <b>Stocktake &amp; Tools → Tools / methods</b>; extracting their criteria populates this channel.</div>';
         return;
       }
-      host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(passed?'No AI-passed units to sample.':'No flags for this filter.')+'</div>'; return; }
+      if(passed){
+        var _ps2=window._vfPassStatus||'unreviewed', _tot=passedAll.length, _emsg;
+        if(_tot===0){ _emsg='No AI-passed units in this scope. Broaden the <b>SCOPE</b> filters (practice / table / sub-practice) on the left.'; }
+        else if(_ps2==='unreviewed'){ _emsg='&#10003; You&#39;ve reviewed all <b>'+_tot+'</b> AI-passed units in this scope. To check more: switch to <a href="#" onclick="window._vfPassStatus=\'all\'; renderVfWorklist(); return false;" style="color:var(--accent-sky);">All ('+_tot+')</a> to revisit, broaden the <b>SCOPE</b> on the left for more units, or <a href="#" onclick="window._vfPassSeed=(window._vfPassSeed||0)+1; window._vfPassStatus=\'all\'; renderVfWorklist(); return false;" style="color:var(--accent-sky);">&#8635; resample</a>.'; }
+        else { _emsg='No AI-passed units to sample for this filter.'; }
+        host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">'+_emsg+'</div>'; return;
+      }
+      host.innerHTML='<div style="color:var(--text-muted); padding:14px;">No flags for this filter.</div>'; return; }
     visible.forEach(function(o){ host.insertAdjacentHTML('beforeend', vfDetailHtml(o, passed)); });
   }
 
