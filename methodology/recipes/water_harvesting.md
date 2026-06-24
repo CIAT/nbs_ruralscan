@@ -108,7 +108,7 @@ Negative (non-monotonic): low–moderate slopes optimal; very flat areas drain p
 
 Decreasing sigmoid (or generalised bell-shaped centred on 1–8% for ponds; 5–25% for terraces).
 
-SRTM 30 m, ASTER GDEM 30 m, ALOS PALSAR 12.5 m, Copernicus GLO-30.
+Copernicus GLO-30 (default), SRTM 30 m, ASTER GDEM 30 m, ALOS PALSAR 12.5 m.
 
 Elevation (DEM)
 
@@ -120,7 +120,7 @@ Context-dependent (typically used as derived input rather than direct criterion)
 
 Min–max linear normalisation; or used as constraint mask for elevation-bounded subpractices.
 
-SRTM 30 m, ASTER GDEM 30 m, ALOS PALSAR 12.5 m, Copernicus GLO-30.
+Copernicus GLO-30 (default), SRTM 30 m, ASTER GDEM 30 m, ALOS PALSAR 12.5 m.
 
 Aspect
 
@@ -132,7 +132,7 @@ Non-monotonic (hemisphere-dependent).
 
 Reclassified categorical fuzzy membership; or generalised bell on preferred azimuth.
 
-Derived from any DEM (SRTM, ASTER, ALOS).
+Derived from any DEM (Copernicus GLO-30, SRTM, ASTER, ALOS).
 
 Curvature
 
@@ -546,13 +546,13 @@ Source / GEE Asset ID
 
 Elevation, slope, aspect, curvature, TWI
 
-SRTM v3
+Copernicus DEM GLO-30
 
 30 m
 
 Raster
 
-‘USGS/SRTMGL1_003’
+‘COPERNICUS/DEM/GLO30’
 
 Rainfall (annual, daily)
 
