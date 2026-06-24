@@ -52,4 +52,27 @@ def test_mask_eval_is_sandboxed():
 
 def test_scheme_routing():
     assert codelist.scheme_for(dataset="usda_cdl") == "cdl"
+    assert (
+        codelist.scheme_for(dataset="HWSD") == "hwsd_soil_quality"
+    )  # case-insensitive
     assert codelist.scheme_for(variable="slope") is None
+
+
+def test_expand_codes():
+    assert codelist.expand_codes("1-4") == [1, 2, 3, 4]
+    assert codelist.expand_codes("5-7") == [5, 6, 7]
+    assert codelist.expand_codes("1,2,5") == [1, 2, 5]
+    assert codelist.expand_codes("1-3,7") == [1, 2, 3, 7]
+    assert codelist.expand_codes("") == []
+
+
+def test_hwsd_class_ranges_decode():
+    s = codelist.summarise_class_ranges("hwsd_soil_quality", "1-4", "5-7")
+    assert s["n_included"] == 4
+    inc = dict(s["included"])
+    assert inc[1].startswith("No or slight")
+    assert inc[4].startswith("Very severe")
+    exc = dict(s["excluded"])
+    assert exc[5] == "Mainly non-soil"
+    assert exc[6] == "Permafrost area"
+    assert exc[7] == "Water bodies"
