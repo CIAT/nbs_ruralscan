@@ -72,8 +72,25 @@ def _harmonise(unit: EvidenceUnit, canonical_unit: str) -> dict[str, float]:
     return out
 
 
-def _weight(unit: EvidenceUnit, tier: str) -> float:
-    return TIER_W.get(tier, 0.5) * BASIS_W.get(unit.claim_basis, 0.5)
+# Grey literature (WOCAT/CG/FAO/NGO/project reports) is positively — optimistically —
+# biased and not peer-reviewed (#63): discount its weight in the weighted-median
+# reconciliation so it can't inflate the consensus. Directional: hardest on benefit/effect
+# claims (T6 — advocacy-prone), light on biophysical thresholds (a slope/soil limit isn't
+# advocacy). Grey still COUNTS in n_sources (support is untouched) — it just can't dominate
+# the median bounds. Defensible defaults; tune per RFC (mirrors TIER_W/BASIS_W).
+GREY_DISCOUNT = {
+    "nbs_effect": 0.4,  # T6 effect / economic / adoption-success ranges → big haircut
+    "structural_suitability": 0.9,  # T4 biophysical envelope → barely discounted
+    "climate_risk": 0.6,  # T2/T3 hazard → moderate
+}
+_DEFAULT_GREY_DISCOUNT = 0.6
+
+
+def _weight(unit: EvidenceUnit, tier: str, category: str = "") -> float:
+    w = TIER_W.get(tier, 0.5) * BASIS_W.get(unit.claim_basis, 0.5)
+    if (category or "").lower() == "grey":
+        w *= GREY_DISCOUNT.get(unit.use_role, _DEFAULT_GREY_DISCOUNT)
+    return w
 
 
 def _weighted_median(pairs: list[tuple[float, float]]) -> float | None:
@@ -93,11 +110,17 @@ def _weighted_median(pairs: list[tuple[float, float]]) -> float | None:
 
 def _reconcile(
     contribs: list[tuple[EvidenceUnit, str, dict[str, float]]],
+    categories: dict[str, str] | None = None,
 ) -> dict[str, float]:
     """Weighted-median per threshold param across contributing units."""
+    categories = categories or {}
     params: dict[str, float] = {}
     for key in _PARAMS:
-        pairs = [(ph[key], _weight(u, t)) for (u, t, ph) in contribs if key in ph]
+        pairs = [
+            (ph[key], _weight(u, t, categories.get(u.source_id, "")))
+            for (u, t, ph) in contribs
+            if key in ph
+        ]
         m = _weighted_median(pairs)
         if m is not None:
             params[key] = m
@@ -139,9 +162,13 @@ def _resolve_root_origin(
 
 
 def _dedupe_lineage(
-    units: list[EvidenceUnit], tiers: dict[str, str], report: SynthesisReport
+    units: list[EvidenceUnit],
+    tiers: dict[str, str],
+    report: SynthesisReport,
+    categories: dict[str, str] | None = None,
 ) -> list[EvidenceUnit]:
     """Collapse citation echoes: keep one highest-weight unit per origin source."""
+    categories = categories or {}
     units_by_ev_id = {u.evidence_id: u for u in units if u.evidence_id}
     units_by_source: dict[str, list[EvidenceUnit]] = {}
     for u in units:
@@ -158,7 +185,9 @@ def _dedupe_lineage(
         # and then by weight (tier * claim_basis)
         def sort_key(u: EvidenceUnit) -> tuple[int, float]:
             is_primary = 1 if not u.lineage_of else 0
-            w = _weight(u, tiers.get(u.source_id, "medium"))
+            w = _weight(
+                u, tiers.get(u.source_id, "medium"), categories.get(u.source_id, "")
+            )
             return (is_primary, w)
 
         group.sort(key=sort_key, reverse=True)
@@ -180,9 +209,11 @@ def synthesise_t4_row(
     allow_crop_scope: bool = False,
     context_field: str = "aez",
     override_reltol: float = 0.25,
+    categories: dict[str, str] | None = None,
 ) -> tuple[dict[str, Any], SynthesisReport]:
     """Reconcile evidence units for one (family × variable) into a T4 row."""
     rep = SynthesisReport()
+    categories = categories or {}
 
     # 1) scope filter — practice-level suitability + M2b operational levers.
     # operational_risk vars (enabling-environment) are distinct variables from the structural
@@ -207,7 +238,7 @@ def synthesise_t4_row(
             kept.append(u)
 
     # 2) lineage dedupe (anti pseudo-consensus)
-    kept = _dedupe_lineage(kept, tiers, rep)
+    kept = _dedupe_lineage(kept, tiers, rep, categories)
     rep.used = [u.evidence_id for u in kept]
 
     # 3) harmonise + contributions
@@ -215,7 +246,7 @@ def synthesise_t4_row(
         (u, tiers.get(u.source_id, "medium"), _harmonise(u, canonical_unit))
         for u in kept
     ]
-    global_params = _reconcile(contribs)
+    global_params = _reconcile(contribs, categories)
 
     # 4) uncertainty from spread of values across all parameters (widen, never narrow); humility bumps
     unc = 10.0
