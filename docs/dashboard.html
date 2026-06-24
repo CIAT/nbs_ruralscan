@@ -2631,7 +2631,7 @@
       var card='<div style="border:1px solid var(--border-color); border-left:3px solid '+pcol+'; border-radius:8px; padding:11px 14px; margin-bottom:9px; background:var(--bg-secondary);">'
         +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:5px;">'
         +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code>'
-        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+(page?(' · '+vfEsc(page)):'')+(o.dropped?' · <span style="color:var(--accent-rose);">quarantined</span>':'')+'</span>'
+        +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+(page?(' · '+vfEsc(page)):'')+(o.dropped?' · <span style="color:var(--accent-rose); cursor:help; border-bottom:1px dotted var(--accent-rose);" title="Quarantined = soft-deleted from the live register (excluded from synthesis, support counts and the active worklist) but KEPT as a reversible record. Set by a QA drop or an automatic guard (off-scope / wrong-practice / constrained-AOI). Re-open it to restore to the queue.">quarantined</span>':'')+'</span>'
         +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></div>'
         +'<div style="font-size:11.5px; margin:3px 0;"><b style="color:'+pcol+';">'+vfEsc((pr.reviewer||'someone'))+' said '+vfEsc(pdec.toUpperCase()||'?')+'</b>'+(pr.reason?(' <span style="color:var(--text-secondary);">· '+vfEsc((pr.reason||'').replace(/_/g,' '))+'</span>'):'')+(pr.note?(' <span style="color:var(--text-muted);">— '+vfEsc(pr.note)+'</span>'):'')+'</div>'
         +(rel?('<div style="font-size:11px; margin:3px 0;"><b style="color:var(--text-muted);">Encoded value:</b> '+vfRelHtml(ev)+'</div>'):'')
@@ -2684,11 +2684,22 @@
     });
   }
 
+  function _vfFmtVal(v){ // human-readable nested relationship values (no raw JSON for reviewers)
+    if(v===null||v===undefined) return '';
+    if(Array.isArray(v)) return v.map(_vfFmtVal).join('  ·  ');
+    if(typeof v==='object'){
+      var lab=v.label!==undefined?v.label:(v.name!==undefined?v.name:(v.class!==undefined?v.class:v.level));
+      var val=v.range!==undefined?v.range:(v.value!==undefined?v.value:(v.threshold!==undefined?v.threshold:undefined));
+      if(lab!==undefined && val!==undefined) return lab+': '+val;
+      return Object.keys(v).map(function(k){ return k.replace(/_/g,' ')+' '+_vfFmtVal(v[k]); }).join(', ');
+    }
+    return String(v);
+  }
   function vfRelHtml(ev){ var r=ev.relationship; var o=null;
     if(r){ if(typeof r==='object')o=r; else { try{ o=JSON.parse(r); }catch(e){} } }
     if(o && typeof o==='object' && !Array.isArray(o)){
       var keys=Object.keys(o); if(!keys.length) return '<span style="color:var(--text-muted);">(none)</span>';
-      return '<div style="display:flex; flex-wrap:wrap; gap:3px 16px; margin-top:4px;">'+keys.map(function(k){ var v=o[k]; v=(v&&typeof v==='object')?JSON.stringify(v):String(v); return '<span style="font-size:11.5px;"><span style="color:var(--text-muted);">'+vfEsc(k.replace(/_/g,' '))+':</span> <b style="color:var(--text-primary);">'+vfEsc(v)+'</b></span>'; }).join('')+'</div>';
+      return '<div style="display:flex; flex-wrap:wrap; gap:3px 16px; margin-top:4px;">'+keys.map(function(k){ var v=_vfFmtVal(o[k]); return '<span style="font-size:11.5px;"><span style="color:var(--text-muted);">'+vfEsc(k.replace(/_/g,' '))+':</span> <b style="color:var(--text-primary);">'+vfEsc(v)+'</b></span>'; }).join('')+'</div>';
     }
     if(r) return '<code style="font-size:10.5px;">'+vfEsc(typeof r==='string'?r:JSON.stringify(r))+'</code>';
     return '<span style="color:var(--text-muted);">(no encoded value — qualitative claim; judge the variable + quote)</span>';
