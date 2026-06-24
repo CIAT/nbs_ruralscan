@@ -13,7 +13,7 @@ chain, to (a) prove the method and (b) be the gold standard the extraction skill
 - **NbS:** agroforestry · **Family:** F1 Planted silvoarable (alley cropping, tree intercropping, planted boundary on cropland)
 - **`spatial_product_type`:** `area_suitability` · **dominant limiting factor:** biophysical envelope + management
 - **Variable:** canonical `slope` · group **Topographic** · **canonical unit: degrees (°)** · aliases: terrain slope, gradient, inclination, "slope %"
-- **Dataset (T1):** `srtm_dem_90m` / `srtm_dem_30m` → slope derived
+- **Dataset (T1):** `copernicus_dem_glo30` → slope derived
 - **Suitability question:** where can planted silvoarable agroforestry physically establish (erosion / mechanisation / root-anchoring constraints)?
 
 **Unit harmonisation rule:** papers report slope in **% or degrees** — convert all to degrees: `° = atan(%/100)`.
@@ -80,7 +80,7 @@ Tier- and context-weighted reconciliation of the eight in-family units.
   "mapping_id": "agro_f1_slope",
   "suitability_family_id": "agroforestry__planted_silvoarable",
   "variable": "slope", "variable_unit": "degrees",
-  "dataset_id": "srtm_dem_90m",
+  "dataset_id": "copernicus_dem_glo30",
   "suitability_dimension": "biophysical_constraint",
   "relationship_type": "trapezoidal",
   "relationship_params": { "abs_min": 0, "opt_low": 0, "opt_high": 10, "abs_max": 30 },

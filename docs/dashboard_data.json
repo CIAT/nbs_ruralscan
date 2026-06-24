@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-24T13:07:25.531614+00:00",
-  "git_commit": "cafbb085c40097b39fc94ab117838c1c0f5dd6de",
+  "timestamp": "2026-06-24T15:01:51.295772+00:00",
+  "git_commit": "02881545bbb72ad1b0dd80e12a51135039f639ed",
   "registers": {
     "SRC_source_register": [
       {
@@ -14723,8 +14723,7 @@
         },
         "group_id": "topographic",
         "candidate_dataset_ids": [
-          "srtm_dem_30m",
-          "srtm_dem_90m"
+          "copernicus_dem_glo30"
         ],
         "min_meaningful_resolution_m": 90,
         "resolution_sensitivity": "high",
@@ -14947,7 +14946,7 @@
         "group_id": "hydrological",
         "candidate_dataset_ids": [
           "scs_cn_runoff_composite",
-          "srtm_dem_30m"
+          "copernicus_dem_glo30"
         ],
         "min_meaningful_resolution_m": 90,
         "resolution_sensitivity": "high",
@@ -14965,7 +14964,7 @@
         "group_id": "hydrological",
         "candidate_dataset_ids": [
           "scs_cn_runoff_composite",
-          "srtm_dem_30m"
+          "copernicus_dem_glo30"
         ],
         "min_meaningful_resolution_m": 90,
         "resolution_sensitivity": "high",
@@ -15538,8 +15537,7 @@
         "unit_conversions": {},
         "group_id": "topographic",
         "candidate_dataset_ids": [
-          "srtm_dem_90m",
-          "srtm_dem_30m"
+          "copernicus_dem_glo30"
         ],
         "min_meaningful_resolution_m": 90,
         "resolution_sensitivity": "low",
@@ -15557,8 +15555,7 @@
         "unit_conversions": {},
         "group_id": "topographic",
         "candidate_dataset_ids": [
-          "srtm_dem_30m",
-          "srtm_dem_90m"
+          "copernicus_dem_glo30"
         ],
         "min_meaningful_resolution_m": 90,
         "resolution_sensitivity": "high",
@@ -16844,10 +16841,10 @@
         "binding_id": "slope__global",
         "variable": "slope",
         "scope_type": "global",
-        "dataset_id": "srtm_dem_30m",
+        "dataset_id": "copernicus_dem_glo30",
         "preference_rank": 1,
         "status": "catalogued",
-        "fitness_note": "30 m SRTM; derive-then-aggregate for slope."
+        "fitness_note": "Copernicus DEM GLO-30 (~30 m); derive-then-aggregate for slope on EE. Swapped from SRTM (cleaner/void-filled) — pending Benson QA fitness sign-off."
       },
       {
         "binding_id": "annual_precipitation__global",
@@ -17444,28 +17441,6 @@
         "grain_type": "grid"
       },
       {
-        "dataset_id": "srtm_dem_90m",
-        "dataset_name": "SRTM Digital Elevation Model (90m / 30m)",
-        "analytical_module": "structural_suitability",
-        "time_period": 2000,
-        "spatial_resolution_m": 30,
-        "geographic_coverage": [
-          "global"
-        ],
-        "data_format": "geotiff_cog",
-        "access_type": "gee_asset",
-        "download_url": "https://dwtkns.com/srtm30m/",
-        "gee_asset_id": "USGS/SRTMGL1_003",
-        "license": "Public domain (NASA)",
-        "citation": "Farr, T.G. et al. (2007). The Shuttle Radar Topography Mission. Reviews of Geophysics, 45(2), RG2004.",
-        "doi": "10.1029/2005RG000183",
-        "version": "v3",
-        "preprocessing_notes": "Derive slope (degrees) and aspect from DEM in GEE. Slope is primary biophysical constraint for agroforestry machinery access and erosion risk. Used across nearly all 23 AF papers in stocktake (Ahmad et al. 2017, 2018, 2020; Chuma et al. 2021; Haile 2024; Nath et al. 2021; Mushtaq et al. 2023; Seja et al. 2022; Wotlolan et al. 2021).",
-        "limitations": "Voids in high-relief areas filled with ASTER or other interpolation methods — check for artefacts. Vegetation canopy not filtered — potential overestimation of elevation under forest cover. Not for: Hydraulic modelling requiring bare-earth DEM; landslide hazard at plot scale",
-        "description": "Shuttle Radar Topography Mission digital elevation model, 3 arc-second (~90 m), 56°S-60°N.",
-        "grain_type": "grid"
-      },
-      {
         "dataset_id": "esa_worldcover_2021",
         "dataset_name": "ESA WorldCover 2021 (10m Land Cover)",
         "analytical_module": "structural_suitability",
@@ -17722,25 +17697,24 @@
         "grain_type": "grid"
       },
       {
-        "dataset_id": "srtm_dem_30m",
-        "dataset_name": "SRTM DEM 30m",
+        "dataset_id": "copernicus_dem_glo30",
+        "dataset_name": "Copernicus DEM GLO-30",
         "analytical_module": "structural_suitability",
-        "time_period": 2000,
+        "time_period": "2011–2015",
         "spatial_resolution_m": 30,
         "geographic_coverage": [
           "global"
         ],
         "data_format": "geotiff_cog",
         "access_type": "gee_asset",
-        "download_url": "https://dwtkns.com/srtm30m/",
-        "gee_asset_id": "USGS/SRTMGL1_003",
-        "license": "Public domain (NASA)",
-        "citation": "Farr et al. (2007). SRTM. Reviews of Geophysics.",
-        "doi": "10.1029/2005RG000183",
-        "version": "v3",
-        "preprocessing_notes": "WH module alias for SRTM. See srtm_dem_90m entry for full notes.",
-        "limitations": "Voids in high-relief terrain. Not for: Engineering design",
-        "description": "Shuttle Radar Topography Mission digital elevation model, 1 arc-second (~30 m), 56°S-60°N.",
+        "download_url": "https://registry.opendata.aws/copernicus-dem/",
+        "gee_asset_id": "COPERNICUS/DEM/GLO30",
+        "license": "Copernicus free-and-open (ESA/EU)",
+        "citation": "European Space Agency (2022). Copernicus Global Digital Elevation Model GLO-30 (TanDEM-X).",
+        "version": "GLO-30",
+        "preprocessing_notes": "GEE-hosted ImageCollection (mosaic; band DEM). Preferred elevation source over SRTM — newer, void-filled, globally complete. Derive slope/aspect on EE at native 30 m (derive-then-aggregate), pull AOI grid via xee. Fitness-equivalent COG version on AWS Open Data (s3://copernicus-dem-30m) if a GEE-free path is ever needed. Loader: src/nbs_ruralscan/data_loaders/datasets/copernicus_dem_glo30.py.",
+        "limitations": "DSM (includes canopy/buildings) — not bare-earth. Not for: Engineering design",
+        "description": "Copernicus DEM GLO-30 — global ~30 m digital surface model (TanDEM-X, edited/void-filled). Preferred elevation source over SRTM for slope/aspect.",
         "grain_type": "grid"
       },
       {
@@ -19110,7 +19084,7 @@
         {
           "mapping_id": "agro_slope_global",
           "nbs_id": "agroforestry",
-          "dataset_id": "srtm_dem_90m",
+          "dataset_id": "copernicus_dem_glo30",
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {
@@ -20013,7 +19987,7 @@
         {
           "mapping_id": "wh_slope_global",
           "nbs_id": "water_harvesting_conservation",
-          "dataset_id": "srtm_dem_90m",
+          "dataset_id": "copernicus_dem_glo30",
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {
@@ -20140,7 +20114,7 @@
         {
           "mapping_id": "wh_drainage_density_global",
           "nbs_id": "water_harvesting_conservation",
-          "dataset_id": "srtm_dem_90m",
+          "dataset_id": "copernicus_dem_glo30",
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {

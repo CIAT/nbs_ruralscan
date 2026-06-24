@@ -41,7 +41,7 @@ This workbook was authored standalone and aliased shared framework entities (dat
 priority layers, geographic contexts) with a `_wh` suffix. Those clones have been collapsed into the canonical
 shared rows at the [schema root](../../) so the framework layer is one source of truth — e.g. this recipe's
 T6 now references `rural_poverty_headcount` and `climate_drought_hazard`, not the `_wh` aliases. Genuinely
-water-specific entries (e.g. `srtm_dem_30m`, `runoff_potential_index`, `groundwater_recharge_potential`,
+water-specific entries (e.g. `copernicus_dem_glo30`, `runoff_potential_index`, `groundwater_recharge_potential`,
 `agricultural_water_deficit`, `flood_risk`, `dryland_south_asia`) were retained. Full log:
 [`../../DEDUP_NOTES.md`](../../DEDUP_NOTES.md). Three items await Brayden's M2 sign-off (T2 weight reconciliation,
 flood-hazard method, erosion-vs-degradation).
