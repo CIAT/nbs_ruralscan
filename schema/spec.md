@@ -678,7 +678,7 @@ Canonical variables: harmonisation + data-catalog link + resolution validity.
 |---|---|---|---|---|
 | `canonical_variable_id` | string | Required | Unique id. | `slope` |
 | `label` | string | Required | Display name. | `Terrain slope` |
-| `aliases` | string[] | Optional | Known surface names (may be empty). | `['terrain slope','gradient','slope %']` |
+| `aliases` | string[] | Optional | Known surface names **and synonymous variable names** that map to this canonical (so a source's wording resolves here, and near-equivalent variables are linked rather than duplicated — e.g. `distance_to_settlement` carries `distance to market`; `accessibility_travel_time` carries `market_access`). May be empty. | `['terrain slope','gradient','slope %']` |
 | `canonical_unit` | string | Required | Canonical unit. | `degrees` |
 | `unit_conversions` | object | Optional | Conversions to canonical unit (may be empty). | `{pct→deg:"atan"}` |
 | `group_id` | string | Required | → Variable-Group vocab (Topographic, …). | `topographic` |
