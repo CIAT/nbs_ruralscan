@@ -2749,6 +2749,11 @@
     var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
     var cropImg=(window._reviewApi && _vfTabular(ev.quote))?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show table region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
+    // Default-decode categorical class codes (issue #102): readable class names for any
+    // class-coded EV (e.g. a CDL crop mask) so the reviewer never sees bare "61, 205…".
+    var _dc=((dashboardData||{}).decoded_classes||{})[ev.evidence_id];
+    var _dcName=function(p){return vfEsc(p[1]||('#'+p[0]));};
+    var decodedBlock=_dc?('<div style="margin-top:8px; font-size:10.5px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:4px; padding:7px 9px;"><b style="color:var(--accent-emerald);">&#128203; Decoded classes ('+_dc.n_included+' included &middot; scheme '+vfEsc(_dc.scheme)+')</b><div style="color:var(--text-secondary); margin-top:3px; line-height:1.5;">'+_dc.included.slice(0,25).map(_dcName).join(', ')+(_dc.included.length>25?(' <span style="color:var(--text-muted);">+'+(_dc.included.length-25)+' more</span>'):'')+'</div>'+((_dc.excluded&&_dc.excluded.length)?('<div style="margin-top:4px; color:var(--accent-rose);"><b>Excluded:</b> '+_dc.excluded.map(_dcName).join(', ')+'</div>'):'')+'</div>'):'';
     return '<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:4px solid '+_aiCol+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
       +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
       +_aiBadge
@@ -2760,6 +2765,7 @@
       +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
       +cropImg
+      +decodedBlock
       +reviewsLine
       +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px; font-size:10.5px; border-top:1px solid var(--border-color); padding-top:10px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp; ':'')+pdfLink+'</div>'
       +'<div style="font-size:10.5px; color:var(--text-secondary); margin-top:10px; padding:7px 10px; background:rgba(255,255,255,0.02); border-radius:4px; border-left:2px solid '+_aiCol+';">'+_decLegend+'</div>'

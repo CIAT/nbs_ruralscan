@@ -24,6 +24,7 @@ from __future__ import annotations
 import csv
 from datetime import datetime, timezone
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -319,6 +320,23 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         csv_path = schema_root / f"{tbl}.csv"
         if csv_path.exists():
             data["global_tables"][tbl] = _csv_to_rows(csv_path)
+
+    # Decode categorical class codes by default (issue #102): for any EV whose quote
+    # carries a CDL-style band mask, attach the readable included/excluded class names so
+    # the dashboard never shows bare "61, 205…". Generalises as more schemes are routed.
+    from nbs_ruralscan.runtime import codelist as _codelist
+
+    data["decoded_classes"] = {}
+    _mask_re = re.compile(r"\w+\.(lte|gte)\(\s*\d+\s*\)")
+    for ev in data["registers"].get("EV_evidence_register", []):
+        quote = ev.get("quote") or ""
+        if _mask_re.search(quote):
+            try:
+                summary = _codelist.summarise_cdl_mask(quote)
+            except Exception:  # noqa: BLE001 — never break the build on a mask
+                continue
+            if summary["n_included"]:
+                data["decoded_classes"][ev["evidence_id"]] = summary
 
     # Discover recipes
     recipes_dir = schema_root / "recipes"
