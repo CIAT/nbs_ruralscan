@@ -103,7 +103,7 @@ def record(adjustment: str, commit: str = "", note: str = "") -> dict:
         "note": note,
     }
     with LEARNINGS_LOG.open("a", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS)
+        w = csv.DictWriter(f, fieldnames=FIELDS, lineterminator="\n")
         if new:
             w.writeheader()
         w.writerow(row)

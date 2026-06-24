@@ -110,7 +110,9 @@ def main() -> int:
         list(csv.DictReader(LEDGER.open(encoding="utf-8"))) if LEDGER.exists() else []
     )
     with LEDGER.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=FIELDS, extrasaction="ignore")
+        w = csv.DictWriter(
+            f, fieldnames=FIELDS, extrasaction="ignore", lineterminator="\n"
+        )
         w.writeheader()
         for r in existing:
             w.writerow({k: r.get(k, "") for k in FIELDS})
