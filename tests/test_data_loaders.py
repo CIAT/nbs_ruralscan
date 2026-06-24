@@ -6,12 +6,28 @@ download, so it's skipped unless NBS_RUN_NET=1.
 
 from __future__ import annotations
 
+import importlib
+import inspect
 import os
+import pkgutil
 
 import pytest
 import xarray as xr
 
-from nbs_ruralscan.data_loaders import TargetGrid, load
+from nbs_ruralscan.data_loaders import TargetGrid, datasets, load
+
+
+def test_every_dataset_module_exposes_load_accepting_grid():
+    """Contract guard: each datasets/<id>.py the dispatcher can reach must expose a
+    callable load() that accepts `grid` (the dispatcher calls load(grid=grid, **kw))."""
+    names = [m.name for m in pkgutil.iter_modules(datasets.__path__) if not m.name.startswith("_")]
+    assert names, "no dataset loaders found"
+    for name in names:
+        fn = getattr(importlib.import_module(f"{datasets.__name__}.{name}"), "load", None)
+        assert callable(fn), f"datasets/{name}.py must expose a callable load()"
+        params = inspect.signature(fn).parameters
+        accepts_grid = "grid" in params or any(p.kind == p.VAR_KEYWORD for p in params.values())
+        assert accepts_grid, f"datasets/{name}.load() must accept `grid`"
 
 
 def test_grid_shape_and_transform():
