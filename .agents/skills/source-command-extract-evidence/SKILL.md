@@ -127,6 +127,18 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     scale (e.g. "0–10", "region-specific HUC default") and what is weighted; land_cover with no
     class list (which classes in/out) is likewise unreviewable. **No caption/context, or a
     failed table screengrab → `insufficient_context`**: flag for the human, don't guess.
+14. **Constrained-AOI framing → `constrained_aoi`** (2026-06-24, general principle). A source
+    that scopes the NbS onto a *subset* of land **understates where the NbS is actually
+    feasible** and misrepresents the opportunity-space extent. Classic case: **land-capability
+    / land-use-capacity classifications** (USDA-LCC-style, e.g. INAB Guatemala) that assign
+    agroforestry as a **residual / "marginal land"** bucket — what's left after prime
+    agriculture and protection forest. Agroforestry is *also* feasible on good land, so the
+    source's thresholds describe "where it was *allocated*", not "where it *can go*". This is a
+    FRAMING bias of an otherwise on-topic source (distinct from `off_scope`, which is the wrong
+    section, and `wrong_practice`, which is the wrong NbS). **Down-weight; NEVER use such a
+    source to set the AOI / opportunity-space extent or a global threshold** — at most a
+    qualitative, region-flagged vote (`claim_basis=expert_assertion`). Watch for it in any
+    land-allocation / capability / zoning scheme.
 
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),

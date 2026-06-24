@@ -45,6 +45,7 @@ REASON_CODES = [
     "uninterpretable_weight",
     "speculative_evidence",
     "wrong_table",
+    "constrained_aoi",
     "false_flag",
     "accepted_correction",
     "confirmed_pass",
