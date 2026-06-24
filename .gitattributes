@@ -7,3 +7,10 @@ schema/registers/*.json        linguist-generated=true
 
 # The column manifest is hand-authored, not generated — keep it visible in diffs.
 schema/structure/columns.json  -linguist-generated
+
+# Force LF on ALL CSVs cross-platform. The registers/recipes hold multiline quoted
+# fields (185+ EV rows have embedded newlines); on Windows, git autocrlf would rewrite
+# those embedded LFs to CRLF on checkout, producing ragged rows that crash the
+# QA "Apply decisions & rebuild" path with `dict contains fields not in fieldnames: None`
+# (issue #104). `text eol=lf` pins them to LF so the registers read identically everywhere.
+*.csv                          text eol=lf

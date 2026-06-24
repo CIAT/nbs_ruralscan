@@ -98,7 +98,7 @@ def export() -> Path:
         )
     WORKLIST.parent.mkdir(parents=True, exist_ok=True)
     with WORKLIST.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=_WL_FIELDS)
+        w = csv.DictWriter(f, fieldnames=_WL_FIELDS, extrasaction="ignore")
         w.writeheader()
         w.writerows(out)
     print(f"exported {len(out)} flagged units → {WORKLIST.relative_to(ROOT)}")
@@ -222,7 +222,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             resolved += 1
         kept.append(r)
     with EV.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols)
+        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         w.writeheader()
         w.writerows(kept)
     if logrows:
@@ -307,7 +307,7 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
             ]
         )
     with EV.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols)
+        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
         w.writeheader()
         w.writerows(rows)
     if logrows:
