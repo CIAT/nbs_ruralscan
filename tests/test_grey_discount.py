@@ -49,6 +49,10 @@ def test_grey_cannot_dominate_t6_median_but_still_contributes():
         (_unit("g2", "grey2", "nbs_effect"), "high", {"abs_max": 60}),
     ]
     cats = {"grey1": "grey", "grey2": "grey"}
-    assert synthesis._reconcile(contribs, {})["abs_max"] == 60  # undiscounted → grey wins
-    assert synthesis._reconcile(contribs, cats)["abs_max"] == 30  # discounted → pulled back
+    assert (
+        synthesis._reconcile(contribs, {})["abs_max"] == 60
+    )  # undiscounted → grey wins
+    assert (
+        synthesis._reconcile(contribs, cats)["abs_max"] == 30
+    )  # discounted → pulled back
     # grey still CONTRIBUTED (it was in the pool, just out-weighted) — n_sources unaffected.
