@@ -480,22 +480,20 @@
     "grain_type": "grid"
   },
   {
-    "dataset_id": "gadm_v41_admin",
-    "dataset_name": "GADM v4.1 administrative boundaries",
+    "dataset_id": "wb_admin_boundaries",
+    "dataset_name": "World Bank Official Boundaries",
     "analytical_module": "geographic_context",
-    "time_period": 2022,
     "geographic_coverage": [
       "global"
     ],
-    "data_format": "shapefile",
+    "data_format": "geopackage",
     "access_type": "direct_download",
-    "download_url": "https://gadm.org/",
-    "license": "GADM-noncommercial",
-    "citation": "GADM (2022) Database of Global Administrative Areas v4.1.",
-    "version": 4.1,
-    "preprocessing_notes": "Country/region polygons for AOI + admin context scoping.",
-    "limitations": "Boundary vintages vary by country; non-commercial licence. Not for: dispute adjudication.",
-    "description": "GADM Database of Global Administrative Areas v4.1 — admin-0/1/2/3 boundary polygons.",
+    "download_url": "https://datacatalog.worldbank.org/search/dataset/0038272/world-bank-official-boundaries",
+    "license": "CC-BY-4.0",
+    "citation": "World Bank (2024). World Bank Official Boundaries. World Bank Data Catalog, dataset 0038272.",
+    "preprocessing_notes": "Download Admin 0/1/2 GeoPackages; convert to a GeoParquet store partitioned by admin level, Hilbert-sorted, bbox-covered, zstd-compressed. Filter to AOI country via ISO_A3 (ISO 3166-1 alpha-3). Used for AOI definition + admin-level zonal reporting (M4). Loader: src/nbs_ruralscan/data_loaders/datasets/wb_admin_boundaries.py.",
+    "limitations": "WB depiction of boundaries; the WB_A3 code deviates from ISO3 for some disputed territories — filter on ISO_A3, not WB_A3. Not for: dispute adjudication.",
+    "description": "World Bank Official Administrative Boundaries (Admin 0/1/2) — country and subnational polygons for AOI definition and admin-level reporting.",
     "grain_type": "vector"
   },
   {

@@ -99,7 +99,7 @@
 >
 > - **`T1.scenario_type`** → **Conditional** (was Required). Required only if
 >   `analytical_module ∈ { climate_hazard, climate_impact }`; omitted for static / non-climate
->   datasets (SoilGrids, SRTM, OSM roads, GADM, etc.). Mirrors the existing `hazard_type`
+>   datasets (SoilGrids, SRTM, OSM roads, WB boundaries, etc.). Mirrors the existing `hazard_type`
 >   conditional.
 > - **`T1.description`** — **new Required**, UI-facing one-line description. Populate from the
 >   provider's official metadata/abstract (GEE catalog, dataset landing page) — *not* bespoke
