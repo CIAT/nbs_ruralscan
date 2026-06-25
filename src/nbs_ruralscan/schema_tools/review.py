@@ -153,10 +153,21 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             )
         return (str(v or "").strip().lower(), "", "", "")
 
-    with EV.open(newline="", encoding="utf-8") as f:
-        rd = csv.DictReader(f)
-        cols = list(rd.fieldnames or [])
-        rows = list(rd)
+    try:
+        with EV.open(newline="", encoding="utf-8") as f:
+            rd = csv.DictReader(f)
+            cols = list(rd.fieldnames or [])
+            rows = list(rd)
+    except UnicodeDecodeError as e:
+        # name the file so "Apply failed (gate?): utf-8 codec can't decode byte 0xe7"
+        # is actionable. A stray non-UTF-8 byte is usually a pre-fix cp1252 local write —
+        # `git restore` the register (committed copy is clean UTF-8); decisions live in
+        # pipeline/review/decisions.json, so a restore loses no review work.
+        raise ValueError(
+            f"{EV} is not valid UTF-8 (byte 0x{e.object[e.start]:02x} at position "
+            f"{e.start}). `git restore {EV.name}` — the committed register is clean UTF-8; "
+            "your decisions are safe in decisions.json."
+        ) from e
     kept, dropped, resolved, queried = [], 0, 0, 0
     reasons: Counter = Counter()
     logrows = []
