@@ -3685,7 +3685,9 @@
   // Ledger is keyed (nbs_id, table[T4/T3/T6], category[stock/updated_lit/grey/tool]).
   function ledgerStage(nbsId, table, category, stage) {
     const led = (dashboardData && dashboardData.progress_ledger) || [];
-    const row = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category);
+    // table-level matrix reads the family-agnostic rows (family==''); sub-practice-specific
+    // ledger rows are additive (per-family search status), not shown in this aggregate view.
+    const row = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && !(r.family));
     return row ? (row[stage] || 'not_started') : 'not_started';
   }
   // dashboard typeKey -> ledger category enum
