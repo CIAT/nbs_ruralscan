@@ -1,10 +1,17 @@
-"""Progress ledger — orchestrator-owned, register-enforced, per (NbS × table × category).
+"""Progress ledger — orchestrator-owned, register-enforced, per (NbS × table × category × family).
 
-Tracks, for each (nbs_id × table[T4/T3/T6] × source-category[stock/updated_lit/grey/tool]),
-the AUTHORED process stages: searched · screened · verified. These cannot be derived from
-data (a search either happened or didn't), so the pipeline STEP that runs them stamps the
-ledger via `mark()`. Extraction (E) and review (R) ARE facts, derived live from the
-register per (family × table × category) — they are not stored here.
+Tracks, for each (nbs_id × table[T4/T3/T6] × source-category[stock/updated_lit/grey/tool]
+× suitability_family), the AUTHORED process stages: searched · screened · verified. These
+cannot be derived from data (a search either happened or didn't, and **absence of evidence
+is NOT proof a search was run** — it may be searched-and-empty), so the pipeline STEP that
+runs them stamps the ledger via `mark()`. Extraction (E) and review (R) ARE facts, derived
+live from the register — they are not stored here.
+
+`family` granularity (2026-06-25): an empty `family` = the table-level / all-families search
+(the default — a bounded seed-set sweep reads papers spanning families). A specific
+`family` (e.g. `agroforestry__regeneration_farmland`) records a SUB-PRACTICE-targeted search
+status as source of truth — so "have we searched for FMNR T3?" is answerable from the
+ledger, never inferred from whether evidence happens to exist. Existing rows keep `family=""`.
 
 `check()` reconciles ledger claims against the register and is wired into generate.py + CI:
 it FAILS the build on an invalid status, or `verified=done` for a cell with zero evidence
@@ -36,7 +43,9 @@ _ROLE = {"T4": "structural_suitability", "T3": "climate_risk", "T6": "nbs_effect
 _ROLE_INV = {v: k for k, v in _ROLE.items()}
 STATUSES = {"not_started", "in_progress", "done"}
 FIELDS = (
-    ["nbs_id", "table", "category"] + STAGES + ["last_run_id", "updated", "by", "note"]
+    ["nbs_id", "table", "category", "family"]
+    + STAGES
+    + ["last_run_id", "updated", "by", "note"]
 )
 
 
@@ -68,10 +77,11 @@ def _category_map(schema_root: Path) -> dict[str, str]:
 
 
 def derive_facts(schema_root: str | Path) -> dict[tuple, dict]:
-    """Per (nbs_id, table, category): ev count + reviewed count, from the register.
+    """Per (nbs_id, table, category, family): ev count + reviewed count, from the register.
 
-    (Family is folded out here — the gate works at NbS×table×category; the dashboard
-    derives the per-family cell facts itself.)
+    `family` is the EV's `suitability_family_id`. Aggregate (all-families) facts for a
+    `(nbs, table, category)` are obtained with `facts_for(..., family="")` which sums over
+    families — matching a `family=""` ledger row.
     """
     schema_root = Path(schema_root)
     cat = _category_map(schema_root)
@@ -86,7 +96,12 @@ def derive_facts(schema_root: str | Path) -> dict[tuple, dict]:
             tbl = _ROLE_INV.get(r.get("use_role", ""))
             if not tbl:
                 continue
-            key = (r.get("nbs_id", ""), tbl, cat.get(r.get("source_id", ""), "stock"))
+            key = (
+                r.get("nbs_id", ""),
+                tbl,
+                cat.get(r.get("source_id", ""), "stock"),
+                r.get("suitability_family_id", ""),
+            )
             d = facts.setdefault(key, {"ev": 0, "reviewed": 0})
             d["ev"] += 1
             if r.get("reviewer_ok") in (True, "true", "True"):
@@ -94,40 +109,69 @@ def derive_facts(schema_root: str | Path) -> dict[tuple, dict]:
     return facts
 
 
+def facts_for(
+    facts: dict[tuple, dict], nbs: str, tbl: str, c: str, family: str
+) -> dict:
+    """Resolve facts for a ledger cell: a specific family, or (family=='') the sum over all."""
+    if family:
+        return facts.get((nbs, tbl, c, family), {"ev": 0, "reviewed": 0})
+    agg = {"ev": 0, "reviewed": 0}
+    for (n, t, cc, _fam), d in facts.items():
+        if n == nbs and t == tbl and cc == c:
+            agg["ev"] += d["ev"]
+            agg["reviewed"] += d["reviewed"]
+    return agg
+
+
 def check(schema_root: str | Path) -> list[str]:
     """Hard reconciliation (build-failing). Returns list of violations (empty = OK)."""
     facts = derive_facts(schema_root)
-    rows = {(r["nbs_id"], r["table"], r["category"]): r for r in _rows()}
     errs: list[str] = []
-    for (nbs, tbl, c), r in rows.items():
+    for r in _rows():
+        nbs, tbl, c, fam = (
+            r["nbs_id"],
+            r["table"],
+            r["category"],
+            r.get("family", "") or "",
+        )
+        lbl = f"{nbs}·{tbl}·{c}" + (f"·{fam}" if fam else "")
         if tbl not in TABLES:
-            errs.append(f"[{nbs}·{tbl}·{c}] invalid table '{tbl}'")
+            errs.append(f"[{lbl}] invalid table '{tbl}'")
         if c not in CATEGORIES:
-            errs.append(f"[{nbs}·{tbl}·{c}] invalid category '{c}'")
+            errs.append(f"[{lbl}] invalid category '{c}'")
         for s in STAGES:
             if (r.get(s) or "not_started") not in STATUSES:
-                errs.append(f"[{nbs}·{tbl}·{c}] stage '{s}'='{r.get(s)}' invalid")
+                errs.append(f"[{lbl}] stage '{s}'='{r.get(s)}' invalid")
         if (r.get("verified") or "not_started") == "done":
-            if facts.get((nbs, tbl, c), {}).get("ev", 0) == 0:
+            if facts_for(facts, nbs, tbl, c, fam).get("ev", 0) == 0:
                 errs.append(
-                    f"[{nbs}·{tbl}·{c}] verified=done but 0 evidence units — nothing to verify"
+                    f"[{lbl}] verified=done but 0 evidence units — nothing to verify"
                 )
     return errs
 
 
 def coverage_warnings(schema_root: str | Path) -> list[str]:
-    """Non-fatal: cells holding evidence from a category whose search isn't 'done'."""
+    """Non-fatal: cells holding evidence from a category whose search isn't 'done'.
+
+    Checks at table level (family='' ledger rows) — a family-specific 'done' also counts."""
     facts = derive_facts(schema_root)
-    rows = {(r["nbs_id"], r["table"], r["category"]): r for r in _rows()}
+    rows = list(_rows())
+
+    def _searched_done(nbs: str, tbl: str, c: str, fam: str) -> bool:
+        for r in rows:
+            if r["nbs_id"] == nbs and r["table"] == tbl and r["category"] == c:
+                rf = r.get("family", "") or ""
+                if (rf == "" or rf == fam) and (r.get("searched") or "") == "done":
+                    return True
+        return False
+
     out = []
-    for key, fct in facts.items():
-        if fct["ev"] > 0:
-            r = rows.get(key)
-            if not r or (r.get("searched") or "not_started") != "done":
-                out.append(
-                    f"[{key[0]}·{key[1]}·{key[2]}] {fct['ev']} evidence units but search "
-                    f"!= done — ad-hoc/incomplete search coverage"
-                )
+    for (nbs, tbl, c, fam), fct in facts.items():
+        if fct["ev"] > 0 and not _searched_done(nbs, tbl, c, fam):
+            out.append(
+                f"[{nbs}·{tbl}·{c}" + (f"·{fam}" if fam else "") + f"] {fct['ev']} "
+                "evidence units but search != done — ad-hoc/incomplete search coverage"
+            )
     return out
 
 
@@ -138,6 +182,7 @@ def mark(
     stage: str,
     status: str,
     *,
+    family: str = "",
     run_id: str = "",
     by: str = "orchestrator",
     note: str = "",
@@ -155,7 +200,10 @@ def mark(
         (
             r
             for r in rows
-            if r["nbs_id"] == nbs and r["table"] == table and r["category"] == category
+            if r["nbs_id"] == nbs
+            and r["table"] == table
+            and r["category"] == category
+            and (r.get("family", "") or "") == family
         ),
         None,
     )
@@ -165,6 +213,7 @@ def mark(
             nbs_id=nbs,
             table=table,
             category=category,
+            family=family,
             **{s: "not_started" for s in STAGES},
         )
         rows.append(row)
@@ -183,11 +232,20 @@ def _show() -> None:
         print("progress ledger is empty.")
         return
     tick = {"done": "✓", "in_progress": "~", "not_started": "·"}
-    print(f"{'nbs·table·category':40}  " + " ".join(f"{s[:4]}" for s in STAGES))
-    for r in sorted(rows, key=lambda x: (x["nbs_id"], x["table"], x["category"])):
-        key = f"{r['nbs_id']}·{r['table']}·{r['category']}"
+    print(f"{'nbs·table·category·family':48}  " + " ".join(f"{s[:4]}" for s in STAGES))
+    for r in sorted(
+        rows,
+        key=lambda x: (
+            x["nbs_id"],
+            x["table"],
+            x["category"],
+            x.get("family", "") or "",
+        ),
+    ):
+        fam = r.get("family", "") or ""
+        key = f"{r['nbs_id']}·{r['table']}·{r['category']}" + (f"·{fam}" if fam else "")
         print(
-            f"{key:40}  "
+            f"{key:48}  "
             + "    ".join(tick.get(r.get(s) or "not_started", "?") for s in STAGES)
         )
 
@@ -207,6 +265,11 @@ def main(argv: list[str] | None = None) -> int:
     pm.add_argument("--category", required=True)
     pm.add_argument("--stage", required=True)
     pm.add_argument("--status", required=True)
+    pm.add_argument(
+        "--family",
+        default="",
+        help="suitability_family_id; empty = table-level/all-families",
+    )
     pm.add_argument("--run-id", default="")
     pm.add_argument("--by", default="orchestrator")
     pm.add_argument("--note", default="")
@@ -222,13 +285,15 @@ def main(argv: list[str] | None = None) -> int:
             args.category,
             args.stage,
             args.status,
+            family=args.family,
             run_id=args.run_id,
             by=args.by,
             note=args.note,
         )
-        print(
-            f"marked {args.nbs}·{args.table}·{args.category} {args.stage}={args.status}"
+        _k = f"{args.nbs}·{args.table}·{args.category}" + (
+            f"·{args.family}" if args.family else ""
         )
+        print(f"marked {_k} {args.stage}={args.status}")
         return 0
     errs = check(args.schema_root)
     warns = coverage_warnings(args.schema_root)
