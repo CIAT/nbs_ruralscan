@@ -24,8 +24,14 @@ def load(grid: TargetGrid, variable: str = "elevation"):
 
     # GLO-30 is a tiled ImageCollection (band "DEM"); mosaic to a single image first.
     dem = ee.ImageCollection("COPERNICUS/DEM/GLO30").select("DEM").mosaic()
-    img = {
-        "slope": lambda: ee.Terrain.slope(dem),
-        "aspect": lambda: ee.Terrain.aspect(dem),
-    }.get(variable, lambda: dem)()
+    if variable == "elevation":
+        img = dem
+    elif variable == "slope":
+        img = ee.Terrain.slope(dem)
+    elif variable == "aspect":
+        img = ee.Terrain.aspect(dem)
+    else:
+        raise ValueError(
+            f"unknown variable {variable!r}; expected elevation/slope/aspect"
+        )
     return ee_to_xarray(img, grid)
