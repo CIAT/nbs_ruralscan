@@ -8,6 +8,7 @@ extract (the default), or an ``odc.geo.GeoBox`` to additionally reproject onto a
 
 from odc.geo.geobox import GeoBox
 
+from .checkpoint import checkpoint
 from .core import (
     AOI,
     download,
@@ -21,6 +22,7 @@ from .core import (
 __all__ = [
     "AOI",
     "GeoBox",
+    "checkpoint",
     "download",
     "ee_to_xarray",
     "load",

@@ -38,6 +38,50 @@ def test_every_dataset_module_exposes_load_accepting_target():
         assert accepts_target, f"datasets/{name}.load() must accept `target`"
 
 
+def test_checkpoint_caches_any_type_by_arg_checksum(tmp_path):
+    from nbs_ruralscan.data_loaders import checkpoint
+
+    cache = checkpoint(tmp_path)
+    calls = []
+
+    @cache
+    def raster(scale):  # xarray -> zarr, lazy reopen
+        calls.append(("raster", scale))
+        return xr.DataArray([[1.0, 2.0], [3.0, 4.0]], dims=("y", "x")) * scale
+
+    @cache
+    def table(n):  # non-xarray -> pickle
+        calls.append(("table", n))
+        return {"rows": n, "ok": True}
+
+    a, b = raster(2), raster(2)  # 2nd call: reopened, not recomputed
+    raster(3)  # different checksum -> recompute
+    t1, t2 = table(5), table(5)
+
+    assert calls == [("raster", 2), ("raster", 3), ("table", 5)]  # each computed once
+    assert float(a.sum()) == float(b.sum()) == 20.0
+    assert b.chunks is not None  # raster reopened lazily (dask-backed)
+    assert t1 == t2 == {"rows": 5, "ok": True}  # table round-trips via pickle
+    assert len(list(tmp_path.glob("*.zarr"))) == 2  # scale 2 and 3
+    assert len(list(tmp_path.glob("*.pkl"))) == 1
+
+    # arrays CAN be passed as args — keyed by dask.tokenize (content), not repr: same content
+    # hits the cache, different content recomputes (no silent collision)
+    seen = []
+
+    @cache
+    def doubled(layer):
+        seen.append(float(layer.sum()))
+        return layer * 2
+
+    arr1 = xr.DataArray([[1.0, 2.0], [3.0, 4.0]], dims=("y", "x"))
+    arr2 = xr.DataArray([[9.0, 9.0], [9.0, 9.0]], dims=("y", "x"))
+    r1, r1b, r2 = doubled(arr1), doubled(arr1), doubled(arr2)
+    assert seen == [10.0, 36.0]  # arr1 computed once (r1b was a cache hit), arr2 once
+    assert float(r1.sum()) == float(r1b.sum()) == 20.0
+    assert float(r2.sum()) == 72.0
+
+
 def test_to_target_native_aoi_vs_grid():
     """The core contract: an AOI clips to NATIVE resolution (no resample); a GeoBox
     reprojects onto the grid. Guards the native-default / grid-opt-in split."""
