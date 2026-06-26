@@ -22,6 +22,7 @@ Stdlib only.
 from __future__ import annotations
 
 import csv
+import io
 from datetime import datetime, timezone
 import json
 import re
@@ -41,21 +42,20 @@ def _coerce(value: str):
 
 
 def _csv_to_rows(path: Path) -> list[dict]:
+    # UTF-8, falling back to cp1252 for any CSV re-saved as Windows ANSI — notably an
+    # appended-to review_log.csv that the apply path can't heal by rewriting (#104's
+    # encoding cousin). Without this the rebuild gate crashes opaquely on "byte 0xe7".
+    data = path.read_bytes()
     try:
-        with path.open(newline="", encoding="utf-8") as fh:
-            rows = []
-            for raw in csv.DictReader(fh):
-                row = {k: _coerce(v) for k, v in raw.items() if v is not None}
-                rows.append({k: v for k, v in row.items() if v is not None})
-            return rows
-    except UnicodeDecodeError as e:
-        # name the offending file (issue: Namita's opaque "utf-8 codec can't decode byte
-        # 0xe7" popup gave no filename). A stray non-UTF-8 byte usually means a local cp1252
-        # write — re-save the file as UTF-8 or `git restore` it (the committed copy is clean).
-        raise ValueError(
-            f"{path} is not valid UTF-8 (byte 0x{e.object[e.start]:02x} at position "
-            f"{e.start}). Re-save it as UTF-8 or `git restore {path}` (committed copy is clean)."
-        ) from e
+        text = data.decode("utf-8")
+    except UnicodeDecodeError:
+        text = data.decode("cp1252")
+        print(f"  WARNING: {path.name} was not UTF-8 — read as cp1252. Don't edit CSVs in Excel.")
+    rows = []
+    for rec in csv.DictReader(io.StringIO(text)):
+        row = {k: _coerce(v) for k, v in rec.items() if v is not None}
+        rows.append({k: v for k, v in row.items() if v is not None})
+    return rows
 
 
 def _csv_files(schema_root: Path, location: str) -> list[Path]:
