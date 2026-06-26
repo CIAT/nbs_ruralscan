@@ -22,6 +22,7 @@ Verdict meanings (from the adversarial relationship-verify):
 from __future__ import annotations
 
 import csv
+import io
 import re
 from collections import Counter
 from datetime import datetime, timezone
@@ -73,10 +74,27 @@ def _flag(attr: str) -> tuple[str, str] | None:
     return (m.group(1), m.group(2).strip()) if m else None
 
 
+def _read_evidence_register() -> tuple[list[str], list[dict]]:
+    """Read EV as ``(columns, rows)``, falling back to cp1252 if it was re-saved as
+    Windows ANSI (Excel turns a quote's ``ç`` into a raw ``0xe7`` byte UTF-8 rejects —
+    crashed QA Apply on Windows). Callers rewrite EV as UTF-8, so apply heals it.
+    """
+    raw = EV.read_bytes()
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        text = raw.decode("cp1252")
+        print(
+            f"  WARNING: {EV.name} was not UTF-8 — read as cp1252 and healed to UTF-8. "
+            "Don't edit register CSVs in Excel."
+        )
+    rd = csv.DictReader(io.StringIO(text))
+    return list(rd.fieldnames or []), list(rd)
+
+
 def export() -> Path:
     """Write a review worklist of every currently-flagged EV unit."""
-    with EV.open(newline="", encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
+    _, rows = _read_evidence_register()
     out = []
     for r in rows:
         fl = _flag(r.get("attribution", ""))
@@ -153,21 +171,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             )
         return (str(v or "").strip().lower(), "", "", "")
 
-    try:
-        with EV.open(newline="", encoding="utf-8") as f:
-            rd = csv.DictReader(f)
-            cols = list(rd.fieldnames or [])
-            rows = list(rd)
-    except UnicodeDecodeError as e:
-        # name the file so "Apply failed (gate?): utf-8 codec can't decode byte 0xe7"
-        # is actionable. A stray non-UTF-8 byte is usually a pre-fix cp1252 local write —
-        # `git restore` the register (committed copy is clean UTF-8); decisions live in
-        # pipeline/review/decisions.json, so a restore loses no review work.
-        raise ValueError(
-            f"{EV} is not valid UTF-8 (byte 0x{e.object[e.start]:02x} at position "
-            f"{e.start}). `git restore {EV.name}` — the committed register is clean UTF-8; "
-            "your decisions are safe in decisions.json."
-        ) from e
+    cols, rows = _read_evidence_register()
     kept, dropped, resolved, queried = [], 0, 0, 0
     reasons: Counter = Counter()
     logrows = []
@@ -286,10 +290,7 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
                     row.get("verdict", ""),
                     row.get("reason", ""),
                 )
-    with EV.open(newline="", encoding="utf-8") as f:
-        rd = csv.DictReader(f)
-        cols = list(rd.fieldnames or [])
-        rows = list(rd)
+    cols, rows = _read_evidence_register()
     targets = set(evidence_ids)
     reopened, logrows = 0, []
     for r in rows:
