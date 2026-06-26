@@ -1305,87 +1305,6 @@
         </div>
       </div>
 
-      <!-- Section 2b: Evidence Discovery Audit Matrix -->
-      <div class="card-container" style="margin-top: 24px;">
-        <div class="interrogator-header-row emerald" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 8px;" onclick="toggleSection('wrapper-discovery-audit', 'chev-discovery-audit')">
-          <h3 class="interrogator-section-title emerald" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
-            <span id="chev-discovery-audit" style="display:inline-block; transition:transform 0.2s;">▼</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            Evidence Discovery Coverage Audit Matrix
-          </h3>
-          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
-        </div>
-        <div id="wrapper-discovery-audit">
-          <!-- Filter / Search toolbar -->
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
-            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Filter NbS:</span>
-                <select id="filter-audit-nbs" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
-                  <option value="all">All NbS</option>
-                  <option value="agroforestry">Agroforestry</option>
-                  <option value="water_harvesting_conservation">Water Harvesting</option>
-                </select>
-              </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Status:</span>
-                <select id="filter-audit-status" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
-                  <option value="all">All</option>
-                  <option value="active">Active (Has Ingested Mappings/Claims)</option>
-                  <option value="pending">Pending/Draft</option>
-                </select>
-              </div>
-            </div>
-            
-            <!-- Legend indicators -->
-            <div style="display:flex; gap:16px; align-items:center; font-size:11.5px; border-left: 1px solid var(--border-color); padding-left: 16px; margin-left: 4px; flex-wrap: wrap;">
-              <span style="color:var(--text-muted); font-weight:500;">Legend:</span>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge high audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">#</span>
-                <span style="color:var(--text-secondary);">&gt; 1 Source</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge medium audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">1</span>
-                <span style="color:var(--text-secondary);">1 Source</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge low audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">0</span>
-                <span style="color:var(--text-secondary);">No Evidence</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:8px; margin-left:14px; padding-left:14px; border-left:1px solid var(--border-color); flex-wrap:wrap;">
-                <span style="color:var(--text-muted); font-weight:500;">Stage:</span>
-                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— the 4 small dots inside EACH STOCK/LIT/GREY/TOOLS cell, per source category. S/V from the enforced progress ledger (amber S = search in progress); E (evidence present) + R (reviewed) live from the register. The big number = source count. R is empty everywhere — nothing human-reviewed yet.</span></span>
-              </div>
-            </div>
-
-            <div>
-              <input type="text" class="table-search-input" id="search-audit-table" placeholder="Search families..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:180px;">
-            </div>
-          </div>
-          <div class="table-wrapper">
-            <table class="data-table" id="table-discovery-audit">
-              <thead>
-                <tr>
-                  <th id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
-                  <th id="audit-hdr-t4" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                  <th id="audit-hdr-t3" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                  <th id="audit-hdr-t6" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                </tr>
-              </thead>
-              <tbody id="body-discovery-audit">
-                <!-- Dynamically Rendered -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
       <!-- Section 3: Overview Scope Filter -->
       <div class="card-container" style="margin-top: 24px; padding: 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
         <div style="display:flex; align-items:center; gap:12px;">
@@ -2028,6 +1947,87 @@
               <button class="pill-btn active sky" id="btn-search-view-structured" style="border-radius: 4px; padding: 6px 12px; font-size: 12px; border: none; cursor: pointer;">Structured View</button>
               <button class="pill-btn" id="btn-search-view-raw" style="border-radius: 4px; padding: 6px 12px; font-size: 12px; border: none; cursor: pointer; background: transparent; color: var(--text-secondary);">Raw Markdown</button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2b: Evidence Discovery Audit Matrix -->
+      <div class="card-container" style="margin-top: 24px;">
+        <div class="interrogator-header-row emerald" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 8px;" onclick="toggleSection('wrapper-discovery-audit', 'chev-discovery-audit')">
+          <h3 class="interrogator-section-title emerald" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+            <span id="chev-discovery-audit" style="display:inline-block; transition:transform 0.2s;">▼</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Evidence Discovery Coverage Audit Matrix
+          </h3>
+          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
+        </div>
+        <div id="wrapper-discovery-audit">
+          <!-- Filter / Search toolbar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Filter NbS:</span>
+                <select id="filter-audit-nbs" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
+                  <option value="all">All NbS</option>
+                  <option value="agroforestry">Agroforestry</option>
+                  <option value="water_harvesting_conservation">Water Harvesting</option>
+                </select>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Status:</span>
+                <select id="filter-audit-status" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
+                  <option value="all">All</option>
+                  <option value="active">Active (Has Ingested Mappings/Claims)</option>
+                  <option value="pending">Pending/Draft</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Legend indicators -->
+            <div style="display:flex; gap:16px; align-items:center; font-size:11.5px; border-left: 1px solid var(--border-color); padding-left: 16px; margin-left: 4px; flex-wrap: wrap;">
+              <span style="color:var(--text-muted); font-weight:500;">Legend:</span>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="badge high audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">#</span>
+                <span style="color:var(--text-secondary);">&gt; 1 Source</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="badge medium audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">1</span>
+                <span style="color:var(--text-secondary);">1 Source</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span class="badge low audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">0</span>
+                <span style="color:var(--text-secondary);">No Evidence</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px; margin-left:14px; padding-left:14px; border-left:1px solid var(--border-color); flex-wrap:wrap;">
+                <span style="color:var(--text-muted); font-weight:500;">Stage:</span>
+                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— the 4 small dots inside EACH STOCK/LIT/GREY/TOOLS cell, per source category. S/V from the enforced progress ledger (amber S = search in progress); E (evidence present) + R (reviewed) live from the register. The big number = source count. R is empty everywhere — nothing human-reviewed yet.</span></span>
+              </div>
+            </div>
+
+            <div>
+              <input type="text" class="table-search-input" id="search-audit-table" placeholder="Search families..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:180px;">
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="data-table" id="table-discovery-audit">
+              <thead>
+                <tr>
+                  <th id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
+                  <th id="audit-hdr-t4" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t3" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t6" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                </tr>
+              </thead>
+              <tbody id="body-discovery-audit">
+                <!-- Dynamically Rendered -->
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
