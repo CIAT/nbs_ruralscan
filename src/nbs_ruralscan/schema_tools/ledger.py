@@ -125,6 +125,9 @@ def facts_for(
 
 def check(schema_root: str | Path) -> list[str]:
     """Hard reconciliation (build-failing). Returns list of violations (empty = OK)."""
+    from nbs_ruralscan.schema_tools.search_log import has_search
+
+    srch = Path(schema_root) / "registers" / "SRCH_search_register.csv"
     facts = derive_facts(schema_root)
     errs: list[str] = []
     for r in _rows():
@@ -135,6 +138,14 @@ def check(schema_root: str | Path) -> list[str]:
             r.get("family", "") or "",
         )
         lbl = f"{nbs}·{tbl}·{c}" + (f"·{fam}" if fam else "")
+        # a claimed search must have a logged protocol in SRCH (no search without a record)
+        if (r.get("searched") or "not_started") == "done" and not has_search(
+            nbs, tbl, c, fam, path=srch
+        ):
+            errs.append(
+                f"[{lbl}] searched=done but no SRCH search-protocol row — log the search "
+                "(terms/criteria/limits) via search_log before claiming it"
+            )
         if tbl not in TABLES:
             errs.append(f"[{lbl}] invalid table '{tbl}'")
         if c not in CATEGORIES:

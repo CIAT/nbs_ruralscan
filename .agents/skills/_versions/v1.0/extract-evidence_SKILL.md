@@ -1,13 +1,7 @@
 ---
 name: "source-command-extract-evidence"
 description: "Extract Evidence-Register units for one variable x suitability family from the ingested corpus (T4 method)"
-version: "v1.0"
 ---
-
-<!-- ruleset version v1.0 — log: methodology/RULESET_VERSIONS.md · snapshots: .agents/skills/_versions/.
-     Bump + snapshot on any change to the screening funnel, defect catalogue, or discovery protocol.
-     Stamp the version on SRCH.ruleset_version + EV.ruleset_version. -->
-
 
 # source-command-extract-evidence
 
