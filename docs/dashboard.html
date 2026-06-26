@@ -2032,6 +2032,20 @@
         </div>
       </div>
 
+      <!-- SRCH search-protocol log -->
+      <div class="card-container" style="margin-top: 24px;">
+        <div class="interrogator-header-row sky" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-sky); padding-bottom: 8px;" onclick="toggleSection('wrapper-srch-log','chev-srch-log')">
+          <h3 class="interrogator-section-title sky" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+            <span id="chev-srch-log" style="display:inline-block; transition:transform 0.2s;">&#9660;</span>
+            <span>&#128203; Search protocol log</span>
+          </h3>
+          <span class="card-title-meta" style="margin-left:8px;">Every discovery search, as run: terms &middot; inclusion criteria &middot; limits &middot; counts &middot; ruleset version. The progress ledger requires a row here before a search is marked done.</span>
+        </div>
+        <div id="wrapper-srch-log">
+          <div id="srch-log-body" style="overflow-x:auto;"></div>
+        </div>
+      </div>
+
       <!-- FILTER PILL PANELS -->
       <div class="card-container" style="position: sticky; top: 86px; z-index: 90; margin-bottom: 20px; padding: 16px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); box-shadow: var(--card-shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
         <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -3143,6 +3157,7 @@
 
     // 6b. Populate Discovery Audit List & Listeners
     renderDiscoveryAudit();
+    renderSrchLog();
     const auditNbsFilter = document.getElementById('filter-audit-nbs');
     if (auditNbsFilter) {
       auditNbsFilter.addEventListener('change', renderDiscoveryAudit);
@@ -3777,6 +3792,34 @@
         +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted);">'+vfEsc(r.Spatial_Method||'')+'</td>'
         +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted);">'+vfEsc(r.Tool||'')+'</td></tr>'; }).join('');
     body.innerHTML='<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Showing <b>'+vis.length+'</b> of '+rows.length+' peer-reviewed sources.</div><div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid var(--border-color); text-align:left;">'+['Title / journal','Practice','Tier','Cites','Input variables','Spatial method','Tool'].map(function(h){return '<th style="padding:6px 10px; font-size:9.5px; color:var(--text-muted); text-transform:uppercase;">'+h+'</th>';}).join('')+'</tr></thead><tbody>'+rowsHtml+'</tbody></table></div>';
+  }
+
+  function renderSrchLog() {
+    var el = document.getElementById('srch-log-body'); if (!el) return;
+    var rows = ((dashboardData || {}).registers || {})['SRCH_search_register'] || [];
+    if (!rows.length) { el.innerHTML = '<div style="color:var(--text-muted); padding:10px; font-size:12px;">No searches logged yet.</div>'; return; }
+    var procColor = { stock: '#64748b', updated_lit: '#38bdf8', grey: '#f59e0b', tool: '#a855f7' };
+    var fam = function (r) { var f = r.suitability_family_id || ''; return f ? f.split('__').pop().replace(/_/g, ' ') : 'all families'; };
+    var cell = function (x) { return (x === '' || x == null) ? '–' : x; };
+    var head = '<tr style="text-align:left; border-bottom:2px solid var(--border-color); font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);">'
+      + ['Sub-practice', 'Process', 'Table', 'Search terms', 'Inclusion criteria', 'Limits', 'R / S / I', 'Date', 'Ruleset'].map(function (h) { return '<th style="padding:6px 8px; vertical-align:top;">' + h + '</th>'; }).join('') + '</tr>';
+    var body = rows.map(function (r) {
+      var pc = procColor[r.category] || 'var(--text-secondary)';
+      var counts = cell(r.n_retrieved) + ' / ' + cell(r.n_screened) + ' / ' + cell(r.n_included);
+      return '<tr style="border-bottom:1px solid var(--border-color); font-size:11px; vertical-align:top;">'
+        + '<td style="padding:6px 8px; font-weight:600; white-space:nowrap;">' + vfEsc(fam(r)) + '</td>'
+        + '<td style="padding:6px 8px;"><span style="color:' + pc + '; font-weight:700;">' + vfEsc(r.category || '') + '</span></td>'
+        + '<td style="padding:6px 8px;">' + vfEsc(r.table || '') + '</td>'
+        + '<td style="padding:6px 8px; max-width:320px; color:var(--text-secondary);">' + vfEsc(r.search_terms || '') + '</td>'
+        + '<td style="padding:6px 8px; max-width:220px; color:var(--text-secondary);">' + vfEsc(r.inclusion_criteria || '') + '</td>'
+        + '<td style="padding:6px 8px; max-width:150px; color:var(--text-muted);">' + vfEsc(r.limits || '') + '</td>'
+        + '<td style="padding:6px 8px; white-space:nowrap;" title="retrieved / screened / included">' + vfEsc(counts) + '</td>'
+        + '<td style="padding:6px 8px; white-space:nowrap; color:var(--text-muted);">' + vfEsc(r.search_date || '') + '</td>'
+        + '<td style="padding:6px 8px;"><code style="font-size:10px;">' + vfEsc(r.ruleset_version || '') + '</code></td>'
+        + '</tr>'
+        + (r.note ? ('<tr style="border-bottom:1px solid var(--border-color);"><td></td><td colspan="8" style="padding:0 8px 7px 8px; font-size:10px; color:var(--text-muted); font-style:italic;">' + vfEsc(r.note) + '</td></tr>') : '');
+    }).join('');
+    el.innerHTML = '<table style="width:100%; border-collapse:collapse;"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
   }
 
   function renderDiscoveryAudit() {
