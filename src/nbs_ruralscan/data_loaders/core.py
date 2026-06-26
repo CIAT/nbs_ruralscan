@@ -182,6 +182,19 @@ def ee_to_xarray(
 # --- dispatcher -----------------------------------------------------------------
 
 
+def available() -> list[str]:
+    """dataset_ids with a loader module under ``datasets/`` (``_``-prefixed = helper, skipped)."""
+    import pkgutil
+
+    from . import datasets
+
+    return sorted(
+        m.name
+        for m in pkgutil.iter_modules(datasets.__path__)
+        if not m.name.startswith("_")
+    )
+
+
 def load(dataset_id: str, target: AOI | GeoBox | None = None, **kw):
     """Dispatch to ``datasets/<dataset_id>.load(target=...)``. **Pure and lazy** — returns a
     dask-backed graph that computes nothing until the caller materialises it.
@@ -197,9 +210,18 @@ def load(dataset_id: str, target: AOI | GeoBox | None = None, **kw):
     :func:`~nbs_ruralscan.data_loaders.checkpoint.checkpoint` decorator (caller's dir). The
     library stays side-effect-free so it's reusable across pipelines.
     """
-    result = importlib.import_module(f"{__package__}.datasets.{dataset_id}").load(
-        target=target, **kw
-    )
+    mod_name = f"{__package__}.datasets.{dataset_id}"
+    try:
+        mod = importlib.import_module(mod_name)
+    except ModuleNotFoundError as e:
+        if (
+            e.name == mod_name
+        ):  # the dataset itself is unknown (not a missing dep inside it)
+            raise KeyError(
+                f"no loader for dataset_id {dataset_id!r}; available: {available()}"
+            ) from e
+        raise
+    result = mod.load(target=target, **kw)
     if isinstance(result, xr.DataArray):
         result.attrs["dataset_id"] = dataset_id  # only id; rest recoverable from T1
     return result

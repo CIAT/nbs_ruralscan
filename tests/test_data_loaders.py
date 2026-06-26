@@ -10,11 +10,13 @@ import importlib
 import inspect
 import os
 import pkgutil
+import typing
+from pathlib import Path
 
 import pytest
 import xarray as xr
 
-from nbs_ruralscan.data_loaders import AOI, GeoBox, datasets, load, to_target
+from nbs_ruralscan.data_loaders import AOI, GeoBox, available, datasets, load, to_target
 
 
 def test_every_dataset_module_exposes_load_accepting_target():
@@ -36,6 +38,31 @@ def test_every_dataset_module_exposes_load_accepting_target():
             p.kind == p.VAR_KEYWORD for p in params.values()
         )
         assert accepts_target, f"datasets/{name}.load() must accept `target`"
+
+
+def test_bind_variables_covered_by_loader_literals():
+    """Design-A wiring guard: BIND resolves a canonical variable -> a dataset_id; the loader's
+    ``variable`` Literal must SPEAK that variable. For every BIND row whose dataset has a loader
+    that declares a Literal, the bound variable must be in it — so a loader can't silently forget
+    a canonical variable routed to it (e.g. CHELSA omitting heat_stress_hazard). Datasets with no
+    loader yet are skipped (that's a build-out gap, not a wiring bug)."""
+    from nbs_ruralscan.runtime.binding import load_bindings
+
+    schema_root = Path(__file__).resolve().parents[1] / "schema"
+    have = set(available())
+    for b in load_bindings(schema_root):
+        if not b.dataset_id or b.dataset_id not in have:
+            continue  # requires_upload, or dataset has no loader yet
+        mod = importlib.import_module(f"{datasets.__name__}.{b.dataset_id}")
+        if "variable" not in inspect.signature(mod.load).parameters:
+            continue  # loader serves a single product / takes no `variable`
+        allowed = set(typing.get_args(typing.get_type_hints(mod.load).get("variable")))
+        if not allowed:
+            continue  # `variable` left untyped — no Literal to check
+        assert b.variable in allowed, (
+            f"{b.dataset_id} loader must declare canonical variable {b.variable!r}; "
+            f"its Literal allows {sorted(allowed)}"
+        )
 
 
 def test_checkpoint_caches_any_type_by_arg_checksum(tmp_path):

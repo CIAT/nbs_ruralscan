@@ -16,12 +16,17 @@ which loses the server-side derive-then-aggregate guarantee.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from ..core import AOI, GeoBox, ee_to_xarray
 
 _NATIVE_SCALE_M = 30  # GLO-30; EE pulls at this scale for a bare (native) AOI
 
+# canonical variable names this loader serves (the BIND vocabulary it translates).
+DemVar = Literal["elevation", "slope", "aspect"]
 
-def load(target: AOI | GeoBox, variable: str = "elevation"):
+
+def load(target: AOI | GeoBox, variable: DemVar = "elevation"):
     import ee
 
     # GLO-30 is a tiled ImageCollection (band "DEM"); mosaic to a single image first.

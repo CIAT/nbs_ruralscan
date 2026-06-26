@@ -18,11 +18,18 @@ sums, do that downstream in an equal-area CRS, not here.
 
 from __future__ import annotations
 
+from typing import Literal
+
 import xarray as xr
 from obstore.store import HTTPStore
 from zarr.storage import ObjectStore
 
 from ..core import AOI, GeoBox, to_target
+
+# canonical variable names this loader serves (the BIND vocabulary it translates).
+Glw4Var = Literal[
+    "cattle", "buffalo", "sheep", "goat", "pig", "chicken", "ruminant_tlu"
+]
 
 # Public S3 store read over its https endpoint via obstore (bundled Rust client; no
 # botocore/aiohttp). The store is consolidated, so no S3 key-listing is needed. Swap
@@ -36,7 +43,7 @@ _SPECIES = ("cattle", "buffalo", "sheep", "goat", "pig", "chicken")
 _TLU_RUMINANT = {"cattle": 0.7, "buffalo": 0.7, "sheep": 0.1, "goat": 0.1}
 
 
-def load(target: AOI | GeoBox, variable: str = "ruminant_tlu") -> xr.DataArray:
+def load(target: AOI | GeoBox, variable: Glw4Var = "ruminant_tlu") -> xr.DataArray:
     store = ObjectStore(HTTPStore.from_url(_ZARR), read_only=True)
     ds = xr.open_dataset(
         store,  # ty: ignore[invalid-argument-type]  (zarr store; not in xarray's typed union)
