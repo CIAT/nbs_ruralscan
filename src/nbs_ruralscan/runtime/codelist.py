@@ -29,7 +29,11 @@ ROOT = Path(__file__).resolve().parents[3]
 CODELISTS = ROOT / "schema" / "codelists"
 
 # default routing: which scheme decodes a given variable / dataset. Extend as schemes land.
-_SCHEME_BY_DATASET = {"usda_cdl": "cdl", "cropscape": "cdl"}
+_SCHEME_BY_DATASET = {
+    "usda_cdl": "cdl",
+    "cropscape": "cdl",
+    "gaez_v4_aez33": "gaez_aez33",
+}
 _SCHEME_BY_VARIABLE: dict[str, str] = {}  # e.g. {"land_cover": "cdl"} once unambiguous
 
 

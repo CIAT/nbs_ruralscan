@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-24T15:01:51.295772+00:00",
-  "git_commit": "02881545bbb72ad1b0dd80e12a51135039f639ed",
+  "timestamp": "2026-06-25T14:43:46.763390+00:00",
+  "git_commit": "30e63296a4446c8fd5542bbd57c70d7880b59b8f",
   "registers": {
     "SRC_source_register": [
       {
@@ -17572,20 +17572,20 @@
         "dataset_name": "FAO-IIASA Global Agro-Ecological Zones v4 (33-class AEZ)",
         "analytical_module": "geographic_context",
         "time_period": "1981–2010",
-        "spatial_resolution_m": 1000,
+        "spatial_resolution_m": 10000,
         "geographic_coverage": [
           "global"
         ],
-        "data_format": "geotiff",
+        "data_format": "geotiff_cog",
         "access_type": "direct_download",
         "download_url": "https://gaez.fao.org/",
         "license": "CC-BY-4.0",
         "citation": "FAO & IIASA (2021). Global Agro-Ecological Zones – GAEZ v4. FAO, Rome & IIASA, Laxenburg.",
         "doi": "10.4060/cb4744en",
         "version": "v4",
-        "preprocessing_notes": "Use for AEZ context classification in T7. Key AEZ groups for agroforestry context overrides: humid tropics, sub-humid tropics, semi-arid, highland tropics.",
+        "preprocessing_notes": "Use for AEZ context classification in T7. Key AEZ groups for agroforestry context overrides: humid tropics, sub-humid tropics, semi-arid, highland tropics. Loader: src/nbs_ruralscan/data_loaders/datasets/gaez_v4_aez33.py — streams the GAEZ v4 5-arc-min AEZ COG from data.gaezdev.aws.fao.org (.../LR/aez/aez_v9v2red_5m_CRUTS32_Hist_8110_100_avg.tif) via /vsicurl/; nominal classes 1–33 (0=nodata), categorical → nearest.",
         "limitations": "AEZ boundaries are climate-envelope based and do not capture soil or management diversity within zones. Not for: Crop yield modelling at field scale",
-        "description": "Global Agro-Ecological Zones v4 — 33-class agro-ecological zoning at ~1 km.",
+        "description": "Global Agro-Ecological Zones v4 — 33-class agro-ecological zoning at ~10 km (5 arc-min).",
         "grain_type": "grid"
       },
       {
