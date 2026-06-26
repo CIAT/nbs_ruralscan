@@ -16,12 +16,21 @@ from pathlib import Path
 import pytest
 import xarray as xr
 
-from nbs_ruralscan.data_loaders import AOI, GeoBox, available, datasets, load, to_target
+from nbs_ruralscan.data_loaders import (
+    AOI,
+    GeoBox,
+    LoaderModule,
+    available,
+    datasets,
+    load,
+    to_target,
+)
 
 
-def test_every_dataset_module_exposes_load_accepting_target():
-    """Contract guard: each datasets/<id>.py the dispatcher can reach must expose a
-    callable load() that accepts `target` (the dispatcher calls load(target=target, **kw))."""
+def test_every_dataset_module_satisfies_loader_contract():
+    """Contract guard: each datasets/<id>.py the dispatcher can reach must satisfy the
+    LoaderModule protocol (expose load()) and its load() must accept `target` (the dispatcher
+    calls load(target=target, **kw))."""
     names = [
         m.name
         for m in pkgutil.iter_modules(datasets.__path__)
@@ -29,11 +38,11 @@ def test_every_dataset_module_exposes_load_accepting_target():
     ]
     assert names, "no dataset loaders found"
     for name in names:
-        fn = getattr(
-            importlib.import_module(f"{datasets.__name__}.{name}"), "load", None
+        mod = importlib.import_module(f"{datasets.__name__}.{name}")
+        assert isinstance(mod, LoaderModule), (
+            f"datasets/{name}.py must satisfy LoaderModule (expose load())"
         )
-        assert callable(fn), f"datasets/{name}.py must expose a callable load()"
-        params = inspect.signature(fn).parameters
+        params = inspect.signature(mod.load).parameters
         accepts_target = "target" in params or any(
             p.kind == p.VAR_KEYWORD for p in params.values()
         )

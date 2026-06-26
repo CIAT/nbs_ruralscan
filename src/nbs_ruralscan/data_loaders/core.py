@@ -35,6 +35,7 @@ import os
 import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Protocol, runtime_checkable
 
 import odc.geo.xr  # noqa: F401  (registers the .odc accessor)
 import rioxarray  # noqa: F401  (registers the .rio accessor)
@@ -180,6 +181,16 @@ def ee_to_xarray(
 
 
 # --- dispatcher -----------------------------------------------------------------
+
+
+@runtime_checkable
+class LoaderModule(Protocol):
+    """Contract every ``datasets/<id>.py`` satisfies: a ``load()`` accepting the target (an
+    :class:`AOI` or ``GeoBox``). Both the dynamic dispatcher (:func:`load`) and the
+    direct-import door rely on it; the loader contract test asserts each module conforms via
+    ``isinstance(mod, LoaderModule)``."""
+
+    def load(self, target: AOI | GeoBox | None = None, **kw): ...
 
 
 def available() -> list[str]:

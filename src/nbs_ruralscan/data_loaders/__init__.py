@@ -27,6 +27,7 @@ from odc.geo.geobox import GeoBox
 from .checkpoint import checkpoint
 from .core import (
     AOI,
+    LoaderModule,
     available,
     download,
     ee_to_xarray,
@@ -39,6 +40,7 @@ from .core import (
 __all__ = [
     "AOI",
     "GeoBox",
+    "LoaderModule",
     "available",
     "checkpoint",
     "download",
