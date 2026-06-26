@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 
 import xarray as xr
 
-from nbs_ruralscan.data_loaders import TargetGrid
+from nbs_ruralscan.data_loaders import GeoBox
 
 from . import compute
 
@@ -43,7 +43,7 @@ class M2Result:
 
 
 def run_climate_risk(
-    grid: TargetGrid,
+    grid: GeoBox,
     nbs_id: str,
     *,
     mode: str = "mode_a",
@@ -103,7 +103,7 @@ def _hazard_weights(nbs_id: str) -> dict[str, float]:
 
 
 def _hazard_layer(
-    nbs_id: str, hazard: str, grid: TargetGrid, scenario: str
+    nbs_id: str, hazard: str, grid: GeoBox, scenario: str
 ) -> xr.DataArray:
     """§6.2 — resolve the hazard's variable (binding) and pull it onto grid for this scenario."""
     raise NotImplementedError(
@@ -111,12 +111,12 @@ def _hazard_layer(
     )
 
 
-def _exposure_stack(nbs_id: str, grid: TargetGrid) -> dict[str, xr.DataArray]:
+def _exposure_stack(nbs_id: str, grid: GeoBox) -> dict[str, xr.DataArray]:
     """§6.3 — exposure layer per hazard (baseline only); pulled via binding + load()."""
     raise NotImplementedError("read T2 exposure rows → load() each onto grid")
 
 
-def _vulnerability(nbs_id: str, grid: TargetGrid) -> xr.DataArray:
+def _vulnerability(nbs_id: str, grid: GeoBox) -> xr.DataArray:
     """§6.4 — Mode-B vulnerability composite (excludes opportunity_space_only vars)."""
     raise NotImplementedError("Mode-B only — read T2 sensitivity/AC rows")
 

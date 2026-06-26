@@ -16,10 +16,12 @@ which loses the server-side derive-then-aggregate guarantee.
 
 from __future__ import annotations
 
-from ..core import TargetGrid, ee_to_xarray
+from ..core import AOI, GeoBox, ee_to_xarray
+
+_NATIVE_SCALE_M = 30  # GLO-30; EE pulls at this scale for a bare (native) AOI
 
 
-def load(grid: TargetGrid, variable: str = "elevation"):
+def load(target: AOI | GeoBox, variable: str = "elevation"):
     import ee
 
     # GLO-30 is a tiled ImageCollection (band "DEM"); mosaic to a single image first.
@@ -34,4 +36,4 @@ def load(grid: TargetGrid, variable: str = "elevation"):
         raise ValueError(
             f"unknown variable {variable!r}; expected elevation/slope/aspect"
         )
-    return ee_to_xarray(img, grid)
+    return ee_to_xarray(img, target, native_scale=_NATIVE_SCALE_M)

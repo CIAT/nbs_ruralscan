@@ -39,7 +39,7 @@ def _build(level: int) -> Path:
 
 
 def load(
-    grid=None, level: int = 0, region: str | list[str] | None = None
+    target=None, level: int = 0, region: str | list[str] | None = None
 ) -> gpd.GeoDataFrame:
     gdf = gpd.read_parquet(_build(level))
     if region:
