@@ -2006,7 +2006,7 @@
               </div>
               <div style="display:flex; align-items:center; gap:8px; margin-left:14px; padding-left:14px; border-left:1px solid var(--border-color); flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:500;">Stage:</span>
-                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— the 4 small dots inside EACH STOCK/LIT/GREY/TOOLS cell, per source category. S/V from the enforced progress ledger (amber S = search in progress); E (evidence present) + R (reviewed) live from the register. The big number = source count. R is empty everywhere — nothing human-reviewed yet.</span></span>
+                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— the 4 small dots inside EACH STOCK/LIT/GREY/TOOLS cell, per source category. S/V from the enforced progress ledger (amber S = search in progress); E (evidence present) + R (reviewed) live from the register. The big number = source count. <b style="color:#0ea5e9;">Click any S</b> to see that cell's logged search protocol — terms · inclusion criteria · limits · counts · ruleset version (the SRCH register; the ledger won't accept searched=done without it). R is empty everywhere — nothing human-reviewed yet.</span></span>
               </div>
             </div>
 
@@ -2032,17 +2032,14 @@
         </div>
       </div>
 
-      <!-- SRCH search-protocol log -->
-      <div class="card-container" style="margin-top: 24px;">
-        <div class="interrogator-header-row sky" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-sky); padding-bottom: 8px;" onclick="toggleSection('wrapper-srch-log','chev-srch-log')">
-          <h3 class="interrogator-section-title sky" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
-            <span id="chev-srch-log" style="display:inline-block; transition:transform 0.2s;">&#9660;</span>
-            <span>&#128203; Search protocol log</span>
-          </h3>
-          <span class="card-title-meta" style="margin-left:8px;">Every discovery search, as run: terms &middot; inclusion criteria &middot; limits &middot; counts &middot; ruleset version. The progress ledger requires a row here before a search is marked done.</span>
-        </div>
-        <div id="wrapper-srch-log">
-          <div id="srch-log-body" style="overflow-x:auto;"></div>
+      <!-- Search-protocol modal — opened by clicking an "S" dot in the audit matrix above -->
+      <div id="srch-modal" onclick="if(event.target===this)closeSrchModal()" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.62); padding:56px 20px; overflow:auto;">
+        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; max-width:780px; margin:0 auto; padding:20px 24px; box-shadow:0 12px 48px rgba(0,0,0,0.55);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+            <h3 id="srch-modal-title" style="margin:0; font-size:15px; color:var(--text-primary);">Search protocol</h3>
+            <button onclick="closeSrchModal()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); border-radius:4px; cursor:pointer; font-size:13px; padding:2px 9px;">&#10005;</button>
+          </div>
+          <div id="srch-modal-body"></div>
         </div>
       </div>
 
@@ -3157,7 +3154,6 @@
 
     // 6b. Populate Discovery Audit List & Listeners
     renderDiscoveryAudit();
-    renderSrchLog();
     const auditNbsFilter = document.getElementById('filter-audit-nbs');
     if (auditNbsFilter) {
       auditNbsFilter.addEventListener('change', renderDiscoveryAudit);
@@ -3794,33 +3790,54 @@
     body.innerHTML='<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Showing <b>'+vis.length+'</b> of '+rows.length+' peer-reviewed sources.</div><div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid var(--border-color); text-align:left;">'+['Title / journal','Practice','Tier','Cites','Input variables','Spatial method','Tool'].map(function(h){return '<th style="padding:6px 10px; font-size:9.5px; color:var(--text-muted); text-transform:uppercase;">'+h+'</th>';}).join('')+'</tr></thead><tbody>'+rowsHtml+'</tbody></table></div>';
   }
 
-  function renderSrchLog() {
-    var el = document.getElementById('srch-log-body'); if (!el) return;
-    var rows = ((dashboardData || {}).registers || {})['SRCH_search_register'] || [];
-    if (!rows.length) { el.innerHTML = '<div style="color:var(--text-muted); padding:10px; font-size:12px;">No searches logged yet.</div>'; return; }
-    var procColor = { stock: '#64748b', updated_lit: '#38bdf8', grey: '#f59e0b', tool: '#a855f7' };
-    var fam = function (r) { var f = r.suitability_family_id || ''; return f ? f.split('__').pop().replace(/_/g, ' ') : 'all families'; };
-    var cell = function (x) { return (x === '' || x == null) ? '–' : x; };
-    var head = '<tr style="text-align:left; border-bottom:2px solid var(--border-color); font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);">'
-      + ['Sub-practice', 'Process', 'Table', 'Search terms', 'Inclusion criteria', 'Limits', 'R / S / I', 'Date', 'Ruleset'].map(function (h) { return '<th style="padding:6px 8px; vertical-align:top;">' + h + '</th>'; }).join('') + '</tr>';
-    var body = rows.map(function (r) {
-      var pc = procColor[r.category] || 'var(--text-secondary)';
-      var counts = cell(r.n_retrieved) + ' / ' + cell(r.n_screened) + ' / ' + cell(r.n_included);
-      return '<tr style="border-bottom:1px solid var(--border-color); font-size:11px; vertical-align:top;">'
-        + '<td style="padding:6px 8px; font-weight:600; white-space:nowrap;">' + vfEsc(fam(r)) + '</td>'
-        + '<td style="padding:6px 8px;"><span style="color:' + pc + '; font-weight:700;">' + vfEsc(r.category || '') + '</span></td>'
-        + '<td style="padding:6px 8px;">' + vfEsc(r.table || '') + '</td>'
-        + '<td style="padding:6px 8px; max-width:320px; color:var(--text-secondary);">' + vfEsc(r.search_terms || '') + '</td>'
-        + '<td style="padding:6px 8px; max-width:220px; color:var(--text-secondary);">' + vfEsc(r.inclusion_criteria || '') + '</td>'
-        + '<td style="padding:6px 8px; max-width:150px; color:var(--text-muted);">' + vfEsc(r.limits || '') + '</td>'
-        + '<td style="padding:6px 8px; white-space:nowrap;" title="retrieved / screened / included">' + vfEsc(counts) + '</td>'
-        + '<td style="padding:6px 8px; white-space:nowrap; color:var(--text-muted);">' + vfEsc(r.search_date || '') + '</td>'
-        + '<td style="padding:6px 8px;"><code style="font-size:10px;">' + vfEsc(r.ruleset_version || '') + '</code></td>'
-        + '</tr>'
-        + (r.note ? ('<tr style="border-bottom:1px solid var(--border-color);"><td></td><td colspan="8" style="padding:0 8px 7px 8px; font-size:10px; color:var(--text-muted); font-style:italic;">' + vfEsc(r.note) + '</td></tr>') : '');
-    }).join('');
-    el.innerHTML = '<table style="width:100%; border-collapse:collapse;"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
+  // Open the search-protocol modal for one audit-matrix cell (NbS × table × process × family).
+  // Pulls the matching SRCH rows — the actual searches run — so the matrix IS the search-log view.
+  function showSearchProtocol(nbs, table, category, family) {
+    var modal = document.getElementById('srch-modal'); if (!modal) return;
+    var all = ((dashboardData || {}).registers || {})['SRCH_search_register'] || [];
+    var fam = (family || '').split('__').pop().replace(/_/g, ' ') || 'all families';
+    var procLbl = { stock: 'Stock', updated_lit: 'Lit (OpenAlex)', grey: 'Grey', tool: 'Tools' }[category] || category;
+    // a family-specific row OR a table-level (family='') row covers this cell
+    var rows = all.filter(function (r) {
+      return r.nbs_id === nbs && r.table === table && r.category === category
+        && ((r.suitability_family_id || '') === '' || (r.suitability_family_id || '') === family);
+    });
+    document.getElementById('srch-modal-title').innerHTML =
+      vfEsc(procLbl) + ' search &middot; ' + vfEsc(fam) + ' &middot; ' + vfEsc(table);
+    var body = document.getElementById('srch-modal-body');
+    if (!rows.length) {
+      body.innerHTML = '<div style="color:var(--text-muted); font-size:12.5px; line-height:1.6;">'
+        + '<b style="color:var(--accent-amber);">No search logged for this cell.</b><br>'
+        + 'The ' + vfEsc(procLbl) + ' discovery process has not been run + recorded for this sub-practice × ' + vfEsc(table)
+        + '. Run it and log the protocol (<code>search_log.py</code>) — the progress ledger will not accept <i>searched=done</i> without a record here.</div>';
+    } else {
+      var fld = function (lbl, val, mono) {
+        if (val === '' || val == null) return '';
+        return '<div style="margin-top:8px;"><span style="font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);">' + lbl + '</span><div style="font-size:12px; color:var(--text-primary); margin-top:2px;' + (mono ? 'font-family:monospace;' : '') + '">' + vfEsc(val) + '</div></div>';
+      };
+      body.innerHTML = rows.map(function (r) {
+        var counts = [['retrieved', r.n_retrieved], ['screened', r.n_screened], ['included', r.n_included]]
+          .map(function (c) { return c[0] + ' ' + ((c[1] === '' || c[1] == null) ? '–' : c[1]); }).join(' &middot; ');
+        return '<div style="border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; margin-bottom:10px;">'
+          + (r.suitability_family_id ? '' : '<div style="font-size:10.5px; color:var(--accent-amber); margin-bottom:4px;">&#9432; table-level search (all families) — not yet sub-practice-targeted</div>')
+          + fld('Search terms', r.search_terms)
+          + fld('Inclusion criteria', r.inclusion_criteria)
+          + fld('Screening steps', r.screening_steps)
+          + fld('Limits', r.limits)
+          + '<div style="margin-top:8px;"><span style="font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);">Counts</span><div style="font-size:12px; margin-top:2px;">' + vfEsc(counts) + '</div></div>'
+          + '<div style="display:flex; gap:18px; flex-wrap:wrap; margin-top:10px; font-size:10.5px; color:var(--text-muted); border-top:1px solid var(--border-color); padding-top:8px;">'
+          + '<span>Date: <b style="color:var(--text-secondary);">' + vfEsc(r.search_date || '–') + '</b></span>'
+          + '<span>Run: ' + vfEsc(r.run_id || '–') + '</span>'
+          + '<span>Ruleset: <code>' + vfEsc(r.ruleset_version || '–') + '</code></span>'
+          + (r.discovery_log_ref ? '<span>Log: ' + vfEsc(r.discovery_log_ref) + '</span>' : '')
+          + '</div>'
+          + (r.note ? '<div style="margin-top:8px; font-size:11px; color:var(--text-muted); font-style:italic;">' + vfEsc(r.note) + '</div>' : '')
+          + '</div>';
+      }).join('');
+    }
+    modal.style.display = 'block';
   }
+  function closeSrchModal() { var m = document.getElementById('srch-modal'); if (m) m.style.display = 'none'; }
 
   function renderDiscoveryAudit() {
     discoveryStatusDb = buildDiscoveryStatusDb(); // D2: rebuild from live EV data
@@ -3938,10 +3955,10 @@
       const _e = count > 0;
       const _v = ledgerStage(_nbs, _tbl, _cat, 'verified') === 'done' && _e;
       const _r = cellReviewed(statusKey, targetKey, typeKey);
-      const _dot = (state, color, lbl, tip) =>
-        `<span title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:11px;font-weight:700;margin:0 2px;${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
+      const _dot = (state, color, lbl, tip, onclick) =>
+        `<span ${onclick ? `onclick="${onclick}" ` : ''}title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:11px;font-weight:700;margin:0 2px;${onclick ? 'cursor:pointer;' : ''}${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
       const sevr = `<div style="margin-top:6px;white-space:nowrap;line-height:1;">`
-        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', '#0ea5e9', 'S', `${typeLabel} Searched: ${_ss}`)
+        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', '#0ea5e9', 'S', `${typeLabel} Searched: ${_ss} — click for the search protocol (terms · criteria · limits)`, `showSearchProtocol('${_nbs}','${_tbl}','${_cat}','${statusKey}')`)
         + _dot(_e ? 'full' : 'none', '#10b981', 'E', `Extracted: ${count} source(s)`)
         + _dot(_v ? 'full' : 'none', '#818cf8', 'V', `Verified: ${_v ? 'verify pass run' : 'not run / no evidence'}`)
         + _dot(_r ? 'full' : 'none', '#10b981', 'R', `Reviewed: ${_r ? 'yes' : 'not yet'}`)
