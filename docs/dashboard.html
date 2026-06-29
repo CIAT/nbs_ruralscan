@@ -6254,11 +6254,11 @@
       } else {
         rows = all.filter(r => !(r.suitability_family_id || ''));
         const famName = famSel.split('__').pop().replace(/_/g, ' ');
-        banner = `<div style="font-size:11px; color:var(--accent-amber, #f59e0b); background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:8px 11px; margin-bottom:10px; line-height:1.45;">No <b>${vfEsc(famName)}</b>-specific search logged yet. Showing the <b>agroforestry-wide</b> (all-sub-practice) searches below — they cover this family but were not targeted at it.</div>`;
+        banner = `<div style="font-size:11px; color:var(--accent-amber, #f59e0b); background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:8px 11px; margin-bottom:10px; line-height:1.45;">No <b>${vfEsc(famName)}</b>-targeted search logged yet. Showing the <b>generic agroforestry</b> (practice-wide parent) search below — its broad net catches this family, but no search was aimed at it specifically.</div>`;
       }
     } else {
       rows = all.filter(r => !(r.suitability_family_id || ''));
-      banner = `<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Agroforestry-wide searches (all sub-practices). Select a sub-practice above to see family-targeted searches.</div>`;
+      banner = `<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px; line-height:1.45;"><b>Generic agroforestry search</b> — the practice-wide parent query (broad "agroforestry OR synonyms" net). This is its own search, <b>not</b> an aggregation of the per-sub-practice searches. Select a sub-practice above for family-targeted searches.</div>`;
     }
     if (!rows.length) return false;
     const PROC = [

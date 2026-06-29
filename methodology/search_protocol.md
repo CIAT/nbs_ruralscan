@@ -26,7 +26,31 @@ For **each sub-practice (suitability family) × table (T4/T3/T6)**, run **each o
 - **`ruleset_version`** — which instruction set governed it ([RULESET_VERSIONS.md](RULESET_VERSIONS.md)).
 - **`discovery_log_ref`** — link to the narrative discovery log.
 
-Log via `schema_tools/search_log.py` (`log_search(...)` / CLI `log`). `suitability_family_id=""` = a table-level / all-families search (the default for a broad sweep); a specific family = a sub-practice-targeted search.
+Log via `schema_tools/search_log.py` (`log_search(...)` / CLI `log`).
+
+### Generic (parent) search vs sub-practice search — they are NOT the same (v1.1)
+`suitability_family_id=""` = the **generic / practice-wide parent search** — one broad query over the
+NbS and its synonyms (e.g. the stocktake's `("agroforestry" OR "agro-forestry" OR "trees on farms"
+OR "tree-based system*" OR "agrosilvopastoral*" OR "silvopastoral*" …) AND climate AND spatial`).
+A specific `family` = a **sub-practice-targeted search** with its own added terms (e.g. F1 adds
+`"alley cropping" OR "tree intercropping"`). **The union of the per-sub-practice searches ≠ the
+generic parent search** — different nets, different recall; you do not *sum* searches. Both are
+logged as separate `SRCH` rows and reported separately. A family with no targeted row inherits
+*nothing* automatically — it is shown as "covered by the generic net, not targeted" (the dashboard's
+amber banner + the matrix dashed ring), never as "done".
+
+### Search-term capture must be VERBATIM (v1.1)
+`SRCH.search_terms` records the **exact query string actually run** — copied from the search
+configuration / Annex / run script, never a from-memory paraphrase. (A paraphrase silently dropped
+the climate block, all practice synonyms, and misfiled `silvopastoral` as a topic — caught
+2026-06-29.) If the verbatim string lives in a file (`OpenAlex_run.R`, `search_string.xlsx`, a
+stocktake Annex), transcribe it and cite that file in `SRCH.note`.
+
+### Synonym policy (v1.1)
+Practice-level (generic) searches use the **full synonym set** for the NbS (all spelling/term
+variants OR'd in the practice block). Sub-practice searches keep the parent synonyms **and** add the
+family's own vocabulary. Dropping synonyms narrows recall — default is to include them; any omission
+is a logged decision.
 
 ## How it locks together (one source of truth, layered)
 1. **`SRCH`** = the search *protocol* (this record).
@@ -37,5 +61,10 @@ Log via `schema_tools/search_log.py` (`log_search(...)` / CLI `log`). `suitabili
 ## Version control of the instructions (reproducibility)
 The search/extraction instructions are versioned: [`methodology/RULESET_VERSIONS.md`](RULESET_VERSIONS.md) (semver · date · change) + archived prompt snapshots under [`.agents/skills/_versions/<version>/`](../.agents/skills/_versions/). Bump + snapshot on any change to the screening funnel, defect catalogue, or discovery protocol. A past search is reproducible with the snapshot its `ruleset_version` points to.
 
-## Status (v1.0, 2026-06-26)
-Backfilled the existing agroforestry searches into `SRCH` at `family=""` (table-level — the June sweeps were not sub-practice-targeted). Going forward, searches are logged **per sub-practice** so each family's coverage across the 4 processes is explicit. See the per-family gaps in the agroforestry recipe (synthesis #114 is gated on this being complete + logged).
+## Status (v1.1, 2026-06-29)
+The agroforestry `SRCH` rows are the **generic (practice-wide) parent search** at `family=""` — the
+June sweeps were not sub-practice-targeted. Their `search_terms` were re-captured **verbatim** from
+the stocktake Annex 1 (`reference/stocktake/_local/stocktake_review.txt`), replacing an earlier
+paraphrase. **No sub-practice-targeted search (F1…F6) has been run yet** — those are logged per family
+when run, and are NOT covered by the generic parent search. Synthesis #114 is gated on the
+per-family searches being run + logged.
