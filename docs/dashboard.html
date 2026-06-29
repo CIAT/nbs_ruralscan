@@ -1997,18 +1997,18 @@
                 <span style="display:flex; align-items:center; gap:5px;"><span style="font-size:11px; font-weight:600; color:var(--text-muted); border:1px dashed var(--border-color); border-radius:10px; padding:1px 6px;">+#</span><span style="color:var(--text-secondary);"><b>generic</b> — reached via the practice-wide parent search</span></span>
               </div>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Dots = stage</span>
-                <span style="color:var(--text-secondary);"><b>S</b>earch · <b>E</b>xtract · <b>V</b>erify · <b>R</b>eview <span style="color:var(--text-muted);">— the <b>direct</b> (family-targeted) pipeline only; generic coverage is the +# number, never a dot</span></span>
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Stage pip</span>
+                <span style="color:var(--text-secondary);">the furthest <b>direct</b> (family-targeted) stage reached — sequential <b>Searched → Extracted → Verified → Reviewed</b> <span style="color:var(--text-muted);">(generic coverage is the +# number, not a stage)</span></span>
               </div>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Colour = status</span>
-                <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; background:#10b981; display:inline-block;"></span><span style="color:var(--text-secondary);">done</span></span>
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Pip colour</span>
+                <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; background:#10b981; display:inline-block;"></span><span style="color:var(--text-secondary);">stage reached</span></span>
                 <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; background:#f59e0b; display:inline-block;"></span><span style="color:var(--text-secondary);">in progress</span></span>
                 <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; border:1px solid var(--border-color); display:inline-block;"></span><span style="color:var(--text-secondary);">not started</span></span>
               </div>
               <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
-                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Click a dot</span>
-                <span style="color:var(--text-secondary); flex:1; min-width:240px;"><b>S</b> → that cell's search protocol (terms · criteria · limits · counts · ruleset). <b>E·V·R</b> → that cell's evidence units + their verify / review state.</span>
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Click</span>
+                <span style="color:var(--text-secondary); flex:1; min-width:240px;">the <b>numbers</b> → that cell's evidence units + their verify / review state. The <b>stage pip</b> → that cell's search protocol (terms · criteria · limits · counts · ruleset).</span>
               </div>
             </div>
 
@@ -3218,7 +3218,7 @@
       // Define Sub-NbS mapping definitions
       const subNbsDefinitions = {
         'agroforestry': [
-          { id: 'all', name: 'All Sub-Practices' },
+          { id: 'all', name: 'None — Parent Practice' },
           { id: 'agroforestry__planted_silvoarable', name: 'Planted Silvoarable (F1)' },
           { id: 'agroforestry__regeneration_farmland', name: 'Regeneration Farmland (F2)' },
           { id: 'agroforestry__silvopastoral', name: 'Silvopastoral (F3)' },
@@ -3227,7 +3227,7 @@
           { id: 'agroforestry__homegardens_proximity', name: 'Homegardens (F6)' }
         ],
         'water_harvesting_conservation': [
-          { id: 'all', name: 'All Sub-Practices' },
+          { id: 'all', name: 'None — Parent Practice' },
           { id: 'water_harvesting__runoff_catchment', name: 'Runoff Catchment (F1)' }
         ]
       };
@@ -4115,25 +4115,32 @@
       const _e = directN > 0;
       const _v = ledgerStageDirect(_nbs, _tbl, _cat, 'verified', statusKey) === 'done' && _e;
       const _r = _e && cellReviewed(statusKey, targetKey, typeKey);
-      const _dot = (state, color, lbl, tip, onclick) =>
-        `<span ${onclick ? `onclick="${onclick}" ` : ''}title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:11px;font-weight:700;margin:0 2px;${onclick ? 'cursor:pointer;' : ''}${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
+      // The pipeline is sequential (Search → Extract → Verify → Review). Show ONE pip = the
+      // furthest DIRECT (family-targeted) stage reached, not 4 dots. Generic coverage = the +# number.
+      let stage = 'Not started', stState = 'none';
+      if (_r) { stage = 'Reviewed'; stState = 'done'; }
+      else if (_v) { stage = 'Verified'; stState = 'done'; }
+      else if (_e) { stage = 'Extracted'; stState = 'done'; }
+      else if (_ss === 'done') { stage = 'Searched'; stState = 'done'; }
+      else if (_ss === 'in_progress') { stage = 'Searching'; stState = 'part'; }
       const _GRN = '#10b981';
       const _evClick = `showCellEvidence('${_nbs}','${_tbl}','${_cat}','${statusKey}')`;
-      const sevr = `<div style="margin-top:6px;white-space:nowrap;line-height:1;">`
-        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', _GRN, 'S', `Direct (family-targeted) search: ${_ss} — click for the search protocol`, `showSearchProtocol('${_nbs}','${_tbl}','${_cat}','${statusKey}')`)
-        + _dot(_e ? 'full' : 'none', _GRN, 'E', `Direct extracted: ${directN} source(s)` + (directN ? ' — click to see the evidence' : ''), directN ? _evClick : '')
-        + _dot(_v ? 'full' : 'none', _GRN, 'V', `Direct verified: ${_v ? 'verify pass run' : 'not run / no direct evidence'}` + (directN ? ' — click for the evidence + its verify state' : ''), directN ? _evClick : '')
-        + _dot(_r ? 'full' : 'none', _GRN, 'R', `Direct reviewed: ${_r ? 'yes' : 'not yet'}` + (directN ? ' — click for the evidence + its review state' : ''), directN ? _evClick : '')
-        + `</div>`;
+      const _srchClick = `showSearchProtocol('${_nbs}','${_tbl}','${_cat}','${statusKey}')`;
+      const pipBg = stState === 'done' ? `background:${_GRN};color:#fff;`
+                  : stState === 'part' ? 'background:#f59e0b;color:#fff;'
+                  : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);';
+      const pip = `<span onclick="${_srchClick}" title="Direct (family-targeted) pipeline stage: ${stage}. Sequential — Search → Extract → Verify → Review. Click for the search protocol." style="margin-top:6px; cursor:pointer; font-size:9.5px; font-weight:700; letter-spacing:.02em; padding:2px 9px; border-radius:11px; ${pipBg}">${stage}</span>`;
       const _short = typeKey === 'stock' ? 'Stock' : typeKey === 'updated' ? 'Lit' : typeKey === 'grey' ? 'Grey' : 'Tools';
-      const cellTitle = `${targetLabel} - ${typeLabel}: ${directN} direct (family-targeted) source(s), ${genericN} generic (via the practice-wide parent search). S·E·V·R = the direct pipeline only.`;
+      const _total = directN + genericN;
+      const _numClick = _total > 0 ? ` onclick="${_evClick}" style="cursor:pointer;"` : '';
+      const cellTitle = `${targetLabel} - ${typeLabel}: ${directN} direct (family-targeted) source(s), ${genericN} generic (via the practice-wide parent search). Pip = furthest direct pipeline stage.`;
       return `<div title="${cellTitle}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
         <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">${_short}</span>
-        <div style="display:flex; align-items:center; gap:5px;" title="left = direct (family-targeted); right = generic (via parent search)">
+        <div${_numClick} title="left = direct (family-targeted) sources; right = generic (via parent search)${_total ? ' — click to see the evidence' : ''}" style="display:flex; align-items:center; gap:5px;${_total ? 'cursor:pointer;' : ''}">
           <span class="badge ${directClass} audit-badge" style="font-weight:700; width:22px; height:22px; line-height:22px; font-size:12px; display:inline-block; text-align:center; border-radius:50%; padding:0;">${directN}</span>
           <span style="font-size:11px; font-weight:600; color:var(--text-muted); border:1px dashed var(--border-color); border-radius:10px; padding:1px 6px;" title="${genericN} generic source(s) — reached via the practice-wide parent search, not a ${_short}-direct search for this sub-practice">+${genericN}</span>
         </div>
-        ${sevr}
+        ${pip}
       </div>`;
     };
     const renderTableCell = (statusKey, targetKey) =>
