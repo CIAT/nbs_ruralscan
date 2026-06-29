@@ -154,7 +154,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 ## Don't
 
-- Don't use browser subagents or make browser tool calls to verify, interrogate, or toggle controls on local web servers or websites (which consumes 1000+ credits). Instead, just capture a single screenshot if needed, or ask the user to test and verify UI changes manually.
+- **(Antigravity agents only)** Don't use browser subagents or make browser tool calls to verify, interrogate, or toggle controls on local web servers or websites (which consumes 1000+ Antigravity credits). Instead, capture a single screenshot if needed, or ask the user to test and verify UI changes manually. *(This is an Antigravity cost rule — it does **not** apply to Claude Code, which may use whatever browser/render tooling it has; mind cost regardless. Claude Code currently has no browser/screenshot tool wired, so it validates UI via JS-parse + HTML tag-balance checks and defers the visual pass to the user.)*
 - Don't hardcode analytical rules in pipeline code; read from schema
 - Don't merge wireframe edits without preserving the agreed tab structure (see "What is locked") and the six Variable-Card slots
 - Don't expand variables into MCDA without correlation reduction
