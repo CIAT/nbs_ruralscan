@@ -370,9 +370,63 @@ class Handler(SimpleHTTPRequestHandler):
         pass
 
 
+def integrity_problems(targets: list[Path]) -> list[str]:
+    """Return a problem string per non-UTF-8 / CRLF register file (empty = all clean)."""
+    problems = []
+    for p in targets:
+        if not p.exists():
+            continue
+        rel = p.name
+        raw = p.read_bytes()
+        try:
+            raw.decode("utf-8")
+        except UnicodeDecodeError as e:
+            problems.append(
+                f"  ✗ {rel} — NOT valid UTF-8 (byte 0x{raw[e.start]:02x} at {e.start}); "
+                f"a stray Windows-1252 byte. Fix: git restore <path>/{rel}"
+            )
+        else:
+            if b"\r\n" in raw:
+                problems.append(
+                    f"  ✗ {rel} — has CRLF line endings (Windows). "
+                    f"Fix: git restore <path>/{rel}  (or: git rm --cached -r . && git reset --hard)"
+                )
+    return problems
+
+
+def _startup_integrity_check() -> None:
+    """Warn loudly at startup if a register CSV is non-UTF-8 or CRLF — the recurring
+    Windows failure (#90/#104/#118/#123): a stray cp1252 byte or CRLF working copy makes
+    'Apply decisions & rebuild' fail with a cryptic 'utf-8 codec can't decode 0xe7'. This
+    catches it BEFORE any click, names the file, and gives the one-line fix. The server
+    itself never writes these CSVs on startup — a 'modified' git diff is git autocrlf
+    converting line endings on checkout, not the server."""
+    problems = integrity_problems(
+        [
+            ROOT / "schema" / "registers" / "EV_evidence_register.csv",
+            ROOT / "pipeline" / "metrics" / "review_log.csv",
+            ROOT / "schema" / "registers" / "SRC_source_register.csv",
+        ]
+    )
+    if problems:
+        print("\n" + "=" * 78)
+        print("⚠  REGISTER ENCODING/LINE-ENDING PROBLEM — Apply will fail until fixed:")
+        print("\n".join(problems))
+        print(
+            "\nYour LOCAL copy diverged from the committed (clean UTF-8/LF) register — a\n"
+            "Windows cp1252/CRLF artefact, not the server. The committed files are clean;\n"
+            "the fixes above re-sync them. Decisions live in pipeline/review/decisions.json,\n"
+            "so `git restore` loses no review work. Also set: git config core.autocrlf false"
+        )
+        print("=" * 78 + "\n")
+    else:
+        print("✓ register integrity OK (UTF-8, LF).")
+
+
 def main() -> int:
     import sys
 
+    _startup_integrity_check()
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
     handler = partial(Handler, directory=str(DOCS))
     srv = ThreadingHTTPServer(("127.0.0.1", port), handler)
