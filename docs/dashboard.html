@@ -2006,7 +2006,7 @@
               </div>
               <div style="display:flex; align-items:center; gap:8px; margin-left:14px; padding-left:14px; border-left:1px solid var(--border-color); flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:500;">Stage:</span>
-                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— the 4 small dots inside EACH STOCK/LIT/GREY/TOOLS cell, per source category. S/V from the enforced progress ledger (amber S = search in progress); E (evidence present) + R (reviewed) live from the register. The big number = source count. <b style="color:#0ea5e9;">Click any S</b> to see that cell's logged search protocol — terms · inclusion criteria · limits · counts · ruleset version (the SRCH register; the ledger won't accept searched=done without it). R is empty everywhere — nothing human-reviewed yet.</span></span>
+                <span style="color:var(--text-secondary); font-size:11.5px;">The 4 dots inside each STOCK/LIT/GREY/TOOLS cell are the lifecycle stages: <b>S</b>earch · <b>E</b>xtract · <b>V</b>erify · <b>R</b>eview. <b>Colour = status only:</b> <span style="color:#10b981; font-weight:700;">●&nbsp;green = done</span> · <span style="color:#f59e0b; font-weight:700;">●&nbsp;amber = in progress</span> · <span style="color:var(--text-muted); font-weight:700;">○&nbsp;grey = not started</span>. The big number = source count. <span style="color:var(--text-muted);">S/V come from the enforced progress ledger; E (evidence present) + R (reviewed) live from the register. <b>Dots are clickable:</b> <b>S</b> → that cell's logged search protocol (terms · inclusion criteria · limits · counts · ruleset version — the SRCH register; the ledger won't accept searched=done without it); <b>E·V·R</b> → that cell's evidence units with their verify / review state. R is empty everywhere — nothing human-reviewed yet.</span></span>
               </div>
             </div>
 
@@ -3839,6 +3839,47 @@
   }
   function closeSrchModal() { var m = document.getElementById('srch-modal'); if (m) m.style.display = 'none'; }
 
+  // E/V/R dots → the cell's evidence units (extract → verify → review lifecycle), reusing
+  // the same modal. Shows each EV unit's verify-flag + review state, so E/V/R are navigable.
+  function showCellEvidence(nbs, table, category, family) {
+    var modal = document.getElementById('srch-modal'); if (!modal) return;
+    var roleMap = { T4: 'structural_suitability', T3: 'climate_risk', T6: 'nbs_effect' };
+    var role = roleMap[table];
+    var ev = ((dashboardData || {}).registers || {})['EV_evidence_register'] || [];
+    var src = ((dashboardData || {}).registers || {})['SRC_source_register'] || [];
+    var catOf = {}; src.forEach(function (s) { catOf[s.source_id] = s.source_category || 'stock'; });
+    var rows = ev.filter(function (r) {
+      return r.nbs_id === nbs && r.use_role === role
+        && (r.suitability_family_id || '') === family
+        && (catOf[r.source_id] || 'stock') === category
+        && (r.review_state || '') !== 'dropped';
+    });
+    var procLbl = { stock: 'Stock', updated_lit: 'Lit', grey: 'Grey', tool: 'Tools' }[category] || category;
+    var famLbl = (family || '').split('__').pop().replace(/_/g, ' ') || 'all families';
+    document.getElementById('srch-modal-title').innerHTML =
+      'Evidence &middot; ' + vfEsc(famLbl) + ' &middot; ' + vfEsc(table) + ' &middot; ' + vfEsc(procLbl) + ' (' + rows.length + ')';
+    var body = document.getElementById('srch-modal-body');
+    if (!rows.length) {
+      body.innerHTML = '<div style="color:var(--text-muted); font-size:12.5px;">No evidence units extracted for this cell yet.</div>';
+    } else {
+      body.innerHTML = rows.map(function (r) {
+        var flagged = /\[VERIFY-FLAG/.test(r.attribution || '');
+        var reviewed = r.reviewer_ok === true || r.reviewer_ok === 'true';
+        var badge = function (on, c, t) { return '<span style="font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:3px; margin-left:4px; ' + (on ? 'background:' + c + '; color:#fff;' : 'background:transparent; border:1px solid var(--border-color); color:var(--text-muted);') + '">' + t + '</span>'; };
+        return '<div style="border:1px solid var(--border-color); border-radius:7px; padding:10px 12px; margin-bottom:8px;">'
+          + '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'
+          + '<code style="font-size:10.5px; color:var(--accent-sky);">' + vfEsc(r.evidence_id || '') + '</code>'
+          + '<span style="font-size:11px; color:var(--text-secondary);">' + vfEsc(r.variable || '') + '</span>'
+          + badge(true, '#10b981', 'E') + badge(flagged, '#f59e0b', flagged ? 'V⚑' : 'V') + badge(reviewed, '#10b981', 'R')
+          + '</div>'
+          + '<div style="font-size:11px; color:var(--text-muted); margin-top:5px; line-height:1.5;">' + vfEsc((r.quote || '').slice(0, 200)) + ((r.quote || '').length > 200 ? '…' : '') + '</div>'
+          + '</div>';
+      }).join('')
+        + '<div style="font-size:10.5px; color:var(--text-muted); margin-top:6px;">E = extracted · V⚑ = verify-flagged (needs QA) · R = human-reviewed. Full review in the QA / QC tab.</div>';
+    }
+    modal.style.display = 'block';
+  }
+
   function renderDiscoveryAudit() {
     discoveryStatusDb = buildDiscoveryStatusDb(); // D2: rebuild from live EV data
     const body = document.getElementById('body-discovery-audit');
@@ -3957,11 +3998,15 @@
       const _r = cellReviewed(statusKey, targetKey, typeKey);
       const _dot = (state, color, lbl, tip, onclick) =>
         `<span ${onclick ? `onclick="${onclick}" ` : ''}title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:11px;font-weight:700;margin:0 2px;${onclick ? 'cursor:pointer;' : ''}${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
+      // colour = STATUS (green done · amber in-progress · grey not started); the letter is the
+      // lifecycle stage. S → search protocol (SRCH); E/V/R → the cell's evidence + its state.
+      const _GRN = '#10b981';
+      const _evClick = `showCellEvidence('${_nbs}','${_tbl}','${_cat}','${statusKey}')`;
       const sevr = `<div style="margin-top:6px;white-space:nowrap;line-height:1;">`
-        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', '#0ea5e9', 'S', `${typeLabel} Searched: ${_ss} — click for the search protocol (terms · criteria · limits)`, `showSearchProtocol('${_nbs}','${_tbl}','${_cat}','${statusKey}')`)
-        + _dot(_e ? 'full' : 'none', '#10b981', 'E', `Extracted: ${count} source(s)`)
-        + _dot(_v ? 'full' : 'none', '#818cf8', 'V', `Verified: ${_v ? 'verify pass run' : 'not run / no evidence'}`)
-        + _dot(_r ? 'full' : 'none', '#10b981', 'R', `Reviewed: ${_r ? 'yes' : 'not yet'}`)
+        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', _GRN, 'S', `Search: ${_ss} — click for the search protocol (terms · criteria · limits)`, `showSearchProtocol('${_nbs}','${_tbl}','${_cat}','${statusKey}')`)
+        + _dot(_e ? 'full' : 'none', _GRN, 'E', `Extracted: ${count} source(s)` + (count ? ' — click to see the evidence' : ''), count ? _evClick : '')
+        + _dot(_v ? 'full' : 'none', _GRN, 'V', `Verified: ${_v ? 'verify pass run' : 'not run / no evidence'}` + (count ? ' — click for the evidence + its verify state' : ''), count ? _evClick : '')
+        + _dot(_r ? 'full' : 'none', _GRN, 'R', `Reviewed: ${_r ? 'yes' : 'not yet'}` + (count ? ' — click for the evidence + its review state' : ''), count ? _evClick : '')
         + `</div>`;
       const _short = typeKey === 'stock' ? 'Stock' : typeKey === 'updated' ? 'Lit' : typeKey === 'grey' ? 'Grey' : 'Tools';
       return `<div title="${targetLabel} - ${typeLabel}: ${titleText}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
