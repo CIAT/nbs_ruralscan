@@ -2017,18 +2017,28 @@
               </div>
             </div>
 
-            <div>
-              <input type="text" class="table-search-input" id="search-audit-table" placeholder="Search families..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:180px;">
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="position:relative;">
+                <button type="button" id="audit-variant-btn" onclick="toggleVariantFilter(event)" style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); cursor:pointer; white-space:nowrap;">Variants: All ▾</button>
+                <div id="audit-variant-panel" style="display:none; position:absolute; right:0; top:112%; z-index:200; background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:8px 6px; min-width:240px; max-height:320px; overflow:auto; box-shadow:0 10px 36px rgba(0,0,0,0.55);">
+                  <div style="display:flex; justify-content:space-between; gap:8px; padding:2px 6px 7px; border-bottom:1px solid var(--border-color); margin-bottom:6px;">
+                    <a href="#" onclick="setAllVariants(true);return false;" style="font-size:10.5px; color:var(--accent-sky);">Select all</a>
+                    <a href="#" onclick="setAllVariants(false);return false;" style="font-size:10.5px; color:var(--text-muted);">Clear</a>
+                  </div>
+                  <div id="audit-variant-list"></div>
+                </div>
+              </div>
+              <input type="text" class="table-search-input" id="search-audit-table" placeholder="Search families..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:160px;">
             </div>
           </div>
-          <div class="table-wrapper">
+          <div class="table-wrapper" style="overflow:auto; max-height:calc(100vh - 140px);">
             <table class="data-table" id="table-discovery-audit">
               <thead>
                 <tr>
-                  <th id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
-                  <th id="audit-hdr-t4" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                  <th id="audit-hdr-t3" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                  <th id="audit-hdr-t6" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
+                  <th id="audit-hdr-t4" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t3" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort by T3 Hazards completeness">T3 Hazard Links<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t6" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
                 </tr>
               </thead>
               <tbody id="body-discovery-audit">
@@ -3163,7 +3173,12 @@
     renderDiscoveryAudit();
     const auditNbsFilter = document.getElementById('filter-audit-nbs');
     if (auditNbsFilter) {
-      auditNbsFilter.addEventListener('change', renderDiscoveryAudit);
+      auditNbsFilter.addEventListener('change', function () {
+        // NbS scope changed → drop stale variant selections (they belong to another NbS)
+        if (window.auditVariantFilter) window.auditVariantFilter.clear();
+        populateVariantList();
+        renderDiscoveryAudit();
+      });
     }
     const auditStatusFilter = document.getElementById('filter-audit-status');
     if (auditStatusFilter) {
@@ -3899,6 +3914,59 @@
     modal.style.display = 'block';
   }
 
+  // --- Audit-matrix variant (suitability-family) multiselect filter ---
+  function populateVariantList() {
+    const list = document.getElementById('audit-variant-list');
+    if (!list) return;
+    const families = (dashboardData.registers.FAM_family_registry) || [];
+    const nbsFilter = (document.getElementById('filter-audit-nbs') || {}).value || 'all';
+    const seen = {}, items = [];
+    families.forEach(f => {
+      if (nbsFilter !== 'all' && f.nbs_id !== nbsFilter) return;
+      if (seen[f.suitability_family_id]) return;
+      seen[f.suitability_family_id] = 1;
+      items.push({ id: f.suitability_family_id, name: f.name || f.suitability_family_id.split('__').pop().replace(/_/g, ' ') });
+    });
+    const sel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
+    list.innerHTML = items.map(it =>
+      `<label style="display:flex; align-items:center; gap:7px; padding:4px 6px; font-size:11.5px; cursor:pointer; border-radius:4px;">
+        <input type="checkbox" value="${it.id}" ${sel.has(it.id) ? 'checked' : ''} onchange="onVariantToggle(this)" style="cursor:pointer;">
+        <span style="color:var(--text-secondary);">${vfEsc(it.name)}</span>
+      </label>`).join('') || '<div style="font-size:11px; color:var(--text-muted); padding:4px 6px;">No families for this NbS.</div>';
+    updateVariantBtn();
+  }
+  function onVariantToggle(cb) {
+    const sel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
+    if (cb.checked) sel.add(cb.value); else sel.delete(cb.value);
+    updateVariantBtn();
+    renderDiscoveryAudit();
+  }
+  function setAllVariants(on) {
+    const sel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
+    sel.clear();
+    if (on) document.querySelectorAll('#audit-variant-list input[type=checkbox]').forEach(cb => sel.add(cb.value));
+    populateVariantList();
+    renderDiscoveryAudit();
+  }
+  function updateVariantBtn() {
+    const btn = document.getElementById('audit-variant-btn');
+    const sel = window.auditVariantFilter || new Set();
+    if (btn) btn.textContent = 'Variants: ' + (sel.size ? sel.size + ' selected' : 'All') + ' ▾';
+  }
+  function toggleVariantFilter(e) {
+    if (e) e.stopPropagation();
+    const p = document.getElementById('audit-variant-panel');
+    if (!p) return;
+    const show = p.style.display === 'none' || !p.style.display;
+    if (show) { populateVariantList(); p.style.display = 'block'; } else { p.style.display = 'none'; }
+  }
+  // close the panel when clicking outside it
+  document.addEventListener('click', function (e) {
+    const p = document.getElementById('audit-variant-panel');
+    const b = document.getElementById('audit-variant-btn');
+    if (p && p.style.display === 'block' && !p.contains(e.target) && e.target !== b) p.style.display = 'none';
+  });
+
   function renderDiscoveryAudit() {
     discoveryStatusDb = buildDiscoveryStatusDb(); // D2: rebuild from live EV data
     const body = document.getElementById('body-discovery-audit');
@@ -3932,6 +4000,12 @@
     // 1. Filter by NbS
     if (nbsFilter !== 'all') {
       rows = rows.filter(r => r.nbsId === nbsFilter);
+    }
+
+    // 1b. Filter by selected variants (multiselect). Empty set = show all.
+    const variantSel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
+    if (variantSel.size > 0) {
+      rows = rows.filter(r => variantSel.has(r.familyId));
     }
 
     // 2. Filter by status (active vs pending)
