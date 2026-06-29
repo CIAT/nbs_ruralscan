@@ -1992,24 +1992,19 @@
             <!-- Integrated legend -->
             <div style="font-size:11.5px; border-left: 1px solid var(--border-color); padding-left: 16px; margin-left: 4px; display:flex; flex-direction:column; gap:7px; max-width:760px;">
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Big number</span>
-                <span style="display:flex; align-items:center; gap:5px;"><span class="badge high audit-badge" style="font-weight:700; width:18px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:50%; padding:0;">#</span><span style="color:var(--text-secondary);">&gt;1 source</span></span>
-                <span style="display:flex; align-items:center; gap:5px;"><span class="badge medium audit-badge" style="font-weight:700; width:18px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:50%; padding:0;">1</span><span style="color:var(--text-secondary);">1 source</span></span>
-                <span style="display:flex; align-items:center; gap:5px;"><span class="badge low audit-badge" style="font-weight:700; width:18px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:50%; padding:0;">0</span><span style="color:var(--text-secondary);">no evidence</span></span>
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Two numbers</span>
+                <span style="display:flex; align-items:center; gap:5px;"><span class="badge high audit-badge" style="font-weight:700; width:18px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:50%; padding:0;">#</span><span style="color:var(--text-secondary);"><b>direct</b> — sources from a family-targeted search</span></span>
+                <span style="display:flex; align-items:center; gap:5px;"><span style="font-size:11px; font-weight:600; color:var(--text-muted); border:1px dashed var(--border-color); border-radius:10px; padding:1px 6px;">+#</span><span style="color:var(--text-secondary);"><b>generic</b> — reached via the practice-wide parent search</span></span>
               </div>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Dots = stage</span>
-                <span style="color:var(--text-secondary);"><b>S</b>earch · <b>E</b>xtract · <b>V</b>erify · <b>R</b>eview <span style="color:var(--text-muted);">(the lifecycle, left→right)</span></span>
+                <span style="color:var(--text-secondary);"><b>S</b>earch · <b>E</b>xtract · <b>V</b>erify · <b>R</b>eview <span style="color:var(--text-muted);">— the <b>direct</b> (family-targeted) pipeline only; generic coverage is the +# number, never a dot</span></span>
               </div>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Colour = status</span>
                 <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; background:#10b981; display:inline-block;"></span><span style="color:var(--text-secondary);">done</span></span>
                 <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; background:#f59e0b; display:inline-block;"></span><span style="color:var(--text-secondary);">in progress</span></span>
                 <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; border:1px solid var(--border-color); display:inline-block;"></span><span style="color:var(--text-secondary);">not started</span></span>
-              </div>
-              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Dashed ring</span>
-                <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; background:#10b981; outline:1.5px dashed var(--text-muted); outline-offset:1.5px; display:inline-block;"></span><span style="color:var(--text-secondary);">status inherited from the agroforestry-wide sweep — no sub-practice-specific search logged yet</span></span>
               </div>
               <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Click a dot</span>
@@ -3571,6 +3566,47 @@
     return uniqueSourceIds.size;
   }
 
+  // run_id -> the suitability_family the search targeted ('' = generic/parent search).
+  function srchRunFamilyMap() {
+    const srch = (dashboardData.registers && dashboardData.registers.SRCH_search_register) || [];
+    const m = {};
+    srch.forEach(r => { if (r.run_id && !(r.run_id in m)) m[r.run_id] = (r.suitability_family_id || ''); });
+    return m;
+  }
+  // Split a cell's sources into DIRECT (found by a family-targeted search) vs GENERIC (reached
+  // only via the practice-wide parent search). A source is direct iff its discovery/extraction
+  // run maps to a SRCH row whose suitability_family_id == this family. With no family-targeted
+  // searches logged yet, every source is generic (direct = 0).
+  function getClaimsSplit(familyId, targetKey, typeKey) {
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    const sources = dashboardData.registers.SRC_source_register || [];
+    const runFam = srchRunFamilyMap();
+    const direct = new Set(), generic = new Set();
+    claims.forEach(c => {
+      if (c.suitability_family_id !== familyId) return;
+      const dest = getDestTable(c);
+      let mt = false;
+      if (targetKey === 't4') mt = dest === 't4_mappings';
+      else if (targetKey === 't3') mt = dest === 't3_hazards';
+      else if (targetKey === 't6') mt = dest === 't6_scorecard';
+      if (!mt) return;
+      const s = sources.find(src => src.source_id === c.source_id);
+      const cat = getSourceCategory(c.source_id, s ? s.citation : '');
+      if (cat !== typeKey) return;
+      const fam = runFam[s ? (s.extraction_run_id || '') : ''];
+      if (fam !== undefined && fam === familyId) direct.add(c.source_id);
+      else generic.add(c.source_id);
+    });
+    direct.forEach(id => generic.delete(id));
+    return { direct: direct.size, generic: generic.size };
+  }
+  // DIRECT (family-specific) ledger status — NO fallback to the table-level row (that's generic).
+  function ledgerStageDirect(nbsId, table, category, stage, family) {
+    const led = (dashboardData && dashboardData.progress_ledger) || [];
+    const fr = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && r.family === family);
+    return fr ? (fr[stage] || 'not_started') : 'not_started';
+  }
+
   // Resolve which target table a claim maps to, based on database evidence links & fallbacks
   function getDestTable(c) {
     const evId = c.evidence_id;
@@ -4057,22 +4093,11 @@
     }
 
     const renderCell = (statusKey, targetKey, typeKey) => {
-      const count = getClaimsCount(statusKey, targetKey, typeKey);
-      
-      let badgeClass = 'low';
-      let displayVal = count;
-      let titleText = `${count} source(s) providing evidence`;
-      
-      if (count > 1) {
-        badgeClass = 'high';
-      } else if (count === 1) {
-        badgeClass = 'medium';
-      } else {
-        badgeClass = 'low';
-        displayVal = '0';
-        titleText = 'No sources providing evidence';
-      }
-      
+      // Two coverage numbers: DIRECT (family-targeted search) vs GENERIC (via the parent search).
+      const split = getClaimsSplit(statusKey, targetKey, typeKey);
+      const directN = split.direct, genericN = split.generic;
+      const directClass = directN > 1 ? 'high' : directN === 1 ? 'medium' : 'low';
+
       const typeLabel = typeKey === 'stock' ? 'Stock Papers'
                       : typeKey === 'updated' ? 'Updated Lit'
                       : typeKey === 'grey' ? 'Grey Lit'
@@ -4081,34 +4106,33 @@
                         : targetKey === 't3' ? 'T3 Hazards'
                         : 'T6 Outcomes & Costing';
 
-      // per-cell stage S·E·V·R for (family × table × category)
+      // per-cell stage S·E·V·R — keyed to the DIRECT (family-targeted) pipeline ONLY. Generic
+      // coverage is shown by the second number, never by the dots (no inheritance/dashed ring).
       const _nbs = statusKey.split('__')[0];
       const _tbl = targetKey.toUpperCase();
       const _cat = _catKey[typeKey];
-      const _sObj = ledgerStageFam(_nbs, _tbl, _cat, 'searched', statusKey);
-      const _ss = _sObj.status;
-      const _e = count > 0;
-      const _vObj = ledgerStageFam(_nbs, _tbl, _cat, 'verified', statusKey);
-      const _v = _vObj.status === 'done' && _e;
-      const _r = cellReviewed(statusKey, targetKey, typeKey);
-      // `inh` = status inherited from the table-level (agroforestry-wide) sweep, not a
-      // family-targeted search → dashed ring + tooltip note, so it never reads as family-specific.
-      const _dot = (state, color, lbl, tip, onclick, inh) =>
-        `<span ${onclick ? `onclick="${onclick}" ` : ''}title="${tip}${inh ? ' — inherited from the agroforestry-wide (table-level) sweep; no sub-practice-specific search logged yet' : ''}" style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:11px;font-weight:700;margin:0 2px;${onclick ? 'cursor:pointer;' : ''}${inh && state !== 'none' ? 'outline:1.5px dashed var(--text-muted);outline-offset:1.5px;' : ''}${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
-      // colour = STATUS (green done · amber in-progress · grey not started); the letter is the
-      // lifecycle stage. S → search protocol (SRCH); E/V/R → the cell's evidence + its state.
+      const _ss = ledgerStageDirect(_nbs, _tbl, _cat, 'searched', statusKey);
+      const _e = directN > 0;
+      const _v = ledgerStageDirect(_nbs, _tbl, _cat, 'verified', statusKey) === 'done' && _e;
+      const _r = _e && cellReviewed(statusKey, targetKey, typeKey);
+      const _dot = (state, color, lbl, tip, onclick) =>
+        `<span ${onclick ? `onclick="${onclick}" ` : ''}title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:11px;font-weight:700;margin:0 2px;${onclick ? 'cursor:pointer;' : ''}${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
       const _GRN = '#10b981';
       const _evClick = `showCellEvidence('${_nbs}','${_tbl}','${_cat}','${statusKey}')`;
       const sevr = `<div style="margin-top:6px;white-space:nowrap;line-height:1;">`
-        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', _GRN, 'S', `Search: ${_ss} — click for the search protocol (terms · criteria · limits)`, `showSearchProtocol('${_nbs}','${_tbl}','${_cat}','${statusKey}')`, _sObj.inherited)
-        + _dot(_e ? 'full' : 'none', _GRN, 'E', `Extracted: ${count} source(s)` + (count ? ' — click to see the evidence' : ''), count ? _evClick : '', false)
-        + _dot(_v ? 'full' : 'none', _GRN, 'V', `Verified: ${_v ? 'verify pass run' : 'not run / no evidence'}` + (count ? ' — click for the evidence + its verify state' : ''), count ? _evClick : '', _vObj.inherited)
-        + _dot(_r ? 'full' : 'none', _GRN, 'R', `Reviewed: ${_r ? 'yes' : 'not yet'}` + (count ? ' — click for the evidence + its review state' : ''), count ? _evClick : '', false)
+        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', _GRN, 'S', `Direct (family-targeted) search: ${_ss} — click for the search protocol`, `showSearchProtocol('${_nbs}','${_tbl}','${_cat}','${statusKey}')`)
+        + _dot(_e ? 'full' : 'none', _GRN, 'E', `Direct extracted: ${directN} source(s)` + (directN ? ' — click to see the evidence' : ''), directN ? _evClick : '')
+        + _dot(_v ? 'full' : 'none', _GRN, 'V', `Direct verified: ${_v ? 'verify pass run' : 'not run / no direct evidence'}` + (directN ? ' — click for the evidence + its verify state' : ''), directN ? _evClick : '')
+        + _dot(_r ? 'full' : 'none', _GRN, 'R', `Direct reviewed: ${_r ? 'yes' : 'not yet'}` + (directN ? ' — click for the evidence + its review state' : ''), directN ? _evClick : '')
         + `</div>`;
       const _short = typeKey === 'stock' ? 'Stock' : typeKey === 'updated' ? 'Lit' : typeKey === 'grey' ? 'Grey' : 'Tools';
-      return `<div title="${targetLabel} - ${typeLabel}: ${titleText}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
+      const cellTitle = `${targetLabel} - ${typeLabel}: ${directN} direct (family-targeted) source(s), ${genericN} generic (via the practice-wide parent search). S·E·V·R = the direct pipeline only.`;
+      return `<div title="${cellTitle}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
         <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">${_short}</span>
-        <span class="badge ${badgeClass} audit-badge" style="font-weight:700; width:24px; height:24px; line-height:24px; font-size:13px; display:inline-block; text-align:center; border-radius:50%; padding:0;">${displayVal}</span>
+        <div style="display:flex; align-items:center; gap:5px;" title="left = direct (family-targeted); right = generic (via parent search)">
+          <span class="badge ${directClass} audit-badge" style="font-weight:700; width:22px; height:22px; line-height:22px; font-size:12px; display:inline-block; text-align:center; border-radius:50%; padding:0;">${directN}</span>
+          <span style="font-size:11px; font-weight:600; color:var(--text-muted); border:1px dashed var(--border-color); border-radius:10px; padding:1px 6px;" title="${genericN} generic source(s) — reached via the practice-wide parent search, not a ${_short}-direct search for this sub-practice">+${genericN}</span>
+        </div>
         ${sevr}
       </div>`;
     };
