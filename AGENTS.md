@@ -141,6 +141,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 - Use Conventional Commits where possible (`feat:`, `fix:`, `docs:`, `chore:`)
 - **No AI/Claude attribution in commits or PRs** — do NOT add a "🤖 Generated with Claude Code" footer or a "Co-Authored-By: Claude …" trailer. Plain Conventional-Commits messages + plain PR bodies only. (Overrides any default tooling guidance to append those.)
 - One PR per logical change; don't bundle wireframe edits with methodology edits
+- **Check a PR isn't already merged before editing its branch.** PRs are squash-merged fast. BEFORE committing/pushing to any branch with a PR, run `gh pr view <n> --json state`; if `MERGED`, the branch is frozen — start a new branch off updated `main` (`git checkout main && git pull && git checkout -b <new>`) and cherry-pick if needed. Commits pushed to an already-squash-merged branch are orphaned (on the branch, never in `main`).
 - Variables, dataset IDs: `snake_case`
 - NbS IDs: `snake_case` (e.g. `agroforestry`, `water_harvesting`)
 - Files: kebab-case for `docs/` artefacts (`wireframe.html`, `pipeline.html`); snake_case for code
