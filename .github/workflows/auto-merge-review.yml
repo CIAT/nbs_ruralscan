@@ -1,0 +1,61 @@
+name: Auto-merge review PRs
+
+# QA review batches (from scripts/submit-review.sh) should reach main without a manual
+# approval click — but ONLY review-only PRs from allowlisted reviewers, and only after CI
+# passes. Anything else (code, schema, methodology, or a reviewer touching other files) is
+# left for human review by main's branch protection.
+#
+# Gate (all must hold): author ∈ allowlist · title starts with "qaqc:" · every changed file
+# is in the review set. On match the github-actions bot approves + enables auto-merge, which
+# completes once the required "checks" status is green.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    # allowlisted reviewers only (extend this list as the team grows)
+    if: contains(fromJSON('["Namita-J", "peetmate"]'), github.event.pull_request.user.login)
+    steps:
+      - name: Gate — review-only PR?
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}   # via env — never inline (injection)
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # title must declare a QA review
+          case "$PR_TITLE" in
+            qaqc:*) ;;
+            *) echo "title not 'qaqc:*' — skip"; echo "ok=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
+          esac
+          # every changed file must be in the review set (registers + review_log + generated JSON)
+          allow='^(schema/registers/EV_evidence_register\.(csv|json)|pipeline/metrics/review_log\.csv|docs/(dashboard_data|progress)\.json)$'
+          files="$(gh pr view "$PR" --repo "$REPO" --json files --jq '.files[].path')"
+          bad="$(printf '%s\n' "$files" | grep -vE "$allow" || true)"
+          if [ -n "$bad" ]; then
+            echo "non-review files present — leave for human review:"; printf '  %s\n' $bad
+            echo "ok=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          echo "review-only PR from allowlisted reviewer — eligible"
+          echo "ok=true" >> "$GITHUB_OUTPUT"
+
+      - name: Approve + enable auto-merge
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh pr review "$PR" --repo "$REPO" --approve \
+            -b "Auto-approved: review-only PR (registers + review_log only) from an allowlisted reviewer. Merges on green CI."
+          gh pr merge "$PR" --repo "$REPO" --squash --auto --delete-branch
