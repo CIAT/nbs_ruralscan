@@ -4024,7 +4024,7 @@
     const _nbsChip = document.querySelector('#search-pill-nbs .pill-btn.active');
     const _subChip = document.querySelector('#search-pill-sub-nbs .pill-btn.active');
     const nbsFilter = _nbsChip ? _nbsChip.dataset.nbs : 'all';
-    const variantFilter = _subChip ? _subChip.dataset.subnbs : 'all'; // 'all' = None/Parent → all families
+    const variantFilter = _subChip ? _subChip.dataset.subnbs : 'all'; // 'all' = None → the parent (cross-practice) row
     const statusFilter = (document.getElementById('filter-audit-status') || {}).value || 'all';
     const searchVal = '';
 
@@ -4035,9 +4035,14 @@
       rows = rows.filter(r => r.nbsId === nbsFilter);
     }
 
-    // 1b. Filter by the active Sub-practice chip ('all'/None = show every family row)
+    // 1b. Sub-practice chip → ONE row. A specific F# → that family; 'None — Parent Practice'
+    // → the cross-practice (family-agnostic) row for this NbS, not every family.
     if (variantFilter && variantFilter !== 'all') {
       rows = rows.filter(r => r.familyId === variantFilter);
+    } else {
+      const parentId = (nbsFilter && nbsFilter !== 'all' ? nbsFilter : 'agroforestry') + '__cross_family';
+      const parentRows = rows.filter(r => r.familyId === parentId);
+      if (parentRows.length) rows = parentRows; // fallback: if no cross row (e.g. WH), leave as-is
     }
 
     // 2. Filter by status (active vs pending)
