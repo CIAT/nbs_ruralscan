@@ -15,10 +15,21 @@
 #
 # Your decisions.json is gitignored, so it survives the branch switch untouched.
 #
-# Usage:  bash scripts/submit-review.sh <your-handle> ["PR title"]
+# Usage:  bash scripts/submit-review.sh <your-handle> ["PR title"] [--auto]
 #   e.g.  bash scripts/submit-review.sh Namita-J "qaqc: agroforestry T3 batch"
+#         bash scripts/submit-review.sh Namita-J "qaqc: T3 batch" --auto   # also merges it
+# Run it ONCE per review session (it ships every agreed decision in one PR) — not per flag,
+# or you'll mint a PR per click. --auto squash-merges immediately (no approval needed).
 set -e
-reviewer="${1:?usage: bash scripts/submit-review.sh <your-handle> [\"PR title\"]}"
+# --auto (anywhere in the args): squash-merge the PR immediately after opening it, so a
+# review batch needs zero manual clicks. Safe because main is unprotected + the content is
+# low-risk review metadata applied via the canonical path. Drop it to leave the PR for review.
+auto=0; posargs=()
+for a in "$@"; do
+  if [ "$a" = "--auto" ]; then auto=1; else posargs+=("$a"); fi
+done
+set -- "${posargs[@]}"
+reviewer="${1:?usage: bash scripts/submit-review.sh <your-handle> [\"PR title\"] [--auto]}"
 title="${2:-qaqc: review decisions ($reviewer)}"
 root="$(git rev-parse --show-toplevel)"; cd "$root"
 
@@ -53,6 +64,13 @@ if command -v gh >/dev/null 2>&1; then
   gh pr create --base main --head "$branch" --title "$title" \
     --body "QA review decisions by **$reviewer**, replayed cleanly onto main (decisions.json → consensus apply → regenerate). Registers + review_log + generated JSON only; no stale-branch reverts." \
     && echo "• PR opened"
+  if [ "$auto" = "1" ]; then
+    if gh pr merge "$branch" --squash --delete-branch 2>/dev/null; then
+      echo "• --auto: PR squash-merged into main + branch deleted"
+    else
+      echo "• --auto: merge did not complete (CI pending or protection) — merge the PR manually"
+    fi
+  fi
 else
   echo "• gh not found — open the PR manually for branch $branch"
 fi
