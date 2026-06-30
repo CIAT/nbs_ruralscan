@@ -1970,16 +1970,9 @@
         <div id="wrapper-discovery-audit">
           <!-- Filter / Search toolbar -->
           <div style="margin-bottom:12px; background:rgba(255,255,255,0.02); padding:10px 12px; border-radius:6px; border:1px solid var(--border-color);">
-            <!-- one filter row: NbS · Status · Variants (the family multiselect, with its own search) -->
+            <!-- Practice + Variant are driven by the global Practice/Sub-practice chips below
+                 (single source of truth for the whole Discovery tab). Only Status is matrix-local. -->
             <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">NbS:</span>
-                <select id="filter-audit-nbs" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
-                  <option value="all">All NbS</option>
-                  <option value="agroforestry">Agroforestry</option>
-                  <option value="water_harvesting_conservation">Water Harvesting</option>
-                </select>
-              </div>
               <div style="display:flex; align-items:center; gap:6px;">
                 <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Status:</span>
                 <select id="filter-audit-status" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
@@ -1988,20 +1981,7 @@
                   <option value="pending">Pending/Draft</option>
                 </select>
               </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Variant:</span>
-                <div style="position:relative;">
-                  <button type="button" id="audit-variant-btn" onclick="toggleVariantFilter(event)" style="font-size:11.5px; padding:5px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); cursor:pointer; white-space:nowrap;">All variants ▾</button>
-                  <div id="audit-variant-panel" style="display:none; position:absolute; left:0; top:115%; z-index:200; background:var(--bg-tertiary); border:1px solid var(--border-color); border-radius:6px; padding:8px; min-width:260px; max-height:340px; overflow:auto; box-shadow:0 10px 36px rgba(0,0,0,0.6);">
-                    <input type="text" id="audit-variant-search" oninput="populateVariantList()" placeholder="Find a family…" style="width:100%; box-sizing:border-box; font-size:11px; padding:5px 8px; margin-bottom:7px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary);">
-                    <div style="display:flex; justify-content:space-between; gap:8px; padding:0 2px 7px; border-bottom:1px solid var(--border-color); margin-bottom:6px;">
-                      <a href="#" onclick="setAllVariants(true);return false;" style="font-size:10.5px; color:var(--accent-sky);">Select all</a>
-                      <a href="#" onclick="setAllVariants(false);return false;" style="font-size:10.5px; color:var(--text-muted);">Clear</a>
-                    </div>
-                    <div id="audit-variant-list"></div>
-                  </div>
-                </div>
-              </div>
+              <span style="font-size:11px; color:var(--text-muted);">Practice &amp; variant follow the <b>Practice / Sub-practice</b> chips below.</span>
             </div>
 
             <!-- legend on its own row, full width (no longer competing with the filters) -->
@@ -3376,6 +3356,8 @@
             </p>
           `;
         }
+        // the Practice/Sub-practice chips are the matrix's practice+variant control too → refresh it
+        if (typeof renderDiscoveryAudit === 'function') renderDiscoveryAudit();
       }
 
       // Setup NbS Pills click listeners
@@ -4037,22 +4019,25 @@
       familiesMap[familyId].subpractices.push(f);
     });
 
-    const nbsFilter = document.getElementById('filter-audit-nbs').value;
-    const statusFilter = document.getElementById('filter-audit-status').value;
-    // standalone family-search box was folded into the Variants panel; keep null-safe.
-    const searchVal = ((document.getElementById('search-audit-table') || {}).value || '').toLowerCase().trim();
+    // Practice + variant come from the GLOBAL Practice/Sub-practice chips (single source of
+    // truth for the Discovery tab); only Status is matrix-local.
+    const _nbsChip = document.querySelector('#search-pill-nbs .pill-btn.active');
+    const _subChip = document.querySelector('#search-pill-sub-nbs .pill-btn.active');
+    const nbsFilter = _nbsChip ? _nbsChip.dataset.nbs : 'all';
+    const variantFilter = _subChip ? _subChip.dataset.subnbs : 'all'; // 'all' = None/Parent → all families
+    const statusFilter = (document.getElementById('filter-audit-status') || {}).value || 'all';
+    const searchVal = '';
 
     let rows = Object.values(familiesMap);
 
-    // 1. Filter by NbS
-    if (nbsFilter !== 'all') {
+    // 1. Filter by NbS (active Practice chip)
+    if (nbsFilter && nbsFilter !== 'all') {
       rows = rows.filter(r => r.nbsId === nbsFilter);
     }
 
-    // 1b. Filter by selected variants (multiselect). Empty set = show all.
-    const variantSel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
-    if (variantSel.size > 0) {
-      rows = rows.filter(r => variantSel.has(r.familyId));
+    // 1b. Filter by the active Sub-practice chip ('all'/None = show every family row)
+    if (variantFilter && variantFilter !== 'all') {
+      rows = rows.filter(r => r.familyId === variantFilter);
     }
 
     // 2. Filter by status (active vs pending)
