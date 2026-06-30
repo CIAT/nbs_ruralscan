@@ -138,6 +138,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 ## Style & conventions
 
 - Use Conventional Commits where possible (`feat:`, `fix:`, `docs:`, `chore:`)
+- **No AI/Claude attribution in commits or PRs** — do NOT add a "🤖 Generated with Claude Code" footer or a "Co-Authored-By: Claude …" trailer. Plain Conventional-Commits messages + plain PR bodies only. (Overrides any default tooling guidance to append those.)
 - One PR per logical change; don't bundle wireframe edits with methodology edits
 - Variables, dataset IDs: `snake_case`
 - NbS IDs: `snake_case` (e.g. `agroforestry`, `water_harvesting`)
