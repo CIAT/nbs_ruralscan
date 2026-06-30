@@ -116,6 +116,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 ## Run / preview / deploy
 
+- **After cloning, run `bash scripts/setup-repo.sh` once.** Registers the `regen` git merge driver so the committed generated JSON (`docs/dashboard_data.json`, `docs/progress.json`, register `*.json`) auto-rebuilds from the merged CSVs on merge instead of throwing meaningless line-level conflicts; also sets `core.autocrlf false`.
 - **Python environment**: use `uv` from the repo root. Add runtime dependencies with `uv add ...`; add dev tools with `uv add --dev ...`.
 - **Edited a schema CSV?** Regenerate its JSON: `python3 src/nbs_ruralscan/schema_tools/generate.py schema` (CSV is source of truth; CI fails on stale JSON).
 - **Python checks**: run `uv run ruff check .`, `uv run ruff format .`, `uv run ty check`, `uv run pytest`, `python3 src/nbs_ruralscan/schema_tools/generate.py schema --check`, and `python3 src/nbs_ruralscan/schema_tools/structure.py schema` before PRs that touch `src/` or `schema/`. CI (`.github/workflows/ci.yml`) runs the same gates.
