@@ -1951,6 +1951,39 @@
         </div>
       </div>
 
+      <!-- FILTER PILL PANELS -->
+      <div class="card-container" style="position: sticky; top: 86px; z-index: 90; margin-bottom: 20px; padding: 16px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); box-shadow: var(--card-shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- Row 1: Practice Selector & Table Selector inline -->
+          <div style="display: flex; align-items: center; justify-content: flex-start; gap: 40px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Practice (NbS)</span>
+              <div id="search-pill-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="pill-btn active sky" data-nbs="agroforestry" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">Agroforestry</button>
+                <button class="pill-btn sky" data-nbs="water_harvesting_conservation" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">Water Harvesting</button>
+              </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Table / Step</span>
+              <div id="search-pill-table" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="pill-btn active purple" data-table="T3" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T3 (Hazards)</button>
+                <button class="pill-btn purple" data-table="T4" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T4 (Suitability)</button>
+                <button class="pill-btn purple" data-table="T6" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T6 (Scorecard)</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Sub-NbS Selector (Suitability Family) -->
+          <div id="search-sub-nbs-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 10px;">
+            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Sub-Practice</span>
+            <div id="search-pill-sub-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Section 2b: Evidence Discovery Audit Matrix -->
       <div class="card-container" style="margin-top: 24px;">
         <div class="interrogator-header-row emerald" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 8px;" onclick="toggleSection('wrapper-discovery-audit', 'chev-discovery-audit')">
@@ -2033,39 +2066,6 @@
             <button onclick="closeSrchModal()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); border-radius:4px; cursor:pointer; font-size:13px; padding:2px 9px;">&#10005;</button>
           </div>
           <div id="srch-modal-body"></div>
-        </div>
-      </div>
-
-      <!-- FILTER PILL PANELS -->
-      <div class="card-container" style="position: sticky; top: 86px; z-index: 90; margin-bottom: 20px; padding: 16px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); box-shadow: var(--card-shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <!-- Row 1: Practice Selector & Table Selector inline -->
-          <div style="display: flex; align-items: center; justify-content: flex-start; gap: 40px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Practice (NbS)</span>
-              <div id="search-pill-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="pill-btn active sky" data-nbs="agroforestry" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">Agroforestry</button>
-                <button class="pill-btn sky" data-nbs="water_harvesting_conservation" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">Water Harvesting</button>
-              </div>
-            </div>
-            
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Table / Step</span>
-              <div id="search-pill-table" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="pill-btn active purple" data-table="T3" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T3 (Hazards)</button>
-                <button class="pill-btn purple" data-table="T4" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T4 (Suitability)</button>
-                <button class="pill-btn purple" data-table="T6" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T6 (Scorecard)</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 2: Sub-NbS Selector (Suitability Family) -->
-          <div id="search-sub-nbs-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 10px;">
-            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Sub-Practice</span>
-            <div id="search-pill-sub-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <!-- Populated dynamically -->
-            </div>
-          </div>
         </div>
       </div>
 
