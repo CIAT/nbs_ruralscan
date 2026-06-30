@@ -302,6 +302,39 @@ class Handler(SimpleHTTPRequestHandler):
             _save(store)
             return self._json(200, {"ok": True, **res, "conflicts": conflicts})
 
+        if self.path == "/api/submit":
+            # Ship the reviewed decisions to main with no terminal: run the same vetted flow
+            # as scripts/submit-review.sh (branch off latest main → replay decisions → regen →
+            # commit registers → push → open PR → --auto squash-merge on green CI). This is a
+            # LOCAL tool on the reviewer's machine, so it uses their git/gh auth.
+            import re as _re
+            import subprocess
+
+            reviewer = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
+            title = (
+                payload.get("title") or f"qaqc: review decisions ({reviewer})"
+            ).strip()
+            try:
+                proc = subprocess.run(
+                    ["bash", "scripts/submit-review.sh", reviewer, title, "--auto"],
+                    cwd=str(ROOT),
+                    capture_output=True,
+                    text=True,
+                    timeout=300,
+                )
+            except Exception as e:  # noqa: BLE001
+                return self._json(500, {"ok": False, "error": str(e)})
+            out = (proc.stdout + "\n" + proc.stderr).strip()
+            m = _re.search(r"https://github\.com/\S+/pull/\d+", out)
+            return self._json(
+                200 if proc.returncode == 0 else 500,
+                {
+                    "ok": proc.returncode == 0,
+                    "pr_url": m.group(0) if m else "",
+                    "output": out[-4000:],
+                },
+            )
+
         if self.path == "/api/challenge":
             # A reviewer records a decision on an already-applied unit. If it disagrees
             # with the existing decision(s), it's a conflict -> auto-reopen into AI-flagged
