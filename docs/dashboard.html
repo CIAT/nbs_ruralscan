@@ -3573,14 +3573,18 @@
     srch.forEach(r => { if (r.run_id && !(r.run_id in m)) m[r.run_id] = (r.suitability_family_id || ''); });
     return m;
   }
+  // The cross-family / cross-cutting-envelope row IS the practice-wide (family-agnostic) bucket —
+  // the generic parent search is precisely ITS direct search. So for that row, generic == direct.
+  function _isParentFamily(familyId) { return /cross_family$/.test(familyId || ''); }
   // Split a cell's sources into DIRECT (found by a family-targeted search) vs GENERIC (reached
   // only via the practice-wide parent search). A source is direct iff its discovery/extraction
-  // run maps to a SRCH row whose suitability_family_id == this family. With no family-targeted
-  // searches logged yet, every source is generic (direct = 0).
+  // run maps to a SRCH row whose suitability_family_id == this family. For the parent (cross-
+  // family) row, the parent search IS direct → all its evidence is direct.
   function getClaimsSplit(familyId, targetKey, typeKey) {
     const claims = dashboardData.registers.EV_evidence_register || [];
     const sources = dashboardData.registers.SRC_source_register || [];
     const runFam = srchRunFamilyMap();
+    const parent = _isParentFamily(familyId);
     const direct = new Set(), generic = new Set();
     claims.forEach(c => {
       if (c.suitability_family_id !== familyId) return;
@@ -3594,16 +3598,18 @@
       const cat = getSourceCategory(c.source_id, s ? s.citation : '');
       if (cat !== typeKey) return;
       const fam = runFam[s ? (s.extraction_run_id || '') : ''];
-      if (fam !== undefined && fam === familyId) direct.add(c.source_id);
+      if (parent || (fam !== undefined && fam === familyId)) direct.add(c.source_id);
       else generic.add(c.source_id);
     });
     direct.forEach(id => generic.delete(id));
     return { direct: direct.size, generic: generic.size };
   }
-  // DIRECT (family-specific) ledger status — NO fallback to the table-level row (that's generic).
+  // DIRECT (family-specific) ledger status — NO fallback to the table-level row, EXCEPT the
+  // parent (cross-family) row, whose direct status IS the generic family='' row.
   function ledgerStageDirect(nbsId, table, category, stage, family) {
     const led = (dashboardData && dashboardData.progress_ledger) || [];
-    const fr = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && r.family === family);
+    const wantFam = _isParentFamily(family) ? '' : family;
+    const fr = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && (r.family || '') === wantFam);
     return fr ? (fr[stage] || 'not_started') : 'not_started';
   }
 
