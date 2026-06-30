@@ -1969,10 +1969,11 @@
         </div>
         <div id="wrapper-discovery-audit">
           <!-- Filter / Search toolbar -->
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
-            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+          <div style="margin-bottom:12px; background:rgba(255,255,255,0.02); padding:10px 12px; border-radius:6px; border:1px solid var(--border-color);">
+            <!-- one filter row: NbS · Status · Variants (the family multiselect, with its own search) -->
+            <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
               <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Filter NbS:</span>
+                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">NbS:</span>
                 <select id="filter-audit-nbs" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
                   <option value="all">All NbS</option>
                   <option value="agroforestry">Agroforestry</option>
@@ -1987,10 +1988,24 @@
                   <option value="pending">Pending/Draft</option>
                 </select>
               </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Variant:</span>
+                <div style="position:relative;">
+                  <button type="button" id="audit-variant-btn" onclick="toggleVariantFilter(event)" style="font-size:11.5px; padding:5px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); cursor:pointer; white-space:nowrap;">All variants ▾</button>
+                  <div id="audit-variant-panel" style="display:none; position:absolute; left:0; top:115%; z-index:200; background:var(--bg-tertiary); border:1px solid var(--border-color); border-radius:6px; padding:8px; min-width:260px; max-height:340px; overflow:auto; box-shadow:0 10px 36px rgba(0,0,0,0.6);">
+                    <input type="text" id="audit-variant-search" oninput="populateVariantList()" placeholder="Find a family…" style="width:100%; box-sizing:border-box; font-size:11px; padding:5px 8px; margin-bottom:7px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary);">
+                    <div style="display:flex; justify-content:space-between; gap:8px; padding:0 2px 7px; border-bottom:1px solid var(--border-color); margin-bottom:6px;">
+                      <a href="#" onclick="setAllVariants(true);return false;" style="font-size:10.5px; color:var(--accent-sky);">Select all</a>
+                      <a href="#" onclick="setAllVariants(false);return false;" style="font-size:10.5px; color:var(--text-muted);">Clear</a>
+                    </div>
+                    <div id="audit-variant-list"></div>
+                  </div>
+                </div>
+              </div>
             </div>
-            
-            <!-- Integrated legend -->
-            <div style="font-size:11.5px; border-left: 1px solid var(--border-color); padding-left: 16px; margin-left: 4px; display:flex; flex-direction:column; gap:7px; max-width:760px;">
+
+            <!-- legend on its own row, full width (no longer competing with the filters) -->
+            <div style="font-size:11.5px; margin-top:10px; padding-top:10px; border-top: 1px solid var(--border-color); display:flex; flex-direction:column; gap:7px;">
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Two numbers</span>
                 <span style="display:flex; align-items:center; gap:5px;"><span class="badge high audit-badge" style="font-weight:700; width:18px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:50%; padding:0;">#</span><span style="color:var(--text-secondary);"><b>direct</b> — sources from a family-targeted search</span></span>
@@ -2010,20 +2025,6 @@
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Click</span>
                 <span style="color:var(--text-secondary); flex:1; min-width:240px;">the <b>numbers</b> → that cell's evidence units + their verify / review state. The <b>stage pip</b> → that cell's search protocol (terms · criteria · limits · counts · ruleset).</span>
               </div>
-            </div>
-
-            <div style="display:flex; gap:8px; align-items:center;">
-              <div style="position:relative;">
-                <button type="button" id="audit-variant-btn" onclick="toggleVariantFilter(event)" style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); cursor:pointer; white-space:nowrap;">Variants: All ▾</button>
-                <div id="audit-variant-panel" style="display:none; position:absolute; right:0; top:112%; z-index:200; background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:8px 6px; min-width:240px; max-height:320px; overflow:auto; box-shadow:0 10px 36px rgba(0,0,0,0.55);">
-                  <div style="display:flex; justify-content:space-between; gap:8px; padding:2px 6px 7px; border-bottom:1px solid var(--border-color); margin-bottom:6px;">
-                    <a href="#" onclick="setAllVariants(true);return false;" style="font-size:10.5px; color:var(--accent-sky);">Select all</a>
-                    <a href="#" onclick="setAllVariants(false);return false;" style="font-size:10.5px; color:var(--text-muted);">Clear</a>
-                  </div>
-                  <div id="audit-variant-list"></div>
-                </div>
-              </div>
-              <input type="text" class="table-search-input" id="search-audit-table" placeholder="Search families..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:160px;">
             </div>
           </div>
           <div class="table-wrapper" style="overflow:auto; max-height:calc(100vh - 140px);">
@@ -3962,12 +3963,15 @@
     if (!list) return;
     const families = (dashboardData.registers.FAM_family_registry) || [];
     const nbsFilter = (document.getElementById('filter-audit-nbs') || {}).value || 'all';
+    const q = ((document.getElementById('audit-variant-search') || {}).value || '').toLowerCase().trim();
     const seen = {}, items = [];
     families.forEach(f => {
       if (nbsFilter !== 'all' && f.nbs_id !== nbsFilter) return;
       if (seen[f.suitability_family_id]) return;
       seen[f.suitability_family_id] = 1;
-      items.push({ id: f.suitability_family_id, name: f.name || f.suitability_family_id.split('__').pop().replace(/_/g, ' ') });
+      const name = f.name || f.suitability_family_id.split('__').pop().replace(/_/g, ' ');
+      if (q && !name.toLowerCase().includes(q) && !f.suitability_family_id.toLowerCase().includes(q)) return;
+      items.push({ id: f.suitability_family_id, name });
     });
     const sel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
     list.innerHTML = items.map(it =>
@@ -3993,7 +3997,7 @@
   function updateVariantBtn() {
     const btn = document.getElementById('audit-variant-btn');
     const sel = window.auditVariantFilter || new Set();
-    if (btn) btn.textContent = 'Variants: ' + (sel.size ? sel.size + ' selected' : 'All') + ' ▾';
+    if (btn) btn.textContent = (sel.size ? sel.size + ' selected' : 'All variants') + ' ▾';
   }
   function toggleVariantFilter(e) {
     if (e) e.stopPropagation();
@@ -4035,7 +4039,8 @@
 
     const nbsFilter = document.getElementById('filter-audit-nbs').value;
     const statusFilter = document.getElementById('filter-audit-status').value;
-    const searchVal = document.getElementById('search-audit-table').value.toLowerCase().trim();
+    // standalone family-search box was folded into the Variants panel; keep null-safe.
+    const searchVal = ((document.getElementById('search-audit-table') || {}).value || '').toLowerCase().trim();
 
     let rows = Object.values(familiesMap);
 
