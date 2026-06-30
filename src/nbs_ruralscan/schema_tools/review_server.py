@@ -37,7 +37,9 @@ def _load() -> dict:
             try:
                 txt = raw.decode("cp1252")
                 STORE.write_text(txt, encoding="utf-8")
-                print("⚠  decisions.json had a non-UTF-8 byte — re-encoded cp1252→UTF-8 in place.")
+                print(
+                    "⚠  decisions.json had a non-UTF-8 byte — re-encoded cp1252→UTF-8 in place."
+                )
                 return json.loads(txt)
             except Exception:
                 return {}
@@ -230,8 +232,10 @@ class Handler(SimpleHTTPRequestHandler):
             if enc:
                 return self._json(
                     400,
-                    {"error": "Encoding/line-ending problem — fix these before Apply:\n"
-                              + "\n".join(enc)},
+                    {
+                        "error": "Encoding/line-ending problem — fix these before Apply:\n"
+                        + "\n".join(enc)
+                    },
                 )
             store = _load()
             if not store:
@@ -417,7 +421,9 @@ def _pipeline_text_files() -> list[Path]:
     files += sorted((ROOT / "methodology" / "discovery_logs").glob("*.md"))
     cache = ROOT / ".cache" / "corpus"
     if cache.exists():
-        files += sorted(p for p in cache.iterdir() if p.suffix in {".txt", ".html", ".md"})
+        files += sorted(
+            p for p in cache.iterdir() if p.suffix in {".txt", ".html", ".md"}
+        )
     return files
 
 
