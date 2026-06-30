@@ -1116,14 +1116,14 @@
         <line x1="8" y1="11" x2="14" y2="11"></line>
         <line x1="11" y1="8" x2="11" y2="14"></line>
       </svg>
-      Search &amp; Discovery Logs
+      Discovery &amp; Search Log
     </button>
     <button class="tab-btn" data-tab="tab-interrogator" id="btn-interrogator">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="11" cy="11" r="8"></circle>
         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
       </svg>
-      Evidence Interrogator
+      Evidence Query
     </button>
     <button class="tab-btn" data-tab="tab-variables" id="btn-variables">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1300,87 +1300,6 @@
                 </tr>
               </thead>
               <tbody id="body-management-progress"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section 2b: Evidence Discovery Audit Matrix -->
-      <div class="card-container" style="margin-top: 24px;">
-        <div class="interrogator-header-row emerald" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 8px;" onclick="toggleSection('wrapper-discovery-audit', 'chev-discovery-audit')">
-          <h3 class="interrogator-section-title emerald" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
-            <span id="chev-discovery-audit" style="display:inline-block; transition:transform 0.2s;">▼</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            Evidence Discovery Coverage Audit Matrix
-          </h3>
-          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
-        </div>
-        <div id="wrapper-discovery-audit">
-          <!-- Filter / Search toolbar -->
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
-            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Filter NbS:</span>
-                <select id="filter-audit-nbs" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
-                  <option value="all">All NbS</option>
-                  <option value="agroforestry">Agroforestry</option>
-                  <option value="water_harvesting_conservation">Water Harvesting</option>
-                </select>
-              </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Status:</span>
-                <select id="filter-audit-status" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
-                  <option value="all">All</option>
-                  <option value="active">Active (Has Ingested Mappings/Claims)</option>
-                  <option value="pending">Pending/Draft</option>
-                </select>
-              </div>
-            </div>
-            
-            <!-- Legend indicators -->
-            <div style="display:flex; gap:16px; align-items:center; font-size:11.5px; border-left: 1px solid var(--border-color); padding-left: 16px; margin-left: 4px; flex-wrap: wrap;">
-              <span style="color:var(--text-muted); font-weight:500;">Legend:</span>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge high audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">#</span>
-                <span style="color:var(--text-secondary);">&gt; 1 Source</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge medium audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">1</span>
-                <span style="color:var(--text-secondary);">1 Source</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span class="badge low audit-badge" style="font-weight: 700; width: 18px; height: 18px; line-height: 18px; display: inline-block; text-align: center; border-radius: 50%; padding: 0;">0</span>
-                <span style="color:var(--text-secondary);">No Evidence</span>
-              </div>
-              <div style="display:flex; align-items:center; gap:8px; margin-left:14px; padding-left:14px; border-left:1px solid var(--border-color); flex-wrap:wrap;">
-                <span style="color:var(--text-muted); font-weight:500;">Stage:</span>
-                <span style="color:var(--text-secondary); font-size:11.5px;"><b style="color:#0ea5e9;">S</b>earched · <b style="color:#10b981;">E</b>xtracted (has evidence) · <b style="color:#818cf8;">V</b>erified (verify pass run) · <b style="color:#10b981;">R</b>eviewed &nbsp;<span style="color:var(--text-muted);">— the 4 small dots inside EACH STOCK/LIT/GREY/TOOLS cell, per source category. S/V from the enforced progress ledger (amber S = search in progress); E (evidence present) + R (reviewed) live from the register. The big number = source count. R is empty everywhere — nothing human-reviewed yet.</span></span>
-              </div>
-            </div>
-
-            <div>
-              <input type="text" class="table-search-input" id="search-audit-table" placeholder="Search families..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:180px;">
-            </div>
-          </div>
-          <div class="table-wrapper">
-            <table class="data-table" id="table-discovery-audit">
-              <thead>
-                <tr>
-                  <th id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none;" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
-                  <th id="audit-hdr-t4" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(16, 185, 129, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                  <th id="audit-hdr-t3" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(244, 63, 94, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T3 Hazards completeness">T3 Hazard Links<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                  <th id="audit-hdr-t6" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); background-color: rgba(245, 158, 11, 0.04); cursor: pointer; user-select:none;" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                </tr>
-              </thead>
-              <tbody id="body-discovery-audit">
-                <!-- Dynamically Rendered -->
-              </tbody>
             </table>
           </div>
         </div>
@@ -2004,7 +1923,7 @@
       <div class="card-container">
         <h2 class="card-title" style="display:flex; align-items:center; gap:10px;">
           <span>&#128218; Stocktake &amp; Tools</span>
-          <span class="card-title-meta" style="flex:1;">Catalogues of what's out there: <b>Peer-reviewed</b> = 220 sources from the pre-repo OpenAlex search (C/I/D benchmark); <b>Tools / methods</b> = the in-repo <code>TOOL_tool_registry</code> (codebases · platforms · method frameworks). In-repo paper-first / grey sweeps live under <b>Search &amp; Discovery Logs</b>.</span>
+          <span class="card-title-meta" style="flex:1;">Catalogues of what's out there: <b>Peer-reviewed</b> = 220 sources from the pre-repo OpenAlex search (C/I/D benchmark); <b>Tools / methods</b> = the in-repo <code>TOOL_tool_registry</code> (codebases · platforms · method frameworks). In-repo paper-first / grey sweeps live under <b>Discovery &amp; Search Log</b>.</span>
         </h2>
         <div id="stk-filters" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:12px 0;"></div>
         <div id="stk-body"></div>
@@ -2019,7 +1938,7 @@
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
-            <span>Search &amp; Discovery Logs</span>
+            <span>Discovery &amp; Search Log</span>
             <span class="card-title-meta" style="margin-left: 8px;">PRISMA-lite funnels, AGROVOC search queries, and borderline edge-case triage decisions.</span>
           </h2>
           <div style="display: flex; gap: 12px; align-items: center;">
@@ -2029,6 +1948,110 @@
               <button class="pill-btn" id="btn-search-view-raw" style="border-radius: 4px; padding: 6px 12px; font-size: 12px; border: none; cursor: pointer; background: transparent; color: var(--text-secondary);">Raw Markdown</button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Section 2b: Evidence Discovery Audit Matrix -->
+      <div class="card-container" style="margin-top: 24px;">
+        <div class="interrogator-header-row emerald" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 8px;" onclick="toggleSection('wrapper-discovery-audit', 'chev-discovery-audit')">
+          <h3 class="interrogator-section-title emerald" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+            <span id="chev-discovery-audit" style="display:inline-block; transition:transform 0.2s;">▼</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Evidence Discovery Coverage Audit Matrix
+          </h3>
+          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
+        </div>
+        <div id="wrapper-discovery-audit">
+          <!-- Filter / Search toolbar -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Filter NbS:</span>
+                <select id="filter-audit-nbs" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
+                  <option value="all">All NbS</option>
+                  <option value="agroforestry">Agroforestry</option>
+                  <option value="water_harvesting_conservation">Water Harvesting</option>
+                </select>
+              </div>
+              <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Status:</span>
+                <select id="filter-audit-status" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
+                  <option value="all">All</option>
+                  <option value="active">Active (Has Ingested Mappings/Claims)</option>
+                  <option value="pending">Pending/Draft</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Integrated legend -->
+            <div style="font-size:11.5px; border-left: 1px solid var(--border-color); padding-left: 16px; margin-left: 4px; display:flex; flex-direction:column; gap:7px; max-width:760px;">
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Two numbers</span>
+                <span style="display:flex; align-items:center; gap:5px;"><span class="badge high audit-badge" style="font-weight:700; width:18px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:50%; padding:0;">#</span><span style="color:var(--text-secondary);"><b>direct</b> — sources from a family-targeted search</span></span>
+                <span style="display:flex; align-items:center; gap:5px;"><span style="font-size:11px; font-weight:600; color:var(--text-muted); border:1px dashed var(--border-color); border-radius:10px; padding:1px 6px;">+#</span><span style="color:var(--text-secondary);"><b>generic</b> — reached via the practice-wide parent search</span></span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Stage pip</span>
+                <span style="color:var(--text-secondary);">the furthest <b>direct</b> (family-targeted) stage reached — sequential <b>Searched → Extracted → Verified → Reviewed</b> <span style="color:var(--text-muted);">(generic coverage is the +# number, not a stage)</span></span>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Pip colour</span>
+                <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; background:#10b981; display:inline-block;"></span><span style="color:var(--text-secondary);">stage reached</span></span>
+                <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; background:#f59e0b; display:inline-block;"></span><span style="color:var(--text-secondary);">in progress</span></span>
+                <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; border:1px solid var(--border-color); display:inline-block;"></span><span style="color:var(--text-secondary);">not started</span></span>
+              </div>
+              <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Click</span>
+                <span style="color:var(--text-secondary); flex:1; min-width:240px;">the <b>numbers</b> → that cell's evidence units + their verify / review state. The <b>stage pip</b> → that cell's search protocol (terms · criteria · limits · counts · ruleset).</span>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; align-items:center;">
+              <div style="position:relative;">
+                <button type="button" id="audit-variant-btn" onclick="toggleVariantFilter(event)" style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); cursor:pointer; white-space:nowrap;">Variants: All ▾</button>
+                <div id="audit-variant-panel" style="display:none; position:absolute; right:0; top:112%; z-index:200; background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:8px 6px; min-width:240px; max-height:320px; overflow:auto; box-shadow:0 10px 36px rgba(0,0,0,0.55);">
+                  <div style="display:flex; justify-content:space-between; gap:8px; padding:2px 6px 7px; border-bottom:1px solid var(--border-color); margin-bottom:6px;">
+                    <a href="#" onclick="setAllVariants(true);return false;" style="font-size:10.5px; color:var(--accent-sky);">Select all</a>
+                    <a href="#" onclick="setAllVariants(false);return false;" style="font-size:10.5px; color:var(--text-muted);">Clear</a>
+                  </div>
+                  <div id="audit-variant-list"></div>
+                </div>
+              </div>
+              <input type="text" class="table-search-input" id="search-audit-table" placeholder="Search families..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:160px;">
+            </div>
+          </div>
+          <div class="table-wrapper" style="overflow:auto; max-height:calc(100vh - 140px);">
+            <table class="data-table" id="table-discovery-audit">
+              <thead>
+                <tr>
+                  <th id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
+                  <th id="audit-hdr-t4" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t3" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort by T3 Hazards completeness">T3 Hazard Links<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                  <th id="audit-hdr-t6" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
+                </tr>
+              </thead>
+              <tbody id="body-discovery-audit">
+                <!-- Dynamically Rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search-protocol modal — opened by clicking an "S" dot in the audit matrix above -->
+      <div id="srch-modal" onclick="if(event.target===this)closeSrchModal()" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.62); padding:56px 20px; overflow:auto;">
+        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; max-width:780px; margin:0 auto; padding:20px 24px; box-shadow:0 12px 48px rgba(0,0,0,0.55);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+            <h3 id="srch-modal-title" style="margin:0; font-size:15px; color:var(--text-primary);">Search protocol</h3>
+            <button onclick="closeSrchModal()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); border-radius:4px; cursor:pointer; font-size:13px; padding:2px 9px;">&#10005;</button>
+          </div>
+          <div id="srch-modal-body"></div>
         </div>
       </div>
 
@@ -3145,7 +3168,12 @@
     renderDiscoveryAudit();
     const auditNbsFilter = document.getElementById('filter-audit-nbs');
     if (auditNbsFilter) {
-      auditNbsFilter.addEventListener('change', renderDiscoveryAudit);
+      auditNbsFilter.addEventListener('change', function () {
+        // NbS scope changed → drop stale variant selections (they belong to another NbS)
+        if (window.auditVariantFilter) window.auditVariantFilter.clear();
+        populateVariantList();
+        renderDiscoveryAudit();
+      });
     }
     const auditStatusFilter = document.getElementById('filter-audit-status');
     if (auditStatusFilter) {
@@ -3190,7 +3218,7 @@
       // Define Sub-NbS mapping definitions
       const subNbsDefinitions = {
         'agroforestry': [
-          { id: 'all', name: 'All Sub-Practices' },
+          { id: 'all', name: 'None — Parent Practice' },
           { id: 'agroforestry__planted_silvoarable', name: 'Planted Silvoarable (F1)' },
           { id: 'agroforestry__regeneration_farmland', name: 'Regeneration Farmland (F2)' },
           { id: 'agroforestry__silvopastoral', name: 'Silvopastoral (F3)' },
@@ -3199,7 +3227,7 @@
           { id: 'agroforestry__homegardens_proximity', name: 'Homegardens (F6)' }
         ],
         'water_harvesting_conservation': [
-          { id: 'all', name: 'All Sub-Practices' },
+          { id: 'all', name: 'None — Parent Practice' },
           { id: 'water_harvesting__runoff_catchment', name: 'Runoff Catchment (F1)' }
         ]
       };
@@ -3538,6 +3566,47 @@
     return uniqueSourceIds.size;
   }
 
+  // run_id -> the suitability_family the search targeted ('' = generic/parent search).
+  function srchRunFamilyMap() {
+    const srch = (dashboardData.registers && dashboardData.registers.SRCH_search_register) || [];
+    const m = {};
+    srch.forEach(r => { if (r.run_id && !(r.run_id in m)) m[r.run_id] = (r.suitability_family_id || ''); });
+    return m;
+  }
+  // Split a cell's sources into DIRECT (found by a family-targeted search) vs GENERIC (reached
+  // only via the practice-wide parent search). A source is direct iff its discovery/extraction
+  // run maps to a SRCH row whose suitability_family_id == this family. With no family-targeted
+  // searches logged yet, every source is generic (direct = 0).
+  function getClaimsSplit(familyId, targetKey, typeKey) {
+    const claims = dashboardData.registers.EV_evidence_register || [];
+    const sources = dashboardData.registers.SRC_source_register || [];
+    const runFam = srchRunFamilyMap();
+    const direct = new Set(), generic = new Set();
+    claims.forEach(c => {
+      if (c.suitability_family_id !== familyId) return;
+      const dest = getDestTable(c);
+      let mt = false;
+      if (targetKey === 't4') mt = dest === 't4_mappings';
+      else if (targetKey === 't3') mt = dest === 't3_hazards';
+      else if (targetKey === 't6') mt = dest === 't6_scorecard';
+      if (!mt) return;
+      const s = sources.find(src => src.source_id === c.source_id);
+      const cat = getSourceCategory(c.source_id, s ? s.citation : '');
+      if (cat !== typeKey) return;
+      const fam = runFam[s ? (s.extraction_run_id || '') : ''];
+      if (fam !== undefined && fam === familyId) direct.add(c.source_id);
+      else generic.add(c.source_id);
+    });
+    direct.forEach(id => generic.delete(id));
+    return { direct: direct.size, generic: generic.size };
+  }
+  // DIRECT (family-specific) ledger status — NO fallback to the table-level row (that's generic).
+  function ledgerStageDirect(nbsId, table, category, stage, family) {
+    const led = (dashboardData && dashboardData.progress_ledger) || [];
+    const fr = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && r.family === family);
+    return fr ? (fr[stage] || 'not_started') : 'not_started';
+  }
+
   // Resolve which target table a claim maps to, based on database evidence links & fallbacks
   function getDestTable(c) {
     const evId = c.evidence_id;
@@ -3710,6 +3779,18 @@
     const row = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && !(r.family));
     return row ? (row[stage] || 'not_started') : 'not_started';
   }
+  // Family-aware: prefer a sub-practice (family-specific) ledger row; fall back to the
+  // table-level (family='') row, flagging `inherited` so the dot can show the status is the
+  // agroforestry-WIDE sweep, not a family-targeted search (none logged yet → all inherit).
+  function ledgerStageFam(nbsId, table, category, stage, family) {
+    const led = (dashboardData && dashboardData.progress_ledger) || [];
+    if (family) {
+      const fr = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && r.family === family);
+      if (fr) return { status: fr[stage] || 'not_started', inherited: false };
+    }
+    const tr = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && !(r.family));
+    return { status: tr ? (tr[stage] || 'not_started') : 'not_started', inherited: !!family };
+  }
   // dashboard typeKey -> ledger category enum
   const _catKey = { stock: 'stock', updated: 'updated_lit', grey: 'grey', tools: 'tool' };
   // count reviewer_ok units in a (family, target, type) cell
@@ -3779,6 +3860,149 @@
     body.innerHTML='<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Showing <b>'+vis.length+'</b> of '+rows.length+' peer-reviewed sources.</div><div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid var(--border-color); text-align:left;">'+['Title / journal','Practice','Tier','Cites','Input variables','Spatial method','Tool'].map(function(h){return '<th style="padding:6px 10px; font-size:9.5px; color:var(--text-muted); text-transform:uppercase;">'+h+'</th>';}).join('')+'</tr></thead><tbody>'+rowsHtml+'</tbody></table></div>';
   }
 
+  // Open the search-protocol modal for one audit-matrix cell (NbS × table × process × family).
+  // Pulls the matching SRCH rows — the actual searches run — so the matrix IS the search-log view.
+  function showSearchProtocol(nbs, table, category, family) {
+    var modal = document.getElementById('srch-modal'); if (!modal) return;
+    var all = ((dashboardData || {}).registers || {})['SRCH_search_register'] || [];
+    var fam = (family || '').split('__').pop().replace(/_/g, ' ') || 'all families';
+    var procLbl = { stock: 'Stock', updated_lit: 'Lit (OpenAlex)', grey: 'Grey', tool: 'Tools' }[category] || category;
+    // a family-specific row OR a table-level (family='') row covers this cell
+    var rows = all.filter(function (r) {
+      return r.nbs_id === nbs && r.table === table && r.category === category
+        && ((r.suitability_family_id || '') === '' || (r.suitability_family_id || '') === family);
+    });
+    document.getElementById('srch-modal-title').innerHTML =
+      vfEsc(procLbl) + ' search &middot; ' + vfEsc(fam) + ' &middot; ' + vfEsc(table);
+    var body = document.getElementById('srch-modal-body');
+    if (!rows.length) {
+      body.innerHTML = '<div style="color:var(--text-muted); font-size:12.5px; line-height:1.6;">'
+        + '<b style="color:var(--accent-amber);">No search logged for this cell.</b><br>'
+        + 'The ' + vfEsc(procLbl) + ' discovery process has not been run + recorded for this sub-practice × ' + vfEsc(table)
+        + '. Run it and log the protocol (<code>search_log.py</code>) — the progress ledger will not accept <i>searched=done</i> without a record here.</div>';
+    } else {
+      var fld = function (lbl, val, mono) {
+        if (val === '' || val == null) return '';
+        return '<div style="margin-top:8px;"><span style="font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);">' + lbl + '</span><div style="font-size:12px; color:var(--text-primary); margin-top:2px;' + (mono ? 'font-family:monospace;' : '') + '">' + vfEsc(val) + '</div></div>';
+      };
+      body.innerHTML = rows.map(function (r) {
+        var counts = [['retrieved', r.n_retrieved], ['screened', r.n_screened], ['included', r.n_included]]
+          .map(function (c) { return c[0] + ' ' + ((c[1] === '' || c[1] == null) ? '–' : c[1]); }).join(' &middot; ');
+        return '<div style="border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; margin-bottom:10px;">'
+          + (r.suitability_family_id ? '' : '<div style="font-size:10.5px; color:var(--accent-amber); margin-bottom:4px;">&#9432; table-level search (all families) — not yet sub-practice-targeted</div>')
+          + fld('Search terms', r.search_terms)
+          + fld('Inclusion criteria', r.inclusion_criteria)
+          + fld('Screening steps', r.screening_steps)
+          + fld('Limits', r.limits)
+          + '<div style="margin-top:8px;"><span style="font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);">Counts</span><div style="font-size:12px; margin-top:2px;">' + vfEsc(counts) + '</div></div>'
+          + '<div style="display:flex; gap:18px; flex-wrap:wrap; margin-top:10px; font-size:10.5px; color:var(--text-muted); border-top:1px solid var(--border-color); padding-top:8px;">'
+          + '<span>Date: <b style="color:var(--text-secondary);">' + vfEsc(r.search_date || '–') + '</b></span>'
+          + '<span>Run: ' + vfEsc(r.run_id || '–') + '</span>'
+          + '<span>Ruleset: <code>' + vfEsc(r.ruleset_version || '–') + '</code></span>'
+          + (r.discovery_log_ref ? '<span>Log: ' + vfEsc(r.discovery_log_ref) + '</span>' : '')
+          + '</div>'
+          + (r.note ? '<div style="margin-top:8px; font-size:11px; color:var(--text-muted); font-style:italic;">' + vfEsc(r.note) + '</div>' : '')
+          + '</div>';
+      }).join('');
+    }
+    modal.style.display = 'block';
+  }
+  function closeSrchModal() { var m = document.getElementById('srch-modal'); if (m) m.style.display = 'none'; }
+
+  // E/V/R dots → the cell's evidence units (extract → verify → review lifecycle), reusing
+  // the same modal. Shows each EV unit's verify-flag + review state, so E/V/R are navigable.
+  function showCellEvidence(nbs, table, category, family) {
+    var modal = document.getElementById('srch-modal'); if (!modal) return;
+    var roleMap = { T4: 'structural_suitability', T3: 'climate_risk', T6: 'nbs_effect' };
+    var role = roleMap[table];
+    var ev = ((dashboardData || {}).registers || {})['EV_evidence_register'] || [];
+    var src = ((dashboardData || {}).registers || {})['SRC_source_register'] || [];
+    var catOf = {}; src.forEach(function (s) { catOf[s.source_id] = s.source_category || 'stock'; });
+    var rows = ev.filter(function (r) {
+      return r.nbs_id === nbs && r.use_role === role
+        && (r.suitability_family_id || '') === family
+        && (catOf[r.source_id] || 'stock') === category
+        && (r.review_state || '') !== 'dropped';
+    });
+    var procLbl = { stock: 'Stock', updated_lit: 'Lit', grey: 'Grey', tool: 'Tools' }[category] || category;
+    var famLbl = (family || '').split('__').pop().replace(/_/g, ' ') || 'all families';
+    document.getElementById('srch-modal-title').innerHTML =
+      'Evidence &middot; ' + vfEsc(famLbl) + ' &middot; ' + vfEsc(table) + ' &middot; ' + vfEsc(procLbl) + ' (' + rows.length + ')';
+    var body = document.getElementById('srch-modal-body');
+    if (!rows.length) {
+      body.innerHTML = '<div style="color:var(--text-muted); font-size:12.5px;">No evidence units extracted for this cell yet.</div>';
+    } else {
+      body.innerHTML = rows.map(function (r) {
+        var flagged = /\[VERIFY-FLAG/.test(r.attribution || '');
+        var reviewed = r.reviewer_ok === true || r.reviewer_ok === 'true';
+        var badge = function (on, c, t) { return '<span style="font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:3px; margin-left:4px; ' + (on ? 'background:' + c + '; color:#fff;' : 'background:transparent; border:1px solid var(--border-color); color:var(--text-muted);') + '">' + t + '</span>'; };
+        return '<div style="border:1px solid var(--border-color); border-radius:7px; padding:10px 12px; margin-bottom:8px;">'
+          + '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'
+          + '<code style="font-size:10.5px; color:var(--accent-sky);">' + vfEsc(r.evidence_id || '') + '</code>'
+          + '<span style="font-size:11px; color:var(--text-secondary);">' + vfEsc(r.variable || '') + '</span>'
+          + badge(true, '#10b981', 'E') + badge(flagged, '#f59e0b', flagged ? 'V⚑' : 'V') + badge(reviewed, '#10b981', 'R')
+          + '</div>'
+          + '<div style="font-size:11px; color:var(--text-muted); margin-top:5px; line-height:1.5;">' + vfEsc((r.quote || '').slice(0, 200)) + ((r.quote || '').length > 200 ? '…' : '') + '</div>'
+          + '</div>';
+      }).join('')
+        + '<div style="font-size:10.5px; color:var(--text-muted); margin-top:6px;">E = extracted · V⚑ = verify-flagged (needs QA) · R = human-reviewed. Full review in the QA / QC tab.</div>';
+    }
+    modal.style.display = 'block';
+  }
+
+  // --- Audit-matrix variant (suitability-family) multiselect filter ---
+  function populateVariantList() {
+    const list = document.getElementById('audit-variant-list');
+    if (!list) return;
+    const families = (dashboardData.registers.FAM_family_registry) || [];
+    const nbsFilter = (document.getElementById('filter-audit-nbs') || {}).value || 'all';
+    const seen = {}, items = [];
+    families.forEach(f => {
+      if (nbsFilter !== 'all' && f.nbs_id !== nbsFilter) return;
+      if (seen[f.suitability_family_id]) return;
+      seen[f.suitability_family_id] = 1;
+      items.push({ id: f.suitability_family_id, name: f.name || f.suitability_family_id.split('__').pop().replace(/_/g, ' ') });
+    });
+    const sel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
+    list.innerHTML = items.map(it =>
+      `<label style="display:flex; align-items:center; gap:7px; padding:4px 6px; font-size:11.5px; cursor:pointer; border-radius:4px;">
+        <input type="checkbox" value="${it.id}" ${sel.has(it.id) ? 'checked' : ''} onchange="onVariantToggle(this)" style="cursor:pointer;">
+        <span style="color:var(--text-secondary);">${vfEsc(it.name)}</span>
+      </label>`).join('') || '<div style="font-size:11px; color:var(--text-muted); padding:4px 6px;">No families for this NbS.</div>';
+    updateVariantBtn();
+  }
+  function onVariantToggle(cb) {
+    const sel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
+    if (cb.checked) sel.add(cb.value); else sel.delete(cb.value);
+    updateVariantBtn();
+    renderDiscoveryAudit();
+  }
+  function setAllVariants(on) {
+    const sel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
+    sel.clear();
+    if (on) document.querySelectorAll('#audit-variant-list input[type=checkbox]').forEach(cb => sel.add(cb.value));
+    populateVariantList();
+    renderDiscoveryAudit();
+  }
+  function updateVariantBtn() {
+    const btn = document.getElementById('audit-variant-btn');
+    const sel = window.auditVariantFilter || new Set();
+    if (btn) btn.textContent = 'Variants: ' + (sel.size ? sel.size + ' selected' : 'All') + ' ▾';
+  }
+  function toggleVariantFilter(e) {
+    if (e) e.stopPropagation();
+    const p = document.getElementById('audit-variant-panel');
+    if (!p) return;
+    const show = p.style.display === 'none' || !p.style.display;
+    if (show) { populateVariantList(); p.style.display = 'block'; } else { p.style.display = 'none'; }
+  }
+  // close the panel when clicking outside it
+  document.addEventListener('click', function (e) {
+    const p = document.getElementById('audit-variant-panel');
+    const b = document.getElementById('audit-variant-btn');
+    if (p && p.style.display === 'block' && !p.contains(e.target) && e.target !== b) p.style.display = 'none';
+  });
+
   function renderDiscoveryAudit() {
     discoveryStatusDb = buildDiscoveryStatusDb(); // D2: rebuild from live EV data
     const body = document.getElementById('body-discovery-audit');
@@ -3812,6 +4036,12 @@
     // 1. Filter by NbS
     if (nbsFilter !== 'all') {
       rows = rows.filter(r => r.nbsId === nbsFilter);
+    }
+
+    // 1b. Filter by selected variants (multiselect). Empty set = show all.
+    const variantSel = window.auditVariantFilter || (window.auditVariantFilter = new Set());
+    if (variantSel.size > 0) {
+      rows = rows.filter(r => variantSel.has(r.familyId));
     }
 
     // 2. Filter by status (active vs pending)
@@ -3863,22 +4093,11 @@
     }
 
     const renderCell = (statusKey, targetKey, typeKey) => {
-      const count = getClaimsCount(statusKey, targetKey, typeKey);
-      
-      let badgeClass = 'low';
-      let displayVal = count;
-      let titleText = `${count} source(s) providing evidence`;
-      
-      if (count > 1) {
-        badgeClass = 'high';
-      } else if (count === 1) {
-        badgeClass = 'medium';
-      } else {
-        badgeClass = 'low';
-        displayVal = '0';
-        titleText = 'No sources providing evidence';
-      }
-      
+      // Two coverage numbers: DIRECT (family-targeted search) vs GENERIC (via the parent search).
+      const split = getClaimsSplit(statusKey, targetKey, typeKey);
+      const directN = split.direct, genericN = split.generic;
+      const directClass = directN > 1 ? 'high' : directN === 1 ? 'medium' : 'low';
+
       const typeLabel = typeKey === 'stock' ? 'Stock Papers'
                       : typeKey === 'updated' ? 'Updated Lit'
                       : typeKey === 'grey' ? 'Grey Lit'
@@ -3887,27 +4106,41 @@
                         : targetKey === 't3' ? 'T3 Hazards'
                         : 'T6 Outcomes & Costing';
 
-      // per-cell stage S·E·V·R for (family × table × category)
+      // per-cell stage S·E·V·R — keyed to the DIRECT (family-targeted) pipeline ONLY. Generic
+      // coverage is shown by the second number, never by the dots (no inheritance/dashed ring).
       const _nbs = statusKey.split('__')[0];
       const _tbl = targetKey.toUpperCase();
       const _cat = _catKey[typeKey];
-      const _ss = ledgerStage(_nbs, _tbl, _cat, 'searched');
-      const _e = count > 0;
-      const _v = ledgerStage(_nbs, _tbl, _cat, 'verified') === 'done' && _e;
-      const _r = cellReviewed(statusKey, targetKey, typeKey);
-      const _dot = (state, color, lbl, tip) =>
-        `<span title="${tip}" style="display:inline-flex;align-items:center;justify-content:center;width:19px;height:19px;border-radius:50%;font-size:11px;font-weight:700;margin:0 2px;${state === 'full' ? `background:${color};color:#fff;` : state === 'part' ? 'background:#f59e0b;color:#fff;' : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);'}">${lbl}</span>`;
-      const sevr = `<div style="margin-top:6px;white-space:nowrap;line-height:1;">`
-        + _dot(_ss === 'done' ? 'full' : _ss === 'in_progress' ? 'part' : 'none', '#0ea5e9', 'S', `${typeLabel} Searched: ${_ss}`)
-        + _dot(_e ? 'full' : 'none', '#10b981', 'E', `Extracted: ${count} source(s)`)
-        + _dot(_v ? 'full' : 'none', '#818cf8', 'V', `Verified: ${_v ? 'verify pass run' : 'not run / no evidence'}`)
-        + _dot(_r ? 'full' : 'none', '#10b981', 'R', `Reviewed: ${_r ? 'yes' : 'not yet'}`)
-        + `</div>`;
+      const _ss = ledgerStageDirect(_nbs, _tbl, _cat, 'searched', statusKey);
+      const _e = directN > 0;
+      const _v = ledgerStageDirect(_nbs, _tbl, _cat, 'verified', statusKey) === 'done' && _e;
+      const _r = _e && cellReviewed(statusKey, targetKey, typeKey);
+      // The pipeline is sequential (Search → Extract → Verify → Review). Show ONE pip = the
+      // furthest DIRECT (family-targeted) stage reached, not 4 dots. Generic coverage = the +# number.
+      let stage = 'Not started', stState = 'none';
+      if (_r) { stage = 'Reviewed'; stState = 'done'; }
+      else if (_v) { stage = 'Verified'; stState = 'done'; }
+      else if (_e) { stage = 'Extracted'; stState = 'done'; }
+      else if (_ss === 'done') { stage = 'Searched'; stState = 'done'; }
+      else if (_ss === 'in_progress') { stage = 'Searching'; stState = 'part'; }
+      const _GRN = '#10b981';
+      const _evClick = `showCellEvidence('${_nbs}','${_tbl}','${_cat}','${statusKey}')`;
+      const _srchClick = `showSearchProtocol('${_nbs}','${_tbl}','${_cat}','${statusKey}')`;
+      const pipBg = stState === 'done' ? `background:${_GRN};color:#fff;`
+                  : stState === 'part' ? 'background:#f59e0b;color:#fff;'
+                  : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);';
+      const pip = `<span onclick="${_srchClick}" title="Direct (family-targeted) pipeline stage: ${stage}. Sequential — Search → Extract → Verify → Review. Click for the search protocol." style="margin-top:6px; cursor:pointer; font-size:9.5px; font-weight:700; letter-spacing:.02em; padding:2px 9px; border-radius:11px; ${pipBg}">${stage}</span>`;
       const _short = typeKey === 'stock' ? 'Stock' : typeKey === 'updated' ? 'Lit' : typeKey === 'grey' ? 'Grey' : 'Tools';
-      return `<div title="${targetLabel} - ${typeLabel}: ${titleText}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
+      const _total = directN + genericN;
+      const _numClick = _total > 0 ? ` onclick="${_evClick}" style="cursor:pointer;"` : '';
+      const cellTitle = `${targetLabel} - ${typeLabel}: ${directN} direct (family-targeted) source(s), ${genericN} generic (via the practice-wide parent search). Pip = furthest direct pipeline stage.`;
+      return `<div title="${cellTitle}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
         <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">${_short}</span>
-        <span class="badge ${badgeClass} audit-badge" style="font-weight:700; width:24px; height:24px; line-height:24px; font-size:13px; display:inline-block; text-align:center; border-radius:50%; padding:0;">${displayVal}</span>
-        ${sevr}
+        <div${_numClick} title="left = direct (family-targeted) sources; right = generic (via parent search)${_total ? ' — click to see the evidence' : ''}" style="display:flex; align-items:center; gap:5px;${_total ? 'cursor:pointer;' : ''}">
+          <span class="badge ${directClass} audit-badge" style="font-weight:700; width:22px; height:22px; line-height:22px; font-size:12px; display:inline-block; text-align:center; border-radius:50%; padding:0;">${directN}</span>
+          <span style="font-size:11px; font-weight:600; color:var(--text-muted); border:1px dashed var(--border-color); border-radius:10px; padding:1px 6px;" title="${genericN} generic source(s) — reached via the practice-wide parent search, not a ${_short}-direct search for this sub-practice">+${genericN}</span>
+        </div>
+        ${pip}
       </div>`;
     };
     const renderTableCell = (statusKey, targetKey) =>
@@ -6106,6 +6339,80 @@
     return tables.length > 0 ? tables[0] : null;
   }
 
+  // SRCH-driven, UNIFORM across T3/T4/T6: one card per discovery process (stock · updated_lit
+  // · grey · tool), each with its mini funnel (retrieved→screened→included), terms, inclusion
+  // criteria, limits, date + ruleset version. Single source of truth (the SRCH register) — kills
+  // the per-table structure drift of the old markdown-parsed view. Returns true if it rendered.
+  function renderSrchQueries(container, nbs, table, family) {
+    const srch = ((dashboardData || {}).registers || {})['SRCH_search_register'] || [];
+    const all = srch.filter(r => r.nbs_id === nbs && r.table === table);
+    if (!all.length) return false;
+    // Sub-practice scoping: a specific family shows its own searches; if none are logged, fall
+    // back to the table-level (family='') 'agroforestry overall' searches under an honest banner
+    // — so it's clear no sub-practice-targeted search exists, matching the matrix dashed-ring.
+    const famSel = (family && family !== 'all') ? family : '';
+    let rows, banner = '';
+    if (famSel) {
+      const famRows = all.filter(r => (r.suitability_family_id || '') === famSel);
+      if (famRows.length) {
+        rows = famRows;
+      } else {
+        rows = all.filter(r => !(r.suitability_family_id || ''));
+        const famName = famSel.split('__').pop().replace(/_/g, ' ');
+        banner = `<div style="font-size:11px; color:var(--accent-amber, #f59e0b); background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.3); border-radius:6px; padding:8px 11px; margin-bottom:10px; line-height:1.45;">No <b>${vfEsc(famName)}</b>-targeted search logged yet. Showing the <b>generic agroforestry</b> (practice-wide parent) search below — its broad net catches this family, but no search was aimed at it specifically.</div>`;
+      }
+    } else {
+      rows = all.filter(r => !(r.suitability_family_id || ''));
+      banner = `<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px; line-height:1.45;"><b>Generic agroforestry search</b> — the practice-wide parent query (broad "agroforestry OR synonyms" net). This is its own search, <b>not</b> an aggregation of the per-sub-practice searches. Select a sub-practice above for family-targeted searches.</div>`;
+    }
+    if (!rows.length) return false;
+    const PROC = [
+      { key: 'stock', label: 'Stocktake corpus', sub: 'peer-reviewed benchmarked' },
+      { key: 'updated_lit', label: 'Updated literature', sub: 'OpenAlex title sweep' },
+      { key: 'grey', label: 'Grey literature', sub: 'web · WOCAT · CGSpace · FAO/WRI' },
+      { key: 'tool', label: 'Tools & code', sub: 'repos · GEE scripts' },
+    ];
+    const num = v => { const n = parseInt(String(v).replace(/[^0-9]/g, ''), 10); return isNaN(n) ? null : n; };
+    const _staleTabs = document.getElementById('search-queries-tabs');
+    if (_staleTabs) _staleTabs.style.display = 'none';
+    let html = banner + '<div style="display:flex; flex-direction:column; gap:10px;">';
+    PROC.forEach(p => {
+      const rs = rows.filter(r => r.category === p.key);
+      if (!rs.length) {
+        html += `<div style="border:1px dashed var(--border-color); border-radius:7px; padding:9px 12px; opacity:.6;">
+          <span style="font-weight:700; font-size:12px;">${vfEsc(p.label)}</span>
+          <span style="font-size:10.5px; color:var(--text-muted); margin-left:6px;">— no search logged for this process yet</span></div>`;
+        return;
+      }
+      rs.forEach(r => {
+        const ret = num(r.n_retrieved), scr = num(r.n_screened), inc = num(r.n_included);
+        const mx = Math.max(ret || 0, scr || 0, inc || 0) || 1;
+        const chip = (lbl, v, col) => v == null ? '' :
+          `<div style="display:flex; align-items:center; gap:6px; margin:2px 0;">
+            <span style="font-size:9.5px; color:var(--text-muted); width:62px; flex-shrink:0;">${lbl}</span>
+            <div style="flex:1; height:6px; background:var(--bg-secondary); border-radius:3px; overflow:hidden;"><div style="height:100%; width:${Math.max(8, (v / mx) * 100)}%; background:${col}; border-radius:3px;"></div></div>
+            <span style="font-size:10.5px; font-weight:700; width:34px; text-align:right;">${v}</span>
+          </div>`;
+        const field = (lbl, v) => !v ? '' :
+          `<div style="font-size:10.5px; margin-top:4px; line-height:1.45;"><span style="color:var(--text-muted);">${lbl}:</span> <span style="color:var(--text-secondary);">${vfEsc(v)}</span></div>`;
+        html += `<div style="border:1px solid var(--border-color); border-radius:7px; padding:10px 12px;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:8px; flex-wrap:wrap;">
+            <span><b style="font-size:12px;">${vfEsc(p.label)}</b> <span style="font-size:10px; color:var(--text-muted);">${vfEsc(p.sub)}</span></span>
+            <span style="font-size:9.5px; color:var(--text-muted);">${vfEsc(r.search_date || '')} · ruleset ${vfEsc(r.ruleset_version || '?')}</span>
+          </div>
+          <div style="margin-top:7px;">${chip('retrieved', ret, '#0ea5e9') + chip('screened', scr, '#818cf8') + chip('included', inc, '#10b981')}</div>
+          ${field('Terms', r.search_terms)}
+          ${field('Inclusion', r.inclusion_criteria)}
+          ${field('Limits', r.limits)}
+          ${r.discovery_log_ref ? `<div style="font-size:10px; color:var(--text-muted); margin-top:5px;">Narrative log: ${vfEsc(r.discovery_log_ref)}</div>` : ''}
+        </div>`;
+      });
+    });
+    html += '</div>';
+    container.innerHTML = html;
+    return true;
+  }
+
   function renderQueriesVisual(container, text) {
     if (!text) {
       container.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
@@ -6550,29 +6857,9 @@
       });
     }
 
-    // 1. Render Metadata
+    // 1. Metadata header (LOG DATE / AUTHORS / SEED-SET) removed 2026-06 — clutter, no user value.
     const metadataGrid = document.getElementById('search-metadata-grid');
-    if (metadataGrid) {
-      const cleanAuthors = (log.authors || 'N/A').replace(/Codex \(operator\)/g, 'Antigravity (agent)');
-      let seedRule = log.seed_rule || 'N/A';
-      const activeTable = logId.split('_').pop(); // 'T3', 'T4', 'T6'
-      seedRule = seedRule.replace(/T4\s+method/g, `${activeTable} method`);
-
-      metadataGrid.innerHTML = `
-        <div class="stat-card" style="padding: 16px 20px;">
-          <div class="stat-label" style="font-size: 11px;">LOG DATE</div>
-          <div class="stat-value" style="font-size: 18px; margin-top: 4px; font-family: var(--font-outfit);">${log.date || 'N/A'}</div>
-        </div>
-        <div class="stat-card" style="padding: 16px 20px;">
-          <div class="stat-label" style="font-size: 11px;">AUTHORS / ROLES</div>
-          <div class="stat-value" style="font-size: 16px; margin-top: 4px; line-height:1.3; font-weight:600; font-family: var(--font-outfit);">${cleanAuthors}</div>
-        </div>
-        <div class="stat-card" style="padding: 16px 20px; grid-column: span 2;">
-          <div class="stat-label" style="font-size: 11px;">SEED-SET SELECTION RULE</div>
-          <div class="stat-value" style="font-size: 13px; margin-top: 4px; font-weight: normal; color: var(--text-primary); line-height: 1.4;">${seedRule}</div>
-        </div>
-      `;
-    }
+    if (metadataGrid) { metadataGrid.innerHTML = ''; metadataGrid.style.display = 'none'; }
 
     // 2. Render PRISMA Funnel
     const funnelContainer = document.getElementById('search-funnel-container');
@@ -6629,13 +6916,18 @@
         `;
         funnelContainer.appendChild(funnelTitle);
 
-        const stages = activeTable.rows.map((row, idx) => {
+        // Only rows whose COUNT cell is a real single number are funnel stages. A cell like
+        // "5 High · 13 Medium · 5 Low" is a breakdown annotation, NOT a stage — stripping its
+        // non-digits would concatenate to a bogus 5135. Drop those rows from the funnel.
+        const _isCountCell = (c) => /^\d+$/.test((c || '').replace(/\*\*/g, '').replace(/[~,+\s]/g, '').trim());
+        const funnelRows = activeTable.rows.filter(row => _isCountCell(row[1]));
+        const stages = funnelRows.map((row, idx) => {
           const stageRaw = row[0].replace(/\*\*/g, '').trim();
           let count = parseInt(row[1].replace(/[^0-9]/g, '')) || 0;
           const notes = row[2] || '';
-          
+
           // Dynamically compute the final inclusion count based on the filtered list, but ONLY for the final stage or table containing inclusion counts
-          const isFinalRow = idx === activeTable.rows.length - 1;
+          const isFinalRow = idx === funnelRows.length - 1;
           const isIncludedRow = stageRaw.toLowerCase().includes('include') || stageRaw.toLowerCase().includes('src') || stageRaw.toLowerCase().includes('registered');
           if (isFinalRow && isIncludedRow) {
             count = filteredRows.length;
@@ -6674,11 +6966,18 @@
     // 3. Render Queries & Databases
     const queriesContainer = document.getElementById('search-queries-container');
     if (queriesContainer) {
-      const queriesKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('source') || k.toLowerCase().includes('queried') || k.toLowerCase().includes('database'));
-      if (queriesKey) {
-        renderQueriesVisual(queriesContainer, log.sections[queriesKey]);
-      } else {
-        queriesContainer.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
+      // SRCH register first (uniform, single source of truth); markdown only as a fallback for
+      // logs with no SRCH rows yet — so T3/T4/T6 stop showing divergent hand-authored structures.
+      const _qNbs = logId.substring(0, logId.lastIndexOf('_'));
+      const _qTbl = logId.split('_').pop();
+      const renderedFromSrch = renderSrchQueries(queriesContainer, _qNbs, _qTbl, subNbsFilter);
+      if (!renderedFromSrch) {
+        const queriesKey = Object.keys(log.sections).find(k => k.toLowerCase().includes('source') || k.toLowerCase().includes('queried') || k.toLowerCase().includes('database'));
+        if (queriesKey) {
+          renderQueriesVisual(queriesContainer, log.sections[queriesKey]);
+        } else {
+          queriesContainer.innerHTML = `<div style="color: var(--text-muted);">No query details found.</div>`;
+        }
       }
     }
 
