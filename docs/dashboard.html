@@ -1998,7 +1998,7 @@
               </div>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Stage pip</span>
-                <span style="color:var(--text-secondary);">the furthest <b>direct</b> (family-targeted) stage reached — sequential <b>Searched → Extracted → Verified → Reviewed</b> <span style="color:var(--text-muted);">(generic coverage is the +# number, not a stage)</span></span>
+                <span style="color:var(--text-secondary);">the furthest stage reached — sequential <b>Searched → Extracted → Verified → Reviewed</b>. <span style="color:#10b981; font-weight:700;">Green</span> = <b>direct</b> (family-targeted). <span style="background:#475569; color:#e2e8f0; padding:0 5px; border-radius:8px;">slate · gen</span> = the <b>generic</b> parent-search stage (shown when no direct search has run yet).</span>
               </div>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Pip colour</span>
@@ -4111,25 +4111,44 @@
       const _nbs = statusKey.split('__')[0];
       const _tbl = targetKey.toUpperCase();
       const _cat = _catKey[typeKey];
+      // Sequential pipeline (Search → Extract → Verify → Review). One pip = furthest stage.
+      // DIRECT (family-targeted) wins and shows solid green/amber. If there's NO direct work,
+      // fall back to the GENERIC (parent-search) stage — shown slate + " · gen" so real
+      // parent-search progress is visible (not a misleading "Not started"), yet clearly not
+      // a family-targeted result.
       const _ss = ledgerStageDirect(_nbs, _tbl, _cat, 'searched', statusKey);
       const _e = directN > 0;
       const _v = ledgerStageDirect(_nbs, _tbl, _cat, 'verified', statusKey) === 'done' && _e;
       const _r = _e && cellReviewed(statusKey, targetKey, typeKey);
-      // The pipeline is sequential (Search → Extract → Verify → Review). Show ONE pip = the
-      // furthest DIRECT (family-targeted) stage reached, not 4 dots. Generic coverage = the +# number.
+      // generic (parent-search) lifecycle — ledger family-level rows + generic evidence
+      const _gss = ledgerStageFam(_nbs, _tbl, _cat, 'searched', statusKey).status;
+      const _ge = genericN > 0;
+      const _gv = ledgerStageFam(_nbs, _tbl, _cat, 'verified', statusKey).status === 'done' && _ge;
+      const _gr = _ge && cellReviewed(statusKey, targetKey, typeKey);
       let stage = 'Not started', stState = 'none';
       if (_r) { stage = 'Reviewed'; stState = 'done'; }
       else if (_v) { stage = 'Verified'; stState = 'done'; }
       else if (_e) { stage = 'Extracted'; stState = 'done'; }
       else if (_ss === 'done') { stage = 'Searched'; stState = 'done'; }
       else if (_ss === 'in_progress') { stage = 'Searching'; stState = 'part'; }
+      else if (_gr) { stage = 'Reviewed · gen'; stState = 'gen'; }
+      else if (_gv) { stage = 'Verified · gen'; stState = 'gen'; }
+      else if (_ge) { stage = 'Extracted · gen'; stState = 'gen'; }
+      else if (_gss === 'done') { stage = 'Searched · gen'; stState = 'gen'; }
+      else if (_gss === 'in_progress') { stage = 'Searching · gen'; stState = 'genpart'; }
+      const _isGen = stState === 'gen' || stState === 'genpart';
       const _GRN = '#10b981';
       const _evClick = `showCellEvidence('${_nbs}','${_tbl}','${_cat}','${statusKey}')`;
       const _srchClick = `showSearchProtocol('${_nbs}','${_tbl}','${_cat}','${statusKey}')`;
       const pipBg = stState === 'done' ? `background:${_GRN};color:#fff;`
                   : stState === 'part' ? 'background:#f59e0b;color:#fff;'
+                  : stState === 'gen' ? 'background:#475569;color:#e2e8f0;'
+                  : stState === 'genpart' ? 'background:transparent;border:1px dashed #f59e0b;color:#f59e0b;'
                   : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);';
-      const pip = `<span onclick="${_srchClick}" title="Direct (family-targeted) pipeline stage: ${stage}. Sequential — Search → Extract → Verify → Review. Click for the search protocol." style="margin-top:6px; cursor:pointer; font-size:9.5px; font-weight:700; letter-spacing:.02em; padding:2px 9px; border-radius:11px; ${pipBg}">${stage}</span>`;
+      const _pipTip = _isGen
+        ? `Generic (parent-search) stage: ${stage.replace(' · gen', '')}. No family-targeted (direct) search yet. Click for the search protocol.`
+        : `Direct (family-targeted) stage: ${stage}. Sequential — Search → Extract → Verify → Review. Click for the search protocol.`;
+      const pip = `<span onclick="${_srchClick}" title="${_pipTip}" style="margin-top:6px; cursor:pointer; font-size:9.5px; font-weight:700; letter-spacing:.02em; padding:2px 9px; border-radius:11px; ${pipBg}">${stage}</span>`;
       const _short = typeKey === 'stock' ? 'Stock' : typeKey === 'updated' ? 'Lit' : typeKey === 'grey' ? 'Grey' : 'Tools';
       const _total = directN + genericN;
       const _numClick = _total > 0 ? ` onclick="${_evClick}" style="cursor:pointer;"` : '';
