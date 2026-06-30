@@ -242,6 +242,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "VONT_variable_ontology",
         "BIND_dataset_binding",
         "TOOL_tool_registry",
+        "SRCH_search_register",
     ]
     global_tables = [
         "T1_data_registry",
