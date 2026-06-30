@@ -48,7 +48,9 @@ def consensus_decisions(store: dict) -> tuple[dict, list[str]]:
             decisions[eid] = {
                 "decision": next(iter(vals)),
                 "reason": ";".join(
-                    sorted({v.get("reason", "") for v in decs.values() if v.get("reason")})
+                    sorted(
+                        {v.get("reason", "") for v in decs.values() if v.get("reason")}
+                    )
                 ),
                 "note": " | ".join(
                     v.get("note", "") for v in decs.values() if v.get("note")
@@ -66,7 +68,9 @@ def main() -> int:
     if not decisions:
         print("submit_review: no agreed decisions to apply (nothing to do).")
         if conflicts:
-            print(f"  ({len(conflicts)} conflicted, left pending: {', '.join(conflicts)})")
+            print(
+                f"  ({len(conflicts)} conflicted, left pending: {', '.join(conflicts)})"
+            )
         return 0
     res = apply_decisions(decisions, "consensus")
     generate(ROOT / "schema")
