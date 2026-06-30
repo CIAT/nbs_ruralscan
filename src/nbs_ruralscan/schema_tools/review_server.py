@@ -28,8 +28,19 @@ STORE = ROOT / "pipeline" / "review" / "decisions.json"
 
 def _load() -> dict:
     if STORE.exists():
+        raw = STORE.read_bytes()
         try:
-            return json.loads(STORE.read_text(encoding="utf-8"))
+            return json.loads(raw.decode("utf-8"))
+        except UnicodeDecodeError:
+            # decisions.json is gitignored (per-reviewer, local) so `git restore` can't fix a
+            # stray Windows-1252 byte in it. Self-heal: re-decode cp1252 → rewrite UTF-8.
+            try:
+                txt = raw.decode("cp1252")
+                STORE.write_text(txt, encoding="utf-8")
+                print("⚠  decisions.json had a non-UTF-8 byte — re-encoded cp1252→UTF-8 in place.")
+                return json.loads(txt)
+            except Exception:
+                return {}
         except Exception:
             return {}
     return {}
@@ -212,6 +223,16 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(200, {"ok": True, "decided": decided})
 
         if self.path == "/api/apply":
+            # Preflight: scan every file the Apply path reads for a stray non-UTF-8 byte / CRLF
+            # BEFORE apply_decisions + generate run — so the popup NAMES the offending file
+            # (incl. gitignored .cache snapshots) instead of a cryptic 'codec can't decode 0xNN'.
+            enc = integrity_problems(_pipeline_text_files())
+            if enc:
+                return self._json(
+                    400,
+                    {"error": "Encoding/line-ending problem — fix these before Apply:\n"
+                              + "\n".join(enc)},
+                )
             store = _load()
             if not store:
                 return self._json(200, {"applied": 0, "message": "no decisions"})
@@ -370,26 +391,68 @@ class Handler(SimpleHTTPRequestHandler):
         pass
 
 
+def _gitignored(p: Path) -> bool:
+    """decisions.json + the local corpus cache are gitignored — `git restore` won't touch them."""
+    s = str(p).replace("\\", "/")
+    return p.name == "decisions.json" or "/.cache/" in s
+
+
+def _pipeline_text_files() -> list[Path]:
+    """Every text file the Apply path reads (apply_decisions + generate + the validate gate) —
+    including the local / gitignored ones a `git restore` can't fix (the .cache/corpus
+    snapshots the guardrail reads). A stray non-UTF-8 byte in ANY of these makes Apply fail
+    with a cryptic 'utf-8 codec can't decode 0xNN'. decisions.json is excluded here because
+    `_load` self-heals it; it's covered by the startup warning instead."""
+    reg = ROOT / "schema" / "registers"
+    files = [
+        reg / "EV_evidence_register.csv",
+        reg / "SRC_source_register.csv",
+        reg / "VONT_variable_ontology.csv",
+        reg / "FAM_family_registry.csv",
+        reg / "BIND_dataset_binding.csv",
+        reg / "TOOL_tool_registry.csv",
+        reg / "SRCH_search_register.csv",
+        ROOT / "pipeline" / "metrics" / "review_log.csv",
+    ]
+    files += sorted((ROOT / "methodology" / "discovery_logs").glob("*.md"))
+    cache = ROOT / ".cache" / "corpus"
+    if cache.exists():
+        files += sorted(p for p in cache.iterdir() if p.suffix in {".txt", ".html", ".md"})
+    return files
+
+
 def integrity_problems(targets: list[Path]) -> list[str]:
-    """Return a problem string per non-UTF-8 / CRLF register file (empty = all clean)."""
+    """One problem string per non-UTF-8 / CRLF file (empty = all clean). The fix hint is
+    path-aware: tracked files → `git restore`; gitignored (decisions.json / .cache) → re-encode,
+    since restore can't reach them."""
     problems = []
     for p in targets:
         if not p.exists():
             continue
-        rel = p.name
+        try:
+            rel = p.relative_to(ROOT)
+        except ValueError:
+            rel = p.name
         raw = p.read_bytes()
         try:
             raw.decode("utf-8")
         except UnicodeDecodeError as e:
+            if _gitignored(p):
+                fix = (
+                    "re-encode it: uv run python -c \"import pathlib; q=pathlib.Path(r'"
+                    f"{rel}'); q.write_text(q.read_bytes().decode('cp1252'), encoding='utf-8')\""
+                )
+            else:
+                fix = f"git restore {rel}"
             problems.append(
-                f"  ✗ {rel} — NOT valid UTF-8 (byte 0x{raw[e.start]:02x} at {e.start}); "
-                f"a stray Windows-1252 byte. Fix: git restore <path>/{rel}"
+                f"  ✗ {rel} — NOT valid UTF-8 (byte 0x{raw[e.start]:02x} at position {e.start}); "
+                f"a stray Windows-1252 byte. Fix: {fix}"
             )
         else:
-            if b"\r\n" in raw:
+            if b"\r\n" in raw and not _gitignored(p):
                 problems.append(
                     f"  ✗ {rel} — has CRLF line endings (Windows). "
-                    f"Fix: git restore <path>/{rel}  (or: git rm --cached -r . && git reset --hard)"
+                    f"Fix: git restore {rel}  (or set: git config core.autocrlf false)"
                 )
     return problems
 
@@ -401,13 +464,7 @@ def _startup_integrity_check() -> None:
     catches it BEFORE any click, names the file, and gives the one-line fix. The server
     itself never writes these CSVs on startup — a 'modified' git diff is git autocrlf
     converting line endings on checkout, not the server."""
-    problems = integrity_problems(
-        [
-            ROOT / "schema" / "registers" / "EV_evidence_register.csv",
-            ROOT / "pipeline" / "metrics" / "review_log.csv",
-            ROOT / "schema" / "registers" / "SRC_source_register.csv",
-        ]
-    )
+    problems = integrity_problems(_pipeline_text_files() + [STORE])
     if problems:
         print("\n" + "=" * 78)
         print("⚠  REGISTER ENCODING/LINE-ENDING PROBLEM — Apply will fail until fixed:")
