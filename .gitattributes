@@ -8,6 +8,20 @@ schema/registers/*.json        linguist-generated=true
 # The column manifest is hand-authored, not generated — keep it visible in diffs.
 schema/structure/columns.json  -linguist-generated
 
+# Generated JSON is a deterministic function of the source CSVs, so a 3-way TEXT merge of it
+# is meaningless noise — two branches that both touched a register collide here even though
+# the content is fully rebuildable. The `regen` merge driver ignores both sides and rebuilds
+# from the merged CSVs (scripts/git-merge-regen.sh). The driver COMMAND lives in .git/config,
+# so run `bash scripts/setup-repo.sh` ONCE per clone to register it. Without setup, git just
+# falls back to a normal (conflicting) merge — no worse than before.
+docs/dashboard_data.json       merge=regen
+docs/progress.json             merge=regen
+schema/registers/*.json        merge=regen
+schema/*.json                  merge=regen
+schema/recipes/**/*.json       merge=regen
+# columns.json is hand-authored (not generated) — keep a normal text merge.
+schema/structure/columns.json  merge=text
+
 # Force LF on ALL CSVs cross-platform. The registers/recipes hold multiline quoted
 # fields (185+ EV rows have embedded newlines); on Windows, git autocrlf would rewrite
 # those embedded LFs to CRLF on checkout, producing ragged rows that crash the
