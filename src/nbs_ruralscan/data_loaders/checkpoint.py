@@ -44,7 +44,9 @@ def checkpoint(run_dir: str | Path) -> Callable:
 
     def decorate(fn: Callable) -> Callable:
         name = getattr(fn, "__name__", "fn")
-        body = getattr(getattr(fn, "__code__", None), "co_code", b"")  # bust cache when edited
+        body = getattr(
+            getattr(fn, "__code__", None), "co_code", b""
+        )  # bust cache when edited
 
         @functools.wraps(fn)
         def wrapped(*args, **kw):
