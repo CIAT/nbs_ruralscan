@@ -35,8 +35,12 @@ class _Band(NamedTuple):
     CHELSA v2.1 ships bioclim as **raw uint16**, NOT physical units — every read MUST be
     scaled or the numbers are nonsense (e.g. an unscaled bio01 reads ~2980, not ~25 °C).
       * temperature bands store Kelvin×10  → scale 0.1, offset -273.15 gives °C.
-      * precip bio12 stores mm/yr directly → scale 1.0, offset 0 (at 0.1 it would overflow
+      * precip bio12 (annual) stores mm/yr directly → scale 1.0 (at ×10 it would overflow
         uint16 in the wet tropics: 12 000 mm × 10 = 120 000 > 65 535).
+      * precip bio13-19 (monthly/quarterly, smaller values) store mm×10 → scale 0.1 for finer
+        precision. NB: NOT the same scale as bio12 — verified empirically (a wettest-quarter
+        read that exceeds the annual total means the ×10 wasn't undone). Extreme-wet quarters
+        (>6553 mm) may clip in uint16; a non-issue for the LDC pilots.
     """
 
     code: str  # CHELSA band file code, zero-padded (e.g. "bio01")
@@ -50,13 +54,23 @@ _VARS: dict[str, _Band] = {
     "mean_annual_temperature": _Band("bio01", scale=0.1, offset=-273.15, unit="degC"),
     "heat_stress_hazard": _Band(
         "bio05", scale=0.1, offset=-273.15, unit="degC"
-    ),  # warmest-month Tmax
+    ),  # warmest-month Tmax (BIO5)
+    "frost_hazard": _Band(
+        "bio06", scale=0.1, offset=-273.15, unit="degC"
+    ),  # coldest-month Tmin (BIO6); lower = more frost risk (invert in membership)
     "annual_precipitation": _Band(
         "bio12", scale=1.0, offset=0.0, unit="mm"
     ),  # direct mm/yr
+    "precip_wettest_quarter": _Band(
+        "bio16", scale=0.1, offset=0.0, unit="mm"
+    ),  # sustained wet-season water input (waterlogging composite); mm×10, NOT bio12's scale
 }
 ChelsaVar = Literal[
-    "mean_annual_temperature", "heat_stress_hazard", "annual_precipitation"
+    "mean_annual_temperature",
+    "heat_stress_hazard",
+    "frost_hazard",
+    "annual_precipitation",
+    "precip_wettest_quarter",
 ]
 
 
