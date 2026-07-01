@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-07-01T07:53:35.737786+00:00",
-  "git_commit": "9ccc1d49f01eea4f58b76bc465349f1bebf67614",
+  "timestamp": "2026-07-01T07:57:10.151602+00:00",
+  "git_commit": "22b7b20c9babdec1ab83a8b5ca5a543d5729ca37",
   "registers": {
     "SRC_source_register": [
       {
@@ -17650,26 +17650,26 @@
       },
       {
         "dataset_id": "chirps_precipitation_v2",
-        "dataset_name": "WorldClim v2.1 Monthly Precipitation",
+        "dataset_name": "CHIRPS v2.0 (Climate Hazards Group InfraRed Precipitation with Stations)",
         "analytical_module": "climate_hazard",
         "hazard_type": "drought",
         "scenario_type": "baseline",
-        "time_period": "1970-2000",
-        "spatial_resolution_m": 1000,
+        "time_period": "1981–present",
+        "spatial_resolution_m": 5566,
         "geographic_coverage": [
           "global"
         ],
         "data_format": "geotiff_cog",
-        "access_type": "direct_download",
-        "download_url": "https://www.worldclim.org/data/worldclim21.html",
-        "gee_asset_id": "WORLDCLIM/V1/MONTHLY",
-        "license": "CC-BY-4.0",
-        "citation": "Fick, S.E. & Hijmans, R.J. (2017). WorldClim 2: new 1km spatial resolution climate surfaces for global land areas. International Journal of Climatology, 37(12), 4302-4315.",
-        "doi": "10.1002/joc.5086",
-        "version": "v2.1",
-        "preprocessing_notes": "Rainfall is the second most frequent input variable (38 of 85 papers). Extract mean annual precipitation and wet-season monthly totals. Use for SCS-CN runoff depth calculation combined with HSG soil map. Buraihi & Shariff (2015) use projected precipitation to assess future RWH viability under climate change.",
-        "limitations": "30-year climatological mean; interannual variability not captured. Resolution too coarse for localised orographic precipitation in complex terrain. Not for: Flood frequency analysis; design-storm estimation for dam sizing",
-        "description": "Climate Hazards Group InfraRed Precipitation with Stations, ~5 km daily precipitation 1981-present.",
+        "access_type": "gee_asset",
+        "download_url": "https://www.chc.ucsb.edu/data/chirps",
+        "gee_asset_id": "UCSB-CHG/CHIRPS/DAILY",
+        "license": "public_domain",
+        "citation": "Funk, C., Peterson, P., Landsfeld, M., Pedreros, D., Verdin, J., Shukla, S., Husak, G., Rowland, J., Harrison, L., Hoell, A. & Michaelsen, J. (2015). The climate hazards infrared precipitation with stations—a new environmental record for monitoring extremes. Scientific Data, 2, 150066.",
+        "doi": "10.1038/sdata.2015.66",
+        "version": "v2.0",
+        "preprocessing_notes": "Aggregate daily to annual totals; compute the interannual coefficient of variation (CV) over a multi-decadal window for rainfall_variability_exposure. Pull the AOI window via xee and reduce server-side; UCSB-CHG/CHIRPS/PENTAD is a lighter alternative to DAILY.",
+        "limitations": "Quasi-global 50°S–50°N only (covers all tropical/subtropical land incl. the LDC pilots). Gauge-sparse regions lean on the satellite estimate; known biases over complex terrain and hyper-arid zones. Not for: sub-daily intensity or design-storm work.",
+        "description": "CHIRPS v2.0 — Climate Hazards Group InfraRed Precipitation with Stations; ~5 km (0.05°) daily precipitation; quasi-global; 1981-present.",
         "grain_type": "grid"
       },
       {
