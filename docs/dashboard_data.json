@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-07-01T07:57:10.151602+00:00",
-  "git_commit": "22b7b20c9babdec1ab83a8b5ca5a543d5729ca37",
+  "timestamp": "2026-07-01T08:10:24.473190+00:00",
+  "git_commit": "fd492332fd9ff0e9fb4102e29827af3d58621aab",
   "registers": {
     "SRC_source_register": [
       {
@@ -18096,24 +18096,25 @@
       },
       {
         "dataset_id": "jrc_global_flood_hazard",
-        "dataset_name": "JRC Global Flood Hazard Maps (Dottori et al. 2016)",
+        "dataset_name": "JRC Global River Flood Hazard Maps v2.1 (CEMS/GloFAS)",
         "analytical_module": "climate_hazard",
         "hazard_type": "flood",
         "scenario_type": "baseline",
-        "spatial_resolution_m": 1000,
+        "spatial_resolution_m": 90,
         "geographic_coverage": [
           "global"
         ],
-        "data_format": "geotiff",
-        "access_type": "direct_download",
-        "download_url": "https://data.jrc.ec.europa.eu/dataset/jrc-floods-floodmapgl_rp50y-tif",
+        "data_format": "geotiff_cog",
+        "access_type": "gee_asset",
+        "download_url": "https://data.jrc.ec.europa.eu/collection/id-0054",
+        "gee_asset_id": "JRC/CEMS_GLOFAS/FloodHazard/v2_1",
         "license": "CC-BY-4.0",
         "citation": "Dottori, F., Salamon, P., Bianchi, A., Alfieri, L., Hirpa, F. A., & Feyen, L. (2016). Development and evaluation of a framework for global flood hazard mapping. Advances in Water Resources, 94, 87-102.",
         "doi": "10.1016/j.advwatres.2016.05.002",
-        "version": 2016,
-        "preprocessing_notes": "Pick return-period band (100y default for scoping); model assumes existing flood protection per FLOPROS.",
+        "version": "v2.1",
+        "preprocessing_notes": "GEE ImageCollection JRC/CEMS_GLOFAS/FloodHazard/v2_1 — mosaic and select the RP{n}_depth band (RP100 default for scoping). Pull the AOI grid via xee. Loader: src/nbs_ruralscan/data_loaders/datasets/jrc_global_flood_hazard.py. Model assumes existing flood protection per FLOPROS.",
         "limitations": "River flooding only — pluvial/urban + coastal flooding need separate layers (e.g. WRI Aqueduct Coastal). Hydrological-model uncertainty in data-sparse basins.",
-        "description": "JRC global river-flood hazard maps — return-period flood depth grids (e.g. 100-year, 500-year) at ~30 arc-second (~1 km).",
+        "description": "JRC/CEMS GloFAS global river-flood hazard maps v2.1 — return-period inundation depth (RP10-RP500) in metres at ~90 m.",
         "grain_type": "grid"
       },
       {
@@ -18240,27 +18241,6 @@
         "evidence_ids": []
       },
       {
-        "variable_id": "flood_exposure_baseline",
-        "dataset_id": "chelsa_bioclim_v21_baseline",
-        "risk_component": "hazard",
-        "hazard_type": "flood",
-        "scenario_type": "baseline",
-        "use_in_simplified_mode": "False",
-        "use_in_advanced_mode": "True",
-        "double_count_risk": "risk_only",
-        "normalisation_method": "percentile_clip",
-        "normalisation_params": {
-          "p_low": 2,
-          "p_high": 98
-        },
-        "weight_default": 0.058,
-        "weight_adjustable": "True",
-        "directionality": "positive_risk",
-        "justification": "Heavy rainfall events cause soil waterlogging and root damage in agroforestry systems, particularly in low-lying and floodplain areas. Castle et al. (2025) treat flood hazard as a suitability constraint for agroforestry in the US Midwest, excluding floodplain areas. Baldwin et al. (2022) integrate flood inundation as a key exposure layer. BIO13 (wettest month precipitation) is a practical proxy for flood-generating rainfall intensity at 1 km resolution.",
-        "variable": "flood_exposure_baseline",
-        "evidence_ids": []
-      },
-      {
         "variable_id": "agricultural_cropland_exposure",
         "dataset_id": "esa_worldcover_2021",
         "risk_component": "exposure",
@@ -18356,14 +18336,14 @@
         "evidence_ids": []
       },
       {
-        "variable_id": "flood_hazard_runoff_depth",
-        "dataset_id": "scs_cn_runoff_composite",
+        "variable_id": "flood_hazard",
+        "dataset_id": "jrc_global_flood_hazard",
         "risk_component": "hazard",
         "hazard_type": "flood",
         "scenario_type": "baseline",
         "use_in_simplified_mode": "True",
         "use_in_advanced_mode": "True",
-        "double_count_risk": "shared",
+        "double_count_risk": "risk_only",
         "normalisation_method": "percentile_clip",
         "normalisation_params": {
           "p_low": 2,
@@ -18372,8 +18352,8 @@
         "weight_default": 0.182,
         "weight_adjustable": "True",
         "directionality": "positive_risk",
-        "justification": "High runoff depth is simultaneously a flood hazard indicator AND the primary measure of water harvesting opportunity. Terencio et al. (2017) weight overflood risk as a suitability barrier. Abd-el-Kader et al. (2023) and Ahmad et al. (2024) explicitly target high-runoff zones as RWH sites for flood-risk adaptation. Shared variable - used in risk (flood hazard) and opportunity space (RWH potential).",
-        "variable": "flood_hazard_runoff_depth",
+        "justification": "Return-period river-flood inundation depth (JRC/CEMS GloFAS) is the direct flood-hazard measure: low-lying and floodplain agroforestry is exposed to waterlogging and root damage. Castle et al. (2025) exclude floodplains as an agroforestry constraint; Baldwin et al. (2022) use flood inundation as a key exposure layer. Replaces the earlier BIO13 rainfall proxy and SCS-CN runoff surrogate with observed return-period depth (RP100 default).",
+        "variable": "flood_hazard",
         "evidence_ids": []
       },
       {

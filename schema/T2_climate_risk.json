@@ -42,27 +42,6 @@
     "evidence_ids": []
   },
   {
-    "variable_id": "flood_exposure_baseline",
-    "dataset_id": "chelsa_bioclim_v21_baseline",
-    "risk_component": "hazard",
-    "hazard_type": "flood",
-    "scenario_type": "baseline",
-    "use_in_simplified_mode": "False",
-    "use_in_advanced_mode": "True",
-    "double_count_risk": "risk_only",
-    "normalisation_method": "percentile_clip",
-    "normalisation_params": {
-      "p_low": 2,
-      "p_high": 98
-    },
-    "weight_default": 0.058,
-    "weight_adjustable": "True",
-    "directionality": "positive_risk",
-    "justification": "Heavy rainfall events cause soil waterlogging and root damage in agroforestry systems, particularly in low-lying and floodplain areas. Castle et al. (2025) treat flood hazard as a suitability constraint for agroforestry in the US Midwest, excluding floodplain areas. Baldwin et al. (2022) integrate flood inundation as a key exposure layer. BIO13 (wettest month precipitation) is a practical proxy for flood-generating rainfall intensity at 1 km resolution.",
-    "variable": "flood_exposure_baseline",
-    "evidence_ids": []
-  },
-  {
     "variable_id": "agricultural_cropland_exposure",
     "dataset_id": "esa_worldcover_2021",
     "risk_component": "exposure",
@@ -158,14 +137,14 @@
     "evidence_ids": []
   },
   {
-    "variable_id": "flood_hazard_runoff_depth",
-    "dataset_id": "scs_cn_runoff_composite",
+    "variable_id": "flood_hazard",
+    "dataset_id": "jrc_global_flood_hazard",
     "risk_component": "hazard",
     "hazard_type": "flood",
     "scenario_type": "baseline",
     "use_in_simplified_mode": "True",
     "use_in_advanced_mode": "True",
-    "double_count_risk": "shared",
+    "double_count_risk": "risk_only",
     "normalisation_method": "percentile_clip",
     "normalisation_params": {
       "p_low": 2,
@@ -174,8 +153,8 @@
     "weight_default": 0.182,
     "weight_adjustable": "True",
     "directionality": "positive_risk",
-    "justification": "High runoff depth is simultaneously a flood hazard indicator AND the primary measure of water harvesting opportunity. Terencio et al. (2017) weight overflood risk as a suitability barrier. Abd-el-Kader et al. (2023) and Ahmad et al. (2024) explicitly target high-runoff zones as RWH sites for flood-risk adaptation. Shared variable - used in risk (flood hazard) and opportunity space (RWH potential).",
-    "variable": "flood_hazard_runoff_depth",
+    "justification": "Return-period river-flood inundation depth (JRC/CEMS GloFAS) is the direct flood-hazard measure: low-lying and floodplain agroforestry is exposed to waterlogging and root damage. Castle et al. (2025) exclude floodplains as an agroforestry constraint; Baldwin et al. (2022) use flood inundation as a key exposure layer. Replaces the earlier BIO13 rainfall proxy and SCS-CN runoff surrogate with observed return-period depth (RP100 default).",
+    "variable": "flood_hazard",
     "evidence_ids": []
   },
   {

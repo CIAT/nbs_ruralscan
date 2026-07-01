@@ -794,24 +794,25 @@
   },
   {
     "dataset_id": "jrc_global_flood_hazard",
-    "dataset_name": "JRC Global Flood Hazard Maps (Dottori et al. 2016)",
+    "dataset_name": "JRC Global River Flood Hazard Maps v2.1 (CEMS/GloFAS)",
     "analytical_module": "climate_hazard",
     "hazard_type": "flood",
     "scenario_type": "baseline",
-    "spatial_resolution_m": 1000,
+    "spatial_resolution_m": 90,
     "geographic_coverage": [
       "global"
     ],
-    "data_format": "geotiff",
-    "access_type": "direct_download",
-    "download_url": "https://data.jrc.ec.europa.eu/dataset/jrc-floods-floodmapgl_rp50y-tif",
+    "data_format": "geotiff_cog",
+    "access_type": "gee_asset",
+    "download_url": "https://data.jrc.ec.europa.eu/collection/id-0054",
+    "gee_asset_id": "JRC/CEMS_GLOFAS/FloodHazard/v2_1",
     "license": "CC-BY-4.0",
     "citation": "Dottori, F., Salamon, P., Bianchi, A., Alfieri, L., Hirpa, F. A., & Feyen, L. (2016). Development and evaluation of a framework for global flood hazard mapping. Advances in Water Resources, 94, 87-102.",
     "doi": "10.1016/j.advwatres.2016.05.002",
-    "version": 2016,
-    "preprocessing_notes": "Pick return-period band (100y default for scoping); model assumes existing flood protection per FLOPROS.",
+    "version": "v2.1",
+    "preprocessing_notes": "GEE ImageCollection JRC/CEMS_GLOFAS/FloodHazard/v2_1 — mosaic and select the RP{n}_depth band (RP100 default for scoping). Pull the AOI grid via xee. Loader: src/nbs_ruralscan/data_loaders/datasets/jrc_global_flood_hazard.py. Model assumes existing flood protection per FLOPROS.",
     "limitations": "River flooding only — pluvial/urban + coastal flooding need separate layers (e.g. WRI Aqueduct Coastal). Hydrological-model uncertainty in data-sparse basins.",
-    "description": "JRC global river-flood hazard maps — return-period flood depth grids (e.g. 100-year, 500-year) at ~30 arc-second (~1 km).",
+    "description": "JRC/CEMS GloFAS global river-flood hazard maps v2.1 — return-period inundation depth (RP10-RP500) in metres at ~90 m.",
     "grain_type": "grid"
   },
   {
