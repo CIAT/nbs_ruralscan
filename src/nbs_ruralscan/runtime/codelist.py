@@ -32,6 +32,7 @@ CODELISTS = ROOT / "schema" / "codelists"
 _SCHEME_BY_DATASET = {
     "usda_cdl": "cdl",
     "cropscape": "cdl",
+    "gaez_v4_aez33": "gaez_aez33",
     "hwsd": "hwsd_soil_quality",
 }
 _SCHEME_BY_VARIABLE: dict[str, str] = {}  # e.g. {"land_cover": "cdl"} once unambiguous

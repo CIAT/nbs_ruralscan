@@ -1,5 +1,5 @@
 canonical_variable_id,label,aliases,canonical_unit,unit_conversions,group_id,candidate_dataset_ids,min_meaningful_resolution_m,resolution_sensitivity,derive_then_aggregate,context_sensitivity,review_status,raised_by,raised_date,comment
-slope,Terrain slope,"[""gradient"",""slope %"",""slope degrees""]",degrees,"{""pct->deg"":""atan"",""ratio->deg"":""atan""}",topographic,"[""srtm_dem_30m"",""srtm_dem_90m""]",90,high,true,low,,,,
+slope,Terrain slope,"[""gradient"",""slope %"",""slope degrees""]",degrees,"{""pct->deg"":""atan"",""ratio->deg"":""atan""}",topographic,"[""copernicus_dem_glo30""]",90,high,true,low,,,,
 annual_precipitation,Mean annual precipitation,"[""BIO12"",""MAP"",""annual rainfall""]",mm/year,{},climatic,"[""worldclim_v2_precip"",""chelsa_bioclim_v21_baseline"",""chirps_precipitation_v2""]",1000,low,false,low,,,,
 mean_annual_temperature,Mean annual temperature,"[""BIO1"",""MAT""]",degC,{},climatic,"[""worldclim_v2_bioclim"",""chelsa_bioclim_v21_baseline""]",1000,low,false,low,,,,
 soil_ph,Topsoil pH (0-30 cm),"[""pH"",""soil reaction""]",pH_units,{},edaphic,"[""isric_soilgrids250_v2""]",250,medium,false,medium,,,,
@@ -11,10 +11,10 @@ distance_to_road,Distance to nearest road,"[""road access"",""market access prox
 aridity_index,Aridity Index (P/PET),"[""AI"",""UNEP aridity index""]",dimensionless,{},climatic,"[""global_aridity_index_v3""]",1000,low,false,low,,,,
 tree_canopy_cover,Tree canopy cover,"[""canopy cover"",""tree cover""]",percent,{},land_use,"[""hansen_treecover2000""]",30,medium,false,medium,,,,
 soil_texture_hsg,Soil texture / Hydrologic Soil Group,"[""HSG"",""texture class""]",categorical,{},edaphic,"[""hwsd_v2"",""isric_soilgrids250_v2""]",250,low,false,medium,,,,
-drainage_density,Drainage density,"[""stream density""]",km/km2,{},hydrological,"[""scs_cn_runoff_composite"",""srtm_dem_30m""]",90,high,true,low,,,,
-stream_order,Stream order (Strahler),"[""Strahler order""]",ordinal,{},hydrological,"[""scs_cn_runoff_composite"",""srtm_dem_30m""]",90,high,true,low,,,,
+drainage_density,Drainage density,"[""stream density""]",km/km2,{},hydrological,"[""scs_cn_runoff_composite"",""copernicus_dem_glo30""]",90,high,true,low,,,,
+stream_order,Stream order (Strahler),"[""Strahler order""]",ordinal,{},hydrological,"[""scs_cn_runoff_composite"",""copernicus_dem_glo30""]",90,high,true,low,,,,
 permanent_water,Permanent water body,"[""surface water"",""water occurrence""]",percent_occurrence,{},hydrological,"[""esa_worldcover_2021""]",30,low,false,low,,,,
-drought_spei12_baseline,"Drought severity (SPEI-12, baseline)",[],index_or_native,{},climatic,"[""spei_global_v26""]",1000,low,false,low,,,,
+drought_spei12_baseline,"Drought severity (SPEI-12, baseline)",[],index_or_native,{},climatic,"[""spei_global_v211""]",1000,low,false,low,,,,
 heat_stress_tmax_baseline,Heat stress (Tmax warmest month),[],index_or_native,{},climatic,"[""chelsa_bioclim_v21_baseline""]",1000,low,false,medium,,,,
 flood_exposure_baseline,Flood hazard proxy (precip wettest month),[],index_or_native,{},climatic,"[""chelsa_bioclim_v21_baseline""]",1000,low,false,low,,,,
 agricultural_cropland_exposure,Cropland exposure fraction,[],index_or_native,{},land_use,"[""esa_worldcover_2021""]",1000,low,false,medium,,,,
@@ -31,7 +31,7 @@ food_security_risk,Food-security risk,[],index_or_native,{},socioeconomic,"[""wo
 biodiversity_conservation_priority,Biodiversity conservation priority,[],index_or_native,{},biodiversity,"[""protected_areas_wdpa""]",1000,low,false,medium,,,,
 soil_degradation_risk,Soil degradation risk,[],index_or_native,{},edaphic,"[""isric_soilgrids250_v2""]",1000,low,false,medium,,,,
 road_infrastructure_access,Road infrastructure access,[],index_or_native,{},infrastructure,"[""osm_road_network""]",1000,low,false,medium,,,,
-climate_drought_hazard,Climate drought hazard,[],index_or_native,{},climatic,"[""spei_global_v26""]",1000,low,false,low,,,,
+climate_drought_hazard,Climate drought hazard,[],index_or_native,{},climatic,"[""spei_global_v211""]",1000,low,false,low,,,,
 tree_cover_gap,Tree-cover gap,[],index_or_native,{},land_use,"[""hansen_treecover2000""]",1000,low,false,medium,,,,
 agricultural_water_deficit,Agricultural water deficit,[],index_or_native,{},hydrological,"[""chirps_precipitation_v2""]",1000,low,false,low,,,,
 runoff_potential_index,Surface runoff potential,[],index_or_native,{},hydrological,"[""scs_cn_runoff_composite""]",1000,low,false,low,,,,
@@ -47,8 +47,8 @@ soil_organic_carbon_subsoil,Subsoil organic carbon (30-100 cm),"[""SOC subsoil""
 soil_texture,Soil texture (USDA class),"[""texture"",""soil texture code""]",class,{},edaphic,"[""isric_soilgrids250_v2""]",250,medium,false,,canonical,ev_tex_nath21,2026-06-05,Canonical USDA-class soil texture. Complementary to soil_texture_hsg (HSG hydrology classification) — not a duplicate. Both stay canonical.
 soil_cation_exchange_capacity,Cation exchange capacity (topsoil),"[""CEC""]",cmol/kg,{},edaphic,"[""isric_soilgrids250_v2""]",250,medium,false,,canonical,ev_cec_nath21,2026-06-05,
 soil_available_water_capacity,Available water capacity (root zone),"[""AWC"",""plant-available water""]",mm,{},edaphic,"[""isric_soilgrids250_v2""]",250,medium,false,,canonical,ev_awc_nath21,2026-06-05,
-elevation,Terrain elevation,"[""altitude"",""DEM""]",m,{},topographic,"[""srtm_dem_90m"",""srtm_dem_30m""]",90,low,false,,canonical,,,
-aspect,Slope aspect (terrain direction),"[""aspect"",""slope aspect""]",degrees,{},topographic,"[""srtm_dem_30m"",""srtm_dem_90m""]",90,high,true,,canonical,ev_aspect_nath21,2026-06-05,
+elevation,Terrain elevation,"[""altitude"",""DEM""]",m,{},topographic,"[""copernicus_dem_glo30""]",90,low,false,,canonical,,,
+aspect,Slope aspect (terrain direction),"[""aspect"",""slope aspect""]",degrees,{},topographic,"[""copernicus_dem_glo30""]",90,high,true,,canonical,ev_aspect_nath21,2026-06-05,
 ndvi,NDVI,"[""NDVI"",""vegetation index""]",unitless,{},land_cover_vegetation,"[""mod13q1_ndvi""]",250,low,false,,canonical,ev_ndvi_nath21,2026-06-05,
 built_up_areas,Built-up areas (points/polygons),"[""built-up"",""settlement points""]",boolean_or_distance,{},socio_economic,"[""ghsl_built_up""]",100,low,false,,canonical,ev_builtup_nath21,2026-06-05,Could be merged with population_exposure_rural or treated as proximity variable.
 soil_erosion_wind,Wind erosion risk (erodibility index),"[""wind erodibility""]",unitless,,hazard,"[""ssurgo_wind_erodibility""]",800,low,false,,canonical,ev_erosion_wind_castle25,2026-06-05,
@@ -64,7 +64,7 @@ solar_radiation,Solar radiation (annual mean / daily mean),"[""radiation"",""ins
 geology,Geological substrate (lithology),"[""lithology"",""geological units""]",class,,edaphic,"[""onegeology""]",1000,low,false,,canonical,ev_geology_mendonca22,2026-06-05,Mendonça (Embrapa-style) ranked classes; may be redundant with soil_texture in coarse-resolution analyses.
 land_capability,Land-use capability class (FAO/Brazilian I-VIII),"[""PLUC"",""land capability""]",class,,land_cover_vegetation,"[""faogaez_landcap""]",1000,low,false,,canonical,ev_pluc_mendonca22,2026-06-05,
 forest_fragment_size,Forest fragment size (ha),"[""forest patch size""]",ha,,land_cover_vegetation,"[""hansen_treecover2000""]",30,medium,true,,canonical,ev_forestfrag_mendonca22,2026-06-05,Derived from forest cover layer + patch analysis; agroforestry-priority signal (Brazilian Atlantic Forest restoration framing).
-drought_hazard,Drought hazard (SPEI / annualised severity),"[""SPEI"",""drought severity""]",unitless,,climate_hazard,"[""spei_global_v26"",""chirps_precipitation_v2""]",5000,low,false,low,,,,
+drought_hazard,Drought hazard (SPEI / annualised severity),"[""SPEI"",""drought severity""]",unitless,,climate_hazard,"[""spei_global_v211"",""chirps_precipitation_v2""]",5000,low,false,low,,,,
 flood_hazard,Flood hazard (return-period flood depth/extent),"[""flood risk"",""flood depth""]",m,,climate_hazard,"[""jrc_global_flood_hazard""]",250,medium,false,low,canonical,t5_v030_ratification,2026-06-05,"Layer choice deferred — FATHOM, JRC, WRI Aqueduct. Pilot-time decision."
 heat_stress_hazard,Heat-stress hazard (Tmax-days / WBGT / heat-index frequency),"[""heat stress"",""Tmax"",""extreme heat days""]",days_per_year,,climate_hazard,"[""chelsa_bioclim_v21_baseline"",""chelsa_bioclim_ssp245_2050""]",1000,low,false,low,canonical,,,
 biodiversity_priority,Biodiversity priority (layer TBD),"[""KBA"",""BII"",""biodiversity priority""]",unitless,,biodiversity,"[""bii_nhm_global""]",1000,low,false,low,canonical,t5_v030_ratification,2026-06-05,BII (Newbold et al. 2016) chosen as canonical layer. KBA polygons recommended as supplementary binary flag (vector overlay outside T5).

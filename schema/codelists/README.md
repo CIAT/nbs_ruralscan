@@ -9,6 +9,9 @@ One CSV per scheme (`code,label`):
 - **`cdl.csv`** — USDA NASS Cropland Data Layer category legend. Source: USDA NASS CDL
   legend (https://www.nass.usda.gov/Research_and_Science/Cropland/sarsfaqs2.php),
   fetched 2026-06-24. Used by the saraheb3 agroforestry tool's CDL crop-eligibility mask.
+- **`gaez_aez33.csv`** — GAEZ v4 33-class Agro-Ecological Zones legend (codes 1–33;
+  0=nodata). Source: FAO GAEZ4 symbology `AEZ_33classes.clr`. Decodes the `gaez_v4_aez33`
+  dataset raster (loader streams the class-coded COG; classes are nominal).
 
 To add a scheme (e.g. HWSD soil-quality 1–7, FAO LCCS 1–4): drop `<scheme>.csv` here from
 an authoritative legend, then map the variable/dataset to it in `codelist.py`.

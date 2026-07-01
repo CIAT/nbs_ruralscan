@@ -1,33 +1,33 @@
-binding_id,variable,scope_type,scope_id,dataset_id,preference_rank,status,fitness_note,band
-slope__global,slope,global,,srtm_dem_30m,1,catalogued,30 m SRTM; derive-then-aggregate for slope.,
-annual_precipitation__global,annual_precipitation,global,,chelsa_bioclim_v21_baseline,1,catalogued,CHELSA v2.1 BIO12 (annual precip) — bias-corrected high-res; preferred over CHIRPS for static climatology.,BIO12
-cocoa_distribution__global,cocoa_distribution,global,,mapspam_cocoa_2020,2,catalogued,MapSPAM ~10 km harvested-area fraction — coarse global default.,
-cocoa_distribution__SLE,cocoa_distribution,admin_country,SLE,,1,requires_upload,"National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot.",
-mean_annual_temperature__global,mean_annual_temperature,global,,chelsa_bioclim_v21_baseline,1,catalogued,"CHELSA BIO1 = annual mean temperature; multi-band asset, band-resolved via this binding.",BIO1
-production_gap__cropping_rainfed,production_gap,farming_system,cropping_rainfed,,1,requires_upload,Cropping-rainfed yield gap — GAEZ v4 attainable-vs-actual or MapSPAM-derived; pilot binding to be uploaded.,
-production_gap__cropping_irrigated,production_gap,farming_system,cropping_irrigated,,1,requires_upload,Cropping-irrigated yield gap — GAEZ v4 irrigated attainable-vs-actual; pilot binding to be uploaded.,
-production_gap__mixed_crop_livestock,production_gap,farming_system,mixed_crop_livestock,,1,requires_upload,Mixed systems: composite of crop yield gap and livestock-productivity gap; livestock side often thinner — flag for upload.,
-production_gap__pastoral_rangeland,production_gap,farming_system,pastoral_rangeland,,1,requires_upload,Rangeland NPP gap (e.g. MODIS NPP vs CASA potential); livestock side often thinner — requires_upload by default.,
-production_gap__agro_pastoral,production_gap,farming_system,agro_pastoral,,1,requires_upload,Agro-pastoral composite (cropping yield-gap + NPP-gap) — pilot upload.,
-production_gap__tree_perennial,production_gap,farming_system,tree_perennial,,1,requires_upload,Tree-perennial production gap — MapSPAM-based attainable for the perennial; per-crop binding (cocoa/coffee/etc.) preferred.,
-heat_stress_hazard__global,heat_stress_hazard,global,,chelsa_bioclim_v21_baseline,1,catalogued,"CHELSA BIO5 = max temperature of warmest month — proxy for heat-stress exposure; multi-band asset, band-resolved.",BIO5
-rural_poverty__global,rural_poverty,global,,world_bank_poverty_pip,1,catalogued,WB PIP subnational poverty headcount at admin1 (admin2 where available).,
-farming_system__global,farming_system,global,,,1,requires_upload,Derived run-time layer. Inputs: glad_global_cropland_2019 + esa_worldcereal_2021 + glw4_livestock_2020 + fao_gmia_v5 + hansen_treecover2000 + mapspam_cocoa_2020. Recipe: methodology/farming_system_classifier.md. Default thresholds; tune per AOI.,
-farming_system__SLE,farming_system,admin_country,SLE,,1,requires_upload,"Sierra Leone tuning: irrigation_share=0.10, livestock_mixed=3.0 TLU/km2, livestock_pastoral=15.0, tree_perennial_dominant=0.40. See farming_system_classifier.md §Per-AOI tuning.",
-biodiversity_priority__global,biodiversity_priority,global,,bii_nhm_global,1,catalogued,BII (Newbold et al. 2016). Global 1 km. Use (1 - BII) as priority.,
-accessibility_travel_time__global,accessibility_travel_time,global,,nelson_accessibility_2015,1,catalogued,Weiss/Nelson 2015 baseline ~1 km global accessibility surface. Travel-time minutes.,
-electrification_index__global,electrification_index,global,,viirs_nighttime_lights,1,catalogued,VIIRS annual night-lights composite at ~500 m as electrification proxy.,
-tenure_security__global,tenure_security,global,,landmark_iplc_lands,1,catalogued,LandMark IPLC vector layer. FPIC_REQUIRED flag triggers on overlap with the M1 opportunity-space mask. Coverage patchy — absence ≠ no IPLC presence.,
-conflict_fragility_index__global,conflict_fragility_index,global,,acled_conflict_events,1,catalogued,ACLED rolling 5-year event-density grid; pair with WB FCV admin0 list for binary fragility flag.,
-extension_governance__global,extension_governance,global,,wb_wgi_governance,1,catalogued,"WB WGI 'government effectiveness' (admin0). Per the T5 spatial-grain rule (admin0 → qualified flag, not hotspot driver). Subnational requires_upload.",
-finance_credit_access__global,finance_credit_access,global,,wb_findex_access,1,catalogued,WB Global Findex (admin0). Subnational requires_upload via LSMS-ISA / FinScope.,
-market_value_chain__global,market_value_chain,global,,faostat_country_indicators,1,catalogued,FAOSTAT country indicators (producer prices + trade) as market-depth proxy. Subnational requires country uploads.,
-labour_availability__global,labour_availability,global,,ilo_labour_statistics,1,catalogued,ILOSTAT agricultural employment share. Subnational requires LSMS-ISA or country uploads.,
-flood_hazard__global,flood_hazard,global,,jrc_global_flood_hazard,1,catalogued,"JRC Global Flood Hazard 100-year return period as default. WRI Aqueduct + FATHOM (proprietary) considered, JRC chosen for open + global + grid.",
-water_stress__global,water_stress,global,,wri_aqueduct_water_stress,1,catalogued,WRI Aqueduct 4.0 baseline water-stress index. Basin/admin1 granularity.,
-agricultural_dependency__global,agricultural_dependency,global,,ilo_labour_statistics,1,catalogued,ILOSTAT 'employment in agriculture (% of total)' admin0 indicator. Subnational requires_upload.,
-gender_inequity__global,gender_inequity,global,,undp_gii_national,1,catalogued,"UNDP Gender Inequality Index — national flag. Per T5 spatial-grain rule, surfaces as qualified flag within a country, not hotspot driver.",
-market_access__global,accessibility_travel_time,global,,nelson_accessibility_2015,1,catalogued,"Same Nelson/Weiss surface as accessibility_travel_time — re-bound here for the T5 descriptor framing (market connectivity context, not scenario lever).",
-farm_size__global,farm_size,global,,lesiv_smallholder_farm_size,1,catalogued,"Lesiv et al. 2019 crowdsourced field-size dataset, ~1 km.",
-agricultural_production_value__global,agricultural_production_value,global,,mapspam_v2,1,catalogued,"MapSPAM v2.0 summed crop economic value, ~10 km. Weak on tree-perennials — Forest Data Partnership (issue #35) is the supplement.",
-iplc_lands__global,iplc_lands,global,,landmark_iplc_lands,1,catalogued,LandMark IPLC vector layer. Marks IPLC overlap with M1 opportunity-space mask for equity priority + FPIC/ESS7 flag. Coverage patchy - absence != no IPLC presence.,
+binding_id,variable,scope_type,scope_id,dataset_id,preference_rank,status,fitness_note
+slope__global,slope,global,,copernicus_dem_glo30,1,catalogued,Copernicus DEM GLO-30 (~30 m); derive-then-aggregate for slope on EE. Swapped from SRTM (cleaner/void-filled) — pending Benson QA fitness sign-off.
+annual_precipitation__global,annual_precipitation,global,,chelsa_bioclim_v21_baseline,1,catalogued,CHELSA v2.1 BIO12 (annual precip) — bias-corrected high-res; preferred over CHIRPS for static climatology.
+cocoa_distribution__global,cocoa_distribution,global,,mapspam_cocoa_2020,2,catalogued,MapSPAM ~10 km harvested-area fraction — coarse global default.
+cocoa_distribution__SLE,cocoa_distribution,admin_country,SLE,,1,requires_upload,"National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot."
+mean_annual_temperature__global,mean_annual_temperature,global,,chelsa_bioclim_v21_baseline,1,catalogued,"CHELSA BIO1 = annual mean temperature; multi-band asset, band-resolved via this binding."
+production_gap__cropping_rainfed,production_gap,farming_system,cropping_rainfed,,1,requires_upload,Cropping-rainfed yield gap — GAEZ v4 attainable-vs-actual or MapSPAM-derived; pilot binding to be uploaded.
+production_gap__cropping_irrigated,production_gap,farming_system,cropping_irrigated,,1,requires_upload,Cropping-irrigated yield gap — GAEZ v4 irrigated attainable-vs-actual; pilot binding to be uploaded.
+production_gap__mixed_crop_livestock,production_gap,farming_system,mixed_crop_livestock,,1,requires_upload,Mixed systems: composite of crop yield gap and livestock-productivity gap; livestock side often thinner — flag for upload.
+production_gap__pastoral_rangeland,production_gap,farming_system,pastoral_rangeland,,1,requires_upload,Rangeland NPP gap (e.g. MODIS NPP vs CASA potential); livestock side often thinner — requires_upload by default.
+production_gap__agro_pastoral,production_gap,farming_system,agro_pastoral,,1,requires_upload,Agro-pastoral composite (cropping yield-gap + NPP-gap) — pilot upload.
+production_gap__tree_perennial,production_gap,farming_system,tree_perennial,,1,requires_upload,Tree-perennial production gap — MapSPAM-based attainable for the perennial; per-crop binding (cocoa/coffee/etc.) preferred.
+heat_stress_hazard__global,heat_stress_hazard,global,,chelsa_bioclim_v21_baseline,1,catalogued,"CHELSA BIO5 = max temperature of warmest month — proxy for heat-stress exposure; multi-band asset, band-resolved."
+rural_poverty__global,rural_poverty,global,,world_bank_poverty_pip,1,catalogued,WB PIP subnational poverty headcount at admin1 (admin2 where available).
+farming_system__global,farming_system,global,,,1,requires_upload,Derived run-time layer. Inputs: glad_global_cropland_2019 + esa_worldcereal_2021 + glw4_livestock_2020 + fao_gmia_v5 + hansen_treecover2000 + mapspam_cocoa_2020. Recipe: methodology/farming_system_classifier.md. Default thresholds; tune per AOI.
+farming_system__SLE,farming_system,admin_country,SLE,,1,requires_upload,"Sierra Leone tuning: irrigation_share=0.10, livestock_mixed=3.0 TLU/km2, livestock_pastoral=15.0, tree_perennial_dominant=0.40. See farming_system_classifier.md §Per-AOI tuning."
+biodiversity_priority__global,biodiversity_priority,global,,bii_nhm_global,1,catalogued,BII (Newbold et al. 2016). Global 1 km. Use (1 - BII) as priority.
+accessibility_travel_time__global,accessibility_travel_time,global,,nelson_accessibility_2015,1,catalogued,Weiss/Nelson 2015 baseline ~1 km global accessibility surface. Travel-time minutes.
+electrification_index__global,electrification_index,global,,viirs_nighttime_lights,1,catalogued,VIIRS annual night-lights composite at ~500 m as electrification proxy.
+tenure_security__global,tenure_security,global,,landmark_iplc_lands,1,catalogued,LandMark IPLC vector layer. FPIC_REQUIRED flag triggers on overlap with the M1 opportunity-space mask. Coverage patchy — absence ≠ no IPLC presence.
+conflict_fragility_index__global,conflict_fragility_index,global,,acled_conflict_events,1,catalogued,ACLED rolling 5-year event-density grid; pair with WB FCV admin0 list for binary fragility flag.
+extension_governance__global,extension_governance,global,,wb_wgi_governance,1,catalogued,"WB WGI 'government effectiveness' (admin0). Per the T5 spatial-grain rule (admin0 → qualified flag, not hotspot driver). Subnational requires_upload."
+finance_credit_access__global,finance_credit_access,global,,wb_findex_access,1,catalogued,WB Global Findex (admin0). Subnational requires_upload via LSMS-ISA / FinScope.
+market_value_chain__global,market_value_chain,global,,faostat_country_indicators,1,catalogued,FAOSTAT country indicators (producer prices + trade) as market-depth proxy. Subnational requires country uploads.
+labour_availability__global,labour_availability,global,,ilo_labour_statistics,1,catalogued,ILOSTAT agricultural employment share. Subnational requires LSMS-ISA or country uploads.
+flood_hazard__global,flood_hazard,global,,jrc_global_flood_hazard,1,catalogued,"JRC Global Flood Hazard 100-year return period as default. WRI Aqueduct + FATHOM (proprietary) considered, JRC chosen for open + global + grid."
+water_stress__global,water_stress,global,,wri_aqueduct_water_stress,1,catalogued,WRI Aqueduct 4.0 baseline water-stress index. Basin/admin1 granularity.
+agricultural_dependency__global,agricultural_dependency,global,,ilo_labour_statistics,1,catalogued,ILOSTAT 'employment in agriculture (% of total)' admin0 indicator. Subnational requires_upload.
+gender_inequity__global,gender_inequity,global,,undp_gii_national,1,catalogued,"UNDP Gender Inequality Index — national flag. Per T5 spatial-grain rule, surfaces as qualified flag within a country, not hotspot driver."
+market_access__global,accessibility_travel_time,global,,nelson_accessibility_2015,1,catalogued,"Same Nelson/Weiss surface as accessibility_travel_time — re-bound here for the T5 descriptor framing (market connectivity context, not scenario lever)."
+farm_size__global,farm_size,global,,lesiv_smallholder_farm_size,1,catalogued,"Lesiv et al. 2019 crowdsourced field-size dataset, ~1 km."
+agricultural_production_value__global,agricultural_production_value,global,,mapspam_v2,1,catalogued,"MapSPAM v2.0 summed crop economic value, ~10 km. Weak on tree-perennials — Forest Data Partnership (issue #35) is the supplement."
+iplc_lands__global,iplc_lands,global,,landmark_iplc_lands,1,catalogued,LandMark IPLC vector layer. Marks IPLC overlap with M1 opportunity-space mask for equity priority + FPIC/ESS7 flag. Coverage patchy - absence != no IPLC presence.

@@ -99,7 +99,7 @@
 >
 > - **`T1.scenario_type`** → **Conditional** (was Required). Required only if
 >   `analytical_module ∈ { climate_hazard, climate_impact }`; omitted for static / non-climate
->   datasets (SoilGrids, SRTM, OSM roads, GADM, etc.). Mirrors the existing `hazard_type`
+>   datasets (SoilGrids, Copernicus DEM, OSM roads, WB boundaries, etc.). Mirrors the existing `hazard_type`
 >   conditional.
 > - **`T1.description`** — **new Required**, UI-facing one-line description. Populate from the
 >   provider's official metadata/abstract (GEE catalog, dataset landing page) — *not* bespoke
@@ -367,7 +367,7 @@ compositing.
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
 | `variable_id` | string | Required | Unique identifier for this risk variable. | `drought_spei12_baseline` |
-| `dataset_id` | string | Required | FK → `T1.dataset_id`. | `spei_global_v26` |
+| `dataset_id` | string | Required | FK → `T1.dataset_id`. | `spei_global_v211` |
 | `risk_component` | enum | Required | `hazard` \| `exposure` \| `sensitivity` \| `adaptive_capacity`. | `hazard` |
 | `hazard_type` | enum | Conditional | Required if `risk_component = hazard`. `drought` \| `flood` \| `heat_stress` \| `fire` \| `wind_cyclone` \| `waterlogging` \| `frost`. | `drought` |
 | `variable` | string | Required | FK → Variable Ontology (canonical name + unit live there). | `spei12` |
@@ -474,7 +474,7 @@ levers + project-operational-risk stream (M2b family).
 | `mapping_id` | string | Required | Unique row identifier. | `agro_f1_slope_global` |
 | `nbs_id` | string | Required | FK → `T0.nbs_id`. | `agroforestry` |
 | `suitability_family_id` | string | Required | FK → `FAM.suitability_family_id`. **The unit T4 is keyed to** — suitability is reasoned per family, not per whole NbS. Rolls up to `nbs_id` for display. | `agroforestry__planted_silvoarable` |
-| `dataset_id` | string | Required | FK → `T1.dataset_id`. | `srtm_slope_30m` |
+| `dataset_id` | string | Required | FK → `T1.dataset_id`. | `copernicus_dem_glo30` |
 | `variable` | string | Required | FK → Variable Ontology (canonical name + unit live there). | `slope` |
 | `suitability_dimension` | enum | Required | `biophysical_constraint` \| `system_constraint` \| `operational_constraint`. | `biophysical_constraint` |
 | `relationship_type` | enum | Required | Canonical set: `trapezoidal` \| `gaussian` \| `linear_increasing` \| `linear_decreasing` \| `sigmoid` \| `inverted_sigmoid` \| `threshold` \| `ranked_classes` \| `piecewise`. See the reference + wireframe crosswalk below. | `trapezoidal` |
@@ -682,7 +682,7 @@ Canonical variables: harmonisation + data-catalog link + resolution validity.
 | `canonical_unit` | string | Required | Canonical unit. | `degrees` |
 | `unit_conversions` | object | Optional | Conversions to canonical unit (may be empty). | `{pct→deg:"atan"}` |
 | `group_id` | string | Required | → Variable-Group vocab (Topographic, …). | `topographic` |
-| `candidate_dataset_ids` | string[] | Required | → T1 datasets that can supply it. | `['srtm_dem_30m','srtm_dem_90m']` |
+| `candidate_dataset_ids` | string[] | Required | → T1 datasets that can supply it. | `['copernicus_dem_glo30']` |
 | `min_meaningful_resolution_m` | integer | Required | Coarsest grid at which the variable stays valid. | `90` |
 | `resolution_sensitivity` | enum | Required | `low` \| `medium` \| `high` (derivatives = high). | `high` |
 | `derive_then_aggregate` | boolean | Required | Compute native then summarise to grid (slope, TWI…). | `true` |
@@ -771,7 +771,7 @@ captured, then weighted accordingly in synthesis.
 | `membership_functions` | string | Optional | Which of the 5 fuzzy primitives it uses. | `sigmoid\|linear` |
 | `weighting_scheme` | string | Optional | `ahp` / `critic` / `entropy` / `equal` / `expert` …. | `ahp` |
 | `variables_used` | string | Optional | Pipe-delimited → VONT canonicals. | `slope\|annual_precipitation` |
-| `datasets_used` | string | Optional | Pipe-delimited → BIND/T1. | `srtm_dem_90m` |
+| `datasets_used` | string | Optional | Pipe-delimited → BIND/T1. | `copernicus_dem_glo30` |
 | `workflow_summary` | string | Optional | One-line method/workflow. | `AHP weights × fuzzy membership overlay` |
 | `validation` | enum | Optional | `validated` \| `partial` \| `unvalidated` (six-axis evidence strength). | `partial` |
 | `benchmark_tier` | enum | Optional | `High` \| `Medium` \| `Low` (C/I/D). | `Medium` |
