@@ -367,7 +367,7 @@ compositing.
 | Field | Type | Required | Description | Example |
 |---|---|---|---|---|
 | `variable_id` | string | Required | Unique identifier for this risk variable. | `drought_spei12_baseline` |
-| `dataset_id` | string | Required | FK → `T1.dataset_id`. | `spei_global_v26` |
+| `dataset_id` | string | Required | FK → `T1.dataset_id`. | `spei_global_v211` |
 | `risk_component` | enum | Required | `hazard` \| `exposure` \| `sensitivity` \| `adaptive_capacity`. | `hazard` |
 | `hazard_type` | enum | Conditional | Required if `risk_component = hazard`. `drought` \| `flood` \| `heat_stress` \| `fire` \| `wind_cyclone` \| `waterlogging` \| `frost`. | `drought` |
 | `variable` | string | Required | FK → Variable Ontology (canonical name + unit live there). | `spei12` |

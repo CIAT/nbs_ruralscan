@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-06-26T15:26:22.379086+00:00",
-  "git_commit": "09190d519e2e84564b44342905e881d98f605bc1",
+  "timestamp": "2026-07-01T07:53:35.737786+00:00",
+  "git_commit": "9ccc1d49f01eea4f58b76bc465349f1bebf67614",
   "registers": {
     "SRC_source_register": [
       {
@@ -14997,7 +14997,7 @@
         "unit_conversions": {},
         "group_id": "climatic",
         "candidate_dataset_ids": [
-          "spei_global_v26"
+          "spei_global_v211"
         ],
         "min_meaningful_resolution_m": 1000,
         "resolution_sensitivity": "low",
@@ -15257,7 +15257,7 @@
         "unit_conversions": {},
         "group_id": "climatic",
         "candidate_dataset_ids": [
-          "spei_global_v26"
+          "spei_global_v211"
         ],
         "min_meaningful_resolution_m": 1000,
         "resolution_sensitivity": "low",
@@ -15857,7 +15857,7 @@
         "canonical_unit": "unitless",
         "group_id": "climate_hazard",
         "candidate_dataset_ids": [
-          "spei_global_v26",
+          "spei_global_v211",
           "chirps_precipitation_v2"
         ],
         "min_meaningful_resolution_m": 5000,
@@ -17372,26 +17372,27 @@
         "grain_type": "grid"
       },
       {
-        "dataset_id": "spei_global_v26",
-        "dataset_name": "Global SPEI Database v2.6",
+        "dataset_id": "spei_global_v211",
+        "dataset_name": "SPEIbase v2.11 (Standardised Precipitation-Evapotranspiration Index; CSIC)",
         "analytical_module": "climate_hazard",
         "hazard_type": "drought",
         "scenario_type": "baseline",
-        "time_period": "1950–2020",
+        "time_period": "1901–present",
         "spatial_resolution_m": 55000,
         "geographic_coverage": [
           "global"
         ],
-        "data_format": "netcdf",
-        "access_type": "direct_download",
+        "data_format": "geotiff_cog",
+        "access_type": "gee_asset",
         "download_url": "https://spei.csic.es/database.html",
+        "gee_asset_id": "CSIC/SPEI/2_11",
         "license": "CC-BY-4.0",
         "citation": "Vicente-Serrano, S.M. et al. (2010). A Multiscalar Drought Index Sensitive to Global Warming: The Standardized Precipitation Evapotranspiration Index. Journal of Climate, 23(7), 1696–1718.",
         "doi": "10.1175/2009JCLI2909.1",
-        "version": "v2.6",
-        "preprocessing_notes": "Extract SPEI-12 (12-month accumulation window) for drought risk. Compute mean and trend over 1981–2010 baseline. Bilinearly resample to 1 km for overlay.",
-        "limitations": "Very coarse native resolution (0.5°). Misses sub-regional drought heterogeneity. PET estimation method affects values. Not for: Farm-level drought monitoring; flash drought detection",
-        "description": "Standardized Precipitation-Evapotranspiration Index, global ~55 km, monthly 1901-present.",
+        "version": "v2.11",
+        "preprocessing_notes": "GEE ImageCollection CSIC/SPEI/2_11 (band SPEI_12_month). Reduce server-side to drought FREQUENCY = fraction of months in a baseline window with SPEI-12 < -1; pull the AOI grid via xee. Loader: src/nbs_ruralscan/data_loaders/datasets/spei_global_v211.py.",
+        "limitations": "Coarse 0.5° (~55 km) — limited within-country differentiation for small AOIs; a CHELSA 1 km SPEI is the fitness upgrade. Penman-Monteith PET. Not for: farm-level or flash-drought monitoring.",
+        "description": "SPEIbase v2.11 (CSIC) — Standardized Precipitation-Evapotranspiration Index at 0.5° (~55 km) monthly; SPEI accumulations 1-48 months; 1901-present; Penman-Monteith PET.",
         "grain_type": "grid"
       },
       {
@@ -18198,7 +18199,7 @@
     "T2_climate_risk": [
       {
         "variable_id": "drought_spei12_baseline",
-        "dataset_id": "spei_global_v26",
+        "dataset_id": "spei_global_v211",
         "risk_component": "hazard",
         "hazard_type": "drought",
         "scenario_type": "baseline",
@@ -18423,7 +18424,7 @@
         "variable": "drought_hazard",
         "mcda_role": "priority",
         "theme": "climate_hazard",
-        "dataset_id": "spei_global_v26",
+        "dataset_id": "spei_global_v211",
         "directionality_of_concern": "higher_is_more_concern",
         "ttl_priority_label": "Drought hazard",
         "ttl_priority_description": "Long-term SPEI-based drought severity / frequency — areas where dry climatic stress is high.",
