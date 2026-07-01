@@ -45,6 +45,7 @@ REASON_CODES = [
     "uninterpretable_weight",
     "speculative_evidence",
     "wrong_table",
+    "constrained_aoi",
     "false_flag",
     "accepted_correction",
     "confirmed_pass",
@@ -98,7 +99,9 @@ def export() -> Path:
         )
     WORKLIST.parent.mkdir(parents=True, exist_ok=True)
     with WORKLIST.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=_WL_FIELDS, extrasaction="ignore")
+        w = csv.DictWriter(
+            f, fieldnames=_WL_FIELDS, extrasaction="ignore", lineterminator="\n"
+        )
         w.writeheader()
         w.writerows(out)
     print(f"exported {len(out)} flagged units → {WORKLIST.relative_to(ROOT)}")
@@ -150,10 +153,21 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             )
         return (str(v or "").strip().lower(), "", "", "")
 
-    with EV.open(newline="", encoding="utf-8") as f:
-        rd = csv.DictReader(f)
-        cols = list(rd.fieldnames or [])
-        rows = list(rd)
+    try:
+        with EV.open(newline="", encoding="utf-8") as f:
+            rd = csv.DictReader(f)
+            cols = list(rd.fieldnames or [])
+            rows = list(rd)
+    except UnicodeDecodeError as e:
+        # name the file so "Apply failed (gate?): utf-8 codec can't decode byte 0xe7"
+        # is actionable. A stray non-UTF-8 byte is usually a pre-fix cp1252 local write —
+        # `git restore` the register (committed copy is clean UTF-8); decisions live in
+        # pipeline/review/decisions.json, so a restore loses no review work.
+        raise ValueError(
+            f"{EV} is not valid UTF-8 (byte 0x{e.object[e.start]:02x} at position "
+            f"{e.start}). `git restore {EV.name}` — the committed register is clean UTF-8; "
+            "your decisions are safe in decisions.json."
+        ) from e
     kept, dropped, resolved, queried = [], 0, 0, 0
     reasons: Counter = Counter()
     logrows = []
@@ -222,14 +236,16 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             resolved += 1
         kept.append(r)
     with EV.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+        w = csv.DictWriter(
+            f, fieldnames=cols, extrasaction="ignore", lineterminator="\n"
+        )
         w.writeheader()
         w.writerows(kept)
     if logrows:
         LOG.parent.mkdir(parents=True, exist_ok=True)
         new_file = not LOG.exists()
         with LOG.open("a", newline="", encoding="utf-8") as f:
-            w = csv.writer(f)
+            w = csv.writer(f, lineterminator="\n")
             if new_file:
                 w.writerow(
                     [
@@ -307,14 +323,16 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
             ]
         )
     with EV.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+        w = csv.DictWriter(
+            f, fieldnames=cols, extrasaction="ignore", lineterminator="\n"
+        )
         w.writeheader()
         w.writerows(rows)
     if logrows:
         LOG.parent.mkdir(parents=True, exist_ok=True)
         new_file = not LOG.exists()
         with LOG.open("a", newline="", encoding="utf-8") as f:
-            w = csv.writer(f)
+            w = csv.writer(f, lineterminator="\n")
             if new_file:
                 w.writerow(
                     [

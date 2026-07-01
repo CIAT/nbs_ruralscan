@@ -33,6 +33,7 @@ _SCHEME_BY_DATASET = {
     "usda_cdl": "cdl",
     "cropscape": "cdl",
     "gaez_v4_aez33": "gaez_aez33",
+    "hwsd": "hwsd_soil_quality",
 }
 _SCHEME_BY_VARIABLE: dict[str, str] = {}  # e.g. {"land_cover": "cdl"} once unambiguous
 
@@ -65,6 +66,37 @@ def decode(scheme: str, codes: list[int]) -> list[tuple[int, str]]:
     """Decode codes → [(code, label)] (label '' if unknown), preserving order."""
     legend = load(scheme)
     return [(c, legend.get(c, "")) for c in codes]
+
+
+def expand_codes(spec: str) -> list[int]:
+    """Parse a class spec like "1-4", "5-7", "1,2,3", "1-3,5" → sorted [ints]."""
+    out: set[int] = set()
+    for part in str(spec or "").replace(" ", "").split(","):
+        if not part:
+            continue
+        if "-" in part.lstrip("-"):  # a range "a-b" (not a lone negative)
+            a, _, b = part.partition("-")
+            if a.lstrip("-").isdigit() and b.isdigit():
+                out.update(range(int(a), int(b) + 1))
+        elif part.lstrip("-").isdigit():
+            out.add(int(part))
+    return sorted(out)
+
+
+def summarise_class_ranges(scheme: str, suitable: str, not_suitable: str = "") -> dict:
+    """Decode `classes_suitable` / `classes_not_suitable` range specs against a legend.
+
+    For relationship-coded class evidence (e.g. HWSD soil-quality "classes_suitable": "1-4").
+    """
+    legend = load(scheme)
+    inc = expand_codes(suitable)
+    exc = expand_codes(not_suitable)
+    return {
+        "scheme": scheme,
+        "n_included": len(inc),
+        "included": [(c, legend.get(c, "")) for c in inc],
+        "excluded": [(c, legend.get(c, "")) for c in exc],
+    }
 
 
 # ── CDL GEE-mask parsing ─────────────────────────────────────────────────────

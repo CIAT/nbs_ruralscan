@@ -15,3 +15,4 @@ One CSV per scheme (`code,label`):
 
 To add a scheme (e.g. HWSD soil-quality 1–7, FAO LCCS 1–4): drop `<scheme>.csv` here from
 an authoritative legend, then map the variable/dataset to it in `codelist.py`.
+- **`hwsd_soil_quality.csv`** — GAEZ Harmonized World Soil Database soil-suitability/quality 7-class scheme (Fischer et al. 2008, *GAEZ Assessment for Agriculture*). Classes 1–4 = soil-limitation degrees (% of growth potential); 5 = non-soil, 6 = permafrost, 7 = water. Sources: GAEZ v3.0/2008 model documentation (gaez.iiasa.ac.at; classes 1–4 growth-potential ranges) + the cached `cgspace_singh_southasia_2020` source (5/6/7 definitions, Fischer 2008). Used by the South-Asia AF suitability rows (`soil_texture_hsg`, classes_suitable 1–4).

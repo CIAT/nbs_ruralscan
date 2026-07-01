@@ -448,6 +448,7 @@
         "artifact_sha1",
         "retrieved_at",
         "access_status",
+        "license",
         "source_category",
         "library_path"
       ],
@@ -693,6 +694,43 @@
         "benchmark_tier": ["High", "Medium", "Low"],
         "maturity": ["active", "archived", "prototype"],
         "review_status": ["canonical", "pending_review", "rejected"]
+      }
+    },
+    "SRCH": {
+      "name": "Search-Protocol Register",
+      "location": "registers/SRCH_search_register.{csv,json}",
+      "per_nbs": false,
+      "primary_key": "search_id",
+      "required": [
+        "search_id",
+        "nbs_id",
+        "table",
+        "category",
+        "search_terms",
+        "search_date",
+        "ruleset_version"
+      ],
+      "optional": [
+        "suitability_family_id",
+        "screening_steps",
+        "inclusion_criteria",
+        "limits",
+        "n_retrieved",
+        "n_screened",
+        "n_included",
+        "run_id",
+        "searched_by",
+        "discovery_log_ref",
+        "note"
+      ],
+      "conditional": [],
+      "derived": [],
+      "fk": {
+        "nbs_id": "T0.nbs_id"
+      },
+      "enum_values": {
+        "table": ["T3", "T4", "T6"],
+        "category": ["stock", "updated_lit", "grey", "tool"]
       }
     }
   }

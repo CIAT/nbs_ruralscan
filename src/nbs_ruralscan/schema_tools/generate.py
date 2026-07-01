@@ -41,12 +41,21 @@ def _coerce(value: str):
 
 
 def _csv_to_rows(path: Path) -> list[dict]:
-    with path.open(newline="", encoding="utf-8") as fh:
-        rows = []
-        for raw in csv.DictReader(fh):
-            row = {k: _coerce(v) for k, v in raw.items() if v is not None}
-            rows.append({k: v for k, v in row.items() if v is not None})
-        return rows
+    try:
+        with path.open(newline="", encoding="utf-8") as fh:
+            rows = []
+            for raw in csv.DictReader(fh):
+                row = {k: _coerce(v) for k, v in raw.items() if v is not None}
+                rows.append({k: v for k, v in row.items() if v is not None})
+            return rows
+    except UnicodeDecodeError as e:
+        # name the offending file (issue: Namita's opaque "utf-8 codec can't decode byte
+        # 0xe7" popup gave no filename). A stray non-UTF-8 byte usually means a local cp1252
+        # write — re-save the file as UTF-8 or `git restore` it (the committed copy is clean).
+        raise ValueError(
+            f"{path} is not valid UTF-8 (byte 0x{e.object[e.start]:02x} at position "
+            f"{e.start}). Re-save it as UTF-8 or `git restore {path}` (committed copy is clean)."
+        ) from e
 
 
 def _csv_files(schema_root: Path, location: str) -> list[Path]:
@@ -233,6 +242,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "VONT_variable_ontology",
         "BIND_dataset_binding",
         "TOOL_tool_registry",
+        "SRCH_search_register",
     ]
     global_tables = [
         "T1_data_registry",
@@ -330,13 +340,28 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     _mask_re = re.compile(r"\w+\.(lte|gte)\(\s*\d+\s*\)")
     for ev in data["registers"].get("EV_evidence_register", []):
         quote = ev.get("quote") or ""
+        rel = ev.get("relationship")
+        ctx = ev.get("context")
+        summary = None
+        # (a) GEE band mask in the quote → CDL-style decode
         if _mask_re.search(quote):
             try:
                 summary = _codelist.summarise_cdl_mask(quote)
             except Exception:  # noqa: BLE001 — never break the build on a mask
-                continue
-            if summary["n_included"]:
-                data["decoded_classes"][ev["evidence_id"]] = summary
+                summary = None
+        # (b) relationship class-range spec (e.g. HWSD "classes_suitable": "1-4") → decode
+        #     against the scheme routed from the row's dataset hint (context.dataset).
+        elif isinstance(rel, dict) and rel.get("classes_suitable"):
+            dataset = (ctx or {}).get("dataset") if isinstance(ctx, dict) else None
+            scheme = _codelist.scheme_for(variable=ev.get("variable"), dataset=dataset)
+            if scheme and _codelist.load(scheme):
+                summary = _codelist.summarise_class_ranges(
+                    scheme,
+                    rel.get("classes_suitable", ""),
+                    rel.get("classes_not_suitable", ""),
+                )
+        if summary and summary["n_included"]:
+            data["decoded_classes"][ev["evidence_id"]] = summary
 
     # Discover recipes
     recipes_dir = schema_root / "recipes"

@@ -1337,27 +1337,6 @@
     "context_sensitivity": "medium"
   },
   {
-    "canonical_variable_id": "market_access",
-    "label": "Market access (travel time to large markets)",
-    "aliases": [
-      "accessibility",
-      "travel time"
-    ],
-    "canonical_unit": "minutes",
-    "group_id": "socio_economic",
-    "candidate_dataset_ids": [
-      "nelson_accessibility_2015"
-    ],
-    "min_meaningful_resolution_m": 1000,
-    "resolution_sensitivity": "low",
-    "derive_then_aggregate": false,
-    "context_sensitivity": "low",
-    "review_status": "canonical",
-    "raised_by": "t5_v030_ratification",
-    "raised_date": "2026-06-05",
-    "comment": "Nelson/Weiss accessibility surface. Distinct from distance_to_road (proxy)."
-  },
-  {
     "canonical_variable_id": "farm_size",
     "label": "Mean farm size (smallholder share or median ha)",
     "aliases": [
@@ -1403,7 +1382,13 @@
   {
     "canonical_variable_id": "accessibility_travel_time",
     "label": "Travel time to large city/market",
-    "aliases": [],
+    "aliases": [
+      "market access",
+      "market_access",
+      "travel time to large markets",
+      "accessibility",
+      "travel time"
+    ],
     "canonical_unit": "minutes",
     "group_id": "socio_economic",
     "candidate_dataset_ids": [
@@ -1415,7 +1400,7 @@
     "review_status": "canonical",
     "raised_by": "v030_m2b_stream_b",
     "raised_date": "2026-06-05",
-    "comment": "Nelson/Weiss accessibility surface — minutes to large town. Maps to WOCAT QM indirect driver 'm' (market access / roads)."
+    "comment": "Nelson/Weiss accessibility surface — minutes to large town. Maps to WOCAT QM indirect driver 'm' (market access / roads). | market_access (T5/T6/BIND) consolidated here 2026-06-24 #103 — same Nelson/Weiss travel-time surface; synonymous names kept as aliases."
   },
   {
     "canonical_variable_id": "electrification_index",
@@ -2125,5 +2110,101 @@
     "raised_by": "claude_grey_sweep",
     "raised_date": "2026-06-20",
     "comment": "System-constraint precondition for FMNR (existing rootstock/regeneration capacity) — CRS FMNR Niger."
+  },
+  {
+    "canonical_variable_id": "distance_to_settlement",
+    "label": "Distance to nearest settlement",
+    "aliases": [
+      "distance to market",
+      "distance from settlement",
+      "distance to town",
+      "distance to village",
+      "settlement proximity",
+      "market proximity"
+    ],
+    "canonical_unit": "km",
+    "unit_conversions": {
+      "m->km": "/1000"
+    },
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 100,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "issue_103",
+    "raised_date": "2026-06-24",
+    "comment": "Euclidean distance to built-up/settlement. distance_to_market is SYNONYMOUS (rural settlement≈market) — folded here as an alias. Distinct from accessibility_travel_time (friction/travel-time, not euclidean). Dataset binding pending (Benson). #103."
+  },
+  {
+    "canonical_variable_id": "distance_to_waterbody",
+    "label": "Distance to nearest waterbody",
+    "aliases": [
+      "distance to water",
+      "distance from waterbody",
+      "river proximity",
+      "stream proximity"
+    ],
+    "canonical_unit": "km",
+    "unit_conversions": {
+      "m->km": "/1000"
+    },
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 100,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "issue_103",
+    "raised_date": "2026-06-24",
+    "comment": "Euclidean distance to surface water. Dataset binding pending. #103."
+  },
+  {
+    "canonical_variable_id": "distance_to_cropland",
+    "label": "Distance to nearest cropland",
+    "aliases": [
+      "distance to cropland",
+      "distance from agriculture",
+      "cropland proximity"
+    ],
+    "canonical_unit": "km",
+    "unit_conversions": {
+      "m->km": "/1000"
+    },
+    "group_id": "land_use",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 100,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "issue_103",
+    "raised_date": "2026-06-24",
+    "comment": "Euclidean distance to cropland. Dataset binding pending. #103."
+  },
+  {
+    "canonical_variable_id": "distance_to_forest",
+    "label": "Distance to nearest forest",
+    "aliases": [
+      "distance to forest",
+      "distance from forest",
+      "forest edge proximity"
+    ],
+    "canonical_unit": "km",
+    "unit_conversions": {
+      "m->km": "/1000"
+    },
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 100,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "issue_103",
+    "raised_date": "2026-06-24",
+    "comment": "Euclidean distance to forest/tree cover. Dataset binding pending. #103."
   }
 ]

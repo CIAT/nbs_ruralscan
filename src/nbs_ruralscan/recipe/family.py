@@ -50,14 +50,17 @@ def synthesise_family(
     ml_important: set[str] | None = None,
     floor_pct: float = 20.0,
     allow_crop_scope: bool = False,
+    categories: dict[str, str] | None = None,
 ) -> FamilyResult:
     """Reconcile all of a family's evidence into enriched T4 rows + a selection table.
 
     `corpus_n` is the count of papers screened for the family (denominator for support).
     `canonical_units`/`dataset_ids` map variable → its canonical unit / T1 dataset.
+    `categories` maps source_id → source_category (e.g. "grey") for the grey-lit discount.
     """
     canonical_units = canonical_units or {}
     dataset_ids = dataset_ids or {}
+    categories = categories or {}
 
     # exclude soft-deleted (QA-dropped) units from all synthesis + support
     units = [u for u in units if getattr(u, "review_state", "") != "dropped"]
@@ -85,6 +88,7 @@ def synthesise_family(
             canonical_unit=canonical_units.get(variable, "native"),
             dataset_id=dataset_ids.get(variable),
             allow_crop_scope=allow_crop_scope,
+            categories=categories,
         )
         if not row[
             "relationship_params"
