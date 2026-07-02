@@ -57,6 +57,49 @@ def _src_field(source_id: str, field: str) -> str:
     return ""
 
 
+def _github_raw_url(blob_url: str) -> str | None:
+    # https://github.com/<owner>/<repo>/blob/<ref>/<path...>  ->
+    # https://raw.githubusercontent.com/<owner>/<repo>/<ref>/<path...>
+    import re as _re
+
+    m = _re.match(r"^https://github\.com/([^/]+)/([^/]+)/blob/(.+)$", (blob_url or "").strip())
+    if not m:
+        return None
+    return f"https://raw.githubusercontent.com/{m.group(1)}/{m.group(2)}/{m.group(3)}"
+
+
+def _ensure_code_snapshot(source_id: str) -> Path | None:
+    """Return a local cached text snapshot for a code source_id, fetching from
+    GitHub raw (commit-pinned SRC.url blob URL) on cache miss."""
+    # already cached? (.txt / .html / .md — match the existing resolution order)
+    for ext in (".txt", ".html", ".md"):
+        p = CACHE / (source_id + ext)
+        if p.exists():
+            return p
+    # not cached -> try GitHub raw from SRC.url (commit-pinned blob URL)
+    url = _src_field(source_id, "url")
+    raw = _github_raw_url(url)
+    if not raw:
+        return None
+    import urllib.request
+
+    req = urllib.request.Request(raw, headers={"User-Agent": "nbs-ruralscan-review-server"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            if resp.status != 200:
+                return None
+            data = resp.read(4_000_000)  # 4 MB cap
+    except Exception:
+        return None
+    try:
+        CACHE.mkdir(parents=True, exist_ok=True)
+        dest = CACHE / (source_id + ".txt")
+        dest.write_bytes(data)
+        return dest
+    except Exception:
+        return None
+
+
 def _resolve_pdf(source_id: str) -> Path | None:
     """Return a local cached PDF for source_id, hydrating from the OneDrive library on cache miss."""
     cached = CACHE / (source_id + ".pdf")
@@ -157,17 +200,17 @@ class Handler(SimpleHTTPRequestHandler):
                     target_end = int(m.group(2)) if m.group(2) else target_start
             if target_end < target_start:
                 target_start, target_end = target_end, target_start
-            # resolve the cached text snapshot: .txt -> .html -> .md
+            # resolve the cached text snapshot (.txt -> .html -> .md), fetching
+            # from GitHub raw at the commit-pinned SRC.url on cache miss.
             sid = row["source_id"]
-            snap = None
-            for ext in (".txt", ".html", ".md"):
-                cand = CACHE / (sid + ext)
-                if cand.exists():
-                    snap = cand
-                    break
+            snap = _ensure_code_snapshot(sid)
             if snap is None:
                 return self._json(
-                    404, {"error": "no cached source snapshot for this code source"}
+                    404,
+                    {
+                        "error": "no cached snapshot and GitHub fetch failed "
+                        "(offline, or SRC.url not a github blob URL)"
+                    },
                 )
             text = snap.read_text(encoding="utf-8", errors="replace")
             lines = text.split("\n")
