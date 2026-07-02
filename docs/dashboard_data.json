@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-07-01T11:36:07.533031+00:00",
-  "git_commit": "5b887576f4838cea0b43b1dc5baf086ad3cd6fa8",
+  "timestamp": "2026-07-02T15:14:36.476656+00:00",
+  "git_commit": "6879006aa66d8883f33f7f9b3f160a790211344c",
   "registers": {
     "SRC_source_register": [
       {
@@ -15647,25 +15647,27 @@
         "raised_date": "2026-06-05"
       },
       {
-        "canonical_variable_id": "built_up_areas",
-        "label": "Built-up areas (points/polygons)",
+        "canonical_variable_id": "built_up_fraction",
+        "label": "Built-up fraction (WorldCover class 50)",
         "aliases": [
           "built-up",
-          "settlement points"
+          "urban",
+          "settlement"
         ],
-        "canonical_unit": "boolean_or_distance",
+        "canonical_unit": "index_or_native",
         "unit_conversions": {},
-        "group_id": "socio_economic",
+        "group_id": "land_use",
         "candidate_dataset_ids": [
-          "ghsl_built_up"
+          "esa_worldcover_2021"
         ],
-        "min_meaningful_resolution_m": 100,
+        "min_meaningful_resolution_m": 1000,
         "resolution_sensitivity": "low",
         "derive_then_aggregate": false,
+        "context_sensitivity": "low",
         "review_status": "canonical",
         "raised_by": "ev_builtup_nath21",
         "raised_date": "2026-06-05",
-        "comment": "Could be merged with population_exposure_rural or treated as proximity variable."
+        "comment": "WorldCover built-up class (50) aggregated to a per-cell fraction; urban-exclusion mask + built+population framing. Replaced GHSL (removed 2026-07, team-approved)."
       },
       {
         "canonical_variable_id": "soil_erosion_wind",
@@ -18205,26 +18207,6 @@
         "preprocessing_notes": "Sum across months or take annual mean as appropriate.",
         "limitations": "Modelled (not measured) at any specific location; baseline only, no climate projections in this release.",
         "description": "WorldClim v2.1 monthly solar radiation surface, ~1 km, 1970-2000 climatology. kJ/m²/day.",
-        "grain_type": "grid"
-      },
-      {
-        "dataset_id": "ghsl_built_up",
-        "dataset_name": "GHSL Built-Up Surface (100m, multi-temporal)",
-        "analytical_module": "geographic_context",
-        "spatial_resolution_m": 100,
-        "geographic_coverage": [
-          "global"
-        ],
-        "data_format": "geotiff",
-        "access_type": "direct_download",
-        "download_url": "https://human-settlement.emergency.copernicus.eu/",
-        "license": "CC-BY-4.0",
-        "citation": "Pesaresi, M., & Politis, P. (2023). GHS-BUILT-S R2023A — GHS built-up surface grid, derived from Sentinel-2 composite and Landsat, multitemporal (1975-2030). European Commission, Joint Research Centre (JRC).",
-        "doi": "10.2905/9F06F36F-4B11-47EC-ABB0-4F8B7B1D72EA",
-        "version": "R2023A",
-        "preprocessing_notes": "Pick the epoch nearest to the run year; threshold built-up share if a binary mask is needed.",
-        "limitations": "Smallholder rural settlement under-detected at 100m; complements WorldPop population for a built+population framing.",
-        "description": "Joint Research Centre Global Human Settlement Layer (GHSL) built-up surface — global multi-temporal product at 100m, 5-year epochs from 1975 to present.",
         "grain_type": "grid"
       },
       {

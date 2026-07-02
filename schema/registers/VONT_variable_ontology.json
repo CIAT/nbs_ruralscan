@@ -876,25 +876,27 @@
     "raised_date": "2026-06-05"
   },
   {
-    "canonical_variable_id": "built_up_areas",
-    "label": "Built-up areas (points/polygons)",
+    "canonical_variable_id": "built_up_fraction",
+    "label": "Built-up fraction (WorldCover class 50)",
     "aliases": [
       "built-up",
-      "settlement points"
+      "urban",
+      "settlement"
     ],
-    "canonical_unit": "boolean_or_distance",
+    "canonical_unit": "index_or_native",
     "unit_conversions": {},
-    "group_id": "socio_economic",
+    "group_id": "land_use",
     "candidate_dataset_ids": [
-      "ghsl_built_up"
+      "esa_worldcover_2021"
     ],
-    "min_meaningful_resolution_m": 100,
+    "min_meaningful_resolution_m": 1000,
     "resolution_sensitivity": "low",
     "derive_then_aggregate": false,
+    "context_sensitivity": "low",
     "review_status": "canonical",
     "raised_by": "ev_builtup_nath21",
     "raised_date": "2026-06-05",
-    "comment": "Could be merged with population_exposure_rural or treated as proximity variable."
+    "comment": "WorldCover built-up class (50) aggregated to a per-cell fraction; urban-exclusion mask + built+population framing. Replaced GHSL (removed 2026-07, team-approved)."
   },
   {
     "canonical_variable_id": "soil_erosion_wind",
