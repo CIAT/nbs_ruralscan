@@ -62,7 +62,9 @@ def _github_raw_url(blob_url: str) -> str | None:
     # https://raw.githubusercontent.com/<owner>/<repo>/<ref>/<path...>
     import re as _re
 
-    m = _re.match(r"^https://github\.com/([^/]+)/([^/]+)/blob/(.+)$", (blob_url or "").strip())
+    m = _re.match(
+        r"^https://github\.com/([^/]+)/([^/]+)/blob/(.+)$", (blob_url or "").strip()
+    )
     if not m:
         return None
     return f"https://raw.githubusercontent.com/{m.group(1)}/{m.group(2)}/{m.group(3)}"
@@ -83,7 +85,9 @@ def _ensure_code_snapshot(source_id: str) -> Path | None:
         return None
     import urllib.request
 
-    req = urllib.request.Request(raw, headers={"User-Agent": "nbs-ruralscan-review-server"})
+    req = urllib.request.Request(
+        raw, headers={"User-Agent": "nbs-ruralscan-review-server"}
+    )
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
             if resp.status != 200:
