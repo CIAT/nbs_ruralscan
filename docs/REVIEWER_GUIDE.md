@@ -42,6 +42,19 @@ local server on your machine. It's ~3 commands. You need **write access to the r
    ```
    The public site rebuilds in ~2 minutes.
 
+## Seeing table screengrabs / PDFs
+
+The **📷 show source region** button and the inline PDF viewer render from the source
+PDFs on **your** machine (they're not in git). If you sync the SharePoint library via
+OneDrive, the server finds them automatically — a preview copies the PDF from your
+OneDrive mirror into the local cache on first use. If your OneDrive folder differs from
+the default, point the server at it: `NBS_LIBRARY_ROOT="<...>/1_Projects" uv run python3 -m nbs_ruralscan.schema_tools.review_server`.
+
+If previews still show "no cached pdf", pre-copy every registered PDF into the cache once:
+```
+python3 scripts/hydrate-corpus.py
+```
+
 ## Good to know
 
 - **Views:** *AI-flagged* (open queue) · *AI-passed sample* (spot-check what the AI let through)

@@ -16,7 +16,10 @@ Endpoints:
 
 from __future__ import annotations
 
+import csv as _csv_mod
 import json
+import os
+import shutil
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -24,6 +27,57 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 DOCS = ROOT / "docs"
 STORE = ROOT / "pipeline" / "review" / "decisions.json"
+CACHE = ROOT / ".cache" / "corpus"
+
+
+# Local OneDrive mirror of the SharePoint library. SRC.library_path is relative to
+# .../ClimateActionNetZero/1_Projects/ (e.g. "D591_Rural-Scan_NBS/2_Technical_&_Data/library/<nbs>/x.pdf").
+# Per-user OneDrive folder name varies → override with NBS_LIBRARY_ROOT.
+def _library_root() -> Path | None:
+    env = os.environ.get("NBS_LIBRARY_ROOT")
+    if env:
+        return Path(env).expanduser()
+    # best-effort default: Pete's CGIAR OneDrive mount
+    default = (
+        Path.home()
+        / "Library/CloudStorage/OneDrive-CGIAR/ClimateActionNetZero/1_Projects"
+    )
+    return default if default.exists() else None
+
+
+def _src_field(source_id: str, field: str) -> str:
+    """Look up one field for a source_id from the SRC register CSV."""
+    src_csv = ROOT / "schema" / "registers" / "SRC_source_register.csv"
+    if not src_csv.exists():
+        return ""
+    with src_csv.open(newline="", encoding="utf-8") as f:
+        for r in _csv_mod.DictReader(f):
+            if r.get("source_id") == source_id:
+                return (r.get(field) or "").strip()
+    return ""
+
+
+def _resolve_pdf(source_id: str) -> Path | None:
+    """Return a local cached PDF for source_id, hydrating from the OneDrive library on cache miss."""
+    cached = CACHE / (source_id + ".pdf")
+    if cached.exists():
+        return cached
+    lib_path = _src_field(source_id, "library_path")
+    if not lib_path:
+        return None
+    root = _library_root()
+    if not root:
+        return None
+    # library_path may be posix-style with & etc.; join verbatim
+    src_pdf = root / lib_path
+    if not src_pdf.exists():
+        return None
+    try:
+        CACHE.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(src_pdf, cached)
+        return cached
+    except Exception:
+        return None
 
 
 def _load() -> dict:
@@ -85,9 +139,14 @@ class Handler(SimpleHTTPRequestHandler):
                         break
             if not row:
                 return self._json(404, {"error": "no such evidence_id"})
-            pdf = ROOT / ".cache" / "corpus" / (row["source_id"] + ".pdf")
-            if not pdf.exists():
-                return self._json(404, {"error": "no cached pdf"})
+            pdf = _resolve_pdf(row["source_id"])
+            if not pdf:
+                return self._json(
+                    404,
+                    {
+                        "error": "no cached pdf; set NBS_LIBRARY_ROOT or hydrate the corpus (scripts/hydrate-corpus.py)"
+                    },
+                )
             try:
                 import fitz  # PyMuPDF
 
@@ -180,9 +239,14 @@ class Handler(SimpleHTTPRequestHandler):
             sid = parse_qs(urlparse(self.path).query).get("sid", [""])[0]
             if not _re.fullmatch(r"[A-Za-z0-9_]+", sid or ""):
                 return self._json(400, {"error": "bad sid"})
-            pdf = ROOT / ".cache" / "corpus" / (sid + ".pdf")
-            if not pdf.exists():
-                return self._json(404, {"error": "no cached pdf"})
+            pdf = _resolve_pdf(sid)
+            if not pdf:
+                return self._json(
+                    404,
+                    {
+                        "error": "no cached pdf; set NBS_LIBRARY_ROOT or hydrate the corpus (scripts/hydrate-corpus.py)"
+                    },
+                )
             data = pdf.read_bytes()
             self.send_response(200)
             self.send_header("Content-Type", "application/pdf")
@@ -314,13 +378,34 @@ class Handler(SimpleHTTPRequestHandler):
             title = (
                 payload.get("title") or f"qaqc: review decisions ({reviewer})"
             ).strip()
+            # Fail fast on interactive git/gh auth prompts (no TTY here → they'd otherwise
+            # block up to the timeout). Disable every credential/askpass prompt.
+            _env = {
+                **os.environ,
+                "GIT_TERMINAL_PROMPT": "0",
+                "GIT_ASKPASS": "",
+                "SSH_ASKPASS": "",
+                "GCM_INTERACTIVE": "Never",
+                "GH_NO_UPDATE_NOTIFIER": "1",
+                "GH_PROMPT_DISABLED": "1",
+            }
             try:
                 proc = subprocess.run(
                     ["bash", "scripts/submit-review.sh", reviewer, title, "--auto"],
                     cwd=str(ROOT),
                     capture_output=True,
                     text=True,
-                    timeout=300,
+                    env=_env,
+                    stdin=subprocess.DEVNULL,
+                    timeout=180,
+                )
+            except subprocess.TimeoutExpired:
+                return self._json(
+                    500,
+                    {
+                        "ok": False,
+                        "error": "submit timed out (git/gh auth?). Decisions ARE applied locally. Check `gh auth status` and git push rights, then use scripts/submit-review.sh.",
+                    },
                 )
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"ok": False, "error": str(e)})
