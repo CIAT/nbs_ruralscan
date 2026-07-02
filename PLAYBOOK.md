@@ -54,7 +54,7 @@ Pipeline architecture is in [`docs/pipeline.html`](./docs/pipeline.html). The fu
 ### Review flagged evidence (QA/QC → main)
 
 1. Start the local review server: `uv run python3 -m nbs_ruralscan.schema_tools.review_server` → http://localhost:8765/dashboard.html → **QA/QC** tab. (One-time per clone: `bash scripts/setup-repo.sh`; be logged in — `gh auth status`.)
-2. Set your reviewer handle. Work the **AI-flagged** queue: **ok** (keep) or **drop** (remove) + a reason code.
+2. Set your reviewer handle. Work the **AI-flagged** queue: **ok** (keep) or **drop** (remove) + a reason code. (Table screengrabs / PDF previews render from source PDFs on your machine — if they 404, run `python3 scripts/hydrate-corpus.py` once to copy them from your OneDrive-synced SharePoint library into `.cache/corpus/`, or set `NBS_LIBRARY_ROOT`.)
 3. Click **✓ Apply & submit to main** — one click: writes your decisions to the register + `review_log`, regenerates JSON, then branches off latest `main`, opens a PR, and **auto-merges on green CI**. You get a popup with the PR link. (Headless equivalent: `bash scripts/submit-review.sh <handle> --auto`.)
 4. **Consensus:** a flag is applied only when the reviewers who decided it agree; a disagreement stays a pending conflict. Applied decisions are re-openable/challengeable.
 5. **Auto-merge governance:** `main` is protected (CI `checks` + 1 approval). Review-only PRs (files ⊆ registers/`review_log`/`docs/*.json`, title `qaqc:*`) from allowlisted reviewers (`Namita-J`, `peetmate`) get the bot's approval + auto-merge; **anything else needs a human review.** Extend the allowlist in `.github/workflows/auto-merge-review.yml`.
