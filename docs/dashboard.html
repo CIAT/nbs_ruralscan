@@ -2516,10 +2516,41 @@
   function _segregateDropped(data){ try{ var ev=(data&&data.registers&&data.registers.EV_evidence_register)||[]; data._evDropped=ev.filter(function(r){return (r.review_state||'')==='dropped';}); data.registers.EV_evidence_register=ev.filter(function(r){return (r.review_state||'')!=='dropped';}); }catch(e){} return data; }
   function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid); box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° (server re-renders crisp) — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="/api/crop?eid='+q+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="/api/crop?eid='+q+'" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>'; box.dataset.loaded='1'; } box.style.display='block'; btn.textContent='📷 hide source region'; } else { box.style.display='none'; btn.textContent='📷 show source region'; } }
   function vfRotateCrop(eid,b){ var box=b.closest('.vf-crop'); if(!box)return; var img=box.querySelector('img'); if(!img)return; var r=((parseInt(box.dataset.rot||'0',10)+90)%360); box.dataset.rot=String(r); img.src='/api/crop?eid='+encodeURIComponent(eid)+'&rot='+r+'&t='+Date.now(); }
+  function vfToggleCode(eid,btn){
+    var box=btn.nextElementSibling; if(!box)return;
+    if(box.style.display!=='none'){ box.style.display='none'; btn.innerHTML='&lt;/&gt; show code'; return; }
+    if(!box.dataset.loaded){
+      box.innerHTML='<span style="font-size:10.5px; color:var(--text-muted);">loading code…</span>';
+      fetch('/api/code?eid='+encodeURIComponent(eid)).then(function(r){return r.json();}).then(function(j){
+        if(!j||j.error||!j.ok){ box.textContent=(j&&j.error)?j.error:'code unavailable'; return; }
+        var evAll=(dashboardData.registers.EV_evidence_register)||[];
+        var ev=evAll.find(function(e){return e.evidence_id===eid;})||{};
+        var srcAll=(dashboardData.registers.SRC_source_register)||[];
+        var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
+        var ghUrl=src.url?(vfEsc(src.url)+'#L'+j.target_start):'';
+        var head='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px; flex-wrap:wrap;">'
+          +'<code style="font-size:10.5px; color:var(--accent-sky);">'+vfEsc(j.path||'')+'</code>'
+          +'<span style="font-size:9.5px; color:var(--text-muted);">@ '+vfEsc((j.commit||'').slice(0,7))+'</span>'
+          +'<span style="font-size:9.5px; color:var(--text-muted);">'+vfEsc(j.lang||'text')+'</span>'
+          +(ghUrl?('<a href="'+ghUrl+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky); margin-left:auto;">open on GitHub ↗</a>'):'')
+          +'</div>';
+        var rows=(j.lines||[]).map(function(l){
+          var hot=(l.n>=j.target_start&&l.n<=j.target_end);
+          var style='display:flex; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10.5px; line-height:1.5;'
+            +(hot?' background:rgba(245,158,11,0.14); border-left:3px solid var(--accent-amber);':' border-left:3px solid transparent;');
+          return '<div style="'+style+'"><span style="min-width:44px; text-align:right; padding:0 8px; color:var(--text-muted); user-select:none; flex:none;">'+l.n+'</span><span style="white-space:pre; padding-right:8px;">'+vfEsc(l.text||'')+'</span></div>';
+        }).join('');
+        box.innerHTML=head+'<pre style="margin:0; overflow:auto; max-height:60vh; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-primary); padding:6px 0;">'+rows+'</pre>';
+        box.dataset.loaded='1';
+      }).catch(function(){ box.textContent='code unavailable'; });
+    }
+    box.style.display='block'; btn.innerHTML='&lt;/&gt; hide code';
+  }
   function toggleVfStats(){ if(window._vfMode==='stats'){ window._vfMode=window._vfLastReviewMode||'flagged'; } else { window._vfLastReviewMode=(window._vfMode&&window._vfMode!=='stats')?window._vfMode:'flagged'; window._vfMode='stats'; } renderVfWorklist(); }
   function vfShowReasonHelp(){ var d=document.getElementById('vf-reason-codes'); if(!d)return; d.open=true; d.scrollIntoView({behavior:'smooth',block:'center'}); d.style.transition='background .3s'; d.style.background='rgba(14,165,233,0.14)'; setTimeout(function(){ d.style.background=''; },1300); }
   function vfSharePointUrl(lp){ if(!lp)return ''; var base='https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/'+encodeURIComponent('Shared Documents')+'/ClimateActionNetZero/1_Projects/'; return base+lp.split('/').map(encodeURIComponent).join('/'); }
   function vfLocHint(ev){
+    if((ev.locator_type||'')==='file_line') return '</> '+(ev.locator||'code');
     var cb=(ev.claim_basis||'');
     if(cb==='table') return '\uD83D\uDCCA in a Table';
     if(cb==='figure_read') return '\uD83D\uDCC8 in a Figure';
@@ -2762,9 +2793,15 @@
     var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source ↗</a>'):'');
     var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
     var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint">📄 SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a>'):'';
-    var localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
-    var libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
-    var pdfLink=[spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
+    var isCode=((ev.locator_type||'')==='file_line'||(src.source_category||'')==='tool');
+    var codeLink='', localLink='', libTxt='';
+    if(isCode){
+      codeLink=src.url?('<a href="'+vfEsc(src.url)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">&lt;/&gt; source code on GitHub ↗</a>'):'<span style="color:var(--text-muted);">&lt;/&gt; cached code snapshot</span>';
+    } else {
+      localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
+      libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
+    }
+    var pdfLink=(isCode?[codeLink]:[spLink,localLink,libTxt]).filter(Boolean).join(' &nbsp;·&nbsp; ');
     var okA=dec==='ok', dropA=dec==='drop', queryA=(dec==='flag'||dec==='query');
     var _rc=passed?['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','wrong_table','constrained_aoi','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','other']:['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','wrong_table','constrained_aoi','quote_too_narrow','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','false_flag','accepted_correction','other'];
     var _rcDesc={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',wrong_table:'real claim but wrong table — soft enabling-env (tenure/market/road/extension/finance/labour) belongs to T3 project-risk / M2b / next-steps, not T4 structural suitability',constrained_aoi:'source frames the NbS onto a constrained subset of land (e.g. land-capability "marginal/residual" buckets) — understates where the NbS is actually feasible, misrepresenting the opportunity-space extent. Down-weight; never use to set the AOI/extent',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',relationship_missed:'the suitability relationship / directionality / membership curve was present in the source but NOT captured (e.g. monotonic decline with distance, fine-texture = high suitability)',insufficient_context:'cannot review — no caption / surrounding context, or the table screengrab failed to render',uninterpretable_weight:'a weight / score with no scale or standardisation context (e.g. "5" — out of what?); cannot interpret or compare across sources',speculative_evidence:'speculation / assumption, not first- or second-hand evidence ("may deter", hand-wavy assumed causation)',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
@@ -2776,7 +2813,12 @@
     var _rk=Object.keys(_allr).filter(function(rv){return _allr[rv].decision;});
     var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
-    var cropImg=(window._reviewApi)?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show source region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
+    var cropImg='';
+    if((ev.locator_type||'')==='file_line'&&window._reviewApi){
+      cropImg='<div style="margin-top:8px;"><button onclick="vfToggleCode(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">&lt;/&gt; show code</button><div class="vf-code" style="display:none; margin-top:6px;"></div></div>';
+    } else if(window._reviewApi){
+      cropImg='<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show source region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>';
+    }
     // Default-decode categorical class codes (issue #102): readable class names for any
     // class-coded EV (e.g. a CDL crop mask) so the reviewer never sees bare "61, 205…".
     var _dc=((dashboardData||{}).decoded_classes||{})[ev.evidence_id];

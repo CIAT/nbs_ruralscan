@@ -121,6 +121,98 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(200, {"ok": True})
         if self.path == "/api/state":
             return self._json(200, {"decisions": _load()})
+        if self.path.startswith("/api/code"):
+            # return the CODE lines around a file_line locator (tool/methodology sources).
+            from urllib.parse import urlparse, parse_qs
+            import csv as _csv
+            import re as _re
+
+            qs = parse_qs(urlparse(self.path).query)
+            eid = qs.get("eid", [""])[0]
+            if not _re.fullmatch(r"[A-Za-z0-9_]+", eid or ""):
+                return self._json(400, {"error": "bad eid"})
+            ev_csv = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
+            row = None
+            with ev_csv.open(newline="", encoding="utf-8") as f:
+                for r in _csv.DictReader(f):
+                    if r["evidence_id"] == eid:
+                        row = r
+                        break
+            if not row:
+                return self._json(404, {"error": "no such evidence_id"})
+            if (row.get("locator_type") or "").strip() != "file_line":
+                return self._json(400, {"error": "not a code (file_line) source"})
+            loc = (row.get("locator") or "").strip()
+            # path is everything before the last ':L'; the line spec follows it.
+            path = loc
+            target_start = 1
+            target_end = 1
+            idx = loc.rfind(":L")
+            if idx >= 0:
+                path = loc[:idx]
+                spec = loc[idx + 2 :]
+                m = _re.match(r"(\d+)(?:\s*-\s*(\d+))?", spec)
+                if m:
+                    target_start = int(m.group(1))
+                    target_end = int(m.group(2)) if m.group(2) else target_start
+            if target_end < target_start:
+                target_start, target_end = target_end, target_start
+            # resolve the cached text snapshot: .txt -> .html -> .md
+            sid = row["source_id"]
+            snap = None
+            for ext in (".txt", ".html", ".md"):
+                cand = CACHE / (sid + ext)
+                if cand.exists():
+                    snap = cand
+                    break
+            if snap is None:
+                return self._json(
+                    404, {"error": "no cached source snapshot for this code source"}
+                )
+            text = snap.read_text(encoding="utf-8", errors="replace")
+            lines = text.split("\n")
+            nlines = len(lines)
+            try:
+                ctx = int(qs.get("ctx", ["14"])[0])
+            except ValueError:
+                ctx = 14
+            ctx = max(0, min(80, ctx))
+            if target_start > nlines:
+                target_start = min(target_start, nlines)
+            if target_end > nlines:
+                target_end = nlines
+            window_start = max(1, target_start - ctx)
+            window_end = min(nlines, target_end + ctx)
+            out_lines = [
+                {"n": i, "text": lines[i - 1]}
+                for i in range(window_start, window_end + 1)
+            ]
+            # language guess
+            pl = path.lower()
+            if pl.endswith(".py"):
+                lang = "python"
+            elif pl.endswith((".r",)):
+                lang = "r"
+            elif pl.endswith((".js",)):
+                lang = "javascript"
+            else:
+                looks_js = bool(_re.search(r"\bvar\b|\bfunction\b", text))
+                lang = "javascript" if looks_js else "text"
+            return self._json(
+                200,
+                {
+                    "ok": True,
+                    "path": path,
+                    "commit": (row.get("commit_sha") or "").strip(),
+                    "lang": lang,
+                    "start": window_start,
+                    "end": window_end,
+                    "target_start": target_start,
+                    "target_end": target_end,
+                    "n_lines": nlines,
+                    "lines": out_lines,
+                },
+            )
         if self.path.startswith("/api/crop"):
             # render a page-region screengrab around an EV unit's quote (table view).
             from urllib.parse import urlparse, parse_qs
@@ -221,6 +313,16 @@ class Handler(SimpleHTTPRequestHandler):
                 mat = fitz.Matrix(scale, scale)
                 if rot:
                     mat = mat.prerotate(rot)
+                # highlight the located quote span(s) so the reviewer sees the exact
+                # passage inside the rendered region (rendered into the pixmap directly).
+                if rects:
+                    try:
+                        for _hr in rects:
+                            _an = page.add_highlight_annot(_hr)
+                            _an.set_colors(stroke=(1.0, 0.86, 0.24))  # amber
+                            _an.update()
+                    except Exception:  # noqa: BLE001
+                        pass
                 pix = page.get_pixmap(matrix=mat, clip=clip)
                 data = pix.tobytes("png")
                 doc.close()
