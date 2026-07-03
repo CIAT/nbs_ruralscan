@@ -2520,8 +2520,13 @@
       } else if(window._reviewApi){
         // 2) live review server with the PDF locally — keep rotate / open-full.
         box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° (server re-renders crisp) — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="/api/crop?eid='+q+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="/api/crop?eid='+q+'" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>';
+      } else if(window._cropSharePointMap && window._cropSharePointMap[eid]){
+        // 3) non-OA crop lives in the access-controlled library — link (can't embed an
+        // auth'd SharePoint image). Copyright-safe: same access control as the PDF.
+        var spCrop=vfSharePointUrl(window._cropSharePointMap[eid]);
+        box.innerHTML=spCrop?('<div style="font-size:10.5px; color:var(--text-secondary); padding:8px 4px;"><a href="'+spCrop+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open highlighted source region in SharePoint ↗</a><div style="font-size:9.5px; color:var(--text-muted); margin-top:4px;">opens the highlighted crop in SharePoint (needs library access)</div></div>'):('<div style="font-size:10.5px; color:var(--text-muted); padding:8px 4px;">Highlighted crop is in the library but its link could not be built.</div>');
       } else {
-        // 3) no committed crop, no server → SharePoint link (no broken image).
+        // 4) no committed crop, no server, no library crop → SharePoint PDF link.
         var evAll=((dashboardData||{}).registers||{}).EV_evidence_register||[]; var ev=evAll.find(function(e){return e.evidence_id===eid;})||{};
         var srcAll=((dashboardData||{}).registers||{}).SRC_source_register||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
         var sp=vfSharePointUrl(src.library_path||''); if(sp&&ev.page)sp+='#page='+ev.page;
@@ -2787,7 +2792,8 @@
     var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
-    var _showCrop=_hasCommittedCrop||(window._reviewApi && _vfTabular(ev.quote));
+    var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
+    var _showCrop=_hasCommittedCrop||(window._reviewApi && _vfTabular(ev.quote))||_hasSharePointCrop;
     var cropImg=_showCrop?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show source region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
     // Default-decode categorical class codes (issue #102): readable class names for any
     // class-coded EV (e.g. a CDL crop mask) so the reviewer never sees bare "61, 205…".
@@ -3009,7 +3015,9 @@
     // Best-effort: load the committed-crop manifest so crops render for everyone (incl.
     // GitHub Pages) with zero setup. Falls back silently to an empty set if absent/offline.
     if(window._cropManifest===undefined){ window._cropManifest=new Set(); }
-    fetch('crops/manifest.json').then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&Array.isArray(j.eids)){ window._cropManifest=new Set(j.eids); if(typeof renderVfWorklist==='function' && window._vfMode){ try{renderVfWorklist();}catch(e){} } } }).catch(function(){});
+    if(window._cropSharePoint===undefined){ window._cropSharePoint=new Set(); }
+    if(window._cropSharePointMap===undefined){ window._cropSharePointMap={}; }
+    fetch('crops/manifest.json').then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&Array.isArray(j.eids)){ window._cropManifest=new Set(j.eids); } if(j&&j.sharepoint&&typeof j.sharepoint==='object'){ window._cropSharePointMap=j.sharepoint; window._cropSharePoint=new Set(Object.keys(j.sharepoint)); } if(j&&(Array.isArray(j.eids)||j.sharepoint)){ if(typeof renderVfWorklist==='function' && window._vfMode){ try{renderVfWorklist();}catch(e){} } } }).catch(function(){});
     // 1. Meta fields
     const formattedDate = new Date(dashboardData.timestamp).toLocaleString();
     document.getElementById('meta-timestamp-val').textContent = formattedDate;

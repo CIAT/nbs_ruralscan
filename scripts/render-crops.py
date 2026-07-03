@@ -14,12 +14,19 @@ dashboard. Never publish a crop for a paywalled / unknown-licence source.
 
 Usage:
     python3 scripts/render-crops.py [--scope flagged|all] [--dry-run]
+                                    [--sharepoint-nonoa]
 
-    --scope flagged   (default) only render EV rows whose attribution carries a
-                      [VERIFY-FLAG marker.
-    --scope all       render every EV row.
-    --dry-run         do everything EXCEPT writing images / manifest (counts + gate
-                      assertion only).
+    --scope flagged      (default) only render EV rows whose attribution carries a
+                         [VERIFY-FLAG marker.
+    --scope all          render every EV row.
+    --dry-run            do everything EXCEPT writing images / manifest (counts +
+                         gate assertion only).
+    --sharepoint-nonoa   (default OFF) ALSO render a crop for NON-open-access sources
+                         into the OneDrive/SharePoint library `crops/` folder — NEVER
+                         into docs/. Copyright-safe: same access control as the PDFs.
+                         Only their library-relative path is recorded in the public
+                         manifest (never the image bytes). No-op if the library root
+                         can't be resolved.
 
 The library root defaults to Pete's CGIAR OneDrive mount; override with NBS_LIBRARY_ROOT
 (same resolution as scripts/hydrate-corpus.py).
@@ -87,6 +94,20 @@ def resolve_pdf(sid: str, src: dict, lib_root: Path | None) -> Path | None:
     return p if p.exists() else None
 
 
+def library_crops_reldir(src: dict) -> str | None:
+    """Library-relative crops dir for a source, from the first two segments of its
+    library_path (e.g. `D591_.../2_Technical_&_Data/Stocktake Review/x.pdf`
+    → `D591_.../2_Technical_&_Data/crops`). None if library_path is empty/too shallow.
+    """
+    lib_path = (src.get("library_path") or "").strip().replace("\\", "/")
+    if not lib_path:
+        return None
+    segs = [s for s in lib_path.split("/") if s]
+    if len(segs) < 2:
+        return None
+    return "/".join(segs[:2]) + "/crops"
+
+
 def png_to_jpeg(png: bytes) -> bytes | None:
     """PNG bytes → optimised JPEG bytes via Pillow. None on failure."""
     try:
@@ -112,6 +133,52 @@ def png_to_jpeg(png: bytes) -> bytes | None:
         return None
 
 
+def _render_nonoa_library_crop(
+    r: dict,
+    eid: str,
+    sid: str,
+    src: dict,
+    lib_root: Path | None,
+    dry_run: bool,
+    sharepoint_map: dict[str, str],
+    sharepoint_sids: dict[str, str],
+    sp_nopdf: list[str],
+    sp_norender: list[str],
+    sp_noreldir: list[str],
+) -> None:
+    """Render a non-OA source's crop into the library mirror's crops/ dir (never docs/).
+
+    Records the library-relative path in sharepoint_map so the dashboard can build a
+    SharePoint URL. Only the path string is public — the image bytes stay in the
+    access-controlled library.
+    """
+    reldir = library_crops_reldir(src)
+    if reldir is None:
+        sp_noreldir.append(eid)
+        return
+    pdf = resolve_pdf(sid, src, lib_root)
+    if pdf is None:
+        sp_nopdf.append(eid)
+        return
+    page = int(r["page"]) if (r.get("page") or "").strip().isdigit() else None
+    png = render_region_png(pdf, r.get("quote") or "", page)
+    if png is None:
+        sp_norender.append(eid)
+        return
+    jpeg = png_to_jpeg(png)
+    if jpeg is None:
+        sp_norender.append(eid)
+        return
+    rel_path = f"{reldir}/{eid}.jpg"
+    sharepoint_map[eid] = rel_path
+    sharepoint_sids[eid] = sid
+    if not dry_run:
+        assert lib_root is not None  # sp_nonoa_active guarantees this
+        abs_dir = lib_root / reldir
+        abs_dir.mkdir(parents=True, exist_ok=True)
+        (abs_dir / f"{eid}.jpg").write_bytes(jpeg)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument(
@@ -124,6 +191,11 @@ def main() -> int:
         "--dry-run",
         action="store_true",
         help="count + gate-check only; write no images / manifest",
+    )
+    ap.add_argument(
+        "--sharepoint-nonoa",
+        action="store_true",
+        help="also render non-OA crops into the OneDrive library crops/ dir (never docs/)",
     )
     args = ap.parse_args()
 
@@ -150,10 +222,20 @@ def main() -> int:
                 continue
             ev_rows.append(r)
 
+    # non-OA→library rendering is only active when the flag is set AND we can resolve
+    # the local library mirror (else there is nowhere copyright-safe to write).
+    sp_nonoa_active = args.sharepoint_nonoa and lib_root is not None
+
     print(f"scope           : {args.scope}")
     print(f"in-scope EV rows: {len(ev_rows)}")
     print(f"library root    : {lib_root if lib_root else '(none / not found)'}")
     print(f"dry-run         : {args.dry_run}")
+    print(f"sharepoint-nonoa: {args.sharepoint_nonoa} (active: {sp_nonoa_active})")
+    if args.sharepoint_nonoa and lib_root is None:
+        print(
+            "  ! --sharepoint-nonoa requested but library root not found "
+            "(set NBS_LIBRARY_ROOT) — skipping non-OA library crops."
+        )
 
     rendered: list[str] = []
     rendered_sids: dict[str, str] = {}  # eid -> sid, for the gate assertion
@@ -163,6 +245,13 @@ def main() -> int:
     produced_banned: list[
         str
     ] = []  # eids for banned sids that produced a crop (must stay empty)
+
+    # non-OA → library crops (copyright-gated: bytes go ONLY to the library mirror)
+    sharepoint_map: dict[str, str] = {}  # eid -> library-relative "<reldir>/<eid>.jpg"
+    sharepoint_sids: dict[str, str] = {}  # eid -> sid, for the gate assertion
+    sp_nopdf: list[str] = []
+    sp_norender: list[str] = []
+    sp_noreldir: list[str] = []
 
     if not args.dry_run:
         CROPS_DIR.mkdir(parents=True, exist_ok=True)
@@ -177,6 +266,23 @@ def main() -> int:
         # copyright gate FIRST
         if sid in KNOWN_NONPUBLISHABLE or not is_publishable(src):
             skipped_nonoa[eid] = sid
+            # non-OA sources get a crop ONLY inside the access-controlled library
+            # mirror — NEVER under docs/. Gated behind --sharepoint-nonoa + a
+            # resolvable library root.
+            if sp_nonoa_active:
+                _render_nonoa_library_crop(
+                    r,
+                    eid,
+                    sid,
+                    src,
+                    lib_root,
+                    args.dry_run,
+                    sharepoint_map,
+                    sharepoint_sids,
+                    sp_nopdf,
+                    sp_norender,
+                    sp_noreldir,
+                )
             continue
 
         pdf = resolve_pdf(sid, src, lib_root)
@@ -212,6 +318,12 @@ def main() -> int:
         "n": len(rendered),
         "eids": rendered,
     }
+    # non-OA library crops: publish ONLY the library-relative path (never the bytes),
+    # so the dashboard can build a SharePoint link for reviewers with library access.
+    if sp_nonoa_active and sharepoint_map:
+        manifest["sharepoint"] = {
+            eid: sharepoint_map[eid] for eid in sorted(sharepoint_map)
+        }
     if not args.dry_run:
         (CROPS_DIR / "manifest.json").write_text(
             json.dumps(manifest, indent=2), encoding="utf-8"
@@ -227,18 +339,65 @@ def main() -> int:
     print(f"skipped no-pdf      : {len(skipped_nopdf)}")
     print(f"skipped no-render   : {len(skipped_norender)}")
 
-    # gate assertion: none of the known-banned sids produced a crop
+    if sp_nonoa_active:
+        target_dirs = sorted({p.rsplit("/", 1)[0] for p in sharepoint_map.values()})
+        print(
+            f"\nnon-OA crops written to library: {len(sharepoint_map)}"
+            + (" (would be, dry-run)" if args.dry_run else "")
+        )
+        if target_dirs:
+            for d in target_dirs:
+                print(f"  target library dir: {lib_root / d}")
+        sp_sids = sorted(set(sharepoint_sids.values()))
+        if sp_sids:
+            print(f"  non-OA library sids: {', '.join(sp_sids)}")
+        print(f"  non-OA skipped no-pdf   : {len(sp_nopdf)}")
+        print(f"  non-OA skipped no-render: {len(sp_norender)}")
+        print(f"  non-OA skipped no-reldir: {len(sp_noreldir)}")
+
+    # gate assertion: none of the known-banned sids produced a PUBLIC (docs/) crop
     banned_in_rendered = [
         eid for eid in rendered if rendered_sids.get(eid) in KNOWN_NONPUBLISHABLE
     ]
     gate_ok = not produced_banned and not banned_in_rendered
     print(
-        f"\nGATE (no crop for {sorted(KNOWN_NONPUBLISHABLE)}): "
+        f"\nGATE (no PUBLIC crop for {sorted(KNOWN_NONPUBLISHABLE)}): "
         + ("PASS" if gate_ok else "FAIL")
     )
     if not gate_ok:
         print(f"  ! banned crops produced: {produced_banned + banned_in_rendered}")
         return 2
+
+    # sharepoint gate: every eid in the sharepoint map must belong to a
+    # NON-publishable source, and NONE may also appear in the public docs/ set.
+    if args.sharepoint_nonoa:
+        sp_bad_publishable = [
+            eid
+            for eid, s in sharepoint_sids.items()
+            if is_publishable(src_by_id.get(s, {})) and s not in KNOWN_NONPUBLISHABLE
+        ]
+        sp_in_docs = [eid for eid in sharepoint_map if eid in set(rendered)]
+        # every mapped eid must belong to a known non-OA sid (the 3 known ones)
+        sp_sids_seen = set(sharepoint_sids.values())
+        sp_unknown_sids = sorted(sp_sids_seen - KNOWN_NONPUBLISHABLE)
+        sp_gate_ok = (
+            not sp_bad_publishable
+            and not sp_in_docs
+            and sp_sids_seen.issubset(KNOWN_NONPUBLISHABLE)
+        )
+        print(
+            f"SHAREPOINT GATE (map ⊆ {sorted(KNOWN_NONPUBLISHABLE)}, none in docs/): "
+            + ("PASS" if sp_gate_ok else "FAIL")
+        )
+        if not sp_gate_ok:
+            if sp_bad_publishable:
+                print(f"  ! publishable sids in sharepoint map: {sp_bad_publishable}")
+            if sp_in_docs:
+                print(f"  ! sharepoint eids also in docs/: {sp_in_docs}")
+            if sp_unknown_sids:
+                print(f"  ! unexpected non-OA sids in map: {sp_unknown_sids}")
+            return 3
+
     if args.dry_run:
         print("(dry-run: no images or manifest written)")
     return 0
