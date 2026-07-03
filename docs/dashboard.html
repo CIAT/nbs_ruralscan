@@ -2520,8 +2520,13 @@
       } else if(window._reviewApi){
         // 2) live review server with the PDF locally — keep rotate / open-full.
         box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° (server re-renders crisp) — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="/api/crop?eid='+q+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="/api/crop?eid='+q+'" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>';
+      } else if(window._cropSharePointMap && window._cropSharePointMap[eid]){
+        // 3) non-OA crop lives in the access-controlled library — link (can't embed an
+        // auth'd SharePoint image). Copyright-safe: same access control as the PDF.
+        var spCrop=vfSharePointUrl(window._cropSharePointMap[eid]);
+        box.innerHTML=spCrop?('<div style="font-size:10.5px; color:var(--text-secondary); padding:8px 4px;"><a href="'+spCrop+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open highlighted source region in SharePoint ↗</a><div style="font-size:9.5px; color:var(--text-muted); margin-top:4px;">opens the highlighted crop in SharePoint (needs library access)</div></div>'):('<div style="font-size:10.5px; color:var(--text-muted); padding:8px 4px;">Highlighted crop is in the library but its link could not be built.</div>');
       } else {
-        // 3) no committed crop, no server → SharePoint link (no broken image).
+        // 4) no committed crop, no server, no library crop → SharePoint PDF link.
         var evAll=((dashboardData||{}).registers||{}).EV_evidence_register||[]; var ev=evAll.find(function(e){return e.evidence_id===eid;})||{};
         var srcAll=((dashboardData||{}).registers||{}).SRC_source_register||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
         var sp=vfSharePointUrl(src.library_path||''); if(sp&&ev.page)sp+='#page='+ev.page;
@@ -2748,6 +2753,11 @@
   // Authoritative from SRC.source_category; friendly labels for the QA/QC view.
   function _vfSrcCatMap(){ if(window.__vfSrcCat)return window.__vfSrcCat; var m={}; ((dashboardData.registers.SRC_source_register)||[]).forEach(function(s){ m[s.source_id]=(s.source_category||'').trim(); }); window.__vfSrcCat=m; return m; }
   function _vfChanKey(ev){ var c=_vfSrcCatMap()[ev.source_id]||''; return c||'unknown'; }
+  // Open-access gate — same rule as scripts/render-crops.py (license cc-*/other-oa/cc0/
+  // public-domain OR access_status open). Drives the Access filter chip + the OA/Restricted
+  // card badge. Restricted = copyrighted, crop is team-only via SharePoint.
+  function _vfSrcOAMap(){ if(window.__vfSrcOA)return window.__vfSrcOA; var m={}; ((dashboardData.registers.SRC_source_register)||[]).forEach(function(s){ var lic=(s.license||'').toLowerCase(); var acc=(s.access_status||'').toLowerCase(); m[s.source_id]=(lic.indexOf('cc-')===0||lic==='other-oa'||lic==='cc0'||lic==='public-domain'||['open_access','open','gold','green','hybrid','oa'].indexOf(acc)>=0); }); window.__vfSrcOA=m; return m; }
+  function _vfIsOA(ev){ return !!_vfSrcOAMap()[ev.source_id]; }
   function _vfChanMeta(key){ return ({
       stock:{label:'Stocktake', color:'#a78bfa'},
       updated_lit:{label:'Peer-reviewed · OpenAlex', color:'#38bdf8'},
@@ -2757,6 +2767,7 @@
     })[key]||{label:key, color:'var(--text-muted)'}; }
   function vfDetailHtml(o, passed){ var ev=o.ev, verdict=o.verdict, reason=o.reason; var srcAll=(dashboardData.registers.SRC_source_register)||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
     var _chan=_vfChanMeta(_vfChanKey(ev)); var _chanBadge='<span title="source channel (SRC.source_category)" style="font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_chan.color+'; border:1px solid '+_chan.color+'; border-radius:3px; padding:1px 6px;">'+vfEsc(_chan.label)+'</span>';
+    var _oa=_vfIsOA(ev); var _oaCol=_oa?'#34d399':'#fbbf24'; var _oaBadge='<span title="'+(_oa?'Open-access source — crop shown inline / publishable':'Copyrighted (non-open-access) — crop is team-only via SharePoint')+'" style="font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_oaCol+'; border:1px solid '+_oaCol+'; border-radius:3px; padding:1px 6px;">'+(_oa?'OA':'Restricted')+'</span>';
     var dec=(window._vfDecisions||{})[ev.evidence_id]||'';
     var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'page n/a');
     var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';var relShown=rel?vfEsc(rel):'<span style="color:var(--text-muted);">(removed by the verify pass — disputed value is in the reason below)</span>';
@@ -2787,7 +2798,8 @@
     var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
-    var _showCrop=_hasCommittedCrop||(window._reviewApi && _vfTabular(ev.quote));
+    var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
+    var _showCrop=_hasCommittedCrop||(window._reviewApi && _vfTabular(ev.quote))||_hasSharePointCrop;
     var cropImg=_showCrop?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show source region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
     // Default-decode categorical class codes (issue #102): readable class names for any
     // class-coded EV (e.g. a CDL crop mask) so the reviewer never sees bare "61, 205…".
@@ -2800,7 +2812,7 @@
       +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
       +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;" title="AI verify verdict">'+vfEsc(verdict)+'</span>'
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
-      +'<span style="margin-left:auto; display:flex; align-items:center; gap:8px;">'+_chanBadge+'<span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></span></div>'
+      +'<span style="margin-left:auto; display:flex; align-items:center; gap:8px;">'+_oaBadge+_chanBadge+'<span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></span></div>'
       +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> '+vfRelHtml(ev)+'</div>'
       +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
@@ -2847,10 +2859,11 @@
     var passedAll=evAll.filter(function(ev){ return !flaggedIds[ev.evidence_id] && (ev.use_role!=='dataset'); });
     // scope filter — pills derived from the data model; NbS controls table + family options
     var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
-    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'all',family:'all',source:'all'};
+    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'all',family:'all',source:'all',access:'all'};
     if(window._vfScope.source===undefined)window._vfScope.source='all';
+    if(window._vfScope.access===undefined)window._vfScope.access='all';
     var _R2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
-    function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; if(sc.source!=='all'&&_vfChanKey(ev)!==sc.source)return false; return true; }
+    function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; if(sc.source!=='all'&&_vfChanKey(ev)!==sc.source)return false; if(sc.access&&sc.access!=='all'){ var _oa=_vfIsOA(ev); if(sc.access==='oa'&&!_oa)return false; if(sc.access==='restricted'&&_oa)return false; } return true; }
     var scEl=document.getElementById('vf-scope');
     if(scEl){ var _inNbs=function(e){ return window._vfScope.nbs==='all'||e.nbs_id===window._vfScope.nbs; };
       var _famOpts=Array.from(new Set(evAll.filter(_inNbs).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
@@ -2867,7 +2880,8 @@
         +_mkPills('table','Step (table)',_tblOpts,function(o){return _tblName[o]||o;},'purple')
         +_tblLegend
         +_mkPills('family','Sub-practice',_famOpts,function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'emerald')
-        +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber'); }
+        +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber')
+        +_mkPills('access','Access',['oa','restricted'],function(o){return o==='oa'?'Open-access':'Restricted (copyright)';},'emerald'); }
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
     passedAll=passedAll.filter(_inScope);
     var rlAll=(dashboardData.review_log)||[];
@@ -3009,7 +3023,9 @@
     // Best-effort: load the committed-crop manifest so crops render for everyone (incl.
     // GitHub Pages) with zero setup. Falls back silently to an empty set if absent/offline.
     if(window._cropManifest===undefined){ window._cropManifest=new Set(); }
-    fetch('crops/manifest.json').then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&Array.isArray(j.eids)){ window._cropManifest=new Set(j.eids); if(typeof renderVfWorklist==='function' && window._vfMode){ try{renderVfWorklist();}catch(e){} } } }).catch(function(){});
+    if(window._cropSharePoint===undefined){ window._cropSharePoint=new Set(); }
+    if(window._cropSharePointMap===undefined){ window._cropSharePointMap={}; }
+    fetch('crops/manifest.json').then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&Array.isArray(j.eids)){ window._cropManifest=new Set(j.eids); } if(j&&j.sharepoint&&typeof j.sharepoint==='object'){ window._cropSharePointMap=j.sharepoint; window._cropSharePoint=new Set(Object.keys(j.sharepoint)); } if(j&&(Array.isArray(j.eids)||j.sharepoint)){ if(typeof renderVfWorklist==='function' && window._vfMode){ try{renderVfWorklist();}catch(e){} } } }).catch(function(){});
     // 1. Meta fields
     const formattedDate = new Date(dashboardData.timestamp).toLocaleString();
     document.getElementById('meta-timestamp-val').textContent = formattedDate;
