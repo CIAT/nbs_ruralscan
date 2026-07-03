@@ -127,6 +127,111 @@ def _resolve_pdf(source_id: str) -> Path | None:
         return None
 
 
+def render_region_png(
+    pdf_path: Path, quote: str, page: int | None, rot: int = 0
+) -> bytes | None:
+    """Render a highlighted page-region screengrab (PNG bytes) around ``quote`` on ``page``.
+
+    Opens the PDF, searches for the quote span, computes a clip rect (preferring the
+    detected table bbox incl. its header row, falling back to a band around the hits or
+    the whole page), auto-detects a sideways/rotated table, draws amber highlight annots
+    over the located quote rects, and renders to PNG. A search miss with no clip is fine
+    (whole page). Returns ``None`` only on a hard failure (no such file / no page / render
+    error). ``rot`` (0/90/180/270) forces a rotation override; 0 = auto-detect.
+    """
+    try:
+        import fitz  # PyMuPDF
+
+        doc = fitz.open(str(pdf_path))
+        if len(doc) == 0:
+            doc.close()
+            return None
+        pno = page if (page and page > 0) else 1
+        pg = doc[max(0, min(pno - 1, len(doc) - 1))]
+        q = " ".join((quote or "").split())
+        # locate the WHOLE quote span: search several snippets across it and union
+        # all hit rects (a table quote spans caption -> header -> data rows).
+        rects = []
+        for i in range(0, max(1, len(q)), 38):
+            snip = q[i : i + 30].strip()
+            if len(snip) >= 8:
+                rects += pg.search_for(snip)
+        clip = None
+        # 1) prefer the FULL detected table bbox (includes its column-header row,
+        #    which a quote deep in the table sits far below).
+        if rects:
+            try:
+                for t in pg.find_tables().tables or []:
+                    tb = fitz.Rect(t.bbox)
+                    if any(tb.intersects(r) for r in rects):
+                        clip = tb + (-10, -14, 10, 10)  # small pad incl header
+                        break
+            except Exception:  # noqa: BLE001
+                clip = None
+        # 2) fallback: a band around the quote, reaching well up for the header.
+        if clip is None and rects:
+            y0 = max(0, min(r.y0 for r in rects) - 230)
+            y1 = min(pg.rect.height, max(r.y1 for r in rects) + 60)
+            clip = fitz.Rect(0, y0, pg.rect.width, y1)
+        elif clip is None:
+            clip = pg.rect  # whole page
+        clip = clip & pg.rect  # keep within the page
+        # Guard against a too-small crop: a narrow cell hit (e.g. "CUADRO 4" with no
+        # caption) yields an unreviewable thumbnail. Widen to a full-width band around
+        # the hits (or the whole page) so the reviewer gets context. (2026-06-23 inab.)
+        if clip.width < pg.rect.width * 0.45 or clip.height < 90:
+            if rects:
+                y0 = max(0, min(r.y0 for r in rects) - 260)
+                y1 = min(pg.rect.height, max(r.y1 for r in rects) + 120)
+                clip = fitz.Rect(0, y0, pg.rect.width, y1) & pg.rect
+            else:
+                clip = pg.rect
+        # Detect a rotated (sideways) table so we can render it upright. Wide
+        # landscape tables on a portrait page have vertical writing direction.
+        det_rot = 0
+        try:
+            td = pg.get_text("dict", clip=clip)
+            vert = horiz = 0
+            ysign = 0.0
+            for b in td.get("blocks", []):
+                for ln in b.get("lines", []):
+                    dx, dy = ln.get("dir", (1.0, 0.0))
+                    if abs(dy) > abs(dx):
+                        vert += 1
+                        ysign += dy
+                    else:
+                        horiz += 1
+            if vert > horiz and vert > 0:
+                # dir (0,-1) reads bottom→top → rotate 90; (0,1) → 270
+                det_rot = 90 if ysign < 0 else 270
+        except Exception:  # noqa: BLE001
+            det_rot = 0
+        # an explicit rot override wins (manual correction)
+        use_rot = rot if rot in (0, 90, 180, 270) and rot else det_rot
+        # render at higher resolution (~2600px on the long edge) for readability
+        long_edge = max(clip.width, clip.height, 1.0)
+        scale = max(1.5, min(4.0, 2600.0 / long_edge))
+        mat = fitz.Matrix(scale, scale)
+        if use_rot:
+            mat = mat.prerotate(use_rot)
+        # highlight the located quote span(s) so the reviewer sees the exact
+        # passage inside the rendered region (rendered into the pixmap directly).
+        if rects:
+            try:
+                for _hr in rects:
+                    _an = pg.add_highlight_annot(_hr)
+                    _an.set_colors(stroke=(1.0, 0.86, 0.24))  # amber
+                    _an.update()
+            except Exception:  # noqa: BLE001
+                pass
+        pix = pg.get_pixmap(matrix=mat, clip=clip)
+        data = pix.tobytes("png")
+        doc.close()
+        return data
+    except Exception:  # noqa: BLE001
+        return None
+
+
 def _load() -> dict:
     if STORE.exists():
         raw = STORE.read_bytes()
@@ -286,95 +391,17 @@ class Handler(SimpleHTTPRequestHandler):
                         "error": "no cached pdf; set NBS_LIBRARY_ROOT or hydrate the corpus (scripts/hydrate-corpus.py)"
                     },
                 )
+            pno = int(row["page"]) if (row.get("page") or "").isdigit() else None
+            _rq = parse_qs(urlparse(self.path).query).get("rot", [""])[0]
+            rot = int(_rq) if _rq in ("0", "90", "180", "270") else 0
             try:
-                import fitz  # PyMuPDF
-
-                doc = fitz.open(str(pdf))
-                pno = int(row["page"]) if (row.get("page") or "").isdigit() else 1
-                page = doc[max(0, min(pno - 1, len(doc) - 1))]
-                quote = " ".join((row.get("quote") or "").split())
-                # locate the WHOLE quote span: search several snippets across it and union
-                # all hit rects (a table quote spans caption -> header -> data rows).
-                rects = []
-                for i in range(0, max(1, len(quote)), 38):
-                    snip = quote[i : i + 30].strip()
-                    if len(snip) >= 8:
-                        rects += page.search_for(snip)
-                clip = None
-                # 1) prefer the FULL detected table bbox (includes its column-header row,
-                #    which a quote deep in the table sits far below).
-                if rects:
-                    try:
-                        for t in page.find_tables().tables or []:
-                            tb = fitz.Rect(t.bbox)
-                            if any(tb.intersects(r) for r in rects):
-                                clip = tb + (-10, -14, 10, 10)  # small pad incl header
-                                break
-                    except Exception:  # noqa: BLE001
-                        clip = None
-                # 2) fallback: a band around the quote, reaching well up for the header.
-                if clip is None and rects:
-                    y0 = max(0, min(r.y0 for r in rects) - 230)
-                    y1 = min(page.rect.height, max(r.y1 for r in rects) + 60)
-                    clip = fitz.Rect(0, y0, page.rect.width, y1)
-                elif clip is None:
-                    clip = page.rect  # whole page
-                clip = clip & page.rect  # keep within the page
-                # Guard against a too-small crop: a narrow cell hit (e.g. "CUADRO 4" with no
-                # caption) yields an unreviewable thumbnail. Widen to a full-width band around
-                # the hits (or the whole page) so the reviewer gets context. (2026-06-23 inab.)
-                if clip.width < page.rect.width * 0.45 or clip.height < 90:
-                    if rects:
-                        y0 = max(0, min(r.y0 for r in rects) - 260)
-                        y1 = min(page.rect.height, max(r.y1 for r in rects) + 120)
-                        clip = fitz.Rect(0, y0, page.rect.width, y1) & page.rect
-                    else:
-                        clip = page.rect
-                # Detect a rotated (sideways) table so we can render it upright. Wide
-                # landscape tables on a portrait page have vertical writing direction.
-                rot = 0
-                try:
-                    td = page.get_text("dict", clip=clip)
-                    vert = horiz = 0
-                    ysign = 0.0
-                    for b in td.get("blocks", []):
-                        for ln in b.get("lines", []):
-                            dx, dy = ln.get("dir", (1.0, 0.0))
-                            if abs(dy) > abs(dx):
-                                vert += 1
-                                ysign += dy
-                            else:
-                                horiz += 1
-                    if vert > horiz and vert > 0:
-                        # dir (0,-1) reads bottom→top → rotate 90; (0,1) → 270
-                        rot = 90 if ysign < 0 else 270
-                except Exception:  # noqa: BLE001
-                    rot = 0
-                # an explicit ?rot= override from the client wins (manual correction)
-                _rq = parse_qs(urlparse(self.path).query).get("rot", [""])[0]
-                if _rq in ("0", "90", "180", "270"):
-                    rot = int(_rq)
-                # render at higher resolution (~2600px on the long edge) for readability
-                long_edge = max(clip.width, clip.height, 1.0)
-                scale = max(1.5, min(4.0, 2600.0 / long_edge))
-                mat = fitz.Matrix(scale, scale)
-                if rot:
-                    mat = mat.prerotate(rot)
-                # highlight the located quote span(s) so the reviewer sees the exact
-                # passage inside the rendered region (rendered into the pixmap directly).
-                if rects:
-                    try:
-                        for _hr in rects:
-                            _an = page.add_highlight_annot(_hr)
-                            _an.set_colors(stroke=(1.0, 0.86, 0.24))  # amber
-                            _an.update()
-                    except Exception:  # noqa: BLE001
-                        pass
-                pix = page.get_pixmap(matrix=mat, clip=clip)
-                data = pix.tobytes("png")
-                doc.close()
+                data = render_region_png(pdf, row.get("quote") or "", pno, rot)
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"error": f"crop failed: {e}"})
+            if data is None:
+                return self._json(
+                    500, {"error": "crop failed: could not render region"}
+                )
             self.send_response(200)
             self.send_header("Content-Type", "image/png")
             self.send_header("Content-Length", str(len(data)))

@@ -1900,9 +1900,7 @@
             <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="narrow to a practice / table / sub-practice">Scope</div><div id="vf-scope" style="display:flex; gap:8px; flex-wrap:wrap;"></div></div>
             <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
               <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
-              <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Save your ok/drop to the LOCAL evidence register and re-run the gate. Stays on your machine — no git, no push. Works for everyone." style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply decisions (local)</button>
-              <button id="vf-submit-btn" onclick="submitVfToMain()" title="Push the applied decisions to main via a PR that auto-merges on green CI. Needs git push rights + gh auth — for allowlisted reviewers (Namita-J, peetmate)." style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8593; Submit to main</button>
-              <span style="font-size:10px; color:var(--text-muted);">Apply saves locally · Submit pushes to main (needs push rights)</span>
+              <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Applies your decisions to the registers AND submits them to main (opens a PR that auto-merges on green CI). One click." style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply &amp; submit to main</button>
               <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
               <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
               <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4;"></span>
@@ -2514,43 +2512,27 @@
   // soft-deleted (QA-dropped) EV rows are moved out of the analytical register into
   // data._evDropped so every count/synthesis view excludes them; QA views read _evDropped.
   function _segregateDropped(data){ try{ var ev=(data&&data.registers&&data.registers.EV_evidence_register)||[]; data._evDropped=ev.filter(function(r){return (r.review_state||'')==='dropped';}); data.registers.EV_evidence_register=ev.filter(function(r){return (r.review_state||'')!=='dropped';}); }catch(e){} return data; }
-  function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid); box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° (server re-renders crisp) — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="/api/crop?eid='+q+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="/api/crop?eid='+q+'" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>'; box.dataset.loaded='1'; } box.style.display='block'; btn.textContent='📷 hide source region'; } else { box.style.display='none'; btn.textContent='📷 show source region'; } }
+  function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid);
+      var manifest=window._cropManifest||new Set();
+      if(manifest.has(eid)){
+        // 1) committed crop (works on Pages + local, zero setup). Highlight already baked in; no rotate needed.
+        box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><a href="crops/'+q+'.jpg" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="crops/'+q+'.jpg" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>';
+      } else if(window._reviewApi){
+        // 2) live review server with the PDF locally — keep rotate / open-full.
+        box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° (server re-renders crisp) — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="/api/crop?eid='+q+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="/api/crop?eid='+q+'" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>';
+      } else {
+        // 3) no committed crop, no server → SharePoint link (no broken image).
+        var evAll=((dashboardData||{}).registers||{}).EV_evidence_register||[]; var ev=evAll.find(function(e){return e.evidence_id===eid;})||{};
+        var srcAll=((dashboardData||{}).registers||{}).SRC_source_register||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
+        var sp=vfSharePointUrl(src.library_path||''); if(sp&&ev.page)sp+='#page='+ev.page;
+        box.innerHTML=sp?('<div style="font-size:10.5px; color:var(--text-secondary); padding:8px 4px;">No committed crop and no local review server — <a href="'+sp+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open source region in SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a></div>'):('<div style="font-size:10.5px; color:var(--text-muted); padding:8px 4px;">No committed crop, no review server, and no SharePoint copy for this source.</div>');
+      }
+      box.dataset.loaded='1'; } box.style.display='block'; btn.textContent='📷 hide source region'; } else { box.style.display='none'; btn.textContent='📷 show source region'; } }
   function vfRotateCrop(eid,b){ var box=b.closest('.vf-crop'); if(!box)return; var img=box.querySelector('img'); if(!img)return; var r=((parseInt(box.dataset.rot||'0',10)+90)%360); box.dataset.rot=String(r); img.src='/api/crop?eid='+encodeURIComponent(eid)+'&rot='+r+'&t='+Date.now(); }
-  function vfToggleCode(eid,btn){
-    var box=btn.nextElementSibling; if(!box)return;
-    if(box.style.display!=='none'){ box.style.display='none'; btn.innerHTML='&lt;/&gt; show code'; return; }
-    if(!box.dataset.loaded){
-      box.innerHTML='<span style="font-size:10.5px; color:var(--text-muted);">loading code…</span>';
-      fetch('/api/code?eid='+encodeURIComponent(eid)).then(function(r){return r.json();}).then(function(j){
-        if(!j||j.error||!j.ok){ box.textContent=(j&&j.error)?j.error:'code unavailable'; return; }
-        var evAll=(dashboardData.registers.EV_evidence_register)||[];
-        var ev=evAll.find(function(e){return e.evidence_id===eid;})||{};
-        var srcAll=(dashboardData.registers.SRC_source_register)||[];
-        var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
-        var ghUrl=src.url?(vfEsc(src.url)+'#L'+j.target_start):'';
-        var head='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px; flex-wrap:wrap;">'
-          +'<code style="font-size:10.5px; color:var(--accent-sky);">'+vfEsc(j.path||'')+'</code>'
-          +'<span style="font-size:9.5px; color:var(--text-muted);">@ '+vfEsc((j.commit||'').slice(0,7))+'</span>'
-          +'<span style="font-size:9.5px; color:var(--text-muted);">'+vfEsc(j.lang||'text')+'</span>'
-          +(ghUrl?('<a href="'+ghUrl+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky); margin-left:auto;">open on GitHub ↗</a>'):'')
-          +'</div>';
-        var rows=(j.lines||[]).map(function(l){
-          var hot=(l.n>=j.target_start&&l.n<=j.target_end);
-          var style='display:flex; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:10.5px; line-height:1.5;'
-            +(hot?' background:rgba(245,158,11,0.14); border-left:3px solid var(--accent-amber);':' border-left:3px solid transparent;');
-          return '<div style="'+style+'"><span style="min-width:44px; text-align:right; padding:0 8px; color:var(--text-muted); user-select:none; flex:none;">'+l.n+'</span><span style="white-space:pre; padding-right:8px;">'+vfEsc(l.text||'')+'</span></div>';
-        }).join('');
-        box.innerHTML=head+'<pre style="margin:0; overflow:auto; max-height:60vh; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-primary); padding:6px 0;">'+rows+'</pre>';
-        box.dataset.loaded='1';
-      }).catch(function(){ box.textContent='code unavailable'; });
-    }
-    box.style.display='block'; btn.innerHTML='&lt;/&gt; hide code';
-  }
   function toggleVfStats(){ if(window._vfMode==='stats'){ window._vfMode=window._vfLastReviewMode||'flagged'; } else { window._vfLastReviewMode=(window._vfMode&&window._vfMode!=='stats')?window._vfMode:'flagged'; window._vfMode='stats'; } renderVfWorklist(); }
   function vfShowReasonHelp(){ var d=document.getElementById('vf-reason-codes'); if(!d)return; d.open=true; d.scrollIntoView({behavior:'smooth',block:'center'}); d.style.transition='background .3s'; d.style.background='rgba(14,165,233,0.14)'; setTimeout(function(){ d.style.background=''; },1300); }
   function vfSharePointUrl(lp){ if(!lp)return ''; var base='https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/'+encodeURIComponent('Shared Documents')+'/ClimateActionNetZero/1_Projects/'; return base+lp.split('/').map(encodeURIComponent).join('/'); }
   function vfLocHint(ev){
-    if((ev.locator_type||'')==='file_line') return '</> '+(ev.locator||'code');
     var cb=(ev.claim_basis||'');
     if(cb==='table') return '\uD83D\uDCCA in a Table';
     if(cb==='figure_read') return '\uD83D\uDCC8 in a Figure';
@@ -2569,31 +2551,28 @@
     if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:((window._vfReasons||{})[id]||''),note:note,reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
   function _vfToggleBanner(){ var b=document.getElementById('readonly-banner'); if(b)b.style.display=window._reviewApi?'none':'flex'; }
   function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
-  function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), sb=document.getElementById('vf-submit-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
-    if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(sb)sb.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live server connected. <b>Apply</b> saves locally + re-gates. <b>Submit to main</b> pushes an auto-merging PR (needs push rights).'; }
-    else { if(ab)ab.style.display='none'; if(sb)sb.style.display='none'; if(db)db.style.display='inline-block'; } }
+  function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
+    if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply &amp; submit to main</b>: writes to the register, re-gates, and opens an auto-merging PR.'; }
+    else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block'; } }
   function applyVfDecisions(){ if(!window._reviewApi){ alert('No review server. Use Download decisions CSV + review.py apply.'); return; }
     var btn=document.getElementById('vf-apply-btn'); if(btn){btn.disabled=true; btn.textContent='Applying…';}
     fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer')})}).then(function(r){return r.json();}).then(function(res){
-      if(res.error){ alert('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions (local)';} return; }
+      if(res.error){ alert('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} return; }
       fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d));
         fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){ dashboardData=_segregateDropped(data); renderVfWorklist(); if(typeof triggerOverviewFilter==='function')triggerOverviewFilter(); if(typeof renderDiscoveryAudit==='function')renderDiscoveryAudit();
           var cf=(res.conflicts||[]);
           var msg='Applied: '+(res.ok||0)+' ok, '+(res.dropped||0)+' dropped.'
-            +(cf.length?('\n\u26a0 '+cf.length+' CONFLICT(s) pending \u2014 reviewers disagree: '+cf.map(function(c){return c.evidence_id;}).join(', ')):' No conflicts.')
-            +' Register rebuilt + re-gated locally.';
-          if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions (local)';}
-          alert(msg); });
+            +(cf.length?('\n\u26a0 '+cf.length+' CONFLICT(s) pending \u2014 reviewers disagree: '+cf.map(function(c){return c.evidence_id;}).join(', ')):' No conflicts.');
+          // one click \u2192 also submit to main (branch off main \u2192 push \u2192 PR \u2192 auto-merge on green CI)
+          if(btn){btn.textContent='Submitting to main\u2026';}
+          var _today=new Date().toISOString().slice(0,10);
+          fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer'),title:'qaqc: review '+_today})}).then(function(r){return r.json();}).then(function(sb){
+            if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';}
+            if(sb.ok){ alert(msg+'\n\n\u2705 Submitted to main \u2014 '+(sb.pr_url||'PR opened')+'\n(bot-approves + auto-merges once CI is green).'); }
+            else { alert(msg+'\n\n\u26a0 Submit to main FAILED \u2014 decisions ARE saved locally; run scripts/submit-review.sh manually.\n\n'+((sb.error||sb.output)||'').slice(-600)); }
+          }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} alert(msg+'\n\nSubmit error: '+e); }); });
       });
-    }).catch(function(e){ alert('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply decisions (local)';} }); }
-  function submitVfToMain(){ if(!window._reviewApi){ alert('Submit needs the live review server.'); return; }
-    if(!confirm('Push applied decisions to main? Opens a PR that auto-merges on green CI.\n\nNeeds git push rights + gh auth. If you don\'t have them this will fail (not hang).')) return;
-    var btn=document.getElementById('vf-submit-btn'); if(btn){btn.disabled=true; btn.textContent='Submitting to main\u2026';}
-    var _today=new Date().toISOString().slice(0,10);
-    fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer'),title:'qaqc: review '+_today})}).then(function(r){return r.json();}).then(function(sb){
-      if(sb.ok){ alert('\u2705 Submitted \u2014 '+(sb.pr_url||'PR opened')+' (bot approves + auto-merges on green CI).'); }
-      else { alert('\u26a0 Submit failed \u2014 decisions are still applied locally; run scripts/submit-review.sh manually.\n\n'+((sb.error||sb.output)||'').slice(-600)); }
-    }).catch(function(e){ alert('\u26a0 Submit failed \u2014 decisions are still applied locally; run scripts/submit-review.sh manually.\n\n'+e); }).finally(function(){ if(btn){btn.disabled=false;btn.textContent='\u2191 Submit to main';} }); }
+    }).catch(function(e){ alert('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} }); }
   function downloadVfDecisions(){
     var rows=window._vfFlagged||[]; var hdr=['evidence_id','source_id','variable','use_role','verdict','flag_reason','quote','relationship','decision','reason','reviewer','note'];
     function q(v){v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"';}
@@ -2793,15 +2772,9 @@
     var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source ↗</a>'):'');
     var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
     var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint">📄 SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a>'):'';
-    var isCode=((ev.locator_type||'')==='file_line'||(src.source_category||'')==='tool');
-    var codeLink='', localLink='', libTxt='';
-    if(isCode){
-      codeLink=src.url?('<a href="'+vfEsc(src.url)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">&lt;/&gt; source code on GitHub ↗</a>'):'<span style="color:var(--text-muted);">&lt;/&gt; cached code snapshot</span>';
-    } else {
-      localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
-      libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
-    }
-    var pdfLink=(isCode?[codeLink]:[spLink,localLink,libTxt]).filter(Boolean).join(' &nbsp;·&nbsp; ');
+    var localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
+    var libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
+    var pdfLink=[spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
     var okA=dec==='ok', dropA=dec==='drop', queryA=(dec==='flag'||dec==='query');
     var _rc=passed?['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','wrong_table','constrained_aoi','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','other']:['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','wrong_table','constrained_aoi','quote_too_narrow','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','false_flag','accepted_correction','other'];
     var _rcDesc={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',wrong_table:'real claim but wrong table — soft enabling-env (tenure/market/road/extension/finance/labour) belongs to T3 project-risk / M2b / next-steps, not T4 structural suitability',constrained_aoi:'source frames the NbS onto a constrained subset of land (e.g. land-capability "marginal/residual" buckets) — understates where the NbS is actually feasible, misrepresenting the opportunity-space extent. Down-weight; never use to set the AOI/extent',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',relationship_missed:'the suitability relationship / directionality / membership curve was present in the source but NOT captured (e.g. monotonic decline with distance, fine-texture = high suitability)',insufficient_context:'cannot review — no caption / surrounding context, or the table screengrab failed to render',uninterpretable_weight:'a weight / score with no scale or standardisation context (e.g. "5" — out of what?); cannot interpret or compare across sources',speculative_evidence:'speculation / assumption, not first- or second-hand evidence ("may deter", hand-wavy assumed causation)',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
@@ -2813,12 +2786,9 @@
     var _rk=Object.keys(_allr).filter(function(rv){return _allr[rv].decision;});
     var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
-    var cropImg='';
-    if((ev.locator_type||'')==='file_line'&&window._reviewApi){
-      cropImg='<div style="margin-top:8px;"><button onclick="vfToggleCode(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">&lt;/&gt; show code</button><div class="vf-code" style="display:none; margin-top:6px;"></div></div>';
-    } else if(window._reviewApi){
-      cropImg='<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show source region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>';
-    }
+    var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
+    var _showCrop=_hasCommittedCrop||(window._reviewApi && _vfTabular(ev.quote));
+    var cropImg=_showCrop?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show source region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
     // Default-decode categorical class codes (issue #102): readable class names for any
     // class-coded EV (e.g. a CDL crop mask) so the reviewer never sees bare "61, 205…".
     var _dc=((dashboardData||{}).decoded_classes||{})[ev.evidence_id];
@@ -3036,6 +3006,10 @@
 
   function initDashboard() {
     probeReviewApi();
+    // Best-effort: load the committed-crop manifest so crops render for everyone (incl.
+    // GitHub Pages) with zero setup. Falls back silently to an empty set if absent/offline.
+    if(window._cropManifest===undefined){ window._cropManifest=new Set(); }
+    fetch('crops/manifest.json').then(function(r){return r.ok?r.json():null;}).then(function(j){ if(j&&Array.isArray(j.eids)){ window._cropManifest=new Set(j.eids); if(typeof renderVfWorklist==='function' && window._vfMode){ try{renderVfWorklist();}catch(e){} } } }).catch(function(){});
     // 1. Meta fields
     const formattedDate = new Date(dashboardData.timestamp).toLocaleString();
     document.getElementById('meta-timestamp-val').textContent = formattedDate;
