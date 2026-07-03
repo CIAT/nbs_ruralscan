@@ -2512,6 +2512,22 @@
   // soft-deleted (QA-dropped) EV rows are moved out of the analytical register into
   // data._evDropped so every count/synthesis view excludes them; QA views read _evDropped.
   function _segregateDropped(data){ try{ var ev=(data&&data.registers&&data.registers.EV_evidence_register)||[]; data._evDropped=ev.filter(function(r){return (r.review_state||'')==='dropped';}); data.registers.EV_evidence_register=ev.filter(function(r){return (r.review_state||'')!=='dropped';}); }catch(e){} return data; }
+  // Live-server /api/crop failed to render (usually: PDF not synced to disk on this
+  // reviewer's machine — the OneDrive folder is cloud-only). Don't dead-end at "crop
+  // unavailable": fall back to the pre-rendered SharePoint crop (restricted sources) or
+  // the SharePoint PDF, so the reviewer can still reach the source. Copyright-safe — both
+  // are access-controlled library links, never inline public content.
+  function vfCropOnErr(eid,img){
+    var d=document.createElement('div');
+    var spCrop=(window._cropSharePointMap||{})[eid];
+    if(spCrop){ var u=vfSharePointUrl(spCrop); if(u){ d.style.cssText='font-size:10.5px; color:var(--text-secondary); padding:8px 4px;'; d.innerHTML='PDF not synced on this machine — <a href="'+u+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open highlighted source region in SharePoint ↗</a><div style="font-size:9.5px; color:var(--text-muted); margin-top:4px;">needs CGIAR library access. To see crops inline, make the library available offline in OneDrive (see the reviewer guide).</div>'; img.replaceWith(d); return; } }
+    var evAll=((dashboardData||{}).registers||{}).EV_evidence_register||[]; var ev=evAll.find(function(e){return e.evidence_id===eid;})||{};
+    var srcAll=((dashboardData||{}).registers||{}).SRC_source_register||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
+    var pdf=vfSharePointUrl(src.library_path||''); if(pdf&&ev.page)pdf+='#page='+ev.page;
+    d.style.cssText='font-size:10.5px; color:var(--text-muted); padding:8px 4px;';
+    d.innerHTML=pdf?('PDF not synced on this machine — <a href="'+pdf+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open in SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a> <span style="color:var(--text-muted);">(needs CGIAR access; or sync the library offline in OneDrive)</span>'):'crop unavailable — PDF not synced and no SharePoint copy for this source.';
+    img.replaceWith(d);
+  }
   function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid);
       var manifest=window._cropManifest||new Set();
       if(manifest.has(eid)){
@@ -2519,12 +2535,12 @@
         box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><a href="crops/'+q+'.jpg" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="crops/'+q+'.jpg" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>';
       } else if(window._reviewApi){
         // 2) live review server with the PDF locally — keep rotate / open-full.
-        box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° (server re-renders crisp) — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="/api/crop?eid='+q+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="/api/crop?eid='+q+'" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>';
+        box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° (server re-renders crisp) — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="/api/crop?eid='+q+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="/api/crop?eid='+q+'" style="max-width:100%; display:block;" alt="source region screengrab" onerror="vfCropOnErr(\''+eid+'\',this)"></div>';
       } else if(window._cropSharePointMap && window._cropSharePointMap[eid]){
         // 3) non-OA crop lives in the access-controlled library — link (can't embed an
         // auth'd SharePoint image). Copyright-safe: same access control as the PDF.
         var spCrop=vfSharePointUrl(window._cropSharePointMap[eid]);
-        box.innerHTML=spCrop?('<div style="font-size:10.5px; color:var(--text-secondary); padding:8px 4px;"><a href="'+spCrop+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open highlighted source region in SharePoint ↗</a><div style="font-size:9.5px; color:var(--text-muted); margin-top:4px;">opens the highlighted crop in SharePoint (needs library access)</div></div>'):('<div style="font-size:10.5px; color:var(--text-muted); padding:8px 4px;">Highlighted crop is in the library but its link could not be built.</div>');
+        box.innerHTML=spCrop?('<div style="font-size:10.5px; color:var(--text-secondary); padding:8px 4px;"><b style="color:#fbbf24;">Restricted (copyright) source.</b> The crop can\'t be published on the public site, so it opens in the team library instead — <a href="'+spCrop+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open highlighted source region in SharePoint ↗</a><div style="font-size:9.5px; color:var(--text-muted); margin-top:4px;">Needs CGIAR library access. To see restricted crops inline instead, make the library available offline in OneDrive + run the local server (see the reviewer guide). If the link won\'t open, ask Pete / Namita to share the file.</div></div>'):('<div style="font-size:10.5px; color:var(--text-muted); padding:8px 4px;">Highlighted crop is in the library but its link could not be built.</div>');
       } else {
         // 4) no committed crop, no server, no library crop → SharePoint PDF link.
         var evAll=((dashboardData||{}).registers||{}).EV_evidence_register||[]; var ev=evAll.find(function(e){return e.evidence_id===eid;})||{};
