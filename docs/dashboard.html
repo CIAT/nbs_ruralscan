@@ -2524,7 +2524,7 @@
         // 3) non-OA crop lives in the access-controlled library — link (can't embed an
         // auth'd SharePoint image). Copyright-safe: same access control as the PDF.
         var spCrop=vfSharePointUrl(window._cropSharePointMap[eid]);
-        box.innerHTML=spCrop?('<div style="font-size:10.5px; color:var(--text-secondary); padding:8px 4px;"><a href="'+spCrop+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open highlighted source region in SharePoint ↗</a><div style="font-size:9.5px; color:var(--text-muted); margin-top:4px;">opens the highlighted crop in SharePoint (needs library access)</div></div>'):('<div style="font-size:10.5px; color:var(--text-muted); padding:8px 4px;">Highlighted crop is in the library but its link could not be built.</div>');
+        box.innerHTML=spCrop?('<div style="font-size:10.5px; color:var(--text-secondary); padding:8px 4px;"><a href="'+spCrop+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open highlighted source region in SharePoint ↗</a><div style="font-size:9.5px; color:var(--text-muted); margin-top:4px;">Copyrighted (non-open-access) source — the crop can\'t be shown inline or published, so it opens in the team SharePoint library. Needs CGIAR access; if it won\'t open, ask a team member (Pete / Namita) to share the file.</div></div>'):('<div style="font-size:10.5px; color:var(--text-muted); padding:8px 4px;">Highlighted crop is in the library but its link could not be built.</div>');
       } else {
         // 4) no committed crop, no server, no library crop → SharePoint PDF link.
         var evAll=((dashboardData||{}).registers||{}).EV_evidence_register||[]; var ev=evAll.find(function(e){return e.evidence_id===eid;})||{};
@@ -2793,7 +2793,11 @@
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
     var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
-    var _showCrop=_hasCommittedCrop||(window._reviewApi && _vfTabular(ev.quote))||_hasSharePointCrop;
+    // Show the crop button whenever a region can be rendered: a committed public crop, a team
+    // SharePoint crop, OR a live local server (which renders ANY quote region — not just tabular.
+    // The old _vfTabular numeric heuristic wrongly hid genuine tables whose quote had <3 numbers,
+    // e.g. a "≤50% / >50%" threshold table).
+    var _showCrop=_hasCommittedCrop||_hasSharePointCrop||window._reviewApi;
     var cropImg=_showCrop?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show source region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
     // Default-decode categorical class codes (issue #102): readable class names for any
     // class-coded EV (e.g. a CDL crop mask) so the reviewer never sees bare "61, 205…".
