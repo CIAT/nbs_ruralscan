@@ -1900,6 +1900,7 @@
             <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="narrow to a practice / table / sub-practice">Scope</div><div id="vf-scope" style="display:flex; gap:8px; flex-wrap:wrap;"></div></div>
             <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
               <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
+              <span id="vf-pending-count" style="font-size:11.5px; font-weight:700;" title="Your decisions saved locally but NOT yet applied + submitted to main. Click Apply & submit to main to ship them."></span>
               <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Applies your decisions to the registers AND submits them to main (opens a PR that auto-merges on green CI). One click." style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply &amp; submit to main</button>
               <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
               <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
@@ -1912,6 +1913,7 @@
               <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700;" title="filter the current view by verdict, your status, or tables-only">Filter</span>
               <div id="vf-verdict-filters" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"><button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button></div>
             </div>
+            <div id="vf-subset-banner" style="display:none; margin-top:10px;"></div>
             <div id="vf-cards" style="margin-top:12px;"></div>
             <div id="vf-stats" style="display:none; margin-top:12px;"></div>
           </div>
@@ -2528,7 +2530,28 @@
     d.innerHTML=pdf?('PDF not synced on this machine — <a href="'+pdf+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open in SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a> <span style="color:var(--text-muted);">(needs CGIAR access; or sync the library offline in OneDrive)</span>'):'crop unavailable — PDF not synced and no SharePoint copy for this source.';
     img.replaceWith(d);
   }
+  // Task 3: click a card's source / page chip to subset the worklist to that paper / location.
+  // Toggling the same value clears it. Applies via _inScope, so it works across flagged/passed.
+  function vfSetSubset(kind,val){ if(!window._vfScope)window._vfScope={}; val=(val==null?'':String(val)); window._vfScope[kind]=(window._vfScope[kind]===val?'':val); renderVfWorklist(); }
+  // Task 2: how many of MY decisions are saved locally but NOT yet applied + submitted to main.
+  // The store stamps each decision `applied:true` after Apply; pending = mine without it.
+  function _vfPendingCount(){ var me=(window._vfReviewer||'').trim(); var all=window._vfAllReviews||{}; var n=0; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true')n++; }); return n; }
+  function _vfUpdatePending(){ var el=document.getElementById('vf-pending-count'); if(!el)return; var me=(window._vfReviewer||'').trim(); if(!me){ el.innerHTML=''; return; } var n=_vfPendingCount(); el.innerHTML=n>0?('<span style="color:var(--accent-amber);">&#9873; '+n+' decision'+(n>1?'s':'')+' pending</span> <span style="color:var(--text-muted); font-weight:400;">— not yet applied/submitted</span>'):'<span style="color:var(--text-muted); font-weight:400;">No decisions pending apply.</span>'; }
+  function _vfRenderSubsetBanner(){ var el=document.getElementById('vf-subset-banner'); if(!el)return; var sc=window._vfScope||{}; var chips=[]; if(sc.sourceId)chips.push(['sourceId','📄 source: '+sc.sourceId, sc.sourceId]); if(sc.section)chips.push(['section','📍 page '+sc.section, sc.section]); if(!chips.length){ el.style.display='none'; el.innerHTML=''; return; } el.style.display='block'; el.innerHTML='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.3); border-radius:6px; padding:6px 10px; font-size:11px;"><span style="color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em;">Subset</span>'+chips.map(function(c){return '<span style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:2px 9px;">'+vfEsc(c[1])+' <a href="#" title="remove this subset" onclick="vfSetSubset(\''+c[0]+'\',\''+vfEsc(String(c[2]))+'\');return false;" style="color:var(--accent-rose); text-decoration:none; font-weight:700;">✕</a></span>';}).join('')+'<a href="#" onclick="window._vfScope.sourceId=\'\';window._vfScope.section=\'\';renderVfWorklist();return false;" style="color:var(--accent-sky); margin-left:auto;">clear all</a></div>'; }
   function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid);
+      // CODE source (tool / GEE script): render the actual code lines from /api/code — NOT a PDF
+      // crop. Needs the live server (it fetches + caches the file from GitHub at the pinned commit).
+      var _evAllC=((dashboardData||{}).registers||{}).EV_evidence_register||[]; var _evC=_evAllC.find(function(e){return e.evidence_id===eid;})||{};
+      if((_evC.locator_type||'')==='file_line'){
+        if(!window._reviewApi){ box.innerHTML='<div style="font-size:10.5px; color:var(--text-muted); padding:8px 4px;">Code source — start the local review server to render the file lines, or use the GitHub link above.</div>'; box.dataset.loaded='1'; box.style.display='block'; btn.textContent='💻 hide source code'; return; }
+        box.innerHTML='<div style="font-size:10px; color:var(--text-muted); padding:6px 4px;">loading code…</div>';
+        fetch('/api/code?eid='+q).then(function(r){return r.json();}).then(function(cj){
+          if(!cj||!cj.ok||!cj.lines){ box.innerHTML='<div style="font-size:10.5px; color:var(--accent-rose); padding:8px 4px;">Could not load code'+((cj&&cj.error)?(': '+vfEsc(cj.error)):'')+'</div>'; return; }
+          var rows=cj.lines.map(function(ln){ var hot=(ln.n>=cj.target_start&&ln.n<=cj.target_end); return '<div style="display:flex; '+(hot?'background:rgba(245,158,11,0.18);':'')+'"><span style="width:46px; flex:0 0 46px; text-align:right; padding-right:10px; color:var(--text-muted); user-select:none;">'+ln.n+'</span><span style="white-space:pre; color:var(--text-primary);">'+vfEsc(ln.text)+'</span></div>'; }).join('');
+          box.innerHTML='<div style="font-size:10px; color:var(--text-muted); margin-bottom:5px;">'+vfEsc(cj.path)+' · lines '+cj.start+'–'+cj.end+' · commit '+vfEsc((cj.commit||'').slice(0,7))+' <span style="color:var(--accent-amber);">(highlighted = cited line)</span></div><div style="max-height:60vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px; font-family:ui-monospace,monospace; font-size:11px; line-height:1.5; padding:8px;">'+rows+'</div>';
+        }).catch(function(e){ box.innerHTML='<div style="font-size:10.5px; color:var(--accent-rose); padding:8px 4px;">Code load error: '+vfEsc(String(e))+'</div>'; });
+        box.dataset.loaded='1'; box.style.display='block'; btn.textContent='💻 hide source code'; return;
+      }
       var manifest=window._cropManifest||new Set();
       if(manifest.has(eid)){
         // 1) committed crop (works on Pages + local, zero setup). Highlight already baked in; no rotate needed.
@@ -2799,9 +2822,14 @@
     var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source ↗</a>'):'');
     var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
     var spLink=spUrl?('<a href="'+spUrl+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens in SharePoint">📄 SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a>'):'';
-    var localLink=(!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
-    var libTxt=(!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
-    var pdfLink=[spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
+    // Task 1: CODE sources (tool / GEE script) link to the exact file+line on GitHub at the
+    // pinned commit — never a "local PDF" (there is no PDF for code).
+    var _isCodeSrc=((ev.locator_type||'')==='file_line');
+    var _codeAnchor=''; if(_isCodeSrc){ var _clm=/:L(\d+)/.exec(ev.locator||''); if(_clm)_codeAnchor='#L'+_clm[1]; }
+    var _codeLink=(_isCodeSrc&&src.url)?('<a href="'+src.url+_codeAnchor+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);" title="opens the exact file + line on GitHub at the pinned commit '+vfEsc((ev.commit_sha||'').slice(0,7))+'">💻 GitHub '+vfEsc((ev.locator||'code').split('/').pop())+' ↗</a>'):'';
+    var localLink=(!_isCodeSrc&&!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
+    var libTxt=(!_isCodeSrc&&!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
+    var pdfLink=[_codeLink,spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
     var okA=dec==='ok', dropA=dec==='drop', queryA=(dec==='flag'||dec==='query');
     var _rc=passed?['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','wrong_table','constrained_aoi','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','other']:['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','wrong_table','constrained_aoi','quote_too_narrow','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','false_flag','accepted_correction','other'];
     var _rcDesc={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',wrong_table:'real claim but wrong table — soft enabling-env (tenure/market/road/extension/finance/labour) belongs to T3 project-risk / M2b / next-steps, not T4 structural suitability',constrained_aoi:'source frames the NbS onto a constrained subset of land (e.g. land-capability "marginal/residual" buckets) — understates where the NbS is actually feasible, misrepresenting the opportunity-space extent. Down-weight; never use to set the AOI/extent',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',relationship_missed:'the suitability relationship / directionality / membership curve was present in the source but NOT captured (e.g. monotonic decline with distance, fine-texture = high suitability)',insufficient_context:'cannot review — no caption / surrounding context, or the table screengrab failed to render',uninterpretable_weight:'a weight / score with no scale or standardisation context (e.g. "5" — out of what?); cannot interpret or compare across sources',speculative_evidence:'speculation / assumption, not first- or second-hand evidence ("may deter", hand-wavy assumed causation)',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
@@ -2813,10 +2841,22 @@
     var _rk=Object.keys(_allr).filter(function(rv){return _allr[rv].decision;});
     var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
+    // Task 4: show what this evidence contributes to (NbS · sub-practice) + its geography, so a
+    // reviewer can sanity-check the tagging without opening the source.
+    var _nbsShort=(ev.nbs_id||'—').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+    var _famShort=ev.suitability_family_id?ev.suitability_family_id.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}):'—';
+    var _geoParts=[src.study_country,src.region,src.aez].filter(Boolean);
+    var _ctxNote=''; try{ var _cx=ev.context?(typeof ev.context==='string'?JSON.parse(ev.context):ev.context):null; if(_cx&&_cx.note)_ctxNote=_cx.note; }catch(_ge){}
+    var _geo=_geoParts.length?_geoParts.join(', '):(_ctxNote||'—');
+    var _metaLine='<div style="font-size:10.5px; color:var(--text-muted); margin:-3px 0 8px 0; display:flex; gap:16px; flex-wrap:wrap;">'
+      +'<span title="which NbS + sub-practice family this evidence is tagged to (T4 suitability contribution)">&#129513; Contributes to: <b style="color:var(--text-secondary);">'+vfEsc(_nbsShort)+'</b> &middot; <b style="color:var(--text-secondary);">'+vfEsc(_famShort)+'</b></span>'
+      +'<span title="study geography — SRC study_country / region / aez, else the context note">&#128205; <b style="color:var(--text-secondary);">'+vfEsc(_geo)+'</b></span></div>';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
     var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
-    var _showCrop=_hasCommittedCrop||(window._reviewApi && _vfTabular(ev.quote))||_hasSharePointCrop;
-    var cropImg=_showCrop?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show source region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
+    // Task 1: server renders /api/crop for ANY passage and /api/code for code sources; the old
+    // _vfTabular gate wrongly hid non-tabular OA PDFs + code. Offer whenever the server is up.
+    var _showCrop=_hasCommittedCrop||window._reviewApi||_hasSharePointCrop;
+    var cropImg=_showCrop?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">'+(_isCodeSrc?'💻 show source code':'📷 show source region')+'</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
     // Default-decode categorical class codes (issue #102): readable class names for any
     // class-coded EV (e.g. a CDL crop mask) so the reviewer never sees bare "61, 205…".
     var _dc=((dashboardData||{}).decoded_classes||{})[ev.evidence_id];
@@ -2827,8 +2867,9 @@
       +_aiBadge
       +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
       +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;" title="AI verify verdict">'+vfEsc(verdict)+'</span>'
-      +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+vfEsc(page)+' · '+vfEsc(vfLocHint(ev))+'</span>'
-      +'<span style="margin-left:auto; display:flex; align-items:center; gap:8px;">'+_oaBadge+_chanBadge+'<span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(ev.source_id||'')+'</span></span></div>'
+      +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+(ev.page?('<a href="#" onclick="vfSetSubset(\'section\',\''+vfEsc(String(ev.page))+'\');return false;" title="subset the worklist to page '+vfEsc(String(ev.page))+' of this source" style="color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(page)+'</a>'):vfEsc(page))+' · '+vfEsc(vfLocHint(ev))+'</span>'
+      +'<span style="margin-left:auto; display:flex; align-items:center; gap:8px;">'+_oaBadge+_chanBadge+'<a href="#" onclick="vfSetSubset(\'sourceId\',\''+vfEsc(ev.source_id||'')+'\');return false;" title="subset the worklist to this source" style="font-size:10.5px; color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(ev.source_id||'')+'</a></span></div>'
+      +_metaLine
       +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> '+vfRelHtml(ev)+'</div>'
       +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
@@ -2875,11 +2916,15 @@
     var passedAll=evAll.filter(function(ev){ return !flaggedIds[ev.evidence_id] && (ev.use_role!=='dataset'); });
     // scope filter — pills derived from the data model; NbS controls table + family options
     var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
-    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'all',family:'all',source:'all',access:'all'};
+    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'all',family:'all',source:'all',access:'all',sourceId:'',section:''};
     if(window._vfScope.source===undefined)window._vfScope.source='all';
     if(window._vfScope.access===undefined)window._vfScope.access='all';
+    if(window._vfScope.sourceId===undefined)window._vfScope.sourceId='';
+    if(window._vfScope.section===undefined)window._vfScope.section='';
+    _vfUpdatePending(); _vfRenderSubsetBanner();
     var _R2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
-    function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; if(sc.source!=='all'&&_vfChanKey(ev)!==sc.source)return false; if(sc.access&&sc.access!=='all'){ var _oa=_vfIsOA(ev); if(sc.access==='oa'&&!_oa)return false; if(sc.access==='restricted'&&_oa)return false; } return true; }
+    // Task 3: sourceId subsets to one paper/tool; section subsets to one page within it.
+    function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; if(sc.source!=='all'&&_vfChanKey(ev)!==sc.source)return false; if(sc.sourceId&&ev.source_id!==sc.sourceId)return false; if(sc.section&&String(ev.page||'')!==String(sc.section))return false; if(sc.access&&sc.access!=='all'){ var _oa=_vfIsOA(ev); if(sc.access==='oa'&&!_oa)return false; if(sc.access==='restricted'&&_oa)return false; } return true; }
     var scEl=document.getElementById('vf-scope');
     if(scEl){ var _inNbs=function(e){ return window._vfScope.nbs==='all'||e.nbs_id===window._vfScope.nbs; };
       var _famOpts=Array.from(new Set(evAll.filter(_inNbs).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
