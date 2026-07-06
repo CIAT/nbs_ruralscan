@@ -2815,7 +2815,10 @@
     var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
     var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
-    var _showCrop=_hasCommittedCrop||(window._reviewApi && _vfTabular(ev.quote))||_hasSharePointCrop;
+    // Live server can render /api/crop for ANY passage (not just tables) — the server-side
+    // highlight works on plain-text quotes too, and vfCropOnErr falls back if the PDF isn't
+    // synced. So offer the button whenever the server is up, not only for tabular quotes.
+    var _showCrop=_hasCommittedCrop||window._reviewApi||_hasSharePointCrop;
     var cropImg=_showCrop?('<div style="margin-top:8px;"><button onclick="vfToggleCrop(\''+ev.evidence_id+'\',this)" style="font-size:10.5px; padding:3px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">📷 show source region</button><div class="vf-crop" style="display:none; margin-top:6px;"></div></div>'):'';
     // Default-decode categorical class codes (issue #102): readable class names for any
     // class-coded EV (e.g. a CDL crop mask) so the reviewer never sees bare "61, 205…".
