@@ -1896,7 +1896,7 @@
         </div>
         <div style="display:flex; gap:18px; align-items:flex-start; margin-top:6px;">
           <div id="vf-sidebar" style="flex:0 0 230px; position:sticky; top:96px; align-self:flex-start; max-height:calc(100vh - 108px); overflow-y:auto; overflow-x:hidden; padding-right:6px; display:flex; flex-direction:column; gap:14px;">
-            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="which set of units to work on">View</div><div id="vf-mode-pills" style="display:flex; gap:6px; flex-wrap:wrap;"></div></div>
+            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="Which set of records to work through — the AI's flags, a sample of what it passed, units needing a 2nd opinion, or your own history">Review queue</div><div id="vf-mode-pills" style="display:flex; gap:6px; flex-wrap:wrap;"></div></div>
             <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="narrow to a practice / table / sub-practice">Scope</div><div id="vf-scope" style="display:flex; gap:8px; flex-wrap:wrap;"></div></div>
             <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
               <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
@@ -2533,6 +2533,9 @@
   // Task 3: click a card's source / page chip to subset the worklist to that paper / location.
   // Toggling the same value clears it. Applies via _inScope, so it works across flagged/passed.
   function vfSetSubset(kind,val){ if(!window._vfScope)window._vfScope={}; val=(val==null?'':String(val)); window._vfScope[kind]=(window._vfScope[kind]===val?'':val); renderVfWorklist(); }
+  // Task (chips): clicking a card's OA / channel / NbS / sub-practice chip sets that scope
+  // filter (single-value, like the sidebar pills) so the worklist narrows to matching cards.
+  function vfScopeSet(key,val){ if(!window._vfScope)window._vfScope={}; window._vfScope[key]=val; if(key==='nbs')window._vfScope.family='all'; renderVfWorklist(); }
   // Task 2: how many of MY decisions are saved locally but NOT yet applied + submitted to main.
   // The store stamps each decision `applied:true` after Apply; pending = mine without it.
   function _vfPendingCount(){ var me=(window._vfReviewer||'').trim(); var all=window._vfAllReviews||{}; var n=0; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true')n++; }); return n; }
@@ -2808,8 +2811,8 @@
       unknown:{label:'Unspecified source', color:'var(--text-muted)'}
     })[key]||{label:key, color:'var(--text-muted)'}; }
   function vfDetailHtml(o, passed){ var ev=o.ev, verdict=o.verdict, reason=o.reason; var srcAll=(dashboardData.registers.SRC_source_register)||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
-    var _chan=_vfChanMeta(_vfChanKey(ev)); var _chanBadge='<span title="source channel (SRC.source_category)" style="font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_chan.color+'; border:1px solid '+_chan.color+'; border-radius:3px; padding:1px 6px;">'+vfEsc(_chan.label)+'</span>';
-    var _oa=_vfIsOA(ev); var _oaCol=_oa?'#34d399':'#fbbf24'; var _oaBadge='<span title="'+(_oa?'Open-access source — crop shown inline / publishable':'Copyrighted (non-open-access) — crop is team-only via SharePoint')+'" style="font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_oaCol+'; border:1px solid '+_oaCol+'; border-radius:3px; padding:1px 6px;">'+(_oa?'OA':'Restricted')+'</span>';
+    var _chan=_vfChanMeta(_vfChanKey(ev)); var _chanBadge='<span onclick="vfScopeSet(\'source\',\''+vfEsc(_vfChanKey(ev))+'\')" title="Source channel: '+vfEsc(_chan.label)+' — click to filter the worklist to this channel" style="cursor:pointer; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_chan.color+'; border:1px solid '+_chan.color+'; border-radius:3px; padding:1px 6px;">'+vfEsc(_chan.label)+'</span>';
+    var _oa=_vfIsOA(ev); var _oaCol=_oa?'#34d399':'#fbbf24'; var _oaBadge='<span onclick="vfScopeSet(\'access\',\''+(_oa?'oa':'restricted')+'\')" title="'+(_oa?'Open-access source — crop shown inline / publishable':'Copyrighted (non-open-access) — crop is team-only via SharePoint')+' — click to filter" style="cursor:pointer; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_oaCol+'; border:1px solid '+_oaCol+'; border-radius:3px; padding:1px 6px;">'+(_oa?'OA':'Restricted')+'</span>';
     var dec=(window._vfDecisions||{})[ev.evidence_id]||'';
     var page=ev.page?('p.'+ev.page):(ev.locator?ev.locator:'page n/a');
     var rel=ev.relationship?(typeof ev.relationship==='string'?ev.relationship:JSON.stringify(ev.relationship)):'';var relShown=rel?vfEsc(rel):'<span style="color:var(--text-muted);">(removed by the verify pass — disputed value is in the reason below)</span>';
@@ -2852,7 +2855,7 @@
     var _ctxNote=''; try{ var _cx=ev.context?(typeof ev.context==='string'?JSON.parse(ev.context):ev.context):null; if(_cx&&_cx.note)_ctxNote=_cx.note; }catch(_ge){}
     var _geo=_geoParts.length?_geoParts.join(', '):(_ctxNote||'—');
     var _metaLine='<div style="font-size:10.5px; color:var(--text-muted); margin:-3px 0 8px 0; display:flex; gap:16px; flex-wrap:wrap;">'
-      +'<span title="which NbS + sub-practice family this evidence is tagged to (T4 suitability contribution)">&#129513; Contributes to: <b style="color:var(--text-secondary);">'+vfEsc(_nbsShort)+'</b> &middot; <b style="color:var(--text-secondary);">'+vfEsc(_famShort)+'</b></span>'
+      +'<span>&#129513; Contributes to: <b onclick="vfScopeSet(\'nbs\',\''+vfEsc(ev.nbs_id||'')+'\')" title="Practice — click to filter the worklist to this NbS" style="cursor:pointer; color:var(--accent-sky); border-bottom:1px dotted var(--accent-sky);">'+vfEsc(_nbsShort)+'</b> &middot; '+(ev.suitability_family_id?('<b onclick="vfScopeSet(\'family\',\''+vfEsc(ev.suitability_family_id)+'\')" title="Sub-practice — click to filter the worklist to this family" style="cursor:pointer; color:var(--accent-sky); border-bottom:1px dotted var(--accent-sky);">'+vfEsc(_famShort)+'</b>'):('<b style="color:var(--text-secondary);">'+vfEsc(_famShort)+'</b>'))+'</span>'
       +'<span title="study geography — SRC study_country / region / aez, else the context note">&#128205; <b style="color:var(--text-secondary);">'+vfEsc(_geo)+'</b></span></div>';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
     var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
@@ -2919,11 +2922,14 @@
     var passedAll=evAll.filter(function(ev){ return !flaggedIds[ev.evidence_id] && (ev.use_role!=='dataset'); });
     // scope filter — pills derived from the data model; NbS controls table + family options
     var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
-    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'all',family:'all',source:'all',access:'all',sourceId:'',section:''};
+    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'T4',family:'all',source:'all',access:'all',sourceId:'',section:''};
     if(window._vfScope.source===undefined)window._vfScope.source='all';
     if(window._vfScope.access===undefined)window._vfScope.access='all';
     if(window._vfScope.sourceId===undefined)window._vfScope.sourceId='';
     if(window._vfScope.section===undefined)window._vfScope.section='';
+    // Practice + Evidence-type are single-select (no "All"): default to a real value.
+    if(['T3','T4','T6'].indexOf(window._vfScope.table)<0)window._vfScope.table='T4';
+    if(window._vfScope.nbs==='all'&&_nbsOpts.length)window._vfScope.nbs=_nbsOpts[0];
     _vfUpdatePending(); _vfRenderSubsetBanner();
     var _R2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
     // Task 3: sourceId subsets to one paper/tool; section subsets to one page within it.
@@ -2937,15 +2943,20 @@
       // even when a channel has no evidence yet; append 'unknown' only if data has it.
       var _srcPresent=new Set(evAll.filter(_inNbs).map(_vfChanKey));
       var _srcOpts=['stock','updated_lit','grey','tool'].concat(_srcPresent.has('unknown')?['unknown']:[]);
-      var _mkPills=function(key,label,opts,fmt,cls){ var cur=window._vfScope[key]; var btns=['all'].concat(opts).map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
+      // noAll=true → single-select mandatory (no "All" pill): used for Practice + Evidence-type.
+      var _mkPills=function(key,label,opts,fmt,cls,noAll,tip){ var cur=window._vfScope[key]; var list=(noAll?[]:['all']).concat(opts); var btns=list.map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
       var _tblName={T3:'T3 · Hazard response',T4:'T4 · Suitability',T6:'T6 · Outcomes & cost'};
-      var _tblLegend='<div style="font-size:9.5px; color:var(--text-muted); margin:1px 0 2px 90px; line-height:1.4;"><b>T4</b> Suitability = where the NbS can establish · <b>T3</b> Hazard response = which climate hazards it mitigates · <b>T6</b> Outcomes &amp; cost = effects, benefits, economics</div>';
-      scEl.innerHTML=_mkPills('nbs','Practice (NbS)',_nbsOpts,function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'sky')
-        +_mkPills('table','Step (table)',_tblOpts,function(o){return _tblName[o]||o;},'purple')
+      // reactive, left-aligned: only the SELECTED evidence-type's description (saves space).
+      var _tblDesc={T4:'<b>T4 · Suitability</b> — where the NbS can physically establish (climate · terrain · soils · land system).',T3:'<b>T3 · Hazard response</b> — which climate hazards the NbS helps mitigate.',T6:'<b>T6 · Outcomes &amp; cost</b> — effects, benefits and indicative (scoping-grade) economics.'};
+      var _tblLegend='<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">'+(_tblDesc[window._vfScope.table]||'')+'</div>';
+      var _capNbs=function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
+      var _capFam=function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
+      scEl.innerHTML=_mkPills('nbs','Practice',_nbsOpts,_capNbs,'sky',true,'The Nature-based Solution this evidence supports. Pick one.')
+        +_mkPills('family','Sub-practice',_famOpts,_capFam,'emerald',false,'Suitability family / sub-practice within the practice. All = every sub-practice.')
+        +_mkPills('table','Evidence type',_tblOpts,function(o){return _tblName[o]||o;},'purple',true,'Which recipe table this evidence informs — pick one. T4 = suitability, T3 = hazard response, T6 = outcomes & cost.')
         +_tblLegend
-        +_mkPills('family','Sub-practice',_famOpts,function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});},'emerald')
-        +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber')
-        +_mkPills('access','Access',['oa','restricted'],function(o){return o==='oa'?'Open-access':'Restricted (copyright)';},'emerald'); }
+        +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber',false,'Which discovery channel the source came from. All = every channel.')
+        +_mkPills('access','Access',['oa','restricted'],function(o){return o==='oa'?'Open-access':'Restricted (copyright)';},'emerald',false,'Open-access vs copyrighted (restricted). All = both.'); }
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
     passedAll=passedAll.filter(_inScope);
     var rlAll=(dashboardData.review_log)||[];
@@ -2954,8 +2965,8 @@
     var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+')';
     var _2ndCount=(typeof _vf2ndList==='function')?_vf2ndList().length:0;
     var mp=document.getElementById('vf-mode-pills');
-    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')'],['passed','AI-passed — sample ('+passedAll.length+')'],['second','🔁 2nd opinion ('+_2ndCount+')'],['reviewed',_reviewedLbl]];
-      mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
+    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')','Records the AI flagged as suspect — the main review queue. Confirm (ok) or remove (drop).'],['passed','AI-passed — sample ('+passedAll.length+')','A random sample of records the AI accepted — spot-check for errors it missed (false negatives).'],['second','🔁 2nd opinion ('+_2ndCount+')','Records one reviewer already resolved, awaiting a second opinion to reach consensus.'],['reviewed',_reviewedLbl,'Your own applied decisions — re-openable and challengeable.']];
+      mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" title="'+vfEsc(m[2]||'')+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
     var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; _sb.textContent=_on?'← Back to review':'📊 Stats'; }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
@@ -3034,25 +3045,38 @@
       return true;
     });
   }
-  // "⚑ Bulk by source" sidebar panel — flag every active record from one source at once
-  // (so a bad source need not be reviewed entry-by-entry). Sets your decisions; Apply commits.
+  // "Flag a whole source at once" sidebar panel — flag every active record from one source
+  // (so a bad source need not be reviewed entry-by-entry). Searchable source picker + chips
+  // for the actual locations (pages / tables) present in that source. Sets your decisions;
+  // Apply commits.
   function _vfRenderBulk(evAll){
     var box=document.getElementById('vf-bulk'); if(!box)return;
     var nbs=(window._vfScope||{}).nbs||'all';
     var bySrc={}; (evAll||[]).forEach(function(e){ if(nbs!=='all'&&e.nbs_id!==nbs)return; if(e.use_role==='dataset')return; if(e.reviewer_ok===true||e.reviewer_ok==='true')return; var s=e.source_id||'(none)'; bySrc[s]=(bySrc[s]||0)+1; });
     var srcs=Object.keys(bySrc).sort();
-    if(!srcs.length){ box.innerHTML='<div style="font-size:10px; color:var(--text-muted);">No active source to bulk-flag in this scope.</div>'; return; }
+    if(!srcs.length){ box.innerHTML='<div style="font-size:10px; color:var(--text-muted);">No active source to flag in this scope.</div>'; return; }
     var cur=(window._vfBulkSrc&&bySrc[window._vfBulkSrc])?window._vfBulkSrc:srcs[0]; window._vfBulkSrc=cur;
-    var scope=window._vfBulkScope||'whole'; window._vfBulkScope=scope;
+    // Locations present in THIS source (structured): distinct pages + whether any tabular rows.
+    var _rowsAll=_vfBulkRows(evAll,cur,'whole');
+    var _pageCount={}; _rowsAll.forEach(function(r){ var p=String(r.page||''); if(p)_pageCount[p]=(_pageCount[p]||0)+1; });
+    var _pages=Object.keys(_pageCount).sort(function(a,b){return (parseInt(a)||0)-(parseInt(b)||0);});
+    var _tabCount=_rowsAll.filter(function(r){return _vfTabular(r.quote);}).length;
+    var scope=window._vfBulkScope||'whole';
+    if(scope==='page'&&_pages.indexOf(String(window._vfBulkPage||''))<0){ scope='whole'; window._vfBulkScope='whole'; window._vfBulkPage=''; }
+    if(scope==='tabular'&&!_tabCount){ scope='whole'; window._vfBulkScope='whole'; }
     var n=_vfBulkRows(evAll,cur,scope).length;
-    var opts=srcs.map(function(s){ return '<option value="'+vfEsc(s)+'"'+(s===cur?' selected':'')+'>'+vfEsc(s)+' ('+bySrc[s]+')</option>'; }).join('');
-    var scopePills=[['whole','whole source'],['page','by page'],['tabular','tables only']].map(function(p){ var a=scope===p[0]?'active sky':''; return '<button class="pill-btn '+a+'" onclick="window._vfBulkScope=\''+p[0]+'\'; renderVfWorklist();" style="font-size:10px; padding:3px 7px; border-radius:4px;">'+p[1]+'</button>'; }).join('');
-    var pageInp=scope==='page'?('<input placeholder="page e.g. 4" value="'+vfEsc(window._vfBulkPage||'')+'" oninput="window._vfBulkPage=this.value; var s=document.getElementById(\'vf-bulk-n\'); if(s)s.textContent=_vfBulkRows(dashboardData.registers.EV_evidence_register||[],window._vfBulkSrc,\'page\').length;" style="width:100%; box-sizing:border-box; font-size:11px; padding:4px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'):'';
+    var dlopts=srcs.map(function(s){ return '<option value="'+vfEsc(s)+'">'+bySrc[s]+' record(s)</option>'; }).join('');
+    var _chip=function(label,active,onclick){ return '<button class="pill-btn '+(active?'active sky':'')+'" onclick="'+onclick+'" style="font-size:10px; padding:3px 8px; border-radius:10px;">'+label+'</button>'; };
+    var locChips=_chip('whole source ('+_rowsAll.length+')', scope==='whole', "window._vfBulkScope='whole'; window._vfBulkPage=''; renderVfWorklist();");
+    if(_tabCount) locChips+=_chip('tables only ('+_tabCount+')', scope==='tabular', "window._vfBulkScope='tabular'; renderVfWorklist();");
+    locChips+=_pages.map(function(p){ return _chip('p.'+vfEsc(p)+' ('+_pageCount[p]+')', scope==='page'&&String(window._vfBulkPage)===p, "window._vfBulkScope='page'; window._vfBulkPage='"+vfEsc(p)+"'; renderVfWorklist();"); }).join('');
     box.innerHTML=''
-      +'<div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:6px;">&#9873; Bulk by source</div>'
-      +'<select onchange="window._vfBulkSrc=this.value; renderVfWorklist();" style="width:100%; box-sizing:border-box; font-size:11px; padding:4px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'+opts+'</select>'
-      +'<div style="display:flex; gap:4px; margin-bottom:6px;">'+scopePills+'</div>'
-      +pageInp
+      +'<div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:2px;">&#9873; Flag a whole source at once</div>'
+      +'<div style="font-size:9.5px; color:var(--text-muted); margin-bottom:6px; line-height:1.4;">Flag every active record from one paper (or one page / its tables) without reviewing each. Sets your decisions; Apply commits.</div>'
+      +'<input list="vf-bulk-datalist" value="'+vfEsc(cur)+'" placeholder="type to search sources…" onchange="window._vfBulkSrc=this.value; window._vfBulkScope=\'whole\'; window._vfBulkPage=\'\'; renderVfWorklist();" style="width:100%; box-sizing:border-box; font-size:11px; padding:5px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'
+      +'<datalist id="vf-bulk-datalist">'+dlopts+'</datalist>'
+      +'<div style="font-size:9px; color:var(--text-muted); margin-bottom:3px;">Location in this source:</div>'
+      +'<div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:6px;">'+locChips+'</div>'
       +'<input placeholder="reason / note (required)" value="'+vfEsc(window._vfBulkNote||'')+'" oninput="window._vfBulkNote=this.value;" style="width:100%; box-sizing:border-box; font-size:11px; padding:4px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'
       +'<div style="font-size:10px; color:var(--text-secondary); margin-bottom:6px;">will flag <b id="vf-bulk-n">'+n+'</b> active record(s)</div>'
       +'<div style="display:flex; gap:6px;">'
