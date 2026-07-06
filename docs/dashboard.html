@@ -2580,7 +2580,10 @@
     fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer')})}).then(function(r){return r.json();}).then(function(res){
       if(res.error){ alert('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} return; }
       fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d));
-        fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){ dashboardData=_segregateDropped(data); renderVfWorklist(); if(typeof triggerOverviewFilter==='function')triggerOverviewFilter(); if(typeof renderDiscoveryAudit==='function')renderDiscoveryAudit();
+        fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){
+          // BEST-EFFORT refresh: a render throw here must NOT abort the flow — otherwise the
+          // submit below never runs and the button hangs forever on "Applying…" (the freeze bug).
+          try{ dashboardData=_segregateDropped(data); renderVfWorklist(); if(typeof triggerOverviewFilter==='function')triggerOverviewFilter(); if(typeof renderDiscoveryAudit==='function')renderDiscoveryAudit(); }catch(_e){ console.error('post-apply render failed (non-fatal, submit continues):',_e); }
           var cf=(res.conflicts||[]);
           var msg='Applied: '+(res.ok||0)+' ok, '+(res.dropped||0)+' dropped.'
             +(cf.length?('\n\u26a0 '+cf.length+' CONFLICT(s) pending \u2014 reviewers disagree: '+cf.map(function(c){return c.evidence_id;}).join(', ')):' No conflicts.');
