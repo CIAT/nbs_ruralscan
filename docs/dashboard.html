@@ -2536,6 +2536,9 @@
   // Task (chips): clicking a card's OA / channel / NbS / sub-practice chip sets that scope
   // filter (single-value, like the sidebar pills) so the worklist narrows to matching cards.
   function vfScopeSet(key,val){ if(!window._vfScope)window._vfScope={}; window._vfScope[key]=val; if(key==='nbs')window._vfScope.family='all'; renderVfWorklist(); }
+  // Uniform little pill for the card chip row — matches the OA / channel badge look so the
+  // NbS / sub-practice / location / source chips all read as one consistent chip set.
+  function _vfChip(label,color,title,onclick,noCaps){ return '<span '+(onclick?('onclick="'+onclick+'" '):'')+'title="'+vfEsc(title||'')+'" style="'+(onclick?'cursor:pointer; ':'')+'font-size:9.5px; font-weight:700; '+(noCaps?'':'text-transform:uppercase; ')+'letter-spacing:.03em; color:'+color+'; border:1px solid '+color+'; border-radius:3px; padding:1px 6px; white-space:nowrap;">'+label+'</span>'; }
   // Task 2: how many of MY decisions are saved locally but NOT yet applied + submitted to main.
   // The store stamps each decision `applied:true` after Apply; pending = mine without it.
   function _vfPendingCount(){ var me=(window._vfReviewer||'').trim(); var all=window._vfAllReviews||{}; var n=0; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true')n++; }); return n; }
@@ -2854,9 +2857,14 @@
     var _geoParts=[src.study_country,src.region,src.aez].filter(Boolean);
     var _ctxNote=''; try{ var _cx=ev.context?(typeof ev.context==='string'?JSON.parse(ev.context):ev.context):null; if(_cx&&_cx.note)_ctxNote=_cx.note; }catch(_ge){}
     var _geo=_geoParts.length?_geoParts.join(', '):(_ctxNote||'—');
-    var _metaLine='<div style="font-size:10.5px; color:var(--text-muted); margin:-3px 0 8px 0; display:flex; gap:16px; flex-wrap:wrap;">'
-      +'<span>&#129513; Contributes to: <b onclick="vfScopeSet(\'nbs\',\''+vfEsc(ev.nbs_id||'')+'\')" title="Practice — click to filter the worklist to this NbS" style="cursor:pointer; color:var(--accent-sky); border-bottom:1px dotted var(--accent-sky);">'+vfEsc(_nbsShort)+'</b> &middot; '+(ev.suitability_family_id?('<b onclick="vfScopeSet(\'family\',\''+vfEsc(ev.suitability_family_id)+'\')" title="Sub-practice — click to filter the worklist to this family" style="cursor:pointer; color:var(--accent-sky); border-bottom:1px dotted var(--accent-sky);">'+vfEsc(_famShort)+'</b>'):('<b style="color:var(--text-secondary);">'+vfEsc(_famShort)+'</b>'))+'</span>'
-      +'<span title="study geography — SRC study_country / region / aez, else the context note">&#128205; <b style="color:var(--text-secondary);">'+vfEsc(_geo)+'</b></span></div>';
+    // Unified chip row (point 2+3): "contributes to" chips (NbS · sub-practice · location) on the
+    // LEFT, source/access chips (OA · channel · source) pushed RIGHT — one line, all uniform pills.
+    var _geoShort=(_geo&&_geo!=='—')?(_geo.length>44?_geo.slice(0,42)+'…':_geo):'';   // point 1: hide when empty
+    var _nbsChip=_vfChip(vfEsc(_nbsShort),'var(--accent-sky)','Practice — click to filter the worklist to this NbS',"vfScopeSet('nbs','"+vfEsc(ev.nbs_id||'')+"')");
+    var _famChip=ev.suitability_family_id?_vfChip(vfEsc(_famShort),'var(--accent-emerald)','Sub-practice — click to filter the worklist to this family',"vfScopeSet('family','"+vfEsc(ev.suitability_family_id)+"')"):_vfChip(vfEsc(_famShort),'var(--text-muted)','No sub-practice family tagged',null);
+    var _geoChip=_geoShort?_vfChip('📍 '+vfEsc(_geoShort),'var(--text-muted)',vfEsc('Study geography: '+_geo),null,true):'';
+    var _srcChip=_vfChip(vfEsc(ev.source_id||''),'var(--text-muted)','Source — click to subset the worklist to this source',"vfSetSubset('sourceId','"+vfEsc(ev.source_id||'')+"')",true);
+    var _chipRow='<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:2px 0 9px 0;"><span style="font-size:11px; color:var(--text-muted); margin-right:1px;" title="what this evidence contributes to">🧩</span>'+_nbsChip+_famChip+_geoChip+'<span style="margin-left:auto; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'+_oaBadge+_chanBadge+_srcChip+'</span></div>';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
     var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
     // Task 1: server renders /api/crop for ANY passage and /api/code for code sources; the old
@@ -2874,8 +2882,8 @@
       +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
       +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;" title="AI verify verdict">'+vfEsc(verdict)+'</span>'
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+(ev.page?('<a href="#" onclick="vfSetSubset(\'section\',\''+vfEsc(String(ev.page))+'\');return false;" title="subset the worklist to page '+vfEsc(String(ev.page))+' of this source" style="color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(page)+'</a>'):vfEsc(page))+' · '+vfEsc(vfLocHint(ev))+'</span>'
-      +'<span style="margin-left:auto; display:flex; align-items:center; gap:8px;">'+_oaBadge+_chanBadge+'<a href="#" onclick="vfSetSubset(\'sourceId\',\''+vfEsc(ev.source_id||'')+'\');return false;" title="subset the worklist to this source" style="font-size:10.5px; color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(ev.source_id||'')+'</a></span></div>'
-      +_metaLine
+      +'</div>'
+      +_chipRow
       +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> '+vfRelHtml(ev)+'</div>'
       +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
