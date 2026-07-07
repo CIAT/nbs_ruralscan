@@ -1986,8 +1986,13 @@
               <span style="font-size:11px; color:var(--text-muted);">Practice &amp; variant follow the <b>Practice / Sub-practice</b> chips below.</span>
             </div>
 
-            <!-- legend on its own row, full width (no longer competing with the filters) -->
-            <div style="font-size:11.5px; margin-top:10px; padding-top:10px; border-top: 1px solid var(--border-color); display:flex; flex-direction:column; gap:7px;">
+            <!-- foldable "about / how to use" — collapsed by default to save vertical space -->
+            <details style="margin-top:10px; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.015);">
+              <summary style="cursor:pointer; padding:9px 13px; font-weight:600; color:var(--text-primary); outline:none; font-size:12px; list-style:none;">&#8505;&#65039; What this matrix shows &amp; how to use it <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">— click to expand</span></summary>
+              <div style="padding:2px 14px 14px;">
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin:10px 0 6px;"><b style="color:var(--text-primary);">What it is.</b> A coverage map of evidence <b>discovery</b> — how far the pipeline has progressed for every combination of sub-practice, recipe table and source type. Each <b>row</b> is an NbS sub-practice (suitability family). Each <b>column group</b> is a recipe table it feeds: <b>T4</b> suitability (where the NbS can establish), <b>T3</b> hazard links (which climate hazards it mitigates), <b>T6</b> outcomes &amp; costing. Each group splits into four <b>source channels</b> — <b>Stock</b> (benchmarked stocktake), <b>Lit</b> (updated peer-reviewed), <b>Grey</b> (reports / project docs), <b>Tools</b> (methods / code). So one <b>cell</b> answers: <i>for this sub-practice × table × channel, how far has discovery got, and how much is reviewed?</i></p>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin:0 0 4px;"><b style="color:var(--text-primary);">How to use it.</b> Scan for gaps (what still needs searching, extracting or reviewing). <b>Click a cell's numbers</b> → its evidence units + verify/review state; <b>click its stage pip</b> → the exact search protocol behind it. The <b>Status</b> dropdown above and the <b>Practice / Sub-practice</b> chips filter which rows appear. Key below:</p>
+                <div style="font-size:11.5px; margin-top:8px; padding-top:10px; border-top: 1px solid var(--border-color); display:flex; flex-direction:column; gap:7px;">
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Two numbers</span>
                 <span style="display:flex; align-items:center; gap:5px;"><span class="badge high audit-badge" style="font-weight:700; width:18px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:50%; padding:0;">#</span><span style="color:var(--text-secondary);"><b>direct</b> — sources from a family-targeted search</span></span>
@@ -2020,7 +2025,9 @@
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Click</span>
                 <span style="color:var(--text-secondary); flex:1; min-width:240px;">the <b>numbers</b> → that cell's evidence units + their verify / review state. The <b>stage pip</b> → that cell's search protocol (terms · criteria · limits · counts · ruleset).</span>
               </div>
-            </div>
+                </div>
+              </div>
+            </details>
           </div>
           <div class="table-wrapper" style="overflow:auto; max-height:calc(100vh - 140px);">
             <table class="data-table" id="table-discovery-audit">
