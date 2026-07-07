@@ -273,6 +273,13 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(200, {"ok": True})
         if self.path == "/api/state":
             return self._json(200, {"decisions": _load()})
+        if self.path == "/api/gaps":
+            gaps_csv = ROOT / "pipeline" / "metrics" / "gaps.csv"
+            rows = []
+            if gaps_csv.exists():
+                with gaps_csv.open(newline="", encoding="utf-8") as f:
+                    rows = list(_csv_mod.DictReader(f))
+            return self._json(200, {"gaps": rows})
         if self.path.startswith("/api/code"):
             # return the CODE lines around a file_line locator (tool/methodology sources).
             from urllib.parse import urlparse, parse_qs
@@ -463,6 +470,64 @@ class Handler(SimpleHTTPRequestHandler):
                 1 for e in store.values() for r in e.values() if r.get("decision")
             )
             return self._json(200, {"ok": True, "decided": decided})
+
+        if self.path == "/api/gap":
+            # Report MISSING evidence — a variable/figure/table a reviewer expected but that was
+            # never extracted. Appended to the in-repo gaps register so it's tracked + queryable
+            # and can feed a re-extraction sweep. Not an EV row (there's no source quote yet).
+            import datetime as _dt
+
+            cols = [
+                "gap_id",
+                "date",
+                "reporter",
+                "nbs_id",
+                "suitability_family_id",
+                "table",
+                "source_id",
+                "location",
+                "variable",
+                "note",
+                "status",
+            ]
+            g = payload or {}
+            variable = (g.get("variable") or "").strip()
+            note = (g.get("note") or "").strip()
+            if not (variable or note):
+                return self._json(
+                    400, {"error": "a gap needs at least a variable or a note"}
+                )
+            gaps_csv = ROOT / "pipeline" / "metrics" / "gaps.csv"
+            gaps_csv.parent.mkdir(parents=True, exist_ok=True)
+            existing = []
+            if gaps_csv.exists():
+                with gaps_csv.open(newline="", encoding="utf-8") as f:
+                    existing = list(_csv_mod.DictReader(f))
+            row = {c: "" for c in cols}
+            row.update(
+                {
+                    "gap_id": f"gap_{len(existing) + 1:04d}",
+                    "date": _dt.date.today().isoformat(),
+                    "reporter": (g.get("reporter") or "reviewer").strip(),
+                    "nbs_id": (g.get("nbs_id") or "").strip(),
+                    "suitability_family_id": (
+                        g.get("suitability_family_id") or ""
+                    ).strip(),
+                    "table": (g.get("table") or "").strip(),
+                    "source_id": (g.get("source_id") or "").strip(),
+                    "location": (g.get("location") or "").strip(),
+                    "variable": variable,
+                    "note": note,
+                    "status": "open",
+                }
+            )
+            need_header = not gaps_csv.exists()
+            with gaps_csv.open("a", newline="", encoding="utf-8") as f:
+                w = _csv_mod.DictWriter(f, fieldnames=cols)
+                if need_header:
+                    w.writeheader()
+                w.writerow(row)
+            return self._json(200, {"ok": True, "gap_id": row["gap_id"]})
 
         if self.path == "/api/apply":
             # Preflight: scan every file the Apply path reads for a stray non-UTF-8 byte / CRLF
