@@ -2003,6 +2003,13 @@
                 <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; background:#f59e0b; display:inline-block;"></span><span style="color:var(--text-secondary);">in progress</span></span>
                 <span style="display:flex; align-items:center; gap:5px;"><span style="width:14px; height:14px; border-radius:50%; border:1px solid var(--border-color); display:inline-block;"></span><span style="color:var(--text-secondary);">not started</span></span>
               </div>
+              <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Review bar</span>
+                <span style="color:var(--text-secondary);">share of the cell's evidence units by review depth —</span>
+                <span style="display:flex; align-items:center; gap:5px;"><span style="width:22px; height:6px; border-radius:3px; background:#475569; display:inline-block;"></span><span style="color:var(--text-secondary);">unreviewed</span></span>
+                <span style="display:flex; align-items:center; gap:5px;"><span style="width:22px; height:6px; border-radius:3px; background:#f59e0b; display:inline-block;"></span><span style="color:var(--text-secondary);">1 review</span></span>
+                <span style="display:flex; align-items:center; gap:5px;"><span style="width:22px; height:6px; border-radius:3px; background:#10b981; display:inline-block;"></span><span style="color:var(--text-secondary);">2+ reviews</span></span>
+              </div>
               <div style="display:flex; align-items:flex-start; gap:10px; flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Click</span>
                 <span style="color:var(--text-secondary); flex:1; min-width:240px;">the <b>numbers</b> → that cell's evidence units + their verify / review state. The <b>stage pip</b> → that cell's search protocol (terms · criteria · limits · counts · ruleset).</span>
@@ -4144,6 +4151,17 @@
     const families = dashboardData.registers.FAM_family_registry || [];
     const claims = dashboardData.registers.EV_evidence_register || [];
 
+    // Review depth per evidence_id = distinct reviewers who logged a real (ok/drop) decision.
+    // Feeds the per-cell review-coverage bar (0 / 1 / 2+ reviews) — so the matrix shows how
+    // much of a cell's evidence is actually reviewed, not just "≥1 reviewed" (the old pip).
+    const _reviewDepth = {};
+    ((dashboardData.review_log) || []).forEach(r => {
+      const d = (r.decision || '').toLowerCase();
+      if (d === 'ok' || d === 'drop') {
+        (_reviewDepth[r.evidence_id] = _reviewDepth[r.evidence_id] || new Set()).add(r.reviewer || '?');
+      }
+    });
+
     // Group subpractices by suitability_family_id
     const familiesMap = {};
     families.forEach(f => {
@@ -4255,7 +4273,14 @@
       const _ss = ledgerStageDirect(_nbs, _tbl, _cat, 'searched', statusKey);
       const _e = directN > 0;
       const _v = ledgerStageDirect(_nbs, _tbl, _cat, 'verified', statusKey) === 'done' && _e;
-      const _r = _e && cellReviewed(statusKey, targetKey, typeKey);
+      // Review-coverage buckets for THIS cell's active evidence units (rows), by review depth.
+      const _roleR = { t4: 'structural_suitability', t3: 'climate_risk', t6: 'nbs_effect' }[targetKey];
+      const _cellRows = (dashboardData.registers.EV_evidence_register || []).filter(c => c.suitability_family_id === statusKey && (c.use_role || '') === _roleR && getSourceCategory(c.source_id, '') === typeKey);
+      let _b0 = 0, _b1 = 0, _b2 = 0;
+      _cellRows.forEach(c => { const dn = _reviewDepth[c.evidence_id] ? _reviewDepth[c.evidence_id].size : 0; if (dn === 0) _b0++; else if (dn === 1) _b1++; else _b2++; });
+      const _nRows = _cellRows.length;
+      // "Reviewed" now means EVERY active unit has ≥1 review (was ".some" → overstated it).
+      const _r = _e && _nRows > 0 && _b0 === 0;
       // generic (parent-search) lifecycle — ledger family-level rows + generic evidence
       const _gss = ledgerStageFam(_nbs, _tbl, _cat, 'searched', statusKey).status;
       const _ge = genericN > 0;
@@ -4288,6 +4313,10 @@
       const _short = typeKey === 'stock' ? 'Stock' : typeKey === 'updated' ? 'Lit' : typeKey === 'grey' ? 'Grey' : 'Tools';
       const _total = directN + genericN;
       const _numClick = _total > 0 ? ` onclick="${_evClick}" style="cursor:pointer;"` : '';
+      // Review-coverage bar: unreviewed (slate) · 1 review (amber) · 2+ reviews (green).
+      const _revBar = _nRows > 0
+        ? `<div title="Review coverage of ${_nRows} evidence unit(s): ${_b1 + _b2}/${_nRows} reviewed (${_b2} with 2+ reviewers), ${_b0} unreviewed" style="display:flex; width:54px; height:5px; border-radius:3px; overflow:hidden; margin-top:5px; background:var(--bg-tertiary);">${_b0 ? `<span style="flex:${_b0}; background:#475569;"></span>` : ''}${_b1 ? `<span style="flex:${_b1}; background:#f59e0b;"></span>` : ''}${_b2 ? `<span style="flex:${_b2}; background:#10b981;"></span>` : ''}</div>`
+        : '';
       const cellTitle = `${targetLabel} - ${typeLabel}: ${directN} direct (family-targeted) source(s), ${genericN} generic (via the practice-wide parent search). Pip = furthest direct pipeline stage.`;
       return `<div title="${cellTitle}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
         <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">${_short}</span>
@@ -4295,6 +4324,7 @@
           <span class="badge ${directClass} audit-badge" style="font-weight:700; width:22px; height:22px; line-height:22px; font-size:12px; display:inline-block; text-align:center; border-radius:50%; padding:0;">${directN}</span>
           <span style="font-size:11px; font-weight:600; color:var(--text-muted); border:1px dashed var(--border-color); border-radius:10px; padding:1px 6px;" title="${genericN} generic source(s) — reached via the practice-wide parent search, not a ${_short}-direct search for this sub-practice">+${genericN}</span>
         </div>
+        ${_revBar}
         ${pip}
       </div>`;
     };
