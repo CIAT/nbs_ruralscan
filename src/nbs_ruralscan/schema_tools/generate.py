@@ -287,6 +287,10 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     review_log_csv = schema_root.parent / "pipeline" / "metrics" / "review_log.csv"
     data["review_log"] = _csv_to_rows(review_log_csv) if review_log_csv.exists() else []
 
+    # Reported evidence gaps (missing variables / figures a reviewer flagged) — see /api/gap.
+    gaps_csv = schema_root.parent / "pipeline" / "metrics" / "gaps.csv"
+    data["gaps"] = _csv_to_rows(gaps_csv) if gaps_csv.exists() else []
+
     # Stocktake (pre-repo OpenAlex + C/I/D benchmark) — trimmed display set; full CSV in
     # reference/stocktake/. Distinct from the in-repo discovery logs.
     data["stocktake"] = {"peer_reviewed": [], "grey_lit": []}

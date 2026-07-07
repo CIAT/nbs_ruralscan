@@ -1903,6 +1903,7 @@
               <span id="vf-pending-count" style="font-size:11.5px; font-weight:700;" title="Your decisions saved locally but NOT yet applied + submitted to main. Click Apply & submit to main to ship them."></span>
               <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Applies your decisions to the registers AND submits them to main (opens a PR that auto-merges on green CI). One click." style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply &amp; submit to main</button>
               <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
+              <button onclick="openGapModal()" title="Report a variable / figure / table that should exist but isn't in the register — e.g. after checking a figure's variables are all extracted" style="font-size:11px; padding:6px 14px; border-radius:4px; background:transparent; color:var(--accent-amber); border:1px solid var(--accent-amber); cursor:pointer;">&#9888; Report missing evidence</button>
               <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
               <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4;"></span>
             </div>
@@ -2088,6 +2089,29 @@
             <button onclick="closeSrchModal()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); border-radius:4px; cursor:pointer; font-size:13px; padding:2px 9px;">&#10005;</button>
           </div>
           <div id="srch-modal-body"></div>
+        </div>
+      </div>
+
+      <!-- Report-missing-evidence (gap) modal -->
+      <div id="gap-modal" onclick="if(event.target===this)closeGapModal()" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.62); padding:56px 20px; overflow:auto;">
+        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; max-width:560px; margin:0 auto; padding:20px 24px; box-shadow:0 12px 48px rgba(0,0,0,0.55);">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+            <h3 style="margin:0; font-size:15px; color:var(--text-primary);">&#9888;&#65039; Report missing evidence</h3>
+            <button onclick="closeGapModal()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); border-radius:4px; cursor:pointer; font-size:13px; padding:2px 9px;">&#10005;</button>
+          </div>
+          <p style="font-size:11.5px; color:var(--text-muted); margin:10px 0 12px; line-height:1.5;">Flag a variable / figure / table you expected but that isn't in the register (e.g. "Figure 7 lists slope but there's no slope row"). Logged to the in-repo gaps register (<code>pipeline/metrics/gaps.csv</code>) to feed a re-extraction sweep.</p>
+          <div id="gap-scope-ctx" style="font-size:10.5px; color:var(--text-secondary); margin-bottom:12px; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:6px; padding:7px 10px;"></div>
+          <div style="display:flex; flex-direction:column; gap:9px;">
+            <label style="font-size:11px; color:var(--text-muted);">Missing variable <span style="color:var(--text-muted);">(what should exist)</span><input id="gap-variable" placeholder="e.g. slope, tree_canopy_cover" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"></label>
+            <label style="font-size:11px; color:var(--text-muted);">Location in the source <span style="color:var(--text-muted);">(optional)</span><input id="gap-location" placeholder="e.g. Figure 7 · p.13 · Table 3" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"></label>
+            <label style="font-size:11px; color:var(--text-muted);">Source <span style="color:var(--text-muted);">(optional)</span><input id="gap-source" list="gap-src-list" placeholder="source_id, e.g. mucida_2023" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><datalist id="gap-src-list"></datalist></label>
+            <label style="font-size:11px; color:var(--text-muted);">Note<textarea id="gap-note" rows="3" placeholder="what's missing and where you saw it" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); resize:vertical; font-family:inherit;"></textarea></label>
+          </div>
+          <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:14px;">
+            <button onclick="closeGapModal()" style="font-size:12px; padding:6px 14px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Cancel</button>
+            <button onclick="submitGap()" style="font-size:12px; font-weight:600; padding:6px 16px; border-radius:4px; background:var(--accent-amber); color:#fff; border:none; cursor:pointer;">Log gap</button>
+          </div>
+          <div id="gap-msg" style="font-size:11px; margin-top:8px;"></div>
         </div>
       </div>
 
@@ -2559,6 +2583,43 @@
   // Uniform little pill for the card chip row — matches the OA / channel badge look so the
   // NbS / sub-practice / location / source chips all read as one consistent chip set.
   function _vfChip(label,color,title,onclick,noCaps){ return '<span '+(onclick?('onclick="'+onclick+'" '):'')+'title="'+vfEsc(title||'')+'" style="'+(onclick?'cursor:pointer; ':'')+'font-size:9.5px; font-weight:700; '+(noCaps?'':'text-transform:uppercase; ')+'letter-spacing:.03em; color:'+color+'; border:1px solid '+color+'; border-radius:3px; padding:1px 6px; white-space:nowrap;">'+label+'</span>'; }
+  // Task D: report MISSING evidence (a variable/figure a reviewer expected but that was never
+  // extracted). Writes a row to the in-repo gaps register via /api/gap; shown in the Gaps queue.
+  function openGapModal(){ var m=document.getElementById('gap-modal'); if(!m)return;
+    var dl=document.getElementById('gap-src-list'); if(dl){ var srcs=(((dashboardData||{}).registers||{}).SRC_source_register||[]).map(function(s){return s.source_id;}).filter(Boolean).sort(); dl.innerHTML=srcs.map(function(s){return '<option value="'+vfEsc(s)+'"></option>';}).join(''); }
+    var sc=window._vfScope||{}; var ctx=document.getElementById('gap-scope-ctx');
+    if(ctx){ ctx.innerHTML='Filed against your current scope: <b>'+vfEsc(sc.nbs||'—')+'</b> · <b>'+vfEsc((sc.family&&sc.family!=='all')?sc.family.split('__').pop().replace(/_/g,' '):'all sub-practices')+'</b> · <b>'+vfEsc(sc.table||'—')+'</b>'; }
+    var msg=document.getElementById('gap-msg'); if(msg)msg.textContent='';
+    if(!window._reviewApi){ if(msg)msg.innerHTML='<span style="color:var(--accent-amber);">No live review server — reporting a gap needs it running locally. It writes to pipeline/metrics/gaps.csv.</span>'; }
+    m.style.display='block'; }
+  function closeGapModal(){ var m=document.getElementById('gap-modal'); if(m)m.style.display='none'; }
+  function submitGap(){ var msg=document.getElementById('gap-msg');
+    if(!window._reviewApi){ if(msg)msg.innerHTML='<span style="color:var(--accent-rose);">No live review server — start it locally to log gaps.</span>'; return; }
+    var sc=window._vfScope||{};
+    var body={ reporter:(window._vfReviewer||'reviewer'), nbs_id:(sc.nbs&&sc.nbs!=='all'?sc.nbs:''), suitability_family_id:(sc.family&&sc.family!=='all'?sc.family:''), table:(sc.table||''), source_id:(document.getElementById('gap-source').value||'').trim(), location:(document.getElementById('gap-location').value||'').trim(), variable:(document.getElementById('gap-variable').value||'').trim(), note:(document.getElementById('gap-note').value||'').trim() };
+    if(!body.variable && !body.note){ if(msg)msg.innerHTML='<span style="color:var(--accent-rose);">Enter at least a missing variable or a note.</span>'; return; }
+    fetch('/api/gap',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){return r.json();}).then(function(res){
+      if(res.error){ if(msg)msg.innerHTML='<span style="color:var(--accent-rose);">'+vfEsc(res.error)+'</span>'; return; }
+      if(!dashboardData.gaps)dashboardData.gaps=[]; dashboardData.gaps.push({gap_id:res.gap_id,date:'',reporter:body.reporter,nbs_id:body.nbs_id,suitability_family_id:body.suitability_family_id,table:body.table,source_id:body.source_id,location:body.location,variable:body.variable,note:body.note,status:'open'});
+      ['gap-variable','gap-location','gap-note'].forEach(function(id){var el=document.getElementById(id); if(el)el.value='';});
+      if(msg)msg.innerHTML='<span style="color:var(--accent-emerald);">Logged '+vfEsc(res.gap_id)+' — in pipeline/metrics/gaps.csv. Commit / submit to share it. See it in the ⚠ Gaps queue.</span>';
+      if(typeof renderVfWorklist==='function')renderVfWorklist();
+    }).catch(function(e){ if(msg)msg.innerHTML='<span style="color:var(--accent-rose);">Error: '+vfEsc(String(e))+'</span>'; }); }
+  function renderVfGaps(host){ if(!host)return;
+    var gaps=((dashboardData||{}).gaps||[]).slice().reverse();
+    var dc=document.getElementById('vf-decided-count'); if(dc)dc.innerHTML='<b>'+gaps.length+'</b> reported gap(s) — missing evidence flagged for a re-extraction sweep. <a href="#" onclick="openGapModal();return false;" style="color:var(--accent-amber);">+ report a gap</a>';
+    host.innerHTML='';
+    if(!gaps.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No gaps reported yet. Use <b style="color:var(--accent-amber);">&#9888; Report missing evidence</b> (sidebar) to flag a variable / figure / table that should exist but isn\'t in the register — e.g. after checking every variable in Figure 7 has been extracted.</div>'; return; }
+    gaps.forEach(function(g){ host.insertAdjacentHTML('beforeend',
+      '<div style="border:1px solid var(--border-color); border-left:3px solid var(--accent-amber); border-radius:8px; padding:11px 14px; margin-bottom:9px; background:var(--bg-secondary);">'
+      +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;"><code style="color:var(--accent-amber); font-size:11.5px;">'+vfEsc(g.gap_id||'')+'</code>'
+      +(g.variable?('<span style="font-size:11.5px; color:var(--text-primary); font-weight:600;">'+vfEsc(g.variable)+'</span>'):'')
+      +(g.location?('<span style="font-size:10.5px; color:var(--text-secondary);">📍 '+vfEsc(g.location)+'</span>'):'')
+      +(g.source_id?('<span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(g.source_id)+'</span>'):'')
+      +'<span style="margin-left:auto; font-size:10px; color:var(--text-muted);">'+vfEsc(g.nbs_id||'')+(g.suitability_family_id?(' · '+vfEsc(g.suitability_family_id.split('__').pop())):'')+(g.table?(' · '+vfEsc(g.table)):'')+'</span></div>'
+      +(g.note?('<div style="font-size:11.5px; color:var(--text-secondary); margin-top:5px;">'+vfEsc(g.note)+'</div>'):'')
+      +'<div style="font-size:10px; color:var(--text-muted); margin-top:6px;">'+vfEsc(g.reporter||'')+(g.date?(' · '+vfEsc(g.date)):'')+' · '+vfEsc(g.status||'open')+'</div>'
+      +'</div>'); }); }
   // Task 2: how many of MY decisions are saved locally but NOT yet applied + submitted to main.
   // The store stamps each decision `applied:true` after Apply; pending = mine without it.
   function _vfPendingCount(){ var me=(window._vfReviewer||'').trim(); var all=window._vfAllReviews||{}; var n=0; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true')n++; }); return n; }
@@ -2992,14 +3053,16 @@
     var _reviewedCount=(new Set((_rlMe?rlAll.filter(function(r){return (r.reviewer||'')===_rlMe;}):rlAll).map(function(r){return r.evidence_id;}))).size;
     var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+')';
     var _2ndCount=(typeof _vf2ndList==='function')?_vf2ndList().length:0;
+    var _gapsCount=((dashboardData.gaps)||[]).length;
     var mp=document.getElementById('vf-mode-pills');
-    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')','Records the AI flagged as suspect — the main review queue. Confirm (ok) or remove (drop).'],['passed','AI-passed — sample ('+passedAll.length+')','A random sample of records the AI accepted — spot-check for errors it missed (false negatives).'],['second','🔁 2nd opinion ('+_2ndCount+')','Records one reviewer already resolved, awaiting a second opinion to reach consensus.'],['reviewed',_reviewedLbl,'Your own applied decisions — re-openable and challengeable.']];
+    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')','Records the AI flagged as suspect — the main review queue. Confirm (ok) or remove (drop).'],['passed','AI-passed — sample ('+passedAll.length+')','A random sample of records the AI accepted — spot-check for errors it missed (false negatives).'],['second','🔁 2nd opinion ('+_2ndCount+')','Records one reviewer already resolved, awaiting a second opinion to reach consensus.'],['reviewed',_reviewedLbl,'Your own applied decisions — re-openable and challengeable.'],['gaps','⚠ Gaps ('+_gapsCount+')','Missing evidence reported by reviewers — variables/figures expected but not extracted. Feeds a re-extraction sweep.']];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" title="'+vfEsc(m[2]||'')+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
     var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; _sb.textContent=_on?'← Back to review':'📊 Stats'; }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
     if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfReviewed(host, rlAll);} return; }
     if(mode==='second'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVf2ndOpinion(host);} return; }
+    if(mode==='gaps'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfGaps(host);} return; }
     if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block';
     var passed=(mode==='passed');
     var _tblPill='<button class="pill-btn '+(window._vfTablesOnly?'active sky':'')+'" onclick="window._vfTablesOnly=!window._vfTablesOnly; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;" title="only units whose quote is tabular (📷)">📷 tables</button>';
