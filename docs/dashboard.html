@@ -2782,16 +2782,14 @@
     var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+list.length+'</b> unit(s) already reviewed by someone else'+(me?(' (not by '+vfEsc(me)+')'):'')+' <span style="color:var(--text-muted);">— give your independent 2nd opinion (ok / drop / query). Agreeing records consensus; disagreeing raises a conflict on Apply.'+(me?'':' Set your handle first.')+'</span>';
     host.innerHTML='';
     if(!list.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">'+(me?'Nothing awaiting your 2nd opinion.':'Set your reviewer handle to see units awaiting your 2nd opinion.')+'</div>'; return; }
-    // Render the SAME full card as direct review (vfDetailHtml), so the 2nd reviewer has all the
-    // content to judge (chips, encoded value, quote, source region, links). Prepend a banner with
-    // the prior reviewer's call. The normal ok/drop/query buttons feed consensus on Apply.
-    list.forEach(function(o){ var ev=o.ev, pr=o.prior;
+    // Render the SAME full card as direct review (vfDetailHtml) — it already carries the existing
+    // review(s) in its "Reviews:" line (supports multiple reviewers per unit). The normal
+    // ok/drop/query buttons feed consensus on Apply (agree → consensus, disagree → conflict).
+    list.forEach(function(o){ var ev=o.ev;
       var attr=ev.attribution||''; var idx=attr.indexOf('[VERIFY-FLAG ');
       var passed=(idx===-1); var verdict='pass', reason='AI accepted this extraction — spot-check: is the encoded value faithful to the quote?';
       if(!passed){ var raw=attr.slice(idx+13); var close=raw.indexOf(']'); var body=close!==-1?raw.slice(0,close):raw; var ci=body.indexOf(': '); verdict=(ci!==-1?body.slice(0,ci):body).trim().toLowerCase(); reason=ci!==-1?body.slice(ci+2).trim():''; }
-      var pdec=(pr.decision||'').toLowerCase(); var pcol=pdec==='ok'?'var(--accent-emerald)':pdec==='drop'?'var(--accent-rose)':'var(--accent-amber)';
-      var banner='<div style="border:1px solid '+pcol+'; border-bottom:none; border-radius:8px 8px 0 0; background:rgba(255,255,255,0.02); padding:8px 14px; font-size:11.5px;">🔁 <b style="color:'+pcol+';">'+vfEsc(pr.reviewer||'someone')+' said '+vfEsc((pdec||'?').toUpperCase())+'</b>'+(pr.reason?(' <span style="color:var(--text-secondary);">· '+vfEsc((pr.reason||'').replace(/_/g,' '))+'</span>'):'')+(pr.note?(' <span style="color:var(--text-muted);">— '+vfEsc(pr.note)+'</span>'):'')+(o.dropped?' <span style="color:var(--accent-rose);">· quarantined</span>':'')+' <span style="color:var(--text-muted);">— your independent 2nd opinion below:</span></div>';
-      host.insertAdjacentHTML('beforeend', '<div style="margin-bottom:10px;">'+banner+vfDetailHtml({ev:ev, verdict:verdict, reason:reason}, passed)+'</div>');
+      host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:ev, verdict:verdict, reason:reason}, passed));
     });
   }
 
@@ -2802,16 +2800,29 @@
     var evAll=(dashboardData.registers.EV_evidence_register)||[]; var present={};
     evAll.forEach(function(e){ present[e.evidence_id]=(e.reviewer_ok===true||e.reviewer_ok==='true'); });
     var dropped={}; ((dashboardData._evDropped)||[]).forEach(function(e){ dropped[e.evidence_id]=true; });
+    // origin (AI-flagged vs AI-passed) from the EV attribution (active or quarantined row).
+    var _flaggedMap={}; evAll.concat((dashboardData._evDropped)||[]).forEach(function(e){ _flaggedMap[e.evidence_id]=/\[VERIFY-FLAG/.test(e.attribution||''); });
+    var _origin=function(id){ return _flaggedMap[id]?'flagged':'passed'; };
     // one card per unit (latest action), optionally filtered to units I've touched
     var seen={}, units=[];
     rows.forEach(function(r){ var id=r.evidence_id; if(me && !touchedByMe[id]) return; if(seen[id]) return; seen[id]=1; units.push(r); });
-    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+units.length+'</b> reviewed unit(s) '+(me?('touched by '+vfEsc(me)+' '):' (all reviewers) ')+'<span style="color:var(--text-muted);">— challenge with ok/drop to raise a conflict; '+(me?'switch reviewer to see others':'set your handle to filter to yours')+'</span>';
+    if(!window._vfReviewedFilter)window._vfReviewedFilter='all';
+    var _rf=window._vfReviewedFilter;
+    var _nFlag=units.filter(function(r){return _origin(r.evidence_id)==='flagged';}).length, _nPass=units.length-_nFlag;
+    var shown=units.filter(function(r){ return _rf==='all'||_origin(r.evidence_id)===_rf; });
+    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+units.length+'</b> reviewed unit(s) '+(me?('by '+vfEsc(me)+' '):'(all reviewers) ')+'<span style="color:var(--text-muted);">— challenge with ok/drop to raise a conflict; '+(me?'switch reviewer to see others':'set your handle to filter to yours')+'</span>';
     host.innerHTML='';
     if(!units.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">No applied reviews yet'+(me?(' by '+vfEsc(me)):'')+'. Decisions appear here once you <b>Apply</b> them.</div>'; return; }
-    units.forEach(function(r){
+    // filter: was the reviewed unit originally AI-flagged or AI-passed
+    var _fp=function(k,lab,n){ var a=_rf===k?'active sky':''; return '<button class="pill-btn '+a+'" onclick="window._vfReviewedFilter=\''+k+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+lab+' ('+n+')</button>'; };
+    host.insertAdjacentHTML('beforeend','<div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; align-items:center;"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-right:2px;">Origin</span>'+_fp('all','All',units.length)+_fp('flagged','⚑ AI-flagged',_nFlag)+_fp('passed','✓ AI-passed',_nPass)+'</div>');
+    if(!shown.length){ host.insertAdjacentHTML('beforeend','<div style="color:var(--text-muted); padding:8px;">None in this origin filter.</div>'); return; }
+    shown.forEach(function(r){
       var id=r.evidence_id;
       var dec=(r.decision||'').toLowerCase();
       var col=dec==='ok'?'var(--accent-emerald)':dec==='drop'?'var(--accent-rose)':'var(--accent-amber)';
+      var _org=_origin(id); var _orgCol=_org==='flagged'?'var(--accent-rose)':'var(--accent-emerald)';
+      var _orgBadge='<span title="'+(_org==='flagged'?'AI flagged this extraction originally':'AI accepted this extraction originally')+'" style="font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:1px 6px; border-radius:3px; border:1px solid '+_orgCol+'; color:'+_orgCol+';">'+(_org==='flagged'?'⚑ AI-flagged':'✓ AI-passed')+'</span>';
       // all reviewers' current decisions for this unit (from the persistent store)
       var allr=(window._vfAllReviews||{})[id]||{}; var rk=Object.keys(allr).filter(function(k){return allr[k].decision;});
       var conf=(new Set(rk.map(function(k){return allr[k].decision;}))).size>1;
@@ -2823,6 +2834,7 @@
       var card='<div style="border:1px solid var(--border-color); border-left:3px solid '+(conf?'var(--accent-rose)':col)+'; border-radius:8px; padding:10px 14px; margin-bottom:8px; background:var(--bg-secondary);">'
         +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">'
         +'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(id||'')+'</code>'
+        +_orgBadge
         +'<span style="font-weight:700; font-size:10px; color:'+col+'; text-transform:uppercase;">'+vfEsc(dec)+'</span>'
         +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(r.verdict||'')+(r.reason?(' · '+vfEsc((r.reason||'').replace(/_/g,' '))):'')+'</span>'
         +'<span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">'+vfEsc(r.reviewer||'')+' · '+vfEsc(r.date||'')+'</span></div>'
