@@ -20,8 +20,10 @@ permissions:
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    # allowlisted reviewers only (extend this list as the team grows)
-    if: contains(fromJSON('["Namita-J", "peetmate"]'), github.event.pull_request.user.login)
+    # allowlisted reviewers only (extend this list as the team grows), AND only QA review PRs —
+    # so ordinary feat/fix/docs PRs don't spin up a (harmless, non-required) pending automerge
+    # check. The in-job Gate still re-checks the title + review-only files before merging.
+    if: startsWith(github.event.pull_request.title, 'qaqc:') && contains(fromJSON('["Namita-J", "peetmate"]'), github.event.pull_request.user.login)
     steps:
       - name: Gate — review-only PR?
         id: gate
