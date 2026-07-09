@@ -2945,7 +2945,10 @@
     var _famChip=ev.suitability_family_id?_vfChip(vfEsc(_famShort),'var(--accent-emerald)','Sub-practice — click to filter the worklist to this family',"vfScopeSet('family','"+vfEsc(ev.suitability_family_id)+"')"):_vfChip(vfEsc(_famShort),'var(--text-muted)','No sub-practice family tagged',null);
     var _geoChip=_geoShort?_vfChip('📍 '+vfEsc(_geoShort),'var(--text-muted)',vfEsc('Study geography: '+_geo),null,true):'';
     var _srcChip=_vfChip(vfEsc(ev.source_id||''),'var(--text-muted)','Source — click to subset the worklist to this source',"vfSetSubset('sourceId','"+vfEsc(ev.source_id||'')+"')",true);
-    var _chipRow='<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:2px 0 9px 0;"><span style="font-size:11px; color:var(--text-muted); margin-right:1px;" title="what this evidence contributes to">🧩</span>'+_nbsChip+_famChip+_geoChip+'<span style="margin-left:auto; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'+_oaBadge+_chanBadge+_srcChip+'</span></div>';
+    // Recipe table this evidence feeds (T4 suitability / T3 hazard / T6 outcomes), from use_role.
+    var _R2Tc={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'}; var _tbl=_R2Tc[ev.use_role]||'';
+    var _tblChip=_tbl?_vfChip(_tbl,'var(--accent-purple)','Recipe table (Evidence type) this evidence contributes to — click to filter the worklist to '+_tbl,"vfScopeSet('table','"+_tbl+"')"):'';
+    var _chipRow='<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:2px 0 9px 0;"><span style="font-size:11px; color:var(--text-muted); margin-right:1px;" title="what this evidence contributes to">🧩</span>'+_nbsChip+_famChip+_geoChip+'<span style="margin-left:auto; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'+_tblChip+_oaBadge+_chanBadge+_srcChip+'</span></div>';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
     var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
     // Task 1: server renders /api/crop for ANY passage and /api/code for code sources; the old
