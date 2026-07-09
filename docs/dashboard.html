@@ -2894,6 +2894,11 @@
       tool:{label:'Tool / methodology', color:'#34d399'},
       unknown:{label:'Unspecified source', color:'var(--text-muted)'}
     })[key]||{label:key, color:'var(--text-muted)'}; }
+  // Shared reason codes — single source of truth for BOTH the per-card reason selector and the
+  // bulk-by-source selector, so they can't drift apart.
+  var _VF_RC_PASSED=['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','wrong_table','constrained_aoi','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','other'];
+  var _VF_RC_FLAGGED=['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','wrong_table','constrained_aoi','quote_too_narrow','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','false_flag','accepted_correction','other'];
+  var _VF_RC_DESC={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',wrong_table:'real claim but wrong table — soft enabling-env (tenure/market/road/extension/finance/labour) belongs to T3 project-risk / M2b / next-steps, not T4 structural suitability',constrained_aoi:'source frames the NbS onto a constrained subset of land (e.g. land-capability "marginal/residual" buckets) — understates where the NbS is actually feasible, misrepresenting the opportunity-space extent. Down-weight; never use to set the AOI/extent',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',relationship_missed:'the suitability relationship / directionality / membership curve was present in the source but NOT captured (e.g. monotonic decline with distance, fine-texture = high suitability)',insufficient_context:'cannot review — no caption / surrounding context, or the table screengrab failed to render',uninterpretable_weight:'a weight / score with no scale or standardisation context (e.g. "5" — out of what?); cannot interpret or compare across sources',speculative_evidence:'speculation / assumption, not first- or second-hand evidence ("may deter", hand-wavy assumed causation)',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
   function vfDetailHtml(o, passed){ var ev=o.ev, verdict=o.verdict, reason=o.reason; var srcAll=(dashboardData.registers.SRC_source_register)||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
     var _chan=_vfChanMeta(_vfChanKey(ev)); var _chanBadge='<span onclick="vfScopeSet(\'source\',\''+vfEsc(_vfChanKey(ev))+'\')" title="Source channel: '+vfEsc(_chan.label)+' — click to filter the worklist to this channel" style="cursor:pointer; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_chan.color+'; border:1px solid '+_chan.color+'; border-radius:3px; padding:1px 6px;">'+vfEsc(_chan.label)+'</span>';
     var _oa=_vfIsOA(ev); var _oaCol=_oa?'#34d399':'#fbbf24'; var _oaBadge='<span onclick="vfScopeSet(\'access\',\''+(_oa?'oa':'restricted')+'\')" title="'+(_oa?'Open-access source — crop shown inline / publishable':'Copyrighted (non-open-access) — crop is team-only via SharePoint')+' — click to filter" style="cursor:pointer; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_oaCol+'; border:1px solid '+_oaCol+'; border-radius:3px; padding:1px 6px;">'+(_oa?'OA':'Restricted')+'</span>';
@@ -2921,8 +2926,8 @@
     var libTxt=(!_isCodeSrc&&!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
     var pdfLink=[_codeLink,spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
     var okA=dec==='ok', dropA=dec==='drop', queryA=(dec==='flag'||dec==='query');
-    var _rc=passed?['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','wrong_table','constrained_aoi','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','other']:['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','wrong_table','constrained_aoi','quote_too_narrow','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','false_flag','accepted_correction','other'];
-    var _rcDesc={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',wrong_table:'real claim but wrong table — soft enabling-env (tenure/market/road/extension/finance/labour) belongs to T3 project-risk / M2b / next-steps, not T4 structural suitability',constrained_aoi:'source frames the NbS onto a constrained subset of land (e.g. land-capability "marginal/residual" buckets) — understates where the NbS is actually feasible, misrepresenting the opportunity-space extent. Down-weight; never use to set the AOI/extent',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',relationship_missed:'the suitability relationship / directionality / membership curve was present in the source but NOT captured (e.g. monotonic decline with distance, fine-texture = high suitability)',insufficient_context:'cannot review — no caption / surrounding context, or the table screengrab failed to render',uninterpretable_weight:'a weight / score with no scale or standardisation context (e.g. "5" — out of what?); cannot interpret or compare across sources',speculative_evidence:'speculation / assumption, not first- or second-hand evidence ("may deter", hand-wavy assumed causation)',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
+    var _rc=passed?_VF_RC_PASSED:_VF_RC_FLAGGED;
+    var _rcDesc=_VF_RC_DESC;
     var _rsel=(window._vfReasons||{})[ev.evidence_id]||'';
     var _nval=(window._vfNotes||{})[ev.evidence_id]||'';
     var noteInp='<textarea rows="2" placeholder="note (required for other)" onchange="setVfNote(\''+ev.evidence_id+'\',this.value)" style="font-size:10.5px; padding:5px 7px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); width:100%; resize:vertical; font-family:inherit; box-sizing:border-box;">'+vfEsc(_nval)+'</textarea>';
@@ -3124,6 +3129,9 @@
 
   // Active EV rows (not dropped/dataset/reviewer_ok) for a single source_id, scoped to the
   // current NbS, narrowed by scope: whole source | a single page | tabular-only quotes.
+  // Paper-table number parsed from an evidence_id suffix (e.g. ev_texture_affan24_table4 -> "4").
+  // Matches only "table"/"tbl" — NOT bare "t4" (that collides with the T4 recipe-table id).
+  function _vfTableNo(eid){ var m=/(?:table|tbl)[ _]?(\d+)/i.exec(eid||''); return m?m[1]:''; }
   function _vfBulkRows(evAll, sid, scope){
     var nbs=(window._vfScope||{}).nbs||'all';
     return (evAll||[]).filter(function(e){
@@ -3133,6 +3141,7 @@
       if(e.reviewer_ok===true||e.reviewer_ok==='true')return false;
       if(scope==='tabular')return _vfTabular(e.quote);
       if(scope==='page'){ var p=(window._vfBulkPage||'').trim(); return p!==''&&String(e.page||'')===p; }
+      if(scope==='table'){ var t=(window._vfBulkTable||'').trim(); return t!==''&&_vfTableNo(e.evidence_id)===t; }
       return true;
     });
   }
@@ -3152,23 +3161,30 @@
     var _pageCount={}; _rowsAll.forEach(function(r){ var p=String(r.page||''); if(p)_pageCount[p]=(_pageCount[p]||0)+1; });
     var _pages=Object.keys(_pageCount).sort(function(a,b){return (parseInt(a)||0)-(parseInt(b)||0);});
     var _tabCount=_rowsAll.filter(function(r){return _vfTabular(r.quote);}).length;
+    // specific paper-tables present (from evidence_id) — lets you target Table 4 without also
+    // catching other content on the same page.
+    var _tblCount={}; _rowsAll.forEach(function(r){ var t=_vfTableNo(r.evidence_id); if(t)_tblCount[t]=(_tblCount[t]||0)+1; });
+    var _tbls=Object.keys(_tblCount).sort(function(a,b){return (parseInt(a)||0)-(parseInt(b)||0);});
     var scope=window._vfBulkScope||'whole';
     if(scope==='page'&&_pages.indexOf(String(window._vfBulkPage||''))<0){ scope='whole'; window._vfBulkScope='whole'; window._vfBulkPage=''; }
     if(scope==='tabular'&&!_tabCount){ scope='whole'; window._vfBulkScope='whole'; }
+    if(scope==='table'&&_tbls.indexOf(String(window._vfBulkTable||''))<0){ scope='whole'; window._vfBulkScope='whole'; window._vfBulkTable=''; }
     var n=_vfBulkRows(evAll,cur,scope).length;
     var dlopts=srcs.map(function(s){ return '<option value="'+vfEsc(s)+'">'+bySrc[s]+' record(s)</option>'; }).join('');
     var _chip=function(label,active,onclick){ return '<button class="pill-btn '+(active?'active sky':'')+'" onclick="'+onclick+'" style="font-size:10px; padding:3px 8px; border-radius:10px;">'+label+'</button>'; };
-    var locChips=_chip('whole source ('+_rowsAll.length+')', scope==='whole', "window._vfBulkScope='whole'; window._vfBulkPage=''; renderVfWorklist();");
+    var locChips=_chip('whole source ('+_rowsAll.length+')', scope==='whole', "window._vfBulkScope='whole'; window._vfBulkPage=''; window._vfBulkTable=''; renderVfWorklist();");
     if(_tabCount) locChips+=_chip('tables only ('+_tabCount+')', scope==='tabular', "window._vfBulkScope='tabular'; renderVfWorklist();");
+    locChips+=_tbls.map(function(t){ return _chip('Table '+vfEsc(t)+' ('+_tblCount[t]+')', scope==='table'&&String(window._vfBulkTable)===t, "window._vfBulkScope='table'; window._vfBulkTable='"+vfEsc(t)+"'; renderVfWorklist();"); }).join('');
     locChips+=_pages.map(function(p){ return _chip('p.'+vfEsc(p)+' ('+_pageCount[p]+')', scope==='page'&&String(window._vfBulkPage)===p, "window._vfBulkScope='page'; window._vfBulkPage='"+vfEsc(p)+"'; renderVfWorklist();"); }).join('');
     box.innerHTML=''
       +'<div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:2px;">&#9873; Flag a whole source at once</div>'
       +'<div style="font-size:9.5px; color:var(--text-muted); margin-bottom:6px; line-height:1.4;">Flag every active record from one paper (or one page / its tables) without reviewing each. Sets your decisions; Apply commits.</div>'
-      +'<input list="vf-bulk-datalist" value="'+vfEsc(cur)+'" placeholder="type to search sources…" onchange="window._vfBulkSrc=this.value; window._vfBulkScope=\'whole\'; window._vfBulkPage=\'\'; renderVfWorklist();" style="width:100%; box-sizing:border-box; font-size:11px; padding:5px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'
+      +'<input list="vf-bulk-datalist" value="'+vfEsc(cur)+'" placeholder="type to search sources…" onchange="window._vfBulkSrc=this.value; window._vfBulkScope=\'whole\'; window._vfBulkPage=\'\'; window._vfBulkTable=\'\'; renderVfWorklist();" style="width:100%; box-sizing:border-box; font-size:11px; padding:5px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'
       +'<datalist id="vf-bulk-datalist">'+dlopts+'</datalist>'
       +'<div style="font-size:9px; color:var(--text-muted); margin-bottom:3px;">Location in this source:</div>'
       +'<div style="display:flex; gap:4px; flex-wrap:wrap; margin-bottom:6px;">'+locChips+'</div>'
-      +'<input placeholder="reason / note (required)" value="'+vfEsc(window._vfBulkNote||'')+'" oninput="window._vfBulkNote=this.value;" style="width:100%; box-sizing:border-box; font-size:11px; padding:4px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">'
+      +'<select onchange="window._vfBulkReason=this.value;" title="coded reason — same set as the per-card reason selector" style="width:100%; box-sizing:border-box; font-size:11px; padding:5px 7px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><option value="">reason…</option>'+_VF_RC_FLAGGED.map(function(rc){return '<option value="'+rc+'" title="'+vfEsc(_VF_RC_DESC[rc]||'')+'"'+((window._vfBulkReason||'')===rc?' selected':'')+'>'+rc.replace(/_/g,' ')+'</option>';}).join('')+'</select>'
+      +'<textarea rows="2" placeholder="note (required for &quot;other&quot;)" oninput="window._vfBulkNote=this.value;" style="width:100%; box-sizing:border-box; font-size:11px; padding:5px 7px; border-radius:4px; margin-bottom:6px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); resize:vertical; font-family:inherit;">'+vfEsc(window._vfBulkNote||'')+'</textarea>'
       +'<div style="font-size:10px; color:var(--text-secondary); margin-bottom:6px;">will flag <b id="vf-bulk-n">'+n+'</b> active record(s)</div>'
       +'<div style="display:flex; gap:6px;">'
         +'<button onclick="vfBulkFlag(\'drop\')" title="remove all matching records (soft-delete on Apply)" style="flex:1; font-size:11px; padding:6px; border-radius:4px; border:1px solid var(--accent-rose); background:transparent; color:var(--accent-rose); cursor:pointer;">&#9873; drop all</button>'
@@ -3177,18 +3193,20 @@
   }
   function vfBulkFlag(decision){
     var sid=window._vfBulkSrc; var scope=window._vfBulkScope||'whole';
+    var reason=(window._vfBulkReason||'').trim();
     var note=(window._vfBulkNote||'').trim();
-    if(!note){ alert('Write a reason/note first — a bulk flag needs a justification.'); return; }
+    if(!reason){ alert('Pick a reason first — a bulk flag needs a coded reason (same set as the cards).'); return; }
+    if(reason==='other'&&!note){ alert('Reason "other" needs a note explaining it.'); return; }
     var rows=_vfBulkRows(dashboardData.registers.EV_evidence_register||[],sid,scope);
     if(!rows.length){ alert('No active records match that source/scope.'); return; }
     var verb=decision==='drop'?'DROP':'QUERY (tentatively keep + flag for reconsideration)';
-    var where=scope==='page'?(' on page '+(window._vfBulkPage||'')):(scope==='tabular'?' (tabular records only)':'');
+    var where=scope==='page'?(' on page '+(window._vfBulkPage||'')):(scope==='tabular'?' (tabular records only)':(scope==='table'?(' from Table '+(window._vfBulkTable||'')):''));
     if(!confirm(verb+' all '+rows.length+' active record(s) from "'+sid+'"'+where+'?\n\nThis sets YOUR decision on each — review the queue, then Apply to commit.'))return;
     var me=(window._vfReviewer||'reviewer');
     if(!window._vfDecisions)window._vfDecisions={}; if(!window._vfReasons)window._vfReasons={}; if(!window._vfNotes)window._vfNotes={}; if(!window._vfAllReviews)window._vfAllReviews={};
-    rows.forEach(function(e){ var id=e.evidence_id; window._vfDecisions[id]=decision; window._vfReasons[id]='other'; window._vfNotes[id]=note;
-      window._vfAllReviews[id]=window._vfAllReviews[id]||{}; window._vfAllReviews[id][me]={decision:decision,reason:'other',note:note};
-      if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:decision,reason:'other',note:note,reviewer:me})}).catch(function(){}); }
+    rows.forEach(function(e){ var id=e.evidence_id; window._vfDecisions[id]=decision; window._vfReasons[id]=reason; window._vfNotes[id]=note;
+      window._vfAllReviews[id]=window._vfAllReviews[id]||{}; window._vfAllReviews[id][me]={decision:decision,reason:reason,note:note};
+      if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:decision,reason:reason,note:note,reviewer:me})}).catch(function(){}); }
     });
     localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));
     localStorage.setItem('vfReasons',JSON.stringify(window._vfReasons));
