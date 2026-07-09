@@ -2956,6 +2956,9 @@
     // AI's call on this record: passed = AI INCLUDED it (green); flagged = AI marked it for removal (red).
     var _aiInc=passed; var _aiCol=_aiInc?'var(--accent-emerald)':'var(--accent-rose)';
     var _aiBadge='<span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#fff; background:'+_aiCol+'; border-radius:3px; padding:2px 8px;">'+(_aiInc?'✓ AI included':'⚑ AI flagged')+'</span>';
+    // Quarantined? (e.g. a unit dropped by another reviewer, shown here for a 2nd opinion.) Make
+    // it obvious so a dropped record isn't mistaken for an active one still in the queue.
+    var _dropBadge=((ev.review_state||'')==='dropped')?'<span title="Quarantined — dropped from the analysis (removed from results, kept &amp; reversible). Shown here so you can give a 2nd opinion / re-open it." style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#fff; background:var(--accent-rose); border-radius:3px; padding:2px 8px;">🗑 dropped</span>':'';
     var _qLeg=' · <b style="color:var(--accent-amber);">⚑ query</b> = keep tentatively but raise an open question (write it in the note).';
     var _decLegend=(_aiInc
       ? 'AI <b style="color:var(--accent-emerald);">included</b> this extraction. &nbsp;<b style="color:var(--accent-emerald);">ok</b> = keep it · <b style="color:var(--accent-rose);">drop</b> = remove (you caught an error the AI missed)'
@@ -3014,7 +3017,7 @@
     var decodedBlock=_dc?('<div style="margin-top:8px; font-size:10.5px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:4px; padding:7px 9px;"><b style="color:var(--accent-emerald);">&#128203; Decoded classes ('+_dc.n_included+' included &middot; scheme '+vfEsc(_dc.scheme)+')</b><div style="color:var(--text-secondary); margin-top:3px; line-height:1.5;">'+_dc.included.slice(0,25).map(_dcName).join(', ')+(_dc.included.length>25?(' <span style="color:var(--text-muted);">+'+(_dc.included.length-25)+' more</span>'):'')+'</div>'+((_dc.excluded&&_dc.excluded.length)?('<div style="margin-top:4px; color:var(--accent-rose);"><b>Excluded:</b> '+_dc.excluded.map(_dcName).join(', ')+'</div>'):'')+'</div>'):'';
     return '<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:4px solid '+_aiCol+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
       +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
-      +_aiBadge
+      +_aiBadge+_dropBadge
       +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
       +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;" title="AI verify verdict">'+vfEsc(verdict)+'</span>'
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+(ev.page?('<a href="#" onclick="vfSetSubset(\'section\',\''+vfEsc(String(ev.page))+'\');return false;" title="subset the worklist to page '+vfEsc(String(ev.page))+' of this source" style="color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(page)+'</a>'):vfEsc(page))+' · '+vfEsc(vfLocHint(ev))+'</span>'
