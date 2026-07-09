@@ -2821,7 +2821,8 @@
     var _rf=window._vfReviewedFilter;
     var _nFlag=units.filter(function(r){return _origin(r.evidence_id)==='flagged';}).length, _nPass=units.length-_nFlag;
     var shown=units.filter(function(r){ return _rf==='all'||_origin(r.evidence_id)===_rf; });
-    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+units.length+'</b> reviewed unit(s) '+(me?('by '+vfEsc(me)+' '):'(all reviewers) ')+'<span style="color:var(--text-muted);">— challenge with ok/drop to raise a conflict; '+(me?'switch reviewer to see others':'set your handle to filter to yours')+'</span>';
+    var _nDrop=units.filter(function(r){return dropped[r.evidence_id];}).length, _nAct=units.length-_nDrop;
+    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+units.length+'</b> unit(s) reviewed '+(me?('by '+vfEsc(me)):'(all reviewers)')+' — <b style="color:var(--accent-emerald);">'+_nAct+'</b> active, <b style="color:var(--accent-rose);">'+_nDrop+'</b> dropped. <span style="color:var(--text-muted);"><b>Active</b> = still in the live register (counts toward synthesis + shows in the queues). <b>Dropped</b> = quarantined: removed from analysis but kept &amp; reversible (re-open below). Challenge any with ok/drop to raise a conflict.</span>';
     host.innerHTML='';
     if(!units.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">No applied reviews yet'+(me?(' by '+vfEsc(me)):'')+'. Decisions appear here once you <b>Apply</b> them.</div>'; return; }
     // filter: was the reviewed unit originally AI-flagged or AI-passed
@@ -3071,8 +3072,11 @@
     passedAll=passedAll.filter(_inScope);
     var rlAll=(dashboardData.review_log)||[];
     var _rlMe=(window._vfReviewer||'').trim();
-    var _reviewedCount=(new Set((_rlMe?rlAll.filter(function(r){return (r.reviewer||'')===_rlMe;}):rlAll).map(function(r){return r.evidence_id;}))).size;
-    var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+')';
+    var _reviewedIds=(new Set((_rlMe?rlAll.filter(function(r){return (r.reviewer||'')===_rlMe;}):rlAll).map(function(r){return r.evidence_id;})));
+    var _reviewedCount=_reviewedIds.size;
+    var _dropSet=new Set(((dashboardData._evDropped)||[]).map(function(e){return e.evidence_id;}));
+    var _reviewedDropped=Array.from(_reviewedIds).filter(function(id){return _dropSet.has(id);}).length;
+    var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+(_reviewedDropped?(' · '+_reviewedDropped+' dropped'):'')+')';
     var _2ndCount=(typeof _vf2ndList==='function')?_vf2ndList().length:0;
     var _gapsCount=((dashboardData.gaps)||[]).length;
     var mp=document.getElementById('vf-mode-pills');
@@ -3103,7 +3107,7 @@
       // jump between renders). No sampling cap / resample — narrow via the SCOPE filters instead.
       if(window._vfPassSeed===undefined)window._vfPassSeed=Math.floor(Math.random()*1e9); var seed=window._vfPassSeed;
       visible=pool.map(function(ev){ var h=0,s=ev.evidence_id+'|'+seed; for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;} return {ev:ev,h:h>>>0}; }).sort(function(a,b){return a.h-b.h;}).map(function(o){ return {ev:o.ev, verdict:'pass', reason:'AI accepted this extraction — spot-check: is the encoded value actually faithful to the quote?'}; });
-      var dc0=document.getElementById('vf-decided-count'); if(dc0) dc0.innerHTML='<b>'+visible.length+'</b> '+(_ps==='all'?'':(_ps+' '))+'AI-passed unit(s) <span style="color:var(--text-muted);">— randomized order · ok = pass confirmed · drop = AI missed an error (false negative)</span>';
+      var dc0=document.getElementById('vf-decided-count'); if(dc0) dc0.innerHTML='<b>'+visible.length+'</b> '+(_ps==='all'?'':(_ps+' '))+'AI-passed unit(s) <span style="color:var(--text-muted);">— <b>active</b> units in this scope only (dropped/quarantined ones aren\'t counted here — see <b>My reviewed</b>). Randomized order · ok = pass confirmed · drop = AI missed an error (false negative).</span>';
     } else {
       if(!window._vfFlagStatus)window._vfFlagStatus='all';
       var _myDec=function(id){ return !!(window._vfDecisions||{})[id]; };
