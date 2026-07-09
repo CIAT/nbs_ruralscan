@@ -1902,7 +1902,9 @@
                 <div style="font-size:10.5px; color:var(--text-secondary); line-height:1.55; margin-top:5px; border-left:2px solid var(--border-color); padding-left:8px;">
                   <div><b>AI-flagged</b> / <b>AI-passed</b> — records in the <b>current scope</b> (left panel). Shown as <b>still-to-review / total</b> (e.g. <code>0 / 60</code> = 60 in scope, all reviewed). The left number drops to 0 as you work.</div>
                   <div style="margin-top:4px;"><b>2nd opinion</b> — reviewed by <b>someone else</b> (not you), awaiting your independent check.</div>
-                  <div style="margin-top:4px;"><b>My reviewed</b> — everything <b>you</b> have decided, across <b>all</b> scopes/tables (not just this one). So it will <b>not</b> equal AI-flagged + AI-passed — it's your whole history (done), they're the current-scope to-do.</div>
+                  <div style="margin-top:4px;"><b>My reviewed</b> — records you reviewed and <b>kept (active)</b> in the current scope. It equals <b>AI-flagged-reviewed + AI-passed-reviewed</b> (every record is one or the other) — so it reconciles with the queues above.</div>
+                  <div style="margin-top:4px;"><b>🗑 Dropped</b> — records you reviewed and <b>dropped</b> (quarantined) in the current scope: removed from the analysis but kept &amp; reversible. Separate from My reviewed so the numbers add up; re-open any to restore it.</div>
+                  <div style="margin-top:4px; color:var(--text-muted);"><b>All counts follow the SCOPE</b> (Practice · Sub-practice · Evidence type · channel · access) — change a filter and every number updates together.</div>
                   <div style="margin-top:4px;"><b>Gaps</b> — missing evidence you've reported.</div>
                   <div style="margin-top:6px; padding-top:5px; border-top:1px solid var(--border-color);"><b style="color:var(--accent-rose);">Dropped</b> (e.g. &ldquo;127 dropped&rdquo;) — records removed from the analysis (by a QA drop or an auto-guard): <b>parked, not deleted</b>. They&rsquo;re excluded from results + the to-do queues but kept as a record you can <b>re-open</b> (in My reviewed). That&rsquo;s why they&rsquo;re in your reviewed total but not in AI-passed.</div>
                 </div></details></div>
@@ -2615,7 +2617,7 @@
       if(typeof renderVfWorklist==='function')renderVfWorklist();
     }).catch(function(e){ if(msg)msg.innerHTML='<span style="color:var(--accent-rose);">Error: '+vfEsc(String(e))+'</span>'; }); }
   function renderVfGaps(host){ if(!host)return;
-    var gaps=((dashboardData||{}).gaps||[]).slice().reverse();
+    var gaps=((dashboardData||{}).gaps||[]).filter(_vfGapInScope).slice().reverse();
     var dc=document.getElementById('vf-decided-count'); if(dc)dc.innerHTML='<b>'+gaps.length+'</b> reported gap(s) — missing evidence flagged for a re-extraction sweep. <a href="#" onclick="openGapModal();return false;" style="color:var(--accent-amber);">+ report a gap</a>';
     host.innerHTML='';
     if(!gaps.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No gaps reported yet. Use <b style="color:var(--accent-amber);">&#9888; Report missing evidence</b> (sidebar) to flag a variable / figure / table that should exist but isn\'t in the register — e.g. after checking every variable in Figure 7 has been extracted.</div>'; return; }
@@ -2776,6 +2778,25 @@
     var a=(window._vfAllReviews||{})[eid]||{};
     Object.keys(a).forEach(function(rv){ if(a[rv]&&a[rv].decision) out[rv]=a[rv].decision; });  // local pending/applied overrides
     return out; }
+  // Module-level SCOPE predicate — the single source of truth for "is this row in the current
+  // scope" (Practice · Sub-practice · Evidence-type · Source channel · Access · source/section
+  // subset). Used by EVERY queue count so they all filter to the same scope + reconcile.
+  var _vfR2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
+  function _vfInScope(ev){ var sc=window._vfScope||{}; if(!sc.nbs)return true;
+    if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false;
+    if(sc.table&&sc.table!=='all'&&_vfR2T[ev.use_role]!==sc.table)return false;
+    if(sc.family&&sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false;
+    if(sc.source&&sc.source!=='all'&&_vfChanKey(ev)!==sc.source)return false;
+    if(sc.sourceId&&ev.source_id!==sc.sourceId)return false;
+    if(sc.section&&String(ev.page||'')!==String(sc.section))return false;
+    if(sc.access&&sc.access!=='all'){ var _oa=_vfIsOA(ev); if(sc.access==='oa'&&!_oa)return false; if(sc.access==='restricted'&&_oa)return false; }
+    return true; }
+  // Gap rows carry nbs_id / suitability_family_id / table directly (no use_role).
+  function _vfGapInScope(g){ var sc=window._vfScope||{}; if(!sc.nbs)return true;
+    if(sc.nbs!=='all'&&(g.nbs_id||'')!==sc.nbs)return false;
+    if(sc.table&&sc.table!=='all'&&(g.table||'')!==sc.table)return false;
+    if(sc.family&&sc.family!=='all'&&(g.suitability_family_id||'')!==sc.family)return false;
+    return true; }
   function _vf2ndList(){
     var me=(window._vfReviewer||'').trim();
     var evAll=(dashboardData.registers.EV_evidence_register)||[];
@@ -2787,6 +2808,7 @@
     var byId={}; evAll.concat(dropped).forEach(function(e){ byId[e.evidence_id]=e; });
     var store=(window._vfAllReviews||{});
     return resolved.filter(function(e){ var id=e.evidence_id;
+      if(!_vfInScope(e)) return false;                           // 2nd-opinion respects the scope too
       var nrev=Object.keys(revBy[id]||{}).length;
       if(nrev<1) return false;                                   // nobody has reviewed it → not a 2nd-opinion candidate
       if(nrev>=2) return false;                                  // already has a 2nd opinion
@@ -2812,25 +2834,28 @@
     });
   }
 
-  function renderVfReviewed(host, rlAll){ rlAll=rlAll||[];
+  function renderVfReviewed(host, rlAll, wantDropped){ rlAll=rlAll||[];
     var me=(window._vfReviewer||'').trim();
     var rows=rlAll.slice().reverse();
     var touchedByMe={}; if(me) rlAll.forEach(function(r){ if((r.reviewer||'')===me) touchedByMe[r.evidence_id]=true; });
     var evAll=(dashboardData.registers.EV_evidence_register)||[]; var present={};
     evAll.forEach(function(e){ present[e.evidence_id]=(e.reviewer_ok===true||e.reviewer_ok==='true'); });
     var dropped={}; ((dashboardData._evDropped)||[]).forEach(function(e){ dropped[e.evidence_id]=true; });
+    var _byId2={}; evAll.concat((dashboardData._evDropped)||[]).forEach(function(e){ _byId2[e.evidence_id]=e; });
     // origin (AI-flagged vs AI-passed) from the EV attribution (active or quarantined row).
-    var _flaggedMap={}; evAll.concat((dashboardData._evDropped)||[]).forEach(function(e){ _flaggedMap[e.evidence_id]=/\[VERIFY-FLAG/.test(e.attribution||''); });
+    var _flaggedMap={}; Object.keys(_byId2).forEach(function(id){ _flaggedMap[id]=/\[VERIFY-FLAG/.test((_byId2[id].attribution)||''); });
     var _origin=function(id){ return _flaggedMap[id]?'flagged':'passed'; };
-    // one card per unit (latest action), optionally filtered to units I've touched
+    // one card per unit (latest action) — touched by me, IN the current scope, and in the
+    // active/dropped bucket for this mode (My reviewed = kept/active; Dropped = quarantined).
     var seen={}, units=[];
-    rows.forEach(function(r){ var id=r.evidence_id; if(me && !touchedByMe[id]) return; if(seen[id]) return; seen[id]=1; units.push(r); });
+    rows.forEach(function(r){ var id=r.evidence_id; if(me && !touchedByMe[id]) return; if(seen[id]) return; var e=_byId2[id]; if(!e||!_vfInScope(e)) return; if((!!dropped[id])!==!!wantDropped) return; seen[id]=1; units.push(r); });
     if(!window._vfReviewedFilter)window._vfReviewedFilter='all';
     var _rf=window._vfReviewedFilter;
     var _nFlag=units.filter(function(r){return _origin(r.evidence_id)==='flagged';}).length, _nPass=units.length-_nFlag;
     var shown=units.filter(function(r){ return _rf==='all'||_origin(r.evidence_id)===_rf; });
-    var _nDrop=units.filter(function(r){return dropped[r.evidence_id];}).length, _nAct=units.length-_nDrop;
-    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML='<b>'+units.length+'</b> unit(s) reviewed '+(me?('by '+vfEsc(me)):'(all reviewers)')+' — <b style="color:var(--accent-emerald);">'+_nAct+'</b> active, <b style="color:var(--accent-rose);">'+_nDrop+'</b> dropped. <span style="color:var(--text-muted);"><b>Active</b> = still in the live register (counts toward synthesis + shows in the queues). <b>Dropped</b> = quarantined: removed from analysis but kept &amp; reversible (re-open below). Challenge any with ok/drop to raise a conflict.</span>';
+    var dc=document.getElementById('vf-decided-count'); if(dc) dc.innerHTML= wantDropped
+      ? ('<b>'+units.length+'</b> dropped (quarantined) record(s) '+(me?('by '+vfEsc(me)+' '):'')+'in scope — <span style="color:var(--text-muted);">removed from the analysis but kept &amp; reversible. Re-open any to send it back to the queue.</span>')
+      : ('<b>'+units.length+'</b> reviewed &amp; kept (active) record(s) '+(me?('by '+vfEsc(me)+' '):'')+'in scope = <b style="color:var(--accent-rose);">'+_nFlag+'</b> AI-flagged + <b style="color:var(--accent-emerald);">'+_nPass+'</b> AI-passed. <span style="color:var(--text-muted);">Challenge any with ok/drop to raise a conflict; dropped ones are under the 🗑 Dropped queue.</span>');
     host.innerHTML='';
     if(!units.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px;">No applied reviews yet'+(me?(' by '+vfEsc(me)):'')+'. Decisions appear here once you <b>Apply</b> them.</div>'; return; }
     // filter: was the reviewed unit originally AI-flagged or AI-passed
@@ -3052,7 +3077,7 @@
     _vfUpdatePending(); _vfRenderSubsetBanner();
     var _R2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
     // Task 3: sourceId subsets to one paper/tool; section subsets to one page within it.
-    function _inScope(ev){ var sc=window._vfScope; if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false; if(sc.table!=='all'&&_R2T[ev.use_role]!==sc.table)return false; if(sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false; if(sc.source!=='all'&&_vfChanKey(ev)!==sc.source)return false; if(sc.sourceId&&ev.source_id!==sc.sourceId)return false; if(sc.section&&String(ev.page||'')!==String(sc.section))return false; if(sc.access&&sc.access!=='all'){ var _oa=_vfIsOA(ev); if(sc.access==='oa'&&!_oa)return false; if(sc.access==='restricted'&&_oa)return false; } return true; }
+    function _inScope(ev){ return _vfInScope(ev); }
     var scEl=document.getElementById('vf-scope');
     if(scEl){ var _inNbs=function(e){ return window._vfScope.nbs==='all'||e.nbs_id===window._vfScope.nbs; };
       var _famOpts=Array.from(new Set(evAll.filter(_inNbs).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
@@ -3081,12 +3106,16 @@
     var rlAll=(dashboardData.review_log)||[];
     var _rlMe=(window._vfReviewer||'').trim();
     var _reviewedIds=(new Set((_rlMe?rlAll.filter(function(r){return (r.reviewer||'')===_rlMe;}):rlAll).map(function(r){return r.evidence_id;})));
-    var _reviewedCount=_reviewedIds.size;
-    var _dropSet=new Set(((dashboardData._evDropped)||[]).map(function(e){return e.evidence_id;}));
-    var _reviewedDropped=Array.from(_reviewedIds).filter(function(id){return _dropSet.has(id);}).length;
-    var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+(_reviewedDropped?(' · '+_reviewedDropped+' dropped'):'')+')';
+    // My-reviewed, split by IN-SCOPE active vs dropped, and (for the active part) by AI origin.
+    // Every reviewed row is AI-flagged xor AI-passed, so _revActFlag + _revActPass == _revAct —
+    // i.e. My reviewed (active) = AI-flagged-reviewed + AI-passed-reviewed. They sum by construction.
+    var _byIdAll={}; ((dashboardData.registers.EV_evidence_register)||[]).forEach(function(e){_byIdAll[e.evidence_id]=e;}); ((dashboardData._evDropped)||[]).forEach(function(e){_byIdAll[e.evidence_id]=e;});
+    var _FLAG0=function(e){return /\[VERIFY-FLAG/.test((e&&e.attribution)||'');};
+    var _revAct=0,_revDrop=0,_revActFlag=0,_revActPass=0;
+    _reviewedIds.forEach(function(id){ var e=_byIdAll[id]; if(!e||!_vfInScope(e))return; if((e.review_state||'')==='dropped'){_revDrop++;} else {_revAct++; if(_FLAG0(e))_revActFlag++; else _revActPass++;} });
+    var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_revAct+')';
     var _2ndCount=(typeof _vf2ndList==='function')?_vf2ndList().length:0;
-    var _gapsCount=((dashboardData.gaps)||[]).length;
+    var _gapsCount=((dashboardData.gaps)||[]).filter(_vfGapInScope).length;
     // Every to-do queue shows ONE number = records in the current scope still needing MY review
     // (not decided pending, and not committed by me in the review_log/store). Uniform single-number
     // "work remaining" — drops to 0 as I review. Totals live in the per-mode Filter row.
@@ -3095,12 +3124,13 @@
     var _passOut=passedAll.filter(function(ev){return _unrev(ev.evidence_id);}).length;
     var _flagOut=flaggedRows.filter(function(r){return _unrev(r.ev.evidence_id);}).length;
     var mp=document.getElementById('vf-mode-pills');
-    if(mp){ var modes=[['flagged','AI-flagged ('+_flagOut+' / '+flaggedRows.length+')','Records the AI flagged as suspect. Count = still-to-review / total in the current scope (0 / N = all done); confirm (ok) or remove (drop).'],['passed','AI-passed ('+_passOut+' / '+passedAll.length+')','Records the AI accepted — spot-check each is faithful. Count = still-to-review / total in the current scope (0 / N = all done); drop = AI missed an error.'],['second','🔁 2nd opinion ('+_2ndCount+')','Evidence already reviewed by someone else (not you) — give your independent 2nd opinion. Agreeing confirms consensus; disagreeing raises a conflict.'],['reviewed',_reviewedLbl,'Your own applied decisions — re-openable and challengeable.'],['gaps','⚠ Gaps ('+_gapsCount+')','Missing evidence reported by reviewers — variables/figures expected but not extracted. Feeds a re-extraction sweep.']];
+    if(mp){ var modes=[['flagged','AI-flagged ('+_flagOut+' / '+flaggedRows.length+')','Records the AI flagged as suspect. Count = still-to-review / total in the current scope (0 / N = all done); confirm (ok) or remove (drop).'],['passed','AI-passed ('+_passOut+' / '+passedAll.length+')','Records the AI accepted — spot-check each is faithful. Count = still-to-review / total in the current scope (0 / N = all done); drop = AI missed an error.'],['second','🔁 2nd opinion ('+_2ndCount+')','Evidence already reviewed by someone else (not you) — give your independent 2nd opinion. Agreeing confirms consensus; disagreeing raises a conflict.'],['reviewed',_reviewedLbl,'Records you have reviewed AND kept (active) in the current scope: '+_revActFlag+' AI-flagged + '+_revActPass+' AI-passed = '+_revAct+'. (Ones you dropped are under Dropped, not here.)'],['dropped','🗑 Dropped ('+_revDrop+')','Records you reviewed and dropped (quarantined) in the current scope — removed from the analysis but kept & reversible. Re-open any to send it back to the queue.'],['gaps','⚠ Gaps ('+_gapsCount+')','Missing evidence reported by reviewers — variables/figures expected but not extracted. Feeds a re-extraction sweep.']];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" title="'+vfEsc(m[2]||'')+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
     var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; _sb.textContent=_on?'← Back to review':'📊 Stats'; }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
-    if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfReviewed(host, rlAll);} return; }
+    if(mode==='reviewed'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfReviewed(host, rlAll, false);} return; }
+    if(mode==='dropped'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfReviewed(host, rlAll, true);} return; }
     if(mode==='second'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVf2ndOpinion(host);} return; }
     if(mode==='gaps'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfGaps(host);} return; }
     if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block';
