@@ -1897,7 +1897,15 @@
         </div>
         <div style="display:flex; gap:18px; align-items:flex-start; margin-top:6px;">
           <div id="vf-sidebar" style="flex:0 0 230px; position:sticky; top:96px; align-self:flex-start; max-height:calc(100vh - 108px); overflow-y:auto; overflow-x:hidden; padding-right:6px; display:flex; flex-direction:column; gap:14px;">
-            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="Which set of records to work through — the AI's flags, a sample of what it passed, units needing a 2nd opinion, or your own history">Review queue</div><div id="vf-mode-pills" style="display:flex; gap:6px; flex-wrap:wrap;"></div></div>
+            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="Which set of records to work through">Review queue</div><div id="vf-mode-pills" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
+              <details style="margin-top:7px;"><summary style="cursor:pointer; font-size:10px; color:var(--accent-sky); outline:none; list-style:none;">&#9432; what these numbers mean</summary>
+                <div style="font-size:10.5px; color:var(--text-secondary); line-height:1.55; margin-top:5px; border-left:2px solid var(--border-color); padding-left:8px;">
+                  <div><b>AI-flagged</b> / <b>AI-passed</b> — records in the <b>current scope</b> (left panel). Shown as <b>still-to-review / total</b> (e.g. <code>0 / 60</code> = 60 in scope, all reviewed). The left number drops to 0 as you work.</div>
+                  <div style="margin-top:4px;"><b>2nd opinion</b> — reviewed by <b>someone else</b> (not you), awaiting your independent check.</div>
+                  <div style="margin-top:4px;"><b>My reviewed</b> — everything <b>you</b> have decided, across <b>all</b> scopes/tables (not just this one). So it will <b>not</b> equal AI-flagged + AI-passed — it's your whole history (done), they're the current-scope to-do.</div>
+                  <div style="margin-top:4px;"><b>Gaps</b> — missing evidence you've reported.</div>
+                  <div style="margin-top:6px; padding-top:5px; border-top:1px solid var(--border-color);"><b style="color:var(--accent-rose);">Dropped</b> (e.g. &ldquo;127 dropped&rdquo;) — records removed from the analysis (by a QA drop or an auto-guard): <b>parked, not deleted</b>. They&rsquo;re excluded from results + the to-do queues but kept as a record you can <b>re-open</b> (in My reviewed). That&rsquo;s why they&rsquo;re in your reviewed total but not in AI-passed.</div>
+                </div></details></div>
             <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="narrow to a practice / table / sub-practice">Scope</div><div id="vf-scope" style="display:flex; gap:8px; flex-wrap:wrap;"></div></div>
             <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
               <span id="vf-decided-count" style="font-size:12px; color:var(--text-secondary);"></span>
@@ -3079,13 +3087,15 @@
     var _reviewedLbl=(_rlMe?'✓ My reviewed (':'✓ Reviewed — all (')+_reviewedCount+(_reviewedDropped?(' · '+_reviewedDropped+' dropped'):'')+')';
     var _2ndCount=(typeof _vf2ndList==='function')?_vf2ndList().length:0;
     var _gapsCount=((dashboardData.gaps)||[]).length;
-    // outstanding = passed-in-scope units I have NOT reviewed yet (pending, or committed in the
-    // review_log/store). Pill shows "outstanding / total" so it reads as a work queue, not a
-    // static total (which looked like 60-to-do even when all 60 were done).
+    // Every to-do queue shows ONE number = records in the current scope still needing MY review
+    // (not decided pending, and not committed by me in the review_log/store). Uniform single-number
+    // "work remaining" — drops to 0 as I review. Totals live in the per-mode Filter row.
     var _me3=(window._vfReviewer||'').trim(), _store3=(window._vfAllReviews||{}), _pend3=(window._vfDecisions||{});
-    var _passOut=passedAll.filter(function(ev){ var id=ev.evidence_id; if(_pend3[id])return false; if(_reviewedIds.has(id))return false; var s=_store3[id]&&_me3&&_store3[id][_me3]; if(s&&s.decision)return false; return true; }).length;
+    var _unrev=function(id){ if(_pend3[id])return false; if(_reviewedIds.has(id))return false; var s=_store3[id]&&_me3&&_store3[id][_me3]; return !(s&&s.decision); };
+    var _passOut=passedAll.filter(function(ev){return _unrev(ev.evidence_id);}).length;
+    var _flagOut=flaggedRows.filter(function(r){return _unrev(r.ev.evidence_id);}).length;
     var mp=document.getElementById('vf-mode-pills');
-    if(mp){ var modes=[['flagged','AI-flagged ('+flaggedRows.length+')','Records the AI flagged as suspect — the main review queue. Confirm (ok) or remove (drop).'],['passed','AI-passed ('+_passOut+' / '+passedAll.length+')','Records the AI accepted — spot-check each is faithful. Count = still-to-review / total in scope; drop = AI missed an error.'],['second','🔁 2nd opinion ('+_2ndCount+')','Evidence already reviewed by someone else (not you) — give your independent 2nd opinion. Agreeing confirms consensus; disagreeing raises a conflict.'],['reviewed',_reviewedLbl,'Your own applied decisions — re-openable and challengeable.'],['gaps','⚠ Gaps ('+_gapsCount+')','Missing evidence reported by reviewers — variables/figures expected but not extracted. Feeds a re-extraction sweep.']];
+    if(mp){ var modes=[['flagged','AI-flagged ('+_flagOut+' / '+flaggedRows.length+')','Records the AI flagged as suspect. Count = still-to-review / total in the current scope (0 / N = all done); confirm (ok) or remove (drop).'],['passed','AI-passed ('+_passOut+' / '+passedAll.length+')','Records the AI accepted — spot-check each is faithful. Count = still-to-review / total in the current scope (0 / N = all done); drop = AI missed an error.'],['second','🔁 2nd opinion ('+_2ndCount+')','Evidence already reviewed by someone else (not you) — give your independent 2nd opinion. Agreeing confirms consensus; disagreeing raises a conflict.'],['reviewed',_reviewedLbl,'Your own applied decisions — re-openable and challengeable.'],['gaps','⚠ Gaps ('+_gapsCount+')','Missing evidence reported by reviewers — variables/figures expected but not extracted. Feeds a re-extraction sweep.']];
       mp.innerHTML=modes.map(function(m){ var act=mode===m[0]?'active sky':''; return '<button class="pill-btn '+act+'" title="'+vfEsc(m[2]||'')+'" onclick="window._vfMode=\''+m[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+m[1]+'</button>'; }).join(''); }
     var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; _sb.textContent=_on?'← Back to review':'📊 Stats'; }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
