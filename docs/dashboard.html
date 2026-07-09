@@ -2759,6 +2759,15 @@
 
   // Units resolved by < 2 reviewers (need a 2nd opinion). If a reviewer handle is set,
   // exclude units that reviewer already reviewed (it's not THEIR 2nd opinion to give).
+  // All reviews for one unit, MERGING committed review_log (other reviewers, from the register)
+  // with the local decisions.json store (_vfAllReviews). decisions.json is per-machine, so on
+  // its own it misses other people's committed reviews — the review_log fills that gap.
+  function _vfMergedReviews(eid){ var out={};
+    var rl=(dashboardData.review_log)||[];
+    rl.forEach(function(r){ if(r.evidence_id!==eid)return; var d=(r.decision||'').toLowerCase(); if(d==='ok'||d==='drop'||d==='flag'||d==='query') out[r.reviewer||'?']=d; });
+    var a=(window._vfAllReviews||{})[eid]||{};
+    Object.keys(a).forEach(function(rv){ if(a[rv]&&a[rv].decision) out[rv]=a[rv].decision; });  // local pending/applied overrides
+    return out; }
   function _vf2ndList(){
     var me=(window._vfReviewer||'').trim();
     var evAll=(dashboardData.registers.EV_evidence_register)||[];
@@ -2771,9 +2780,10 @@
     var store=(window._vfAllReviews||{});
     return resolved.filter(function(e){ var id=e.evidence_id;
       var nrev=Object.keys(revBy[id]||{}).length;
+      if(nrev<1) return false;                                   // nobody has reviewed it → not a 2nd-opinion candidate
       if(nrev>=2) return false;                                  // already has a 2nd opinion
       if(me){ var meRl=revBy[id]&&revBy[id][me]; var meSt=store[id]&&store[id][me]&&store[id][me].decision; if(meRl||meSt) return false; }
-      return true;
+      return true;                                               // reviewed by exactly one OTHER person, not me
     }).map(function(e){ return {ev:e, prior:prior[e.evidence_id]||{}, dropped:((e.review_state||'')==='dropped')}; });
   }
 
@@ -2825,9 +2835,9 @@
       var _org=_origin(id); var _orgCol=_org==='flagged'?'var(--accent-rose)':'var(--accent-emerald)';
       var _orgBadge='<span title="'+(_org==='flagged'?'AI flagged this extraction originally':'AI accepted this extraction originally')+'" style="font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; padding:1px 6px; border-radius:3px; border:1px solid '+_orgCol+'; color:'+_orgCol+';">'+(_org==='flagged'?'⚑ AI-flagged':'✓ AI-passed')+'</span>';
       // all reviewers' current decisions for this unit (from the persistent store)
-      var allr=(window._vfAllReviews||{})[id]||{}; var rk=Object.keys(allr).filter(function(k){return allr[k].decision;});
-      var conf=(new Set(rk.map(function(k){return allr[k].decision;}))).size>1;
-      var reviewsLine=rk.length?('<div style="font-size:10.5px; margin-top:5px;">'+(conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+rk.map(function(k){return vfEsc(k)+'='+vfEsc(allr[k].decision);}).join(' · ')+'</div>'):'';
+      var allr=_vfMergedReviews(id); var rk=Object.keys(allr);
+      var conf=(new Set(rk.map(function(k){return allr[k];}))).size>1;
+      var reviewsLine=rk.length?('<div style="font-size:10.5px; margin-top:5px;">'+(conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+rk.map(function(k){return vfEsc(k)+'='+vfEsc(allr[k]);}).join(' · ')+'</div>'):'';
       var reopenBtn = (present[id]||dropped[id]) ? ('<button onclick="reopenVf(\''+id+'\')" title="clear the applied decision and send back to AI-flagged" style="cursor:pointer; font-size:11px; padding:3px 10px; border-radius:4px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber);">↩ re-open</button>') : '<span style="color:var(--text-muted); font-size:10.5px;">removed — re-extract</span>';
       var challenge='<span style="font-size:10.5px; color:var(--text-muted);">challenge:</span>'
         +'<button onclick="challengeVf(\''+id+'\',\'ok\')" title="record YOUR call = keep; disagreement raises a conflict" style="cursor:pointer; font-size:11px; padding:3px 11px; border-radius:4px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald);">ok</button>'
@@ -2935,10 +2945,10 @@
     var _nval=(window._vfNotes||{})[ev.evidence_id]||'';
     var noteInp='<textarea rows="2" placeholder="note (required for other)" onchange="setVfNote(\''+ev.evidence_id+'\',this.value)" style="font-size:10.5px; padding:5px 7px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); width:100%; resize:vertical; font-family:inherit; box-sizing:border-box;">'+vfEsc(_nval)+'</textarea>';
     var reasonSel='<select onchange="setVfReason(\''+ev.evidence_id+'\',this.value)" style="font-size:10.5px; padding:4px 7px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><option value="">reason…</option>'+_rc.map(function(rc){return '<option value="'+rc+'" title="'+vfEsc(_rcDesc[rc])+'"'+(_rsel===rc?' selected':'')+'>'+rc.replace(/_/g,' ')+'</option>';}).join('')+'</select>';
-    var _allr=(window._vfAllReviews||{})[ev.evidence_id]||{};
-    var _rk=Object.keys(_allr).filter(function(rv){return _allr[rv].decision;});
-    var _conf=(new Set(_rk.map(function(rv){return _allr[rv].decision;}))).size>1;
-    var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv].decision);}).join(' · ')+'</div>'):'';
+    var _allr=_vfMergedReviews(ev.evidence_id);
+    var _rk=Object.keys(_allr);
+    var _conf=(new Set(_rk.map(function(rv){return _allr[rv];}))).size>1;
+    var reviewsLine=_rk.length?('<div style="font-size:10.5px; margin-top:8px;">'+(_conf?'<span style="color:var(--accent-rose); font-weight:700;">⚠ CONFLICT</span> ':'<span style="color:var(--text-muted);">Reviews:</span> ')+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv]);}).join(' · ')+'</div>'):'';
     // Task 4: show what this evidence contributes to (NbS · sub-practice) + its geography, so a
     // reviewer can sanity-check the tagging without opening the source.
     var _nbsShort=(ev.nbs_id||'—').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
