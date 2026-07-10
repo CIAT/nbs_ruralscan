@@ -3075,8 +3075,8 @@
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+(ev.page?('<a href="#" onclick="vfSetSubset(\'section\',\''+vfEsc(String(ev.page))+'\');return false;" title="subset the worklist to page '+vfEsc(String(ev.page))+' of this source" style="color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(page)+'</a>'):vfEsc(page))+' · '+vfEsc(vfLocHint(ev))+'</span>'
       +'</div>'
       +_chipRow
-      +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);">'+(passed?'Encoded value:':'Encoded value (disputed):')+'</b> '+vfRelHtml(ev)+'</div>'
-      +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Why flagged:')+'</b> '+vfEsc(reason)+'</div>'
+      +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);" title="'+(passed?'The value the AI encoded from the quote.':'What the verify pass KEPT — only the fields the quote supports. The disputed field was removed and is described in the Flagged line below. These shown values are the confirmed ones, not the disputed ones.')+'">'+(passed?'Encoded value:':'Encoded value (kept after verify — disputed part removed):')+'</b> '+vfRelHtml(ev)+'</div>'
+      +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Flagged — what was removed / disputed:')+'</b> '+vfEsc(reason)+'</div>'
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
       +cropImg
       +decodedBlock
