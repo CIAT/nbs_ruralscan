@@ -3175,11 +3175,15 @@
     var _uMe=function(id){ if(_pend[id])return true; if(_reopMe[id])return false; var s=_store[id]||{}; if(_meH&&s[_meH]&&s[_meH].decision)return true; return !!(_meH&&(_rlByRev[id]||{})[_meH]); };
     var _uOther=function(id){ var s=_store[id]||{}; if(Object.keys(s).some(function(k){return k!==_meH&&s[k]&&s[k].decision;}))return true; return Object.keys(_rlByRev[id]||{}).some(function(k){return k!==_meH;}); };
     var _uMyDec=function(id){ if(_pend[id])return (_pend[id]||'').toLowerCase(); if(_reopMe[id])return ''; var s=_store[id]||{}; if(_meH&&s[_meH]&&s[_meH].decision)return (s[_meH].decision||'').toLowerCase(); return _meH?((_rlByRev[id]||{})[_meH]||''):''; };
+    // Has MY decision been APPLIED (committed to the review_log, or stamped applied in the store)?
+    // This — not the register's reviewer_ok/dropped state — decides settled (compact card) vs
+    // in-progress (full editable card), so an applied *query* reads as settled like an ok/drop does.
+    var _meApplied=function(id){ if(_reopMe[id])return false; if((_rlByRev[id]||{})[_meH])return true; var s=_store[id]||{}; return !!(_meH&&s[_meH]&&(s[_meH].applied===true||s[_meH].applied==='true')); };
     // Build the annotated universe (deduped by evidence_id). flaggedRows/passedAll are already scoped.
     var _uni=[], _useen={};
     var _pushU=function(ev,origin,verdict,reason){ var id=ev.evidence_id; if(_useen[id])return; _useen[id]=1;
-      var isDrop=((ev.review_state||'')==='dropped'); var applied=(ev.reviewer_ok===true||ev.reviewer_ok==='true')||isDrop;
-      _uni.push({ev:ev,origin:origin,verdict:verdict,reason:reason,me:_uMe(id),other:_uOther(id),myDec:_uMyDec(id),applied:applied,dropped:isDrop}); };
+      var isDrop=((ev.review_state||'')==='dropped');
+      _uni.push({ev:ev,origin:origin,verdict:verdict,reason:reason,me:_uMe(id),other:_uOther(id),myDec:_uMyDec(id),meApplied:_meApplied(id),dropped:isDrop}); };
     flaggedRows.forEach(function(r){ _pushU(r.ev,'flagged',r.verdict,r.reason); });
     passedAll.forEach(function(ev){ _pushU(ev,'passed','pass','AI accepted this extraction — spot-check: is the encoded value faithful to the quote?'); });
     ((dashboardData._evDropped)||[]).forEach(function(ev){ if(ev.use_role==='dataset')return; if(!_vfInScope(ev))return; var o=/\[VERIFY-FLAG/.test(ev.attribution||'')?'flagged':'passed'; _pushU(ev,o,o==='flagged'?'flagged':'pass',''); });
@@ -3249,7 +3253,7 @@
     //  • me + applied  -> compact resolved card (my settled decision; challenge / re-open)
     //  • otherwise      -> full review card, so I can actually judge it. This covers 2nd opinion
     //    (others dropped/kept it, I haven't) and in-progress pending decisions.
-    _list.forEach(function(u){ if(u.applied && u.me){ host.insertAdjacentHTML('beforeend', _vfResolvedCard(u.ev.evidence_id, rlAll)); } else { host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed')); } });
+    _list.forEach(function(u){ if(u.meApplied){ host.insertAdjacentHTML('beforeend', _vfResolvedCard(u.ev.evidence_id, rlAll)); } else { host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed')); } });
   }
 
   // Active EV rows (not dropped/dataset/reviewer_ok) for a single source_id, scoped to the
