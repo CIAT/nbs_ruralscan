@@ -3215,8 +3215,8 @@
     if(fd){ fd.style.display='block'; fd.style.gap=''; fd.style.flexWrap=''; fd.style.alignItems='';
       var _seg=function(which,label,opts,sv){ return '<div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin:2px 0;"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:120px;">'+label+'</span>'+opts.map(function(o){ var active=(window[sv]===o[0])?'active sky':''; var cnt=which?(' ('+_axN(which,o[0])+')'):''; return '<button class="pill-btn '+active+'" onclick="window.'+sv+'=\''+o[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+o[1]+cnt+'</button>'; }).join('')+'</div>'; };
       var _bar=_seg('origin','Origin',[['any','Any'],['flagged','⚑ AI-flagged'],['passed','✓ AI-passed']],'_vfAxOrigin')
-        +_seg('me','Reviewed by me',[['any','Any'],['no','Not'],['yes','Yes']],'_vfAxMe')
-        +_seg('other','Reviewed by others',[['any','Any'],['no','Not'],['yes','Yes']],'_vfAxOther');
+        +_seg('me','Reviewed by me',[['any','Any'],['no','No'],['yes','Yes']],'_vfAxMe')
+        +_seg('other','Reviewed by others',[['any','Any'],['no','No'],['yes','Yes']],'_vfAxOther');
       if(window._vfAxMe==='yes'){ _bar+=_seg('','My call',[['all','All'],['ok','✓ Kept'],['query','⚑ Queried'],['drop','🗑 Dropped']],'_vfMyCall'); }
       // verdict pills (only meaningful when flagged units can be in view) + tables toggle
       var _extra='';
