@@ -3245,7 +3245,11 @@
         return;
       }
       host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No evidence matches these filters (<b>'+_uni.length+'</b> in scope). Loosen the <b>Origin / Reviewed-by</b> toggles above, or broaden the <b>SCOPE</b> on the left.</div>'; return; }
-    _list.forEach(function(u){ if(u.applied){ host.insertAdjacentHTML('beforeend', _vfResolvedCard(u.ev.evidence_id, rlAll)); } else { host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed')); } });
+    // Card choice by whether I have settled it — NOT by global applied/dropped state:
+    //  • me + applied  -> compact resolved card (my settled decision; challenge / re-open)
+    //  • otherwise      -> full review card, so I can actually judge it. This covers 2nd opinion
+    //    (others dropped/kept it, I haven't) and in-progress pending decisions.
+    _list.forEach(function(u){ if(u.applied && u.me){ host.insertAdjacentHTML('beforeend', _vfResolvedCard(u.ev.evidence_id, rlAll)); } else { host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed')); } });
   }
 
   // Active EV rows (not dropped/dataset/reviewer_ok) for a single source_id, scoped to the
