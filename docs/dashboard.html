@@ -1858,6 +1858,7 @@
         <h2 class="card-title" style="display:flex; align-items:center; gap:12px;">
           <span>&#9872; QA / QC — VERIFY-FLAG review</span>
           <span class="card-title-meta" style="flex:1;">Every EV row flagged by the relationship-verify pass — work through these before any threshold is trusted</span>
+          <button id="vf-gaps-btn" onclick="window._vfMode=(window._vfMode==='gaps'?'review':'gaps'); renderVfWorklist();" title="Missing evidence reported by reviewers — variables/figures expected but not extracted. Click to open, click again to return to review." style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber); cursor:pointer;">&#9888; Gaps</button>
           <button id="vf-stats-btn" onclick="toggleVfStats()" title="AI verify-flag performance metrics — click to open, click again to return to review" style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald); cursor:pointer;">📊 Stats</button>
         </h2>
         <div style="margin-bottom:14px; display:flex; flex-direction:column; gap:9px;">
@@ -1897,18 +1898,14 @@
         </div>
         <div style="display:flex; gap:18px; align-items:flex-start; margin-top:6px;">
           <div id="vf-sidebar" style="flex:0 0 230px; position:sticky; top:96px; align-self:flex-start; max-height:calc(100vh - 108px); overflow-y:auto; overflow-x:hidden; padding-right:6px; display:flex; flex-direction:column; gap:14px;">
-            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="Quick presets — each just sets the Origin / Reviewed-by toggles in the Filter bar. Fine-tune any permutation there.">Review queue <span style="font-weight:400; text-transform:none; letter-spacing:0;">· presets</span></div><div id="vf-mode-pills" style="display:flex; gap:6px; flex-wrap:wrap;"></div>
-              <details style="margin-top:7px;"><summary style="cursor:pointer; font-size:10px; color:var(--accent-sky); outline:none; list-style:none;">&#9432; what these numbers mean</summary>
+            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="How the review filters work">Filters</div>
+              <details><summary style="cursor:pointer; font-size:10px; color:var(--accent-sky); outline:none; list-style:none;">&#9432; how the filters work</summary>
                 <div style="font-size:10.5px; color:var(--text-secondary); line-height:1.55; margin-top:5px; border-left:2px solid var(--border-color); padding-left:8px;">
-                  <div>These are <b>presets</b> — clicking one sets the three <b>Filter-bar toggles</b> (Origin · Reviewed&nbsp;by&nbsp;me · Reviewed&nbsp;by&nbsp;others). Each count = exactly what that combo shows, so a pill and its view always agree. Set the toggles yourself for any other permutation.</div>
-                  <div style="margin-top:4px;"><b>To review</b> — anything <b>not yet reviewed by you</b> (any origin).</div>
-                  <div style="margin-top:4px;"><b>⚑ AI-flagged</b> / <b>✓ AI-passed</b> — that origin, <b>not reviewed by you</b>.</div>
-                  <div style="margin-top:4px;"><b>🔁 2nd opinion</b> — reviewed by <b>someone else</b>, not by you (includes a drop by another awaiting your call).</div>
-                  <div style="margin-top:4px;">Your own reviews, by the call you made (disjoint):</div>
-                  <div style="margin-top:2px;"><b>✓ Kept</b> = your <b>ok</b> · <b>⚑ Queried</b> = your <b>query</b> (open question) · <b>🗑 Dropped</b> = your <b>drop</b> (quarantined; kept &amp; reversible — re-open to restore).</div>
-                  <div style="margin-top:4px; color:var(--text-muted);"><b>Everything follows the SCOPE</b> (Practice · Sub-practice · Evidence type · channel · access) AND the toggles — change any and all counts update together.</div>
-                  <div style="margin-top:4px;"><b>Gaps</b> — missing evidence you've reported.</div>
-                  <div style="margin-top:6px; padding-top:5px; border-top:1px solid var(--border-color);">The <b>Filter bar</b> (right) shows the three toggles as <b>Any / Not / Yes</b> with live counts, plus a <b>My call</b> sub-filter (Kept/Queried/Dropped) when <b>Reviewed by me = Yes</b>, and Verdict + 📷 tables.</div>
+                  <div>The <b>Filter bar</b> (right) has three orthogonal toggles, each with a live count — combine them for any permutation:</div>
+                  <div style="margin-top:2px;"><b>Origin</b> (Any / ⚑&nbsp;AI-flagged / ✓&nbsp;AI-passed) · <b>Reviewed by me</b> (Any / Not / Yes) · <b>Reviewed by others</b> (Any / Not / Yes).</div>
+                  <div style="margin-top:4px;">Common views: <b>To review</b> = me&nbsp;Not · <b>2nd opinion</b> = me&nbsp;Not + others&nbsp;Yes · your own calls = me&nbsp;Yes, then the <b>My call</b> sub-filter (✓&nbsp;Kept / ⚑&nbsp;Queried / 🗑&nbsp;Dropped).</div>
+                  <div style="margin-top:4px; color:var(--text-muted);">Everything also follows the <b>SCOPE</b> below (Practice · Sub-practice · Evidence type · channel · access) — change any and all counts update together.</div>
+                  <div style="margin-top:4px;"><b>⚠ Gaps</b> / <b>📊 Stats</b> — buttons top-right.</div>
                 </div></details></div>
             <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="narrow to a practice / table / sub-practice">Scope</div><div id="vf-scope" style="display:flex; gap:8px; flex-wrap:wrap;"></div></div>
             <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
@@ -3099,11 +3096,6 @@
     vfRenderDetail(window._vfVisible||[], window._vfMode==='passed');
   }
 
-  // Sidebar presets set the three orthogonal review-status toggles (origin × me × others) + the
-  // My-call sub-filter, then re-render. vfMode switches to a non-toggle view (gaps / stats).
-  function vfPreset(o,m,ot,c){ window._vfAxOrigin=o; window._vfAxMe=m; window._vfAxOther=ot; window._vfMyCall=c||'all'; window._vfVerdictFilter='all'; window._vfTablesOnly=false; if(window._vfMode==='gaps'||window._vfMode==='stats')window._vfMode='review'; renderVfWorklist(); }
-  function vfMode(m){ window._vfMode=m; renderVfWorklist(); }
-
   function renderVfWorklist() {
     if (!dashboardData) return;
     if (!window._vfDecisions){ try{ window._vfDecisions=JSON.parse(localStorage.getItem('vfDecisions')||'{}'); }catch(e){ window._vfDecisions={}; } }
@@ -3170,7 +3162,6 @@
     if(window._vfAxMe===undefined)window._vfAxMe='no';
     if(window._vfAxOther===undefined)window._vfAxOther='any';
     if(window._vfMyCall===undefined)window._vfMyCall='all';
-    var _reviewMode=(mode!=='gaps'&&mode!=='stats');
     // reviewed-by predicates: pending (this session) + persistent store (all reviewers) + committed log.
     var _store=(window._vfAllReviews||{}), _pend=(window._vfDecisions||{});
     var _meH=(window._vfReviewer||'').trim();
@@ -3192,10 +3183,6 @@
     flaggedRows.forEach(function(r){ _pushU(r.ev,'flagged',r.verdict,r.reason); });
     passedAll.forEach(function(ev){ _pushU(ev,'passed','pass','AI accepted this extraction — spot-check: is the encoded value faithful to the quote?'); });
     ((dashboardData._evDropped)||[]).forEach(function(ev){ if(ev.use_role==='dataset')return; if(!_vfInScope(ev))return; var o=/\[VERIFY-FLAG/.test(ev.attribution||'')?'flagged':'passed'; _pushU(ev,o,o==='flagged'?'flagged':'pass',''); });
-    // Preset counts — computed from the SAME universe so a pill's number == what clicking it shows.
-    var _cTodo=0,_cFlag=0,_cPass=0,_c2nd=0,_cKept=0,_cQ=0,_cDrop=0;
-    _uni.forEach(function(u){ if(!u.me)_cTodo++; if(u.origin==='flagged'&&!u.me)_cFlag++; if(u.origin==='passed'&&!u.me)_cPass++; if(!u.me&&u.other)_c2nd++;
-      if(u.me&&u.myDec==='ok')_cKept++; else if(u.me&&(u.myDec==='query'||u.myDec==='flag'))_cQ++; else if(u.me&&u.myDec==='drop')_cDrop++; });
     // Secondary filters (My-call + verdict + tables) — SHARED by _axN and the rendered _list so a
     // toggle's count always equals what clicking it shows. effOrigin/effMe let _axN evaluate the
     // predicate as if a candidate axis value were applied. A non-'conflict' verdict is ignored when
@@ -3217,20 +3204,7 @@
       else { if(!(val==='any'||u.other===(val==='yes')))return false; }
       return _sec(u, (which==='origin')?val:window._vfAxOrigin, (which==='me')?val:window._vfAxMe); }).length; };
     // ---- sidebar presets (set the toggles; keep familiar labels + counts) ----
-    var mp=document.getElementById('vf-mode-pills');
-    if(mp){
-      var _isP=function(o,m,ot,c){ return _reviewMode&&window._vfAxOrigin===o&&window._vfAxMe===m&&window._vfAxOther===ot&&(c===undefined||window._vfMyCall===c); };
-      var presets=[
-        ['To review','any origin · not yet reviewed by you','vfPreset(\'any\',\'no\',\'any\',\'all\')',_isP('any','no','any','all'),_cTodo],
-        ['⚑ AI-flagged','AI-flagged · not reviewed by you','vfPreset(\'flagged\',\'no\',\'any\',\'all\')',_isP('flagged','no','any','all'),_cFlag],
-        ['✓ AI-passed','AI-passed · not reviewed by you','vfPreset(\'passed\',\'no\',\'any\',\'all\')',_isP('passed','no','any','all'),_cPass],
-        ['🔁 2nd opinion','reviewed by others · not by you','vfPreset(\'any\',\'no\',\'yes\',\'all\')',_isP('any','no','yes','all'),_c2nd],
-        ['✓ Kept','you reviewed & kept (ok)','vfPreset(\'any\',\'yes\',\'any\',\'ok\')',_isP('any','yes','any','ok'),_cKept],
-        ['⚑ Queried','you kept tentatively (open question)','vfPreset(\'any\',\'yes\',\'any\',\'query\')',_isP('any','yes','any','query'),_cQ],
-        ['🗑 Dropped','you dropped (quarantined)','vfPreset(\'any\',\'yes\',\'any\',\'drop\')',_isP('any','yes','any','drop'),_cDrop],
-        ['⚠ Gaps','missing evidence reported by reviewers','vfMode(\'gaps\')',mode==='gaps',_gapsCount]
-      ];
-      mp.innerHTML=presets.map(function(p){ var act=p[3]?'active sky':''; return '<button class="pill-btn '+act+'" title="'+vfEsc(p[1])+'" onclick="'+p[2]+'" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+p[0]+' ('+p[4]+')</button>'; }).join(''); }
+    var _gb=document.getElementById('vf-gaps-btn'); if(_gb){ var _gon=(mode==='gaps'); _gb.style.background=_gon?'var(--accent-amber)':'transparent'; _gb.style.color=_gon?'#0b0b0b':'var(--accent-amber)'; _gb.textContent=(_gon?'← Back to review':'⚠ Gaps ('+_gapsCount+')'); }
     var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; _sb.textContent=_on?'← Back to review':'📊 Stats'; }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
