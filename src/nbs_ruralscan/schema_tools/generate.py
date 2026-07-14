@@ -488,7 +488,9 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
         )
     from nbs_ruralscan.schema_tools.check_species import check as _species_check
 
-    _species_flags = _species_check(schema_root / "registers" / "EV_evidence_register.csv")
+    _species_flags = _species_check(
+        schema_root / "registers" / "EV_evidence_register.csv"
+    )
     if _species_flags:
         print(
             f"  SPECIES NOTES ({len(_species_flags)} practice-tagged unit(s) that look "
