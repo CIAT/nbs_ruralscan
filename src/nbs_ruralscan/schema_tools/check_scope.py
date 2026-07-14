@@ -12,6 +12,12 @@ are PROXIES — a real suitability claim can mention carbon — so this is ADVIS
 never fails the build). Use it to triage before an LLM verify pass and to stop
 regressions; the `off_scope` rate must trend DOWN sweep-over-sweep.
 
+Two 2026-07 additions (from the sweep-retro triage of the July QA `other`/`constrained_aoi`
+buckets): `land_capability` catches AOI-constraining land-capability/land-use-capacity
+schemes (residual/"marginal land" framing — catalogue #14 `constrained_aoi`), and
+`land_cover_no_classes` catches a land_cover/LULC quote that names no in/out classes
+(unactionable — catalogue #13). Both advisory, same as the section signals.
+
 Already-resolved rows (reviewer_ok) and quarantined rows (review_state=dropped) are
 skipped — they've had their human call.
 """
@@ -82,7 +88,32 @@ _SIGNALS: dict[str, re.Pattern] = {
         r"|we (believe|expect|hypothesi)|is (a )?reflection|hand-?wavy|speculat",
         re.I,
     ),
+    # AOI-CONSTRAINING classification (2026-06-24 `constrained_aoi`, catalogue #14): a
+    # land-capability / land-use-capacity scheme (USDA-LCC-style, e.g. INAB Guatemala) that
+    # files agroforestry into a residual / "marginal land" bucket UNDERSTATES where the NbS is
+    # feasible — its class thresholds describe where it was *allocated*, not where it *can go*.
+    # A FRAMING bias of an on-topic source: never use to set the AOI/extent or a global
+    # threshold. Existing INAB rows are already dropped (skipped below); this stops regressions.
+    "land_capability": re.compile(
+        r"land[- ]?(use[- ]?)?capabilit|capability class(es|ification)?"
+        r"|land[- ]?use[- ]?capacit|capacidad de uso|clase[s]? agrol[oó]gic"
+        r"|clases de capacidad|marginal land|residual land|tierras marginales"
+        r"|USDA[- ]?LCC|\bINAB\b",
+        re.I,
+    ),
 }
+
+# land_cover / LULC variables (2026-06-24, catalogue #13): a bare "land cover is a variable"
+# claim with NO enumerated in/out classes is unreviewable ("which classes are in or out?").
+# Flag a land_cover EV whose quote names none of the usual class terms.
+_LC_VARS = ("land_cover", "landcover", "lulc", "land_use")
+_LC_CLASS = re.compile(
+    r"\b(forest|woodland|cropland|crop ?land|agricultur|pasture|grass ?land|range ?land"
+    r"|shrub|savanna|wetland|\bwater\b|urban|built[- ]?up|bare|barren|mangrove|plantation"
+    r"|orchard|fallow|settlement|grazing|scrub|tree ?cover|canopy|paddy|arable"
+    r"|deciduous|evergreen|coniferous|meadow|bush)\b",
+    re.I,
+)
 
 
 def check(ev_path: str | Path | None = None) -> list[dict]:
@@ -103,6 +134,7 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
             if r.get("use_role") != "structural_suitability":
                 continue
             quote = r.get("quote") or ""
+            matched = False
             for name, pat in _SIGNALS.items():
                 m = pat.search(quote)
                 if m:
@@ -114,7 +146,20 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
                             "snippet": quote[s : m.end() + 20].strip(),
                         }
                     )
-                    break  # one flag per row is enough for triage
+                    matched = True
+                    break  # one section-signal flag per row is enough for triage
+            if matched:
+                continue
+            # land_cover with no enumerated classes → unactionable (catalogue #13)
+            var = (r.get("variable") or "").lower()
+            if any(k in var for k in _LC_VARS) and not _LC_CLASS.search(quote):
+                flags.append(
+                    {
+                        "evidence_id": r["evidence_id"],
+                        "signal": "land_cover_no_classes",
+                        "snippet": quote[:60].strip(),
+                    }
+                )
     return flags
 
 

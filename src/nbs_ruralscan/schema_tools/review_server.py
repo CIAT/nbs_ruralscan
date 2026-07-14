@@ -458,11 +458,17 @@ class Handler(SimpleHTTPRequestHandler):
             if dec in ("", None):
                 byrev.pop(rev, None)
             else:
-                byrev[rev] = {
+                entry = {
                     "decision": dec,
                     "reason": payload.get("reason", ""),
                     "note": payload.get("note", ""),
                 }
+                # reclassify (species/crop) carries the target claim_scope + taxon
+                if payload.get("taxon"):
+                    entry["taxon"] = str(payload.get("taxon")).strip()
+                if payload.get("claim_scope"):
+                    entry["claim_scope"] = str(payload.get("claim_scope")).strip()
+                byrev[rev] = entry
             if not byrev:
                 store.pop(eid, None)
             _save(store)

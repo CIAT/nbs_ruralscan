@@ -1875,18 +1875,17 @@
             <summary style="cursor:pointer; color:var(--accent-sky); font-weight:600; outline:none;">Reason codes — what each means</summary>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:4px 18px; margin-top:8px; line-height:1.5;">
               <div><b style="color:var(--text-primary);">smuggled_number</b> — number not in this quote</div>
-              <div><b style="color:var(--text-primary);">cross_row_stitch</b> — two table rows merged into a range</div>
+              <div><b style="color:var(--text-primary);">table_error</b> — mangled / mis-stitched table (cells merged across rows, garbled values)</div>
               <div><b style="color:var(--text-primary);">wrong_variable</b> — mis-labelled variable (SOM&#8800;SOC)</div>
               <div><b style="color:var(--text-primary);">wrong_practice</b> — wrong NbS/practice (reforestation, pure forestry, carbon-only)</div>
-              <div><b style="color:var(--text-primary);">species_envelope</b> — per-species range, not a practice rule</div>
-              <div><b style="color:var(--text-primary);">table_garble</b> — mangled table extraction</div>
+              <div><b style="color:var(--text-primary);">species_envelope</b> — per-species range, not a practice rule (retag species-specific + keep, don't drop)</div>
               <div><b style="color:var(--text-primary);">off_scope</b> — not a suitability claim (site descriptors, wrong crop)</div>
               <div><b style="color:var(--text-primary);">wrong_table</b> — soft enabling-env &#8594; T3/M2b/next-steps, not T4</div>
-              <div><b style="color:var(--text-primary);">constrained_aoi</b> — source constrains NbS to marginal/residual land &#8594; understates opportunity-space extent</div>
+              <div><b style="color:var(--text-primary);">constrained_aoi</b> — source only covers part of the land (e.g. &#8220;marginal land&#8221;) &#8594; understates where the NbS can go; don't use to set extent</div>
               <div><b style="color:var(--text-primary);">quote_too_narrow</b> — too little context</div>
               <div><b style="color:var(--text-primary);">relationship_missed</b> — suitability curve/directionality in source but not captured</div>
               <div><b style="color:var(--text-primary);">insufficient_context</b> — no caption/context or screengrab failed &#8594; cannot review</div>
-              <div><b style="color:var(--text-primary);">uninterpretable_weight</b> — weight/score with no scale (&#8220;5 out of what?&#8221;)</div>
+              <div><b style="color:var(--text-primary);">unusable_value</b> — variable named but no usable rule: weight with no scale (&#8220;5 out of what?&#8221;) or land cover with no class list</div>
               <div><b style="color:var(--text-primary);">speculative_evidence</b> — speculation/assumption, not first/second-hand</div>
               <div><b style="color:var(--accent-emerald);">false_flag</b> — verifier wrong &#8594; keep (ok)</div>
               <div><b style="color:var(--accent-emerald);">accepted_correction</b> — fix accepted &#8594; ok</div>
@@ -2702,6 +2701,30 @@
     { var me=(window._vfReviewer||'reviewer'); if(!window._vfAllReviews)window._vfAllReviews={}; window._vfAllReviews[id]=window._vfAllReviews[id]||{}; if(val){window._vfAllReviews[id][me]={decision:val,reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||'')};}else{delete window._vfAllReviews[id][me];} }
     if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||''),reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); }
     renderVfWorklist(); }
+  // A per-card DROP must carry a coded reason (mirrors the bulk-flag + query-note guards).
+  // Before this, per-card drops could be reason-less — the source of the blank-reason drops
+  // in the July QA batch (2026-07 sweep-retro #4). Toggling an existing drop OFF still works
+  // (the reason is already set, so the guard passes and setVfDecision un-sets it).
+  function vfTryDrop(id){
+    var r=((window._vfReasons||{})[id]||''); var n=((window._vfNotes||{})[id]||'').trim();
+    if(!r){ alert('Pick a reason first — a drop needs a coded reason (use the Reason selector to the left).'); return; }
+    if(r==='other'&&!n){ alert('Reason "other" needs a note explaining it.'); return; }
+    setVfDecision(id,'drop'); }
+  // Reclassify species/crop-specific evidence (2026-07): KEEP + retag claim_scope + taxon —
+  // never drop. On apply, review.apply_decisions retags the row; synthesis routes it out of the
+  // practice T4 surface but retains it for reuse. Toggling again clears the decision.
+  function vfReclassify(id){
+    if((window._vfDecisions||{})[id]==='reclassify'){ setVfDecision(id,'reclassify'); return; } // toggle off
+    var taxon=(prompt('Reclassify as species / crop-specific — KEEP & bank for reuse (not dropped).\n\nEnter the taxon (e.g. Faidherbia albida, Coffea arabica):','')||'').trim();
+    if(!taxon)return;
+    var isCrop=confirm('Is this an agricultural CROP?\n\nOK = crop-specific (e.g. coffee, maize — re-includable for F5 shaded systems)\nCancel = tree / plant species-specific');
+    var scope=isCrop?'crop_specific':'species_specific';
+    if(!window._vfDecisions)window._vfDecisions={}; if(!window._vfReasons)window._vfReasons={}; if(!window._vfTaxa)window._vfTaxa={};
+    window._vfDecisions[id]='reclassify'; window._vfReasons[id]='species_envelope'; window._vfTaxa[id]=taxon;
+    localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));
+    { var me=(window._vfReviewer||'reviewer'); if(!window._vfAllReviews)window._vfAllReviews={}; window._vfAllReviews[id]=window._vfAllReviews[id]||{}; window._vfAllReviews[id][me]={decision:'reclassify',reason:'species_envelope',note:('→ '+scope+' · taxon: '+taxon)}; }
+    if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:'reclassify',reason:'species_envelope',claim_scope:scope,taxon:taxon,note:'',reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); }
+    renderVfWorklist(); }
   function setVfReason(id,reason){ if(!window._vfReasons)window._vfReasons={}; window._vfReasons[id]=reason; localStorage.setItem('vfReasons',JSON.stringify(window._vfReasons));
     if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:reason,note:((window._vfNotes||{})[id]||''),reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
   function setVfNote(id,note){ if(!window._vfNotes)window._vfNotes={}; window._vfNotes[id]=note; localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes));
@@ -2805,6 +2828,13 @@
     if(sc.sourceId&&ev.source_id!==sc.sourceId)return false;
     if(sc.section&&String(ev.page||'')!==String(sc.section))return false;
     if(sc.access&&sc.access!=='all'){ var _oa=_vfIsOA(ev); if(sc.access==='oa'&&!_oa)return false; if(sc.access==='restricted'&&_oa)return false; }
+    // claim_scope lane (2026-07): general = practice-level suitability (the everyday MCDA work);
+    // species/crop = per-taxon evidence, KEPT + banked for reuse but filtered from practice MCDA.
+    // Default 'general' hides the species/crop lane so it doesn't clutter suitability review.
+    if(sc.claimScope&&sc.claimScope!=='all'){ var _cs=(ev.claim_scope||'practice_technology');
+      if(sc.claimScope==='general'&&_cs!=='practice_technology')return false;
+      if(sc.claimScope==='species'&&_cs!=='species_specific')return false;
+      if(sc.claimScope==='crop'&&_cs!=='crop_specific')return false; }
     return true; }
   // Gap rows carry nbs_id / suitability_family_id / table directly (no use_role).
   function _vfGapInScope(g){ var sc=window._vfScope||{}; if(!sc.nbs)return true;
@@ -2965,9 +2995,9 @@
     })[key]||{label:key, color:'var(--text-muted)'}; }
   // Shared reason codes — single source of truth for BOTH the per-card reason selector and the
   // bulk-by-source selector, so they can't drift apart.
-  var _VF_RC_PASSED=['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','wrong_table','constrained_aoi','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','other'];
-  var _VF_RC_FLAGGED=['smuggled_number','cross_row_stitch','wrong_variable','wrong_practice','species_envelope','table_garble','off_scope','wrong_table','constrained_aoi','quote_too_narrow','relationship_missed','insufficient_context','uninterpretable_weight','speculative_evidence','false_flag','accepted_correction','other'];
-  var _VF_RC_DESC={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',wrong_table:'real claim but wrong table — soft enabling-env (tenure/market/road/extension/finance/labour) belongs to T3 project-risk / M2b / next-steps, not T4 structural suitability',constrained_aoi:'source frames the NbS onto a constrained subset of land (e.g. land-capability "marginal/residual" buckets) — understates where the NbS is actually feasible, misrepresenting the opportunity-space extent. Down-weight; never use to set the AOI/extent',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',relationship_missed:'the suitability relationship / directionality / membership curve was present in the source but NOT captured (e.g. monotonic decline with distance, fine-texture = high suitability)',insufficient_context:'cannot review — no caption / surrounding context, or the table screengrab failed to render',uninterpretable_weight:'a weight / score with no scale or standardisation context (e.g. "5" — out of what?); cannot interpret or compare across sources',speculative_evidence:'speculation / assumption, not first- or second-hand evidence ("may deter", hand-wavy assumed causation)',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
+  var _VF_RC_PASSED=['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','wrong_table','constrained_aoi','relationship_missed','insufficient_context','unusable_value','speculative_evidence','other'];
+  var _VF_RC_FLAGGED=['smuggled_number','wrong_variable','wrong_practice','species_envelope','table_error','off_scope','wrong_table','constrained_aoi','quote_too_narrow','relationship_missed','insufficient_context','unusable_value','speculative_evidence','false_flag','accepted_correction','other'];
+  var _VF_RC_DESC={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',table_error:'mangled or mis-stitched table extraction — cells merged across rows, or garbled/misread values',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',wrong_table:'real claim, wrong table — soft enabling-env (tenure / market / road / extension / finance / labour) belongs to T3 / M2b / next-steps, not T4 suitability',constrained_aoi:'source only covers part of the land (e.g. a "marginal / residual land" bucket) → understates where the NbS can actually go; never use to set the AOI / opportunity-space extent',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',relationship_missed:'the suitability relationship / directionality / membership curve was present in the source but NOT captured (e.g. monotonic decline with distance, fine-texture = high suitability)',insufficient_context:'cannot review — no caption / surrounding context, or the table screengrab failed to render',uninterpretable_weight:'a weight / score with no scale or standardisation context (e.g. "5" — out of what?); cannot interpret or compare across sources',unusable_value:'named a variable but gave no usable rule — a weight / score with no scale ("5 out of what?"), or land cover with no class list (which classes in / out?)',speculative_evidence:'speculation / assumption, not first- or second-hand evidence ("may deter", hand-wavy assumed causation)',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
   function vfDetailHtml(o, passed, opts){ opts=opts||{}; var _collap=!!opts.collapsible,_settledC=!!opts.settled,_openC=!!opts.open,_myDecC=(opts.myDec||'').toLowerCase(); var ev=o.ev, verdict=o.verdict, reason=o.reason; var srcAll=(dashboardData.registers.SRC_source_register)||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
     var _chan=_vfChanMeta(_vfChanKey(ev)); var _chanBadge='<span onclick="vfScopeSet(\'source\',\''+vfEsc(_vfChanKey(ev))+'\')" title="Source channel: '+vfEsc(_chan.label)+' — click to filter the worklist to this channel" style="cursor:pointer; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_chan.color+'; border:1px solid '+_chan.color+'; border-radius:3px; padding:1px 6px;">'+vfEsc(_chan.label)+'</span>';
     var _oa=_vfIsOA(ev); var _oaCol=_oa?'#34d399':'#fbbf24'; var _oaBadge='<span onclick="vfScopeSet(\'access\',\''+(_oa?'oa':'restricted')+'\')" title="'+(_oa?'Open-access source — crop shown inline / publishable':'Copyrighted (non-open-access) — crop is team-only via SharePoint')+' — click to filter" style="cursor:pointer; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_oaCol+'; border:1px solid '+_oaCol+'; border-radius:3px; padding:1px 6px;">'+(_oa?'OA':'Restricted')+'</span>';
@@ -2996,7 +3026,7 @@
     var localLink=(!_isCodeSrc&&!spLink&&window._reviewApi)?('<a href="/api/pdf?sid='+encodeURIComponent(ev.source_id)+'#page='+(ev.page||1)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-amber);">📄 local PDF '+vfEsc(page)+' ↗ (not in SharePoint)</a>'):'';
     var libTxt=(!_isCodeSrc&&!spLink&&!localLink)?'<span style="color:var(--text-muted);">📄 not uploaded</span>':'';
     var pdfLink=[_codeLink,spLink,localLink,libTxt].filter(Boolean).join(' &nbsp;·&nbsp; ');
-    var okA=dec==='ok', dropA=dec==='drop', queryA=(dec==='flag'||dec==='query');
+    var okA=dec==='ok', dropA=dec==='drop', queryA=(dec==='flag'||dec==='query'), reclassA=dec==='reclassify';
     var _rc=passed?_VF_RC_PASSED:_VF_RC_FLAGGED;
     var _rcDesc=_VF_RC_DESC;
     var _rsel=(window._vfReasons||{})[ev.evidence_id]||'';
@@ -3019,13 +3049,17 @@
     var _geoShort=(_geo&&_geo!=='—')?(_geo.length>44?_geo.slice(0,42)+'…':_geo):'';   // point 1: hide when empty
     var _nbsChip=_vfChip(vfEsc(_nbsShort),'var(--accent-sky)','Practice — click to filter the worklist to this NbS',"vfScopeSet('nbs','"+vfEsc(ev.nbs_id||'')+"')");
     var _famChip=ev.suitability_family_id?_vfChip(vfEsc(_famShort),'var(--accent-emerald)','Sub-practice — click to filter the worklist to this family',"vfScopeSet('family','"+vfEsc(ev.suitability_family_id)+"')"):_vfChip(vfEsc(_famShort),'var(--text-muted)','No sub-practice family tagged',null);
+    // Taxon chip (2026-07): species/crop-specific evidence carries a taxon; the chip both
+    // flags "this is banked-for-reuse, not practice suitability" and jumps to the Species lane.
+    var _isSpeciesEv=(ev.claim_scope==='species_specific'||ev.claim_scope==='crop_specific');
+    var _taxonChip=(_isSpeciesEv&&ev.taxon)?_vfChip('🧬 '+vfEsc(ev.taxon),'var(--accent-amber)','Species/crop-specific ('+vfEsc((ev.claim_scope||'').replace(/_/g,' '))+') — kept & banked for reuse, filtered from the practice MCDA. Click to see the Species lane.',"vfScopeSet('claimScope','"+(ev.claim_scope==='crop_specific'?'crop':'species')+"')",true):'';
     var _geoChip=_geoShort?_vfChip('📍 '+vfEsc(_geoShort),'var(--text-muted)',vfEsc('Study geography: '+_geo),null,true):'';
     var _srcChip=_vfChip(vfEsc(ev.source_id||''),'var(--text-muted)','Source — click to subset the worklist to this source',"vfSetSubset('sourceId','"+vfEsc(ev.source_id||'')+"')",true);
     var _pageChip=ev.page?_vfChip('p.'+vfEsc(String(ev.page)),'var(--text-muted)','Page — click to subset the worklist to page '+vfEsc(String(ev.page))+' of this source',"vfSetSubset('section','"+vfEsc(String(ev.page))+"')",true):'';
     // Recipe table this evidence feeds (T4 suitability / T3 hazard / T6 outcomes), from use_role.
     var _R2Tc={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'}; var _tbl=_R2Tc[ev.use_role]||'';
     var _tblChip=_tbl?_vfChip(_tbl,'var(--accent-purple)','Recipe table (Evidence type) this evidence contributes to — click to filter the worklist to '+_tbl,"vfScopeSet('table','"+_tbl+"')"):'';
-    var _chipRow='<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:2px 0 9px 0;"><span style="font-size:11px; color:var(--text-muted); margin-right:1px;" title="what this evidence contributes to">🧩</span>'+_nbsChip+_famChip+_geoChip+'<span style="margin-left:auto; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'+_tblChip+_oaBadge+_chanBadge+_srcChip+_pageChip+'</span></div>';
+    var _chipRow='<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:2px 0 9px 0;"><span style="font-size:11px; color:var(--text-muted); margin-right:1px;" title="what this evidence contributes to">🧩</span>'+_nbsChip+_famChip+_taxonChip+_geoChip+'<span style="margin-left:auto; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'+_tblChip+_oaBadge+_chanBadge+_srcChip+_pageChip+'</span></div>';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
     var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
     // Task 1: server renders /api/crop for ANY passage and /api/code for code sources; the old
@@ -3042,8 +3076,9 @@
       +'<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;">'
       +'<a href="#" onclick="vfShowReasonHelp();return false;" title="reason-code definitions" style="font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+'<span style="font-size:11px; color:var(--text-muted); margin-left:auto; font-weight:700;">Your decision:</span>'
       +'<button title="keep this record in the evidence register" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">✓ ok — keep</button>'
-      +'<button title="remove this record from the evidence register (soft-delete / quarantine)" onclick="setVfDecision(\''+ev.evidence_id+'\',\'drop\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">✕ drop — remove</button>'
-      +'<button title="tentatively keep, but raise an open question for further review — write the question in the note below" onclick="if(!((window._vfNotes||{})[\''+ev.evidence_id+'\']||\'\').trim()){alert(\'Write your question in the note box first — a query needs a note.\');return;} setVfDecision(\''+ev.evidence_id+'\',\'flag\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-amber); background:'+(queryA?'var(--accent-amber)':'transparent')+'; color:'+(queryA?'#fff':'var(--accent-amber)')+';">⚑ query</button></div>'
+      +'<button title="remove this record from the evidence register (soft-delete / quarantine) — pick a reason first" onclick="vfTryDrop(\''+ev.evidence_id+'\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">✕ drop — remove</button>'
+      +'<button title="tentatively keep, but raise an open question for further review — write the question in the note below" onclick="if(!((window._vfNotes||{})[\''+ev.evidence_id+'\']||\'\').trim()){alert(\'Write your question in the note box first — a query needs a note.\');return;} setVfDecision(\''+ev.evidence_id+'\',\'flag\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-amber); background:'+(queryA?'var(--accent-amber)':'transparent')+'; color:'+(queryA?'#fff':'var(--accent-amber)')+';">⚑ query</button>'
+      +'<button title="species/crop-specific evidence → reclassify + KEEP (banked for reuse, filtered from the practice MCDA) — do NOT drop it" onclick="vfReclassify(\''+ev.evidence_id+'\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 12px; border-radius:4px; border:1px solid var(--accent-sky); background:'+(reclassA?'var(--accent-sky)':'transparent')+'; color:'+(reclassA?'#fff':'var(--accent-sky)')+';">🧬 species/crop'+(reclassA&&(window._vfTaxa||{})[ev.evidence_id]?(' · '+vfEsc(window._vfTaxa[ev.evidence_id])):'')+'</button></div>'
       +'<div style="margin-top:8px;">'+noteInp+'</div>';
     var _footerSettled='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:12px; border-top:1px solid var(--border-color); padding-top:10px;"><span style="font-size:10.5px; color:var(--text-muted);">You applied this — <b>challenge</b> (a differing call raises a conflict) or <b>re-open</b> to redo:</span><span style="margin-left:auto; display:inline-flex; gap:8px; align-items:center;"><button onclick="challengeVf(\''+ev.evidence_id+'\',\'ok\')" title="record YOUR call = keep" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 14px; border-radius:4px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald);">✓ ok</button><button onclick="challengeVf(\''+ev.evidence_id+'\',\'drop\')" title="record YOUR call = drop" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 14px; border-radius:4px; border:1px solid var(--accent-rose); background:transparent; color:var(--accent-rose);">✕ drop</button><button onclick="reopenVf(\''+ev.evidence_id+'\')" title="clear the applied decision and send it back to the queue" style="cursor:pointer; font-size:11px; padding:5px 12px; border-radius:4px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber);">↩ re-open</button></span></div>';
     var _footerHtml=_settledC?_footerSettled:_footerPending;
@@ -3100,9 +3135,10 @@
     var passedAll=evAll.filter(function(ev){ return !flaggedIds[ev.evidence_id] && (ev.use_role!=='dataset'); });
     // scope filter — pills derived from the data model; NbS controls table + family options
     var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
-    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'T4',family:'all',source:'all',access:'all',sourceId:'',section:''};
+    if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'T4',family:'all',source:'all',access:'all',claimScope:'general',sourceId:'',section:''};
     if(window._vfScope.source===undefined)window._vfScope.source='all';
     if(window._vfScope.access===undefined)window._vfScope.access='all';
+    if(window._vfScope.claimScope===undefined)window._vfScope.claimScope='general';
     if(window._vfScope.sourceId===undefined)window._vfScope.sourceId='';
     if(window._vfScope.section===undefined)window._vfScope.section='';
     // Practice + Evidence-type are single-select (no "All"): default to a real value.
@@ -3129,10 +3165,19 @@
       var _tblLegend='<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">'+(_tblDesc[window._vfScope.table]||'')+'</div>';
       var _capNbs=function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
       var _capFam=function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
+      // claim_scope lane (2026-07): count rows per lane within the current Practice so the
+      // pills show "🧬 Species (N awaiting)". General = practice-level (default); species/crop
+      // are kept + banked for reuse but filtered from the practice MCDA.
+      var _csOf=function(e){return e.claim_scope||'practice_technology';};
+      var _csCount=function(v){ return evAll.filter(_inNbs).filter(function(e){ var c=_csOf(e); return v==='general'?c==='practice_technology':(v==='species'?c==='species_specific':(v==='crop'?c==='crop_specific':true)); }).length; };
+      var _csFmt=function(o){ var m={general:'General (practice)',species:'🧬 Species',crop:'🌾 Crop'}; var lab=m[o]||o; var n=_csCount(o); return n?(lab+' ('+n+')'):lab; };
+      var _csHint=(window._vfScope.claimScope&&window._vfScope.claimScope!=='general'&&window._vfScope.claimScope!=='all')?'<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">🧬 <b>Species / crop lane</b> — per-taxon evidence, <b>kept &amp; banked for reuse</b> but filtered out of the practice-level MCDA. Fix a mis-tagged row by re-classifying it (keep), not dropping it.</div>':'';
       scEl.innerHTML=_mkPills('nbs','Practice',_nbsOpts,_capNbs,'sky',true,'The Nature-based Solution this evidence supports. Pick one.')
         +_mkPills('family','Sub-practice',_famOpts,_capFam,'emerald',false,'Suitability family / sub-practice within the practice. All = every sub-practice.')
         +_mkPills('table','Evidence type',_tblOpts,function(o){return _tblName[o]||o;},'purple',true,'Which recipe table this evidence informs — pick one. T4 = suitability, T3 = hazard response, T6 = outcomes & cost.')
         +_tblLegend
+        +_mkPills('claimScope','Scope',['general','species','crop'],_csFmt,'sky',false,'General = practice-level suitability (the everyday MCDA work). Species / Crop = per-taxon evidence, kept + banked for reuse but filtered from the practice MCDA. Default = General.')
+        +_csHint
         +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber',false,'Which discovery channel the source came from. All = every channel.')
         +_mkPills('access','Access',['oa','restricted'],function(o){return o==='oa'?'Open-access':'Restricted (copyright)';},'emerald',false,'Open-access vs copyrighted (restricted). All = both.'); }
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;

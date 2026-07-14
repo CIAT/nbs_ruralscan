@@ -32,9 +32,10 @@ _FLAGGED = {"mismatch", "unsupported"}
 # pass never checks (that's check_scope/check_quote) — counting them as FN unfairly blames it.
 _VERIFY_REMIT = {
     "smuggled_number",
-    "cross_row_stitch",
     "wrong_variable",
-    "table_garble",
+    "table_error",  # 2026-07: merged cross_row_stitch + table_garble
+    "cross_row_stitch",  # legacy — historic review_log rows
+    "table_garble",  # legacy — historic review_log rows
     "missed_error",
 }
 _SCOPE_QUALITY = {"off_scope", "wrong_practice", "species_envelope", "quote_too_narrow"}
