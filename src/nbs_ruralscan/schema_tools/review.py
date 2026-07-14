@@ -31,18 +31,21 @@ ROOT = Path(__file__).resolve().parents[3]
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 WORKLIST = ROOT / "pipeline" / "review" / "flag_worklist.csv"
 LOG = ROOT / "pipeline" / "metrics" / "review_log.csv"
+# Active reason codes (2026-07: merged cross_row_stitch→table_error; broadened
+# uninterpretable_weight→unusable_value = weight-with-no-scale OR land-cover-with-no-classes).
+# Legacy codes (cross_row_stitch, table_garble, uninterpretable_weight) may still appear in
+# historic review_log rows; qaqc_stats keeps them in its scope/quality set for back-compat.
 REASON_CODES = [
     "smuggled_number",
-    "cross_row_stitch",
     "wrong_variable",
     "wrong_practice",
     "species_envelope",
-    "table_garble",
+    "table_error",
     "off_scope",
     "quote_too_narrow",
     "relationship_missed",
     "insufficient_context",
-    "uninterpretable_weight",
+    "unusable_value",
     "speculative_evidence",
     "wrong_table",
     "constrained_aoi",
@@ -168,11 +171,12 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             f"{e.start}). `git restore {EV.name}` — the committed register is clean UTF-8; "
             "your decisions are safe in decisions.json."
         ) from e
-    kept, dropped, resolved, queried = [], 0, 0, 0
+    kept, dropped, resolved, queried, reclassified = [], 0, 0, 0, 0
     reasons: Counter = Counter()
     logrows = []
     for r in rows:
-        dec, reason, note, rev = _norm(decisions.get(r["evidence_id"]))
+        dv = decisions.get(r["evidence_id"])
+        dec, reason, note, rev = _norm(dv)
         who = rev or reviewer
         if not dec:
             kept.append(r)
@@ -222,6 +226,33 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             queried += 1
             kept.append(r)
             continue
+        if dec == "reclassify":
+            # species/crop-specific evidence: retag (claim_scope + taxon) and KEEP — never
+            # drop. synthesis.py then routes it OUT of the practice T4 surface but RETAINS it
+            # in the register for a future species-level layer (2026-07). Un-drops if dropped.
+            scope = "species_specific"
+            taxon = ""
+            if isinstance(dv, dict):
+                scope = (
+                    dv.get("claim_scope") or "species_specific"
+                ).strip() or "species_specific"
+                taxon = (dv.get("taxon") or "").strip()
+            r["claim_scope"] = scope
+            if taxon:
+                r["taxon"] = taxon
+            r["review_state"] = ""  # active
+            r["reviewer_ok"] = "true"
+            r["attribution"] = _FLAG_RE.sub("", r.get("attribution", "")).strip()
+            tag = (
+                f"[reclassified {today} by {who} → {scope}"
+                + (f"; taxon:{taxon}" if taxon else "")
+                + (f"; note:{note}" if note else "")
+                + "]"
+            )
+            r["attribution"] = (tag + " " + (r["attribution"] or "")).strip()
+            reclassified += 1
+            kept.append(r)
+            continue
         if dec == "ok":
             r["reviewer_ok"] = "true"
             r["review_state"] = ""  # active (un-drops if it was previously dropped)
@@ -264,6 +295,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
         "ok": resolved,
         "dropped": dropped,
         "queried": queried,
+        "reclassified": reclassified,
         "rows": len(kept),
         "reasons": dict(reasons),
     }

@@ -45,7 +45,7 @@ def consensus_decisions(store: dict) -> tuple[dict, list[str]]:
             continue
         vals = {v["decision"] for v in decs.values()}
         if len(vals) == 1:
-            decisions[eid] = {
+            entry = {
                 "decision": next(iter(vals)),
                 "reason": ";".join(
                     sorted(
@@ -57,6 +57,18 @@ def consensus_decisions(store: dict) -> tuple[dict, list[str]]:
                 ),
                 "reviewer": ",".join(sorted(decs.keys())),
             }
+            # a `reclassify` decision carries the target claim_scope + taxon — preserve them
+            # through the consensus reduction so apply_decisions can retag the row.
+            _tax = next((v.get("taxon") for v in decs.values() if v.get("taxon")), "")
+            _cs = next(
+                (v.get("claim_scope") for v in decs.values() if v.get("claim_scope")),
+                "",
+            )
+            if _tax:
+                entry["taxon"] = _tax
+            if _cs:
+                entry["claim_scope"] = _cs
+            decisions[eid] = entry
         else:
             conflicts.append(eid)
     return decisions, conflicts

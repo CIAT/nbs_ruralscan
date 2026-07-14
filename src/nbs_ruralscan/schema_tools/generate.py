@@ -486,6 +486,15 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             f"  PICOS NOTES ({len(_picos_flags)} active AF unit(s) with wrong-practice "
             "signals — run check_picos.py; the practice must be evidenced in the source)"
         )
+    from nbs_ruralscan.schema_tools.check_species import check as _species_check
+
+    _species_flags = _species_check(schema_root / "registers" / "EV_evidence_register.csv")
+    if _species_flags:
+        print(
+            f"  SPECIES NOTES ({len(_species_flags)} practice-tagged unit(s) that look "
+            "species-specific — run check_species.py; retag claim_scope=species_specific "
+            "+ taxon and KEEP, don't drop)"
+        )
     # Guard B (2026-06-23): auto-quarantine off-scope/wrong-practice on the WRITE path only —
     # soft-delete (reversible) so junk stops reaching the worklist; never mutate on --check.
     if not check:
