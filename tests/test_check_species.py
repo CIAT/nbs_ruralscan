@@ -12,6 +12,7 @@ _FIELDS = [
     "variable",
     "use_role",
     "claim_scope",
+    "taxon",
     "quote",
     "review_state",
     "reviewer_ok",
@@ -43,6 +44,7 @@ def _row(eid, quote, claim_scope="practice_technology", **kw):
         "variable": "annual_precipitation",
         "use_role": "structural_suitability",
         "claim_scope": claim_scope,
+        "taxon": kw.get("taxon", ""),
         "quote": quote,
         "review_state": kw.get("review_state", ""),
         "reviewer_ok": kw.get("reviewer_ok", ""),
@@ -51,6 +53,16 @@ def _row(eid, quote, claim_scope="practice_technology", **kw):
 
 def _sig(flags, eid):
     return next((f["signal"] for f in flags if f["evidence_id"] == eid), None)
+
+
+def test_taxon_set_but_practice_scope_flags_regardless_of_genus(tmp_path):
+    # Artocarpus is NOT in the curated genus list + no marker, but taxon is filled →
+    # definitional mis-tag must still fire (list-independent).
+    ev = _write(
+        tmp_path,
+        [_row("ev_art", "Breadfruit uto kulu 21-32 well", taxon="Artocarpus altilis")],
+    )
+    assert _sig(check_species.check(ev), "ev_art") == "species_mistag_taxon_set"
 
 
 def test_binomial_in_quote_flags_mistag(tmp_path):

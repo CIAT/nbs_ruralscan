@@ -9,9 +9,13 @@ extractor MIS-TAG: a species claim left as `claim_scope=practice_technology`, so
 into the practice suitability instead of the species lane. 12 of the 29 July drops were
 exactly this (tagged practice_technology).
 
-This flags that mis-tag deterministically, every build (advisory — never fatal). Two layers,
-from Pete's 2026-07 note that "the article title/abstract often indicates species-specificity":
+This flags that mis-tag deterministically, every build (advisory — never fatal). Three
+layers (the first is the strongest; the other two from Pete's 2026-07 note that "the article
+title/abstract often indicates species-specificity"):
 
+* field-level (`species_mistag_taxon_set`): a `taxon` is FILLED but claim_scope is still
+  practice_technology. The spec requires taxon only when claim_scope ≠ practice_technology, so
+  this is a definitional mis-tag — list-independent (catches any genus, e.g. Artocarpus).
 * evidence-level (`species_mistag`): the QUOTE names a taxon but claim_scope=practice_technology
 * source-level  (`species_hint_citation`): the SRC CITATION (carries the title) names a taxon
   and claim_scope=practice_technology, even if this particular quote doesn't
@@ -82,6 +86,19 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
                 continue
             if (r.get("claim_scope") or "practice_technology") != "practice_technology":
                 continue  # already scoped to a species/crop lane — correct
+            # Strongest, list-independent signal: a `taxon` is filled but claim_scope is still
+            # practice_technology. The spec requires taxon ONLY when claim_scope ≠ practice_tech,
+            # so a taxon on a practice-scoped row is definitionally a mis-tag — regardless of
+            # whether the genus is in our curated list (catches e.g. Artocarpus, Intsia).
+            if (r.get("taxon") or "").strip():
+                flags.append(
+                    {
+                        "evidence_id": r["evidence_id"],
+                        "signal": "species_mistag_taxon_set",
+                        "snippet": f"taxon={r['taxon']} but claim_scope=practice_technology",
+                    }
+                )
+                continue
             quote = r.get("quote") or ""
             m = _BINOMIAL.search(quote) or _TAXON_MARKER.search(quote)
             if m:
