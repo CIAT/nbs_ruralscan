@@ -296,6 +296,18 @@ def validate_all_sources(schema_root: str | Path) -> None:
             "Evidence must trace to a verbatim quote on the cited page of a cached "
             "source. Hand-authored / hallucinated rows are rejected.\n"
         )
+        # Distinguish "missing cached PDF" (a local-setup problem, not bad evidence) from
+        # genuine provenance failures. On a fresh clone the gitignored .cache/corpus/ is empty,
+        # so a reviewer sees dozens of these — point them at the hydrator instead of leaving the
+        # error opaque (2026-07, issue #181).
+        n_missing = sum(1 for e in errors if "no cached artifact" in e)
+        if n_missing:
+            head += (
+                f"\n  ⓘ {n_missing} of these are MISSING CACHED PDFs, not bad evidence — the "
+                "corpus (.cache/corpus/) is gitignored, so a fresh clone has none. Hydrate it "
+                "from the SharePoint/OneDrive library, then retry:\n"
+                '      NBS_LIBRARY_ROOT="<your OneDrive>/.../1_Projects" python3 scripts/hydrate-corpus.py\n'
+            )
         raise ValueError(head + "\n".join(f"  - {e}" for e in errors))
 
     print(
