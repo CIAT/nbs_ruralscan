@@ -299,6 +299,30 @@ def _git_version() -> dict:
     }
 
 
+def _resolve_bash() -> str | None:
+    """Locate a bash interpreter for /api/submit. On Windows `bash` is usually not on PATH
+    even when Git for Windows (which bundles it) is installed, so `subprocess.run(["bash",...])`
+    fails with WinError 2 (the submit step Namita hit). Fall back to the standard Git install
+    locations. Returns the executable path, or None if none is found."""
+    found = shutil.which("bash")
+    if found:
+        return found
+    candidates: list[Path] = []
+    for base in (
+        os.environ.get("ProgramFiles"),
+        os.environ.get("ProgramFiles(x86)"),
+        os.environ.get("LOCALAPPDATA"),
+    ):
+        if base:
+            b = Path(base)
+            candidates += [
+                b / "Git" / "bin" / "bash.exe",
+                b / "Git" / "usr" / "bin" / "bash.exe",
+                b / "Programs" / "Git" / "bin" / "bash.exe",
+            ]
+    return next((str(c) for c in candidates if c.exists()), None)
+
+
 class Handler(SimpleHTTPRequestHandler):
     def _json(self, code: int, obj: dict) -> None:
         body = json.dumps(obj).encode()
@@ -678,9 +702,22 @@ class Handler(SimpleHTTPRequestHandler):
                 "GH_NO_UPDATE_NOTIFIER": "1",
                 "GH_PROMPT_DISABLED": "1",
             }
+            bash = _resolve_bash()
+            if not bash:
+                return self._json(
+                    500,
+                    {
+                        "ok": False,
+                        "error": "Submit needs bash and none was found. Your decisions ARE "
+                        "applied + saved locally. On Windows, install Git for Windows (it "
+                        "bundles bash) then click Apply again, or run from Git Bash: "
+                        "`bash scripts/submit-review.sh <your-handle> --auto`. "
+                        "(A bash-free submit is the follow-up.)",
+                    },
+                )
             try:
                 proc = subprocess.run(
-                    ["bash", "scripts/submit-review.sh", reviewer, title, "--auto"],
+                    [bash, "scripts/submit-review.sh", reviewer, title, "--auto"],
                     cwd=str(ROOT),
                     capture_output=True,
                     text=True,
