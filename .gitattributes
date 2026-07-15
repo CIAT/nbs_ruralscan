@@ -28,3 +28,9 @@ schema/structure/columns.json  merge=text
 # QA "Apply decisions & rebuild" path with `dict contains fields not in fieldnames: None`
 # (issue #104). `text eol=lf` pins them to LF so the registers read identically everywhere.
 *.csv                          text eol=lf
+
+# Same class as the CSV fix, for Markdown: the Apply preflight checks methodology/discovery_logs/
+# *.md, and on Windows (autocrlf=true, before setup-repo.sh) git smudges them to CRLF at
+# checkout — `integrity_problems()` then flags them and Apply returns 400 (issue #190). Pin all
+# *.md to LF so a fresh Windows clone reads identically. (Run `git add --renormalize .` once.)
+*.md                           text eol=lf

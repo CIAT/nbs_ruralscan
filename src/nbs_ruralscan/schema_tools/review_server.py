@@ -259,6 +259,46 @@ def _save(d: dict) -> None:
     STORE.write_text(json.dumps(d, indent=2), encoding="utf-8")
 
 
+def _git_version() -> dict:
+    """Local HEAD vs origin/main, for the dashboard 'new version — pull' banner (#191).
+
+    `git ls-remote` reads the remote tip without a full fetch (~1s). `behind` is true only
+    when the remote main commit is NOT already in local history (the reviewer is missing
+    commits) — so being AHEAD (unpushed work) or up-to-date does not trigger it. Any git
+    failure (no network, detached, not a clone) reports `known=false` and never raises.
+    """
+    import subprocess
+
+    def _run(args: list[str]) -> tuple[int, str]:
+        try:
+            p = subprocess.run(
+                args,
+                cwd=str(ROOT),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+                timeout=8,
+            )
+            return p.returncode, p.stdout.strip()
+        except Exception:  # noqa: BLE001
+            return 1, ""
+
+    _, local = _run(["git", "rev-parse", "HEAD"])
+    rc, out = _run(["git", "ls-remote", "origin", "refs/heads/main"])
+    remote = out.split()[0] if (rc == 0 and out) else ""
+    behind = False
+    if local and remote and local != remote:
+        # remote tip already in our history? if not (or we don't have it), we're behind.
+        anc, _ = _run(["git", "merge-base", "--is-ancestor", remote, "HEAD"])
+        behind = anc != 0
+    return {
+        "local": local[:12],
+        "remote": remote[:12],
+        "behind": behind,
+        "known": bool(local and remote),
+    }
+
+
 class Handler(SimpleHTTPRequestHandler):
     def _json(self, code: int, obj: dict) -> None:
         body = json.dumps(obj).encode()
@@ -271,6 +311,8 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):  # noqa: N802
         if self.path == "/api/health":
             return self._json(200, {"ok": True})
+        if self.path == "/api/version":
+            return self._json(200, _git_version())
         if self.path == "/api/state":
             return self._json(200, {"decisions": _load()})
         if self.path == "/api/gaps":
@@ -853,6 +895,18 @@ def _startup_integrity_check() -> None:
 
 def main() -> int:
     import sys
+
+    # Windows cp1252 stdout can't encode the ⚠ ✓ ✗ → ═ glyphs the startup prints use, so
+    # print() raises UnicodeEncodeError and the process exits 1 BEFORE binding the port —
+    # the server never starts (#189). Force UTF-8 on the streams first (best-effort: a
+    # redirected pipe may not be reconfigurable).
+    for _stream in (sys.stdout, sys.stderr):
+        _reconfig = getattr(_stream, "reconfigure", None)
+        if _reconfig is not None:
+            try:
+                _reconfig(encoding="utf-8", errors="replace")
+            except (ValueError, OSError):
+                pass
 
     _startup_integrity_check()
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765

@@ -2730,7 +2730,22 @@
   function setVfNote(id,note){ if(!window._vfNotes)window._vfNotes={}; window._vfNotes[id]=note; localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes));
     if(window._reviewApi && (window._vfDecisions||{})[id]){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:window._vfDecisions[id],reason:((window._vfReasons||{})[id]||''),note:note,reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); } }
   function _vfToggleBanner(){ var b=document.getElementById('readonly-banner'); if(b)b.style.display=window._reviewApi?'none':'flex'; }
-  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
+  // Red 'new version — pull' banner (#191): only for local reviewers (API present). Polls
+  // /api/version; shows when the local clone is behind origin/main. Data/decisions are safe
+  // across a pull (decisions.json is gitignored).
+  function checkVersion(){
+    if(!window._reviewApi)return;
+    fetch('/api/version').then(function(r){return r.ok?r.json():null;}).then(function(v){
+      var id='vf-version-banner'; var el=document.getElementById(id);
+      if(v&&v.behind){
+        if(!el){ el=document.createElement('div'); el.id=id;
+          el.style.cssText='position:fixed; top:0; left:0; right:0; z-index:99999; background:#e11d48; color:#fff; font-size:12.5px; line-height:1.5; padding:8px 16px; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,.35);';
+          document.body.appendChild(el); document.body.style.paddingTop='40px'; }
+        el.innerHTML='&#9888; <b>New version on main</b> — your local copy is behind (<code>'+vfEsc(v.local||'?')+'</code> vs <code>'+vfEsc(v.remote||'?')+'</code>). Finish &amp; <b>Apply</b> your current decisions, then <code>git pull</code> &#8594; <code>python3 scripts/hydrate-corpus.py</code> &#8594; <b>restart the server</b> &#8594; hard-reload. <span style="opacity:.85;">Pending decisions are safe (decisions.json is gitignored).</span>';
+      } else if(el){ el.remove(); document.body.style.paddingTop=''; }
+    }).catch(function(){});
+  }
+  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ checkVersion(); if(!window._vfVerPoll){window._vfVerPoll=setInterval(checkVersion,60000);} if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
   function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
     if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply &amp; submit to main</b>: writes to the register, re-gates, and opens an auto-merging PR.'; }
     else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block'; } }
