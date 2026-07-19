@@ -115,6 +115,56 @@ _LC_CLASS = re.compile(
     re.I,
 )
 
+# ---------------------------------------------------------------------------
+# site_context (2026-07, catalogue #16): a structural_suitability quote that describes the
+# STUDY'S OWN SITE / a figure / a region — NOT a generalising suitability RULE. A single
+# study saying "our site is 900 mm, 28 °C, 30 trees/ha" is n=1 CONTEXT (answers "where did
+# you work?"), not a criterion ("where does the practice work?"). The recurring #1 defect
+# Pete flags: study context extracted as biophysical suitability. Net for the classes the
+# pure-quote `study_site` signal above misses — the AI's own `direction` tell (site_envelope
+# / fmnr_occurs_on…), figure captions, and region-extent context. GATE: FRAME (or site-
+# occurrence direction) AND NOT a suitability CRITERION AND NOT a distributional
+# GENERALisation — because "FMNR occurs ACROSS the 100–950 mm band" (a review envelope) and
+# "suitable where…" ARE rules and must be kept. Tuned to 6/6 of Pete's 2026-07 FMNR site-
+# context drops with 0 genuine-rule false-positives. Advisory, like the signals above.
+_SITE_FRAME = re.compile(
+    r"study\s+(area|site|sites|region|plots?)"
+    r"|\bis\s+located\s+in\b|\blocated\s+in\s+the\b|characteri[sz]ed\s+by"
+    r"|(extended\s+)?fig(ure|\.)\s*\d|\btable\s*\d+\s*[:.]"
+    r"|couvre\s+[\d\s]+\s*km|du\s+territoire|correspond\s+à\s+des\s+écosyst"
+    r"|covers?\s+[\d,\s]+\s*(km|ha|hectares)\b|% of the (national )?territory"
+    r"|our\s+(study|site|plots?|field)|the\s+region\s+(is|has|over\s+which)"
+    r"|study\s+(area\s+)?was\s+(conducted|carried|situated)"
+    r"|used\s+\w*\s*fmnr\s+to\s+restore|restored?\s+[\d,]+\s*(ha|hectares)",
+    re.I,
+)
+_SITE_OCC_DIR = re.compile(
+    r"site_envelope|observed_.*_where_fmnr|fmnr_occurs_on|_at_site\b", re.I
+)
+_SITE_CRITERION = re.compile(
+    r"suitab|optim|\brequire|\bneeds?\b|grows?\s+(best|well)|thriv|toleran|prefer"
+    r"|best\s+(for|suited)|ideal\s+for|establishment\s+requires|gated|enabl|favou?r",
+    re.I,
+)
+_SITE_GENERAL = re.compile(
+    r"\bacross\b|throughout|many\s+(types|soils|kinds)|generally|broadly|band|zones?\s+of"
+    r"|wherever|(wide\s+)?range\s+of|various\s+soils|confined\s+to|gradient|isohyet"
+    r"|agroecological\s+context",
+    re.I,
+)
+_DIRECTION = re.compile(r'"direction"\s*:\s*"([^"]*)"')
+
+
+def _is_site_context(quote: str, relationship: str) -> bool:
+    """True when a structural_suitability quote is single-study CONTEXT, not a rule."""
+    m = _DIRECTION.search(relationship or "")
+    direction = m.group(1) if m else ""
+    if _SITE_CRITERION.search(quote) or _SITE_CRITERION.search(direction):
+        return False
+    if _SITE_GENERAL.search(quote) or _SITE_GENERAL.search(direction):
+        return False
+    return bool(_SITE_FRAME.search(quote) or _SITE_OCC_DIR.search(direction))
+
 
 def check(ev_path: str | Path | None = None) -> list[dict]:
     """Return advisory off-scope flags: [{evidence_id, signal, snippet}]."""
@@ -157,6 +207,16 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
                     {
                         "evidence_id": r["evidence_id"],
                         "signal": "land_cover_no_classes",
+                        "snippet": quote[:60].strip(),
+                    }
+                )
+                continue
+            # study-site / figure / region CONTEXT extracted as suitability (catalogue #16)
+            if _is_site_context(quote, r.get("relationship") or ""):
+                flags.append(
+                    {
+                        "evidence_id": r["evidence_id"],
+                        "signal": "site_context",
                         "snippet": quote[:60].strip(),
                     }
                 )

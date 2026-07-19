@@ -19,6 +19,7 @@ from __future__ import annotations
 import csv as _csv_mod
 import json
 import os
+import threading
 import shutil
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -254,9 +255,21 @@ def _load() -> dict:
     return {}
 
 
+# Serialise all writes to the decisions store. ThreadingHTTPServer handles requests
+# concurrently, so two saves (e.g. an /api/decision write racing the /api/submit
+# rewrite) could interleave. write_text is not atomic — an interleaved short write over
+# longer prior content left a valid-prefix + stale-tail file that failed to parse
+# ("Extra data"), silently hiding all pending decisions. Lock + write-temp-then-replace.
+_STORE_LOCK = threading.Lock()
+
+
 def _save(d: dict) -> None:
     STORE.parent.mkdir(parents=True, exist_ok=True)
-    STORE.write_text(json.dumps(d, indent=2), encoding="utf-8")
+    payload = json.dumps(d, indent=2)
+    with _STORE_LOCK:
+        tmp = STORE.with_name(STORE.name + f".tmp.{os.getpid()}")
+        tmp.write_text(payload, encoding="utf-8")
+        os.replace(tmp, STORE)  # atomic on the same filesystem
 
 
 def _git_version() -> dict:
