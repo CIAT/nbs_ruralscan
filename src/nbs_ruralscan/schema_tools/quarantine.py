@@ -76,6 +76,14 @@ def _tool_evidence_ids(root: Path) -> set[str]:
     return ids
 
 
+# check_scope signals that are REPORTED for reviewer triage but NOT auto-quarantined. The
+# `site_context` boundary (study/figure/region context vs a distributional rule) is fuzzier
+# than the tight section regexes, so auto-dropping it would wrongly quarantine borderline
+# rules and erode trust in the register. The extraction spec (#16) stops it at source; the
+# reviewer decides the residue from the advisory SCOPE-CHECK report.
+_ADVISORY_ONLY = {"site_context"}
+
+
 def candidates(schema_root: str | Path = "schema") -> list[dict]:
     """Eligible auto-quarantine rows: [{evidence_id, kind, signal, snippet}] (no mutation)."""
     root = Path(schema_root)
@@ -84,6 +92,8 @@ def candidates(schema_root: str | Path = "schema") -> list[dict]:
         return []
     flags: dict[str, dict] = {}
     for f in check_scope.check(ev):
+        if f["signal"] in _ADVISORY_ONLY:
+            continue  # advisory-only — surfaced for review, not auto-quarantined
         flags.setdefault(f["evidence_id"], {"kind": "off_scope", **f})
     for f in check_picos.check(ev):  # wrong-practice; don't overwrite an off_scope hit
         flags.setdefault(f["evidence_id"], {"kind": "wrong_practice", **f})

@@ -13,6 +13,7 @@ _FIELDS = [
     "variable",
     "use_role",
     "quote",
+    "relationship",
     "review_state",
     "reviewer_ok",
 ]
@@ -110,3 +111,73 @@ def test_plain_suitability_quote_not_flagged(tmp_path):
         ],
     )
     assert check(p) == []
+
+
+# --- site_context (catalogue #16): study-site / figure / region context, not a rule ---
+
+# Cases the pure-quote `study_site` signal MISSES → the site_context block must catch them.
+# (A quote naming "study area"/"located in" is already caught upstream as study_site.)
+_SITE_CASES = [
+    (
+        "ev_site_rain",  # site point-value via the AI's `site_envelope` direction tell
+        "The annual rainfall is about 900 mm/yr and average annual temperature is 28 C.",
+        '{"direction": "site_envelope_where_FMNR_occurs"}',
+    ),
+    (
+        "ev_fig",  # figure caption describing the study's data
+        "Extended Figure 1: Country level counts trees for croplands experiencing more than 300mm.",
+        '{"direction": "lower_bound"}',
+    ),
+    (
+        "ev_region",  # geographic region-extent context
+        "Au Mali, le sahel couvre 320 000 km2, environ 26% du territoire national.",
+        "",
+    ),
+]
+
+_RULE_CASES = [
+    # (id, quote, relationship_json) — a generalising RULE, must NOT be flagged
+    (
+        "ev_envelope",
+        "FMNR in Africa is confined to a wide range of mean annual rainfall of between 100 and 950 mm.",
+        '{"direction": "envelope"}',
+    ),
+    (
+        "ev_gradient",
+        "These zones reflect the banding of rainfall isohyets along a north-south gradient.",
+        "",
+    ),
+    (
+        "ev_suitable",
+        "Suitable climate: annual rainfall 250 to 600 mm; suitable on degraded land.",
+        '{"direction": "suitable_range"}',
+    ),
+    (
+        "ev_requires",
+        "Natural regeneration requires existing stumps or rootstock in the soil.",
+        '{"direction": "required_regeneration_source"}',
+    ),
+]
+
+
+def test_site_context_flags_study_context(tmp_path):
+    p = _write(
+        tmp_path,
+        [
+            _row(eid, "annual_precipitation", q, relationship=rel)
+            for eid, q, rel in _SITE_CASES
+        ],
+    )
+    flagged = {f["evidence_id"] for f in check(p) if f["signal"] == "site_context"}
+    assert flagged == {eid for eid, _, _ in _SITE_CASES}
+
+
+def test_site_context_keeps_generalising_rules(tmp_path):
+    p = _write(
+        tmp_path,
+        [
+            _row(eid, "annual_precipitation", q, relationship=rel)
+            for eid, q, rel in _RULE_CASES
+        ],
+    )
+    assert [f for f in check(p) if f["signal"] == "site_context"] == []
