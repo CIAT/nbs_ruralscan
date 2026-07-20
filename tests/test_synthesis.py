@@ -8,9 +8,34 @@ from nbs_ruralscan.recipe.evidence import EvidenceUnit
 from nbs_ruralscan.recipe.synthesis import (
     _dedupe_lineage,
     _harmonise,
+    normalize_shape_keys,
     synthesise_t4_row,
     SynthesisReport,
 )
+
+
+def test_normalize_shape_keys_maps_aliases():
+    # non-canonical range keys (from the 2026-07 FMNR sweep) → canonical shape keys
+    assert normalize_shape_keys({"range_min": 100, "range_max": 950})["abs_min"] == 100
+    assert (
+        normalize_shape_keys({"precip_mm_low": 251, "precip_mm_high": 750})["abs_max"]
+        == 750
+    )
+    assert (
+        normalize_shape_keys({"optimum_low_mm": 400, "optimum_high_mm": 800})["opt_low"]
+        == 400
+    )
+    # never overwrite an existing canonical key
+    assert normalize_shape_keys({"abs_min": 5, "range_min": 99})["abs_min"] == 5
+    # non-numeric alias is ignored (categorical); non-shape keys pass through untouched
+    out = normalize_shape_keys({"range_min": "low", "direction": "envelope"})
+    assert "abs_min" not in out and out["direction"] == "envelope"
+
+
+def test_harmonise_reads_aliased_range():
+    u = _sample_unit(relationship={"range_min": 251, "range_max": 750, "unit": "mm"})
+    h = _harmonise(u, "mm")
+    assert h["abs_min"] == 251 and h["abs_max"] == 750
 
 
 def _sample_unit(**overrides: Any) -> EvidenceUnit:
