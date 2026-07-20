@@ -50,9 +50,53 @@ def _deg_to_pct(v: float) -> float:
     return round(math.tan(math.radians(v)) * 100.0, 1)
 
 
+# Common non-canonical relationship-key aliases → canonical shape keys. Extraction should
+# emit the canonical `_PARAMS` (abs_min/opt_low/opt_high/abs_max), but sweeps have used
+# free-form keys (range_min, precip_mm_low, optimum_low_mm…) that the synthesiser can't read
+# → the family silently yields 0 T4 rows despite real range consensus (2026-07 FMNR: rainfall
+# 100–950 mm across 5 sources, all under non-canonical keys). This maps the recurring numeric-
+# range aliases so the ranges are read. Explicit + conservative — no bare "min"/"max" (too
+# ambiguous). The durable fix is still canonical keys at extraction time (catalogue #17).
+_KEY_ALIASES = {
+    # range floor → abs_min
+    "range_min": "abs_min",
+    "abs_min_mm": "abs_min",
+    "precip_mm_low": "abs_min",
+    "sahelian_zone_min": "abs_min",
+    "slope_pct_low": "abs_min",
+    "low_density_per_ha": "abs_min",
+    "lower_bound": "abs_min",
+    # range ceiling → abs_max
+    "range_max": "abs_max",
+    "abs_max_mm": "abs_max",
+    "precip_mm_high": "abs_max",
+    "sahelian_zone_max": "abs_max",
+    "slope_pct_high": "abs_max",
+    "high_density_per_ha": "abs_max",
+    "upper_bound": "abs_max",
+    # optimum band
+    "optimum_low_mm": "opt_low",
+    "optimum_low": "opt_low",
+    "optimum_high_mm": "opt_high",
+    "optimum_high": "opt_high",
+}
+
+
+def normalize_shape_keys(rel: dict) -> dict:
+    """Copy recognised alias keys onto their canonical shape key (numeric only; never
+    overwrite an already-canonical key). Returns a new dict; non-shape keys pass through."""
+    if not rel:
+        return rel
+    out = dict(rel)
+    for alias, canon in _KEY_ALIASES.items():
+        if alias in out and canon not in out and isinstance(out[alias], (int, float)):
+            out[canon] = out[alias]
+    return out
+
+
 def _harmonise(unit: EvidenceUnit, canonical_unit: str) -> dict[str, float]:
     """Return the unit's threshold params converted to the canonical unit."""
-    rel = unit.relationship or {}
+    rel = normalize_shape_keys(unit.relationship or {})
     src_unit = str(rel.get("unit", canonical_unit)).lower()
 
     canon = canonical_unit.lower()
