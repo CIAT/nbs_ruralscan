@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NbS Rural Scan — World Bank Feedback</title>
+<style>
+  :root{
+    --ink:#1c2b28;
+    --forest:#1f3d34;
+    --forest-light:#2f5d4f;
+    --sand:#f6f5f0;
+    --sand-panel:#ffffff;
+    --line:#dcded9;
+    --clay:#b96a2c;
+    --clay-soft:#f1e2d2;
+    --ok:#2f6f4f;
+    --muted:#6b7570;
+    --radius:10px;
+    --font: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; margin:0; }
+  body{ font-family:var(--font); background:var(--sand); color:var(--ink); display:flex; flex-direction:column; }
+
+  header.topbar{
+    background:var(--forest); color:#eef4f1; padding:14px 22px;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    border-bottom:3px solid var(--clay);
+  }
+  header.topbar .title{ display:flex; flex-direction:column; line-height:1.25; }
+  header.topbar .title strong{ font-size:16px; letter-spacing:.2px; }
+  header.topbar .title span{ font-size:12px; color:#c9d8d1; }
+  header.topbar .badge{
+    font-size:11px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.25);
+    padding:4px 10px; border-radius:20px; color:#eef4f1;
+  }
+
+  .layout{ flex:1; display:flex; min-height:0; }
+  .viewer{ flex:1.5; min-width:0; display:flex; flex-direction:column; border-right:1px solid var(--line); background:#e7e9e4; position:relative; }
+  .viewer .viewer-bar{
+    background:var(--sand-panel); border-bottom:1px solid var(--line); padding:10px 14px;
+    font-size:13px; color:var(--forest); display:flex; align-items:center; gap:8px; font-weight:600;
+  }
+  .viewer-bar .dot{ width:8px;height:8px;border-radius:50%; background:var(--clay); flex:none; }
+  .viewer iframe{ flex:1; width:100%; border:none; background:#fff; }
+
+  .viewer-cover{
+    position:absolute; inset:0; z-index:5;
+    background:var(--forest);
+    display:flex; align-items:center; justify-content:center;
+    transition:opacity .25s ease;
+  }
+  .viewer-cover.hidden{ opacity:0; pointer-events:none; }
+  .viewer-cover-inner{ text-align:center; color:#eef4f1; padding:20px; max-width:460px; }
+  .vc-eyebrow{ font-size:11.5px; letter-spacing:.5px; color:#a9c2b7; text-transform:uppercase; margin-bottom:14px; }
+  .viewer-cover-inner h1{ font-size:32px; margin:0 0 4px 0; font-weight:700; letter-spacing:-.5px; }
+  .vc-sub{ font-size:15px; margin:0 0 22px 0; color:#cfe0d8; }
+  .vc-howto{
+    text-align:left; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.15);
+    border-radius:10px; padding:16px 18px; font-size:13px; line-height:1.55; color:#dfeae4;
+  }
+  .vc-howto strong{ display:block; margin-bottom:8px; font-size:13.5px; color:#fff; }
+  .vc-howto ol{ margin:0; padding-left:18px; }
+  .vc-howto li{ margin-bottom:7px; }
+  .vc-howto li:last-child{ margin-bottom:0; }
+  .vc-howto b{ color:#f0c9a3; }
+
+  .feedback{
+    flex:1; max-width:460px; min-width:340px; display:flex; flex-direction:column;
+    background:var(--sand-panel); min-height:0;
+  }
+  .feedback-scroll{ flex:1; overflow-y:auto; padding:20px 20px 10px 20px; }
+
+  /* progress dots */
+  .progress{ display:flex; gap:6px; margin-bottom:16px; }
+  .progress .pd{
+    flex:1; height:5px; border-radius:3px; background:var(--line);
+  }
+  .progress .pd.done{ background:var(--ok); }
+  .progress .pd.current{ background:var(--clay); }
+
+  .start-hero{ text-align:center; margin-bottom:22px; }
+  .start-hero h2{
+    font-size:24px; margin:0 0 8px 0; color:var(--forest); font-weight:700; letter-spacing:-.3px;
+  }
+  .start-hero p{ font-size:13.5px; color:var(--muted); margin:0; }
+
+  .howto{
+    background:var(--clay-soft); border:1px solid #e6c9a4; border-radius:var(--radius);
+    padding:14px 16px; font-size:13px; line-height:1.55; margin-bottom:18px;
+  }
+  .howto strong{ display:block; margin-bottom:6px; font-size:13.5px; color:var(--forest); }
+  .howto ol{ margin:6px 0 0 18px; padding:0; }
+  .howto li{ margin-bottom:4px; }
+
+  .identity{ display:flex; gap:10px; margin-bottom:20px; }
+  .field{ flex:1; display:flex; flex-direction:column; gap:5px; }
+  .field label{ font-size:12px; font-weight:600; color:var(--forest); }
+  .field input{
+    border:1px solid var(--line); border-radius:8px; padding:9px 10px; font-size:13.5px;
+    font-family:var(--font); background:#fbfbf9; width:100%;
+  }
+  .field input:focus{ outline:2px solid var(--forest-light); outline-offset:1px; }
+
+  .banner{
+    display:flex; align-items:center; gap:10px;
+    background:#eef2ee; border:1px solid #cfdccf; border-radius:var(--radius);
+    padding:12px 14px; margin-bottom:18px; font-size:13px; color:var(--forest);
+  }
+  .banner .num{
+    font-size:11px; font-weight:700; color:#fff; background:var(--forest);
+    border-radius:6px; padding:3px 7px; min-width:22px; text-align:center; flex:none;
+  }
+  .banner strong{ display:block; font-size:13.5px; }
+
+  .question{ margin-bottom:20px; }
+  .question p{ font-size:13px; margin:0 0 8px 0; line-height:1.4; }
+  .req-star{ color:var(--clay); font-weight:700; }
+
+  .scale{ display:flex; align-items:center; gap:6px; }
+  .scale .opt{ flex:1; text-align:center; }
+  .scale label{ display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; font-size:10px; color:var(--muted); }
+  .scale input{ position:absolute; opacity:0; pointer-events:none; }
+  .scale .circle{
+    width:26px; height:26px; border-radius:50%; border:1.5px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600;
+    color:var(--forest); background:#fff; transition:.12s;
+  }
+  .scale input:checked + .circle{ background:var(--clay); border-color:var(--clay); color:#fff; }
+  .scale-caption{ display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-top:4px; padding:0 2px; }
+  .scale-warning{ font-size:11px; color:#a83232; margin-top:6px; display:none; }
+  .question.invalid .scale-warning{ display:block; }
+  .question.invalid .circle{ border-color:#d99; }
+
+  textarea{
+    width:100%; border:1px solid var(--line); border-radius:8px; padding:9px 10px; font-size:13px;
+    font-family:var(--font); resize:vertical; min-height:56px; background:#fbfbf9;
+  }
+  textarea:focus{ outline:2px solid var(--forest-light); outline-offset:1px; }
+
+  .feedback-footer{ border-top:1px solid var(--line); padding:14px 20px; background:#fff; display:flex; gap:10px; }
+  .status{ font-size:12px; margin-bottom:8px; min-height:14px; }
+  .status.error{ color:#a83232; }
+  .status.ok{ color:var(--ok); }
+
+  button.submit, button.back, button.start{
+    border:none; padding:12px; border-radius:8px; font-size:14px; font-weight:600;
+    cursor:pointer; letter-spacing:.2px; font-family:var(--font);
+  }
+  button.submit{ flex:1; background:var(--forest); color:#fff; }
+  button.submit:hover{ background:var(--forest-light); }
+  button.submit:disabled{ opacity:.6; cursor:default; }
+  button.back{ background:#fff; color:var(--forest); border:1px solid var(--line) !important; }
+  button.back:hover{ background:#f2f1ea; }
+  button.start{ width:100%; background:var(--forest); color:#fff; }
+  button.start:hover{ background:var(--forest-light); }
+
+  .done-screen{ display:none; padding:60px 30px; text-align:center; }
+  .done-screen.show{ display:block; }
+  .done-screen .check{ font-size:34px; color:var(--ok); margin-bottom:14px; }
+  .done-screen h3{ margin:0 0 8px 0; color:var(--forest); }
+  .done-screen p{ font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:20px; }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; }
+  .footer-wrap{ display:none; }
+  .footer-wrap.active{ display:flex; }
+
+  @media (max-width: 900px){
+    .layout{ flex-direction:column; }
+    .viewer{ border-right:none; border-bottom:1px solid var(--line); height:42vh; }
+    .feedback{ max-width:none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="title">
+    <strong>Rural NbS Scan — Wireframe Review (v0.7)</strong>
+    <span>D591 · World Bank · Alliance Bioversity &amp; CIAT</span>
+  </div>
+  <div class="badge">Feedback prototype</div>
+</header>
+
+<div class="layout">
+
+  <div class="viewer" id="viewerPanel">
+    <div class="viewer-bar" id="viewerBar">
+      <span class="dot"></span>
+      <span id="viewerBarText">Browse the live tool on this side.</span>
+    </div>
+    <iframe id="wireframeFrame" src="wireframe.html" title="Rural NbS Scan wireframe" loading="eager"></iframe>
+    <div class="viewer-cover" id="viewerCover">
+      <div class="viewer-cover-inner">
+        <div class="vc-eyebrow">D591 · World Bank · Alliance Bioversity &amp; CIAT</div>
+        <h1>NbS Rural Scan</h1>
+        <p class="vc-sub">Visualization feedback</p>
+        <div class="vc-howto">
+          <strong>How this works</strong>
+          <ol>
+            <li>Enter your name and email on the right.</li>
+            <li>Press <b>Start</b> — this tool will appear right here, open to the first tab.</li>
+            <li>Answer the questions on the right for the tab currently showing.</li>
+            <li>Press <b>Next</b> to move on — the tab here switches automatically, no need to click anything on this side yourself.</li>
+            <li>At the end, press <b>Submit</b> to send everything in one go.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback">
+    <div class="feedback-scroll" id="scrollArea">
+
+      <!-- START SCREEN -->
+      <div class="screen active" id="screenStart">
+        <div class="start-hero">
+          <h2>Share your feedback</h2>
+          <p>Enter your details, then press Start — the guided steps appear on the left.</p>
+        </div>
+        <div class="identity">
+          <div class="field">
+            <label for="fName">Name</label>
+            <input type="text" id="fName" placeholder="Full name">
+          </div>
+          <div class="field">
+            <label for="fEmail">Email</label>
+            <input type="email" id="fEmail" placeholder="name@worldbank.org">
+          </div>
+        </div>
+        <div class="status" id="startStatus"></div>
+        <button class="start" onclick="startFlow()">Start</button>
+      </div>
+
+      <!-- STEP SCREEN -->
+      <div class="screen" id="screenStep">
+        <div class="progress" id="progressDots"></div>
+        <div class="banner" id="stepBanner">
+          <span class="num" id="stepNum">01</span>
+          <div>
+            <strong id="stepBannerTitle">Setup</strong>
+            <span id="stepBannerHint">On the left, open this tab, then answer below.</span>
+          </div>
+        </div>
+        <div id="stepQuestions"></div>
+      </div>
+
+      <!-- DONE SCREEN -->
+      <div class="screen" id="screenDone">
+        <div class="done-screen show">
+          <div class="check">✓</div>
+          <h3>Thank you for your feedback</h3>
+          <p>Your response has been recorded. This will return to the start screen for the next reviewer.</p>
+          <button class="start" onclick="resetFlow()" style="max-width:220px;margin:0 auto;">Start a new response</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="feedback-footer footer-wrap" id="stepFooter">
+      <button class="back" onclick="goBack()">Back</button>
+      <button class="submit" id="nextBtn" onclick="goNext()">Next</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ---- Replace this with your own Google Apps Script Web App URL ----
+  const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbyB_hjmTcg4vhEIdFmXW50ynB910kc3SnkhU2hv89hSmOUXNaiMT5mIoWzCEITX9gEu/exec";
+
+  // Real tab button ids from wireframe.html — confirmed from source (id="tab-setup", "tab-opp", etc.)
+  function goToTab(tabId){
+    if(!tabId) return;
+    try{
+      const frame = document.getElementById('wireframeFrame');
+      const doc = frame.contentDocument || frame.contentWindow.document;
+      const btn = doc.getElementById(tabId);
+      if(btn) btn.click();
+    }catch(e){
+      // Cross-origin or not-yet-loaded fallback: the on-screen instruction still tells the reviewer which tab to open.
+      console.warn('Could not auto-switch tab (same-origin hosting required):', e);
+    }
+  }
+
+  const STEPS = [
+    {
+      key:'setup', num:'01', tab:'01 Setup', tabId:'tab-setup',
+      questions:[
+        {type:'scale', name:'setup_rating', prompt:"It's clear what each choice (NbS, geographic scope, resolution, climate mode) will change in the analysis.", lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'setup_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
+        {type:'text', name:'setup_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+      ]
+    },
+    {
+      key:'opportunity', num:'02', tab:'02 Opportunity Space', tabId:'tab-opp',
+      questions:[
+        {type:'scale', name:'opportunity_rating', prompt:'The suitability map and the VH/H/M/L/X classes make it easy to see where an NbS could plausibly work.', lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'opportunity_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
+        {type:'text', name:'opportunity_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+      ]
+    },
+    {
+      key:'risk', num:'03', tab:'03 Project Risk', tabId:'tab-prisk',
+      questions:[
+        {type:'scale', name:'risk_rating', prompt:'The difference between "risk to the NbS asset" (this tab) and "risk to rural livelihoods" (Opportunity Space) is clear.', lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'risk_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
+        {type:'text', name:'risk_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+      ]
+    },
+    {
+      key:'hotspots', num:'04', tab:'04 Priority Hotspots', tabId:'tab-hotspot',
+      questions:[
+        {type:'scale', name:'hotspots_rating', prompt:'The ranked district list and the priority weights would help you defend a site-selection decision to a task team.', lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'hotspots_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
+        {type:'text', name:'hotspots_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+      ]
+    },
+    {
+      key:'comparison', num:'05', tab:'05 NbS Comparison', tabId:'tab-compare',
+      questions:[
+        {type:'scale', name:'comparison_rating', prompt:'The side-by-side comparison (spatial overlap, climate resilience, cost-effectiveness) makes it easier to choose between candidate NbS.', lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'comparison_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
+        {type:'text', name:'comparison_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+      ]
+    },
+    {
+      key:'nextsteps', num:'06', tab:'06 Next Steps', tabId:'tab-next',
+      questions:[
+        {type:'scale', name:'nextsteps_rating', prompt:'The pathway from scoping to pre-feasibility and feasibility is clear and actionable.', lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'nextsteps_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
+        {type:'text', name:'nextsteps_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+      ]
+    },
+    {
+      key:'general', num:'GN', tab:null,
+      questions:[
+        {type:'scale', name:'general_usefulness', prompt:'Overall, how useful would this tool be for your work as a TTL?', lo:'Not useful at all', hi:'Very useful'},
+        {type:'text', name:'general_missing', prompt:"Is there any feature, data view, or functionality you expected to see that's missing? (e.g. exporting results, cross-country comparison, an API, methodology documentation)"},
+        {type:'text', name:'general_favorite', prompt:'Of the six tabs, which is most valuable for your work — and which is least?'},
+        {type:'text', name:'general_patterns_like', prompt:"Are there UI/UX patterns from other geospatial or decision-support platforms you'd like to see here? (e.g. World Bank Climate Change Knowledge Portal, WRI Aqueduct, Africa GeoPortal, Global Forest Watch — links/screenshots welcome)"},
+        {type:'text', name:'general_patterns_avoid', prompt:"Anything from other platforms you think we should avoid?"},
+        {type:'text', name:'general_comment', prompt:'Any final comments?'}
+      ]
+    }
+  ];
+
+  let currentIndex = -1;
+  let responses = {};
+
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.getElementById('stepFooter').classList.toggle('active', id === 'screenStep');
+  }
+
+  function startFlow(){
+    const name = document.getElementById('fName').value.trim();
+    const email = document.getElementById('fEmail').value.trim();
+    const statusEl = document.getElementById('startStatus');
+    if(!name || !email){
+      statusEl.textContent = "Please enter your name and email to begin.";
+      statusEl.className = "status error";
+      return;
+    }
+    responses.name = name;
+    responses.email = email;
+    statusEl.textContent = "";
+    document.getElementById('viewerCover').classList.add('hidden');
+    currentIndex = 0;
+    renderStep();
+    showScreen('screenStep');
+    goToTab(STEPS[0].tabId);
+  }
+
+  function renderProgress(){
+    const wrap = document.getElementById('progressDots');
+    wrap.innerHTML = "";
+    STEPS.forEach((s, i) => {
+      const d = document.createElement('div');
+      d.className = 'pd' + (i < currentIndex ? ' done' : (i === currentIndex ? ' current' : ''));
+      wrap.appendChild(d);
+    });
+  }
+
+  function renderStep(){
+    const step = STEPS[currentIndex];
+    renderProgress();
+    document.getElementById('stepNum').textContent = step.num;
+    if(step.tab){
+      document.getElementById('stepBannerTitle').textContent = step.tab;
+      document.getElementById('stepBannerHint').textContent = "This tab is now showing on the left — answer below.";
+      goToTab(step.tabId);
+    } else {
+      document.getElementById('stepBannerTitle').textContent = "Overall impression";
+      document.getElementById('stepBannerHint').textContent = "You've now seen every tab — a few closing questions.";
+    }
+
+    const container = document.getElementById('stepQuestions');
+    container.innerHTML = "";
+    step.questions.forEach(q => {
+      const qDiv = document.createElement('div');
+      qDiv.className = 'question';
+      qDiv.dataset.name = q.name;
+
+      const p = document.createElement('p');
+      p.innerHTML = q.prompt + ' <span class="req-star">*</span>';
+      qDiv.appendChild(p);
+
+      if(q.type === 'scale'){
+        qDiv.dataset.required = "true";
+        const scale = document.createElement('div');
+        scale.className = 'scale';
+        for(let v=1; v<=5; v++){
+          const opt = document.createElement('div');
+          opt.className = 'opt';
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = q.name;
+          input.value = v;
+          if(responses[q.name] == v) input.checked = true;
+          input.addEventListener('change', () => qDiv.classList.remove('invalid'));
+          const circle = document.createElement('span');
+          circle.className = 'circle';
+          circle.textContent = v;
+          label.appendChild(input);
+          label.appendChild(circle);
+          opt.appendChild(label);
+          scale.appendChild(opt);
+        }
+        qDiv.appendChild(scale);
+        const caption = document.createElement('div');
+        caption.className = 'scale-caption';
+        caption.innerHTML = '<span>' + q.lo + '</span><span>' + q.hi + '</span>';
+        qDiv.appendChild(caption);
+        const warn = document.createElement('div');
+        warn.className = 'scale-warning';
+        warn.textContent = 'Please select a rating before continuing.';
+        qDiv.appendChild(warn);
+      } else {
+        qDiv.dataset.required = "true";
+        const ta = document.createElement('textarea');
+        ta.name = q.name;
+        ta.placeholder = 'Your answer';
+        ta.value = responses[q.name] || '';
+        ta.addEventListener('input', () => qDiv.classList.remove('invalid'));
+        qDiv.appendChild(ta);
+        const warnT = document.createElement('div');
+        warnT.className = 'scale-warning';
+        warnT.textContent = 'Please answer before continuing.';
+        qDiv.appendChild(warnT);
+      }
+      container.appendChild(qDiv);
+    });
+
+    document.getElementById('nextBtn').textContent = (currentIndex === STEPS.length - 1) ? 'Submit feedback' : 'Next';
+  }
+
+  function saveStep(){
+    const step = STEPS[currentIndex];
+    step.questions.forEach(q => {
+      if(q.type === 'scale'){
+        const checked = document.querySelector('input[name="' + q.name + '"]:checked');
+        responses[q.name] = checked ? checked.value : "";
+      } else {
+        const ta = document.querySelector('textarea[name="' + q.name + '"]');
+        responses[q.name] = ta ? ta.value.trim() : "";
+      }
+    });
+  }
+
+  function validateStep(){
+    const step = STEPS[currentIndex];
+    let valid = true;
+    step.questions.forEach(q => {
+      const qDiv = document.querySelector('.question[data-name="' + q.name + '"]');
+      if(q.type === 'scale'){
+        const checked = document.querySelector('input[name="' + q.name + '"]:checked');
+        if(!checked){
+          valid = false;
+          qDiv.classList.add('invalid');
+        } else {
+          qDiv.classList.remove('invalid');
+        }
+      } else {
+        const ta = document.querySelector('textarea[name="' + q.name + '"]');
+        if(!ta || !ta.value.trim()){
+          valid = false;
+          qDiv.classList.add('invalid');
+        } else {
+          qDiv.classList.remove('invalid');
+        }
+      }
+    });
+    return valid;
+  }
+
+  function goBack(){
+    saveStep();
+    if(currentIndex === 0){
+      currentIndex = -1;
+      document.getElementById('viewerCover').classList.remove('hidden');
+      showScreen('screenStart');
+      return;
+    }
+    currentIndex--;
+    renderStep();
+  }
+
+  async function goNext(){
+    if(!validateStep()) return;
+    saveStep();
+
+    if(currentIndex < STEPS.length - 1){
+      currentIndex++;
+      renderStep();
+      document.getElementById('scrollArea').scrollTop = 0;
+    } else {
+      await submitAll();
+    }
+  }
+
+  async function submitAll(){
+    const btn = document.getElementById('nextBtn');
+    btn.disabled = true;
+    btn.textContent = "Sending...";
+
+    if(GAS_ENDPOINT.indexOf("http") !== 0){
+      alert("The Google Apps Script URL still needs to be set in the code (GAS_ENDPOINT).");
+      btn.disabled = false;
+      btn.textContent = "Submit feedback";
+      return;
+    }
+
+    const body = new URLSearchParams(responses);
+    try{
+      await fetch(GAS_ENDPOINT, { method: "POST", mode: "no-cors", body: body });
+      showScreen('screenDone');
+    }catch(err){
+      alert("Something went wrong sending your feedback. Please check your connection and try again.");
+    }
+    btn.disabled = false;
+    btn.textContent = "Submit feedback";
+  }
+
+  function resetFlow(){
+    responses = {};
+    currentIndex = -1;
+    document.getElementById('fName').value = '';
+    document.getElementById('fEmail').value = '';
+    document.getElementById('viewerCover').classList.remove('hidden');
+    showScreen('screenStart');
+  }
+</script>
+
+</body>
+</html>
