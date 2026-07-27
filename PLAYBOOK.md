@@ -51,6 +51,15 @@ Pipeline architecture is in [`docs/pipeline.html`](./docs/pipeline.html). The fu
 9. Verify using `python3 src/nbs_ruralscan/schema_tools/check_alignment.py` and run tests (`uv run pytest`).
 10. Raise a PR using the PR template.
 
+### Acquisition queue — sources that can't be auto-fetched
+
+A source that is screened-in but **paywalled or bot-blocked** can't be cached automatically, and its PDF must **never** go in git (copyright — GitHub issue attachments are public `githubusercontent.com` URLs; `.cache/corpus/` is gitignored for this reason). Track + hand off instead:
+
+1. Add a row to `pipeline/acquisition_queue.csv` (metadata only — `source_id`, citation, doi, url, `blocker`, `access_route`, `target_library_path`, `status=pending`, `assigned`).
+2. Open/append a GitHub issue mirroring the queue for the assignee (e.g. #205). **Metadata only — no PDFs.**
+3. The assignee downloads (browser for OA / CGIAR institutional access for paywalled) → saves to the **SharePoint library** at `target_library_path` (exact `<source_id>.pdf` name) → marks `status=acquired`.
+4. Then hydrate (`hydrate-corpus.py`), add the `SRC` row, and extract under the current ruleset.
+
 ### Review flagged evidence (QA/QC → main)
 
 1. Start the local review server: `uv run python3 -m nbs_ruralscan.schema_tools.review_server` → http://localhost:8765/dashboard.html → **QA/QC** tab. (One-time per clone: `bash scripts/setup-repo.sh`; be logged in — `gh auth status`; **and hydrate the corpus — `NBS_LIBRARY_ROOT="<your OneDrive>/.../1_Projects" python3 scripts/hydrate-corpus.py`.** Apply's guardrail verifies every quote against the local, gitignored `.cache/corpus/`, so a fresh clone that skips this fails with **GUARDRAIL FAILED** listing missing artifacts — issue #181. `hydrate-corpus.py` now fetches **code/web tool sources too** (from `SRC.url`), not only SharePoint PDFs, so one run reaches full coverage. Set `NBS_LIBRARY_ROOT` if your OneDrive folder name differs, e.g. on Windows. **A red "new version — pull" banner** appears when your local clone is behind `main` — `git pull` + restart the server when you see it.)
