@@ -15,6 +15,10 @@ Welcome Benson, Namita, Brayden (and everyone else who lands here). This repo is
 the shared home for our methodology and workflow going forward. **Please spend
 ~15 minutes reading this section before picking up any work.**
 
+> **New to the repo / setting up Claude Code on your own machine?** Start with
+> **[`ONBOARDING.md`](./ONBOARDING.md)** — a step-by-step handover (install, one-time
+> setup incl. Windows, current project state, and first prompts by lane).
+
 ### What's here
 
 The scaffolding covers the methodology (modules, schema, recipes), the team's
@@ -24,7 +28,7 @@ been done.
 
 ### Three things to look at, with your feedback in mind
 
-1. **[Pipeline architecture (v0.4)](https://ciat.github.io/nbs_ruralscan/pipeline.html)**
+1. **[Pipeline architecture (v0.5)](https://ciat.github.io/nbs_ruralscan/pipeline.html)**
    — one-page map of the 7 modules + the M2b disaster-risk addendum and the
    T0–T7 schema. The _framework primitives_ layer at the top (canonical
    membership functions, hybrid weighting, MCDA engine, recipe template) is
@@ -117,7 +121,7 @@ reproducible Jupyter/Colab notebooks plus an interactive demonstrator UI.
 Includes:
 
 - **TTL Tool Wireframe** — interactive mockup of the decision-support tool
-- **Pipeline Architecture (v0.4)** — one-page methodology architecture diagram
+- **Pipeline Architecture (v0.5)** — one-page methodology architecture diagram
 - **Data Schema (v0.3.0)** — the T0–T7 ERD, field-level spec, evidence/config
   registers, and draft-0 example tables (structure frozen + machine-validated)
 - **[Evidence & Literature Dashboard](https://ciat.github.io/nbs_ruralscan/dashboard.html)**
@@ -148,16 +152,22 @@ you're never starting cold.
 
 ### One-time setup
 
+> **On Windows?** Follow **[`ONBOARDING.md` §4](./ONBOARDING.md#4-one-time-setup-on-your-machine-windows)**
+> instead — it has the PowerShell installers and the Git-Bash / OneDrive gotchas. The macOS
+> path is below.
+
 ```bash
 # 1. Tools
 brew install gh                                   # GitHub CLI (for issue/PR commands)
 curl -fsSL https://claude.com/install.sh | bash   # Claude Code installer
+curl -LsSf https://astral.sh/uv/install.sh | sh   # uv — Python runner (tests, generators, review server)
 # (Or follow https://docs.claude.com/en/docs/claude-code/setup for your platform)
 gh auth login                                     # authenticate GitHub CLI
 
 # 2. Clone and open
 git clone https://github.com/CIAT/nbs_ruralscan.git
 cd nbs_ruralscan
+bash scripts/setup-repo.sh                        # one-time: JSON merge driver + autocrlf=false
 code .                                            # opens in VS Code
 ```
 
@@ -191,6 +201,7 @@ asking Claude Code to do it for you. Raise the PR via the GitHub UI or
 
 | You want to…                                                     | Read this                                                                                                                                          |
 | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Set up Claude Code on your machine + get the current state       | [`ONBOARDING.md`](./ONBOARDING.md)                                                                                                                 |
 | Understand the system architecture, what's locked, who does what | [`AGENTS.md`](./AGENTS.md)                                                                                                                         |
 | Learn the team's workflows and conventions                       | [`PLAYBOOK.md`](./PLAYBOOK.md)                                                                                                                     |
 | Find a task to pick up                                           | [Issues tab](https://github.com/CIAT/nbs_ruralscan/issues) (or [`.github/SEED_ISSUES.md`](./.github/SEED_ISSUES.md) if you're seeding the backlog) |

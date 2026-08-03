@@ -221,6 +221,7 @@ Automation to enable (one-off setup — click-by-click runbook at [`.github/PROJ
 
 ## When in doubt
 
+- [ONBOARDING.md](./ONBOARDING.md) is the fastest path from a clean (incl. Windows) machine to a first contribution
 - [AGENTS.md](./AGENTS.md) is the source of truth for what's locked
 - This Playbook is the source of truth for how we work
 - Most recent `5_Meetings/` transcript in the shared SharePoint for current discussion state

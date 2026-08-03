@@ -8,12 +8,20 @@ local server on your machine. It's ~3 commands. You need **write access to the r
 ## One-time setup
 
 1. **Install `uv`** (Python runner) — https://docs.astral.sh/uv/getting-started/installation/
-   (macOS/Linux: `curl -LsSf https://astral.sh/uv/install.sh | sh`)
-2. **Clone the repo:**
+   - macOS/Linux: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+   - Windows (PowerShell): `irm https://astral.sh/uv/install.ps1 | iex`
+2. **Clone the repo and run the one-time setup:**
    ```
    git clone https://github.com/CIAT/nbs_ruralscan.git
    cd nbs_ruralscan
+   bash scripts/setup-repo.sh
    ```
+   (`setup-repo.sh` registers the JSON merge driver and sets `core.autocrlf false` — **required on Windows** so the CSV registers stay LF.)
+3. **Hydrate the local corpus** so the Apply guardrail can verify quotes against the cached sources (a fresh clone that skips this fails Apply with **GUARDRAIL FAILED**):
+   ```
+   python3 scripts/hydrate-corpus.py
+   ```
+   Set `NBS_LIBRARY_ROOT="<your OneDrive path>/1_Projects"` first if your OneDrive folder name differs (see the restricted-sources section below).
 
 ## Each review session
 
@@ -32,15 +40,18 @@ local server on your machine. It's ~3 commands. You need **write access to the r
    - Read the **quote** + **why flagged**; for tables click **📷 show table region**.
    - Pick a **reason** (hover each for its meaning) → click **ok** (keep) or **drop** (remove).
    - Repeat. Your picks are saved as you go (pending).
-6. **Apply decisions & rebuild** (sidebar) — writes them to the register, re-runs the gates.
+6. **✓ Apply & submit to main** (sidebar) — **one click, end-to-end**. It writes your
+   decisions to the register + `review_log`, regenerates the JSON, re-runs the gates, then
+   branches off the latest `main`, opens a `qaqc:` PR, and **auto-merges on green CI** if
+   you're an allowlisted reviewer (`Namita-J`, `peetmate`). You get a popup with the PR link.
+   The public site rebuilds ~2 minutes after merge.
    - **ok** → evidence kept, flag cleared. **drop** → **quarantined** (kept as a record,
      excluded from analysis, fully reversible — not deleted).
    - If two reviewers disagree on a unit, it becomes a **conflict** (stays pending until you agree).
-7. **Commit + push** so everyone (and the public site) gets your work:
-   ```
-   git add -A && git commit -m "qaqc: review <what you did>" && git push
-   ```
-   The public site rebuilds in ~2 minutes.
+   - Run it **once per session** (it batches all agreed decisions into one PR), not per flag.
+   - **Windows:** the submit shells out to Git-Bash (auto-located if Git for Windows is
+     installed). If it can't be found, run the headless equivalent from **Git Bash**:
+     `bash scripts/submit-review.sh <your-handle> --auto`.
 
 ## Seeing the source (📷 show source region)
 

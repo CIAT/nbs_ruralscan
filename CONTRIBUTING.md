@@ -2,6 +2,8 @@
 
 Welcome. This document is the detailed onboarding for working in this repo — for first-time contributors and as a refresher for the existing team. Read [`AGENTS.md`](./AGENTS.md) and [`PLAYBOOK.md`](./PLAYBOOK.md) first if you haven't; they set the architectural and team context. This file is about *how to actually get hands on the work*.
 
+> **Just setting up?** [`ONBOARDING.md`](./ONBOARDING.md) is the fastest path from a clean machine to a first contribution — including the **Windows** installers and gotchas. Come back here for the deeper first-PR walkthrough.
+
 ---
 
 ## Tools you'll use
@@ -11,6 +13,7 @@ Welcome. This document is the detailed onboarding for working in this repo — f
 | **VS Code** | Editor + Source Control panel + integrated terminal | https://code.visualstudio.com |
 | **Claude Code** | Pair programmer in your terminal; reads project memory automatically | `curl -fsSL https://claude.com/install.sh \| bash` (or see https://docs.claude.com/en/docs/claude-code/setup) |
 | **GitHub CLI (`gh`)** | Commits, PRs, issues from the terminal — used by `setup-labels.sh` | `brew install gh` then `gh auth login` |
+| **uv** | Python runner — tests, schema generators, QA review server | `curl -LsSf https://astral.sh/uv/install.sh \| sh` (Windows: `irm https://astral.sh/uv/install.ps1 \| iex`) |
 | **Python 3** | Pipeline code; local Pages preview server | Usually installed on macOS by default; `brew install python` otherwise |
 | **Google Earth Engine** | Underlying analytics platform (pipeline work only) | https://earthengine.google.com — request access via your CGIAR email |
 
@@ -20,9 +23,12 @@ Confirm everything is installed:
 code --version
 claude --version
 gh --version
+uv --version
 python3 --version
 git --version
 ```
+
+After cloning, run the one-time repo setup once: `bash scripts/setup-repo.sh` (registers the JSON merge driver and sets `core.autocrlf false` — **required on Windows** to keep the CSV registers as LF).
 
 ## VS Code: the suggested setup
 
