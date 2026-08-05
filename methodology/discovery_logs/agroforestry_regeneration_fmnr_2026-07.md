@@ -67,3 +67,19 @@ Low-tier / predatory venues (Int J Environmental Sciences, Int J Advanced Resear
 - Search protocol: SRCH register rows `agroforestry__{T4,T3,T6}__{updated_lit,grey}__agroforestry__regeneration_farmland__2026-07-17`.
 - Ledger: `searched=done` + `screened=done` stamped per (table × category × family) for `fmnr_2026-07`.
 - Extraction (deterministic pipeline → staging → central gates) tracked separately; ledger `extracted`/`verified`/`reviewed` advance only as those steps complete.
+
+---
+
+## Backfill: stock + tool processes (run `fmnr_stock_tool_backfill_2026-08`, 2026-08-05)
+
+The July FMNR sweep logged only `updated_lit` + `grey`. Audit (2026-08-05) found `stock`
+and `tool` were never logged for F2 — closed here so all 4 processes are on record.
+
+| process | table | retrieved | screened | included | note |
+|---|---|---|---|---|---|
+| stock | T4 | 168 | 12 | 2 | Kessler1994 parkland woody-species dynamics (OA); Sendzimir2011 already held via updated_lit. Temperate-forestry "natural regeneration" (Fagus/spruce/pine) excluded — wrong practice. |
+| stock | T3 | 168 | 12 | 1 | Sendzimir2011 regreening/resilience Sahel (OA, 268c) — drought-resilience anchor (likely already registered). |
+| stock | T6 | 168 | 12 | 3 | ANR carbon cost-effective 2015 (closed → queued); Drivers of FMNR Sahel 2020 (OA); local-institutions agroforestry adoption 2017 (OA). |
+| tool | T4/T3/T6 | 19 | 5 | 0 | **No dedicated FMNR/ANR practice-suitability or MCDA tool exists.** 19 "FMNR" GitHub repos = unrelated acronym/hobby; Regreening Africa = data portal, not a rule-encoding tool. Genuine tool gap (as for F3 silvopastoral). |
+
+**stock net (verbatim):** `title.search:(FMNR OR "farmer managed natural regeneration" OR "assisted natural regeneration" OR "natural regeneration" OR regreening OR "regeneration naturelle assistee") AND (parkland OR Sahel OR density OR drought OR yield OR adoption OR carbon OR suitability OR agroforestry); sort=cited_by_count:desc`
