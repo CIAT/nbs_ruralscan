@@ -37,3 +37,31 @@
 ## Gaps / next iteration
 
 OpenAlex curl was IP-budget-exhausted ('Insufficient budget, resets midnight UTC', ~12h) after a single query that returned 0 for the strict title.search boolean — so BOTH stock (high-cite) and updated_lit (recent) OpenAlex passes are UNVERIFIED for real retrieved/cited_by totals; re-run the logged booleans after reset to confirm counts and pull any high-cite items WebSearch missed. Multilingual grey is EN+ES only: no PT (Brazil Atlantic Forest ANR literature is substantial) and no FR (Sahel/francophone Africa) grey retrieved this pass. WOCAT SLM technologies DB (a locked diamond source) was not directly queried. Tool process is genuinely thin: no public commit-pinnable regeneration-potential code repo exists (Williams model code is on-request; ROAM/Restoration Diagnostic are methodologies, not code) — so file:line tool evidencing for this family is currently not possible. T3 content skew: most ANR sources treat fire and grazing QUALITATIVELY as regeneration barriers (hazard-to-restoration) rather than giving quantified drought survival/mortality or fire-resilience thresholds — expect many qualitative_only T3 rows, and watch claim_scope (dry-forest drought/resprouting and framework-species tolerance evidence is often species_specific, must be KEPT+tagged, not read as practice-level). Restoration-as-hazard-buffer direction (restored cover reducing flood/erosion/heat) is under-represented in the ANR-specific corpus and may need a separate cross-family/forest-cover search.
+
+---
+
+## stock + updated_lit — FINALISED (OpenAlex online, run `fr_stocklit_finish_2026-08`, 2026-08-05)
+
+Supersedes the provisional section above (OpenAlex was budget-blocked at first pass).
+
+| process | retrieved | screened | included |
+|---|---|---|---|
+| stock | 44 | 15 | 4 |
+| updated_lit | 111 | 15 | 4 |
+
+**Verbatim terms:**
+- **stock:** `title.search:("assisted natural regeneration" OR "framework species") AND (restoration OR forest OR resilience OR fire) ; sort=cited_by_count:desc`
+- **updated_lit:** `title.search:("assisted natural regeneration" OR "natural regeneration") AND (drought OR fire OR seedling OR mortality) , from_publication_date:2015-01-01 ; sort=cited_by_count:desc`
+
+**Screened-in (stock/lit):**
+
+| source_id | process | access | rel | title / note |
+|---|---|---|---|---|
+| `framework_sp_fireprone_grass_2020` | stock | oa | high | Framework Species Approach Proves Robust in Restoring Forest on Fire Prone Invasive Grass — Direct PICOS: framework-species ANR intervention explicit + T3 fire hazard (survival on  |
+| `anr_degraded_seasonal_forest_1997` | stock | paywalled | med | Understanding and assisting natural regeneration processes in degraded seasonal evergreen forest — Seminal ANR-process foundation (85 cites, SE Asia LMIC). Practice explicit; hazar |
+| `framework_species_method_review_2022` | stock | oa | med | The framework species method: harnessing natural regeneration to restore tropical forest ecosystems — Authoritative framework-species (ANR) method review, tropical LMIC, 52 cites,  |
+| `framework_sp_seedling_recruit_dryforest_2009` | stock | paywalled | med | Bird communities and seedling recruitment in restoring seasonally dry forest using the framework species method — Framework-species ANR in seasonally-dry (drought-exposed) tropical |
+| `postfire_nr_trends_bolivia_2023` | updated_lit | oa | high | Post-Fire Natural Regeneration Trends in Bolivia: 2001-2021 — LMIC (Bolivia), spatial/remote-sensing fire-driven regeneration over 20y — direct T3 fire hazard + spatial-suitability |
+| `postfire_restoration_deadwood_microsite_2023` | updated_lit | oa | med | Post-Fire Restoration and Deadwood Management: Microsite Dynamics and Their Impact on Natural Regeneration — Post-fire restoration, microsite controls on natural regen (barrier-rem |
+| `fire_impact_nr_woody_dry_wet_2018` | updated_lit | oa | med | Investigating the impact of fire on the natural regeneration of woody species in dry and wet forest — Fire hazard effect on woody natural regeneration across dry/wet forest (likely |
+| `survival_nr_ecological_restoration_2021` | updated_lit | paywalled | med | Survival, seedlings growth and natural regeneration in areas under ecological restoration — Direct survival/mortality + natural regeneration under active ecological restoration — c |

@@ -36,3 +36,29 @@
 ## Gaps / next iteration
 
 OpenAlex daily budget hit $0 after a SINGLE query, so only the stock process has a real API retrieved count (238); updated_lit true counts are outstanding - RERUN the two verbatim boolean+date OpenAlex queries after midnight-UTC reset to complete that row. Content gaps for F1 passive-regeneration T6: (1) cost_per_ha_restored figures that ISOLATE pure passive NR (most grey/lit lump passive NR with ANR - the ANR sibling scope keeps leaking into cost anchors); (2) survival/success rates conditioned on regeneration-potential drivers (remnant-cover %, seed-source proximity, prior land-use intensity) rather than pooled; (3) African/Asian LMIC outcome+cost evidence (surfaced set is Latin-America-heavy - Rozendaal/Chazdon/Brazil); (4) MEL/adoption evidence for passive-NR schemes (dis-adoption when land re-cleared) - none surfaced. Tool gap: no T6-outcome/cost tool with extractable hardcoded parameters - WRI ROAM/Restoration Diagnostic are handbooks (no code); seed_dispersal_mapper is T4 potential only. A carbon-accumulation-rate dataset/tool (Cook-Patton-style regrowth curves) was NOT verbatim-surfaced this pass and should be sought for cost_per_tCO2e. PICOS watch: exclude single-species SDM and enrichment-planting papers seen in the stock query tail.
+
+---
+
+## stock + updated_lit — FINALISED (OpenAlex online, run `fr_stocklit_finish_2026-08`, 2026-08-05)
+
+Supersedes the provisional section above (OpenAlex was budget-blocked at first pass).
+
+| process | retrieved | screened | included |
+|---|---|---|---|
+| stock | 263 | 15 | 3 |
+| updated_lit | 1266 | 15 | 3 |
+
+**Verbatim terms:**
+- **stock:** `(natural regeneration OR passive restoration) AND (forest restoration OR tropical forest)`
+- **updated_lit:** `(natural regeneration OR passive restoration) AND (restoration success OR cost OR biodiversity)`
+
+**Screened-in (stock/lit):**
+
+| source_id | process | access | rel | title / note |
+|---|---|---|---|---|
+| `chazdon_guariguata_2016_natregen_tool` | stock | paywalled | high | Natural regeneration as a tool for large-scale forest restoration in the tropics: prospects and challenges — Seminal (cited 694). Passive natural regeneration EXPLICIT as restorati |
+| `crouzeilles_2017_natregen_success` | stock | oa | high | Ecological restoration success is higher for natural regeneration than for active restoration in tropical forests — Gold OA meta-analysis (cited 683). Directly quantifies restorati |
+| `vieira_scariot_2006_dryforest_natregen` | stock | repo | high | Principles of Natural Regeneration of Tropical Dry Forests for Restoration — Seminal (cited 518), green OA. Passive regeneration explicit; success/limiting-factor principles for tr |
+| `brancalion_2020_targeted_natregen_cost` | updated_lit | oa | high | Achieving cost-effective landscape-scale forest restoration through targeted natural regeneration — Gold OA (cited 268). Explicit cost_per_ha_restored / cost-effectiveness of natur |
+| `reid_2018_site_selection_bias_natregen` | updated_lit | oa | med | Positive site selection bias in meta-analyses comparing natural regeneration to active forest restoration — Gold OA (cited 175). Methodological caution: passive-regen success is bi |
+| `chazdon_uriarte_2016_natregen_humanmodified` | updated_lit | repo | med | Natural forest regeneration and ecological restoration in human-modified tropical landscapes — Green OA (cited 126). Passive regen in human-modified/agricultural landscapes -> rele |

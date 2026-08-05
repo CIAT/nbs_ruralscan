@@ -37,3 +37,33 @@
 ## Gaps / next iteration
 
 OpenAlex daily budget exhausted after 2 queries (resets midnight UTC) — the planned broader stock booleans and a date-sorted (2015-2026) updated_lit sweep did NOT run; rerun after reset to firm up retrieved counts. Title-only OpenAlex intersection of NR x hazard is noisy (fauna, post-fire weed/deadwood biodiversity, temperate single-genus stands) — genuine T3 signal for passive regeneration lives in tropical-forest-recovery lit + grey/tools, not high-cite title hits. Tool layer is US-temperate post-fire conifer only (poscrptR, Regenmapper); no LMIC/tropical passive-NR hazard-response code tool found — transferability caveat for the pilot. poscrptR code needs a GitLab code adapter to pin file:line of GLM coefficients + probability cutoff (WebFetch 403 blocked inline read); Regenmapper has no open source repo. F1/F2 boundary is pervasive: FAO and ELTI guidance and the framework-species paper are ANR (F2) — pure passive-F1 hazard evidence is sparser and must be segregated at extraction. Hazard coverage is skewed: fire-resilience and drought/desiccation mortality of regeneration are well represented; flood/erosion-control-by-restored-cover and wind are thin — targeted follow-up searches warranted."
+
+---
+
+## stock + updated_lit — FINALISED (OpenAlex online, run `fr_stocklit_finish_2026-08`, 2026-08-05)
+
+Supersedes the provisional section above (OpenAlex was budget-blocked at first pass).
+
+| process | retrieved | screened | included |
+|---|---|---|---|
+| stock | 257 | 15 | 5 |
+| updated_lit | 83 | 15 | 5 |
+
+**Verbatim terms:**
+- **stock:** `title.search:("natural regeneration" OR "secondary succession" OR "forest regrowth" OR "second-growth" OR "passive restoration") AND (drought OR fire OR resilience OR mortality OR disturbance)`
+- **updated_lit:** `title.search:("natural regeneration" OR "secondary succession" OR "forest regrowth" OR "spontaneous regeneration") AND (drought OR fire OR resilience OR mortality),from_publication_date:2015-01-01`
+
+**Screened-in (stock/lit):**
+
+| source_id | process | access | rel | title / note |
+|---|---|---|---|---|
+| `tropdry_resilience_meta_2016` | stock | oa | high | Resilience of tropical dry forests – a meta-analysis of changes in species diversity and composition during secondary succession — Meta-analysis (diamond source class) of passive s |
+| `drought_resist_succession_tdf_2012` | stock | oa | high | Drought resistance in early and late secondary successional species from a tropical dry forest: the interplay between xylem resistance to embolism, sapwood density and leaf morphol |
+| `atlantic_rainforest_recovery_time_2008` | stock | paywalled | med | How long does the Atlantic Rain Forest take to recover after a disturbance? Changes in species composition and ecological features during tropical succession — Passive post-disturb |
+| `fire_legacy_amazon_regrowth_2005` | stock | oa | med | Legacy of fire slows carbon accumulation in Amazonian forest regrowth — Fire hazard legacy effect on natural forest regrowth (Amazonia, LMIC). T3 fire-x-regeneration. Carbon-accumu |
+| `sec_regrowth_resilience_slashburn_amazon_2005` | stock | paywalled | med | Resilience of secondary forest regrowth after slash-and-burn agriculture in central Amazonia — Passive regrowth resilience after fire/slash-and-burn disturbance (Amazonia, LMIC). T |
+| `waterstrategy_succession_tropdry_2015` | updated_lit | oa | high | Exploiting water versus tolerating drought: water-use strategies of trees in a secondary successional tropical dry forest — Drought water-use / tolerance strategies across secondar |
+| `postfire_restoration_deadwood_regen_2023` | updated_lit | oa | high | Post-Fire Restoration and Deadwood Management: Microsite Dynamics and Their Impact on Natural Regeneration — Restoration explicit; fire hazard x microsite conditions driving natura |
+| `postfire_natregen_bolivia_trends_2023` | updated_lit | oa | high | Post-Fire Natural Regeneration Trends in Bolivia: 2001-2021 — LMIC (Bolivia), spatially-explicit 20-yr trends of post-fire natural regeneration. Fits T3 fire x passive regen with s |
+| `fmnr_resilience_welfare_mali_2023` | updated_lit | oa | med | Impact of Farmer-Managed Natural Regeneration on Resilience and Welfare in Mali — LMIC (Mali, drylands). FMNR = low/no-planting natural-regeneration family; resilience outcomes und |
+| `soilresp_resilience_drought_dieoff_succession_2016` | updated_lit | oa | med | Strong resilience of soil respiration components to drought-induced die-off resulting in forest secondary succession — Drought-induced die-off triggering secondary succession; ecos |

@@ -32,3 +32,33 @@
 ## Gaps / next iteration
 
 OpenAlex was budget-blocked this run (HTTP 402 'Insufficient budget', resets midnight UTC), so stock + updated_lit have NO verified cited_by/total counts — re-run the two boolean queries after the UTC reset to backfill srch.retrieved and catch additional high-cite seminals (e.g. Crouzeilles et al. 2016 Nat Commun 'ecological drivers of forest restoration success'). ANR-specific open-source tooling is a real gap: authoritative restoration tools (IUCN/WRI ROAM, Restoration Diagnostic, WRI Atlas of FLR Opportunities) are methodology PDFs not open code, and GitHub yields only weak-authority generic reforestation scorers with no ANR branch — the Williams et al. 2024 natural-regeneration-potential model may have an associated repo worth a targeted tool follow-up. T6 cost evidence skews to Brazil/Atlantic-Forest and tropical grey lit; sparse on African/Asian ANR cost + on quantitative water/soil outcomes and cost_per_tCO2e for ANR specifically. Grey (WRI/FAO/WWF) needs the standard positive-bias discount on benefit/cost claims. Species-level survival figures (dry-tropical ANR paper) must route to claim_scope=species_specific, not the practice-level T6 surface. All web/PDF candidates still require cached snapshots + EV locators before any extraction.
+
+---
+
+## stock + updated_lit — FINALISED (OpenAlex online, run `fr_stocklit_finish_2026-08`, 2026-08-05)
+
+Supersedes the provisional section above (OpenAlex was budget-blocked at first pass).
+
+| process | retrieved | screened | included |
+|---|---|---|---|
+| stock | 31 | 15 | 5 |
+| updated_lit | 27 | 15 | 5 |
+
+**Verbatim terms:**
+- **stock:** `title.search:("assisted natural regeneration" OR "framework species") AND (restoration OR carbon OR biodiversity) | sort=cited_by_count:desc | OpenAlex works | per_page=15`
+- **updated_lit:** `title.search:("assisted natural regeneration" OR "managed natural regeneration" OR "framework species") AND (restoration OR cost OR success OR recovery),from_publication_date:2015-01-01 | sort=cited_by_count:desc | OpenAlex works | per_page=15`
+
+**Screened-in (stock/lit):**
+
+| source_id | process | access | rel | title / note |
+|---|---|---|---|---|
+| `anr_carbon_farming_cost_2015` | stock | paywalled | high | Carbon farming via assisted natural regeneration as a cost-effective mechanism for restoring forest — Seminal (119 cites), ANR explicit. Directly T6 cost_per_ha_restored + carbon c |
+| `anr_bibliometric_synthesis_2024` | stock | oa | high | Bibliometric and literature synthesis on assisted natural regeneration: an evidence base for forest restoration — OA synthesis of ANR outcome evidence (success/recovery/carbon/biod |
+| `framework_species_carbon_financial_2022` | stock | oa | high | Financial Analysis of Potential Carbon Value over 14 Years of Forest Restoration by the Framework Species Method — Framework species (ANR-adjacent, barrier-removal + framework plan |
+| `anr_biomass_carbon_stocks_2024` | stock | oa | high | Effect of assisted natural regeneration on forest biomass and carbon stocks (Livingstone) — ANR explicit; T6 biomass/carbon-stock outcomes; LMIC (Southern Africa) context tie-break |
+| `anr_dry_tropical_diversity_2024` | stock | oa | med | Restoring a dry tropical forest through assisted natural regeneration: enhancing tree diversity — ANR explicit; T6 biodiversity/tree-diversity + cover outcome; tropical LMIC. OA Tr |
+| `fmnr_opportunities_constraints_2020` | updated_lit | oa | high | Opportunities and Constraints for Using Farmer Managed Natural Regeneration for Land Restoration in Sub-Saharan Africa — Managed natural regeneration explicit; T6 adoption/MEL + re |
+| `fmnr_drivers_sahel_2020` | updated_lit | oa | high | Drivers of farmer-managed natural regeneration in the Sahel. Lessons for restoration — Managed natural regen explicit; T6 adoption drivers/MEL at scale; LMIC Sahel. OA Sci Reports, |
+| `fmnr_farmers_perspectives_success_2022` | updated_lit | oa | high | Farmers' perspectives and context are key for the success and sustainability of farmer-managed natural regeneration — Managed natural regen explicit; T6 restoration success + susta |
+| `anr_cost_efficient_mitigation_2025` | updated_lit | oa | high | Assessing Assisted Natural Regeneration as a Cost-Efficient Mitigation for Climate Change — ANR explicit; recent T6 cost_per_tCO2e / cost-efficiency of carbon mitigation. OA Earth' |
+| `anr_success_drone_field_2019` | updated_lit | paywalled | med | Evaluating success of various restorative interventions through drone- and field-collected data — Compares restorative interventions incl. ANR; T6 restoration-success + canopy/cove |
