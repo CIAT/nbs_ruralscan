@@ -2038,8 +2038,8 @@
                 <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin:0 0 4px;"><b style="color:var(--text-primary);">How to use it.</b> Scan for gaps (what still needs searching, extracting or reviewing). <b>Click a cell's numbers</b> → its evidence units + verify/review state; <b>click its stage pip</b> → the exact search protocol behind it. The <b>Status</b> dropdown above and the <b>Practice / Sub-practice</b> chips filter which rows appear. Key below:</p>
                 <div style="font-size:11.5px; margin-top:8px; padding-top:10px; border-top: 1px solid var(--border-color); display:flex; flex-direction:column; gap:7px;">
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Done / found</span>
-                <span style="display:flex; align-items:center; gap:5px;"><span class="badge high audit-badge" style="font-weight:700; min-width:30px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:9px; padding:0 6px;">0/50</span><span style="color:var(--text-secondary);"><b>done / found</b> — sources <b>extracted</b> vs sources <b>screened-in</b> (SRCH <i>n_included</i>) for this cell. <code>0/50</code> = 50 candidates found, none extracted yet. Hover for the direct-vs-generic split.</span></span>
+                <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Found + progress</span>
+                <span style="display:flex; align-items:center; gap:5px;"><span class="badge high audit-badge" style="font-weight:700; min-width:24px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:9px; padding:0 6px;">12</span><span style="color:var(--text-secondary);"><b>found</b> — candidate sources <b>screened-in</b> (SRCH <i>n_included</i>) awaiting extraction — the discovery resource pool. Green whenever resources exist. The <b>bar</b> below shows how many are <b>extracted</b>; hover for the direct/generic + extracted split.</span></span>
               </div>
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                 <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Stage pip</span>
@@ -4594,23 +4594,31 @@
         : `Direct (family-targeted) stage: ${stage}. Sequential — Search → Extract → Verify → Review. Click for the search protocol.`;
       const pip = `<span onclick="${_srchClick}" title="${_pipTip}" style="margin-top:6px; cursor:pointer; font-size:9.5px; font-weight:700; letter-spacing:.02em; padding:2px 9px; border-radius:11px; ${pipBg}">${stage}</span>`;
       const _short = typeKey === 'stock' ? 'Stock' : typeKey === 'updated' ? 'Lit' : typeKey === 'grey' ? 'Grey' : 'Tools';
-      // done / found ratio: done = extracted source count (direct + generic); found =
-      // candidates screened-in (SRCH n_included). Denominator clamped >= done.
-      const _done = directN + genericN;
+      // FOUND-led: headline = candidate sources found (screened-in, SRCH n_included) —
+      // the discovery resource pool. A thin bar shows extraction progress (how many of
+      // those are extracted). So a searched-but-not-extracted cell reads "12" (resources
+      // exist), not a bare "0".
+      const _done = directN + genericN;                 // extracted sources
       const _found = getFoundTotal(_nbs, _tbl, _cat, statusKey);
-      const _denom = Math.max(_found, _done);
-      const ratioClass = (_denom > 0 && _done >= _denom) ? 'high' : _done > 0 ? 'medium' : 'low';
-      const _numClick = _done > 0 ? ` onclick="${_evClick}" style="cursor:pointer;"` : '';
+      const _denom = Math.max(_found, _done);           // total candidate sources known for this cell
+      const headClass = _denom > 0 ? 'high' : 'low';    // green whenever resources exist
+      const _numClick = _denom > 0 ? ` onclick="${_evClick}" style="cursor:pointer;"` : '';
+      const _extPct = _denom > 0 ? Math.round(100 * Math.min(_done, _denom) / _denom) : 0;
+      const _extBar = _denom > 0
+        ? `<div title="${_done} of ${_denom} found source(s) extracted" style="width:54px; height:5px; border-radius:3px; overflow:hidden; margin-top:5px; background:var(--bg-tertiary);"><span style="display:block; height:100%; width:${_extPct}%; background:#10b981;"></span></div>`
+        : '';
       // Review-coverage bar: unreviewed (slate) · 1 review (amber) · 2+ reviews (green).
       const _revBar = _nRows > 0
         ? `<div title="Review coverage of ${_nRows} evidence unit(s): ${_b1 + _b2}/${_nRows} reviewed (${_b2} with 2+ reviewers), ${_b0} unreviewed" style="display:flex; width:54px; height:5px; border-radius:3px; overflow:hidden; margin-top:5px; background:var(--bg-tertiary);">${_b0 ? `<span style="flex:${_b0}; background:#475569;"></span>` : ''}${_b1 ? `<span style="flex:${_b1}; background:#f59e0b;"></span>` : ''}${_b2 ? `<span style="flex:${_b2}; background:#10b981;"></span>` : ''}</div>`
         : '';
-      const cellTitle = `${targetLabel} - ${typeLabel}: ${_done} extracted / ${_denom} found (screened-in). Extracted = ${directN} direct (family-targeted) + ${genericN} generic (via the practice-wide parent search). Pip = furthest direct pipeline stage.`;
+      const cellTitle = `${targetLabel} - ${typeLabel}: ${_denom} candidate source(s) found (screened-in); ${_done} extracted (${directN} direct + ${genericN} generic). Bar = extraction progress. Pip = furthest direct pipeline stage.`;
       return `<div title="${cellTitle}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
         <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">${_short}</span>
-        <div${_numClick} title="done / found — ${_done} source(s) extracted of ${_denom} screened-in (${directN} direct + ${genericN} generic extracted)${_done ? ' — click to see the evidence' : ''}" style="display:flex; align-items:center; gap:4px;${_done ? 'cursor:pointer;' : ''}">
-          <span class="badge ${ratioClass} audit-badge" style="font-weight:700; min-width:34px; height:22px; line-height:22px; font-size:12px; display:inline-block; text-align:center; border-radius:11px; padding:0 7px;">${_done}/${_denom}</span>
+        <div${_numClick} title="${_denom} found (candidates to extract) · ${_done} extracted (${directN} direct + ${genericN} generic)${_denom ? ' — click for the evidence / candidates' : ''}" style="display:flex; align-items:baseline; gap:3px;${_denom ? 'cursor:pointer;' : ''}">
+          <span class="badge ${headClass} audit-badge" style="font-weight:700; min-width:22px; height:22px; line-height:22px; font-size:13px; display:inline-block; text-align:center; border-radius:11px; padding:0 6px;">${_denom}</span>
+          <span style="font-size:8px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">found</span>
         </div>
+        ${_extBar}
         ${_revBar}
         ${pip}
       </div>`;
