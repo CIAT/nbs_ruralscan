@@ -19,9 +19,18 @@ cd "$root" || exit 1
 # Never abort the merge if generate fails (e.g. a CSV still conflicted, or missing deps);
 # CI's `generate.py --check` is the backstop that catches any staleness left behind.
 if command -v uv >/dev/null 2>&1; then
-  uv run python3 src/nbs_ruralscan/schema_tools/generate.py schema >/dev/null 2>&1 || true
+  # `python`, not `python3` — see issue #212 (no python3.exe in a Windows venv).
+  uv run python src/nbs_ruralscan/schema_tools/generate.py schema >/dev/null 2>&1 || true
 else
-  python3 src/nbs_ruralscan/schema_tools/generate.py schema >/dev/null 2>&1 || true
+  # No uv. Pick an interpreter that actually RUNS: on Windows `command -v python3` happily
+  # finds the MS Store alias stub, which only prints "Python was not found" (issue #212).
+  py=""
+  for cand in python3 python; do
+    if command -v "$cand" >/dev/null 2>&1 && "$cand" -c "" >/dev/null 2>&1; then
+      py="$cand"; break
+    fi
+  done
+  [ -n "$py" ] && "$py" src/nbs_ruralscan/schema_tools/generate.py schema >/dev/null 2>&1 || true
 fi
 
 # Copy the freshly-generated canonical file ($4 = repo path) into git's result slot ($2 = %A).
