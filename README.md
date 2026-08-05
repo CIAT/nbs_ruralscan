@@ -63,9 +63,10 @@ been done.
   server-side preferred (GEE / STAC / large services)**
 - **Namita** — **Task H focus
   ([expert-opinion elicitation & integration protocol](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/methodology/expert_opinion_protocol.md))**
-  · expert-opinion elicitation · coordination
-- **Benson** — **QA/QC across all modules**: dataset fitness sign-off, output
-  validation, resolution audit
+  · expert-opinion elicitation · coordination · **QA/QC across all modules**
+  (dataset fitness sign-off, output validation, resolution audit — from Benson)
+- **Benson** — **left the project (Aug 2026)**; framework primitives stay
+  attributed to him (inherited work). QA/QC passed to Namita.
 - **MFL team** (Sarah · Chris · Evert · Hannes) — M6 hand-off content,
   ecosystem-services & domain input
 
