@@ -39,3 +39,32 @@
 ## Gaps / next iteration
 
 API OUTAGE: OpenAlex was budget-blocked (HTTP 429, resets midnight UTC) and Semantic Scholar 429 (no key) for the entire session, so stock/updated_lit retrieved counts are WebSearch-surfaced, NOT true corpus totals. ACTION: re-run the intended OpenAlex booleans (given verbatim in srch.search_terms) after reset to get real PRISMA counts and a proper high-cite ranking. TOOL gap: GitHub file contents + commit sha unreadable via WebFetch (SPA) - the two code tools are screened-in but hazard thresholds are UNVERIFIED; must pin commit+file:line and confirm a real code branch (not README) before any tool EV extraction. COVERAGE gaps: (1) flood/erosion-control and wind hazard responses are thin - searches surfaced mostly drought+fire; add targeted queries (restored cover x runoff/erosion, windthrow of young plantings). (2) Reforestation-vs-afforestation prior-land-cover flag + do-no-harm caveat for afforesting native non-forest ecosystems (savanna/grassland) surfaced only in prose (fire-risk of afforestation) - needs dedicated evidence. (3) LMIC-specific quantified survival/mortality under drought is mostly grey (CIFOR-ICRAF, positive-bias) - seek peer-reviewed LMIC field trials. (4) Multilingual FR/PT grey not yet run (only EN+ES done).
+
+---
+
+## stock + updated_lit — FINALISED (OpenAlex online, run `fr_stocklit_finish_2026-08`, 2026-08-05)
+
+Supersedes the provisional section above (OpenAlex was budget-blocked at first pass).
+
+| process | retrieved | screened | included |
+|---|---|---|---|
+| stock | 244 | 30 | 5 |
+| updated_lit | 156 | 30 | 4 |
+
+**Verbatim terms:**
+- **stock:** `title.search primary: (reforestation OR afforestation OR "tree planting" OR "restoration planting") AND (drought OR mortality OR survival); companion cover-hazard string also run: (reforestation OR afforestation OR "tree planting" OR "restoration planting") AND (fire OR flood OR erosion OR heat)`
+- **updated_lit:** `title.search primary (from_publication_date:2015-01-01): (reforestation OR afforestation OR "restoration planting" OR "enrichment planting") AND (drought OR fire OR mortality OR survival); companion: (reforestation OR "tree planting" OR "restoration planting") AND ("seedling survival" OR "drought mortality" OR "climate")`
+
+**Screened-in (stock/lit):**
+
+| source_id | process | access | rel | title / note |
+|---|---|---|---|---|
+| `reforest_drylands_drought_filters_2020` | stock | repo | high | Reforesting drylands under novel climates with extreme drought filters: the importance of trait-based species selection — F3 active-planting drought hazard response in drylands; tr |
+| `reforest_water_yield_drought_risk_2022` | stock | paywalled | high | Large-scale reforestation can increase water yield and reduce drought risk for water-insecure regions — Restored forest cover -> drought-risk reduction (hazard mitigation service); |
+| `afforestation_arid_survival_taklimakan_2016` | stock | oa | med | Survival and growth of three afforestation species under high saline drip irrigation in the Taklimakan Desert, China — Afforestation survival under arid/drought + salinity stress;  |
+| `reforestation_flood_wetspa_hornad_2006` | stock | paywalled | med | WetSpa Model Application for Assessing Reforestation Impacts on Floods in Margecany-Hornad Watershed, Slovakia — Flood-control hazard response by restored cover (spatial/hydrologic |
+| `afforestation_erosion_sediment_catchments_2009` | stock | paywalled | med | Investigating the effects of afforestation on soil erosion and sediment mobilisation in two small catchments — Erosion/sediment control by restored cover (hazard mitigation). Pract |
+| `enrichment_planting_seedling_survival_tradeoffs_2018` | updated_lit | paywalled | high | Tree Seedling Survival Depends on Canopy Age, Cover and Initial Composition: Trade-offs in Forest Restoration Enrichment — Direct F3 enrichment-planting survival under canopy/micro |
+| `postfire_regeneration_failure_reforestation_boreal_2021` | updated_lit | oa | high | Mitigating post-fire regeneration failure in boreal landscapes with reforestation and variable retention harvesting — Active reforestation as fire-hazard recovery response (post-fi |
+| `reforestation_drought_west_africa_2017` | updated_lit | paywalled | med | Future impacts of global warming and reforestation on drought patterns over West Africa — LMIC (West Africa) reforestation-drought interaction; climate-modelling of restoration eff |
+| `forest_diversification_novel_planting_climate_2017` | updated_lit | oa | med | Climate change mitigation through adaptation: the effectiveness of forest diversification by novel tree planting regimes — Diversified/novel tree-planting as climate-resilience (dr |

@@ -36,3 +36,30 @@
 ## Gaps / next iteration
 
 BLOCKER: OpenAlex API is hard-rate-limited this session ('Insufficient budget', $0 remaining, resets midnight UTC) - NO true retrieved totals or cited_by ranking obtained for stock/updated_lit. All counts are WebSearch fallbacks. ACTION: rerun the two OpenAlex boolean queries after budget reset (or add funds) to (a) confirm real retrieved totals, (b) surface any high-cite papers missed by WebSearch, (c) recency-rank updated_lit.\n\nTOOL process is thin: no public code repository with hardcoded regeneration-potential weights/thresholds was located/pinnable (GitHub search via WebFetch returned 0 usable results - SPA render limitation, not confirmed-empty). The strongest tool (WRI/IUCN Atlas) exposes thresholds only at doc level, not file:line+commit_sha. Williams et al. 2024 (Nature) and Strassburg PLANGEA analysis code are almost certainly archived on Zenodo/GitHub but were not found this session - needs a direct Zenodo/data-availability lookup + commit pin before any tool-source EV extraction. Recommend a follow-up GitHub/Zenodo pass (query author handles: brookewilliams, hlbeyer, IIS-Brazil, TNC) run with `gh` rather than WebFetch.\n\nFAMILY-BOUNDARY watch for extraction: several sources conflate passive NR with assisted NR (ANR) - Crouzeilles 2020 and ELTI explicitly split them; keep passive-NR (F1) rows distinct from ANR, and route ROAM/Atlas soft success-factors (tenure/finance/governance) to operational_risk/M2b, NOT T4. Cook-Patton 2020 sits near the pure-carbon-accounting exclusion line - retained because it is a spatial regen-potential model, but flag on extraction.\n\nMultilingual grey (ES/FR/PT) surfaced regional priority-mapping studies (Mexico Veracruz, Bolivia) not yet screened in depth - a targeted LMIC grey pass could add 2-3 system_constraint candidates.
+
+---
+
+## stock + updated_lit — FINALISED (OpenAlex online, run `fr_stocklit_finish_2026-08`, 2026-08-05)
+
+Supersedes the provisional section above (OpenAlex was budget-blocked at first pass).
+
+| process | retrieved | screened | included |
+|---|---|---|---|
+| stock | 197 | 15 | 3 |
+| updated_lit | 101 | 15 | 4 |
+
+**Verbatim terms:**
+- **stock:** `title.search:("natural regeneration" OR "passive restoration" OR "secondary succession" OR "forest regrowth") AND ("potential" OR "predict" OR "suitability" OR "recovery") | sort=cited_by_count:desc | OpenAlex`
+- **updated_lit:** `title.search:("natural regeneration" OR "passive restoration" OR "spontaneous regeneration" OR "second-growth forest") AND ("potential" OR "predict" OR "suitability" OR "spatial") ,from_publication_date:2015-01-01 | sort=cited_by_count:desc | OpenAlex`
+
+**Screened-in (stock/lit):**
+
+| source_id | process | access | rel | title / note |
+|---|---|---|---|---|
+| `cook_patton_2020_mapping_regrowth_potential` | stock | paywalled | high | Mapping carbon accumulation potential from global natural forest regrowth — Cook-Patton et al. 2020 Nature. Global 1-km map of natural-regrowth potential - directly a regeneration- |
+| `meli_2017_landuse_climate_active_passive_recovery` | stock | oa | high | A global review of past land use, climate, and active vs. passive restoration effects on forest recovery — Meli et al. 2017 PLoS ONE (gold OA). Meta-analysis of how prior land use  |
+| `cloud_forest_active_vs_passive_pasture_2018` | stock | paywalled | med | Active versus passive restoration: Recovery of cloud forest structure, diversity and soil condition in abandoned pastureland — Ecol. Eng. 2018. LMIC (Neotropical) prior-land-use (a |
+| `chazdon_2016_secondgrowth_carbon_latam` | updated_lit | oa | high | Carbon sequestration potential of second-growth forest regeneration in the Latin American tropics — Chazdon et al. 2016 Science Advances (gold OA). Spatially explicit second-growth |
+| `williams_2024_global_natregen_potential_deforested` | updated_lit | oa | high | Global potential for natural regeneration in deforested tropical regions — Williams et al. 2024 Nature (hybrid OA). Global map of where natural regeneration is likely to succeed in |
+| `crouzeilles_2016_natregen_biodiversity_spatial_planning` | updated_lit | paywalled | high | Natural regeneration and biodiversity: a global meta-analysis and implications for spatial planning — Crouzeilles et al. 2016 Biotropica. Global meta-analysis linking natural-regen |
+| `landuse_dynamics_carbon_secondgrowth_2017` | updated_lit | oa | med | Land-use dynamics influence estimates of carbon sequestration potential in tropical second-growth forest — Environ. Res. Lett. 2017 (gold OA). Prior land-use dynamics as a determin |

@@ -39,3 +39,23 @@
 ## Gaps / next iteration
 
 OpenAlex updated_lit query was NOT executed: per-day API budget hit $0 after the single stock query (resets midnight UTC, retryAfter ~12h). RE-RUN the intended boolean [(reforestation OR afforestation OR \"forest restoration\") AND (suitability OR opportunity OR potential) AND (mapping OR spatial), from_publication_date:2015-01-01] after reset for a real recent total + high-cite recency ranking; current updated_lit candidates are WebSearch fallback only. Grey done EN+ES only - FR and PT NOT separately run (add FAO/CIFOR-ICRAF FR + Portuguese/Brazil Mata Atlantica restoration sources; Brazil is a major active-planting evidence base). WOCAT and Evidence Gap Maps (3ie/CEE) not yet queried for this family. Species/community-as-parameter: single-species SDM papers deliberately excluded (claim_scope=species) - a future species-level layer will need them; not this sweep. GROA belongs to the passive/ANR sibling family, not active_planting - ensure it is picked up there. No DOIs captured (OpenAlex metadata call blocked); acquisition_queue rows carry OpenAlex IDs for Namita-J to resolve. Afforestation-Tracker is the only code-verified tool; WRI restoration-diagnostic / IIASA GLOBIOM restoration modules not located as pinnable public code repos (ROAM/Atlas covered as grey methodology instead).
+
+---
+
+## stock + updated_lit — FINALISED (OpenAlex online, run `fr_stocklit_finish_2026-08`, 2026-08-05)
+
+Supersedes the provisional section above (OpenAlex was budget-blocked at first pass).
+
+| process | retrieved | screened | included |
+|---|---|---|---|
+| stock | 79 | 30 | 4 |
+| updated_lit | 41 | 27 | 5 |
+
+**Verbatim terms:**
+- **stock:** `title.search:(reforestation OR afforestation OR "restoration planting") AND (suitability OR prioritization OR "site selection") | sort=cited_by_count:desc`
+- **updated_lit:** `title.search:(reforestation OR afforestation OR "restoration planting") AND (suitability OR "restoration opportunity" OR prioritization),from_publication_date:2015-01-01 | sort=cited_by_count:desc`
+
+**Screened-in (stock/lit):**
+
+| source_id | process | access | rel | title / note |
+|---|---|---|---|---|

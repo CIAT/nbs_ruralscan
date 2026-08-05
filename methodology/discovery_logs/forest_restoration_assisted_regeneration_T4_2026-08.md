@@ -37,3 +37,33 @@
 ## Gaps / next iteration
 
 SEARCH-COVERAGE GAPS: (1) OpenAlex dedicated recent (Q3/Q4 date-filtered) + planned ES/FR/PT title-only runs were BLOCKED by HTTP 429 (daily budget exhausted, resets midnight UTC; WebFetch fallback also 429). updated_lit candidates were harvested from the recency subset of the successful stock Q1/Q2 runs - re-run Q3/Q4 and add PT/ES title booleans (e.g. 'regeneracao natural' AND (potencial OR restauracao)) next window to confirm totals and catch the Brazil literature. (2) The Brazil natural-regen-potential prediction paper behind WRI-Brasil/Pacto (75.5 Mha modelled; likely Crouzeilles/Molin ~2019-2020) is not yet pinned to a DOI - targeted OpenAlex/Scholar pull needed; strong LMIC T4 regen-potential source. TOOL-LANE GAP: no interrogable public source repo located for ANY named tool (RePlant Alfa, WRI FLR Atlas, USFS Regenmapper) - GitHub API returned 0 relevant repos. Per the tools-are-sources rule, EV extraction (commit sha + file:line of weights/thresholds/masks) is BLOCKED until a repo/commit is located; screened-in as candidates only. WRI Atlas has quotable hardcoded criteria (>=10% canopy, pop-density class breaks) but from methodology docs, not code. SCOPE FLAGS: sahel_fmnr_drivers mixes T4 regen-potential with soft enabling-env drivers (tenure/governance) -> extract ONLY biophysical/system_constraint as structural_suitability; route soft factors to use_role=operational_risk/M2b. Regenmapper is US temperate post-fire (low LMIC transferability). Williams_2024 Nature likely ships a global regen-potential raster + driver model = candidate T4 BIND dataset AND a tool-lane artifact - inspect its data-availability/Zenodo next.
+
+---
+
+## stock + updated_lit — FINALISED (OpenAlex online, run `fr_stocklit_finish_2026-08`, 2026-08-05)
+
+Supersedes the provisional section above (OpenAlex was budget-blocked at first pass).
+
+| process | retrieved | screened | included |
+|---|---|---|---|
+| stock | 258 | 30 | 6 |
+| updated_lit | 214 | 30 | 5 |
+
+**Verbatim terms:**
+- **stock:** `title.search:("assisted natural regeneration" OR "natural regeneration") AND (restoration OR degraded)  [+ complementary run: ("forest restoration" OR "forest landscape restoration") AND (regeneration OR suitability OR prioritization)]  sort=cited_by_count:desc`
+- **updated_lit:** `title.search:("assisted natural regeneration" OR "natural regeneration") AND (restoration OR degraded OR potential),from_publication_date:2015-01-01  [+ complementary run: ("forest restoration" OR reforestation) AND (suitability OR prioritization OR "seed source" OR "remnant forest"),from_publication_date:2015-01-01]  sort=cited_by_count:desc`
+
+**Screened-in (stock/lit):**
+
+| source_id | process | access | rel | title / note |
+|---|---|---|---|---|
+| `gonzalez_targeted_anr_2020` | stock | oa | high | Achieving cost-effective landscape-scale forest restoration through targeted natural regeneration — Gold OA. Core T4: spatially targets WHERE natural regeneration is the cost-effec |
+| `vieira_principles_nat_regen_dry_forest_2006` | stock | repo | high | Principles of Natural Regeneration of Tropical Dry Forests for Restoration — Green OA (seminal, 518 cites). Conditions/limiting factors governing natural regen success (seed source |
+| `shono_anr_degraded_tropical_2007` | stock | paywalled | high | Application of Assisted Natural Regeneration to Restore Degraded Tropical Forestlands — Seminal ANR practice paper (295 cites). ANR barrier-removal + site conditions where ANR viab |
+| `chazdon_natregen_tool_flr_2016` | stock | paywalled | high | Natural regeneration as a tool for large-scale forest restoration in the tropics: prospects and challenges — Top-cited (694) seminal anchor. Frames biophysical/landscape conditions |
+| `orsi_mcda_prioritize_restoration_2017` | stock | oa | high | Multicriteria decision analysis for prioritizing areas for forest restoration — Diamond OA. MCDA prioritization = T4 method-side; criteria include regeneration/connectivity/degrada |
+| `holl_stimulating_natregen_degraded_2013` | stock | paywalled | med | Stimulating Natural Regeneration of Tropical Forest on Degraded Land: Approaches, Outcomes, and Information Gaps — Degradation-gradient threshold: when natural regen stalls -> acti |
+| `crouzeilles_global_natregen_potential_tropics_2024` | updated_lit | oa | high | Global potential for natural regeneration in deforested tropical regions — Hybrid OA, 2024, 90 cites. THE regeneration-potential mapping paper: spatial predictors of where natural  |
+| `chomba_fmnr_opportunities_constraints_ssa_2020` | updated_lit | oa | high | Opportunities and Constraints for Using Farmer Managed Natural Regeneration for Land Restoration in Sub-Saharan Africa — Gold OA, LMIC (SSA). FMNR = ANR variant; biophysical opport |
+| `barros_mcda_prioritize_restoration_amazon_2022` | updated_lit | paywalled | high | Multicriteria approach to prioritize forest restoration areas for biodiversity conservation in the eastern Amazon — LMIC (Amazon) MCDA prioritization; criteria layers relevant to T |
+| `elliott_automating_anr_tropical_2016` | updated_lit | paywalled | med | The potential for automating assisted natural regeneration of tropical forest ecosystems — ANR practice explicit; more method/remote-sensing than suitability thresholds. Medium T4  |
