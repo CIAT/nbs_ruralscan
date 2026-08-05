@@ -1,6 +1,6 @@
 # Water Harvesting & Conservation — Suitability-Family Scheme (for review)
 
-*Draft for sign-off · August 2026 · domain owner **Benson** (this is his canonical recipe), QA Benson, coordination Namita.*
+*Draft for sign-off · August 2026 · sign-off **Pete + MFL** (Sarah · Chris · Evert · Hannes) domain review · QA **Namita** · coordination Namita. Grounded in **Benson's** canonical water-harvesting recipe (inherited work — Benson left the project Aug 2026, so WH has **no dedicated hydrology domain reviewer**: open gap, flag at validation).*
 
 > **Why this document exists.** Suitability is reasoned **per suitability family, not per whole NbS**
 > (locked). T4 rows key to `suitability_family_id`. Water Harvesting is the **most evidenced NbS in the
@@ -13,7 +13,7 @@
 > check dams, farm ponds, percolation tanks, bench terraces, contour ridges, runoff strips, gully plugs).
 > **`nbs_id = water_harvesting_conservation`.**
 
-## How to review (what we need from you, Benson)
+## How to review (what we need from Pete + MFL)
 
 1. **Are the family boundaries right?** The recipe already separates in-situ / micro-catchment / ex-situ /
    terracing by the water-balance question they answer — is that the right T4 family split?
@@ -101,7 +101,7 @@ sigmoid on runoff for ex-situ, decreasing for recharge; ponds favour 1–8 % slo
 - **T4 rows key to `suitability_family_id`.** No WH T4 rows yet; FAM entries are the FK targets.
 - First-pass hypothesis, revisable once evidence is in.
 
-## 6. Open questions for sign-off (Benson)
+## 6. Open questions for sign-off (Pete + MFL)
 1. **Four-family split** (in-situ / micro-catchment / ex-situ / terracing) — right T4 boundaries, matching the
    recipe's per-subpractice membership logic?
 2. **F3 footprint** — agree ex-situ storage is `applicability_zone` (drainage-line siting density, not pixel

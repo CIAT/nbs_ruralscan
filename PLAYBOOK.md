@@ -7,8 +7,8 @@ How we work. Read once, re-skim when unsure.
 | Person | Role | Owns |
 |---|---|---|
 | **Pete Steward** | Team Lead | Framework integrity · wireframe direction · scope-control · WB liaison · **operational lead on M1 (Suitability), M3 (Opp Space Characterisation), M4 (Priority Hotspots)** · recipe/spec authoring |
-| **Benson Kenduiywo** | QA / QC | Dataset fitness sign-off · output validation · resolution audit · framework primitives (inherited attribution) |
-| **Namita Joshi** | Project Coordination + Literature | **Task H focus ([expert-opinion elicitation & integration protocol](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/methodology/expert_opinion_protocol.md))** · expert-opinion elicitation · project coordination |
+| **Benson Kenduiywo** | *(left project Aug 2026)* | Framework primitives (inherited attribution — stays credited). QA/QC role → Namita. |
+| **Namita Joshi** | Project Coordination + Literature + **QA/QC** | **Task H focus ([expert-opinion elicitation & integration protocol](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/methodology/expert_opinion_protocol.md))** · expert-opinion elicitation · project coordination · **QA/QC** (dataset fitness · output validation · resolution audit, from Benson) |
 | **Brayden Youngberg** | Co-lead — Methodology | **M2 climate-risk + M2b project-disaster-risk index formulation · dataset download layer (T1 → Python) + analytical-context construction (T7); server-side preferred (GEE / STAC / large services)** |
 | **Aniruddha Ghosh** | Methodology Advisor | Variable parsimony · transparency · Claude Code patterns |
 | **Sarah Jones, Chris Kettle, Evert Thomas, Hannes Gaisberger** | MFL Team | Ecosystem services · M6 hand-off content · agroforestry/forest domain input |
@@ -100,7 +100,7 @@ A source that is screened-in but **paywalled or bot-blocked** can't be cached au
 
 ## Using Claude Code on this repo
 
-Benson has a Claude Premium seat. We expect Claude Code to be the default development environment.
+The team has Claude Premium seats. We expect Claude Code to be the default development environment.
 
 ### What to ask Claude Code
 

@@ -1,6 +1,6 @@
 # Forest Restoration — Suitability-Family Scheme (for review)
 
-*Draft for sign-off · August 2026 · owner Namita (coordination), domain review MFL (Sarah · Chris · Evert · Hannes), QA Benson.*
+*Draft for sign-off · August 2026 · sign-off Pete + domain review MFL (Sarah · Chris · Evert · Hannes), coordination + QA Namita. (Benson left the project Aug 2026; QA/QC → Namita.)*
 
 > **Why this document exists.** Suitability in the Rural NbS Scan is reasoned **per suitability family, not per
 > whole NbS** (a locked decision). T4 rows key to `suitability_family_id`. Before we populate T4 for forest

@@ -32,11 +32,11 @@ Demonstrator-grade artefacts (not contracted but valuable):
 | ID | Module | Owner | Schema tables |
 |---|---|---|---|
 | M0 | Setup & Scope | Pete | T0, T1, T7 |
-| M1 | Suitability → Opportunity Space | Pete (Benson QA) | T1, T4, T7 |
+| M1 | Suitability → Opportunity Space | Pete (Namita QA) | T1, T4, T7 |
 | M2 | Rural Climate Risk (risk to **livelihoods**) | Brayden | T1, T2 |
 | M2b | Project Disaster Risk Screen (addendum — risk to the **investment**) | Brayden | T2, T3 |
 | M3 | Opportunity Space Characterisation | Pete (Namita content) | T1, T5 |
-| M4 | Priority Hotspots (MCDA) | Pete (Benson QA) | T5 |
+| M4 | Priority Hotspots (MCDA) | Pete (Namita QA) | T5 |
 | M5 | NbS Scorecard & Response | Namita | T3, T6 |
 | M6 | Implementation Hand-off | Namita (lead) + MFL team + Pete | T0, T6 |
 
@@ -128,8 +128,8 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 ## Team & roles
 
 - **Pete Steward** (Team Lead) — framework integrity, wireframe direction, scope-control; **operational lead on M1 (suitability), M3 (opportunity-space characterisation), M4 (hotspotting/MCDA)**. Leads recipe/spec authoring.
-- **Benson Kenduiywo** (Geospatial Analytics) — **QA/QC**: dataset fitness sign-off, output validation, resolution-audit review. *(The framework primitives below remain his inherited work and stay attributed to him.)* Pipeline implementation now proceeds in Python via Claude Code, driven by Brayden / Anastasia / Pete.
-- **Namita Joshi** (Coordination + lit) — **Task H focus ([expert-opinion elicitation & integration protocol](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/methodology/expert_opinion_protocol.md))**, lead on **M6 (Implementation Hand-off)**, project coordination.
+- **Benson Kenduiywo** (Geospatial Analytics) — **left the project (Aug 2026)**. His **framework primitives** (membership functions, hybrid AHP+CRITIC+Entropy weighting, reference MCDA, recipe/subpractice-family patterns) remain inherited work and **stay attributed to him**. His **QA/QC role passed to Namita**.
+- **Namita Joshi** (Coordination + lit + **QA/QC**) — **Task H focus ([expert-opinion elicitation & integration protocol](file:///Users/pstewarda/Documents/rprojects/nbs_ruralscan/methodology/expert_opinion_protocol.md))**, lead on **M6 (Implementation Hand-off)**, project coordination, and **QA/QC across all modules** (dataset fitness sign-off, output validation, resolution audit — from Benson). *(Water Harvesting has no dedicated hydrology domain reviewer since Benson left — open gap.)*
 - **Brayden Youngberg** (Co-lead — methodology) — **M2 climate-risk + M2b project-disaster-risk index formulation; dataset download layer from T1 + analytical-context construction from T7** (server-side preferred — GEE / STAC / large services).
 - **Aniruddha Ghosh** — variable parsimony + transparency principles; Claude Code patterns
 - **Sarah Jones, Chris Kettle, Evert Thomas, Hannes Gaisberger** (MFL team) — ecosystem services, M6 implementation hand-off content, agroforestry & forest restoration domain input
