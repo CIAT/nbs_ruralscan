@@ -180,5 +180,135 @@
     "spatial_product_type": "qualitative_only",
     "grouping_rationale": "Meta-tag (v0.3.2, pending ratification) so general envelope evidence is not force-pinned to F1; see methodology/schema_changes.",
     "references": []
+  },
+  {
+    "subpractice_id": "passive_natural_regeneration",
+    "nbs_id": "forest_restoration",
+    "name": "Passive natural regeneration",
+    "definition": "Forest recovery by spontaneous regeneration after the degrading pressure is removed; no planting or active management.",
+    "suitability_family_id": "forest_restoration__passive_regeneration",
+    "dominant_limiting_factor": "regeneration potential: seed-source/remnant proximity, residual woody cover, low disturbance, pressure-removal feasibility",
+    "spatial_product_type": "area_suitability",
+    "grouping_rationale": "Restoration continuum passive end; limited by natural regeneration potential not planting. Grounded stocktake 'natural regeneration' rows + distance-from-remnants variable.",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
+  },
+  {
+    "subpractice_id": "secondary_succession",
+    "nbs_id": "forest_restoration",
+    "name": "Secondary succession",
+    "definition": "Unassisted secondary forest succession on abandoned/degraded land.",
+    "suitability_family_id": "forest_restoration__passive_regeneration",
+    "dominant_limiting_factor": "same as passive regeneration — spontaneous recovery gated by regeneration potential",
+    "spatial_product_type": "area_suitability",
+    "grouping_rationale": "Grouped with passive regeneration: identical limiting factor (natural propagule supply + low disturbance).",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
+  },
+  {
+    "subpractice_id": "assisted_natural_regeneration",
+    "nbs_id": "forest_restoration",
+    "name": "Assisted natural regeneration (ANR)",
+    "definition": "Accelerate natural regeneration by removing barriers (weeding, fire/grazing protection, liberation thinning, releasing wildlings); relies on natural propagules, not planting.",
+    "suitability_family_id": "forest_restoration__assisted_regeneration",
+    "dominant_limiting_factor": "partial regeneration potential + intervention feasibility (access/labour/management)",
+    "spatial_product_type": "area_suitability",
+    "grouping_rationale": "Distinct from passive (needs active intervention + access) and from planting (no planting). Middle of the restoration continuum.",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
+  },
+  {
+    "subpractice_id": "reforestation",
+    "nbs_id": "forest_restoration",
+    "name": "Reforestation",
+    "definition": "Deliberate tree planting to re-establish forest on formerly forested land.",
+    "suitability_family_id": "forest_restoration__active_planting",
+    "dominant_limiting_factor": "planting envelope for target species/community + degradation too high for natural regen",
+    "spatial_product_type": "area_suitability",
+    "grouping_rationale": "Active-planting family; reforestation vs afforestation is a prior-land-cover flag, not a separate family (same planting limiting factor).",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
+  },
+  {
+    "subpractice_id": "afforestation",
+    "nbs_id": "forest_restoration",
+    "name": "Afforestation",
+    "definition": "Tree planting to establish forest on land not recently forested.",
+    "suitability_family_id": "forest_restoration__active_planting",
+    "dominant_limiting_factor": "planting envelope for target species + site not previously forest (do-no-harm caveat on non-forest ecosystems)",
+    "spatial_product_type": "area_suitability",
+    "grouping_rationale": "Grouped with reforestation/enrichment under active planting; prior land cover is a context flag.",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
+  },
+  {
+    "subpractice_id": "enrichment_planting",
+    "nbs_id": "forest_restoration",
+    "name": "Enrichment planting",
+    "definition": "Planting target species into degraded/secondary forest to restore composition/structure.",
+    "suitability_family_id": "forest_restoration__active_planting",
+    "dominant_limiting_factor": "planting envelope + existing degraded canopy (partial cover)",
+    "spatial_product_type": "area_suitability",
+    "grouping_rationale": "Active-planting intervention within existing degraded forest; shares the planting limiting factor.",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
+  },
+  {
+    "subpractice_id": "mangrove_restoration",
+    "nbs_id": "forest_restoration",
+    "name": "Mangrove restoration",
+    "definition": "Restoration of mangrove/coastal forested wetlands by planting or hydrology restoration.",
+    "suitability_family_id": "forest_restoration__mangrove_coastal",
+    "dominant_limiting_factor": "coastal hydrology: tidal hydroperiod, salinity, intertidal elevation, sediment supply, wave energy",
+    "spatial_product_type": "area_suitability",
+    "grouping_rationale": "Distinct coastal-hydrology limiting factor. PARKED from discovery pending scope decision (coastal vs rural-terrestrial scan).",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
+  },
+  {
+    "subpractice_id": "ecological_mangrove_restoration",
+    "nbs_id": "forest_restoration",
+    "name": "Ecological mangrove restoration (EMR)",
+    "definition": "Restore tidal hydrology and let mangroves regenerate naturally rather than mass-planting.",
+    "suitability_family_id": "forest_restoration__mangrove_coastal",
+    "dominant_limiting_factor": "coastal hydrology restoration feasibility (hydroperiod/elevation) + natural propagule supply",
+    "spatial_product_type": "area_suitability",
+    "grouping_rationale": "Grouped with mangrove restoration (same coastal-hydrology driver). PARKED from discovery pending scope decision.",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
+  },
+  {
+    "subpractice_id": "forest_protection",
+    "nbs_id": "forest_restoration",
+    "name": "Forest protection / avoided degradation",
+    "definition": "Protecting existing forest under threat from degradation/deforestation.",
+    "suitability_family_id": "forest_restoration__protection_cbfm",
+    "dominant_limiting_factor": "existing standing forest x degradation/deforestation pressure x governance feasibility (governance is soft -> M2b, not T4)",
+    "spatial_product_type": "applicability_zone",
+    "grouping_rationale": "Not new establishment; applies within existing-forest mask. PARKED from discovery pending scope decision (restoration family vs separate avoided-deforestation stream).",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
+  },
+  {
+    "subpractice_id": "community_based_forest_management",
+    "nbs_id": "forest_restoration",
+    "name": "Community-based forest management",
+    "definition": "Community/collective management of forest for protection and sustainable use.",
+    "suitability_family_id": "forest_restoration__protection_cbfm",
+    "dominant_limiting_factor": "existing forest + community tenure/governance feasibility (soft enabling-env -> M2b)",
+    "spatial_product_type": "applicability_zone",
+    "grouping_rationale": "Grouped with protection: same standing-stock+governance driver. PARKED from discovery pending scope decision.",
+    "references": [
+      "reference/stocktake/peer_reviewed_benchmarked.csv"
+    ]
   }
 ]
