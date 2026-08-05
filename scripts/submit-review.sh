@@ -47,7 +47,9 @@ git checkout -q -B "$branch" origin/main
 echo "• branched $branch off latest main"
 
 # Replay decisions.json onto the current registers + regenerate.
-uv run python3 -m nbs_ruralscan.schema_tools.submit_review
+# NB: `python`, not `python3` — a Windows venv has python.exe only (no python3.exe), so
+# `uv run python3` escapes to PATH and hits the MS Store alias stub. Issue #212.
+uv run python -m nbs_ruralscan.schema_tools.submit_review
 
 if git diff --quiet -- schema/registers/EV_evidence_register.csv pipeline/metrics/review_log.csv; then
   echo "• no register changes produced — nothing agreed to apply. Stopping."
