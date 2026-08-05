@@ -4614,12 +4614,11 @@
       const cellTitle = `${targetLabel} - ${typeLabel}: ${_denom} candidate source(s) found (screened-in); ${_done} extracted (${directN} direct + ${genericN} generic). Bar = extraction progress. Pip = furthest direct pipeline stage.`;
       return `<div title="${cellTitle}" style="display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 4px; border:1px solid var(--border-color); border-radius:6px; background:rgba(255,255,255,0.015);">
         <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">${_short}</span>
-        <div${_numClick} title="${_denom} found (candidates to extract) · ${_done} extracted (${directN} direct + ${genericN} generic)${_denom ? ' — click for the evidence / candidates' : ''}" style="display:flex; align-items:baseline; gap:3px;${_denom ? 'cursor:pointer;' : ''}">
+        <div${_numClick} title="${_denom} found (candidates screened-in) · ${_done} extracted (${directN} direct + ${genericN} generic)${_nRows > 0 ? ` · ${_b1 + _b2}/${_nRows} unit(s) reviewed` : ''}${_denom ? ' — click for the evidence / candidates' : ''}" style="display:flex; align-items:baseline; gap:3px;${_denom ? 'cursor:pointer;' : ''}">
           <span class="badge ${headClass} audit-badge" style="font-weight:700; min-width:22px; height:22px; line-height:22px; font-size:13px; display:inline-block; text-align:center; border-radius:11px; padding:0 6px;">${_denom}</span>
           <span style="font-size:8px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.03em;">found</span>
         </div>
         ${_extBar}
-        ${_revBar}
         ${pip}
       </div>`;
     };
