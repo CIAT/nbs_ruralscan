@@ -68,3 +68,13 @@ the stocktake Annex 1 (`reference/stocktake/_local/stocktake_review.txt`), repla
 paraphrase. **No sub-practice-targeted search (F1…F6) has been run yet** — those are logged per family
 when run, and are NOT covered by the generic parent search. Synthesis #114 is gated on the
 per-family searches being run + logged.
+
+## OA-recovery — before marking a source `paywalled` (locked, 2026-08)
+
+`blocker="paywalled"` must mean **verified no OA copy found**, NOT "OpenAlex `is_oa=false`" or "one fetch failed". Over-labelling dumps needless institutional-access work on the acquirer (Namita). Before queueing any source for institutional download, exhaust OA recovery:
+
+1. **Unpaywall by DOI** — `https://api.unpaywall.org/v2/<doi>?email=p.steward@cgiar.org`. If `is_oa=true`, take `best_oa_location.url_for_pdf` → this is a **browser/repository** acquire, NOT institutional. (OpenAlex's OA flag lags/misses green OA; Unpaywall is authoritative.)
+2. **Green-OA / preprint / dataset** — for high-value sources, check subject/institutional repositories, author postprints, preprints (bioRxiv, EarthArXiv, Research Square) and open **datasets** (Zenodo) even when the article body is closed.
+3. **ResearchGate / Academia** — crawler-blocked, so a tool can never confirm/deny a copy. **Never claim "not on ResearchGate"**; instead flag it in the queue note as a **human-checks-RG-first** step.
+
+Only what survives 1–3 is `access_route = institutional`. Anything with a found OA copy → `blocker=OA`, `access_route=browser/repository` + the URL. A helper OA-recovery sweep over the acquisition queue's DOIs is the standard pre-handover step.
