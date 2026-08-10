@@ -54,7 +54,9 @@ def _crossref(doi: str) -> dict | None:
     doi = doi.replace("https://doi.org/", "").strip()
     url = f"https://api.crossref.org/works/{urllib.parse.quote(doi)}?mailto={MAILTO}"
     try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers=_UA), timeout=12) as r:
+        with urllib.request.urlopen(
+            urllib.request.Request(url, headers=_UA), timeout=12
+        ) as r:
             return json.load(r)["message"]
     except Exception:
         return None
@@ -68,7 +70,7 @@ def _authoritative_citation(m: dict) -> str:
     except Exception:
         yr = ""
     title = (m.get("title") or [""])[0]
-    cont = (m.get("container-title") or [""])
+    cont = m.get("container-title") or [""]
     cont = cont[0] if cont else ""
     return f"{au} ({yr}). {title}. {cont}.".strip()
 
@@ -94,7 +96,12 @@ def verify() -> int:
         m = _crossref(r["doi"])
         cite = r.get("citation", "")
         if not m:
-            return {"source_id": r["source_id"], "doi": r["doi"], "verified": False, "reason": "doi_unresolved"}
+            return {
+                "source_id": r["source_id"],
+                "doi": r["doi"],
+                "verified": False,
+                "reason": "doi_unresolved",
+            }
         ov = _overlap((m.get("title") or [""])[0], cite)
         return {
             "source_id": r["source_id"],
@@ -133,9 +140,19 @@ def verify() -> int:
         w.writeheader()
         w.writerows(rows)
     REPORT.parent.mkdir(parents=True, exist_ok=True)
-    json.dump({"checked": len(with_doi), "verified": verified, "failed": mismatched, "results": list(results.values())},
-              REPORT.open("w", encoding="utf-8"), indent=1)
-    print(f"verify: checked={len(with_doi)} verified={verified} failed(blanked)={mismatched}")
+    json.dump(
+        {
+            "checked": len(with_doi),
+            "verified": verified,
+            "failed": mismatched,
+            "results": list(results.values()),
+        },
+        REPORT.open("w", encoding="utf-8"),
+        indent=1,
+    )
+    print(
+        f"verify: checked={len(with_doi)} verified={verified} failed(blanked)={mismatched}"
+    )
     return 0
 
 
@@ -150,12 +167,16 @@ def check() -> int:
         and (r.get("doi_verified") or "") != "true"
     ]
     if bad:
-        print(f"METADATA CHECK FAILED: {len(bad)} queue row(s) carry an unverified DOI "
-              f"(run verify_metadata.py verify, or blank the DOI + acquire by title):")
+        print(
+            f"METADATA CHECK FAILED: {len(bad)} queue row(s) carry an unverified DOI "
+            f"(run verify_metadata.py verify, or blank the DOI + acquire by title):"
+        )
         for s in bad[:20]:
             print(f"   - {s}")
         return 1
-    print("METADATA CHECK OK: every pending queue DOI is verified against its citation.")
+    print(
+        "METADATA CHECK OK: every pending queue DOI is verified against its citation."
+    )
     return 0
 
 
