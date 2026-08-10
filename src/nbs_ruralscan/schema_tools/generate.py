@@ -460,6 +460,22 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             + "\n".join(f"  - {e}" for e in _ledger_errs)
         )
 
+    # Acquisition-queue metadata gate: no pending row may carry a DOI that hasn't been
+    # round-trip-verified against its citation (a wrong DOI fetches the wrong PDF ->
+    # contamination). Offline (reads the doi_verified stamp; run verify_metadata.py verify
+    # to (re)stamp). Build note, not fatal — extraction is the hard refusal point.
+    try:
+        from nbs_ruralscan.schema_tools.verify_metadata import check as _meta_check
+
+        if _meta_check() != 0:
+            print(
+                "  METADATA NOTE: acquisition-queue rows carry an UNVERIFIED DOI — run "
+                "`verify_metadata.py verify`, or blank the DOI and acquire by title. "
+                "Extraction MUST refuse doi_verified != true (title-only otherwise)."
+            )
+    except Exception as _e:  # never block the build on the advisory gate
+        print(f"  METADATA NOTE: metadata check skipped ({_e}).")
+
     # Advisory (never fatal): off-scope extraction signals + unincorporated review feedback.
     from nbs_ruralscan.schema_tools.check_scope import check as _scope_check
     from nbs_ruralscan.schema_tools.learnings import coverage_note as _learn_note
