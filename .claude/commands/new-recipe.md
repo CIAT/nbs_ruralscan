@@ -13,7 +13,7 @@ Scaffold the following:
 2. **Create** `schema/recipes/<nbs_id>/` folder with placeholder CSV files:
    - `T0_nbs_registry.csv` — one row for this NbS
    - `T4_suitability_variables.csv` — empty with headers from AGENTS.md schema description
-   - `T6_scorecard.csv` — empty with headers
+   - `T6_scorecard.csv` — empty with headers *(frozen — T3/T6 extraction deferred 2026-09; scaffold only, do not populate)*
 
 3. **Pre-populate `T0_nbs_registry.csv`** with one row including the NbS ID, default cluster (ask user if uncertain), economic archetype placeholder, evidence quality `emerging`, is_active `false` (set true after recipe review), created date, updated_by current user.
 

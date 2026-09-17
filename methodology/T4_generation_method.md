@@ -353,7 +353,7 @@ obvious gaps. Categories to hit, in roughly this order of authority:
 above is genuinely thin for the variable. `external` tier is used for citation-cascade pointers
 (Mushtaq → Ahmad 2019), not for primary discovery.
 
-**Corpus differs per table — sequence T6/T3 after T4.** The 220-paper stocktake was scoped to
+**Corpus differs per table — sequence T6/T3 after T4.** *(DEFERRED 2026-09, ruleset v1.5.0: T3/T6 are removed from the extraction exercise — this sequencing is parked; archive + restore in `schema/registers/_deferred/README.md`.)* The 220-paper stocktake was scoped to
 **suitability (T4)** — *that* corpus is in hand. The other tables need their own bounded
 discovery passes against different literature:
 
@@ -365,8 +365,7 @@ discovery passes against different literature:
 - **T1** (data registry): GEE / STAC catalogues; data provider documentation. Not literature.
 - **T7** (AEZ + farming systems): GAEZ + Dixon farming-systems standards. Not literature.
 
-Sequence: **complete T4 first**, then T6/T3 use the same paper-first machinery against their
-own bounded seed sets.
+Sequence: **complete T4 first**; the T6/T3 passes are deferred (2026-09) — when restored they use the same paper-first machinery against their own bounded seed sets.
 
 ### Screening funnel (v0.2.7) — the repeatable SOP
 
@@ -731,7 +730,8 @@ evidence types, and synthesis.
   rather than inventing — adopt where a credible standard exists.
 - **Extract-once is the goal, but earn it per table.** Before populating T3/T5/T6 from the same pass, develop the
   **per-table extraction sub-instructions/skills** (T3 mitigation-matrix, T5 priority-layer, T6 effects) so each is
-  extracted the right way; T4 leads, the others follow once their contracts exist.
+  extracted the right way; T4 leads, the others follow once their contracts exist. *(2026-09: T3/T6
+  deferred from the exercise — their drafted contracts are archived under `.agents/skills/_versions/v1.4.2/contracts/`.)*
 
 ## Open questions still open
 
@@ -739,7 +739,7 @@ evidence types, and synthesis.
 - ~~Scoping report rich enough?~~ **Resolved** (§11).
 - ~~Human review per tier?~~ **Resolved** — intermediate QA = extraction team + Claude; Benson reviews later-stage outputs; Namita + MFL review families/recipes (§7).
 - How do we **version the corpus** so a T4 row is reproducible against a frozen evidence set? *(Proposal: freeze the ingested cache + Source/Evidence registers per run, hash-stamped.)*
-- T3/T5/T6 **per-table extraction contracts** — to be authored before extract-once.
+- ~~T3/T5/T6 **per-table extraction contracts** — to be authored before extract-once.~~ **Deferred (2026-09)** — T3/T6 extraction removed from the exercise (contracts archived, `_deferred/README.md`); revisit at restore.
 - **Climate variables in F1 — load-bearing or redundant?** Open for team review (Pete, 2026-06-04 while reviewing annual_precipitation). Hypothesis: once a pixel is not rocky / frozen / desert (gated by land cover, ecosystem layer, AEZ mask), trees can grow → agroforestry biophysically possible. The crisp climate thresholds in the corpus are nearly all **species** envelopes routed out by `claim_scope`; the surviving *practice-level* claims (Haile, Nath on precip) bottom out at "not desert / not freezing," which other layers already exclude. Tension with §2.5's distribution-over-niche rule. If climate is redundant in F1, replace per-variable envelopes with a single non-extreme-environment composite (or let correlation clustering prune it per AOI). Decide once F1 climate variables are extracted end to end; ML-importance on the pilot AOI is the natural decider.
 
 ---

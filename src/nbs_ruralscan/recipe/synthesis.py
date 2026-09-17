@@ -122,6 +122,8 @@ def _harmonise(unit: EvidenceUnit, canonical_unit: str) -> dict[str, float]:
 # claims (T6 — advocacy-prone), light on biophysical thresholds (a slope/soil limit isn't
 # advocacy). Grey still COUNTS in n_sources (support is untouched) — it just can't dominate
 # the median bounds. Defensible defaults; tune per RFC (mirrors TIER_W/BASIS_W).
+# nbs_effect/climate_risk extraction is deferred (2026-09, see schema/registers/_deferred/);
+# their keys stay as the documented policy + restore path — _EMITTABLE_ROLES gates them out.
 GREY_DISCOUNT = {
     "nbs_effect": 0.4,  # T6 effect / economic / adoption-success ranges → big haircut
     "structural_suitability": 0.9,  # T4 biophysical envelope → barely discounted

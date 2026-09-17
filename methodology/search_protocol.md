@@ -3,7 +3,9 @@
 *So that "what searches did we run?" has a clear, queryable answer for every sub-practice.*
 
 ## The rule
-For **each sub-practice (suitability family) × table (T4/T3/T6)**, run **each of the 4 discovery processes** and **log the protocol** in the `SRCH` register before claiming the search done.
+For **each sub-practice (suitability family) × table (T4)**, run **each of the 4 discovery processes** and **log the protocol** in the `SRCH` register before claiming the search done.
+
+> **T3/T6 deferred (2026-09, ruleset v1.5.0):** T3 and T6 are removed from the extraction exercise — no new T3/T6 searches are run or logged. Their completed search protocols are archived in `schema/registers/_deferred/SRCH_T3_T6_deferred_2026-09.csv`; restore path in `schema/registers/_deferred/README.md`.
 
 ### The 4 discovery processes
 (= the ledger categories / dashboard audit-matrix columns)

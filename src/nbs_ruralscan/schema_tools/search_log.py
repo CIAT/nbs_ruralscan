@@ -14,7 +14,7 @@ force (see methodology/RULESET_VERSIONS.md + .agents/skills/_versions/).
 
 CLI:
   uv run python3 -m nbs_ruralscan.schema_tools.search_log show
-  uv run python3 -m nbs_ruralscan.schema_tools.search_log log --nbs agroforestry --table T3 \
+  uv run python3 -m nbs_ruralscan.schema_tools.search_log log --nbs agroforestry --table T4 \
       --category grey --family agroforestry__regeneration_farmland \
       --terms "FMNR parkland suitability Sahel" --limits "screen<=50" --ruleset v1.0 --run-id fmnr_2026
 """
@@ -28,7 +28,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 SRCH = ROOT / "schema" / "registers" / "SRCH_search_register.csv"
 CATEGORIES = ["stock", "updated_lit", "grey", "tool"]
-TABLES = ["T3", "T4", "T6"]
+# T3/T6 deferred 2026-09 — archived SRCH rows + restore path in schema/registers/_deferred/README.md
+TABLES = ["T4"]
 FIELDS = [
     "search_id",
     "nbs_id",

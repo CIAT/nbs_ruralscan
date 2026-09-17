@@ -182,6 +182,10 @@ def _parse_discovery_logs(schema_root: Path) -> dict[str, dict]:
     for item in sorted(logs_dir.iterdir()):
         if item.is_file() and item.suffix == ".md" and item.name != "README.md":
             log_id = item.stem
+            # T3/T6 extraction deferred (2026-09, schema/registers/_deferred/README.md):
+            # their PRISMA logs stay on disk as the search record but leave the dashboard.
+            if "_T3" in log_id or "_T6" in log_id:
+                continue
             try:
                 content = item.read_text(encoding="utf-8")
                 lines = content.splitlines()
@@ -376,11 +380,11 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
                 if t0_csv.exists():
                     nbs_id = item.name
                     data["recipes"][nbs_id] = {}
+                    # T3_nbs_hazard_farming / T6_nbs_scorecard stay on disk (frozen) but
+                    # leave the dashboard payload — extraction deferred 2026-09.
                     for tbl in [
                         "T0_nbs_registry",
-                        "T3_nbs_hazard_farming",
                         "T4_suitability_mappings",
-                        "T6_nbs_scorecard",
                     ]:
                         csv_path = item / f"{tbl}.csv"
                         if csv_path.exists():
