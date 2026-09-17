@@ -1,6 +1,6 @@
 """Progress ledger — orchestrator-owned, register-enforced, per (NbS × table × category × family).
 
-Tracks, for each (nbs_id × table[T4/T3/T6] × source-category[stock/updated_lit/grey/tool]
+Tracks, for each (nbs_id × table[T4] × source-category[stock/updated_lit/grey/tool]
 × suitability_family), the AUTHORED process stages: searched · screened · verified. These
 cannot be derived from data (a search either happened or didn't, and **absence of evidence
 is NOT proof a search was run** — it may be searched-and-empty), so the pipeline STEP that
@@ -37,9 +37,11 @@ ROOT = Path(__file__).resolve().parents[3]
 LEDGER = ROOT / "pipeline" / "progress_ledger.csv"
 
 STAGES = ["searched", "screened", "verified"]  # authored (cannot be derived)
-TABLES = ["T4", "T3", "T6"]
+# T3/T6 deferred from the extraction exercise 2026-09 — archived rows + restore path in
+# schema/registers/_deferred/README.md. Restore = re-add here + in _ROLE + search_log.TABLES.
+TABLES = ["T4"]
 CATEGORIES = ["stock", "updated_lit", "grey", "tool"]
-_ROLE = {"T4": "structural_suitability", "T3": "climate_risk", "T6": "nbs_effect"}
+_ROLE = {"T4": "structural_suitability"}
 _ROLE_INV = {v: k for k, v in _ROLE.items()}
 STATUSES = {"not_started", "in_progress", "done"}
 FIELDS = (
