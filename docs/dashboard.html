@@ -503,12 +503,6 @@
   #audit-hdr-t4:hover {
     background-color: rgba(16, 185, 129, 0.12) !important;
   }
-  #audit-hdr-t3:hover {
-    background-color: rgba(244, 63, 94, 0.12) !important;
-  }
-  #audit-hdr-t6:hover {
-    background-color: rgba(245, 158, 11, 0.12) !important;
-  }
   .badge.audit-badge {
     display: inline-flex;
     justify-content: center;
@@ -1265,8 +1259,6 @@
                 <th>Swept / Ingested</th>
                 <th>Evidence Claims</th>
                 <th>T4 Suitability Mappings</th>
-                <th>T3 Climate Hazard Links</th>
-                <th>T6 Scorecard Outcomes & Costing</th>
               </tr>
             </thead>
             <tbody id="body-nbs-comparison"></tbody>
@@ -1295,8 +1287,6 @@
                   <th>NbS / Suitability Family Variant</th>
                   <th>T4 Suitability Mappings</th>
                   <th>Evidence Claims</th>
-                  <th>T3 Climate Hazard Links</th>
-                  <th>T6 Scorecard Outcomes & Costing</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -1338,8 +1328,6 @@
           <div style="display: flex; gap: 8px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap;">
             <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; align-self: center; margin-right: 4px;">Filter Target Tables:</span>
             <button class="pill-btn active emerald" id="toggle-sankey-t4" data-target="t4_mappings" style="border-radius: 4px; padding: 4px 10px;">T4 Suitability</button>
-            <button class="pill-btn active rose" id="toggle-sankey-t3" data-target="t3_hazards" style="border-radius: 4px; padding: 4px 10px;">T3 Hazards</button>
-            <button class="pill-btn active amber" id="toggle-sankey-t6" data-target="t6_scorecard" style="border-radius: 4px; padding: 4px 10px;">T6 Outcomes &amp; Costing</button>
           </div>
           
           <!-- Right: View Toggle Buttons -->
@@ -1361,8 +1349,6 @@
                   <th style="font-size:11px; padding: 8px 10px; text-align: center;">Tier</th>
                   <th style="font-size:11px; padding: 8px 10px;">Geography / Context</th>
                   <th style="font-size:11px; padding: 8px 10px; text-align: center; background-color: rgba(16, 185, 129, 0.02);">T4 Suitability</th>
-                  <th style="font-size:11px; padding: 8px 10px; text-align: center; background-color: rgba(244, 63, 94, 0.02);">T3 Hazards</th>
-                  <th style="font-size:11px; padding: 8px 10px; text-align: center; background-color: rgba(245, 158, 11, 0.02);">T6 Costing</th>
                   <th style="font-size:11px; padding: 8px 10px;">Variables Extracted</th>
                 </tr>
               </thead>
@@ -1553,107 +1539,6 @@
             </div>
           </div>
 
-          <!-- T3 Hazard Matrix & T6 Scorecard Outcomes & Costing -->
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
-            <!-- T3 -->
-            <div>
-              <div class="interrogator-header-row rose" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-rose); padding-bottom: 8px;" onclick="toggleSection('wrapper-t3-hazard', 'chev-t3')">
-                <h3 class="interrogator-section-title rose" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
-                  <span id="chev-t3" style="display:inline-block; transition:transform 0.2s;">▼</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                  </svg>
-                  T3 Climate Hazard Mitigation Links
-                </h3>
-                <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
-              </div>
-              
-              <div id="wrapper-t3-hazard">
-                <!-- Filter / Search toolbar -->
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
-                  <div style="display:flex; gap:6px; align-items:center;">
-                    <span style="font-size:11.5px; color:var(--text-muted); font-weight:500; margin-right:4px;">Hazard:</span>
-                    <div style="display:flex; gap:4px;" class="table-filter-pills" id="filter-t3-hazard-type">
-                      <button class="pill-btn active rose" data-filter="all">All</button>
-                      <button class="pill-btn rose" data-filter="drought">Drought</button>
-                      <button class="pill-btn rose" data-filter="flood">Flood</button>
-                      <button class="pill-btn rose" data-filter="heat">Heat</button>
-                      <button class="pill-btn rose" data-filter="erosion">Erosion</button>
-                    </div>
-                  </div>
-                  <div>
-                    <input type="text" class="table-search-input" id="search-t3-table" placeholder="Filter hazards..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:130px;">
-                  </div>
-                </div>
-                
-                <div class="table-wrapper">
-                  <table class="data-table" id="table-t3-hazard">
-                    <thead>
-                      <tr>
-                        <th>Hazard</th>
-                        <th>Farming Context</th>
-                        <th>Mitigation Potential</th>
-                        <th>Mechanism &amp; Evidence</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody id="body-t3-hazard"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-            <!-- T6 Scorecard Outcomes & Costing -->
-            <div>
-              <div class="interrogator-header-row amber" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-amber); padding-bottom: 8px;" onclick="toggleSection('wrapper-t6-scorecard', 'chev-t6')">
-                <h3 class="interrogator-section-title amber" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
-                  <span id="chev-t6" style="display:inline-block; transition:transform 0.2s;">▼</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                  </svg>
-                  T6 Scorecard Outcomes &amp; Costing
-                </h3>
-                <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
-              </div>
-              
-              <div id="wrapper-t6-scorecard">
-                <!-- Filter / Search toolbar -->
-                <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
-                  <div style="display:flex; gap:6px; align-items:center;">
-                    <span style="font-size:11.5px; color:var(--text-muted); font-weight:500; margin-right:4px;">Type:</span>
-                    <div style="display:flex; gap:4px;" class="table-filter-pills" id="filter-t6-cost-type">
-                      <button class="pill-btn active amber" data-filter="all">All</button>
-                      <button class="pill-btn amber" data-filter="cost">Cost</button>
-                      <button class="pill-btn amber" data-filter="benefit">Benefit</button>
-                      <button class="pill-btn amber" data-filter="carbon">Carbon</button>
-                    </div>
-                  </div>
-                  <div>
-                    <input type="text" class="table-search-input" id="search-t6-table" placeholder="Filter outcomes & costing..." style="font-size:11.5px; padding:6px 10px; border:1px solid var(--border-color); border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); width:130px;">
-                  </div>
-                </div>
-                
-                <div class="table-wrapper">
-                  <table class="data-table" id="table-t6-scorecard">
-                    <thead>
-                      <tr>
-                        <th>Outcome / Cost Indicator</th>
-                        <th>Value range</th>
-                        <th>Confidence</th>
-                        <th>Mechanism &amp; Evidence</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody id="body-t6-scorecard"></tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </section>
       </div>
     </div>
@@ -1804,7 +1689,7 @@
               <label class="node-type-toggle-item">
                 <input type="checkbox" id="toggle-node-recipes" checked>
                 <span class="legend-color" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald);"></span>
-                Recipe Mappings (T3/T4/T6)
+                Recipe Mappings (T4)
               </label>
             </div>
 
@@ -1977,12 +1862,13 @@
               </div>
             </div>
             
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <!-- Table / Step: T4 is the only live recipe table (T3/T6 deferred), so the
+                 selector row is hidden; the single T4 pill stays in the DOM because the
+                 search-log key + category-filter handlers read it. -->
+            <div style="display: none; align-items: center; gap: 12px; flex-wrap: wrap;">
               <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Table / Step</span>
               <div id="search-pill-table" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="pill-btn active purple" data-table="T3" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T3 (Hazards)</button>
-                <button class="pill-btn purple" data-table="T4" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T4 (Suitability)</button>
-                <button class="pill-btn purple" data-table="T6" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T6 (Scorecard)</button>
+                <button class="pill-btn active purple" data-table="T4" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T4 (Suitability)</button>
               </div>
             </div>
           </div>
@@ -2034,7 +1920,7 @@
             <details open style="margin-top:10px; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.015);">
               <summary style="cursor:pointer; padding:9px 13px; font-weight:600; color:var(--text-primary); outline:none; font-size:12px; list-style:none;">&#8505;&#65039; What this matrix shows &amp; how to use it <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">— click to expand</span></summary>
               <div style="padding:2px 14px 14px;">
-                <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin:10px 0 6px;"><b style="color:var(--text-primary);">What it is.</b> A coverage map of evidence <b>discovery</b> — how far the pipeline has progressed for every combination of sub-practice, recipe table and source type. Each <b>row</b> is an NbS sub-practice (suitability family). Each <b>column group</b> is a recipe table it feeds: <b>T4</b> suitability (where the NbS can establish), <b>T3</b> hazard links (which climate hazards it mitigates), <b>T6</b> outcomes &amp; costing. Each group splits into four <b>source channels</b> — <b>Stock</b> (benchmarked stocktake), <b>Lit</b> (updated peer-reviewed), <b>Grey</b> (reports / project docs), <b>Tools</b> (methods / code). So one <b>cell</b> answers: <i>for this sub-practice × table × channel, how far has discovery got, and how much is reviewed?</i></p>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin:10px 0 6px;"><b style="color:var(--text-primary);">What it is.</b> A coverage map of evidence <b>discovery</b> — how far the pipeline has progressed for every combination of sub-practice, recipe table and source type. Each <b>row</b> is an NbS sub-practice (suitability family). The <b>column group</b> is the recipe table it feeds: <b>T4</b> suitability (where the NbS can establish). The group splits into four <b>source channels</b> — <b>Stock</b> (benchmarked stocktake), <b>Lit</b> (updated peer-reviewed), <b>Grey</b> (reports / project docs), <b>Tools</b> (methods / code). So one <b>cell</b> answers: <i>for this sub-practice × table × channel, how far has discovery got, and how much is reviewed?</i></p>
                 <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin:0 0 4px;"><b style="color:var(--text-primary);">How to use it.</b> Scan for gaps (what still needs searching, extracting or reviewing). <b>Click a cell's numbers</b> → its evidence units + verify/review state; <b>click its stage pip</b> → the exact search protocol behind it. The <b>Status</b> dropdown above and the <b>Practice / Sub-practice</b> chips filter which rows appear. Key below:</p>
                 <div style="font-size:11.5px; margin-top:8px; padding-top:10px; border-top: 1px solid var(--border-color); display:flex; flex-direction:column; gap:7px;">
               <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -2076,8 +1962,6 @@
                 <tr>
                   <th id="audit-hdr-family" class="sortable-header" style="vertical-align: middle; cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort alphabetically">NbS &amp; Suitability Family Variant ▲</th>
                   <th id="audit-hdr-t4" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort by T4 Suitability completeness">T4 Suitability Mappings<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                  <th id="audit-hdr-t3" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort by T3 Hazards completeness">T3 Hazard Links<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
-                  <th id="audit-hdr-t6" class="sortable-header" style="width:30%; text-align: center; border-left: 1px solid var(--border-color); cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort by T6 Outcomes & Costing completeness">T6 Outcomes &amp; Costing<div style="font-size:9px; font-weight:400; color:var(--text-muted); text-transform:none;">Stock · Lit · Grey · Tools</div></th>
                 </tr>
               </thead>
               <tbody id="body-discovery-audit">
@@ -2434,35 +2318,6 @@
 ---
 ### Review Comments / Requested Changes
 *Provide detailed comments on why this mapping requires a review (e.g. thresholds, parameters, default weights) and link supporting papers or evidence below.*
-`;
-    } else if (type === 't3') {
-      title = `[T3 Review] Climate Hazard link review for '${item.hazard_type}'`;
-      body = `### T3 Climate Hazard Link Review Flag
-
-- **NbS ID**: \`${item.nbs_id}\`
-- **Hazard Type**: \`${item.hazard_type}\`
-- **Farming System**: \`${item.farming_system}\`
-- **Mitigation Potential**: \`${item.mitigation_potential}\`
-- **Mechanism**:
-  > ${item.mitigation_mechanism || 'None'}
-
----
-### Review Comments / Requested Changes
-*Describe why this hazard link requires modifications.*
-`;
-    } else if (type === 't6') {
-      title = `[T6 Review] Scorecard metric review for '${item.economic_indicator_type || item.variable_id}'`;
-      body = `### T6 Scorecard Metric Review Flag
-
-- **NbS ID**: \`${item.nbs_id}\`
-- **Indicator Type**: \`${item.economic_indicator_type || item.variable_id}\`
-- **Confidence**: \`${item.effect_confidence}\`
-- **Mechanism**:
-  > ${item.effect_mechanism || 'None'}
-
----
-### Review Comments / Requested Changes
-*Describe requested changes in value ranges, units, or mechanisms.*
 `;
     } else if (type === 'evidence') {
       title = `[Evidence Review] Flagging evidence ID '${item.evidence_id}'`;
@@ -2831,7 +2686,10 @@
   // Module-level SCOPE predicate — the single source of truth for "is this row in the current
   // scope" (Practice · Sub-practice · Evidence-type · Source channel · Access · source/section
   // subset). Used by EVERY queue count so they all filter to the same scope + reconcile.
-  var _vfR2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
+  // use_role -> recipe table. T3/T6 are deferred from the evidence exercise, so T4 is the only
+  // live surface. operational_risk (M2b / next-steps routing) is deliberately NOT mapped here —
+  // it is catalogued + traceable but never bucketed into the T4 MCDA surface.
+  var _vfR2T={structural_suitability:'T4'};
   function _vfInScope(ev){ var sc=window._vfScope||{}; if(!sc.nbs)return true;
     if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false;
     if(sc.table&&sc.table!=='all'&&_vfR2T[ev.use_role]!==sc.table)return false;
@@ -3068,8 +2926,8 @@
     var _geoChip=_geoShort?_vfChip('📍 '+vfEsc(_geoShort),'var(--text-muted)',vfEsc('Study geography: '+_geo),null,true):'';
     var _srcChip=_vfChip(vfEsc(ev.source_id||''),'var(--text-muted)','Source — click to subset the worklist to this source',"vfSetSubset('sourceId','"+vfEsc(ev.source_id||'')+"')",true);
     var _pageChip=ev.page?_vfChip('p.'+vfEsc(String(ev.page)),'var(--text-muted)','Page — click to subset the worklist to page '+vfEsc(String(ev.page))+' of this source',"vfSetSubset('section','"+vfEsc(String(ev.page))+"')",true):'';
-    // Recipe table this evidence feeds (T4 suitability / T3 hazard / T6 outcomes), from use_role.
-    var _R2Tc={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'}; var _tbl=_R2Tc[ev.use_role]||'';
+    // Recipe table this evidence feeds (T4 suitability), from use_role.
+    var _R2Tc={structural_suitability:'T4'}; var _tbl=_R2Tc[ev.use_role]||'';
     var _tblChip=_tbl?_vfChip(_tbl,'var(--accent-purple)','Recipe table (Evidence type) this evidence contributes to — click to filter the worklist to '+_tbl,"vfScopeSet('table','"+_tbl+"')"):'';
     var _chipRow='<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:2px 0 9px 0;"><span style="font-size:11px; color:var(--text-muted); margin-right:1px;" title="what this evidence contributes to">🧩</span>'+_nbsChip+_famChip+_taxonChip+_geoChip+'<span style="margin-left:auto; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'+_tblChip+_oaBadge+_chanBadge+_srcChip+_pageChip+'</span></div>';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
@@ -3153,27 +3011,23 @@
     if(window._vfScope.claimScope===undefined)window._vfScope.claimScope='general';
     if(window._vfScope.sourceId===undefined)window._vfScope.sourceId='';
     if(window._vfScope.section===undefined)window._vfScope.section='';
-    // Practice + Evidence-type are single-select (no "All"): default to a real value.
-    if(['T3','T4','T6'].indexOf(window._vfScope.table)<0)window._vfScope.table='T4';
+    // Practice is single-select (no "All"). Evidence type is fixed at T4 — T3/T6 are deferred.
+    window._vfScope.table='T4';
     if(window._vfScope.nbs==='all'&&_nbsOpts.length)window._vfScope.nbs=_nbsOpts[0];
     _vfUpdatePending(); _vfRenderSubsetBanner();
-    var _R2T={structural_suitability:'T4',climate_risk:'T3',nbs_effect:'T6'};
     // Task 3: sourceId subsets to one paper/tool; section subsets to one page within it.
     function _inScope(ev){ return _vfInScope(ev); }
     var scEl=document.getElementById('vf-scope');
     if(scEl){ var _inNbs=function(e){ return window._vfScope.nbs==='all'||e.nbs_id===window._vfScope.nbs; };
       var _famOpts=Array.from(new Set(evAll.filter(_inNbs).map(function(e){return e.suitability_family_id;}).filter(Boolean))).sort();
-      var _tblPresent=new Set(evAll.filter(_inNbs).map(function(e){return _R2T[e.use_role];}).filter(Boolean));
-      var _tblOpts=['T3','T4','T6'].filter(function(t){return _tblPresent.has(t);}); if(!_tblOpts.length)_tblOpts=['T3','T4','T6'];
       // Always show the 4 canonical channels (Tool is its own chip, distinct from Grey)
       // even when a channel has no evidence yet; append 'unknown' only if data has it.
       var _srcPresent=new Set(evAll.filter(_inNbs).map(_vfChanKey));
       var _srcOpts=['stock','updated_lit','grey','tool'].concat(_srcPresent.has('unknown')?['unknown']:[]);
       // noAll=true → single-select mandatory (no "All" pill): used for Practice + Evidence-type.
       var _mkPills=function(key,label,opts,fmt,cls,noAll,tip){ var cur=window._vfScope[key]; var list=(noAll?[]:['all']).concat(opts); var btns=list.map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
-      var _tblName={T3:'T3 · Hazard response',T4:'T4 · Suitability',T6:'T6 · Outcomes & cost'};
-      // reactive, left-aligned: only the SELECTED evidence-type's description (saves space).
-      var _tblDesc={T4:'<b>T4 · Suitability</b> — where the NbS can physically establish (climate · terrain · soils · land system).',T3:'<b>T3 · Hazard response</b> — which climate hazards the NbS helps mitigate.',T6:'<b>T6 · Outcomes &amp; cost</b> — effects, benefits and indicative (scoping-grade) economics.'};
+      // T4 is the only live evidence type (T3/T6 deferred) → no pill row, just the legend line.
+      var _tblDesc={T4:'<b>T4 · Suitability</b> — where the NbS can physically establish (climate · terrain · soils · land system).'};
       var _tblLegend='<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">'+(_tblDesc[window._vfScope.table]||'')+'</div>';
       var _capNbs=function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
       var _capFam=function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
@@ -3186,7 +3040,6 @@
       var _csHint=(window._vfScope.claimScope&&window._vfScope.claimScope!=='general'&&window._vfScope.claimScope!=='all')?'<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">🧬 <b>Species / crop lane</b> — per-taxon evidence, <b>kept &amp; banked for reuse</b> but filtered out of the practice-level MCDA. Fix a mis-tagged row by re-classifying it (keep), not dropping it.</div>':'';
       scEl.innerHTML=_mkPills('nbs','Practice',_nbsOpts,_capNbs,'sky',true,'The Nature-based Solution this evidence supports. Pick one.')
         +_mkPills('family','Sub-practice',_famOpts,_capFam,'emerald',false,'Suitability family / sub-practice within the practice. All = every sub-practice.')
-        +_mkPills('table','Evidence type',_tblOpts,function(o){return _tblName[o]||o;},'purple',true,'Which recipe table this evidence informs — pick one. T4 = suitability, T3 = hazard response, T6 = outcomes & cost.')
         +_tblLegend
         +_mkPills('claimScope','Scope',['general','species','crop'],_csFmt,'sky',false,'General = practice-level suitability (the everyday MCDA work). Species / Crop = per-taxon evidence, kept + banked for reuse but filtered from the practice MCDA. Default = General.')
         +_csHint
@@ -3517,38 +3370,6 @@
       renderT4Mappings(nbsId, familyId);
     });
 
-    // T3 hazard filtering
-    const t3Pills = document.querySelectorAll('#filter-t3-hazard-type .pill-btn');
-    t3Pills.forEach(btn => {
-      btn.addEventListener('click', () => {
-        t3Pills.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const nbsId = document.getElementById('select-nbs').value;
-        renderT3Hazard(nbsId);
-      });
-    });
-
-    document.getElementById('search-t3-table').addEventListener('input', () => {
-      const nbsId = document.getElementById('select-nbs').value;
-      renderT3Hazard(nbsId);
-    });
-
-    // T6 scorecard filtering
-    const t6Pills = document.querySelectorAll('#filter-t6-cost-type .pill-btn');
-    t6Pills.forEach(btn => {
-      btn.addEventListener('click', () => {
-        t6Pills.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const nbsId = document.getElementById('select-nbs').value;
-        renderT6Scorecard(nbsId);
-      });
-    });
-
-    document.getElementById('search-t6-table').addEventListener('input', () => {
-      const nbsId = document.getElementById('select-nbs').value;
-      renderT6Scorecard(nbsId);
-    });
-
     // 5. Populate Ontology / Dataset lists
     renderOntologyAndDatasets();
 
@@ -3626,7 +3447,7 @@
 
       // Current active states
       let activeNbs = 'agroforestry';
-      let activeTable = 'T3';
+      let activeTable = 'T4';
       let activeSubNbs = 'all';
 
       // Updates option elements inside the hidden select (for backwards compatibility if any other code references it)
@@ -3686,31 +3507,14 @@
           else b.classList.remove('active');
         });
 
-        // Enforce logical constraints (Water Harvesting only has T4 Suitability)
-        if (activeNbs === 'water_harvesting_conservation') {
-          tablePills.forEach(btn => {
-            const tableVal = btn.dataset.table;
-            if (tableVal !== 'T4') {
-              btn.classList.add('disabled');
-              btn.classList.remove('active');
-            } else {
-              btn.classList.remove('disabled');
-              btn.classList.add('active');
-            }
-          });
-          activeTable = 'T4';
-        } else {
-          tablePills.forEach(btn => {
-            btn.classList.remove('disabled');
-            if (btn.dataset.table === activeTable) {
-              btn.classList.add('active');
-            } else {
-              btn.classList.remove('active');
-            }
-          });
-        }
+        // T4 suitability is the only live recipe table (T3/T6 deferred) — keep it selected.
+        activeTable = 'T4';
+        tablePills.forEach(btn => {
+          btn.classList.remove('disabled');
+          btn.classList.toggle('active', btn.dataset.table === activeTable);
+        });
 
-        // Determine log key (e.g. "agroforestry_T3")
+        // Determine log key (e.g. "agroforestry_T4")
         let logId = `${activeNbs}_${activeTable}`;
         
         // Check if log exists in data
@@ -3845,7 +3649,7 @@
     }
 
     // 7. Initialize Sankey target table toggle click listeners
-    const sankeyToggles = ['toggle-sankey-t4', 'toggle-sankey-t3', 'toggle-sankey-t6'];
+    const sankeyToggles = ['toggle-sankey-t4'];
     sankeyToggles.forEach(id => {
       const btn = document.getElementById(id);
       if (btn) {
@@ -3945,11 +3749,8 @@
       if (c.suitability_family_id !== familyId) return false;
       
       const dest = getDestTable(c);
-      let matchTarget = false;
-      if (targetKey === 't4') matchTarget = (dest === 't4_mappings');
-      else if (targetKey === 't3') matchTarget = (dest === 't3_hazards');
-      else if (targetKey === 't6') matchTarget = (dest === 't6_scorecard');
-      if (!matchTarget) return false;
+      // T4 is the only live target table; a null dest (non-T4 use_role) never matches.
+      if (targetKey !== 't4' || dest !== 't4_mappings') return false;
       
       const s = sources.find(src => src.source_id === c.source_id);
       const cat = getSourceCategory(c.source_id, s ? s.citation : '');
@@ -3983,11 +3784,8 @@
     claims.forEach(c => {
       if (c.suitability_family_id !== familyId) return;
       const dest = getDestTable(c);
-      let mt = false;
-      if (targetKey === 't4') mt = dest === 't4_mappings';
-      else if (targetKey === 't3') mt = dest === 't3_hazards';
-      else if (targetKey === 't6') mt = dest === 't6_scorecard';
-      if (!mt) return;
+      // T4 is the only live target table; a null dest (non-T4 use_role) never matches.
+      if (targetKey !== 't4' || dest !== 't4_mappings') return;
       const s = sources.find(src => src.source_id === c.source_id);
       const cat = getSourceCategory(c.source_id, s ? s.citation : '');
       if (cat !== typeKey) return;
@@ -4024,15 +3822,17 @@
     return fr ? (fr[stage] || 'not_started') : 'not_started';
   }
 
-  // Resolve which target table a claim maps to, based on database evidence links & fallbacks
+  // Resolve which target table a claim maps to, based on database evidence links & fallbacks.
+  // T4 suitability is the only live recipe table (T3/T6 are deferred from the evidence
+  // exercise) — everything else resolves to null and MUST be skipped by callers. Note the
+  // fallback matches `structural_suitability` EXACTLY: the old `role.includes('risk')` test
+  // silently swept `operational_risk` (M2b / next-steps routing) into the hazard bucket.
   function getDestTable(c) {
     const evId = c.evidence_id;
     if (!window.t4EvidenceIds) {
       window.t4EvidenceIds = new Set();
-      window.t3EvidenceIds = new Set();
-      window.t6EvidenceIds = new Set();
-      Object.keys(dashboardData.recipes).forEach(nbsId => {
-        const recipe = dashboardData.recipes[nbsId];
+      Object.keys(dashboardData.recipes || {}).forEach(nbsId => {
+        const recipe = dashboardData.recipes[nbsId] || {};
         const parseIds = (val) => {
           if (!val) return [];
           if (Array.isArray(val)) return val;
@@ -4048,28 +3848,15 @@
         if (recipe.T4_suitability_mappings) {
           recipe.T4_suitability_mappings.forEach(r => parseIds(r.evidence_ids).forEach(id => window.t4EvidenceIds.add(id)));
         }
-        if (recipe.T3_nbs_hazard_farming) {
-          recipe.T3_nbs_hazard_farming.forEach(r => parseIds(r.evidence_ids).forEach(id => window.t3EvidenceIds.add(id)));
-        }
-        if (recipe.T6_nbs_scorecard) {
-          recipe.T6_nbs_scorecard.forEach(r => parseIds(r.evidence_ids).forEach(id => window.t6EvidenceIds.add(id)));
-        }
       });
     }
-    
+
     if (window.t4EvidenceIds.has(evId)) return 't4_mappings';
-    if (window.t3EvidenceIds.has(evId)) return 't3_hazards';
-    if (window.t6EvidenceIds.has(evId)) return 't6_scorecard';
-    
-    // Fallback: use_role
-    const role = (c.use_role || '').toLowerCase();
-    if (role.includes('suitability')) return 't4_mappings';
-    if (role.includes('hazard') || role.includes('risk') || role.includes('priority')) return 't3_hazards';
-    if (role.includes('effect') || role.includes('economic') || role.includes('cost')) return 't6_scorecard';
-    if (role === 'hazard_mitigation' || role === 'hazard_risk') return 't3_hazards';
-    if (role === 'economics' || role === 'cost_sourcing') return 't6_scorecard';
-    
-    return 't4_mappings';
+
+    // Fallback: use_role — exact match only.
+    if ((c.use_role || '').toLowerCase() === 'structural_suitability') return 't4_mappings';
+
+    return null;
   }
 
   function renderGlobalNbsComparison() {
@@ -4093,9 +3880,7 @@
       const claimsCount = nbsClaims.length;
       
       const t4Count = recipe.T4_suitability_mappings ? recipe.T4_suitability_mappings.length : 0;
-      const t3Count = recipe.T3_nbs_hazard_farming ? recipe.T3_nbs_hazard_farming.length : 0;
-      const t6Count = recipe.T6_nbs_scorecard ? recipe.T6_nbs_scorecard.length : 0;
-      
+
       const tr = document.createElement('tr');
       tr.style.cursor = 'pointer';
       tr.title = `Click to explore ${nbsName} in detail`;
@@ -4112,8 +3897,6 @@
         </td>
         <td>${claimsCount}</td>
         <td>${t4Count}</td>
-        <td>${t3Count}</td>
-        <td>${t6Count}</td>
       `;
       
       tr.addEventListener('click', () => {
@@ -4140,15 +3923,15 @@
   function buildDiscoveryStatusDb() {
     const _evBase = (dashboardData && dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
     const _srcBase = (dashboardData && dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
-    const _roleToTable = { structural_suitability: 't4', climate_risk: 't3', nbs_effect: 't6' };
+    const _roleToTable = { structural_suitability: 't4' };
     const _db = {
-      "agroforestry__homegardens_proximity": { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
-      "agroforestry__linear_boundary":       { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
-      "agroforestry__planted_silvoarable":   { t4:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"}, t3:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"}, t6:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"} },
-      "agroforestry__regeneration_farmland": { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
-      "agroforestry__shaded_perennial":      { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
-      "agroforestry__silvopastoral":         { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
-      "water_harvesting__runoff_catchment":  { t4:{stock:"pending",updated:"pending",grey:"complete",tools:"complete"}, t3:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"}, t6:{stock:"pending",updated:"pending",grey:"pending",tools:"complete"} }
+      "agroforestry__homegardens_proximity": { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__linear_boundary":       { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__planted_silvoarable":   { t4:{stock:"complete",updated:"complete",grey:"complete",tools:"complete"} },
+      "agroforestry__regeneration_farmland": { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__shaded_perennial":      { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "agroforestry__silvopastoral":         { t4:{stock:"pending",updated:"pending",grey:"pending",tools:"pending"} },
+      "water_harvesting__runoff_catchment":  { t4:{stock:"pending",updated:"pending",grey:"complete",tools:"complete"} }
     };
     // Scan live EV: for each (family, role→table, category), upgrade pending→seeded if EV rows exist
     _evBase.forEach(c => {
@@ -4166,7 +3949,7 @@
   }
   let discoveryStatusDb = {};
 
-  let auditSortCol = 'family'; // 'family', 't4', 't3', 't6'
+  let auditSortCol = 'family'; // 'family', 't4'
   let auditSortDir = 'asc';
 
   // Stage status PER (family × table). Honest definitions — no completeness claims:
@@ -4188,7 +3971,7 @@
   }
   // Read an authored stage status from the enforced progress ledger (NOT inferred).
   // ledger is keyed (nbs_id, table); stages: searched/screened/extracted/verified/reviewed.
-  // Ledger is keyed (nbs_id, table[T4/T3/T6], category[stock/updated_lit/grey/tool]).
+  // Ledger is keyed (nbs_id, table[T4], category[stock/updated_lit/grey/tool]).
   function ledgerStage(nbsId, table, category, stage) {
     const led = (dashboardData && dashboardData.progress_ledger) || [];
     // table-level matrix reads the family-agnostic rows (family==''); sub-practice-specific
@@ -4212,7 +3995,7 @@
   const _catKey = { stock: 'stock', updated: 'updated_lit', grey: 'grey', tools: 'tool' };
   // count reviewer_ok units in a (family, target, type) cell
   function cellReviewed(familyId, targetKey, typeKey) {
-    const role = { t4: 'structural_suitability', t3: 'climate_risk', t6: 'nbs_effect' }[targetKey];
+    const role = { t4: 'structural_suitability' }[targetKey];
     const ev = (dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
     return ev.some(c => c.suitability_family_id === familyId && (c.use_role || '') === role
       && getSourceCategory(c.source_id, '') === typeKey
@@ -4330,7 +4113,7 @@
   // the same modal. Shows each EV unit's verify-flag + review state, so E/V/R are navigable.
   function showCellEvidence(nbs, table, category, family) {
     var modal = document.getElementById('srch-modal'); if (!modal) return;
-    var roleMap = { T4: 'structural_suitability', T3: 'climate_risk', T6: 'nbs_effect' };
+    var roleMap = { T4: 'structural_suitability' };
     var role = roleMap[table];
     var ev = ((dashboardData || {}).registers || {})['EV_evidence_register'] || [];
     var src = ((dashboardData || {}).registers || {})['SRC_source_register'] || [];
@@ -4523,7 +4306,7 @@
     });
 
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
+      body.innerHTML = '<tr><td colspan="2" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
       return;
     }
 
@@ -4537,9 +4320,7 @@
                       : typeKey === 'updated' ? 'Updated Lit'
                       : typeKey === 'grey' ? 'Grey Lit'
                       : 'Tools & Manuals';
-      const targetLabel = targetKey === 't4' ? 'T4 Suitability'
-                        : targetKey === 't3' ? 'T3 Hazards'
-                        : 'T6 Outcomes & Costing';
+      const targetLabel = 'T4 Suitability';
 
       // per-cell stage S·E·V·R — keyed to the DIRECT (family-targeted) pipeline ONLY. Generic
       // coverage is shown by the second number, never by the dots (no inheritance/dashed ring).
@@ -4555,7 +4336,7 @@
       const _e = directN > 0;
       const _v = ledgerStageDirect(_nbs, _tbl, _cat, 'verified', statusKey) === 'done' && _e;
       // Review-coverage buckets for THIS cell's active evidence units (rows), by review depth.
-      const _roleR = { t4: 'structural_suitability', t3: 'climate_risk', t6: 'nbs_effect' }[targetKey];
+      const _roleR = { t4: 'structural_suitability' }[targetKey];
       const _cellRows = (dashboardData.registers.EV_evidence_register || []).filter(c => c.suitability_family_id === statusKey && (c.use_role || '') === _roleR && getSourceCategory(c.source_id, '') === typeKey);
       let _b0 = 0, _b1 = 0, _b2 = 0;
       _cellRows.forEach(c => { const dn = _reviewDepth[c.evidence_id] ? _reviewDepth[c.evidence_id].size : 0; if (dn === 0) _b0++; else if (dn === 1) _b1++; else _b2++; });
@@ -4642,8 +4423,6 @@
           </div>
         </td>
         ${renderTableCell(r.familyId, 't4')}
-        ${renderTableCell(r.familyId, 't3')}
-        ${renderTableCell(r.familyId, 't6')}
       `;
       body.appendChild(tr);
     });
@@ -4652,9 +4431,7 @@
   function setupAuditSortListeners() {
     const headers = [
       { id: 'audit-hdr-family', col: 'family' },
-      { id: 'audit-hdr-t4', col: 't4' },
-      { id: 'audit-hdr-t3', col: 't3' },
-      { id: 'audit-hdr-t6', col: 't6' }
+      { id: 'audit-hdr-t4', col: 't4' }
     ];
     headers.forEach(h => {
       const el = document.getElementById(h.id);
@@ -4710,20 +4487,7 @@
     });
     
     const sortedFamilyIds = Object.keys(familiesMap).sort();
-    
-    const parseIds = (val) => {
-      if (!val) return [];
-      if (Array.isArray(val)) return val;
-      try {
-        const parsed = JSON.parse(val);
-        if (Array.isArray(parsed)) return parsed;
-      } catch(e) {}
-      if (typeof val === 'string') {
-        return val.split(';').map(x => x.trim()).filter(Boolean);
-      }
-      return [];
-    };
-    
+
     sortedFamilyIds.forEach(familyId => {
       const famData = familiesMap[familyId];
       const nbsId = famData.nbsId;
@@ -4743,36 +4507,14 @@
         : 0;
       
       // Evidence claims for this family
-      const familyClaims = claims.filter(c => c.suitability_family_id === familyId);
-      const claimsCount = familyClaims.length;
-      const familyClaimIds = new Set(familyClaims.map(c => c.evidence_id));
-      
-      // T3 hazard links linked to this family via evidence IDs
-      let t3Count = 0;
-      if (recipe.T3_nbs_hazard_farming) {
-        recipe.T3_nbs_hazard_farming.forEach(row => {
-          const rowEvIds = parseIds(row.evidence_ids);
-          const hasMatchingEv = rowEvIds.some(id => familyClaimIds.has(id));
-          if (hasMatchingEv) t3Count++;
-        });
-      }
-      
-      // T6 scorecard lines linked to this family via evidence IDs
-      let t6Count = 0;
-      if (recipe.T6_nbs_scorecard) {
-        recipe.T6_nbs_scorecard.forEach(row => {
-          const rowEvIds = parseIds(row.evidence_ids);
-          const hasMatchingEv = rowEvIds.some(id => familyClaimIds.has(id));
-          if (hasMatchingEv) t6Count++;
-        });
-      }
-      
+      const claimsCount = claims.filter(c => c.suitability_family_id === familyId).length;
+
       // Determine status
       let statusText = 'Pending';
       let statusClass = 'low';
-      
+
       if (famData.spatialProductType === 'qualitative_only') {
-        if (claimsCount > 0 || t6Count > 0) {
+        if (claimsCount > 0) {
           statusText = 'Active (Qual)';
           statusClass = 'high';
         } else {
@@ -4805,8 +4547,6 @@
         </td>
         <td>${t4Count}</td>
         <td>${claimsCount}</td>
-        <td>${t3Count}</td>
-        <td>${t6Count}</td>
         <td>
           <span class="badge ${statusClass}">${statusText}</span>
         </td>
@@ -4852,8 +4592,6 @@
     // Resolve active targets from filter toggles
     const activeTargets = [];
     if (document.getElementById('toggle-sankey-t4')?.classList.contains('active')) activeTargets.push('t4_mappings');
-    if (document.getElementById('toggle-sankey-t3')?.classList.contains('active')) activeTargets.push('t3_hazards');
-    if (document.getElementById('toggle-sankey-t6')?.classList.contains('active')) activeTargets.push('t6_scorecard');
 
     // Filter claims to only include those that match the active target tables
     const filteredClaims = claims.filter(c => activeTargets.includes(getDestTable(c)));
@@ -4909,8 +4647,6 @@
 
     const col3Nodes = [];
     if (activeTargets.includes('t4_mappings')) col3Nodes.push({ id: 't4_mappings', type: 'table', label: 'T4 Suitability Mappings' });
-    if (activeTargets.includes('t3_hazards')) col3Nodes.push({ id: 't3_hazards', type: 'table', label: 'T3 Hazard Links' });
-    if (activeTargets.includes('t6_scorecard')) col3Nodes.push({ id: 't6_scorecard', type: 'table', label: 'T6 Outcomes & Costing' });
 
     // Compute coordinates
     const height = 420;
@@ -5023,9 +4759,7 @@
       let nodeColor = 'var(--text-muted)';
       if (n.type === 'variable') nodeColor = n.color;
       else if (n.type === 'table') {
-        nodeColor = n.id === 't4_mappings' ? 'var(--accent-emerald)' 
-                  : n.id === 't3_hazards' ? 'var(--accent-rose)' 
-                  : 'var(--accent-amber)';
+        nodeColor = 'var(--accent-emerald)';
       }
       rect.setAttribute('fill', nodeColor);
 
@@ -5108,37 +4842,21 @@
     if (!claims) claims = dashboardData.registers.EV_evidence_register || [];
     
     // Resolve active targets from filters
-    const activeTargets = [];
     const t4Active = document.getElementById('toggle-sankey-t4')?.classList.contains('active');
-    const t3Active = document.getElementById('toggle-sankey-t3')?.classList.contains('active');
-    const t6Active = document.getElementById('toggle-sankey-t6')?.classList.contains('active');
-    if (t4Active) activeTargets.push('t4_mappings');
-    if (t3Active) activeTargets.push('t3_hazards');
-    if (t6Active) activeTargets.push('t6_scorecard');
 
     sources.forEach(s => {
       // Find all claims for this source in the filtered set
       const sourceClaims = claims.filter(c => c.source_id === s.source_id);
-      
-      // Count claims mapping to each table
-      let t4ClaimsCount = 0;
-      let t3ClaimsCount = 0;
-      let t6ClaimsCount = 0;
 
+      // Count claims mapping to the (only) live target table
+      let t4ClaimsCount = 0;
       sourceClaims.forEach(c => {
-        const dest = getDestTable(c);
-        if (dest === 't4_mappings') t4ClaimsCount++;
-        else if (dest === 't3_hazards') t3ClaimsCount++;
-        else if (dest === 't6_scorecard') t6ClaimsCount++;
+        if (getDestTable(c) === 't4_mappings') t4ClaimsCount++;
       });
 
       // Filter: if no active targets are selected, don't show.
       // Or if the source doesn't contribute to any of the active targets, and is not swept.
-      const hasT4Claims = t4ClaimsCount > 0;
-      const hasT3Claims = t3ClaimsCount > 0;
-      const hasT6Claims = t6ClaimsCount > 0;
-
-      const contributesToActive = (t4Active && hasT4Claims) || (t3Active && hasT3Claims) || (t6Active && hasT6Claims);
+      const contributesToActive = !!(t4Active && t4ClaimsCount > 0);
       const isSwept = ['complete','swept','signed_off'].includes(s.extraction_status);
 
       if (!contributesToActive && !isSwept) return;
@@ -5187,12 +4905,6 @@
         <td style="text-align: center; vertical-align: middle; padding: 10px 12px; background-color: rgba(16, 185, 129, 0.01);">
           ${checkMark(t4ClaimsCount, t4Active)}
         </td>
-        <td style="text-align: center; vertical-align: middle; padding: 10px 12px; background-color: rgba(244, 63, 94, 0.01);">
-          ${checkMark(t3ClaimsCount, t3Active)}
-        </td>
-        <td style="text-align: center; vertical-align: middle; padding: 10px 12px; background-color: rgba(245, 158, 11, 0.01);">
-          ${checkMark(t6ClaimsCount, t6Active)}
-        </td>
         <td style="padding: 10px 12px;">
           <div style="display:flex; flex-wrap:wrap; max-width:240px;">
             ${varsLabel}
@@ -5203,7 +4915,7 @@
     });
 
     if (body.children.length === 0) {
-      body.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:20px;">No reviewed sources found matching the active filters.</td></tr>';
+      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">No reviewed sources found matching the active filters.</td></tr>';
     }
   }
 
@@ -5648,8 +5360,6 @@
 
     renderT4Mappings(nbsId, familyId);
     renderVerbatimEvidence();
-    renderT3Hazard(nbsId);
-    renderT6Scorecard(nbsId);
   }
 
   function renderT4Mappings(nbsId, familyId) {
@@ -5867,172 +5577,6 @@
     });
   }
 
-  function renderT3Hazard(nbsId) {
-    const body = document.getElementById('body-t3-hazard');
-    body.innerHTML = '';
-
-    const recipe = dashboardData.recipes[nbsId];
-    if (!recipe || !recipe.T3_nbs_hazard_farming) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hazard mappings compiled.</td></tr>';
-      return;
-    }
-
-    let rows = recipe.T3_nbs_hazard_farming;
-
-    // Filter by hazard pill
-    const hazBtn = document.querySelector('#filter-t3-hazard-type .pill-btn.active');
-    const hazFilter = hazBtn ? hazBtn.getAttribute('data-filter') : 'all';
-    if (hazFilter !== 'all') {
-      rows = rows.filter(r => (r.hazard_type || '').toLowerCase().includes(hazFilter));
-    }
-
-    // Filter by text search
-    const searchInput = document.getElementById('search-t3-table');
-    const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
-    if (searchVal) {
-      rows = rows.filter(r => 
-        (r.hazard_type || '').toLowerCase().includes(searchVal) ||
-        (r.farming_system || '').toLowerCase().includes(searchVal) ||
-        (r.mitigation_mechanism || '').toLowerCase().includes(searchVal)
-      );
-    }
-
-    if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No hazard links match the active filters.</td></tr>';
-      return;
-    }
-
-    rows.forEach(r => {
-      const tr = document.createElement('tr');
-      const potentialColor = r.mitigation_potential === 'high' ? 'var(--accent-emerald)'
-                           : r.mitigation_potential === 'medium' ? 'var(--accent-amber)'
-                           : 'var(--text-secondary)';
-
-      // C: rebuild evidence drawer from EV register if evidence_ids absent
-      let evidenceDrawer;
-      if (r.evidence_ids && r.evidence_ids.length > 0) {
-        evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
-      } else {
-        const _evAll2 = dashboardData.registers.EV_evidence_register || [];
-        const _t3Matches = _evAll2.filter(c => c.use_role === 'climate_risk' && c.nbs_id === nbsId && (!r.hazard_type || (c.variable || '').toLowerCase().includes((r.hazard_type || '').toLowerCase().split('_')[0])));
-        if (_t3Matches.length > 0) {
-          evidenceDrawer = generateEvidenceDrawerHtml(_t3Matches.map(c => c.evidence_id));
-        } else {
-          evidenceDrawer = '<div style="font-size:10.5px; color:var(--text-muted); margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">No linked evidence yet</div>';
-        }
-      }
-
-      tr.innerHTML = `
-        <td style="font-weight:600; font-family:var(--font-outfit); text-transform:capitalize;">${r.hazard_type}</td>
-        <td><code>${r.farming_system}</code></td>
-        <td style="font-weight:bold; color:${potentialColor}; text-transform:uppercase; font-size:12px;">${r.mitigation_potential}</td>
-        <td style="font-size:12.5px; color:var(--text-secondary); max-width: 240px;">
-          ${r.mitigation_mechanism || 'N/A'}
-          ${r.caveats ? `<div style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">Caveat: ${r.caveats}</div>` : ''}
-          ${evidenceDrawer}
-        </td>
-        <td>
-          <button class="btn-flag" onclick="openGitIssue('t3', ${JSON.stringify(r).replace(/"/g, '&quot;')})">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
-            Flag
-          </button>
-        </td>
-      `;
-      body.appendChild(tr);
-    });
-  }
-
-  function renderT6Scorecard(nbsId) {
-    const body = document.getElementById('body-t6-scorecard');
-    body.innerHTML = '';
-
-    const recipe = dashboardData.recipes[nbsId];
-    if (!recipe || !recipe.T6_nbs_scorecard) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No scorecard compiled.</td></tr>';
-      return;
-    }
-
-    let rows = recipe.T6_nbs_scorecard;
-
-    // Filter by economic type pill
-    const typeBtn = document.querySelector('#filter-t6-cost-type .pill-btn.active');
-    const typeFilter = typeBtn ? typeBtn.getAttribute('data-filter') : 'all';
-    if (typeFilter !== 'all') {
-      if (typeFilter === 'cost') {
-        rows = rows.filter(r => (r.variable_type || '').toLowerCase().includes('cost') || (r.economic_indicator_type || '').toLowerCase().includes('cost'));
-      } else if (typeFilter === 'benefit') {
-        rows = rows.filter(r => (r.variable_type || '').toLowerCase().includes('benefit') || (r.variable_type || '').toLowerCase().includes('income') || (r.economic_indicator_type || '').toLowerCase().includes('income'));
-      } else if (typeFilter === 'carbon') {
-        rows = rows.filter(r => (r.variable_type || '').toLowerCase().includes('carbon') || (r.economic_indicator_type || '').toLowerCase().includes('tco2e'));
-      }
-    }
-
-    // Filter by text search
-    const searchInput = document.getElementById('search-t6-table');
-    const searchVal = searchInput ? searchInput.value.toLowerCase().trim() : '';
-    if (searchVal) {
-      rows = rows.filter(r => 
-        (r.economic_indicator_type || r.variable_id || '').toLowerCase().replace(/_/g, ' ').includes(searchVal) ||
-        (r.variable_type || '').toLowerCase().includes(searchVal) ||
-        (r.effect_mechanism || '').toLowerCase().includes(searchVal)
-      );
-    }
-
-    if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">No scorecard metrics match the active filters.</td></tr>';
-      return;
-    }
-
-    rows.forEach(r => {
-      const tr = document.createElement('tr');
-      let valRange = 'N/A';
-      if (r.economic_value_range) {
-        const vr = r.economic_value_range;
-        valRange = `<strong>${vr.low} – ${vr.high}</strong> <span style="color:var(--text-muted); font-size:11px;">${vr.unit || ''}</span>`;
-      }
-
-      // C: rebuild evidence drawer from EV register if evidence_ids absent
-      let evidenceDrawer;
-      if (r.evidence_ids && r.evidence_ids.length > 0) {
-        evidenceDrawer = generateEvidenceDrawerHtml(r.evidence_ids);
-      } else {
-        const _evAll3 = dashboardData.registers.EV_evidence_register || [];
-        const _varKey = r.variable_id || r.economic_indicator_type || '';
-        const _t6Matches = _evAll3.filter(c => c.use_role === 'nbs_effect' && c.nbs_id === nbsId && (!_varKey || (c.variable || '').toLowerCase().includes(_varKey.toLowerCase().split('_')[0])));
-        if (_t6Matches.length > 0) {
-          evidenceDrawer = generateEvidenceDrawerHtml(_t6Matches.map(c => c.evidence_id));
-        } else {
-          evidenceDrawer = '<div style="font-size:10.5px; color:var(--text-muted); margin-top:6px; border-top:1px solid var(--border-color); padding-top:4px;">No linked evidence yet</div>';
-        }
-      }
-
-      tr.innerHTML = `
-        <td style="font-weight:600; font-family:var(--font-outfit);">
-          ${(r.economic_indicator_type || r.variable_id || '').replace(/_/g, ' ')}
-          <div style="font-size:10px; font-weight:normal; color:var(--text-muted);">Type: ${r.variable_type}</div>
-        </td>
-        <td>${valRange}</td>
-        <td>
-          <span class="badge ${r.effect_confidence === 'high' ? 'high' : r.effect_confidence === 'medium' ? 'medium' : 'low'}">
-            ${r.effect_confidence}
-          </span>
-        </td>
-        <td style="font-size:12.5px; color:var(--text-secondary); max-width:240px;">
-          ${r.effect_mechanism || 'N/A'}
-          ${r.conditionality ? `<div style="margin-top:4px; font-size:10px; color:var(--accent-sky);">Condition: ${r.conditionality}</div>` : ''}
-          ${evidenceDrawer}
-        </td>
-        <td>
-          <button class="btn-flag" onclick="openGitIssue('t6', ${JSON.stringify(r).replace(/"/g, '&quot;')})">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
-            Flag
-          </button>
-        </td>
-      `;
-      body.appendChild(tr);
-    });
-  }
-
   function renderOntologyAndDatasets() {
     const vontBody = document.getElementById('body-vont');
     vontBody.innerHTML = '';
@@ -6229,9 +5773,7 @@
       evidence: document.getElementById('toggle-node-evidence')?.checked ?? true,
       variable: document.getElementById('toggle-node-variable')?.checked ?? true,
       family: document.getElementById('toggle-node-family')?.checked ?? true,
-      t3: document.getElementById('toggle-node-recipes')?.checked ?? true,
-      t4: document.getElementById('toggle-node-recipes')?.checked ?? true,
-      t6: document.getElementById('toggle-node-recipes')?.checked ?? true
+      t4: document.getElementById('toggle-node-recipes')?.checked ?? true
     };
 
     const allData = prepareNetworkData(dashboardData);
@@ -6247,7 +5789,7 @@
           if (n.data.nbs_id !== nbsFilter) return false;
         } else if (n.type === 'family') {
           if (n.data.nbs_id !== nbsFilter) return false;
-        } else if (n.type === 't3' || n.type === 't4' || n.type === 't6') {
+        } else if (n.type === 't4') {
           if (n.id && !n.id.startsWith(nbsFilter)) return false;
         } else if (n.type === 'variable') {
           const hasLinkedClaim = allData.links.some(l => {
@@ -6353,7 +5895,7 @@
       return [];
     };
 
-    // 5. Ingest Recipes (T3, T4, T6) and link to Evidence, Variables, Families
+    // 5. Ingest Recipes (T4) and link to Evidence, Variables, Families
     Object.entries(data.recipes).forEach(([nbsId, recipe]) => {
       // T4 Mappings
       (recipe.T4_suitability_mappings || []).forEach(m => {
@@ -6374,32 +5916,6 @@
           const evKey = `evidence:${evId}`;
           if (nodeMap.has(evKey)) {
             links.push({ source: evKey, target: t4Key, relation: 'justifies_t4' });
-          }
-        });
-      });
-
-      // T3 Hazard Links
-      (recipe.T3_nbs_hazard_farming || []).forEach(r => {
-        const t3Id = `${nbsId}_t3_${r.record_id}`;
-        const t3Key = addNode(t3Id, 't3', r.hazard_type, r);
-
-        parseEvList(r.evidence_ids).forEach(evId => {
-          const evKey = `evidence:${evId}`;
-          if (nodeMap.has(evKey)) {
-            links.push({ source: evKey, target: t3Key, relation: 'justifies_t3' });
-          }
-        });
-      });
-
-      // T6 Scorecard Outcomes & Costing
-      (recipe.T6_nbs_scorecard || []).forEach(sc => {
-        const t6Id = `${nbsId}_t6_${sc.record_id}`;
-        const t6Key = addNode(t6Id, 't6', sc.economic_indicator_type || sc.variable_id, sc);
-
-        parseEvList(sc.evidence_ids).forEach(evId => {
-          const evKey = `evidence:${evId}`;
-          if (nodeMap.has(evKey)) {
-            links.push({ source: evKey, target: t6Key, relation: 'justifies_t6' });
           }
         });
       });
@@ -6464,8 +5980,6 @@
       .attr("stroke", d => {
         if (d.relation === 'defines_suitability') return "var(--accent-purple)";
         if (d.relation.startsWith('justifies_t4')) return "var(--accent-emerald)";
-        if (d.relation.startsWith('justifies_t3')) return "var(--accent-rose)";
-        if (d.relation.startsWith('justifies_t6')) return "var(--accent-amber)";
         return "var(--text-muted)";
       })
       .attr("stroke-opacity", 0.18);
@@ -6497,8 +6011,6 @@
         if (d.type === 'variable') return "var(--accent-sky)";
         if (d.type === 'family') return "var(--accent-purple)";
         if (d.type === 't4') return "var(--accent-emerald)";
-        if (d.type === 't3') return "var(--accent-rose)";
-        if (d.type === 't6') return "var(--accent-amber)";
         return "var(--text-muted)";
       })
       .attr("stroke", "var(--bg-secondary)")
@@ -6603,18 +6115,14 @@
     if (!panel) return;
     
     let html = '';
-    const typeLabel = node.type.toUpperCase() === 'T3' ? 'Hazard Link (T3)'
-                    : node.type.toUpperCase() === 'T4' ? 'Suitability Mapping (T4)'
-                    : node.type.toUpperCase() === 'T6' ? 'Scorecard Outcome & Cost (T6)'
+    const typeLabel = node.type.toUpperCase() === 'T4' ? 'Suitability Mapping (T4)'
                     : node.type.charAt(0).toUpperCase() + node.type.slice(1);
-                    
+
     let badgeColor = 'var(--text-muted)';
     if (node.type === 'variable') badgeColor = 'var(--accent-sky)';
     else if (node.type === 'family') badgeColor = 'var(--accent-purple)';
     else if (node.type === 'source') badgeColor = '#0f766e';
     else if (node.type === 't4') badgeColor = 'var(--accent-emerald)';
-    else if (node.type === 't3') badgeColor = 'var(--accent-rose)';
-    else if (node.type === 't6') badgeColor = 'var(--accent-amber)';
 
     html += `
       <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 12px;">
@@ -6744,28 +6252,6 @@
         <p><strong>Siting Threshold Logic:</strong><br>${paramsStr}</p>
         <p><strong>Reconciliation Comments:</strong><br>${m.justification || 'No justification details.'}</p>
       `;
-    } else if (node.type === 't3') {
-      const r = node.data;
-      html += `
-        <p><strong>Applicable Farming System:</strong> <code>${r.farming_system}</code></p>
-        <p><strong>Mitigation Potential:</strong> <span style="font-weight: 600; text-transform: uppercase; color: ${r.mitigation_potential === 'high' ? 'var(--accent-emerald)' : r.mitigation_potential === 'medium' ? 'var(--accent-amber)' : 'var(--text-secondary)'};">${r.mitigation_potential}</span></p>
-        <p><strong>Mitigation Mechanism:</strong><br>${r.mitigation_mechanism || 'N/A'}</p>
-        ${r.caveats ? `<p><strong>Caveats:</strong><br><span style="color: var(--text-muted); font-size: 11.5px;">${r.caveats}</span></p>` : ''}
-      `;
-    } else if (node.type === 't6') {
-      const sc = node.data;
-      let valRange = 'N/A';
-      if (sc.economic_value_range) {
-        const vr = sc.economic_value_range;
-        valRange = `<strong>${vr.low} – ${vr.high}</strong> <span style="color:var(--text-muted); font-size:11px;">${vr.unit || ''}</span>`;
-      }
-      html += `
-        <p><strong>Indicator Type:</strong> <span style="text-transform: capitalize;">${sc.variable_type}</span></p>
-        <p><strong>Value Scoping Range:</strong> ${valRange}</p>
-        <p><strong>Confidence:</strong> <span class="badge ${sc.effect_confidence === 'high' ? 'high' : sc.effect_confidence === 'medium' ? 'medium' : 'low'}" style="font-size: 10px; padding: 1px 5px;">${sc.effect_confidence}</span></p>
-        <p><strong>Mechanism:</strong><br>${sc.effect_mechanism || 'N/A'}</p>
-        ${sc.conditionality ? `<p><strong>Conditionality:</strong><br><span style="color: var(--accent-sky); font-size: 11.5px;">${sc.conditionality}</span></p>` : ''}
-      `;
     }
 
     html += '</div>';
@@ -6816,7 +6302,7 @@
     return tables.length > 0 ? tables[0] : null;
   }
 
-  // SRCH-driven, UNIFORM across T3/T4/T6: one card per discovery process (stock · updated_lit
+  // SRCH-driven, UNIFORM across recipe tables: one card per discovery process (stock · updated_lit
   // · grey · tool), each with its mini funnel (retrieved→screened→included), terms, inclusion
   // criteria, limits, date + ruleset version. Single source of truth (the SRCH register) — kills
   // the per-table structure drift of the old markdown-parsed view. Returns true if it rendered.
@@ -7444,7 +6930,7 @@
     const queriesContainer = document.getElementById('search-queries-container');
     if (queriesContainer) {
       // SRCH register first (uniform, single source of truth); markdown only as a fallback for
-      // logs with no SRCH rows yet — so T3/T4/T6 stop showing divergent hand-authored structures.
+      // logs with no SRCH rows yet — so recipe tables stop showing divergent hand-authored structures.
       const _qNbs = logId.substring(0, logId.lastIndexOf('_'));
       const _qTbl = logId.split('_').pop();
       const renderedFromSrch = renderSrchQueries(queriesContainer, _qNbs, _qTbl, subNbsFilter);
@@ -7514,11 +7000,10 @@
           const sourceClaims = (dashboardData.registers.EV_evidence_register || []).filter(c => {
             if (c.source_id !== row.sourceId) return false;
             
-            const dest = getDestTable(c);
-            if (activeTable === 'T3' && dest !== 't3_hazards') return false;
-            if (activeTable === 'T4' && dest !== 't4_mappings') return false;
-            if (activeTable === 'T6' && dest !== 't6_scorecard') return false;
-            
+            // T4 suitability is the only live recipe table; null dest never matches.
+            if (activeTable === 'T4' && getDestTable(c) !== 't4_mappings') return false;
+
+
             if (subNbsFilter && subNbsFilter !== 'all') {
               if (c.suitability_family_id !== subNbsFilter) return false;
             } else {
@@ -7666,11 +7151,10 @@
     const sourceClaims = (dashboardData.registers.EV_evidence_register || []).filter(c => {
       if (c.source_id !== sourceId) return false;
       
-      const dest = getDestTable(c);
-      if (activeTable === 'T3' && dest !== 't3_hazards') return false;
-      if (activeTable === 'T4' && dest !== 't4_mappings') return false;
-      if (activeTable === 'T6' && dest !== 't6_scorecard') return false;
-      
+      // T4 suitability is the only live recipe table; null dest never matches.
+      if (activeTable === 'T4' && getDestTable(c) !== 't4_mappings') return false;
+
+
       if (subNbsFilter && subNbsFilter !== 'all') {
         if (c.suitability_family_id !== subNbsFilter) return false;
       } else {
