@@ -91,15 +91,20 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
         for row in reader:
             if not row.get("source_id"):
                 continue
+            # register list fields are "|"-separated (";" tolerated from older rows)
             nbs_ids = [
-                n.strip() for n in row.get("nbs_ids", "").split(";") if n.strip()
+                n.strip()
+                for n in re.split(r"[|;]", row.get("nbs_ids", ""))
+                if n.strip()
             ]
             status = row.get("extraction_status", "pending") or "pending"
             tier = row.get("benchmark_tier", "low") or "low"
             method = row.get("method_type", "empirical") or "empirical"
             country = row.get("study_country", "") or ""
             vars_list = [
-                v.strip() for v in row.get("vars_extracted", "").split(";") if v.strip()
+                v.strip()
+                for v in re.split(r"[|;]", row.get("vars_extracted", ""))
+                if v.strip()
             ]
 
             for nbs in nbs_ids:

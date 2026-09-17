@@ -74,7 +74,8 @@ def main():
         for row in reader:
             sid = row["source_id"]
             vars_str = row["vars_extracted"]
-            vars_list = [v.strip() for v in vars_str.split(";") if v.strip()]
+            # register convention is "|"-separated (";" tolerated from older rows)
+            vars_list = [v.strip() for v in re.split(r"[|;]", vars_str) if v.strip()]
             src_vars[sid] = set(vars_list)
 
     # =========================================================================
