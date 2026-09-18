@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-09-18T07:45:51.584000+00:00",
-  "git_commit": "e0db41c11946eda3143edc3fb3332b84e58b2ab0",
+  "timestamp": "2026-09-18T09:36:16.068961+00:00",
+  "git_commit": "e842a39cf35fc4accef8a6f02d8d8eb82a22b9b6",
   "registers": {
     "SRC_source_register": [
       {
@@ -1090,6 +1090,25 @@
         "access_status": "oa",
         "source_category": "stock",
         "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/4_Riparian_Buffers/grass_barrier_vfs_runoff_effectiveness_2004.pdf"
+      },
+      {
+        "source_id": "rip_buffer_width_guidelines_review_2004",
+        "citation": "Lee et al. (2004). Quantitative review of riparian buffer width guidelines from Canada and the United States. Journal of Environmental Management.",
+        "doi": "10.1016/j.jenvman.2003.11.009",
+        "benchmark_tier": "high",
+        "study_country": "Canada; United States",
+        "method_type": "review",
+        "spatial_scale": "national",
+        "nbs_ids": "riparian_buffer",
+        "vars_extracted": "slope|stream_order",
+        "extraction_status": "complete",
+        "extraction_date": "2026-09-18",
+        "extraction_run_id": "riparian_t4_pilot_2026-09",
+        "extractor": "Pete/Claude",
+        "source_kind": "paper",
+        "access_status": "oa",
+        "source_category": "stock",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/4_Riparian_Buffers/rip_buffer_width_guidelines_review_2004.pdf"
       }
     ],
     "EV_evidence_register": [
@@ -11968,6 +11987,162 @@
         "locator_type": "page",
         "commit_sha": "b688621632ab86d13d784de709c818f0c4efa704",
         "ruleset_version": "v1.2"
+      },
+      {
+        "evidence_id": "ev_slope_lee04_1",
+        "source_id": "rip_buffer_width_guidelines_review_2004",
+        "nbs_id": "riparian_buffer",
+        "suitability_family_id": "riparian_buffer__planted",
+        "variable": "slope",
+        "relationship": {
+          "baseline_buffer_width_m_at_0pct_slope": 16.8,
+          "added_width_m_per_1pct_slope_increase": 0.79,
+          "no_slope_guideline_baseline_width_m": 33.1,
+          "unit": "m",
+          "slope_unit": "percent",
+          "direction": "required riparian buffer zone width increases monotonically with shoreline slope"
+        },
+        "context": {
+          "region": "Canada and United States",
+          "n_jurisdictions": 60,
+          "governance": "provincial/territorial/state riparian management guidelines"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "table",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "The mean (S.E.) buffer width at 0% slope for jurisdictions with slope modiﬁers (16.8 m (2.9)) was signiﬁcantly narrower than jurisdictions without slope guidelines (33.1 m (3.0); ANOVA, P , 0:05). Furthermore, in jurisdictions with slope guidelines, the mean (S.E.) addition to the baseline buffer width was 0.79 m (0.08) for each 1% increase in slope.",
+        "page": 5,
+        "reviewer_ok": false,
+        "raw_name": "shoreline slope (%) used as a modifying factor for buffer width",
+        "observed_dataset": "compiled database of riparian management guidelines from 60 provinces, territories and states",
+        "locator_type": "page",
+        "selection_justification": "Spatial-applicability claim, not an effectiveness claim: it sets how WIDE the riparian zone must be as a function of shoreline slope, which is the zonal_linear spatial product for this family (FAM limiter: 'watercourse proximity + riparian slope/width'). Quantified rate (0.79 m per 1% slope) makes slope a usable T4 driver rather than a directional statement. NOTE for synthesis: the underlying widths are regulatory/policy prescriptions, not measured performance, so they carry an expert/policy basis and should be weighted accordingly. Claim is generic-riparian (buffer-zone geometry applies to planted and to retained/regenerated buffers alike); no riparian cross-family id exists, so it is filed under the family the source was discovered and screened under (riparian_buffer__planted) per the 2026-09 pilot brief.",
+        "selection_justification_page": 5,
+        "ruleset_version": "v1.5.0"
+      },
+      {
+        "evidence_id": "ev_slope_lee04_2",
+        "source_id": "rip_buffer_width_guidelines_review_2004",
+        "nbs_id": "riparian_buffer",
+        "suitability_family_id": "riparian_buffer__planted",
+        "variable": "slope",
+        "context": {
+          "region": "North America",
+          "n_jurisdictions": 60
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "table",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Across many jurisdictions, a number of modifying factors were commonly used in guideline formulation (Table 5). Just under half (44%) in North America had three or more modifying factors in the guidelines. Thirteen jurisdictions surveyed (22%) used only a single factor. Across all jurisdictions, waterbody type, slope, waterbody size, and presence of ﬁsh were the most common modifying factors (Table 5).",
+        "page": 4,
+        "reviewer_ok": false,
+        "raw_name": "slope (modifying factor in riparian buffer guidelines)",
+        "locator_type": "page",
+        "selection_justification": "Variable-selection evidence only (no threshold): establishes that slope is one of the most frequently used modifiers of riparian buffer placement/width across 60 North American jurisdictions, supporting inclusion of slope in the T4 variable set. Deliberately carries no relationship — the numbers in the quote (44%, 22%) describe guideline complexity, not a slope threshold, and are not encoded. Claim is generic-riparian (buffer-zone geometry applies to planted and to retained/regenerated buffers alike); no riparian cross-family id exists, so it is filed under the family the source was discovered and screened under (riparian_buffer__planted) per the 2026-09 pilot brief.",
+        "selection_justification_page": 4,
+        "ruleset_version": "v1.5.0"
+      },
+      {
+        "evidence_id": "ev_stream_order_lee04_1",
+        "source_id": "rip_buffer_width_guidelines_review_2004",
+        "nbs_id": "riparian_buffer",
+        "suitability_family_id": "riparian_buffer__planted",
+        "variable": "stream_order",
+        "relationship": {
+          "buffer_width_m_by_waterbody_class": {
+            "large_permanent_stream": 28.1,
+            "small_permanent_stream": 21.8,
+            "intermittent_stream": 15.1
+          },
+          "unit": "m",
+          "direction": "required buffer zone width increases with watercourse size and flow permanence"
+        },
+        "context": {
+          "region": "Canada and United States",
+          "column_quoted": "Combined (n = 60)"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "table",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Table 3 The mean (S.E.) buffer widths summarized for jurisdictions from Canada and the United States combined, and separately for each country. Letters denote signiﬁcant differences for waterbody types between Canada and the United States (ANOVA, df ¼ 1; post hoc Tukey Kramer HSD test, df ¼ 1; P , 0:05) Waterbody classes Combined ðn ¼ 60Þ Canada ðn ¼ 12Þ United States ðn ¼ 48Þ Large permanent streams 28.1 (2.7) 43.8 (9.1) a 24.2 (2.3) b Small permanent streams 21.8 (1.7) 29.6 (4.9) a 19.9 (1.7) b Intermittent streams 15.1 (1.7) 13.8 (3.2) a 15.5 (2) a",
+        "page": 3,
+        "reviewer_ok": false,
+        "raw_name": "waterbody type / waterbody class (large permanent stream, small permanent stream, intermittent stream)",
+        "observed_dataset": "compiled database of riparian management guidelines from 60 provinces, territories and states",
+        "locator_type": "page",
+        "selection_justification": "PROXY (defect #4): the paper's 'waterbody class' is a size/permanence classification, NOT Strahler stream order — mapped to the closest canonical id (stream_order) with confidence lowered and the surface name kept in raw_name. Encoded because it is a spatial-applicability rule for a zonal_linear product: the width of the riparian zone to be established is keyed to the watercourse class that can be mapped from a stream network. Quote carries the full Table 3 caption + column headers + the three stream rows so the numbers are interpretable (defect #14). Claim is generic-riparian (buffer-zone geometry applies to planted and to retained/regenerated buffers alike); no riparian cross-family id exists, so it is filed under the family the source was discovered and screened under (riparian_buffer__planted) per the 2026-09 pilot brief.",
+        "selection_justification_page": 3,
+        "ruleset_version": "v1.5.0"
+      },
+      {
+        "evidence_id": "ev_stream_order_lee04_2",
+        "source_id": "rip_buffer_width_guidelines_review_2004",
+        "nbs_id": "riparian_buffer",
+        "suitability_family_id": "riparian_buffer__planted",
+        "variable": "stream_order",
+        "relationship": {
+          "small_stream_channel_width_m_max": 5.0,
+          "medium_stream_channel_width_m_low": 5.0,
+          "medium_stream_channel_width_m_high": 9.3,
+          "large_stream_channel_width_m_min": 9.3,
+          "unit": "m",
+          "measured_as": "channel width"
+        },
+        "context": {
+          "region": "Canada and United States",
+          "pooled_across": "all jurisdictions"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "table",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "In pooling all jurisdictions, we found three size categories of streams, two size categories of lakes, and two size categories of wetlands. In applying mean values to the breakpoints of these size classes, we estimated that small streams were ,5.0 m in width, medium streams were between 5.0–9.3 m while large streams were .9.3 m.",
+        "page": 6,
+        "reviewer_ok": false,
+        "raw_name": "waterbody size class breakpoints (stream channel width)",
+        "locator_type": "page",
+        "selection_justification": "Operationalises ev_stream_order_lee04_1: gives the mappable channel-width breakpoints that assign a watercourse to the small/medium/large class the buffer width is keyed to. CAVEAT: the '<' and '>' symbols are lost by the PDF text layer (rendered as ',' and '.'); the bound directions are recovered from the sentence's ordinal structure (small / medium 5.0-9.3 / large), not from the garbled glyphs — hence medium confidence. Claim is generic-riparian (buffer-zone geometry applies to planted and to retained/regenerated buffers alike); no riparian cross-family id exists, so it is filed under the family the source was discovered and screened under (riparian_buffer__planted) per the 2026-09 pilot brief.",
+        "selection_justification_page": 6,
+        "ruleset_version": "v1.5.0"
+      },
+      {
+        "evidence_id": "ev_slope_lee04_3",
+        "source_id": "rip_buffer_width_guidelines_review_2004",
+        "nbs_id": "riparian_buffer",
+        "suitability_family_id": "riparian_buffer__planted",
+        "variable": "slope",
+        "relationship": {
+          "buffer_width_m_for_slope_under_1pct": 15,
+          "buffer_width_m_for_slope_under_15pct": 61,
+          "unit": "m",
+          "slope_unit": "percent",
+          "direction": "required buffer width rises steeply with slope"
+        },
+        "context": {
+          "basis": "model",
+          "purpose": "sediment reduction"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Applying a different model, Cook College Department of Environmental Resources (1989) found that buffer widths from 15 m for slopes less than 1% and 61 m for slopes under 15% would be adequate for sediment reduction.",
+        "page": 8,
+        "reviewer_ok": false,
+        "raw_name": "slope (%) class determining adequate buffer width",
+        "attribution": "Cook College Department of Environmental Resources (1989)",
+        "locator_type": "page",
+        "selection_justification": "Second, independent slope->required-width function, corroborating ev_slope_lee04_1 with explicit bounds (15 m at <1% slope; 61 m at <15% slope). Encoded as a spatial design rule on slope, NOT as an effect: the sediment-reduction PERFORMANCE this width is designed to achieve is deferred nbs_effect and is not extracted. cited_secondary + attribution recorded so synthesis does not double-count Cook College (1989) via this review. Claim is generic-riparian (buffer-zone geometry applies to planted and to retained/regenerated buffers alike); no riparian cross-family id exists, so it is filed under the family the source was discovered and screened under (riparian_buffer__planted) per the 2026-09 pilot brief.",
+        "selection_justification_page": 8,
+        "ruleset_version": "v1.5.0"
       }
     ],
     "FAM_family_registry": [
