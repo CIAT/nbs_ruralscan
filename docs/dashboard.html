@@ -1490,16 +1490,23 @@
           <button id="vf-gaps-btn" onclick="window._vfMode=(window._vfMode==='gaps'?'review':'gaps'); renderVfWorklist();" title="Missing evidence reported by reviewers — variables/figures expected but not extracted. Click to open, click again to return to review." style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber); cursor:pointer;">&#9888; Gaps</button>
           <button id="vf-stats-btn" onclick="toggleVfStats()" title="AI verify-flag performance metrics — click to open, click again to return to review" style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald); cursor:pointer;">📊 Stats</button>
         </h2>
-        <div style="margin-bottom:14px; display:flex; flex-direction:column; gap:9px;">
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25); color:var(--text-secondary);"><b style="color:#10b981;">AI INCLUDED</b> — AI accepted it; spot-check it's faithful (AI-passed view)</span>
-            <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.25); color:var(--text-secondary);"><b style="color:#f43f5e;">MISMATCH</b> — AI-flagged: a value contradicted the quote (auto-corrected)</span>
-            <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); color:var(--text-secondary);"><b style="color:#f59e0b;">UNSUPPORTED</b> — AI-flagged: a value the quote never contained (stripped)</span>
-          </div>
-          <div style="font-size:11.5px; color:var(--text-secondary); line-height:1.6;">
-            <b style="color:var(--text-primary);">To review:</b> set your handle &#8594; choose <b style="color:var(--accent-emerald);">ok</b> (keep) or <b style="color:var(--accent-rose);">drop</b> (remove) + a reason &#8594; <b>Apply &amp; submit to main</b> writes it to the register, re-gates, and opens a PR that auto-merges on green CI.
-            <span style="color:var(--text-muted);">No live server? Use <b>Download decisions CSV</b> &#8594; <code style="font-size:10.5px;">review.py apply</code>.</span>
-          </div>
+        <div style="margin-bottom:10px; display:flex; flex-direction:column; gap:5px;">
+          <details id="vf-howto" style="font-size:11.5px; color:var(--text-secondary); border-radius:6px; padding:2px 4px;">
+            <summary style="cursor:pointer; color:var(--accent-sky); font-weight:600; outline:none;">&#8505; How to review</summary>
+            <div style="margin-top:8px; display:flex; flex-direction:column; gap:9px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.25); color:var(--text-secondary);"><b style="color:#10b981;">AI INCLUDED</b> — AI accepted it; spot-check it's faithful (AI-passed view)</span>
+                <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.25); color:var(--text-secondary);"><b style="color:#f43f5e;">MISMATCH</b> — AI-flagged: a value contradicted the quote (auto-corrected)</span>
+                <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); color:var(--text-secondary);"><b style="color:#f59e0b;">UNSUPPORTED</b> — AI-flagged: a value the quote never contained (stripped)</span>
+              </div>
+              <div style="font-size:11.5px; color:var(--text-secondary); line-height:1.6;">
+                <b style="color:var(--text-primary);">To review:</b> set your handle &#8594; choose <b style="color:var(--accent-emerald);">ok</b> (keep) or <b style="color:var(--accent-rose);">drop</b> (remove) + a reason &#8594; <b>Apply &amp; submit to main</b> writes it to the register, re-gates, and opens a PR that auto-merges on green CI.
+                <span style="color:var(--text-muted);">No live server? Use <b>Download decisions CSV</b> &#8594; <code style="font-size:10.5px;">review.py apply</code>.</span>
+                <br><span style="color:var(--text-muted);">Per card: <b style="color:var(--accent-emerald);">ok</b> = keep · <b style="color:var(--accent-rose);">drop</b> = remove (needs a coded reason) · <b style="color:var(--accent-amber);">&#9873; query</b> = keep tentatively but raise an open question (write it in the note).</span>
+              </div>
+              <div style="font-size:11px; color:var(--text-muted); line-height:1.6;"><b style="color:var(--text-secondary);">Keys:</b> <code style="font-size:10.5px;">j</code>/<code style="font-size:10.5px;">&#8595;</code> next &middot; <code style="font-size:10.5px;">&#8593;</code> prev &middot; <code style="font-size:10.5px;">k</code> ok &middot; <code style="font-size:10.5px;">d</code> drop &middot; <code style="font-size:10.5px;">q</code> query <span style="color:var(--text-muted);">(ignored while you're typing in a field)</span></div>
+            </div>
+          </details>
           <details id="vf-reason-codes" style="font-size:11.5px; color:var(--text-secondary); border-radius:6px; padding:2px 4px;">
             <summary style="cursor:pointer; color:var(--accent-sky); font-weight:600; outline:none;">Reason codes — what each means</summary>
             <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:4px 18px; margin-top:8px; line-height:1.5;">
@@ -1536,21 +1543,23 @@
                   <div style="margin-top:4px;"><b>⚠ Gaps</b> / <b>📊 Stats</b> — buttons top-right.</div>
                 </div></details></div>
             <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="narrow to a practice / table / sub-practice">Scope</div><div id="vf-scope" style="display:flex; gap:8px; flex-wrap:wrap;"></div></div>
-            <div style="display:flex; flex-direction:column; align-items:flex-start; gap:8px; border-top:1px solid var(--border-color); padding-top:12px;">
-              <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700;" title="Apply ships every pending decision you have — regardless of which queue you're looking at">Apply &amp; submit</span>
-              <span id="vf-pending-count" style="font-size:11.5px; font-weight:700;" title="Your decisions saved locally but NOT yet applied + submitted to main. Applies EVERY pending decision (AI-flagged + AI-passed), not just the current queue. Click Apply & submit to main to ship them."></span>
-              <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Applies your decisions to the registers AND submits them to main (opens a PR that auto-merges on green CI). One click." style="display:none; font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply &amp; submit to main</button>
-              <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
-              <button onclick="openGapModal()" title="Report a variable / figure / table that should exist but isn't in the register — e.g. after checking a figure's variables are all extracted" style="font-size:11px; padding:6px 14px; border-radius:4px; background:transparent; color:var(--accent-amber); border:1px solid var(--accent-amber); cursor:pointer;">&#9888; Report missing evidence</button>
-              <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:11px; padding:6px 10px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
-              <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4;"></span>
-            </div>
             <div id="vf-bulk" style="border-top:1px solid var(--border-color); padding-top:12px;"></div>
+            <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4; border-top:1px solid var(--border-color); padding-top:10px;"></span>
           </div>
           <div id="vf-main" style="flex:1; min-width:0;">
-            <div id="vf-filterbar" style="position:sticky; top:86px; z-index:20; background:var(--bg-primary); padding:8px 0 9px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700;" title="filter the current view by verdict, your status, or tables-only">Filter</span>
-              <div id="vf-verdict-filters" style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;"><button class="pill-btn active rose" data-vf-verdict="all" onclick="window._vfVerdictFilter='all'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">All</button></div>
+            <div id="vf-filterbar" style="position:sticky; top:86px; z-index:20; background:var(--bg-primary); padding:6px 0 6px; border-bottom:1px solid var(--border-color); display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap;">
+              <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; padding-top:4px;" title="filter the current view by origin, review status, verdict, or tables-only">Filter</span>
+              <div id="vf-verdict-filters" style="flex:1; min-width:0;"></div>
+            </div>
+            <div id="vf-actionbar" style="position:sticky; top:86px; z-index:19; background:var(--bg-primary); border-bottom:1px solid var(--border-color); padding:6px 0 7px; display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+              <span id="vf-pending-count" style="font-size:11.5px; font-weight:700;" title="Your decisions saved locally but NOT yet applied + submitted to main. Applies EVERY pending decision (AI-flagged + AI-passed), not just the current queue. Click Apply & submit to main to ship them."></span>
+              <span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Applies your decisions to the registers AND submits them to main (opens a PR that auto-merges on green CI). One click." style="display:none; font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply &amp; submit to main</button>
+                <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
+                <span style="width:1px; height:17px; background:var(--border-color);"></span>
+                <button onclick="openGapModal()" title="Report a variable / figure / table that should exist but isn't in the register — e.g. after checking a figure's variables are all extracted" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">&#9888; Report missing evidence</button>
+                <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
+              </span>
             </div>
             <div id="vf-decided-count" style="font-size:12px; color:var(--text-secondary); margin-top:12px;"></div>
             <div id="vf-subset-banner" style="display:none; margin-top:10px;"></div>
@@ -1779,29 +1788,6 @@
             <button onclick="closeSrchModal()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); border-radius:4px; cursor:pointer; font-size:13px; padding:2px 9px;">&#10005;</button>
           </div>
           <div id="srch-modal-body"></div>
-        </div>
-      </div>
-
-      <!-- Report-missing-evidence (gap) modal -->
-      <div id="gap-modal" onclick="if(event.target===this)closeGapModal()" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.62); padding:56px 20px; overflow:auto;">
-        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; max-width:560px; margin:0 auto; padding:20px 24px; box-shadow:0 12px 48px rgba(0,0,0,0.55);">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
-            <h3 style="margin:0; font-size:15px; color:var(--text-primary);">&#9888;&#65039; Report missing evidence</h3>
-            <button onclick="closeGapModal()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); border-radius:4px; cursor:pointer; font-size:13px; padding:2px 9px;">&#10005;</button>
-          </div>
-          <p style="font-size:11.5px; color:var(--text-muted); margin:10px 0 12px; line-height:1.5;">Flag a variable / figure / table you expected but that isn't in the register (e.g. "Figure 7 lists slope but there's no slope row"). Logged to the in-repo gaps register (<code>pipeline/metrics/gaps.csv</code>) to feed a re-extraction sweep.</p>
-          <div id="gap-scope-ctx" style="font-size:10.5px; color:var(--text-secondary); margin-bottom:12px; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:6px; padding:7px 10px;"></div>
-          <div style="display:flex; flex-direction:column; gap:9px;">
-            <label style="font-size:11px; color:var(--text-muted);">Missing variable <span style="color:var(--text-muted);">(what should exist)</span><input id="gap-variable" placeholder="e.g. slope, tree_canopy_cover" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"></label>
-            <label style="font-size:11px; color:var(--text-muted);">Location in the source <span style="color:var(--text-muted);">(optional)</span><input id="gap-location" placeholder="e.g. Figure 7 · p.13 · Table 3" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"></label>
-            <label style="font-size:11px; color:var(--text-muted);">Source <span style="color:var(--text-muted);">(optional)</span><input id="gap-source" list="gap-src-list" placeholder="source_id, e.g. mucida_2023" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><datalist id="gap-src-list"></datalist></label>
-            <label style="font-size:11px; color:var(--text-muted);">Note<textarea id="gap-note" rows="3" placeholder="what's missing and where you saw it" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); resize:vertical; font-family:inherit;"></textarea></label>
-          </div>
-          <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:14px;">
-            <button onclick="closeGapModal()" style="font-size:12px; padding:6px 14px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Cancel</button>
-            <button onclick="submitGap()" style="font-size:12px; font-weight:600; padding:6px 16px; border-radius:4px; background:var(--accent-amber); color:#fff; border:none; cursor:pointer;">Log gap</button>
-          </div>
-          <div id="gap-msg" style="font-size:11px; margin-top:8px;"></div>
         </div>
       </div>
 
@@ -2076,6 +2062,32 @@
     <span>Git commit: <code id="meta-commit-val" style="font-family:ui-monospace, monospace; font-size:11px; background-color:var(--bg-tertiary); padding:2px 5px; border-radius:3px;">abcdefg</code></span>
   </div>
 </main>
+
+<!-- Report-missing-evidence (gap) modal — a DIRECT child of <body>, not of any tab pane:
+     it is opened from the QA/QC tab's action bar, and a modal nested inside an inactive
+     tab (display:none) can never show itself (a child display:block cannot override an
+     ancestor's display:none). -->
+<div id="gap-modal" onclick="if(event.target===this)closeGapModal()" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.62); padding:56px 20px; overflow:auto;">
+  <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; max-width:560px; margin:0 auto; padding:20px 24px; box-shadow:0 12px 48px rgba(0,0,0,0.55);">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:6px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
+      <h3 style="margin:0; font-size:15px; color:var(--text-primary);">&#9888;&#65039; Report missing evidence</h3>
+      <button onclick="closeGapModal()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); border-radius:4px; cursor:pointer; font-size:13px; padding:2px 9px;">&#10005;</button>
+    </div>
+    <p style="font-size:11.5px; color:var(--text-muted); margin:10px 0 12px; line-height:1.5;">Flag a variable / figure / table you expected but that isn't in the register (e.g. "Figure 7 lists slope but there's no slope row"). Logged to the in-repo gaps register (<code>pipeline/metrics/gaps.csv</code>) to feed a re-extraction sweep.</p>
+    <div id="gap-scope-ctx" style="font-size:10.5px; color:var(--text-secondary); margin-bottom:12px; background:rgba(255,255,255,0.02); border:1px solid var(--border-color); border-radius:6px; padding:7px 10px;"></div>
+    <div style="display:flex; flex-direction:column; gap:9px;">
+      <label style="font-size:11px; color:var(--text-muted);">Missing variable <span style="color:var(--text-muted);">(what should exist)</span><input id="gap-variable" placeholder="e.g. slope, tree_canopy_cover" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"></label>
+      <label style="font-size:11px; color:var(--text-muted);">Location in the source <span style="color:var(--text-muted);">(optional)</span><input id="gap-location" placeholder="e.g. Figure 7 · p.13 · Table 3" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"></label>
+      <label style="font-size:11px; color:var(--text-muted);">Source <span style="color:var(--text-muted);">(optional)</span><input id="gap-source" list="gap-src-list" placeholder="source_id, e.g. mucida_2023" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);"><datalist id="gap-src-list"></datalist></label>
+      <label style="font-size:11px; color:var(--text-muted);">Note<textarea id="gap-note" rows="3" placeholder="what's missing and where you saw it" style="width:100%; box-sizing:border-box; margin-top:3px; font-size:12px; padding:6px 8px; border-radius:4px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); resize:vertical; font-family:inherit;"></textarea></label>
+    </div>
+    <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:14px;">
+      <button onclick="closeGapModal()" style="font-size:12px; padding:6px 14px; border-radius:4px; background:transparent; color:var(--text-secondary); border:1px solid var(--border-color); cursor:pointer;">Cancel</button>
+      <button onclick="submitGap()" style="font-size:12px; font-weight:600; padding:6px 16px; border-radius:4px; background:var(--accent-amber); color:#fff; border:none; cursor:pointer;">Log gap</button>
+    </div>
+    <div id="gap-msg" style="font-size:11px; margin-top:8px;"></div>
+  </div>
+</div>
 
 <script>
   let dashboardData = null;
@@ -2396,7 +2408,7 @@
     var gaps=((dashboardData||{}).gaps||[]).filter(_vfGapInScope).slice().reverse();
     var dc=document.getElementById('vf-decided-count'); if(dc)dc.innerHTML='<b>'+gaps.length+'</b> reported gap(s) — missing evidence flagged for a re-extraction sweep. <a href="#" onclick="openGapModal();return false;" style="color:var(--accent-amber);">+ report a gap</a>';
     host.innerHTML='';
-    if(!gaps.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No gaps reported yet. Use <b style="color:var(--accent-amber);">&#9888; Report missing evidence</b> (sidebar) to flag a variable / figure / table that should exist but isn\'t in the register — e.g. after checking every variable in Figure 7 has been extracted.</div>'; return; }
+    if(!gaps.length){ host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No gaps reported yet. Use <b style="color:var(--accent-amber);">&#9888; Report missing evidence</b> (in the action bar above) to flag a variable / figure / table that should exist but isn\'t in the register — e.g. after checking every variable in Figure 7 has been extracted.</div>'; return; }
     gaps.forEach(function(g){ host.insertAdjacentHTML('beforeend',
       '<div style="border:1px solid var(--border-color); border-left:3px solid var(--accent-amber); border-radius:8px; padding:11px 14px; margin-bottom:9px; background:var(--bg-secondary);">'
       +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;"><code style="color:var(--accent-amber); font-size:11.5px;">'+vfEsc(g.gap_id||'')+'</code>'
@@ -2410,13 +2422,20 @@
   // Task 2: how many of MY decisions are saved locally but NOT yet applied + submitted to main.
   // The store stamps each decision `applied:true` after Apply; pending = mine without it.
   function _vfPendingCount(){ var me=(window._vfReviewer||'').trim(); var all=window._vfAllReviews||{}; var n=0; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true')n++; }); return n; }
-  function _vfUpdatePending(){ var el=document.getElementById('vf-pending-count'); if(!el)return; var me=(window._vfReviewer||'').trim(); if(!me){ el.innerHTML=''; return; }
+  // Presentation only: with nothing pending, Apply reads as unavailable (muted + not-allowed).
+  // Its show/hide (live vs offline) stays owned by updateVfMode, and we never touch .disabled,
+  // so the in-flight "Applying…" state set by applyVfDecisions is never disturbed.
+  function _vfStyleApply(n){ var b=document.getElementById('vf-apply-btn'); if(!b)return;
+    b.style.opacity=(n>0?'1':'0.45'); b.style.cursor=(n>0?'pointer':'not-allowed'); }
+  function _vfUpdatePending(){ var el=document.getElementById('vf-pending-count'); if(!el)return; var me=(window._vfReviewer||'').trim();
+    if(!me){ el.innerHTML='<span style="color:var(--text-muted); font-weight:400;">Pick your reviewer handle (top right) to start deciding.</span>'; _vfStyleApply(0); return; }
     // Apply ships EVERY pending decision, across all queues — so this total is scope- and mode-independent.
     // Break it into AI-flagged + AI-passed origin so the reviewer sees exactly what will be submitted.
     var all=window._vfAllReviews||{}; var byId={}; ((dashboardData.registers.EV_evidence_register)||[]).forEach(function(e){byId[e.evidence_id]=e;}); ((dashboardData._evDropped)||[]).forEach(function(e){byId[e.evidence_id]=e;});
     var nf=0,np=0; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true'){ var e=byId[eid]; if(e&&/\[VERIFY-FLAG/.test(e.attribution||''))nf++; else np++; } });
     var n=nf+np;
-    el.innerHTML=n>0?('<span style="color:var(--accent-amber);">&#9873; '+n+' decision'+(n>1?'s':'')+' pending</span> <span style="color:var(--text-muted); font-weight:400;">— '+nf+' AI-flagged + '+np+' AI-passed. Apply submits <b>all</b> of them (any queue).</span>'):'<span style="color:var(--text-muted); font-weight:400;">No decisions pending apply.</span>'; }
+    el.innerHTML=n>0?('<span style="color:var(--accent-amber);">&#9873; '+n+' decision'+(n>1?'s':'')+' pending</span> <span style="color:var(--text-muted); font-weight:400;">— '+nf+' AI-flagged + '+np+' AI-passed. Apply submits <b>all</b> of them (any queue).</span>'):'<span style="color:var(--text-muted); font-weight:400;">No decisions pending apply.</span>';
+    _vfStyleApply(n); }
   function _vfRenderSubsetBanner(){ var el=document.getElementById('vf-subset-banner'); if(!el)return; var sc=window._vfScope||{}; var chips=[]; if(sc.sourceId)chips.push(['sourceId','📄 source: '+sc.sourceId, sc.sourceId]); if(sc.section)chips.push(['section','📍 page '+sc.section, sc.section]); if(!chips.length){ el.style.display='none'; el.innerHTML=''; return; } el.style.display='block'; el.innerHTML='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.3); border-radius:6px; padding:6px 10px; font-size:11px;"><span style="color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em;">Subset</span>'+chips.map(function(c){return '<span style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:2px 9px;">'+vfEsc(c[1])+' <a href="#" title="remove this subset" onclick="vfSetSubset(\''+c[0]+'\',\''+vfEsc(String(c[2]))+'\');return false;" style="color:var(--accent-rose); text-decoration:none; font-weight:700;">✕</a></span>';}).join('')+'<a href="#" onclick="window._vfScope.sourceId=\'\';window._vfScope.section=\'\';renderVfWorklist();return false;" style="color:var(--accent-sky); margin-left:auto;">clear all</a></div>'; }
   function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid);
       // CODE source (tool / GEE script): render the actual code lines from /api/code — NOT a PDF
@@ -2525,7 +2544,10 @@
   function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ checkVersion(); if(!window._vfVerPoll){window._vfVerPoll=setInterval(checkVersion,60000);} if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
   function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
     if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply &amp; submit to main</b>: writes to the register, re-gates, and opens an auto-merging PR.'; }
-    else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block'; } }
+    else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block';
+      // Offline branch was previously silent — the hint stayed blank on GitHub Pages, so a
+      // reviewer had no idea why Apply was missing. Say what to run to get it back.
+      if(h)h.innerHTML='<b style="color:var(--accent-amber);">Read-only</b> — decisions stay in this browser. Run the local review server (<code style="font-size:9.5px;">uv run python3 -m nbs_ruralscan.schema_tools.review_server</code>) to enable <b>Apply</b>, or use <b>Download CSV</b>.'; } }
   function applyVfDecisions(){ if(!window._reviewApi){ alert('No review server. Use Download decisions CSV + review.py apply.'); return; }
     var btn=document.getElementById('vf-apply-btn'); if(btn){btn.disabled=true; btn.textContent='Applying…';}
     fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer')})}).then(function(r){return r.json();}).then(function(res){
@@ -2761,17 +2783,6 @@
   function _vfTabular(q){ q=q||''; return /\d+\s*[–-]\s*\d+/.test(q)||((q).match(/\d+(\.\d+)?/g)||[]).length>=3||q.indexOf('\n')>=0; }
   function _vfVerdictColor(v){ return v==='unsupported'?'var(--accent-rose)':v==='mismatch'?'var(--accent-amber)':v==='pass'?'var(--accent-sky)':v==='scope'?'var(--accent-amber)':'var(--text-secondary)'; }
 
-  function vfListRow(o){ var ev=o.ev; var dec=(window._vfDecisions||{})[ev.evidence_id]||''; var sel=window._vfSelected===ev.evidence_id;
-    var allr=(window._vfAllReviews||{})[ev.evidence_id]||{}; var rk=Object.keys(allr).filter(function(k){return allr[k].decision;}); var conf=(new Set(rk.map(function(k){return allr[k].decision;}))).size>1;
-    return '<div data-vfid="'+ev.evidence_id+'" onclick="selectVf(\''+ev.evidence_id+'\')" style="cursor:pointer; padding:7px 9px; border-bottom:1px solid var(--border-color); border-left:3px solid '+(sel?'var(--accent-sky)':'transparent')+'; background:'+(sel?'rgba(255,255,255,0.03)':'transparent')+';">'
-      +'<div style="display:flex; align-items:center; gap:6px;"><span style="font-weight:700; font-size:9px; color:'+_vfVerdictColor(o.verdict)+'; text-transform:uppercase;">'+vfEsc(o.verdict)+'</span>'
-      +(dec?('<span style="color:'+(dec==='ok'?'var(--accent-emerald)':'var(--accent-rose)')+'; font-size:10px; font-weight:700;">'+dec+'</span>'):'')
-      +(conf?'<span style="color:var(--accent-rose); font-size:10px;" title="conflict">⚠</span>':'')
-      +(_vfTabular(ev.quote)?'<span style="margin-left:auto; font-size:9px; color:var(--text-muted);">📷</span>':'')+'</div>'
-      +'<div style="font-size:11px; color:var(--text-primary); margin-top:2px; line-height:1.25;">'+vfEsc(ev.variable||'')+'</div>'
-      +'<code style="font-size:9px; color:var(--text-muted);">'+vfEsc(ev.evidence_id||'')+'</code></div>';
-  }
-
   // --- Source channel (which discovery pipeline an EV row came from) ---
   // Authoritative from SRC.source_category; friendly labels for the QA/QC view.
   function _vfSrcCatMap(){ if(window.__vfSrcCat)return window.__vfSrcCat; var m={}; ((dashboardData.registers.SRC_source_register)||[]).forEach(function(s){ m[s.source_id]=(s.source_category||'').trim(); }); window.__vfSrcCat=m; return m; }
@@ -2792,7 +2803,7 @@
   // bulk-by-source selector, so they can't drift apart.
   var _VF_RC_PASSED=['confirmed_pass','missed_error','wrong_practice','species_envelope','off_scope','wrong_table','constrained_aoi','relationship_missed','insufficient_context','unusable_value','speculative_evidence','other'];
   var _VF_RC_FLAGGED=['smuggled_number','wrong_variable','wrong_practice','species_envelope','table_error','off_scope','wrong_table','constrained_aoi','quote_too_narrow','relationship_missed','insufficient_context','unusable_value','speculative_evidence','false_flag','accepted_correction','other'];
-  var _VF_RC_DESC={smuggled_number:'number came from elsewhere in the paper, not this quote',cross_row_stitch:'merged values from two different table rows into one range',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_garble:'mangled table extraction; value may be misread',table_error:'mangled or mis-stitched table extraction — cells merged across rows, or garbled/misread values',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',wrong_table:'real claim, wrong table — soft enabling-env (tenure / market / road / extension / finance / labour) belongs to T3 / M2b / next-steps, not T4 suitability',constrained_aoi:'source only covers part of the land (e.g. a "marginal / residual land" bucket) → understates where the NbS can actually go; never use to set the AOI / opportunity-space extent',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',relationship_missed:'the suitability relationship / directionality / membership curve was present in the source but NOT captured (e.g. monotonic decline with distance, fine-texture = high suitability)',insufficient_context:'cannot review — no caption / surrounding context, or the table screengrab failed to render',uninterpretable_weight:'a weight / score with no scale or standardisation context (e.g. "5" — out of what?); cannot interpret or compare across sources',unusable_value:'named a variable but gave no usable rule — a weight / score with no scale ("5 out of what?"), or land cover with no class list (which classes in / out?)',speculative_evidence:'speculation / assumption, not first- or second-hand evidence ("may deter", hand-wavy assumed causation)',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
+  var _VF_RC_DESC={smuggled_number:'number came from elsewhere in the paper, not this quote',wrong_variable:'labelled the wrong canonical variable (e.g. SOM != SOC, NDVI != canopy)',wrong_practice:'mapped to the wrong NbS / practice (reforestation, pure forestry, carbon-only)',species_envelope:'a per-species envelope, not a practice-level suitability rule',table_error:'mangled or mis-stitched table extraction — cells merged across rows, or garbled/misread values',off_scope:'not a suitability claim (study-site descriptors, methods, problem statement)',wrong_table:'real claim, wrong table — soft enabling-env (tenure / market / road / extension / finance / labour) belongs to T3 / M2b / next-steps, not T4 suitability',constrained_aoi:'source only covers part of the land (e.g. a "marginal / residual land" bucket) → understates where the NbS can actually go; never use to set the AOI / opportunity-space extent',quote_too_narrow:'quote too short / mid-sentence — does not carry the full claim',relationship_missed:'the suitability relationship / directionality / membership curve was present in the source but NOT captured (e.g. monotonic decline with distance, fine-texture = high suitability)',insufficient_context:'cannot review — no caption / surrounding context, or the table screengrab failed to render',unusable_value:'named a variable but gave no usable rule — a weight / score with no scale ("5 out of what?"), or land cover with no class list (which classes in / out?)',speculative_evidence:'speculation / assumption, not first- or second-hand evidence ("may deter", hand-wavy assumed causation)',false_flag:'verifier was wrong; the number IS supported -> keep (ok)',accepted_correction:'verifier auto-correction was right and accepted -> ok',confirmed_pass:'AI pass was correct (ok)',missed_error:'AI should have flagged this — false negative -> drop',other:'something else; explain in the note'};
   function vfDetailHtml(o, passed, opts){ opts=opts||{}; var _collap=!!opts.collapsible,_settledC=!!opts.settled,_openC=!!opts.open,_myDecC=(opts.myDec||'').toLowerCase(); var ev=o.ev, verdict=o.verdict, reason=o.reason; var srcAll=(dashboardData.registers.SRC_source_register)||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
     var _chan=_vfChanMeta(_vfChanKey(ev)); var _chanBadge='<span onclick="vfScopeSet(\'source\',\''+vfEsc(_vfChanKey(ev))+'\')" title="Source channel: '+vfEsc(_chan.label)+' — click to filter the worklist to this channel" style="cursor:pointer; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_chan.color+'; border:1px solid '+_chan.color+'; border-radius:3px; padding:1px 6px;">'+vfEsc(_chan.label)+'</span>';
     var _oa=_vfIsOA(ev); var _oaCol=_oa?'#34d399':'#fbbf24'; var _oaBadge='<span onclick="vfScopeSet(\'access\',\''+(_oa?'oa':'restricted')+'\')" title="'+(_oa?'Open-access source — crop shown inline / publishable':'Copyrighted (non-open-access) — crop is team-only via SharePoint')+' — click to filter" style="cursor:pointer; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:'+_oaCol+'; border:1px solid '+_oaCol+'; border-radius:3px; padding:1px 6px;">'+(_oa?'OA':'Restricted')+'</span>';
@@ -2805,10 +2816,8 @@
     var _aiBadge='<span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#fff; background:'+_aiCol+'; border-radius:3px; padding:2px 8px;">'+(_aiInc?'✓ AI included':'⚑ AI flagged')+'</span>';
     var _autoQD=((ev.review_state||'')==='dropped')&&/\[AUTO-QUARANTINE/.test(ev.attribution||'');
     var _dropBadgeD=((ev.review_state||'')==='dropped')?('<span title="'+(_autoQD?'Auto-quarantined by the guard — no human decision recorded.':'Quarantined — dropped from the analysis (kept &amp; reversible).')+'" style="font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#fff; background:'+(_autoQD?'var(--accent-amber)':'var(--accent-rose)')+'; border-radius:3px; padding:2px 8px;">'+(_autoQD?'🤖 auto-quarantined':'🗑 dropped')+'</span>'):'';
-    var _qLeg=' · <b style="color:var(--accent-amber);">⚑ query</b> = keep tentatively but raise an open question (write it in the note).';
-    var _decLegend=(_aiInc
-      ? 'AI <b style="color:var(--accent-emerald);">included</b> this extraction. &nbsp;<b style="color:var(--accent-emerald);">ok</b> = keep it · <b style="color:var(--accent-rose);">drop</b> = remove (you caught an error the AI missed)'
-      : 'AI <b style="color:var(--accent-rose);">flagged</b> this for removal. &nbsp;<b style="color:var(--accent-emerald);">ok</b> = keep it (the flag was wrong) · <b style="color:var(--accent-rose);">drop</b> = remove (confirm the flag)')+_qLeg;
+    // (the ok / drop / query legend used to be repeated on EVERY card — it now lives once in the
+    //  "ℹ How to review" details above the queue; the AI-included/flagged badge still says which.)
     var doi=(src.doi||'').trim();
     var doiHtml=doi?('<a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">DOI ↗</a>'):(src.url?('<a href="'+src.url+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">source ↗</a>'):'');
     var spUrl=vfSharePointUrl(src.library_path||''); if(spUrl&&ev.page)spUrl+='#page='+ev.page;
@@ -2867,8 +2876,7 @@
     var _dcName=function(p){return vfEsc(p[1]||('#'+p[0]));};
     var decodedBlock=_dc?('<div style="margin-top:8px; font-size:10.5px; background:var(--bg-primary); border:1px solid var(--border-color); border-radius:4px; padding:7px 9px;"><b style="color:var(--accent-emerald);">&#128203; Decoded classes ('+_dc.n_included+' included &middot; scheme '+vfEsc(_dc.scheme)+')</b><div style="color:var(--text-secondary); margin-top:3px; line-height:1.5;">'+_dc.included.slice(0,25).map(_dcName).join(', ')+(_dc.included.length>25?(' <span style="color:var(--text-muted);">+'+(_dc.included.length-25)+' more</span>'):'')+'</div>'+((_dc.excluded&&_dc.excluded.length)?('<div style="margin-top:4px; color:var(--accent-rose);"><b>Excluded:</b> '+_dc.excluded.map(_dcName).join(', ')+'</div>'):'')+'</div>'):'';
     // Footer differs by state: pending/unreviewed -> decision buttons; my APPLIED decision -> challenge + re-open.
-    var _footerPending='<div style="font-size:10.5px; color:var(--text-secondary); margin-top:10px; padding:7px 10px; background:rgba(255,255,255,0.02); border-radius:4px; border-left:2px solid '+_aiCol+';">'+_decLegend+'</div>'
-      +'<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;">'
+    var _footerPending='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:10px;">'
       +'<a href="#" onclick="vfShowReasonHelp();return false;" title="reason-code definitions" style="font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+'<span style="font-size:11px; color:var(--text-muted); margin-left:auto; font-weight:700;">Your decision:</span>'
       +'<button title="keep this record in the evidence register" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">✓ ok — keep</button>'
       +'<button title="remove this record from the evidence register (soft-delete / quarantine) — pick a reason first" onclick="vfTryDrop(\''+ev.evidence_id+'\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">✕ drop — remove</button>'
@@ -2880,7 +2888,7 @@
     var _decChipS=_myDecC?('<span style="font-size:9px; font-weight:700; text-transform:uppercase; padding:1px 7px; border-radius:3px; color:#fff; background:'+(_myDecC==='ok'?'var(--accent-emerald)':(_myDecC==='drop'?'var(--accent-rose)':'var(--accent-amber)'))+';">you: '+vfEsc(_myDecC==='flag'?'query':_myDecC)+'</span>'):'';
     var _revChipS=_rk.length?('<span style="font-size:10px; color:var(--text-muted);">'+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv]);}).join(' · ')+'</span>'):'';
     var _summaryHtml='<summary style="cursor:pointer; display:flex; align-items:center; gap:9px; flex-wrap:wrap; padding:9px 14px; border-left:4px solid '+_aiCol+'; border-radius:8px; background:var(--bg-secondary);">'+_aiBadge+_dropBadgeD+'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code><span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+'</span>'+_decChipS+'<span style="margin-left:auto; display:inline-flex; gap:8px; align-items:center;">'+_revChipS+'</span></summary>';
-    var _card='<div style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:4px solid '+_aiCol+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
+    var _card='<div data-vfeid="'+vfEsc(ev.evidence_id||'')+'" style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:4px solid '+_aiCol+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
       +(_collap?'':('<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
       +_aiBadge+_dropBadgeD
       +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
@@ -2896,20 +2904,52 @@
       +reviewsLine
       +'<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:12px; font-size:10.5px; border-top:1px solid var(--border-color); padding-top:10px;">'+doiHtml+((doiHtml&&pdfLink)?' &nbsp; ':'')+pdfLink+'</div>'
       +_footerHtml+'</div>';
-    if(_collap){ return '<details '+(_openC?'open':'')+' style="margin-bottom:10px;">'+_summaryHtml+_card+'</details>'; }
+    if(_collap){ return '<details data-vfeid="'+vfEsc(ev.evidence_id||'')+'" '+(_openC?'open':'')+' style="margin-bottom:10px;">'+_summaryHtml+_card+'</details>'; }
     return _card;
   }
 
-  function vfRenderDetail(visible, passed){ var el=document.getElementById('vf-detail'); if(!el)return;
-    var o=visible.find(function(x){return x.ev.evidence_id===window._vfSelected;})||visible[0];
-    if(!o){ el.innerHTML='<div style="color:var(--text-muted); padding:24px; text-align:center;">No flag selected.</div>'; return; }
-    el.innerHTML=vfDetailHtml(o, passed);
+  // ===== Keyboard-driven review (j/↓ next · ↑ prev · k ok · d drop · q query) =====
+  // Operates on the rendered cards in #vf-cards. A "focused" card is tracked by index in
+  // window._vfFocusIdx and outlined; the index resets on every re-render (the list reorders).
+  // The action keys route through the SAME guarded entry points as the buttons — vfTryDrop for
+  // drop (a drop needs a coded reason) and the note-required rule for query — never around them.
+  function _vfCardEls(){ var h=document.getElementById('vf-cards'); if(!h)return [];
+    return Array.prototype.filter.call(h.children,function(el){return el.nodeType===1;}); }
+  function _vfSetFocus(i){ var cards=_vfCardEls(); if(!cards.length){ window._vfFocusIdx=-1; return; }
+    if(i<0)i=0; if(i>cards.length-1)i=cards.length-1; window._vfFocusIdx=i;
+    cards.forEach(function(el,k){ if(k===i){ el.style.outline='2px solid var(--accent-sky)'; el.style.outlineOffset='2px'; el.style.borderRadius='8px'; } else { el.style.outline=''; el.style.outlineOffset=''; } });
+    try{ cards[i].scrollIntoView({block:'nearest'}); }catch(_e){} }
+  // click anywhere in a card → that card becomes the focused one (walk up to the direct child
+  // of #vf-cards, so a click on a nested button/chip still resolves to its card).
+  function _vfFocusFromNode(n){ var host=document.getElementById('vf-cards'); if(!host)return;
+    while(n&&n!==host&&n.parentNode!==host)n=n.parentNode;
+    if(!n||n===host)return; var i=_vfCardEls().indexOf(n); if(i>=0)_vfSetFocus(i); }
+  function _vfInstallKeys(){ if(window._vfKeysInstalled)return; window._vfKeysInstalled=true;
+    window.addEventListener('resize',function(){ try{_vfSyncStickyBars();}catch(_e){} });
+    document.addEventListener('click',function(e){ var host=document.getElementById('vf-cards'); if(!host||!host.contains(e.target))return; _vfFocusFromNode(e.target); });
+    document.addEventListener('keydown',function(e){
+      if(e.ctrlKey||e.metaKey||e.altKey)return;
+      var t=e.target||{}; var tn=((t.tagName||'')+'').toUpperCase();
+      if(tn==='INPUT'||tn==='TEXTAREA'||tn==='SELECT'||t.isContentEditable)return;   // never steal typing
+      var tab=document.getElementById('tab-qaqc'); if(!tab||!tab.classList.contains('active'))return;
+      var cards=_vfCardEls(); if(!cards.length)return;
+      var k=e.key, cur=window._vfFocusIdx; if(cur===undefined||cur===null||cur<0)cur=-1;
+      if(k==='j'||k==='ArrowDown'){ e.preventDefault(); _vfSetFocus(cur<0?0:cur+1); return; }
+      if(k==='ArrowUp'){ e.preventDefault(); _vfSetFocus(cur<0?0:cur-1); return; }
+      if(cur<0||cur>=cards.length)return;
+      var el=cards[cur]; var eid=el.getAttribute('data-vfeid'); if(!eid)return;        // gap cards etc. carry none
+      if(k==='k'){ e.preventDefault(); setVfDecision(eid,'ok'); return; }
+      if(k==='d'){ e.preventDefault();
+        if(!((window._vfReasons||{})[eid]||'')){ var sel=el.querySelector('select'); if(sel){ try{sel.scrollIntoView({block:'nearest'});}catch(_e){} try{sel.focus();}catch(_e2){} } return; }
+        vfTryDrop(eid); return; }
+      if(k==='q'){ e.preventDefault(); var ta=el.querySelector('textarea'); if(ta){ try{ta.scrollIntoView({block:'nearest'});}catch(_e){} try{ta.focus();}catch(_e3){} } return; }
+    });
   }
-
-  function selectVf(eid){ window._vfSelected=eid;
-    document.querySelectorAll('#vf-list [data-vfid]').forEach(function(el){ var s=el.getAttribute('data-vfid')===eid; el.style.borderLeftColor=s?'var(--accent-sky)':'transparent'; el.style.background=s?'rgba(255,255,255,0.03)':'transparent'; });
-    vfRenderDetail(window._vfVisible||[], window._vfMode==='passed');
-  }
+  // Two stacked sticky bars inside #vf-main: the filter matrix (top:86px) and the action bar
+  // directly under it. The filter bar's height varies with the toggles on show, so the action
+  // bar's offset is measured rather than hardcoded (falls back to the inline 86px).
+  function _vfSyncStickyBars(){ var fb=document.getElementById('vf-filterbar'), ab=document.getElementById('vf-actionbar');
+    if(!fb||!ab)return; var h=fb.offsetHeight||0; ab.style.top=(86+h)+'px'; }
 
   function renderVfWorklist() {
     if (!dashboardData) return;
@@ -2917,6 +2957,8 @@
     if (!window._vfReasons){ try{ window._vfReasons=JSON.parse(localStorage.getItem('vfReasons')||'{}'); }catch(e){ window._vfReasons={}; } }
     if (!window._vfNotes){ try{ window._vfNotes=JSON.parse(localStorage.getItem('vfNotes')||'{}'); }catch(e){ window._vfNotes={}; } }
     if (window._vfReviewer===undefined){ window._vfReviewer=localStorage.getItem('vfReviewer')||''; }
+    _vfInstallKeys();                       // idempotent — one document-level listener, ever
+    window._vfFocusIdx=-1;                  // the card list is about to be rebuilt; drop the focus
     var _ri=document.getElementById('vf-reviewer'); if(_ri && !_ri.value && window._vfReviewer){ _ri.value=window._vfReviewer; }
     var evAll=dashboardData.registers.EV_evidence_register||[]; var srcAll=dashboardData.registers.SRC_source_register||[];
     var mode=window._vfMode||'flagged';
@@ -3031,22 +3073,23 @@
     var _gb=document.getElementById('vf-gaps-btn'); if(_gb){ var _gon=(mode==='gaps'); _gb.style.background=_gon?'var(--accent-amber)':'transparent'; _gb.style.color=_gon?'#0b0b0b':'var(--accent-amber)'; _gb.textContent=(_gon?'← Back to review':'⚠ Gaps ('+_gapsCount+')'); }
     var _sb=document.getElementById('vf-stats-btn'); if(_sb){ var _on=(mode==='stats'); _sb.style.background=_on?'var(--accent-emerald)':'transparent'; _sb.style.color=_on?'#fff':'var(--accent-emerald)'; _sb.textContent=_on?'← Back to review':'📊 Stats'; }
     var fd=document.getElementById('vf-verdict-filters'); var host=document.getElementById('vf-cards'); var statsHost=document.getElementById('vf-stats');
-    if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} return; }
-    if(mode==='gaps'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfGaps(host);} return; }
+    if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} _vfSyncStickyBars(); return; }
+    if(mode==='gaps'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfGaps(host);} _vfSyncStickyBars(); return; }
     if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block';
     var _tblPill='<button class="pill-btn '+(window._vfTablesOnly?'active sky':'')+'" onclick="window._vfTablesOnly=!window._vfTablesOnly; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;" title="only units whose quote is tabular (📷)">📷 tables</button>';
     // ---- filter bar: 3 orthogonal toggles (+ My-call when me=Yes) + verdict + tables ----
     if(fd){ fd.style.display='block'; fd.style.gap=''; fd.style.flexWrap=''; fd.style.alignItems='';
-      var _seg=function(which,label,opts,sv){ return '<div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin:2px 0;"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:120px;">'+label+'</span>'+opts.map(function(o){ var active=(window[sv]===o[0])?'active sky':''; var cnt=which?(' ('+_axN(which,o[0])+')'):''; return '<button class="pill-btn '+active+'" onclick="window.'+sv+'=\''+o[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+o[1]+cnt+'</button>'; }).join('')+'</div>'; };
-      var _bar=_seg('origin','Origin',[['any','Any'],['flagged','⚑ AI-flagged'],['passed','✓ AI-passed']],'_vfAxOrigin')
-        +_seg('me','Reviewed by me',[['any','Any'],['no','No'],['yes','Yes']],'_vfAxMe')
-        +_seg('other','Reviewed by others',[['any','Any'],['no','No'],['yes','Yes']],'_vfAxOther');
-      if(window._vfAxMe==='yes'){ _bar+=_seg('','My call',[['all','All'],['ok','✓ Kept'],['query','⚑ Queried'],['drop','🗑 Dropped']],'_vfMyCall'); }
+      // One row per axis: a fixed-width label column keeps the pill columns aligned down the bar.
+      var _seg=function(which,label,opts,sv,tip){ return '<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:1px 0;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">'+label+'</span>'+opts.map(function(o){ var active=(window[sv]===o[0])?'active sky':''; var cnt=which?(' ('+_axN(which,o[0])+')'):''; return '<button class="pill-btn '+active+'" onclick="window.'+sv+'=\''+o[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+o[1]+cnt+'</button>'; }).join('')+'</div>'; };
+      var _bar=_seg('origin','Origin',[['any','Any'],['flagged','⚑ AI-flagged'],['passed','✓ AI-passed']],'_vfAxOrigin','Did the AI verify pass flag this extraction, or accept it?')
+        +_seg('me','Reviewed by me',[['any','Any'],['no','No'],['yes','Yes']],'_vfAxMe','Have YOU already made a call on it? “No” is the to-review queue.')
+        +_seg('other','Reviewed by others',[['any','Any'],['no','No'],['yes','Yes']],'_vfAxOther','Has anyone else made a call? Not-me + others-Yes = the 2nd-opinion queue.');
+      if(window._vfAxMe==='yes'){ _bar+=_seg('','My call',[['all','All'],['ok','✓ Kept'],['query','⚑ Queried'],['drop','🗑 Dropped']],'_vfMyCall','Narrow your own reviewed units by the call you made.'); }
       // verdict pills (only meaningful when flagged units can be in view) + tables toggle
       var _extra='';
       if(window._vfAxOrigin!=='passed'){ var verdicts=['all'].concat(Array.from(new Set(flaggedRows.map(function(r){return r.verdict;})))).concat(['conflict']);
         _extra=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; var n=(v==='all')?0:flaggedRows.filter(function(r){return v==='conflict'?((function(){var a=_store[r.ev.evidence_id]||{};var ds=Object.keys(a).filter(function(k){return a[k].decision;}).map(function(k){return a[k].decision;});return (new Set(ds)).size>1;})()):r.verdict===v;}).length; return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All':(v+' ('+n+')'))+'</button>'; }).join('')+'<span style="width:1px; height:16px; background:var(--border-color); margin:0 5px;"></span>'; }
-      _bar+='<div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; margin:4px 0 0; padding-top:5px; border-top:1px solid var(--border-color);"><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:120px;">Verdict / tables</span>'+_extra+_tblPill+'</div>';
+      _bar+='<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:3px 0 0; padding-top:4px; border-top:1px solid var(--border-color);" title="The AI verify verdict on a flagged unit (mismatch / unsupported / conflict), plus a tabular-quotes-only toggle."><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">Verdict</span>'+_extra+_tblPill+'</div>';
       fd.innerHTML=_bar; }
     // ---- apply the toggle filters to the universe (secondary filters via the shared _sec) ----
     var _list=_uni.filter(function(u){
@@ -3068,11 +3111,12 @@
         host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-amber);">No tool-derived evidence extracted yet.</b><br>Tools / methods / codebases <b>are evidence-reviewable like any source</b> — their thresholds, weights and criteria become EV rows (provenance via <code>locator=file_line</code>+<code>commit_sha</code> for code, or section/anchor for docs) and are reviewed here under this channel. This is empty only because no tool has been extracted yet. <b>'+_nTool+'</b> tool(s) are catalogued in <code>TOOL_tool_registry</code> — browse them under <b>Stocktake &amp; Tools → Tools / methods</b>; extracting their criteria populates this channel.</div>';
         return;
       }
-      host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No evidence matches these filters (<b>'+_uni.length+'</b> in scope). Loosen the <b>Origin / Reviewed-by</b> toggles above, or broaden the <b>SCOPE</b> on the left.</div>'; return; }
+      host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No evidence matches these filters (<b>'+_uni.length+'</b> in scope). Loosen the <b>Origin / Reviewed-by</b> toggles above, or broaden the <b>SCOPE</b> on the left.</div>'; _vfSyncStickyBars(); return; }
     // One collapsible card per unit. Furled (closed) when I've already applied a decision — the
     // summary row shows my call; expand for the full evidence + challenge / re-open. Unfurled (open)
     // for anything I still need to act on (to-review, 2nd opinion, or my pending unapplied decision).
     _list.forEach(function(u){ host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed', {collapsible:true, open:!u.meApplied, settled:u.meApplied, myDec:u.myDec})); });
+    _vfSyncStickyBars();
   }
 
   // Active EV rows (not dropped/dataset/reviewer_ok) for a single source_id, scoped to the
@@ -3160,7 +3204,7 @@
     localStorage.setItem('vfReasons',JSON.stringify(window._vfReasons));
     localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes));
     renderVfWorklist();
-    alert('Flagged '+rows.length+' record(s) from "'+sid+'" as '+decision+'. Now Apply (sidebar) to commit.');
+    alert('Flagged '+rows.length+' record(s) from "'+sid+'" as '+decision+'. Now Apply (action bar, top of the queue) to commit.');
   }
 
   function initDashboard() {
