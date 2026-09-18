@@ -289,6 +289,36 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     if ledger_csv.exists():
         data["progress_ledger"] = _csv_to_rows(ledger_csv)
 
+    # Acquisition-funnel rollup per NbS — the coverage matrix's group header shows
+    # "extracted X / discovered Y" progress, and Y (screened-in candidates awaiting
+    # acquisition/extraction) lives only in the acquisition queue, not in SRC.
+    # T3/T6-only candidates are excluded (extraction deferred 2026-09).
+    queue_csv = schema_root.parent / "pipeline" / "acquisition_queue.csv"
+    if queue_csv.exists():
+        funnel: dict[str, dict[str, int]] = {}
+        seen_q: set[str] = set()
+        with queue_csv.open(newline="", encoding="utf-8") as f:
+            for row in csv.DictReader(f):
+                sid = (row.get("source_id") or "").strip()
+                nbs = (row.get("nbs_id") or "").strip()
+                if not sid or not nbs or sid in seen_q:
+                    continue
+                seen_q.add(sid)
+                if (row.get("status") or "").strip() == "duplicate":
+                    continue
+                tables = {
+                    t.strip()
+                    for t in re.split(r"[|;,]", row.get("tables") or "")
+                    if t.strip()
+                }
+                if tables and tables <= {"T3", "T6"}:
+                    continue  # deferred-only candidate
+                slot = funnel.setdefault(nbs, {"candidates": 0, "acquired": 0})
+                slot["candidates"] += 1
+                if (row.get("status") or "").strip() == "acquired":
+                    slot["acquired"] += 1
+        data["acquisition_funnel"] = funnel
+
     from nbs_ruralscan.schema_tools import qaqc_stats as _qaqc
 
     data["qaqc_stats"] = _qaqc.compute()
