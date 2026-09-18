@@ -99,6 +99,10 @@ class EvidenceUnit:
         None  # why the paper selected the variable at all
     )
     selection_justification_page: int | None = None
+    # ruleset that governed the extraction (methodology/RULESET_VERSIONS.md). The EV
+    # register has carried this column since v1.0 but the dataclass lacked the field,
+    # so save_units/load_units silently dropped the stamp (caught 2026-09, riparian pilot).
+    ruleset_version: str = ""
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
