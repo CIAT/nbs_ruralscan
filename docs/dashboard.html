@@ -4202,13 +4202,19 @@
       // ---- NbS group header, carrying the register roll-ups (was: global NbS comparison) ----
       if (r.nbsId !== lastNbs) {
         lastNbs = r.nbsId;
-        const nbsSources = sources.filter(s => (s.nbs_ids || '').split(';').map(x => x.trim()).includes(r.nbsId));
+        const nbsSources = sources.filter(s => (s.nbs_ids || '').split(/[|;]/).map(x => x.trim()).includes(r.nbsId));
         const totalSourcesCount = nbsSources.length;
-        const sweptSourcesCount = nbsSources.filter(s => ['complete', 'swept', 'signed_off'].includes(s.extraction_status)).length;
         const nbsClaimsCount = claims.filter(c => c.nbs_id === r.nbsId).length;
         const nbsT4Count = recipe.T4_suitability_mappings ? recipe.T4_suitability_mappings.length : 0;
-        const sweptClass = sweptSourcesCount === totalSourcesCount ? 'high' : sweptSourcesCount > 0 ? 'medium' : 'low';
-        const sweptPct = totalSourcesCount > 0 ? Math.round(sweptSourcesCount / totalSourcesCount * 100) : 0;
+        // Progress funnel: discovered (screened-in candidates, acquisition queue) →
+        // acquired (PDF in the team library) → extracted (registered in SRC with EV rows).
+        // Older sources predate the queue, so the denominator is max(queue, registered).
+        const _fun = (dashboardData.acquisition_funnel || {})[r.nbsId] || { candidates: 0, acquired: 0 };
+        const discoveredCount = Math.max(_fun.candidates, totalSourcesCount);
+        const acquiredCount = Math.min(Math.max(_fun.acquired, totalSourcesCount), discoveredCount);
+        const extrPct = discoveredCount > 0 ? Math.round(totalSourcesCount / discoveredCount * 100) : 0;
+        const extrClass = extrPct === 100 ? 'high' : extrPct > 0 ? 'medium' : 'low';
+        const funnelTitle = `${discoveredCount} screened-in candidate source(s) from discovery → ${acquiredCount} acquired to the library → ${totalSourcesCount} extracted into the registers`;
 
         const gtr = document.createElement('tr');
         gtr.style.cursor = 'pointer';
@@ -4217,8 +4223,9 @@
           <td colspan="8" style="padding:10px 14px; background:rgba(14,165,233,0.06); border-top:2px solid var(--accent-sky);">
             <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
               <span style="font-family:var(--font-outfit); font-weight:700; font-size:13.5px; color:var(--accent-sky);">${vfEsc(nbsName)}</span>
-              <span style="font-size:11px; color:var(--text-secondary);"><b style="color:var(--text-primary);">${totalSourcesCount}</b> sources</span>
-              <span class="badge ${sweptClass}" style="font-size:10px;">${sweptSourcesCount} swept (${sweptPct}%)</span>
+              <span style="font-size:11px; color:var(--text-secondary);" title="${funnelTitle}"><b style="color:var(--text-primary);">${totalSourcesCount}/${discoveredCount}</b> sources extracted</span>
+              <span class="badge ${extrClass}" style="font-size:10px;" title="${funnelTitle}">${extrPct}%</span>
+              ${acquiredCount > totalSourcesCount ? `<span style="font-size:11px; color:var(--text-secondary);" title="acquired to the SharePoint library, awaiting extraction"><b style="color:var(--text-primary);">${acquiredCount - totalSourcesCount}</b> acquired, unextracted</span>` : ''}
               <span style="font-size:11px; color:var(--text-secondary);"><b style="color:var(--text-primary);">${nbsClaimsCount}</b> claims</span>
               <span style="font-size:11px; color:var(--text-secondary);"><b style="color:var(--text-primary);">${nbsT4Count}</b> T4 rows</span>
               <span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">click → Evidence Query &#8594;</span>
