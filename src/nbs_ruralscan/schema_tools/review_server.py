@@ -825,7 +825,10 @@ class Handler(SimpleHTTPRequestHandler):
 
         if self.path == "/api/clear":
             # Reset to-review. Scoped to ONE reviewer by default (you can't wipe others'
-            # pending work); a full wipe requires reviewer="*". Always backs up first.
+            # pending work) and to that reviewer's PENDING (not-yet-applied) decisions —
+            # applied entries are the durable review record and stay (matching the dialog's
+            # "already-applied decisions are NOT affected"). Full wipe requires reviewer="*".
+            # Always backs up first.
             rev = (payload.get("reviewer") or "").strip()
             store = _load()
             if STORE.exists():
@@ -833,12 +836,18 @@ class Handler(SimpleHTTPRequestHandler):
                     STORE.read_text(encoding="utf-8")
                 )
             if rev and rev != "*":
+                cleared = 0
                 for eid in list(store):
-                    store[eid].pop(rev, None)
+                    mine = store[eid].get(rev)
+                    if mine is not None and mine.get("applied") not in (True, "true"):
+                        store[eid].pop(rev, None)
+                        cleared += 1
                     if not store[eid]:
                         store.pop(eid, None)
                 _save(store)
-                return self._json(200, {"ok": True, "cleared_for": rev})
+                return self._json(
+                    200, {"ok": True, "cleared_for": rev, "cleared": cleared}
+                )
             if rev == "*":
                 _save({})
                 return self._json(200, {"ok": True, "cleared_for": "ALL"})

@@ -1558,7 +1558,7 @@
                 <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
                 <span style="width:1px; height:17px; background:var(--border-color);"></span>
                 <button onclick="openGapModal()" title="Report a variable / figure / table that should exist but isn't in the register — e.g. after checking a figure's variables are all extracted" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">&#9888; Report missing evidence</button>
-                <button onclick="resetVfDecisions()" title="resets only YOUR in-progress decisions; other reviewers + applied decisions untouched" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
+                <button onclick="resetVfDecisions()" title="un-decides only YOUR pending (not-yet-applied) decisions — the same ones the pending counter shows; applied/committed decisions + other reviewers untouched" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
               </span>
             </div>
             <div id="vf-decided-count" style="font-size:12px; color:var(--text-secondary); margin-top:12px;"></div>
@@ -2579,7 +2579,19 @@
     var blob=new Blob([lines.join('\n')],{type:'text/csv'}); var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='flag_worklist.csv'; a.click();
   }
   function setVfReviewer(v){ v=(v||'').trim(); window._vfReviewer=v; localStorage.setItem('vfReviewer',v); var sel=document.getElementById('vf-reviewer'); if(sel&&v){ if(!Array.prototype.some.call(sel.options,function(o){return o.value===v;})){ var op=document.createElement('option'); op.value=v; op.textContent=v; sel.insertBefore(op,sel.options[sel.options.length-1]); } sel.value=v; } var all=window._vfAllReviews||{}; var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][v]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }
-  function resetVfDecisions(){ var me=(window._vfReviewer||'').trim(); if(!me){ alert('Set your reviewer handle first — reset only clears YOUR decisions.'); return; } var n=Object.keys(window._vfDecisions||{}).length; if(!confirm('Reset YOUR '+n+' in-progress decision(s) back to to-review?\n\nOther reviewers'+String.fromCharCode(39)+' decisions are untouched. Already-applied/committed decisions are NOT affected.'))return; window._vfDecisions={}; window._vfReasons={}; window._vfNotes={}; if(window._vfAllReviews){ Object.keys(window._vfAllReviews).forEach(function(eid){ if(window._vfAllReviews[eid]){ delete window._vfAllReviews[eid][me]; if(!Object.keys(window._vfAllReviews[eid]).length) delete window._vfAllReviews[eid]; } }); } localStorage.removeItem('vfDecisions'); localStorage.removeItem('vfReasons'); localStorage.removeItem('vfNotes'); if(window._reviewApi){ fetch('/api/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:me})}).then(function(){renderVfWorklist();}); } else { renderVfWorklist(); } }
+  function resetVfDecisions(){ var me=(window._vfReviewer||'').trim(); if(!me){ alert('Set your reviewer handle first — reset only clears YOUR decisions.'); return; }
+    // Reset = un-decide your PENDING (not-yet-applied) decisions only. Applied decisions are
+    // the durable review record (register + review_log) and are never touched here — the old
+    // version counted + cleared applied history too, so the dialog said "237" while Apply
+    // said "24 pending" (confusing, 2026-09-18).
+    var all=window._vfAllReviews||{}; var pend=[];
+    Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true') pend.push(eid); });
+    if(!window._reviewApi){ pend=Object.keys(window._vfDecisions||{}); } // offline: local decisions are all unapplied
+    if(!pend.length){ alert('Nothing to reset — you have no pending (not-yet-applied) decisions.'); return; }
+    if(!confirm('Reset your '+pend.length+' pending decision(s) back to to-review?\n\nPending = decided by you but not yet applied. Already-applied/committed decisions and other reviewers'+String.fromCharCode(39)+' work are untouched.'))return;
+    pend.forEach(function(eid){ if(window._vfDecisions)delete window._vfDecisions[eid]; if(window._vfReasons)delete window._vfReasons[eid]; if(window._vfNotes)delete window._vfNotes[eid]; if(all[eid]){ delete all[eid][me]; if(!Object.keys(all[eid]).length) delete all[eid]; } });
+    localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions||{})); localStorage.setItem('vfReasons',JSON.stringify(window._vfReasons||{})); localStorage.setItem('vfNotes',JSON.stringify(window._vfNotes||{}));
+    if(window._reviewApi){ fetch('/api/clear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:me})}).then(function(){renderVfWorklist();}); } else { renderVfWorklist(); } }
   function renderQaqcStats(hostEl){
     var s=(dashboardData&&dashboardData.qaqc_stats)||{};
     var fe=s.flag_eval||{}, pe=s.pass_eval||{};

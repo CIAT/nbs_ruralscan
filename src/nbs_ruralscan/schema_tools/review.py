@@ -174,12 +174,51 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
     kept, dropped, resolved, queried, reclassified = [], 0, 0, 0, 0
     reasons: Counter = Counter()
     logrows = []
+
+    def _already_applied(r: dict, dec: str, dv) -> bool:
+        """Row already reflects this decision → skip (no duplicate log row / stacked tag).
+
+        Apply and the submit flow both REPLAY the full decisions store (by design — the
+        store is the durable review record), so without this guard every replay re-logged
+        every decision into review_log and prepended another [dropped/reviewed/query] tag
+        (found 2026-09-18: 445 duplicate log rows, 128 rows with stacked tags). A re-opened
+        row passes the guard again because reopen clears review_state / restores the flag.
+        """
+        attr = r.get("attribution", "") or ""
+        state = (r.get("review_state") or "").strip()
+        if dec == "drop":
+            return state == "dropped"
+        if dec == "ok":
+            return (
+                str(r.get("reviewer_ok", "")).lower() == "true"
+                and state == ""
+                and not _FLAG_RE.search(attr)
+            )
+        if dec in ("flag", "query"):
+            return bool(re.search(r"\[query [0-9-]+ by " + re.escape(who), attr))
+        if dec == "reclassify":
+            scope = "species_specific"
+            taxon = ""
+            if isinstance(dv, dict):
+                scope = (dv.get("claim_scope") or "species_specific").strip()
+                taxon = (dv.get("taxon") or "").strip()
+            return (
+                (r.get("claim_scope") or "").strip() == scope
+                and (not taxon or (r.get("taxon") or "").strip() == taxon)
+                and str(r.get("reviewer_ok", "")).lower() == "true"
+                and state == ""
+            )
+        return False
+
     for r in rows:
         dv = decisions.get(r["evidence_id"])
         dec, reason, note, rev = _norm(dv)
         who = rev or reviewer
         if not dec:
             kept.append(r)
+            continue
+        if _already_applied(r, dec, dv):
+            kept.append(r)  # no-op replay: already in the decided state
             continue
         verdict = _verdict_of(r.get("attribution", ""))
         logrows.append(
