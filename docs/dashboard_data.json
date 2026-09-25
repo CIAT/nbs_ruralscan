@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-09-25T07:36:51.930830+00:00",
-  "git_commit": "a8e43dd30b77ec12f8d67b8cc99fed91c2f377b5",
+  "timestamp": "2026-09-25T07:46:47.481733+00:00",
+  "git_commit": "d49ec01048f8017b550ca234b5053ede1f912e45",
   "registers": {
     "SRC_source_register": [
       {
@@ -16398,20 +16398,23 @@
           "river proximity",
           "stream proximity"
         ],
-        "canonical_unit": "km",
+        "canonical_unit": "m",
         "unit_conversions": {
-          "m->km": "/1000"
+          "km->m": "*1000"
         },
         "group_id": "hydrological",
-        "candidate_dataset_ids": [],
-        "min_meaningful_resolution_m": 100,
+        "candidate_dataset_ids": [
+          "merit_hydro_v1",
+          "jrc_global_surface_water_v1_4"
+        ],
+        "min_meaningful_resolution_m": 30,
         "resolution_sensitivity": "medium",
         "derive_then_aggregate": true,
         "context_sensitivity": "low",
         "review_status": "pending_review",
-        "raised_by": "issue_103",
+        "raised_by": "issue_103; unit revised by the riparian T4 sweep 2026-09-25",
         "raised_date": "2026-06-24",
-        "comment": "Euclidean distance to surface water. Dataset binding pending. #103."
+        "comment": "Outward distance from the watercourse. For riparian_buffer (spatial_product_type=zonal_linear) this is the band half-width that defines the opportunity zone, and ALL 13 evidence units state it in metres (statutory reserves 30-50 m, design widths 5-30 m, delineation maxima 200-210 m) - so the canonical unit is m, not km (changed 2026-09-25; the variable is used by no other NbS, no BIND row and no other recipe, so the change has no blast radius). min_meaningful_resolution lowered 100->30 to match the evidence. CAVEAT for dataset-fitness sign-off: a 30 m band cannot be resolved from a ~90 m global stream network - record as a scoping-grade limitation. Distinct from riparian_buffer_width, which is the width of the EXISTING buffer (a restoration-priority indicator, not the zone definition). #103."
       },
       {
         "canonical_variable_id": "distance_to_cropland",
@@ -16819,6 +16822,25 @@
         "preference_rank": 1,
         "status": "catalogued",
         "fitness_note": "LandMark IPLC vector layer. Marks IPLC overlap with M1 opportunity-space mask for equity priority + FPIC/ESS7 flag. Coverage patchy - absence != no IPLC presence."
+      },
+      {
+        "binding_id": "distance_to_waterbody__global",
+        "variable": "distance_to_waterbody",
+        "scope_type": "global",
+        "dataset_id": "merit_hydro_v1",
+        "preference_rank": 1,
+        "status": "catalogued",
+        "fitness_note": "Derive the stream network from MERIT upstream drainage area, then Euclidean distance to it. ~90 m: the 5-30 m bands the evidence specifies are below the network's meaningful resolution - scoping-grade only, and a national hydrography upload is preferable where one exists."
+      },
+      {
+        "binding_id": "distance_to_waterbody__global_water_bodies",
+        "variable": "distance_to_waterbody",
+        "scope_type": "global",
+        "dataset_id": "jrc_global_surface_water_v1_4",
+        "preference_rank": 2,
+        "status": "catalogued",
+        "fitness_note": "30 m water-surface complement for lakes and wide rivers; does not carry the headwater network, so it supplements rank 1 rather than replacing it.",
+        "band": "occurrence"
       }
     ],
     "TOOL_tool_registry": [
@@ -19521,6 +19543,50 @@
         "limitations": "Modelled allocation (not surveyed); coarse ~10 km; specific tree-perennial coverage weak (use Forest Data Partnership for cocoa/coffee/palm).",
         "description": "IFPRI/IIASA Spatial Production Allocation Model (MapSPAM) v2.0 — gridded crop area, yield, production, value for 42 crops at ~10 km.",
         "grain_type": "grid"
+      },
+      {
+        "dataset_id": "merit_hydro_v1",
+        "dataset_name": "MERIT Hydro v1.0.1 (global hydrography)",
+        "analytical_module": "structural_suitability",
+        "time_period": 2019,
+        "spatial_resolution_m": 90,
+        "geographic_coverage": [
+          "global"
+        ],
+        "data_format": "geotiff_cog",
+        "access_type": "gee_asset",
+        "download_url": "https://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro/",
+        "gee_asset_id": "MERIT/Hydro/v1_0_1",
+        "license": "CC-BY-NC-4.0 or ODbL-1.0 (dual; NON-COMMERCIAL clause - confirm before operational use)",
+        "citation": "Yamazaki, D. et al. (2019). MERIT Hydro: A high-resolution global hydrography map based on latest topography datasets. Water Resources Research 55, 5053-5073.",
+        "doi": "10.1029/2019WR024873",
+        "version": "v1.0.1",
+        "preprocessing_notes": "Derive the stream network from upstream drainage area, then compute Euclidean distance to the network; threshold at the T4 band half-width. Derive-then-aggregate: never resample the distance raster from a coarser network.",
+        "limitations": "~90 m cell: cannot resolve the 5-30 m buffer bands the riparian evidence specifies, so a 30 m band is scoping-grade only. Small and intermittent streams are under-represented. Non-commercial licence clause. Not for: engineering-grade buffer delineation.",
+        "description": "Global hydrography (flow direction, upstream drainage area, river width, elevation) at 3 arc-seconds, used here to derive the stream network that riparian distance is measured from.",
+        "grain_type": "grid"
+      },
+      {
+        "dataset_id": "jrc_global_surface_water_v1_4",
+        "dataset_name": "JRC Global Surface Water v1.4",
+        "analytical_module": "structural_suitability",
+        "time_period": "1984-2021",
+        "spatial_resolution_m": 30,
+        "geographic_coverage": [
+          "global"
+        ],
+        "data_format": "geotiff_cog",
+        "access_type": "gee_asset",
+        "download_url": "https://global-surface-water.appspot.com/",
+        "gee_asset_id": "JRC/GSW1_4/GlobalSurfaceWater",
+        "license": "CC-BY-4.0",
+        "citation": "Pekel, J.-F., Cottam, A., Gorelick, N., Belward, A.S. (2016). High-resolution mapping of global surface water and its long-term changes. Nature 540, 418-422.",
+        "doi": "10.1038/nature20584",
+        "version": "v1.4",
+        "preprocessing_notes": "Use the occurrence/seasonality bands to mask permanent and seasonal water bodies; complements the MERIT stream network for lakes and wide rivers at 30 m.",
+        "limitations": "Maps water SURFACES, not the channel network - narrow headwater streams are largely invisible, so it cannot stand alone as the riparian reference layer. Not for: small-stream delineation.",
+        "description": "30 m global surface-water occurrence, change and seasonality from 38 years of Landsat, used as the water-body complement to the derived stream network.",
+        "grain_type": "grid"
       }
     ],
     "T2_climate_risk": [
@@ -20941,6 +21007,63 @@
             "Stutter et al. (2019) - Riparian buffer management",
             "Sweeney & Newbold (2014) - Buffer width for stream ecological protection"
           ]
+        }
+      ],
+      "T4_suitability_mappings": [
+        {
+          "mapping_id": "riparian_buffer__natural_restored__distance_to_waterbody",
+          "nbs_id": "riparian_buffer",
+          "dataset_id": "merit_hydro_v1",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "abs_min": 50.0,
+            "abs_max": 210.0
+          },
+          "uncertainty_pct": 40.0,
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 1.0,
+          "weight_adjustable": true,
+          "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 50.0, 'abs_max': 210.0}; uncertainty ±40% from spread. Collapsed 4 citation echo(es). ",
+          "variable": "distance_to_waterbody",
+          "suitability_family_id": "riparian_buffer__natural_restored",
+          "evidence_ids": [
+            "ev_distance_to_waterbody_zhao13_1",
+            "ev_distance_to_waterbody_dalacorte20_2",
+            "ev_distance_to_waterbody_demello18_1"
+          ],
+          "n_sources": 3,
+          "corpus_n": 15,
+          "paper_support_pct": 21.6
+        },
+        {
+          "mapping_id": "riparian_buffer__planted__distance_to_waterbody",
+          "nbs_id": "riparian_buffer",
+          "dataset_id": "merit_hydro_v1",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "abs_max": 30.0
+          },
+          "uncertainty_pct": 10.0,
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 1.0,
+          "weight_adjustable": true,
+          "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 30.0}; uncertainty ±10% from spread. Collapsed 3 citation echo(es). ",
+          "variable": "distance_to_waterbody",
+          "suitability_family_id": "riparian_buffer__planted",
+          "evidence_ids": [
+            "ev_distance_to_waterbody_schultz95_1",
+            "ev_distance_to_waterbody_tiwari16_1",
+            "ev_distance_to_waterbody_cole20_1"
+          ],
+          "n_sources": 3,
+          "corpus_n": 12,
+          "paper_support_pct": 27.5
         }
       ]
     },

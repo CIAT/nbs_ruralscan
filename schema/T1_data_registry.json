@@ -916,5 +916,49 @@
     "limitations": "Modelled allocation (not surveyed); coarse ~10 km; specific tree-perennial coverage weak (use Forest Data Partnership for cocoa/coffee/palm).",
     "description": "IFPRI/IIASA Spatial Production Allocation Model (MapSPAM) v2.0 — gridded crop area, yield, production, value for 42 crops at ~10 km.",
     "grain_type": "grid"
+  },
+  {
+    "dataset_id": "merit_hydro_v1",
+    "dataset_name": "MERIT Hydro v1.0.1 (global hydrography)",
+    "analytical_module": "structural_suitability",
+    "time_period": 2019,
+    "spatial_resolution_m": 90,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff_cog",
+    "access_type": "gee_asset",
+    "download_url": "https://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_Hydro/",
+    "gee_asset_id": "MERIT/Hydro/v1_0_1",
+    "license": "CC-BY-NC-4.0 or ODbL-1.0 (dual; NON-COMMERCIAL clause - confirm before operational use)",
+    "citation": "Yamazaki, D. et al. (2019). MERIT Hydro: A high-resolution global hydrography map based on latest topography datasets. Water Resources Research 55, 5053-5073.",
+    "doi": "10.1029/2019WR024873",
+    "version": "v1.0.1",
+    "preprocessing_notes": "Derive the stream network from upstream drainage area, then compute Euclidean distance to the network; threshold at the T4 band half-width. Derive-then-aggregate: never resample the distance raster from a coarser network.",
+    "limitations": "~90 m cell: cannot resolve the 5-30 m buffer bands the riparian evidence specifies, so a 30 m band is scoping-grade only. Small and intermittent streams are under-represented. Non-commercial licence clause. Not for: engineering-grade buffer delineation.",
+    "description": "Global hydrography (flow direction, upstream drainage area, river width, elevation) at 3 arc-seconds, used here to derive the stream network that riparian distance is measured from.",
+    "grain_type": "grid"
+  },
+  {
+    "dataset_id": "jrc_global_surface_water_v1_4",
+    "dataset_name": "JRC Global Surface Water v1.4",
+    "analytical_module": "structural_suitability",
+    "time_period": "1984-2021",
+    "spatial_resolution_m": 30,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff_cog",
+    "access_type": "gee_asset",
+    "download_url": "https://global-surface-water.appspot.com/",
+    "gee_asset_id": "JRC/GSW1_4/GlobalSurfaceWater",
+    "license": "CC-BY-4.0",
+    "citation": "Pekel, J.-F., Cottam, A., Gorelick, N., Belward, A.S. (2016). High-resolution mapping of global surface water and its long-term changes. Nature 540, 418-422.",
+    "doi": "10.1038/nature20584",
+    "version": "v1.4",
+    "preprocessing_notes": "Use the occurrence/seasonality bands to mask permanent and seasonal water bodies; complements the MERIT stream network for lakes and wide rivers at 30 m.",
+    "limitations": "Maps water SURFACES, not the channel network - narrow headwater streams are largely invisible, so it cannot stand alone as the riparian reference layer. Not for: small-stream delineation.",
+    "description": "30 m global surface-water occurrence, change and seasonality from 38 years of Landsat, used as the water-body complement to the derived stream network.",
+    "grain_type": "grid"
   }
 ]
