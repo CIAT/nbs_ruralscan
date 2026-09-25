@@ -13,6 +13,7 @@ already allowed to carry them (the extractor/validator enforce that upstream).
 from __future__ import annotations
 
 import math
+import re
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -48,6 +49,52 @@ def _pct_to_deg(v: float) -> float:
 
 def _deg_to_pct(v: float) -> float:
     return round(math.tan(math.radians(v)) * 100.0, 1)
+
+
+# Unit-string synonyms. An EV unit declares its own `relationship["unit"]`; VONT declares
+# the variable's canonical unit. Most observed "mismatches" are spellings of the SAME unit
+# (degrees_c vs degC, mm_yr vs mm/year) — normalise those away so they don't trip the
+# mismatch guard below. Only a genuine scale difference (m vs km, % vs g/kg) should.
+_UNIT_SYNONYMS = {
+    "percent": {
+        "%",
+        "pct",
+        "percent",
+        "percentage",
+        "percent_tree_cover",
+        "percent_cover",
+    },
+    "degrees": {"deg", "degree", "degrees", "°"},
+    "degc": {"degc", "deg_c", "degrees_c", "degreesc", "°c", "celsius", "c"},
+    "mm/year": {"mm", "mm_yr", "mm/yr", "mm_per_year", "mm/year", "mm_year", "mm/a"},
+    "ph_units": {"ph", "ph_units", "phunits"},
+    "m": {"m", "metre", "metres", "meter", "meters"},
+    "km": {"km", "kilometre", "kilometres", "kilometer", "kilometers"},
+    "unitless": {"unitless", "dimensionless", "index", "ratio"},
+}
+_UNIT_CANON = {alias: canon for canon, al in _UNIT_SYNONYMS.items() for alias in al}
+# canonical units that mean "whatever the evidence used" — never mismatch-checked
+_UNIT_WILDCARDS = {"", "native", "mixed"}
+_CONV_RULE = re.compile(r"^\s*([*/])\s*([0-9]*\.?[0-9]+)\s*$")
+
+
+def _normalise_unit(raw: str) -> str:
+    """Fold a declared unit string to a comparable token ('degrees (inferred)' → 'degrees')."""
+    s = str(raw or "").strip().lower()
+    s = re.sub(r"\s*\(.*?\)\s*", " ", s).strip()  # drop parentheticals
+    s = s.replace(" ", "_").strip("_")
+    return _UNIT_CANON.get(s, s)
+
+
+def _apply_conversion(value: float, rule: str) -> float | None:
+    """Apply a VONT-declared conversion expression ('/1000', '*100'). None if unparseable."""
+    m = _CONV_RULE.match(str(rule))
+    if not m:
+        return None
+    factor = float(m.group(2))
+    if factor == 0:
+        return None
+    return value / factor if m.group(1) == "/" else value * factor
 
 
 # Common non-canonical relationship-key aliases → canonical shape keys. Extraction should
@@ -94,14 +141,49 @@ def normalize_shape_keys(rel: dict) -> dict:
     return out
 
 
-def _harmonise(unit: EvidenceUnit, canonical_unit: str) -> dict[str, float]:
-    """Return the unit's threshold params converted to the canonical unit."""
-    rel = normalize_shape_keys(unit.relationship or {})
-    src_unit = str(rel.get("unit", canonical_unit)).lower()
+def _harmonise(
+    unit: EvidenceUnit,
+    canonical_unit: str,
+    conversions: dict[str, str] | None = None,
+    rep: SynthesisReport | None = None,
+) -> dict[str, float]:
+    """Return the unit's threshold params converted to the canonical unit.
 
-    canon = canonical_unit.lower()
-    conv_pct_to_deg = (canon in {"degrees", "deg"}) and src_unit in _PCT_UNITS
-    conv_deg_to_pct = (canon in _PCT_UNITS) and src_unit in {"degrees", "deg"}
+    A unit that declares a scale the canonical unit does not share (metres against a
+    canonical km, % against g/kg) is CONVERTED when `VONT.unit_conversions` declares the
+    rule, and REFUSED otherwise — never passed through, which would emit the raw number
+    under the wrong unit label (caught 2026-09: riparian buffer widths in m synthesised
+    as km, a 1000x error on the opportunity surface).
+    """
+    rel = normalize_shape_keys(unit.relationship or {})
+    src_unit = _normalise_unit(rel.get("unit", canonical_unit))
+    canon = _normalise_unit(canonical_unit)
+
+    conv_pct_to_deg = canon == "degrees" and src_unit in _PCT_UNITS
+    conv_deg_to_pct = canon in _PCT_UNITS and src_unit == "degrees"
+
+    rule: str | None = None
+    if (
+        src_unit != canon
+        and canon not in _UNIT_WILDCARDS
+        and not (conv_pct_to_deg or conv_deg_to_pct)
+    ):
+        raw_src = str(rel.get("unit", "")).strip().lower()
+        for key in (f"{src_unit}->{canon}", f"{raw_src}->{canonical_unit.lower()}"):
+            rule = (conversions or {}).get(key)
+            if rule:
+                break
+        if not rule:
+            if rep is not None and any(
+                k in rel and isinstance(rel[k], (int, float)) for k in _PARAMS
+            ):
+                rep.dropped.append(
+                    (
+                        unit.evidence_id,
+                        f"unit mismatch {src_unit or '?'}→{canon}, no VONT conversion rule",
+                    )
+                )
+            return {}
 
     out: dict[str, float] = {}
     for k in _PARAMS:
@@ -111,8 +193,22 @@ def _harmonise(unit: EvidenceUnit, canonical_unit: str) -> dict[str, float]:
                 out[k] = _pct_to_deg(val)
             elif conv_deg_to_pct:
                 out[k] = _deg_to_pct(val)
+            elif rule:
+                converted = _apply_conversion(val, rule)
+                if converted is None:
+                    if rep is not None:
+                        rep.dropped.append(
+                            (
+                                unit.evidence_id,
+                                f"unparseable VONT conversion rule {rule!r}",
+                            )
+                        )
+                    return {}
+                out[k] = converted
             else:
                 out[k] = val
+    if rule and out and rep is not None:
+        rep.notes.append(f"{unit.evidence_id}: {src_unit}→{canon} via {rule}")
     return out
 
 
@@ -139,6 +235,17 @@ def _weight(unit: EvidenceUnit, tier: str, category: str = "") -> float:
     return w
 
 
+def _round(v: float) -> float:
+    """Round to 1 dp for ordinary magnitudes, to 3 significant figures below 1.
+
+    A flat 1 dp silently annihilates small-magnitude thresholds: 30 m expressed in the
+    canonical km is 0.03, which `round(v, 1)` turns into 0.0 (caught 2026-09, riparian).
+    """
+    if v == 0 or abs(v) >= 1:
+        return round(v, 1)
+    return round(v, 2 - int(math.floor(math.log10(abs(v)))))
+
+
 def _weighted_median(pairs: list[tuple[float, float]]) -> float | None:
     if not pairs:
         return None
@@ -150,8 +257,8 @@ def _weighted_median(pairs: list[tuple[float, float]]) -> float | None:
     for v, w in pairs:
         acc += w
         if acc >= total / 2:
-            return round(v, 1)
-    return round(pairs[-1][0], 1)
+            return _round(v)
+    return _round(pairs[-1][0])
 
 
 def _reconcile(
@@ -256,6 +363,7 @@ def synthesise_t4_row(
     context_field: str = "aez",
     override_reltol: float = 0.25,
     categories: dict[str, str] | None = None,
+    unit_conversions: dict[str, str] | None = None,
 ) -> tuple[dict[str, Any], SynthesisReport]:
     """Reconcile evidence units for one (family × variable) into a T4 row."""
     rep = SynthesisReport()
@@ -289,7 +397,11 @@ def synthesise_t4_row(
 
     # 3) harmonise + contributions
     contribs = [
-        (u, tiers.get(u.source_id, "medium"), _harmonise(u, canonical_unit))
+        (
+            u,
+            tiers.get(u.source_id, "medium"),
+            _harmonise(u, canonical_unit, unit_conversions, rep),
+        )
         for u in kept
     ]
     global_params = _reconcile(contribs, categories)

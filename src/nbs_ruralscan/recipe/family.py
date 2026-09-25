@@ -51,6 +51,7 @@ def synthesise_family(
     floor_pct: float = 20.0,
     allow_crop_scope: bool = False,
     categories: dict[str, str] | None = None,
+    unit_conversions: dict[str, dict[str, str]] | None = None,
 ) -> FamilyResult:
     """Reconcile all of a family's evidence into enriched T4 rows + a selection table.
 
@@ -61,6 +62,7 @@ def synthesise_family(
     canonical_units = canonical_units or {}
     dataset_ids = dataset_ids or {}
     categories = categories or {}
+    unit_conversions = unit_conversions or {}
 
     # exclude soft-deleted (QA-dropped) units from all synthesis + support
     units = [u for u in units if getattr(u, "review_state", "") != "dropped"]
@@ -89,6 +91,7 @@ def synthesise_family(
             dataset_id=dataset_ids.get(variable),
             allow_crop_scope=allow_crop_scope,
             categories=categories,
+            unit_conversions=(unit_conversions or {}).get(variable),
         )
         if not row[
             "relationship_params"
@@ -115,6 +118,8 @@ def save_family(result: FamilyResult, path: str | Path) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        json.dumps(result.rows, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(result.rows, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+        newline="\n",
     )
     return path

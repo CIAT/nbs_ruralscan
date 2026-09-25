@@ -2149,20 +2149,23 @@
       "river proximity",
       "stream proximity"
     ],
-    "canonical_unit": "km",
+    "canonical_unit": "m",
     "unit_conversions": {
-      "m->km": "/1000"
+      "km->m": "*1000"
     },
     "group_id": "hydrological",
-    "candidate_dataset_ids": [],
-    "min_meaningful_resolution_m": 100,
+    "candidate_dataset_ids": [
+      "merit_hydro_v1",
+      "jrc_global_surface_water_v1_4"
+    ],
+    "min_meaningful_resolution_m": 30,
     "resolution_sensitivity": "medium",
     "derive_then_aggregate": true,
     "context_sensitivity": "low",
     "review_status": "pending_review",
-    "raised_by": "issue_103",
+    "raised_by": "issue_103; unit revised by the riparian T4 sweep 2026-09-25",
     "raised_date": "2026-06-24",
-    "comment": "Euclidean distance to surface water. Dataset binding pending. #103."
+    "comment": "Outward distance from the watercourse. For riparian_buffer (spatial_product_type=zonal_linear) this is the band half-width that defines the opportunity zone, and ALL 13 evidence units state it in metres (statutory reserves 30-50 m, design widths 5-30 m, delineation maxima 200-210 m) - so the canonical unit is m, not km (changed 2026-09-25; the variable is used by no other NbS, no BIND row and no other recipe, so the change has no blast radius). min_meaningful_resolution lowered 100->30 to match the evidence. CAVEAT for dataset-fitness sign-off: a 30 m band cannot be resolved from a ~90 m global stream network - record as a scoping-grade limitation. Distinct from riparian_buffer_width, which is the width of the EXISTING buffer (a restoration-priority indicator, not the zone definition). #103."
   },
   {
     "canonical_variable_id": "distance_to_cropland",
@@ -2209,5 +2212,74 @@
     "raised_by": "issue_103",
     "raised_date": "2026-06-24",
     "comment": "Euclidean distance to forest/tree cover. Dataset binding pending. #103."
+  },
+  {
+    "canonical_variable_id": "riparian_buffer_width",
+    "label": "Riparian buffer width",
+    "aliases": [
+      "buffer width",
+      "mean buffer width",
+      "MBW",
+      "riparian strip width"
+    ],
+    "canonical_unit": "m",
+    "unit_conversions": {
+      "km->m": "*1000"
+    },
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_riparian_buffer_width_zhao13_1",
+    "raised_date": "2026-09-25",
+    "comment": "Width of the EXISTING riparian vegetation strip per reach/sub-basin (an indicator of restoration priority, not the design width of a new buffer). Raised by the riparian T4 sweep; group placement + dataset binding need sign-off. Narrow linear feature - 30 m is the coarsest meaningful run resolution."
+  },
+  {
+    "canonical_variable_id": "riparian_vegetation_gap",
+    "label": "Riparian buffer gap ratio",
+    "aliases": [
+      "buffer gap ratio",
+      "BGR",
+      "buffer discontinuity",
+      "unbuffered stream length"
+    ],
+    "canonical_unit": "percent",
+    "unit_conversions": {
+      "fraction->percent": "*100"
+    },
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_riparian_vegetation_gap_zhao13_1",
+    "raised_date": "2026-09-25",
+    "comment": "Share of stream length carrying no riparian buffer. Continuity outranks width in the ES literature (cole20), so gaps are the priority restoration target. Dataset binding pending."
+  },
+  {
+    "canonical_variable_id": "regeneration_potential",
+    "label": "Natural regeneration potential",
+    "aliases": [
+      "passive restoration potential",
+      "soil seed bank capacity",
+      "propagule dispersal capacity"
+    ],
+    "canonical_unit": "categorical",
+    "unit_conversions": {},
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 100,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "ev_regeneration_potential_gonzalez15_1",
+    "raised_date": "2026-09-25",
+    "comment": "Whether passive regeneration can be expected vs requiring active reintroduction - gated by soil seed bank depletion and limited propagule dispersal. NAME COLLISION: rootstock_presence already carries 'regeneration potential' as an alias, but that variable is FMNR living-stump specific. Reviewers to rule: keep distinct or merge."
   }
 ]

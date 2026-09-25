@@ -167,3 +167,61 @@ def test_uncertainty_spread_multiple_parameters():
     # Reconciled parameters: opt_low = 11, abs_max = 35.
     # Max spread pct is from abs_max: (40 - 30) / 35 * 100 = 28.57% -> 29.0
     assert row["uncertainty_pct"] == 29.0
+
+
+def test_harmonise_applies_declared_conversion():
+    """A declared VONT conversion is applied — m thresholds against a canonical km."""
+    u = _sample_unit(relationship={"abs_min": 30, "abs_max": 210, "unit": "m"})
+    h = _harmonise(u, "km", {"m->km": "/1000"})
+    assert h["abs_min"] == 0.03 and h["abs_max"] == 0.21
+
+
+def test_harmonise_refuses_unconvertible_mismatch():
+    """No declared rule → refuse, never emit the raw number under the wrong unit label.
+
+    The 2026-09 riparian defect: buffer widths in m were emitted as km (1000x).
+    """
+    rep = SynthesisReport()
+    u = _sample_unit(relationship={"abs_max": 30, "unit": "m"})
+    assert _harmonise(u, "km", None, rep) == {}
+    assert rep.dropped and "unit mismatch" in rep.dropped[0][1]
+    # a categorical canonical unit is not a home for a metre threshold either
+    assert (
+        _harmonise(
+            _sample_unit(relationship={"abs_max": 1, "unit": "m"}), "ordinal_1_7"
+        )
+        == {}
+    )
+
+
+def test_harmonise_unit_spellings_are_not_mismatches():
+    """degrees_c/degC, mm_yr/mm-per-year, %/percent are the same unit, not a rescale."""
+    for src, canon in (
+        ("degrees_c", "degC"),
+        ("mm_yr", "mm/year"),
+        ("mm_per_year", "mm/year"),
+        ("percent_tree_cover", "percent"),
+        ("%", "percent"),
+        ("degrees (inferred)", "degrees"),
+        ("pH", "ph_units"),
+    ):
+        u = _sample_unit(relationship={"abs_max": 42, "unit": src})
+        assert _harmonise(u, canon) == {"abs_max": 42.0}, f"{src} vs {canon}"
+
+
+def test_harmonise_native_canonical_unit_passes_through():
+    """A variable with no VONT entry (canonical 'native') must not be mismatch-checked."""
+    u = _sample_unit(relationship={"abs_max": 7, "unit": "mm"})
+    assert _harmonise(u, "native") == {"abs_max": 7.0}
+
+
+def test_small_magnitude_thresholds_survive_rounding():
+    """A flat 1 dp annihilated sub-unit thresholds (30 m as 0.03 km -> 0.0)."""
+    from nbs_ruralscan.recipe.synthesis import _round
+
+    assert _round(0.03) == 0.03
+    assert _round(0.0005) == 0.0005
+    assert _round(0.21) == 0.21
+    assert _round(44.44) == 44.4
+    assert _round(0.0) == 0.0
+    assert _round(-0.03) == -0.03

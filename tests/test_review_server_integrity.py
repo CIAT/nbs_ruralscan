@@ -7,7 +7,9 @@ from nbs_ruralscan.schema_tools import review_server as RS
 def test_clean_utf8_lf_is_ok(tmp_path):
     p = tmp_path / "EV.csv"
     p.write_text(
-        "evidence_id,quote\ne1,café plantation\n", encoding="utf-8"
+        "evidence_id,quote\ne1,café plantation\n",
+        encoding="utf-8",
+        newline="\n",  # explicit: write_text would emit CRLF on Windows
     )  # UTF-8 + LF
     assert RS.integrity_problems([p]) == []
 
