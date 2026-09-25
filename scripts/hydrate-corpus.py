@@ -12,8 +12,15 @@ fails (it verifies every quote against the cached artifact). This script fetches
   -> `.html`. These have NO `library_path`, so the PDF pass alone leaves them missing and
   Apply blocks on them (#191, e.g. the saraheb3 GEE tool sources).
 
+A source being *swept* does not have an `SRC` row yet (the SRC row is written at the central
+merge, after extraction), so the SRC pass alone cannot hydrate it. `--queue` adds the
+acquisition queue's **acquired** rows (`pipeline/acquisition_queue.csv` ->
+`target_library_path`), which is what an extraction sweep needs. See `docs/HYDRATION.md`.
+
 Usage:
-    python3 scripts/hydrate-corpus.py
+    python3 scripts/hydrate-corpus.py                  # SRC rows (review / guardrail)
+    python3 scripts/hydrate-corpus.py --queue          # + acquired queue rows (sweeps)
+    python3 scripts/hydrate-corpus.py --queue --nbs forest_restoration
 
 The library root defaults to Pete's CGIAR OneDrive mount; override with NBS_LIBRARY_ROOT if
 your OneDrive folder name differs (e.g. on Windows):
@@ -24,6 +31,7 @@ Code/web hydration runs even without a library root (it only needs network).
 
 from __future__ import annotations
 
+import argparse
 import csv
 import os
 import re
@@ -34,6 +42,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CACHE = ROOT / ".cache" / "corpus"
 SRC_CSV = ROOT / "schema" / "registers" / "SRC_source_register.csv"
+QUEUE_CSV = ROOT / "pipeline" / "acquisition_queue.csv"
 _SNAPSHOT_EXTS = (".pdf", ".txt", ".html", ".md")
 
 
@@ -77,7 +86,74 @@ def _cached(sid: str) -> bool:
     return any((CACHE / (sid + ext)).exists() for ext in _SNAPSHOT_EXTS)
 
 
-def main() -> int:
+def hydrate_queue(root: Path | None, nbs: str | None) -> None:
+    """Copy the acquisition queue's `acquired` PDFs into the cache (pre-SRC sweep sources)."""
+    if not QUEUE_CSV.exists():
+        print(f"acquisition queue not found: {QUEUE_CSV}")
+        return
+    with QUEUE_CSV.open(newline="", encoding="utf-8") as f:
+        rows = [
+            r
+            for r in csv.DictReader(f)
+            if not nbs or (r.get("nbs_id") or "").strip() == nbs
+        ]
+
+    copied = already = 0
+    missing: list[str] = []
+    pending: list[tuple[str, str]] = []
+    for r in rows:
+        sid = (r.get("source_id") or "").strip()
+        status = (r.get("status") or "").strip().lower()
+        if not sid or status == "duplicate":
+            continue
+        if status != "acquired":  # pending / unacquired — not in the library yet
+            pending.append((sid, (r.get("blocker") or "not acquired").strip()))
+            continue
+        if _cached(sid):
+            already += 1
+            continue
+        lib_path = (r.get("target_library_path") or "").strip()
+        if root is None or not lib_path:
+            missing.append(f"{sid} (set NBS_LIBRARY_ROOT)" if root is None else sid)
+            continue
+        src_pdf = root / lib_path
+        if not src_pdf.exists():
+            missing.append(sid)
+            continue
+        try:
+            shutil.copy2(src_pdf, CACHE / (sid + ".pdf"))
+            copied += 1
+        except Exception as e:  # noqa: BLE001
+            print(f"  ! failed to copy {sid}: {e}")
+            missing.append(sid)
+
+    scope = nbs or "all NbS"
+    print("")
+    print(f"acquisition queue ({scope})")
+    print(f"queue PDF copied    : {copied}")
+    print(f"queue already cached: {already}")
+    for sid, blocker in pending:
+        print(f"SKIP {sid} - not acquired ({blocker})")
+    if missing:
+        print(f"queue MISSING from library: {len(missing)}")
+        for sid in missing:
+            print(f"  - {sid}")
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--queue",
+        action="store_true",
+        help="also hydrate the acquisition queue's `acquired` rows (pre-SRC sweep sources)",
+    )
+    ap.add_argument(
+        "--nbs",
+        default=None,
+        help="restrict --queue to one nbs_id (e.g. forest_restoration)",
+    )
+    args = ap.parse_args(argv)
+
     if not SRC_CSV.exists():
         print(f"SRC register not found: {SRC_CSV}")
         return 0
@@ -151,6 +227,9 @@ def main() -> int:
         )
         for sid in code_failed:
             print(f"  - {sid}")
+
+    if args.queue:
+        hydrate_queue(root, args.nbs)
     return 0
 
 
