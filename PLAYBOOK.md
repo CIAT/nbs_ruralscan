@@ -58,7 +58,9 @@ A source that is screened-in but **paywalled or bot-blocked** can't be cached au
 1. Add a row to `pipeline/acquisition_queue.csv` (metadata only — `source_id`, citation, doi, url, `blocker`, `access_route`, `target_library_path`, `status=pending`, `assigned`).
 2. Open/append a GitHub issue mirroring the queue for the assignee (e.g. #205). **Metadata only — no PDFs.**
 3. The assignee downloads (browser for OA / CGIAR institutional access for paywalled) → saves to the **SharePoint library** at `target_library_path` (exact `<source_id>.pdf` name) → marks `status=acquired`.
-4. Then hydrate (`hydrate-corpus.py`), add the `SRC` row, and extract under the current ruleset.
+4. **Hydrate** the cached corpus from the library — `python3 scripts/hydrate-corpus.py --queue --nbs <nbs_id>` (the queue rows have no `SRC` row yet, so the default SRC-driven pass can't see them; see `docs/HYDRATION.md`).
+5. **Extract** under the current ruleset (staging-only agents, quotes sliced from the cached PDF).
+6. The **`SRC` row is created at the central merge** — from the verified queue metadata, alongside the EV rows, with first-pass `benchmark_tier` flagged for QA. Don't add it beforehand: a source that has never been swept has nothing to register.
 
 ### Review flagged evidence (QA/QC → main)
 

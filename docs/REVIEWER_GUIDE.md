@@ -22,6 +22,7 @@ local server on your machine. It's ~3 commands. You need **write access to the r
    python3 scripts/hydrate-corpus.py
    ```
    Set `NBS_LIBRARY_ROOT="<your OneDrive path>/1_Projects"` first if your OneDrive folder name differs (see the restricted-sources section below).
+   (Running an **extraction sweep** rather than a review? Those sources are pre-`SRC` and need `--queue` — see `docs/HYDRATION.md`.)
 
 ## Each review session
 
