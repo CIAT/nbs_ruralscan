@@ -115,6 +115,8 @@ def save_family(result: FamilyResult, path: str | Path) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        json.dumps(result.rows, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(result.rows, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+        newline="\n",
     )
     return path

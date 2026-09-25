@@ -371,6 +371,7 @@ def save_units(units: list[EvidenceUnit], path: str | Path) -> Path:
     path.write_text(
         json.dumps([u.to_dict() for u in units], ensure_ascii=False, indent=2),
         encoding="utf-8",
+        newline="\n",
     )
     return path
 

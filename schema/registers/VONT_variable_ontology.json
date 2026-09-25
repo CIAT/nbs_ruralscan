@@ -2209,5 +2209,74 @@
     "raised_by": "issue_103",
     "raised_date": "2026-06-24",
     "comment": "Euclidean distance to forest/tree cover. Dataset binding pending. #103."
+  },
+  {
+    "canonical_variable_id": "riparian_buffer_width",
+    "label": "Riparian buffer width",
+    "aliases": [
+      "buffer width",
+      "mean buffer width",
+      "MBW",
+      "riparian strip width"
+    ],
+    "canonical_unit": "m",
+    "unit_conversions": {
+      "km->m": "*1000"
+    },
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_riparian_buffer_width_zhao13_1",
+    "raised_date": "2026-09-25",
+    "comment": "Width of the EXISTING riparian vegetation strip per reach/sub-basin (an indicator of restoration priority, not the design width of a new buffer). Raised by the riparian T4 sweep; group placement + dataset binding need sign-off. Narrow linear feature - 30 m is the coarsest meaningful run resolution."
+  },
+  {
+    "canonical_variable_id": "riparian_vegetation_gap",
+    "label": "Riparian buffer gap ratio",
+    "aliases": [
+      "buffer gap ratio",
+      "BGR",
+      "buffer discontinuity",
+      "unbuffered stream length"
+    ],
+    "canonical_unit": "percent",
+    "unit_conversions": {
+      "fraction->percent": "*100"
+    },
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_riparian_vegetation_gap_zhao13_1",
+    "raised_date": "2026-09-25",
+    "comment": "Share of stream length carrying no riparian buffer. Continuity outranks width in the ES literature (cole20), so gaps are the priority restoration target. Dataset binding pending."
+  },
+  {
+    "canonical_variable_id": "regeneration_potential",
+    "label": "Natural regeneration potential",
+    "aliases": [
+      "passive restoration potential",
+      "soil seed bank capacity",
+      "propagule dispersal capacity"
+    ],
+    "canonical_unit": "categorical",
+    "unit_conversions": {},
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 100,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "ev_regeneration_potential_gonzalez15_1",
+    "raised_date": "2026-09-25",
+    "comment": "Whether passive regeneration can be expected vs requiring active reintroduction - gated by soil seed bank depletion and limited propagule dispersal. NAME COLLISION: rootstock_presence already carries 'regeneration potential' as an alias, but that variable is FMNR living-stump specific. Reviewers to rule: keep distinct or merge."
   }
 ]

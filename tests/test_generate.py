@@ -33,4 +33,4 @@ def test_committed_json_is_in_sync():
 
 def test_roundtrip_is_valid_json():
     for jp in SCHEMA.rglob("*.json"):
-        json.loads(jp.read_text())  # raises if malformed
+        json.loads(jp.read_text(encoding="utf-8"))  # raises if malformed

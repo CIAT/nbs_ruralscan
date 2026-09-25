@@ -173,7 +173,7 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
 
     changed = [dest_path]
     if not check:
-        dest_path.write_text(text, encoding="utf-8")
+        dest_path.write_text(text, encoding="utf-8", newline="\n")
     return changed
 
 
@@ -474,7 +474,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
 
     changed = [dest_path]
     if not check:
-        dest_path.write_text(text, encoding="utf-8")
+        dest_path.write_text(text, encoding="utf-8", newline="\n")
     return changed
 
 
@@ -584,7 +584,7 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
                 continue
             changed.append(json_path)
             if not check:
-                json_path.write_text(text, encoding="utf-8")
+                json_path.write_text(text, encoding="utf-8", newline="\n")
 
     # Compile the progress.json report
     changed.extend(generate_progress_report(schema_root, check=check))
