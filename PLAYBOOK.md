@@ -46,7 +46,7 @@ Pipeline architecture is in [`docs/pipeline.html`](./docs/pipeline.html). The fu
 4. Screen and select candidates using the **six-axis credibility rubric** (methodological transparency, evidence type, context AEZ/LMIC relevance, recency, influence).
 5. Compile the screening results in the PRISMA-lite discovery log under `methodology/discovery_logs/<nbs_id>_<table>.md`.
 6. Add the approved candidates to `SRC_source_register.csv` and log detailed evidence extraction quotes in `EV_evidence_register.csv`.
-7. Link the evidence IDs to the recipe table (e.g. `T3_nbs_hazard_farming.csv` or `T4_suitability_rules.csv`).
+7. Link the evidence IDs to the recipe table (`T4_suitability_mappings.csv` — T3/T6 are deferred, 2026-09).
 8. Run `python3 src/nbs_ruralscan/schema_tools/generate.py schema` to rebuild the JSON files and update the dashboard logs view.
 9. Verify using `python3 src/nbs_ruralscan/schema_tools/check_alignment.py` and run tests (`uv run pytest`).
 10. Raise a PR using the PR template.
