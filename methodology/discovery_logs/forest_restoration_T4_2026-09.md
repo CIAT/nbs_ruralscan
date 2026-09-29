@@ -72,3 +72,21 @@ Three sources independently give a canopy-cover ceiling for the opportunity spac
 
 Human QA of the 30 units; sign-off on the 12 first-pass `benchmark_tier` values; the
 `/sweep-retro` retrospective; the 9 DOI-gated sources.
+
+## Deep pass (2026-09-29, run `deep_pass_2026-09`) — **+5 units, 30 → 35**
+
+Full-variable re-read of all 32 sources with whole tables. **Much smaller gain than water
+harvesting**, and the reason is the corpus rather than the method: the first pass had already
+caught the T4 content, and the remainder is outcome ecology. The estimate of +10-15 was too
+high.
+
+New: a **75% slope ceiling for planting** (Oliveira 2026 — a paper the first pass wrongly
+wrote off as results-description), a protected-area hard mask (Zomer 2008), local forest
+density within 1 km as a positive driver of natural regeneration (Williams 2024), and two
+enabling-environment units from Chazdon & Guariguata — a **legal clearing threshold** (in Pará,
+regrowth under 10 m²/ha basal area may be legally cleared, so passive regeneration is at risk
+until it crosses it) and the need to compensate regeneration stewards.
+
+`landscape_forest_cover` is a new `VONT` variable, deliberately separate from
+`tree_canopy_cover`: on-site canopy must be LOW (<25-30%) for land to be restorable, while
+surrounding forest being HIGH is good. One variable would carry opposite signs.

@@ -2410,7 +2410,8 @@
     ],
     "canonical_unit": "mm/hour",
     "unit_conversions": {
-      "m/day->mm/hour": "*41.667"
+      "m/day->mm/hour": "*41.667",
+      "cm/day->mm/hour": "/2.4"
     },
     "group_id": "edaphic",
     "candidate_dataset_ids": [],
@@ -2422,5 +2423,56 @@
     "raised_by": "ev_wh_soil_permeability_chen17_1",
     "raised_date": "2026-09-29",
     "comment": "Rate at which water enters the soil. Directional both ways: recharge structures and slope-separated terraces WANT permeability, storage structures (farm ponds) want the opposite. Distinct from the existing soil_permeability_sensitivity index."
+  },
+  {
+    "canonical_variable_id": "clay_content",
+    "label": "Soil clay content",
+    "aliases": [
+      "% clay",
+      "clay fraction",
+      "clay percentage"
+    ],
+    "canonical_unit": "percent",
+    "unit_conversions": {
+      "fraction->percent": "*100",
+      "g/kg->percent": "/10"
+    },
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "soilgrids_250m"
+    ],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wh_clay_content_kahinda08_1",
+    "raised_date": "2026-09-29",
+    "comment": "Percentage clay. Split out of soil_texture (a CLASS variable) because water-harvesting sources rank suitability on % clay directly (Kahinda 2008, Krois & Schulte 2014), and the unit guard correctly refused percent against a class. Directional by structure: in-field RWH peaks at 15-35% clay, ex-field at 35-55%."
+  },
+  {
+    "canonical_variable_id": "landscape_forest_cover",
+    "label": "Surrounding-landscape forest cover",
+    "aliases": [
+      "local forest density",
+      "forest cover within radius",
+      "landscape forest cover"
+    ],
+    "canonical_unit": "percent",
+    "unit_conversions": {
+      "fraction->percent": "*100"
+    },
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [
+      "hansen_treecover2000"
+    ],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_fr_landscape_forest_cover_williams24_1",
+    "raised_date": "2026-09-29",
+    "comment": "Forest cover in the SURROUNDING landscape (e.g. within a 1 km radius) as a seed and disperser supply for natural regeneration. Deliberately NOT tree_canopy_cover: on-site canopy must be LOW for land to be in the restoration opportunity space (<25-30%), while surrounding forest cover being HIGH is good - one variable would carry opposite signs."
   }
 ]
