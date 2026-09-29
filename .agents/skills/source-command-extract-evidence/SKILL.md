@@ -222,6 +222,20 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     page + what it says) instead of forcing a stitched quote (defect #5). A sentence that
     straddles a page break is likewise unquotable.
 
+19. **Do not let the quote SPAN open on a trend / study-site clause -> `span_bleed`** (2026-09
+    forest-restoration sweep). A span that starts a sentence or two before the criterion
+    ("forest cover increased in the landscape... To generate the regeneration potential, this
+    radius of 5 km was maintained") trips `check_scope` on the OPENING clause and gets
+    auto-quarantined, even though the rule it carries is sound. Start the slice AT the
+    criterion sentence; include the mechanism only if it sits inside the same span. Detected
+    deterministically: `check_scope` now emits the advisory `span_bleed` (carrying the
+    original signal in `section_signal`) when a section signal fires but the quote also
+    contains explicit decision language, and `quarantine.py` does NOT auto-drop it -- the
+    reviewer RE-SLICES instead of dropping. **The narrowness is the point**: a quantified
+    RESULT with no decision language ("98.1% of cells ... occur within 300 m of a forest
+    edge") is not a span bleed, stays hard-flagged, and needs a human to judge whether a
+    measured result may stand as a suitability claim at all.
+
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
 `check_species.py` (species mis-tag), `quarantine.py` (auto-soft-deletes off-scope +

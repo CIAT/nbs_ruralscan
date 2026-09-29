@@ -181,3 +181,59 @@ def test_site_context_keeps_generalising_rules(tmp_path):
         ],
     )
     assert [f for f in check(p) if f["signal"] == "site_context"] == []
+
+
+def test_span_bleed_when_the_quote_still_carries_the_rule(tmp_path):
+    """FR sweep 2026-09: the span opened on a trend clause, but the criterion follows.
+
+    The claim is fine and the remedy is to re-slice, so this is reported as the advisory
+    `span_bleed` rather than the hard section signal that would auto-quarantine it.
+    """
+    p = _write(
+        tmp_path,
+        [
+            {
+                "evidence_id": "ev_bleed",
+                "variable": "distance_to_forest",
+                "use_role": "structural_suitability",
+                "quote": (
+                    "forest cover increased in the landscape, with more substantial "
+                    "effects within a radius of 5 km. To generate the regeneration "
+                    "potential, this radius of 5 km was maintained, and a minimum "
+                    "fragment size of 100 ha was considered."
+                ),
+            }
+        ],
+    )
+    flags = check(p)
+    assert len(flags) == 1
+    assert flags[0]["signal"] == "span_bleed"
+    assert flags[0]["section_signal"] == "trend_description"
+
+
+def test_quantified_result_without_decision_language_stays_hard_flagged(tmp_path):
+    """A RESULT is not a span bleed: no decision marker, so the section signal stands."""
+    p = _write(
+        tmp_path,
+        [
+            {
+                "evidence_id": "ev_result",
+                "variable": "distance_to_forest",
+                "use_role": "structural_suitability",
+                "quote": (
+                    "out of a random sample of 62,493 grid cells across the study "
+                    "region, 98.1% of cells with a potential of >0.5 occur within "
+                    "300 m of a forest edge."
+                ),
+            }
+        ],
+    )
+    flags = check(p)
+    assert len(flags) == 1
+    assert flags[0]["signal"] == "study_site"
+
+
+def test_span_bleed_is_advisory_not_auto_quarantined(tmp_path):
+    from nbs_ruralscan.schema_tools.quarantine import _ADVISORY_ONLY
+
+    assert "span_bleed" in _ADVISORY_ONLY

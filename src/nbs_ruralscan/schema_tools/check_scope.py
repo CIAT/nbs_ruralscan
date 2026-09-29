@@ -31,6 +31,21 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 
+# A quote can trip a section signal and STILL carry the rule — the span simply opened on a
+# trend/site clause before reaching the criterion sentence ("forest cover increased ... To
+# generate the regeneration potential, this radius of 5 km was maintained"). The claim is
+# fine; the SPAN is the defect, and the remedy is to re-slice, not to drop. Detected by an
+# explicit decision marker (catalogue #19, FR sweep 2026-09) and reported as the advisory
+# `span_bleed` so the reviewer re-slices instead of the guard auto-quarantining a real rule.
+# Deliberately narrow: a quantified RESULT with no decision language ("98.1% of cells ...
+# occur within 300 m") is NOT a span bleed and stays hard-flagged.
+_RULE_MARKER = re.compile(
+    r"\b(we set|was set|we excluded|were excluded|we applied|was applied|we used"
+    r"|was used as|threshold|criteri|screen(ed)? (out|for)|was maintained"
+    r"|defined here as|buffer distance|minimum (width|size|fragment)|binary screen)\b",
+    re.I,
+)
+
 # off-scope section signals (case-insensitive), grouped by the defect they catch
 _SIGNALS: dict[str, re.Pattern] = {
     "study_site": re.compile(
@@ -189,10 +204,12 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
                 m = pat.search(quote)
                 if m:
                     s = max(0, m.start() - 20)
+                    bleed = _RULE_MARKER.search(quote) is not None
                     flags.append(
                         {
                             "evidence_id": r["evidence_id"],
-                            "signal": name,
+                            "signal": "span_bleed" if bleed else name,
+                            "section_signal": name,
                             "snippet": quote[s : m.end() + 20].strip(),
                         }
                     )
