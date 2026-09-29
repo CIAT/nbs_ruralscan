@@ -90,3 +90,23 @@ until it crosses it) and the need to compensate regeneration stewards.
 `landscape_forest_cover` is a new `VONT` variable, deliberately separate from
 `tree_canopy_cover`: on-site canopy must be LOW (<25-30%) for land to be restorable, while
 surrounding forest being HIGH is good. One variable would carry opposite signs.
+
+
+## DOI-unblocked pass (2026-09-29)
+
+PR #253 recovered DOIs printed on 21 cached library PDFs (Crossref round-trip, confirmed at PR
+review; Nyamadzawo 2013 was rejected in review because the library file is the wrong paper,
+and one FR row was a duplicate of Zomer 2008). The remaining sources were re-read with
+full-table bundles. Most are effect or impact studies (T3/T6 material, deferred), so they
+yield no T4 rule.
+
+- **del Campo et al. 2021 — 1 unit, `active_planting`, species_specific (*Pinus pinaster*)**:
+  survival improves only where soil depth is above 30–35 cm. Routed out of the practice
+  surface by `claim_scope` and kept for the species layer.
+- **Fahrudin et al. 2024 — 1 unit, `active_planting`**: planting targets are defined as
+  non-forested or low-forest-cover land (a land-cover inclusion rule).
+- Screened, no T4 rule: Cao 2010 (the only criterion is a programme-eligibility rule), the
+  IUFRO climate-adaptive guidelines (727 pages — forest *definitions*, nursery and species
+  guidance; no practice-level siting threshold), the 2007 Scottish farmland hotspots (benefit
+  weights, not suitability), the 2021 large-seedling meta-analysis, the 2023 planting-methods
+  study, and the 2008 portfolio-theory study.
