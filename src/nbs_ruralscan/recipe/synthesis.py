@@ -75,6 +75,19 @@ _UNIT_SYNONYMS = {
 _UNIT_CANON = {alias: canon for canon, al in _UNIT_SYNONYMS.items() for alias in al}
 # canonical units that mean "whatever the evidence used" — never mismatch-checked
 _UNIT_WILDCARDS = {"", "native", "mixed"}
+
+
+def _is_wildcard_unit(canon: str) -> bool:
+    """True when the canonical unit accepts the source's own unit.
+
+    VONT spells these as alternatives — `index_or_native` (25 variables), `fraction_or_ha`,
+    `boolean_or_distance` — which declare that more than one unit is legitimate. Treating
+    them as a literal unit refused every declared-unit claim for those variables (caught
+    2026-09 on Karimi's runoff depth in mm against `index_or_native`).
+    """
+    return canon in _UNIT_WILDCARDS or "_or_" in canon
+
+
 _CONV_RULE = re.compile(r"^\s*([*/])\s*([0-9]*\.?[0-9]+)\s*$")
 
 
@@ -165,7 +178,7 @@ def _harmonise(
     rule: str | None = None
     if (
         src_unit != canon
-        and canon not in _UNIT_WILDCARDS
+        and not _is_wildcard_unit(canon)
         and not (conv_pct_to_deg or conv_deg_to_pct)
     ):
         raw_src = str(rel.get("unit", "")).strip().lower()

@@ -225,3 +225,11 @@ def test_small_magnitude_thresholds_survive_rounding():
     assert _round(44.44) == 44.4
     assert _round(0.0) == 0.0
     assert _round(-0.03) == -0.03
+
+
+def test_either_unit_canonicals_accept_the_source_unit():
+    """VONT's `index_or_native` (25 variables), `fraction_or_ha` and `boolean_or_distance`
+    declare that more than one unit is legitimate — they must not refuse a declared unit."""
+    for canon in ("index_or_native", "fraction_or_ha", "boolean_or_distance"):
+        u = _sample_unit(relationship={"opt_low": 200, "unit": "mm"})
+        assert _harmonise(u, canon) == {"opt_low": 200.0}, canon
