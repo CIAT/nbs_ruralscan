@@ -964,6 +964,10 @@
       "soil depth"
     ],
     "canonical_unit": "cm",
+    "unit_conversions": {
+      "m->cm": "*100",
+      "mm->cm": "/10"
+    },
     "group_id": "edaphic",
     "candidate_dataset_ids": [
       "ssurgo_statsgo",
@@ -972,7 +976,8 @@
     "min_meaningful_resolution_m": 250,
     "resolution_sensitivity": "medium",
     "derive_then_aggregate": false,
-    "review_status": "canonical"
+    "review_status": "canonical",
+    "comment": "Conversions declared 2026-09-29 (WH sweep): sources state soil depth in m (Krois 2014: >1.0 m) as well as cm, and without the rule the synthesiser refuses them."
   },
   {
     "canonical_variable_id": "set_aside_conservation",
@@ -2325,5 +2330,97 @@
     "raised_by": "ev_fr_population_density_chazdon16_1",
     "raised_date": "2026-09-29",
     "comment": "Local human population density bands the restoration opportunity (wide-scale below 10/km2 vs mosaic 10-100/km2; Chazdon & Guariguata 2016). context_sensitivity=high: nationally derived, so the scoping output should recommend a country-endorsed source. Dataset binding pending."
+  },
+  {
+    "canonical_variable_id": "topographic_wetness_index",
+    "label": "Topographic wetness index",
+    "aliases": [
+      "TWI",
+      "wetness index",
+      "compound topographic index"
+    ],
+    "canonical_unit": "dimensionless",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wet_topographic_wetness_index_russell97_1",
+    "raised_date": "2026-09-29",
+    "comment": "ln(upslope contributing area / tan slope) from a DEM - delineates saturation-prone ground for wetland restoration siting (Russell 1997 carries forward only the medium and high classes). Scale-dependent derivative: derive-then-aggregate, never resample a coarser index."
+  },
+  {
+    "canonical_variable_id": "restorable_patch_area",
+    "label": "Minimum restorable patch area",
+    "aliases": [
+      "site area",
+      "patch size",
+      "minimum site extent"
+    ],
+    "canonical_unit": "ha",
+    "unit_conversions": {
+      "m2->ha": "/10000"
+    },
+    "group_id": "land_use",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wet_site_area_russell97_1",
+    "raised_date": "2026-09-29",
+    "comment": "Minimum contiguous area for a restoration site to be worth prioritising (Russell 1997 uses 1 ha for flood attenuation, and states the threshold was arbitrarily defined). Distinct from forest_fragment_size, which measures an existing seed-source patch."
+  },
+  {
+    "canonical_variable_id": "catchment_area",
+    "label": "Contributing catchment area",
+    "aliases": [
+      "catchment area",
+      "contributing area",
+      "catchment size",
+      "runoff area"
+    ],
+    "canonical_unit": "ha",
+    "unit_conversions": {
+      "km2->ha": "*100",
+      "m2->ha": "/10000"
+    },
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wh_catchment_area_kadam12_1",
+    "raised_date": "2026-09-29",
+    "comment": "Area contributing runoff to a water-harvesting structure; sizes the structure to its catchment (farm ponds 1-2 ha, check dams >25 ha, percolation tanks 25-40 ha). NOTE for review: micro-catchment evidence expresses the same constraint as a transport DISTANCE (<100 m, Boers 1986), not an area - reviewers to decide whether that belongs here or in its own variable."
+  },
+  {
+    "canonical_variable_id": "soil_permeability",
+    "label": "Soil permeability / infiltration capacity",
+    "aliases": [
+      "permeability",
+      "infiltration rate",
+      "hydraulic conductivity"
+    ],
+    "canonical_unit": "mm/hour",
+    "unit_conversions": {
+      "m/day->mm/hour": "*41.667"
+    },
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wh_soil_permeability_chen17_1",
+    "raised_date": "2026-09-29",
+    "comment": "Rate at which water enters the soil. Directional both ways: recharge structures and slope-separated terraces WANT permeability, storage structures (farm ponds) want the opposite. Distinct from the existing soil_permeability_sensitivity index."
   }
 ]
