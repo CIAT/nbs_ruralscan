@@ -142,3 +142,61 @@ def test_retrieve_smart_table_truncation():
     # Should be exactly 12 rows of data + 1 row of truncation indicator = 13 total lines
     assert len(text_rows) == 13
     assert "... [table truncated]" in text_rows[-1]
+
+
+def _spec_table_index(n_rows: int = 15) -> DocIndex:
+    """A siting SPECIFICATION table: one row per structure, one column per criterion.
+
+    The "Soil type" column is non-numeric and its header does not name the search term,
+    so the default filter drops it — which is exactly the column an extractor needs.
+    """
+    rows = [["Structure", "Slope limit", "Soil type"]]
+    for i in range(n_rows):
+        rows.append([f"Structure {i}", f"{i + 1}%", "Sandy clay loam"])
+    return DocIndex(
+        source_id="spec_doc",
+        path="spec.pdf",
+        sha1="abc",
+        n_pages=1,
+        pages=["Table 6 gives the adopted specifications."],
+        tables=[TableBlock(page=1, rows=rows, label="Table 6")],
+    )
+
+
+def test_default_retrieval_prunes_and_truncates_spec_tables():
+    """Baseline the defect the full_tables option exists for (2026-09 sweeps)."""
+    (passage,) = [
+        p for p in retrieve(_spec_table_index(), ["slope"]) if p.kind == "table"
+    ]
+    assert "Soil type" not in passage.text
+    assert passage.text.endswith("... [table truncated]")
+
+
+def test_full_tables_keeps_every_row_and_column():
+    """Extraction opts in: the whole specification table comes through unpruned."""
+    (passage,) = [
+        p
+        for p in retrieve(_spec_table_index(), ["slope"], full_tables=True)
+        if p.kind == "table"
+    ]
+    lines = passage.text.split("\n")
+    assert lines[0] == "Structure | Slope limit | Soil type"
+    assert len(lines) == 16  # header + all 15 rows
+    assert "[table truncated]" not in passage.text
+    assert lines[-1] == "Structure 14 | 15% | Sandy clay loam"
+
+
+def test_full_tables_threads_through_the_extraction_packager(tmp_path):
+    from nbs_ruralscan.recipe.evidence import package_for_extraction_multi
+
+    ev = tmp_path / "EV.csv"
+    ev.write_text("evidence_id,source_id,variable\n", encoding="utf-8", newline="\n")
+    bundle = package_for_extraction_multi(
+        _spec_table_index(),
+        [{"variable": "slope"}],
+        ev_register=ev,
+        full_tables=True,
+    )
+    tables = [p for p in bundle["passages"] if p["kind"] == "table"]
+    assert tables and "Soil type" in tables[0]["text"]
+    assert "[table truncated]" not in tables[0]["text"]

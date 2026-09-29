@@ -217,6 +217,7 @@ def package_for_extraction(
     *,
     max_passages: int = 8,
     min_score: float = 1.5,
+    full_tables: bool = False,
 ) -> dict[str, Any]:
     """Deterministic half of extraction: retrieve the passages an LLM should read.
 
@@ -233,7 +234,9 @@ def package_for_extraction(
       already captured on the body/table passages they introduce.
     """
     terms = [variable, *(aliases or [])]
-    passages = retrieve(index, terms, max_passages=max_passages)
+    passages = retrieve(
+        index, terms, max_passages=max_passages, full_tables=full_tables
+    )
     return {
         "source_id": index.source_id,
         "variable": variable,
@@ -261,6 +264,7 @@ def package_for_extraction_multi(
     min_score: float = 1.5,
     ev_register: str | Path = _EV_REGISTER,
     force: bool = False,
+    full_tables: bool = False,
 ) -> dict[str, Any]:
     """Paper-first packaging: bundle passages for *all* target variables in one call.
 
@@ -294,6 +298,9 @@ def package_for_extraction_multi(
         this source_id are skipped unless ``force=True``.
     force : bool
         If True, skip the dedup check and re-extract everything.
+    full_tables : bool
+        If True, matching tables are returned whole - no column pruning, no row
+        cap. Use for extraction; the default keeps the token-saving truncation.
 
     Returns
     -------
@@ -330,7 +337,9 @@ def package_for_extraction_multi(
         var = vspec["variable"]
         aliases = vspec.get("aliases", [])
         terms = [var, *aliases]
-        passages = retrieve(index, terms, max_passages=max_passages_per_var)
+        passages = retrieve(
+            index, terms, max_passages=max_passages_per_var, full_tables=full_tables
+        )
 
         for p in passages:
             if p.kind == "section" or p.score < min_score:
