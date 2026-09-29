@@ -61,3 +61,25 @@ rather than excluding it. A reviewer should confirm that sign before it reaches 
 Human QA of the 6 units; the 3 first-pass `benchmark_tier` values; the 13 DOI-gated sources;
 and a decision on whether `creation` needs its own discovery round rather than more
 extraction from this corpus.
+
+## `creation` discovery round (2026-09-29, run `wet_creation_disc_2026-09`)
+
+The August `creation` peer-reviewed search retrieved **5** papers. This broader multilingual
+title search (logged in `SRCH`) retrieved **153**; 46 passed the title screen; **15 were
+included**.
+
+- **7 acquired** open-access; 6 DOI-verified (the arXiv preprint's DataCite DOI cannot be
+  Crossref-verified, so the gate keeps it out of extraction).
+- **8 are gold open access but block automated download** (MDPI, Elsevier, T&F). Queued as
+  `webfetch_403_bot_block` for a browser download — **not** paywalled. These include the
+  strongest restoration-siting papers found (the CONUS restoration indicator, the Ontario
+  suitability index, the LiDAR creation-siting paper).
+
+**First-ever evidence for `creation`: 4 units** from Moreno-Mateos et al. 2010 — very suitable
+within ~500 m of a frequently flowing stream (calibrated at 450 m, and given the model's
+maximum weight), slope as a restrictive construction-cost factor, and irrigated or
+low-activity farmland as the most suitable land use.
+
+The other five acquired papers mostly **map where wetlands are** (classifiers, delineation for
+avoiding wet ground) rather than where to restore or create them. PICOS keeps them out: the
+practice is not evidenced in the source.
