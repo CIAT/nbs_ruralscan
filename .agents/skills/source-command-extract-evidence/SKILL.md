@@ -236,6 +236,17 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     edge") is not a span bleed, stays hard-flagged, and needs a human to judge whether a
     measured result may stand as a suitability claim at all.
 
+20. **Numbers in explanatory TEXT count too -> `smuggled_number`** (2026-09 deep pass). The
+    number-provenance rule covers every number anywhere in `relationship`, including inside
+    `direction`, `scale` and `weight_scale` strings. Glosses are where smuggling now hides:
+    significance levels copied from a table footnote outside the span ("p<0.05"), a weight
+    range from another sentence ("weights ranged 1 to 1.5"), a value the paper writes in
+    words ("one hundred and fifty metres" glossed as "150 m"), even publication years in a
+    cross-reference ("agreeing with Karimi 2019"). Eleven units in the deep pass tripped
+    `check_numbers` this way and pushed `numberprov_rate_pct` UP for the first time in
+    seven sweeps. Keep glosses number-free unless the number is verbatim inside the quote;
+    cite other sources by author, not year. The staging checker now reads strings too.
+
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
 `check_species.py` (species mis-tag), `quarantine.py` (auto-soft-deletes off-scope +
