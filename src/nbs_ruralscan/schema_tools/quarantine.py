@@ -81,7 +81,9 @@ def _tool_evidence_ids(root: Path) -> set[str]:
 # than the tight section regexes, so auto-dropping it would wrongly quarantine borderline
 # rules and erode trust in the register. The extraction spec (#16) stops it at source; the
 # reviewer decides the residue from the advisory SCOPE-CHECK report.
-_ADVISORY_ONLY = {"site_context"}
+# `span_bleed` = a section signal fired but the quote still carries the criterion; the span
+# is the defect, not the claim, so it goes to the reviewer to RE-SLICE (retro 2026-09, FR).
+_ADVISORY_ONLY = {"site_context", "span_bleed"}
 
 
 def candidates(schema_root: str | Path = "schema") -> list[dict]:
