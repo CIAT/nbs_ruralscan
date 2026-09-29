@@ -83,3 +83,24 @@ low-activity farmland as the most suitable land use.
 The other five acquired papers mostly **map where wetlands are** (classifiers, delineation for
 avoiding wet ground) rather than where to restore or create them. PICOS keeps them out: the
 practice is not evidenced in the source.
+
+
+## DOI-unblocked pass (2026-09-29)
+
+PR #253 recovered DOIs printed on 21 cached library PDFs (Crossref round-trip, confirmed at PR
+review; Nyamadzawo 2013 was rejected in review because the library file is the wrong paper,
+and one FR row was a duplicate of Zomer 2008). The remaining sources were re-read with
+full-table bundles. Most are effect or impact studies (T3/T6 material, deferred), so they
+yield no T4 rule.
+
+- **Brouwer et al. 2026 (paludiculture, NL) — 3 units, `peatland`**: Table 1 classes rewetting
+  potential on mean lowest groundwater level, available water capacity and seepage. Two new
+  VONT variables (`water_table_depth`, `groundwater_seepage`, pending review). The AWC unit is
+  in percent, while `soil_available_water_capacity` is in mm, so the engine refuses it until a
+  reviewer decides how to handle root-zone depth.
+- **Cheng et al. 2020 (US nitrate removal) — 1 unit, `restoration_rewetting`**: a land-cover
+  exclusion mask for placement (open water, developed, barren, shrubland, existing wetland).
+- Screened, no T4 rule: Erwin 2009, the 2005 riverine-pulsing creation study, the 2007 semi-arid
+  created-wetland water-quality study, the 2022 Stage-0 floodplain study, the 2020 floodplain
+  equity targeting study, the 2023 flood/drought efficiency study, and the 2018 drought
+  prioritisation study (its elevation thresholds are site-absolute metres, not transferable).

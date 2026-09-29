@@ -96,3 +96,18 @@ family would make the synthesised median meaningless. **Recommend splitting the 
 
 One earlier unit was re-tagged: Krois 2014's % clay had been recorded as `soil_texture` (a
 class variable); it is now `clay_content`, a new `VONT` variable.
+
+
+## DOI-unblocked pass (2026-09-29)
+
+PR #253 recovered DOIs printed on 21 cached library PDFs (Crossref round-trip, confirmed at PR
+review; Nyamadzawo 2013 was rejected in review because the library file is the wrong paper,
+and one FR row was a duplicate of Zomer 2008). The remaining sources were re-read with
+full-table bundles. Most are effect or impact studies (T3/T6 material, deferred), so they
+yield no T4 rule.
+
+- **Kiboi et al. 2017 — 1 unit, `in_situ`**: tied ridging performs best on coarser semi-arid
+  soils; on clay it can induce waterlogging and then erosion (citing FAO 1993).
+- Screened, no T4 rule: the 2018 study of terraces mitigating the 2015 Ethiopian drought
+  (effect only). Nyamadzawo 2013 is back in `pending`: the library PDF is the wrong paper, so
+  it needs re-acquisition by title.

@@ -14935,5 +14935,197 @@
     "raw_name": "existing land use classes suitable for wetland establishment",
     "locator_type": "page",
     "ruleset_version": "v1.5.1"
+  },
+  {
+    "evidence_id": "ev_wet_land_cover_cheng20_1",
+    "source_id": "cheng_2020_us_nitrate_removal_wetland_restoration",
+    "nbs_id": "wetland_management",
+    "suitability_family_id": "wetland_management__restoration_rewetting",
+    "variable": "land_cover",
+    "relationship": {
+      "type": "categorical_exclusion",
+      "excluded_classes": [
+        "open water",
+        "developed land (open space, low, medium and high intensity)",
+        "barren land",
+        "shrubland",
+        "existing wetland"
+      ],
+      "direction": "restored/new wetlands may only be placed on the remaining land-cover classes; the listed classes are hard exclusions in the placement model"
+    },
+    "use_role": "structural_suitability",
+    "evidence_type": "literature_relationship",
+    "claim_basis": "modelled",
+    "claim_scope": "practice_technology",
+    "extraction_confidence": "high",
+    "quote": "No placement of new/\nrestored wetlands was allowed in any of the simulations in areas with \nthe following land cover designations: (1) open water; (2) developed \nland (open space, low intensity, medium intensity, high intensity); (3) \nbarren land; (4) shrubland; and (5) wetland.",
+    "page": 8,
+    "reviewer_ok": false,
+    "raw_name": "NLCD land cover designation",
+    "locator_type": "page",
+    "ruleset_version": "v1.5.1"
+  },
+  {
+    "evidence_id": "ev_fr_land_cover_fahrudin24_1",
+    "source_id": "optimizing_afforestation_reforestation_degraded_2024",
+    "nbs_id": "forest_restoration",
+    "suitability_family_id": "forest_restoration__active_planting",
+    "variable": "land_cover",
+    "relationship": {
+      "type": "categorical_inclusion",
+      "included_classes": [
+        "non-forested land (afforestation target)",
+        "low forest cover or non-forested land (reforestation target)"
+      ],
+      "direction": "planting targets are defined as currently non-forested or low-forest-cover land, identified from forest-loss, impervious-surface and land-cover products"
+    },
+    "use_role": "structural_suitability",
+    "evidence_type": "literature_relationship",
+    "claim_basis": "modelled",
+    "claim_scope": "practice_technology",
+    "extraction_confidence": "medium",
+    "quote": "In this study, adjustments were made to the definitions of target \nareas for afforestation and reforestation based on the regulations set by \nthe UNFCCC and Ministry of Forestry (MoFE 2015). Afforested areas \nwere defined as non-forested regions of > 50 years. However, owing to \ndata limitations, an adjusted approach was adopted in which the target \nareas for afforestation were identified by integrating non-forested \nregional information defined as of 2000. This information was sourced \nfrom Global Forest Watch data (Hansen et al., 2013), integrated with \nimpervious surface data from 1983 to 2000 (Gong et al., 2020), and \nMODIS land-cover data since 2000 (USGS, 2010). Consequently, the \ntargeted reforestation areas in this study focused on regions with low \nforest cover or non-forested areas observed from 2000 to 2023.",
+    "page": 4,
+    "reviewer_ok": false,
+    "raw_name": "non-forested / low forest cover target areas",
+    "locator_type": "page",
+    "ruleset_version": "v1.5.1"
+  },
+  {
+    "evidence_id": "ev_wet_water_table_depth_brouwer26_1",
+    "source_id": "page_nl_paludiculture_crop_suitability_model",
+    "nbs_id": "wetland_management",
+    "suitability_family_id": "wetland_management__peatland",
+    "variable": "water_table_depth",
+    "relationship": {
+      "opt_low": 0,
+      "opt_high": 30,
+      "abs_max": 160,
+      "unit": "cm",
+      "class_potential": {
+        "0-30": "high (3)",
+        "30-80": "moderate (2)",
+        "80-160": "marginal (1)"
+      },
+      "direction": "hydrological potential for paludiculture on rewetted peat is HIGH where the mean lowest groundwater level sits 0-30 cm below the surface, moderate at 30-80 cm and marginal at 80-160 cm — the shallower the dry-season water table, the more rewettable the land"
+    },
+    "use_role": "structural_suitability",
+    "evidence_type": "literature_relationship",
+    "claim_basis": "table",
+    "claim_scope": "practice_technology",
+    "extraction_confidence": "high",
+    "quote": "Table 1 \nPaludiculture potential based on AWC, MLG and seepage.\nSuitability score\nAWC\nMLG\nSeepage\nHigh Potential (3)\n> 30 %\n0–30 cm\n< -0.1 mm/d (upward)\nModerate Potential (2)\n15–30 %\n30–80 cm\n-0.1–0.1 mm/d (neutral)\nMarginal Potential (1)\n10–15 %\n80–160 cm\n0.1–0.5 mm/d (downward)",
+    "page": 3,
+    "reviewer_ok": false,
+    "raw_name": "mean lowest groundwater level (MLG) classes for paludiculture potential",
+    "locator_type": "page",
+    "ruleset_version": "v1.5.1"
+  },
+  {
+    "evidence_id": "ev_wet_soil_available_water_capacity_brouwer26_1",
+    "source_id": "page_nl_paludiculture_crop_suitability_model",
+    "nbs_id": "wetland_management",
+    "suitability_family_id": "wetland_management__peatland",
+    "variable": "soil_available_water_capacity",
+    "relationship": {
+      "opt_low": 30,
+      "abs_min": 10,
+      "unit": "percent",
+      "class_potential": {
+        ">30": "high (3)",
+        "15-30": "moderate (2)",
+        "10-15": "marginal (1)"
+      },
+      "direction": "available water capacity above 30% gives high paludiculture potential, 15-30% moderate and 10-15% marginal — soils must hold water to stay wet"
+    },
+    "use_role": "structural_suitability",
+    "evidence_type": "literature_relationship",
+    "claim_basis": "table",
+    "claim_scope": "practice_technology",
+    "extraction_confidence": "high",
+    "quote": "Table 1 \nPaludiculture potential based on AWC, MLG and seepage.\nSuitability score\nAWC\nMLG\nSeepage\nHigh Potential (3)\n> 30 %\n0–30 cm\n< -0.1 mm/d (upward)\nModerate Potential (2)\n15–30 %\n30–80 cm\n-0.1–0.1 mm/d (neutral)\nMarginal Potential (1)\n10–15 %\n80–160 cm\n0.1–0.5 mm/d (downward)",
+    "page": 3,
+    "reviewer_ok": false,
+    "raw_name": "available water capacity (AWC) classes for paludiculture potential",
+    "locator_type": "page",
+    "ruleset_version": "v1.5.1"
+  },
+  {
+    "evidence_id": "ev_wet_groundwater_seepage_brouwer26_1",
+    "source_id": "page_nl_paludiculture_crop_suitability_model",
+    "nbs_id": "wetland_management",
+    "suitability_family_id": "wetland_management__peatland",
+    "variable": "groundwater_seepage",
+    "relationship": {
+      "opt_high": -0.1,
+      "abs_max": 0.5,
+      "unit": "mm/d",
+      "class_potential": {
+        "<-0.1 (upward)": "high (3)",
+        "-0.1 to 0.1 (neutral)": "moderate (2)",
+        "0.1 to 0.5 (downward)": "marginal (1)"
+      },
+      "direction": "UPWARD seepage (below -0.1 mm/d) gives the highest potential because groundwater feeds the root zone; neutral seepage is moderate and downward seepage up to 0.5 mm/d marginal — land losing water downward is hard to keep wet"
+    },
+    "use_role": "structural_suitability",
+    "evidence_type": "literature_relationship",
+    "claim_basis": "table",
+    "claim_scope": "practice_technology",
+    "extraction_confidence": "high",
+    "quote": "Table 1 \nPaludiculture potential based on AWC, MLG and seepage.\nSuitability score\nAWC\nMLG\nSeepage\nHigh Potential (3)\n> 30 %\n0–30 cm\n< -0.1 mm/d (upward)\nModerate Potential (2)\n15–30 %\n30–80 cm\n-0.1–0.1 mm/d (neutral)\nMarginal Potential (1)\n10–15 %\n80–160 cm\n0.1–0.5 mm/d (downward)",
+    "page": 3,
+    "reviewer_ok": false,
+    "raw_name": "seepage flux classes for paludiculture potential",
+    "locator_type": "page",
+    "ruleset_version": "v1.5.1"
+  },
+  {
+    "evidence_id": "ev_fr_soil_depth_delcampo21_1",
+    "source_id": "reforestation_failure_project_scale_mediterranean_dryland_2021",
+    "nbs_id": "forest_restoration",
+    "suitability_family_id": "forest_restoration__active_planting",
+    "variable": "soil_depth_to_bedrock",
+    "relationship": {
+      "type": "threshold",
+      "abs_min": 30,
+      "abs_min_alt": 35,
+      "unit": "cm",
+      "direction": "Maritime pine survival improves only where soil depth is above the threshold (partial dependence from a survival model)"
+    },
+    "use_role": "structural_suitability",
+    "evidence_type": "literature_relationship",
+    "claim_basis": "modelled",
+    "claim_scope": "species_specific",
+    "extraction_confidence": "medium",
+    "quote": "The roles of speciﬁc soil-related predictors in Maritime pine are\nhighlighted, such as soil depth, which must be above 30–35 cm in\norder to improve survival (partial dependance plots, Fig. SM3).",
+    "page": 11,
+    "reviewer_ok": false,
+    "raw_name": "soil depth",
+    "taxon": "Pinus pinaster",
+    "locator_type": "page",
+    "ruleset_version": "v1.5.1"
+  },
+  {
+    "evidence_id": "ev_wh_soil_texture_kiboi17_1",
+    "source_id": "wh_insitu_tied_ridge_yield_stability_2017",
+    "nbs_id": "water_harvesting_conservation",
+    "suitability_family_id": "water_harvesting__in_situ",
+    "variable": "soil_texture",
+    "relationship": {
+      "type": "qualitative",
+      "direction": "tied ridging performs best on coarser-textured soils in the semi-arid site; on clay (fine-textured) soils ridge tillage can induce waterlogging followed by mass movement and erosion - a negative on heavy clays"
+    },
+    "use_role": "structural_suitability",
+    "evidence_type": "literature_relationship",
+    "claim_basis": "cited_secondary",
+    "claim_scope": "practice_technology",
+    "extraction_confidence": "medium",
+    "quote": "The best CEM techniques were diﬀerent for both sites. In Mbeere\nSouth, tied ridging was the best followed by mulching practice while in\nMeru South mulching was the best. The tied ridges in the semi-arid site\nwere hardly destroyed during the cropping season leading to increased\nwater content in the soil proﬁle and good crop performance while in the\nsub-humid site the ridges were repaired often. On clay soils (in Meru\nSouth), ridge tillage can induce water logging, and later on followed by\nmass movement/soil erosion (FAO, 1993). Mulching retained more soil\nwater content in Meru South since the region received more rainfall\ncompared with Mbeere South. In addition, soils in Meru South are ﬁne\ntextured, clay while Mbeere South the soils are coarser. Reduced soil\nwater retention is observed in coarse textured (Mbeere South) than in\nﬁne-textured soils",
+    "page": 8,
+    "reviewer_ok": false,
+    "raw_name": "soil type (clay vs coarser)",
+    "attribution": "FAO (1993), as cited by Kiboi et al.; site contrast observed in the Kiboi on-farm trials",
+    "locator_type": "page",
+    "ruleset_version": "v1.5.1"
   }
 ]
