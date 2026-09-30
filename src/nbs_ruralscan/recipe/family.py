@@ -38,6 +38,12 @@ class FamilyResult:
     reports: dict[str, SynthesisReport] = field(default_factory=dict)  # per variable
 
 
+def is_observed_presence(u: EvidenceUnit) -> bool:
+    """A fixed-form practice-database record (see synthesise_family)."""
+    rel = u.relationship if isinstance(u.relationship, dict) else {}
+    return rel.get("type") == "observed_presence"
+
+
 def synthesise_family(
     units: list[EvidenceUnit],
     tiers: dict[str, str],
@@ -66,6 +72,13 @@ def synthesise_family(
 
     # exclude soft-deleted (QA-dropped) units from all synthesis + support
     units = [u for u in units if getattr(u, "review_state", "") != "dropped"]
+    # Fixed-form practice-database records (WOCAT 'Natural environment' ticks, tagged
+    # relationship.type="observed_presence") say where ONE documented case is applied.
+    # Every sheet carries the same fields, so as support votes they are 100% by
+    # construction, and a single case is not a limit (#16). Catalogued and reviewable,
+    # but kept OUT of support + threshold synthesis; their intended use is an observed
+    # envelope across many cases (not built yet).
+    units = [u for u in units if not is_observed_presence(u)]
 
     # support is measured over the structural-suitability candidates (what T4 considers)
     t4_units = [u for u in units if u.use_role == "structural_suitability"]

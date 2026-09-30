@@ -27,7 +27,12 @@ import json
 from pathlib import Path
 
 from nbs_ruralscan.recipe.evidence import load_units
-from nbs_ruralscan.recipe.family import FamilyResult, save_family, synthesise_family
+from nbs_ruralscan.recipe.family import (
+    is_observed_presence,
+    FamilyResult,
+    save_family,
+    synthesise_family,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 REG = ROOT / "schema" / "registers"
@@ -115,6 +120,14 @@ def synthesise(nbs_id: str) -> dict[str, FamilyResult]:
     out: dict[str, FamilyResult] = {}
     for family in families:
         fam_units = [u for u in units if u.suitability_family_id == family]
+        # sources that contribute ONLY fixed-form observed-presence records (WOCAT sheets)
+        # leave the support denominator too, or they would dilute every variable their
+        # form never asks about
+        form_only = {u.source_id for u in fam_units if is_observed_presence(u)} - {
+            u.source_id for u in fam_units if not is_observed_presence(u)
+        }
+        if family in corpus:
+            corpus[family] = max(0, corpus[family] - len(form_only))
         out[family] = synthesise_family(
             fam_units,
             tiers,
