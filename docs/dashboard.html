@@ -3012,9 +3012,6 @@
       // even when a channel has no evidence yet; append 'unknown' only if data has it.
       var _srcPresent=new Set(evAll.filter(_inNbs).map(_vfChanKey));
       var _srcOpts=['stock','updated_lit','grey','tool'].concat(_srcPresent.has('unknown')?['unknown']:[]);
-      // every round in the register, not just this practice's: an active round must stay visible
-      var _roundOpts=Array.from(new Set(evAll.map(_vfRoundKey))).sort();
-      var _roundFmt=function(o){ var n=evAll.filter(_inNbs).filter(function(e){return _vfRoundKey(e)===o;}).length; return _vfRoundLabel(o)+' ('+n+')'; };
       // noAll=true → single-select mandatory (no "All" pill): used for Practice + Evidence-type.
       var _mkPills=function(key,label,opts,fmt,cls,noAll,tip){ var cur=window._vfScope[key]; var list=(noAll?[]:['all']).concat(opts); var btns=list.map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\'){window._vfScope.family=\'all\';window._vfScope.round=\'all\';} renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
       // T4 is the only live evidence type (T3/T6 deferred) → no pill row, just the legend line.
@@ -3035,8 +3032,8 @@
         +_mkPills('claimScope','Scope',['general','species','crop'],_csFmt,'sky',false,'General = practice-level suitability (the everyday MCDA work). Species / Crop = per-taxon evidence, kept + banked for reuse but filtered from the practice MCDA. Default = General.')
         +_csHint
         +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber',false,'Which discovery channel the source came from. All = every channel.')
-        +_mkPills('round','Search round',_roundOpts,_roundFmt,'amber',false,'Which discovery round the source was found in. Round 1 = the original sweeps; Round 2 = grey literature + practice databases (WOCAT) added 2026-09/10. All = every round.')
         +_mkPills('access','Access',['oa','restricted'],function(o){return o==='oa'?'Open-access':'Restricted (copyright)';},'emerald',false,'Open-access vs copyrighted (restricted). All = both.'); }
+    var _vfPreScope=flaggedRows.map(function(r){return r.ev;}).concat(passedAll); window._vfPreScope=_vfPreScope;
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
     passedAll=passedAll.filter(_inScope);
     var rlAll=(dashboardData.review_log)||[];
@@ -3109,6 +3106,13 @@
       var _bar=_seg('origin','Origin',[['any','Any'],['flagged','⚑ AI-flagged'],['passed','✓ AI-passed']],'_vfAxOrigin','Did the AI verify pass flag this extraction, or accept it?')
         +_seg('me','Reviewed by me',[['any','Any'],['no','No'],['yes','Yes']],'_vfAxMe','Have YOU already made a call on it? “No” is the to-review queue.')
         +_seg('other','Reviewed by others',[['any','Any'],['no','No'],['yes','Yes']],'_vfAxOther','Has anyone else made a call? Not-me + others-Yes = the 2nd-opinion queue.');
+      // Search round: which discovery round the source came from (SRC.extraction_run_id prefix).
+      // Counts = records in the current practice / sub-practice per round, ignoring the round filter.
+      var _rdAll=Array.from(new Set(((window._vfPreScope)||[]).map(_vfRoundKey))).sort();
+      var _rdN=function(k){ var sc=window._vfScope||{}; var sv=sc.round; sc.round='all'; var n=((window._vfPreScope)||[]).filter(function(e){ return _vfInScope(e)&&(k==='all'||_vfRoundKey(e)===k); }).length; sc.round=sv; return n; };
+      var _rdCur=(window._vfScope&&window._vfScope.round)||'all';
+      _bar+='<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:1px 0;" title="Which discovery round the source was found in. Round 1 = the original sweeps; Round 2 = grey literature + WOCAT practice database (2026-09)."><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">Search round</span>'
+        +['all'].concat(_rdAll).map(function(k){ var active=(_rdCur===k)?'active sky':''; var lab=(k==='all')?'Any':('Round '+String(k).replace('round','')); return '<button class="pill-btn '+active+'" onclick="window._vfScope.round=\''+k+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+lab+' ('+_rdN(k)+')</button>'; }).join('')+'</div>';
       if(window._vfAxMe==='yes'){ _bar+=_seg('','My call',[['all','All'],['ok','✓ Kept'],['query','⚑ Queried'],['drop','🗑 Dropped']],'_vfMyCall','Narrow your own reviewed units by the call you made.'); }
       // verdict pills (only meaningful when flagged units can be in view) + tables toggle
       var _extra='';
