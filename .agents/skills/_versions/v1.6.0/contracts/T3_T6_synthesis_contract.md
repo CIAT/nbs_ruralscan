@@ -32,8 +32,9 @@ reported under `unmapped` and feeds nothing.
 
 1. **Gather** units for the cell; apply `claim_scope` routing (species out; crop in only where the family allows).
 2. **Lineage dedupe** (`_dedupe_lineage`) → independent sources.
-3. **Polarity** — apply `XW.polarity`; rank = sign × {`slight` 1, `moderate` 2, `strong` 3}; `unspecified` → sign
-   only; `direction = none` → 0.
+3. **Polarity** — apply `XW.polarity` to move the unit's direction from the outcome-as-measured frame into the
+   **benefit frame** (positive = the NbS helps; `inverted` for `high_is_bad` outcomes such as erosion and hazards);
+   rank = sign × {`slight` 1, `moderate` 2, `strong` 3}; `unspecified` → sign only; `direction = none` → 0.
 4. **Weight** — `w = TIER_W[tier] × BASIS_W[claim_basis] × grey_discount × TRANSFER_W[d] × XW.weight_factor × (0.5 if significance = ns)`.
    - `d` = max context distance over populated dimensions (method §5.2): income band 0/1/2 · AEZ same / same
      `climate_zone` / other · farming system same / adjacent pair / other. `TRANSFER_W = {0: 1.0, 1: 0.7, 2: 0.3}`.
