@@ -16,6 +16,18 @@ Two commands:
   `doi_verified != true` rows (title-only acquisition).
 
 The trust anchor is the TITLE, never the DOI, until the DOI is round-trip verified.
+
+DOI-less sources (grey literature, agency manuals, WOCAT technology sheets; ruleset v1.6.0):
+* `verify-titles` (offline) -- for every acquired queue row with NO doi and a cached
+  artifact in `.cache/corpus/`, asserts the citation's TITLE appears in the opening pages
+  of the cached file itself (token coverage >= TITLE_THRESH) and stamps `title_verified`
+  (true/false). This guards the failure the DOI lock exists for -- the wrong document in
+  the cache (cf. Nyamadzawo 2013, a different paper filed under its name). The acquire
+  URL must also be the publisher's own domain (fao.org, wocat.net, iucn.org, ...), which
+  is recorded in `url` and checked at review, not here.
+* `check` additionally FAILS if a source registered in SRC failed its title check.
+Extraction may proceed on a source only if `doi_verified=true`, or it has no DOI and
+`title_verified=true`.
 """
 
 from __future__ import annotations
@@ -32,6 +44,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 QUEUE = ROOT / "pipeline" / "acquisition_queue.csv"
 REPORT = ROOT / "pipeline" / "metrics" / "doi_audit.json"
+CORPUS = ROOT / ".cache" / "corpus"
+SRC = ROOT / "schema" / "registers" / "SRC_source_register.csv"
+TITLE_THRESH = 0.8
 MAILTO = "p.steward@cgiar.org"
 THRESH = 0.5
 _UA = {"User-Agent": f"nbs-ruralscan/1.0 (mailto:{MAILTO})"}
@@ -80,11 +95,70 @@ def _rows() -> tuple[list[dict], list[str]]:
         rd = csv.DictReader(f)
         rows = list(rd)
         cols = list(rd.fieldnames or [])
-    if "doi_verified" not in cols:
-        cols.append("doi_verified")
-        for r in rows:
-            r.setdefault("doi_verified", "")
+    for c in ("doi_verified", "title_verified"):
+        if c not in cols:
+            cols.append(c)
+            for r in rows:
+                r.setdefault(c, "")
     return rows, cols
+
+
+def _title_of(citation: str) -> str:
+    """The title segment of an 'Author (Year). Title. Publisher.' citation."""
+    c = citation or ""
+    i = c.find("). ")
+    body = c[i + 3 :] if i >= 0 else c
+    j = body.find(". ")
+    return body[:j] if j > 0 else body
+
+
+def _head_text(source_id: str, pages: int = 3) -> str | None:
+    """Text of the opening pages of the cached artifact, or None if not cached."""
+    for ext in (".pdf", ".txt", ".html", ".md"):
+        f = CORPUS / f"{source_id}{ext}"
+        if not f.exists():
+            continue
+        if ext != ".pdf":
+            return f.read_text(encoding="utf-8", errors="ignore")[:20000]
+        import fitz  # PyMuPDF
+
+        with fitz.open(f) as doc:
+            return " ".join(doc[i].get_text() for i in range(min(pages, len(doc))))
+    return None
+
+
+def _title_coverage(title: str, text: str) -> float:
+    tt = _toks(title)
+    return len(tt & _toks(text)) / len(tt) if tt else 0.0
+
+
+def verify_titles() -> int:
+    rows, cols = _rows()
+    passed = failed = uncached = 0
+    for r in rows:
+        if (r.get("doi") or "").strip() or r.get("status") != "acquired":
+            continue
+        text = _head_text(r["source_id"])
+        if text is None:
+            uncached += 1
+            continue
+        cov = _title_coverage(_title_of(r.get("citation", "")), text)
+        ok = cov >= TITLE_THRESH
+        r["title_verified"] = "true" if ok else "false"
+        if ok:
+            passed += 1
+        else:
+            failed += 1
+            note = (r.get("note") or "").strip()
+            flag = f"TITLE CHECK FAILED (coverage {cov:.2f}): cached file may be the wrong document."
+            if flag not in note:
+                r["note"] = (note + " | " if note else "") + flag
+    with QUEUE.open("w", newline="", encoding="utf-8") as f:
+        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
+        w.writeheader()
+        w.writerows(rows)
+    print(f"verify-titles: passed={passed} failed={failed} not_cached={uncached}")
+    return 0
 
 
 def verify() -> int:
@@ -166,6 +240,25 @@ def check() -> int:
         and (r.get("doi") or "").strip()
         and (r.get("doi_verified") or "") != "true"
     ]
+    registered = set()
+    if SRC.exists():
+        with SRC.open(encoding="utf-8") as f:
+            registered = {r["source_id"] for r in csv.DictReader(f)}
+    bad_title = [
+        r["source_id"]
+        for r in rows
+        if not (r.get("doi") or "").strip()
+        and (r.get("title_verified") or "") == "false"
+        and r["source_id"] in registered
+    ]
+    if bad_title:
+        print(
+            f"METADATA CHECK FAILED: {len(bad_title)} registered DOI-less source(s) FAILED the "
+            "title check (the cached file may be the wrong document):"
+        )
+        for s in bad_title[:20]:
+            print(f"   - {s}")
+        return 1
     if bad:
         print(
             f"METADATA CHECK FAILED: {len(bad)} queue row(s) carry an unverified DOI "
@@ -187,7 +280,9 @@ def main(argv: list[str] | None = None) -> int:
         return verify()
     if cmd == "check":
         return check()
-    print("usage: verify_metadata.py [verify|check]")
+    if cmd == "verify-titles":
+        return verify_titles()
+    print("usage: verify_metadata.py [verify|verify-titles|check]")
     return 2
 
 

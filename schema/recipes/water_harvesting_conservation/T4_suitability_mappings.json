@@ -9,21 +9,23 @@
       "opt_high": 5.0,
       "abs_max": 30.0
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 60.0,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 0.2,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 5.0, 'abs_max': 30.0}; uncertainty ±20% from spread. ",
+    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 5.0, 'abs_max': 30.0}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
     "variable": "slope",
     "suitability_family_id": "water_harvesting__in_situ",
     "evidence_ids": [
-      "ev_wh_slope_krois14_bunds"
+      "ev_wh_slope_krois14_bunds",
+      "ev_wh_slope_critchley91_contourbunds",
+      "ev_wh_slope_slm11_ca"
     ],
-    "n_sources": 1,
-    "corpus_n": 13,
-    "paper_support_pct": 11.6
+    "n_sources": 3,
+    "corpus_n": 17,
+    "paper_support_pct": 25.4
   },
   {
     "mapping_id": "water_harvesting__in_situ__annual_precipitation",
@@ -37,21 +39,22 @@
       "opt_high": 400.0,
       "abs_max": 1000.0
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 60.0,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 0.2,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 200.0, 'opt_high': 400.0, 'abs_max': 1000.0}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 200.0, 'opt_high': 400.0, 'abs_max': 1000.0}; uncertainty ±60% from spread. Collapsed 2 citation echo(es). ",
     "variable": "annual_precipitation",
     "suitability_family_id": "water_harvesting__in_situ",
     "evidence_ids": [
-      "ev_wh_annual_precipitation_kahinda08_3"
+      "ev_wh_annual_precipitation_kahinda08_3",
+      "ev_wh_precip_critchley91_contourbunds"
     ],
-    "n_sources": 1,
-    "corpus_n": 13,
-    "paper_support_pct": 11.6
+    "n_sources": 2,
+    "corpus_n": 17,
+    "paper_support_pct": 16.9
   },
   {
     "mapping_id": "water_harvesting__in_situ__aridity_index",
@@ -71,15 +74,43 @@
     "has_future_projection": false,
     "weight_default": 0.2,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.05, 'opt_low': 0.2, 'opt_high': 0.5, 'abs_max': 0.65}; uncertainty ±20% from spread. ",
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.05, 'opt_low': 0.2, 'opt_high': 0.5, 'abs_max': 0.65}; uncertainty ±20% from spread. ",
     "variable": "aridity_index",
     "suitability_family_id": "water_harvesting__in_situ",
     "evidence_ids": [
-      "ev_wh_aridity_index_kahinda08_2"
+      "ev_wh_aridity_index_kahinda08_2",
+      "ev_wh_aridity_slm11_ca"
     ],
-    "n_sources": 1,
-    "corpus_n": 13,
-    "paper_support_pct": 11.6
+    "n_sources": 2,
+    "corpus_n": 17,
+    "paper_support_pct": 16.9
+  },
+  {
+    "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "ssurgo_statsgo",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 20.0,
+      "opt_low": 75.0
+    },
+    "uncertainty_pct": 60.0,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.2,
+    "weight_adjustable": true,
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 20.0, 'opt_low': 75.0}; uncertainty ±60% from spread. ",
+    "variable": "soil_depth_to_bedrock",
+    "suitability_family_id": "water_harvesting__in_situ",
+    "evidence_ids": [
+      "ev_wh_soil_depth_kahinda08_1",
+      "ev_wh_soildepth_critchley91_contourbunds"
+    ],
+    "n_sources": 2,
+    "corpus_n": 17,
+    "paper_support_pct": 16.9
   },
   {
     "mapping_id": "water_harvesting__in_situ__clay_content",
@@ -105,34 +136,117 @@
       "ev_wh_clay_content_kahinda08_1"
     ],
     "n_sources": 1,
-    "corpus_n": 13,
-    "paper_support_pct": 11.6
+    "corpus_n": 17,
+    "paper_support_pct": 8.5
   },
   {
-    "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
+    "mapping_id": "water_harvesting__micro_catchment__annual_precipitation",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "worldclim_v2_precip",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 150.0,
+      "abs_max": 500.0
+    },
+    "uncertainty_pct": 30.0,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.3333,
+    "weight_adjustable": true,
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 150.0, 'abs_max': 500.0}; uncertainty ±30% from spread. Collapsed 5 citation echo(es). ",
+    "variable": "annual_precipitation",
+    "suitability_family_id": "water_harvesting__micro_catchment",
+    "evidence_ids": [
+      "ev_wh_precip_critchley91_negarim",
+      "ev_wh_precip_wocatgl13_negarim"
+    ],
+    "n_sources": 2,
+    "corpus_n": 19,
+    "paper_support_pct": 15.9
+  },
+  {
+    "mapping_id": "water_harvesting__micro_catchment__soil_depth_to_bedrock",
     "nbs_id": "water_harvesting_conservation",
     "dataset_id": "ssurgo_statsgo",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
-      "abs_min": 20.0,
-      "opt_low": 75.0
+      "abs_min": 100.0,
+      "opt_low": 200.0
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 60.0,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
-    "weight_default": 0.2,
+    "weight_default": 0.3333,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 20.0, 'opt_low': 75.0}; uncertainty ±20% from spread. ",
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 200.0}; uncertainty ±60% from spread. ",
     "variable": "soil_depth_to_bedrock",
-    "suitability_family_id": "water_harvesting__in_situ",
+    "suitability_family_id": "water_harvesting__micro_catchment",
     "evidence_ids": [
-      "ev_wh_soil_depth_kahinda08_1"
+      "ev_wh_soildepth_critchley91_negarim",
+      "ev_wh_soildepth_wocatgl13_strips"
+    ],
+    "n_sources": 2,
+    "corpus_n": 19,
+    "paper_support_pct": 15.9
+  },
+  {
+    "mapping_id": "water_harvesting__micro_catchment__slope",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "srtm_dem_30m",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 0.6,
+      "opt_low": 0.6,
+      "opt_high": 2.9,
+      "abs_max": 2.9
+    },
+    "uncertainty_pct": 60.0,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.3333,
+    "weight_adjustable": true,
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.6, 'opt_low': 0.6, 'opt_high': 2.9, 'abs_max': 2.9}; uncertainty ±60% from spread. Collapsed 6 citation echo(es). ",
+    "variable": "slope",
+    "suitability_family_id": "water_harvesting__micro_catchment",
+    "evidence_ids": [
+      "ev_wh_slope_critchley91_negarim",
+      "ev_wh_slope_wocatgl13_negarim"
+    ],
+    "n_sources": 2,
+    "corpus_n": 19,
+    "paper_support_pct": 15.9
+  },
+  {
+    "mapping_id": "water_harvesting__rooftop__annual_precipitation",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "worldclim_v2_precip",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 200.0,
+      "abs_max": 1000.0
+    },
+    "uncertainty_pct": 30.0,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 1.0,
+    "weight_adjustable": true,
+    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 200.0, 'abs_max': 1000.0}; uncertainty ±30% from spread. Collapsed 1 citation echo(es). ",
+    "variable": "annual_precipitation",
+    "suitability_family_id": "water_harvesting__rooftop",
+    "evidence_ids": [
+      "ev_wh_precip_wocatgl13_rooftop"
     ],
     "n_sources": 1,
-    "corpus_n": 13,
-    "paper_support_pct": 11.6
+    "corpus_n": 1,
+    "paper_support_pct": 100.0
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__slope",
@@ -141,6 +255,7 @@
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
+      "abs_min": 0.1,
       "opt_low": 0.0,
       "opt_high": 2.3,
       "abs_max": 5.7
@@ -151,7 +266,7 @@
     "has_future_projection": false,
     "weight_default": 0.1111,
     "weight_adjustable": true,
-    "justification": "Reconciled from 6 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 0.0, 'opt_high': 2.3, 'abs_max': 5.7}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
+    "justification": "Reconciled from 8 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.1, 'opt_low': 0.0, 'opt_high': 2.3, 'abs_max': 5.7}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
     "variable": "slope",
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
@@ -160,11 +275,13 @@
       "ev_wh_slope_ryan20_1",
       "ev_wh_slope_alabadi17_1",
       "ev_wh_slope_karimi19_1",
-      "ev_wh_slope_vema19_1"
+      "ev_wh_slope_vema19_1",
+      "ev_wh_slope_critchley91_trapezoidal",
+      "ev_wh_slope_wocatgl13_tanks"
     ],
-    "n_sources": 6,
-    "corpus_n": 10,
-    "paper_support_pct": 57.9
+    "n_sources": 8,
+    "corpus_n": 13,
+    "paper_support_pct": 60.4
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
@@ -193,8 +310,39 @@
       "ev_wh_runoff_potential_index_vema19_1"
     ],
     "n_sources": 5,
-    "corpus_n": 10,
-    "paper_support_pct": 50.0
+    "corpus_n": 13,
+    "paper_support_pct": 35.8
+  },
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "worldclim_v2_precip",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 200.0,
+      "opt_low": 600.0,
+      "opt_high": 800.0,
+      "abs_max": 500.0
+    },
+    "uncertainty_pct": 60.0,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.1111,
+    "weight_adjustable": true,
+    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 200.0, 'opt_low': 600.0, 'opt_high': 800.0, 'abs_max': 500.0}; uncertainty ±60% from spread. Collapsed 3 citation echo(es). ",
+    "variable": "annual_precipitation",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": [
+      "ev_wh_annual_precipitation_kahinda08_4",
+      "ev_wh_annual_precipitation_ryan20_1",
+      "ev_wh_precip_critchley91_trapezoidal",
+      "ev_wh_precip_wocatgl13_trapezoidal"
+    ],
+    "n_sources": 4,
+    "corpus_n": 13,
+    "paper_support_pct": 34.0
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__stream_order",
@@ -223,8 +371,36 @@
       "ev_wh_stream_order_mahmoud21_1"
     ],
     "n_sources": 3,
-    "corpus_n": 10,
-    "paper_support_pct": 28.9
+    "corpus_n": 13,
+    "paper_support_pct": 20.8
+  },
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__aridity_index",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "global_aridity_index_v3",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 0.05,
+      "opt_low": 0.5,
+      "opt_high": 0.65
+    },
+    "uncertainty_pct": 20.0,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.1111,
+    "weight_adjustable": true,
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.05, 'opt_low': 0.5, 'opt_high': 0.65}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
+    "variable": "aridity_index",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "evidence_ids": [
+      "ev_wh_aridity_index_kahinda08_3",
+      "ev_wh_aridity_slm11_macro"
+    ],
+    "n_sources": 2,
+    "corpus_n": 13,
+    "paper_support_pct": 18.9
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
@@ -250,37 +426,8 @@
       "ev_wh_drainage_density_mahmoud21_1"
     ],
     "n_sources": 3,
-    "corpus_n": 10,
-    "paper_support_pct": 23.7
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 100.0,
-      "opt_low": 600.0,
-      "opt_high": 800.0,
-      "abs_max": 1000.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1111,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 600.0, 'opt_high': 800.0, 'abs_max': 1000.0}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "evidence_ids": [
-      "ev_wh_annual_precipitation_kahinda08_4",
-      "ev_wh_annual_precipitation_ryan20_1"
-    ],
-    "n_sources": 2,
-    "corpus_n": 10,
-    "paper_support_pct": 21.1
+    "corpus_n": 13,
+    "paper_support_pct": 17.0
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__catchment_area",
@@ -303,35 +450,8 @@
       "ev_wh_catchment_area_kadam12_1"
     ],
     "n_sources": 1,
-    "corpus_n": 10,
-    "paper_support_pct": 13.2
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__aridity_index",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "global_aridity_index_v3",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.05,
-      "opt_low": 0.5,
-      "opt_high": 0.65
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1111,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.05, 'opt_low': 0.5, 'opt_high': 0.65}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "aridity_index",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "evidence_ids": [
-      "ev_wh_aridity_index_kahinda08_3"
-    ],
-    "n_sources": 1,
-    "corpus_n": 10,
-    "paper_support_pct": 13.2
+    "corpus_n": 13,
+    "paper_support_pct": 9.4
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__clay_content",
@@ -356,8 +476,8 @@
       "ev_wh_clay_content_kahinda08_2"
     ],
     "n_sources": 1,
-    "corpus_n": 10,
-    "paper_support_pct": 13.2
+    "corpus_n": 13,
+    "paper_support_pct": 9.4
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__soil_permeability",
@@ -381,8 +501,62 @@
       "ev_wh_soil_permeability_vema19_1"
     ],
     "n_sources": 1,
-    "corpus_n": 10,
-    "paper_support_pct": 13.2
+    "corpus_n": 13,
+    "paper_support_pct": 9.4
+  },
+  {
+    "mapping_id": "water_harvesting__spate__annual_precipitation",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "worldclim_v2_precip",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 100.0,
+      "abs_max": 700.0
+    },
+    "uncertainty_pct": 60.0,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.5,
+    "weight_adjustable": true,
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'abs_max': 700.0}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
+    "variable": "annual_precipitation",
+    "suitability_family_id": "water_harvesting__spate",
+    "evidence_ids": [
+      "ev_wh_precip_critchley91_rockdams",
+      "ev_wh_precip_wocatgl13_floodwh"
+    ],
+    "n_sources": 2,
+    "corpus_n": 4,
+    "paper_support_pct": 62.5
+  },
+  {
+    "mapping_id": "water_harvesting__spate__slope",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "srtm_dem_30m",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "opt_high": 1.1,
+      "abs_max": 1.7
+    },
+    "uncertainty_pct": 30.0,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.5,
+    "weight_adjustable": true,
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 1.1, 'abs_max': 1.7}; uncertainty ±30% from spread. Collapsed 1 citation echo(es). ",
+    "variable": "slope",
+    "suitability_family_id": "water_harvesting__spate",
+    "evidence_ids": [
+      "ev_wh_slope_critchley91_rockdams",
+      "ev_wh_slope_wocatgl13_tabia"
+    ],
+    "n_sources": 2,
+    "corpus_n": 4,
+    "paper_support_pct": 62.5
   },
   {
     "mapping_id": "water_harvesting__terracing__slope",
@@ -396,49 +570,25 @@
       "opt_high": 30.0,
       "abs_max": 30.0
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 60.0,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 0.2,
     "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 2.0, 'opt_low': 18.0, 'opt_high': 30.0, 'abs_max': 30.0}; uncertainty ±20% from spread. ",
+    "justification": "Reconciled from 5 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 2.0, 'opt_low': 18.0, 'opt_high': 30.0, 'abs_max': 30.0}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
     "variable": "slope",
     "suitability_family_id": "water_harvesting__terracing",
     "evidence_ids": [
       "ev_wh_slope_krois14_terraces",
-      "ev_wh_slope_chen17_1"
+      "ev_wh_slope_chen17_1",
+      "ev_wh_slope_critchley91_stonebunds",
+      "ev_wh_slope_slm11_fanyajuu",
+      "ev_wh_slope_wocatgl13_benchterraces"
     ],
-    "n_sources": 2,
-    "corpus_n": 11,
-    "paper_support_pct": 27.0
-  },
-  {
-    "mapping_id": "water_harvesting__terracing__soil_depth_to_bedrock",
-    "nbs_id": "water_harvesting_conservation",
-    "dataset_id": "ssurgo_statsgo",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 15.0,
-      "opt_low": 100.0
-    },
-    "uncertainty_pct": 43.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.2,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 15.0, 'opt_low': 100.0}; uncertainty ±43% from spread. ",
-    "variable": "soil_depth_to_bedrock",
-    "suitability_family_id": "water_harvesting__terracing",
-    "evidence_ids": [
-      "ev_wh_soil_depth_krois14_1",
-      "ev_wh_soil_depth_chen17_1"
-    ],
-    "n_sources": 2,
-    "corpus_n": 11,
-    "paper_support_pct": 27.0
+    "n_sources": 5,
+    "corpus_n": 14,
+    "paper_support_pct": 48.1
   },
   {
     "mapping_id": "water_harvesting__terracing__annual_precipitation",
@@ -450,23 +600,53 @@
       "abs_min": 100.0,
       "opt_low": 400.0,
       "opt_high": 600.0,
-      "abs_max": 1200.0
+      "abs_max": 750.0
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 60.0,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 0.2,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 400.0, 'opt_high': 600.0, 'abs_max': 1200.0}; uncertainty ±20% from spread. ",
+    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 400.0, 'opt_high': 600.0, 'abs_max': 750.0}; uncertainty ±60% from spread. ",
     "variable": "annual_precipitation",
     "suitability_family_id": "water_harvesting__terracing",
     "evidence_ids": [
-      "ev_wh_annual_precipitation_krois14_1"
+      "ev_wh_annual_precipitation_krois14_1",
+      "ev_wh_precip_critchley91_stonebunds",
+      "ev_wh_precip_wocatgl13_benchterraces"
     ],
-    "n_sources": 1,
-    "corpus_n": 11,
-    "paper_support_pct": 13.5
+    "n_sources": 3,
+    "corpus_n": 14,
+    "paper_support_pct": 28.8
+  },
+  {
+    "mapping_id": "water_harvesting__terracing__soil_depth_to_bedrock",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "ssurgo_statsgo",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 15.0,
+      "opt_low": 100.0
+    },
+    "uncertainty_pct": 33.0,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.2,
+    "weight_adjustable": true,
+    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 15.0, 'opt_low': 100.0}; uncertainty ±33% from spread. ",
+    "variable": "soil_depth_to_bedrock",
+    "suitability_family_id": "water_harvesting__terracing",
+    "evidence_ids": [
+      "ev_wh_soil_depth_krois14_1",
+      "ev_wh_soil_depth_chen17_1",
+      "ev_wh_soildepth_slm11_terraces"
+    ],
+    "n_sources": 3,
+    "corpus_n": 14,
+    "paper_support_pct": 28.8
   },
   {
     "mapping_id": "water_harvesting__terracing__clay_content",
@@ -492,8 +672,8 @@
       "ev_wh_soil_texture_krois14_1"
     ],
     "n_sources": 1,
-    "corpus_n": 11,
-    "paper_support_pct": 13.5
+    "corpus_n": 14,
+    "paper_support_pct": 9.6
   },
   {
     "mapping_id": "water_harvesting__terracing__runoff_potential_index",
@@ -517,7 +697,7 @@
       "ev_wh_runoff_potential_index_krois14_1"
     ],
     "n_sources": 1,
-    "corpus_n": 11,
-    "paper_support_pct": 13.5
+    "corpus_n": 14,
+    "paper_support_pct": 9.6
   }
 ]

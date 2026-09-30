@@ -8,20 +8,23 @@
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
+      "abs_min": 0.1,
       "opt_low": 0.0,
       "opt_high": 2.3,
       "abs_max": 5.7
     },
     "uncertainty_pct": 60.0,
     "context_overrides": [],
-    "justification": "Reconciled from 6 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 0.0, 'opt_high': 2.3, 'abs_max': 5.7}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
+    "justification": "Reconciled from 8 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.1, 'opt_low': 0.0, 'opt_high': 2.3, 'abs_max': 5.7}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
     "references": [
+      "fao_critchley_wh_manual_1991",
       "fuzzy_ahp_2017_wh_zones",
       "kadam2012_scscn_india_rwh",
       "karimi_2019_runoff_map_rwh_zones",
       "mahmoud_2016_mcda_gis_wh_recharge",
       "sanddam_siting_guidelines_kenya_2020",
-      "singh_2019_fuzzy_wh_structure_rainfed"
+      "singh_2019_fuzzy_wh_structure_rainfed",
+      "wocat_wh_guidelines_2013"
     ],
     "evidence_ids": [
       "ev_wh_slope_kadam12_1",
@@ -29,11 +32,13 @@
       "ev_wh_slope_ryan20_1",
       "ev_wh_slope_alabadi17_1",
       "ev_wh_slope_karimi19_1",
-      "ev_wh_slope_vema19_1"
+      "ev_wh_slope_vema19_1",
+      "ev_wh_slope_critchley91_trapezoidal",
+      "ev_wh_slope_wocatgl13_tanks"
     ],
-    "paper_support_pct": 57.9,
-    "n_sources": 6,
-    "corpus_n": 10
+    "paper_support_pct": 60.4,
+    "n_sources": 8,
+    "corpus_n": 13
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
@@ -64,9 +69,42 @@
       "ev_wh_runoff_potential_index_singh17_1",
       "ev_wh_runoff_potential_index_vema19_1"
     ],
-    "paper_support_pct": 50.0,
+    "paper_support_pct": 35.8,
     "n_sources": 5,
-    "corpus_n": 10
+    "corpus_n": 13
+  },
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "variable": "annual_precipitation",
+    "variable_unit": "mm/year",
+    "dataset_id": "[\"worldclim_v2_precip\",\"chelsa_bioclim_v21_baseline\",\"chirps_precipitation_v2\"]",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 200.0,
+      "opt_low": 600.0,
+      "opt_high": 800.0,
+      "abs_max": 500.0
+    },
+    "uncertainty_pct": 60.0,
+    "context_overrides": [],
+    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 200.0, 'opt_low': 600.0, 'opt_high': 800.0, 'abs_max': 500.0}; uncertainty ±60% from spread. Collapsed 3 citation echo(es). ",
+    "references": [
+      "fao_critchley_wh_manual_1991",
+      "kahinda2008_sa_rwh_suitability",
+      "sanddam_siting_guidelines_kenya_2020",
+      "wocat_wh_guidelines_2013"
+    ],
+    "evidence_ids": [
+      "ev_wh_annual_precipitation_kahinda08_4",
+      "ev_wh_annual_precipitation_ryan20_1",
+      "ev_wh_precip_critchley91_trapezoidal",
+      "ev_wh_precip_wocatgl13_trapezoidal"
+    ],
+    "paper_support_pct": 34.0,
+    "n_sources": 4,
+    "corpus_n": 13
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__stream_order",
@@ -95,9 +133,37 @@
       "ev_wh_stream_order_singh17_1",
       "ev_wh_stream_order_mahmoud21_1"
     ],
-    "paper_support_pct": 28.9,
+    "paper_support_pct": 20.8,
     "n_sources": 3,
-    "corpus_n": 10
+    "corpus_n": 13
+  },
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__aridity_index",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
+    "variable": "aridity_index",
+    "variable_unit": "dimensionless",
+    "dataset_id": "[\"global_aridity_index_v3\"]",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 0.05,
+      "opt_low": 0.5,
+      "opt_high": 0.65
+    },
+    "uncertainty_pct": 20.0,
+    "context_overrides": [],
+    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.05, 'opt_low': 0.5, 'opt_high': 0.65}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
+    "references": [
+      "fao_slm_in_practice_2011",
+      "kahinda2008_sa_rwh_suitability"
+    ],
+    "evidence_ids": [
+      "ev_wh_aridity_index_kahinda08_3",
+      "ev_wh_aridity_slm11_macro"
+    ],
+    "paper_support_pct": 18.9,
+    "n_sources": 2,
+    "corpus_n": 13
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
@@ -123,38 +189,9 @@
       "ev_wh_drainage_density_singh17_1",
       "ev_wh_drainage_density_mahmoud21_1"
     ],
-    "paper_support_pct": 23.7,
+    "paper_support_pct": 17.0,
     "n_sources": 3,
-    "corpus_n": 10
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "variable": "annual_precipitation",
-    "variable_unit": "mm/year",
-    "dataset_id": "[\"worldclim_v2_precip\",\"chelsa_bioclim_v21_baseline\",\"chirps_precipitation_v2\"]",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 100.0,
-      "opt_low": 600.0,
-      "opt_high": 800.0,
-      "abs_max": 1000.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0, 'opt_low': 600.0, 'opt_high': 800.0, 'abs_max': 1000.0}; uncertainty ±60% from spread. Collapsed 1 citation echo(es). ",
-    "references": [
-      "kahinda2008_sa_rwh_suitability",
-      "sanddam_siting_guidelines_kenya_2020"
-    ],
-    "evidence_ids": [
-      "ev_wh_annual_precipitation_kahinda08_4",
-      "ev_wh_annual_precipitation_ryan20_1"
-    ],
-    "paper_support_pct": 21.1,
-    "n_sources": 2,
-    "corpus_n": 10
+    "corpus_n": 13
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__catchment_area",
@@ -176,35 +213,9 @@
     "evidence_ids": [
       "ev_wh_catchment_area_kadam12_1"
     ],
-    "paper_support_pct": 13.2,
+    "paper_support_pct": 9.4,
     "n_sources": 1,
-    "corpus_n": 10
-  },
-  {
-    "mapping_id": "water_harvesting__runoff_catchment__aridity_index",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "variable": "aridity_index",
-    "variable_unit": "dimensionless",
-    "dataset_id": "[\"global_aridity_index_v3\"]",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.05,
-      "opt_low": 0.5,
-      "opt_high": 0.65
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.05, 'opt_low': 0.5, 'opt_high': 0.65}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
-    "references": [
-      "kahinda2008_sa_rwh_suitability"
-    ],
-    "evidence_ids": [
-      "ev_wh_aridity_index_kahinda08_3"
-    ],
-    "paper_support_pct": 13.2,
-    "n_sources": 1,
-    "corpus_n": 10
+    "corpus_n": 13
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__clay_content",
@@ -227,9 +238,9 @@
     "evidence_ids": [
       "ev_wh_clay_content_kahinda08_2"
     ],
-    "paper_support_pct": 13.2,
+    "paper_support_pct": 9.4,
     "n_sources": 1,
-    "corpus_n": 10
+    "corpus_n": 13
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__soil_permeability",
@@ -252,8 +263,8 @@
     "evidence_ids": [
       "ev_wh_soil_permeability_vema19_1"
     ],
-    "paper_support_pct": 13.2,
+    "paper_support_pct": 9.4,
     "n_sources": 1,
-    "corpus_n": 10
+    "corpus_n": 13
   }
 ]
