@@ -206,6 +206,7 @@ def test_account_check_catches_foreign_numbers_and_ids(tmp_path):
     bad["evidence_ids"] = ["ev_a", "ev_dropped", "ev_nope"]
     bad["justification"]["statement"] = "reduces erosion by 55 % according to ev_zzz"
     bad["justification"]["evidence_summary"] = []  # isolate the four intended flags
+    bad["justification"]["agreement_note"] = ""
     sigs = sorted(
         f["signal"] for f in check_account.check_row(bad, check_account._load_ev(ev))
     )
