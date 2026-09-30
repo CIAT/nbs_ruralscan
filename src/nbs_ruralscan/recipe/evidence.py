@@ -22,7 +22,13 @@ USE_ROLE = {
     "structural_suitability",
     "climate_risk",
     "priority_need",
+    # NbS -> outcome claim (yield, erosion, carbon, income, a hazard's impact). Routed to
+    # T3 (livelihood_mitigation) and/or T6 by the XW target crosswalk — never by relabelling
+    # the outcome variable. Re-activated 2026-09-30 (T3/T6 generation method, ruleset v1.6.0).
     "nbs_effect",
+    # Hazard -> NbS claim: the hazard damages/kills the NbS asset (seedling mortality, fire,
+    # windthrow, flood scour). Feeds T3 asset_threat rows only (M2b Stream A). New v1.6.0.
+    "asset_vulnerability",
     "dataset",
     # M2b Stream-B operational / enabling-environment lever (soft, investment-addressable:
     # tenure/market/road/extension/finance/labour/access). NOT structural suitability

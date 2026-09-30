@@ -1,8 +1,8 @@
 {
-  "manifest_version": "0.3.0-structure-frozen",
+  "manifest_version": "0.4.0-structure-frozen",
   "spec_source": "schema/spec.md",
-  "generated": "2026-06-05",
-  "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.2; CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
+  "generated": "2026-09-30",
+  "note": "Machine-checkable column manifest for the T0-T7 tables + the evidence/configuration layer (SRC/EV/VONT/FAM). This is the authoritative column set the team populates against. STRUCTURE is locked at v0.4.0 (T3/T6 generation method columns added 2026-09-30, see methodology/T3_T6_generation_method.md section 11); CONTENT is draft/pending. Change the structure only by editing spec.md and regenerating this file (raise an issue + tag the team first). 'required' = must be present and non-empty on every row; 'optional' = column may be present, value may be blank; 'conditional' = required when the noted trigger holds; 'derived' = computed, not authored. 'fk' maps a column to its referenced table.column.",
   "value_rules": {
     "required": "column present on every row; value non-empty",
     "optional": "column may be present; value may be blank",
@@ -177,20 +177,29 @@
         "nbs_id",
         "hazard_type",
         "farming_system",
-        "mitigation_potential",
         "risk_role",
         "mitigation_mechanism",
         "confidence",
         "timescale_of_effect",
         "landscape_scale_only",
-        "evidence_ids"
+        "evidence_ids",
+        "evidence_level",
+        "agreement_level",
+        "context_dependent"
       ],
       "optional": [
         "caveats",
-        "justification"
+        "justification",
+        "suitability_family_id",
+        "scope_type",
+        "scope_id",
+        "applicability",
+        "family_spread"
       ],
       "conditional": [
-        "asset_risk_weight"
+        "asset_risk_weight",
+        "asset_sensitivity",
+        "mitigation_potential"
       ],
       "derived": [],
       "fk": {
@@ -203,7 +212,20 @@
             "all"
           ]
         },
-        "evidence_ids": "EV.evidence_id"
+        "evidence_ids": "EV.evidence_id",
+        "suitability_family_id": "FAM.suitability_family_id",
+        "scope_id": {
+          "targets": [
+            "T7.context_id"
+          ],
+          "literals": [
+            "low",
+            "lower_middle",
+            "upper_middle",
+            "high",
+            "lic_lmic"
+          ]
+        }
       },
       "enum_values": {
         "hazard_type": [
@@ -214,8 +236,61 @@
           "wind_cyclone",
           "waterlogging",
           "frost"
+        ],
+        "mitigation_potential": [
+          "very_negative",
+          "negative",
+          "none",
+          "low",
+          "moderate",
+          "high",
+          "very_high"
+        ],
+        "risk_role": [
+          "livelihood_mitigation",
+          "asset_threat",
+          "both"
+        ],
+        "confidence": [
+          "very_low",
+          "low",
+          "medium",
+          "high",
+          "very_high"
+        ],
+        "timescale_of_effect": [
+          "immediate",
+          "short_term_1_3yr",
+          "medium_term_3_7yr",
+          "long_term_7yr_plus"
+        ],
+        "scope_type": [
+          "aez",
+          "farming_system",
+          "admin_country",
+          "admin_region",
+          "hydrobasin",
+          "income_group"
+        ],
+        "evidence_level": [
+          "limited",
+          "medium",
+          "robust"
+        ],
+        "agreement_level": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "asset_sensitivity": [
+          "none",
+          "low",
+          "moderate",
+          "high",
+          "very_high"
         ]
-      }
+      },
+      "note": "v0.4.0 (T3/T6 generation method): rows are generated per cell x applicability scope; blank scope_type/scope_id = global row; blank suitability_family_id = NbS roll-up row. mitigation_potential required when risk_role in {livelihood_mitigation, both}; asset_sensitivity + asset_risk_weight required when risk_role in {asset_threat, both}. confidence is derived (IPCC evidence x agreement matrix), never authored."
     },
     "T4": {
       "name": "Suitability Variable Mappings",
@@ -338,12 +413,21 @@
         "effect_confidence",
         "effect_mechanism",
         "timescale_of_effect",
-        "evidence_ids"
+        "evidence_ids",
+        "evidence_level",
+        "agreement_level",
+        "context_dependent"
       ],
       "optional": [
         "conditionality",
         "economic_archetype_id",
-        "justification"
+        "justification",
+        "suitability_family_id",
+        "scope_type",
+        "scope_id",
+        "applicability",
+        "family_spread",
+        "magnitude_summary"
       ],
       "conditional": [
         "economic_indicator_type",
@@ -354,8 +438,7 @@
         "nbs_id": "T0.nbs_id",
         "variable_id": {
           "targets": [
-            "T5.variable_id",
-            "T3.hazard_type"
+            "T5.variable_id"
           ],
           "literals": [
             "establishment_cost",
@@ -371,7 +454,20 @@
             "cost_per_farmer_reached"
           ]
         },
-        "evidence_ids": "EV.evidence_id"
+        "evidence_ids": "EV.evidence_id",
+        "suitability_family_id": "FAM.suitability_family_id",
+        "scope_id": {
+          "targets": [
+            "T7.context_id"
+          ],
+          "literals": [
+            "low",
+            "lower_middle",
+            "upper_middle",
+            "high",
+            "lic_lmic"
+          ]
+        }
       },
       "enum_values": {
         "economic_indicator_type": [
@@ -386,8 +482,54 @@
           "cost_per_hectare_restored",
           "cost_per_tco2e_avoided",
           "cost_per_farmer_reached"
+        ],
+        "variable_type": [
+          "opportunity_space_variable",
+          "climate_hazard_mitigation",
+          "economic_indicator"
+        ],
+        "effect_direction": [
+          "strong_negative",
+          "moderate_negative",
+          "slight_negative",
+          "no_relationship",
+          "slight_positive",
+          "moderate_positive",
+          "strong_positive"
+        ],
+        "effect_confidence": [
+          "very_low",
+          "low",
+          "medium",
+          "high",
+          "very_high"
+        ],
+        "timescale_of_effect": [
+          "immediate",
+          "short_term_1_3yr",
+          "medium_term_3_7yr",
+          "long_term_7yr_plus"
+        ],
+        "scope_type": [
+          "aez",
+          "farming_system",
+          "admin_country",
+          "admin_region",
+          "hydrobasin",
+          "income_group"
+        ],
+        "evidence_level": [
+          "limited",
+          "medium",
+          "robust"
+        ],
+        "agreement_level": [
+          "low",
+          "medium",
+          "high"
         ]
-      }
+      },
+      "note": "v0.4.0: variable_id for climate_hazard_mitigation rows is the T5 climate_hazard priority id (drought_hazard), never the bare T3 hazard_type. Same scope/family row semantics as T3. magnitude_summary only when >=2 independent sources share metric+unit; economic_value_range under the hard gates in methodology/T3_T6_generation_method.md section 7.7."
     },
     "T7": {
       "name": "Geographic Context",
@@ -558,6 +700,15 @@
           "section",
           "char_span",
           "file_line"
+        ],
+        "use_role": [
+          "structural_suitability",
+          "operational_risk",
+          "dataset",
+          "nbs_effect",
+          "asset_vulnerability",
+          "climate_risk",
+          "priority_need"
         ]
       }
     },
@@ -688,13 +839,51 @@
         "source_id": "SRC.source_id"
       },
       "enum_values": {
-        "tool_type": ["codebase", "platform", "method_framework", "r_package", "gee_app", "webgis"],
-        "language": ["python", "r", "gee_js", "javascript", "other", "na"],
-        "spatial_method": ["mcda_ahp", "fuzzy", "rule_based", "ml", "optimization", "process_model", "other"],
-        "validation": ["validated", "partial", "unvalidated"],
-        "benchmark_tier": ["High", "Medium", "Low"],
-        "maturity": ["active", "archived", "prototype"],
-        "review_status": ["canonical", "pending_review", "rejected"]
+        "tool_type": [
+          "codebase",
+          "platform",
+          "method_framework",
+          "r_package",
+          "gee_app",
+          "webgis"
+        ],
+        "language": [
+          "python",
+          "r",
+          "gee_js",
+          "javascript",
+          "other",
+          "na"
+        ],
+        "spatial_method": [
+          "mcda_ahp",
+          "fuzzy",
+          "rule_based",
+          "ml",
+          "optimization",
+          "process_model",
+          "other"
+        ],
+        "validation": [
+          "validated",
+          "partial",
+          "unvalidated"
+        ],
+        "benchmark_tier": [
+          "High",
+          "Medium",
+          "Low"
+        ],
+        "maturity": [
+          "active",
+          "archived",
+          "prototype"
+        ],
+        "review_status": [
+          "canonical",
+          "pending_review",
+          "rejected"
+        ]
       }
     },
     "SRCH": {
@@ -730,9 +919,117 @@
         "nbs_id": "T0.nbs_id"
       },
       "enum_values": {
-        "table": ["T4"],
-        "category": ["stock", "updated_lit", "grey", "tool"]
+        "table": [
+          "T4",
+          "T3",
+          "T6"
+        ],
+        "category": [
+          "stock",
+          "updated_lit",
+          "grey",
+          "tool"
+        ]
       }
+    },
+    "XW": {
+      "name": "Target Crosswalk (evidence outcome variable -> T3 hazard / T5 priority / T6 economic indicator)",
+      "location": "registers/XW_target_crosswalk.{csv,json}",
+      "per_nbs": false,
+      "primary_key": "xw_id",
+      "required": [
+        "xw_id",
+        "ev_variable",
+        "target_table",
+        "target_key",
+        "polarity",
+        "proximity",
+        "weight_factor",
+        "rationale"
+      ],
+      "optional": [
+        "ratified_by",
+        "ratified_date",
+        "note"
+      ],
+      "conditional": [],
+      "derived": [],
+      "fk": {
+        "ev_variable": "VONT.canonical_variable_id",
+        "target_key": {
+          "targets": [
+            "T5.variable_id",
+            "T3.hazard_type"
+          ],
+          "literals": [
+            "establishment_cost",
+            "recurrent_cost",
+            "income_potential",
+            "cost_reduction",
+            "market_access",
+            "carbon_revenue",
+            "subsidy_dependency",
+            "cost_per_beneficiary",
+            "cost_per_hectare_restored",
+            "cost_per_tco2e_avoided",
+            "cost_per_farmer_reached"
+          ]
+        }
+      },
+      "enum_values": {
+        "target_table": [
+          "T3",
+          "T6"
+        ],
+        "polarity": [
+          "same",
+          "inverted"
+        ],
+        "proximity": [
+          "direct",
+          "proxy",
+          "component"
+        ]
+      },
+      "note": "v0.4.0. The ONLY place an EV outcome variable becomes a consumer key. Many-to-many allowed. No row without a VONT id. Ratified by the consumer owner (Namita T6, Brayden T3; Pete pilot). weight_factor defaults: direct 1.0, proxy 0.7, component 0.7."
+    },
+    "BANDS": {
+      "name": "Magnitude Bands (metric -> strength class)",
+      "location": "registers/BANDS_magnitude_bands.{csv,json}",
+      "per_nbs": false,
+      "primary_key": "band_id",
+      "required": [
+        "band_id",
+        "metric",
+        "strength_class",
+        "basis"
+      ],
+      "optional": [
+        "abs_min",
+        "abs_max",
+        "source_scale_value",
+        "note"
+      ],
+      "conditional": [],
+      "derived": [],
+      "fk": {},
+      "enum_values": {
+        "metric": [
+          "smd_hedges_g",
+          "pct_change",
+          "ln_response_ratio",
+          "ordinal_rating",
+          "absolute",
+          "narrative"
+        ],
+        "strength_class": [
+          "slight",
+          "moderate",
+          "strong",
+          "unspecified"
+        ]
+      },
+      "note": "v0.4.0. Machine-readable magnitude->strength_class bands used at extraction (check_bands.py verifies). abs_min inclusive, abs_max exclusive, on |magnitude|. ordinal_rating rows map a source scale value (source_scale_value) to a class per adapter."
     }
   }
 }
