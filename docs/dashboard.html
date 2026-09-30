@@ -2378,7 +2378,7 @@
   function vfSetSubset(kind,val){ if(!window._vfScope)window._vfScope={}; val=(val==null?'':String(val)); window._vfScope[kind]=(window._vfScope[kind]===val?'':val); renderVfWorklist(); }
   // Task (chips): clicking a card's OA / channel / NbS / sub-practice chip sets that scope
   // filter (single-value, like the sidebar pills) so the worklist narrows to matching cards.
-  function vfScopeSet(key,val){ if(!window._vfScope)window._vfScope={}; window._vfScope[key]=val; if(key==='nbs')window._vfScope.family='all'; renderVfWorklist(); }
+  function vfScopeSet(key,val){ if(!window._vfScope)window._vfScope={}; window._vfScope[key]=val; if(key==='nbs'){ window._vfScope.family='all'; window._vfScope.round='all'; } renderVfWorklist(); }
   // Uniform little pill for the card chip row — matches the OA / channel badge look so the
   // NbS / sub-practice / location / source chips all read as one consistent chip set.
   function _vfChip(label,color,title,onclick,noCaps){ return '<span '+(onclick?('onclick="'+onclick+'" '):'')+'title="'+vfEsc(title||'')+'" style="'+(onclick?'cursor:pointer; ':'')+'font-size:9.5px; font-weight:700; '+(noCaps?'':'text-transform:uppercase; ')+'letter-spacing:.03em; color:'+color+'; border:1px solid '+color+'; border-radius:3px; padding:1px 6px; white-space:nowrap;">'+label+'</span>'; }
@@ -3012,10 +3012,11 @@
       // even when a channel has no evidence yet; append 'unknown' only if data has it.
       var _srcPresent=new Set(evAll.filter(_inNbs).map(_vfChanKey));
       var _srcOpts=['stock','updated_lit','grey','tool'].concat(_srcPresent.has('unknown')?['unknown']:[]);
-      var _roundOpts=Array.from(new Set(evAll.filter(_inNbs).map(_vfRoundKey))).sort();
+      // every round in the register, not just this practice's: an active round must stay visible
+      var _roundOpts=Array.from(new Set(evAll.map(_vfRoundKey))).sort();
       var _roundFmt=function(o){ var n=evAll.filter(_inNbs).filter(function(e){return _vfRoundKey(e)===o;}).length; return _vfRoundLabel(o)+' ('+n+')'; };
       // noAll=true → single-select mandatory (no "All" pill): used for Practice + Evidence-type.
-      var _mkPills=function(key,label,opts,fmt,cls,noAll,tip){ var cur=window._vfScope[key]; var list=(noAll?[]:['all']).concat(opts); var btns=list.map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\')window._vfScope.family=\'all\'; renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
+      var _mkPills=function(key,label,opts,fmt,cls,noAll,tip){ var cur=window._vfScope[key]; var list=(noAll?[]:['all']).concat(opts); var btns=list.map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\'){window._vfScope.family=\'all\';window._vfScope.round=\'all\';} renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
       // T4 is the only live evidence type (T3/T6 deferred) → no pill row, just the legend line.
       var _tblDesc={T4:'<b>T4 · Suitability</b> — where the NbS can physically establish (climate · terrain · soils · land system).'};
       var _tblLegend='<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">'+(_tblDesc[window._vfScope.table]||'')+'</div>';
