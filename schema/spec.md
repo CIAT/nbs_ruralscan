@@ -610,7 +610,7 @@ narrative without a full CBA — **scoping-grade, not CBA**.
 | `variable_id` | string | Required | FK → `T5.variable_id` (a `priority` row) **or** an `economic_indicator_type` literal. *(v0.4.0: for `climate_hazard_mitigation` rows this is the T5 climate-hazard priority id, e.g. `drought_hazard` — the bare T3 `hazard_type` is no longer accepted.)* | `rural_poverty` |
 | `variable_type` | enum | Required | `opportunity_space_variable` \| `climate_hazard_mitigation` \| `economic_indicator`. | `opportunity_space_variable` |
 | `scope_type` · `scope_id` | enum · string | Optional / Conditional *(v0.4.0)* | As T3; `farming_system` **is** a valid scope on T6 (it is not a cell key here). | `income_group` · `lic_lmic` |
-| `effect_direction` | enum | Required | Likert: `strong_negative` \| `moderate_negative` \| `slight_negative` \| `no_relationship` \| `slight_positive` \| `moderate_positive` \| `strong_positive`. Sign is in the **T5 variable's frame** (after `XW.polarity`). Derived from the modal-sign weighted-median rank (±1 slight, ±2 moderate, ±3 strong); **`no_relationship` only when the evidence reports a null**, never from cancellation. | `moderate_positive` |
+| `effect_direction` | enum | Required | Likert: `strong_negative` \| `moderate_negative` \| `slight_negative` \| `no_relationship` \| `slight_positive` \| `moderate_positive` \| `strong_positive`. Sign is in the **benefit frame** — positive = the NbS improves the priority concern (reduces a `high_is_bad` variable, raises a `low_is_bad` one) — reached from the outcome-as-measured direction via `XW.polarity`. Derived from the modal-sign weighted-median rank (±1 slight, ±2 moderate, ±3 strong); **`no_relationship` only when the evidence reports a null**, never from cancellation. | `moderate_positive` |
 | `evidence_level` · `agreement_level` | enum | Required *(v0.4.0)* | IPCC axes, as T3. | `medium` · `high` |
 | `effect_confidence` | enum | Required | **Derived** via the IPCC matrix: `very_low` \| `low` \| `medium` \| `high` \| `very_high`. *(v0.4.0: `expert_opinion` removed.)* | `high` |
 | `context_dependent` · `family_spread` | boolean | Required · Optional *(v0.4.0)* | As T3. | `false` |
@@ -793,7 +793,7 @@ unmapped variable is catalogued, feeds no cell, and is listed in the run report.
 | `ev_variable` | string | Required | FK → `VONT.canonical_variable_id`. | `erosion_hazard` |
 | `target_table` | enum | Required | `T3` \| `T6`. | `T6` |
 | `target_key` | string | Required | T3 `hazard_type`, T5 `variable_id`, or an `economic_indicator_type` literal. | `soil_erosion_risk` |
-| `polarity` | enum | Required | `same` \| `inverted` — sign flip between the outcome as measured and the target's `directionality_of_concern`. | `same` |
+| `polarity` | enum | Required | `same` \| `inverted` — converts the unit's direction on the **outcome as measured** into the **benefit frame** of the generated row (positive = the NbS helps). `inverted` for `high_is_bad` outcomes (erosion, hazards, costs-as-outcomes), `same` for `low_is_bad` ones (yield, income, carbon, biodiversity). | `inverted` |
 | `proximity` | enum | Required | `direct` \| `proxy` \| `component`. Proxies/components are named as such in the traceable account. | `direct` |
 | `weight_factor` | float | Required | Synthesis weight multiplier. Defaults: direct 1.0 · proxy 0.7 · component 0.7. | `1.0` |
 | `rationale` | string | Required | Why this mapping (cite the proximate-over-distal principle where relevant). | |
