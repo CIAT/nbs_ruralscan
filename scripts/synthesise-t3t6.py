@@ -151,13 +151,13 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
 def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
     units: list[EvidenceUnit] = inp["units"]
     xw: list[cs.XWRow] = inp["xw"]
-    common = dict(
-        categories=inp["categories"],
-        src_contexts=inp["src_contexts"],
-        income_lookup=inp["income"],
-        matrix=inp["matrix"],
-        xw_rows=xw,
-    )
+    common: dict[str, Any] = {
+        "categories": inp["categories"],
+        "src_contexts": inp["src_contexts"],
+        "income_lookup": inp["income"],
+        "matrix": inp["matrix"],
+        "xw_rows": xw,
+    }
     t3_rows: list[dict[str, Any]] = []
     t6_rows: list[dict[str, Any]] = []
     report: dict[str, Any] = {

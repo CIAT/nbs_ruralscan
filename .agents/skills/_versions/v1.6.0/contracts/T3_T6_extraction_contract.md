@@ -56,6 +56,7 @@ raise an ontology-triage note**; do not invent an id or borrow the nearest T5 id
   "magnitude_low": 11.0,
   "magnitude_high": 35.0,
   "unit": "percent",
+  "framing": "presence | loss",
   "significance": "sig | ns | not_reported",
   "n": 14,
   "design": "meta_analysis | rct | quasi_experimental | observational | model | case_study | expert | practitioner_rating",
@@ -67,6 +68,11 @@ Rules:
 
 1. **`direction` is relative to the outcome variable as named.** `erosion_hazard` + `negative` = erosion went
    *down*. Never translate to "good/bad for people".
+   **`framing`** (added 2026-09-30, riparian pilot): `presence` (default — the source measured the effect of the
+   buffer / practice being present or added) or **`loss`** — the source measured what happens when the
+   vegetation / practice is LOST or absent (dose-response to native-vegetation loss, deforestation → floods).
+   Record the direction exactly as measured and set `framing = "loss"`; the engine flips the sign into the
+   intervention-present frame. Never pre-flip the direction yourself.
 2. **Every number in `magnitude*` and `n` must appear verbatim in `quote`** (`check_numbers`). No number in the
    quote → no `magnitude`, `metric = narrative`.
 3. **`strength_class` comes from BANDS** (`schema/registers/BANDS_magnitude_bands.csv`) when `metric` has a band;

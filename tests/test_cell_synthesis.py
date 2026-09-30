@@ -620,7 +620,7 @@ def test_family_rows_and_roll_up_spread():
     assert fam_rows[f2]["effect_direction"] == "slight_positive"
     assert rows[0]["suitability_family_id"] == "" and rows[0]["family_spread"] is True
     assert rows[0]["record_id"] == "riparian_buffer__soil_erosion_risk"
-    assert fam_rows[f1]["record_id"] == f"riparian_buffer__{f1}__soil_erosion_risk"
+    assert fam_rows[f1]["record_id"] == "riparian_buffer__planted__soil_erosion_risk"
 
 
 def test_magnitude_summary_needs_two_sources_sharing_metric_and_unit():
@@ -658,31 +658,6 @@ def test_resolve_prefers_most_specific_scope():
     assert row is not None and (row["record_id"], st) == ("inc", "ok")
     row, st = cs.resolve_for_aoi(rows, {"income_group": "high"})
     assert row is not None and (row["record_id"], st) == ("g", "ok")
-
-
-def test_direction_only_evidence_is_weakest_class_and_says_so():
-    units = [
-        _u(
-            f"d{i}",
-            f"s{i}",
-            direction="negative",
-            strength="unspecified",
-            ctx={"income_group": "low"},
-        )
-        for i in range(3)
-    ]
-    rows, _ = _t6(units)
-    g = rows[0]
-    assert (
-        g["effect_direction"] == "slight_positive"
-    )  # erosion down, benefit frame, weakest
-    assert g["justification"]["strength_basis"] == "direction_only"
-    assert "strength not quantified" in g["justification"]["statement"]
-    q = _u(
-        "q", "sq", direction="negative", strength="strong", ctx={"income_group": "low"}
-    )
-    rows, _ = _t6(units + [q])
-    assert rows[0]["justification"]["strength_basis"] == "quantified"
 
 
 def test_range_only_cost_units_pass_the_magnitude_gate_and_widen_the_range():
@@ -734,3 +709,69 @@ def test_range_only_cost_units_pass_the_magnitude_gate_and_widen_the_range():
         "HIC figure excluded from LIC/LMIC or global row",
     ) in rep.excluded_economics
     assert rows[0]["economic_value_range"]["high"] == 500.0
+
+
+def test_direction_only_evidence_is_weakest_class_and_says_so():
+    units = [
+        _u(
+            f"d{i}",
+            f"s{i}",
+            direction="negative",
+            strength="unspecified",
+            ctx={"income_group": "low"},
+        )
+        for i in range(3)
+    ]
+    rows, _ = _t6(units)
+    g = rows[0]
+    assert (
+        g["effect_direction"] == "slight_positive"
+    )  # erosion down, benefit frame, weakest
+    assert g["justification"]["strength_basis"] == "direction_only"
+    assert "strength not quantified" in g["justification"]["statement"]
+    q = _u(
+        "q", "sq", direction="negative", strength="strong", ctx={"income_group": "low"}
+    )
+    rows, _ = _t6(units + [q])
+    assert rows[0]["justification"]["strength_basis"] == "quantified"
+
+
+def test_loss_framed_units_flip_into_the_intervention_frame():
+    # Dala-Corte style: biodiversity DECLINES as riparian vegetation is LOST → riparian vegetation
+    # present = benefit. Recorded as measured (negative) with framing=loss → positive benefit.
+    lost = _u(
+        "lf",
+        "s1",
+        "biodiversity_outcome",
+        "negative",
+        "strong",
+        rel={"framing": "loss"},
+        ctx={"income_group": "upper_middle"},
+    )
+    rows, _ = cs.synthesise_cell(
+        [lost],
+        {},
+        table="T6",
+        nbs_id="riparian_buffer",
+        target_key="biodiversity_priority",
+        xw_rows=[
+            cs.XWRow(
+                "biodiversity_outcome", "T6", "biodiversity_priority", "same", "direct"
+            )
+        ],
+    )
+    assert rows[0]["effect_direction"] == "strong_positive"
+    assert rows[0]["record_id"] == "riparian_buffer__biodiversity_priority"
+
+
+def test_record_ids_do_not_double_the_nbs_prefix_and_asset_cells_are_distinct():
+    assert (
+        cs._record_id("riparian_buffer", "flood__all", "riparian_buffer__planted", None)
+        == "riparian_buffer__planted__flood__all"
+    )
+    assert (
+        cs._record_id(
+            "riparian_buffer", "asset_threat__flood", None, ("aez", "semi_arid")
+        )
+        == "riparian_buffer__asset_threat__flood__aez-semi_arid"
+    )

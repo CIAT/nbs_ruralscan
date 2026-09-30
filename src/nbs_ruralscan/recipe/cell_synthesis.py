@@ -359,6 +359,11 @@ def unit_rank(unit: EvidenceUnit, polarity: str = "same") -> tuple[int, int | No
     rel = unit.relationship or {}
     d = str(rel.get("direction") or "").lower()
     sign = {"positive": 1, "negative": -1, "none": 0}.get(d, 0)
+    # `framing = "loss"`: the source measured what happens when the vegetation / practice is
+    # LOST or absent (dose-response to vegetation loss, deforestation → floods). The sign is
+    # then that of the loss, so flip it to the intervention-present frame before polarity.
+    if str(rel.get("framing") or "presence").lower() == "loss":
+        sign = -sign
     if polarity == "inverted":
         sign = -sign
     mag = STRENGTH_RANK.get(str(rel.get("strength_class") or "").lower())
@@ -682,7 +687,10 @@ def _record_id(
 ) -> str:
     parts = [nbs_id]
     if family:
-        parts.append(family)
+        # FAM ids already carry the NbS prefix (riparian_buffer__planted) — don't double it
+        parts.append(
+            family[len(nbs_id) + 2 :] if family.startswith(nbs_id + "__") else family
+        )
     parts.append(cell)
     if scope:
         parts.append(f"{scope[0]}-{scope[1]}")
@@ -813,6 +821,22 @@ def _statement(
     return (
         f"{core} in {where} ({ev_l} evidence, {ag_l} agreement → {conf} confidence; "
         f"transfer: {envelope.get('transfer_class')})."
+    )
+
+
+def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
+    """The calibrated statement for a reconciled record (used as the mechanism placeholder)."""
+    return _statement(
+        table,
+        str(rec.get("nbs_id") or ""),
+        key,
+        rec["rank"],
+        rec["evidence_level"],
+        rec["agreement_level"],
+        rec["confidence"],
+        rec["applicability"],
+        role,
+        rec.get("strength_basis", "quantified"),
     )
 
 
@@ -981,10 +1005,16 @@ def synthesise_cell(
         }
     )
     g = _reconcile_group(contribs, tiers, matrix, target_ctx)
-    cell = target_key if table == "T6" else f"{target_key}__{farming_system}"
+    if table == "T6":
+        cell = target_key
+    elif role == "asset_vulnerability":
+        cell = f"asset_threat__{target_key}"  # distinct from the mitigation cell of the same hazard
+    else:
+        cell = f"{target_key}__{farming_system}"
     rows: list[dict[str, Any]] = []
 
     def _row(rec: dict[str, Any], scope: tuple[str, str] | None, cs: list[_Contrib]):
+        rec = dict(rec, nbs_id=nbs_id)
         r: dict[str, Any] = {
             "record_id": _record_id(nbs_id, cell, family, scope),
             "nbs_id": nbs_id,
@@ -1011,7 +1041,10 @@ def synthesise_cell(
                     "confidence": rec["confidence"],
                     "timescale_of_effect": _modal_ctx(cs, "timescale_of_effect"),
                     "landscape_scale_only": _any_ctx_true(cs, "landscape_scale_only"),
-                    "mitigation_mechanism": "",
+                    # prose is written by the gated prose writer (contract §5); until it runs
+                    # the field points at the traceable account instead of standing empty
+                    "mitigation_mechanism": "[prose pending] "
+                    + rec_statement(rec, table, target_key, role),
                     "caveats": "",
                 }
             )
@@ -1045,7 +1078,8 @@ def synthesise_cell(
                     "effect_direction": t6_effect_direction(rec["rank"]),
                     "effect_confidence": rec["confidence"],
                     "timescale_of_effect": _modal_ctx(cs, "timescale_of_effect"),
-                    "effect_mechanism": "",
+                    "effect_mechanism": "[prose pending] "
+                    + rec_statement(rec, table, target_key, role),
                     "conditionality": "",
                     "magnitude_summary": magnitude_summary(cs),
                 }
