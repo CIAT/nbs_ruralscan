@@ -28,8 +28,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 SRCH = ROOT / "schema" / "registers" / "SRCH_search_register.csv"
 CATEGORIES = ["stock", "updated_lit", "grey", "tool"]
-# T3/T6 deferred 2026-09 — archived SRCH rows + restore path in schema/registers/_deferred/README.md
-TABLES = ["T4"]
+# T3/T6 re-activated 2026-09-30 (generated cell-synthesis tables; methodology/T3_T6_generation_method.md)
+TABLES = ["T4", "T3", "T6"]
 FIELDS = [
     "search_id",
     "nbs_id",

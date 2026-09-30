@@ -658,3 +658,28 @@ def test_resolve_prefers_most_specific_scope():
     assert row is not None and (row["record_id"], st) == ("inc", "ok")
     row, st = cs.resolve_for_aoi(rows, {"income_group": "high"})
     assert row is not None and (row["record_id"], st) == ("g", "ok")
+
+
+def test_direction_only_evidence_is_weakest_class_and_says_so():
+    units = [
+        _u(
+            f"d{i}",
+            f"s{i}",
+            direction="negative",
+            strength="unspecified",
+            ctx={"income_group": "low"},
+        )
+        for i in range(3)
+    ]
+    rows, _ = _t6(units)
+    g = rows[0]
+    assert (
+        g["effect_direction"] == "slight_positive"
+    )  # erosion down, benefit frame, weakest
+    assert g["justification"]["strength_basis"] == "direction_only"
+    assert "strength not quantified" in g["justification"]["statement"]
+    q = _u(
+        "q", "sq", direction="negative", strength="strong", ctx={"income_group": "low"}
+    )
+    rows, _ = _t6(units + [q])
+    assert rows[0]["justification"]["strength_basis"] == "quantified"
