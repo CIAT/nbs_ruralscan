@@ -1,7 +1,7 @@
 # T3 / T6 Generation Method — cell-level synthesis of NbS effects from pooled evidence
 
 **Status:** v0.1 draft for team ratification · 2026-09-29 · **no build before sign-off** (green-light rule)
-**Owners:** Pete (framework, engine) · Namita (T6 / M5 consumer, expert elicitation, XW ratification for T6) · Brayden (T3 / M2b Stream A consumer, XW ratification for T3) · MFL team (agroforestry content at the volume test)
+**Owners:** Pete (framework, engine) · Namita (T6 / M5 consumer, XW ratification for T6) · Brayden (T3 / M2b Stream A consumer, XW ratification for T3) · MFL team (agroforestry content at the volume test)
 **Produces:** rows of **T3 — NbS × Hazard × Farming System** and **T6 — NbS Scorecard** (see [`../schema/spec.md`](../schema/spec.md) §T3, §T5, §T6)
 **Replaces:** the per-paper T3/T6 row extraction deferred on 2026-09-17 (ruleset v1.5.0, [`../schema/registers/_deferred/`](../schema/registers/_deferred/README.md))
 **Scope:** scoping-grade effect direction, strength class and calibrated confidence per NbS, bounded by where the evidence comes from. Not CBA, not ecosystem-service modelling, not site feasibility.
@@ -328,7 +328,7 @@ PRISMA-lite logs) applies unchanged. What differs is **which** sources matter pe
 |---|---|---|
 | `nbs_effect` (T6 outcomes) | Systematic reviews / meta-analyses (Campbell, 3ie, CEE evidence-gap maps — Castle 2021 is the archived exemplar) · WB IEG / ICR outcome sections · MEL/MELIA reports · adoption studies | Grey (WOCAT, CG, FAO, NGO) is positively biased on benefits → `GREY_DISCOUNT["nbs_effect"] = 0.4` (existing, now live) |
 | `nbs_effect` (T3 hazard mitigation) | IPCC WGII agriculture / land chapters · FAO CSA sourcebook · hazard-specific reviews (windbreaks, fire in silvopasture, flood attenuation) | Same discount |
-| `asset_vulnerability` (T3 asset threat) | **WOCAT technology questionnaire §6.3** (tolerance to extremes, per technology, ordinal) · **expert elicitation** (Namita's protocol §2.2) · establishment-mortality literature | See §9 |
+| `asset_vulnerability` (T3 asset threat) | **WOCAT technology questionnaire §6.3** (tolerance to extremes, per technology, ordinal) · establishment-mortality / windthrow / fire literature from the single-pass sweep · *optional* internal Alliance/CGIAR rating pass | See §9. **No external expert-elicitation programme** (no bandwidth, decision 7 revised 2026-09-30). |
 | `economic_indicator` | WB PADs / ICRs (with denominators) · CrossBoundary archetypes · meta-analyses of adoption economics | Only with a per-unit denominator; raw project totals are not evidence |
 
 **Provenance matters for reuse.** Of the 264 archived units, only **72 (5 sources)** came in via a T3/T6-targeted
@@ -478,7 +478,12 @@ check (`check_account.py`, PR3) verifies that every number in the account appear
 
 ---
 
-## 9. Asset vulnerability — layered sourcing (decision 7d)
+## 9. Asset vulnerability — layered sourcing (decision 7d, revised 2026-09-30)
+
+**No expert-elicitation programme.** The team has no bandwidth for structured external elicitation. Asset
+vulnerability is sourced from WOCAT and literature; an expert layer exists **only** as an optional, lightweight
+pass by **internal Alliance / CGIAR staff** (e.g. the MFL team for agroforestry / forest restoration), and the
+method must produce usable, honestly-graded rows without it.
 
 1. **WOCAT seed.** One SRC row per relevant WOCAT technology entry (`source_category = grey`,
    `venue_type = grey`, `claim_basis = expert_assertion`, `design = practitioner_rating`), `url` + saved snapshot
@@ -487,11 +492,17 @@ check (`check_account.py`, PR3) verifies that every number in the account appear
    The **technology → family** map is recorded and ratified like an XW row (FAM note + rationale).
    **WOCAT has no acquisition adapter yet → PAUSE per the acquisition lock.** This section is the rule; the
    adapter (per-technology page snapshot, locator semantics, QA check) is built in its own PR after ratification.
-2. **Expert elicitation** as the validation layer: Namita's protocol §2.2 questions per NbS × hazard on the same
-   ordinal scale, landing as EV `evidence_type = expert`. Practitioner-vs-expert concordance then shows up in
-   `agreement_level`.
-3. **Literature** opportunistically, from the single-pass sweep (mortality, windthrow, fire studies), with
-   species-specific claims routed by `claim_scope`.
+2. **Literature** from the single-pass sweep (establishment mortality, windthrow, plantation fire, flood scour
+   studies), with species-specific claims routed by `claim_scope`. WOCAT-vs-literature concordance is what the
+   `agreement_level` axis then measures.
+3. **Optional internal rating pass.** Where an Alliance / CGIAR colleague with domain knowledge is available
+   (MFL team, no external recruitment), a one-page structured form per NbS — the 7 hazards × the 5-level
+   `asset_sensitivity` scale + one line of rationale each — lands as EV `evidence_type = expert`,
+   `claim_basis = expert_assertion`, one SRC row per rater (`method_type = expert_elicitation`,
+   `benchmark_tier = medium`), per Namita's protocol §4 mapping rules. Cost: ~30 minutes per rater per NbS.
+   Never a prerequisite: a cell with WOCAT only is emitted as `evidence_level = limited` → confidence
+   `low`/`very_low`, and M2b uses its equal-weight fallback more often. That is the honest state of the evidence,
+   not a gap to be filled by a programme we cannot run.
 
 ---
 
@@ -627,7 +638,7 @@ and why). Seed rows are then retired or re-authored with `evidence_ids`.
 | 4 | Numeric bar | **`economic_value_range` under hard gates + `magnitude_summary`** | One numeric slot for MCDA, numbers under the class with their n |
 | 5 | Crosswalk | **New `XW` register**, `proximity` + haircut, ratified | Many-to-many; proxies never relabelled silently |
 | 6 | Roles | **Collapse to `nbs_effect`; new `asset_vulnerability`**; `climate_risk` reserved for T2 | Role = claim kind; one unit can feed T3 and T6 |
-| 7 | Asset threat | **WOCAT seed → expert validation → literature**; `asset_sensitivity` field; weights only on complete hazard sets | Literature near-empty; WOCAT covers every hazard; weights are a normalisation |
+| 7 | Asset threat | **WOCAT seed → literature; internal Alliance/CGIAR rating pass optional only** (revised 2026-09-30: no external expert-elicitation programme, no bandwidth); `asset_sensitivity` field; weights only on complete hazard sets | Literature near-empty; WOCAT covers every hazard; weights are a normalisation; expect many `limited` cells and M2b fallback |
 | 8 | Pilot | **Riparian → agroforestry → FR single-pass**; FR T4 now with deferred pointers | Envelope stress test first; seed benchmark second; no 40-paper re-read |
 | 9 | Migration | **Targeted (c)**: only the 72 targeted-search units; deterministic re-shape; quote-bounded LLM; supersession via soft-delete | T4-net effect rows are incidental, not evidence-targeted |
 | 10 | Sequencing | **Staged PRs 1–6**, consumers ratify PR1, seed rows = benchmark only, Brayden co-reviews T3 columns | One logical change per PR; green-light rule |
@@ -643,7 +654,7 @@ unmappable rows stay archived · `expert_opinion` dropped from the confidence en
 
 - **BANDS thresholds** for `pct_change` and `ln_response_ratio` are conventions, not literature — ratify or replace.
 - **AEZ adjacency** (§5.2) uses a 4-class `climate_zone`; is that coarse enough to be defensible, or should it read T7 AEZ groupings?
-- **`iplc_lands` and `gender_inequity`** as T6 targets: effect evidence on these is thin and almost always qualitative. Accept `limited` / `very_low` rows, or leave them as T5 context-only until expert elicitation fills them?
-- **Expert weight**: `BASIS_W["expert_assertion"] = 0.5` and `TIER_W["medium"]` for expert SRC rows — does structured elicitation from several independent experts deserve more than a single grey report?
+- **`iplc_lands` and `gender_inequity`** as T6 targets: effect evidence on these is thin and almost always qualitative. Accept `limited` / `very_low` rows, or leave them as T5 context-only? (No elicitation programme will fill them.)
+- **Internal rater weight**: an MFL-team rating lands at `BASIS_W["expert_assertion"] = 0.5` × `TIER_W["medium"]`, i.e. below a single grey WOCAT entry after its 0.6 discount only marginally. Acceptable, or should ≥ 2 independent internal raters lift the cell to `medium` evidence?
 - **WOCAT technology → family mapping**: who owns it (Namita + MFL?), and does a WOCAT entry that spans two families go to `cross_family`?
 - **M2b equal-weight fallback** when `asset_risk_weight` is blank — Brayden to confirm that is the right default.
