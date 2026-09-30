@@ -552,6 +552,38 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             "species-specific — run check_species.py; retag claim_scope=species_specific "
             "+ taxon and KEEP, don't drop)"
         )
+    # Effect-claim gates (ruleset v1.6.0, T3/T6 generation method) — advisory. They only
+    # see use_role = nbs_effect / asset_vulnerability units, so they print nothing until
+    # the migrated / re-extracted effect units land (PR4+).
+    from nbs_ruralscan.schema_tools.check_bands import check as _bands_check
+    from nbs_ruralscan.schema_tools.check_context import check as _context_check
+    from nbs_ruralscan.schema_tools.check_xw import check as _xw_check
+
+    _ev_csv = schema_root / "registers" / "EV_evidence_register.csv"
+    _ctx_flags = _context_check(_ev_csv, schema_root / "T7_geographic_context.csv")
+    if _ctx_flags:
+        print(
+            f"  CONTEXT NOTES ({len(_ctx_flags)} fixed-key violation(s) on active effect "
+            "units — run check_context.py; contract §2.3 keys only)"
+        )
+    _band_flags = _bands_check(
+        _ev_csv, schema_root / "registers" / "BANDS_magnitude_bands.csv"
+    )
+    if _band_flags:
+        print(
+            f"  BANDS NOTES ({len(_band_flags)} strength-class/magnitude disagreement(s) "
+            "— run check_bands.py; classes come from BANDS, never adjectives)"
+        )
+    _xw_flags = _xw_check(
+        _ev_csv,
+        schema_root / "registers" / "VONT_variable_ontology.csv",
+        schema_root / "registers" / "XW_target_crosswalk.csv",
+    )
+    if _xw_flags:
+        print(
+            f"  XW NOTES ({len(_xw_flags)} effect variable(s) with no VONT id or no "
+            "crosswalk route — run check_xw.py; unmapped feeds no cell)"
+        )
     # Guard B (2026-06-23): auto-quarantine off-scope/wrong-practice on the WRITE path only —
     # soft-delete (reversible) so junk stops reaching the worklist; never mutate on --check.
     if not check:
