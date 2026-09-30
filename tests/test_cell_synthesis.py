@@ -683,3 +683,54 @@ def test_direction_only_evidence_is_weakest_class_and_says_so():
     )
     rows, _ = _t6(units + [q])
     assert rows[0]["justification"]["strength_basis"] == "quantified"
+
+
+def test_range_only_cost_units_pass_the_magnitude_gate_and_widen_the_range():
+    a = _u(
+        "ra",
+        "s1",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["KEN"], "income_group": "lower_middle"},
+        rel={
+            "metric": "absolute",
+            "magnitude_low": 300,
+            "magnitude_high": 500,
+            "unit": "usd_per_ha",
+        },
+    )
+    b = _u(
+        "rb",
+        "s2",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["ETH"], "income_group": "low"},
+        rel={"metric": "absolute", "magnitude": 450, "unit": "usd_per_ha"},
+    )
+    rows, rep = _t6([a, b], key="establishment_cost")
+    rng = rows[0]["economic_value_range"]
+    assert rng is not None and (rng["low"], rng["high"]) == (300.0, 500.0)
+    assert not any(g == "no numeric magnitude" for _, g in rep.excluded_economics)
+    # a range-only HIC unit is excluded by the HIC gate, not mislabelled as number-less
+    swe = _u(
+        "rs",
+        "s3",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["SWE"], "income_group": "high"},
+        rel={
+            "metric": "absolute",
+            "magnitude_low": 3300,
+            "magnitude_high": 3500,
+            "unit": "usd_per_ha",
+        },
+    )
+    rows, rep = _t6([a, b, swe], key="establishment_cost")
+    assert (
+        "rs",
+        "HIC figure excluded from LIC/LMIC or global row",
+    ) in rep.excluded_economics
+    assert rows[0]["economic_value_range"]["high"] == 500.0

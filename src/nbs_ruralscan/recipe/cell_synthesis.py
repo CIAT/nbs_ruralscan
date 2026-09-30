@@ -586,7 +586,10 @@ def economic_value_range(
         v = rel.get("magnitude")
         unit = str(rel.get("unit") or "").lower()
         band = INCOME_BAND.get(str(c.ctx.get("income_group") or ""), "")
-        if not isinstance(v, (int, float)):
+        lo, hi = rel.get("magnitude_low"), rel.get("magnitude_high")
+        if not isinstance(v, (int, float)) and not (
+            isinstance(lo, (int, float)) and isinstance(hi, (int, float))
+        ):
             report.excluded_economics.append(
                 (c.unit.evidence_id, "no numeric magnitude")
             )
@@ -620,7 +623,13 @@ def economic_value_range(
                     (c.unit.evidence_id, f"only 1 independent source in {unit}")
                 )
             continue
-        vals = [float((c.unit.relationship or {})["magnitude"]) for c in group]
+        vals: list[float] = []
+        for c in group:
+            r = c.unit.relationship or {}
+            if isinstance(r.get("magnitude"), (int, float)):
+                vals.append(float(r["magnitude"]))
+            else:  # range-only unit: both bounds enter the observed extremes
+                vals += [float(r["magnitude_low"]), float(r["magnitude_high"])]
         notes = []
         for c in group:
             yr = (c.unit.relationship or {}).get("currency_year") or "year n/a"
