@@ -9,12 +9,22 @@ and serve as a template for subsequent NbS recipes.
 | File | Table | Rows |
 |---|---|---|
 | `T0_nbs_registry.{csv,json}` | T0 — NbS Registry | 1 |
-| `T3_nbs_hazard_farming.{csv,json}` | T3 — NbS × Hazard × Farming | 8 |
+| `T3_nbs_hazard_farming.{csv,json}` | T3 — NbS × Hazard × Farming (**generated**, cell synthesis) | 23 |
 | `T4_suitability_mappings.{csv,json}` | T4 — Suitability Mappings | 11 |
-| `T6_nbs_scorecard.{csv,json}` | T6 — NbS Scorecard | 8 |
+| `T6_nbs_scorecard.{csv,json}` | T6 — NbS Scorecard (**generated**, cell synthesis) | 20 |
 
 The cross-NbS tables this recipe joins to — `T1_data_registry`, `T2_climate_risk`, `T5_opportunity_space`,
 `T7_geographic_context` — live at the [schema root](../../) and merge rows from every recipe.
+
+## T3 / T6 are generated (2026-10-01)
+
+`T3_nbs_hazard_farming.csv` and `T6_nbs_scorecard.csv` are **written by `scripts/synthesise-t3t6.py agroforestry`**
+from the pooled `nbs_effect` / `asset_vulnerability` evidence units (method `methodology/T3_T6_generation_method.md`;
+run report `T3T6_synthesis_report.json`). Do not hand-edit them — add evidence and re-run. The 17 hand-authored
+seed rows from May 2026 are frozen as a **benchmark only** in
+[`../../design/seed_benchmark/`](../../design/seed_benchmark/) (never fed to synthesis); the seed-vs-generated
+comparison is `T3T6_BENCHMARK.md`. CSV is the source of truth and the JSON is regenerated from it (the
+"fix the JSON" sentence below predates that rule).
 
 ## Provenance
 

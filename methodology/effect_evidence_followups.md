@@ -124,6 +124,36 @@ Schultz tile-outlet constructed wetland (nitrate >15 → <3 mg/L, p.1/23 — a *
 
 ---
 
+## 1b. agroforestry — PR6 benchmark run over the 72 migrated units (2026-10-01)
+
+Source: `schema/recipes/agroforestry/T3T6_synthesis_report.json` (tracked) + the PR4 migration notes.
+
+### Unmapped (in EV, no XW route) — consumer decision
+
+| variable | units | sources | route options |
+|---|---|---|---|
+| `beneficiaries` | 4 | WB FSRP / KCSAP PADs | T6 `cost_per_beneficiary` denominator (needs cost in the same row) or a `people_production` descriptor |
+| `climate_shock` | 4 | Quandt 2017, Castle 2021 | generic "resilience to climate shock" — route as `proxy` to T3 `drought` / T6 `drought_hazard`? Namita/Brayden |
+| `ecosystem_service` | 2 | Castle 2021 SR | too generic for a T5 target; keep as context |
+| `adoption_rate` | 1 | Castle 2021 SR | adoption = observed-reality evidence → T6 `conditionality` text, not an effect |
+
+### Economics seen but failing the §7.7 gates
+
+| source_id | evidence_id | why |
+|---|---|---|
+| wb_fsrp_2022 | ev_t6_total_cost_fsrp22_1 | no numeric magnitude in quote |
+| wb_kcsap_2016 | ev_t6_proj_cost_kcsap16_1 | `usd_million` programme total, no per-unit denominator |
+| wb_fsrp_2022 / wb_kcsap_2016 | 8 component-cost lines (collapsed echoes) | programme totals; a `cost_per_beneficiary` row would need beneficiaries × cost from the **same** PAD table — table screengrab + a derived-denominator rule (not yet in contract) |
+
+### Structural findings (why generated ≠ seed)
+
+- **66/72 units have `strength_class = unspecified`** → engine floors every T3 row to `low` and most T6 rows to `slight_*`. Migrated v1.4.2 units carried direction only; a quote-bounded strength pass over the 5 sources (contract §4 BANDS) is the cheapest way to lift this — Castle 2021 (systematic review) and Quandt 2017 carry effect sizes in their quotes.
+- **37/72 units (both WB PADs) are tagged `suitability_family_id = planted_silvoarable`** — PAD-level "agroforestry" claims are NbS-level, not F1. Migration default, flag for QA: should be blank (roll-up only) so they stop inflating the F1 family rows.
+- Seed hazards with **zero evidence**: `waterlogging`, `heat_stress × cropping_irrigated`, `drought × tree_perennial`, `fire × pastoral_rangeland`, `wind_cyclone × cropping_rainfed` (windbreak) — targets for the synthesis-first search (meta-analyses on windbreak yield effects, shade × heat stress in perennial systems).
+- Seed T6 rows with zero evidence: `carbon_sequestration_potential` (seed said strong_positive + carbon_revenue 20–200 USD/ha/yr), `accessibility_travel_time` (market access — seed had it as a T6 effect; by the 2026-06-23 routing it is M2b/next-steps, so the seed row was mis-placed anyway).
+
+---
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |
