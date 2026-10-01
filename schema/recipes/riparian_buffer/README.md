@@ -94,3 +94,11 @@ required `dataset_id`, not ratified.
 `riparian_buffer_width` · `riparian_vegetation_gap` · `regeneration_potential`. The third
 collides with an existing alias on `rootstock_presence` ("regeneration potential"), which is
 FMNR living-stump specific — reviewers to rule keep-distinct vs merge.
+
+## T3/T6 pilot follow-ups
+
+Generated T3/T6 rows (`T3_nbs_hazard_farming.csv`, `T6_nbs_scorecard.csv`, `T3T6_synthesis_report.json`)
+landed in PR #264. Everything the pilot *saw but could not emit* — unmapped water-quality units, ontology
+gaps, unquotable Blanco-Canqui effectiveness numbers, denominator-less economics, PICOS exclusions — is
+captured in [`methodology/effect_evidence_followups.md`](../../../methodology/effect_evidence_followups.md) §1
+so no source needs re-reading.
