@@ -46,7 +46,7 @@ Pipeline architecture is in [`docs/pipeline.html`](./docs/pipeline.html). The fu
 4. Screen and select candidates using the **six-axis credibility rubric** (methodological transparency, evidence type, context AEZ/LMIC relevance, recency, influence).
 5. Compile the screening results in the PRISMA-lite discovery log under `methodology/discovery_logs/<nbs_id>_<table>.md`.
 6. Add the approved candidates to `SRC_source_register.csv` and log detailed evidence extraction quotes in `EV_evidence_register.csv`.
-7. Link the evidence IDs to the recipe table: T4 rows via `/t4-synthesise` → `T4_suitability_mappings.csv`; T3/T6 rows are **generated** by cell synthesis (`/t3t6-synthesise` → `T3_nbs_hazard_farming.csv` / `T6_nbs_scorecard.csv`, method `methodology/T3_T6_generation_method.md`) — never hand-linked.
+7. Link the evidence IDs to the recipe table: T4 rows via `/t4-synthesise` → `T4_suitability_mappings.csv`; T3/T6 rows are **generated** by cell synthesis (`recipe/cell_synthesis.py` → `T3_nbs_hazard_farming.csv` / `T6_nbs_scorecard.csv`; method `methodology/T3_T6_generation_method.md`; riparian pilot lands the `/t3t6-synthesise` command) — never hand-linked.
 8. Run `python3 src/nbs_ruralscan/schema_tools/generate.py schema` to rebuild the JSON files and update the dashboard logs view.
 9. Verify using `python3 src/nbs_ruralscan/schema_tools/check_alignment.py` and run tests (`uv run pytest`).
 10. Raise a PR using the PR template.
