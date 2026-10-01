@@ -154,6 +154,32 @@ Source: `schema/recipes/agroforestry/T3T6_synthesis_report.json` (tracked) + the
 - Seed hazards with **zero evidence**: `waterlogging`, `heat_stress × cropping_irrigated`, `drought × tree_perennial`, `fire × pastoral_rangeland`, `wind_cyclone × cropping_rainfed` (windbreak) — targets for the synthesis-first search (meta-analyses on windbreak yield effects, shade × heat stress in perennial systems).
 - Seed T6 rows with zero evidence: `carbon_sequestration_potential` (seed said strong_positive + carbon_revenue 20–200 USD/ha/yr), `accessibility_travel_time` (market access — seed had it as a T6 effect; by the 2026-06-23 routing it is M2b/next-steps, so the seed row was mis-placed anyway).
 
+### Castle 2021 strength pass (2026-10-01, +27 units, 5 superseded)
+
+Castle et al. 2021 (Campbell SR) pools only **two** meta-analyses — crop yield (g 1.16 [−0.35, 2.67], ns) and household
+income (g 0.12 [−0.06, 0.30], ns), both all-agroforestry; **no subgroup pooling by intervention type**. Every per-practice
+result is a single included study → `cited_secondary` + `lineage_of` (the engine de-dupes to the primary). Family
+attribution now carried on 20 units (planted_silvoarable 10 · shaded_perennial 7 [coffee, `crop_specific`, routed out of
+practice cells] · silvopastoral 3); `linear_boundary`, `regeneration_farmland`, homegardens have **no isolating result**
+in the review. Superseded (soft-dropped, `accepted_correction`, note `superseded_by=`): `ev_t6_yield_p20_castle21_3`,
+`ev_t6_yield_meta_castle21_1` (abstract repeat), `ev_t6_income_meta_castle21_4`, `ev_t6_foodsec_dietary_castle21_7`,
+`ev_t6_biodiv_esi_castle21_10` (ESI = biodiversity+carbon composite → `ecosystem_service`).
+
+| pointer | page | note |
+|---|---|---|
+| Thorlakson soil-erosion × tree-biomass correlation (−0.31) | 25→26 | page-break straddle — unquotable; would be the only `erosion_hazard` unit from this review |
+| Forest plots (Figs 6–7) per-study effect sizes | — | image-only; `figure_read` pass |
+| Forest-cover loss (Sills) | 25 | no VONT id |
+| Tree planting density, trees/ha (Pender) | 25 | no VONT id |
+| Fuelwood purchases −49 pp, collection time −180 min (Thorlakson) | 26 | no VONT id (existing narrative unit `_12` holds it) |
+| Tenure-security perception +26.4 % (Pender) | 24 | no VONT id (and tenure = M2b operational, not T6) |
+| Gender-decomposed results | 27 | no VONT id; equity lane |
+| Haggar per-certification-scheme yield/income SMDs (Utz, Fairtrade, RA, Organic) | 21–22 | numbers sit in kept quotes; emit as separate units only if per-scheme detail is wanted |
+| Hegde & Bull country mis-stated as Nicaragua in the review (is Mozambique) · Coulibaly labelled improved fallows vs Table 4 fertilizer trees | 21 | source errors; units use MOZ / planted_silvoarable |
+
+**Human family check still open:** the 8 kept pre-pass Castle units are all tagged `planted_silvoarable`; `_5`
+(income pathway) and `_11` (ecosystem-service baseline) are pooled/narrative → should be `agroforestry__cross_family`.
+
 ---
 
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
