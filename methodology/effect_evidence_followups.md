@@ -120,6 +120,25 @@ Other blockers:
 - Tiwari 2016: `climate_zone = boreal`, no T7 boreal AEZ; family fit (`planted`) needs a human call.
 - Zhao 2013 is CHN (Liuxihe basin, Guangdong), not CAN — `SRC.study_country` fixed in PR #264; check it stuck.
 
+### 1.6b QA items raised by the prose-writer review (2026-10-01; `riparian_buffer_prose_report.md`, staging-only)
+
+Engine template defects it found are FIXED in PR #270 (verb frame on risk targets · ISO3-only envelopes · AEZ naming
+threshold · cost-row wording). Data items still open for a human:
+
+| item | evidence | call needed |
+|---|---|---|
+| `ev_biodiversity_outcome_meli19_6` carries `MEX` only as the source default while citing González del Tánago & García de Jalón 2011 (Spain?) | Meli 2019 p3 | if the primary is European, blank `country` → the `income_group-upper_middle` scope row loses an `in_context` vote |
+| Lee 2004 units are forest buffers **retained after timber harvest**, tagged `planted` | all `__planted__*` riparian rows | reclassify family (`natural_restored`? or a forestry-retention flag) — already listed in §1.6 |
+| `ev_project_cost_tiwari16_2` (forgone-forestry NPV, USD/ha) feeds BOTH `establishment_cost` and `cost_per_hectare_restored` via `project_cost` XW routes | riparian economic rows | an `opportunity_cost` T6 indicator (enum gap, §1.2) or drop the two routes for retention-cost units |
+| `ev_carbon_sequestration_cole20_1` — storage capacity printed as t ha⁻¹ yr⁻¹ | Cole 2020 p9 | keep direction-only (engine does); human check of the unit's `metric` |
+| `riparian_buffer__asset_threat__flood` = "slightly damaged" rests on one cited mechanism statement; the other unit observed no damage | Cole 2020 (Puijalon/O'Hare) · Schultz 1995 p17 | fine at scoping grade; note for M2b (Brayden) |
+| Loss-framed units (meli19_4 flood · dalacorte20_1 biodiversity · mello18_11 bank erosion) count toward agreement after the engine's sign flip | — | by design (contract `framing=loss`); prose conditionality names the framing |
+
+Rows where the quotes give **no mechanism** (prose states only what the quote supports): natural_restored flood rows
+(one loss-framed association), `planted__asset_threat__flood` (outcome, not process), both carbon rows, all four
+economic rows. Rows resting mainly on `cited_secondary` lineage: all flood rows, asset-threat global/natural_restored,
+all biodiversity rows (Lee 2004 / Cole 2020 reviews), carbon rows.
+
 ### 1.7 PICOS exclusions (recorded so nobody re-screens them)
 
 Schultz tile-outlet constructed wetland (nitrate >15 → <3 mg/L, p.1/23 — a *wetland_management* claim, not riparian; **pointer for the wetlands T3/T6 pass**) · Lee: logging / canopy-removal effects with no buffer as intervention (Carlson 1990, Noel 1986, France 1996, Steedman & France 2000), bank cover (Wesche 1987), partial harvest inside buffers · Zhao: NDVI ↔ N-uptake mechanism papers (Hively 2009) · Meli: Conservador das Águas +60 % forest cover, Nascentes >12,000 ha (programme outputs), La Vieja silvopastoral package results (+40 % stocking, −43 % agrochemicals) · González: passive vs active hydro-geomorphic cost-efficiency (dam/levee removal, not buffers) · Dala-Corte: catchment turbidity/nutrient effects (catchment land use, not riparian).
