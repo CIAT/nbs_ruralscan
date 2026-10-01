@@ -30,6 +30,8 @@ Source of these pointers: `pipeline/staging/riparian_effects_{A,B,C}_report.md` 
 
 ### 1.1 Already in EV but routed nowhere (no T5 target) — decision needed, not re-extraction
 
+**RESOLVED 2026-10-01 (Pete):** T5 `water_quality_risk` added under `nbs_response` + XW routes (`nutrient_removal` direct · `stream_temperature`, `sediment_retention` component 0.7). The 31 units now feed `riparian_buffer__water_quality_risk` rows. Table kept for the record.
+
 | variable (VONT, pending_review) | units | why unmapped | route |
 |---|---|---|---|
 | `nutrient_removal` | 27 | no T5 water-quality priority (T5 v0.3.0 lock) | Namita/Pete: add a water-quality `priority` row to T5 (or a `descriptor`) → XW row |
