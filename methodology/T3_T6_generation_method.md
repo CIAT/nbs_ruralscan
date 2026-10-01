@@ -197,6 +197,11 @@ The read-once lock stands: a paper is swept **once** for every live role (`struc
 (forest restoration next) emit a **structured deferred-pointer list** per paper — `{source_id, page, claim_kind,
 outcome_raw, note}` — so the later effects pass is a targeted lookup, not a re-read. The riparian sweep's prose
 pointers in `pipeline/staging/riparian_t4_*_sweep.json` are the informal precedent; the contract makes it a field.
+**Tracked home for pointers (2026-10-01):** `pipeline/staging/` is gitignored, so pointer lists, ontology-gap notes,
+denominator-less economics and blockers from each extraction report are copied into
+`methodology/effect_evidence_followups.md` (per-NbS sections) in the PR that ingests the units. Lit-search
+targeting for effect evidence: syntheses (meta-analyses, systematic reviews, EGMs) and project MEL /
+impact-assessment grey literature first; primaries only to fill cells the syntheses leave empty.
 
 ---
 
