@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any
 
 from nbs_ruralscan.recipe import cell_synthesis as cs
+from nbs_ruralscan.recipe import prose as P
 from nbs_ruralscan.recipe.evidence import EvidenceUnit, load_units
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -269,11 +270,19 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
 def write_recipe(nbs_id: str, out: dict[str, Any], *, dry_run: bool) -> list[Path]:
     rdir = SCHEMA / "recipes" / nbs_id
     written: list[Path] = []
+    # prose sidecar (contract §5): re-apply AI-written mechanism/conditionality only to rows
+    # whose evidence_ids are exactly what the prose was written against; else stays pending
+    sidecar = P.load_sidecar(rdir)
     for table, fields, fname in (
         ("T3", T3_FIELDS, "T3_nbs_hazard_farming.csv"),
         ("T6", T6_FIELDS, "T6_nbs_scorecard.csv"),
     ):
         rows = out[table]
+        if sidecar:
+            applied, stale = P.apply_prose(rows, table, sidecar)
+            print(
+                f"{table}: prose applied to {applied} row(s); {stale} stale (evidence changed → pending)"
+            )
         path = rdir / fname
         if dry_run:
             print(f"[dry-run] {path}: {len(rows)} row(s)")
