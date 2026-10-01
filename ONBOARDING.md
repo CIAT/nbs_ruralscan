@@ -32,20 +32,35 @@ unit → source · page · verbatim quote.
 | **Recipes + Variable Cards** | `methodology/recipes/` · `/new-recipe`, `/update-variable-card` slash commands | Agroforestry is the worked NbS; water-harvesting is the canonical template. |
 | **M6 Implementation Hand-off (lead)** | `methodology/modules/M6_*` + MFL team | Yours to drive. |
 
-## 3. Current repo state (2026-08-03)
+## 3. Current repo state (2026-10-01)
 
-- Branch **`main`** is the trunk; HEAD `c76fbd8`. `main` is **protected** (CI + 1 approval).
-- **Ruleset version `v1.4.1`** (2026-07-20) — the frozen search/extraction instructions
-  ([`methodology/RULESET_VERSIONS.md`](./methodology/RULESET_VERSIONS.md)). Every evidence
-  row pins to a ruleset version so past sweeps stay reproducible.
-- Evidence so far: **~3,100 EV rows across ~52 sources**, agroforestry only. T4 (suitability)
-  synthesised for families **F2 (FMNR / regeneration)**, **F3 (silvopastoral)**, and
-  **cross-family**; F1 (planted silvoarable) is the fully-evidenced example.
+- Branch **`main`** is the trunk; **protected** (CI + 1 approval).
+- **T3/T6 are GENERATED, not extracted (2026-09-30; supersedes the 2026-09 deferral).** Effect
+  claims are extracted as `use_role = nbs_effect` / `asset_vulnerability` and pooled per table
+  cell by `recipe/cell_synthesis.py` (IPCC evidence × agreement confidence, applicability
+  envelope, rows per scope). Method: `methodology/T3_T6_generation_method.md`; schema v0.4.0
+  adds the **XW** (outcome → T3/T6 target) and **BANDS** (magnitude → strength class) registers.
+  Review of generated T3/T6 rows = PR review of the recipe CSV diffs, outside the QA dashboard.
+  Status: method + engine merged; migration of the 72 targeted archived units (#263) and the
+  riparian pilot (first generated T3/T6 rows) are landing next.
+- **Ruleset version `v1.6.0`** ([`methodology/RULESET_VERSIONS.md`](./methodology/RULESET_VERSIONS.md)) —
+  every evidence row pins to a ruleset version so past sweeps stay reproducible. Headline
+  rules: quotes are *sliced* from `page.get_text()`, never retyped (#18); effect claims use the
+  fixed `relationship` + `context` shape (`check_context`, `check_bands`); DOI-less sources need
+  `title_verified=true`; `climate_risk` is reserved for T2 and never emitted.
+- Evidence: **agroforestry** (T4 synthesised for F2, F3 + cross-family; F1 is the fully-evidenced
+  example), **riparian_buffer** (T4 synthesised for both families), **forest_restoration**,
+  **water_harvesting_conservation** and **wetland_management** (T4 sweeps + round-2 grey/WOCAT
+  pass landed 2026-09). Corpus hydration: `docs/HYDRATION.md`.
 - **Species/crop lane** is live — per-taxon claims are tagged (`claim_scope` + `taxon`) and
-  **kept out of the practice-level MCDA but retained** for a future species layer. The file
-  you had open, `docs/crops/manifest.json`, is the generated index behind that lane.
-- Open PR: **#122 `feat/dataloaders`** (Brayden, geospatial loaders) — not yours.
-- One-click **"Apply & submit to main"** QA flow is live for allowlisted reviewers.
+  **kept out of the practice-level MCDA but retained** for a future species layer.
+- **Dashboard**: Registers Overview + Discovery merged into one **Evidence & Discovery** tab;
+  the coverage matrix's NbS headers show the acquisition funnel (`X/Y sources extracted`);
+  a Search-round filter sits in the QA/QC top bar. QA tab has keyboard shortcuts
+  (j/↓ next · k ok · d drop · q query).
+- One-click **"Apply & submit to main"** QA flow is live for allowlisted reviewers; Apply
+  reports only what actually changed, and "Reset my decisions" clears only pending
+  (not-yet-applied) decisions.
 
 ## 4. One-time setup on your machine (Windows)
 
