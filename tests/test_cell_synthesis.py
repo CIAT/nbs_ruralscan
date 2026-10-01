@@ -809,3 +809,91 @@ def test_economic_rows_carry_no_effect_direction():
     )
     rows, _ = _t6([pa])
     assert rows[0]["effect_direction"] != ""
+
+
+def test_statement_verbs_read_in_the_target_frame():
+    env = {
+        "aezs": {"unknown": 3},
+        "countries": ["KEN", "ETH"],
+        "transfer_class": "in_context",
+    }
+    s = cs._statement(
+        "T6", "nbs", "soil_erosion_risk", 2, "medium", "high", "high", env, "nbs_effect"
+    )
+    assert "moderately reduces soil_erosion_risk" in s
+    assert "in KEN, ETH" in s  # no AEZ named when most units are untagged
+    s = cs._statement(
+        "T6",
+        "nbs",
+        "soil_erosion_risk",
+        -1,
+        "medium",
+        "high",
+        "high",
+        env,
+        "nbs_effect",
+    )
+    assert "slightly increases soil_erosion_risk" in s
+    s = cs._statement(
+        "T6",
+        "nbs",
+        "biodiversity_priority",
+        3,
+        "medium",
+        "high",
+        "high",
+        env,
+        "nbs_effect",
+    )
+    assert "strongly increases biodiversity_priority" in s
+    s = cs._statement(
+        "T3", "nbs", "flood", 1, "limited", "high", "medium", env, "nbs_effect"
+    )
+    assert "reduces the impact of flood" in s
+    env2 = {
+        "aezs": {"semi_arid": 2, "unknown": 1},
+        "countries": ["KEN"],
+        "transfer_class": "in_context",
+    }
+    s = cs._statement(
+        "T6", "nbs", "rural_poverty", 1, "medium", "high", "high", env2, "nbs_effect"
+    )
+    assert "in semi_arid" in s
+    s = cs._statement(
+        "T6",
+        "nbs",
+        "establishment_cost",
+        0,
+        "limited",
+        "low",
+        "very_low",
+        env,
+        "nbs_effect",
+    )
+    assert "pooled cost evidence" in s and "no effect" not in s
+
+
+def test_src_country_fallback_only_admits_iso3():
+    names = {
+        "Brazil": "BRA",
+        "Colombia": "COL",
+        "Mexico": "MEX",
+        "United States": "USA",
+        "Kenya": "KEN",
+    }
+    assert cs.normalise_countries("Brazil; Colombia; Mexico", names) == (
+        ["BRA", "COL", "MEX"],
+        [],
+    )
+    assert cs.normalise_countries("Global", names) == ([], [])
+    assert cs.normalise_countries("Canada; United States", names) == (
+        ["USA"],
+        ["Canada"],
+    )
+    assert cs.normalise_countries(["KEN", "DRC"], names) == (["KEN", "COD"], [])
+    # a raw name that slips through to the engine is dropped, never injected
+    u = _u("x", "s", direction="positive", strength="unspecified", ctx={})
+    ctx = cs.unit_context(u, {"study_country": "Brazil; Colombia; Mexico"}, None)
+    assert "country" not in ctx
+    ctx = cs.unit_context(u, {"country": ["BRA", "COL"]}, None)
+    assert ctx["country"] == ["BRA", "COL"]

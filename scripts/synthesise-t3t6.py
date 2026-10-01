@@ -114,15 +114,23 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
     src = _rd(REG / "SRC_source_register.csv")
     tiers = {r["source_id"]: (r["benchmark_tier"] or "medium").lower() for r in src}
     categories = {r["source_id"]: r.get("source_category", "") for r in src}
-    src_contexts = {
-        r["source_id"]: {
-            "study_country": r.get("study_country", ""),
+    # SRC.study_country is free text ("Brazil; Colombia; Mexico", "Global"): normalise to
+    # ISO3 here so the envelope never carries a raw name (riparian prose review 2026-10-01)
+    name_to_iso3 = {
+        r["country_name"]: r["iso3"] for r in _rd(LOOK / "wb_income_groups.csv")
+    }
+    src_contexts: dict[str, dict[str, Any]] = {}
+    unresolved: dict[str, list[str]] = {}
+    for r in src:
+        codes, bad = cs.normalise_countries(r.get("study_country", ""), name_to_iso3)
+        if bad:
+            unresolved[r["source_id"]] = bad
+        src_contexts[r["source_id"]] = {
+            "country": codes,
             "aez": r.get("aez", ""),
             "farming_system": r.get("farming_system", ""),
             "income_group": r.get("study_income_group", ""),
         }
-        for r in src
-    }
     xw = cs.load_xw(REG / "XW_target_crosswalk.csv")
     income = cs.load_income_lookup(LOOK / "wb_income_groups.csv")
     matrix = cs.load_confidence_matrix(LOOK / "ipcc_confidence_matrix.csv")
@@ -142,6 +150,7 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
         "tiers": tiers,
         "categories": categories,
         "src_contexts": src_contexts,
+        "src_country_unresolved": unresolved,
         "xw": xw,
         "income": income,
         "matrix": matrix,
@@ -342,6 +351,12 @@ def main(argv: list[str] | None = None) -> int:
     inp = load_inputs(args.nbs_id, staging)
     out = synthesise(args.nbs_id, inp)
     print(_summary(out))
+    used = {u.source_id for u in inp["units"]}
+    bad = {k: v for k, v in inp["src_country_unresolved"].items() if k in used}
+    if bad:
+        print(
+            f"SRC.study_country tokens not resolved to ISO3 (dropped from envelopes): {bad}"
+        )
     for p in write_recipe(args.nbs_id, out, dry_run=args.dry_run):
         print("wrote", p.relative_to(ROOT))
     return 0
