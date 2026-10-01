@@ -219,3 +219,18 @@ def test_account_check_catches_foreign_numbers_and_ids(tmp_path):
     rows = tmp_path / "rows.json"
     rows.write_text(json.dumps([good, bad]), encoding="utf-8")
     assert len(check_account.check(rows, ev)) == 4
+
+
+def test_account_check_ignores_identifier_digits(tmp_path):
+    ev = _write_ev(tmp_path, [_row(eid="ev_a", quote="removal of 40 %")])
+    row = {
+        "record_id": "r",
+        "evidence_ids": ["ev_a"],
+        "justification": {
+            "evidence_summary": [
+                "lee_2004 · smd_hedges_g=40 percent · (SWE; high) [ev_a]"
+            ],
+            "statement": "riparian_buffer increases soil_erosion_risk (limited evidence)",
+        },
+    }
+    assert check_account.check_row(row, check_account._load_ev(ev)) == []
