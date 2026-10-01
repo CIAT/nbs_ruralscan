@@ -222,6 +222,49 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     page + what it says) instead of forcing a stitched quote (defect #5). A sentence that
     straddles a page break is likewise unquotable.
 
+19. **Do not let the quote SPAN open on a trend / study-site clause -> `span_bleed`** (2026-09
+    forest-restoration sweep). A span that starts a sentence or two before the criterion
+    ("forest cover increased in the landscape... To generate the regeneration potential, this
+    radius of 5 km was maintained") trips `check_scope` on the OPENING clause and gets
+    auto-quarantined, even though the rule it carries is sound. Start the slice AT the
+    criterion sentence; include the mechanism only if it sits inside the same span. Detected
+    deterministically: `check_scope` now emits the advisory `span_bleed` (carrying the
+    original signal in `section_signal`) when a section signal fires but the quote also
+    contains explicit decision language, and `quarantine.py` does NOT auto-drop it -- the
+    reviewer RE-SLICES instead of dropping. **The narrowness is the point**: a quantified
+    RESULT with no decision language ("98.1% of cells ... occur within 300 m of a forest
+    edge") is not a span bleed, stays hard-flagged, and needs a human to judge whether a
+    measured result may stand as a suitability claim at all.
+
+20. **Numbers in explanatory TEXT count too -> `smuggled_number`** (2026-09 deep pass). The
+    number-provenance rule covers every number anywhere in `relationship`, including inside
+    `direction`, `scale` and `weight_scale` strings. Glosses are where smuggling now hides:
+    significance levels copied from a table footnote outside the span ("p<0.05"), a weight
+    range from another sentence ("weights ranged 1 to 1.5"), a value the paper writes in
+    words ("one hundred and fifty metres" glossed as "150 m"), even publication years in a
+    cross-reference ("agreeing with Karimi 2019"). Eleven units in the deep pass tripped
+    `check_numbers` this way and pushed `numberprov_rate_pct` UP for the first time in
+    seven sweeps. Keep glosses number-free unless the number is verbatim inside the quote;
+    cite other sources by author, not year. The staging checker now reads strings too.
+
+21. **Fixed-form practice databases (WOCAT) -> `observed_presence`, never thresholds; the header
+    travels with the value** (2026-09 round 2; ruleset v1.6.0). A WOCAT technology sheet's
+    'Natural environment' ticks say where ONE documented case is applied. Emit them as
+    `evidence_type=scoping_candidate`, `claim_basis=expert_assertion`, relationship
+    `{"type": "observed_presence", "observed_classes": [...], "observed_min"/"observed_max", "unit"}`,
+    NEVER `abs_min`/`abs_max` (#16: one case is not a limit). The engine keeps these out of
+    support and threshold synthesis (every sheet carries the same fields, so as votes they are
+    100% by construction). Quote the CLIMATE block (header -> rainfall -> agro-climatic zone) or
+    the TERRAIN & SOIL block ('Slope' -> last soil field) so the field labels are always in the
+    quote (Pete 2026-07: "the table has no caption, I cannot interpret"), and leave the free-text
+    'Specifications on climate' prose OUT (it is a site descriptor and trips `study_site`). Put
+    the technology name in `justification_quote` and `attribution`. Take the PDF from
+    `wocat.net/en/database/technologies/<id>/pdf/` - the legacy qcat `/summary/<id>/` endpoint
+    uses a different id scheme and returns the WRONG sheet (caught by the title check).
+    **DOI-less sources** (grey literature, WOCAT) may be extracted only when the queue row has
+    `title_verified=true` (`verify_metadata.py verify-titles`) and was downloaded from the
+    publisher's own domain.
+
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
 `check_species.py` (species mis-tag), `quarantine.py` (auto-soft-deletes off-scope +

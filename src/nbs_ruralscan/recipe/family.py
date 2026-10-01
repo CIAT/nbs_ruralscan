@@ -38,6 +38,12 @@ class FamilyResult:
     reports: dict[str, SynthesisReport] = field(default_factory=dict)  # per variable
 
 
+def is_observed_presence(u: EvidenceUnit) -> bool:
+    """A fixed-form practice-database record (see synthesise_family)."""
+    rel = u.relationship if isinstance(u.relationship, dict) else {}
+    return rel.get("type") == "observed_presence"
+
+
 def synthesise_family(
     units: list[EvidenceUnit],
     tiers: dict[str, str],
@@ -51,6 +57,7 @@ def synthesise_family(
     floor_pct: float = 20.0,
     allow_crop_scope: bool = False,
     categories: dict[str, str] | None = None,
+    unit_conversions: dict[str, dict[str, str]] | None = None,
 ) -> FamilyResult:
     """Reconcile all of a family's evidence into enriched T4 rows + a selection table.
 
@@ -61,9 +68,17 @@ def synthesise_family(
     canonical_units = canonical_units or {}
     dataset_ids = dataset_ids or {}
     categories = categories or {}
+    unit_conversions = unit_conversions or {}
 
     # exclude soft-deleted (QA-dropped) units from all synthesis + support
     units = [u for u in units if getattr(u, "review_state", "") != "dropped"]
+    # Fixed-form practice-database records (WOCAT 'Natural environment' ticks, tagged
+    # relationship.type="observed_presence") say where ONE documented case is applied.
+    # Every sheet carries the same fields, so as support votes they are 100% by
+    # construction, and a single case is not a limit (#16). Catalogued and reviewable,
+    # but kept OUT of support + threshold synthesis; their intended use is an observed
+    # envelope across many cases (not built yet).
+    units = [u for u in units if not is_observed_presence(u)]
 
     # support is measured over the structural-suitability candidates (what T4 considers)
     t4_units = [u for u in units if u.use_role == "structural_suitability"]
@@ -89,6 +104,7 @@ def synthesise_family(
             dataset_id=dataset_ids.get(variable),
             allow_crop_scope=allow_crop_scope,
             categories=categories,
+            unit_conversions=(unit_conversions or {}).get(variable),
         )
         if not row[
             "relationship_params"
@@ -115,6 +131,8 @@ def save_family(result: FamilyResult, path: str | Path) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
-        json.dumps(result.rows, ensure_ascii=False, indent=2), encoding="utf-8"
+        json.dumps(result.rows, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+        newline="\n",
     )
     return path

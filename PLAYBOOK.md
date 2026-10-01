@@ -46,7 +46,7 @@ Pipeline architecture is in [`docs/pipeline.html`](./docs/pipeline.html). The fu
 4. Screen and select candidates using the **six-axis credibility rubric** (methodological transparency, evidence type, context AEZ/LMIC relevance, recency, influence).
 5. Compile the screening results in the PRISMA-lite discovery log under `methodology/discovery_logs/<nbs_id>_<table>.md`.
 6. Add the approved candidates to `SRC_source_register.csv` and log detailed evidence extraction quotes in `EV_evidence_register.csv`.
-7. Link the evidence IDs to the recipe table (`T4_suitability_mappings.csv` — T3/T6 are deferred, 2026-09).
+7. Link the evidence IDs to the recipe table: T4 rows via `/t4-synthesise` → `T4_suitability_mappings.csv`; T3/T6 rows are **generated** by cell synthesis (`/t3t6-synthesise` → `T3_nbs_hazard_farming.csv` / `T6_nbs_scorecard.csv`, method `methodology/T3_T6_generation_method.md`) — never hand-linked.
 8. Run `python3 src/nbs_ruralscan/schema_tools/generate.py schema` to rebuild the JSON files and update the dashboard logs view.
 9. Verify using `python3 src/nbs_ruralscan/schema_tools/check_alignment.py` and run tests (`uv run pytest`).
 10. Raise a PR using the PR template.
@@ -58,7 +58,9 @@ A source that is screened-in but **paywalled or bot-blocked** can't be cached au
 1. Add a row to `pipeline/acquisition_queue.csv` (metadata only — `source_id`, citation, doi, url, `blocker`, `access_route`, `target_library_path`, `status=pending`, `assigned`).
 2. Open/append a GitHub issue mirroring the queue for the assignee (e.g. #205). **Metadata only — no PDFs.**
 3. The assignee downloads (browser for OA / CGIAR institutional access for paywalled) → saves to the **SharePoint library** at `target_library_path` (exact `<source_id>.pdf` name) → marks `status=acquired`.
-4. Then hydrate (`hydrate-corpus.py`), add the `SRC` row, and extract under the current ruleset.
+4. **Hydrate** the cached corpus from the library — `python3 scripts/hydrate-corpus.py --queue --nbs <nbs_id>` (the queue rows have no `SRC` row yet, so the default SRC-driven pass can't see them; see `docs/HYDRATION.md`).
+5. **Extract** under the current ruleset (staging-only agents, quotes sliced from the cached PDF).
+6. The **`SRC` row is created at the central merge** — from the verified queue metadata, alongside the EV rows, with first-pass `benchmark_tier` flagged for QA. Don't add it beforehand: a source that has never been swept has nothing to register.
 
 ### Review flagged evidence (QA/QC → main)
 

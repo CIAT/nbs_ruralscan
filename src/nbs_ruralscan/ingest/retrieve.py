@@ -26,16 +26,29 @@ def _terms_re(terms: list[str]) -> re.Pattern[str]:
 
 
 def _filter_table_text(
-    rows: list[list[str]], rx: re.Pattern[str], max_rows: int = 12
+    rows: list[list[str]],
+    rx: re.Pattern[str],
+    max_rows: int = 12,
+    *,
+    full: bool = False,
 ) -> str:
     """Filter columns in a table to retain only relevant information, then format.
 
     Always keeps column 0 (usually categories/labels).
     Keeps any column where the header matches terms or cells contain numeric patterns.
     Caps rows at max_rows to avoid token blowup on massive tables.
+
+    ``full=True`` disables BOTH the column pruning and the row cap. Siting evidence
+    lives in specification tables - one row per structure or class, one column per
+    criterion - and pruning the columns whose header does not name the search term,
+    or cutting at 12 rows, drops exactly the criteria an extractor needs (2026-09:
+    18% of water-harvesting passages arrived as "[table truncated]"). Off by
+    default: the cap is a deliberate token trade-off for retrieval; extraction opts in.
     """
     if not rows:
         return ""
+    if full:
+        return "\n".join(" | ".join(r) for r in rows)
 
     num_cols = max(len(r) for r in rows)
     if num_cols <= 1:
@@ -94,8 +107,12 @@ def retrieve(
     *,
     window: int = 240,
     max_passages: int = 12,
+    full_tables: bool = False,
 ) -> list[Passage]:
-    """Return ranked, page-stamped passages relevant to ``terms``."""
+    """Return ranked, page-stamped passages relevant to ``terms``.
+
+    ``full_tables=True`` returns matching tables whole (see ``_filter_table_text``).
+    """
     rx = _terms_re(terms)
     out: list[Passage] = []
     seen: set[tuple[int, str]] = set()
@@ -105,7 +122,7 @@ def retrieve(
         flat = " | ".join(" ".join(r) for r in t.rows)
         if rx.search(flat):
             score = 4.0 + (2.0 if _NUMERIC.search(flat) else 0.0)
-            preview = _filter_table_text(t.rows, rx)
+            preview = _filter_table_text(t.rows, rx, full=full_tables)
             key = (t.page, preview[:60])
             if key not in seen:
                 seen.add(key)

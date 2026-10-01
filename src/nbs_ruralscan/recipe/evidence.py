@@ -22,7 +22,13 @@ USE_ROLE = {
     "structural_suitability",
     "climate_risk",
     "priority_need",
+    # NbS -> outcome claim (yield, erosion, carbon, income, a hazard's impact). Routed to
+    # T3 (livelihood_mitigation) and/or T6 by the XW target crosswalk — never by relabelling
+    # the outcome variable. Re-activated 2026-09-30 (T3/T6 generation method, ruleset v1.6.0).
     "nbs_effect",
+    # Hazard -> NbS claim: the hazard damages/kills the NbS asset (seedling mortality, fire,
+    # windthrow, flood scour). Feeds T3 asset_threat rows only (M2b Stream A). New v1.6.0.
+    "asset_vulnerability",
     "dataset",
     # M2b Stream-B operational / enabling-environment lever (soft, investment-addressable:
     # tenure/market/road/extension/finance/labour/access). NOT structural suitability
@@ -217,6 +223,7 @@ def package_for_extraction(
     *,
     max_passages: int = 8,
     min_score: float = 1.5,
+    full_tables: bool = False,
 ) -> dict[str, Any]:
     """Deterministic half of extraction: retrieve the passages an LLM should read.
 
@@ -233,7 +240,9 @@ def package_for_extraction(
       already captured on the body/table passages they introduce.
     """
     terms = [variable, *(aliases or [])]
-    passages = retrieve(index, terms, max_passages=max_passages)
+    passages = retrieve(
+        index, terms, max_passages=max_passages, full_tables=full_tables
+    )
     return {
         "source_id": index.source_id,
         "variable": variable,
@@ -261,6 +270,7 @@ def package_for_extraction_multi(
     min_score: float = 1.5,
     ev_register: str | Path = _EV_REGISTER,
     force: bool = False,
+    full_tables: bool = False,
 ) -> dict[str, Any]:
     """Paper-first packaging: bundle passages for *all* target variables in one call.
 
@@ -294,6 +304,9 @@ def package_for_extraction_multi(
         this source_id are skipped unless ``force=True``.
     force : bool
         If True, skip the dedup check and re-extract everything.
+    full_tables : bool
+        If True, matching tables are returned whole - no column pruning, no row
+        cap. Use for extraction; the default keeps the token-saving truncation.
 
     Returns
     -------
@@ -330,7 +343,9 @@ def package_for_extraction_multi(
         var = vspec["variable"]
         aliases = vspec.get("aliases", [])
         terms = [var, *aliases]
-        passages = retrieve(index, terms, max_passages=max_passages_per_var)
+        passages = retrieve(
+            index, terms, max_passages=max_passages_per_var, full_tables=full_tables
+        )
 
         for p in passages:
             if p.kind == "section" or p.score < min_score:
@@ -371,6 +386,7 @@ def save_units(units: list[EvidenceUnit], path: str | Path) -> Path:
     path.write_text(
         json.dumps([u.to_dict() for u in units], ensure_ascii=False, indent=2),
         encoding="utf-8",
+        newline="\n",
     )
     return path
 

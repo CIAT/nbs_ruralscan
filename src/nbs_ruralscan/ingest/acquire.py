@@ -181,7 +181,9 @@ def acquire(
     tmp = artifact_path.with_suffix(".tmp")
     try:
         tmp.write_bytes(body)
-        tmp.rename(artifact_path)
+        tmp.replace(
+            artifact_path
+        )  # replace(), not rename(): Windows errors if dest exists
     except Exception:
         tmp.unlink(missing_ok=True)
         raise

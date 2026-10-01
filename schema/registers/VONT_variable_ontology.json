@@ -964,6 +964,10 @@
       "soil depth"
     ],
     "canonical_unit": "cm",
+    "unit_conversions": {
+      "m->cm": "*100",
+      "mm->cm": "/10"
+    },
     "group_id": "edaphic",
     "candidate_dataset_ids": [
       "ssurgo_statsgo",
@@ -972,7 +976,8 @@
     "min_meaningful_resolution_m": 250,
     "resolution_sensitivity": "medium",
     "derive_then_aggregate": false,
-    "review_status": "canonical"
+    "review_status": "canonical",
+    "comment": "Conversions declared 2026-09-29 (WH sweep): sources state soil depth in m (Krois 2014: >1.0 m) as well as cm, and without the rule the synthesiser refuses them."
   },
   {
     "canonical_variable_id": "set_aside_conservation",
@@ -2149,20 +2154,23 @@
       "river proximity",
       "stream proximity"
     ],
-    "canonical_unit": "km",
+    "canonical_unit": "m",
     "unit_conversions": {
-      "m->km": "/1000"
+      "km->m": "*1000"
     },
     "group_id": "hydrological",
-    "candidate_dataset_ids": [],
-    "min_meaningful_resolution_m": 100,
+    "candidate_dataset_ids": [
+      "merit_hydro_v1",
+      "jrc_global_surface_water_v1_4"
+    ],
+    "min_meaningful_resolution_m": 30,
     "resolution_sensitivity": "medium",
     "derive_then_aggregate": true,
     "context_sensitivity": "low",
     "review_status": "pending_review",
-    "raised_by": "issue_103",
+    "raised_by": "issue_103; unit revised by the riparian T4 sweep 2026-09-25",
     "raised_date": "2026-06-24",
-    "comment": "Euclidean distance to surface water. Dataset binding pending. #103."
+    "comment": "Outward distance from the watercourse. For riparian_buffer (spatial_product_type=zonal_linear) this is the band half-width that defines the opportunity zone, and ALL 13 evidence units state it in metres (statutory reserves 30-50 m, design widths 5-30 m, delineation maxima 200-210 m) - so the canonical unit is m, not km (changed 2026-09-25; the variable is used by no other NbS, no BIND row and no other recipe, so the change has no blast radius). min_meaningful_resolution lowered 100->30 to match the evidence. CAVEAT for dataset-fitness sign-off: a 30 m band cannot be resolved from a ~90 m global stream network - record as a scoping-grade limitation. Distinct from riparian_buffer_width, which is the width of the EXISTING buffer (a restoration-priority indicator, not the zone definition). #103."
   },
   {
     "canonical_variable_id": "distance_to_cropland",
@@ -2209,5 +2217,333 @@
     "raised_by": "issue_103",
     "raised_date": "2026-06-24",
     "comment": "Euclidean distance to forest/tree cover. Dataset binding pending. #103."
+  },
+  {
+    "canonical_variable_id": "riparian_buffer_width",
+    "label": "Riparian buffer width",
+    "aliases": [
+      "buffer width",
+      "mean buffer width",
+      "MBW",
+      "riparian strip width"
+    ],
+    "canonical_unit": "m",
+    "unit_conversions": {
+      "km->m": "*1000"
+    },
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_riparian_buffer_width_zhao13_1",
+    "raised_date": "2026-09-25",
+    "comment": "Width of the EXISTING riparian vegetation strip per reach/sub-basin (an indicator of restoration priority, not the design width of a new buffer). Raised by the riparian T4 sweep; group placement + dataset binding need sign-off. Narrow linear feature - 30 m is the coarsest meaningful run resolution."
+  },
+  {
+    "canonical_variable_id": "riparian_vegetation_gap",
+    "label": "Riparian buffer gap ratio",
+    "aliases": [
+      "buffer gap ratio",
+      "BGR",
+      "buffer discontinuity",
+      "unbuffered stream length"
+    ],
+    "canonical_unit": "percent",
+    "unit_conversions": {
+      "fraction->percent": "*100"
+    },
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_riparian_vegetation_gap_zhao13_1",
+    "raised_date": "2026-09-25",
+    "comment": "Share of stream length carrying no riparian buffer. Continuity outranks width in the ES literature (cole20), so gaps are the priority restoration target. Dataset binding pending."
+  },
+  {
+    "canonical_variable_id": "regeneration_potential",
+    "label": "Natural regeneration potential",
+    "aliases": [
+      "passive restoration potential",
+      "soil seed bank capacity",
+      "propagule dispersal capacity"
+    ],
+    "canonical_unit": "categorical",
+    "unit_conversions": {},
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 100,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "ev_regeneration_potential_gonzalez15_1",
+    "raised_date": "2026-09-25",
+    "comment": "Whether passive regeneration can be expected vs requiring active reintroduction - gated by soil seed bank depletion and limited propagule dispersal. NAME COLLISION: rootstock_presence already carries 'regeneration potential' as an alias, but that variable is FMNR living-stump specific. Reviewers to rule: keep distinct or merge."
+  },
+  {
+    "canonical_variable_id": "distance_to_plantation",
+    "label": "Distance to nearest existing plantation",
+    "aliases": [
+      "distance to plantation",
+      "plantation proximity",
+      "seedling supply distance"
+    ],
+    "canonical_unit": "km",
+    "unit_conversions": {
+      "m->km": "/1000"
+    },
+    "group_id": "infrastructure",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "low",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "ev_fr_distance_to_plantation_bukoski24_1",
+    "raised_date": "2026-09-29",
+    "comment": "Proximity to existing plantations as a proxy for seed, nursery and labour supply for planted restoration (Bukoski 2024 screens out plantation beyond 40 km). Operational rather than biophysical - extracted as use_role=operational_risk. Dataset binding pending."
+  },
+  {
+    "canonical_variable_id": "population_density",
+    "label": "Human population density",
+    "aliases": [
+      "population density",
+      "inhabitants per km2",
+      "persons per km2"
+    ],
+    "canonical_unit": "persons/km2",
+    "unit_conversions": {},
+    "group_id": "socio_economic",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 1000,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "high",
+    "review_status": "pending_review",
+    "raised_by": "ev_fr_population_density_chazdon16_1",
+    "raised_date": "2026-09-29",
+    "comment": "Local human population density bands the restoration opportunity (wide-scale below 10/km2 vs mosaic 10-100/km2; Chazdon & Guariguata 2016). context_sensitivity=high: nationally derived, so the scoping output should recommend a country-endorsed source. Dataset binding pending."
+  },
+  {
+    "canonical_variable_id": "topographic_wetness_index",
+    "label": "Topographic wetness index",
+    "aliases": [
+      "TWI",
+      "wetness index",
+      "compound topographic index"
+    ],
+    "canonical_unit": "dimensionless",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wet_topographic_wetness_index_russell97_1",
+    "raised_date": "2026-09-29",
+    "comment": "ln(upslope contributing area / tan slope) from a DEM - delineates saturation-prone ground for wetland restoration siting (Russell 1997 carries forward only the medium and high classes). Scale-dependent derivative: derive-then-aggregate, never resample a coarser index."
+  },
+  {
+    "canonical_variable_id": "restorable_patch_area",
+    "label": "Minimum restorable patch area",
+    "aliases": [
+      "site area",
+      "patch size",
+      "minimum site extent"
+    ],
+    "canonical_unit": "ha",
+    "unit_conversions": {
+      "m2->ha": "/10000"
+    },
+    "group_id": "land_use",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wet_site_area_russell97_1",
+    "raised_date": "2026-09-29",
+    "comment": "Minimum contiguous area for a restoration site to be worth prioritising (Russell 1997 uses 1 ha for flood attenuation, and states the threshold was arbitrarily defined). Distinct from forest_fragment_size, which measures an existing seed-source patch."
+  },
+  {
+    "canonical_variable_id": "catchment_area",
+    "label": "Contributing catchment area",
+    "aliases": [
+      "catchment area",
+      "contributing area",
+      "catchment size",
+      "runoff area"
+    ],
+    "canonical_unit": "ha",
+    "unit_conversions": {
+      "km2->ha": "*100",
+      "m2->ha": "/10000"
+    },
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wh_catchment_area_kadam12_1",
+    "raised_date": "2026-09-29",
+    "comment": "Area contributing runoff to a water-harvesting structure; sizes the structure to its catchment (farm ponds 1-2 ha, check dams >25 ha, percolation tanks 25-40 ha). NOTE for review: micro-catchment evidence expresses the same constraint as a transport DISTANCE (<100 m, Boers 1986), not an area - reviewers to decide whether that belongs here or in its own variable."
+  },
+  {
+    "canonical_variable_id": "soil_permeability",
+    "label": "Soil permeability / infiltration capacity",
+    "aliases": [
+      "permeability",
+      "infiltration rate",
+      "hydraulic conductivity"
+    ],
+    "canonical_unit": "mm/hour",
+    "unit_conversions": {
+      "m/day->mm/hour": "*41.667",
+      "cm/day->mm/hour": "/2.4"
+    },
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wh_soil_permeability_chen17_1",
+    "raised_date": "2026-09-29",
+    "comment": "Rate at which water enters the soil. Directional both ways: recharge structures and slope-separated terraces WANT permeability, storage structures (farm ponds) want the opposite. Distinct from the existing soil_permeability_sensitivity index."
+  },
+  {
+    "canonical_variable_id": "clay_content",
+    "label": "Soil clay content",
+    "aliases": [
+      "% clay",
+      "clay fraction",
+      "clay percentage"
+    ],
+    "canonical_unit": "percent",
+    "unit_conversions": {
+      "fraction->percent": "*100",
+      "g/kg->percent": "/10"
+    },
+    "group_id": "edaphic",
+    "candidate_dataset_ids": [
+      "soilgrids_250m"
+    ],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_wh_clay_content_kahinda08_1",
+    "raised_date": "2026-09-29",
+    "comment": "Percentage clay. Split out of soil_texture (a CLASS variable) because water-harvesting sources rank suitability on % clay directly (Kahinda 2008, Krois & Schulte 2014), and the unit guard correctly refused percent against a class. Directional by structure: in-field RWH peaks at 15-35% clay, ex-field at 35-55%."
+  },
+  {
+    "canonical_variable_id": "landscape_forest_cover",
+    "label": "Surrounding-landscape forest cover",
+    "aliases": [
+      "local forest density",
+      "forest cover within radius",
+      "landscape forest cover"
+    ],
+    "canonical_unit": "percent",
+    "unit_conversions": {
+      "fraction->percent": "*100"
+    },
+    "group_id": "land_cover_vegetation",
+    "candidate_dataset_ids": [
+      "hansen_treecover2000"
+    ],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_fr_landscape_forest_cover_williams24_1",
+    "raised_date": "2026-09-29",
+    "comment": "Forest cover in the SURROUNDING landscape (e.g. within a 1 km radius) as a seed and disperser supply for natural regeneration. Deliberately NOT tree_canopy_cover: on-site canopy must be LOW for land to be in the restoration opportunity space (<25-30%), while surrounding forest cover being HIGH is good - one variable would carry opposite signs."
+  },
+  {
+    "canonical_variable_id": "water_table_depth",
+    "label": "Groundwater table depth (mean lowest level)",
+    "aliases": [
+      "MLG",
+      "mean lowest groundwater level",
+      "depth to water table",
+      "groundwater level"
+    ],
+    "canonical_unit": "cm",
+    "unit_conversions": {
+      "m->cm": "*100",
+      "mm->cm": "/10"
+    },
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "ev_wet_water_table_depth_brouwer26_1",
+    "raised_date": "2026-09-29",
+    "comment": "Depth below surface of the (dry-season) groundwater table. Shallower = more rewettable peat (paludiculture). No global dataset bound yet; national groundwater-level products are typically requires_upload."
+  },
+  {
+    "canonical_variable_id": "groundwater_seepage",
+    "label": "Groundwater seepage flux (upward negative)",
+    "aliases": [
+      "seepage",
+      "upward seepage",
+      "downward seepage",
+      "kwel/wegzijging"
+    ],
+    "canonical_unit": "mm/d",
+    "unit_conversions": {},
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 250,
+    "resolution_sensitivity": "medium",
+    "derive_then_aggregate": false,
+    "context_sensitivity": "medium",
+    "review_status": "pending_review",
+    "raised_by": "ev_wet_groundwater_seepage_brouwer26_1",
+    "raised_date": "2026-09-29",
+    "comment": "Vertical groundwater flux; NEGATIVE = upward (groundwater feeding the root zone, good for rewetting), positive = downward loss. Sign convention per Brouwer et al. Typically a national hydrological-model output (requires_upload)."
+  },
+  {
+    "canonical_variable_id": "tidal_inundation_duration",
+    "label": "Tidal inundation duration",
+    "aliases": [
+      "inundation period",
+      "hydroperiod",
+      "time flooded",
+      "intertidal position"
+    ],
+    "canonical_unit": "percent",
+    "unit_conversions": {
+      "fraction->percent": "*100"
+    },
+    "group_id": "hydrological",
+    "candidate_dataset_ids": [],
+    "min_meaningful_resolution_m": 30,
+    "resolution_sensitivity": "high",
+    "derive_then_aggregate": true,
+    "context_sensitivity": "low",
+    "review_status": "pending_review",
+    "raised_by": "ev_fr_inundation_gma23_1",
+    "raised_date": "2026-09-30",
+    "comment": "Share of time a site is flooded by the tide - the master control on where mangroves establish (low intertidal = too long flooded). Derived from elevation relative to local tidal datums; no global dataset bound yet (local DEM + tide model, or the Mangrove Restoration Potential Map as a screen)."
   }
 ]

@@ -22,15 +22,28 @@ from pathlib import Path
 
 # capture leading-dot decimals too (".13" as written in papers, not just "0.13")
 _NUM = re.compile(r"\d*\.\d+|\d+")
+# thousands grouped with a space (SI style, used by WOCAT/FAO: "1 001 - 1 500 mm"),
+# incl. no-break / thin / narrow no-break spaces
+_SPACED_THOUSANDS = re.compile(
+    r"(?<![\d.])\d{1,3}(?:[ \u00a0\u2009\u202f]\d{3})+(?![\d.])"
+)
 
 
 def _nums(text: str) -> set[str]:
-    """Numeric tokens, comma-stripped, trailing-zero-normalised (e.g. 1,637,600 / 25.0)."""
+    """Numeric tokens, comma-stripped, trailing-zero-normalised (e.g. 1,637,600 / 25.0).
+
+    Space-grouped thousands ("1 001") are ALSO added joined ("1001"), so a relationship
+    value written as 1001 matches a quote that prints it SI-style (2026-09: every WOCAT
+    rainfall class tripped this). The split tokens are kept too, so nothing is lost.
+    """
+    text = (text or "").replace(",", "")
     out: set[str] = set()
-    for m in _NUM.findall((text or "").replace(",", "")):
+    for m in _NUM.findall(text):
         out.add(m)
         if "." in m:
             out.add(m.rstrip("0").rstrip("."))  # 25.0 -> 25
+    for m in _SPACED_THOUSANDS.findall(text):
+        out.add(re.sub(r"\D", "", m))
     return out
 
 
@@ -51,7 +64,9 @@ def _rel_nums(rel: str) -> set[str]:
         data = json.loads(rel)
     except (json.JSONDecodeError, TypeError):
         return _nums(rel)
-    vals = " ".join(str(v) for v in _walk(data))
+    # " ; " not " ": adjacent values (observed_min 251, observed_max 500) must never fuse
+    # into a space-grouped "thousands" number on the relationship side
+    vals = " ; ".join(str(v) for v in _walk(data))
     return _nums(vals)
 
 
