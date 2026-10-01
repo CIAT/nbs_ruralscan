@@ -168,6 +168,9 @@ class _Contrib:
     distance: int  # 0 | 1 | 2 vs the row's target
     ctx: dict[str, Any]
     ns: bool
+    has_direction: bool = (
+        True  # False = magnitude/economics-only unit (never a null vote)
+    )
 
 
 # ── loaders (CSV registers / lookups; all optional — callers may pass Python objects) ──
@@ -384,7 +387,12 @@ def unit_weight(
 
 
 def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int]:
-    """(cell rank, sign agreement A, modal sign) over the contributing units."""
+    """(cell rank, sign agreement A, modal sign) over the contributing units.
+
+    Units with no `direction` (magnitude / economics-only) are excluded here — a missing
+    direction is not a null finding — but stay in the envelope, n_sources and the gated
+    number summaries."""
+    contribs = [c for c in contribs if c.has_direction]
     if not contribs:
         return 0, 0.0, 0
     pos = sum(c.weight for c in contribs if c.sign > 0)
@@ -694,7 +702,12 @@ def _contribs(
             xw.factor,
         )
         ns = str((u.relationship or {}).get("significance") or "").lower() == "ns"
-        out.append(_Contrib(u, sign, mag, w, d, ctx, ns))
+        has_dir = str((u.relationship or {}).get("direction") or "").lower() in (
+            "positive",
+            "negative",
+            "none",
+        )
+        out.append(_Contrib(u, sign, mag, w, d, ctx, ns, has_dir))
     return out
 
 
@@ -705,6 +718,10 @@ def _reconcile_group(
     target_ctx: dict[str, Any],
 ) -> dict[str, Any]:
     rank, agreement, modal = _reconcile_rank(contribs)
+    strength_stated = any(
+        c.has_direction and c.sign == modal and c.magnitude is not None
+        for c in contribs
+    )
     units = [c.unit for c in contribs]
     ev_l = evidence_level(units, tiers)
     ag_l = agreement_level(agreement)
@@ -721,6 +738,9 @@ def _reconcile_group(
         "evidence_ids": [c.unit.evidence_id for c in contribs],
         "sources": sorted({c.unit.source_id for c in contribs}),
         "source_mix": _source_mix(contribs),
+        # direction_only = every modal-sign unit states a direction but no strength; the
+        # weakest class is emitted and the statement says the strength is unquantified
+        "strength_basis": "quantified" if strength_stated else "direction_only",
     }
 
 
@@ -751,6 +771,7 @@ def _statement(
     conf: str,
     envelope: dict[str, Any],
     role: str,
+    strength_basis: str = "quantified",
 ) -> str:
     """Calibrated-language statement; levels inserted by the engine (contract §5)."""
     where = ", ".join(k for k in envelope.get("aezs", {}) if k != "unknown") or (
@@ -766,12 +787,16 @@ def _statement(
         core = f"{nbs_id} {verb} {key}"
     else:
         strength = {1: "slightly", 2: "moderately", 3: "strongly"}
+        if strength_basis == "direction_only":
+            strength = {1: "", 2: "", 3: ""}
         if rank == 0:
             core = f"{nbs_id} shows no effect on {key}"
         elif rank > 0:
-            core = f"{nbs_id} {strength[rank]} increases {key}"
+            core = f"{nbs_id} {strength[rank]} increases {key}".replace("  ", " ")
         else:
-            core = f"{nbs_id} {strength[-rank]} decreases {key}"
+            core = f"{nbs_id} {strength[-rank]} decreases {key}".replace("  ", " ")
+        if strength_basis == "direction_only":
+            core += " (strength not quantified in the evidence)"
         if table == "T3":
             core = core.replace("increases", "reduces the impact of").replace(
                 "decreases", "worsens"
@@ -849,7 +874,9 @@ def traceable_account(
             rec["confidence"],
             env,
             role,
+            rec.get("strength_basis", "quantified"),
         ),
+        "strength_basis": rec.get("strength_basis", "quantified"),
         "evidence_summary": summary,
         "agreement_note": agreement_note,
         "proxies": proxies,

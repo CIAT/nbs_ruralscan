@@ -1,6 +1,6 @@
 """Progress ledger — orchestrator-owned, register-enforced, per (NbS × table × category × family).
 
-Tracks, for each (nbs_id × table[T4] × source-category[stock/updated_lit/grey/tool]
+Tracks, for each (nbs_id × table[T4/T3/T6] × source-category[stock/updated_lit/grey/tool]
 × suitability_family), the AUTHORED process stages: searched · screened · verified. These
 cannot be derived from data (a search either happened or didn't, and **absence of evidence
 is NOT proof a search was run** — it may be searched-and-empty), so the pipeline STEP that
@@ -37,12 +37,34 @@ ROOT = Path(__file__).resolve().parents[3]
 LEDGER = ROOT / "pipeline" / "progress_ledger.csv"
 
 STAGES = ["searched", "screened", "verified"]  # authored (cannot be derived)
-# T3/T6 deferred from the extraction exercise 2026-09 — archived rows + restore path in
-# schema/registers/_deferred/README.md. Restore = re-add here + in _ROLE + search_log.TABLES.
-TABLES = ["T4"]
+# T3/T6 re-activated 2026-09-30 as GENERATED cell-synthesis tables (methodology/
+# T3_T6_generation_method.md, ruleset v1.6.0). Which table an evidence unit counts toward is
+# derived from its ROLE + the XW target crosswalk: structural_suitability → T4;
+# asset_vulnerability → T3; nbs_effect → every table an XW row routes its variable to.
+TABLES = ["T4", "T3", "T6"]
 CATEGORIES = ["stock", "updated_lit", "grey", "tool"]
-_ROLE = {"T4": "structural_suitability"}
-_ROLE_INV = {v: k for k, v in _ROLE.items()}
+_FIXED_ROLE_TABLES = {"structural_suitability": {"T4"}, "asset_vulnerability": {"T3"}}
+
+
+def _xw_routes(schema_root: Path) -> dict[str, set[str]]:
+    """variable → {target_table} from the XW register (empty when absent)."""
+    xw = Path(schema_root) / "registers" / "XW_target_crosswalk.csv"
+    out: dict[str, set[str]] = {}
+    if xw.exists():
+        with xw.open(newline="", encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                out.setdefault(r["ev_variable"], set()).add(r["target_table"])
+    return out
+
+
+def tables_for(role: str, variable: str, routes: dict[str, set[str]]) -> set[str]:
+    if role in _FIXED_ROLE_TABLES:
+        return set(_FIXED_ROLE_TABLES[role])
+    if role == "nbs_effect":
+        return set(routes.get(variable, set()))
+    return set()
+
+
 STATUSES = {"not_started", "in_progress", "done"}
 FIELDS = (
     ["nbs_id", "table", "category", "family"]
@@ -87,6 +109,7 @@ def derive_facts(schema_root: str | Path) -> dict[tuple, dict]:
     """
     schema_root = Path(schema_root)
     cat = _category_map(schema_root)
+    routes = _xw_routes(schema_root)
     ev_csv = schema_root / "registers" / "EV_evidence_register.csv"
     facts: dict[tuple, dict] = {}
     if not ev_csv.exists():
@@ -95,19 +118,19 @@ def derive_facts(schema_root: str | Path) -> dict[tuple, dict]:
         for r in csv.DictReader(f):
             if (r.get("review_state") or "") == "dropped":
                 continue  # soft-deleted — not active evidence
-            tbl = _ROLE_INV.get(r.get("use_role", ""))
-            if not tbl:
-                continue
-            key = (
-                r.get("nbs_id", ""),
-                tbl,
-                cat.get(r.get("source_id", ""), "stock"),
-                r.get("suitability_family_id", ""),
-            )
-            d = facts.setdefault(key, {"ev": 0, "reviewed": 0})
-            d["ev"] += 1
-            if r.get("reviewer_ok") in (True, "true", "True"):
-                d["reviewed"] += 1
+            for tbl in sorted(
+                tables_for(r.get("use_role", ""), r.get("variable", ""), routes)
+            ):
+                key = (
+                    r.get("nbs_id", ""),
+                    tbl,
+                    cat.get(r.get("source_id", ""), "stock"),
+                    r.get("suitability_family_id", ""),
+                )
+                d = facts.setdefault(key, {"ev": 0, "reviewed": 0})
+                d["ev"] += 1
+                if r.get("reviewer_ok") in (True, "true", "True"):
+                    d["reviewed"] += 1
     return facts
 
 
