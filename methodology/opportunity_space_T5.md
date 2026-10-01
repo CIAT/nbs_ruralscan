@@ -56,9 +56,9 @@ apply to descriptors.
 
 ---
 
-## The 15 ratified rows
+## The 17 ratified rows (v0.3.0 + `iplc_lands` 2026-06 + `water_quality_risk` 2026-10-01)
 
-### Priorities (12)
+### Priorities (13)
 
 | variable_id | theme | concern direction | notes |
 |---|---|---|---|
@@ -68,6 +68,7 @@ apply to descriptors.
 | `soil_erosion_risk` | nbs_response | higher → more concern | RUSLE-class |
 | `carbon_sequestration_potential` | nbs_response | higher → more concern | FAO GSOCseq-style additional-C |
 | `biodiversity_priority` | nbs_response | higher → more concern | **placeholder / requires_upload** — layer choice deferred |
+| `water_quality_risk` | nbs_response | higher → more concern | **added 2026-10-01 (Pete)** — the riparian T3/T6 pilot left 31 effect units (`nutrient_removal`, `stream_temperature`) with no T5 target; water quality is the core riparian/wetland service. No scoping-grade global layer: BIND `requires_upload` or a nutrient/sediment-export proxy. XW routes: `nutrient_removal` direct, `stream_temperature` + `sediment_retention` component (0.7). `nbs_response` default weights rebalanced to 0.25 × 4 |
 | `water_stress` | people_production | higher → more concern | composite (Aqueduct or ET-deficit) |
 | `rural_poverty` | people_production | higher → more concern | WB PIP subnational |
 | `production_gap` | people_production | higher → more concern | per-farming-system metric via BIND (yield gap / NPP gap / mixed) |
