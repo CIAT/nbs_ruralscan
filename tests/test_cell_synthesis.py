@@ -775,3 +775,37 @@ def test_record_ids_do_not_double_the_nbs_prefix_and_asset_cells_are_distinct():
         )
         == "riparian_buffer__asset_threat__flood__aez-semi_arid"
     )
+
+
+def test_economic_rows_carry_no_effect_direction():
+    a = _u(
+        "ca",
+        "s1",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["KEN"], "income_group": "lower_middle"},
+        rel={"metric": "absolute", "magnitude": 400, "unit": "usd_per_ha"},
+    )
+    b = _u(
+        "cb",
+        "s2",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["ETH"], "income_group": "low"},
+        rel={"metric": "absolute", "magnitude": 450, "unit": "usd_per_ha"},
+    )
+    rows, _ = _t6([a, b], key="establishment_cost")
+    assert all(r["variable_type"] == "economic_indicator" for r in rows)
+    assert all(r["effect_direction"] == "" for r in rows)
+    # a priority-target row still carries a Likert direction
+    pa = _u(
+        "pa",
+        "s1",
+        direction="negative",
+        strength="unspecified",
+        ctx={"country": ["KEN"], "income_group": "lower_middle"},
+    )
+    rows, _ = _t6([pa])
+    assert rows[0]["effect_direction"] != ""

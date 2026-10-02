@@ -1075,7 +1075,12 @@ def synthesise_cell(
                             else "opportunity_space_variable"
                         )
                     ),
-                    "effect_direction": t6_effect_direction(rec["rank"]),
+                    # a cost indicator has no "direction of benefit": the rank from the
+                    # cost-sign votes is meaningless there, so economic rows leave it blank
+                    # (manifest: conditional, required unless variable_type=economic_indicator)
+                    "effect_direction": (
+                        "" if is_econ else t6_effect_direction(rec["rank"])
+                    ),
                     "effect_confidence": rec["confidence"],
                     "timescale_of_effect": _modal_ctx(cs, "timescale_of_effect"),
                     "effect_mechanism": "[prose pending] "
