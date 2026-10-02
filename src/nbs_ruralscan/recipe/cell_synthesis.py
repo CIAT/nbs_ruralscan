@@ -22,6 +22,8 @@ never authored. Same register in → byte-identical rows out.
 
 from __future__ import annotations
 
+import re
+
 import csv
 import json
 from collections import defaultdict
@@ -260,6 +262,80 @@ def _as_list(v: Any) -> list[str]:
     return [str(x) for x in v]
 
 
+_ISO3 = re.compile(r"^[A-Z]{3}$")
+# names the WB lookup spells differently (or does not carry); extend as sources demand
+COUNTRY_ALIASES = {
+    "usa": "USA",
+    "us": "USA",
+    "united states of america": "USA",
+    "uk": "GBR",
+    "drc": "COD",
+    "dr congo": "COD",
+    "democratic republic of the congo": "COD",
+    "congo, dem. rep.": "COD",
+    "syria": "SYR",
+    "iran": "IRN",
+    "egypt": "EGY",
+    "vietnam": "VNM",
+    "laos": "LAO",
+    "russia": "RUS",
+    "south korea": "KOR",
+    "bolivia": "BOL",
+    "venezuela": "VEN",
+    "tanzania": "TZA",
+    "ivory coast": "CIV",
+    "cote d'ivoire": "CIV",
+    "côte d'ivoire": "CIV",
+    "the gambia": "GMB",
+    "gambia": "GMB",
+    "cabo verde": "CPV",
+    "cape verde": "CPV",
+    "eswatini": "SWZ",
+    "swaziland": "SWZ",
+    "czech republic": "CZE",
+    "slovakia": "SVK",
+    "türkiye": "TUR",
+    "turkey": "TUR",
+}
+
+
+def normalise_countries(
+    raw: Any, name_to_iso3: dict[str, str] | None = None
+) -> tuple[list[str], list[str]]:
+    """Free-text / list country field → (ISO3 list, unresolved tokens).
+
+    Splits on ';' ',' '/' and '&'; accepts ISO3 as-is; resolves names via the WB lookup's
+    ``country_name`` (case-insensitive) and ``COUNTRY_ALIASES``. "Global"/"multiple" and
+    unknown names are returned as unresolved and never enter the envelope.
+    """
+    names = {k.lower(): v for k, v in (name_to_iso3 or {}).items()}
+    toks: list[str] = []
+    for x in _as_list(raw):
+        toks += [s.strip() for s in re.split(r"[;,/&]| and ", str(x)) if s.strip()]
+    out: list[str] = []
+    bad: list[str] = []
+    valid = set(names.values())
+    for tok in toks:
+        key = tok.lower()
+        if key in COUNTRY_ALIASES:
+            code = COUNTRY_ALIASES[key]
+        elif _ISO3.match(tok) and (not valid or tok in valid):
+            code = tok
+        else:
+            code = names.get(key) or ""
+        if code and code not in out:
+            out.append(code)
+        elif not code and key not in {
+            "global",
+            "multiple",
+            "various",
+            "worldwide",
+            "n/a",
+        }:
+            bad.append(tok)
+    return out, bad
+
+
 def unit_context(
     unit: EvidenceUnit,
     src_context: dict[str, Any] | None = None,
@@ -274,9 +350,14 @@ def unit_context(
     src = src_context or {}
     uc = unit.context or {}
     out: dict[str, Any] = {}
-    countries = _as_list(uc.get("country")) or _as_list(
-        src.get("country") or src.get("study_country")
-    )
+    countries = _as_list(uc.get("country")) or [
+        c
+        for c in _as_list(src.get("country") or src.get("study_country"))
+        # the SRC fallback is free text ("Brazil; Colombia; Mexico", "Global"): only ISO3
+        # tokens may enter the envelope — the loader normalises names first
+        # (`normalise_countries`); anything left unresolved is dropped, not injected
+        if _ISO3.match(str(c))
+    ]
     if countries:
         out["country"] = countries
     for k in ("aez", "farming_system", "income_group", "climate_zone"):
@@ -778,6 +859,24 @@ def _source_mix(contribs: list[_Contrib]) -> dict[str, Any]:
     return mix
 
 
+# T3/T6 rows are in the BENEFIT frame (positive = the NbS helps). The statement verb has to
+# read in the frame of the TARGET: for a risk / hazard / gap / deficit target a benefit
+# REDUCES it; for a stock / potential target a benefit INCREASES it. Caught by the riparian
+# prose review (2026-10-01): "buffer increases soil_erosion_risk" meant the opposite.
+_CONCERN_TARGET = re.compile(
+    r"(_hazard|_risk|_gap|_stress|_poverty|_inequity|_dependency|_exposure)$"
+)
+
+
+def _benefit_verbs(table: str, key: str) -> tuple[str, str]:
+    """(verb for a positive benefit rank, verb for a negative rank)."""
+    if table == "T3":
+        return "reduces the impact of", "worsens"
+    if _CONCERN_TARGET.search(key):
+        return "reduces", "increases"
+    return "increases", "decreases"
+
+
 def _statement(
     table: str,
     nbs_id: str,
@@ -791,9 +890,17 @@ def _statement(
     strength_basis: str = "quantified",
 ) -> str:
     """Calibrated-language statement; levels inserted by the engine (contract §5)."""
-    where = ", ".join(k for k in envelope.get("aezs", {}) if k != "unknown") or (
-        ", ".join(envelope.get("countries", [])) or "the pooled evidence contexts"
-    )
+    # name the AEZs only when they cover at least half of the pooled units; a single
+    # tagged unit must not label the whole cell (riparian prose review, 2026-10-01)
+    aezs = envelope.get("aezs", {}) or {}
+    known = {k: n for k, n in aezs.items() if k != "unknown"}
+    total = sum(aezs.values()) or 1
+    if known and sum(known.values()) * 2 >= total:
+        where = ", ".join(sorted(known))
+    else:
+        where = (
+            ", ".join(envelope.get("countries", [])) or "the pooled evidence contexts"
+        )
     if role == "asset_vulnerability":
         verb = {
             0: "is not damaged by",
@@ -806,18 +913,24 @@ def _statement(
         strength = {1: "slightly", 2: "moderately", 3: "strongly"}
         if strength_basis == "direction_only":
             strength = {1: "", 2: "", 3: ""}
+        if key in _ECON_KEYS:
+            # a cost indicator has no direction of benefit (manifest v0.4.1): describe the
+            # pooled cost evidence instead of an effect
+            core = f"{nbs_id} {key}: pooled cost evidence"
+            return (
+                f"{core} from {where} ({ev_l} evidence, {ag_l} agreement → {conf} confidence; "
+                f"transfer: {envelope.get('transfer_class')}; value range only when the "
+                "contract gates pass)."
+            )
+        up, down = _benefit_verbs(table, key)
         if rank == 0:
             core = f"{nbs_id} shows no effect on {key}"
         elif rank > 0:
-            core = f"{nbs_id} {strength[rank]} increases {key}".replace("  ", " ")
+            core = f"{nbs_id} {strength[rank]} {up} {key}".replace("  ", " ")
         else:
-            core = f"{nbs_id} {strength[-rank]} decreases {key}".replace("  ", " ")
+            core = f"{nbs_id} {strength[-rank]} {down} {key}".replace("  ", " ")
         if strength_basis == "direction_only":
             core += " (strength not quantified in the evidence)"
-        if table == "T3":
-            core = core.replace("increases", "reduces the impact of").replace(
-                "decreases", "worsens"
-            )
     return (
         f"{core} in {where} ({ev_l} evidence, {ag_l} agreement → {conf} confidence; "
         f"transfer: {envelope.get('transfer_class')})."

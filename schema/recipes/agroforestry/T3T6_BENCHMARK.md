@@ -4,6 +4,13 @@ Seed rows (hand-authored 2026-05, no `evidence_ids`) now live frozen in `schema/
 
 Generated: T3 23 rows (13 NbS roll-up, rest scope/family) · T6 20 rows (9 roll-up). Pooled units 72; strength_class `unspecified` on 66/72 → almost every row is `direction_only` and therefore the weakest class by rule (synthesis contract §4).
 
+> **Update 2026-10-01 — Castle 2021 strength pass (+27 units, 5 superseded).** Tables below are the PR6 snapshot
+> (72 units). After the pass: T3 27 rows / T6 19 rows; `production_gap` global row now medium × **medium** → medium
+> (Haggar's negative certified-coffee yield SMD enters as `cited_secondary`; coffee-specific units are routed out of the
+> practice cell) — more evidence lowered agreement, which is the honest outcome; `rural_poverty` unchanged
+> (slight_positive, quantified). T3 cells unchanged: Castle carries no hazard-mitigation effect sizes, so the `low`
+> wall is a corpus gap, not an extraction gap. Current rows: `T3T6_synthesis_report.json`.
+
 ## T3 — hazard × farming_system
 
 | seed cell (hazard × farming_system) | seed potential / conf | generated match | gen potential / conf | n_src | transfer | basis | verdict |

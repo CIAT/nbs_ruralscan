@@ -30,6 +30,8 @@ Source of these pointers: `pipeline/staging/riparian_effects_{A,B,C}_report.md` 
 
 ### 1.1 Already in EV but routed nowhere (no T5 target) — decision needed, not re-extraction
 
+**RESOLVED 2026-10-01 (Pete):** T5 `water_quality_risk` added under `nbs_response` + XW routes (`nutrient_removal` direct · `stream_temperature`, `sediment_retention` component 0.7). The 31 units now feed `riparian_buffer__water_quality_risk` rows. Table kept for the record.
+
 | variable (VONT, pending_review) | units | why unmapped | route |
 |---|---|---|---|
 | `nutrient_removal` | 27 | no T5 water-quality priority (T5 v0.3.0 lock) | Namita/Pete: add a water-quality `priority` row to T5 (or a `descriptor`) → XW row |
@@ -118,6 +120,25 @@ Other blockers:
 - Tiwari 2016: `climate_zone = boreal`, no T7 boreal AEZ; family fit (`planted`) needs a human call.
 - Zhao 2013 is CHN (Liuxihe basin, Guangdong), not CAN — `SRC.study_country` fixed in PR #264; check it stuck.
 
+### 1.6b QA items raised by the prose-writer review (2026-10-01; `riparian_buffer_prose_report.md`, staging-only)
+
+Engine template defects it found are FIXED in PR #270 (verb frame on risk targets · ISO3-only envelopes · AEZ naming
+threshold · cost-row wording). Data items still open for a human:
+
+| item | evidence | call needed |
+|---|---|---|
+| `ev_biodiversity_outcome_meli19_6` carries `MEX` only as the source default while citing González del Tánago & García de Jalón 2011 (Spain?) | Meli 2019 p3 | if the primary is European, blank `country` → the `income_group-upper_middle` scope row loses an `in_context` vote |
+| Lee 2004 units are forest buffers **retained after timber harvest**, tagged `planted` | all `__planted__*` riparian rows | reclassify family (`natural_restored`? or a forestry-retention flag) — already listed in §1.6 |
+| `ev_project_cost_tiwari16_2` (forgone-forestry NPV, USD/ha) feeds BOTH `establishment_cost` and `cost_per_hectare_restored` via `project_cost` XW routes | riparian economic rows | an `opportunity_cost` T6 indicator (enum gap, §1.2) or drop the two routes for retention-cost units |
+| `ev_carbon_sequestration_cole20_1` — storage capacity printed as t ha⁻¹ yr⁻¹ | Cole 2020 p9 | keep direction-only (engine does); human check of the unit's `metric` |
+| `riparian_buffer__asset_threat__flood` = "slightly damaged" rests on one cited mechanism statement; the other unit observed no damage | Cole 2020 (Puijalon/O'Hare) · Schultz 1995 p17 | fine at scoping grade; note for M2b (Brayden) |
+| Loss-framed units (meli19_4 flood · dalacorte20_1 biodiversity · mello18_11 bank erosion) count toward agreement after the engine's sign flip | — | by design (contract `framing=loss`); prose conditionality names the framing |
+
+Rows where the quotes give **no mechanism** (prose states only what the quote supports): natural_restored flood rows
+(one loss-framed association), `planted__asset_threat__flood` (outcome, not process), both carbon rows, all four
+economic rows. Rows resting mainly on `cited_secondary` lineage: all flood rows, asset-threat global/natural_restored,
+all biodiversity rows (Lee 2004 / Cole 2020 reviews), carbon rows.
+
 ### 1.7 PICOS exclusions (recorded so nobody re-screens them)
 
 Schultz tile-outlet constructed wetland (nitrate >15 → <3 mg/L, p.1/23 — a *wetland_management* claim, not riparian; **pointer for the wetlands T3/T6 pass**) · Lee: logging / canopy-removal effects with no buffer as intervention (Carlson 1990, Noel 1986, France 1996, Steedman & France 2000), bank cover (Wesche 1987), partial harvest inside buffers · Zhao: NDVI ↔ N-uptake mechanism papers (Hively 2009) · Meli: Conservador das Águas +60 % forest cover, Nascentes >12,000 ha (programme outputs), La Vieja silvopastoral package results (+40 % stocking, −43 % agrochemicals) · González: passive vs active hydro-geomorphic cost-efficiency (dam/levee removal, not buffers) · Dala-Corte: catchment turbidity/nutrient effects (catchment land use, not riparian).
@@ -151,6 +172,32 @@ Source: `schema/recipes/agroforestry/T3T6_synthesis_report.json` (tracked) + the
 - **37/72 units (both WB PADs) are tagged `suitability_family_id = planted_silvoarable`** — PAD-level "agroforestry" claims are NbS-level, not F1. Migration default, flag for QA: should be blank (roll-up only) so they stop inflating the F1 family rows.
 - Seed hazards with **zero evidence**: `waterlogging`, `heat_stress × cropping_irrigated`, `drought × tree_perennial`, `fire × pastoral_rangeland`, `wind_cyclone × cropping_rainfed` (windbreak) — targets for the synthesis-first search (meta-analyses on windbreak yield effects, shade × heat stress in perennial systems).
 - Seed T6 rows with zero evidence: `carbon_sequestration_potential` (seed said strong_positive + carbon_revenue 20–200 USD/ha/yr), `accessibility_travel_time` (market access — seed had it as a T6 effect; by the 2026-06-23 routing it is M2b/next-steps, so the seed row was mis-placed anyway).
+
+### Castle 2021 strength pass (2026-10-01, +27 units, 5 superseded)
+
+Castle et al. 2021 (Campbell SR) pools only **two** meta-analyses — crop yield (g 1.16 [−0.35, 2.67], ns) and household
+income (g 0.12 [−0.06, 0.30], ns), both all-agroforestry; **no subgroup pooling by intervention type**. Every per-practice
+result is a single included study → `cited_secondary` + `lineage_of` (the engine de-dupes to the primary). Family
+attribution now carried on 20 units (planted_silvoarable 10 · shaded_perennial 7 [coffee, `crop_specific`, routed out of
+practice cells] · silvopastoral 3); `linear_boundary`, `regeneration_farmland`, homegardens have **no isolating result**
+in the review. Superseded (soft-dropped, `accepted_correction`, note `superseded_by=`): `ev_t6_yield_p20_castle21_3`,
+`ev_t6_yield_meta_castle21_1` (abstract repeat), `ev_t6_income_meta_castle21_4`, `ev_t6_foodsec_dietary_castle21_7`,
+`ev_t6_biodiv_esi_castle21_10` (ESI = biodiversity+carbon composite → `ecosystem_service`).
+
+| pointer | page | note |
+|---|---|---|
+| Thorlakson soil-erosion × tree-biomass correlation (−0.31) | 25→26 | page-break straddle — unquotable; would be the only `erosion_hazard` unit from this review |
+| Forest plots (Figs 6–7) per-study effect sizes | — | image-only; `figure_read` pass |
+| Forest-cover loss (Sills) | 25 | no VONT id |
+| Tree planting density, trees/ha (Pender) | 25 | no VONT id |
+| Fuelwood purchases −49 pp, collection time −180 min (Thorlakson) | 26 | no VONT id (existing narrative unit `_12` holds it) |
+| Tenure-security perception +26.4 % (Pender) | 24 | no VONT id (and tenure = M2b operational, not T6) |
+| Gender-decomposed results | 27 | no VONT id; equity lane |
+| Haggar per-certification-scheme yield/income SMDs (Utz, Fairtrade, RA, Organic) | 21–22 | numbers sit in kept quotes; emit as separate units only if per-scheme detail is wanted |
+| Hegde & Bull country mis-stated as Nicaragua in the review (is Mozambique) · Coulibaly labelled improved fallows vs Table 4 fertilizer trees | 21 | source errors; units use MOZ / planted_silvoarable |
+
+**Human family check still open:** the 8 kept pre-pass Castle units are all tagged `planted_silvoarable`; `_5`
+(income pathway) and `_11` (ecosystem-service baseline) are pooled/narrative → should be `agroforestry__cross_family`.
 
 ---
 

@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any
 
 from nbs_ruralscan.recipe import cell_synthesis as cs
+from nbs_ruralscan.recipe import prose as P
 from nbs_ruralscan.recipe.evidence import EvidenceUnit, load_units
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -114,15 +115,23 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
     src = _rd(REG / "SRC_source_register.csv")
     tiers = {r["source_id"]: (r["benchmark_tier"] or "medium").lower() for r in src}
     categories = {r["source_id"]: r.get("source_category", "") for r in src}
-    src_contexts = {
-        r["source_id"]: {
-            "study_country": r.get("study_country", ""),
+    # SRC.study_country is free text ("Brazil; Colombia; Mexico", "Global"): normalise to
+    # ISO3 here so the envelope never carries a raw name (riparian prose review 2026-10-01)
+    name_to_iso3 = {
+        r["country_name"]: r["iso3"] for r in _rd(LOOK / "wb_income_groups.csv")
+    }
+    src_contexts: dict[str, dict[str, Any]] = {}
+    unresolved: dict[str, list[str]] = {}
+    for r in src:
+        codes, bad = cs.normalise_countries(r.get("study_country", ""), name_to_iso3)
+        if bad:
+            unresolved[r["source_id"]] = bad
+        src_contexts[r["source_id"]] = {
+            "country": codes,
             "aez": r.get("aez", ""),
             "farming_system": r.get("farming_system", ""),
             "income_group": r.get("study_income_group", ""),
         }
-        for r in src
-    }
     xw = cs.load_xw(REG / "XW_target_crosswalk.csv")
     income = cs.load_income_lookup(LOOK / "wb_income_groups.csv")
     matrix = cs.load_confidence_matrix(LOOK / "ipcc_confidence_matrix.csv")
@@ -142,6 +151,7 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
         "tiers": tiers,
         "categories": categories,
         "src_contexts": src_contexts,
+        "src_country_unresolved": unresolved,
         "xw": xw,
         "income": income,
         "matrix": matrix,
@@ -260,11 +270,19 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
 def write_recipe(nbs_id: str, out: dict[str, Any], *, dry_run: bool) -> list[Path]:
     rdir = SCHEMA / "recipes" / nbs_id
     written: list[Path] = []
+    # prose sidecar (contract §5): re-apply AI-written mechanism/conditionality only to rows
+    # whose evidence_ids are exactly what the prose was written against; else stays pending
+    sidecar = P.load_sidecar(rdir)
     for table, fields, fname in (
         ("T3", T3_FIELDS, "T3_nbs_hazard_farming.csv"),
         ("T6", T6_FIELDS, "T6_nbs_scorecard.csv"),
     ):
         rows = out[table]
+        if sidecar:
+            applied, stale = P.apply_prose(rows, table, sidecar)
+            print(
+                f"{table}: prose applied to {applied} row(s); {stale} stale (evidence changed → pending)"
+            )
         path = rdir / fname
         if dry_run:
             print(f"[dry-run] {path}: {len(rows)} row(s)")
@@ -342,6 +360,12 @@ def main(argv: list[str] | None = None) -> int:
     inp = load_inputs(args.nbs_id, staging)
     out = synthesise(args.nbs_id, inp)
     print(_summary(out))
+    used = {u.source_id for u in inp["units"]}
+    bad = {k: v for k, v in inp["src_country_unresolved"].items() if k in used}
+    if bad:
+        print(
+            f"SRC.study_country tokens not resolved to ISO3 (dropped from envelopes): {bad}"
+        )
     for p in write_recipe(args.nbs_id, out, dry_run=args.dry_run):
         print("wrote", p.relative_to(ROOT))
     return 0

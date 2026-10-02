@@ -1,4 +1,9 @@
-# Schema spec — field-level reference (v0.4.0)
+# Schema spec — field-level reference (v0.4.1)
+
+> **v0.4.1 (2026-10-01)** — additive, from the PR6 agroforestry benchmark review: T6 `effect_direction` Required → Conditional
+> (blank on `economic_indicator` rows — a cost has no direction of benefit); **T5 `water_quality_risk`** priority row added under
+> `nbs_response` (17 rows: 13 priorities + 4 descriptors; `nbs_response` default weights 0.25 × 4) with XW routes for
+> `nutrient_removal` (direct), `stream_temperature` and `sediment_retention` (component). No new columns.
 
 > **v0.4.0 (2026-09-30)** — **T3/T6 generation method** ([`../methodology/T3_T6_generation_method.md`](../methodology/T3_T6_generation_method.md)):
 > T3/T6 become *generated* cell-synthesis tables. Additive columns on T3 + T6 (`suitability_family_id` · `scope_type` · `scope_id` ·
