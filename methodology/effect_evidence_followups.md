@@ -210,6 +210,36 @@ Rows where the quotes give **no mechanism**: all six flood rows (Quandt conclusi
 rows ("has been proposed"), Batcheler-only drought rows (infiltration listed as a service; drought never named), global
 `production_gap` / `rural_poverty` (outcomes only).
 
+### Synthesis-first discovery round 1 — agroforestry T3 + T6 (2026-10-02; probe + 3 agents; 75 candidates queued)
+
+Logs: `methodology/discovery_logs/agroforestry_{T3_synthesis_probe,T6_synthesis,multilingual_T3T6,grey_mel_T3T6}_2026-10.md`.
+SRCH: 7 rows (runs `probe_af_t3_2026-10-02`, `probe_af_t6_lit_2026-10-02`, `af_ml_2026-10-02` ×2, `af_grey_mel_2026-10-02` ×2).
+Ledger: `updated_lit` T3/T6 = done (EN + ES/FR/PT saturated on OpenAlex/HAL); `grey` T3/T6 = in_progress.
+
+**Coverage after round 1.** T6: carbon · yield · biodiversity · erosion · adoption have meta-analyses; income partial
+(Jemaneh 2026 SSA welfare SR-MA); economics only now has per-unit costs (CRS: FMNR Ghana USD 66/hh · 58/ha vs planted
+agroforestry Rwanda USD 201/hh · 1,387/ha — two families, so no range yet) plus Current et al. (21 projects, es) and
+Brazilian NPV/IRR pools. **No synthesis anywhere** for yield stability, LMIC establishment/recurrent cost, BCR,
+`agricultural_dependency`, `iplc_lands`, quantitative gender, water use. T3: drought + heat covered; frost 4 primaries
+(incl. a NEGATIVE windbreak effect — cold-air pooling, Quénol & Beltrando 2006); wind China-only MA; flood proxy;
+fire HIC; **project grey literature contributes ≈ nothing to T3** (two weak sources) and nothing on asset damage.
+
+| pointer | note |
+|---|---|
+| **ERA — Evidence for Resilient Agriculture** (Rosenstock et al. 2024; Dataverse doi:10.7910/DVN/C3YBNN v1.0.1; R pkg `EiA2030/ERAg`) | HELD, not queued: CSV/R dataset = a format with no acquisition/locator rule → PAUSE and define a dataset-intake adapter (pin a commit/version; locator = table·row·column). **COI:** Pete + Namita are co-authors → independence-axis note when tiered |
+| **Regreening Africa consolidated endline (Aug 2023)** | FOUND via Internet Archive (publisher link 404); 60 pp text layer OK; before–after only (impact comparison dropped); FIES 4.9→4.8 "no substantial change", SOC +0.31 g/kg, tree-product income flat USD 82 PPP/hh; **no drought-conditional outcome** → T6 only. Human: mirror the PDF to SharePoint |
+| Untraceable web-summary numbers | "40 % fewer food-insecure months in drought" (attributed to the Regreening endline — NOT in it) and "25 % greater food security during drought in Kenya" (ICRAF news page; probably Thorlakson & Neufeldt 2012) — **never use**; extract only from cached text |
+| IFAD (ifad.org 403 bot-check) | human browser download: DECOFOS Mexico impact assessment · IOE Burkina Faso SWC/agroforestry evaluation · "Strengthening agroforestry in rural investments" |
+| Caquetá silvopasture DiD brief (Buriticá 2024) | directional only — find the working paper with coefficients |
+| IEG Ethiopia SLMP PPAR (already queued) | holds the strongest T3 drought number of the grey pass: GPP +14 % in severe-drought project areas vs +3 % elsewhere — capture at extraction |
+| Adoption syntheses (Stubblefield 2026, Sánchez 2026, Ribeiro 2022, Dias-Filho 2008) | drivers = soft enabling-environment factors → `operational_risk` (M2b / M6), not T6 effect rows; dis-adoption only in Sánchez |
+| Mixed-practice syntheses (Basche 2019, Sileshi 2008, Félix 2018, Reed 2017, Haverhals 2016, Zheng 2020) | extract agroforestry rows only (exclude green manures, wood-chip, forest trees, grass hedgerows) |
+| Crop-specific syntheses (Niether 2020 cocoa, De Beenhouwer 2013 coffee/cacao, Patil 2025 coffee) | `crop_specific` → shaded_perennial family only via `allow_crop_scope` |
+| Title-anchored (DOI-less) items ×15 | WB/IEG/IPCC reports, Montagnini 2015, RIOCCADAPT ch.7, Current et al. (es), Robusti 2017, Dias-Filho 2008 — need `title_verified` after caching; RIOCCADAPT agroforestry section + Ferraz 2024 scope to confirm |
+| Citations to repair by hand | Haverhals 2016 (Crossref swaps first/last names — fixed in queue), Ribeiro 2022 (blank first author in Crossref), IPCC chapters (author lists from front matter) |
+| Protocol learnings | OpenAlex title search is accent-sensitive (`agroforestería` 188 vs `agroforesteria` 21) — run both forms; FR `haies` pulls English "hay" noise; SciELO/IFAD bot-block tools (reach SciELO via OpenAlex DOIs); Semantic Scholar rate-limits (429) |
+| Positive-bias check (grey) | most independent sources (Regreening endline, SPIA Ethiopia) null/modest; implementer briefs (World Vision) most positive → apply the grey/COI discount in synthesis |
+
 ### Synthesis-first discovery PROBE, agroforestry × T3 (2026-10-02; 1 agent; log `methodology/discovery_logs/agroforestry_T3_synthesis_probe_2026-10.md`)
 
 20 candidates queued (`pending`, tables T3). Hazard coverage after the probe: **drought 12 · heat_stress 10 · flood 8
