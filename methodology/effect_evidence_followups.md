@@ -173,6 +173,43 @@ Source: `schema/recipes/agroforestry/T3T6_synthesis_report.json` (tracked) + the
 - Seed hazards with **zero evidence**: `waterlogging`, `heat_stress × cropping_irrigated`, `drought × tree_perennial`, `fire × pastoral_rangeland`, `wind_cyclone × cropping_rainfed` (windbreak) — targets for the synthesis-first search (meta-analyses on windbreak yield effects, shade × heat stress in perennial systems).
 - Seed T6 rows with zero evidence: `carbon_sequestration_potential` (seed said strong_positive + carbon_revenue 20–200 USD/ha/yr), `accessibility_travel_time` (market access — seed had it as a T6 effect; by the 2026-06-23 routing it is M2b/next-steps, so the seed row was mis-placed anyway).
 
+### PADs are not effect evidence (Pete, 2026-10-01 → applied 2026-10-02)
+
+The 37 `nbs_effect` units from the two World Bank **Project Appraisal Documents** (`wb_fsrp_2022`, `wb_kcsap_2016`) were
+design intent ("Sub-pillar 3.2 *will* support…"), mis-tagged `claim_basis = primary_measured`. A PAD is an ex-ante
+investment proposal; it cannot evidence an effect. All 37 are **soft-dropped** (`review_state = dropped`, reason
+`speculative_evidence`, note `ex_ante_pad`, reviewer `orchestrator`) — restorable. Agroforestry T3/T6 regenerated without
+them: the "ETH, KEN, MDG" context and the two cost rows disappear; the remaining LMIC base is Castle 2021 + Quandt 2017.
+
+| pointer | note |
+|---|---|
+| **KCSAP ICR** (project approved 2016 → Implementation Completion Report should exist) | the ex-post MEL replacement under the synthesis-first search rule; `method_type = mel_report` |
+| FSRP (2022) | too young for an ICR; ISRs only — skip |
+| PAD cost tables (programme totals, component budgets) | a possible *cost-expectations* lane (ex-ante budgets), never an effect; needs a per-unit denominator from the same table to be usable |
+| `SRC.method_type` enum has no ex-ante value (`empirical` is wrong for a PAD) | add `project_appraisal` at the next spec bump; both SRC rows left as-is until then |
+| ledger `agroforestry·T3/T6·grey` table-level rows | `verified` reset to `not_started` (no live grey units); the sub-practice grey rows were already `not_started` |
+
+### QA items raised by the agroforestry prose-writer review (2026-10-02; `agroforestry_prose_report.md`, staging-only)
+
+Engine fixes applied from this review: T6 hazard rows now read "reduces the impact of <hazard>" (the outcome is
+livelihood resilience, not a smaller hazard); `transfer_class` share now uses pre-transfer weight with strict
+majorities (one Kenyan + one US unit was `in_context` at 0.95 — now `mixed` at 0.5). Metadata fixed: Batcheler units
+and SRC lose the wrong `aez = temperate_europe` (US study; T7 has no North-American AEZ — climate_zone `temperate`
+kept); Quandt `_3`/`_4` (introduction sentences citing Lin 2007) → `cited_secondary` with lineage. Still open:
+
+| item | evidence | call needed |
+|---|---|---|
+| `ev_t6_income_timebenefit_castle21_6` (Lower Nyando, 87.5 % after 4 yr) is very likely the same primary as Thorlakson & Neufeldt (`castle21s_3`, `_7`) | Castle p23 | set `lineage_of = Thorlakson & Neufeldt 2012` so `_dedupe_lineage` collapses the double count in `planted_silvoarable__rural_poverty` |
+| `castle21_2` (soil-fertility yield), `castle21_6`, `batcheler24_9` are `cited_secondary` with blank `lineage_of` | — | fill lineage from the quotes' citations |
+| `ev_crop_yield_castle21s_2` tagged `MOZ` while Castle's text says Nicaragua (Hegde & Bull 2011 is Mozambique — the review mis-states it) | Castle p21 | keep MOZ (true location); note recorded in the unit; prose names no country |
+| `ev_economic_return_castle21s_4` (Indonesian social-forestry tenure permits) routed as an agroforestry → `rural_poverty` proxy | Castle p24 | XW/PICOS call: is a tenure-permit programme an agroforestry effect? Lean no |
+| Quandt `_1` ("has been proposed…") still `primary_measured` with no citation in the quote; `mixed_crop_livestock` farming-system tag is the SRC default, not in the quotes | Quandt p2 | reviewer call on `_1`; FS tag acceptable as source default |
+| `production_gap` "strongly reduces" rests on single-study SMDs (Haggar 3.85, Coulibaly +35 %) while both pooled estimates are ns | Castle | by design (ns units vote at ×0.5, direction only) — but worth stating in the Variable Card |
+
+Rows where the quotes give **no mechanism**: all six flood rows (Quandt conclusion sentence only), Quandt-only drought
+rows ("has been proposed"), Batcheler-only drought rows (infiltration listed as a service; drought never named), global
+`production_gap` / `rural_poverty` (outcomes only).
+
 ### Castle 2021 strength pass (2026-10-01, +27 units, 5 superseded)
 
 Castle et al. 2021 (Campbell SR) pools only **two** meta-analyses — crop yield (g 1.16 [−0.35, 2.67], ns) and household

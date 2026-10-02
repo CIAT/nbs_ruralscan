@@ -897,3 +897,44 @@ def test_src_country_fallback_only_admits_iso3():
     assert "country" not in ctx
     ctx = cs.unit_context(u, {"country": ["BRA", "COL"]}, None)
     assert ctx["country"] == ["BRA", "COL"]
+
+
+def test_transfer_class_share_ignores_the_transfer_factor_and_needs_a_strict_majority():
+    ken = _u(
+        "k",
+        "s1",
+        direction="negative",
+        strength="unspecified",
+        ctx={"country": ["KEN"], "income_group": "lower_middle"},
+    )
+    usa = _u(
+        "u",
+        "s2",
+        direction="negative",
+        strength="unspecified",
+        ctx={"country": ["USA"], "income_group": "high"},
+    )
+    rows, _ = _t6([ken, usa])
+    app = rows[0]["applicability"]
+    # equal tiers, one in-context and one far unit → an even split, not a 0.95 in-context majority
+    assert abs(app["weight_share_in_context"] - 0.5) < 1e-6
+    assert app["transfer_class"] == "mixed"
+    eth = _u(
+        "e",
+        "s3",
+        direction="negative",
+        strength="unspecified",
+        ctx={"country": ["ETH"], "income_group": "low"},
+    )
+    rows, _ = _t6([ken, usa, eth])
+    assert rows[0]["applicability"]["transfer_class"] == "in_context"
+    assert cs.transfer_class_from_shares(0.5, 0.5, 0.5) == "mixed"
+    assert cs.transfer_class_from_shares(0.0, 0.0, 0.6) == "out_of_context"
+
+
+def test_t6_hazard_rows_read_as_impact_reduction():
+    env = {"aezs": {}, "countries": ["KEN"], "transfer_class": "in_context"}
+    s = cs._statement(
+        "T6", "nbs", "drought_hazard", 1, "limited", "high", "medium", env, "nbs_effect"
+    )
+    assert "reduces the impact of drought_hazard" in s
