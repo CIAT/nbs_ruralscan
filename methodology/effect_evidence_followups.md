@@ -210,6 +210,30 @@ Rows where the quotes give **no mechanism**: all six flood rows (Quandt conclusi
 rows ("has been proposed"), Batcheler-only drought rows (infiltration listed as a service; drought never named), global
 `production_gap` / `rural_poverty` (outcomes only).
 
+### Synthesis-first discovery PROBE, agroforestry × T3 (2026-10-02; 1 agent; log `methodology/discovery_logs/agroforestry_T3_synthesis_probe_2026-10.md`)
+
+20 candidates queued (`pending`, tables T3). Hazard coverage after the probe: **drought 12 · heat_stress 10 · flood 8
+(proxy-grade: runoff) · wind_cyclone 6 (windbreak meta-analysis China-only; cyclone damage primaries only) · fire 3
+(HIC only) · frost 2 · waterlogging 2**. Asset damage: Watts 2022, van Noordwijk 2021, Colombia CMSCR ICR (new
+silvopasture area −45 % in the 2019 drought), McGuigan 2024; nothing for fire/flood damage → `asset_risk_weight`
+stays on the equal-weight fallback.
+
+| pointer | note |
+|---|---|
+| **Regreening Africa consolidated endline report (Aug 2023)** | strong MEL candidate; PDF link 404, not on CGSpace; web summaries attach drought/food-insecurity figures that could not be traced to any document — **do not use those numbers**; acquire the real report via ICRAF/CIFOR-ICRAF library |
+| Chausson et al. 2020 (GCB) | publisher PDF blocked at probe time — confirm which hazards its agroforestry slice covers before extraction |
+| Ntawuruhunga et al. 2023 | confirm the CGSpace item carries a PDF |
+| KCSAP ICR (ICR00006593, 2024) + IEG ICRR | **documents a gap, not an effect**: agroforestry = 395 acres of bundled sub-projects; resilience indicator = adoption of ≥1 practice; the 48.2 % drought-period productivity gain covers five value chains, none agroforestry; ICR Lesson 6 says resilience was not measured. Tier low; useful as T6 `conditionality`/M6 evidence on MEL design, not T3 |
+| IPCC AR6 WGII Ch5 | Crossref returns no authors — confirm the author list from the PDF before the SRC row |
+| ResearchGate-only candidates (Deniz 2023 · Singh & Lal 2018 · Caramori 1996 · McGuigan 2024) | human must confirm a full-text PDF exists (tool cannot) |
+| **T6-relevant syntheses screened out of this T3 probe** | Kuyah et al. 2019 (ecosystem services meta-analysis) · Niether et al. 2020 (cocoa agroforestry meta-analysis) · Reed et al. 2017 (trees for food security) · the **ERA database** (CIAT Evidence for Resilient Agriculture) — first stop for the agroforestry T6 pass |
+| Multilingual recall gap | AGROVOC ES/FR/PT synonym queries not run — add before the full search |
+| Grey channels not yet worked | CGIAR impact assessments, GEF IEO, IFAD IOE, 3ie repository, WOCAT (adapter still PAUSED) |
+
+**Scale-up estimate (from the probe):** full agroforestry T3 ≈ 25–40 sources; + T6 ≈ 20–35 more; ≈ 45–75 for
+T3+T6 before the ~20-per-table cap. `updated_lit` saturated for EN syntheses on drought/heat/wind/fire; `grey` not
+saturated.
+
 ### Castle 2021 strength pass (2026-10-01, +27 units, 5 superseded)
 
 Castle et al. 2021 (Campbell SR) pools only **two** meta-analyses — crop yield (g 1.16 [−0.35, 2.67], ns) and household
