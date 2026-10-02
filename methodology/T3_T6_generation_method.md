@@ -286,20 +286,24 @@ semi-arid paper carries full weight in the semi-arid scope row and 0.7 in the dr
   "farming_systems": {"mixed_crop_livestock": 3, "unknown": 2},
   "countries": ["KEN", "ETH", "IND", "SWE", "ITA"],
   "n_sources_in_scope": 5,
-  "weight_share_in_context": 0.62,
+  "weight_share_in_context": 0.42,
   "transfer_class": "mixed"
 }
 ```
 
 Counts are **independent sources** after lineage dedupe. `transfer_class` is computed from the share of
-contributing *weight* at each distance against the row's target:
+contributing weight at each distance against the row's target, where the weight is the unit's
+**pre-transfer** weight (tier · claim basis · grey discount · ns · XW proximity — *excluding* `TRANSFER_W`).
+Measuring the share on transfer-weighted weights would be circular: the far unit is first down-weighted to
+0.3 and then found to be a small share, so one LMIC unit + one HIC unit read as 0.95 "in context"
+(caught 2026-10-02). Majorities are **strict**, so an even split is `mixed`:
 
 | `transfer_class` | Rule |
 |---|---|
-| `in_context` | ≥ 0.5 of contributing weight at `d = 0` |
-| `adjacent` | ≥ 0.5 at `d ≤ 1`, not `in_context` |
-| `out_of_context` | ≥ 0.5 at `d = 2` |
-| `mixed` | none of the above |
+| `in_context` | > 0.5 of pre-transfer weight at `d = 0` |
+| `out_of_context` | > 0.5 at `d = 2` |
+| `adjacent` | > 0.5 at `d ≤ 1`, not `in_context` |
+| `mixed` | none of the above (incl. an exact 50/50 split) |
 
 ### 5.5 Runtime resolution and the gap flag
 

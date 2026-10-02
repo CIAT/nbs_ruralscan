@@ -584,22 +584,32 @@ def _count_by(contribs: list[_Contrib], key: str) -> dict[str, int]:
 
 
 def transfer_class_from_shares(share0: float, share_le1: float, share2: float) -> str:
-    if share0 >= 0.5:
+    """Strict majorities: an even split between in- and out-of-context evidence is `mixed`,
+    never `in_context` (method §5.4, corrected 2026-10-02)."""
+    if share0 > 0.5:
         return "in_context"
-    if share_le1 >= 0.5:
-        return "adjacent"
-    if share2 >= 0.5:
+    if share2 > 0.5:
         return "out_of_context"
+    if share_le1 > 0.5:
+        return "adjacent"
     return "mixed"
+
+
+def _pre_transfer_weight(c: _Contrib) -> float:
+    """The contribution's weight WITHOUT the transferability factor. The share that decides
+    `transfer_class` must not be measured on weights that already down-weight out-of-context
+    units — that made one LMIC unit + one HIC unit read as 0.95 in-context (agroforestry
+    prose review, 2026-10-02)."""
+    return c.weight / TRANSFER_W.get(c.distance, TRANSFER_W[2])
 
 
 def build_applicability(
     contribs: list[_Contrib], target_ctx: dict[str, Any]
 ) -> dict[str, Any]:
-    total = sum(c.weight for c in contribs) or 1.0
-    s0 = sum(c.weight for c in contribs if c.distance == 0) / total
-    s1 = sum(c.weight for c in contribs if c.distance <= 1) / total
-    s2 = sum(c.weight for c in contribs if c.distance == 2) / total
+    total = sum(_pre_transfer_weight(c) for c in contribs) or 1.0
+    s0 = sum(_pre_transfer_weight(c) for c in contribs if c.distance == 0) / total
+    s1 = sum(_pre_transfer_weight(c) for c in contribs if c.distance <= 1) / total
+    s2 = sum(_pre_transfer_weight(c) for c in contribs if c.distance == 2) / total
     countries = sorted({c for x in contribs for c in x.ctx.get("country", [])})
     return {
         "income_groups": _count_by(contribs, "income_group"),
@@ -870,8 +880,10 @@ _CONCERN_TARGET = re.compile(
 
 def _benefit_verbs(table: str, key: str) -> tuple[str, str]:
     """(verb for a positive benefit rank, verb for a negative rank)."""
-    if table == "T3":
-        return "reduces the impact of", "worsens"
+    if table == "T3" or key.endswith("_hazard"):
+        # T6 hazard rows (variable_type climate_hazard_mitigation) are about livelihood
+        # resilience to the hazard, not a smaller hazard
+        return "reduces the impact of", "worsens the impact of"
     if _CONCERN_TARGET.search(key):
         return "reduces", "increases"
     return "increases", "decreases"
