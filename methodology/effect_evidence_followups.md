@@ -173,6 +173,22 @@ Source: `schema/recipes/agroforestry/T3T6_synthesis_report.json` (tracked) + the
 - Seed hazards with **zero evidence**: `waterlogging`, `heat_stress × cropping_irrigated`, `drought × tree_perennial`, `fire × pastoral_rangeland`, `wind_cyclone × cropping_rainfed` (windbreak) — targets for the synthesis-first search (meta-analyses on windbreak yield effects, shade × heat stress in perennial systems).
 - Seed T6 rows with zero evidence: `carbon_sequestration_potential` (seed said strong_positive + carbon_revenue 20–200 USD/ha/yr), `accessibility_travel_time` (market access — seed had it as a T6 effect; by the 2026-06-23 routing it is M2b/next-steps, so the seed row was mis-placed anyway).
 
+### PADs are not effect evidence (Pete, 2026-10-01 → applied 2026-10-02)
+
+The 37 `nbs_effect` units from the two World Bank **Project Appraisal Documents** (`wb_fsrp_2022`, `wb_kcsap_2016`) were
+design intent ("Sub-pillar 3.2 *will* support…"), mis-tagged `claim_basis = primary_measured`. A PAD is an ex-ante
+investment proposal; it cannot evidence an effect. All 37 are **soft-dropped** (`review_state = dropped`, reason
+`speculative_evidence`, note `ex_ante_pad`, reviewer `orchestrator`) — restorable. Agroforestry T3/T6 regenerated without
+them: the "ETH, KEN, MDG" context and the two cost rows disappear; the remaining LMIC base is Castle 2021 + Quandt 2017.
+
+| pointer | note |
+|---|---|
+| **KCSAP ICR** (project approved 2016 → Implementation Completion Report should exist) | the ex-post MEL replacement under the synthesis-first search rule; `method_type = mel_report` |
+| FSRP (2022) | too young for an ICR; ISRs only — skip |
+| PAD cost tables (programme totals, component budgets) | a possible *cost-expectations* lane (ex-ante budgets), never an effect; needs a per-unit denominator from the same table to be usable |
+| `SRC.method_type` enum has no ex-ante value (`empirical` is wrong for a PAD) | add `project_appraisal` at the next spec bump; both SRC rows left as-is until then |
+| ledger `agroforestry·T3/T6·grey` table-level rows | `verified` reset to `not_started` (no live grey units); the sub-practice grey rows were already `not_started` |
+
 ### Castle 2021 strength pass (2026-10-01, +27 units, 5 superseded)
 
 Castle et al. 2021 (Campbell SR) pools only **two** meta-analyses — crop yield (g 1.16 [−0.35, 2.67], ns) and household
