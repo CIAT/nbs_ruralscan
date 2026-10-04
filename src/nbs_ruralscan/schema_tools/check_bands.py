@@ -62,7 +62,9 @@ def check_unit(row: dict, bands: list[dict]) -> list[dict]:
         and metric != "ordinal_rating"
         and isinstance(mag, (int, float))
     ):
-        expect = classify_magnitude(metric, float(mag), bands)
+        expect = classify_magnitude(
+            metric, float(mag), bands, unit=str(rel.get("unit") or "")
+        )
         if expect != "unspecified" and expect != cls:
             flags.append(
                 {

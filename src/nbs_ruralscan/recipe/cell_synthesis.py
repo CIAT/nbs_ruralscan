@@ -223,31 +223,57 @@ def classify_magnitude(
     magnitude: float | None,
     bands: list[dict[str, Any]],
     source_scale_value: str | None = None,
+    unit: str | None = None,
 ) -> str:
     """Return the strength_class a magnitude falls in per the BANDS register.
 
-    ``abs_min`` inclusive, ``abs_max`` exclusive, on |magnitude|. ``ordinal_rating`` rows
-    match on ``source_scale_value``. No matching band → ``unspecified``.
+    ``abs_min`` inclusive, ``abs_max`` exclusive, on |magnitude - centre|. ``centre``
+    defaults to 0; a RATIO metric sets ``centre = 1`` (a response ratio of 1.0 is "no
+    effect", so RR 0.9 is a 10% reduction, not a 90% one).
+
+    A band row may also pin a ``unit``: unit-specific rows are tried first, so
+    ``metric = absolute`` with ``unit = response_ratio`` bands correctly while every other
+    ``absolute`` unit (t/ha, USD/ha …) still falls through to ``unspecified``. This is why
+    ratio-reporting meta-analyses do not need a new metric in the extraction contract.
+
+    ``ordinal_rating`` rows match on ``source_scale_value``. No matching band →
+    ``unspecified``.
     """
-    for b in bands:
-        if (b.get("metric") or "") != metric:
-            continue
-        if metric == "ordinal_rating":
-            if source_scale_value is not None and (
-                (b.get("source_scale_value") or "").strip().lower()
-                == source_scale_value.strip().lower()
-            ):
+    unit_s = (unit or "").strip().lower()
+
+    def _rows(unit_specific: bool) -> list[dict[str, Any]]:
+        out = []
+        for b in bands:
+            bu = (b.get("unit") or "").strip().lower()
+            if bool(bu) is not unit_specific:
+                continue
+            if unit_specific and bu != unit_s:
+                continue
+            out.append(b)
+        return out
+
+    for pool in ((_rows(True) if unit_s else []), _rows(False)):
+        for b in pool:
+            if (b.get("metric") or "") != metric:
+                continue
+            if metric == "ordinal_rating":
+                if source_scale_value is not None and (
+                    (b.get("source_scale_value") or "").strip().lower()
+                    == source_scale_value.strip().lower()
+                ):
+                    return b.get("strength_class") or "unspecified"
+                continue
+            if magnitude is None:
+                continue
+            lo = b.get("abs_min")
+            hi = b.get("abs_max")
+            lo_f = float(lo) if lo not in (None, "") else None
+            hi_f = float(hi) if hi not in (None, "") else None
+            centre = b.get("centre")
+            c = float(centre) if centre not in (None, "") else 0.0
+            v = abs(float(magnitude) - c)
+            if (lo_f is None or v >= lo_f) and (hi_f is None or v < hi_f):
                 return b.get("strength_class") or "unspecified"
-            continue
-        if magnitude is None:
-            continue
-        lo = b.get("abs_min")
-        hi = b.get("abs_max")
-        lo_f = float(lo) if lo not in (None, "") else None
-        hi_f = float(hi) if hi not in (None, "") else None
-        v = abs(float(magnitude))
-        if (lo_f is None or v >= lo_f) and (hi_f is None or v < hi_f):
-            return b.get("strength_class") or "unspecified"
     return "unspecified"
 
 
@@ -1104,6 +1130,17 @@ def synthesise_cell(
         if table == "T3":
             fs = str((u.context or {}).get("farming_system") or "all")
             if farming_system != "all" and fs not in (farming_system, "all"):
+                continue
+            # A unit that STATES its hazard only speaks to that hazard's cell. Without
+            # this, any variable routed to several hazards (microclimate_buffering →
+            # heat_stress AND frost) put every one of its units into every one of those
+            # cells — the frost cell inherited 12 sources of daytime-shade evidence
+            # (caught 2026-10-04). Blank = unstated = applies, exactly like farming_system.
+            hz = str((u.context or {}).get("hazard_type") or "")
+            if hz and hz != target_key:
+                rep.dropped.append(
+                    (u.evidence_id, f"hazard_type={hz} ≠ cell {target_key}")
+                )
                 continue
         for x in hits:
             routed.append((u, x))

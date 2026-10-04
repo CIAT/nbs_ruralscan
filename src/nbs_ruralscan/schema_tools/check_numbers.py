@@ -29,14 +29,35 @@ _SPACED_THOUSANDS = re.compile(
 )
 
 
+#: locale DECIMAL COMMA (es/fr/pt): "29,8" = 29.8. A thousands group is 3 digits
+#: ("1,637,600"), so requiring 1-2 digits not followed by another digit excludes it.
+_DECIMAL_COMMA = re.compile(r"(?<![\d.])\d+,\d{1,2}(?![\d,])")
+#: locale THOUSANDS DOT (pt/es): "5.047" = 5047. Genuinely ambiguous with a 3-decimal
+#: value, so BOTH readings are emitted - this is a containment check, and offering the
+#: alternative reading can only let a correctly-transcribed number match.
+_THOUSANDS_DOT = re.compile(r"(?<![\d,])\d{1,3}(?:\.\d{3})+(?![\d.])")
+
+
 def _nums(text: str) -> set[str]:
     """Numeric tokens, comma-stripped, trailing-zero-normalised (e.g. 1,637,600 / 25.0).
 
     Space-grouped thousands ("1 001") are ALSO added joined ("1001"), so a relationship
     value written as 1001 matches a quote that prints it SI-style (2026-09: every WOCAT
     rainfall class tripped this). The split tokens are kept too, so nothing is lost.
+
+    Locale forms are added too (2026-10, multilingual sweep): a decimal comma ("29,8")
+    yields "29.8" and a thousands dot ("5.047") yields "5047", alongside the plain
+    comma-stripped reading. Without this every es/fr/pt magnitude failed provenance.
     """
-    text = (text or "").replace(",", "")
+    raw = text or ""
+    pre: set[str] = set()
+    for m in _DECIMAL_COMMA.findall(raw):
+        d = m.replace(",", ".")
+        pre.add(d)
+        pre.add(d.rstrip("0").rstrip("."))
+    for m in _THOUSANDS_DOT.findall(raw):
+        pre.add(m.replace(".", ""))
+    text = raw.replace(",", "")
     out: set[str] = set()
     for m in _NUM.findall(text):
         out.add(m)
@@ -44,7 +65,7 @@ def _nums(text: str) -> set[str]:
             out.add(m.rstrip("0").rstrip("."))  # 25.0 -> 25
     for m in _SPACED_THOUSANDS.findall(text):
         out.add(re.sub(r"\D", "", m))
-    return out
+    return out | pre
 
 
 def _floats(toks: set[str]) -> set[float]:

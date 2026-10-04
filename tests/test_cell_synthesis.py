@@ -938,3 +938,48 @@ def test_t6_hazard_rows_read_as_impact_reduction():
         "T6", "nbs", "drought_hazard", 1, "limited", "high", "medium", env, "nbs_effect"
     )
     assert "reduces the impact of drought_hazard" in s
+
+
+def test_t3_cell_rejects_a_unit_that_states_a_different_hazard():
+    """A variable routed to several hazards must not put heat units in the frost cell."""
+    xw = [
+        cs.XWRow(
+            "microclimate_buffering", "T3", "heat_stress", "same", "component", 0.7
+        ),
+        cs.XWRow("microclimate_buffering", "T3", "frost", "same", "component", 0.7),
+    ]
+    heat = _u(
+        "h",
+        "s1",
+        "microclimate_buffering",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low", "hazard_type": "heat_stress"},
+    )
+    frost = _u(
+        "f",
+        "s2",
+        "microclimate_buffering",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low", "hazard_type": "frost"},
+    )
+    silent = _u(
+        "q",
+        "s3",
+        "microclimate_buffering",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low"},
+    )
+    _, rep = cs.synthesise_cell(
+        [heat, frost, silent],
+        {"s1": "high", "s2": "high", "s3": "high"},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="frost",
+        xw_rows=xw,
+    )
+    used = set(rep.used)
+    assert "f" in used and "q" in used, "frost + hazard-silent units belong in the cell"
+    assert "h" not in used, "a heat_stress unit must not become frost evidence"

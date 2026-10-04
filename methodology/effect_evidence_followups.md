@@ -231,7 +231,7 @@ fire HIC; **project grey literature contributes ≈ nothing to T3** (two weak so
 | Untraceable web-summary numbers | "40 % fewer food-insecure months in drought" (attributed to the Regreening endline — NOT in it) and "25 % greater food security during drought in Kenya" (ICRAF news page; probably Thorlakson & Neufeldt 2012) — **never use**; extract only from cached text |
 | IFAD (ifad.org 403 bot-check) | human browser download: DECOFOS Mexico impact assessment · IOE Burkina Faso SWC/agroforestry evaluation · "Strengthening agroforestry in rural investments" |
 | Caquetá silvopasture DiD brief (Buriticá 2024) | directional only — find the working paper with coefficients |
-| IEG Ethiopia SLMP PPAR (already queued) | holds the strongest T3 drought number of the grey pass: GPP +14 % in severe-drought project areas vs +3 % elsewhere — capture at extraction |
+| ~~IEG Ethiopia SLMP PPAR holds a GPP +14 % drought-buffering number~~ **WRONG — corrected 2026-10-04** | The extraction pass searched all 110 pp of the cached PPAR: **zero** occurrences of "gross primary production" / "GPP". The discovery agent read the sentence in the **GEF SCCE Drylands (2023) vol 1, printed p.32** (which cites IEG) and then asserted it "lives in the PPAR". The PPAR's geospatial work is pixel-level PSM+DiD on EVI/NDVI/LSWI (Table A.7, p.65) with **no drought split**, attributed to the whole SLM package. The claim is therefore **unverified and unusable** until the SCCE Drylands document is itself acquired and cached. **Lesson: a discovery agent's "this number is in document X" is a pointer, never provenance — only the extraction pass, reading the cached artefact, establishes where a number lives.** |
 | Adoption syntheses (Stubblefield 2026, Sánchez 2026, Ribeiro 2022, Dias-Filho 2008) | drivers = soft enabling-environment factors → `operational_risk` (M2b / M6), not T6 effect rows; dis-adoption only in Sánchez |
 | Mixed-practice syntheses (Basche 2019, Sileshi 2008, Félix 2018, Reed 2017, Haverhals 2016, Zheng 2020) | extract agroforestry rows only (exclude green manures, wood-chip, forest trees, grass hedgerows) |
 | Crop-specific syntheses (Niether 2020 cocoa, De Beenhouwer 2013 coffee/cacao, Patil 2025 coffee) | `crop_specific` → shaded_perennial family only via `allow_crop_scope` |
@@ -291,6 +291,48 @@ in the review. Superseded (soft-dropped, `accepted_correction`, note `superseded
 (income pathway) and `_11` (ecosystem-service baseline) are pooled/narrative → should be `agroforestry__cross_family`.
 
 ---
+
+## 1c. Agroforestry effect sweep — 4 extractor lanes over the 41 acquired sources (2026-10-04)
+
+**348 units ingested** through the gated staging path (326 `nbs_effect` / `asset_vulnerability` + 22 `operational_risk`):
+lane A T3-hazard syntheses 73 · lane B T6 meta-analyses 87 · lane C multilingual es/fr/pt 113 · lane D grey MEL 53 + 22
+operational. Agroforestry T3 went 23 → **163 rows**, T6 12 → **71 rows**; 425 units pool into cells. Reports (staging,
+gitignored): `pipeline/staging/agroforestry_effects_{A,B,C,D}_report.md`.
+
+### A number that did not survive contact with the PDF
+The grey *discovery* agent reported "GPP +14 % in severe-drought project areas vs +3 % elsewhere" as living in the IEG
+Ethiopia SLMP PPAR and called it the strongest T3 drought signal of the grey pass. The extraction pass searched all
+110 pp: **zero** hits for "gross primary production" or "GPP". The sentence was read in the **GEF SCCE Drylands (2023)
+vol 1** (which cites IEG) and then attributed to the PPAR. Corrected in §probe and in the grey discovery log.
+**Rule: a discovery agent's "this number is in document X" is a pointer, never provenance.** Only the extraction pass,
+reading the cached artefact, establishes where a number lives. Two other widely-repeated agroforestry-drought figures
+("40 % fewer food-insecure months", "25 % greater food security in Kenya") were likewise confirmed absent from the
+documents they are attributed to.
+
+### Register and engine gaps the sweep exposed (all fixed in this PR — ruleset note v1.6.1)
+| gap | effect before | fix |
+|---|---|---|
+| No band for a response ratio | 19 units incl. RR 9.7 sat at `strength_class = unspecified` | BANDS gains `unit` + `centre`; `absolute`/`response_ratio` bands on \|RR − 1\| against the pct_change thresholds. No new metric, so the contract is unchanged |
+| T3 cells ignored a unit's stated hazard | a variable routed to two hazards put every unit in both — the frost cell inherited 12 sources of daytime-shade evidence | units whose `context.hazard_type` differs from the cell are excluded (blank = applies, like `farming_system`). Frost 12 → **4 sources** |
+| `_nums` comma-stripped locale decimals | `29,8` → `298`; ~15 % of es/fr/pt magnitudes unusable | decimal comma and thousands dot both read, alongside the plain reading |
+| staging gate ≠ central guardrail | all 104 translated multilingual quotes failed the staging gate though `validate_sources` passed them | the gate strips the bracketed translation and compares numbers as floats |
+| `operational_risk` had no gated path | 22 units would have needed a forbidden hand-append | `--allow-operational` on the staging ingest |
+| `gender_inequity`, `wind_cyclone_hazard`, `waterlogging_hazard`, `livestock_productivity`, `forage_productivity`, soil/water mechanism variables had no XW route | units reached no cell | 10 XW routes added (ratification pending at PR review) |
+| `livestock_productivity` / `forage_productivity` missing from VONT | the Colombia silvopasture milk/beef results and the Sahel fodder evidence were dropped rather than mislabelled | both ids added (`pending_review`); the 6 parked units ingested |
+
+### Still open — human calls
+| item | detail |
+|---|---|
+| **Ontology triage** | `tree_mortality` (6 asset units are squeezed into `tree_canopy_cover`), `tree_density`, `pest_disease_incidence` (4 pooled ORs from Patil 2025 unextractable), `infiltration_rate`, `available_phosphorus` (Kuyah RR 1.2 + 7 subgroups and Muchane RR 1.11 dropped), `aggregate_stability`, `livestock_thermal_comfort`, `fuelwood_availability` |
+| **Unmapped variables** | `ecosystem_service` 10 · `climate_shock` 7 · `tree_canopy_cover` 5 · `beneficiaries` 4 · `adoption_rate` 2 · `rural_poverty` 2 (a T5 id used as a measured variable — contract forbids; re-tag to `household_income`) · `establishment_cost`/`recurrent_cost` 3 (economic ids used as `ev_variable`) · `landscape_forest_cover` 1 |
+| **Economics still cannot fill a T6 cost cell** | the only denominated LMIC costs are CRS (FMNR Ghana USD 66/hh · 58/ha vs planted Rwanda USD 201/hh · 1,387/ha) — one source across two families, so the ≥2-independent-sources gate fails by design. Roe/IPCC give only the USD 100/tCO₂e *screening threshold*, recorded with an explicit "not a measured cost" note |
+| **`asset_risk_weight` stays blank** | 5 of 7 hazards have asset-threat rows (no flood- or waterlogging-damage evidence), so M2b keeps the equal-weight fallback |
+| **Family calls** | "improved/planted fallow" (IFPRI + lane B, 10 units) provisionally `planted_silvoarable`; cut-and-carry fodder shrubs (2 units) `cross_family`; use `--fix-family` if the team disagrees |
+| **Blockers worth a screengrab** | Dobhal p9→10 (the best silvopastoral drought effect size in lane A, lost to a page straddle); Félix rainfall-gradient moderator p9→10; WV2019 p9 Fig 3; CMSCR pp25→26 and Tables A4.16–19; Ferraz Tabela 5 (17 TIR/BCR rows, decimal commas) |
+| **Contract gap** | 26 multilingual units carry a deliberately blank `country`: multi-country reviews spanning income bands, where the "modal context" rule has no answer. Consider allowing a country list with a derived band, or an explicit `income_group = mixed` |
+| **Content error for QA** | IPCC AR6 WGII Ch5 p72 attributes Abdulai (2018) to coffee in Ghana; the cited study is on cocoa. Recorded at `extraction_confidence = low` with the mis-attribution in `context.note` |
+| **A finding that cuts against the grain** | `ev_wind_cyclone_hazard_philpott08_8` (Uriarte 2004): more structurally complex vegetation was *least* resistant to hurricane damage — the only unit contradicting "complexity = protection" on the asset side, sitting opposite 10 units saying complexity lowers landslide risk. Relevant to M2b Stream A |
+| **Grey positive-bias check** | the most independent sources (Regreening endline, SPIA Ethiopia, IEG) are null or modest; implementer briefs (World Vision) are the most positive. ~20 % of lane D is null or negative and deliberately kept |
 
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 

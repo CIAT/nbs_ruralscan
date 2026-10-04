@@ -25,7 +25,8 @@ import fitz
 
 from nbs_ruralscan.recipe.cell_synthesis import load_bands
 from nbs_ruralscan.schema_tools import check_bands, check_context
-from nbs_ruralscan.schema_tools.check_numbers import _nums
+from nbs_ruralscan.schema_tools.check_numbers import _floats, _nums
+from nbs_ruralscan.schema_tools.validate_sources import _native_part
 from nbs_ruralscan.schema_tools.migrate_effects import (
     append_to_register,
     resync_vars_extracted,
@@ -41,7 +42,8 @@ def _col(path: Path, col: str) -> set[str]:
         return {r[col] for r in csv.DictReader(f) if r.get(col)}
 
 
-def gate(units: list[dict]) -> list[str]:
+def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
+    allowed_roles = allowed_roles or {"nbs_effect", "asset_vulnerability"}
     errs: list[str] = []
     bands = load_bands(REG / "BANDS_magnitude_bands.csv")
     vont = _col(REG / "VONT_variable_ontology.csv", "canonical_variable_id")
@@ -60,7 +62,10 @@ def gate(units: list[dict]) -> list[str]:
         else:
             try:
                 text = " ".join(d[int(u["page"]) - 1].get_text().split())
-                if " ".join(u["quote"].split()) not in text:
+                # a non-English quote is stored "<native> (English: <translation>)" per
+                # the AGENTS.md lock; only the native part is in the PDF, so verify that
+                # - the central guardrail (validate_sources) already does exactly this
+                if " ".join(_native_part(u["quote"]).split()) not in text:
                     errs.append(f"{eid}: quote not verbatim on page {u['page']}")
             except Exception as e:  # noqa: BLE001
                 errs.append(f"{eid}: page {u.get('page')} unreadable ({e})")
@@ -70,7 +75,9 @@ def gate(units: list[dict]) -> list[str]:
             v = rel.get(k)
             if isinstance(v, (int, float)) and not isinstance(v, bool):
                 rn |= _nums(str(v))
-        missing = rn - _nums(u["quote"])
+        # compare as FLOATS, like check_numbers.check: otherwise an integral float
+        # magnitude (41.0) never matches a quote that prints "41"
+        missing = _floats(rn) - _floats(_nums(_native_part(u["quote"])))
         if missing:
             errs.append(f"{eid}: numbers not in quote {sorted(missing)}")
         row = {
@@ -92,10 +99,15 @@ def gate(units: list[dict]) -> list[str]:
             errs.append(f"{eid}: variable '{u['variable']}' has no VONT id")
         if u.get("suitability_family_id") not in fams:
             errs.append(f"{eid}: family '{u.get('suitability_family_id')}' not in FAM")
-        if u.get("use_role") not in {"nbs_effect", "asset_vulnerability"}:
-            errs.append(f"{eid}: use_role '{u.get('use_role')}' is not an effect role")
-        if u.get("ruleset_version") != "v1.6.0":
-            errs.append(f"{eid}: ruleset_version '{u.get('ruleset_version')}' ≠ v1.6.0")
+        if u.get("use_role") not in allowed_roles:
+            errs.append(
+                f"{eid}: use_role '{u.get('use_role')}' is not allowed here "
+                f"(allowed: {sorted(allowed_roles)})"
+            )
+        if u.get("ruleset_version") not in {"v1.6.0", "v1.6.1"}:
+            errs.append(
+                f"{eid}: ruleset_version '{u.get('ruleset_version')}' not in v1.6.0/v1.6.1"
+            )
     return errs
 
 
@@ -105,6 +117,16 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument(
         "--fix-family", action="append", default=[], metavar="EVIDENCE_ID=FAMILY"
+    )
+    ap.add_argument(
+        "--allow-operational",
+        action="store_true",
+        help=(
+            "also accept use_role=operational_risk units (enabling-environment / adoption "
+            "claims from the same single-pass read; 2026-06-23 lock routes them to M2b and "
+            "Module 6). Every other gate still applies; they carry no effect relationship, "
+            "so the BANDS check skips them by role."
+        ),
     )
     args = ap.parse_args(argv)
     fixes = dict(kv.split("=", 1) for kv in args.fix_family)
@@ -121,7 +143,10 @@ def main(argv: list[str] | None = None) -> int:
             ).strip("; ")
     ids = Counter(u["evidence_id"] for u in units)
     dups = [k for k, n in ids.items() if n > 1]
-    errs = gate(units) + [f"duplicate evidence_id in staging: {d}" for d in dups]
+    roles = {"nbs_effect", "asset_vulnerability"} | (
+        {"operational_risk"} if args.allow_operational else set()
+    )
+    errs = gate(units, roles) + [f"duplicate evidence_id in staging: {d}" for d in dups]
     print(
         f"{len(units)} staged unit(s) from {len(args.files)} file(s); roles {dict(Counter(u['use_role'] for u in units))}"
     )

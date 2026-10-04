@@ -362,7 +362,9 @@ def build_relationship(
     if "significance" not in out and rel.get("p_value") is not None:
         out["significance"] = _significance(rel.get("p_value"))
     out["strength_class"] = (
-        classify_magnitude(metric, out.get("magnitude"), bands)
+        classify_magnitude(
+            metric, out.get("magnitude"), bands, unit=str(out.get("unit") or "")
+        )
         if "magnitude" in out
         else "unspecified"
     )

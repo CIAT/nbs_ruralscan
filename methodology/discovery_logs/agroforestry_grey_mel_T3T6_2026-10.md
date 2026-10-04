@@ -111,7 +111,7 @@ The 3ie-registered Vi Agroforestry IE (Hughes et al., World Dev) is peer-reviewe
 - **SCCE Drylands (2023), vol 1 (84 pp, fetched).** Screened out: lineage. Its agroforestry and drought findings come from the IEG Ethiopia SLMP PPAR, which is already queued:
   - "gross primary production grew by 14 percent on average in project areas affected by severe droughts and by 3 percent in other project areas" (printed p.32)
   - "Agroforestry and area closures to limit free grazing led to a 5 percent increase in vegetation cover" (citing IEG 2020a)
-  - Note for the PPAR extraction: the 14% GPP drought-buffering number is the strongest **T3 drought** signal in the whole grey pass, and it lives in the PPAR.
+  - ~~Note for the PPAR extraction: … it lives in the PPAR.~~ **CORRECTED 2026-10-04 by the lane-D extraction pass:** the sentence above was read in the **SCCE Drylands document**, not in the PPAR. A full-text search of the cached PPAR (110 pp) returns **zero** hits for "gross primary production" or "GPP". Do NOT attribute this number to the PPAR; it is unusable until the SCCE Drylands evaluation is acquired and cached in its own right.
 - **VfM 2016 land degradation (GEF/ME/C.51/Inf.02, 56 pp).** Screened out: practice (1 agroforestry mention, no disaggregation).
 
 **Saturation:** reached for agroforestry-disaggregated GEF IEO content.
@@ -245,7 +245,7 @@ inclusion_criteria = ex-post MEL / impact assessment / endline / programme evalu
 limits = CGSpace size 15–40/query; web ~9–10 results/query; screen<=80; include<=25 (shared with T6)
 n_retrieved≈435 | n_screened=44 | n_included=2 (af_grey_mel_04 [drought, weak], af_grey_mel_10)
 search_date=2026-10-02 | run_id=grey_mel_af_t3t6_2026-10-02 | searched_by=discovery-agent (grey MEL) | ruleset_version=v1.6.0
-note = grey MEL channels yield almost no hazard-conditional agroforestry evidence; strongest T3 drought number (GPP +14% in severe-drought areas) sits in the already-queued IEG Ethiopia SLMP PPAR; IFAD + USAID channels tool-blocked → not saturated
+note = grey MEL channels yield almost no hazard-conditional agroforestry evidence; [CORRECTED 2026-10-04: the GPP +14% drought number is NOT in the IEG PPAR — it was read in the SCCE Drylands evaluation, which is not acquired; claim unusable]; IFAD + USAID channels tool-blocked → not saturated
 ```
 ```
 nbs_id=agroforestry | suitability_family_id="" | table=T6 | process=grey
