@@ -51,6 +51,11 @@ EFFECT_ROLES = {"nbs_effect", "asset_vulnerability"}
 TRANSFER_W = {0: 1.0, 1: 0.7, 2: 0.3}
 #: non-significant results count toward direction only, at half weight (method §3.2)
 NS_FACTOR = 0.5
+#: `evidence_type = scoping_candidate` = a bundled-programme result the source attributes to
+#: the practice only loosely (watershed programme + livelihoods + roads); attribution is
+#: weaker than an isolated-practice finding, so it votes at half weight (WH prose review
+#: 2026-10-05: a very_high drought class rested entirely on bundles). Pending ratification.
+BUNDLED_W = 0.5
 #: XW proximity defaults (method §4)
 PROXIMITY_W = {"direct": 1.0, "proxy": 0.7, "component": 0.7}
 
@@ -530,6 +535,8 @@ def unit_weight(
     w *= TRANSFER_W.get(distance, TRANSFER_W[2]) * xw_factor
     if str((unit.relationship or {}).get("significance") or "").lower() == "ns":
         w *= NS_FACTOR
+    if unit.evidence_type == "scoping_candidate":
+        w *= BUNDLED_W
     return w
 
 
@@ -747,25 +754,59 @@ def _default_bands() -> list[dict[str, Any]]:
     return load_bands(_DEFAULT_BANDS_PATH) if _DEFAULT_BANDS_PATH.exists() else []
 
 
+#: extraction spellings of a unit that mean the same denominator (WH prose review 2026-10-05:
+#: a household BCR < 1 was silently dropped from the pool as `bcr`)
+_UNIT_ALIASES = {"bcr": "benefit_cost_ratio", "pct": "percent", "%": "percent"}
+
+
+def _pool_unit(rel: dict[str, Any]) -> str:
+    u = str(rel.get("unit") or "").strip().lower()
+    u = _UNIT_ALIASES.get(u, u)
+    if not u and str(rel.get("metric") or "") == "pct_change":
+        u = "percent"  # a % change needs no other denominator
+    return u
+
+
 def magnitude_summary(
     contribs: list[_Contrib],
     bands: list[dict[str, Any]] | None = None,
     target_band: str = "",
     min_sources: int = 2,
+    modal: int = 0,
+    band_gate: bool = False,
 ) -> dict[str, Any] | None:
     """Best same-metric/same-unit pooled magnitude, plus its ORDINAL class.
 
     ``class`` is the BANDS class of the weighted median, taken relative to the row's
     income band for absolute costs — the scoping answer "big or small given the context"
     (Pete 2026-10-05). Numbers stay as transparency; the class is what consumers read.
+
+    ``modal`` (the row's benefit-frame sign) keeps the pool DIRECTION-AWARE: a unit whose
+    sign opposes the row's direction is a different finding, not a smaller one — a −34 %
+    yield loss was the median of a `strong_positive` production_gap row (WH prose review
+    2026-10-05). Opposite-sign and null units are counted in ``n_excluded_opposite`` and
+    the account, never pooled. ``band_gate`` applies the §7.7 income-band gate that
+    `economic_value_range` already applies, so a cost class can never rest on a figure the
+    range excluded.
     """
     bands = bands if bands is not None else _default_bands()
     by_key: dict[tuple[str, str], list[_Contrib]] = defaultdict(list)
+    n_opp = n_band = 0
     for c in contribs:
         rel = c.unit.relationship or {}
-        m, u, v = rel.get("metric"), rel.get("unit"), rel.get("magnitude")
-        if m and u and isinstance(v, (int, float)) and m not in ("narrative",):
-            by_key[(str(m), str(u).lower())].append(c)
+        m, v = rel.get("metric"), rel.get("magnitude")
+        u = _pool_unit(rel)
+        if not (m and u and isinstance(v, (int, float)) and m not in ("narrative",)):
+            continue
+        if modal and c.has_direction and c.sign != modal:
+            n_opp += 1
+            continue
+        if band_gate and target_band:
+            band = INCOME_BAND.get(str(c.ctx.get("income_group") or ""), "")
+            if band != target_band:
+                n_band += 1
+                continue
+        by_key[(str(m), u)].append(c)
     best: dict[str, Any] | None = None
     for (metric, unit), group in sorted(by_key.items()):
         if independent_sources(group) < min_sources:
@@ -777,15 +818,17 @@ def magnitude_summary(
         cand: dict[str, Any] = {
             "metric": metric,
             "unit": unit,
-            "median": med,
-            "low": min(v for v, _ in vals),
-            "high": max(v for v, _ in vals),
+            "median": round(med, 3) if med is not None else None,
+            "low": round(min(v for v, _ in vals), 3),
+            "high": round(max(v for v, _ in vals), 3),
             "n": independent_sources(group),
             "income_groups": _count_by(group, "income_group"),
             "class": classify_magnitude(
                 metric, med, bands, unit=unit, income_band=target_band
             ),
             "class_context": target_band or "any",
+            "n_excluded_opposite": n_opp,
+            "n_excluded_band": n_band,
         }
         if best is None or int(cand["n"]) > int(best["n"]):
             best = cand
@@ -953,7 +996,8 @@ def _reconcile_group(
     target_ctx: dict[str, Any],
 ) -> dict[str, Any]:
     rank, agreement, modal = _reconcile_rank(contribs)
-    if independent_sources(contribs) < 2:
+    agreement_undefined = independent_sources(contribs) < 2
+    if agreement_undefined:
         # agreement is undefined with one independent source: it cannot be "high"
         agreement = 0.0
     strength_stated = any(
@@ -967,6 +1011,7 @@ def _reconcile_group(
     return {
         "rank": rank,
         "agreement": round(agreement, 3),
+        "agreement_undefined": agreement_undefined,
         "modal_sign": modal,
         "evidence_level": ev_l,
         "agreement_level": ag_l,
@@ -1051,6 +1096,10 @@ def _statement(
             3: "is severely damaged by",
         }[max(0, min(3, rank))]
         core = f"{nbs_id} {verb} {key}"
+        if strength_basis == "direction_only" and rank > 0:
+            # match the livelihood rows: a stated direction with no stated strength is
+            # not "slight" damage (WH prose review 2026-10-05)
+            core = f"{nbs_id} is damaged by {key} (strength not quantified in the evidence)"
     else:
         strength = {1: "slightly", 2: "moderately", 3: "strongly"}
         if strength_basis == "direction_only":
@@ -1221,8 +1270,13 @@ def traceable_account(
     pos = [c.unit.evidence_id for c in contribs if c.sign > 0]
     neg = [c.unit.evidence_id for c in contribs if c.sign < 0]
     zero = [c.unit.evidence_id for c in contribs if c.sign == 0]
+    head = (
+        "sign agreement undefined (single independent source)"
+        if rec.get("agreement_undefined")
+        else f"weighted sign agreement {rec['agreement']}"
+    )
     agreement_note = (
-        f"weighted sign agreement {rec['agreement']}: positive {len(pos)} {pos}; "
+        f"{head}: positive {len(pos)} {pos}; "
         f"negative {len(neg)} {neg}; null {len(zero)} {zero}."
     )
     return {
@@ -1361,6 +1415,19 @@ def synthesise_cell(
             routed.append((u, x))
     if not routed:
         return [], rep
+    if table == "T3" and farming_system != "all" and role != "asset_vulnerability":
+        # a farming-system row that no unit addresses specifically is the all-systems
+        # row under another name (rooftop cisterns × irrigated cropping, zaï × rangeland;
+        # WH prose review 2026-10-05) — emit only where a unit states that system
+        if not any(
+            str((u.context or {}).get("farming_system") or "") == farming_system
+            for u, _ in routed
+        ):
+            rep.notes.append(
+                f"{target_key}×{farming_system}: no unit states this farming system — "
+                "not emitted (the all-systems row applies)"
+            )
+            return [], rep
 
     # 2) lineage dedupe (anti pseudo-consensus) — on the unit set
     kept_units, shares = dedupe_for_cells(
@@ -1480,6 +1547,8 @@ def synthesise_cell(
                             "",
                         ),
                         min_sources=1 if is_econ else 2,
+                        modal=0 if is_econ else int(rec.get("modal_sign") or 0),
+                        band_gate=is_econ,
                     ),
                 }
             )
@@ -1575,12 +1644,11 @@ def synthesise_cell(
 # unit everywhere: a USD/tCO2e figure ended up as the magnitude of the per-hectare
 # establishment-cost cell (caught 2026-10-05).
 _ECON_UNITS: dict[str, set[str]] = {
-    "establishment_cost": {
-        "usd_per_ha",
-        "usd_per_household",
-        "usd_per_farmer",
-        "usd_per_beneficiary",
-    },
+    # the GENERIC up-front cost cell takes the denominators no specific cell owns
+    # (per structure / per system / per m³ stored); per-ha and per-household amounts live in
+    # cost_per_hectare_restored / cost_per_beneficiary only, else the scorecard counted the
+    # same four units twice (WH prose review 2026-10-05)
+    "establishment_cost": {"usd_per_structure", "usd_per_system", "usd_per_m3"},
     "recurrent_cost": {"usd_per_ha_yr", "usd_per_household_yr", "usd_per_farmer_yr"},
     "cost_per_hectare_restored": {"usd_per_ha"},
     "cost_per_beneficiary": {

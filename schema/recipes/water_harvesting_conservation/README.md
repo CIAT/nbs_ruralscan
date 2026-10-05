@@ -9,9 +9,9 @@ Conservation (`nbs_id = water_harvesting_conservation`, cluster `soil_water`). D
 | File | Table | Rows |
 |---|---|---|
 | `T0_nbs_registry.{csv,json}` | T0 — NbS Registry | 1 |
-| `T3_nbs_hazard_farming.{csv,json}` | T3 — NbS × Hazard × Farming | 59 (generated 2026-10-05 by `scripts/synthesise-t3t6.py`; draft-0 seeds frozen in `schema/design/seed_benchmark/`) |
+| `T3_nbs_hazard_farming.{csv,json}` | T3 — NbS × Hazard × Farming | 20 (generated 2026-10-05, re-run 2026-10-06 by `scripts/synthesise-t3t6.py`; draft-0 seeds frozen in `schema/design/seed_benchmark/`) |
 | `T4_suitability_mappings.{csv,json}` | T4 — Suitability Mappings | 9 |
-| `T6_nbs_scorecard.{csv,json}` | T6 — NbS Scorecard | 53 (generated 2026-10-05; see `T3T6_BENCHMARK.md`) |
+| `T6_nbs_scorecard.{csv,json}` | T6 — NbS Scorecard | 53 (generated 2026-10-05, re-run 2026-10-06; see `T3T6_BENCHMARK.md`) |
 
 The cross-NbS tables this recipe joins to — `T1_data_registry`, `T2_climate_risk`, `T5_opportunity_space`,
 `T7_geographic_context` — live at the [schema root](../../) and merge rows from every recipe. The water-harvesting

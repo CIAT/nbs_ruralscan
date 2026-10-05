@@ -245,7 +245,7 @@ def main(argv: list[str] | None = None) -> int:
         for x in _load_candidates(Path(path)):
             if x["candidate_id"] in added_ids:
                 tables |= set((x.get("tables") or "T3|T6").split("|"))
-    tables = sorted(tables)
+    table_list = sorted(tables)
     for lane, path in cand_files.items():
         cands = [
             x
@@ -266,7 +266,7 @@ def main(argv: list[str] | None = None) -> int:
             for x in cands
         )
         for process, n in procs.items():
-            for table in tables:
+            for table in table_list:
                 n_tbl = sum(
                     1
                     for x in cands
@@ -275,7 +275,7 @@ def main(argv: list[str] | None = None) -> int:
                         or ("grey" if lane == "grey" else "updated_lit")
                     )
                     == process
-                    and table in (x.get("tables") or "T3|T6")
+                    and table in (x.get("table_list") or "T3|T6")
                 )
                 if n_tbl == 0:
                     continue
@@ -304,7 +304,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"  SRCH {table} {process:12s} ({lane}) n_included={n_tbl}")
     # ledger
     for process, status in ledger_status.items():
-        for table in tables:
+        for table in table_list:
             for stage in ("searched", "screened"):
                 ledger.mark(
                     args.nbs_id,
@@ -317,7 +317,7 @@ def main(argv: list[str] | None = None) -> int:
                     by="orchestrator",
                     note=f"synthesis-first round {args.date}; see SRCH {run_prefix}_* rows + discovery logs",
                 )
-    print(f"  ledger: {ledger_status} on {tables}")
+    print(f"  ledger: {ledger_status} on {table_list}")
     # tracked discovery logs
     LOGS.mkdir(exist_ok=True)
     for lane, path in reports.items():

@@ -9,9 +9,9 @@ and serve as a template for subsequent NbS recipes.
 | File | Table | Rows |
 |---|---|---|
 | `T0_nbs_registry.{csv,json}` | T0 — NbS Registry | 1 |
-| `T3_nbs_hazard_farming.{csv,json}` | T3 — NbS × Hazard × Farming (**generated**, cell synthesis) | 23 |
+| `T3_nbs_hazard_farming.{csv,json}` | T3 — NbS × Hazard × Farming (**generated**, cell synthesis) | 75 (generated; re-run 2026-10-06) |
 | `T4_suitability_mappings.{csv,json}` | T4 — Suitability Mappings | 11 |
-| `T6_nbs_scorecard.{csv,json}` | T6 — NbS Scorecard (**generated**, cell synthesis) | 20 |
+| `T6_nbs_scorecard.{csv,json}` | T6 — NbS Scorecard (**generated**, cell synthesis) | 74 (generated; re-run 2026-10-06) |
 
 The cross-NbS tables this recipe joins to — `T1_data_registry`, `T2_climate_risk`, `T5_opportunity_space`,
 `T7_geographic_context` — live at the [schema root](../../) and merge rows from every recipe.

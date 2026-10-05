@@ -489,6 +489,39 @@ C: 7 ES/FR · D: 6 PT). Ingested through the gated staging path: **295 effect/as
 | **`design` enum** | contract has no `monitoring` design → ICR results-framework values tagged `observational` with a note | add `monitoring` at the next contract bump |
 | **Kassie bunds-lower-yields finding** | Schmidt cites it as Kassie et al. 2008, Abate as 2009 — must be resolved before lineage dedupe | check the primary |
 
+
+**Engine fixes from the WH prose-writer reviews (2026-10-05/06, implemented + tested, pending ratification at PR review)**
+
+| defect | fix |
+|---|---|
+| `magnitude_summary` pooled magnitudes regardless of direction (a −34 % yield loss was the median of a `strong_positive` production row) | pool only units whose benefit-frame sign = the row's modal sign; opposite/null units counted in `n_excluded_opposite` |
+| cost class could rest on a figure `economic_value_range` excluded (Peru 1994 UMIC cost made terracing costs "large" vs the LIC/LMIC band) | income-band gate applied to economic magnitude summaries (`n_excluded_band`) |
+| `establishment_cost` and `cost_per_hectare_restored` carried the same four per-ha units → cost counted twice | `establishment_cost` = per-structure / per-system / per-m³ denominators only; per-ha → `cost_per_hectare_restored`, per-household → `cost_per_beneficiary`; BANDS rows added for `usd_per_structure` (1 000 / 10 000) and `usd_per_m3` (5 / 50), LIC/LMIC ×1, UMIC ×2, HIC ×5 — thresholds pending |
+| units silently dropped from pooling (`bcr` ≠ `benefit_cost_ratio`; `pct_change` with no unit) | `_UNIT_ALIASES` + default `percent` for `pct_change` |
+| bundled-programme results (`evidence_type = scoping_candidate`) voted at full weight; a very_high drought class rested on bundles | `BUNDLED_W = 0.5` |
+| farming-system rows emitted with no system-specific unit (rooftop cisterns × irrigated cropping; identical to the all-systems row) | a T3 farming-system row needs ≥1 unit stating that system — agroforestry T3 149→75 rows, riparian 9→6, WH 59→20 |
+| asset-threat rows said "slightly damaged" on direction-only evidence | "is damaged by … (strength not quantified in the evidence)" |
+| single-source rows printed "weighted sign agreement 0.0" | "sign agreement undefined (single independent source)" |
+| medians rounded outside their own range | median/low/high rounded consistently (3 dp) |
+
+Not changed (design, noted for Pete): null / ns units legitimately pull the modal-sign magnitude median to 0 → rank floors at 1 (`low`) even when quantified positives exist (drought roll-up: 3 null units outweigh 4 quantified gains); a meta-analysis counts its `n` studies, so one review's pooled "factor" (n = 105) outranks a multi-source soil-loss pool as the row's magnitude summary.
+
+**Human-QA items from the reviews (Namita's lane; not engine)**
+
+| unit(s) | issue |
+|---|---|
+| `ev_drought_hazard_arsky20_3`, `_cirilo03_2`, `_cirilo03_3`, `ev_drought_hazard_iegtun13_1` | storage running dry / reduced benefit tagged `asset_vulnerability` (their own notes say "not structural damage") → re-tag `nbs_effect` with the measured direction; they currently create the rooftop + runoff drought asset-threat rows |
+| `ev_water_access_deficit_ritc21_3` | capacity limit (67 % of sand dams) coded `none`; its note calls it a negative finding |
+| `ev_soil_water_retention_willem21_2` | encodes the positive half of a quote that also says narrow benches / contour-trench terraces had no advantage |
+| `ev_flood_hazard_ritc21_1` | dam-size trade-off, not evidence that sand dams worsen floods |
+| `ev_food_security_kabo04_1` (negative), `ev_economic_return_heusch95_1` (positive for ≈1 % return), `ev_economic_return_yem12_7` (return reflects the subsidy) | sign / meaning questionable |
+| `ev_project_cost_kar20_5`, `ev_project_cost_veno12_1` | tagged `cost_reduction` but encode an absolute cost / a cost spread |
+| `ev_runoff_reduction_utk22_4` | +1.5 % runoff kept as null/negative while the same page says most watersheds show less runoff |
+| `ev_project_cost_hp17_5` | `usd_per_m3` = per m³ of masonry, not per m³ stored — unit semantics; propose `usd_per_m3_structure` |
+| flood cell | bunds/terraces lower peaks vs diversion banquettes raise them (`heusch95_1`, `roose94_3` under terracing) — FAM split would give two clean rows |
+| `ev_economic_return_mrt14_4`, `ev_runoff_reduction_roose06_4` | in family rows but not the NbS-wide row — check dedupe/econ filter |
+| residue mulch under `in_situ`; a USA unit in the flood asset row's country list | tagging |
+
 **Pointers (verify before use — a lane's "number is in document X" is a pointer, never provenance)**
 
 | pointer | note |
