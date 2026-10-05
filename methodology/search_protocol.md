@@ -63,6 +63,15 @@ is a logged decision.
 ## Version control of the instructions (reproducibility)
 The search/extraction instructions are versioned: [`methodology/RULESET_VERSIONS.md`](RULESET_VERSIONS.md) (semver · date · change) + archived prompt snapshots under [`.agents/skills/_versions/<version>/`](../.agents/skills/_versions/). Bump + snapshot on any change to the screening funnel, defect catalogue, or discovery protocol. A past search is reproducible with the snapshot its `ruleset_version` points to.
 
+### Learnings from the agroforestry synthesis-first round (2026-10-02)
+- **Synthesis-first targeting** (Pete 2026-10-01) for T3/T6: meta-analyses · systematic reviews · EGMs · reviews first, then
+  MEL / impact-assessment grey literature (ICR/IEG, SPIA/MELIA, 3ie, IFAD IOE, GEF IEO); PADs are ex-ante proposals, never evidence.
+- **OpenAlex title search is accent-sensitive** (`agroforestería` 188 hits vs `agroforesteria` 21): run accented AND unaccented forms.
+  French `haies` pulls English "hay" noise — qualify it. SciELO's own search and ifad.org bot-block tool fetches (reach SciELO items
+  through OpenAlex DOIs; IFAD needs a human browser). Semantic Scholar rate-limits (HTTP 429) — do not rely on it for counts.
+- **Web-summary numbers are not evidence**: two widely repeated agroforestry-drought figures could not be traced to any document.
+- **Datasets** (ERA) are a format with no handling rule → PAUSE and define a dataset-intake adapter before registering.
+
 ## Status (v1.1, 2026-06-29)
 The agroforestry `SRCH` rows are the **generic (practice-wide) parent search** at `family=""` — the
 June sweeps were not sub-practice-targeted. Their `search_terms` were re-captured **verbatim** from

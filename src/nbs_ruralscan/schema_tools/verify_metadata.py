@@ -210,7 +210,7 @@ def verify() -> int:
             mismatched += 1
 
     with QUEUE.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols)
+        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
         w.writeheader()
         w.writerows(rows)
     REPORT.parent.mkdir(parents=True, exist_ok=True)
