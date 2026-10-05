@@ -318,6 +318,22 @@ engine `evidence_summary` lines failing the account check (`outcome_raw` numbers
 | Uriarte 2004 (via Philpott): complex vegetation *least* hurricane-resistant | the one asset-side unit contradicting "complexity = protection" — M2b Stream A |
 | statement verb vs `magnitude_summary.class` can differ | the statement's class is the weighted modal strength over all quantified units; `magnitude_summary` is one metric/unit group — by design, but the Variable Card should explain it |
 
+**Third review (delta writer, 2026-10-05) — fixed in-engine:** all-ns direction evidence → `no_relationship`; agreement
+undefined (`low`) with one independent source; economic cells take an ordinal class from one source. **Confirmed fixed:**
+Watts fire null now an asset row; context-less units adjacent; frost rows frost-only; Rwanda arm kept; Colombia saving and
+the Steward cost ratio feed `cost_reduction` only; Tiwari units no longer fan into per-beneficiary / per-tCO₂e / recurrent rows.
+**Still open (data / design):**
+| item | detail |
+|---|---|
+| riparian envelopes list COL / CHN / MEX that no unit states | by design — SRC `study_country` fallback for units without a country (Meli: Brazil; Colombia; Mexico; Zhao: China) — fine, but the bundle should show the fallback so writers stop flagging it |
+| Tiwari opportunity costs → `cost_per_hectare_restored` / `establishment_cost` | needs an `opportunity_cost` indicator (enum gap, §1.2) — XW decision |
+| `batcheler24_6` (litter depth ↔ fire spread) counted against fire mitigation | a mechanism correlation, not an agroforestry effect — re-role or drop (QA) |
+| Quandt general "agroforestry" units in `planted_silvoarable` rows; `quandt17_3` shade trees; Lee 2004 / Tiwari retained forest in riparian `planted__` | family tags not stated in the source — migration defaults; bulk re-tag to `cross_family` / `natural_restored` is a reviewer call |
+| `watts22_14` climate-scenario sensitivity statement counted as a null poverty effect | QA |
+| `seghieri19_13` adopter/non-adopter shares stored as a low/high range; `rgaf23_8` 31 % relative rise in a dietary-diversity share drives the rural-poverty magnitude | encoding semantics — reviewer call on whether shares are magnitudes |
+| Quandt flood unit = a table caption only | re-slice to include the table rows (screengrab path) |
+| statement "slightly" vs `magnitude_summary.class` strong (2 rows) | the two aggregates differ by construction; explain in the Variable Card or pick one — method decision |
+
 ## 1c. Agroforestry effect sweep — 4 extractor lanes over the 41 acquired sources (2026-10-04)
 
 **348 units ingested** through the gated staging path (326 `nbs_effect` / `asset_vulnerability` + 22 `operational_risk`):
