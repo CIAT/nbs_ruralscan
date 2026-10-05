@@ -39,6 +39,7 @@ from .synthesis import (
     TIER_W,
     SynthesisReport,
     _dedupe_lineage,
+    _resolve_root_origin,
     _weighted_median,
 )
 
@@ -454,6 +455,11 @@ def context_distance(unit_ctx: dict[str, Any], target_ctx: dict[str, Any]) -> in
         ds.append(
             _income_distance(unit_ctx["income_group"], target_ctx["income_group"])
         )
+    elif target_ctx.get("income_group") and not unit_ctx.get("income_group"):
+        # the target states its income band and the unit states nothing: UNKNOWN is not
+        # "same". It is at best adjacent — otherwise 129 context-less units read as fully
+        # in-context with a 1.0 weight share (prose review, 2026-10-05; method §5.2).
+        ds.append(1)
     d_aez = _aez_distance(unit_ctx, target_ctx)
     if d_aez is not None:
         ds.append(d_aez)
@@ -467,7 +473,12 @@ def context_distance(unit_ctx: dict[str, Any], target_ctx: dict[str, Any]) -> in
 # ── per-unit rank + weight ────────────────────────────────────────────────────────────
 
 
-def unit_rank(unit: EvidenceUnit, polarity: str = "same") -> tuple[int, int | None]:
+def unit_rank(
+    unit: EvidenceUnit,
+    polarity: str = "same",
+    bands: list[dict[str, Any]] | None = None,
+    income_band: str = "",
+) -> tuple[int, int | None]:
     """(sign, magnitude) on the shared −3..+3 scale, in the BENEFIT frame.
 
     The unit's `direction` is on the outcome AS MEASURED (erosion `negative` = erosion
@@ -486,7 +497,21 @@ def unit_rank(unit: EvidenceUnit, polarity: str = "same") -> tuple[int, int | No
         sign = -sign
     if polarity == "inverted":
         sign = -sign
-    mag = STRENGTH_RANK.get(str(rel.get("strength_class") or "").lower())
+    cls = str(rel.get("strength_class") or "").lower()
+    if cls in ("", "unspecified") and rel.get("magnitude") is None:
+        lo, hi = rel.get("magnitude_low"), rel.get("magnitude_high")
+        nums = [float(x) for x in (lo, hi) if isinstance(x, (int, float))]
+        if nums and str(rel.get("metric") or "") not in ("narrative", ""):
+            # a RANGE is a quantified claim: class its midpoint rather than treating the
+            # unit as direction-only (43 units; e.g. "seedling mortality 35–40%")
+            cls = classify_magnitude(
+                str(rel.get("metric") or ""),
+                sum(nums) / len(nums),
+                bands if bands is not None else _default_bands(),
+                unit=str(rel.get("unit") or ""),
+                income_band=income_band,
+            )
+    mag = STRENGTH_RANK.get(cls)
     if sign == 0:
         mag = None
     return sign, mag
@@ -892,7 +917,11 @@ def _contribs(
     for u in units:
         ctx = unit_context(u, src_contexts.get(u.source_id), income_lookup)
         d = context_distance(ctx, target_ctx)
-        sign, mag = unit_rank(u, xw.polarity)
+        sign, mag = unit_rank(
+            u,
+            xw.polarity,
+            income_band=INCOME_BAND.get(str(ctx.get("income_group") or ""), ""),
+        )
         w = unit_weight(
             u,
             tiers.get(u.source_id, "medium"),
@@ -1040,6 +1069,77 @@ def _statement(
     )
 
 
+def dedupe_for_cells(
+    units: list[EvidenceUnit],
+    tiers: dict[str, str],
+    report: SynthesisReport,
+    categories: dict[str, str] | None = None,
+) -> tuple[list[EvidenceUnit], dict[str, float]]:
+    """Lineage dedupe for CELLS: collapse citation echoes, keep a source's own arms.
+
+    The T4 dedupe keeps one unit per origin — right for "one threshold per source", wrong
+    for a cell where one source legitimately reports several arms (CRS: FMNR Ghana AND
+    planted agroforestry Rwanda; a meta-analysis' subgroup estimates). Here every unit whose
+    own source IS the origin is kept, and that source's weight is split equally across them
+    (``shares``), so independence is preserved (one source = one source-weight) while the
+    arms inform the median and the range. Echoes from OTHER sources citing the origin are
+    collapsed as before (prose review, 2026-10-05).
+    """
+    categories = categories or {}
+    by_ev = {u.evidence_id: u for u in units if u.evidence_id}
+    by_src: dict[str, list[EvidenceUnit]] = {}
+    for u in units:
+        by_src.setdefault(u.source_id, []).append(u)
+    by_origin: dict[str, list[EvidenceUnit]] = {}
+    for u in units:
+        by_origin.setdefault(_resolve_root_origin(u, by_ev, by_src), []).append(u)
+    kept: list[EvidenceUnit] = []
+    shares: dict[str, float] = {}
+    for origin, group in by_origin.items():
+        own = [u for u in group if u.source_id == origin] or [
+            u for u in group if not u.lineage_of
+        ]
+        if not own:
+            # echoes only: keep the highest-weight echo (as the T4 engine does)
+            own = _dedupe_lineage(group, tiers, report, categories)
+            kept += own
+            continue
+        for u in own:
+            shares[u.evidence_id] = 1.0 / len(own)
+        kept += own
+        for echo in group:
+            if echo not in own:
+                report.collapsed.append((echo.evidence_id, origin))
+    return kept, shares
+
+
+def _apply_shares(contribs: list[_Contrib], shares: dict[str, float]) -> None:
+    for c in contribs:
+        c.weight *= shares.get(c.unit.evidence_id, 1.0)
+
+
+def apply_proxy_cap(
+    rec: dict[str, Any], contribs: list[_Contrib], xw_by_unit: dict[str, XWRow]
+) -> dict[str, Any]:
+    """Cap a cell built ONLY from proxy / component evidence at |rank| 2 (moderate).
+
+    A `very_high` drought-mitigation class resting entirely on soil-moisture and
+    infiltration proxies over-claims: the proxies carry the 0.7 weight haircut but weight
+    does not bound the CLASS (prose review, 2026-10-05; method §4). Direct evidence anywhere
+    in the cell lifts the cap. Recorded as `proxy_capped` so the account says why.
+    """
+    if not contribs:
+        return rec
+    if (
+        all(xw_by_unit[c.unit.evidence_id].proximity != "direct" for c in contribs)
+        and abs(int(rec.get("rank", 0))) > 2
+    ):
+        rec = dict(rec)
+        rec["rank"] = 2 if rec["rank"] > 0 else -2
+        rec["proxy_capped"] = True
+    return rec
+
+
 def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
     """The calibrated statement for a reconciled record (used as the mechanism placeholder)."""
     return _statement(
@@ -1076,8 +1176,9 @@ def traceable_account(
         bits = [c.unit.source_id]
         if rel.get("design"):
             bits.append(str(rel["design"]))
-        if rel.get("outcome_raw"):
-            bits.append(str(rel["outcome_raw"]))
+        # outcome_raw is free text and may carry numbers that are not in the quote ("after
+        # 13 years"); the account check would then flag the ENGINE's own line. The measured
+        # outcome stays visible through `variable` / `raw_name` on the unit.
         d = rel.get("direction")
         if d:
             bits.append(
@@ -1088,7 +1189,9 @@ def traceable_account(
             if isinstance(rel.get("magnitude_low"), (int, float)) and isinstance(
                 rel.get("magnitude_high"), (int, float)
             ):
-                m += f" [{rel['magnitude_low']}, {rel['magnitude_high']}]"
+                # "lo to hi", never "[lo, hi]": the comma-stripping tokeniser reads "[56, 555]"
+                # as the number 56555
+                m += f" {rel['magnitude_low']} to {rel['magnitude_high']}"
             if rel.get("unit"):
                 m += f" {rel['unit']}"
             bits.append(m)
@@ -1126,6 +1229,7 @@ def traceable_account(
             rec.get("strength_basis", "quantified"),
         ),
         "strength_basis": rec.get("strength_basis", "quantified"),
+        "proxy_capped": bool(rec.get("proxy_capped", False)),
         "evidence_summary": summary,
         "agreement_note": agreement_note,
         "proxies": proxies,
@@ -1202,9 +1306,33 @@ def synthesise_cell(
             # cells — the frost cell inherited 12 sources of daytime-shade evidence
             # (caught 2026-10-04). Blank = unstated = applies, exactly like farming_system.
             hz = str((u.context or {}).get("hazard_type") or "")
+            n_hazard_routes = len(
+                {
+                    x.target_key
+                    for x in xw_rows
+                    if x.ev_variable == u.variable and x.target_table == "T3"
+                }
+            )
+            if not hz and n_hazard_routes > 1:
+                # the variable reaches several hazards (microclimate_buffering → heat AND
+                # frost); an unstated hazard would put the unit in every one of them
+                rep.dropped.append(
+                    (
+                        u.evidence_id,
+                        f"hazard unstated; {u.variable} routes to {n_hazard_routes} hazards",
+                    )
+                )
+                continue
             if hz and hz != target_key:
                 rep.dropped.append(
                     (u.evidence_id, f"hazard_type={hz} ≠ cell {target_key}")
+                )
+                continue
+        if table == "T6" and target_key.endswith("_hazard"):
+            hz6 = str((u.context or {}).get("hazard_type") or "")
+            if hz6 and hz6 != target_key[: -len("_hazard")]:
+                rep.dropped.append(
+                    (u.evidence_id, f"hazard_type={hz6} ≠ T6 cell {target_key}")
                 )
                 continue
         if (
@@ -1225,7 +1353,9 @@ def synthesise_cell(
         return [], rep
 
     # 2) lineage dedupe (anti pseudo-consensus) — on the unit set
-    kept_units = _dedupe_lineage([u for u, _ in routed], tiers, rep, categories)
+    kept_units, shares = dedupe_for_cells(
+        [u for u, _ in routed], tiers, rep, categories
+    )
     xw_by_unit = {u.evidence_id: x for u, x in routed}
     rep.used = [u.evidence_id for u in kept_units]
 
@@ -1236,6 +1366,7 @@ def synthesise_cell(
         contribs += _contribs(
             [u], tiers, categories, x, target_ctx, src_contexts, income_lookup
         )
+    _apply_shares(contribs, shares)
     proxies = sorted(
         {
             f"{c.unit.variable}→{target_key} ({xw_by_unit[c.unit.evidence_id].proximity})"
@@ -1243,7 +1374,9 @@ def synthesise_cell(
             if xw_by_unit[c.unit.evidence_id].proximity != "direct"
         }
     )
-    g = _reconcile_group(contribs, tiers, matrix, target_ctx)
+    g = apply_proxy_cap(
+        _reconcile_group(contribs, tiers, matrix, target_ctx), contribs, xw_by_unit
+    )
     if table == "T6":
         cell = target_key
     elif role == "asset_vulnerability":
@@ -1375,7 +1508,11 @@ def synthesise_cell(
                     continue
                 # a scope row is reconciled against ITS scope alone (method §5.3): a
                 # temperate_europe row applies to temperate Europe, whatever the income
-                s_target: dict[str, Any] = {dim: sid}
+                # a farming-system or AEZ scope still answers to the GLOBAL income target —
+                # otherwise a Costa-Rica-only tree_perennial row read as in_context
+                s_target: dict[str, Any] = (
+                    {dim: sid} if dim == "income_group" else {**target_ctx, dim: sid}
+                )
                 s_contribs: list[_Contrib] = []
                 for u in gunits:
                     s_contribs += _contribs(
@@ -1387,7 +1524,12 @@ def synthesise_cell(
                         src_contexts,
                         income_lookup,
                     )
-                s_rec = _reconcile_group(s_contribs, tiers, matrix, s_target)
+                _apply_shares(s_contribs, shares)
+                s_rec = apply_proxy_cap(
+                    _reconcile_group(s_contribs, tiers, matrix, s_target),
+                    s_contribs,
+                    xw_by_unit,
+                )
                 g_class_for_scope = recompute_transfer_class(
                     global_row, [(c.ctx, c.weight) for c in contribs], s_target
                 )
@@ -1447,12 +1589,39 @@ _ECON_UNITS: dict[str, set[str]] = {
 _RELATIVE_METRICS = {"ln_response_ratio", "pct_change", "smd_hedges_g", "narrative"}
 
 
+_COST_LEVEL_KEYS = {
+    "establishment_cost",
+    "recurrent_cost",
+    "cost_per_hectare_restored",
+    "cost_per_beneficiary",
+    "cost_per_farmer_reached",
+    "cost_per_tco2e_avoided",
+}
+
+
 def _unit_fits_econ_cell(unit: EvidenceUnit, target_key: str) -> bool:
+    """Which economic cell a `project_cost`-type unit may enter.
+
+    * A cost LEVEL cell (establishment_cost, cost_per_*) takes only an ABSOLUTE amount with
+      the cell's denominator that is not a decrease: a saving is not a cost level.
+    * `cost_reduction` takes the rest: relative measures (a cost log-RR vs the control, a %
+      change) and absolute decreases. Routing one relative cost ratio into five level cells
+      had inflated their evidence and agreement levels while adding no amount, and a
+      recurrent SAVING had been pooled into the per-hectare cost range (prose review,
+      2026-10-05).
+    """
+    rel = unit.relationship or {}
+    metric = str(rel.get("metric") or "")
+    direction = str(rel.get("direction") or "").lower()
+    relative = metric in _RELATIVE_METRICS
+    if target_key == "cost_reduction":
+        return relative or direction == "negative"
     allowed = _ECON_UNITS.get(target_key)
     if allowed is None:
-        return True  # unconstrained cell (cost_reduction, market_access, subsidy_dependency)
-    rel = unit.relationship or {}
-    if str(rel.get("metric") or "") in _RELATIVE_METRICS:
+        return True  # unconstrained cell (market_access, subsidy_dependency, income…)
+    if target_key in _COST_LEVEL_KEYS and (relative or direction == "negative"):
+        return False
+    if relative:
         return True
     return str(rel.get("unit") or "").strip().lower() in allowed
 

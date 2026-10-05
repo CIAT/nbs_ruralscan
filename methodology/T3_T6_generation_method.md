@@ -270,12 +270,19 @@ Unit distance `d = max` over dimensions that are populated on **both** sides; a 
 ignored. `TRANSFER_W = {0: 1.0, 1: 0.7, 2: 0.3}`. This is the six-axis credibility rubric's transferability
 axis made mechanical, replacing the "LMIC tie-break" prose.
 
+**Unknown is not "same" (2026-10-05).** When the target states an income band and the unit states none, the
+income dimension scores `1` (adjacent), not `0`: a context-less unit can never read as fully in-context. Found
+when 129 context-less units carried a 1.0 in-context weight share.
+
 ### 5.3 The generation-time target
 
 Global rows are reconciled against the **WB-investable default target**: `income_group = lic_lmic`, `aez` and
 `farming_system` unset. So at generation, transferability reduces to the income dimension: LIC/LMIC 1.0 ·
 UMIC 0.7 · HIC 0.3. Scope rows are reconciled against their own scope (`aez = semi_arid` etc.), so a
 semi-arid paper carries full weight in the semi-arid scope row and 0.7 in the dryland-adjacent one.
+**Non-income scope rows also keep the global income target (2026-10-05):** an AEZ or farming-system scope built
+only from HIC evidence is `out_of_context`, not `in_context` within its own scope — otherwise a Costa-Rica-only
+`tree_perennial` row would silently set an LMIC value, which the lock forbids.
 
 ### 5.4 The `applicability` object (every row, including global)
 
