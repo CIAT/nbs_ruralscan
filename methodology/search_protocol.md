@@ -80,6 +80,29 @@ paraphrase. **No sub-practice-targeted search (F1…F6) has been run yet** — t
 when run, and are NOT covered by the generic parent search. Synthesis #114 is gated on the
 per-family searches being run + logged.
 
+## Word documents (.docx) — handling rule (2026-10-05, Pete)
+
+A `.docx` is a format the pipeline cannot verify quotes against directly (no stable pages). Rule:
+1. **Master = the `.docx`**, uploaded unchanged to the SharePoint library beside its rendering.
+2. **Artefact of record = a PDF rendered once** with LibreOffice headless (`soffice --headless --convert-to pdf`);
+   record the renderer and version (e.g. `LibreOffice 26.2.4.2`) in `SRC.license`/`note` and the PDF's `artifact_sha1`.
+   The rendered PDF is what `.cache/corpus/<source_id>.pdf` holds and what `library_path` points to.
+3. **Locator = page of the rendered PDF** (`locator_type = page`), exactly as for a native PDF. Never re-render after
+   extraction: a new render can re-flow pages and orphan every page locator. If the master changes, it is a new
+   `source_id`.
+4. **QA/QC** — `verify_metadata.py verify-titles` must pass on the rendered PDF (DOI-less); the verbatim guardrail runs
+   as for any PDF. A published PDF of the same document, when one appears, supersedes the rendering (new SRC row,
+   `superseded_by`).
+First use: the Alliance working paper *Economic benefits and costs of NbS in LMICs* (Steward et al. 2023) —
+`steward_2023_nbs_economics_wp`. Internal authorship is recorded for the independence axis.
+
+### Datasets (.csv / .xlsx / R) — still PAUSED
+The economics **meta-dataset** behind that paper (`nbs_data_p3.csv`, ~3,700 rows with the primary study's DOI and an
+in-paper table locator per row) and **ERA** are *dataset* sources: no verbatim-page semantics, so no registration until
+a dataset-intake adapter is defined (`source_kind = dataset`, snapshot + sha1, `locator_type = table_row`, quote = the
+serialised row, `lineage_of` = the row's primary DOI). Until then a dataset is used only as a **discovery seed list**:
+its DOIs enter the acquisition queue and the primaries are extracted from their own PDFs.
+
 ## OA-recovery — before marking a source `paywalled` (locked, 2026-08)
 
 `blocker="paywalled"` must mean **verified no OA copy found**, NOT "OpenAlex `is_oa=false`" or "one fetch failed". Over-labelling dumps needless institutional-access work on the acquirer (Namita). Before queueing any source for institutional download, exhaust OA recovery:

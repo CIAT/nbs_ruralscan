@@ -983,3 +983,39 @@ def test_t3_cell_rejects_a_unit_that_states_a_different_hazard():
     used = set(rep.used)
     assert "f" in used and "q" in used, "frost + hazard-silent units belong in the cell"
     assert "h" not in used, "a heat_stress unit must not become frost evidence"
+
+
+def test_a_meta_analysis_counts_its_pooled_studies_as_independent_sources():
+    ma = _u(
+        "ma",
+        "s1",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["KEN"], "income_group": "lower_middle"},
+        rel={
+            "metric": "absolute",
+            "magnitude": 420,
+            "unit": "usd_per_ha",
+            "design": "meta_analysis",
+            "n": 12,
+        },
+    )
+    assert cs.independent_sources([ma]) == 12
+    single = _u(
+        "p",
+        "s2",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["ETH"], "income_group": "low"},
+        rel={"metric": "absolute", "magnitude": 380, "unit": "usd_per_ha"},
+    )
+    assert cs.independent_sources([single]) == 1
+    # a meta-analysis alone now clears the ≥ 2 gate; its range is its own value
+    rows, rep = _t6([ma], key="establishment_cost")
+    rng = rows[0]["economic_value_range"]
+    assert rng is not None and rng["low"] == 420.0 and rng["high"] == 420.0
+    assert not any("only 1 independent" in g for _, g in rep.excluded_economics)
+    # evidence_level sees 12, not 1 → no longer "limited"
+    assert rows[0]["evidence_level"] != "limited"

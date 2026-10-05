@@ -532,8 +532,33 @@ def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int]:
     return max(-3, min(3, rank)), agreement, modal
 
 
+def independent_sources(items: list[Any]) -> int:
+    """Independent evidence count behind a set of units or contributions.
+
+    A primary study counts 1 per distinct ``source_id``. A **meta-analysis unit** pools
+    ``n`` independent studies, so it counts ``n`` (the largest ``n`` any of that source's
+    units states) when ``relationship.design == "meta_analysis"`` and ``n >= 2``. Without
+    this, a pooled estimate over 12 studies counted as one source and could never satisfy
+    the "≥ 2 independent sources" gates on `magnitude_summary` / `economic_value_range`
+    (method §7.7; agreed with Pete 2026-10-05). Lineage dedupe has already run upstream,
+    so re-cited primaries are not double-counted here.
+    """
+    per_source: dict[str, int] = {}
+    for it in items:
+        u = getattr(it, "unit", it)
+        rel = u.relationship or {}
+        n = rel.get("n")
+        k = 1
+        if str(rel.get("design") or "") == "meta_analysis" and isinstance(
+            n, (int, float)
+        ):
+            k = max(1, int(n)) if n >= 2 else 1
+        per_source[u.source_id] = max(per_source.get(u.source_id, 0), k)
+    return sum(per_source.values())
+
+
 def evidence_level(units: list[EvidenceUnit], tiers: dict[str, str]) -> str:
-    n = len({u.source_id for u in units})
+    n = independent_sources(units)
     bases = [u.claim_basis for u in units]
     if n <= 2 or all(b in _LOW_BASIS for b in bases):
         return "limited"
@@ -675,7 +700,7 @@ def magnitude_summary(contribs: list[_Contrib]) -> dict[str, Any] | None:
             by_key[(str(m), str(u).lower())].append(c)
     best: dict[str, Any] | None = None
     for (metric, unit), group in sorted(by_key.items()):
-        if len({c.unit.source_id for c in group}) < 2:
+        if independent_sources(group) < 2:
             continue
         vals = [
             (float((c.unit.relationship or {})["magnitude"]), c.weight) for c in group
@@ -687,7 +712,7 @@ def magnitude_summary(contribs: list[_Contrib]) -> dict[str, Any] | None:
             "median": med,
             "low": min(v for v, _ in vals),
             "high": max(v for v, _ in vals),
-            "n": len({c.unit.source_id for c in group}),
+            "n": independent_sources(group),
             "income_groups": _count_by(group, "income_group"),
         }
         if best is None or int(cand["n"]) > int(best["n"]):
@@ -739,7 +764,7 @@ def economic_value_range(
             continue
         by_unit[unit].append(c)
     for unit, group in sorted(by_unit.items()):
-        if len({c.unit.source_id for c in group}) < 2:
+        if independent_sources(group) < 2:
             for c in group:
                 report.excluded_economics.append(
                     (c.unit.evidence_id, f"only 1 independent source in {unit}")
