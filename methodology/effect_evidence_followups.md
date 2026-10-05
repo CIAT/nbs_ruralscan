@@ -292,6 +292,32 @@ in the review. Superseded (soft-dropped, `accepted_correction`, note `superseded
 
 ---
 
+### Prose-writer reviews of the regenerated agroforestry rows (2026-10-05) — engine fixes applied, data items open
+
+Three writers (T3 · T6 + riparian · delta) reviewed 235 rows. **Engine defects they found, all fixed in the same PR:**
+unknown context scored as in-context (129 units) · range-only magnitudes read as direction-only · proxy-only cells reaching
+`very_high` (heat stress → `moderate`, `proxy_capped`) · hazard-silent units of a multi-hazard variable entering every
+hazard cell · T6 hazard cells ignoring `hazard_type` · relative cost ratios and savings pooled into cost LEVEL cells
+(the "USD 58–127/ha" range held a Colombia *saving*) · non-income scope rows ignoring the income target (Costa-Rica-only
+`tree_perennial` row `in_context`) · one unit per source per cell (Rwanda cost arm and meta-analysis subgroups dropped) ·
+engine `evidence_summary` lines failing the account check (`outcome_raw` numbers; `[lo, hi]` read as one number) ·
+`claim_basis = primary_measurement` on 86 units (default weight, not counted as primary).
+
+**Still open — data / QA calls (human):**
+| item | detail |
+|---|---|
+| `ev_t3_wind_buffer_quandt17_4` | variable `windbreak_protection` on a quote about deep roots and floods/droughts — likely mis-tagged; lineage corrected to Kandji 2006 / Verchot |
+| `ieg20_4` (Ethiopia SLMP stakeholder ratings) | a bundled land-management package result tagged `planted_silvoarable` (9 rows); `claim_basis` should not be primary — stakeholder ratings |
+| `faosen24_6` | the English translation adds a soil-temperature sentence absent from the French quote — fix the translation (native text is fine) |
+| gender units (Kiptot 2011) | 89 %, 23 %, 47 % are shares of households/participants, yet produce "strongly" classes on `gender_inequity`; the variable's direction semantics are unclear — reviewer call on whether these are effects at all |
+| `basche19_1` | "perennials" class pools agroforestry with grasses/forestry — PICOS-weak; already `confidence = low` |
+| `vannoordwijk21_2` cites Kuyah 2019 = `kuyah_2019` | lineage text ("Kuyah et al. 2019") cannot match the source_id, so dedupe misses the echo — a surname+year matcher for `lineage_of` ↔ `source_id` is the next engine step |
+| `taboada20_3` / `seghieri19_9` in frost rows | now excluded unless `hazard_type = frost` is stated — confirm the extractors' hazard tags |
+| flood asset row `watts22` "slightly damaged" vs quote "could significantly increase soil loss" | adjective, no number → weakest class by rule; fine, noted |
+| Philpott 2008 hurricane | damage "stemmed from excessive rainfall, rather than wind" and the outcome is landslides — reviewer: `wind_cyclone` or `flood`? |
+| Uriarte 2004 (via Philpott): complex vegetation *least* hurricane-resistant | the one asset-side unit contradicting "complexity = protection" — M2b Stream A |
+| statement verb vs `magnitude_summary.class` can differ | the statement's class is the weighted modal strength over all quantified units; `magnitude_summary` is one metric/unit group — by design, but the Variable Card should explain it |
+
 ## 1c. Agroforestry effect sweep — 4 extractor lanes over the 41 acquired sources (2026-10-04)
 
 **348 units ingested** through the gated staging path (326 `nbs_effect` / `asset_vulnerability` + 22 `operational_risk`):
@@ -387,6 +413,43 @@ ERA economics codes for the **water-harvesting round**: AN0083, AN0121, DK0008, 
 | `gross_revenue` vs profit | both sit under `economic_return`, told apart only by `raw_name`; a VONT `gross_revenue` id or an XW split keeps them from pooling (the WP itself says profit, not revenue, is the farmer-relevant measure) |
 | WP cost = variable cost | not an establishment cost; `project_cost` units carry the caveat |
 | Dataset-intake adapter | `source_kind = dataset`, snapshot + sha1, `locator_type = table_row`, quote = serialised row, `lineage_of` = row DOI — would let the 3,744 rows (and ERA) enter directly; separate design PR |
+
+## 3. Water harvesting & conservation — synthesis-first round 1 (2026-10-05; 3 agents; 78 candidates queued)
+
+Logs: `methodology/discovery_logs/water_harvesting_{T3T6_synthesis,multilingual_T3T6,grey_mel_T3T6}_2026-10.md`; SRCH runs
+`wh_synthesis_first_2026-10-05_{lit,ml,grey}` (7 rows); ledger `updated_lit` T3/T6 done · `grey` in_progress (IFAD 403, WFP
+FFA series, Niger half-moon IE, NGO portals not worked) · `stock` T6 done (ERA economics seed). WH had **0 effect units** before.
+
+**Coverage after discovery.** T3: drought 19 syntheses; flood only plot/field runoff (no flood-peak synthesis); heat 1
+(Steward 2018 — **Pete first author, COI axis**, conservation-agriculture only); **waterlogging 0** (Vertisol / broad-bed-and-furrow
+is grey). Asset vulnerability well covered for the first time: check-dam filling/failure (Lucas-Borja, Frankl), sand-dam failure
+(Ritchie; MCC audit of 87 dams: erosion 72 %, leakage 33 %, siltation −10–25 % storage, 3/14 pump wells working), reservoir
+sedimentation (Saruchera), terrace collapse (Arnáez, Wei, Roose 2006), pond seepage (Moges), Morocco gabion check dams losing
+function; **bund breaching in extreme rainfall: no synthesis**. T6: production_gap 19 · water_stress 14 · soil_erosion_risk 12 ·
+rural_poverty 11 · water_quality 5 · carbon 4 (no LMIC soil-carbon-under-bunds synthesis) · gender 0 · spate 1 (Roose 2010 only).
+Economics: India watershed treatment cost US$261/ha and US$217/ha (IEG 61065 pp68, 97), zaï ≈300 man-hours/ha (Kaboré & Reij
+p15), Rwanda terrace NPV US$285/ha, BCR 1.38 (ICR4539 p50), Joshi 2005 meta-analysis of 311 case studies BCR 2.14 / IRR 22 %
+(p6, **needs OCR**); programme ERRs 15–36 % have no denominator. Negative/null evidence kept: Heusch 1995 (Niger diversion
+terraces lowered yields, raised erosion), Arabi 2004 (40-yr Algerian ex-post, abandonment), Glendenning (downstream losses),
+Malan 2024 (little causal income evidence), Adimassu (yield lost to bund footprint), Ethiopia SLMP (yields fell in treated AND
+control; the 20 %/5 % dip on p66 is a CBA assumption, not an observation).
+
+| pointer | note |
+|---|---|
+| **Uttarakhand II sediment "17 % reduction"** | 71.6→69.3 t/ha/yr is **3.2 %** — the ICR's label is wrong; encode the numbers, never the label |
+| 31 % of earthen dams silted within five years, 20 % functioned < 1 yr (IEG 61065 p72) | cited from Kurian et al. 2003 — chase the primary; `cited_secondary` |
+| IFAD "+25 % yields" | web snippet, never read in a document — do not use |
+| `ieg_ethiopia_slmp_ppar_2020`, `alemu_spia_ethiopia_2024` | already in SRC under agroforestry → add `water_harvesting_conservation` to `nbs_ids` and run a WH extraction pass over the cached PDFs |
+| OpenEdition chapters (Roose 2010, 2017; IRD) | served as HTML → cache `.html` snapshots with section locators (existing web rule), or chapter PDFs if OpenEdition serves them — decide before extraction |
+| Barraginhas (Brazil) and sand dams | no FAM sub-practice: `runoff_catchment` or `micro_catchment`? — family owner to ratify; sand dams need an id |
+| China (Loess Plateau II) | lower-middle income at evaluation, upper-middle now — transfer class from the study period |
+| Roose 1994 exists in EN and FR editions | extract one edition only |
+| Conservation-agriculture syntheses (Steward 2018, Corbeels 2020, González-Sánchez 2019) | apply ONLY to `water_harvesting__in_situ` (conservation tillage / mulch), never to bunds or pits |
+| Fan, Arnáez, Wei, Lucas-Borja | heavily HIC / Chinese evidence → expect `out_of_context` on LMIC rows |
+| ERA seed: NJ0007 (no DOI, title-only), EO0122 (candidate DOI, may not be WH at all) | human check |
+| Human browser downloads | IFAD IOE Burkina Faso; WFP FFA evaluations; Niger demi-lune impact evaluation; Concern sand-dam brief; MCC-published copy of the sand-dam audit (current copy is an author draft); PeerJ/OUP 403s; ResearchGate-only ×8 (Dile, Rockström, Kato, Glendenning, Arnáez, Adimassu, Bouma, Stavi) + Cárdenas 2022, Arabi 2004, Botoni & Reij 2009 |
+| Bias pattern | independent sources (IEG, IFPRI, SPIA, MCC) most sceptical; Bank completion reports most positive — apply the COI discount and cross-check ICRs against IEG's ICRRs |
+| Reserve lists | ~25 EN (Pittelkow 2015 ×2, Tarolli 2014, Wolka 2026 adoption/dis-adoption, Ryan 2016 sand dams in drought, Pavelic 2012 floodwater harvesting); Mesoamerican terraces (Bocco 2019) |
 
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 

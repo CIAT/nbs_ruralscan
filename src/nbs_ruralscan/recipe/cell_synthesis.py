@@ -545,6 +545,12 @@ def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int]:
     contribs = [c for c in contribs if c.has_direction]
     if not contribs:
         return 0, 0.0, 0
+    if all(c.ns for c in contribs):
+        # every direction-bearing unit is non-significant: the honest class is "no
+        # relationship", not a half-weight direction (a single ns meta-analysis was reading
+        # as 'slightly reduces … very_high'; prose review 2026-10-05). Agreement = 1: they
+        # agree there is no clear effect.
+        return 0, 1.0, 0
     pos = sum(c.weight for c in contribs if c.sign > 0)
     neg = sum(c.weight for c in contribs if c.sign < 0)
     zero = sum(c.weight for c in contribs if c.sign == 0)
@@ -745,6 +751,7 @@ def magnitude_summary(
     contribs: list[_Contrib],
     bands: list[dict[str, Any]] | None = None,
     target_band: str = "",
+    min_sources: int = 2,
 ) -> dict[str, Any] | None:
     """Best same-metric/same-unit pooled magnitude, plus its ORDINAL class.
 
@@ -761,7 +768,7 @@ def magnitude_summary(
             by_key[(str(m), str(u).lower())].append(c)
     best: dict[str, Any] | None = None
     for (metric, unit), group in sorted(by_key.items()):
-        if independent_sources(group) < 2:
+        if independent_sources(group) < min_sources:
             continue
         vals = [
             (float((c.unit.relationship or {})["magnitude"]), c.weight) for c in group
@@ -946,6 +953,9 @@ def _reconcile_group(
     target_ctx: dict[str, Any],
 ) -> dict[str, Any]:
     rank, agreement, modal = _reconcile_rank(contribs)
+    if independent_sources(contribs) < 2:
+        # agreement is undefined with one independent source: it cannot be "high"
+        agreement = 0.0
     strength_stated = any(
         c.has_direction and c.sign == modal and c.magnitude is not None
         for c in contribs
@@ -1458,6 +1468,9 @@ def synthesise_cell(
                     "effect_mechanism": "[prose pending] "
                     + rec_statement(rec, table, target_key, role),
                     "conditionality": "",
+                    # economics are read ORDINALLY ("big or small given the context", Pete
+                    # 2026-10-05): a single source may still give the class; the confidence
+                    # (limited × undefined agreement → very_low) carries the caveat
                     "magnitude_summary": magnitude_summary(
                         cs,
                         target_band=INCOME_BAND.get(
@@ -1466,6 +1479,7 @@ def synthesise_cell(
                             ),
                             "",
                         ),
+                        min_sources=1 if is_econ else 2,
                     ),
                 }
             )

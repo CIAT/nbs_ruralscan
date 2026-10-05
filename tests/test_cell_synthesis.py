@@ -1302,3 +1302,78 @@ def test_relative_and_saving_cost_units_go_to_cost_reduction_not_level_cells():
         saving, "cost_reduction"
     )
     assert not cs._unit_fits_econ_cell(level, "cost_reduction")
+
+
+def test_all_nonsignificant_direction_evidence_is_no_relationship():
+    ns1 = _u(
+        "a",
+        "s1",
+        direction="negative",
+        strength="strong",
+        ctx={"income_group": "low"},
+        rel={
+            "metric": "pct_change",
+            "magnitude": 40,
+            "unit": "percent",
+            "significance": "ns",
+        },
+    )
+    ns2 = _u(
+        "b",
+        "s2",
+        direction="negative",
+        strength="moderate",
+        ctx={"income_group": "low"},
+        rel={
+            "metric": "pct_change",
+            "magnitude": 20,
+            "unit": "percent",
+            "significance": "ns",
+        },
+    )
+    rows, _ = _t6([ns1, ns2])
+    assert rows[0]["effect_direction"] == "no_relationship"
+    sig = _u(
+        "c",
+        "s3",
+        direction="negative",
+        strength="moderate",
+        ctx={"income_group": "low"},
+        rel={
+            "metric": "pct_change",
+            "magnitude": 25,
+            "unit": "percent",
+            "significance": "sig",
+        },
+    )
+    rows, _ = _t6([ns1, ns2, sig])
+    assert rows[0]["effect_direction"] != "no_relationship"
+
+
+def test_single_source_cannot_have_high_agreement_but_econ_gets_a_class():
+    one = _u(
+        "c",
+        "crs",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["GHA"], "income_group": "lower_middle"},
+        rel={"metric": "absolute", "magnitude": 58, "unit": "usd_per_ha"},
+    )
+    rows, _ = _t6([one], key="establishment_cost")
+    r = rows[0]
+    assert r["agreement_level"] == "low"
+    ms = r["magnitude_summary"]
+    assert ms is not None and ms["n"] == 1 and ms["class"] == "slight"
+    assert "Cost class: small" in r["justification"]["statement"]
+    # a priority cell still needs two sources for a magnitude summary
+    prio = _u(
+        "p",
+        "s1",
+        direction="negative",
+        strength="strong",
+        ctx={"income_group": "low"},
+        rel={"metric": "pct_change", "magnitude": 40, "unit": "percent"},
+    )
+    rows, _ = _t6([prio])
+    assert rows[0]["magnitude_summary"] is None
