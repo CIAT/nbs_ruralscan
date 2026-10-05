@@ -1167,6 +1167,18 @@ def synthesise_cell(
                     (u.evidence_id, f"hazard_type={hz} ≠ cell {target_key}")
                 )
                 continue
+        if (
+            table == "T6"
+            and target_key in _ECON_KEYS
+            and not _unit_fits_econ_cell(u, target_key)
+        ):
+            rep.dropped.append(
+                (
+                    u.evidence_id,
+                    f"unit {(u.relationship or {}).get('unit')} does not fit the {target_key} denominator",
+                )
+            )
+            continue
         for x in hits:
             routed.append((u, x))
     if not routed:
@@ -1341,6 +1353,50 @@ def synthesise_cell(
         f"{len(rows) - 1} scope row(s); transfer {g['applicability']['transfer_class']}"
     )
     return rows, rep
+
+
+# Economic T6 cells are DENOMINATOR-SPECIFIC. A unit may reach a cost cell only if its
+# `relationship.unit` matches the cell's denominator (or is a relative measure, which
+# carries direction but never a value). Without this, XW routed every `project_cost`
+# unit everywhere: a USD/tCO2e figure ended up as the magnitude of the per-hectare
+# establishment-cost cell (caught 2026-10-05).
+_ECON_UNITS: dict[str, set[str]] = {
+    "establishment_cost": {
+        "usd_per_ha",
+        "usd_per_household",
+        "usd_per_farmer",
+        "usd_per_beneficiary",
+    },
+    "recurrent_cost": {"usd_per_ha_yr", "usd_per_household_yr", "usd_per_farmer_yr"},
+    "cost_per_hectare_restored": {"usd_per_ha"},
+    "cost_per_beneficiary": {
+        "usd_per_beneficiary",
+        "usd_per_household",
+        "usd_per_household_yr",
+    },
+    "cost_per_farmer_reached": {"usd_per_farmer", "usd_per_farmer_yr"},
+    "cost_per_tco2e_avoided": {"usd_per_tco2e"},
+    "income_potential": {
+        "usd_per_ha_yr",
+        "usd_per_household_yr",
+        "usd_per_farmer_yr",
+        "usd_per_ha",
+    },
+    "carbon_revenue": {"usd_per_ha_yr", "usd_per_tco2e"},
+}
+#: relative metrics carry no denominator; they may vote direction in a cost cell but
+#: never set a value, so they pass the unit filter and fail the value gates by construction
+_RELATIVE_METRICS = {"ln_response_ratio", "pct_change", "smd_hedges_g", "narrative"}
+
+
+def _unit_fits_econ_cell(unit: EvidenceUnit, target_key: str) -> bool:
+    allowed = _ECON_UNITS.get(target_key)
+    if allowed is None:
+        return True  # unconstrained cell (cost_reduction, market_access, subsidy_dependency)
+    rel = unit.relationship or {}
+    if str(rel.get("metric") or "") in _RELATIVE_METRICS:
+        return True
+    return str(rel.get("unit") or "").strip().lower() in allowed
 
 
 # T6 keys that are economic indicators (schema enum) vs T5-like priority ids

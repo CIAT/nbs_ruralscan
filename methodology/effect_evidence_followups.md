@@ -334,6 +334,60 @@ documents they are attributed to.
 | **A finding that cuts against the grain** | `ev_wind_cyclone_hazard_philpott08_8` (Uriarte 2004): more structurally complex vegetation was *least* resistant to hurricane damage — the only unit contradicting "complexity = protection" on the asset side, sitting opposite 10 units saying complexity lowers landslide risk. Relevant to M2b Stream A |
 | **Grey positive-bias check** | the most independent sources (Regreening endline, SPIA Ethiopia, IEG) are null or modest; implementer briefs (World Vision) are the most positive. ~20 % of lane D is null or negative and deliberately kept |
 
+## 1d. Economics — resolving the empty T6 cost cells (Pete "agree go", 2026-10-05)
+
+**Source found:** Pete's OneDrive `1_Projects/Archived/ERA Worldbank Economics` = **Steward, Joshi, Kacha, Ombewa, Mumo,
+Muller, Youngberg, Magnan & Rosenstock (2023), *Economic benefits and costs of NbS in LMICs*, Alliance working paper**
+(198 studies, ~9,700 economic observations, 12 agricultural NbS) + its meta-dataset (`nbs_data_p3.csv`, 3,744 rows, each
+with the primary's DOI and an in-paper table locator; ERA-coded rows resolve via `ERAg::ERA_Bibliography`, column `ERACODE`).
+
+**Three layers applied**
+1. **Working paper registered** as `steward_2023_nbs_economics_wp` under the new **.docx rule** (master docx + a once-rendered
+   LibreOffice PDF as the artefact of record; `methodology/search_protocol.md` §Word documents). 4 pooled agroforestry units
+   from Table 3 (p14), all `ln_response_ratio`, `design = meta_analysis`, all **ns**: gross revenue 0.223 (n=9), cost −0.014
+   (n=10), profit 0.164 (n=11), BCR 0.17 (n=8). Internal authorship → tier `medium` (independence discount).
+2. **Gate semantics**: a meta-analysis unit now counts its pooled `n` as independent sources (`independent_sources()`), so a
+   single synthesis source can clear the ≥2 gate on `magnitude_summary` / `economic_value_range` and lift `evidence_level`.
+3. **Meta-dataset as a seed list** (datasets stay PAUSED — no adapter yet): 14 agroforestry economics primaries queued
+   (`*_econ`, tables T6, with the dataset's **VALUE LOCATIONS** in the note so the extractor knows which table to read) — 4 from
+   `nbs_data_p3.csv` (Bado 2021 Niger · Pérez-Neira 2016 Ecuador · Adhikary 2022 India · Li 2022 China) + 10 ERA codes
+   (Bucagu 2013 · Fadl 2013 · Midega 2014 · Aiyelaagbe 2001 · Kormawa 1999 · Maliki 2012 · Onduru 2008 · Reyes 2005 · Snapp 2010 ·
+   Tonye 1995). 13/14 DOIs round-trip (Reyes 2005 blanked → title-only). **All 14 are Elsevier/Springer/CUP/SAGE with no
+   Unpaywall copy → `pending` for Namita's required web-search OA recovery; NOT labelled paywalled.** Three carry a PICOS
+   `SCREEN` flag (Midega legume intercrops, Onduru INM, Snapp PNAS) — emit only if a woody component is explicit.
+
+**For Pete as lead author — the WP's prose disagrees with its own Table 3** (extractor report, verify before any re-release):
+agroforestry n = "12" in prose vs 8–11 per outcome in Table 3 and 9 studies / 190 obs / 6 countries in Table S1; total
+studies 198 (p8) vs 181 (Summary p3); observations 9,705 vs 7,116 (Table S1); countries 30 vs 34; "ten" NbS (p6) vs "twelve"
+(p8) vs 11 listed in Table 2; several prose log-RRs are typos against the table (all-NbS profit "17.5" for 0.176, biochar
+profit "16.2", rotation cost "24.4", reduced-tillage cost missing its sign; rotation profit 0.22 vs 0.429; reduced-erosion
+profit 0.18 vs 0.207); organic-fertiliser BCR called significant (table p = 0.545). Units were taken from the table.
+
+**Pointers — pooled economics for the other 11 NbS** (Table 3, pp14–15; log-RR, n, p) — a cross-NbS economics layer once
+their practices map to our T0 (the "reduced erosion" pool's search string names terraces / contour bunds / zaï / water
+harvesting but the results text does not, so no `water_harvesting_conservation` units were emitted):
+| NbS | gross revenue | cost | profit | BCR |
+|---|---|---|---|---|
+| All NbS | 0.162 (137, <0.001) | 0.062 (156, 0.033) | 0.176 (180, <0.001) | 0.019 (137, ns) |
+| Reduced erosion | 0.453 (7, 0.143) | 0.183 (7, 0.165) | 0.207 (10, 0.049) | 0.158 (7, 0.241) |
+| Residue/mulch | 0.185 (41, 0.028) | −0.017 (51, ns) | 0.222 (64, 0.01) | 0.028 (39, ns) |
+| Reduced tillage | 0.03 (49, 0.204) | −0.104 (62, <0.001) | n/c | 0.076 (49, 0.025) |
+| Intercropping · Rotation · Cover crops · Organic fert. · Biochar · IPM · Reduced fert./irrig. | see report | | | |
+ERA economics codes for the **water-harvesting round**: AN0083, AN0121, DK0008, EO0122, HK0259, JS0241, NJ0007, NN0102, NN0259, NN0305 (+1).
+
+**Two defects the re-synthesis exposed and fixed (same PR):**
+- The IPCC AR6 WGIII / Roe 2021 **"USD 100/tCO₂e" is a mitigation-cost screening threshold** (potential available at or below that carbon price), not a measured cost — lane B had said so in the unit note — yet it became the *magnitude* of the per-hectare establishment-cost cell. Both units soft-dropped (`unusable_value`, restorable if a `cost_per_tco2e_avoided` cell wants an upper bound).
+- **Economic cells are denominator-specific.** XW routed every `project_cost` unit to every cost cell by variable alone, so a per-tonne or per-beneficiary figure could set a per-hectare value. The engine now admits a unit to a cost cell only if its `unit` matches the cell's denominator (`_ECON_UNITS`); relative metrics (log-RR, % change) pass but can never set a value. With that guard in place `project_cost` is routed to `cost_per_beneficiary`, `cost_per_tco2e_avoided` and `recurrent_cost` too. Result: `cost_per_hectare_restored` now reads **USD 58–127/ha (LMIC, 2 independent sources: CRS Ghana FMNR · Colombia CMSCR)**; `cost_per_beneficiary` USD 66–201/household (CRS, one source across two families — summary only).
+
+**Still open**
+| item | detail |
+|---|---|
+| OA recovery of the 14 primaries | Namita: ResearchGate / repositories / author copies; then extract the dataset-named tables |
+| Currency / price-year normalisation | dataset holds NGN, XOF, SDG, MWK, ZAR, ETB… and mixed years; the T6 gate pools only same-unit rows — a USD/ha + price-year rule is needed before local-currency rows can meet (decision 4 said no inflation adjustment; revisit) |
+| `gross_revenue` vs profit | both sit under `economic_return`, told apart only by `raw_name`; a VONT `gross_revenue` id or an XW split keeps them from pooling (the WP itself says profit, not revenue, is the farmer-relevant measure) |
+| WP cost = variable cost | not an establishment cost; `project_cost` units carry the caveat |
+| Dataset-intake adapter | `source_kind = dataset`, snapshot + sha1, `locator_type = table_row`, quote = serialised row, `lineage_of` = row DOI — would let the 3,744 rows (and ERA) enter directly; separate design PR |
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |

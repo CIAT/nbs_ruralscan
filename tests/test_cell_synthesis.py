@@ -1019,3 +1019,47 @@ def test_a_meta_analysis_counts_its_pooled_studies_as_independent_sources():
     assert not any("only 1 independent" in g for _, g in rep.excluded_economics)
     # evidence_level sees 12, not 1 → no longer "limited"
     assert rows[0]["evidence_level"] != "limited"
+
+
+def test_a_per_tonne_cost_never_reaches_a_per_hectare_cost_cell():
+    per_t = _u(
+        "t",
+        "s1",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["KEN"], "income_group": "lower_middle"},
+        rel={"metric": "absolute", "magnitude": 100, "unit": "usd_per_tco2e"},
+    )
+    per_ha = _u(
+        "h",
+        "s2",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["ETH"], "income_group": "low"},
+        rel={"metric": "absolute", "magnitude": 400, "unit": "usd_per_ha"},
+    )
+    rel_cost = _u(
+        "r",
+        "s3",
+        "project_cost",
+        "negative",
+        "slight",
+        ctx={"income_group": "lic_lmic"},
+        rel={
+            "metric": "ln_response_ratio",
+            "magnitude": -0.014,
+            "unit": "ln_response_ratio",
+            "design": "meta_analysis",
+            "n": 10,
+        },
+    )
+    rows, rep = _t6([per_t, per_ha, rel_cost], key="establishment_cost")
+    assert "t" not in rep.used
+    assert any(eid == "t" for eid, _ in rep.dropped)
+    assert (
+        "h" in rep.used and "r" in rep.used
+    )  # the relative measure passes, carries no value
+    ms = rows[0]["magnitude_summary"]
+    assert ms is None or ms["unit"] != "usd_per_tco2e"
