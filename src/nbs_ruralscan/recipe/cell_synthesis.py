@@ -224,8 +224,13 @@ def classify_magnitude(
     bands: list[dict[str, Any]],
     source_scale_value: str | None = None,
     unit: str | None = None,
+    income_band: str | None = None,
 ) -> str:
     """Return the strength_class a magnitude falls in per the BANDS register.
+
+    ``income_band`` (``lic_lmic`` · ``upper_middle`` · ``high``) selects context-relative
+    rows: an absolute cost is "big or small" only relative to where it is spent (Pete
+    2026-10-05). Rows pinning an ``income_band`` are tried before band-agnostic rows.
 
     ``abs_min`` inclusive, ``abs_max`` exclusive, on |magnitude - centre|. ``centre``
     defaults to 0; a RATIO metric sets ``centre = 1`` (a response ratio of 1.0 is "no
@@ -240,19 +245,27 @@ def classify_magnitude(
     ``unspecified``.
     """
     unit_s = (unit or "").strip().lower()
+    band_s = (income_band or "").strip().lower()
 
-    def _rows(unit_specific: bool) -> list[dict[str, Any]]:
+    def _rows(unit_specific: bool, band_specific: bool) -> list[dict[str, Any]]:
         out = []
         for b in bands:
             bu = (b.get("unit") or "").strip().lower()
-            if bool(bu) is not unit_specific:
+            bb = (b.get("income_band") or "").strip().lower()
+            if bool(bu) is not unit_specific or (unit_specific and bu != unit_s):
                 continue
-            if unit_specific and bu != unit_s:
+            if bool(bb) is not band_specific or (band_specific and bb != band_s):
                 continue
             out.append(b)
         return out
 
-    for pool in ((_rows(True) if unit_s else []), _rows(False)):
+    pools = []
+    if unit_s and band_s:
+        pools.append(_rows(True, True))
+    if unit_s:
+        pools.append(_rows(True, False))
+    pools.append(_rows(False, False))
+    for pool in pools:
         for b in pool:
             if (b.get("metric") or "") != metric:
                 continue
@@ -691,7 +704,30 @@ def recompute_transfer_class(
 # ── gated numbers (method §7.6–§7.7) ──────────────────────────────────────────────────
 
 
-def magnitude_summary(contribs: list[_Contrib]) -> dict[str, Any] | None:
+_DEFAULT_BANDS_PATH = (
+    Path(__file__).resolve().parents[3]
+    / "schema"
+    / "registers"
+    / "BANDS_magnitude_bands.csv"
+)
+
+
+def _default_bands() -> list[dict[str, Any]]:
+    return load_bands(_DEFAULT_BANDS_PATH) if _DEFAULT_BANDS_PATH.exists() else []
+
+
+def magnitude_summary(
+    contribs: list[_Contrib],
+    bands: list[dict[str, Any]] | None = None,
+    target_band: str = "",
+) -> dict[str, Any] | None:
+    """Best same-metric/same-unit pooled magnitude, plus its ORDINAL class.
+
+    ``class`` is the BANDS class of the weighted median, taken relative to the row's
+    income band for absolute costs — the scoping answer "big or small given the context"
+    (Pete 2026-10-05). Numbers stay as transparency; the class is what consumers read.
+    """
+    bands = bands if bands is not None else _default_bands()
     by_key: dict[tuple[str, str], list[_Contrib]] = defaultdict(list)
     for c in contribs:
         rel = c.unit.relationship or {}
@@ -714,6 +750,10 @@ def magnitude_summary(contribs: list[_Contrib]) -> dict[str, Any] | None:
             "high": max(v for v, _ in vals),
             "n": independent_sources(group),
             "income_groups": _count_by(group, "income_group"),
+            "class": classify_magnitude(
+                metric, med, bands, unit=unit, income_band=target_band
+            ),
+            "class_context": target_band or "any",
         }
         if best is None or int(cand["n"]) > int(best["n"]):
             best = cand
@@ -1285,10 +1325,28 @@ def synthesise_cell(
                     "effect_mechanism": "[prose pending] "
                     + rec_statement(rec, table, target_key, role),
                     "conditionality": "",
-                    "magnitude_summary": magnitude_summary(cs),
+                    "magnitude_summary": magnitude_summary(
+                        cs,
+                        target_band=INCOME_BAND.get(
+                            str(
+                                rec["applicability"]["target"].get("income_group") or ""
+                            ),
+                            "",
+                        ),
+                    ),
                 }
             )
             if is_econ:
+                ms = r.get("magnitude_summary") or {}
+                if ms.get("class") and ms["class"] != "unspecified":
+                    size = {
+                        "slight": "small",
+                        "moderate": "moderate",
+                        "strong": "large",
+                    }[ms["class"]]
+                    r["justification"]["statement"] += (
+                        f" Cost class: {size} ({ms['unit']}, {ms['class_context']} context)."
+                    )
                 r["economic_indicator_type"] = target_key
                 r["economic_value_range"] = economic_value_range(
                     cs, rec["applicability"]["target"], rep

@@ -1063,3 +1063,46 @@ def test_a_per_tonne_cost_never_reaches_a_per_hectare_cost_cell():
     )  # the relative measure passes, carries no value
     ms = rows[0]["magnitude_summary"]
     assert ms is None or ms["unit"] != "usd_per_tco2e"
+
+
+def test_absolute_costs_get_an_ordinal_class_relative_to_income_band():
+    bands = cs.load_bands("schema/registers/BANDS_magnitude_bands.csv")
+    f = cs.classify_magnitude
+    assert (
+        f("absolute", 300, bands, unit="usd_per_ha", income_band="lic_lmic")
+        == "moderate"
+    )
+    assert f("absolute", 300, bands, unit="usd_per_ha", income_band="high") == "slight"
+    assert (
+        f("absolute", 1387, bands, unit="usd_per_ha", income_band="lic_lmic")
+        == "strong"
+    )
+    assert (
+        f("absolute", 58, bands, unit="usd_per_ha", income_band="lic_lmic") == "slight"
+    )
+    assert (
+        f("absolute", 45, bands, unit="t_c_per_ha", income_band="lic_lmic")
+        == "unspecified"
+    )
+    a = _u(
+        "a",
+        "s1",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["GHA"], "income_group": "lower_middle"},
+        rel={"metric": "absolute", "magnitude": 58, "unit": "usd_per_ha"},
+    )
+    b = _u(
+        "b",
+        "s2",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["COL"], "income_group": "upper_middle"},
+        rel={"metric": "absolute", "magnitude": 127, "unit": "usd_per_ha"},
+    )
+    rows, _ = _t6([a, b], key="establishment_cost")
+    ms = rows[0]["magnitude_summary"]
+    assert ms["class"] in {"slight", "moderate"} and ms["class_context"] == "lic_lmic"
+    assert "Cost class:" in rows[0]["justification"]["statement"]

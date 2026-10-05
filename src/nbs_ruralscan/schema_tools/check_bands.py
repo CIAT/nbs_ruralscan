@@ -62,8 +62,16 @@ def check_unit(row: dict, bands: list[dict]) -> list[dict]:
         and metric != "ordinal_rating"
         and isinstance(mag, (int, float))
     ):
+        ctx = _obj(row.get("context"))
+        band = {
+            "low": "lic_lmic",
+            "lower_middle": "lic_lmic",
+            "lic_lmic": "lic_lmic",
+            "upper_middle": "upper_middle",
+            "high": "high",
+        }.get(str(ctx.get("income_group") or ""), "")
         expect = classify_magnitude(
-            metric, float(mag), bands, unit=str(rel.get("unit") or "")
+            metric, float(mag), bands, unit=str(rel.get("unit") or ""), income_band=band
         )
         if expect != "unspecified" and expect != cls:
             flags.append(
