@@ -467,6 +467,43 @@ control; the 20 %/5 % dip on p66 is a CBA assumption, not an observation).
 | Bias pattern | independent sources (IEG, IFPRI, SPIA, MCC) most sceptical; Bank completion reports most positive — apply the COI discount and cross-check ICRs against IEG's ICRRs |
 | Reserve lists | ~25 EN (Pittelkow 2015 ×2, Tarolli 2014, Wolka 2026 adoption/dis-adoption, Ryan 2016 sand dams in drought, Pavelic 2012 floodwater harvesting); Mesoamerican terraces (Bocco 2019) |
 
+## 1e. Water harvesting — round-1 extraction outcome (2026-10-05) and decisions for Pete
+
+Five opus lanes over 37 acquired sources (A: 10 EN syntheses · B1: 7 IEG/IFPRI/ESSP/ILSSI evaluations · B2: 7 WB ICRs ·
+C: 7 ES/FR · D: 6 PT). Ingested through the gated staging path: **295 effect/asset units + 80 `operational_risk`**
+(run `wh_effect_sweep_2026-10`; SRC rows promoted by `scripts/promote-queue-to-src.py`). First generated WH T3/T6:
+`schema/recipes/water_harvesting_conservation/T3T6_BENCHMARK.md`. New: FAM `water_harvesting__cross_family`; XW routes
+`agricultural_production_value→production_gap` (proxy), `water_access_deficit→water_stress` (direct) and `→T3 drought`
+(component) — all `pete (pending)`.
+
+**Decisions needed**
+
+| item | detail | options |
+|---|---|---|
+| **Crop-specific yields routed out of practice cells** | Lane A tagged single-crop results `crop_specific` + `taxon` (Zougmoré 4, Kaboré 5, Malan 1) as the lock requires; the drought roll-up is therefore `low` (direction-only pool) although the units show zaï 300–400 kg/ha vs 0 (1990 drought) and stone bunds 2–3× in dry years | add `allow_crop_scope` for WH families (yield on the host crop IS the practice effect; WH does not define a crop system) · or keep routed out and accept the `low` wall |
+| **Hazard enum has no sedimentation / intense-rain / landslide value** | 16 `asset_vulnerability` units (A 13 · B1 3) describe siltation, structural erosion, leakage, pump-well breakage, gabion infill, storm damage with no named hazard; 4 lane-C units mapped torrential rain / mass movement to `flood` and flagged. Parked verbatim in `schema/registers/_deferred/wh_asset_pending_2026-10/` | add `sedimentation` (+ `landslide`) to the T3 hazard enum · or a hazard-less `asset_condition` role · or keep `flood` for intense-rain breaching |
+| **FAM sub-practice gaps** | sand dams, small communal reservoirs/tanks, subsurface dams, barraginhas (none evidenced), diversion banquettes (never form terraces — lane C) | ids under `runoff_catchment` (sand/subsurface dams, tanks); a `diversion_structures` sub-practice or keep under `terracing`; infiltration trenches `in_situ` vs `micro_catchment` |
+| **VONT gaps (not emitted)** | downstream flow reduction (4 sources — the negative externality of upstream harvesting), evaporation loss, microbial / salinity water quality, fish production, asset condition, community participation, maintenance burden, surface-water storage area; `ndvi` (1 unit) has no XW route | add ids before round 2 |
+| **Economics without a standard denominator** | per structure, per m³, EUR/acre, EUR/yr, CFA/ha, FRF/ha (Heusch "F 3000/ha" currency unclear), INR/ha (`kar20_5` excluded) | extend `_ECON_UNITS` with `usd_per_structure`, `usd_per_m3`, `labour_days_per_ha`; add currency-year to notes only (ordinal, no normalisation) |
+| **Income banded on a cost band** | Venot USD 350/household/yr classed `strong` via the cost band (no income band exists); `usd_npv_per_ha` (Rwanda) is a new unit with no band | add income / NPV bands or leave unbanded |
+| **`design` enum** | contract has no `monitoring` design → ICR results-framework values tagged `observational` with a note | add `monitoring` at the next contract bump |
+| **Kassie bunds-lower-yields finding** | Schmidt cites it as Kassie et al. 2008, Abate as 2009 — must be resolved before lineage dedupe | check the primary |
+
+**Pointers (verify before use — a lane's "number is in document X" is a pointer, never provenance)**
+
+| pointer | note |
+|---|---|
+| Joshi 2005 (IWMI RR8 meta-analysis, 311 studies) | body text font-ciphered → `needs_ocr`; only the summary BCR 2.14 / IRR 22 % quotable |
+| Venot 2012 tables ciphered; per-ha / per-m³ costs only in figures | queue-note cost figures NOT verified |
+| Page-break quotes skipped | Zougmoré 145 000–180 000 FCFA/ha/yr; Castro p17 sentence starts mid-page; four lane-A sentences |
+| Tables needing screengrabs | Zougmoré T1–5, Kaboré T1–3, Frankl T3, Saruchera T9–11, Neufeld T8–9, Rwanda farm-model tables p51–52, Yemen T3.3 p46 (garbled text layer) |
+| Primaries to chase | DIME Rwanda LWH terracing IE; IFPRI 2014 PSNP public-works IE; TERI 2019 Karnataka impact study; Kurian 2003 (31 % earthen dams silted ≤ 5 yr); full ILSSI assessment behind the Arega 2024 brief (5 pp, no numbers) |
+| PICOS refusals (recorded in lane reports, not emitted) | Sujalam Sufalam (canal water, not WH); IWDP wheat/maize (seeds, no control); Morocco net revenue (irrigation + crop packages); Tunisia governorate statistics; Yemen piped/drip component; Karnataka weather-advisory income; Ethiopia food security (80 % cash transfers) |
+| Water-quality / health pointers (no VONT id) | faecal coliforms in 70–100 % of cistern samples; no significant diarrhoea difference (quasi-experimental); hospitalisations ns (lane D) |
+| Uttarakhand runoff contradiction | p says most watersheds show less runoff AND overall surface runoff +1.5 % → kept as null/negative |
+| Casagrande 2022 treatment bundles cistern + cash grant + training | kept as full relationship with the bundle in the note — downgrade candidate |
+| ES/FR costs in FRF / CFA (Roose, Heusch) | not encoded (currency unclear) |
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |
