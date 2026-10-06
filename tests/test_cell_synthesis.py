@@ -1684,3 +1684,10 @@ def test_direct_units_set_strength_over_components():
     )
     assert rows[0]["mitigation_potential"] == "low"  # the direct unit says slight
     assert rows[0]["justification"].get("strength_from") == "direct" or True
+
+
+def test_spaced_thousands_keep_their_decimal_part():
+    from nbs_ruralscan.schema_tools.check_numbers import _nums
+
+    got = _nums("a cost of US$3 945.60/ha and 1 156.52")
+    assert {"3945.60", "3945.6", "1156.52"} <= got
