@@ -532,8 +532,33 @@ def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int]:
     return max(-3, min(3, rank)), agreement, modal
 
 
+def independent_sources(items: list[Any]) -> int:
+    """Independent evidence count behind a set of units or contributions.
+
+    A primary study counts 1 per distinct ``source_id``. A **meta-analysis unit** pools
+    ``n`` independent studies, so it counts ``n`` (the largest ``n`` any of that source's
+    units states) when ``relationship.design == "meta_analysis"`` and ``n >= 2``. Without
+    this, a pooled estimate over 12 studies counted as one source and could never satisfy
+    the "≥ 2 independent sources" gates on `magnitude_summary` / `economic_value_range`
+    (method §7.7; agreed with Pete 2026-10-05). Lineage dedupe has already run upstream,
+    so re-cited primaries are not double-counted here.
+    """
+    per_source: dict[str, int] = {}
+    for it in items:
+        u = getattr(it, "unit", it)
+        rel = u.relationship or {}
+        n = rel.get("n")
+        k = 1
+        if str(rel.get("design") or "") == "meta_analysis" and isinstance(
+            n, (int, float)
+        ):
+            k = max(1, int(n)) if n >= 2 else 1
+        per_source[u.source_id] = max(per_source.get(u.source_id, 0), k)
+    return sum(per_source.values())
+
+
 def evidence_level(units: list[EvidenceUnit], tiers: dict[str, str]) -> str:
-    n = len({u.source_id for u in units})
+    n = independent_sources(units)
     bases = [u.claim_basis for u in units]
     if n <= 2 or all(b in _LOW_BASIS for b in bases):
         return "limited"
@@ -675,7 +700,7 @@ def magnitude_summary(contribs: list[_Contrib]) -> dict[str, Any] | None:
             by_key[(str(m), str(u).lower())].append(c)
     best: dict[str, Any] | None = None
     for (metric, unit), group in sorted(by_key.items()):
-        if len({c.unit.source_id for c in group}) < 2:
+        if independent_sources(group) < 2:
             continue
         vals = [
             (float((c.unit.relationship or {})["magnitude"]), c.weight) for c in group
@@ -687,7 +712,7 @@ def magnitude_summary(contribs: list[_Contrib]) -> dict[str, Any] | None:
             "median": med,
             "low": min(v for v, _ in vals),
             "high": max(v for v, _ in vals),
-            "n": len({c.unit.source_id for c in group}),
+            "n": independent_sources(group),
             "income_groups": _count_by(group, "income_group"),
         }
         if best is None or int(cand["n"]) > int(best["n"]):
@@ -739,7 +764,7 @@ def economic_value_range(
             continue
         by_unit[unit].append(c)
     for unit, group in sorted(by_unit.items()):
-        if len({c.unit.source_id for c in group}) < 2:
+        if independent_sources(group) < 2:
             for c in group:
                 report.excluded_economics.append(
                     (c.unit.evidence_id, f"only 1 independent source in {unit}")
@@ -1142,6 +1167,18 @@ def synthesise_cell(
                     (u.evidence_id, f"hazard_type={hz} ≠ cell {target_key}")
                 )
                 continue
+        if (
+            table == "T6"
+            and target_key in _ECON_KEYS
+            and not _unit_fits_econ_cell(u, target_key)
+        ):
+            rep.dropped.append(
+                (
+                    u.evidence_id,
+                    f"unit {(u.relationship or {}).get('unit')} does not fit the {target_key} denominator",
+                )
+            )
+            continue
         for x in hits:
             routed.append((u, x))
     if not routed:
@@ -1316,6 +1353,50 @@ def synthesise_cell(
         f"{len(rows) - 1} scope row(s); transfer {g['applicability']['transfer_class']}"
     )
     return rows, rep
+
+
+# Economic T6 cells are DENOMINATOR-SPECIFIC. A unit may reach a cost cell only if its
+# `relationship.unit` matches the cell's denominator (or is a relative measure, which
+# carries direction but never a value). Without this, XW routed every `project_cost`
+# unit everywhere: a USD/tCO2e figure ended up as the magnitude of the per-hectare
+# establishment-cost cell (caught 2026-10-05).
+_ECON_UNITS: dict[str, set[str]] = {
+    "establishment_cost": {
+        "usd_per_ha",
+        "usd_per_household",
+        "usd_per_farmer",
+        "usd_per_beneficiary",
+    },
+    "recurrent_cost": {"usd_per_ha_yr", "usd_per_household_yr", "usd_per_farmer_yr"},
+    "cost_per_hectare_restored": {"usd_per_ha"},
+    "cost_per_beneficiary": {
+        "usd_per_beneficiary",
+        "usd_per_household",
+        "usd_per_household_yr",
+    },
+    "cost_per_farmer_reached": {"usd_per_farmer", "usd_per_farmer_yr"},
+    "cost_per_tco2e_avoided": {"usd_per_tco2e"},
+    "income_potential": {
+        "usd_per_ha_yr",
+        "usd_per_household_yr",
+        "usd_per_farmer_yr",
+        "usd_per_ha",
+    },
+    "carbon_revenue": {"usd_per_ha_yr", "usd_per_tco2e"},
+}
+#: relative metrics carry no denominator; they may vote direction in a cost cell but
+#: never set a value, so they pass the unit filter and fail the value gates by construction
+_RELATIVE_METRICS = {"ln_response_ratio", "pct_change", "smd_hedges_g", "narrative"}
+
+
+def _unit_fits_econ_cell(unit: EvidenceUnit, target_key: str) -> bool:
+    allowed = _ECON_UNITS.get(target_key)
+    if allowed is None:
+        return True  # unconstrained cell (cost_reduction, market_access, subsidy_dependency)
+    rel = unit.relationship or {}
+    if str(rel.get("metric") or "") in _RELATIVE_METRICS:
+        return True
+    return str(rel.get("unit") or "").strip().lower() in allowed
 
 
 # T6 keys that are economic indicators (schema enum) vs T5-like priority ids
