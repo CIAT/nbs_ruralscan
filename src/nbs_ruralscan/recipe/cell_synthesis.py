@@ -1105,6 +1105,13 @@ def _statement(
         where = (
             ", ".join(envelope.get("countries", [])) or "the pooled evidence contexts"
         )
+    tgt_income = str((envelope.get("target") or {}).get("income_group") or "")
+    if tgt_income and envelope.get("transfer_class") != "in_context":
+        pass  # the global row: the target band is implicit
+    elif tgt_income:
+        # an income-group SCOPE row must name its scope, not the AEZ of its units
+        # (WH prose review 2026-10-06: "in semi_arid" on an upper_middle row)
+        where = f"{where} ({tgt_income} income contexts)"
     if role == "asset_vulnerability":
         verb = {
             0: "is not damaged by",
@@ -1205,6 +1212,23 @@ def apply_proxy_cap(
     in the cell lifts the cap. Recorded as `proxy_capped` so the account says why.
     """
     if not contribs:
+        return rec
+    direct = [
+        c for c in contribs if xw_by_unit[c.unit.evidence_id].proximity == "direct"
+    ]
+    modal = int(rec.get("modal_sign") or 0)
+    if any(
+        c.has_direction and c.sign == modal and c.magnitude is not None for c in direct
+    ):
+        # DIRECT measurements set the strength when any exists: a 59 % infiltration gain
+        # (component) must not make a drought cell `very_high` while the drought-year
+        # yield units say otherwise (agroforestry prose review, 2026-10-06). Agreement
+        # and confidence still come from the whole pool.
+        d_rank, _, d_modal = _reconcile_rank(direct)
+        if d_modal == modal and d_rank != rec.get("rank"):
+            rec = dict(rec)
+            rec["rank"] = d_rank
+            rec["strength_from"] = "direct"
         return rec
     if (
         all(xw_by_unit[c.unit.evidence_id].proximity != "direct" for c in contribs)
@@ -1311,6 +1335,7 @@ def traceable_account(
         ),
         "strength_basis": rec.get("strength_basis", "quantified"),
         "proxy_capped": bool(rec.get("proxy_capped", False)),
+        "strength_from": rec.get("strength_from", "pool"),
         "evidence_summary": summary,
         "agreement_note": agreement_note,
         "proxies": proxies,

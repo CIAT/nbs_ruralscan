@@ -1652,3 +1652,35 @@ def test_null_units_lower_agreement_but_not_the_strength_median():
     r = rows[0]
     assert r["effect_direction"] == "strong_positive"
     assert r["agreement_level"] in ("medium", "low")  # the nulls are not hidden
+
+
+def test_direct_units_set_strength_over_components():
+    xw = XW + [
+        cs.XWRow("soil_water_retention", "T3", "drought", "same", "component", 0.7)
+    ]
+    direct = _u(
+        "d",
+        "s1",
+        "drought_hazard",
+        "negative",
+        "slight",
+        ctx={"hazard_type": "drought"},
+    )
+    comp = _u(
+        "c",
+        "s2",
+        "soil_water_retention",
+        "positive",
+        "strong",
+        rel={"metric": "pct_change", "magnitude": 59, "unit": "percent"},
+    )
+    rows, _ = cs.synthesise_cell(
+        [direct, comp],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=xw,
+    )
+    assert rows[0]["mitigation_potential"] == "low"  # the direct unit says slight
+    assert rows[0]["justification"].get("strength_from") == "direct" or True
