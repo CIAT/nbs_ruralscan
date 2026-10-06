@@ -13,7 +13,7 @@ from nbs_ruralscan.recipe.evidence import EvidenceUnit
 
 XW = [
     cs.XWRow("erosion_hazard", "T6", "soil_erosion_risk", "inverted", "direct"),
-    cs.XWRow("project_cost", "T6", "establishment_cost", "same", "direct"),
+    cs.XWRow("project_cost", "T6", "cost_per_hectare_restored", "same", "direct"),
     cs.XWRow("household_income", "T6", "rural_poverty", "same", "proxy"),
     cs.XWRow("drought_hazard", "T3", "drought", "inverted", "direct"),
 ]
@@ -34,6 +34,7 @@ def _u(
     family="riparian_buffer__planted",
     lineage=None,
     scope="practice_technology",
+    etype="literature_relationship",
 ):
     r = {"direction": direction, "strength_class": strength}
     if rel:
@@ -45,7 +46,7 @@ def _u(
         suitability_family_id=family,
         variable=variable,
         use_role=role,
-        evidence_type="literature_relationship",
+        evidence_type=etype,
         claim_basis=basis,
         claim_scope=scope,
         extraction_confidence="high",
@@ -125,13 +126,13 @@ def test_hic_cost_never_enters_lmic_or_global_range_but_lmic_pair_does():
         rel={"metric": "absolute", "magnitude": 450, "unit": "usd_per_ha"},
     )
     # HIC alone → no range, exclusion logged with the HIC gate
-    rows, rep = _t6([swe], key="establishment_cost")
+    rows, rep = _t6([swe], key="cost_per_hectare_restored")
     assert rows[0]["economic_value_range"] is None
     assert any(
         "HIC" in gate for eid, gate in rep.excluded_economics if eid == "ev_swe_cost"
     )
     # HIC + two LIC/LMIC → range from the two African sources only; HIC still excluded
-    rows, rep = _t6([swe, ken, eth], key="establishment_cost")
+    rows, rep = _t6([swe, ken, eth], key="cost_per_hectare_restored")
     rng = rows[0]["economic_value_range"]
     assert rng == {
         "low": 300.0,
@@ -145,7 +146,7 @@ def test_hic_cost_never_enters_lmic_or_global_range_but_lmic_pair_does():
         "HIC figure excluded from LIC/LMIC or global row",
     ) in rep.excluded_economics
     # one LMIC source only → gate 1 fails
-    rows, rep = _t6([swe, ken], key="establishment_cost")
+    rows, rep = _t6([swe, ken], key="cost_per_hectare_restored")
     assert rows[0]["economic_value_range"] is None
     assert any("only 1 independent" in g for _, g in rep.excluded_economics)
 
@@ -191,9 +192,12 @@ def test_lmic_evidence_dominates_and_semi_arid_scope_row_emitted():
     # a temperate_europe scope row exists: its rank (slight) differs from global (strong)
     assert ("aez", "temperate_europe") in scoped
     assert scoped[("aez", "temperate_europe")]["effect_direction"] == "slight_positive"
+    # 2026-10-05: a non-income scope row inherits the GLOBAL income target, so a scope row
+    # built only from HIC evidence is out_of_context even inside its own AEZ — otherwise a
+    # Costa-Rica-only tree_perennial row read as in_context for an LMIC AOI (method §5.3)
     assert (
         scoped[("aez", "temperate_europe")]["applicability"]["transfer_class"]
-        == "in_context"
+        == "out_of_context"
     )
     assert g["effect_direction"] == "strong_positive"
 
@@ -684,7 +688,7 @@ def test_range_only_cost_units_pass_the_magnitude_gate_and_widen_the_range():
         ctx={"country": ["ETH"], "income_group": "low"},
         rel={"metric": "absolute", "magnitude": 450, "unit": "usd_per_ha"},
     )
-    rows, rep = _t6([a, b], key="establishment_cost")
+    rows, rep = _t6([a, b], key="cost_per_hectare_restored")
     rng = rows[0]["economic_value_range"]
     assert rng is not None and (rng["low"], rng["high"]) == (300.0, 500.0)
     assert not any(g == "no numeric magnitude" for _, g in rep.excluded_economics)
@@ -703,7 +707,7 @@ def test_range_only_cost_units_pass_the_magnitude_gate_and_widen_the_range():
             "unit": "usd_per_ha",
         },
     )
-    rows, rep = _t6([a, b, swe], key="establishment_cost")
+    rows, rep = _t6([a, b, swe], key="cost_per_hectare_restored")
     assert (
         "rs",
         "HIC figure excluded from LIC/LMIC or global row",
@@ -796,7 +800,7 @@ def test_economic_rows_carry_no_effect_direction():
         ctx={"country": ["ETH"], "income_group": "low"},
         rel={"metric": "absolute", "magnitude": 450, "unit": "usd_per_ha"},
     )
-    rows, _ = _t6([a, b], key="establishment_cost")
+    rows, _ = _t6([a, b], key="cost_per_hectare_restored")
     assert all(r["variable_type"] == "economic_indicator" for r in rows)
     assert all(r["effect_direction"] == "" for r in rows)
     # a priority-target row still carries a Likert direction
@@ -862,7 +866,7 @@ def test_statement_verbs_read_in_the_target_frame():
     s = cs._statement(
         "T6",
         "nbs",
-        "establishment_cost",
+        "cost_per_hectare_restored",
         0,
         "limited",
         "low",
@@ -981,7 +985,9 @@ def test_t3_cell_rejects_a_unit_that_states_a_different_hazard():
         xw_rows=xw,
     )
     used = set(rep.used)
-    assert "f" in used and "q" in used, "frost + hazard-silent units belong in the cell"
+    # microclimate_buffering routes to TWO hazards, so the hazard-silent unit is now
+    # excluded as well (it would otherwise land in both cells)
+    assert "f" in used and "q" not in used
     assert "h" not in used, "a heat_stress unit must not become frost evidence"
 
 
@@ -1013,7 +1019,7 @@ def test_a_meta_analysis_counts_its_pooled_studies_as_independent_sources():
     )
     assert cs.independent_sources([single]) == 1
     # a meta-analysis alone now clears the ≥ 2 gate; its range is its own value
-    rows, rep = _t6([ma], key="establishment_cost")
+    rows, rep = _t6([ma], key="cost_per_hectare_restored")
     rng = rows[0]["economic_value_range"]
     assert rng is not None and rng["low"] == 420.0 and rng["high"] == 420.0
     assert not any("only 1 independent" in g for _, g in rep.excluded_economics)
@@ -1055,11 +1061,487 @@ def test_a_per_tonne_cost_never_reaches_a_per_hectare_cost_cell():
             "n": 10,
         },
     )
-    rows, rep = _t6([per_t, per_ha, rel_cost], key="establishment_cost")
+    rows, rep = _t6([per_t, per_ha, rel_cost], key="cost_per_hectare_restored")
     assert "t" not in rep.used
     assert any(eid == "t" for eid, _ in rep.dropped)
     assert (
-        "h" in rep.used and "r" in rep.used
-    )  # the relative measure passes, carries no value
+        "h" in rep.used and "r" not in rep.used
+    )  # relative cost → cost_reduction only
     ms = rows[0]["magnitude_summary"]
     assert ms is None or ms["unit"] != "usd_per_tco2e"
+
+
+def test_absolute_costs_get_an_ordinal_class_relative_to_income_band():
+    bands = cs.load_bands("schema/registers/BANDS_magnitude_bands.csv")
+    f = cs.classify_magnitude
+    assert (
+        f("absolute", 300, bands, unit="usd_per_ha", income_band="lic_lmic")
+        == "moderate"
+    )
+    assert f("absolute", 300, bands, unit="usd_per_ha", income_band="high") == "slight"
+    assert (
+        f("absolute", 1387, bands, unit="usd_per_ha", income_band="lic_lmic")
+        == "strong"
+    )
+    assert (
+        f("absolute", 58, bands, unit="usd_per_ha", income_band="lic_lmic") == "slight"
+    )
+    assert (
+        f("absolute", 45, bands, unit="t_c_per_ha", income_band="lic_lmic")
+        == "unspecified"
+    )
+    a = _u(
+        "a",
+        "s1",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["GHA"], "income_group": "lower_middle"},
+        rel={"metric": "absolute", "magnitude": 58, "unit": "usd_per_ha"},
+    )
+    b = _u(
+        "b",
+        "s2",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["COL"], "income_group": "upper_middle"},
+        rel={"metric": "absolute", "magnitude": 127, "unit": "usd_per_ha"},
+    )
+    rows, _ = _t6([a, b], key="cost_per_hectare_restored")
+    ms = rows[0]["magnitude_summary"]
+    assert ms["class"] in {"slight", "moderate"} and ms["class_context"] == "lic_lmic"
+    assert "Cost class:" in rows[0]["justification"]["statement"]
+
+
+def test_unknown_income_group_is_adjacent_not_in_context():
+    assert cs.context_distance({}, {"income_group": "lic_lmic"}) == 1
+    assert (
+        cs.context_distance({"income_group": "low"}, {"income_group": "lic_lmic"}) == 0
+    )
+    assert cs.context_distance({}, {}) == 0
+
+
+def test_range_only_magnitude_is_classed_on_its_midpoint():
+    u = _u(
+        "r",
+        "s",
+        "erosion_hazard",
+        "negative",
+        "unspecified",
+        rel={
+            "metric": "pct_change",
+            "magnitude_low": 35,
+            "magnitude_high": 40,
+            "unit": "percent",
+        },
+    )
+    sign, mag = cs.unit_rank(u, "inverted")
+    assert sign == 1 and mag == 3  # 37.5 % → strong, benefit frame
+
+
+def test_proxy_only_cell_is_capped_at_moderate():
+    xw = [cs.XWRow("soil_water_retention", "T3", "drought", "same", "component", 0.7)]
+    units = [
+        _u(
+            f"p{i}",
+            f"s{i}",
+            "soil_water_retention",
+            "positive",
+            "strong",
+            ctx={"income_group": "low"},
+        )
+        for i in range(6)
+    ]
+    rows, _ = cs.synthesise_cell(
+        units,
+        {f"s{i}": "high" for i in range(6)},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=xw,
+    )
+    assert rows[0]["mitigation_potential"] == "moderate"
+    assert rows[0]["justification"]["proxy_capped"] is True
+
+
+def test_variable_with_several_hazard_routes_needs_a_stated_hazard():
+    xw = [
+        cs.XWRow(
+            "microclimate_buffering", "T3", "heat_stress", "same", "component", 0.7
+        ),
+        cs.XWRow("microclimate_buffering", "T3", "frost", "same", "component", 0.7),
+    ]
+    silent = _u(
+        "q",
+        "s1",
+        "microclimate_buffering",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low"},
+    )
+    stated = _u(
+        "f",
+        "s2",
+        "microclimate_buffering",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low", "hazard_type": "frost"},
+    )
+    _, rep = cs.synthesise_cell(
+        [silent, stated],
+        {"s1": "high", "s2": "high"},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="frost",
+        xw_rows=xw,
+    )
+    assert "f" in rep.used and "q" not in rep.used
+
+
+def test_scope_rows_inherit_the_global_income_target():
+    # a Costa-Rica-only (HIC) tree_perennial scope row must not read as in_context
+    cri = [
+        _u(
+            f"c{i}",
+            f"s{i}",
+            direction="positive",
+            strength="strong",
+            ctx={
+                "country": ["CRI"],
+                "income_group": "high",
+                "farming_system": "tree_perennial",
+            },
+        )
+        for i in range(3)
+    ]
+    rows, _ = _t6(cri)
+    scope = [r for r in rows if r["scope_type"] == "farming_system"]
+    assert scope and all(json_tc(r) == "out_of_context" for r in scope)
+
+
+def json_tc(row):
+    return (row.get("applicability") or {}).get("transfer_class")
+
+
+def test_one_source_with_two_arms_keeps_both_with_split_weight():
+    a = _u(
+        "gha",
+        "crs",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["GHA"], "income_group": "lower_middle"},
+        rel={"metric": "absolute", "magnitude": 58, "unit": "usd_per_ha"},
+        family="riparian_buffer__planted",
+    )
+    b = _u(
+        "rwa",
+        "crs",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["RWA"], "income_group": "low"},
+        rel={"metric": "absolute", "magnitude": 1387, "unit": "usd_per_ha"},
+        family="riparian_buffer__natural_restored",
+    )
+    other = _u(
+        "col",
+        "cmscr",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["COL"], "income_group": "upper_middle"},
+        rel={"metric": "absolute", "magnitude": 127, "unit": "usd_per_ha"},
+    )
+    rows, rep = _t6([a, b, other], key="cost_per_hectare_restored")
+    assert {"gha", "rwa", "col"} <= set(rep.used)
+    ms = rows[0]["magnitude_summary"]
+    assert (
+        ms["high"] == 1387.0 and ms["low"] == 58.0
+    )  # the Rwanda arm is no longer dropped
+    # the Colombia (upper_middle) figure is outside the LIC/LMIC target band: it is
+    # excluded from the pooled magnitude exactly as economic_value_range excludes it
+    assert ms["n"] == 1 and ms["n_excluded_band"] == 1
+
+
+def test_relative_and_saving_cost_units_go_to_cost_reduction_not_level_cells():
+    ratio = _u(
+        "r",
+        "s1",
+        "project_cost",
+        "negative",
+        "slight",
+        ctx={"income_group": "lic_lmic"},
+        rel={
+            "metric": "ln_response_ratio",
+            "magnitude": -0.014,
+            "unit": "ln_response_ratio",
+            "design": "meta_analysis",
+            "n": 10,
+        },
+    )
+    saving = _u(
+        "v",
+        "s2",
+        "project_cost",
+        "negative",
+        "unspecified",
+        ctx={"country": ["COL"], "income_group": "upper_middle"},
+        rel={"metric": "absolute", "magnitude": 127, "unit": "usd_per_ha"},
+    )
+    level = _u(
+        "l",
+        "s3",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["GHA"], "income_group": "lower_middle"},
+        rel={"metric": "absolute", "magnitude": 58, "unit": "usd_per_ha"},
+    )
+    rows, rep = _t6([ratio, saving, level], key="cost_per_hectare_restored")
+    assert set(rep.used) == {"l"}
+    assert cs._unit_fits_econ_cell(ratio, "cost_reduction") and cs._unit_fits_econ_cell(
+        saving, "cost_reduction"
+    )
+    assert not cs._unit_fits_econ_cell(level, "cost_reduction")
+
+
+def test_all_nonsignificant_direction_evidence_is_no_relationship():
+    ns1 = _u(
+        "a",
+        "s1",
+        direction="negative",
+        strength="strong",
+        ctx={"income_group": "low"},
+        rel={
+            "metric": "pct_change",
+            "magnitude": 40,
+            "unit": "percent",
+            "significance": "ns",
+        },
+    )
+    ns2 = _u(
+        "b",
+        "s2",
+        direction="negative",
+        strength="moderate",
+        ctx={"income_group": "low"},
+        rel={
+            "metric": "pct_change",
+            "magnitude": 20,
+            "unit": "percent",
+            "significance": "ns",
+        },
+    )
+    rows, _ = _t6([ns1, ns2])
+    assert rows[0]["effect_direction"] == "no_relationship"
+    sig = _u(
+        "c",
+        "s3",
+        direction="negative",
+        strength="moderate",
+        ctx={"income_group": "low"},
+        rel={
+            "metric": "pct_change",
+            "magnitude": 25,
+            "unit": "percent",
+            "significance": "sig",
+        },
+    )
+    rows, _ = _t6([ns1, ns2, sig])
+    assert rows[0]["effect_direction"] != "no_relationship"
+
+
+def test_single_source_cannot_have_high_agreement_but_econ_gets_a_class():
+    one = _u(
+        "c",
+        "crs",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"country": ["GHA"], "income_group": "lower_middle"},
+        rel={"metric": "absolute", "magnitude": 58, "unit": "usd_per_ha"},
+    )
+    rows, _ = _t6([one], key="cost_per_hectare_restored")
+    r = rows[0]
+    assert r["agreement_level"] == "low"
+    ms = r["magnitude_summary"]
+    assert ms is not None and ms["n"] == 1 and ms["class"] == "slight"
+    assert "Cost class: small" in r["justification"]["statement"]
+    # a priority cell still needs two sources for a magnitude summary
+    prio = _u(
+        "p",
+        "s1",
+        direction="negative",
+        strength="strong",
+        ctx={"income_group": "low"},
+        rel={"metric": "pct_change", "magnitude": 40, "unit": "percent"},
+    )
+    rows, _ = _t6([prio])
+    assert rows[0]["magnitude_summary"] is None
+
+
+# ── WH prose-review fixes (2026-10-05) ────────────────────────────────────────────────
+
+
+def test_magnitude_pool_is_direction_aware():
+    # a −34 % yield loss must not be the median of a positive production row
+    gain1 = _u(
+        "g1",
+        "s1",
+        "erosion_hazard",
+        "negative",
+        "strong",
+        rel={"metric": "pct_change", "magnitude": -60, "unit": "percent"},
+    )
+    gain2 = _u(
+        "g2",
+        "s2",
+        "erosion_hazard",
+        "negative",
+        "moderate",
+        rel={"metric": "pct_change", "magnitude": -40, "unit": "percent"},
+    )
+    loss = _u(
+        "l1",
+        "s3",
+        "erosion_hazard",
+        "positive",
+        "moderate",
+        rel={"metric": "pct_change", "magnitude": 30, "unit": "percent"},
+    )
+    rows, _ = _t6([gain1, gain2, loss])
+    ms = rows[0]["magnitude_summary"]
+    assert ms["n"] == 2 and ms["n_excluded_opposite"] == 1
+    assert ms["low"] == -60.0 and ms["high"] == -40.0
+
+
+def test_unit_aliases_and_blank_pct_unit_pool():
+    a = _u(
+        "a",
+        "s1",
+        "erosion_hazard",
+        "negative",
+        "strong",
+        rel={"metric": "pct_change", "magnitude": -50, "unit": "pct"},
+    )
+    b = _u(
+        "b",
+        "s2",
+        "erosion_hazard",
+        "negative",
+        "strong",
+        rel={"metric": "pct_change", "magnitude": -30},
+    )
+    rows, _ = _t6([a, b])
+    ms = rows[0]["magnitude_summary"]
+    assert ms is not None and ms["unit"] == "percent" and ms["n"] == 2
+
+
+def test_scoping_candidate_votes_at_half_weight():
+    full = _u("f", "s1", "erosion_hazard", "negative", "strong")
+    bundle = _u(
+        "b", "s1", "erosion_hazard", "negative", "strong", etype="scoping_candidate"
+    )
+    assert (
+        cs.unit_weight(bundle, "high", "updated_lit", 0)
+        == cs.unit_weight(full, "high", "updated_lit", 0) * cs.BUNDLED_W
+    )
+
+
+def test_asset_threat_direction_only_statement_does_not_say_slightly():
+    u = _u(
+        "a",
+        "s1",
+        "drought_hazard",
+        "positive",
+        "unspecified",
+        role="asset_vulnerability",
+        ctx={"hazard_type": "drought"},
+    )
+    rows, _ = cs.synthesise_cell(
+        [u],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        role="asset_vulnerability",
+        xw_rows=XW,
+    )
+    st = rows[0]["justification"]["statement"]
+    assert "slightly" not in st and "strength not quantified" in st
+
+
+def test_single_source_agreement_note_says_undefined():
+    u = _u("a", "s1", "erosion_hazard", "negative", "strong")
+    rows, _ = _t6([u])
+    assert rows[0]["justification"]["agreement_note"].startswith(
+        "sign agreement undefined"
+    )
+
+
+def test_farming_system_row_needs_system_specific_evidence():
+    generic = _u(
+        "g",
+        "s1",
+        "drought_hazard",
+        "negative",
+        "strong",
+        ctx={"hazard_type": "drought"},
+    )
+
+    def _cell(units, fs):
+        return cs.synthesise_cell(
+            units,
+            {},
+            table="T3",
+            nbs_id="riparian_buffer",
+            target_key="drought",
+            farming_system=fs,
+            xw_rows=XW,
+        )
+
+    rows, rep = _cell([generic], "pastoral_rangeland")
+    assert rows == [] and any(
+        "no unit states this farming system" in n for n in rep.notes
+    )
+    specific = _u(
+        "p",
+        "s2",
+        "drought_hazard",
+        "negative",
+        "strong",
+        ctx={"hazard_type": "drought", "farming_system": "pastoral_rangeland"},
+    )
+    rows, _ = _cell([generic, specific], "pastoral_rangeland")
+    assert rows and set(rows[0]["evidence_ids"]) == {"g", "p"}
+
+
+def test_establishment_cost_takes_per_structure_not_per_hectare():
+    per_ha = _u(
+        "h",
+        "s1",
+        "project_cost",
+        "positive",
+        "unspecified",
+        rel={"metric": "absolute", "magnitude": 300, "unit": "usd_per_ha"},
+    )
+    per_structure = _u(
+        "s",
+        "s2",
+        "project_cost",
+        "positive",
+        "unspecified",
+        rel={"metric": "absolute", "magnitude": 2500, "unit": "usd_per_structure"},
+    )
+    xw = XW + [cs.XWRow("project_cost", "T6", "establishment_cost", "same", "direct")]
+    rows, rep = cs.synthesise_cell(
+        [per_ha, per_structure],
+        {},
+        table="T6",
+        nbs_id="riparian_buffer",
+        target_key="establishment_cost",
+        xw_rows=xw,
+    )
+    assert rep.used == ["s"] and "h" in {e for e, _ in rep.dropped}
