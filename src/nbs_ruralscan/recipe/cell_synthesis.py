@@ -1433,6 +1433,22 @@ def synthesise_cell(
                     (u.evidence_id, f"hazard_type={hz} ≠ cell {target_key}")
                 )
                 continue
+            if not hz and role != "asset_vulnerability":
+                # a COMPONENT / PROXY route (soil moisture → drought, erosion → flood)
+                # admits only units that STATE the hazard: an infiltration gain in a normal
+                # year is T6 water-stress evidence, not drought mitigation, and landslide
+                # findings filed under erosion were reaching flood cells (FR prose review
+                # 2026-10-06). Direct hazard variables (drought_hazard …) need no statement.
+                direct_hits = [x for x in hits if x.proximity == "direct"]
+                if not direct_hits:
+                    rep.dropped.append(
+                        (
+                            u.evidence_id,
+                            f"hazard unstated; {u.variable} reaches {target_key} only by a component/proxy route",
+                        )
+                    )
+                    continue
+                hits = direct_hits
         if table == "T6" and target_key.endswith("_hazard"):
             hz6 = str((u.context or {}).get("hazard_type") or "")
             if hz6 and hz6 != target_key[: -len("_hazard")]:
@@ -1816,6 +1832,16 @@ def synthesise_cell_with_families(
         frows, frep = synthesise_cell(
             fam_units, tiers, family=fam, emit_scope_rows=False, **kw
         )
+        if frows and set(frows[0].get("evidence_ids") or []) == set(
+            rows[0].get("evidence_ids") or []
+        ):
+            # the family holds EVERY unit of the roll-up (a cross_family-only cell, or
+            # one family in the pool): its row would duplicate the roll-up — not emitted
+            # (FR prose review 2026-10-06)
+            rep.notes.append(
+                f"{fam}: family row identical to the roll-up — not emitted"
+            )
+            continue
         if frows:
             rows += frows
             fam_ranks.append(_rank_of(frows[0]))
