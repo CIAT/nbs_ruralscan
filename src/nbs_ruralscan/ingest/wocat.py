@@ -225,11 +225,13 @@ def render(payload: dict[str, Any], source_id: str) -> str:
                     f"- {key}: copes {_COPE_SCALE.get(str(g[key]), str(g[key]))}"
                 )
         lines.append("")
+    cl = cost_lines(sv)
+    if len(cl) > 1:
+        lines += ["## costs", *cl, ""]
     for key in (
         "onsite_impacts_comments",
         "impacts_offsite_comments",
         "climate_change_comments",
-        "costbenefit_comments",
     ):
         c = _en(sv.get(key))
         if c:
@@ -249,6 +251,136 @@ def render(payload: dict[str, Any], source_id: str) -> str:
                     lines.append(f"- {t}")
             lines.append("")
     return "\n".join(lines).rstrip() + "\n"
+
+
+# ── 2b. costs (QT 4.x) ───────────────────────────────────────────────────────────────
+
+_COSTBENEFIT = {
+    "VERYNEGATIVE": ("very negative", "negative"),
+    "NEGATIVE": ("negative", "negative"),
+    "SLIGHTLYNEGATIVE": ("slightly negative", "negative"),
+    "NEUTRAL": ("neutral", "none"),
+    "SLIGHTLYPOSITIVE": ("slightly positive", "positive"),
+    "POSITIVE": ("positive", "positive"),
+    "VERYPOSITIVE": ("very positive", "positive"),
+}
+_AREA_HA = re.compile(r"(\d+(?:[.,]\d+)?)\s*(ha|hectare)", re.I)
+_COST_LINE = re.compile(
+    r"- (establishment|maintenance)_cost_usd_per_(ha|structure)(_yr)?: ([0-9.]+) "
+)
+_CB_LINE = re.compile(
+    r"- (costbenefit_(?:establishment|maintenance)_(?:short|long)): (.+)$"
+)
+
+
+def _breakdown_total(bd: Any) -> float | None:
+    """Σ cost_per_unit × quantity over the costed items of a QT 4 breakdown (in the sheet's
+    currency as entered). None when nothing is costed."""
+    if not isinstance(bd, dict):
+        return None
+    tot, n = 0.0, 0
+    for grp in bd.values():
+        if not isinstance(grp, list):
+            continue
+        for it in grp:
+            if not isinstance(it, dict):
+                continue
+            c, q = it.get("cost_per_unit"), it.get("quantity")
+            if isinstance(c, (int, float)) and isinstance(q, (int, float)):
+                tot += float(c) * float(q)
+                n += 1
+    return tot if n else None
+
+
+def _item_units_all_ha(bd: Any) -> bool:
+    units: set[str] = set()
+    if not isinstance(bd, dict):
+        return False
+    for grp in bd.values():
+        if isinstance(grp, list):
+            for it in grp:
+                if isinstance(it, dict) and isinstance(
+                    it.get("cost_per_unit"), (int, float)
+                ):
+                    units.add(_en(it.get("units")).lower())
+    return bool(units) and units <= {"ha", "hectare", "hectares"}
+
+
+def cost_basis(sv: dict[str, Any]) -> tuple[str, float, str]:
+    """(denominator, hectares the totals cover, description): `ha`, `structure` (per-unit
+    calculation) or '' when the sheet does not say."""
+    cc = sv.get("cost_calculation") or {}
+    base = str(cc.get("calculation_base") or "")
+    if base == "unit":
+        return (
+            "structure",
+            1.0,
+            f"per unit: {_en(cc.get('unit'))} {_en(cc.get('volume'))}".strip(),
+        )
+    if base == "area":
+        m = _AREA_HA.search(_en(cc.get("size_and_area_unit")))
+        if m:
+            ha = float(m.group(1).replace(",", "."))
+            if ha > 0:
+                return "ha", ha, f"per area: {_en(cc.get('size_and_area_unit'))}"
+        return "", 1.0, "area basis without a parseable hectare size"
+    if _item_units_all_ha(sv.get("establishment_cost_breakdown")):
+        return "ha", 1.0, "per hectare (older sheet: every costed item is per ha)"
+    return "", 1.0, "no calculation basis stated"
+
+
+def usd_rate(sv: dict[str, Any]) -> tuple[float | None, str]:
+    """Factor turning the sheet's currency into USD: 1 for USD; 1/exchange_rate when the sheet
+    states its own rate (the sheet's conversion, not ours); None otherwise."""
+    cu = sv.get("cost_calculation_currency") or {}
+    base = str(cu.get("currency_base") or "")
+    rate = cu.get("exchange_rate")
+    if base == "USD":
+        return 1.0, "USD"
+    if isinstance(rate, (int, float)) and rate > 0:
+        name = _en(cu.get("currency_other")) or base
+        return 1.0 / float(rate), f"{name} at the sheet's stated rate {rate:g} per USD"
+    name = _en(cu.get("currency_other")) or base or "currency not stated"
+    return None, f"{name} with no exchange rate"
+
+
+def cost_lines(sv: dict[str, Any]) -> list[str]:
+    """Deterministic cost transcript lines (QT 4.3 / 4.5 totals + QT 4.7 cost-benefit)."""
+    out: list[str] = []
+    denom, scale, basis = cost_basis(sv)
+    fx, cur = usd_rate(sv)
+    out.append(f"- cost_basis: {basis}; currency: {cur}")
+    for key, label, suffix in (
+        ("establishment_cost_breakdown", "establishment", ""),
+        ("maintenance_cost_breakdown", "maintenance", "_yr"),
+    ):
+        tot = _breakdown_total(sv.get(key))
+        if tot is None or tot <= 0:
+            continue
+        if fx is None or not denom:
+            out.append(
+                f"- {label}_total_as_entered: {tot:.2f} "
+                f"(not placed on a USD-per-{denom or 'unit'} basis)"
+            )
+            continue
+        usd = tot * fx
+        out.append(
+            f"- {label}_cost_usd_per_{denom}{suffix}: {usd / scale:.2f} "
+            f"(total {usd:.2f} USD, as entered {tot:.2f}; {basis})"
+        )
+    for key in (
+        "costbenefit_establishment_short",
+        "costbenefit_establishment_long",
+        "costbenefit_maintenance_short",
+        "costbenefit_maintenance_long",
+    ):
+        v = sv.get(key)
+        if v in _COSTBENEFIT:
+            out.append(f"- {key}: {_COSTBENEFIT[v][0]}")
+    c = _en(sv.get("costbenefit_comments"))
+    if c:
+        out.append(f"- costbenefit_comments: {c}")
+    return out
 
 
 # ── 3. emit (rule-based units) ──────────────────────────────────────────────────────
@@ -436,7 +568,126 @@ def emit_units(
                     dict(base_ctx, hazard_type=hz),
                 )
             )
+    # QT 4 costs → project_cost (ordinal cost cells); QT 4.7 cost-benefit → economic_return
+    band = {
+        "low": "lic_lmic",
+        "lower_middle": "lic_lmic",
+        "upper_middle": "upper_middle",
+        "high": "high",
+    }.get(str(base_ctx.get("income_group") or ""), "")
+    for line in cost_lines(sv):
+        m = _COST_LINE.match(line)
+        if m:
+            label, denom, yr, val = (
+                m.group(1),
+                m.group(2),
+                m.group(3) or "",
+                float(m.group(4)),
+            )
+            unit = f"usd_per_{denom}{yr}"
+            units.append(
+                _mk(
+                    f"ev_project_cost_{source_id}_{label}",
+                    "project_cost",
+                    "nbs_effect",
+                    line,
+                    f"costs/{label}_cost_breakdown",
+                    {
+                        "direction": "positive",
+                        "metric": "absolute",
+                        "magnitude": round(val, 2),
+                        "unit": unit,
+                        "strength_class": classify_magnitude(
+                            "absolute", val, bands, unit=unit, income_band=band
+                        ),
+                        "design": "practitioner_rating",
+                        "significance": "not_reported",
+                        "outcome_raw": f"WOCAT QT 4 {label} cost: {line[2:]}",
+                        "note": (
+                            "sum of the sheet's costed items (cost per unit × quantity), "
+                            "converted with the sheet's own stated exchange rate; no "
+                            "cross-sheet price-year normalisation (ordinal economics, "
+                            "Pete 2026-10-05)"
+                        ),
+                    },
+                    dict(base_ctx),
+                )
+            )
+            continue
+        m = _CB_LINE.match(line)
+        if m:
+            key, label = m.group(1), m.group(2)
+            direction = next(d for lab, d in _COSTBENEFIT.values() if lab == label)
+            parts = key.split("_")
+            units.append(
+                _mk(
+                    f"ev_economic_return_{source_id}_{key}",
+                    "economic_return",
+                    "nbs_effect",
+                    line,
+                    f"costs/{key}",
+                    {
+                        "direction": direction,
+                        "metric": "ordinal_rating",
+                        "source_scale_value": label,
+                        "unit": "wocat_costbenefit",
+                        "strength_class": classify_magnitude(
+                            "ordinal_rating",
+                            None,
+                            bands,
+                            source_scale_value=label,
+                            unit="wocat_costbenefit",
+                        ),
+                        "design": "practitioner_rating",
+                        "significance": "not_reported",
+                        "outcome_raw": (
+                            f"WOCAT QT 4.7 benefits compared with {parts[1]} costs, "
+                            f"{parts[2]}-term returns: {label}"
+                        ),
+                        "note": "compiler rating on the very negative … very positive scale",
+                    },
+                    dict(base_ctx),
+                )
+            )
     return units
+
+
+def _drop_cost_mismatches(
+    sid: str, units: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Keep a QT 4 cost unit only when the adapter's USD total agrees (±2 %) with the total
+    WOCAT's own PDF export prints — the two use the same arithmetic, so a mismatch means the
+    sheet's rate or basis is not what the JSON suggests (one sheet of 66 on 2026-10-06)."""
+    pdf = CORPUS / f"{sid}.pdf"
+    if not pdf.exists():
+        return units
+    try:
+        import fitz  # PyMuPDF
+
+        text = "\n".join(pg.get_text() for pg in fitz.open(pdf))
+    except Exception:  # noqa: BLE001
+        return units
+    keep: list[dict[str, Any]] = []
+    for u in units:
+        if u["variable"] != "project_cost":
+            keep.append(u)
+            continue
+        label = u["evidence_id"].rsplit("_", 1)[-1]
+        m = re.search(
+            rf"Total costs for {label} of the Technology in USD\n([\d\u202f\u00a0 ,.]+)",
+            text,
+        )
+        ours = re.search(r"\(total ([0-9.]+) USD", u["quote"])
+        if m and ours:
+            pdf_tot = float(re.sub(r"[^\d.]", "", m.group(1)) or 0)
+            if pdf_tot and abs(float(ours.group(1)) - pdf_tot) / pdf_tot > 0.02:
+                print(
+                    f"  note {sid}: {label} cost {ours.group(1)} USD ≠ PDF total {pdf_tot} — not emitted",
+                    file=sys.stderr,
+                )
+                continue
+        keep.append(u)
+    return keep
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────────────
@@ -495,6 +746,7 @@ def main(argv: list[str] | None = None) -> int:
             hmap,
             bands,
         )
+        units = _drop_cost_mismatches(sid, units)
         print(f"  {sid}: {len(units)} unit(s), family {family or '(none)'}")
         out += units
     Path(args.out).write_text(

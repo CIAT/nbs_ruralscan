@@ -131,3 +131,14 @@ through FAM, never the CLI argument (PICOS). **QA/QC:** render determinism + val
 unit-tested (`tests/test_wocat_adapter.py`); `emit` asserts every quote is a transcript line; the staging gate and
 `validate_sources` verify section quotes against the `.md`. A re-acquire that changes the transcript changes the
 sha1 in `.meta.json` — re-emit, never hand-edit.
+
+**Costs (QT 4, added 2026-10-06).** The transcript gains a `## costs` section: the sheet's establishment and
+maintenance totals (Σ cost per unit × quantity over the costed items, exactly as WOCAT's own export computes them),
+placed on a USD-per-hectare or USD-per-structure basis from the sheet's stated calculation base (`area` with its
+hectare size, `unit`, or — older sheets — every costed item per ha) and the sheet's **own** exchange rate (never a
+cross-sheet price-year normalisation; ordinal economics, Pete 2026-10-05). Sheets with no basis or no rate print
+`*_total_as_entered` and emit nothing. Units: `project_cost` (`usd_per_ha` · `usd_per_structure` · `usd_per_ha_yr` ·
+`usd_per_structure_yr`) and `economic_return` ordinal units from the QT 4.7 benefits-vs-costs ratings
+(`wocat_costbenefit` bands). The adapter's USD totals are cross-checked against the PDF export's printed
+"Total costs … in USD" at ingest; a mismatch > 2 % is reported and not ingested.
+
