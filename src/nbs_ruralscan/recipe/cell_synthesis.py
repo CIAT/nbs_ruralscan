@@ -113,6 +113,11 @@ T3_HAZARDS = [
     "waterlogging",
     "frost",
 ]
+#: hazards that exist ONLY as T3 asset_threat rows (Pete 2026-10-06): siltation of dams /
+#: tanks and storm damage to structures are threats to the INVESTMENT (M2b Stream A), not
+#: livelihood hazards — no T3 livelihood cell, no XW route, excluded from the 7-hazard
+#: `asset_risk_weight` completeness rule.
+ASSET_ONLY_HAZARDS = ["sedimentation", "extreme_rainfall"]
 ECON_UNITS = {
     "usd_per_ha",
     "usd_per_ha_yr",
@@ -503,6 +508,12 @@ def unit_rank(
     if polarity == "inverted":
         sign = -sign
     cls = str(rel.get("strength_class") or "").lower()
+    if str(rel.get("metric") or "") in ("contrast", "complete_contrast"):
+        # v1.6.2: with/without pairs and all-or-nothing statements are classed by rule,
+        # never by the extractor's adjective (schema_tools.check_bands.contrast_class)
+        from nbs_ruralscan.schema_tools.check_bands import contrast_class
+
+        cls = contrast_class(rel, bands if bands is not None else _default_bands())
     if cls in ("", "unspecified") and rel.get("magnitude") is None:
         lo, hi = rel.get("magnitude_low"), rel.get("magnitude_high")
         nums = [float(x) for x in (lo, hi) if isinstance(x, (int, float))]
@@ -568,18 +579,24 @@ def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int]:
         return 0, 1.0, 0
     modal = 1 if pos >= neg else -1
     agreement = ((pos if modal > 0 else neg) + zero / 2) / total
+    # STRENGTH = the typical magnitude when the effect occurs (modal-sign units with a
+    # stated strength). Null and opposite units are NOT in this median: they already
+    # lower `agreement` (and so confidence), and letting them also vote 0 in the strength
+    # median double-penalised — four null drought units outweighed seven `strong` ones
+    # and floored the WH drought cell at `low` while every quantified positive was
+    # strong (2026-10-06; vote-counting separates direction consistency from effect
+    # size). Pending ratification.
     pairs = [
         (float(c.sign * c.magnitude), c.weight)
         for c in contribs
         if c.sign == modal and c.magnitude is not None
     ]
-    pairs += [(0.0, c.weight) for c in contribs if c.sign == 0]
     if not pairs:  # direction known, strength never stated → weakest class of that sign
         return modal * 1, agreement, modal
     med = _weighted_median(pairs)
     rank = int(round(med if med is not None else modal))
     if rank == 0:
-        rank = modal  # modal sign exists; zeros cannot flip a stated direction to null
+        rank = modal
     return max(-3, min(3, rank)), agreement, modal
 
 

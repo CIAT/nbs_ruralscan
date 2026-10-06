@@ -111,6 +111,22 @@ def _cell(v: Any) -> str:
     return str(v)
 
 
+def crop_scope_policy(nbs_id: str) -> bool:
+    """`allow_crop_scope` for an NbS from `schema/lookups/crop_scope_policy.csv`.
+
+    A row with an empty `suitability_family_id` sets the NbS-wide policy; family rows are
+    recorded for the T4 recipe engine (`synthesise-recipe.py`) and future per-family use.
+    Default False = the species/crop lock (`claim_scope=crop_specific` routed out)."""
+    path = SCHEMA / "lookups" / "crop_scope_policy.csv"
+    if not path.exists():
+        return False
+    with path.open(newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            if r["nbs_id"] == nbs_id and not (r.get("suitability_family_id") or ""):
+                return str(r.get("allow_crop_scope") or "").lower() == "true"
+    return False
+
+
 def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
     src = _rd(REG / "SRC_source_register.csv")
     tiers = {r["source_id"]: (r["benchmark_tier"] or "medium").lower() for r in src}
@@ -167,6 +183,9 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
         "income_lookup": inp["income"],
         "matrix": inp["matrix"],
         "xw_rows": xw,
+        # crop_specific re-inclusion is a per-NbS policy read from the schema, never
+        # hardcoded (schema/lookups/crop_scope_policy.csv; Pete 2026-10-06 for WH)
+        "allow_crop_scope": crop_scope_policy(nbs_id),
     }
     t3_rows: list[dict[str, Any]] = []
     t6_rows: list[dict[str, Any]] = []
@@ -235,8 +254,8 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
                 t3_rows += rows
                 _collect(rows, rep, "T3", f"{hz}__{fs}")
 
-    # ── T3 asset threat: per hazard, from asset_vulnerability units ──
-    for hz in T3_HAZARDS:
+    # ── T3 asset threat: per hazard (+ asset-only hazards), from asset_vulnerability units ──
+    for hz in T3_HAZARDS + cs.ASSET_ONLY_HAZARDS:
         rows, rep = cs.synthesise_cell_with_families(
             units,
             inp["tiers"],

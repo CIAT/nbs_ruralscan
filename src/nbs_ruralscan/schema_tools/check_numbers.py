@@ -36,6 +36,27 @@ _DECIMAL_COMMA = re.compile(r"(?<![\d.])\d+,\d{1,2}(?![\d,])")
 #: value, so BOTH readings are emitted - this is a containment check, and offering the
 #: alternative reading can only let a correctly-transcribed number match.
 _THOUSANDS_DOT = re.compile(r"(?<![\d,])\d{1,3}(?:\.\d{3})+(?![\d.])")
+_NUMBER_WORDS = {
+    "half": "0.5",
+    "one": "1",
+    "two": "2",
+    "three": "3",
+    "four": "4",
+    "five": "5",
+    "six": "6",
+    "seven": "7",
+    "eight": "8",
+    "nine": "9",
+    "ten": "10",
+    "twelve": "12",
+    "fifteen": "15",
+    "twenty": "20",
+    "double[ds]?|twice|twofold": "2",
+    "tripled?|threefold|thrice": "3",
+    "fourfold|quadrupled?": "4",
+    "fivefold": "5",
+    "tenfold": "10",
+}
 
 
 def _nums(text: str) -> set[str]:
@@ -51,6 +72,11 @@ def _nums(text: str) -> set[str]:
     """
     raw = text or ""
     pre: set[str] = set()
+    # spelled-out multipliers (v1.6.2, 2026-10-06): "two to three times", "doubled" —
+    # a stated ratio is provenance whether printed as digits or words
+    for word, val in _NUMBER_WORDS.items():
+        if re.search(rf"\b{word}\b", raw, flags=re.IGNORECASE):
+            pre.add(val)
     for m in _DECIMAL_COMMA.findall(raw):
         d = m.replace(",", ".")
         pre.add(d)

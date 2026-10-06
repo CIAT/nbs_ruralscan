@@ -1545,3 +1545,110 @@ def test_establishment_cost_takes_per_structure_not_per_hectare():
         xw_rows=xw,
     )
     assert rep.used == ["s"] and "h" in {e for e, _ in rep.dropped}
+
+
+def test_asset_only_hazard_makes_an_asset_threat_row_but_no_livelihood_cell():
+    silt = _u(
+        "s",
+        "s1",
+        "water_access_deficit",
+        "positive",
+        "moderate",
+        role="asset_vulnerability",
+        ctx={"hazard_type": "sedimentation"},
+    )
+    assert "sedimentation" in cs.ASSET_ONLY_HAZARDS
+    rows, _ = cs.synthesise_cell(
+        [silt],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="sedimentation",
+        role="asset_vulnerability",
+        xw_rows=XW,
+    )
+    assert rows and rows[0]["risk_role"] == "asset_threat"
+    # never a livelihood hazard: no XW route can target it
+    assert not any(x.target_key == "sedimentation" for x in XW)
+    assert "sedimentation" not in cs.T3_HAZARDS
+
+
+def test_contrast_metrics_are_classed_by_rule():
+    from nbs_ruralscan.schema_tools.check_bands import check_unit, contrast_class
+
+    bands = cs._default_bands()
+    pair = {"metric": "contrast", "value_with": 2.6, "value_without": 54}
+    assert contrast_class(pair, bands) == "strong"
+    assert (
+        contrast_class(
+            {"metric": "contrast", "value_with": 300, "value_without": 0}, bands
+        )
+        == "strong"
+    )
+    assert (
+        contrast_class(
+            {"metric": "contrast", "value_with": 95, "value_without": 100}, bands
+        )
+        == "slight"
+    )
+    assert contrast_class({"metric": "complete_contrast"}, bands) == "strong"
+    # the engine ranks a contrast unit from the pair, ignoring any adjective
+    u = _u(
+        "c",
+        "s1",
+        "erosion_hazard",
+        "negative",
+        "slight",
+        rel={
+            "metric": "contrast",
+            "value_with": 2.6,
+            "value_without": 54,
+            "unit": "t_per_ha_yr",
+        },
+    )
+    assert cs.unit_rank(u, "inverted", bands) == (1, 3)
+    # check_bands flags a mis-stated class
+    row = {
+        "evidence_id": "x",
+        "relationship": {**pair, "strength_class": "slight"},
+        "context": {},
+    }
+    assert any(f["signal"] == "band_mismatch" for f in check_unit(row, bands))
+    # a stated multiplier range bands on its midpoint via fold_change
+    fold = _u(
+        "f",
+        "s2",
+        "crop_yield",
+        "positive",
+        "strong",
+        rel={
+            "metric": "absolute",
+            "magnitude_low": 2,
+            "magnitude_high": 3,
+            "unit": "fold_change",
+        },
+    )
+    assert cs.unit_rank(fold, "same", bands) == (1, 3)
+    assert not check_unit(
+        {"evidence_id": "y", "relationship": fold.relationship, "context": {}}, bands
+    )
+
+
+def test_spelled_out_multipliers_count_as_number_provenance():
+    from nbs_ruralscan.schema_tools.check_numbers import _nums
+
+    assert {"2", "3"} <= _nums("could yield two to three times more than control plots")
+    assert "150" in _nums("l'érosion par 150")
+
+
+def test_null_units_lower_agreement_but_not_the_strength_median():
+    strong = [
+        _u(f"p{i}", f"s{i}", "erosion_hazard", "negative", "strong") for i in range(3)
+    ]
+    nulls = [
+        _u(f"z{i}", f"n{i}", "erosion_hazard", "none", "unspecified") for i in range(4)
+    ]
+    rows, _ = _t6(strong + nulls)
+    r = rows[0]
+    assert r["effect_direction"] == "strong_positive"
+    assert r["agreement_level"] in ("medium", "low")  # the nulls are not hidden

@@ -522,6 +522,21 @@ Not changed (design, noted for Pete): null / ns units legitimately pull the moda
 | `ev_economic_return_mrt14_4`, `ev_runoff_reduction_roose06_4` | in family rows but not the NbS-wide row — check dedupe/econ filter |
 | residue mulch under `in_situ`; a USA unit in the flood asset row's country list | tagging |
 
+
+**Decisions taken 2026-10-06 (Pete) and applied on `feat/wh-decisions-round2`**
+
+| decision | applied as |
+|---|---|
+| WH crop_specific re-included (all families) | `schema/lookups/crop_scope_policy.csv` (NbS-wide row; agroforestry F5 row records the existing T4 rule); `synthesise-t3t6.py` reads it — no hardcoded policy |
+| asset-threat-only hazards `sedimentation` · `extreme_rainfall` | `check_context.HAZARDS`, manifest T3 `hazard_type` enum, `cell_synthesis.ASSET_ONLY_HAZARDS` (asset rows only; outside the 7-hazard weight rule); 9 parked units ingested (8 siltation, 1 storm) — 7 stay parked (leakage, apron erosion, breach with no stated cause, pump wells, rehabilitation age) |
+| FAM sub-practices `sand_dams` · `subsurface_dams` · `communal_tanks` under `runoff_catchment`; banquettes stay under `terracing` | FAM rows added; no unit retag needed (EV carries the family only) |
+| next = WH round 2 grey + tools | WOCAT adapter to scope first |
+
+**Found while applying: the drought wall was a ROUTING gap, not crop scope.** Only 1 of 9 hazard-tagged WH yield units is `crop_specific`; `crop_yield` (and `food_security`, `household_income`, `livestock_productivity`, `forage_productivity`) had **no T3 route at all**, so drought-year yield results never reached a drought cell. Added 37 XW routes (each livelihood outcome → all 7 T3 hazards; `erosion_hazard`/`runoff_reduction` → flood, component) — safe because the engine's multi-hazard rule admits only units with a stated `context.hazard_type` into a multi-routed variable's cells. Effect: WH flood `low → very_high` (17 sources), agroforestry drought `low → very_high` (13). WH drought stays `low`: its magnitude-bearing units are few and null units (`roose94_2` dry-year no-gain, `ritc21_3`, two ns) outweigh them in the modal-sign median; and the large drought-year contrasts ("two to three times", "only fields with pits produced a harvest") were extracted with `strength_class = unspecified` → a quote-bounded **strength pass** (50 candidates, as for Castle 2021) is running; superseded units soft-dropped with `accepted_correction`.
+
+
+**Strength pass result (2026-10-06, 50 candidates):** 9 superseded (`_s` units, soft-dropped originals with `accepted_correction` / `superseded_by=`), 41 left direction-only (vote counts, perception shares, numbers belonging to other outcomes). Encoding needed a **ruleset v1.6.2 addendum** (`.agents/skills/_versions/v1.6.2/contracts/CONTRAST_ADDENDUM.md`): `metric = contrast` (`value_with` / `value_without`, class derived from their ratio; 0 without → strong), `metric = complete_contrast` (all-or-nothing, strong by definition), BANDS `unit = fold_change`, and spelled-out multipliers as number provenance. **Engine rule change (pending ratification):** the strength median is taken over the modal-sign units only — null units lower `agreement` (and so confidence) but no longer vote 0 in the strength median (four nulls had outweighed seven `strong` drought units and floored the cell at `low`). Effect across NbS: WH drought `low → very_high`, water_stress `slight → strong`, production_gap `moderate → strong`; agroforestry drought `very_high`; riparian unchanged. Reviewer items from the pass: `utk22_3` (ICR's "17 %" vs its own 3.2 %), `eth16_5`/`eth16_6` duplicates, Heusch p3 erosion +30 % never extracted, `ev_food_security_kabo04_1` direction questionable.
+
 **Pointers (verify before use — a lane's "number is in document X" is a pointer, never provenance)**
 
 | pointer | note |
