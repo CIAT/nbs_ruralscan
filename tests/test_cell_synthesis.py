@@ -1149,7 +1149,8 @@ def test_proxy_only_cell_is_capped_at_moderate():
             "soil_water_retention",
             "positive",
             "strong",
-            ctx={"income_group": "low"},
+            # a component route needs the hazard stated (2026-10-06)
+            ctx={"income_group": "low", "hazard_type": "drought"},
         )
         for i in range(6)
     ]
@@ -1691,3 +1692,58 @@ def test_spaced_thousands_keep_their_decimal_part():
 
     got = _nums("a cost of US$3 945.60/ha and 1 156.52")
     assert {"3945.60", "3945.6", "1156.52"} <= got
+
+
+def test_component_route_needs_a_stated_hazard_but_direct_does_not():
+    xw = XW + [
+        cs.XWRow("soil_water_retention", "T3", "drought", "same", "component", 0.7)
+    ]
+    comp_unstated = _u("c", "s1", "soil_water_retention", "positive", "strong")
+    comp_stated = _u(
+        "d",
+        "s2",
+        "soil_water_retention",
+        "positive",
+        "strong",
+        ctx={"hazard_type": "drought"},
+    )
+    direct_unstated = _u("e", "s3", "drought_hazard", "negative", "strong")
+    rows, rep = cs.synthesise_cell(
+        [comp_unstated, comp_stated, direct_unstated],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=xw,
+    )
+    assert set(rows[0]["evidence_ids"]) == {"d", "e"}
+    assert any(e == "c" for e, _ in rep.dropped)
+
+
+def test_family_row_identical_to_rollup_is_not_emitted():
+    a = _u(
+        "a",
+        "s1",
+        "erosion_hazard",
+        "negative",
+        "strong",
+        family="riparian_buffer__planted",
+    )
+    b = _u(
+        "b",
+        "s2",
+        "erosion_hazard",
+        "negative",
+        "moderate",
+        family="riparian_buffer__planted",
+    )
+    rows, rep = cs.synthesise_cell_with_families(
+        [a, b],
+        {},
+        table="T6",
+        nbs_id="riparian_buffer",
+        target_key="soil_erosion_risk",
+        xw_rows=XW,
+    )
+    assert len(rows) == 1 and not rows[0].get("suitability_family_id")
+    assert any("identical to the roll-up" in n for n in rep.notes)
