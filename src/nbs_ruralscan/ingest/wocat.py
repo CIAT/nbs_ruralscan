@@ -269,7 +269,10 @@ _COST_LINE = re.compile(
     r"- (establishment|maintenance)_cost_usd_per_(ha|structure)(_yr)?: ([0-9.]+) "
 )
 _CB_LINE = re.compile(
-    r"- (costbenefit_(?:establishment|maintenance)_(?:short|long)): (.+)$"
+    # short-term ratings stay in the transcript for the reader; only the long-term ones
+    # become economic_return units (a negative short-term return on establishment is the
+    # normal payback pattern, not evidence against the return — prose review 2026-10-06)
+    r"- (costbenefit_(?:establishment|maintenance)_long): (.+)$"
 )
 
 
@@ -324,9 +327,9 @@ def cost_basis(sv: dict[str, Any]) -> tuple[str, float, str]:
             if ha > 0:
                 return "ha", ha, f"per area: {_en(cc.get('size_and_area_unit'))}"
         return "", 1.0, "area basis without a parseable hectare size"
-    if _item_units_all_ha(sv.get("establishment_cost_breakdown")):
-        return "ha", 1.0, "per hectare (older sheet: every costed item is per ha)"
-    return "", 1.0, "no calculation basis stated"
+    # older sheets state no calculation base; inferring "per hectare" from the item units
+    # produced USD 0.04/ha and USD 42 530/ha (prose review 2026-10-06) → totals only
+    return "", 1.0, "no calculation basis stated (older sheet)"
 
 
 def usd_rate(sv: dict[str, Any]) -> tuple[float | None, str]:
