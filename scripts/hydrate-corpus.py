@@ -211,8 +211,32 @@ def main(argv: list[str] | None = None) -> int:
                 1  # no artifact source (e.g. a PDF not yet uploaded to the library)
             )
 
+    # WOCAT transcripts: section-locator evidence verifies against `<sid>.md`, which the
+    # adapter renders from the questionnaire JSON (never in the SharePoint library) —
+    # re-acquire any that are missing (needs network; 2026-10-06)
+    wocat_fetched = wocat_failed = 0
+    wocat_ids = sorted(
+        {
+            r["source_id"]
+            for r in rows
+            if r["source_id"].startswith("wocat_")
+            and re.match(r"wocat_\d+_", r["source_id"])
+            and not (CACHE / f"{r['source_id']}.md").exists()
+        }
+    )
+    if wocat_ids:
+        from nbs_ruralscan.ingest import wocat as _wocat
+
+        for sid in wocat_ids:
+            try:
+                _wocat.acquire(sid, CACHE)
+                wocat_fetched += 1
+            except Exception:  # noqa: BLE001
+                wocat_failed += 1
+
     print(f"library root       : {root}")
     print(f"PDF copied         : {pdf_copied}")
+    print(f"WOCAT transcripts   : {wocat_fetched} fetched, {wocat_failed} failed")
     print(f"PDF already cached  : {pdf_already}")
     print(f"code/web fetched    : {code_fetched}")
     print(f"code/web cached     : {code_already}")
