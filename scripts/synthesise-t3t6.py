@@ -154,7 +154,11 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
     units = [
         u
         for u in load_units(REG / "EV_evidence_register.json")
-        if u.nbs_id == nbs_id and u.use_role in cs.EFFECT_ROLES
+        if u.nbs_id == nbs_id
+        and u.use_role in cs.EFFECT_ROLES
+        # soft-deleted rows stay in the register as records; the engine skips them per
+        # cell, but the run report must not count them as pooled (2026-10-06)
+        and getattr(u, "review_state", "") != "dropped"
     ]
     for p in staging:
         units += [

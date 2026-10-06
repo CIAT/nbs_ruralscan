@@ -372,7 +372,9 @@ def emit_units(
             n += 1
             units.append(
                 _mk(
-                    f"ev_{m['canonical_variable_id']}_{source_id}_{n}",
+                    # locator-based id: stable across re-emits (a sequential counter
+                    # shifted when UNKNOWN coping rows were skipped → duplicates, 2026-10-06)
+                    f"ev_{m['canonical_variable_id']}_{source_id}_{field}",
                     m["canonical_variable_id"],
                     m["use_role"],
                     line,
@@ -400,9 +402,11 @@ def emit_units(
             continue
         for key in sorted(g):
             hz = hmap.get((group, key))
-            if not hz:
+            if not hz or str(g[key]) not in _COPE_SCALE:
+                # UNKNOWN / null coping is not a rating (T3 prose review 2026-10-06:
+                # four "copes UNKNOWN" units had entered as threats)
                 continue
-            cope = _COPE_SCALE.get(str(g[key]), str(g[key]))
+            cope = _COPE_SCALE[str(g[key])]
             line = f"- {key}: copes {cope}"
             cls = classify_magnitude(
                 "ordinal_rating", None, bands, source_scale_value=cope
@@ -410,7 +414,7 @@ def emit_units(
             n += 1
             units.append(
                 _mk(
-                    f"ev_asset_{hz}_{source_id}_{n}",
+                    f"ev_asset_{hz}_{source_id}_{key}",
                     "climate_shock",
                     "asset_vulnerability",
                     line,

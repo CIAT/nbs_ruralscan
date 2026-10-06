@@ -1105,13 +1105,12 @@ def _statement(
         where = (
             ", ".join(envelope.get("countries", [])) or "the pooled evidence contexts"
         )
-    tgt_income = str((envelope.get("target") or {}).get("income_group") or "")
-    if tgt_income and envelope.get("transfer_class") != "in_context":
-        pass  # the global row: the target band is implicit
-    elif tgt_income:
-        # an income-group SCOPE row must name its scope, not the AEZ of its units
-        # (WH prose review 2026-10-06: "in semi_arid" on an upper_middle row)
-        where = f"{where} ({tgt_income} income contexts)"
+    scope_income = str((envelope.get("scope") or {}).get("income_group") or "")
+    if scope_income:
+        # an income-group SCOPE row names its scope, not the AEZ of its units (WH prose
+        # reviews 2026-10-06: "in semi_arid" on an upper_middle row; and the global row
+        # must NOT carry the target band as if it described the pool)
+        where = f"{where} ({scope_income} income contexts)"
     if role == "asset_vulnerability":
         verb = {
             0: "is not damaged by",
@@ -1655,6 +1654,7 @@ def synthesise_cell(
                     s_contribs,
                     xw_by_unit,
                 )
+                s_rec["applicability"]["scope"] = {dim: sid}
                 g_class_for_scope = recompute_transfer_class(
                     global_row, [(c.ctx, c.weight) for c in contribs], s_target
                 )

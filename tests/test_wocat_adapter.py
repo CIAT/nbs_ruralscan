@@ -23,7 +23,10 @@ PAYLOAD = {
         },
         "impacts_ecological_water": {"surface_runoff": {"value": 1}},
         "climatological_disaster_coping": {"drought": "NOT_WELL"},
-        "hydrological_disaster_coping": {"flash_flood": "VERY_WELL"},
+        "hydrological_disaster_coping": {
+            "flash_flood": "VERY_WELL",
+            "general_river_flood": "UNKNOWN",
+        },
     },
 }
 IMAP = wocat._load_csv(wocat.LOOKUPS / "wocat_impact_map.csv")
@@ -83,3 +86,8 @@ def test_coping_scale_becomes_asset_vulnerability():
     assert assets["drought"]["relationship"]["direction"] == "positive"
     assert assets["drought"]["relationship"]["strength_class"] == "strong"
     assert assets["flood"]["relationship"]["direction"] == "none"
+
+
+def test_unknown_coping_is_not_a_rating():
+    _, units = _units()
+    assert not any(u["locator"].endswith("general_river_flood") for u in units)
