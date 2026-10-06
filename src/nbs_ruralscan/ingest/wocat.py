@@ -346,6 +346,10 @@ def emit_units(
             v = int(item["value"])
             line = f"- {field}: value {_fmt_value(v)}"
             comment = _en(item.get("comment"))
+            if str(m.get("requires_comment") or "").lower() == "true" and not comment:
+                # a bare carbon / biodiversity tick with no stated pathway is not evidence
+                # of a delivered result (Pete D4, 2026-10-06)
+                continue
             if comment:
                 line += f" — comment: {comment}"
             right_up = m["right_label"].strip().lower() in _INCREASE_LABELS
