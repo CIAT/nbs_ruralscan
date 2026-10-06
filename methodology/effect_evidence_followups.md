@@ -573,6 +573,23 @@ Not changed (design, noted for Pete): null / ns units legitimately pull the moda
 | Casagrande 2022 treatment bundles cistern + cash grant + training | kept as full relationship with the bundle in the note — downgrade candidate |
 | ES/FR costs in FRF / CFA (Roose, Heusch) | not encoded (currency unclear) |
 
+
+## 1f. Forest restoration — effect round 1 (2026-10-06)
+
+No draft-0 T3/T6 seeds existed for this NbS (no benchmark). Round 1 = 23 WOCAT sheets via the adapter (269 units) + the 23 sources acquired by the 2026-08 targeted searches (lanes A: T3/asset, B: T6/costs → 83 effect/asset + 20 operational units) + a synthesis-first discovery (54 candidates: 26 syntheses · 13 MEL/IEG grey · 15 ES/FR/PT; 30 acquired, 1 178 pp → lanes C/D/E). New: VONT `establishment_survival` (seedling / stand survival — the FR asset outcome), FAM `forest_restoration__cross_family`; the 2026-08 T3/T6 searches were logged under T4 only and are back-filled in SRCH at table level.
+
+| item | detail | action |
+|---|---|---|
+| **Wrong PDF in the cache + library** | `sierra_planting_vs_natural_1978.pdf` is Donato, Campbell & Franklin 2012 (J Veg Sci) — re-acquire Bock et al. 1978 by TITLE; the SharePoint copy must be replaced too | Namita (queue blocker set; `title_verified=false`) |
+| IUFRO Stanturf guidelines book cached whole, SRC cites chapter 1 (out of scope) | in-scope claims on pp 152/154, 439–440, 650, 717 need their own source rows | source rows per chapter before extraction |
+| `anr_success_drone_field_2019` | shrub-steppe quarry revegetation, not forest restoration — PICOS refusal, queue note set | drop from the FR lane |
+| Evans 2015 values are AUD 2013 | unit relabelled `aud_*` (no conversion); excluded from USD bands by construction | — |
+| Pending OA rows (18) | landing pages / 403 (FAO-CIFOR 2005 floods, IUFRO 2015, IEG 2013 + Vietnam PPAR, GEF/WRI landing pages, ES/FR/PT agency reports) | human browser download |
+| Paywalled (6, verified) | Farley 2005, van Dijk 2009, Yang 2023, Kandel 2022, Didy 2026, Nunes & Silva 2020 — check ResearchGate first; **acquire Bradshaw 2007 + van Dijk 2009 as a pair** (flood cell bias otherwise) | Namita |
+| Ontology gaps | aboveground biomass (→ `carbon_sequestration` used), water yield (→ `water_regulation` used), forest structure, social acceptance, reclearance pressure, landslide hazard (no T3 id) | round 2 |
+| Not yet extracted | technique → survival effects (Andivia 2021 seedling size; Grossnickle nursery stock; Hardwick weed cutting, Table 6 screengrab) now encodable as `establishment_survival` effects; 3ie EGM study counts are not effect sizes | short follow-up pass |
+| Discovery lesson | French title queries must exclude words shared with English (`afforestation`, `impacts`, `erosion`) — one query returned 469 English papers | `search_protocol.md` |
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |

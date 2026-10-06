@@ -25,7 +25,7 @@ _NUM = re.compile(r"\d*\.\d+|\d+")
 # thousands grouped with a space (SI style, used by WOCAT/FAO: "1 001 - 1 500 mm"),
 # incl. no-break / thin / narrow no-break spaces
 _SPACED_THOUSANDS = re.compile(
-    r"(?<![\d.])\d{1,3}(?:[ \u00a0\u2009\u202f]\d{3})+(?![\d.])"
+    r"(?<![\d.])\d{1,3}(?:[ \u00a0\u2009\u202f]\d{3})+(?:\.\d+)?(?![\d.])"
 )
 
 
@@ -90,7 +90,12 @@ def _nums(text: str) -> set[str]:
         if "." in m:
             out.add(m.rstrip("0").rstrip("."))  # 25.0 -> 25
     for m in _SPACED_THOUSANDS.findall(text):
-        out.add(re.sub(r"\D", "", m))
+        joined = re.sub(
+            r"[ \u00a0\u2009\u202f]", "", m
+        )  # keep a decimal part: "3 945.60"
+        out.add(joined)
+        if "." in joined:
+            out.add(joined.rstrip("0").rstrip("."))
     return out | pre
 
 
