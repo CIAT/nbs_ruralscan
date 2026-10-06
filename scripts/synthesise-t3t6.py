@@ -151,6 +151,19 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
     xw = cs.load_xw(REG / "XW_target_crosswalk.csv")
     income = cs.load_income_lookup(LOOK / "wb_income_groups.csv")
     matrix = cs.load_confidence_matrix(LOOK / "ipcc_confidence_matrix.csv")
+    # a `qualitative_only` family (FAM.spatial_product_type) is parked out of the scored
+    # tables: its evidence stays in the register for Module 6 hand-off material but never
+    # sets a T3/T6 class (Pete 2026-10-06: rooftop / household cisterns are a built domestic
+    # supply technology, not a landscape NbS)
+    parked = {
+        r["suitability_family_id"]
+        for r in _rd(REG / "FAM_family_registry.csv")
+        if r["nbs_id"] == nbs_id
+        and r.get("spatial_product_type") == "qualitative_only"
+        # the cross-cutting envelope meta-tag is qualitative_only too, but it is a
+        # tagging value for pooled evidence, not a parked practice
+        and not r["subpractice_id"].startswith("cross_cutting_envelope")
+    }
     units = [
         u
         for u in load_units(REG / "EV_evidence_register.json")
@@ -159,6 +172,7 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
         # soft-deleted rows stay in the register as records; the engine skips them per
         # cell, but the run report must not count them as pooled (2026-10-06)
         and getattr(u, "review_state", "") != "dropped"
+        and u.suitability_family_id not in parked
     ]
     for p in staging:
         units += [
@@ -168,6 +182,7 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
         ]
     return {
         "units": units,
+        "parked_families": sorted(parked),
         "tiers": tiers,
         "categories": categories,
         "src_contexts": src_contexts,
@@ -196,6 +211,7 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
     report: dict[str, Any] = {
         "nbs_id": nbs_id,
         "n_units_pooled": len(units),
+        "parked_families": inp.get("parked_families", []),
         "units_by_role": dict(Counter(u.use_role for u in units)),
         "cells": [],
         "dropped": [],
