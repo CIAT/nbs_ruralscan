@@ -49,6 +49,12 @@ HAZARDS = {
     "wind_cyclone",
     "waterlogging",
     "frost",
+    # asset-threat-only hazards (Pete 2026-10-06): non-climatic / sub-hazard processes that
+    # damage WH structures (siltation of dams and tanks; storm damage to terraces). Valid in
+    # `asset_vulnerability` units and T3 asset_threat rows only — never a T3 livelihood cell
+    # and never counted in `asset_risk_weight` completeness.
+    "sedimentation",
+    "extreme_rainfall",
 }
 TIMESCALE = {"immediate", "short_term_1_3yr", "medium_term_3_7yr", "long_term_7yr_plus"}
 _ISO3 = re.compile(r"^[A-Z]{3}$")

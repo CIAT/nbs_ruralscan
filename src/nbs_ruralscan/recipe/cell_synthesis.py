@@ -113,6 +113,11 @@ T3_HAZARDS = [
     "waterlogging",
     "frost",
 ]
+#: hazards that exist ONLY as T3 asset_threat rows (Pete 2026-10-06): siltation of dams /
+#: tanks and storm damage to structures are threats to the INVESTMENT (M2b Stream A), not
+#: livelihood hazards — no T3 livelihood cell, no XW route, excluded from the 7-hazard
+#: `asset_risk_weight` completeness rule.
+ASSET_ONLY_HAZARDS = ["sedimentation", "extreme_rainfall"]
 ECON_UNITS = {
     "usd_per_ha",
     "usd_per_ha_yr",
@@ -503,6 +508,12 @@ def unit_rank(
     if polarity == "inverted":
         sign = -sign
     cls = str(rel.get("strength_class") or "").lower()
+    if str(rel.get("metric") or "") in ("contrast", "complete_contrast"):
+        # v1.6.2: with/without pairs and all-or-nothing statements are classed by rule,
+        # never by the extractor's adjective (schema_tools.check_bands.contrast_class)
+        from nbs_ruralscan.schema_tools.check_bands import contrast_class
+
+        cls = contrast_class(rel, bands if bands is not None else _default_bands())
     if cls in ("", "unspecified") and rel.get("magnitude") is None:
         lo, hi = rel.get("magnitude_low"), rel.get("magnitude_high")
         nums = [float(x) for x in (lo, hi) if isinstance(x, (int, float))]
@@ -568,18 +579,24 @@ def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int]:
         return 0, 1.0, 0
     modal = 1 if pos >= neg else -1
     agreement = ((pos if modal > 0 else neg) + zero / 2) / total
+    # STRENGTH = the typical magnitude when the effect occurs (modal-sign units with a
+    # stated strength). Null and opposite units are NOT in this median: they already
+    # lower `agreement` (and so confidence), and letting them also vote 0 in the strength
+    # median double-penalised — four null drought units outweighed seven `strong` ones
+    # and floored the WH drought cell at `low` while every quantified positive was
+    # strong (2026-10-06; vote-counting separates direction consistency from effect
+    # size). Pending ratification.
     pairs = [
         (float(c.sign * c.magnitude), c.weight)
         for c in contribs
         if c.sign == modal and c.magnitude is not None
     ]
-    pairs += [(0.0, c.weight) for c in contribs if c.sign == 0]
     if not pairs:  # direction known, strength never stated → weakest class of that sign
         return modal * 1, agreement, modal
     med = _weighted_median(pairs)
     rank = int(round(med if med is not None else modal))
     if rank == 0:
-        rank = modal  # modal sign exists; zeros cannot flip a stated direction to null
+        rank = modal
     return max(-3, min(3, rank)), agreement, modal
 
 
@@ -1088,6 +1105,13 @@ def _statement(
         where = (
             ", ".join(envelope.get("countries", [])) or "the pooled evidence contexts"
         )
+    tgt_income = str((envelope.get("target") or {}).get("income_group") or "")
+    if tgt_income and envelope.get("transfer_class") != "in_context":
+        pass  # the global row: the target band is implicit
+    elif tgt_income:
+        # an income-group SCOPE row must name its scope, not the AEZ of its units
+        # (WH prose review 2026-10-06: "in semi_arid" on an upper_middle row)
+        where = f"{where} ({tgt_income} income contexts)"
     if role == "asset_vulnerability":
         verb = {
             0: "is not damaged by",
@@ -1188,6 +1212,23 @@ def apply_proxy_cap(
     in the cell lifts the cap. Recorded as `proxy_capped` so the account says why.
     """
     if not contribs:
+        return rec
+    direct = [
+        c for c in contribs if xw_by_unit[c.unit.evidence_id].proximity == "direct"
+    ]
+    modal = int(rec.get("modal_sign") or 0)
+    if any(
+        c.has_direction and c.sign == modal and c.magnitude is not None for c in direct
+    ):
+        # DIRECT measurements set the strength when any exists: a 59 % infiltration gain
+        # (component) must not make a drought cell `very_high` while the drought-year
+        # yield units say otherwise (agroforestry prose review, 2026-10-06). Agreement
+        # and confidence still come from the whole pool.
+        d_rank, _, d_modal = _reconcile_rank(direct)
+        if d_modal == modal and d_rank != rec.get("rank"):
+            rec = dict(rec)
+            rec["rank"] = d_rank
+            rec["strength_from"] = "direct"
         return rec
     if (
         all(xw_by_unit[c.unit.evidence_id].proximity != "direct" for c in contribs)
@@ -1294,6 +1335,7 @@ def traceable_account(
         ),
         "strength_basis": rec.get("strength_basis", "quantified"),
         "proxy_capped": bool(rec.get("proxy_capped", False)),
+        "strength_from": rec.get("strength_from", "pool"),
         "evidence_summary": summary,
         "agreement_note": agreement_note,
         "proxies": proxies,

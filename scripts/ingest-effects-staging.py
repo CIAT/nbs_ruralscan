@@ -71,7 +71,14 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
                 errs.append(f"{eid}: page {u.get('page')} unreadable ({e})")
         rel = u.get("relationship") or {}
         rn: set[str] = set()
-        for k in ("magnitude", "magnitude_low", "magnitude_high", "n"):
+        for k in (
+            "magnitude",
+            "magnitude_low",
+            "magnitude_high",
+            "n",
+            "value_with",
+            "value_without",
+        ):
             v = rel.get(k)
             if isinstance(v, (int, float)) and not isinstance(v, bool):
                 rn |= _nums(str(v))
@@ -104,9 +111,9 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
                 f"{eid}: use_role '{u.get('use_role')}' is not allowed here "
                 f"(allowed: {sorted(allowed_roles)})"
             )
-        if u.get("ruleset_version") not in {"v1.6.0", "v1.6.1"}:
+        if u.get("ruleset_version") not in {"v1.6.0", "v1.6.1", "v1.6.2"}:
             errs.append(
-                f"{eid}: ruleset_version '{u.get('ruleset_version')}' not in v1.6.0/v1.6.1"
+                f"{eid}: ruleset_version '{u.get('ruleset_version')}' not in v1.6.0/v1.6.1/v1.6.2"
             )
     return errs
 

@@ -28,7 +28,33 @@ METRICS = {
     "ordinal_rating",
     "absolute",
     "narrative",
+    # v1.6.2 (2026-10-06): a WITH / WITHOUT (after / before) pair quoted as two values —
+    # `value_with`, `value_without` — classed on their ratio against the response_ratio
+    # bands; `value_without = 0` (nothing without the practice) is a complete contrast.
+    "contrast",
+    # v1.6.2: an all-or-nothing statement with no number ("only fields with pits produced
+    # a harvest") — strength_class `strong` without a magnitude, by definition.
+    "complete_contrast",
 }
+
+
+def contrast_class(rel: dict, bands: list[dict]) -> str:
+    """Derived strength_class of a `contrast` / `complete_contrast` relationship."""
+    metric = str(rel.get("metric") or "")
+    if metric == "complete_contrast":
+        return "strong"
+    if metric != "contrast":
+        return "unspecified"
+    w, wo = rel.get("value_with"), rel.get("value_without")
+    if not isinstance(w, (int, float)) or not isinstance(wo, (int, float)):
+        return "unspecified"
+    if wo == 0:
+        return "strong" if w != 0 else "unspecified"
+    return classify_magnitude(
+        "absolute", float(w) / float(wo), bands, unit="response_ratio"
+    )
+
+
 _ROOT = Path(__file__).resolve().parents[3]
 _EV = _ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 _BANDS = _ROOT / "schema" / "registers" / "BANDS_magnitude_bands.csv"
@@ -52,11 +78,28 @@ def check_unit(row: dict, bands: list[dict]) -> list[dict]:
     metric = str(rel.get("metric") or "")
     cls = str(rel.get("strength_class") or "unspecified")
     mag = rel.get("magnitude")
+    if mag is None:
+        # a RANGE is a quantified claim: check its midpoint, as the engine ranks it
+        lo, hi = rel.get("magnitude_low"), rel.get("magnitude_high")
+        nums = [float(x) for x in (lo, hi) if isinstance(x, (int, float))]
+        if nums:
+            mag = sum(nums) / len(nums)
     flags: list[dict] = []
     if metric and metric not in METRICS:
         flags.append({"signal": "unknown_metric", "evidence_id": eid, "detail": metric})
         return flags
     banded = {b.get("metric") for b in bands}
+    if metric in ("contrast", "complete_contrast"):
+        expect = contrast_class(rel, bands)
+        if expect == "unspecified" or expect != cls:
+            flags.append(
+                {
+                    "signal": "band_mismatch",
+                    "evidence_id": eid,
+                    "detail": f"{metric} with={rel.get('value_with')} without={rel.get('value_without')} → {expect}, unit says {cls}",
+                }
+            )
+        return flags
     if (
         metric in banded
         and metric != "ordinal_rating"
