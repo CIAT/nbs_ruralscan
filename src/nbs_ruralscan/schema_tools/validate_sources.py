@@ -86,14 +86,21 @@ def _load_pdf_pages(path: Path) -> list[str]:
         doc.close()
 
 
+def _find_snapshot(corpus: Path, sid: str) -> Path | None:
+    for ext in _SNAPSHOT_EXT:
+        snap = corpus / f"{sid}{ext}"
+        if snap.exists():
+            return snap
+    return None
+
+
 def _find_artifact(corpus: Path, sid: str) -> tuple[Path, str] | None:
     pdf = corpus / f"{sid}{_PDF_EXT}"
     if pdf.exists():
         return pdf, "pdf"
-    for ext in _SNAPSHOT_EXT:
-        snap = corpus / f"{sid}{ext}"
-        if snap.exists():
-            return snap, "snapshot"
+    snap = _find_snapshot(corpus, sid)
+    if snap is not None:
+        return snap, "snapshot"
     return None
 
 
@@ -179,6 +186,13 @@ def validate_all_sources(schema_root: str | Path) -> None:
 
         path, kind = artifacts[sid]
         locator_type = (ev.get("locator_type") or "page").strip()
+        # A source may carry BOTH a PDF (page locators) and a rendered snapshot (section
+        # locators) — the WOCAT adapter renders the questionnaire the PDF text layer
+        # loses (2026-10-06). Section evidence verifies against the snapshot.
+        if kind == "pdf" and locator_type == "section":
+            snap = _find_snapshot(corpus, sid)
+            if snap is not None:
+                path, kind = snap, "snapshot"
 
         # Page-level provenance: only for a PDF with a page locator.
         if kind == "pdf" and locator_type == "page":
@@ -253,7 +267,7 @@ def validate_all_sources(schema_root: str | Path) -> None:
             # `acquire.py` writes a `{source_id}.meta.json` provenance sidecar beside each
             # fetched artifact — it pairs with a real .pdf/.txt/.html/.md, is never itself
             # cited as evidence, so it is not an "undefined format". Skip it.
-            if p.name.endswith(".meta.json"):
+            if p.name.endswith(".meta.json") or p.name.endswith(".source.json"):
                 continue
             if (
                 p.is_file()
