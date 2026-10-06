@@ -91,3 +91,81 @@ def test_coping_scale_becomes_asset_vulnerability():
 def test_unknown_coping_is_not_a_rating():
     _, units = _units()
     assert not any(u["locator"].endswith("general_river_flood") for u in units)
+
+
+def test_cost_lines_scale_area_and_unit_bases():
+    sv_area = {
+        "cost_calculation": {
+            "calculation_base": "area",
+            "size_and_area_unit": {"en": "1.6 ha"},
+        },
+        "cost_calculation_currency": {"currency_base": "USD"},
+        "establishment_cost_breakdown": {
+            "labour": [{"cost_per_unit": 3200, "quantity": 1}]
+        },
+        "costbenefit_establishment_long": "VERYPOSITIVE",
+    }
+    lines = wocat.cost_lines(sv_area)
+    assert any(
+        line.startswith("- establishment_cost_usd_per_ha: 2000.00 ") for line in lines
+    )
+    assert "- costbenefit_establishment_long: very positive" in lines
+    sv_unit = {
+        "cost_calculation": {"calculation_base": "unit", "unit": {"en": "dam"}},
+        "cost_calculation_currency": {"currency_base": "other", "exchange_rate": 100.0},
+        "maintenance_cost_breakdown": {
+            "labour": [{"cost_per_unit": 5000, "quantity": 2}]
+        },
+    }
+    lines = wocat.cost_lines(sv_unit)
+    assert any(
+        line.startswith("- maintenance_cost_usd_per_structure_yr: 100.00 ")
+        for line in lines
+    )
+    sv_none = {
+        "establishment_cost_breakdown": {
+            "labour": [{"cost_per_unit": 12, "quantity": 1, "units": {"en": "ha"}}]
+        }
+    }
+    assert any("not placed on a USD" in line for line in wocat.cost_lines(sv_none))
+
+
+def test_cost_units_are_emitted_from_the_transcript():
+    payload = {
+        "id": 998,
+        "selected_version": {
+            "name": {"en": "Pond"},
+            "country": "KE",
+            "cost_calculation": {"calculation_base": "unit", "unit": {"en": "pond"}},
+            "cost_calculation_currency": {"currency_base": "USD"},
+            "establishment_cost_breakdown": {
+                "labour": [{"cost_per_unit": 2500, "quantity": 1}]
+            },
+            "costbenefit_establishment_long": "NEGATIVE",
+        },
+    }
+    md = wocat.render(payload, "wocat_998_2020")
+    units = wocat.emit_units(
+        "wocat_998_2020",
+        payload,
+        md,
+        "water_harvesting_conservation",
+        "water_harvesting__runoff_catchment",
+        IMAP,
+        HMAP,
+        _default_bands(),
+    )
+    by = {u["evidence_id"]: u for u in units}
+    cost = by["ev_project_cost_wocat_998_2020_establishment"]
+    assert (
+        cost["relationship"]["unit"] == "usd_per_structure"
+        and cost["relationship"]["magnitude"] == 2500.0
+    )
+    assert (
+        cost["relationship"]["strength_class"] == "moderate"
+    )  # KEN lic_lmic: 1 000–10 000
+    cb = by["ev_economic_return_wocat_998_2020_costbenefit_establishment_long"]
+    assert (
+        cb["relationship"]["direction"] == "negative"
+        and cb["relationship"]["strength_class"] == "moderate"
+    )

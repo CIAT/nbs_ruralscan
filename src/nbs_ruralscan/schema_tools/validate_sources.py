@@ -176,6 +176,12 @@ def validate_all_sources(schema_root: str | Path) -> None:
         if ev.get("use_role") in EXEMPT_USE_ROLES:
             n_exempt += 1
             continue
+        if (ev.get("review_state") or "").strip() == "dropped":
+            # a soft-deleted row is a historic record, excluded from synthesis, the
+            # ledger and the dashboard; its quote may belong to an artefact version the
+            # adapter has since re-rendered (withdrawn WOCAT cost lines, 2026-10-06)
+            n_exempt += 1
+            continue
         if sid not in artifacts:
             continue  # source-level error already recorded
         quote = ev.get("quote", "")

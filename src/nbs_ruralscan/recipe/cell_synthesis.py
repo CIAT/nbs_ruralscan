@@ -1691,7 +1691,12 @@ _ECON_UNITS: dict[str, set[str]] = {
     # cost_per_hectare_restored / cost_per_beneficiary only, else the scorecard counted the
     # same four units twice (WH prose review 2026-10-05)
     "establishment_cost": {"usd_per_structure", "usd_per_system", "usd_per_m3"},
-    "recurrent_cost": {"usd_per_ha_yr", "usd_per_household_yr", "usd_per_farmer_yr"},
+    "recurrent_cost": {
+        "usd_per_ha_yr",
+        "usd_per_household_yr",
+        "usd_per_farmer_yr",
+        "usd_per_structure_yr",
+    },
     "cost_per_hectare_restored": {"usd_per_ha"},
     "cost_per_beneficiary": {
         "usd_per_beneficiary",
