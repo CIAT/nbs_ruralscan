@@ -549,6 +549,9 @@ Not changed (design, noted for Pete): null / ns units legitimately pull the moda
 
 **Pete's decisions on the WOCAT round (2026-10-06, `methodology/decisions/2026-10-06_wh_evidence_decisions.md`):** D1 keep the weighted vote (flood "measurements" were proxies — QA: `flood_hazard` units that measure runoff → `runoff_reduction`); D2 field-practice coping ratings stay in asset rows (pits infill/collapse in floods); D3 asset threat = physical damage only (drought/heatwave coping out of the asset rows; four literature "ran dry" units re-tagged to effect, direction none); D4 carbon/biodiversity ratings need a stated mechanism (`requires_comment`); D5 keep conservation tillage in in-situ. **Rooftop decided (b):** `qualitative_only` families are parked out of the scored T3/T6 (evidence kept for M6); applied 2026-10-06.
 
+
+**Agroforestry WOCAT pass (2026-10-06, 2 regeneration-farmland sheets, 33 units) — prose-review items.** `fire__all` reads `negative`: five US silvopasture units (high-income, transfer weight 0.3) report less fuel/fire, while an in-context Kenyan rating ("tree cover can increase wildfire risk") and a fire-spread correlation carry the weighted vote — a transfer-weighting consequence, visible in `transfer_class`, not a sign error; `asset_threat__wind_cyclone` likewise (hurricane unit is HIC). Single-unit asset rows print "slightly damaged" for "copes well" by the D3 scale (well = little damage). Semi-arid flood rows (`high`) rest on one erosion meta-analysis + three self-reported Kenyan household units from one study. Burkina `harvesting_collection_of_water +3` (no comment) is the only strong water-side unit in the regeneration drought cells. The 23 forest-restoration WOCAT sheets are cached but wait for the FR effect round (seed freeze + first synthesis).
+
 **Pointers (verify before use — a lane's "number is in document X" is a pointer, never provenance)**
 
 | pointer | note |
