@@ -506,8 +506,18 @@ method must produce usable, honestly-graded rows without it.
    in `.cache/corpus/`, EV `locator_type = section`, `locator` = questionnaire section id (§6.3 tolerance to
    extremes). Its 4-level tolerance scale maps to `asset_sensitivity` via a BANDS `ordinal_rating` adapter row.
    The **technology → family** map is recorded and ratified like an XW row (FAM note + rationale).
-   **WOCAT has no acquisition adapter yet → PAUSE per the acquisition lock.** This section is the rule; the
-   adapter (per-technology page snapshot, locator semantics, QA check) is built in its own PR after ratification.
+   **Adapter built 2026-10-06 (`src/nbs_ruralscan/ingest/wocat.py`), PAUSE lifted.** The PDF export loses the
+   ratings (the tick on the "decreased … increased" scale is graphical), so the adapter reads the structured
+   questionnaire embedded in the QCAT page (`/api/database/technologies/<id>/`), caches it as
+   `<sid>.source.json` and renders a deterministic markdown transcript `<sid>.md` — the artefact of record for
+   `locator_type = section` evidence (one line per rated field; `validate_sources` verifies against it while the
+   PDF keeps serving page-locator T4 units: a source may carry both). Units are **rule-based, no LLM**: QT 6.1/6.2
+   impact values −3…+3 → `nbs_effect` (`metric = ordinal_rating`, `unit = wocat_impact`, variable + right-label
+   polarity from `schema/lookups/wocat_impact_map.csv`); QT 6.3 disaster-coping → `asset_vulnerability`
+   (`schema/lookups/wocat_hazard_map.csv`; BANDS `wocat_tol_*` → `asset_sensitivity`; `very well` = no damage).
+   Compiler comments ride along in `outcome_raw`; nothing is inferred from them. Grey practitioner ratings carry
+   `claim_basis = expert_assertion` + `design = practitioner_rating` and the grey discount. First run: 51 WH
+   sheets → 690 units.
 2. **Literature** from the single-pass sweep (establishment mortality, windthrow, plantation fire, flood scour
    studies), with species-specific claims routed by `claim_scope`. WOCAT-vs-literature concordance is what the
    `agreement_level` axis then measures.

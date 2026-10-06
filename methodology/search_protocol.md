@@ -113,3 +113,21 @@ its DOIs enter the acquisition queue and the primaries are extracted from their 
 4. **ResearchGate / Academia** — crawler-blocked, so a tool can never confirm/deny a copy. **Never claim "not on ResearchGate"**; instead flag it in the queue note as a **human-checks-RG-first** step.
 
 Only what survives 1–3 is `access_route = institutional`. Anything with a found OA copy → `blocker=OA`, `access_route=browser/repository` + the URL. A helper OA-recovery sweep over the acquisition queue's DOIs is the standard pre-handover step.
+
+
+## WOCAT technology sheets (handling rule, 2026-10-06)
+
+**Format:** a WOCAT SLM Technologies entry is TWO artefacts under one `source_id` (`wocat_<id>_<year>`): the PDF
+export (`.cache/corpus/<sid>.pdf`, SharePoint `library_path`, page locators — the T4 suitability units) and the
+adapter transcript (`<sid>.md` rendered from the embedded questionnaire JSON `<sid>.source.json`, section locators —
+the T3/T6 effect + asset-vulnerability units). **Acquire:** `python -m nbs_ruralscan.ingest.wocat acquire <sid>…`
+(fetches `https://qcat.wocat.net/en/wocat/technologies/view/technologies_<id>/`, writes raw + transcript +
+`.meta.json` with sha1s). **Locator semantics:** `locator_type = section`, `locator = <questionnaire_group>/<field>`
+(e.g. `impacts_ecological_soil/soil_loss`, `climatological_disaster_coping/drought`); the quote is the transcript line.
+**Extraction:** `python -m nbs_ruralscan.ingest.wocat emit --nbs <nbs_id> --out pipeline/staging/<file>.json <sid>…`
+— rule-based from the two ratified lookups (`schema/lookups/wocat_impact_map.csv`, `wocat_hazard_map.csv`); the
+family is the sheet's T4 family (modal `suitability_family_id` of its EV rows) and the NbS follows that family
+through FAM, never the CLI argument (PICOS). **QA/QC:** render determinism + value→direction + coping→hazard are
+unit-tested (`tests/test_wocat_adapter.py`); `emit` asserts every quote is a transcript line; the staging gate and
+`validate_sources` verify section quotes against the `.md`. A re-acquire that changes the transcript changes the
+sha1 in `.meta.json` — re-emit, never hand-edit.

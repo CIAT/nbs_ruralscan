@@ -57,7 +57,28 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
             pdf = CORPUS / f"{sid}.pdf"
             docs[sid] = fitz.open(pdf) if pdf.exists() else None
         d = docs[sid]
-        if d is None:
+        if (u.get("locator_type") or "page") == "section":
+            # section locator → the rendered snapshot (.md/.txt/.html) is the artefact,
+            # exactly as validate_sources resolves it (WOCAT adapter, 2026-10-06)
+            snap = next(
+                (
+                    CORPUS / f"{sid}{ext}"
+                    for ext in (".md", ".txt", ".html")
+                    if (CORPUS / f"{sid}{ext}").exists()
+                ),
+                None,
+            )
+            if snap is None:
+                errs.append(f"{eid}: no cached snapshot for section locator ({sid})")
+            else:
+                text = " ".join(
+                    snap.read_text(encoding="utf-8", errors="replace").split()
+                )
+                if " ".join(_native_part(u["quote"]).split()) not in text:
+                    errs.append(f"{eid}: quote not verbatim in snapshot {snap.name}")
+                if not (u.get("locator") or "").strip():
+                    errs.append(f"{eid}: section locator missing")
+        elif d is None:
             errs.append(f"{eid}: no cached PDF for {sid}")
         else:
             try:
