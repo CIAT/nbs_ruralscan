@@ -110,3 +110,15 @@ These went in with the merge of #277 and are marked "pending ratification". No a
 4. Namita's OA-recovery queue (42 water-harvesting, 34 agroforestry, 14 economics sources) unblocks round 3 for all three NbS.
 
 **Where the technical record lives:** PR #278 (adapter, run, gates), `methodology/search_protocol.md` §WOCAT (the handling rule), `schema/recipes/water_harvesting_conservation/T3T6_BENCHMARK.md` (generated vs seed rows).
+
+## Decisions taken (Pete, 2026-10-06) and how they were applied
+
+| # | Decision | Pete's reasoning | Applied as |
+| --- | --- | --- | --- |
+| 1 | **A — leave the weighted vote** | The flood "measurements" in the example are runoff and soil-loss proxies, not flood measurements, so a measured-beats-rated rule would rest on a false distinction; the existing downweighting is enough. | No change. QA note: units extracted as `flood_hazard` that actually measure runoff should be re-labelled `runoff_reduction` (proxy route) — Namita's queue. |
+| 2 | **Keep field-practice coping ratings in the asset rows** | Pits do not survive floods: soil wets and collapses, pits infill and silt, lifespan shortens — that is damage to the works. | No change (the letter in the reply read "A"; the reasoning says keep — applied the reasoning; say if that is wrong). |
+| 3 | **A — asset threat = physical damage only** | A dry cistern is a benefit shortfall, not a lost cistern. Separately: are household cisterns a nature-based solution at all? | WOCAT drought / heatwave coping ratings no longer feed asset rows (hazard lookup; existing units soft-dropped, `accepted_correction`); the four literature "ran dry / benefit limited" units re-tagged as effect units with direction *none*. The rooftop question is raised below. |
+| 4 | **Rows 1–2 keep; rows 3–4 keep only with a stated mechanism** | A carbon or biodiversity tick with no pathway (a cistern rated +1 for biodiversity) is not evidence of a delivered result. | `requires_comment = true` on the four carbon / diversity fields in the impact lookup: a rating counts only when the compiler wrote a comment stating the mechanism; comment-less ones soft-dropped. |
+| 5 | **A — keep conservation tillage in in-situ** | — | No change. Two sheets flagged for QA. |
+
+**Open question raised by D3 — rooftop / household cisterns.** The `water_harvesting__rooftop` family comes from the original water-harvesting recipe (Benson's family scheme, `rooftop_harvesting` sub-practice). It is a built domestic water-supply technology, not a landscape process. Options: (a) remove the family from the NbS (scheme change — needs the family-scheme sign-off; its 22 WOCAT units and 8 Brazilian cistern units stay in the register, tagged); (b) keep it but exclude it from the generated T3/T6 and the opportunity space (`spatial_product_type = qualitative_only`), so it appears only in Module 6 hand-off material; (c) keep as is. My recommendation is (b) until the scheme is revisited: the Brazilian cistern evaluations are good evidence about drought-year water access that a TTL may still want to see, but they should not score as a landscape NbS.

@@ -83,8 +83,8 @@ def test_coping_scale_becomes_asset_vulnerability():
         for u in units
         if u["use_role"] == "asset_vulnerability"
     }
-    assert assets["drought"]["relationship"]["direction"] == "positive"
-    assert assets["drought"]["relationship"]["strength_class"] == "strong"
+    # drought coping is a delivery shortfall, not damage → no asset unit (Pete D3 2026-10-06)
+    assert "drought" not in assets
     assert assets["flood"]["relationship"]["direction"] == "none"
 
 
