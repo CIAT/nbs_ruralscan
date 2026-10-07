@@ -1093,6 +1093,7 @@ def _statement(
     role: str,
     strength_basis: str = "quantified",
     intensity_limited: bool = False,
+    severity: dict[str, Any] | None = None,
 ) -> str:
     """Calibrated-language statement; levels inserted by the engine (contract §5)."""
     # name the AEZs only when they cover at least half of the pooled units; a single
@@ -1112,6 +1113,7 @@ def _statement(
         # reviews 2026-10-06: "in semi_arid" on an upper_middle row; and the global row
         # must NOT carry the target band as if it described the pool)
         where = f"{where} ({scope_income} income contexts)"
+    tail = ""
     if role == "asset_vulnerability":
         verb = {
             0: "is not damaged by",
@@ -1147,13 +1149,27 @@ def _statement(
         if strength_basis == "direction_only":
             core += " (strength not quantified in the evidence)"
         if intensity_limited:
-            core += (
+            tail += (
                 f"; the measured evidence also includes no-benefit or reversal results "
-                f"under severe {key}, which discount the class (it is not a defence "
-                f"against late-onset or extreme {key})"
+                f"under {key}, which discount the class"
             )
+        end = (severity or {}).get("severe_end")
+        cnt = (severity or {}).get("severe_end_counts") or {}
+        if rank > 0 and end == "tested_no_gain":
+            tail += (
+                f"; at severe or extreme {key} the measured results show no benefit "
+                f"(it is not a defence against late-onset or extreme {key})"
+            )
+        elif rank > 0 and end == "mostly_no_gain":
+            tail += (
+                f"; at severe or extreme {key} the measured results mostly show no "
+                f"benefit ({cnt.get('gains', 0)} gain vs {cnt.get('failures', 0)} "
+                f"failures)"
+            )
+        elif rank > 0 and end == "untested":
+            tail += f"; no measured evidence at severe or extreme {key}"
     return (
-        f"{core} in {where} ({ev_l} evidence, {ag_l} agreement → {conf} confidence; "
+        f"{core} in {where}{tail} ({ev_l} evidence, {ag_l} agreement → {conf} confidence; "
         f"transfer: {envelope.get('transfer_class')})."
     )
 
@@ -1261,6 +1277,46 @@ def _measured_same_hazard(contribs: list[_Contrib], target_key: str) -> list[_Co
     ]
 
 
+SEVERITY_ORDER = ("mild", "moderate", "severe", "extreme", "unspecified")
+SEVERE_END = {"severe", "extreme"}
+
+
+def _severity(c: _Contrib) -> str:
+    sev = str((c.unit.context or {}).get("hazard_severity") or "unspecified")
+    return sev if sev in SEVERITY_ORDER else "unspecified"
+
+
+def severity_coverage(measured: list[_Contrib]) -> dict[str, Any]:
+    """Gains vs failures per author-stated hazard severity (ruleset v1.6.3), over the
+    measured same-hazard units: `{"gains": {sev: n}, "failures": {sev: n}, "severe_end":
+    tested_gain | mostly_no_gain | tested_no_gain | untested}`. `severe_end` reads the
+    severe + extreme bands: gains ≥ failures there → tested_gain; failures outnumber
+    gains → mostly_no_gain; only failures → tested_no_gain; nothing measured there →
+    untested (most cells — most evidence is `unspecified`)."""
+    gains: dict[str, int] = {}
+    fails: dict[str, int] = {}
+    for c in measured:
+        sev = _severity(c)
+        d = gains if c.sign > 0 else fails
+        d[sev] = d.get(sev, 0) + 1
+    g = sum(v for k, v in gains.items() if k in SEVERE_END)
+    f = sum(v for k, v in fails.items() if k in SEVERE_END)
+    if g == 0 and f == 0:
+        end = "untested"
+    elif g == 0:
+        end = "tested_no_gain"
+    elif f > g:
+        end = "mostly_no_gain"
+    else:
+        end = "tested_gain"
+    return {
+        "gains": gains,
+        "failures": fails,
+        "severe_end": end,
+        "severe_end_counts": {"gains": g, "failures": f},
+    }
+
+
 def apply_intensity_cap(
     rec: dict[str, Any], contribs: list[_Contrib], target_key: str
 ) -> dict[str, Any]:
@@ -1277,21 +1333,27 @@ def apply_intensity_cap(
     crop failure among ten measured gains barely moves it; failures weighing a third
     of the measured drought-year evidence take very_high to moderate; a majority takes
     it to low. Only measured units (not practitioner ratings) that STATE this hazard
-    count — rated and other-hazard nulls act through agreement alone. Pending
-    ratification.
+    count — rated and other-hazard nulls act through agreement alone. Decision 7
+    (ruleset v1.6.3): a failure the source itself places at a `mild` event (a dry
+    spell, erratic rain) is NOT an intensity limit and is left to agreement;
+    `unspecified` failures still count — most evidence does not qualify the event, and
+    exempting it would silently restore the old optimism. Every livelihood row carries
+    `severity_coverage` so the statement can say when the severe end is untested.
+    Pending ratification.
     """
     modal = int(rec.get("modal_sign") or 0)
     if modal <= 0:
         return rec
     measured = _measured_same_hazard(contribs, target_key)
-    limiting = [c for c in measured if c.sign <= 0]
+    rec = dict(rec)
+    rec["severity_coverage"] = severity_coverage(measured)
+    limiting = [c for c in measured if c.sign <= 0 and _severity(c) != "mild"]
     if not limiting:
         return rec
-    total = sum(c.weight for c in measured)
+    total = sum(c.weight for c in measured if _severity(c) != "mild" or c.sign > 0)
     share = (sum(c.weight for c in limiting) / total) if total > 0 else 0.0
     rank = int(rec.get("rank", 0))
     discounted = max(modal, int(round(rank * (1.0 - share))))
-    rec = dict(rec)
     rec["intensity_limited"] = True
     rec["intensity_limiting_ids"] = sorted(c.unit.evidence_id for c in limiting)
     rec["intensity_limit_share"] = round(share, 3)
@@ -1315,6 +1377,7 @@ def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
         role,
         rec.get("strength_basis", "quantified"),
         bool(rec.get("intensity_limited", False)),
+        rec.get("severity_coverage"),
     )
 
 
@@ -1395,8 +1458,10 @@ def traceable_account(
             role,
             rec.get("strength_basis", "quantified"),
             bool(rec.get("intensity_limited", False)),
+            rec.get("severity_coverage"),
         ),
         "strength_basis": rec.get("strength_basis", "quantified"),
+        "severity_coverage": rec.get("severity_coverage"),
         "proxy_capped": bool(rec.get("proxy_capped", False)),
         "intensity_limited": bool(rec.get("intensity_limited", False)),
         "intensity_limiting_ids": rec.get("intensity_limiting_ids", []),

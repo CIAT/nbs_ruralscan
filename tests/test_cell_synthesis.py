@@ -1819,3 +1819,124 @@ def test_rated_or_other_hazard_nulls_do_not_discount():
         ]
         is False
     )
+
+
+def test_mild_failures_are_exempt_from_the_discount_but_unspecified_count():
+    strong = [
+        _u(
+            f"g{i}",
+            f"s{i}",
+            "drought_hazard",
+            "negative",
+            "strong",
+            ctx={"hazard_type": "drought"},
+        )
+        for i in range(2)
+    ]
+    mild = [
+        _u(
+            f"m{i}",
+            f"z{i}",
+            "drought_hazard",
+            "none",
+            "unspecified",
+            ctx={
+                "hazard_type": "drought",
+                "hazard_severity": "mild",
+                "severity_cue": "dry spell",
+            },
+        )
+        for i in range(3)
+    ]
+    rows, _ = cs.synthesise_cell(
+        strong + mild,
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    j = rows[0]["justification"]
+    assert j["intensity_limited"] is False
+    assert j["severity_coverage"]["failures"] == {"mild": 3}
+    assert rows[0]["mitigation_potential"] in ("high", "very_high")
+    # the same three failures with no severity stated still discount
+    unspec = [
+        _u(
+            f"u{i}",
+            f"y{i}",
+            "drought_hazard",
+            "none",
+            "unspecified",
+            ctx={"hazard_type": "drought"},
+        )
+        for i in range(3)
+    ]
+    rows, _ = cs.synthesise_cell(
+        strong + unspec,
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    assert rows[0]["justification"]["intensity_limited"] is True
+    assert rows[0]["mitigation_potential"] == "low"
+
+
+def test_severe_end_coverage_drives_the_statement():
+    mod_ctx = {
+        "hazard_type": "drought",
+        "hazard_severity": "moderate",
+        "severity_cue": "dry year",
+    }
+    sev_ctx = {
+        "hazard_type": "drought",
+        "hazard_severity": "extreme",
+        "severity_cue": "rainless",
+    }
+    gain_mod = _u("g", "s1", "drought_hazard", "negative", "strong", ctx=mod_ctx)
+    gain_mod2 = _u("g2", "s3", "drought_hazard", "negative", "strong", ctx=mod_ctx)
+    fail_sev = _u("f", "s2", "drought_hazard", "none", "unspecified", ctx=sev_ctx)
+    rows, _ = cs.synthesise_cell(
+        [gain_mod, gain_mod2, fail_sev],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    j = rows[0]["justification"]
+    assert j["severity_coverage"]["severe_end"] == "tested_no_gain"
+    assert (
+        "at severe or extreme drought the measured results show no benefit"
+        in j["statement"]
+    )
+    rows, _ = cs.synthesise_cell(
+        [gain_mod, gain_mod2],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    j = rows[0]["justification"]
+    assert j["severity_coverage"]["severe_end"] == "untested"
+    assert "no measured evidence at severe or extreme drought" in j["statement"]
+    # one severe gain against several severe/extreme failures reads "mostly no benefit"
+    gain_sev = _u("gs", "s4", "drought_hazard", "negative", "slight", ctx=sev_ctx)
+    fails = [
+        _u(f"f{i}", f"z{i}", "drought_hazard", "none", "unspecified", ctx=sev_ctx)
+        for i in range(3)
+    ]
+    rows, _ = cs.synthesise_cell(
+        [gain_mod, gain_mod2, gain_sev] + fails,
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    j = rows[0]["justification"]
+    assert j["severity_coverage"]["severe_end"] == "mostly_no_gain"
+    assert "mostly show no benefit (1 gain vs 3 failures)" in j["statement"]
