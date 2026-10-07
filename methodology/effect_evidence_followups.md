@@ -618,6 +618,9 @@ One question — the practice's effect in drought / dry / heat / flood YEARS aga
 | Boillat 2019 co-authored by P. Steward | independence axis | tier note |
 | silvopastoral India 2008 cached file = journal volume (95 pp), title verify failed | re-acquire the article by title | Namita |
 
+
+**Intensity cap (Pete 2026-10-07, applied).** A measured same-hazard null / reversal in a T3 livelihood pool caps the class at `moderate` (`justification.intensity_limited` + `intensity_limiting_ids`). WH drought very_high → moderate; AF planted_silvoarable drought high → moderate. Decision record: `methodology/decisions/2026-10-06_wh_evidence_decisions.md` §Decision 6.
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |

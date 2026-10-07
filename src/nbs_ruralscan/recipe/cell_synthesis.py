@@ -1092,6 +1092,7 @@ def _statement(
     envelope: dict[str, Any],
     role: str,
     strength_basis: str = "quantified",
+    intensity_limited: bool = False,
 ) -> str:
     """Calibrated-language statement; levels inserted by the engine (contract §5)."""
     # name the AEZs only when they cover at least half of the pooled units; a single
@@ -1145,6 +1146,12 @@ def _statement(
             core = f"{nbs_id} {strength[-rank]} {down} {key}".replace("  ", " ")
         if strength_basis == "direction_only":
             core += " (strength not quantified in the evidence)"
+        if intensity_limited:
+            core += (
+                f" — capped at moderate: the measured evidence includes no-benefit or "
+                f"reversal results under severe {key}, so the practice does not hold "
+                f"under late-onset or extreme {key}"
+            )
     return (
         f"{core} in {where} ({ev_l} evidence, {ag_l} agreement → {conf} confidence; "
         f"transfer: {envelope.get('transfer_class')})."
@@ -1239,6 +1246,43 @@ def apply_proxy_cap(
     return rec
 
 
+_MEASURED_BASES = {"primary_measured", "cited_secondary", "modelled"}
+
+
+def apply_intensity_cap(
+    rec: dict[str, Any], contribs: list[_Contrib], target_key: str
+) -> dict[str, Any]:
+    """T3 livelihood cells: a measured same-hazard null or reversal caps the class at
+    `moderate` and flags the row `intensity_limited`.
+
+    A strong gain in a rainfall-deficit year does not make a practice a drought
+    defence: water harvesting is not irrigation and does not help in a late-onset or
+    extreme drought (Pete, 2026-10-07 — complete crop failure in Mozambique, conventional
+    tillage beating no-till in Zimbabwe 1991/92 sat in the pool while the cell read
+    very_high). Nulls already lower agreement; this makes the hazard-INTENSITY limit they
+    reveal bound the class too. Only measured units (not practitioner ratings) that STATE
+    this hazard count as such a signal. Pending ratification.
+    """
+    modal = int(rec.get("modal_sign") or 0)
+    if modal <= 0 or int(rec.get("rank", 0)) <= 2:
+        return rec
+    limiting = [
+        c.unit.evidence_id
+        for c in contribs
+        if c.has_direction
+        and c.sign <= 0
+        and c.unit.claim_basis in _MEASURED_BASES
+        and str((c.unit.context or {}).get("hazard_type") or "") == target_key
+    ]
+    if not limiting:
+        return rec
+    rec = dict(rec)
+    rec["rank"] = 2
+    rec["intensity_limited"] = True
+    rec["intensity_limiting_ids"] = sorted(limiting)
+    return rec
+
+
 def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
     """The calibrated statement for a reconciled record (used as the mechanism placeholder)."""
     return _statement(
@@ -1252,6 +1296,7 @@ def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
         rec["applicability"],
         role,
         rec.get("strength_basis", "quantified"),
+        bool(rec.get("intensity_limited", False)),
     )
 
 
@@ -1331,9 +1376,12 @@ def traceable_account(
             env,
             role,
             rec.get("strength_basis", "quantified"),
+            bool(rec.get("intensity_limited", False)),
         ),
         "strength_basis": rec.get("strength_basis", "quantified"),
         "proxy_capped": bool(rec.get("proxy_capped", False)),
+        "intensity_limited": bool(rec.get("intensity_limited", False)),
+        "intensity_limiting_ids": rec.get("intensity_limiting_ids", []),
         "strength_from": rec.get("strength_from", "pool"),
         "evidence_summary": summary,
         "agreement_note": agreement_note,
@@ -1511,6 +1559,8 @@ def synthesise_cell(
     g = apply_proxy_cap(
         _reconcile_group(contribs, tiers, matrix, target_ctx), contribs, xw_by_unit
     )
+    if table == "T3" and role != "asset_vulnerability":
+        g = apply_intensity_cap(g, contribs, target_key)
     if table == "T6":
         cell = target_key
     elif role == "asset_vulnerability":
@@ -1670,6 +1720,8 @@ def synthesise_cell(
                     s_contribs,
                     xw_by_unit,
                 )
+                if table == "T3" and role != "asset_vulnerability":
+                    s_rec = apply_intensity_cap(s_rec, s_contribs, target_key)
                 s_rec["applicability"]["scope"] = {dim: sid}
                 g_class_for_scope = recompute_transfer_class(
                     global_row, [(c.ctx, c.weight) for c in contribs], s_target

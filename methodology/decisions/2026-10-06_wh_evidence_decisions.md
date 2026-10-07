@@ -125,3 +125,9 @@ These went in with the merge of #277 and are marked "pending ratification". No a
 
 **Rooftop decision (Pete, 2026-10-06): option (b).** The family registry already marks `rooftop_harvesting` as `qualitative_only` and "PARKED: settlement-driven, not a rural-landscape suitability surface" (Benson's scoping). The generated T3/T6 now honour that flag: any `qualitative_only` family's evidence stays in the register (30 units: 22 WOCAT cistern sheets, 8 Brazilian cistern evaluations) for Module 6 hand-off material but never sets a scored class or a row (`scripts/synthesise-t3t6.py`, `parked_families` in the run report).
 
+## Decision 6 (Pete, 2026-10-07) — hazard-intensity cap
+
+**Pete:** "The drought labelling seems a little high — water harvesting can mitigate drought a bit, but it is not irrigation; it is not going to help you with late-onset or extreme drought."
+
+**Applied as:** a T3 livelihood cell whose pool contains a *measured* same-hazard null or reversal (not a practitioner rating) is capped at **moderate** and its statement says why (`intensity_limited`, with the limiting units listed in the account). Nulls already lowered agreement; now the hazard-intensity limit they reveal bounds the class too. Effect: water-harvesting drought very high → **moderate** (bounded by complete crop failure in a Mozambican drought season, conventional tillage beating no-till in Zimbabwe 1991/92, no millet gain in Burkina Faso's driest year, Brazilian stores running dry, Tunisian consecutive drought years); planted-silvoarable agroforestry drought high → moderate (a measured no-benefit result); other cells unchanged. No prose changed (the evidence sets did not move).
+

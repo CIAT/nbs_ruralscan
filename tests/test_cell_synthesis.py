@@ -1747,3 +1747,55 @@ def test_family_row_identical_to_rollup_is_not_emitted():
     )
     assert len(rows) == 1 and not rows[0].get("suitability_family_id")
     assert any("identical to the roll-up" in n for n in rep.notes)
+
+
+def test_measured_same_hazard_null_caps_the_class_at_moderate():
+    strong = [
+        _u(
+            f"g{i}",
+            f"s{i}",
+            "drought_hazard",
+            "negative",
+            "strong",
+            ctx={"hazard_type": "drought"},
+        )
+        for i in range(3)
+    ]
+    failure = _u(
+        "f",
+        "s9",
+        "drought_hazard",
+        "none",
+        "unspecified",
+        ctx={"hazard_type": "drought"},
+    )
+    rows, _ = cs.synthesise_cell(
+        strong + [failure],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    assert rows[0]["mitigation_potential"] == "moderate"
+    assert rows[0]["justification"]["intensity_limited"] is True
+    assert "capped at moderate" in rows[0]["justification"]["statement"]
+    # a practitioner rating is not such a signal
+    rating = _u(
+        "r",
+        "s9",
+        "drought_hazard",
+        "none",
+        "unspecified",
+        ctx={"hazard_type": "drought"},
+        basis="expert_assertion",
+    )
+    rows, _ = cs.synthesise_cell(
+        strong + [rating],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    assert rows[0]["mitigation_potential"] in ("high", "very_high")
