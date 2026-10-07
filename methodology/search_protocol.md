@@ -162,3 +162,7 @@ Pete shared the ILRI "climate change × agri-food systems" umbrella-review proto
 
 **Not adopted from the protocol:** the 2015 date floor (our T3/T6 evidence needs older drought-year trials), the Scopus-only recall benchmark (we benchmark against frozen seed rows instead).
 
+### OA-recovery pass, 2026-10-07 — what actually blocks fetching (and the workarounds)
+
+A full pass over the 192 `pending` rows (fresh Unpaywall by DOI → `acquire-queue.py --all-dates` → three web-search lanes) recovered **71** automatically and found free copies for 27 more that only a browser can fetch. Most "tool acquisition failed" / "paywalled (verified)" labels were **bot walls, not paywalls**: Cloudflare / Akamai on MDPI, PNAS, PubMed Central, Europe PMC, T&F, Wiley, ScienceDirect, CORE, SSRN, ramsar.org; HAL / BORIS / PMC show a bot-check page to browser-like agents but serve a plain `curl` agent (now the acquirer's fallback UA); DSpace 7 repositories (CGSpace, Utrecht, Pretoria) expose files only through `/server/api/.../bitstreams/.../content`; MDPI serves PDFs from `mdpi-res.com`; PMC OA articles are mirrored on AWS S3; dead publisher links often have Internet Archive captures; Embrapa's TLS chain is incomplete (`curl -k`). Lane output and the per-source trail live in `pipeline/staging/oa_recovery/` (gitignored) and in the queue `note`/`blocker` columns. **Never again build a human hand-off from blocker text** — run this pass first; the residue goes to the human bucketed as free-click · institutional · ResearchGate.
+
