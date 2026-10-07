@@ -237,6 +237,12 @@
     <div class="panel" id="detail" aria-live="polite"><span class="muted">No cell selected.</span></div>
   </section>
 
+  <section aria-labelledby="h-decisions">
+    <h2 class="sec" id="h-decisions">Decisions waiting on Pete</h2>
+    <p class="muted" style="font-size:12px;margin-bottom:8px">From <code>methodology/decisions/open_decisions.csv</code> — open first, then parked, then decided. Answer by decision id.</p>
+    <div id="decisions"><span class="muted">—</span></div>
+  </section>
+
   <section aria-labelledby="h-blockers">
     <h2 class="sec" id="h-blockers">Open blockers</h2>
     <div id="blockers"><span class="muted">—</span></div>
@@ -545,6 +551,25 @@
     return h;
   }
 
+  function renderDecisions() {
+    var e = el('decisions');
+    var rows = (DATA && DATA.decisions) || [];
+    if (!rows.length) { if (e) e.innerHTML = '<span class="muted">' + DASH + '</span>'; return ''; }
+    var h = '<table class="kv"><thead><tr><th>id</th><th>status</th><th>question</th><th>options · recommendation</th><th>decided</th><th>record</th></tr></thead><tbody>';
+    rows.forEach(function (r) {
+      var st = r.status || '';
+      var cls = st === 'open' ? 'in_progress' : (st === 'decided' ? 'done' : 'not_started');
+      var rec = r.record ? '<a href="https://github.com/CIAT/nbs_ruralscan/blob/main/' + esc(r.record) + '">record</a>' : DASH;
+      var dec = r.decided ? esc(r.decided) + (r.decided_on ? ' <span class="muted">(' + esc(r.decided_on) + ')</span>' : '') : '<span class="muted">' + DASH + '</span>';
+      h += '<tr><td><code>' + esc(r.decision_id || '') + '</code></td><td>' + pill(cls) + ' ' + esc(st) + (r._status_note ? ' <span class="muted">' + esc(r._status_note) + '</span>' : '') + '</td>'
+        + '<td>' + esc(r.question || '') + '</td><td>' + esc(r.options || '') + (r.recommendation ? '<br><span class="muted">rec: ' + esc(r.recommendation) + '</span>' : '') + '</td>'
+        + '<td>' + dec + '</td><td>' + rec + '</td></tr>';
+    });
+    h += '</tbody></table>';
+    if (e) e.innerHTML = h;
+    return h;
+  }
+
   function showError(text) {
     var e = el('msg');
     if (e) e.innerHTML = '<div class="msg">' + esc(text) + '</div>';
@@ -557,6 +582,7 @@
     renderStamp();
     renderLegend();
     renderMatrix();
+    renderDecisions();
     renderBlockers();
   }
 
@@ -579,7 +605,7 @@
 
   var api = {
     load: load, renderAll: renderAll, renderStamp: renderStamp, renderLegend: renderLegend, renderMatrix: renderMatrix,
-    cellSummary: cellSummary, pill: pill, renderStageDetail: renderStageDetail, renderBlockers: renderBlockers,
+    cellSummary: cellSummary, pill: pill, renderStageDetail: renderStageDetail, renderBlockers: renderBlockers, renderDecisions: renderDecisions,
     bar: bar, esc: esc
   };
   root.ProgressPage = api;
