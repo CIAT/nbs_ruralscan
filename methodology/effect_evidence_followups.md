@@ -623,6 +623,8 @@ One question — the practice's effect in drought / dry / heat / flood YEARS aga
 
 **Hazard severity in synthesis (Decision 7, applied 2026-10-07).** `hazard_severity` (ruleset v1.6.3) feeds the engine: `mild`-tagged measured failures are exempt from the intensity discount (unspecified still count); every T3 livelihood account carries `severity_coverage` (gains/failures per severity + `severe_end` = tested_gain · mostly_no_gain · tested_no_gain · untested) and the statement names it. Severe-end picture: WH 11 cells no-gain, 3 mostly-no-gain, 1 gain, 21 untested; AF 64 untested, 4 gain; FR 22 untested, 5 gain. Follow-up: a severity-banded T3 class (option 3) only if M5 asks.
 
+**Round-3 ontology gaps (2026-10-07, Decision 8).** VONT `water_yield` (16 units re-labelled from `water_regulation`) + `yield_stability` (9 from `crop_yield`), XW routes to water_stress / production_gap (T6) and drought (T3 proxy); SRC `vars_extracted` synced. No T3 class moved; FR `water_stress` moderate → strong positive because Teo 2022's four modelled regional outputs now set the strength on a direct route against three measured reviews — Decision 8a (modelled-only strength cap proposed). Still open: landslide hazard enum (8b), livelihood diversification (Mezgebo, 1 unit), vegetation structure (Crouzeilles), social acceptance / reclearance (no units yet).
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |
