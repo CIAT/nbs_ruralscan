@@ -627,6 +627,8 @@ One question — the practice's effect in drought / dry / heat / flood YEARS aga
 
 **Decision round 2026-10-07 (Pete's answers, applied).** Maladaptation signal on every livelihood/priority row; modelled-only strength cap (8a B — does NOT move FR water_stress: Meaza 2022 measured baseflow backs the strength; the real tension is ratings-vs-syntheses direction = D1); effect-locus lookup (FR off_site → `landscape_scale_only`). PICOS B → next PR (comparator tag). Open: 8b landslide enum; D1 reversal if Pete wants syntheses to outweigh compiler ratings on direction.
 
+**PICOS B applied (2026-10-07, ruleset v1.6.4).** 37 FR units tagged `comparator=existing_forest`; `comparator_policy.csv` + `synthesise_cell_with_families` keep them in protection/mangrove family rows only. Protection flood high → moderate; cross_family soil_erosion row gone; 21 FR rows re-pooled + prose rewritten. Open: 8b landslide enum; D1 reversal question (syntheses vs compiler ratings on direction).
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |

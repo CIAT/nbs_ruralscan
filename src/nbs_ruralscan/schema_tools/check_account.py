@@ -90,6 +90,18 @@ def check_row(row: dict, ev: dict[str, dict]) -> list[dict]:
         str(app.get("weight_share_in_context", "")),
     }
     whitelist |= {str(acc.get("agreement", ""))}
+    # Decision 6/7/8 derived counts: maladaptation source/unit counts, severe-end
+    # gain/failure counts, intensity share, discount origin — engine arithmetic, not claims
+    mal = acc.get("maladaptation") or {}
+    sev = (acc.get("severity_coverage") or {}).get("severe_end_counts") or {}
+    whitelist |= {
+        str(mal.get("n_sources", "")),
+        str(mal.get("n_units", "")),
+        str(sev.get("gains", "")),
+        str(sev.get("failures", "")),
+        str(acc.get("intensity_limit_share", "")),
+        str(acc.get("intensity_discounted_from", "")),
+    }
     for fld in _PROSE_FIELDS:
         text = acc.get(fld)
         if not text:

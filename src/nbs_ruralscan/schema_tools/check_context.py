@@ -13,6 +13,7 @@ Flags (advisory, never fatal), on ACTIVE `nbs_effect` / `asset_vulnerability` un
                             `timescale_of_effect` not in their enums, `country` not ISO3-shaped
 * `missing_income_group`  — `country` known but no `income_group` (the WB lookup resolves it)
 * `missing_hazard_type`   — a hazard-routed unit with no `context.hazard_type`
+* `bad_vocab` also covers `comparator` (v1.6.4: `existing_forest`)
 * `severity_without_hazard` — `hazard_severity` set on a unit with no `hazard_type` (v1.6.3)
 * `missing_severity_cue`  — `hazard_severity` other than `unspecified` with no `severity_cue`
 * `severity_cue_not_in_quote` — the cue is not a verbatim substring of quote / note / outcome_raw
@@ -40,6 +41,7 @@ ALLOWED_KEYS = {
     "hazard_type",
     "hazard_severity",  # v1.6.3: author-stated intensity of the hazard event
     "severity_cue",  # v1.6.3: verbatim words that justify hazard_severity
+    "comparator",  # v1.6.4: what the practice is compared against (existing_forest)
     "landscape_scale_only",
     "timescale_of_effect",
     "note",
@@ -62,6 +64,7 @@ HAZARDS = {
     "extreme_rainfall",
 }
 SEVERITY = {"mild", "moderate", "severe", "extreme", "unspecified"}
+COMPARATOR = {"existing_forest"}
 TIMESCALE = {"immediate", "short_term_1_3yr", "medium_term_3_7yr", "long_term_7yr_plus"}
 _ISO3 = re.compile(r"^[A-Z]{3}$")
 
@@ -134,6 +137,9 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
         flag("missing_income_group", ",".join(countries))
     if row.get("use_role") == "asset_vulnerability" and not ctx.get("hazard_type"):
         flag("missing_hazard_type", row.get("variable", ""))
+    comp = ctx.get("comparator")
+    if comp is not None and comp not in COMPARATOR:
+        flag("bad_vocab", f"comparator='{comp}'")
     sev = ctx.get("hazard_severity")
     if sev is not None:
         if sev not in SEVERITY:

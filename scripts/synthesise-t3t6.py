@@ -94,6 +94,7 @@ T6_FIELDS = [
     "context_dependent",
 ]
 T3_HAZARDS = cs.T3_HAZARDS
+COMPARATOR_POLICY = cs.load_comparator_policy(LOOK / "comparator_policy.csv")
 
 
 def _rd(path: Path) -> list[dict[str, str]]:
@@ -249,7 +250,13 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
     # ── T6: every XW T6 target (priorities + economic indicators) ──
     for key in sorted({x.target_key for x in xw if x.target_table == "T6"}):
         rows, rep = cs.synthesise_cell_with_families(
-            units, inp["tiers"], table="T6", nbs_id=nbs_id, target_key=key, **common
+            units,
+            inp["tiers"],
+            table="T6",
+            nbs_id=nbs_id,
+            comparator_policy=COMPARATOR_POLICY,
+            target_key=key,
+            **common,
         )
         if rows:
             t6_rows += rows
@@ -266,6 +273,7 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
                 inp["tiers"],
                 table="T3",
                 nbs_id=nbs_id,
+                comparator_policy=COMPARATOR_POLICY,
                 target_key=hz,
                 farming_system=fs,
                 **common,
@@ -281,6 +289,7 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
             inp["tiers"],
             table="T3",
             nbs_id=nbs_id,
+            comparator_policy=COMPARATOR_POLICY,
             target_key=hz,
             role="asset_vulnerability",
             **common,
