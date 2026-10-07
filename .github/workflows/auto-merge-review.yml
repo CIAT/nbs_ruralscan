@@ -40,7 +40,7 @@ jobs:
             *) echo "title not 'qaqc:*' — skip"; echo "ok=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
           esac
           # every changed file must be in the review set (registers + review_log + generated JSON)
-          allow='^(schema/registers/EV_evidence_register\.(csv|json)|pipeline/metrics/review_log\.csv|docs/(dashboard_data|progress)\.json)$'
+          allow='^(schema/registers/EV_evidence_register\.(csv|json)|pipeline/metrics/review_log\.csv|docs/(dashboard_data|progress|table_progress)\.json)$'
           files="$(gh pr view "$PR" --repo "$REPO" --json files --jq '.files[].path')"
           bad="$(printf '%s\n' "$files" | grep -vE "$allow" || true)"
           if [ -n "$bad" ]; then

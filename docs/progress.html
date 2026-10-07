@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>T3 / T6 Build Progress</title>
+<meta name="description" content="Internal stage-by-stage build status of the generated hazard (T3) and scorecard (T6) tables per NbS, with open blockers.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0b0f19;
+    --bg-secondary: #131c2e;
+    --bg-tertiary: #1e293b;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-emerald: #10b981;
+    --accent-sky: #0ea5e9;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --pill-done-bg: rgba(16, 185, 129, 0.18);
+    --pill-done-fg: #34d399;
+    --pill-prog-bg: rgba(245, 158, 11, 0.18);
+    --pill-prog-fg: #fbbf24;
+    --pill-none-bg: rgba(148, 163, 184, 0.12);
+    --pill-none-fg: #94a3b8;
+    --t3-bg: #4a3010;
+    --t3-fg: #fbe3bd;
+    --t6-bg: #4a1a2c;
+    --t6-fg: #f8d3e0;
+    --font-outfit: 'Outfit', sans-serif;
+    --font-inter: 'Inter', sans-serif;
+    --radius-md: 8px;
+    --radius-sm: 4px;
+  }
+  /* Light theme: explicit toggle, or OS preference when no explicit choice */
+  :root[data-theme="light"] {
+    --bg-primary: #f8fcfb;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent-emerald: #059669;
+    --accent-sky: #0284c7;
+    --accent-amber: #d97706;
+    --accent-rose: #e11d48;
+    --pill-done-bg: #e1f5ee;
+    --pill-done-fg: #085041;
+    --pill-prog-bg: #fdf0d5;
+    --pill-prog-fg: #8a4b06;
+    --pill-none-bg: #eef1f4;
+    --pill-none-fg: #64748b;
+    --t3-bg: #faeeda;
+    --t3-fg: #633806;
+    --t6-bg: #fbeaf0;
+    --t6-fg: #72243e;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg-primary: #f8fcfb;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent-emerald: #059669;
+      --accent-sky: #0284c7;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --pill-done-bg: #e1f5ee;
+      --pill-done-fg: #085041;
+      --pill-prog-bg: #fdf0d5;
+      --pill-prog-fg: #8a4b06;
+      --pill-none-bg: #eef1f4;
+      --pill-none-fg: #64748b;
+      --t3-bg: #faeeda;
+      --t3-fg: #633806;
+      --t6-bg: #fbeaf0;
+      --t6-fg: #72243e;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-inter);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  a { color: var(--accent-sky); }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 0 24px 48px; }
+
+  .app-header {
+    background-color: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+  .app-header .inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .brand-title { font-family: var(--font-outfit); font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+  .brand-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+  .stamp { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
+  .stamp code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .header-actions { display: flex; gap: 10px; align-items: center; }
+  .btn {
+    background: transparent; border: 1px solid var(--border-color); color: var(--text-primary);
+    border-radius: var(--radius-md); padding: 6px 12px; font: inherit; font-size: 12px; cursor: pointer; text-decoration: none;
+  }
+  .btn:hover { background: var(--bg-tertiary); }
+
+  section { margin-bottom: 28px; }
+  h2.sec { font-family: var(--font-outfit); font-size: 17px; font-weight: 600; margin-bottom: 10px; }
+  .panel { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; }
+  .muted { color: var(--text-muted); }
+  .msg { padding: 16px; border: 1px solid var(--accent-rose); border-radius: var(--radius-md); color: var(--accent-rose); background: var(--bg-secondary); }
+
+  /* pills */
+  .pill { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+  .pill.done { background: var(--pill-done-bg); color: var(--pill-done-fg); }
+  .pill.in_progress { background: var(--pill-prog-bg); color: var(--pill-prog-fg); }
+  .pill.not_started, .pill.unknown { background: var(--pill-none-bg); color: var(--pill-none-fg); }
+
+  /* legend */
+  .legend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px 20px; margin-bottom: 12px; }
+  .legend-grid dt { font-weight: 600; font-size: 12px; }
+  .legend-grid dd { font-size: 12px; color: var(--text-secondary); }
+  .legend-foot { font-size: 12px; color: var(--text-secondary); display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+
+  /* matrix (desktop table) */
+  .matrix-scroll { overflow-x: auto; }
+  table.matrix { border-collapse: collapse; width: 100%; font-size: 12px; }
+  table.matrix th, table.matrix td { border: 1px solid var(--border-color); padding: 4px; vertical-align: top; }
+  table.matrix thead th { font-weight: 600; font-size: 11px; color: var(--text-secondary); text-align: left; }
+  th.grp-T3 { background: var(--t3-bg); color: var(--t3-fg) !important; font-size: 12px !important; }
+  th.grp-T6 { background: var(--t6-bg); color: var(--t6-fg) !important; font-size: 12px !important; }
+  th.nbs { text-align: left; font-weight: 600; white-space: nowrap; background: var(--bg-secondary); }
+  .cell {
+    display: block; width: 100%; text-align: left; background: transparent; border: 1px solid transparent; border-radius: var(--radius-sm);
+    color: var(--text-primary); font: inherit; font-size: 11px; padding: 4px; cursor: pointer; min-height: 44px;
+  }
+  .cell:hover, .cell:focus-visible { background: var(--bg-tertiary); border-color: var(--accent-sky); outline: none; }
+  .cell.sel { border-color: var(--accent-sky); background: var(--bg-tertiary); }
+  .cell .hl { display: block; margin-top: 3px; color: var(--text-secondary); line-height: 1.3; }
+  .comp { font-weight: 700; font-size: 13px; }
+  .thin { height: 4px; background: var(--bg-tertiary); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .thin > span { display: block; height: 100%; background: var(--accent-emerald); }
+
+  /* matrix (phone cards) */
+  .mcards { display: none; }
+  .mcard { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px; margin-bottom: 12px; }
+  .mcard h3 { font-family: var(--font-outfit); font-size: 15px; margin-bottom: 8px; }
+  .mcard .tblhead { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; border-radius: var(--radius-sm); font-weight: 600; font-size: 12px; margin: 8px 0 6px; }
+  .tblhead.T3 { background: var(--t3-bg); color: var(--t3-fg); }
+  .tblhead.T6 { background: var(--t6-bg); color: var(--t6-fg); }
+  .mcard .stages { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .mcard .cell { border-color: var(--border-color); }
+  .stage-name { font-weight: 600; font-size: 11px; color: var(--text-primary); margin-right: 4px; }
+
+  @media (max-width: 720px) {
+    .wrap { padding: 0 16px 40px; }
+    .app-header { padding: 16px; }
+    .matrix-scroll { display: none; }
+    .mcards { display: block; }
+  }
+
+  /* detail */
+  .kv { border-collapse: collapse; width: 100%; font-size: 12px; }
+  .kv th, .kv td { border-bottom: 1px solid var(--border-color); padding: 6px 8px; text-align: left; vertical-align: top; }
+  .kv th { width: 30%; font-weight: 600; color: var(--text-secondary); word-break: break-word; }
+  .kv td { word-break: break-word; }
+  .kv .kv th { width: 35%; }
+  .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .chip { font-size: 11px; padding: 1px 7px; border-radius: 3px; background: var(--bg-tertiary); color: var(--text-secondary); }
+  .hist { display: grid; grid-template-columns: minmax(80px, max-content) 1fr auto; gap: 3px 8px; align-items: center; font-size: 11px; }
+  .hist .lab { color: var(--text-secondary); word-break: break-word; }
+  .hist .trk { height: 8px; background: var(--bg-tertiary); border-radius: 2px; overflow: hidden; min-width: 40px; }
+  .hist .trk > span { display: block; height: 100%; background: var(--accent-sky); }
+  .hist .n { font-variant-numeric: tabular-nums; }
+  .detail-h { font-family: var(--font-outfit); font-size: 15px; font-weight: 600; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  /* blockers */
+  details.blk { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 10px; }
+  details.blk > summary { cursor: pointer; padding: 10px 14px; font-weight: 600; font-family: var(--font-outfit); font-size: 14px; }
+  .blk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 14px 14px; }
+  @media (max-width: 720px) { .blk-grid { grid-template-columns: 1fr; } }
+  .blk-col { min-width: 0; }
+  .blk-col h4 { font-size: 12px; padding: 3px 8px; border-radius: var(--radius-sm); margin-bottom: 6px; }
+  .blk-col h4.T3 { background: var(--t3-bg); color: var(--t3-fg); }
+  .blk-col h4.T6 { background: var(--t6-bg); color: var(--t6-fg); }
+  .blk-col .row { font-size: 12px; margin-bottom: 6px; }
+  .blk-col .row b { color: var(--text-secondary); font-weight: 600; }
+  ul.top { list-style: none; font-size: 12px; }
+  ul.top li { padding: 5px 0; border-top: 1px solid var(--border-color); word-break: break-word; }
+  ul.top .sub { display: block; color: var(--text-muted); font-size: 11px; }
+  ul.plain { padding-left: 16px; font-size: 12px; }
+
+  footer { font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; }
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="inner">
+    <div>
+      <div class="brand-title">T3 / T6 Build Progress</div>
+      <div class="brand-subtitle">Internal — how far each NbS's hazard (T3) and scorecard (T6) tables have been built</div>
+      <div class="stamp" id="stamp">loading…</div>
+    </div>
+    <div class="header-actions">
+      <a class="btn" href="index.html">← All artefacts</a>
+      <button class="btn" id="theme-toggle" type="button" aria-label="Toggle light/dark theme">◐ Theme</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="msg"></div>
+
+  <section aria-labelledby="h-legend">
+    <h2 class="sec" id="h-legend">How stages are judged</h2>
+    <div class="panel" id="legend"><span class="muted">—</span></div>
+  </section>
+
+  <section aria-labelledby="h-matrix">
+    <h2 class="sec" id="h-matrix">Stage matrix</h2>
+    <p class="muted" style="font-size:12px;margin-bottom:8px">Select any stage cell to see every metric behind it.</p>
+    <div id="matrix"><span class="muted">—</span></div>
+  </section>
+
+  <section aria-labelledby="h-detail">
+    <h2 class="sec" id="h-detail">Stage detail</h2>
+    <div class="panel" id="detail" aria-live="polite"><span class="muted">No cell selected.</span></div>
+  </section>
+
+  <section aria-labelledby="h-blockers">
+    <h2 class="sec" id="h-blockers">Open blockers</h2>
+    <div id="blockers"><span class="muted">—</span></div>
+  </section>
+
+  <footer>Rebuilt by generate.py on every schema build · stage status = pipeline position, not evidence quality</footer>
+</main>
+
+<script>
+(function (root) {
+  'use strict';
+
+  var DATA = null;
+  var DEFAULT_STAGES = ['searched', 'acquired', 'extracted', 'reviewed', 'synthesised', 'prose', 'benchmarked'];
+  var TABLE_LABEL = { T3: 'T3 — hazard × farming system', T6: 'T6 — scorecard' };
+  var DASH = '—';
+
+  function esc(v) {
+    if (v === null || v === undefined) return '';
+    return String(v)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function has(v) { return v !== null && v !== undefined && v !== ''; }
+  function num(v) { return (typeof v === 'number' && isFinite(v)) ? v : null; }
+  function show(v) { return has(v) ? esc(v) : DASH; }
+  function obj(v) { return (v && typeof v === 'object' && !Array.isArray(v)) ? v : {}; }
+  function arr(v) { return Array.isArray(v) ? v : []; }
+  function label(id) {
+    if (!has(id)) return DASH;
+    var s = String(id).replace(/_/g, ' ');
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  function el(id) { return (typeof document !== 'undefined') ? document.getElementById(id) : null; }
+  function stagesList() {
+    var m = obj(DATA && DATA.meta);
+    return arr(m.stages).length ? m.stages : DEFAULT_STAGES;
+  }
+  function tablesList() {
+    var m = obj(DATA && DATA.meta);
+    return arr(m.tables).length ? m.tables : ['T3', 'T6'];
+  }
+  function nbsList() {
+    var m = obj(DATA && DATA.meta);
+    if (arr(m.nbs).length) return m.nbs;
+    return Object.keys(obj(DATA && DATA.cells));
+  }
+  function getCell(nbs, tbl) { return obj(obj(obj(DATA && DATA.cells)[nbs])[tbl]); }
+  function getStage(nbs, tbl, stage) { return obj(obj(getCell(nbs, tbl).stages)[stage]); }
+
+  function pill(status) {
+    var s = (status === 'done' || status === 'in_progress' || status === 'not_started') ? status : 'unknown';
+    var txt = { done: 'done', in_progress: 'in progress', not_started: 'not started', unknown: DASH }[s];
+    return '<span class="pill ' + s + '">' + txt + '</span>';
+  }
+
+  function bar(counter) {
+    var c = obj(counter);
+    var keys = Object.keys(c).filter(function (k) { return num(c[k]) !== null; });
+    if (!keys.length) return '<span class="muted">' + DASH + '</span>';
+    keys.sort(function (a, b) { return c[b] - c[a]; });
+    var max = Math.max.apply(null, keys.map(function (k) { return c[k]; })) || 1;
+    var h = '<div class="hist">';
+    keys.forEach(function (k) {
+      var w = Math.max(0, Math.round((c[k] / max) * 100));
+      h += '<span class="lab">' + esc(k) + '</span><span class="trk"><span style="width:' + w + '%"></span></span><span class="n">' + esc(c[k]) + '</span>';
+    });
+    return h + '</div>';
+  }
+
+  function tick(b) { return b === true ? '✓' : (b === false ? '✗' : DASH); }
+
+  function cellSummary(stageName, st, tbl) {
+    st = obj(st);
+    var n;
+    switch (stageName) {
+      case 'searched':
+        if (!st.categories_done && !st.categories_missing && !st.by_category) return DASH;
+        var done = arr(st.categories_done).length;
+        var tot = done + arr(st.categories_missing).length;
+        if (!tot) tot = Object.keys(obj(st.by_category)).length || 4;
+        return done + '/' + tot + ' categories';
+      case 'acquired':
+        if (num(st.discovered) === null) return DASH;
+        n = (num(st.acquired) || 0) + (num(st.extracted) || 0);
+        var s = n + '/' + st.discovered + ' in hand';
+        if (num(st.pending) > 0) s += ' · ' + st.pending + ' pending';
+        return s;
+      case 'extracted':
+        if (num(st.units_active) === null) return DASH;
+        return st.units_active + ' units · ' + (num(st.sources) !== null ? st.sources : DASH) + ' src';
+      case 'reviewed':
+        return num(st.pct_reviewed) === null ? DASH : st.pct_reviewed + '% reviewed';
+      case 'synthesised':
+        if (num(st.rows) === null) return DASH;
+        var r = st.rows + ' rows';
+        if (tbl === 'T3') {
+          var rr = obj(st.risk_role);
+          r += ' (' + (num(rr.livelihood_mitigation) || 0) + ' liv · ' + (num(rr.asset_threat) || 0) + ' asset)';
+        }
+        return r;
+      case 'prose':
+        if (num(st.with_prose) === null && num(st.total) === null) return DASH;
+        return (num(st.with_prose) !== null ? st.with_prose : DASH) + '/' + (num(st.total) !== null ? st.total : DASH);
+      case 'benchmarked':
+        if (!('seed' in st) && !('benchmark_md' in st)) return DASH;
+        return 'seed ' + tick(st.seed) + ' · md ' + tick(st.benchmark_md);
+      default:
+        return DASH;
+    }
+  }
+
+  function cellButton(nbs, tbl, stage, withName) {
+    var st = getStage(nbs, tbl, stage);
+    return '<button type="button" class="cell" data-nbs="' + esc(nbs) + '" data-tbl="' + esc(tbl) + '" data-stage="' + esc(stage) + '"' +
+      ' aria-label="' + esc(label(nbs) + ' ' + tbl + ' ' + stage) + '">' +
+      (withName ? '<span class="stage-name">' + esc(stage) + '</span>' : '') +
+      pill(st.status) + '<span class="hl">' + esc(cellSummary(stage, st, tbl)) + '</span></button>';
+  }
+
+  function completionHtml(nbs, tbl) {
+    var c = obj(getCell(nbs, tbl).completion);
+    var p = num(c.pct);
+    if (p === null) return '<span class="comp">' + DASH + '</span>';
+    var w = Math.max(0, Math.min(100, p));
+    return '<span class="comp">' + esc(p) + '%</span><div class="thin" role="img" aria-label="' + esc(p) + '% complete"><span style="width:' + w + '%"></span></div>' +
+      '<span class="muted" style="font-size:10px">' + show(c.n_done) + ' done · ' + show(c.n_in_progress) + ' in prog</span>';
+  }
+
+  function renderStamp() {
+    var e = el('stamp');
+    if (!e) return '';
+    var b = obj(DATA && DATA.build);
+    var ts = has(b.timestamp) ? String(b.timestamp) : '';
+    var date = ts ? ts.slice(0, 10) : DASH;
+    var sha = has(b.git_commit) ? String(b.git_commit) : '';
+    var shaHtml = sha
+      ? '<a href="https://github.com/CIAT/nbs_ruralscan/commit/' + encodeURIComponent(sha) + '"><code>' + esc(sha.slice(0, 7)) + '</code></a>'
+      : DASH;
+    var h = 'data as of <span title="' + esc(ts) + '">' + esc(date) + '</span> · built from ' + shaHtml;
+    e.innerHTML = h;
+    return h;
+  }
+
+  function renderLegend() {
+    var e = el('legend');
+    var m = obj(DATA && DATA.meta);
+    var rules = obj(m.rules);
+    var h = '<dl class="legend-grid">';
+    stagesList().forEach(function (s) {
+      h += '<div><dt>' + esc(s) + '</dt><dd>' + show(rules[s]) + '</dd></div>';
+    });
+    h += '</dl><div class="legend-foot">';
+    h += '<span><b>Completion:</b> ' + show(m.completion_rule) + '</span>';
+    var rds = num(m.review_done_share);
+    h += '<span><b>Review done-share:</b> ' + (rds === null ? DASH : esc(Math.round(rds * 100)) + '%') + '</span>';
+    h += '<span>' + pill('done') + ' ' + pill('in_progress') + ' ' + pill('not_started') + '</span>';
+    h += '</div>';
+    if (e) e.innerHTML = h;
+    return h;
+  }
+
+  function renderMatrix() {
+    var e = el('matrix');
+    var stages = stagesList(), tables = tablesList(), nbs = nbsList();
+    var span = stages.length + 1;
+    // desktop table
+    var h = '<div class="matrix-scroll"><table class="matrix"><thead><tr><th rowspan="2">NbS</th>';
+    tables.forEach(function (t) {
+      h += '<th colspan="' + span + '" class="grp-' + esc(t) + '">' + esc(TABLE_LABEL[t] || t) + '</th>';
+    });
+    h += '</tr><tr>';
+    tables.forEach(function () {
+      stages.forEach(function (s) { h += '<th scope="col">' + esc(s) + '</th>'; });
+      h += '<th scope="col">complete</th>';
+    });
+    h += '</tr></thead><tbody>';
+    nbs.forEach(function (n) {
+      h += '<tr><th scope="row" class="nbs">' + esc(label(n)) + '</th>';
+      tables.forEach(function (t) {
+        stages.forEach(function (s) { h += '<td>' + cellButton(n, t, s, false) + '</td>'; });
+        h += '<td>' + completionHtml(n, t) + '</td>';
+      });
+      h += '</tr>';
+    });
+    h += '</tbody></table></div>';
+    // phone cards
+    h += '<div class="mcards">';
+    nbs.forEach(function (n) {
+      h += '<div class="mcard"><h3>' + esc(label(n)) + '</h3>';
+      tables.forEach(function (t) {
+        var c = obj(getCell(n, t).completion);
+        h += '<div class="tblhead ' + esc(t) + '"><span>' + esc(TABLE_LABEL[t] || t) + '</span><span>' + (num(c.pct) === null ? DASH : esc(c.pct) + '%') + '</span></div>';
+        h += '<div class="stages">';
+        stages.forEach(function (s) { h += cellButton(n, t, s, true); });
+        h += '</div>';
+      });
+      h += '</div>';
+    });
+    h += '</div>';
+    if (!nbs.length) h = '<span class="muted">No NbS in data.</span>';
+    if (e) e.innerHTML = h;
+    return h;
+  }
+
+  function valueHtml(v) {
+    if (v === null || v === undefined || v === '') return '<span class="muted">' + DASH + '</span>';
+    if (typeof v === 'boolean') return v ? '✓ yes' : '✗ no';
+    if (typeof v === 'number' || typeof v === 'string') return esc(v);
+    if (Array.isArray(v)) {
+      if (!v.length) return '<span class="muted">none</span>';
+      return '<div class="chips">' + v.map(function (x) {
+        var t;
+        if (Array.isArray(x)) t = x.map(function (y) { return String(y); }).join(' · ');
+        else if (x && typeof x === 'object') t = Object.keys(x).map(function (k) { return k + ': ' + x[k]; }).join(' · ');
+        else t = String(x);
+        return '<span class="chip">' + esc(t) + '</span>';
+      }).join('') + '</div>';
+    }
+    if (typeof v === 'object') {
+      var keys = Object.keys(v);
+      if (!keys.length) return '<span class="muted">none</span>';
+      var allNum = keys.every(function (k) { return num(v[k]) !== null; });
+      if (allNum) return bar(v);
+      return kvTable(v);
+    }
+    return esc(v);
+  }
+
+  function kvTable(o) {
+    var h = '<table class="kv"><tbody>';
+    Object.keys(o).forEach(function (k) {
+      h += '<tr><th scope="row">' + esc(k) + '</th><td>' + valueHtml(o[k]) + '</td></tr>';
+    });
+    return h + '</tbody></table>';
+  }
+
+  function renderStageDetail(nbs, tbl, stage) {
+    var e = el('detail');
+    var st = getStage(nbs, tbl, stage);
+    var h = '<div class="detail-h">' + esc(label(nbs)) + ' · ' + esc(tbl) + ' · ' + esc(stage) + ' ' + pill(st.status) + '</div>';
+    var rule = obj(obj(DATA && DATA.meta).rules)[stage];
+    if (has(rule)) h += '<p class="muted" style="font-size:12px;margin-bottom:8px">' + esc(rule) + '</p>';
+    var rest = {};
+    Object.keys(st).forEach(function (k) { if (k !== 'status') rest[k] = st[k]; });
+    h += Object.keys(rest).length ? kvTable(rest) : '<span class="muted">No metrics for this stage.</span>';
+    if (e) e.innerHTML = h;
+    if (typeof document !== 'undefined') {
+      var btns = document.querySelectorAll('.cell');
+      for (var i = 0; i < btns.length; i++) {
+        var b = btns[i];
+        var on = b.getAttribute('data-nbs') === String(nbs) && b.getAttribute('data-tbl') === String(tbl) && b.getAttribute('data-stage') === String(stage);
+        b.classList.toggle('sel', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+    }
+    return h;
+  }
+
+  function blockerCol(nbs, tbl) {
+    var b = obj(getCell(nbs, tbl).blockers);
+    var h = '<div class="blk-col"><h4 class="' + esc(tbl) + '">' + esc(TABLE_LABEL[tbl] || tbl) + '</h4>';
+    if (!Object.keys(b).length) return h + '<p class="muted" style="font-size:12px">' + DASH + '</p></div>';
+    var pbr = obj(b.pending_by_reason);
+    h += '<div class="row"><b>Pending by reason</b>' + (Object.keys(pbr).length ? bar(pbr) : ' <span class="muted">none</span>') + '</div>';
+    h += '<div class="row"><b>Acquired, not extracted:</b> ' + show(b.acquired_not_extracted) + '</div>';
+    h += '<div class="row"><b>Unmapped variables</b> ' + valueHtml(arr(b.unmapped_variables)) + '</div>';
+    h += '<div class="row"><b>Parked families</b> ' + valueHtml(arr(b.parked_families)) + '</div>';
+    h += '<div class="row"><b>Weights incomplete</b> ' + valueHtml(arr(b.weights_incomplete)) + '</div>';
+    var notes = arr(b.ledger_notes);
+    h += '<div class="row"><b>Ledger notes</b>';
+    if (notes.length) {
+      h += '<ul class="plain">' + notes.map(function (n) {
+        n = obj(n);
+        return '<li>' + (has(n.family) ? '<b>' + esc(n.family) + '</b>: ' : '') + show(n.note) +
+          ' <span class="muted">(' + show(n.last_run_id) + ', ' + show(n.updated) + ')</span></li>';
+      }).join('') + '</ul>';
+    } else h += ' <span class="muted">none</span>';
+    h += '</div>';
+    var warns = arr(b.warnings);
+    h += '<div class="row"><b>Warnings</b>' + (warns.length ? '<ul class="plain">' + warns.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul>' : ' <span class="muted">none</span>') + '</div>';
+    var top = arr(b.top);
+    h += '<div class="row"><b>Top blocked sources</b>';
+    if (top.length) {
+      h += '<ul class="top">' + top.map(function (t) {
+        t = obj(t);
+        return '<li><code>' + show(t.source_id) + '</code> · ' + show(t.reason) + ' · ' + show(t.citation) +
+          (has(t.blocker) ? '<span class="sub">' + esc(t.blocker) + '</span>' : '') + '</li>';
+      }).join('') + '</ul>';
+    } else h += ' <span class="muted">none</span>';
+    h += '</div></div>';
+    return h;
+  }
+
+  function renderBlockers() {
+    var e = el('blockers');
+    var nbs = nbsList();
+    var h = '';
+    nbs.forEach(function (n) {
+      h += '<details class="blk" open><summary>' + esc(label(n)) + '</summary><div class="blk-grid">';
+      tablesList().forEach(function (t) { h += blockerCol(n, t); });
+      h += '</div></details>';
+    });
+    if (!nbs.length) h = '<span class="muted">' + DASH + '</span>';
+    if (e) e.innerHTML = h;
+    return h;
+  }
+
+  function showError(text) {
+    var e = el('msg');
+    if (e) e.innerHTML = '<div class="msg">' + esc(text) + '</div>';
+    var s = el('stamp');
+    if (s) s.textContent = 'data unavailable';
+  }
+
+  function renderAll(data) {
+    DATA = data || {};
+    renderStamp();
+    renderLegend();
+    renderMatrix();
+    renderBlockers();
+  }
+
+  function load() {
+    if (typeof fetch === 'undefined') return Promise.resolve(null);
+    return fetch('table_progress.json', { cache: 'no-store' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (data) {
+        try { renderAll(data); } catch (err) { showError('Could not render table_progress.json: ' + err.message); }
+        return data;
+      })
+      .catch(function (err) {
+        showError('Could not load table_progress.json (' + (err && err.message ? err.message : err) + '). It is written by generate.py on every schema build — if you opened this file directly from disk, serve docs/ over HTTP instead (cd docs && python3 -m http.server 8000).');
+        return null;
+      });
+  }
+
+  var api = {
+    load: load, renderAll: renderAll, renderStamp: renderStamp, renderLegend: renderLegend, renderMatrix: renderMatrix,
+    cellSummary: cellSummary, pill: pill, renderStageDetail: renderStageDetail, renderBlockers: renderBlockers,
+    bar: bar, esc: esc
+  };
+  root.ProgressPage = api;
+
+  if (typeof document !== 'undefined') {
+    document.addEventListener('click', function (ev) {
+      var t = ev.target && ev.target.closest ? ev.target.closest('.cell') : null;
+      if (!t) return;
+      renderStageDetail(t.getAttribute('data-nbs'), t.getAttribute('data-tbl'), t.getAttribute('data-stage'));
+      var d = el('detail');
+      if (d && window.matchMedia && window.matchMedia('(max-width: 720px)').matches && d.scrollIntoView) d.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    var tg = el('theme-toggle');
+    if (tg) tg.addEventListener('click', function () {
+      var rootEl = document.documentElement;
+      var cur = rootEl.getAttribute('data-theme');
+      if (!cur) cur = (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+      var next = cur === 'light' ? 'dark' : 'light';
+      rootEl.setAttribute('data-theme', next);
+      try { localStorage.setItem('progressTheme', next); } catch (e) { /* storage unavailable */ }
+    });
+    try {
+      var saved = localStorage.getItem('progressTheme');
+      if (saved === 'light' || saved === 'dark') document.documentElement.setAttribute('data-theme', saved);
+    } catch (e) { /* storage unavailable */ }
+    load();
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
+</script>
+</body>
+</html>
