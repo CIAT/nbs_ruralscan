@@ -1,0 +1,34 @@
+# Source acquisition hand-off (2026-10-07)
+
+**For:** whoever can give a few hours to chase PDFs (Pete suggested Charity). **From:** the NbS Rural Scan evidence pipeline (Pete Steward). Plain-language; no tooling needed beyond a browser and SharePoint.
+
+## What this is
+
+Our evidence tables are built only from sources whose full text we hold. 192 sources that our searches flagged as relevant could not be fetched automatically. Each one needs a human to find and save the PDF. Nothing else: no reading, no judging relevance.
+
+## How to do one row
+
+1. Open `2026-10-07_acquisition_handoff.csv` (same folder). Work top to bottom: priority 1 first.
+2. Follow **what_to_do** for the row (the **bucket** says why it was blocked). Try the **url** and the **doi** (`https://doi.org/<doi>`) first.
+3. Save the PDF to SharePoint at the path in **save_to_sharepoint**, named exactly as **file_name** (the source id). Same name is what links the file to the register.
+4. Put `yes` in **done** (or `no copy found` / `wrong paper` if that is the outcome) and, if you found it somewhere unexpected, note where in **blocker_note**.
+5. Send the CSV back (or commit it) when you stop; partial progress is fine.
+
+Two cautions: the **citation is the trust anchor** (a DOI can resolve to the wrong paper; if title and DOI disagree, save the paper matching the title and say so); and please do not retype or "clean" anything in the file.
+
+## What is in the list
+
+| bucket | meaning | n |
+|---|---|---|
+| A_researchgate_check | Search ResearchGate / Academia for a free full text; if found, download. | 44 |
+| C_institutional_access | Verified no open copy: download through institutional (university / CGIAR) journal access. | 110 |
+| D_browser_download | The link works in a browser but not for our fetcher (403 / landing page): open and save the PDF manually. | 18 |
+| E_other | See blocker note. | 20 |
+
+By NbS: agroforestry 66, forest_restoration 40, riparian_buffer 1, water_harvesting_conservation 72, wetland_management 13. Priority 1 = institutional access and CGSpace limited-access rows (110 rows); priority 2 = ResearchGate / browser checks.
+
+## What happens after
+
+The pipeline hydrates its cache from the SharePoint library, verifies each PDF's title against the citation, and only then extracts. Rows marked `no copy found` are retired from the queue as verified-inaccessible.
+
+Technical record: `pipeline/acquisition_queue.csv` (status `pending`), `methodology/search_protocol.md` §OA-recovery.
