@@ -110,15 +110,33 @@ def _floats(toks: set[str]) -> set[float]:
     return out
 
 
+#: Provenance tokens that are never claims (retro 2026-10-07; 1,122 WOCAT false positives):
+#: the WOCAT adapter's questionnaire references ("WOCAT QT 6.3", "WOCAT 6.1.flood_impacts",
+#: "on the −3…+3 scale"), ISO run dates, and evidence-id references in process notes.
+_PROVENANCE = re.compile(
+    r"WOCAT\s+(?:QT\s*)?\d(?:\.\d)?(?:\.[a-z_]+)?(?:\s*:)?"
+    r"|WOCAT\s+[a-z_]+\.[a-z_]+"
+    r"|\bQT\s*\d(?:\.\d)?\b"
+    r"|on the [−-]3…\+3 scale"
+    r"|\b\d{4}-\d{2}-\d{2}\b"
+    r"|\b[eE][vV]_[A-Za-z0-9_]+"
+)
+
+
+def _strip_provenance(text: str) -> str:
+    return _PROVENANCE.sub(" ", text)
+
+
 def _rel_nums(rel: str) -> set[str]:
-    """All numeric tokens appearing in a relationship dict (keys are ignored)."""
+    """All numeric tokens appearing in a relationship dict (keys are ignored); adapter
+    provenance, ISO dates and evidence-id references are not numbers (``_PROVENANCE``)."""
     try:
         data = json.loads(rel)
     except (json.JSONDecodeError, TypeError):
-        return _nums(rel)
+        return _nums(_strip_provenance(rel))
     # " ; " not " ": adjacent values (observed_min 251, observed_max 500) must never fuse
     # into a space-grouped "thousands" number on the relationship side
-    vals = " ; ".join(str(v) for v in _walk(data))
+    vals = " ; ".join(_strip_provenance(str(v)) for v in _walk(data))
     return _nums(vals)
 
 

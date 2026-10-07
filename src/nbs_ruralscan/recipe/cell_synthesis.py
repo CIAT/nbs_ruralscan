@@ -534,6 +534,49 @@ def unit_rank(
     return sign, mag
 
 
+#: Study-design weights (Decision D1 revisited, Pete 2026-10-07: "synthesis should be higher
+#: weighted than practitioner ratings, the latter will be biased"). Read from
+#: `schema/lookups/design_weights.csv`; these defaults are the fallback when it is absent.
+_DEFAULT_DESIGN_W: dict[str, float] = {
+    "meta_analysis": 1.5,
+    "review": 1.25,
+    "rct": 1.2,
+    "quasi_experimental": 1.0,
+    "observational": 1.0,
+    "model": 1.0,
+    "case_study": 0.9,
+    "expert": 0.6,
+    "practitioner_rating": 0.5,
+}
+
+
+def load_design_weights(path: Path | None = None) -> dict[str, float]:
+    path = path or (
+        Path(__file__).resolve().parents[3]
+        / "schema"
+        / "lookups"
+        / "design_weights.csv"
+    )
+    if not Path(path).exists():
+        return dict(_DEFAULT_DESIGN_W)
+    out: dict[str, float] = {}
+    with Path(path).open(newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            try:
+                out[r["design"].strip()] = float(r["weight_factor"])
+            except (KeyError, ValueError, AttributeError):
+                continue
+    return out or dict(_DEFAULT_DESIGN_W)
+
+
+DESIGN_W: dict[str, float] = load_design_weights()
+
+
+def design_factor(unit: EvidenceUnit) -> float:
+    d = str((unit.relationship or {}).get("design") or "").strip().lower()
+    return DESIGN_W.get(d, 1.0)
+
+
 def unit_weight(
     unit: EvidenceUnit,
     tier: str,
@@ -542,6 +585,7 @@ def unit_weight(
     xw_factor: float = 1.0,
 ) -> float:
     w = TIER_W.get((tier or "").lower(), 0.5) * BASIS_W.get(unit.claim_basis, 0.5)
+    w *= design_factor(unit)
     if (category or "").lower() == "grey":
         w *= GREY_DISCOUNT.get(unit.use_role, _DEFAULT_GREY_DISCOUNT)
     w *= TRANSFER_W.get(distance, TRANSFER_W[2]) * xw_factor
@@ -1620,9 +1664,12 @@ def traceable_account(
         if rec.get("agreement_undefined")
         else f"weighted sign agreement {rec['agreement']}"
     )
+    w_pos = round(sum(c.weight for c in contribs if c.sign > 0), 2)
+    w_neg = round(sum(c.weight for c in contribs if c.sign < 0), 2)
+    w_zero = round(sum(c.weight for c in contribs if c.sign == 0), 2)
     agreement_note = (
-        f"{head}: positive {len(pos)} {pos}; "
-        f"negative {len(neg)} {neg}; null {len(zero)} {zero}."
+        f"{head}: positive {len(pos)} (weight {w_pos}) {pos}; "
+        f"negative {len(neg)} (weight {w_neg}) {neg}; null {len(zero)} (weight {w_zero}) {zero}."
     )
     return {
         "statement": _statement(

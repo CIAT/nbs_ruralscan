@@ -631,6 +631,10 @@ One question — the practice's effect in drought / dry / heat / flood YEARS aga
 
 **8b B applied (2026-10-07).** `landslide` = asset-threat-only hazard (`ASSET_ONLY_HAZARDS`, `check_context.HAZARDS`, manifest enum, `wocat_hazard_map` landslide → landslide). 9 WOCAT coping units re-tagged + renamed `ev_asset_landslide_*`; 15 erosion-filed landslide effect units carry a note. New asset rows WH low · FR moderate (assisted regeneration high). Option A (livelihood landslide cell + M2 layer) parked.
 
+**Retro, October effect rounds (2026-10-07, ruleset v1.6.6).** `numberprov_rate_pct` had jumped 2.1 → 45.8 %: 1,122 WOCAT false positives (adapter questionnaire references `QT 6.x`, `−3…+3 scale` read as numbers) + 95 process notes (run dates, `superseded_by`, ruleset stamps) in `relationship.note`. Fixed: provenance exemptions in `check_numbers`, notes migrated to `context.note` (`process:`), catalogue #22/#23 (process metadata; ex-ante PADs). Post-retro 8.1 % (255 active flags; triage `pipeline/metrics/numberprov_triage_2026-10-07.csv`: value_not_in_quote → verify; gloss numbers → widen quote or drop; labels/citations → accept or move). Still above the 2.1 % of the last sweep because the October lanes (v1.6.0/1.6.2) put paper numbers in `outcome_raw` glosses (catalogue #20) — tighten before the next lane: glosses carry NO digits not in the quote. Learning-loop cursor advanced 335 → 624.
+
+**Design weights (D1 revisited, Pete 2026-10-07).** `schema/lookups/design_weights.csv` (meta-analysis 1.5 · review 1.25 · RCT 1.2 · practitioner rating 0.5 · expert 0.6) multiplies unit weight; agreement notes now show the weight behind each sign. 20 class moves (drought cells up where meta-analyses outweigh ratings; FR active_planting biodiversity → moderate_negative; poverty/erosion roll-ups ±1). FR water_stress unchanged (Meaza 2022 measured + Teo model still carry it). D6 confirmed. Register rows D6/D1 → decided once #296 is on main.
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |
