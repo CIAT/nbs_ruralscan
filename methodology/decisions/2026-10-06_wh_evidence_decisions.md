@@ -150,3 +150,15 @@ No prose text changed (the prose describes the evidence, not the class, and its 
 
 **To confirm or change:** reply "6 ok", or say what feels off (e.g. "in-situ low is too harsh") and the share-to-class step can be tuned.
 
+## Decision 7 (Pete, 2026-10-07) — tag the severity of the hazard on the evidence
+
+**Pete:** "Do we qualify the severity of the hazard in the table?" — we did not. Chosen: option 2, tag severity on the evidence, with the note that much evidence will not qualify it.
+
+**What changed.** Every hazard-stated effect and asset unit now carries `hazard_severity`: the author's own description of the event the result was observed under — `mild` (dry spell, erratic rain, late onset) · `moderate` (a drought / dry / low-rainfall year, a flood, no stronger qualifier) · `severe` (severe, driest year of a series, consecutive drought years, stores dried up) · `extreme` (extreme, record, rainless season, complete failure season, return period of 1-in-20 or rarer) · `unspecified` (the default: ratings, general statements, pooled reviews, model averages). Each tag other than `unspecified` cites the exact words from the quote, and the build checks those words are really there. Nothing was inferred from rainfall numbers or from what a drought "must" have been.
+
+**What the tags show (395 units tagged; 319 unspecified, 30 moderate, 20 severe, 18 extreme, 8 mild).** Water harvesting drought evidence: measured units span moderate (7), severe (4) and extreme (4) events; the WOCAT ratings are mostly unspecified, with four practitioner sheets describing dry spells. Agroforestry drought: most measured evidence (32 of 44) does not qualify the event; 8 moderate, 2 severe, 2 extreme. Forest restoration: 5 units, mostly moderate. So the honest statement for most cells will be "benefit observed in moderate events; little or no measured evidence at the severe or extreme end".
+
+**What happens next (engine, separate PR once #287 is merged).** (a) The Decision 6 discount ignores failures tagged `mild` (a practice that cannot buffer a dry spell is a different finding; it still lowers agreement). Unspecified failures keep counting — most evidence is unspecified, and ignoring it would silently restore the old optimism. (b) Each T3 livelihood row's account reports gains and failures per severity, and the statement says plainly when no measured gain exists at severe or extreme while failures do. T3 keeps one class per cell; the severity banding of the class itself (option 3) stays open for Module 5 to ask for.
+
+**To confirm:** "7 ok", or name tags to re-check (the lane's ten least-certain calls are listed in the PR body).
+
