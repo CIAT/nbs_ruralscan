@@ -13,6 +13,9 @@ Flags (advisory, never fatal), on ACTIVE `nbs_effect` / `asset_vulnerability` un
                             `timescale_of_effect` not in their enums, `country` not ISO3-shaped
 * `missing_income_group`  — `country` known but no `income_group` (the WB lookup resolves it)
 * `missing_hazard_type`   — a hazard-routed unit with no `context.hazard_type`
+* `severity_without_hazard` — `hazard_severity` set on a unit with no `hazard_type` (v1.6.3)
+* `missing_severity_cue`  — `hazard_severity` other than `unspecified` with no `severity_cue`
+* `severity_cue_not_in_quote` — the cue is not a verbatim substring of quote / note / outcome_raw
 
 `check_context.py [EV.csv]` prints a summary; `check()` returns the flags.
 """
@@ -35,6 +38,8 @@ ALLOWED_KEYS = {
     "climate_zone",
     # hazard units (contract §2.2.7–8)
     "hazard_type",
+    "hazard_severity",  # v1.6.3: author-stated intensity of the hazard event
+    "severity_cue",  # v1.6.3: verbatim words that justify hazard_severity
     "landscape_scale_only",
     "timescale_of_effect",
     "note",
@@ -56,6 +61,7 @@ HAZARDS = {
     "sedimentation",
     "extreme_rainfall",
 }
+SEVERITY = {"mild", "moderate", "severe", "extreme", "unspecified"}
 TIMESCALE = {"immediate", "short_term_1_3yr", "medium_term_3_7yr", "long_term_7yr_plus"}
 _ISO3 = re.compile(r"^[A-Z]{3}$")
 
@@ -128,6 +134,32 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
         flag("missing_income_group", ",".join(countries))
     if row.get("use_role") == "asset_vulnerability" and not ctx.get("hazard_type"):
         flag("missing_hazard_type", row.get("variable", ""))
+    sev = ctx.get("hazard_severity")
+    if sev is not None:
+        if sev not in SEVERITY:
+            flag("bad_vocab", f"hazard_severity='{sev}'")
+        elif not ctx.get("hazard_type"):
+            flag("severity_without_hazard", f"hazard_severity='{sev}'")
+        elif sev != "unspecified":
+            cue = str(ctx.get("severity_cue") or "")
+            rel = row.get("relationship")
+            if isinstance(rel, str):
+                try:
+                    rel = json.loads(rel) if rel else {}
+                except json.JSONDecodeError:
+                    rel = {}
+            hay = " ".join(
+                str(x or "")
+                for x in (
+                    row.get("quote"),
+                    ctx.get("note"),
+                    (rel or {}).get("outcome_raw"),
+                )
+            )
+            if not cue:
+                flag("missing_severity_cue", f"hazard_severity='{sev}'")
+            elif cue not in hay:
+                flag("severity_cue_not_in_quote", cue[:80])
     return flags
 
 
