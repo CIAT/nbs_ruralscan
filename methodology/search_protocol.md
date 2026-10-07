@@ -142,3 +142,5 @@ cross-sheet price-year normalisation; ordinal economics, Pete 2026-10-05). Sheet
 (`wocat_costbenefit` bands). The adapter's USD totals are cross-checked against the PDF export's printed
 "Total costs … in USD" at ingest; a mismatch > 2 % is reported and not ingested.
 
+**Multilingual title-query lessons (2026-10-06).** French queries must not include words shared with English (`afforestation`, `impacts`, `erosion`) — one such query returned 469 English papers. Portuguese / Spanish `seca` matches "matéria seca" (dry matter) and pulls no-till agronomy — qualify it (`"ano seco"`, `estiagem`, `"año seco"`, `sequía`) or exclude "matéria/materia seca".
+

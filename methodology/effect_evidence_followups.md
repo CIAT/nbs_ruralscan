@@ -602,6 +602,22 @@ No draft-0 T3/T6 seeds existed for this NbS (no benchmark). Round 1 = 23 WOCAT s
 
 **Effect of the stated-hazard rule (2026-10-06, `feat/engine-followups-2026-10`).** Component / proxy T3 routes now admit only units that state the hazard. Water-harvesting drought `very_high → moderate` (the strong soil-moisture units measured in normal years left the cell; three measured drought-year contrasts from two sources now sit against twelve compiler `drought_impacts` ratings, mostly slight / moderate — Pete's D1 weighted vote), agroforestry drought `very_high → low` (its strength had rested on a 59 % infiltration gain from a high-rainfall section; what remains direct and quantified is one cited-secondary strong yield result against one compiler rating), forest-restoration drought `moderate` (literature-dominated), flood cells unchanged or slightly lower. These are the honest drought-year readings; raising them needs drought-year measurements, not more moisture studies — a targeted round-2 search item for all three NbS ("yield / income in drought years under <practice>").
 
+
+## 1g. Drought-year round 2 (2026-10-06, all three NbS)
+
+One question — the practice's effect in drought / dry / heat / flood YEARS against a same-year comparator — because the stated-hazard rule left the drought cells thin. Discovery: 61 candidates (WH 30 · AF 19 · FR 13), 60 registered, 18 acquired, **42 pending a human ResearchGate / CGSpace check** (CGSpace handles are "limited access", not verified paywalls; Setimela 2018, Constenla-Villoslada 2022, Kassie 2008/2015, Sileshi 2011/2012, Badola & Hussain 2005 are the most valuable). Extraction: 16 sources → 76 effect + 3 asset + 9 operational units (drought-tagged 32 after the orchestrator untagged 7 dry-CLIMATE-class moderators — a climate class is not a drought year, contract E7). Results: WH drought `moderate → very_high` (29 sources; agreement medium because Thierfelder's crop failure, Rusinamhodzi's 1991/92 reversal and wet-year penalties are in); AF drought stays `low` at very_high confidence (Gateau-Rey: full-sun cocoa more resilient than shaded in the Ghana drought; Mensah shade × drought ns; Morel no benefit of diverse shade; Majaura alley barley 4.05 vs 2.01 t/ha is the positive); FR drought `moderate` (Mezgebo exclosures +188–222 kg/ha in the 2023 drought, ns in 2024).
+
+| item | detail | action |
+|---|---|---|
+| Mensah 2023 uses shade NETS, not trees | 3 units kept at low confidence | Namita: PICOS call |
+| Tosh 2026 hot-dry result emitted twice (drought + heat) from one quote; UK model | by design (two stated hazards); HIC transfer | — |
+| No VONT id for yield STABILITY (7 units as `crop_yield` + note), livelihood diversification (Mezgebo's main outcome, not extracted), community organisation | | round 3 |
+| `establishment_survival` as a practice effect has no XW route (Gateau-Rey) | | decide: M6 lever vs T6 |
+| Page-break blockers: Gateau-Rey pp 6–7, Morel pp 5–6, Mezgebo pp 9–10 ("25–30 %" gain) | | screengrab pass |
+| Pittelkow PDF loses minus signs → negatives left magnitude-less | | re-acquire a clean PDF |
+| Boillat 2019 co-authored by P. Steward | independence axis | tier note |
+| silvopastoral India 2008 cached file = journal volume (95 pp), title verify failed | re-acquire the article by title | Namita |
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |
