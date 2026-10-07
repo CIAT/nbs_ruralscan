@@ -125,6 +125,31 @@ These went in with the merge of #277 and are marked "pending ratification". No a
 
 **Rooftop decision (Pete, 2026-10-06): option (b).** The family registry already marks `rooftop_harvesting` as `qualitative_only` and "PARKED: settlement-driven, not a rural-landscape suitability surface" (Benson's scoping). The generated T3/T6 now honour that flag: any `qualitative_only` family's evidence stays in the register (30 units: 22 WOCAT cistern sheets, 8 Brazilian cistern evaluations) for Module 6 hand-off material but never sets a scored class or a row (`scripts/synthesise-t3t6.py`, `parked_families` in the run report).
 
+## Decision 6 (Pete, 2026-10-07) — hazard-intensity discount (graded, not a cap)
+
+**Pete:** "The drought labelling seems a little high — water harvesting can mitigate drought a bit, but it is not irrigation; it is not going to help you with late-onset or extreme drought." Then, on the first fix: "that is too extreme, I did not want a hard rule."
+
+**What was wrong.** The drought class only looked at how big the benefit was *when there was one*. Studies that measured no benefit or a loss in a severe drought year (crops failing completely in Mozambique, conventional tillage beating no-till in Zimbabwe 1991/92, no millet gain in Burkina Faso's driest year, Brazilian stores running dry, consecutive drought years in Tunisia) only dented the agreement score; they could not move the class. So water harvesting read **very high** for drought.
+
+**First attempt (rejected).** Any measured failure under the same hazard forced the cell down to **moderate**. Too blunt: one failed trial would have pinned a cell with twenty good measurements.
+
+**Applied instead (this PR).** The class is scaled by *how much* of the measured same-hazard evidence found no benefit or a loss, by evidence weight. A tenth of the evidence failing barely moves a cell; a third takes very high to moderate; a majority takes it to low. The floor is **low**, never "none", because the direction vote still says the practice helps. Only measured studies that name the hazard count — practitioner ratings (WOCAT) and findings about other hazards do not. Each affected row says so in its statement and lists the failure studies and the share in its account, so it can be challenged.
+
+**Effect on the tables.**
+
+| Cell | Before | Now | Share of measured drought/flood evidence that found no benefit |
+|---|---|---|---|
+| Water harvesting · drought (all systems) | very high | **moderate** | 44 % |
+| Water harvesting · drought · in-situ family | high | **low** | 65 % |
+| Water harvesting · drought · runoff-catchment family | very high | **moderate** | 23 % |
+| Water harvesting · flood (all) | moderate | **low** | 31 % |
+| Agroforestry · drought · planted silvoarable | very high | **moderate** | 21–35 % |
+| Forest restoration · all cells | — | unchanged | — |
+
+No prose text changed (the prose describes the evidence, not the class, and its conditionality paragraphs already name these failures). Two new water-harvesting semi-arid / upper-middle-income scope rows got prose.
+
+**To confirm or change:** reply "6 ok", or say what feels off (e.g. "in-situ low is too harsh") and the share-to-class step can be tuned.
+
 ## Decision 7 (Pete, 2026-10-07) — tag the severity of the hazard on the evidence
 
 **Pete:** "Do we qualify the severity of the hazard in the table?" — we did not. Chosen: option 2, tag severity on the evidence, with the note that much evidence will not qualify it.

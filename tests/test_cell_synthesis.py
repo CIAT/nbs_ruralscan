@@ -1747,3 +1747,75 @@ def test_family_row_identical_to_rollup_is_not_emitted():
     )
     assert len(rows) == 1 and not rows[0].get("suitability_family_id")
     assert any("identical to the roll-up" in n for n in rep.notes)
+
+
+def _drought_pool(
+    n_strong, n_null, *, null_basis="primary_measured", null_hazard="drought"
+):
+    strong = [
+        _u(
+            f"g{i}",
+            f"s{i}",
+            "drought_hazard",
+            "negative",
+            "strong",
+            ctx={"hazard_type": "drought"},
+        )
+        for i in range(n_strong)
+    ]
+    nulls = [
+        _u(
+            f"n{i}",
+            f"z{i}",
+            "drought_hazard",
+            "none",
+            "unspecified",
+            basis=null_basis,
+            ctx={"hazard_type": null_hazard},
+        )
+        for i in range(n_null)
+    ]
+    rows, _ = cs.synthesise_cell(
+        strong + nulls,
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    return rows[0]
+
+
+def test_one_measured_failure_among_many_gains_is_flagged_but_barely_moves_the_class():
+    r = _drought_pool(9, 1)
+    j = r["justification"]
+    assert j["intensity_limited"] is True
+    assert j["intensity_limit_share"] == 0.1
+    assert r["mitigation_potential"] in ("high", "very_high")
+    assert "discount the class" in j["statement"]
+
+
+def test_failures_discount_the_class_in_proportion_to_their_share():
+    # a third of the measured drought-year evidence found no benefit → one class down
+    r = _drought_pool(4, 2)
+    assert r["justification"]["intensity_limit_share"] == 0.333
+    assert r["justification"]["intensity_discounted_from"] == 3
+    assert r["mitigation_potential"] == "moderate"
+    # a majority of failures → low, never "none" (the direction vote still says benefit)
+    r = _drought_pool(1, 3)
+    assert r["mitigation_potential"] == "low"
+
+
+def test_rated_or_other_hazard_nulls_do_not_discount():
+    assert (
+        _drought_pool(2, 3, null_basis="expert_assertion")["justification"][
+            "intensity_limited"
+        ]
+        is False
+    )
+    assert (
+        _drought_pool(2, 3, null_hazard="heatwave")["justification"][
+            "intensity_limited"
+        ]
+        is False
+    )

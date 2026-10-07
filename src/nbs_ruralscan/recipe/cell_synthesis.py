@@ -1092,6 +1092,7 @@ def _statement(
     envelope: dict[str, Any],
     role: str,
     strength_basis: str = "quantified",
+    intensity_limited: bool = False,
 ) -> str:
     """Calibrated-language statement; levels inserted by the engine (contract §5)."""
     # name the AEZs only when they cover at least half of the pooled units; a single
@@ -1145,6 +1146,12 @@ def _statement(
             core = f"{nbs_id} {strength[-rank]} {down} {key}".replace("  ", " ")
         if strength_basis == "direction_only":
             core += " (strength not quantified in the evidence)"
+        if intensity_limited:
+            core += (
+                f"; the measured evidence also includes no-benefit or reversal results "
+                f"under severe {key}, which discount the class (it is not a defence "
+                f"against late-onset or extreme {key})"
+            )
     return (
         f"{core} in {where} ({ev_l} evidence, {ag_l} agreement → {conf} confidence; "
         f"transfer: {envelope.get('transfer_class')})."
@@ -1201,7 +1208,9 @@ def _apply_shares(contribs: list[_Contrib], shares: dict[str, float]) -> None:
 
 
 def apply_proxy_cap(
-    rec: dict[str, Any], contribs: list[_Contrib], xw_by_unit: dict[str, XWRow]
+    rec: dict[str, Any],
+    contribs: list[_Contrib],
+    xw_by_unit: dict[str, XWRow],
 ) -> dict[str, Any]:
     """Cap a cell built ONLY from proxy / component evidence at |rank| 2 (moderate).
 
@@ -1239,6 +1248,59 @@ def apply_proxy_cap(
     return rec
 
 
+_MEASURED_BASES = {"primary_measured", "cited_secondary", "modelled"}
+
+
+def _measured_same_hazard(contribs: list[_Contrib], target_key: str) -> list[_Contrib]:
+    return [
+        c
+        for c in contribs
+        if c.has_direction
+        and c.unit.claim_basis in _MEASURED_BASES
+        and str((c.unit.context or {}).get("hazard_type") or "") == target_key
+    ]
+
+
+def apply_intensity_cap(
+    rec: dict[str, Any], contribs: list[_Contrib], target_key: str
+) -> dict[str, Any]:
+    """T3 livelihood cells: a graded hazard-INTENSITY discount, not a cap.
+
+    A strong gain in a rainfall-deficit year does not make a practice a drought
+    defence: water harvesting is not irrigation and does not help in a late-onset or
+    extreme drought (Pete, 2026-10-07 — complete crop failure in Mozambique, conventional
+    tillage beating no-till in Zimbabwe 1991/92 sat in the pool while the cell read
+    very_high). A hard "any failure → moderate" rule was rejected the same day ("too
+    extreme, I did not want a hard rule"), so the class is discounted by the SHARE of
+    measured, same-hazard evidence (by weight) that found no benefit or a reversal:
+    rank × (1 − share), rounded, floored at the weakest class of the modal sign. One
+    crop failure among ten measured gains barely moves it; failures weighing a third
+    of the measured drought-year evidence take very_high to moderate; a majority takes
+    it to low. Only measured units (not practitioner ratings) that STATE this hazard
+    count — rated and other-hazard nulls act through agreement alone. Pending
+    ratification.
+    """
+    modal = int(rec.get("modal_sign") or 0)
+    if modal <= 0:
+        return rec
+    measured = _measured_same_hazard(contribs, target_key)
+    limiting = [c for c in measured if c.sign <= 0]
+    if not limiting:
+        return rec
+    total = sum(c.weight for c in measured)
+    share = (sum(c.weight for c in limiting) / total) if total > 0 else 0.0
+    rank = int(rec.get("rank", 0))
+    discounted = max(modal, int(round(rank * (1.0 - share))))
+    rec = dict(rec)
+    rec["intensity_limited"] = True
+    rec["intensity_limiting_ids"] = sorted(c.unit.evidence_id for c in limiting)
+    rec["intensity_limit_share"] = round(share, 3)
+    if discounted != rank:
+        rec["rank"] = discounted
+        rec["intensity_discounted_from"] = rank
+    return rec
+
+
 def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
     """The calibrated statement for a reconciled record (used as the mechanism placeholder)."""
     return _statement(
@@ -1252,6 +1314,7 @@ def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
         rec["applicability"],
         role,
         rec.get("strength_basis", "quantified"),
+        bool(rec.get("intensity_limited", False)),
     )
 
 
@@ -1331,9 +1394,14 @@ def traceable_account(
             env,
             role,
             rec.get("strength_basis", "quantified"),
+            bool(rec.get("intensity_limited", False)),
         ),
         "strength_basis": rec.get("strength_basis", "quantified"),
         "proxy_capped": bool(rec.get("proxy_capped", False)),
+        "intensity_limited": bool(rec.get("intensity_limited", False)),
+        "intensity_limiting_ids": rec.get("intensity_limiting_ids", []),
+        "intensity_limit_share": rec.get("intensity_limit_share"),
+        "intensity_discounted_from": rec.get("intensity_discounted_from"),
         "strength_from": rec.get("strength_from", "pool"),
         "evidence_summary": summary,
         "agreement_note": agreement_note,
@@ -1511,6 +1579,8 @@ def synthesise_cell(
     g = apply_proxy_cap(
         _reconcile_group(contribs, tiers, matrix, target_ctx), contribs, xw_by_unit
     )
+    if table == "T3" and role != "asset_vulnerability":
+        g = apply_intensity_cap(g, contribs, target_key)
     if table == "T6":
         cell = target_key
     elif role == "asset_vulnerability":
@@ -1670,6 +1740,8 @@ def synthesise_cell(
                     s_contribs,
                     xw_by_unit,
                 )
+                if table == "T3" and role != "asset_vulnerability":
+                    s_rec = apply_intensity_cap(s_rec, s_contribs, target_key)
                 s_rec["applicability"]["scope"] = {dim: sid}
                 g_class_for_scope = recompute_transfer_class(
                     global_row, [(c.ctx, c.weight) for c in contribs], s_target
