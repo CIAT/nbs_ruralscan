@@ -25,6 +25,7 @@ from __future__ import annotations
 import re
 
 import csv
+import dataclasses
 import json
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -1443,12 +1444,6 @@ def _rehome(u: EvidenceUnit, fam: str) -> EvidenceUnit:
     family); the register row is untouched."""
     if u.suitability_family_id == fam:
         return u
-    if hasattr(u, "model_copy"):
-        return u.model_copy(update={"suitability_family_id": fam})
-    if hasattr(u, "copy") and hasattr(u, "dict"):
-        return u.copy(update={"suitability_family_id": fam})
-    import dataclasses
-
     return dataclasses.replace(u, suitability_family_id=fam)
 
 

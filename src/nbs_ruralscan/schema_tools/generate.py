@@ -295,28 +295,19 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     # T3/T6-only candidates are excluded (extraction deferred 2026-09).
     queue_csv = schema_root.parent / "pipeline" / "acquisition_queue.csv"
     if queue_csv.exists():
+        from nbs_ruralscan.schema_tools.table_progress import iter_queue
+
         funnel: dict[str, dict[str, int]] = {}
-        seen_q: set[str] = set()
-        with queue_csv.open(newline="", encoding="utf-8") as f:
-            for row in csv.DictReader(f):
-                sid = (row.get("source_id") or "").strip()
-                nbs = (row.get("nbs_id") or "").strip()
-                if not sid or not nbs or sid in seen_q:
-                    continue
-                seen_q.add(sid)
-                if (row.get("status") or "").strip() == "duplicate":
-                    continue
-                tables = {
-                    t.strip()
-                    for t in re.split(r"[|;,]", row.get("tables") or "")
-                    if t.strip()
-                }
-                if tables and tables <= {"T3", "T6"}:
-                    continue  # deferred-only candidate
-                slot = funnel.setdefault(nbs, {"candidates": 0, "acquired": 0})
-                slot["candidates"] += 1
-                if (row.get("status") or "").strip() == "acquired":
-                    slot["acquired"] += 1
+        for row, _nbs_ids, tables in iter_queue(queue_csv):
+            if (row.get("status") or "").strip() == "duplicate":
+                continue
+            if tables and tables <= {"T3", "T6"}:
+                continue  # deferred-only candidate
+            nbs = (row.get("nbs_id") or "").strip()  # raw key (pipe-joined kept as-is)
+            slot = funnel.setdefault(nbs, {"candidates": 0, "acquired": 0})
+            slot["candidates"] += 1
+            if (row.get("status") or "").strip() == "acquired":
+                slot["acquired"] += 1
         data["acquisition_funnel"] = funnel
 
     from nbs_ruralscan.schema_tools import qaqc_stats as _qaqc
@@ -622,6 +613,10 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     changed.extend(generate_progress_report(schema_root, check=check))
     # Compile the dashboard_data.json payload
     changed.extend(generate_dashboard_data(schema_root, check=check))
+    # Compile the per NbS × T3/T6 pipeline-position report (docs/table_progress.json)
+    from nbs_ruralscan.schema_tools import table_progress
+
+    changed.extend(table_progress.write(schema_root, check=check))
     return changed
 
 

@@ -46,7 +46,7 @@ CATEGORIES = ["stock", "updated_lit", "grey", "tool"]
 _FIXED_ROLE_TABLES = {"structural_suitability": {"T4"}, "asset_vulnerability": {"T3"}}
 
 
-def _xw_routes(schema_root: Path) -> dict[str, set[str]]:
+def xw_routes(schema_root: Path) -> dict[str, set[str]]:
     """variable → {target_table} from the XW register (empty when absent)."""
     xw = Path(schema_root) / "registers" / "XW_target_crosswalk.csv"
     out: dict[str, set[str]] = {}
@@ -55,6 +55,9 @@ def _xw_routes(schema_root: Path) -> dict[str, set[str]]:
             for r in csv.DictReader(f):
                 out.setdefault(r["ev_variable"], set()).add(r["target_table"])
     return out
+
+
+_xw_routes = xw_routes  # backward-compatible private alias
 
 
 def tables_for(role: str, variable: str, routes: dict[str, set[str]]) -> set[str]:
@@ -109,7 +112,7 @@ def derive_facts(schema_root: str | Path) -> dict[tuple, dict]:
     """
     schema_root = Path(schema_root)
     cat = _category_map(schema_root)
-    routes = _xw_routes(schema_root)
+    routes = xw_routes(schema_root)
     ev_csv = schema_root / "registers" / "EV_evidence_register.csv"
     facts: dict[tuple, dict] = {}
     if not ev_csv.exists():
