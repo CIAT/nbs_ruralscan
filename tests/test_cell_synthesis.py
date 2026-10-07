@@ -1940,3 +1940,144 @@ def test_severe_end_coverage_drives_the_statement():
     j = rows[0]["justification"]
     assert j["severity_coverage"]["severe_end"] == "mostly_no_gain"
     assert "mostly show no benefit (1 gain vs 3 failures)" in j["statement"]
+
+
+def test_modelled_only_strength_is_capped_at_moderate():
+    ctx = {"hazard_type": "drought"}
+    model = [
+        _u(
+            f"m{i}",
+            "s1",
+            "drought_hazard",
+            "negative",
+            "strong",
+            basis="modelled",
+            ctx=ctx,
+        )
+        for i in range(4)
+    ]
+    measured_null = [
+        _u(f"n{i}", f"z{i}", "drought_hazard", "none", "unspecified", ctx=ctx)
+        for i in range(2)
+    ]
+    rows, _ = cs.synthesise_cell(
+        model + measured_null,
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    j = rows[0]["justification"]
+    assert j["modelled_capped"] is True
+    assert "capped at moderate" in j["statement"]
+    assert rows[0]["mitigation_potential"] in ("moderate", "low")
+    # ratings beside the model do not lift the cap; one measured unit does
+    rated = [
+        _u(
+            f"r{i}",
+            f"w{i}",
+            "drought_hazard",
+            "negative",
+            "strong",
+            basis="expert_assertion",
+            ctx=ctx,
+        )
+        for i in range(3)
+    ]
+    rows, _ = cs.synthesise_cell(
+        model + rated,
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    assert rows[0]["justification"]["modelled_capped"] is True
+    rows, _ = cs.synthesise_cell(
+        model + [_u("g", "s9", "drought_hazard", "negative", "strong", ctx=ctx)],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    assert rows[0]["justification"]["modelled_capped"] is False
+
+
+def test_measured_harm_is_named_as_maladaptation():
+    ctx = {"hazard_type": "drought"}
+    gains = [
+        _u(f"g{i}", f"s{i}", "drought_hazard", "negative", "strong", ctx=ctx)
+        for i in range(3)
+    ]
+    harm = _u(
+        "h", "s9", "drought_hazard", "positive", "moderate", ctx=ctx
+    )  # worsens the hazard impact
+    rows, _ = cs.synthesise_cell(
+        gains + [harm],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    j = rows[0]["justification"]
+    assert j["maladaptation"] == {"n_units": 1, "n_sources": 1, "ids": ["h"]}
+    assert "measured HARM (maladaptation) in 1 source" in j["statement"]
+    rows, _ = cs.synthesise_cell(
+        gains,
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+    )
+    assert rows[0]["justification"]["maladaptation"] is None
+
+
+def test_effect_locus_marks_off_site_practices(tmp_path):
+    lk = tmp_path / "effect_locus.csv"
+    lk.write_text(
+        "nbs_id,suitability_family_id,effect_locus,rationale,ratified_by,ratified_date\n"
+        "forest_restoration,,off_site,r,p,d\n"
+        "water_harvesting_conservation,water_harvesting__in_situ,on_farm,r,p,d\n"
+        "water_harvesting_conservation,water_harvesting__runoff_catchment,mixed,r,p,d\n",
+        encoding="utf-8",
+    )
+    lookup = cs.load_effect_locus(lk)
+    assert (
+        cs.effect_locus_for(
+            lookup, "forest_restoration", "forest_restoration__active_planting"
+        )
+        == "off_site"
+    )
+    assert (
+        cs.effect_locus_for(
+            lookup, "water_harvesting_conservation", "water_harvesting__in_situ"
+        )
+        == "on_farm"
+    )
+    assert (
+        cs.effect_locus_for(lookup, "water_harvesting_conservation", "") == "mixed"
+    )  # families differ
+    rows = [
+        {
+            "nbs_id": "forest_restoration",
+            "suitability_family_id": "",
+            "mitigation_potential": "high",
+            "landscape_scale_only": False,
+            "justification": {"statement": "x."},
+        },
+        {
+            "nbs_id": "forest_restoration",
+            "risk_role": "asset_vulnerability",
+            "asset_sensitivity": "low",
+            "justification": {"statement": "y."},
+        },
+    ]
+    cs.apply_effect_locus(rows, lookup)
+    assert rows[0]["landscape_scale_only"] is True
+    assert rows[0]["justification"]["effect_locus"] == "off_site"
+    assert "OFF-SITE effect" in rows[0]["justification"]["statement"]
+    assert "effect_locus" not in rows[1]["justification"]

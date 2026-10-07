@@ -1094,6 +1094,8 @@ def _statement(
     strength_basis: str = "quantified",
     intensity_limited: bool = False,
     severity: dict[str, Any] | None = None,
+    modelled_capped: bool = False,
+    maladaptation: dict[str, Any] | None = None,
 ) -> str:
     """Calibrated-language statement; levels inserted by the engine (contract §5)."""
     # name the AEZs only when they cover at least half of the pooled units; a single
@@ -1168,6 +1170,14 @@ def _statement(
             )
         elif rank > 0 and end == "untested":
             tail += f"; no measured evidence at severe or extreme {key}"
+        if modelled_capped:
+            tail += "; strength rests on modelled results only, so the class is capped at moderate"
+        if maladaptation and rank > 0:
+            n = maladaptation.get("n_sources", 0)
+            tail += (
+                f"; measured HARM (maladaptation) in {n} source{'s' if n != 1 else ''}"
+                " — the practice worsened this outcome for some adopters"
+            )
     return (
         f"{core} in {where}{tail} ({ev_l} evidence, {ag_l} agreement → {conf} confidence; "
         f"transfer: {envelope.get('transfer_class')})."
@@ -1363,6 +1373,150 @@ def apply_intensity_cap(
     return rec
 
 
+def _strength_voters(
+    contribs: list[_Contrib], xw_by_unit: dict[str, XWRow], modal: int
+) -> list[_Contrib]:
+    """The units whose stated strength set the class: modal-sign units with a magnitude,
+    the DIRECT ones when any exist (direct-first rule), else the whole pool."""
+    voters = [
+        c
+        for c in contribs
+        if c.has_direction and c.sign == modal and c.magnitude is not None
+    ]
+    direct = [c for c in voters if xw_by_unit[c.unit.evidence_id].proximity == "direct"]
+    return direct or voters
+
+
+def apply_modelled_cap(
+    rec: dict[str, Any], contribs: list[_Contrib], xw_by_unit: dict[str, XWRow]
+) -> dict[str, Any]:
+    """Decision 8a (Pete 2026-10-07, option B): when a model is among the units that set
+    the strength and NO measured unit of the majority direction backs it (ratings may sit
+    beside the model), the class is capped at moderate, the same way proxy-only cells are. Direction still comes from
+    the whole vote and the model stays in the pool. Caught on forest-restoration water
+    stress: one regional climate model split into four per-region scenario outputs set
+    `strong_positive` against three measured syntheses pointing the other way."""
+    modal = int(rec.get("modal_sign") or 0)
+    rank = int(rec.get("rank", 0))
+    if modal == 0 or abs(rank) <= 2:
+        return rec
+    voters = _strength_voters(contribs, xw_by_unit, modal)
+    measured = {"primary_measured", "cited_secondary"}
+    if (
+        not voters
+        or any(c.unit.claim_basis in measured for c in voters)
+        or not any(c.unit.claim_basis == "modelled" for c in voters)
+    ):
+        # a measured unit backs the strength, or no model is among the voters
+        # (rated-only cells are Pete's D1 weighted vote, untouched here)
+        return rec
+    rec = dict(rec)
+    rec["rank"] = 2 if rank > 0 else -2
+    rec["modelled_capped"] = True
+    rec["modelled_capped_ids"] = sorted(c.unit.evidence_id for c in voters)
+    return rec
+
+
+def maladaptation_signal(contribs: list[_Contrib], modal: int) -> dict[str, Any] | None:
+    """Pete 2026-10-07 (Decision 6 follow-up): measured HARM in a cell whose majority
+    says benefit — the practice made the outcome worse for some adopters (a reversal,
+    not a null). Listed on its own so a reader sees antagonistic results even when the
+    class is positive; a majority of harm already yields a negative class."""
+    if modal <= 0:
+        return None
+    harm = [
+        c
+        for c in contribs
+        if c.has_direction and c.sign < 0 and c.unit.claim_basis in _MEASURED_BASES
+    ]
+    if not harm:
+        return None
+    return {
+        "n_units": len(harm),
+        "n_sources": len({c.unit.source_id for c in harm}),
+        "ids": sorted(c.unit.evidence_id for c in harm),
+    }
+
+
+LOCUS_VALUES = ("on_farm", "mixed", "off_site")
+
+
+def load_effect_locus(path: Path) -> dict[tuple[str, str], str]:
+    """`schema/lookups/effect_locus.csv` → {(nbs_id, family_id or ""): locus}."""
+    out: dict[tuple[str, str], str] = {}
+    with Path(path).open(newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            loc = (r.get("effect_locus") or "").strip()
+            if loc in LOCUS_VALUES:
+                out[
+                    (
+                        r["nbs_id"].strip(),
+                        (r.get("suitability_family_id") or "").strip(),
+                    )
+                ] = loc
+    return out
+
+
+def effect_locus_for(
+    lookup: dict[tuple[str, str], str], nbs_id: str, family: str
+) -> str | None:
+    """Most specific wins: the family row, else the NbS default, else — for the roll-up —
+    the single locus shared by every family of that NbS, `mixed` when they differ."""
+    if family and (nbs_id, family) in lookup:
+        return lookup[(nbs_id, family)]
+    if (nbs_id, "") in lookup:
+        return lookup[(nbs_id, "")]
+    fams = {v for (n, f), v in lookup.items() if n == nbs_id and f}
+    if not fams:
+        return None
+    return fams.pop() if len(fams) == 1 else "mixed"
+
+
+_LOCUS_TEXT = {
+    "off_site": (
+        " This is an OFF-SITE effect for farmers: the practice is not on their land, so the "
+        "benefit arrives downstream or at landscape / societal scale, not on the plot."
+    ),
+    "mixed": (
+        " Part of this effect is off-site (downstream or landscape scale) rather than on "
+        "the adopting farm."
+    ),
+}
+
+
+def apply_effect_locus(
+    rows: list[dict[str, Any]], lookup: dict[tuple[str, str], str]
+) -> list[dict[str, Any]]:
+    """Pete 2026-10-07 (Decision 8): stamp every T3 livelihood row with where the farmer
+    feels the effect (`effect_locus` in the account; `landscape_scale_only = true` for
+    off-site practices such as forest restoration) and say so in the statement."""
+    for r in rows:
+        if (
+            r.get("risk_role") == "asset_vulnerability"
+            or "mitigation_potential" not in r
+        ):
+            continue
+        loc = effect_locus_for(
+            lookup,
+            str(r.get("nbs_id") or ""),
+            str(r.get("suitability_family_id") or ""),
+        )
+        if not loc:
+            continue
+        j = r.get("justification")
+        if isinstance(j, dict):
+            j["effect_locus"] = loc
+            if (
+                loc in _LOCUS_TEXT
+                and isinstance(j.get("statement"), str)
+                and _LOCUS_TEXT[loc] not in j["statement"]
+            ):
+                j["statement"] = j["statement"] + _LOCUS_TEXT[loc]
+        if loc == "off_site":
+            r["landscape_scale_only"] = True
+    return rows
+
+
 def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
     """The calibrated statement for a reconciled record (used as the mechanism placeholder)."""
     return _statement(
@@ -1378,6 +1532,8 @@ def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
         rec.get("strength_basis", "quantified"),
         bool(rec.get("intensity_limited", False)),
         rec.get("severity_coverage"),
+        bool(rec.get("modelled_capped", False)),
+        rec.get("maladaptation"),
     )
 
 
@@ -1459,10 +1615,15 @@ def traceable_account(
             rec.get("strength_basis", "quantified"),
             bool(rec.get("intensity_limited", False)),
             rec.get("severity_coverage"),
+            bool(rec.get("modelled_capped", False)),
+            rec.get("maladaptation"),
         ),
         "strength_basis": rec.get("strength_basis", "quantified"),
         "severity_coverage": rec.get("severity_coverage"),
         "proxy_capped": bool(rec.get("proxy_capped", False)),
+        "modelled_capped": bool(rec.get("modelled_capped", False)),
+        "modelled_capped_ids": rec.get("modelled_capped_ids", []),
+        "maladaptation": rec.get("maladaptation"),
         "intensity_limited": bool(rec.get("intensity_limited", False)),
         "intensity_limiting_ids": rec.get("intensity_limiting_ids", []),
         "intensity_limit_share": rec.get("intensity_limit_share"),
@@ -1641,11 +1802,20 @@ def synthesise_cell(
             if xw_by_unit[c.unit.evidence_id].proximity != "direct"
         }
     )
-    g = apply_proxy_cap(
-        _reconcile_group(contribs, tiers, matrix, target_ctx), contribs, xw_by_unit
+    g = apply_modelled_cap(
+        apply_proxy_cap(
+            _reconcile_group(contribs, tiers, matrix, target_ctx), contribs, xw_by_unit
+        ),
+        contribs,
+        xw_by_unit,
     )
     if table == "T3" and role != "asset_vulnerability":
         g = apply_intensity_cap(g, contribs, target_key)
+    if role != "asset_vulnerability":
+        g = dict(g)
+        g["maladaptation"] = maladaptation_signal(
+            contribs, int(g.get("modal_sign") or 0)
+        )
     if table == "T6":
         cell = target_key
     elif role == "asset_vulnerability":
@@ -1800,13 +1970,22 @@ def synthesise_cell(
                         income_lookup,
                     )
                 _apply_shares(s_contribs, shares)
-                s_rec = apply_proxy_cap(
-                    _reconcile_group(s_contribs, tiers, matrix, s_target),
+                s_rec = apply_modelled_cap(
+                    apply_proxy_cap(
+                        _reconcile_group(s_contribs, tiers, matrix, s_target),
+                        s_contribs,
+                        xw_by_unit,
+                    ),
                     s_contribs,
                     xw_by_unit,
                 )
                 if table == "T3" and role != "asset_vulnerability":
                     s_rec = apply_intensity_cap(s_rec, s_contribs, target_key)
+                if role != "asset_vulnerability":
+                    s_rec = dict(s_rec)
+                    s_rec["maladaptation"] = maladaptation_signal(
+                        s_contribs, int(s_rec.get("modal_sign") or 0)
+                    )
                 s_rec["applicability"]["scope"] = {dim: sid}
                 g_class_for_scope = recompute_transfer_class(
                     global_row, [(c.ctx, c.weight) for c in contribs], s_target

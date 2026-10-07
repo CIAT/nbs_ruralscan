@@ -181,3 +181,16 @@ Options:
 
 **To answer:** "8 ok, 8a B, 8b <choice>".
 
+## Pete's answers, 2026-10-07 — and what was applied
+
+**6 — "Are we capturing maladaptation?"** Partly, and now explicitly. Before: a study where the practice made things *worse* under the hazard counted as a failure (it discounted the class and lowered agreement), and a cell where harm is the majority reads `negative`. But a minority of harm findings disappeared into the agreement score; a reader of a `moderate` cell could not see that two sources measured a loss. Now every T3 livelihood row and every T6 priority row carries a **maladaptation signal**: the measured units (not ratings) that found harm, their count and their sources, and the statement says "measured HARM (maladaptation) in n sources — the practice worsened this outcome for some adopters". Today that fires on 31 water-harvesting rows, 37 agroforestry rows, 17 forest-restoration rows and 5 riparian rows. Nulls are not harm. Asset-threat rows (damage to the works) are a separate stream and untouched, as you said.
+
+**7 — ok.** Applied (#288, #289).
+
+**8 — ok, 8a B, plus "forest restoration does not occur on farmland".**
+- *8a B, modelled-only strength cap* — applied: when a model is among the units that set a class's strength and no measured unit of the majority direction backs it, the class is capped at moderate (ratings beside the model do not lift the cap; one measurement does). **It does not change the forest-restoration water-stress cell**, which I had wrongly attributed to the Teo model alone: a measured Ethiopian exclosure study (Meaza 2022, baseflow 1.5 to 4 times that of cropland) also backs the strength, so the cell legitimately reads strong on its positive side. What is really at issue there is the vote: twelve WOCAT compiler ratings plus two studies say more water, three measured syntheses say less. That is the grey-literature positive bias you flagged earlier and your D1 choice to keep the weighted vote. The account and prose name the disagreement; the class follows the majority. If you want the syntheses to outweigh the ratings, that is a D1 reversal — say so and it becomes a rule (e.g. measured syntheses set direction when they disagree with ratings).
+- *Effect locus* — applied. Every family now carries where the farmer feels the effect (`schema/lookups/effect_locus.csv`): **forest restoration = off-site for all families** (your rule: never on the plot; downstream water, flood, microclimate, wider societal benefit), agroforestry = on-farm, water harvesting in-field / micro-catchment / terracing = on-farm, ponds-dams-spate-tanks = mixed, riparian = mixed. Every forest-restoration T3 row is stamped `landscape_scale_only = true` and its statement ends "This is an OFF-SITE effect for farmers: the practice is not on their land, so the benefit arrives downstream or at landscape / societal scale, not on the plot"; mixed rows say "part of this effect is off-site". Module 2 / Module 5 can read the flag directly.
+- *8b landslide* — still open (no answer yet): livelihood hazard · asset-only · leave under erosion.
+
+**PICOS — B.** Agreed; applied in the next PR (a `comparator = existing_forest` tag on the existing-forest and forest-loss studies; they stay in the protection / mangrove family rows and leave the roll-up and the planting / regeneration rows).
+
