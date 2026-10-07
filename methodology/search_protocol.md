@@ -144,3 +144,21 @@ cross-sheet price-year normalisation; ordinal economics, Pete 2026-10-05). Sheet
 
 **Multilingual title-query lessons (2026-10-06).** French queries must not include words shared with English (`afforestation`, `impacts`, `erosion`) — one such query returned 469 English papers. Portuguese / Spanish `seca` matches "matéria seca" (dry matter) and pulls no-till agronomy — qualify it (`"ano seco"`, `estiagem`, `"año seco"`, `sequía`) or exclude "matéria/materia seca".
 
+## Bibliographic sources (2026-10-07, from the ILRI umbrella-review protocol)
+
+Pete shared the ILRI "climate change × agri-food systems" umbrella-review protocol (Mukherji, Haddaway, Eales, 2026). Its source list was compared with ours ("let's not go overboard"):
+
+| source | theirs | ours | decision |
+|---|---|---|---|
+| OpenAlex, CGSpace, World Bank documents, FAO repository, 3ie, Campbell | ✓ | ✓ | already covered |
+| WOCAT, ICRAF/TECA, GEF, WRI, IEG, HAL, SciELO | – | ✓ | ours only (practice-level grey) |
+| **Lens.org** | ✓ | – | **added — scriptable.** Free non-commercial token (`LENS_TOKEN`); preprints + theses OpenAlex misses. `scripts/discover-sources.py lens "<query>" --out pipeline/staging/discovery/<name>.json [--year-from] [--reviews]`; candidates go through `register-discovery.py` unchanged (`process=updated_lit`; DOIs verified by `verify_metadata.py`, title is the anchor). |
+| **AGRIS** (FAO) | ✓ | – | **added — manual.** LMIC-heavy, multilingual (ES/FR/PT) agricultural grey literature. Its search is behind a Cloudflare browser challenge on every `query=` request and it exposes no OAI-PMH/JSON (probed 2026-10-07), so it is **never scraped**: `scripts/discover-sources.py agris "<query>" --lang fr --out …` prints the browser URL and writes a candidate template; a human screens the result list, fills one entry per record (record id · citation · DOI/handle from the Links block · language), and the registrar logs the SRCH row with `searched_by=<handle>`, `category=grey`. |
+| AGRICOLA | ✓ | – | skipped (US-centric; overlaps AGRIS) |
+| Web of Science, Scopus, CAB Abstracts, ProQuest theses | ✓ | – | skipped (institutional, not scriptable; low marginal yield over OpenAlex + Lens for narrow NbS × hazard questions) |
+| Google Scholar (Publish or Perish) | ✓ | – | skipped as a lane; already used per source in OA recovery |
+
+**Reusable term block.** The protocol's study-type string (systematic review · systematic map · scoping review · evidence and gap map · evidence synthesis · umbrella review · review of reviews …) is kept verbatim as `discovery_sources.REVIEW_TYPE_TERMS` (`discover-sources.py review-terms`) and ANDed into synthesis-first lanes (`--reviews`).
+
+**Not adopted from the protocol:** the 2015 date floor (our T3/T6 evidence needs older drought-year trials), the Scopus-only recall benchmark (we benchmark against frozen seed rows instead).
+
