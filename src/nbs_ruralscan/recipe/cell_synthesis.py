@@ -117,7 +117,7 @@ T3_HAZARDS = [
 #: tanks and storm damage to structures are threats to the INVESTMENT (M2b Stream A), not
 #: livelihood hazards — no T3 livelihood cell, no XW route, excluded from the 7-hazard
 #: `asset_risk_weight` completeness rule.
-ASSET_ONLY_HAZARDS = ["sedimentation", "extreme_rainfall"]
+ASSET_ONLY_HAZARDS = ["sedimentation", "extreme_rainfall", "landslide"]
 ECON_UNITS = {
     "usd_per_ha",
     "usd_per_ha_yr",

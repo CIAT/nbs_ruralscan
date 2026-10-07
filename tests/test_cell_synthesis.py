@@ -2150,3 +2150,8 @@ def test_existing_forest_comparator_leaves_the_rollup_and_other_families():
         xw_rows=XW,
     )
     assert set(rows[0]["evidence_ids"]) == {"p0", "p1", "x0", "x1"}
+
+
+def test_landslide_is_an_asset_only_hazard():
+    assert "landslide" in cs.ASSET_ONLY_HAZARDS
+    assert "landslide" not in cs.T3_HAZARDS

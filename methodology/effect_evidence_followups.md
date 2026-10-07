@@ -629,6 +629,8 @@ One question — the practice's effect in drought / dry / heat / flood YEARS aga
 
 **PICOS B applied (2026-10-07, ruleset v1.6.4).** 37 FR units tagged `comparator=existing_forest`; `comparator_policy.csv` + `synthesise_cell_with_families` keep them in protection/mangrove family rows only. Protection flood high → moderate; cross_family soil_erosion row gone; 21 FR rows re-pooled + prose rewritten. Open: 8b landslide enum; D1 reversal question (syntheses vs compiler ratings on direction).
 
+**8b B applied (2026-10-07).** `landslide` = asset-threat-only hazard (`ASSET_ONLY_HAZARDS`, `check_context.HAZARDS`, manifest enum, `wocat_hazard_map` landslide → landslide). 9 WOCAT coping units re-tagged + renamed `ev_asset_landslide_*`; 15 erosion-filed landslide effect units carry a note. New asset rows WH low · FR moderate (assisted regeneration high). Option A (livelihood landslide cell + M2 layer) parked.
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |

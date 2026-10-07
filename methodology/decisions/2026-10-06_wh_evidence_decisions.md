@@ -194,3 +194,7 @@ Options:
 
 **PICOS — B.** Agreed; applied in the next PR (a `comparator = existing_forest` tag on the existing-forest and forest-loss studies; they stay in the protection / mangrove family rows and leave the roll-up and the planting / regeneration rows).
 
+## 8b (Pete, 2026-10-07): B — landslide is an asset-threat-only hazard. Applied.
+
+`landslide` joins sedimentation and extreme rainfall as a hazard that can damage the works but has no livelihood cell. The nine WOCAT "landslide: copes well / not well" ratings that had been filed under extreme rainfall now form landslide asset-threat rows: water harvesting low (terracing, ponds and dams); forest restoration moderate overall, high for assisted regeneration (compilers rate the regenerating stands as coping poorly), low for planting. The fifteen effect studies about whether forest or shade *reduces* landslides stay under erosion with a note saying so; a livelihood landslide cell (option A) would need an M2 landslide hazard layer and is parked.
+
