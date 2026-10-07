@@ -288,6 +288,7 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
         if rows:
             t3_rows += rows
             _collect(rows, rep, "T3", f"asset_threat__{hz}")
+    cs.apply_effect_locus(t3_rows, cs.load_effect_locus(LOOK / "effect_locus.csv"))
     weights = cs.asset_risk_weights(t3_rows, nbs_id)
     if weights is None:
         if any(r.get("risk_role") == "asset_threat" for r in t3_rows):

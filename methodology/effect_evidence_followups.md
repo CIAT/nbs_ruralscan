@@ -625,6 +625,8 @@ One question — the practice's effect in drought / dry / heat / flood YEARS aga
 
 **Round-3 ontology gaps (2026-10-07, Decision 8).** VONT `water_yield` (16 units re-labelled from `water_regulation`) + `yield_stability` (9 from `crop_yield`), XW routes to water_stress / production_gap (T6) and drought (T3 proxy); SRC `vars_extracted` synced. No T3 class moved; FR `water_stress` moderate → strong positive because Teo 2022's four modelled regional outputs now set the strength on a direct route against three measured reviews — Decision 8a (modelled-only strength cap proposed). Still open: landslide hazard enum (8b), livelihood diversification (Mezgebo, 1 unit), vegetation structure (Crouzeilles), social acceptance / reclearance (no units yet).
 
+**Decision round 2026-10-07 (Pete's answers, applied).** Maladaptation signal on every livelihood/priority row; modelled-only strength cap (8a B — does NOT move FR water_stress: Meaza 2022 measured baseflow backs the strength; the real tension is ratings-vs-syntheses direction = D1); effect-locus lookup (FR off_site → `landscape_scale_only`). PICOS B → next PR (comparator tag). Open: 8b landslide enum; D1 reversal if Pete wants syntheses to outweigh compiler ratings on direction.
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |
