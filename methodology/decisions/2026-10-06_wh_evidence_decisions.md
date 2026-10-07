@@ -162,3 +162,22 @@ No prose text changed (the prose describes the evidence, not the class, and its 
 
 **To confirm:** "7 ok", or name tags to re-check (the lane's ten least-certain calls are listed in the PR body).
 
+## Decision 8 (2026-10-07) — two ontology gaps closed; one weighting question for you
+
+**What was wrong.** Three follow-up sections listed the same gaps: evidence about *how much water a catchment yields* was filed under "water regulation" (flow buffering), and evidence about *how stable yields are across seasons* was filed under "crop yield" (the level). Both were parked with a note; neither could reach the right cell.
+
+**Applied.** Two new variables, pending your ratification: `water_yield` (annual yield, baseflow, spring/stream discharge; 16 units re-labelled from water regulation — the Teo 2022 model, the Filoso 2017 systematic review, the IUFRO 2018 report, two World Bank watershed ICRs, the Peru trench review, the Ethiopian exclosure meta-analysis) and `yield_stability` (9 units re-labelled from crop yield — the Knapp 2018 and Rusinamhodzi 2011 conservation-agriculture meta-analyses, Morel 2024, Tosh 2026, Nasielski 2015). Routes: water yield → water-stress priority (direct) and → drought cell (proxy, needs a stated hazard); yield stability → production-gap priority (component) and → drought cell (proxy). Quotes, pages and ids unchanged; only the label moved.
+
+**Effect.** No T3 class moved. One T6 cell moved: **forest restoration → water stress, moderate → strong positive** (also the two family rows). That is not good news — read on.
+
+**The question (8a).** The forest-restoration water-stress cell now says "strongly reduces water stress". The positive side is twelve WOCAT compiler ratings plus **one modelled study (Teo 2022) split into four per-region scenario outputs**; the negative side is **three measured syntheses** (a 167-paper systematic review and two reports citing it) saying forest cover expansion usually *reduces* water yield. Because strength is read from the units that agree with the majority direction, and the water-yield route is now direct, the model's four regional numbers set the strength. The measured reviews only lower agreement (medium).
+
+Options:
+- **A — leave it.** The vote is honest about what is in the pool; the account and prose already say the measured syntheses point the other way. Cheapest, but the headline class misleads a reader who only sees the table.
+- **B — modelled-only strength cap (recommended).** When no *measured* unit of the majority direction exists on a direct route, cap the class at moderate, the same way proxy-only cells are capped. Direction still comes from the whole vote; the model stays in. Forest-restoration water stress returns to moderate; nothing else in the current tables changes.
+- **C — one finding, one unit.** Collapse per-region outputs of a single model run into one unit, so a study counts once. Fixes this case, but the regional values are genuinely different (11 % to 85 %) and the contract allows one unit per reported result.
+
+**Parked, needs your call (8b).** 18 agroforestry units about *landslides* (Philpott 2008, Hurricane Stan) sit under erosion hazard because there is no landslide hazard in the T3 list. Adding one is a hazard-enum change (same as the sedimentation / extreme-rainfall decision). Say "add landslide as a livelihood hazard" or "asset-threat only" or "leave under erosion".
+
+**To answer:** "8 ok, 8a B, 8b <choice>".
+
