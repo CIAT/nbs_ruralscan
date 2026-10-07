@@ -1,7 +1,7 @@
 {
   "build": {
-    "timestamp": "2026-10-07T12:53:34.744999+00:00",
-    "git_commit": "a595699e6c103588582b0de71213c9828ecedeb2"
+    "timestamp": "2026-10-07T13:07:10.203629+00:00",
+    "git_commit": "309761475c22a340106a0d58c4992befb718c563"
   },
   "meta": {
     "nbs": [
@@ -2459,5 +2459,139 @@
         }
       }
     }
-  }
+  },
+  "decisions": [
+    {
+      "decision_id": "landslide_livelihood_cell",
+      "status": "parked",
+      "owner": "Pete",
+      "raised": "2026-10-07",
+      "question": "Landslide as a livelihood hazard (option A) — needs an M2 landslide hazard layer; 15 effect units sit under erosion meanwhile.",
+      "options": "A add livelihood cell + M2 layer | B asset-only (current)",
+      "recommendation": "revisit when M2 scopes hazard layers",
+      "decided": "B for now",
+      "decided_on": "2026-10-07",
+      "record": "methodology/decisions/2026-10-06_wh_evidence_decisions.md#8b"
+    },
+    {
+      "decision_id": "lens_first_run",
+      "status": "parked",
+      "owner": "Pete",
+      "raised": "2026-10-07",
+      "question": "First Lens.org discovery run (WH + AF drought-year gap, FR grey/tool gap) — needs a free LENS_TOKEN and a 'run'. AGRIS queries can be handed to Namita.",
+      "options": "run now | later",
+      "recommendation": "later (bookmarked by Pete)",
+      "decided": "",
+      "decided_on": "",
+      "record": "methodology/search_protocol.md#bibliographic-sources-2026-10-07-from-the-ilri-umbrella-review-protocol"
+    },
+    {
+      "decision_id": "severity_banded_T3",
+      "status": "parked",
+      "owner": "Pete + M5",
+      "raised": "2026-10-07",
+      "question": "Severity-banded T3 class (one class per hazard severity band) instead of one class + severity coverage note.",
+      "options": "keep one class + coverage (current) | band the class",
+      "recommendation": "only if Module 5 asks",
+      "decided": "",
+      "decided_on": "",
+      "record": "methodology/decisions/2026-10-06_wh_evidence_decisions.md#decision-7"
+    },
+    {
+      "decision_id": "D1_ratings_vs_syntheses",
+      "status": "decided",
+      "owner": "Pete",
+      "raised": "2026-10-07",
+      "question": "Should measured syntheses outrank WOCAT compiler ratings when they disagree on DIRECTION? (forest-restoration water stress: 12 ratings + 2 studies say more water; 3 measured syntheses say less; class follows the majority).",
+      "options": "A keep weighted vote (D1) | B measured syntheses set direction on disagreement | C discount ratings further",
+      "recommendation": "B worth a look; A is the standing D1 choice",
+      "decided": "syntheses weighted above practitioner ratings (design_weights.csv: meta-analysis 1.5, review 1.25, practitioner rating 0.5)",
+      "decided_on": "2026-10-07",
+      "record": "methodology/decisions/2026-10-06_wh_evidence_decisions.md#petes-answers-2026-10-07"
+    },
+    {
+      "decision_id": "D6_graded_discount",
+      "status": "decided",
+      "owner": "Pete",
+      "raised": "2026-10-07",
+      "question": "Confirm the graded hazard-intensity discount (replaced the rejected hard cap): measured same-hazard failures scale a T3 class by their evidence share, floor low.",
+      "options": "keep | tune the share-to-class step | revert",
+      "recommendation": "keep",
+      "decided": "keep",
+      "decided_on": "2026-10-07",
+      "record": "methodology/decisions/2026-10-06_wh_evidence_decisions.md#decision-6"
+    },
+    {
+      "decision_id": "D7_severity_tag",
+      "status": "decided",
+      "owner": "Pete",
+      "raised": "2026-10-07",
+      "question": "Tag author-stated hazard severity on every hazard unit; discount ignores mild failures; severe-end coverage stated per row.",
+      "options": "option 2 (tag) | option 3 (banded class)",
+      "recommendation": "2",
+      "decided": "7 ok",
+      "decided_on": "2026-10-07",
+      "record": "methodology/decisions/2026-10-06_wh_evidence_decisions.md#decision-7"
+    },
+    {
+      "decision_id": "D8_effect_locus",
+      "status": "decided",
+      "owner": "Pete",
+      "raised": "2026-10-07",
+      "question": "Forest restoration never on farmland: stamp off-site effects per family.",
+      "options": "—",
+      "recommendation": "—",
+      "decided": "applied",
+      "decided_on": "2026-10-07",
+      "record": "methodology/decisions/2026-10-06_wh_evidence_decisions.md#petes-answers-2026-10-07"
+    },
+    {
+      "decision_id": "D8a_modelled_cap",
+      "status": "decided",
+      "owner": "Pete",
+      "raised": "2026-10-07",
+      "question": "Cap a class at moderate when only modelled results set its strength.",
+      "options": "A leave | B cap | C one-finding-one-unit",
+      "recommendation": "B",
+      "decided": "B",
+      "decided_on": "2026-10-07",
+      "record": "methodology/decisions/2026-10-06_wh_evidence_decisions.md#decision-8"
+    },
+    {
+      "decision_id": "D8b_landslide_asset",
+      "status": "decided",
+      "owner": "Pete",
+      "raised": "2026-10-07",
+      "question": "Landslide as an asset-threat-only hazard.",
+      "options": "A livelihood | B asset-only | C leave",
+      "recommendation": "B",
+      "decided": "B for now",
+      "decided_on": "2026-10-07",
+      "record": "methodology/decisions/2026-10-06_wh_evidence_decisions.md#8b"
+    },
+    {
+      "decision_id": "PICOS_existing_forest",
+      "status": "decided",
+      "owner": "Pete",
+      "raised": "2026-10-06",
+      "question": "Existing-forest / forest-loss studies in forest-restoration tables.",
+      "options": "A keep with note | B keep out of roll-up | C demote",
+      "recommendation": "B",
+      "decided": "B",
+      "decided_on": "2026-10-07",
+      "record": "methodology/decisions/2026-10-06_fr_picos_existing_forest.md"
+    },
+    {
+      "decision_id": "WOCAT_D1_D5",
+      "status": "decided",
+      "owner": "Pete",
+      "raised": "2026-10-06",
+      "question": "WOCAT round decisions D1–D5 (weighted vote, coping in asset rows, physical damage only, mechanism for carbon/diversity ratings, conservation tillage in in_situ).",
+      "options": "—",
+      "recommendation": "—",
+      "decided": "D1 A, D2 keep, D3 A, D4 rows 1–2 ok, D5 A",
+      "decided_on": "2026-10-06",
+      "record": "methodology/decisions/2026-10-06_wh_evidence_decisions.md"
+    }
+  ]
 }

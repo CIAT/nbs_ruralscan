@@ -473,7 +473,43 @@ def build(schema_root: str | Path) -> dict:
         "basis_buckets": BASIS_BUCKETS,
         "blocker_reasons": _BLOCKER_ORDER,
     }
-    return {"meta": meta, "cells": cells}
+    return {"meta": meta, "cells": cells, "decisions": load_decisions(schema_root)}
+
+
+DECISION_STATUS = ("open", "parked", "decided")
+DECISIONS_CSV = Path("methodology") / "decisions" / "open_decisions.csv"
+
+
+def load_decisions(schema_root: str | Path) -> list[dict[str, str]]:
+    """`methodology/decisions/open_decisions.csv` → rows for the page, open first, then
+    parked, then decided (newest first within a status). Unknown statuses are kept and
+    flagged in `_status_note` so a typo shows up rather than hides a decision."""
+    path = Path(schema_root).parent / DECISIONS_CSV
+    if not path.exists():
+        return []
+    with path.open(newline="", encoding="utf-8") as f:
+        rows = [dict(r) for r in csv.DictReader(f)]
+    for r in rows:
+        if r.get("status") not in DECISION_STATUS:
+            r["_status_note"] = f"unknown status {r.get('status')!r}"
+    order = {s: i for i, s in enumerate(DECISION_STATUS)}
+    rows.sort(
+        key=lambda r: (
+            order.get(r.get("status") or "", 99),
+            r.get("raised") or "",
+            r.get("decision_id") or "",
+        )
+    )
+    # newest first within a status
+    out: list[dict[str, str]] = []
+    for st in DECISION_STATUS + ("",):
+        grp = [
+            r
+            for r in rows
+            if (r.get("status") if r.get("status") in DECISION_STATUS else "") == st
+        ]
+        out += sorted(grp, key=lambda r: r.get("raised") or "", reverse=True)
+    return out
 
 
 def _blockers(
@@ -571,6 +607,7 @@ def write(
         isinstance(current, dict)
         and current.get("cells") == payload["cells"]
         and current.get("meta") == payload["meta"]
+        and current.get("decisions", []) == payload["decisions"]
     ):
         return []
     out = {

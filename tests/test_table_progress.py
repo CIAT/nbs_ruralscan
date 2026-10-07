@@ -132,3 +132,13 @@ def test_write_check_ignores_build_stamp(tmp_path):
     data["cells"]["agroforestry"]["T3"]["completion"]["pct"] = -1
     dest.write_text(json.dumps(data), encoding="utf-8")
     assert tp.write(SCHEMA, check=True, dest=dest) == [dest]
+
+
+def test_decisions_are_loaded_open_first():
+    from nbs_ruralscan.schema_tools import table_progress as tp
+
+    d = tp.build(tp.Path(__file__).resolve().parents[1] / "schema")["decisions"]
+    assert d, "open_decisions.csv should have rows"
+    statuses = [r["status"] for r in d]
+    assert statuses == sorted(statuses, key=lambda s: tp.DECISION_STATUS.index(s))
+    assert {"decision_id", "status", "question", "record"} <= set(d[0])
