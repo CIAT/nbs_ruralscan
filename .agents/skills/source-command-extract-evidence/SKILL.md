@@ -265,6 +265,21 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     `title_verified=true` (`verify_metadata.py verify-titles`) and was downloaded from the
     publisher's own domain.
 
+22. **Process metadata NEVER goes in `relationship` -> `context.note`** (2026-10-07 retro). Run
+    dates, ruleset stamps, supersession pointers (`superseded_by=…`), review-backlog tags and
+    "strength pass" notes are pipeline bookkeeping, not claims; inside `relationship.note` they
+    read as smuggled numbers (159 ISO-date + 62 citation-year false flags in the October
+    effect rounds). Put them in `context.note` prefixed `process:`. `check_numbers` now ignores
+    ISO dates, evidence-id references and the WOCAT adapter's questionnaire references
+    (`QT 6.1`, `−3…+3 scale`) wherever they sit, but publication years in a claim still count.
+
+23. **Ex-ante project documents are NOT effect evidence -> `speculative_evidence`** (Pete
+    2026-10-01, encoded 2026-10-07). A Project Appraisal Document, proposal, design note or
+    results framework states what a project *will* do ("will support…", target values).
+    Extract only ex-post MEL (ICR / IEG / PPAR / impact evaluations) for `nbs_effect`; a PAD
+    may be registered as a source for T4 scoping context, never for T3/T6. 37 agroforestry
+    PAD units were dropped under this code.
+
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
 `check_species.py` (species mis-tag), `quarantine.py` (auto-soft-deletes off-scope +
