@@ -198,3 +198,11 @@ Options:
 
 `landslide` joins sedimentation and extreme rainfall as a hazard that can damage the works but has no livelihood cell. The nine WOCAT "landslide: copes well / not well" ratings that had been filed under extreme rainfall now form landslide asset-threat rows: water harvesting low (terracing, ponds and dams); forest restoration moderate overall, high for assisted regeneration (compilers rate the regenerating stands as coping poorly), low for planting. The fifteen effect studies about whether forest or shade *reduces* landslides stay under erosion with a note saying so; a livelihood landslide cell (option A) would need an M2 landslide hazard layer and is parked.
 
+## D6 confirmed · D1 revisited (Pete, 2026-10-07)
+
+**D6 — "ok".** The graded drought discount stays.
+
+**D1 — "synthesis should be higher weighted than practitioner ratings, the latter will be biased probably."** Applied as a study-design weight, read from `schema/lookups/design_weights.csv`: meta-analysis × 1.5, review × 1.25, randomised trial × 1.2, observational / quasi-experimental / model × 1.0, case study × 0.9, expert judgement × 0.6, **practitioner (WOCAT compiler) rating × 0.5**. It multiplies the existing quality weights (source tier, how the claim was made, grey-literature haircut), so a rating now counts for roughly a quarter of a measured synthesis of the same tier. Direction and strength both feel it.
+
+What moved (25 rows): drought cells for water harvesting (mixed crop–livestock, terracing) and agroforestry rose from low to moderate because the meta-analyses in them now outweigh the ratings; agroforestry fire rose from negative to low; forest-restoration active planting → biodiversity flipped to moderate negative (the plantation-vs-natural-regeneration syntheses now carry the cell); forest-restoration and agroforestry poverty and erosion roll-ups shifted one class. The forest-restoration water-stress cell that raised the question did **not** move: with the ratings halved it is still carried by a measured Ethiopian exclosure study and the Teo 2022 model against the three syntheses — the account now shows the weight behind each side so you can see that.
+
