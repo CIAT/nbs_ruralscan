@@ -2155,3 +2155,38 @@ def test_existing_forest_comparator_leaves_the_rollup_and_other_families():
 def test_landslide_is_an_asset_only_hazard():
     assert "landslide" in cs.ASSET_ONLY_HAZARDS
     assert "landslide" not in cs.T3_HAZARDS
+
+
+def test_syntheses_outweigh_practitioner_ratings_on_direction():
+    # D1 revisited (Pete 2026-10-07): 3 compiler ratings say benefit, 1 meta-analysis says harm
+    ratings = [
+        _u(
+            f"r{i}",
+            f"w{i}",
+            "water_yield",
+            "positive",
+            "slight",
+            basis="expert_assertion",
+            rel={"design": "practitioner_rating"},
+        )
+        for i in range(3)
+    ]
+    meta = _u(
+        "m",
+        "s1",
+        "water_yield",
+        "negative",
+        "moderate",
+        rel={"design": "meta_analysis"},
+    )
+    xw = [cs.XWRow("water_yield", "T6", "water_stress", "same", "direct", 1.0)]
+    assert cs.design_factor(meta) > cs.design_factor(ratings[0])
+    rows, _ = cs.synthesise_cell(
+        ratings + [meta],
+        {"s1": "high", "w0": "low", "w1": "low", "w2": "low"},
+        table="T6",
+        nbs_id="riparian_buffer",
+        target_key="water_stress",
+        xw_rows=xw,
+    )
+    assert rows[0]["effect_direction"].endswith("negative")
