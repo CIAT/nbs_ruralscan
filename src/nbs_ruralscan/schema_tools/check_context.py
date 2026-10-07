@@ -62,6 +62,7 @@ HAZARDS = {
     # and never counted in `asset_risk_weight` completeness.
     "sedimentation",
     "extreme_rainfall",
+    "landslide",  # 8b B (Pete 2026-10-07): asset-threat only, like sedimentation
 }
 SEVERITY = {"mild", "moderate", "severe", "extreme", "unspecified"}
 COMPARATOR = {"existing_forest"}
