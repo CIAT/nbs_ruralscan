@@ -2081,3 +2081,72 @@ def test_effect_locus_marks_off_site_practices(tmp_path):
     assert rows[0]["justification"]["effect_locus"] == "off_site"
     assert "OFF-SITE effect" in rows[0]["justification"]["statement"]
     assert "effect_locus" not in rows[1]["justification"]
+
+
+def test_existing_forest_comparator_leaves_the_rollup_and_other_families():
+    pol = {
+        ("riparian_buffer", "existing_forest"): {
+            "rollup_included": False,
+            "home_family": "riparian_buffer__planted",
+        }
+    }
+    practice = [
+        _u(
+            f"p{i}",
+            f"s{i}",
+            "erosion_hazard",
+            "negative",
+            "slight",
+            family="riparian_buffer__natural_restored",
+        )
+        for i in range(2)
+    ]
+    existing = [
+        _u(
+            f"x{i}",
+            f"e{i}",
+            "erosion_hazard",
+            "negative",
+            "strong",
+            family="riparian_buffer__cross_family",
+            ctx={"comparator": "existing_forest"},
+        )
+        for i in range(2)
+    ]
+    rows, rep = cs.synthesise_cell_with_families(
+        practice + existing,
+        {},
+        table="T6",
+        nbs_id="riparian_buffer",
+        target_key="soil_erosion_risk",
+        xw_rows=XW,
+        comparator_policy=pol,
+    )
+    rollup = rows[0]
+    assert rollup["suitability_family_id"] in ("", None)
+    assert set(rollup["evidence_ids"]) == {
+        "p0",
+        "p1",
+    }  # strong existing-forest units out
+    fam = {r["suitability_family_id"]: r for r in rows[1:]}
+    assert set(fam["riparian_buffer__planted"]["evidence_ids"]) == {
+        "x0",
+        "x1",
+    }  # home family row
+    assert (
+        "x0"
+        not in fam.get("riparian_buffer__natural_restored", {"evidence_ids": []})[
+            "evidence_ids"
+        ]
+    )
+    assert any("PICOS B" in n for n in rep.notes)
+    # without a policy nothing changes
+    rows, _ = cs.synthesise_cell_with_families(
+        practice + existing,
+        {},
+        table="T6",
+        nbs_id="riparian_buffer",
+        target_key="soil_erosion_risk",
+        xw_rows=XW,
+    )
+    assert set(rows[0]["evidence_ids"]) == {"p0", "p1", "x0", "x1"}

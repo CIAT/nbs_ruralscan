@@ -1438,6 +1438,34 @@ def maladaptation_signal(contribs: list[_Contrib], modal: int) -> dict[str, Any]
     }
 
 
+def _rehome(u: EvidenceUnit, fam: str) -> EvidenceUnit:
+    """A copy of `u` filed under `fam` (a tagged cross_family unit pooled into its home
+    family); the register row is untouched."""
+    if u.suitability_family_id == fam:
+        return u
+    if hasattr(u, "model_copy"):
+        return u.model_copy(update={"suitability_family_id": fam})
+    if hasattr(u, "copy") and hasattr(u, "dict"):
+        return u.copy(update={"suitability_family_id": fam})
+    import dataclasses
+
+    return dataclasses.replace(u, suitability_family_id=fam)
+
+
+def load_comparator_policy(path: Path) -> dict[tuple[str, str], dict[str, Any]]:
+    """`schema/lookups/comparator_policy.csv` → {(nbs_id, comparator): {rollup_included,
+    home_family}} (PICOS B)."""
+    out: dict[tuple[str, str], dict[str, Any]] = {}
+    with Path(path).open(newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            out[(r["nbs_id"].strip(), r["comparator"].strip())] = {
+                "rollup_included": (r.get("rollup_included") or "").strip().lower()
+                == "true",
+                "home_family": (r.get("home_family") or "").strip(),
+            }
+    return out
+
+
 LOCUS_VALUES = ("on_farm", "mixed", "off_site")
 
 
@@ -2134,22 +2162,54 @@ def synthesise_cell_with_families(
 ) -> tuple[list[dict[str, Any]], CellReport]:
     """NbS roll-up row(s) (always, pooled) + family rows where ≥ 2 independent sources.
     Sets `family_spread` on the roll-up global row when family ranks differ by ≥ 2."""
-    rows, rep = synthesise_cell(units, tiers, family=None, **kw)
+    policy = kw.pop("comparator_policy", None) or {}
+    nbs_id = str(kw.get("nbs_id") or "")
+    # PICOS B (Pete 2026-10-07): units measured against an existing-forest / forest-loss
+    # comparator leave the roll-up and every family but their own (or the policy's
+    # home family when they are cross_family) — see comparator_policy.csv.
+    home_of: dict[str, str] = {}
+    excluded: list[EvidenceUnit] = []
+    pooled: list[EvidenceUnit] = []
+    for u in units:
+        comp = str((u.context or {}).get("comparator") or "")
+        pol = policy.get((nbs_id, comp)) if comp else None
+        if pol and not pol.get("rollup_included", False):
+            excluded.append(u)
+            fam_u = u.suitability_family_id or ""
+            if fam_u.endswith("__cross_family") or not fam_u:
+                fam_u = pol.get("home_family") or fam_u
+            home_of[u.evidence_id] = fam_u
+        else:
+            pooled.append(u)
+    rows, rep = synthesise_cell(pooled, tiers, family=None, **kw)
+    if excluded:
+        rep.notes.append(
+            f"{len(excluded)} existing-forest comparator unit(s) kept out of the roll-up "
+            f"(PICOS B): {sorted(u.evidence_id for u in excluded)[:6]}…"
+        )
     if not rows:
-        return rows, rep
+        if not excluded:
+            return rows, rep
+        rows = []
     fams = families or sorted(
-        {u.suitability_family_id for u in units if u.suitability_family_id}
+        {u.suitability_family_id for u in pooled if u.suitability_family_id}
+        | {f for f in home_of.values() if f}
     )
     fam_ranks: list[int] = []
     for fam in fams:
-        fam_units = [u for u in units if u.suitability_family_id == fam]
+        fam_units = [u for u in pooled if u.suitability_family_id == fam] + [
+            _rehome(u, fam) for u in excluded if home_of.get(u.evidence_id) == fam
+        ]
         if len({u.source_id for u in fam_units}) < min_family_sources:
             continue
         frows, frep = synthesise_cell(
             fam_units, tiers, family=fam, emit_scope_rows=False, **kw
         )
-        if frows and set(frows[0].get("evidence_ids") or []) == set(
-            rows[0].get("evidence_ids") or []
+        if (
+            frows
+            and rows
+            and set(frows[0].get("evidence_ids") or [])
+            == set(rows[0].get("evidence_ids") or [])
         ):
             # the family holds EVERY unit of the roll-up (a cross_family-only cell, or
             # one family in the pool): its row would duplicate the roll-up — not emitted

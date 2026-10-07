@@ -23,3 +23,10 @@ The forest-restoration flood roll-up reads **moderate, very high confidence** on
 **B.** It keeps the evidence where it is defensible (protection keeps the forest that does these things), stops it from colouring the planting and regeneration rows, and the roll-up then reads what restoration practices have measurably delivered. Reply "PICOS B" (or A / C).
 
 Technical record: `methodology/effect_evidence_followups.md` §1f; the affected units are listed in the FR lane C / D reports.
+
+## Decision (Pete, 2026-10-07): B — applied
+
+37 forest-restoration units now carry `comparator = existing_forest` (Rasolofoson 2018 diets near forest; McIvor 2012 storm-surge and wave attenuation by mangroves; Gijsman 2021; Menéndez 2020 "if current mangroves were lost"; the World Bank Bangladesh mangrove design study; Prevedello 2019 warming after deforestation; IUFRO 2018 flood risk after forest conversion / harvest and the forest-vs-non-forest water balance; Forbes & Broadhead 2011 landslides after clearance). They stay in the register and in the protection / community-forestry and mangrove family rows, and are out of every NbS roll-up row and every planting / regeneration row (`schema/lookups/comparator_policy.csv`; ruleset v1.6.4 addendum).
+
+**What moved.** Protection-family flood: high → moderate (the strongest existing-mangrove units now sit in the mangrove family row instead). A cross-family soil-erosion row that rested on forest-loss landslide studies no longer exists; the landslide evidence now reads under protection. The roll-up flood, cyclone, erosion, heat-stress, water-stress and poverty rows were re-pooled from restoration-practice evidence only and their prose rewritten (21 rows). Planted-mangrove wind measurements (McIvor's Sonneratia plantation) are practice evidence and were NOT tagged.
+
