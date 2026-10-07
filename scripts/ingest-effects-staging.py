@@ -23,6 +23,7 @@ from pathlib import Path
 
 import fitz
 
+
 from nbs_ruralscan.recipe.cell_synthesis import load_bands
 from nbs_ruralscan.schema_tools import check_bands, check_context
 from nbs_ruralscan.schema_tools.check_numbers import _floats, _nums
@@ -31,6 +32,10 @@ from nbs_ruralscan.schema_tools.migrate_effects import (
     append_to_register,
     resync_vars_extracted,
 )
+
+#: accepted extraction rulesets (methodology/RULESET_VERSIONS.md; v1.6.3–v1.6.6 are search /
+#: tagging / note-rule patches — the extraction contract is unchanged since v1.6.2)
+_RULESETS = {"v1.6.0", "v1.6.1", "v1.6.2", "v1.6.3", "v1.6.4", "v1.6.5", "v1.6.6"}
 
 ROOT = Path(__file__).resolve().parents[1]
 REG = ROOT / "schema" / "registers"
@@ -132,9 +137,9 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
                 f"{eid}: use_role '{u.get('use_role')}' is not allowed here "
                 f"(allowed: {sorted(allowed_roles)})"
             )
-        if u.get("ruleset_version") not in {"v1.6.0", "v1.6.1", "v1.6.2"}:
+        if u.get("ruleset_version") not in _RULESETS:
             errs.append(
-                f"{eid}: ruleset_version '{u.get('ruleset_version')}' not in v1.6.0/v1.6.1/v1.6.2"
+                f"{eid}: ruleset_version '{u.get('ruleset_version')}' not in {sorted(_RULESETS)}"
             )
     return errs
 

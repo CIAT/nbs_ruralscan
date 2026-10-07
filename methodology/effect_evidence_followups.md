@@ -587,7 +587,7 @@ No draft-0 T3/T6 seeds existed for this NbS (no benchmark). Round 1 = 23 WOCAT s
 | Pending OA rows (18) | landing pages / 403 (FAO-CIFOR 2005 floods, IUFRO 2015, IEG 2013 + Vietnam PPAR, GEF/WRI landing pages, ES/FR/PT agency reports) | human browser download |
 | Paywalled (6, verified) | Farley 2005, van Dijk 2009, Yang 2023, Kandel 2022, Didy 2026, Nunes & Silva 2020 — check ResearchGate first; **acquire Bradshaw 2007 + van Dijk 2009 as a pair** (flood cell bias otherwise) | Namita |
 | Ontology gaps | aboveground biomass (→ `carbon_sequestration` used), water yield (→ `water_regulation` used), forest structure, social acceptance, reclearance pressure, landslide hazard (no T3 id) | round 2 |
-| Not yet extracted | technique → survival effects (Andivia 2021 seedling size; Grossnickle nursery stock; Hardwick weed cutting, Table 6 screengrab) now encodable as `establishment_survival` effects; 3ie EGM study counts are not effect sizes | short follow-up pass |
+| ~~Not yet extracted~~ **done 2026-10-07** | technique → survival pass: 22 `operational_risk` units (`establishment_survival`; Andivia 2021 meta-analysis ×4, Grossnickle 2026 review ×15, Hardwick 1997 trial ×3 — weed cutting lowered survival; Hardwick re-filed `active_planting` since the trial planted stock; nurse-crop proposal + abstract duplicate not ingested). Feeds Module 6 implementation guidance, not a T3/T6 cell. Andivia promoted to SRC (high, meta_analysis). Blockers: 2 page-break sentences in Grossnickle; figure-only results. | — |
 | Discovery lesson | French title queries must exclude words shared with English (`afforestation`, `impacts`, `erosion`) — one query returned 469 English papers | `search_protocol.md` |
 
 
