@@ -161,6 +161,11 @@ def main(argv: list[str] | None = None) -> int:
             "so the BANDS check skips them by role."
         ),
     )
+    ap.add_argument(
+        "--allow-structural",
+        action="store_true",
+        help="also accept structural_suitability (T4) units — same gates (verbatim, numbers, VONT, FAM)",
+    )
     args = ap.parse_args(argv)
     fixes = dict(kv.split("=", 1) for kv in args.fix_family)
     units: list[dict] = []
@@ -177,7 +182,8 @@ def main(argv: list[str] | None = None) -> int:
     ids = Counter(u["evidence_id"] for u in units)
     dups = [k for k, n in ids.items() if n > 1]
     roles = {"nbs_effect", "asset_vulnerability"} | (
-        {"operational_risk"} if args.allow_operational else set()
+        ({"operational_risk"} if args.allow_operational else set())
+        | ({"structural_suitability"} if args.allow_structural else set())
     )
     errs = gate(units, roles) + [f"duplicate evidence_id in staging: {d}" for d in dups]
     print(

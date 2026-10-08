@@ -127,16 +127,33 @@ def _head_text(source_id: str, pages: int = 3) -> str | None:
     return None
 
 
+def _squash(s: str) -> str:
+    """NFKC, lower, alnum only, no spaces — survives letter-spaced / ligature titles
+    ("F o r e s t s a n d ﬂ o o d s", caught 2026-10-08 on a CIFOR cover page)."""
+    import re
+    import unicodedata
+
+    return re.sub(r"[^a-z0-9]+", "", unicodedata.normalize("NFKC", s or "").lower())
+
+
 def _title_coverage(title: str, text: str) -> float:
     tt = _toks(title)
-    return len(tt & _toks(text)) / len(tt) if tt else 0.0
+    cov = len(tt & _toks(text)) / len(tt) if tt else 0.0
+    if cov < TITLE_THRESH:
+        st = _squash(title)
+        if len(st) >= 20 and st in _squash(text):
+            return 1.0
+    return cov
 
 
 def verify_titles() -> int:
     rows, cols = _rows()
     passed = failed = uncached = 0
     for r in rows:
-        if (r.get("doi") or "").strip() or r.get("status") != "acquired":
+        if (r.get("doi") or "").strip() or r.get("status") not in (
+            "acquired",
+            "extracted",
+        ):
             continue
         text = _head_text(r["source_id"])
         if text is None:
