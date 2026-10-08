@@ -35,6 +35,12 @@ Every unit passed the deterministic gates (verbatim quote on the cited page, eve
 | agroforestry | `chaudhury_2011 Quesungual units` | Filed under regeneration_farmland by default — Quesungual is slash-and-mulch; confirm the family |
 | agroforestry | `…pastoral_rangeland__income_group-high` rows | Class rests on two opposite-pointing units from different systems (temperate shelterbelt vs Costa Rican cattle) |
 
+| water_harvesting_conservation | `water_harvesting_conservation__water_harvesting__cross_family__rural_poverty` | Class slight_negative with low agreement (negative NPVs for graded fanya juu / soil bunds, Adimassu) while most units read positive — check the economic units' direction coding |
+| water_harvesting_conservation | `water_harvesting_conservation__asset_threat__flood__income_group-lic_lmic` | 'Severely damaged' from WOCAT ratings split between 'not well' and 'well' — check the rating→sensitivity banding |
+| water_harvesting_conservation | `water_harvesting_conservation__water_harvesting__in_situ__water_stress` | slight_negative on one new unit (Roose 2010: mechanised bunds cut downstream reservoir inflow) against benefit-leaning units — confirm direction/polarity |
+| water_harvesting_conservation | `heat_stress rows (all / cropping_rainfed / in_situ)` | Rest on one meta-regression statement (Steward 2018) + one review line (Malan 2024); neither separates heat from drought; envelope lists only USA for a LMIC maize meta-analysis — check context tags |
+| water_harvesting_conservation | `water_harvesting_conservation__production_gap` | 238 units; the 'losses in humid climates / above 1,000 mm' sentence cites rusin11_3 + knapp18_3 carried over from older prose — re-check which unit says which |
+
 ## Also for a human
 - `silvopastoral_drought_herbage_arid_india_2008`: cached file is a journal score list, not the paper — re-acquire by title.
 - `icarda_oweis_wh_indigenous_2001`: scanned PDF, no text layer — OCR before any pass.
