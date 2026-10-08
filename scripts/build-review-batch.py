@@ -32,6 +32,22 @@ CORPUS = ROOT / ".cache" / "corpus"
 OUT = ROOT / "docs" / "review"
 IMG = OUT / "img"
 DPI = 110
+#: same base the dashboard uses (vfSharePointUrl) — team-openable link built from SRC.library_path
+SP_BASE = (
+    "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/"
+    "ClimateActionNetZero/1_Projects/"
+)
+
+
+def sharepoint_url(library_path: str, page: int | None = None) -> str | None:
+    from urllib.parse import quote
+
+    if not library_path:
+        return None
+    url = SP_BASE + "/".join(quote(part) for part in library_path.split("/"))
+    return f"{url}#page={page}" if page else url
+
+
 MARGIN = 28  # pt around the quote block
 
 
@@ -165,6 +181,8 @@ def main(argv: list[str] | None = None) -> int:
                 "question": question,
                 "crop": crop,
                 "crop_note": crop_note,
+                "pdf_url": sharepoint_url(s.get("library_path", ""), page or None),
+                "library_path": s.get("library_path", ""),
             }
         )
     OUT.mkdir(parents=True, exist_ok=True)

@@ -152,6 +152,8 @@
     .decision { position: sticky; bottom: 0; z-index: 5; box-shadow: var(--card-shadow); padding: 10px; }
     .nav .keys { display: none; }
   }
+  .pdf-link { margin-top: 8px; font-size: 13px; }
+  .pdf-link a { font-weight: 600; }
 </style>
 </head>
 <body data-theme="dark">
@@ -425,6 +427,9 @@
         '</div>' +
         '<div class="card crop"><h2>Where it came from</h2>' + right +
           '<div class="crop-note">' + (present(u.crop_note) ? esc(u.crop_note) : '') + '</div>' +
+          (present(u.pdf_url)
+            ? '<p class="pdf-link"><a href="' + esc(u.pdf_url) + '" target="_blank" rel="noopener">Open the full PDF on SharePoint' + (present(u.page) ? ' (page ' + esc(String(u.page)) + ')' : '') + '</a> <span class="muted">— CGIAR login; opens in the browser viewer</span></p>'
+            : '<p class="pdf-link muted">No SharePoint copy registered for this source.</p>') +
         '</div>' +
       '</div>';
     syncDecision(u);
