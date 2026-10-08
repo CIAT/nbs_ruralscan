@@ -1,6 +1,6 @@
 # Source acquisition hand-off (2026-10-07)
 
-**For:** whoever can give a few hours to chase PDFs (Pete suggested Charity). **From:** the NbS Rural Scan evidence pipeline (Pete Steward). Plain-language; no tooling needed beyond a browser and SharePoint.
+**For:** split 2026-10-08 — **Charity** (`…_handoff_charity.xlsx`, 83 rows: free browser-click copies + ResearchGate / Academia checks) and **Namita** (`…_handoff_namita.xlsx`, 38 rows: institutional journal access). **From:** the NbS Rural Scan evidence pipeline (Pete Steward). Plain-language; no tooling needed beyond a browser and SharePoint.
 
 ## What this is
 
