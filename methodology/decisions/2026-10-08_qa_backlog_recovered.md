@@ -32,6 +32,9 @@ Every unit passed the deterministic gates (verbatim quote on the cited page, eve
 | wetland_management | `medland_2020 groundwater + slope units` | Local quantile breaks; 11–86 m groundwater levels implausible as wetland water-table depths; slope % vs degrees |
 | wetland_management | `wet_feasible_locations_lidar_suitability_2018 family` | Uuemaa covers in-stream impoundment wetlands (close to the parked 'constructed' family), filed under 'creation' — confirm |
 
+| agroforestry | `chaudhury_2011 Quesungual units` | Filed under regeneration_farmland by default — Quesungual is slash-and-mulch; confirm the family |
+| agroforestry | `…pastoral_rangeland__income_group-high` rows | Class rests on two opposite-pointing units from different systems (temperate shelterbelt vs Costa Rican cattle) |
+
 ## Also for a human
 - `silvopastoral_drought_herbage_arid_india_2008`: cached file is a journal score list, not the paper — re-acquire by title.
 - `icarda_oweis_wh_indigenous_2001`: scanned PDF, no text layer — OCR before any pass.
