@@ -154,6 +154,11 @@
   }
   .pdf-link { margin-top: 8px; font-size: 13px; }
   .pdf-link a { font-weight: 600; }
+  .plain { margin: 10px 0 12px; padding: 10px 12px; border-left: 3px solid var(--accent-emerald, #2e9e6b); background: var(--bg-tertiary); border-radius: 4px; }
+  .plain h3 { margin: 0 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-secondary); }
+  .plain p { margin: 4px 0; font-size: 15px; line-height: 1.45; }
+  .plain-claim { font-weight: 600; }
+  .codes summary { cursor: pointer; font-size: 12px; color: var(--text-muted); margin: 6px 0; }
 </style>
 </head>
 <body data-theme="dark">
@@ -414,6 +419,12 @@
       '<div class="cols">' +
         '<div class="card"><h2>What was extracted</h2>' +
           '<div class="why"><b>Why this needs a look</b>' + esc(u.question) + '</div>' +
+        (u.plain ? '<div class="plain"><h3>In plain words</h3>' +
+          '<p class="plain-claim">' + esc(u.plain.claim || '') + '</p>' +
+          (u.plain.how ? '<p>' + esc(u.plain.how) + '</p>' : '') +
+          (u.plain.where ? '<p>' + esc(u.plain.where) + '</p>' : '') +
+          '<p class="muted">Role: ' + esc(u.plain.role || '') + '</p></div>' : '') +
+        '<details class="codes"><summary>Coded fields (for the record)</summary>' +
           '<dl class="rows">' +
             '<dt>Source</dt><dd>' + esc(u.citation) + ' <span class="sep">·</span> tier: ' + esc(u.benchmark_tier) + '</dd>' +
             '<dt>Practice</dt><dd>' + joinParts([u.nbs_id, u.suitability_family_id, u.use_role]) + '</dd>' +
@@ -422,7 +433,7 @@
             '<dt>Basis</dt><dd>' + joinParts([u.claim_scope, u.claim_basis]) + '</dd>' +
             '<dt>Context</dt><dd>' + (ctx.length ? ctx.join('<br>') : '—') + '</dd>' +
             '<dt>Page</dt><dd>' + (pageLoc || '—') + '</dd>' +
-          '</dl>' +
+          '</dl></details>' +
           '<blockquote>' + esc(u.quote) + '</blockquote>' +
         '</div>' +
         '<div class="card crop"><h2>Where it came from</h2>' + right +
