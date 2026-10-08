@@ -31,6 +31,7 @@ _TIMEOUT = (10, 60)  # (connect, read) seconds
 _USER_AGENT = (
     "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
 )
+_FALLBACK_USER_AGENT = "curl/8.7.1"
 
 # Accepted content-type fragments per kind
 _CONTENT_TYPE_MAP: dict[str, tuple[str, ...]] = {
@@ -156,16 +157,23 @@ def acquire(
         )
 
     # --- Fetch -----------------------------------------------------------
-    headers = {"User-Agent": _USER_AGENT}
-    try:
-        response = requests.get(url, headers=headers, timeout=_TIMEOUT, stream=True)
-    except requests.exceptions.RequestException as exc:
-        raise AcquireError(f"Network error fetching {url!r}: {exc}") from exc
-
-    if response.status_code != 200:
-        raise AcquireError(
-            f"HTTP {response.status_code} fetching {source_id!r} from {url!r}"
-        )
+    # OA-recovery lane B (2026-10-07): HAL, PMC, BORIS and DSpace 7 repositories answer
+    # a browser-like agent with a bot-check page but serve a plain curl agent; MDPI /
+    # SciELO block one and not the other. Try the project agent first, then plain curl.
+    response = None
+    last_status: int | None = None
+    for ua in (_USER_AGENT, _FALLBACK_USER_AGENT):
+        try:
+            response = requests.get(
+                url, headers={"User-Agent": ua}, timeout=_TIMEOUT, stream=True
+            )
+        except requests.exceptions.RequestException as exc:
+            raise AcquireError(f"Network error fetching {url!r}: {exc}") from exc
+        last_status = response.status_code
+        if response.status_code == 200:
+            break
+    if response is None or response.status_code != 200:
+        raise AcquireError(f"HTTP {last_status} fetching {source_id!r} from {url!r}")
 
     content_type = response.headers.get("Content-Type", "")
     _check_content_type(kind, content_type)

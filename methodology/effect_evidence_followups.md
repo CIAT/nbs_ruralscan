@@ -635,6 +635,8 @@ One question — the practice's effect in drought / dry / heat / flood YEARS aga
 
 **Design weights (D1 revisited, Pete 2026-10-07).** `schema/lookups/design_weights.csv` (meta-analysis 1.5 · review 1.25 · RCT 1.2 · practitioner rating 0.5 · expert 0.6) multiplies unit weight; agreement notes now show the weight behind each sign. 20 class moves (drought cells up where meta-analyses outweigh ratings; FR active_planting biodiversity → moderate_negative; poverty/erosion roll-ups ±1). FR water_stress unchanged (Meaza 2022 measured + Teo model still carry it). D6 confirmed. Register rows D6/D1 → decided once #296 is on main.
 
+**OA-recovery pass (2026-10-07).** 192 pending → 121: 71 PDFs acquired (title-checked), 27 free-but-browser-only, 56 ResearchGate-only, 38 verified no free copy. 20 citation/DOI/author errors caught by the lanes are noted on the queue rows (`METADATA (OA-recovery …)`): vaast→Jezeer 2017, nyamadzawo→Mhizha & Ndiritu, prinz_2004→Schiettecatte 2005, roose_2017 DOI (chapter) blanked, rojas_2011 DOI defunct, sierra_1978 cache still the wrong paper, nunes_silva first author, ramsar_bn10 year/language, thesis/AAM versions (kandel, hajjar, lucasborja, gonzalezsanchez, mekonnen). Hand-off for Charity rebuilt from the residue (`methodology/decisions/2026-10-07_acquisition_handoff.{md,csv,xlsx}`). Newly acquired sources are NOT yet extracted — next: re-run the effect lanes over them (WH 19, AF 19, FR 20, wetland 5, +8 earlier).
+
 ## 2. Pointers left by T4-only sweeps of other NbS (from PR bodies; the staging reports are gone)
 
 | nbs_id | source_id | page | claim_kind | outcome_raw | note |

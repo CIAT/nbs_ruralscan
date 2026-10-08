@@ -122,6 +122,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--nbs", required=True)
     ap.add_argument("--library-subdir", required=True)
     ap.add_argument("--wayback", default="")
+
+    ap.add_argument(
+        "--all-dates",
+        action="store_true",
+        help="retry every pending row of the NbS regardless of date_added (OA-recovery pass)",
+    )
     a = ap.parse_args(argv)
     wayback = json.loads(pathlib.Path(a.wayback).read_text()) if a.wayback else {}
     mirror = LIB_ROOT / LIB_REL / a.library_subdir
@@ -134,7 +140,7 @@ def main(argv: list[str] | None = None) -> int:
     log: list[tuple[str, str, str]] = []
     for r in rows:
         if (
-            r["date_added"] != a.date
+            (r["date_added"] != a.date and not a.all_dates)
             or r["status"] != "pending"
             or r["nbs_id"] != a.nbs
         ):

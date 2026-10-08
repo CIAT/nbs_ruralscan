@@ -18,14 +18,15 @@ Two cautions: the **citation is the trust anchor** (a DOI can resolve to the wro
 
 ## What is in the list
 
+Rebuilt after the 2026-10-07 open-access recovery pass (Unpaywall by DOI → automatic re-acquire → three web-search lanes): 71 of the original 192 were fetched automatically; 121 remain.
+
 | bucket | meaning | n |
 |---|---|---|
-| A_researchgate_check | Search ResearchGate / Academia for a free full text; if found, download. | 44 |
-| C_institutional_access | Verified no open copy: download through institutional (university / CGIAR) journal access. | 110 |
-| D_browser_download | The link works in a browser but not for our fetcher (403 / landing page): open and save the PDF manually. | 18 |
-| E_other | See blocker note. | 20 |
+| A_free_click_and_save | A free copy exists at the url but our downloader is blocked: open the url in a browser, save the PDF. | 27 |
+| B_researchgate_check | Search ResearchGate / Academia (and Google Scholar) for a free full text; if found, download. Else try institutional access. | 56 |
+| C_institutional_access | Automatic + web search found no free copy: download through institutional (university / CGIAR) journal access. | 38 |
 
-By NbS: agroforestry 66, forest_restoration 40, riparian_buffer 1, water_harvesting_conservation 72, wetland_management 13. Priority 1 = institutional access and CGSpace limited-access rows (110 rows); priority 2 = ResearchGate / browser checks.
+By NbS: agroforestry 41, forest_restoration 19, riparian_buffer 1, water_harvesting_conservation 52, wetland_management 8. Priority 1 = free copies that only need a browser click (27); priority 2 = institutional access (38); priority 3 = ResearchGate / Academia checks (56).
 
 ## What happens after
 
