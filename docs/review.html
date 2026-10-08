@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evidence Review</title>
+<meta name="description" content="Side-by-side review of extracted evidence units against the PDF section they came from, with approve / hold / reject logging and CSV export.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* Token block copied from dashboard.html so the two pages match */
+  :root {
+    --bg-primary: #0b0f19;
+    --bg-secondary: #131c2e;
+    --bg-tertiary: #1e293b;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-emerald: #10b981;
+    --accent-emerald-rgb: 16, 185, 129;
+    --accent-sky: #0ea5e9;
+    --accent-sky-rgb: 14, 165, 233;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --accent-rose-rgb: 244, 63, 94;
+    --accent-purple: #a855f7;
+    --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    --font-outfit: 'Outfit', sans-serif;
+    --font-inter: 'Inter', sans-serif;
+    --radius-lg: 12px;
+    --radius-md: 8px;
+    --radius-sm: 4px;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Light theme variables */
+  [data-theme="light"] {
+    --bg-primary: #f8fcfb;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent-emerald: #059669;
+    --accent-sky: #0284c7;
+    --accent-amber: #d97706;
+    --accent-rose: #e11d48;
+    --accent-purple: #9333ea;
+    --card-shadow: 0 10px 30px -10px rgba(15, 23, 42, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overflow-x: hidden; }
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-inter);
+    line-height: 1.55;
+    font-size: 15px;
+  }
+  h1, h2, h3 { font-family: var(--font-outfit); font-weight: 600; }
+  button, select, input, textarea { font: inherit; color: inherit; }
+  select, input[type=text], input[type=search], textarea {
+    background: var(--bg-tertiary); border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm); padding: 6px 8px; max-width: 100%;
+  }
+  button { cursor: pointer; background: var(--bg-tertiary); border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm); padding: 6px 10px; }
+  button:hover { border-color: var(--accent-sky); }
+  a { color: var(--accent-sky); }
+
+  header.top { padding: 12px 16px; background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); }
+  .top-row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+  .top-row h1 { font-size: 20px; margin-right: auto; }
+  .top-row label { font-size: 13px; color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
+  .filters { margin-top: 10px; }
+  #f-search { flex: 1 1 200px; min-width: 0; }
+  .progress { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
+  .bar { height: 4px; background: var(--bg-tertiary); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--accent-emerald); width: 0; transition: var(--transition); }
+  .batch-notes { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
+  .layout { display: flex; gap: 16px; padding: 16px; align-items: flex-start; }
+  aside#list-panel { flex: 0 0 250px; background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: var(--radius-md); max-height: calc(100vh - 120px); overflow-y: auto; position: sticky; top: 8px; }
+  aside#list-panel.collapsed #unit-list { display: none; }
+  .list-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px;
+    border-bottom: 1px solid var(--border-color); font-size: 13px; color: var(--text-secondary); }
+  #unit-list { list-style: none; }
+  #unit-list li { padding: 6px 10px; font-size: 12.5px; border-bottom: 1px solid var(--border-color); cursor: pointer;
+    display: flex; gap: 6px; align-items: center; }
+  #unit-list li:hover { background: var(--bg-tertiary); }
+  #unit-list li.current { background: rgba(var(--accent-sky-rgb), 0.15); }
+  #unit-list li .lbl { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+
+  .pill { font-size: 11px; padding: 1px 7px; border-radius: 10px; white-space: nowrap; border: 1px solid var(--border-color); }
+  .pill.approve { background: var(--accent-emerald); color: #fff; border-color: transparent; }
+  .pill.hold { background: var(--accent-amber); color: #111; border-color: transparent; }
+  .pill.reject { background: var(--accent-rose); color: #fff; border-color: transparent; }
+  .pill.undecided { color: var(--text-muted); }
+
+  main#unit { flex: 1; min-width: 0; }
+  .unit-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; font-size: 13px; color: var(--text-secondary); }
+  .unit-head code { font-size: 12px; word-break: break-all; }
+  .cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  .card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; min-width: 0; }
+  .card h2 { font-size: 15px; color: var(--text-secondary); margin-bottom: 10px; text-transform: uppercase; letter-spacing: .04em; }
+  .why { background: rgba(var(--accent-sky-rgb), 0.12); border-left: 4px solid var(--accent-sky); padding: 10px 12px;
+    border-radius: var(--radius-sm); margin-bottom: 12px; }
+  .why b { display: block; font-size: 12px; color: var(--accent-sky); text-transform: uppercase; letter-spacing: .04em; }
+  dl.rows { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 6px 10px; font-size: 14px; }
+  dl.rows dt { color: var(--text-muted); font-size: 13px; }
+  dl.rows dd { word-wrap: break-word; overflow-wrap: anywhere; }
+  .sep { color: var(--text-muted); }
+  blockquote { margin-top: 12px; padding: 10px 12px; border-left: 4px solid var(--accent-emerald);
+    background: var(--bg-tertiary); border-radius: var(--radius-sm); font-style: italic; overflow-wrap: anywhere; }
+  .crop img { max-width: 100%; height: auto; display: block; border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: zoom-in; background: #fff; }
+  .crop-note { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+  .noimg { padding: 30px 10px; text-align: center; color: var(--text-muted); border: 1px dashed var(--border-color); border-radius: var(--radius-sm); }
+
+  .decision { margin-top: 16px; background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: var(--radius-md); padding: 12px; }
+  .dec-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .dec-btns button.big { flex: 1 1 90px; padding: 12px 8px; font-weight: 600; font-size: 15px; border-width: 2px; }
+  button.approve { border-color: var(--accent-emerald); color: var(--accent-emerald); }
+  button.hold { border-color: var(--accent-amber); color: var(--accent-amber); }
+  button.reject { border-color: var(--accent-rose); color: var(--accent-rose); }
+  button.big.active.approve { background: var(--accent-emerald); color: #fff; }
+  button.big.active.hold { background: var(--accent-amber); color: #111; }
+  button.big.active.reject { background: var(--accent-rose); color: #fff; }
+  .dec-extra { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; align-items: flex-start; }
+  #reason-wrap { display: none; flex: 1 1 100%; }
+  #reason-wrap.show { display: block; }
+  #reason { width: 100%; }
+  #reason-gloss { font-size: 12.5px; color: var(--text-muted); margin-top: 4px; }
+  #note { flex: 1 1 100%; min-height: 54px; resize: vertical; }
+  .nav { display: flex; gap: 8px; margin-top: 10px; align-items: center; font-size: 12.5px; color: var(--text-muted); }
+  .nav .keys { margin-left: auto; }
+  #status { font-size: 12.5px; color: var(--accent-emerald); min-height: 1em; }
+  .warn { color: var(--accent-rose); }
+
+  .io { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 0 16px 8px; font-size: 13px; }
+  footer { padding: 12px 16px 90px; font-size: 13px; color: var(--text-muted); border-top: 1px solid var(--border-color); }
+  .empty { padding: 30px; text-align: center; color: var(--text-muted); }
+
+  @media (max-width: 860px) {
+    .layout { flex-direction: column; padding: 16px; }
+    aside#list-panel { position: static; flex: none; width: 100%; max-height: 260px; }
+    .cols { grid-template-columns: minmax(0, 1fr); }
+    dl.rows { grid-template-columns: 90px minmax(0, 1fr); }
+    .decision { position: sticky; bottom: 0; z-index: 5; box-shadow: var(--card-shadow); padding: 10px; }
+    .nav .keys { display: none; }
+  }
+</style>
+</head>
+<body data-theme="dark">
+<header class="top">
+  <div class="top-row">
+    <h1>Evidence Review</h1>
+    <label>Batch <select id="batch-select"></select></label>
+    <label>Reviewer <input type="text" id="reviewer" placeholder="your name" size="10"></label>
+    <button id="theme-toggle" type="button" title="Toggle light/dark">Theme</button>
+  </div>
+  <div class="batch-notes" id="batch-notes"></div>
+  <div class="top-row filters">
+    <label>NbS <select id="f-nbs"><option value="">all</option></select></label>
+    <label>State <select id="f-state">
+      <option value="all">all</option>
+      <option value="undecided">undecided</option>
+      <option value="approve">approved</option>
+      <option value="hold">hold</option>
+      <option value="reject">rejected</option>
+    </select></label>
+    <input type="search" id="f-search" placeholder="Search citation, variable, question">
+  </div>
+  <div class="progress"><span id="progress-text">0 / 0 decided</span><div class="bar"><div id="progress-bar"></div></div></div>
+</header>
+
+<div class="layout">
+  <aside id="list-panel">
+    <div class="list-head"><span id="list-count">Units</span><button type="button" id="list-toggle">Hide</button></div>
+    <ul id="unit-list"></ul>
+  </aside>
+  <section id="main-col" style="flex:1;min-width:0">
+    <main id="unit"><div class="empty">Loading…</div></main>
+    <section class="decision" id="decision">
+      <div class="dec-btns">
+        <button type="button" class="big approve" data-d="approve">Approve</button>
+        <button type="button" class="big hold" data-d="hold">Hold</button>
+        <button type="button" class="big reject" data-d="reject">Reject</button>
+      </div>
+      <div class="dec-extra">
+        <div id="reason-wrap">
+          <select id="reason"><option value="">Reject reason (required)</option></select>
+          <div id="reason-gloss"></div>
+        </div>
+        <textarea id="note" placeholder="Note (optional, saved with any decision)"></textarea>
+      </div>
+      <div class="nav">
+        <button type="button" id="prev">&larr; Previous</button>
+        <button type="button" id="next">Next &rarr;</button>
+        <span id="status"></span>
+        <span class="keys">Keys: A approve · H hold · R reject · &larr; &rarr; move</span>
+      </div>
+    </section>
+  </section>
+</div>
+
+<div class="io">
+  <button type="button" id="export">Export CSV</button>
+  <label>Import CSV <input type="file" id="import" accept=".csv,text/csv"></label>
+  <button type="button" id="clear" class="reject">Clear my decisions for this batch</button>
+  <span id="io-status"></span>
+</div>
+
+<footer>
+  Decisions stay in this browser until exported. Export when you stop and send the file to Pete (or commit it under pipeline/review/exports/).
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var GLOSS = {
+    wrong_variable: 'The claim is about a different variable than the one tagged.',
+    smuggled_number: 'A number in the claim does not appear in the quote (or was misread).',
+    off_scope: 'Taken from a site description, methods or other section that is not a finding.',
+    species_envelope: 'A species/crop-specific range, not a practice-level claim (reclassify, keep).',
+    insufficient_context: 'The quote alone does not support the claim; key context is missing.',
+    speculative_evidence: 'Hypothesis, expectation or recommendation, not an observed result.',
+    unusable_value: 'Value has no scale/unit, or a land-cover claim has no class list.',
+    table_error: 'Table cells stitched across rows, or garbled table text.',
+    quote_too_narrow: 'Quote is an isolated cell/fragment missing the sentence or header that gives it meaning.',
+    wrong_practice: 'Mapped to the wrong NbS or sub-practice.',
+    wrong_table: 'Belongs in a different table/role (e.g. enabling-environment is not T4).',
+    other: 'Anything else: explain in the note.'
+  };
+  var DEFAULT_REASONS = Object.keys(GLOSS);
+
+  var S = {
+    index: [], batchId: null, batch: null, units: [], reasons: DEFAULT_REASONS.slice(),
+    reviewer: '', decisions: {}, filtered: [], pos: 0, pendingReject: false
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function esc(v) {
+    if (v === null || v === undefined || v === '') return '—';
+    if (Array.isArray(v)) v = v.join(', ');
+    else if (typeof v === 'object') v = JSON.stringify(v);
+    return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+  function present(v) { return !(v === null || v === undefined || v === '' || (Array.isArray(v) && !v.length)); }
+  function joinParts(parts) {
+    var out = parts.filter(present).map(esc);
+    return out.length ? out.join(' <span class="sep">·</span> ') : '—';
+  }
+  function store() { try { return window.localStorage; } catch (e) { return null; } }
+  function lsGet(k) { var s = store(); try { return s ? s.getItem(k) : null; } catch (e) { return null; } }
+  function lsSet(k, v) { var s = store(); try { if (s) s.setItem(k, v); return !!s; } catch (e) { return false; } }
+  function lsDel(k) { var s = store(); try { if (s) s.removeItem(k); } catch (e) { /* ignore */ } }
+  function key() { return 'review:' + S.batchId + ':' + (S.reviewer || 'anonymous'); }
+  function today() { return new Date().toISOString().slice(0, 10); }
+  function nowIso() { return new Date().toISOString(); }
+
+  function loadLocal() {
+    var raw = lsGet(key());
+    try { S.decisions = raw ? JSON.parse(raw) || {} : {}; } catch (e) { S.decisions = {}; }
+    return S.decisions;
+  }
+  function saveLocal() {
+    var ok = lsSet(key(), JSON.stringify(S.decisions));
+    if (!ok && $('status')) $('status').innerHTML = '<span class="warn">Browser storage unavailable — export before leaving.</span>';
+    return ok;
+  }
+
+  // ---------- batch loading ----------
+  function load(batchId) {
+    var fetchJson = function (p) { return fetch(p, { cache: 'no-cache' }).then(function (r) {
+      if (!r.ok) throw new Error(p + ': HTTP ' + r.status); return r.json(); }); };
+    var idxP = S.index.length ? Promise.resolve({ batches: S.index }) : fetchJson('review/index.json');
+    return idxP.then(function (idx) {
+      S.index = (idx && idx.batches) || [];
+      renderBatchList();
+      var want = batchId || new URLSearchParams(location.search).get('batch');
+      var b = S.index.filter(function (x) { return x.id === want; })[0] || S.index[0];
+      if (!b) { $('unit').innerHTML = '<div class="empty">No review batches found.</div>'; return; }
+      S.batchId = b.id;
+      $('batch-select').value = b.id;
+      return fetchJson(b.file).then(function (data) { setBatch(data); });
+    }).catch(function (e) {
+      $('unit').innerHTML = '<div class="empty warn">Could not load review data: ' + esc(e.message) +
+        '<br>Open this page via a web server (e.g. GitHub Pages or <code>python3 -m http.server</code> in docs/).</div>';
+    });
+  }
+
+  function setBatch(data) {
+    S.batch = (data && data.batch) || {};
+    S.units = (data && data.units) || [];
+    if (data && data.reasons && data.reasons.length) {
+      var r = data.reasons.slice();
+      if (r.indexOf('other') < 0) r.push('other');
+      S.reasons = r;
+    }
+    renderReasons();
+    $('batch-notes').innerHTML = present(S.batch.notes) ? esc(S.batch.notes) : '';
+    var nbs = {};
+    S.units.forEach(function (u) { if (u.nbs_id) nbs[u.nbs_id] = 1; });
+    $('f-nbs').innerHTML = '<option value="">all</option>' + Object.keys(nbs).sort().map(function (n) {
+      return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join('');
+    loadLocal();
+    S.pos = 0;
+    applyFilters();
+  }
+
+  function renderBatchList() {
+    var sel = $('batch-select');
+    sel.innerHTML = S.index.map(function (b) {
+      return '<option value="' + esc(b.id) + '">' + esc(b.title || b.id) + ' (' + esc(b.n) + ')</option>';
+    }).join('');
+    if (S.batchId) sel.value = S.batchId;
+  }
+
+  function renderReasons() {
+    // common reasons (with gloss) first, then the remaining codes from the batch
+    var common = DEFAULT_REASONS.filter(function (r) { return S.reasons.indexOf(r) >= 0; });
+    var rest = S.reasons.filter(function (r) { return common.indexOf(r) < 0; });
+    var opt = function (r) { return '<option value="' + esc(r) + '">' + esc(r) + (GLOSS[r] ? ' — ' + esc(GLOSS[r]) : '') + '</option>'; };
+    $('reason').innerHTML = '<option value="">Reject reason (required)</option>' +
+      '<optgroup label="Common">' + common.map(opt).join('') + '</optgroup>' +
+      (rest.length ? '<optgroup label="Other codes">' + rest.map(opt).join('') + '</optgroup>' : '');
+  }
+
+  // ---------- filtering + list ----------
+  function stateOf(id) { var d = S.decisions[id]; return d && d.decision ? d.decision : 'undecided'; }
+
+  function applyFilters() {
+    var nbs = $('f-nbs').value, st = $('f-state').value, q = $('f-search').value.trim().toLowerCase();
+    var curId = S.filtered[S.pos] && S.filtered[S.pos].evidence_id;
+    S.filtered = S.units.filter(function (u) {
+      if (nbs && u.nbs_id !== nbs) return false;
+      if (st && st !== 'all' && stateOf(u.evidence_id) !== st) return false;
+      if (q) {
+        var hay = [u.citation, u.variable, u.question, u.evidence_id].join(' ').toLowerCase();
+        if (hay.indexOf(q) < 0) return false;
+      }
+      return true;
+    });
+    var i = curId ? S.filtered.map(function (u) { return u.evidence_id; }).indexOf(curId) : -1;
+    S.pos = i >= 0 ? i : Math.min(S.pos, Math.max(0, S.filtered.length - 1));
+    renderList();
+    renderUnit(S.filtered[S.pos]);
+    renderProgress();
+    return S.filtered;
+  }
+
+  function renderProgress() {
+    var n = S.units.length, d = S.units.filter(function (u) { return stateOf(u.evidence_id) !== 'undecided'; }).length;
+    $('progress-text').textContent = d + ' / ' + n + ' decided';
+    $('progress-bar').style.width = (n ? (100 * d / n) : 0) + '%';
+  }
+
+  function renderList() {
+    $('list-count').textContent = 'Units (' + S.filtered.length + ' of ' + S.units.length + ')';
+    $('unit-list').innerHTML = S.filtered.map(function (u, i) {
+      var st = stateOf(u.evidence_id);
+      return '<li data-i="' + i + '"' + (i === S.pos ? ' class="current"' : '') + '>' +
+        '<span class="pill ' + st + '">' + (st === 'undecided' ? '·' : esc(st)) + '</span>' +
+        '<span class="lbl" title="' + esc(u.evidence_id) + '">' + esc(u.variable) + ' — ' + esc(u.source_id) + '</span></li>';
+    }).join('');
+  }
+
+  // ---------- unit view ----------
+  function renderUnit(u) {
+    var el = $('unit');
+    if (!u) { el.innerHTML = '<div class="empty">No units match the current filters.</div>'; syncDecision(null); return el.innerHTML; }
+    var r = u.relationship || {}, c = u.context || {};
+    var mag;
+    if (present(r.value_with) || present(r.value_without)) {
+      mag = 'with ' + esc(r.value_with) + ' vs without ' + esc(r.value_without);
+    } else if (present(r.magnitude_low) || present(r.magnitude_high)) {
+      mag = esc(r.magnitude_low) + ' to ' + esc(r.magnitude_high);
+      if (present(r.magnitude)) mag = esc(r.magnitude) + ' (' + mag + ')';
+    } else mag = present(r.magnitude) ? esc(r.magnitude) : '';
+    var metric = [present(r.metric) ? esc(r.metric) : '', mag, present(r.unit) ? esc(r.unit) : ''].filter(Boolean).join(' ');
+    var claim = joinParts([r.direction, r.strength_class]);
+    claim += '<br>' + (metric || '—');
+    claim += '<br>design: ' + esc(r.design) + ' <span class="sep">·</span> significance: ' + esc(r.significance);
+    if (present(r.outcome_raw)) claim += '<br><i>' + esc(r.outcome_raw) + '</i>';
+    var sev = present(c.hazard_severity) ? esc(c.hazard_severity) + (present(c.severity_cue) ? ' (cue: “' + esc(c.severity_cue) + '”)' : '') : '';
+    var ctx = [];
+    if (present(c.hazard_type) || sev) ctx.push('hazard: ' + esc(c.hazard_type) + (sev ? ' · severity ' + sev : ''));
+    if (present(c.country)) ctx.push('country: ' + esc(c.country));
+    if (present(c.income_group)) ctx.push('income: ' + esc(c.income_group));
+    if (present(c.farming_system)) ctx.push('farming system: ' + esc(c.farming_system));
+    if (present(c.comparator)) ctx.push('comparator: ' + esc(c.comparator));
+    if (present(c.note)) ctx.push('note: ' + esc(c.note));
+    var pageLoc = (present(u.page) ? 'p. ' + esc(u.page) : '') + (present(u.locator) ? (present(u.page) ? ' · ' : '') + esc(u.locator) : '');
+
+    var right;
+    if (present(u.crop)) {
+      right = '<a href="' + esc(u.crop) + '" target="_blank" rel="noopener" title="Open full size"><img src="' + esc(u.crop) +
+        '" alt="Source page region for ' + esc(u.evidence_id) + '" loading="lazy"></a>';
+    } else {
+      right = '<div class="noimg">No image for this unit.</div>';
+    }
+    var st = stateOf(u.evidence_id);
+    el.innerHTML =
+      '<div class="unit-head"><span>' + (S.pos + 1) + ' / ' + S.filtered.length + '</span><code>' + esc(u.evidence_id) +
+      '</code><span class="pill ' + st + '">' + esc(st) + '</span></div>' +
+      '<div class="cols">' +
+        '<div class="card"><h2>What was extracted</h2>' +
+          '<div class="why"><b>Why this needs a look</b>' + esc(u.question) + '</div>' +
+          '<dl class="rows">' +
+            '<dt>Source</dt><dd>' + esc(u.citation) + ' <span class="sep">·</span> tier: ' + esc(u.benchmark_tier) + '</dd>' +
+            '<dt>Practice</dt><dd>' + joinParts([u.nbs_id, u.suitability_family_id, u.use_role]) + '</dd>' +
+            '<dt>Variable</dt><dd>' + esc(u.variable) + '</dd>' +
+            '<dt>Claim</dt><dd>' + claim + '</dd>' +
+            '<dt>Basis</dt><dd>' + joinParts([u.claim_scope, u.claim_basis]) + '</dd>' +
+            '<dt>Context</dt><dd>' + (ctx.length ? ctx.join('<br>') : '—') + '</dd>' +
+            '<dt>Page</dt><dd>' + (pageLoc || '—') + '</dd>' +
+          '</dl>' +
+          '<blockquote>' + esc(u.quote) + '</blockquote>' +
+        '</div>' +
+        '<div class="card crop"><h2>Where it came from</h2>' + right +
+          '<div class="crop-note">' + (present(u.crop_note) ? esc(u.crop_note) : '') + '</div>' +
+        '</div>' +
+      '</div>';
+    syncDecision(u);
+    return el.innerHTML;
+  }
+
+  function syncDecision(u) {
+    var d = u ? S.decisions[u.evidence_id] || {} : {};
+    Array.prototype.forEach.call(document.querySelectorAll('.dec-btns button'), function (b) {
+      b.classList.toggle('active', !!u && b.getAttribute('data-d') === d.decision);
+      b.disabled = !u;
+    });
+    S.pendingReject = false;
+    $('reason-wrap').classList.toggle('show', d.decision === 'reject');
+    $('reason').value = d.reason || '';
+    $('reason-gloss').textContent = GLOSS[d.reason] || '';
+    $('note').value = d.note || '';
+    $('status').textContent = d.date ? 'Saved ' + d.date.slice(0, 16).replace('T', ' ') : '';
+  }
+
+  // ---------- deciding ----------
+  function current() { return S.filtered[S.pos]; }
+
+  function decide(decision, opts) {
+    opts = opts || {};
+    var u = opts.evidence_id ? S.units.filter(function (x) { return x.evidence_id === opts.evidence_id; })[0] : current();
+    if (!u) return false;
+    if (!S.reviewer) { $('status').innerHTML = '<span class="warn">Enter your reviewer name first.</span>'; $('reviewer').focus(); return false; }
+    var reason = opts.reason !== undefined ? opts.reason : $('reason').value;
+    var note = opts.note !== undefined ? opts.note : $('note').value;
+    if (decision === 'reject' && !reason) {
+      S.pendingReject = true;
+      $('reason-wrap').classList.add('show');
+      Array.prototype.forEach.call(document.querySelectorAll('.dec-btns button'), function (b) {
+        b.classList.toggle('active', b.getAttribute('data-d') === 'reject'); });
+      $('status').innerHTML = '<span class="warn">Pick a reject reason to save.</span>';
+      $('reason').focus();
+      return false;
+    }
+    S.decisions[u.evidence_id] = { decision: decision, reason: decision === 'reject' ? reason : '', note: note, date: nowIso() };
+    saveLocal();
+    var keepPos = S.pos;
+    applyFilters();
+    if (u === current() || S.filtered.indexOf(u) >= 0) syncDecision(u);
+    // auto-advance after a decision (not on note-only edits)
+    if (!opts.stay && S.filtered.length) {
+      var idx = S.filtered.indexOf(u);
+      go(idx >= 0 ? idx + 1 : keepPos);
+    }
+    return true;
+  }
+
+  function saveNote() {
+    var u = current(); if (!u) return;
+    var d = S.decisions[u.evidence_id];
+    if (!d) return; // note is saved with the next decision
+    d.note = $('note').value; d.date = nowIso();
+    saveLocal();
+    $('status').textContent = 'Note saved';
+  }
+
+  function go(i) {
+    if (!S.filtered.length) return;
+    S.pos = Math.max(0, Math.min(S.filtered.length - 1, i));
+    renderList(); renderUnit(current());
+    var li = document.querySelector('#unit-list li.current');
+    if (li && li.scrollIntoView) li.scrollIntoView({ block: 'nearest' });
+  }
+
+  // ---------- CSV ----------
+  var HEADER = ['batch', 'evidence_id', 'decision', 'reason', 'note', 'reviewer', 'date'];
+  function csvCell(v) {
+    v = v === null || v === undefined ? '' : String(v);
+    return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }
+  function buildCsv() {
+    var lines = [HEADER.join(',')];
+    var order = S.units.map(function (u) { return u.evidence_id; });
+    Object.keys(S.decisions).forEach(function (id) { if (order.indexOf(id) < 0) order.push(id); });
+    order.forEach(function (id) {
+      var d = S.decisions[id]; if (!d || !d.decision) return;
+      lines.push([S.batchId, id, d.decision, d.reason || '', d.note || '', S.reviewer, d.date || ''].map(csvCell).join(','));
+    });
+    return lines.join('\r\n') + '\r\n';
+  }
+  function exportCsv() {
+    var csv = buildCsv();
+    var who = (S.reviewer || 'anonymous').replace(/[^A-Za-z0-9_-]+/g, '_');
+    var name = 'review_' + S.batchId + '_' + who + '_' + today() + '.csv';
+    try {
+      var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob); a.download = name;
+      document.body.appendChild(a); a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+      $('io-status').textContent = 'Exported ' + name;
+    } catch (e) { $('io-status').textContent = 'Export failed: ' + e.message; }
+    return { name: name, csv: csv };
+  }
+
+  function parseCsv(text) {
+    var rows = [], row = [], cell = '', q = false;
+    text = String(text).replace(/^﻿/, '');
+    for (var i = 0; i < text.length; i++) {
+      var ch = text[i];
+      if (q) {
+        if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += ch;
+      } else if (ch === '"') q = true;
+      else if (ch === ',') { row.push(cell); cell = ''; }
+      else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && text[i + 1] === '\n') i++;
+        row.push(cell); rows.push(row); row = []; cell = '';
+      } else cell += ch;
+    }
+    if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+    return rows.filter(function (r) { return r.length > 1 || r[0] !== ''; });
+  }
+
+  // merge rows into current decisions (newer date wins); returns counts
+  function importCsv(text) {
+    var rows = parseCsv(text);
+    if (!rows.length) return { added: 0, skipped: 0, error: 'empty file' };
+    var h = rows[0].map(function (x) { return x.trim(); });
+    var col = {}; HEADER.forEach(function (k) { col[k] = h.indexOf(k); });
+    if (col.evidence_id < 0 || col.decision < 0) return { added: 0, skipped: 0, error: 'missing evidence_id/decision columns' };
+    var added = 0, skipped = 0, other = 0;
+    rows.slice(1).forEach(function (r) {
+      var get = function (k) { return col[k] >= 0 ? (r[col[k]] || '') : ''; };
+      if (col.batch >= 0 && get('batch') && get('batch') !== S.batchId) { other++; return; }
+      var dec = get('decision').trim();
+      if (['approve', 'hold', 'reject'].indexOf(dec) < 0) { skipped++; return; }
+      var id = get('evidence_id').trim(), date = get('date').trim();
+      var cur = S.decisions[id];
+      if (cur && cur.date && date && cur.date >= date) { skipped++; return; }
+      S.decisions[id] = { decision: dec, reason: get('reason'), note: get('note'), date: date || nowIso() };
+      added++;
+    });
+    saveLocal();
+    if (typeof document !== 'undefined' && $('unit-list')) applyFilters();
+    return { added: added, skipped: skipped, otherBatch: other };
+  }
+
+  // ---------- wiring ----------
+  function init() {
+    var th = lsGet('review:theme');
+    if (!th && window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) th = 'light';
+    if (th) document.body.setAttribute('data-theme', th);
+    $('theme-toggle').addEventListener('click', function () {
+      var t = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.body.setAttribute('data-theme', t); lsSet('review:theme', t);
+    });
+    S.reviewer = lsGet('review:reviewer') || '';
+    $('reviewer').value = S.reviewer;
+    $('reviewer').addEventListener('change', function () {
+      S.reviewer = this.value.trim(); lsSet('review:reviewer', S.reviewer);
+      if (S.batchId) { loadLocal(); applyFilters(); }
+    });
+    $('batch-select').addEventListener('change', function () {
+      var id = this.value;
+      try { var u = new URL(location.href); u.searchParams.set('batch', id); history.replaceState(null, '', u); } catch (e) { /* ignore */ }
+      S.filtered = []; load(id);
+    });
+    ['f-nbs', 'f-state'].forEach(function (id) { $(id).addEventListener('change', function () { S.pos = 0; applyFilters(); }); });
+    $('f-search').addEventListener('input', function () { S.pos = 0; applyFilters(); });
+    $('list-toggle').addEventListener('click', function () {
+      var p = $('list-panel'); p.classList.toggle('collapsed');
+      this.textContent = p.classList.contains('collapsed') ? 'Show' : 'Hide';
+    });
+    $('unit-list').addEventListener('click', function (e) {
+      var li = e.target.closest('li'); if (li) go(+li.getAttribute('data-i'));
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.dec-btns button'), function (b) {
+      b.addEventListener('click', function () { decide(b.getAttribute('data-d')); });
+    });
+    $('reason').addEventListener('change', function () {
+      $('reason-gloss').textContent = GLOSS[this.value] || '';
+      var u = current(); if (!u || !this.value) return;
+      var d = S.decisions[u.evidence_id];
+      if (S.pendingReject || (d && d.decision === 'reject')) decide('reject', { stay: !S.pendingReject });
+    });
+    $('note').addEventListener('change', saveNote);
+    $('prev').addEventListener('click', function () { go(S.pos - 1); });
+    $('next').addEventListener('click', function () { go(S.pos + 1); });
+    $('export').addEventListener('click', function () {
+      if (!S.reviewer) { $('io-status').textContent = 'Enter your reviewer name first.'; return; }
+      exportCsv();
+    });
+    $('import').addEventListener('change', function () {
+      var f = this.files && this.files[0]; if (!f) return;
+      var inp = this, rd = new FileReader();
+      rd.onload = function () {
+        var res = importCsv(rd.result);
+        $('io-status').textContent = res.error ? 'Import failed: ' + res.error :
+          'Imported ' + res.added + ', kept ' + res.skipped + ' existing/invalid' + (res.otherBatch ? ', ignored ' + res.otherBatch + ' from other batches' : '');
+        inp.value = '';
+      };
+      rd.readAsText(f);
+    });
+    $('clear').addEventListener('click', function () {
+      if (!confirm('Clear all of your (' + (S.reviewer || 'anonymous') + ') decisions for batch ' + S.batchId + '? Export first if unsure.')) return;
+      lsDel(key()); S.decisions = {}; applyFilters();
+      $('io-status').textContent = 'Cleared.';
+    });
+    document.addEventListener('keydown', function (e) {
+      var t = e.target && e.target.tagName;
+      if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT' || e.metaKey || e.ctrlKey || e.altKey) return;
+      var k = e.key;
+      if (k === 'a' || k === 'A') { decide('approve'); e.preventDefault(); }
+      else if (k === 'h' || k === 'H') { decide('hold'); e.preventDefault(); }
+      else if (k === 'r' || k === 'R') { decide('reject'); e.preventDefault(); }
+      else if (k === 'ArrowLeft') { go(S.pos - 1); e.preventDefault(); }
+      else if (k === 'ArrowRight') { go(S.pos + 1); e.preventDefault(); }
+    });
+    load();
+  }
+
+  window.ReviewPage = {
+    state: S, load: load, setBatch: setBatch, renderBatchList: renderBatchList, renderUnit: renderUnit,
+    renderList: renderList, decide: decide, saveLocal: saveLocal, loadLocal: loadLocal,
+    exportCsv: exportCsv, buildCsv: buildCsv, importCsv: importCsv, parseCsv: parseCsv,
+    applyFilters: applyFilters, esc: esc, go: go
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+})();
+</script>
+</body>
+</html>
