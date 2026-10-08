@@ -48,11 +48,23 @@ def test_shape():
                 assert reason in out["meta"]["blocker_reasons"]
 
 
-def test_wetland_has_no_outputs_yet():
+def test_synthesised_stage_reads_the_recipe_rows():
+    # wetland_management got its first (tiny) T3/T6 on 2026-10-08; the stage must follow
+    # the files rather than a hard-coded expectation
+    import csv
+
     cell = tp.build(SCHEMA)["cells"]["wetland_management"]["T3"]
     syn = cell["stages"]["synthesised"]
-    assert syn["status"] == "not_started" and syn["rows"] == 0
-    assert "no T3/T6 outputs yet" in cell["blockers"]["warnings"]
+    rows = list(
+        csv.DictReader(
+            (
+                SCHEMA / "recipes" / "wetland_management" / "T3_nbs_hazard_farming.csv"
+            ).open(encoding="utf-8")
+        )
+    )
+    assert syn["rows"] == len(rows)
+    assert syn["status"] == ("not_started" if not rows else syn["status"])
+    assert ("no T3/T6 outputs yet" in cell["blockers"]["warnings"]) == (not rows)
 
 
 def test_status_helpers():
