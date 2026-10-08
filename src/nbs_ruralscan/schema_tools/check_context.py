@@ -65,7 +65,7 @@ HAZARDS = {
     "landslide",  # 8b B (Pete 2026-10-07): asset-threat only, like sedimentation
 }
 SEVERITY = {"mild", "moderate", "severe", "extreme", "unspecified"}
-COMPARATOR = {"existing_forest"}
+COMPARATOR = {"existing_forest", "existing_wetland"}
 TIMESCALE = {"immediate", "short_term_1_3yr", "medium_term_3_7yr", "long_term_7yr_plus"}
 _ISO3 = re.compile(r"^[A-Z]{3}$")
 
