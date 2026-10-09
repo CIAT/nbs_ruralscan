@@ -164,6 +164,92 @@ def _num(rel: dict) -> str:
     return ""
 
 
+XW = ROOT / "schema" / "registers" / "XW_target_crosswalk.csv"
+T5 = ROOT / "schema" / "T5_opportunity_space.csv"
+_PROX = {
+    "direct": "direct",
+    "proxy": "as a proxy, weight ×0.7",
+    "component": "as a component, weight ×0.7",
+}
+
+
+def _routes() -> dict[str, list[dict]]:
+    out: dict[str, list[dict]] = {}
+    try:
+        for r in csv.DictReader(XW.open(encoding="utf-8")):
+            out.setdefault(r["ev_variable"], []).append(r)
+    except OSError:
+        pass
+    return out
+
+
+def _t5_labels() -> dict[str, str]:
+    try:
+        rows = list(csv.DictReader(T5.open(encoding="utf-8")))
+        lab = next(
+            (
+                c
+                for c in ("ttl_priority_label", "label", "name")
+                if rows and c in rows[0]
+            ),
+            None,
+        )
+        return (
+            {r["variable_id"]: (r.get(lab) or r["variable_id"]) for r in rows}
+            if lab
+            else {}
+        )
+    except (OSError, KeyError):
+        return {}
+
+
+def feeds_line(
+    r: dict, ctx: dict, routes: dict[str, list[dict]], t5: dict[str, str]
+) -> str:
+    role, var = r["use_role"], r["variable"]
+    hz = (ctx.get("hazard_type") or "").replace("_", " ")
+    if role == "asset_vulnerability":
+        return f"Feeds: T3 hazard table → asset-threat row for {hz or 'the hazard'} (damage to the works; Module 2b project-risk screen)."
+    if role == "operational_risk":
+        return "Feeds: no table cell — enabling / implementation factor for Module 6 next-steps and the Module 2b operational-risk filter."
+    if role == "structural_suitability":
+        return f"Feeds: T4 suitability table → variable '{var}' for the family above (where the practice can establish)."
+    rs = routes.get(var) or []
+    if not rs:
+        return f"Feeds: NOTHING yet — '{var}' has no crosswalk route to T3 or T6 (ontology / routing decision pending)."
+    parts = []
+    t3 = [x for x in rs if x["target_table"] == "T3"]
+    t6 = [x for x in rs if x["target_table"] == "T6"]
+    for x in t6:
+        parts.append(
+            f"T6 scorecard → {t5.get(x['target_key'], x['target_key']).strip()} ({_PROX.get(x.get('proximity') or 'direct', x.get('proximity'))})"
+        )
+    # mirror the engine's gate (cell_synthesis.gather): a stated hazard selects ONE cell;
+    # no stated hazard → a single direct route still lands, several routes land nowhere
+    if t3:
+        hz_key = (ctx.get("hazard_type") or "").strip()
+        if hz_key:
+            m = [x for x in t3 if x["target_key"] == hz_key]
+            if m:
+                prox = m[0].get("proximity") or "direct"
+                parts.append(
+                    f"T3 hazard table → {hz_key.replace('_', ' ')} livelihood cell ({_PROX.get(prox, prox)}) because the unit states that hazard"
+                )
+            else:
+                parts.append(
+                    f"T3: no cell — the stated hazard '{hz_key}' has no route from '{var}'"
+                )
+        elif len(t3) == 1 and (t3[0].get("proximity") or "direct") == "direct":
+            parts.append(
+                f"T3 hazard table → {t3[0]['target_key'].replace('_', ' ')} livelihood cell (direct)"
+            )
+        else:
+            parts.append(
+                "T3: no hazard cell — the unit states no hazard, so it is not hazard-year evidence"
+            )
+    return "Feeds: " + "; ".join(parts) + "."
+
+
 def practice_line(r: dict, fams: dict[str, str]) -> str:
     nbs = r["nbs_id"].replace("_", " ")
     fid = r.get("suitability_family_id") or ""
@@ -180,6 +266,8 @@ def plain_words(
     ctx: dict,
     labels: dict[str, str],
     fams: dict[str, str] | None = None,
+    routes: dict[str, list[dict]] | None = None,
+    t5: dict[str, str] | None = None,
 ) -> dict:
     """Plain-English sentences for a reviewer: what the unit claims, how it was
     established, and in what context. The codes stay in the JSON for the record."""
@@ -267,6 +355,7 @@ def plain_words(
     compared = str(rel.get("outcome_raw") or "").strip()
     return {
         "practice": practice_line(r, fams or {}),
+        "feeds": feeds_line(r, ctx, routes or {}, t5 or {}),
         "compared": ("What the paper compared: " + compared + ".") if compared else "",
         "role": _ROLE.get(r["use_role"], r["use_role"]),
         "claim": claim_sentence,
@@ -332,6 +421,8 @@ def main(argv: list[str] | None = None) -> int:
     missing = []
     labels = _labels()
     fams = _families()
+    routes = _routes()
+    t5 = _t5_labels()
     with EV.open(newline="", encoding="utf-8") as f:
         ev = {r["evidence_id"]: r for r in csv.DictReader(f)}
     for eid, question in items.items():
@@ -401,7 +492,7 @@ def main(argv: list[str] | None = None) -> int:
                 "crop": crop,
                 "crop_note": crop_note,
                 "pdf_url": sharepoint_url(s.get("library_path", ""), page or None),
-                "plain": plain_words(r, rel, ctx, labels, fams),
+                "plain": plain_words(r, rel, ctx, labels, fams, routes, t5),
                 "library_path": s.get("library_path", ""),
             }
         )
