@@ -161,6 +161,21 @@
   .plain-feeds { font-weight: 600; color: var(--accent-amber, #e0a030); }
   .plain-practice { font-weight: 600; color: var(--accent-blue, #4ea1ff); }
   .codes summary { cursor: pointer; font-size: 12px; color: var(--text-muted); margin: 6px 0; }
+  .picos { margin: 12px 0; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 12px; }
+  .picos h3 { margin: 0 0 2px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-secondary); }
+  .picos .muted { font-size: 12px; margin: 0 0 6px; }
+  .picos-tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .picos-tbl th { text-align: left; vertical-align: top; width: 23%; padding: 6px 8px 6px 0; font-weight: 700; border-top: 1px solid var(--border-color); }
+  .picos-tbl td { vertical-align: top; padding: 6px 0; border-top: 1px solid var(--border-color); line-height: 1.45; }
+  .picos-tbl .picos-q { display: block; font-weight: 400; font-size: 11px; color: var(--text-muted); }
+  .picos-tbl tr.flagged td, .picos-tbl tr.flagged th { background: rgba(224, 80, 80, .10); }
+  .picos-act { width: 84px; text-align: right; }
+  .picos-flag { font-size: 11px; padding: 2px 8px; border-radius: 3px; border: 1px solid var(--border-color); background: transparent; color: var(--text-muted); cursor: pointer; }
+  .picos-flag.on { border-color: var(--accent-red, #e05050); color: var(--accent-red, #e05050); font-weight: 700; }
+  .picos-note { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+  .picos-note.bad { color: var(--accent-amber, #e0a030); font-weight: 600; }
+  .picos-gap { font-size: 12px; color: var(--accent-amber, #e0a030); margin-top: 3px; }
+  @media (max-width: 860px) { .picos-tbl th { width: 34%; } }
 </style>
 </head>
 <body data-theme="dark">
@@ -429,6 +444,7 @@
           (u.plain.how ? '<p>' + esc(u.plain.how) + '</p>' : '') +
           (u.plain.where ? '<p>' + esc(u.plain.where) + '</p>' : '') +
           '<p class="muted">Role: ' + esc(u.plain.role || '') + '</p></div>' : '') +
+        (u.picos ? picosHtml(u) : '') +
         '<details class="codes"><summary>Coded fields (for the record)</summary>' +
           '<dl class="rows">' +
             '<dt>Source</dt><dd>' + esc(u.citation) + ' <span class="sep">·</span> tier: ' + esc(u.benchmark_tier) + '</dd>' +
@@ -450,6 +466,45 @@
       '</div>';
     syncDecision(u);
     return el.innerHTML;
+  }
+
+  var PICOS_LABEL = {
+    P: 'Population — who / where does this hold for?',
+    I: 'Intervention — which practice, and is it evidenced in the source?',
+    C: 'Comparator — what was it compared against?',
+    O: 'Outcome — what was measured, and how much?',
+    S: 'Study design — how was it established?'
+  };
+  function picosFlags(id) { var d = S.decisions[id] || {}; return (d.picos || []).slice(); }
+  function picosHtml(u) {
+    var p = u.picos, flags = picosFlags(u.evidence_id), gaps = p.gaps || [];
+    var rows = ['P', 'I', 'C', 'O', 'S'].map(function (k) {
+      var on = flags.indexOf(k) >= 0, gap = gaps.indexOf(k) >= 0;
+      var extra = (k === 'I' && p.I_note) ? '<div class="picos-note' + (p.I_named === false ? ' bad' : '') + '">' + esc(p.I_note) + '</div>' : '';
+      return '<tr' + (on ? ' class="flagged"' : '') + '>' +
+        '<th>' + k + '<span class="picos-q">' + esc(PICOS_LABEL[k]) + '</span></th>' +
+        '<td>' + esc(p[k] || '—') + extra +
+          (gap ? '<div class="picos-gap">automatic check: this element looks missing or unsupported</div>' : '') + '</td>' +
+        '<td class="picos-act"><button type="button" class="picos-flag' + (on ? ' on' : '') + '" data-picos="' + k + '" title="Flag this element as a problem">' + (on ? '✕ flagged' : 'flag') + '</button></td>' +
+      '</tr>';
+    }).join('');
+    return '<div class="picos"><h3>PICOS — does this evidence answer our question?</h3>' +
+      '<p class="muted">Flag any element that fails. Flags are saved with your decision and exported.</p>' +
+      '<table class="picos-tbl">' + rows + '</table></div>';
+  }
+  function togglePicos(k) {
+    var u = current(); if (!u) return false;
+    if (!S.reviewer) { $('status').innerHTML = '<span class="warn">Enter your reviewer name first.</span>'; $('reviewer').focus(); return false; }
+    var d = S.decisions[u.evidence_id] || { decision: '', reason: '', note: '', date: '' };
+    var f = (d.picos || []).slice(), i = f.indexOf(k);
+    if (i >= 0) f.splice(i, 1); else f.push(k);
+    d.picos = f; d.date = nowIso();
+    S.decisions[u.evidence_id] = d;
+    saveLocal();
+    var host = $('unit').querySelector('.picos');
+    if (host) host.outerHTML = picosHtml(u);
+    renderList();
+    return true;
   }
 
   function syncDecision(u) {
@@ -485,7 +540,8 @@
       $('reason').focus();
       return false;
     }
-    S.decisions[u.evidence_id] = { decision: decision, reason: decision === 'reject' ? reason : '', note: note, date: nowIso() };
+    var prev = S.decisions[u.evidence_id] || {};
+    S.decisions[u.evidence_id] = { decision: decision, reason: decision === 'reject' ? reason : '', note: note, date: nowIso(), picos: (prev.picos || []).slice() };
     saveLocal();
     var keepPos = S.pos;
     applyFilters();
@@ -516,7 +572,7 @@
   }
 
   // ---------- CSV ----------
-  var HEADER = ['batch', 'evidence_id', 'decision', 'reason', 'note', 'reviewer', 'date'];
+  var HEADER = ['batch', 'evidence_id', 'decision', 'reason', 'note', 'reviewer', 'date', 'picos_flags'];
   function csvCell(v) {
     v = v === null || v === undefined ? '' : String(v);
     return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
@@ -526,8 +582,8 @@
     var order = S.units.map(function (u) { return u.evidence_id; });
     Object.keys(S.decisions).forEach(function (id) { if (order.indexOf(id) < 0) order.push(id); });
     order.forEach(function (id) {
-      var d = S.decisions[id]; if (!d || !d.decision) return;
-      lines.push([S.batchId, id, d.decision, d.reason || '', d.note || '', S.reviewer, d.date || ''].map(csvCell).join(','));
+      var d = S.decisions[id]; if (!d || (!d.decision && !(d.picos || []).length)) return;
+      lines.push([S.batchId, id, d.decision || '', d.reason || '', d.note || '', S.reviewer, d.date || '', (d.picos || []).join(';')].map(csvCell).join(','));
     });
     return lines.join('\r\n') + '\r\n';
   }
@@ -577,11 +633,12 @@
       var get = function (k) { return col[k] >= 0 ? (r[col[k]] || '') : ''; };
       if (col.batch >= 0 && get('batch') && get('batch') !== S.batchId) { other++; return; }
       var dec = get('decision').trim();
-      if (['approve', 'hold', 'reject'].indexOf(dec) < 0) { skipped++; return; }
+      var pic = get('picos_flags').split(';').map(function (x) { return x.trim(); }).filter(Boolean);
+      if (['approve', 'hold', 'reject'].indexOf(dec) < 0 && !pic.length) { skipped++; return; }
       var id = get('evidence_id').trim(), date = get('date').trim();
       var cur = S.decisions[id];
       if (cur && cur.date && date && cur.date >= date) { skipped++; return; }
-      S.decisions[id] = { decision: dec, reason: get('reason'), note: get('note'), date: date || nowIso() };
+      S.decisions[id] = { decision: dec, reason: get('reason'), note: get('note'), date: date || nowIso(), picos: pic };
       added++;
     });
     saveLocal();
@@ -614,6 +671,10 @@
     $('list-toggle').addEventListener('click', function () {
       var p = $('list-panel'); p.classList.toggle('collapsed');
       this.textContent = p.classList.contains('collapsed') ? 'Show' : 'Hide';
+    });
+    $('unit').addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('.picos-flag') : null;
+      if (b) { e.preventDefault(); togglePicos(b.getAttribute('data-picos')); }
     });
     $('unit-list').addEventListener('click', function (e) {
       var li = e.target.closest('li'); if (li) go(+li.getAttribute('data-i'));
@@ -667,6 +728,7 @@
     state: S, load: load, setBatch: setBatch, renderBatchList: renderBatchList, renderUnit: renderUnit,
     renderList: renderList, decide: decide, saveLocal: saveLocal, loadLocal: loadLocal,
     exportCsv: exportCsv, buildCsv: buildCsv, importCsv: importCsv, parseCsv: parseCsv,
+    picosHtml: picosHtml, togglePicos: togglePicos,
     applyFilters: applyFilters, esc: esc, go: go
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();

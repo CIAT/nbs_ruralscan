@@ -4,7 +4,8 @@
     python3 scripts/apply-review-export.py <export.csv> [--dry-run]
 
 CSV columns (as the page exports them): batch, evidence_id, decision (approve|hold|reject),
-reason, note, reviewer, date. approve → ok · reject → drop (reason code required) ·
+reason, note, reviewer, date, picos_flags (letters of the PICOS elements the reviewer
+flagged; appended to the note as "[PICOS fails: I,C]"). approve → ok · reject → drop (reason code required) ·
 hold → flag (stays open, note logged). Goes through `schema_tools.review.apply_decisions`,
 so the register, review_log and soft-delete rules are the same as the dashboard's.
 """
@@ -35,8 +36,16 @@ def main(argv: list[str] | None = None) -> int:
     for r in rows:
         d = MAP.get((r.get("decision") or "").strip().lower())
         reason = (r.get("reason") or "").strip()
+        pic = [x.strip() for x in (r.get("picos_flags") or "").split(";") if x.strip()]
         if not d:
-            bad.append((r.get("evidence_id"), "unknown decision"))
+            bad.append(
+                (
+                    r.get("evidence_id"),
+                    "PICOS flags but no decision — re-export after approving / holding / rejecting"
+                    if pic
+                    else "unknown decision",
+                )
+            )
             continue
         if d == "drop" and reason not in REASON_CODES:
             bad.append(
@@ -44,10 +53,15 @@ def main(argv: list[str] | None = None) -> int:
             )
             continue
         rev = (r.get("reviewer") or "reviewer").strip() or "reviewer"
+        # PICOS element flags ride in the note: review_log has a fixed column set, and a
+        # flag is a judgement about the evidence, not a new decision type.
+        note = (r.get("note") or "").strip()
+        if pic:
+            note = (note + " " if note else "") + "[PICOS fails: " + ",".join(pic) + "]"
         by_reviewer.setdefault(rev, {})[r["evidence_id"]] = {
             "decision": d,
             "reason": reason or ("confirmed_pass" if d == "ok" else ""),
-            "note": (r.get("note") or "").strip(),
+            "note": note,
             "reviewer": rev,
         }
     print(

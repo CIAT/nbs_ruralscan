@@ -203,6 +203,164 @@ def _t5_labels() -> dict[str, str]:
         return {}
 
 
+#: PICOS (locked, AGENTS "the NbS practice must be EVIDENCED in the source"): practice
+#: keywords per NbS, used for an ADVISORY "is the practice named in the quote?" test. A
+#: miss is not proof of a wrong tag (the practice may be named elsewhere in the paper) —
+#: it tells the reviewer to look.
+_PRACTICE_WORDS = {
+    "agroforestry": r"agro-?forest|agro-?silvo|silvo-?(pastor|arable|cultur)|parkland|shade tree|shaded (coffee|cocoa)|live fence|windbreak|shelterbelt|alley crop|home-?garden|farmer[- ]managed natural regeneration|\bFMNR\b|scattered tree|tree[s]? on farm|intercrop",
+    "water_harvesting_conservation": r"water harvest|rain-?water|\bza[iï]\b|tassa|demi-?lune|bund|terrac|check dam|farm pond|percolation|sand dam|subsurface dam|cistern|tank|runoff|run-?on|mulch|conservation agricultur|no-?till|minimum tillage|reduced tillage|tied ridg|contour|trench|banquette|jessour|spate",
+    "forest_restoration": r"restorat|reforest|afforest|regenerat|\bANR\b|mangrove|tree planting|planted forest|enrichment planting|community forest|forest protect|exclosure|rewild",
+    "riparian_buffer": r"riparian|buffer strip|vegetat(ed|ive) (filter|buffer)|streamside|stream-?bank|filter strip",
+    "wetland_management": r"wetland|peat-?land|re-?wetting|marsh|floodplain|drainage block|re-?flood|constructed wetland",
+}
+
+
+def _practice_named(r: dict, rel: dict, ctx: dict, fams: dict[str, str]) -> bool | None:
+    pat = _PRACTICE_WORDS.get(r["nbs_id"])
+    hay = " ".join(
+        str(x or "")
+        for x in (
+            r.get("quote"),
+            r.get("raw_name"),
+            rel.get("outcome_raw"),
+            ctx.get("note"),
+        )
+    )
+    fam_words = [
+        w
+        for w in re.split(
+            r"[^A-Za-z]+", fams.get(r.get("suitability_family_id") or "", "")
+        )
+        if len(w) > 5
+    ]
+    if pat and re.search(pat, hay, re.I):
+        return True
+    if fam_words and any(re.search(re.escape(w), hay, re.I) for w in fam_words):
+        return True
+    return False if pat else None
+
+
+def picos(
+    r: dict,
+    rel: dict,
+    ctx: dict,
+    labels: dict[str, str],
+    fams: dict[str, str],
+    src: dict,
+) -> dict:
+    """The five PICOS elements spelled out for the reviewer, with the gaps named.
+
+    Locked discipline: the practice (Intervention) must be evidenced IN the source, and a
+    comparator must be identifiable — an effect with nothing to compare against is not an
+    effect. Each element can be flagged by the reviewer on the page."""
+    role = r["use_role"]
+    # P — population / setting
+    pop = []
+    c = ctx.get("country")
+    if c:
+        pop.append(", ".join(c) if isinstance(c, list) else str(c))
+    elif src.get("study_country"):
+        pop.append(
+            str(src["study_country"]).replace("|", ", ")
+            + " (from the source record, not the quote)"
+        )
+    if ctx.get("income_group") in _INCOME:
+        pop.append(_INCOME[ctx["income_group"]])
+    if ctx.get("farming_system"):
+        pop.append(str(ctx["farming_system"]).replace("_", " ") + " farming")
+    if r.get("claim_scope") == "species_specific":
+        pop.append(f"ONE SPECIES only: {r.get('taxon') or 'unnamed'}")
+    elif r.get("claim_scope") == "crop_specific":
+        pop.append(f"ONE CROP only: {r.get('taxon') or 'unnamed'}")
+    # I — intervention
+    fid = r.get("suitability_family_id") or ""
+    inter = r["nbs_id"].replace("_", " ")
+    if fid and not fid.endswith("__cross_family"):
+        inter += " → " + fid.split("__", 1)[-1].replace("_", " ")
+        if fams.get(fid):
+            inter += f" ({fams[fid]})"
+    else:
+        inter += " (no sub-practice stated — pooled across the NbS)"
+    named = _practice_named(r, rel, ctx, fams)
+    # C — comparator
+    comp = []
+    if rel.get("value_without") is not None:
+        comp.append(
+            f"without the practice: {rel.get('value_without')} {str(rel.get('unit') or '').replace('_', ' ')}".strip()
+        )
+    if ctx.get("comparator") == "existing_forest":
+        comp.append("EXISTING forest / forest loss, not a restoration")
+    if ctx.get("comparator") == "existing_wetland":
+        comp.append("EXISTING wetlands, not a restoration")
+    raw = str(rel.get("outcome_raw") or "")
+    if not comp and re.search(
+        r"\bvs\.?\b|versus|compared (with|to)|control", raw, re.I
+    ):
+        comp.append(raw)
+    if not comp and re.search(
+        r"\bvs\.?\b|versus|compared (with|to)|\bcontrol\b",
+        str(r.get("quote") or ""),
+        re.I,
+    ):
+        comp.append(
+            "stated in the quote (see the words 'vs' / 'control') but not captured in the coded fields"
+        )
+    # O — outcome
+    out = [labels.get(r["variable"], r["variable"].replace("_", " "))]
+    if raw:
+        out.append(raw)
+    n = _num(rel)
+    if n:
+        out.append(n)
+    if rel.get("significance") in _SIG:
+        out.append(_SIG[rel["significance"]])
+    # S — study design
+    st = []
+    if rel.get("design") in _DESIGN:
+        st.append(_DESIGN[rel["design"]])
+    if r.get("claim_basis") in _BASIS:
+        st.append(_BASIS[r["claim_basis"]])
+    if src.get("method_type"):
+        st.append("source type: " + str(src["method_type"]).replace("_", " "))
+    if src.get("benchmark_tier"):
+        st.append(f"source tier: {src['benchmark_tier']}")
+    gaps = []
+    if not pop:
+        gaps.append("P")
+    if named is False:
+        gaps.append("I")
+    if not comp and role in ("nbs_effect", "asset_vulnerability"):
+        gaps.append("C")
+    if not raw:
+        gaps.append("O")
+    if not st:
+        gaps.append("S")
+    return {
+        "P": "; ".join(pop) or "not recorded — where/for whom does this hold?",
+        "I": inter,
+        "I_named": named,
+        "I_note": (
+            "the practice is named in the quote"
+            if named
+            else (
+                "the practice is NOT named in the quoted text — check the source before keeping this tag"
+                if named is False
+                else ""
+            )
+        ),
+        "C": "; ".join(comp)
+        or (
+            "NOT recorded — an effect needs something to compare against; read the quote and say what the control was"
+            if role in ("nbs_effect", "asset_vulnerability")
+            else "not applicable to this kind of unit"
+        ),
+        "O": " — ".join(out),
+        "S": "; ".join(st) or "not recorded",
+        "gaps": gaps,
+    }
+
+
 def feeds_line(
     r: dict, ctx: dict, routes: dict[str, list[dict]], t5: dict[str, str]
 ) -> str:
@@ -431,7 +589,7 @@ def main(argv: list[str] | None = None) -> int:
             missing.append(eid)
             continue
         rel, ctx = _j(r.get("relationship", "")), _j(r.get("context", ""))
-        s = src.get(r["source_id"], {})
+        s_rec = src.get(r["source_id"], {})
         crop, crop_note = None, "no cached PDF"
         pdf = CORPUS / f"{r['source_id']}.pdf"
         page = int(r["page"]) if (r.get("page") or "").isdigit() else 0
@@ -445,8 +603,8 @@ def main(argv: list[str] | None = None) -> int:
             {
                 "evidence_id": eid,
                 "source_id": r["source_id"],
-                "citation": s.get("citation", ""),
-                "benchmark_tier": s.get("benchmark_tier", ""),
+                "citation": s_rec.get("citation", ""),
+                "benchmark_tier": s_rec.get("benchmark_tier", ""),
                 "nbs_id": r["nbs_id"],
                 "use_role": r["use_role"],
                 "variable": r["variable"],
@@ -491,9 +649,10 @@ def main(argv: list[str] | None = None) -> int:
                 "question": question,
                 "crop": crop,
                 "crop_note": crop_note,
-                "pdf_url": sharepoint_url(s.get("library_path", ""), page or None),
+                "pdf_url": sharepoint_url(s_rec.get("library_path", ""), page or None),
                 "plain": plain_words(r, rel, ctx, labels, fams, routes, t5),
-                "library_path": s.get("library_path", ""),
+                "picos": picos(r, rel, ctx, labels, fams, s_rec),
+                "library_path": s_rec.get("library_path", ""),
             }
         )
     OUT.mkdir(parents=True, exist_ok=True)
