@@ -200,6 +200,22 @@
   ul.top .sub { display: block; color: var(--text-muted); font-size: 11px; }
   ul.plain { padding-left: 16px; font-size: 12px; }
 
+  /* qa review */
+  .rev-scroll { overflow-x: auto; }
+  table.rev { border-collapse: collapse; width: 100%; font-size: 12px; }
+  table.rev th, table.rev td { border-bottom: 1px solid var(--border-color); padding: 6px 8px; text-align: left; vertical-align: top; }
+  table.rev thead th { font-weight: 600; font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+  table.rev th.nbs { background: transparent; }
+  .rev-dec { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .rev-split { display: flex; flex-wrap: wrap; gap: 2px 6px; font-size: 11px; }
+  .rev-split .chip { white-space: nowrap; }
+  .rev-links { display: flex; flex-wrap: wrap; gap: 4px 10px; }
+  .rev-links a { white-space: nowrap; }
+  .rev-links .bid { color: var(--text-muted); font-size: 11px; }
+  ul.disagree { list-style: none; font-size: 12px; margin-top: 10px; }
+  ul.disagree li { padding: 5px 0; border-top: 1px solid var(--border-color); word-break: break-word; }
+  ul.disagree .calls { color: var(--text-secondary); }
+
   footer { font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 12px; }
 </style>
 </head>
@@ -241,6 +257,12 @@
     <h2 class="sec" id="h-decisions">Decisions waiting on Pete</h2>
     <p class="muted" style="font-size:12px;margin-bottom:8px">From <code>methodology/decisions/open_decisions.csv</code> — open first, then parked, then decided. Answer by decision id.</p>
     <div id="decisions"><span class="muted">—</span></div>
+  </section>
+
+  <section aria-labelledby="h-review">
+    <h2 class="sec" id="h-review">QA review</h2>
+    <p class="muted" style="font-size:12px;margin-bottom:8px">Decisions come from exports committed under <code>docs/review/exports/</code>; the queue holds units the extraction lanes flagged.</p>
+    <div id="review"><span class="muted">&mdash;</span></div>
   </section>
 
   <section aria-labelledby="h-blockers">
@@ -551,6 +573,83 @@
     return h;
   }
 
+  function reviewNbsOrder(byNbs) {
+    // every NbS in the matrix is listed, even with nothing queued — an empty queue is a
+    // fact a reader should see, not a missing row
+    var ids = nbsList().slice();
+    Object.keys(byNbs).forEach(function (n) { if (ids.indexOf(n) < 0) ids.push(n); });
+    return ids;
+  }
+
+  function reviewLinks(nbs, batchIds) {
+    if (!batchIds.length) return '<span class="muted">' + DASH + '</span>';
+    return '<div class="rev-links">' + batchIds.map(function (b) {
+      return '<span><a href="review.html?batch=' + encodeURIComponent(b) + '&nbs=' + encodeURIComponent(nbs) +
+        '">review these</a> <span class="bid">' + esc(b) + '</span></span>';
+    }).join('') + '</div>';
+  }
+
+  function reviewDisagreements() {
+    var batches = obj(obj(DATA && DATA.review).batches);
+    var out = [];
+    Object.keys(batches).forEach(function (b) {
+      arr(obj(batches[b]).disagreements).forEach(function (d) {
+        d = obj(d);
+        if (!has(d.evidence_id)) return;
+        out.push({ batch: b, evidence_id: d.evidence_id, calls: obj(d.calls) });
+      });
+    });
+    return out;
+  }
+
+  function renderReview() {
+    var e = el('review');
+    var rv = obj(DATA && DATA.review);
+    var byNbs = obj(rv.nbs);
+    var ids = reviewNbsOrder(byNbs);
+    var total = ids.reduce(function (acc, n) { return acc + (num(obj(byNbs[n]).units) || 0); }, 0);
+    if (!ids.length || !total) {
+      var none = '<p class="muted">No review batches yet.</p>';
+      if (e) e.innerHTML = none;
+      return none;
+    }
+    var h = '<div class="rev-scroll"><table class="rev"><thead><tr>' +
+      '<th scope="col">NbS</th><th scope="col">in queue</th><th scope="col">decided</th>' +
+      '<th scope="col">approve · hold · reject</th><th scope="col">PICOS flagged</th><th scope="col">batches</th>' +
+      '</tr></thead><tbody>';
+    ids.forEach(function (n) {
+      var r = obj(byNbs[n]);
+      var units = num(r.units) || 0;
+      var dec = num(r.decided) || 0;
+      var w = units ? Math.max(0, Math.min(100, Math.round((dec / units) * 100))) : 0;
+      var d = obj(r.by_decision);
+      var pic = num(r.picos_flagged) || 0;
+      h += '<tr><th scope="row" class="nbs">' + esc(label(n)) + '</th>';
+      h += '<td>' + esc(units) + '</td>';
+      h += '<td><span class="rev-dec">' + esc(dec) + ' / ' + esc(units) + '</span>' +
+        '<div class="thin" role="img" aria-label="' + esc(w) + '% decided"><span style="width:' + w + '%"></span></div></td>';
+      h += '<td><div class="rev-split">' +
+        '<span class="chip">approve ' + esc(num(d.approve) || 0) + '</span>' +
+        '<span class="chip">hold ' + esc(num(d.hold) || 0) + '</span>' +
+        '<span class="chip">reject ' + esc(num(d.reject) || 0) + '</span></div></td>';
+      h += '<td>' + (pic ? esc(pic) : '<span class="muted">0</span>') + '</td>';
+      h += '<td>' + reviewLinks(n, arr(r.batches)) + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+    var dis = reviewDisagreements();
+    if (dis.length) {
+      h += '<ul class="disagree"><li style="border-top:none"><b>' + esc(dis.length) + ' unit(s) where reviewers disagree</b></li>';
+      dis.forEach(function (x) {
+        var calls = Object.keys(x.calls).map(function (k) { return k + ': ' + x.calls[k]; }).join(' · ');
+        h += '<li><a href="review.html?batch=' + encodeURIComponent(x.batch) + '&unit=' + encodeURIComponent(x.evidence_id) + '"><code>' +
+          esc(x.evidence_id) + '</code></a> <span class="calls">' + (calls ? esc(calls) : DASH) + '</span></li>';
+      });
+      h += '</ul>';
+    }
+    if (e) e.innerHTML = h;
+    return h;
+  }
+
   function renderDecisions() {
     var e = el('decisions');
     var rows = (DATA && DATA.decisions) || [];
@@ -583,6 +682,7 @@
     renderLegend();
     renderMatrix();
     renderDecisions();
+    renderReview();
     renderBlockers();
   }
 
@@ -605,7 +705,7 @@
 
   var api = {
     load: load, renderAll: renderAll, renderStamp: renderStamp, renderLegend: renderLegend, renderMatrix: renderMatrix,
-    cellSummary: cellSummary, pill: pill, renderStageDetail: renderStageDetail, renderBlockers: renderBlockers, renderDecisions: renderDecisions,
+    cellSummary: cellSummary, pill: pill, renderStageDetail: renderStageDetail, renderBlockers: renderBlockers, renderDecisions: renderDecisions, renderReview: renderReview,
     bar: bar, esc: esc
   };
   root.ProgressPage = api;
