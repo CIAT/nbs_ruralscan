@@ -614,7 +614,10 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     # Compile the dashboard_data.json payload
     changed.extend(generate_dashboard_data(schema_root, check=check))
     # Compile the per NbS × T3/T6 pipeline-position report (docs/table_progress.json)
-    from nbs_ruralscan.schema_tools import table_progress
+    from nbs_ruralscan.schema_tools import review_exports, table_progress
+
+    # committed review-page exports → docs/review/decisions.json (shared decision view)
+    changed.extend(review_exports.write_decisions(check=check))
 
     changed.extend(table_progress.write(schema_root, check=check))
     return changed

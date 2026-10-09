@@ -176,12 +176,24 @@
   .picos-note.bad { color: var(--accent-amber, #e0a030); font-weight: 600; }
   .picos-gap { font-size: 12px; color: var(--accent-amber, #e0a030); margin-top: 3px; }
   @media (max-width: 860px) { .picos-tbl th { width: 34%; } }
+
+  /* cross-page link + other reviewers (shared decisions.json) */
+  .top-link { font-size: 13px; font-weight: 600; white-space: nowrap; }
+  #unit-list li .othermark { color: var(--accent-purple); font-size: 11px; flex: 0 0 auto; }
+  .others { margin-top: 10px; background: var(--bg-secondary); border: 1px solid var(--border-color);
+    border-radius: var(--radius-md); padding: 10px 12px; max-height: 220px; overflow-y: auto; }
+  .others h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--text-secondary); margin-bottom: 4px; }
+  ul.others-list { list-style: none; }
+  ul.others-list li { font-size: 13px; padding: 3px 0; overflow-wrap: anywhere; }
+  .others-date { color: var(--text-muted); font-size: 12px; }
+  .chip-dis { font-size: 11px; padding: 1px 7px; border-radius: 10px; background: var(--accent-rose); color: #fff; white-space: nowrap; }
 </style>
 </head>
 <body data-theme="dark">
 <header class="top">
   <div class="top-row">
     <h1>Evidence Review</h1>
+    <a class="top-link" href="progress.html">Build progress</a>
     <label>Batch <select id="batch-select"></select></label>
     <label>Reviewer <input type="text" id="reviewer" placeholder="your name" size="10"></label>
     <button id="theme-toggle" type="button" title="Toggle light/dark">Theme</button>
@@ -195,6 +207,7 @@
       <option value="approve">approved</option>
       <option value="hold">hold</option>
       <option value="reject">rejected</option>
+      <option value="others">decided by others</option>
     </select></label>
     <input type="search" id="f-search" placeholder="Search citation, variable, question">
   </div>
@@ -228,6 +241,7 @@
         <span class="keys">Keys: A approve · H hold · R reject · &larr; &rarr; move</span>
       </div>
     </section>
+    <div class="others" id="others" hidden></div>
   </section>
 </div>
 
@@ -264,7 +278,8 @@
 
   var S = {
     index: [], batchId: null, batch: null, units: [], reasons: DEFAULT_REASONS.slice(),
-    reviewer: '', decisions: {}, filtered: [], pos: 0, pendingReject: false
+    reviewer: '', decisions: {}, filtered: [], pos: 0, pendingReject: false,
+    shared: {}, sharedBuilt: ''
   };
 
   function $(id) { return document.getElementById(id); }
@@ -287,6 +302,21 @@
   function key() { return 'review:' + S.batchId + ':' + (S.reviewer || 'anonymous'); }
   function today() { return new Date().toISOString().slice(0, 10); }
   function nowIso() { return new Date().toISOString(); }
+  function urlParam(k) {
+    try { return new URLSearchParams(location.search).get(k) || ''; } catch (e) { return ''; }
+  }
+  // keep ?batch=&nbs= in step with the controls; ?unit= is a one-shot jump, so drop it
+  function syncUrl() {
+    try {
+      var u = new URL(location.href);
+      if (S.batchId) u.searchParams.set('batch', S.batchId); else u.searchParams.delete('batch');
+      var n = $('f-nbs') ? $('f-nbs').value : '';
+      if (n) u.searchParams.set('nbs', n); else u.searchParams.delete('nbs');
+      u.searchParams.delete('unit');
+      history.replaceState(null, '', u);
+      return u.toString();
+    } catch (e) { return ''; }
+  }
 
   function loadLocal() {
     var raw = lsGet(key());
@@ -298,6 +328,37 @@
     if (!ok && $('status')) $('status').innerHTML = '<span class="warn">Browser storage unavailable — export before leaving.</span>';
     return ok;
   }
+
+  // ---------- shared decisions (docs/review/decisions.json, read-only) ----------
+  function setShared(data) {
+    S.shared = (data && data.decisions) || {};
+    S.sharedBuilt = (data && data.built) || '';
+    return S.shared;
+  }
+  function loadShared() {
+    if (typeof fetch === 'undefined') return Promise.resolve(null);
+    return fetch('review/decisions.json', { cache: 'no-cache' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { setShared(d); return d; })
+      .catch(function () { setShared(null); return null; });
+  }
+  // decisions on this unit made by anyone who is not the current reviewer
+  function othersFor(id) {
+    var byBatch = S.shared && S.shared[S.batchId];
+    var rec = byBatch && byBatch[id];
+    if (!rec || typeof rec !== 'object') return [];
+    var me = String(S.reviewer || '').trim().toLowerCase();
+    return Object.keys(rec).filter(function (name) {
+      return String(name).trim().toLowerCase() !== me;
+    }).map(function (name) {
+      var d = rec[name] || {};
+      return {
+        reviewer: name, decision: d.decision || '', reason: d.reason || '', note: d.note || '',
+        date: d.date || '', picos: d.picos_flags || d.picos || []
+      };
+    }).filter(function (o) { return !!o.decision || (o.picos && o.picos.length); });
+  }
+  function decClass(d) { return ['approve', 'hold', 'reject'].indexOf(d) >= 0 ? d : 'undecided'; }
 
   // ---------- batch loading ----------
   function load(batchId) {
@@ -335,7 +396,30 @@
       return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join('');
     loadLocal();
     S.pos = 0;
+    var wantNbs = urlParam('nbs');
+    $('f-nbs').value = (wantNbs && S.units.filter(function (u) { return u.nbs_id === wantNbs; }).length) ? wantNbs : '';
     applyFilters();
+    var wantUnit = urlParam('unit');
+    if (wantUnit) focusUnit(wantUnit);
+    syncUrl();
+  }
+
+  // jump to one evidence_id, dropping the filters if they hide it
+  function focusUnit(id) {
+    if (!id) return false;
+    var ids = function () { return S.filtered.map(function (u) { return u.evidence_id; }); };
+    var idx = ids().indexOf(id);
+    if (idx < 0) {
+      if (!S.units.filter(function (u) { return u.evidence_id === id; }).length) return false;
+      if ($('f-nbs')) $('f-nbs').value = '';
+      if ($('f-state')) $('f-state').value = 'all';
+      if ($('f-search')) $('f-search').value = '';
+      applyFilters();
+      idx = ids().indexOf(id);
+      if (idx < 0) return false;
+    }
+    go(idx);
+    return true;
   }
 
   function renderBatchList() {
@@ -364,7 +448,8 @@
     var curId = S.filtered[S.pos] && S.filtered[S.pos].evidence_id;
     S.filtered = S.units.filter(function (u) {
       if (nbs && u.nbs_id !== nbs) return false;
-      if (st && st !== 'all' && stateOf(u.evidence_id) !== st) return false;
+      if (st === 'others') { if (!othersFor(u.evidence_id).length) return false; }
+      else if (st && st !== 'all' && stateOf(u.evidence_id) !== st) return false;
       if (q) {
         var hay = [u.citation, u.variable, u.question, u.evidence_id].join(' ').toLowerCase();
         if (hay.indexOf(q) < 0) return false;
@@ -389,9 +474,12 @@
     $('list-count').textContent = 'Units (' + S.filtered.length + ' of ' + S.units.length + ')';
     $('unit-list').innerHTML = S.filtered.map(function (u, i) {
       var st = stateOf(u.evidence_id);
+      var others = othersFor(u.evidence_id);
       return '<li data-i="' + i + '"' + (i === S.pos ? ' class="current"' : '') + '>' +
         '<span class="pill ' + st + '">' + (st === 'undecided' ? '·' : esc(st)) + '</span>' +
-        '<span class="lbl" title="' + esc(u.evidence_id) + '">' + esc(u.variable) + ' — ' + esc(u.source_id) + '</span></li>';
+        '<span class="lbl" title="' + esc(u.evidence_id) + '">' + esc(u.variable) + ' — ' + esc(u.source_id) + '</span>' +
+        (others.length ? '<span class="othermark" title="' + esc(others.length + ' other reviewer(s) decided this unit') + '">◆</span>' : '') +
+        '</li>';
     }).join('');
   }
 
@@ -507,6 +595,30 @@
     return true;
   }
 
+  function renderOthers(u) {
+    var host = $('others');
+    var list = u ? othersFor(u.evidence_id) : [];
+    if (!host) return '';
+    if (!list.length) { host.innerHTML = ''; host.hidden = true; return ''; }
+    var mine = (u && S.decisions[u.evidence_id] && S.decisions[u.evidence_id].decision) || '';
+    var h = '<h3>Other reviewers</h3><ul class="others-list">';
+    list.forEach(function (o) {
+      var disagrees = !!mine && !!o.decision && o.decision !== mine;
+      h += '<li><b>' + esc(o.reviewer) + '</b> — <span class="pill ' + decClass(o.decision) + '">' +
+        esc(o.decision || 'undecided') + '</span>' +
+        (o.reason ? ' (' + esc(o.reason) + ')' : '') +
+        (o.picos && o.picos.length ? ' <span class="sep">·</span> PICOS: ' + esc(o.picos) : '') +
+        (o.note ? ' <span class="sep">·</span> ' + esc(o.note) : '') +
+        (o.date ? ' <span class="others-date">' + esc(String(o.date).slice(0, 10)) + '</span>' : '') +
+        (disagrees ? ' <span class="chip-dis">disagrees</span>' : '') +
+        '</li>';
+    });
+    h += '</ul>';
+    host.innerHTML = h;
+    host.hidden = false;
+    return h;
+  }
+
   function syncDecision(u) {
     var d = u ? S.decisions[u.evidence_id] || {} : {};
     Array.prototype.forEach.call(document.querySelectorAll('.dec-btns button'), function (b) {
@@ -519,6 +631,7 @@
     $('reason-gloss').textContent = GLOSS[d.reason] || '';
     $('note').value = d.note || '';
     $('status').textContent = d.date ? 'Saved ' + d.date.slice(0, 16).replace('T', ' ') : '';
+    renderOthers(u);
   }
 
   // ---------- deciding ----------
@@ -666,7 +779,9 @@
       try { var u = new URL(location.href); u.searchParams.set('batch', id); history.replaceState(null, '', u); } catch (e) { /* ignore */ }
       S.filtered = []; load(id);
     });
-    ['f-nbs', 'f-state'].forEach(function (id) { $(id).addEventListener('change', function () { S.pos = 0; applyFilters(); }); });
+    ['f-nbs', 'f-state'].forEach(function (id) {
+      $(id).addEventListener('change', function () { S.pos = 0; applyFilters(); if (id === 'f-nbs') syncUrl(); });
+    });
     $('f-search').addEventListener('input', function () { S.pos = 0; applyFilters(); });
     $('list-toggle').addEventListener('click', function () {
       var p = $('list-panel'); p.classList.toggle('collapsed');
@@ -722,6 +837,11 @@
       else if (k === 'ArrowRight') { go(S.pos + 1); e.preventDefault(); }
     });
     load();
+    loadShared().then(function () {
+      if (!S.units.length) return; // setBatch renders once the batch lands
+      renderList();
+      syncDecision(current());
+    });
   }
 
   window.ReviewPage = {
@@ -729,7 +849,9 @@
     renderList: renderList, decide: decide, saveLocal: saveLocal, loadLocal: loadLocal,
     exportCsv: exportCsv, buildCsv: buildCsv, importCsv: importCsv, parseCsv: parseCsv,
     picosHtml: picosHtml, togglePicos: togglePicos,
-    applyFilters: applyFilters, esc: esc, go: go
+    applyFilters: applyFilters, esc: esc, go: go,
+    loadShared: loadShared, setShared: setShared, othersFor: othersFor,
+    renderOthers: renderOthers, focusUnit: focusUnit, syncUrl: syncUrl
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
