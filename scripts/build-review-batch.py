@@ -111,6 +111,22 @@ _INCOME = {
 }
 
 
+FAM = ROOT / "schema" / "registers" / "FAM_family_registry.csv"
+
+
+def _families() -> dict[str, str]:
+    """family id → 'name; name' of its sub-practices (what the practice actually is)."""
+    out: dict[str, list[str]] = {}
+    try:
+        for r in csv.DictReader(FAM.open(encoding="utf-8")):
+            fid = (r.get("suitability_family_id") or "").strip()
+            if fid and r.get("name"):
+                out.setdefault(fid, []).append(r["name"].strip())
+    except OSError:
+        pass
+    return {k: "; ".join(v) for k, v in out.items()}
+
+
 def _labels() -> dict[str, str]:
     try:
         return {
@@ -148,7 +164,23 @@ def _num(rel: dict) -> str:
     return ""
 
 
-def plain_words(r: dict, rel: dict, ctx: dict, labels: dict[str, str]) -> dict:
+def practice_line(r: dict, fams: dict[str, str]) -> str:
+    nbs = r["nbs_id"].replace("_", " ")
+    fid = r.get("suitability_family_id") or ""
+    if not fid or fid.endswith("__cross_family"):
+        return f"Practice: {nbs} (no sub-practice stated in the source — pooled across the whole NbS)."
+    short = fid.split("__", 1)[-1].replace("_", " ")
+    names = fams.get(fid)
+    return f"Practice: {nbs} → {short}" + (f" ({names})" if names else "") + "."
+
+
+def plain_words(
+    r: dict,
+    rel: dict,
+    ctx: dict,
+    labels: dict[str, str],
+    fams: dict[str, str] | None = None,
+) -> dict:
     """Plain-English sentences for a reviewer: what the unit claims, how it was
     established, and in what context. The codes stay in the JSON for the record."""
     var = labels.get(r["variable"], r["variable"].replace("_", " "))
@@ -232,7 +264,10 @@ def plain_words(r: dict, rel: dict, ctx: dict, labels: dict[str, str]) -> dict:
     if ctx.get("comparator") == "existing_wetland":
         where.append("measured on EXISTING wetlands, not on a restoration")
     where_sentence = ("Context: " + "; ".join(where) + ".") if where else ""
+    compared = str(rel.get("outcome_raw") or "").strip()
     return {
+        "practice": practice_line(r, fams or {}),
+        "compared": ("What the paper compared: " + compared + ".") if compared else "",
         "role": _ROLE.get(r["use_role"], r["use_role"]),
         "claim": claim_sentence,
         "how": how_sentence,
@@ -296,6 +331,7 @@ def main(argv: list[str] | None = None) -> int:
     units = []
     missing = []
     labels = _labels()
+    fams = _families()
     with EV.open(newline="", encoding="utf-8") as f:
         ev = {r["evidence_id"]: r for r in csv.DictReader(f)}
     for eid, question in items.items():
@@ -365,7 +401,7 @@ def main(argv: list[str] | None = None) -> int:
                 "crop": crop,
                 "crop_note": crop_note,
                 "pdf_url": sharepoint_url(s.get("library_path", ""), page or None),
-                "plain": plain_words(r, rel, ctx, labels),
+                "plain": plain_words(r, rel, ctx, labels, fams),
                 "library_path": s.get("library_path", ""),
             }
         )
