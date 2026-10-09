@@ -205,49 +205,87 @@ def _t5_labels() -> dict[str, str]:
 
 def feeds_line(
     r: dict, ctx: dict, routes: dict[str, list[dict]], t5: dict[str, str]
-) -> str:
+) -> dict:
+    """Which generated table(s) and cell(s) this unit lands in, and what question each
+    one answers. A hazard finding legitimately feeds BOTH tables (method §4, 'many-to-many
+    is allowed and expected': flood_hazard → T3 flood + T6 flood_hazard) because they are
+    read by different modules at different granularity — they are never added together."""
     role, var = r["use_role"], r["variable"]
     hz = (ctx.get("hazard_type") or "").replace("_", " ")
     if role == "asset_vulnerability":
-        return f"Feeds: T3 hazard table → asset-threat row for {hz or 'the hazard'} (damage to the works; Module 2b project-risk screen)."
+        return {
+            "lead": "",
+            "items": [
+                f"T3 — hazard table, asset-threat row for {hz or 'the hazard'}: can {hz or 'the hazard'} damage the works themselves? Read by the Module 2b project-risk screen, never by the livelihood cells."
+            ],
+        }
     if role == "operational_risk":
-        return "Feeds: no table cell — enabling / implementation factor for Module 6 next-steps and the Module 2b operational-risk filter."
+        return {
+            "lead": "",
+            "items": [
+                "No table cell. This is an enabling / implementation factor — it informs Module 6 next-steps and the Module 2b operational-risk filter, and never sets a score."
+            ],
+        }
     if role == "structural_suitability":
-        return f"Feeds: T4 suitability table → variable '{var}' for the family above (where the practice can establish)."
+        return {
+            "lead": "",
+            "items": [
+                f"T4 — suitability table, variable '{var}' for the family above: where the practice can physically establish."
+            ],
+        }
     rs = routes.get(var) or []
     if not rs:
-        return f"Feeds: NOTHING yet — '{var}' has no crosswalk route to T3 or T6 (ontology / routing decision pending)."
-    parts = []
+        return {
+            "lead": "",
+            "items": [
+                f"Nothing yet — '{var}' has no crosswalk route to T3 or T6, so this unit currently sets no score (routing / ontology decision pending)."
+            ],
+        }
     t3 = [x for x in rs if x["target_table"] == "T3"]
     t6 = [x for x in rs if x["target_table"] == "T6"]
-    for x in t6:
-        parts.append(
-            f"T6 scorecard → {t5.get(x['target_key'], x['target_key']).strip()} ({_PROX.get(x.get('proximity') or 'direct', x.get('proximity'))})"
-        )
-    # mirror the engine's gate (cell_synthesis.gather): a stated hazard selects ONE cell;
-    # no stated hazard → a single direct route still lands, several routes land nowhere
+    items: list[str] = []
+    n_dest = 0
+    # T3 — mirrors the engine's gate (cell_synthesis.gather): a stated hazard selects ONE
+    # cell; with no stated hazard a single direct route still lands, several land nowhere.
     if t3:
         hz_key = (ctx.get("hazard_type") or "").strip()
+        chosen = None
         if hz_key:
             m = [x for x in t3 if x["target_key"] == hz_key]
-            if m:
-                prox = m[0].get("proximity") or "direct"
-                parts.append(
-                    f"T3 hazard table → {hz_key.replace('_', ' ')} livelihood cell ({_PROX.get(prox, prox)}) because the unit states that hazard"
-                )
-            else:
-                parts.append(
-                    f"T3: no cell — the stated hazard '{hz_key}' has no route from '{var}'"
+            chosen = (m[0], "the unit states that hazard") if m else None
+            if not m:
+                items.append(
+                    f"T3 — no cell: the stated hazard '{hz_key.replace('_', ' ')}' has no route from '{var}'."
                 )
         elif len(t3) == 1 and (t3[0].get("proximity") or "direct") == "direct":
-            parts.append(
-                f"T3 hazard table → {t3[0]['target_key'].replace('_', ' ')} livelihood cell (direct)"
-            )
+            chosen = (t3[0], "the variable is itself a hazard variable")
         else:
-            parts.append(
-                "T3: no hazard cell — the unit states no hazard, so it is not hazard-year evidence"
+            items.append(
+                "T3 — no hazard cell: the unit names no hazard, so it is not hazard-year evidence."
             )
-    return "Feeds: " + "; ".join(parts) + "."
+        if chosen:
+            x, why = chosen
+            key = x["target_key"].replace("_", " ")
+            prox = x.get("proximity") or "direct"
+            n_dest += 1
+            items.append(
+                f"T3 — hazard table, the {key} cell for this NbS and farming system: does the practice reduce the impact of {key} on rural livelihoods? "
+                f"Counted {_PROX.get(prox, prox)}, because {why}. Read by Module 5 (NbS response) and the M2b screen."
+            )
+    for x in t6:
+        key = t5.get(x["target_key"], x["target_key"]).strip()
+        prox = x.get("proximity") or "direct"
+        n_dest += 1
+        items.append(
+            f"T6 — NbS scorecard, the '{key}' priority: how this NbS scores for a Task Team Leader who prioritises {key.lower()}. "
+            f"Counted {_PROX.get(prox, prox)}. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
+        )
+    lead = (
+        "The same finding answers two different questions, so it is used in both tables. They are never added together:"
+        if n_dest > 1
+        else ""
+    )
+    return {"lead": lead, "items": items}
 
 
 def practice_line(r: dict, fams: dict[str, str]) -> str:
