@@ -473,7 +473,16 @@ def build(schema_root: str | Path) -> dict:
         "basis_buckets": BASIS_BUCKETS,
         "blocker_reasons": _BLOCKER_ORDER,
     }
-    return {"meta": meta, "cells": cells, "decisions": load_decisions(schema_root)}
+    from nbs_ruralscan.schema_tools import review_exports
+
+    return {
+        "meta": meta,
+        "cells": cells,
+        "decisions": load_decisions(schema_root),
+        # QA review queue + decisions committed under docs/review/exports (the review page
+        # is where flagged units are judged; this is its progress, per batch and per NbS)
+        "review": review_exports.summary(),
+    }
 
 
 DECISION_STATUS = ("open", "parked", "decided")
@@ -608,6 +617,7 @@ def write(
         and current.get("cells") == payload["cells"]
         and current.get("meta") == payload["meta"]
         and current.get("decisions", []) == payload["decisions"]
+        and current.get("review", {}) == payload["review"]
     ):
         return []
     out = {

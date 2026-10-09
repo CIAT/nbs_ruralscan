@@ -154,3 +154,34 @@ def test_decisions_are_loaded_open_first():
     statuses = [r["status"] for r in d]
     assert statuses == sorted(statuses, key=lambda s: tp.DECISION_STATUS.index(s))
     assert {"decision_id", "status", "question", "record"} <= set(d[0])
+
+
+def test_review_summary_is_included_and_counts_units():
+    from nbs_ruralscan.schema_tools import review_exports as rx
+
+    rev = tp.build(SCHEMA)["review"]
+    assert set(rev) == {"batches", "nbs"}
+    # every unit in a committed batch is counted once per NbS
+    units = rx._batch_units()
+    total = sum(len(v) for v in units.values())
+    assert sum(n["units"] for n in rev["nbs"].values()) == total
+    for b in rev["batches"].values():
+        assert b["decided"] <= b["units"]
+
+
+def test_review_exports_latest_date_wins_and_bad_rows_skipped(tmp_path):
+    from nbs_ruralscan.schema_tools import review_exports as rx
+
+    hdr = "batch,evidence_id,decision,reason,note,reviewer,date,picos_flags\n"
+    (tmp_path / "a.csv").write_text(
+        hdr
+        + "b1,ev_x,approve,,,pete,2026-10-01,\n"
+        + "b1,ev_x,reject,off_scope,later call,pete,2026-10-05,I;C\n"
+        + "b1,,approve,,,pete,2026-10-05,\n"  # no evidence_id → skipped
+        + "b1,ev_y,maybe,,,namita,2026-10-05,\n",  # unknown decision → skipped
+        encoding="utf-8",
+    )
+    got = rx.collect(tmp_path)
+    assert got["b1"]["ev_x"]["pete"]["decision"] == "reject"
+    assert got["b1"]["ev_x"]["pete"]["picos_flags"] == ["I", "C"]
+    assert "ev_y" not in got["b1"]
