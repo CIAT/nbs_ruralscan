@@ -261,15 +261,19 @@ def load_confidence_matrix(path: str | Path) -> dict[tuple[str, str], str]:
 # ── BANDS: magnitude → strength class ─────────────────────────────────────────────────
 
 
-def classify_magnitude(
+def match_band(
     metric: str,
     magnitude: float | None,
     bands: list[dict[str, Any]],
     source_scale_value: str | None = None,
     unit: str | None = None,
     income_band: str | None = None,
-) -> str:
-    """Return the strength_class a magnitude falls in per the BANDS register.
+) -> dict[str, Any] | None:
+    """Return the BANDS row a magnitude falls in (``None`` when no rule covers it).
+
+    ``classify_magnitude`` wraps this and returns only the row's ``strength_class``; the
+    row itself is what the review page prints, so a reviewer can see the rule that set a
+    unit's strength instead of having to trust the adjective (review theme 4, 2026-10-12).
 
     ``income_band`` (``lic_lmic`` · ``upper_middle`` · ``high``) selects context-relative
     rows: an absolute cost is "big or small" only relative to where it is spent (Pete
@@ -284,8 +288,7 @@ def classify_magnitude(
     ``absolute`` unit (t/ha, USD/ha …) still falls through to ``unspecified``. This is why
     ratio-reporting meta-analyses do not need a new metric in the extraction contract.
 
-    ``ordinal_rating`` rows match on ``source_scale_value``. No matching band →
-    ``unspecified``.
+    ``ordinal_rating`` rows match on ``source_scale_value``. No matching band → ``None``.
     """
     unit_s = (unit or "").strip().lower()
     band_s = (income_band or "").strip().lower()
@@ -317,7 +320,7 @@ def classify_magnitude(
                     (b.get("source_scale_value") or "").strip().lower()
                     == source_scale_value.strip().lower()
                 ):
-                    return b.get("strength_class") or "unspecified"
+                    return b
                 continue
             if magnitude is None:
                 continue
@@ -329,8 +332,22 @@ def classify_magnitude(
             c = float(centre) if centre not in (None, "") else 0.0
             v = abs(float(magnitude) - c)
             if (lo_f is None or v >= lo_f) and (hi_f is None or v < hi_f):
-                return b.get("strength_class") or "unspecified"
-    return "unspecified"
+                return b
+    return None
+
+
+def classify_magnitude(
+    metric: str,
+    magnitude: float | None,
+    bands: list[dict[str, Any]],
+    source_scale_value: str | None = None,
+    unit: str | None = None,
+    income_band: str | None = None,
+) -> str:
+    """The strength_class a magnitude falls in per the BANDS register (`match_band`'s row),
+    or ``unspecified`` when no band rule covers it."""
+    b = match_band(metric, magnitude, bands, source_scale_value, unit, income_band)
+    return (b.get("strength_class") if b else None) or "unspecified"
 
 
 # ── context normalisation + distance (method §3.3, §5.2) ─────────────────────────────
@@ -1786,6 +1803,15 @@ def traceable_account(
         "evidence_summary": summary,
         "agreement_note": agreement_note,
         "proxies": proxies,
+        # review theme 5 (Pete 2026-10-12): several units from one paper are not several
+        # findings. The engine already weights by SOURCE, not by unit; this says so on the
+        # row, in the same words the review page uses.
+        "pool_note": (
+            f"This row draws on {len(contribs)} evidence unit(s) from "
+            f"{len({c.unit.source_id for c in contribs})} source(s); the weighting counts "
+            "sources, not units, so several findings from one paper do not multiply its say."
+        ),
+        "n_units": len(contribs),
         "key_evidence_ids": [c.unit.evidence_id for c in top],
         "source_mix": rec["source_mix"],
         "prose_pending": True,  # mechanism / conditionality await the (gated) prose writer

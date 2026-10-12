@@ -24,6 +24,8 @@ Rejections and holds of the same kind: supplemental irrigation counted as water 
 
 You also asked for the fix directly: *"it would be good if the extract could capture the description of the NbS in question from the evidence."* I will add a required `practice_as_described` field — the source's own words for what was done — so the practice test is visible on the review page instead of being inferred. No decision needed; I will do it.
 
+**Done (2026-10-12, ruleset v1.6.9).** Effect units carry the paper's own description of the intervention, including anything applied alongside it. The review page prints it under the practice line and inside the PICOS Intervention row; where it is missing the page says so and tells the reviewer to judge the practice from the quote. `check_context` raises `missing_practice_description` only for units extracted under v1.6.9 or later — the existing register is not swept retrospectively.
+
 ## 3. Hazard-year gains need a normal-year comparator — **decide**
 
 *"Is the same absolute gain also seen in normal years and therefore this is just a production benefit?"* (Mazvimavi). This is the difference between resilience and ordinary yield gain, and we currently cannot tell them apart: a drought-year contrast with no normal-year reference is read as hazard mitigation.
@@ -34,9 +36,13 @@ Options: **A** record a `normal_year_reference` (present / absent / value) and d
 
 *"5% to 2.2% loss — what is the logic by which you have inferred this is a large amount? is there a rule?"* There is: `schema/registers/BANDS_magnitude_bands.csv` maps a metric and unit to slight / moderate / strong. The page never showed it. I will print the band rule applied to each unit ("response ratio 0.44 → strong, band: |r−1| ≥ 0.30"). No decision needed.
 
+**Done (2026-10-12).** Every unit on the review page now carries a "How the size was decided" block: the value as the unit records it, the register rule that fired, the band id, and whether the recorded strength follows the rule. Where no rule covers the metric the page says the strength is the extractor's judgement and is unchecked; where the unit records no size at all it says that instead of inventing a rule. A disagreement between the rule and the recorded class is highlighted, and it is the same finding `check_bands` flags in the build.
+
 ## 5. Several units, one paper
 
 Twice flagged (Bayala, Adimassu): *"multiple data points from same paper will require dealing with when compiling the evidence."* The engine does weight by source rather than by unit, but the page does not say so. I will show "this cell draws on N units from M sources" on every row, and the same line in the generated tables' account.
+
+**Done (2026-10-12).** Each placement line on the review page now says how many units from how many sources that row rests on, and adds "the weighting counts sources, not units" whenever the units outnumber the sources. Every generated T3/T6 row carries the same sentence in its account (`justification.pool_note`, with `justification.n_units` beside the existing `n_sources`).
 
 ## 6. Second-hand citations
 

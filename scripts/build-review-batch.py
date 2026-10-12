@@ -24,11 +24,14 @@ import fitz
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+from nbs_ruralscan.recipe.cell_synthesis import load_bands  # noqa: E402
+from nbs_ruralscan.schema_tools import check_bands  # noqa: E402
 from nbs_ruralscan.schema_tools.review import REASON_CODES  # noqa: E402
 
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 SRC = ROOT / "schema" / "registers" / "SRC_source_register.csv"
 CORPUS = ROOT / ".cache" / "corpus"
+BANDS = ROOT / "schema" / "registers" / "BANDS_magnitude_bands.csv"
 OUT = ROOT / "docs" / "review"
 IMG = OUT / "img"
 DPI = 110
@@ -241,6 +244,14 @@ def _practice_named(r: dict, rel: dict, ctx: dict, fams: dict[str, str]) -> bool
     return False if pat else None
 
 
+def _named_note(named: bool | None) -> str:
+    if named:
+        return "the practice is named in the quote"
+    if named is False:
+        return "the practice is NOT named in the quoted text — check the source before keeping this tag"
+    return ""
+
+
 def picos(
     r: dict,
     rel: dict,
@@ -283,6 +294,9 @@ def picos(
     else:
         inter += " (no sub-practice stated — pooled across the NbS)"
     named = _practice_named(r, rel, ctx, fams)
+    described = str(ctx.get("practice_as_described") or "").strip()
+    if described:
+        inter += f" — the source calls it: “{described}”"
     # C — comparator
     comp = []
     if rel.get("value_without") is not None:
@@ -341,13 +355,12 @@ def picos(
         "I": inter,
         "I_named": named,
         "I_note": (
-            "the practice is named in the quote"
-            if named
+            _named_note(named)
+            if described
             else (
-                "the practice is NOT named in the quoted text — check the source before keeping this tag"
-                if named is False
-                else ""
-            )
+                "the source's own description of the practice is NOT captured — judge the "
+                "practice from the quote. " + _named_note(named)
+            ).strip()
         ),
         "C": "; ".join(comp)
         or (
@@ -369,10 +382,30 @@ _T_FILE_LABEL = {
 }
 
 
-def _placements() -> dict[str, list[dict[str, str]]]:
+def _pool_sentence(n_units: int, n_sources: int) -> str:
+    """How big the row's pool is, in the engine's own terms (review theme 5)."""
+    u = f"{n_units} unit{'s' if n_units != 1 else ''}"
+    m = f"{n_sources} source{'s' if n_sources != 1 else ''}"
+    tail = (
+        " — the weighting counts sources, not units, so several findings from one paper "
+        "do not multiply its say."
+        if n_units > n_sources
+        else "."
+    )
+    return f" That row draws on {u} from {m}{tail}"
+
+
+def _placements(
+    sources: dict[str, str] | None = None,
+) -> dict[str, list[dict[str, str]]]:
     """evidence_id → the generated rows it is actually in. Ground truth beats a predicted
     route: a unit can route somewhere and still land nowhere (kept out of a roll-up by the
-    comparator policy, or in a family row that needs two independent sources)."""
+    comparator policy, or in a family row that needs two independent sources).
+
+    Each placement also carries how big the row's pool is — units and distinct sources —
+    because several data points from one paper are not several findings (review theme 5,
+    Pete 2026-10-12); the engine weights by source, and the page has to say so."""
+    sources = sources or {}
     out: dict[str, list[dict[str, str]]] = {}
     for d in sorted(RECIPES.glob("*")):
         for stem, label in _T_FILE_LABEL.items():
@@ -392,6 +425,9 @@ def _placements() -> dict[str, list[dict[str, str]]]:
                         "family": (r.get("suitability_family_id") or "").strip(),
                         "scope": scope,
                         "role": (r.get("risk_role") or "").strip(),
+                        "pool": _pool_sentence(
+                            len(ids), len({sources.get(i, i) for i in ids})
+                        ),
                     }
                     for eid in ids:
                         out.setdefault(eid, []).append(where)
@@ -424,7 +460,8 @@ def placement_lines(
             else "the NbS roll-up row"
         )
         role = " (asset threat)" if w["role"] == "asset_threat" else ""
-        lines.append(f"{w['table']}: {w['record_id']} — {fam}{scope}{role}.")
+        pool = str(w.get("pool") or "")
+        lines.append(f"{w['table']}: {w['record_id']} — {fam}{scope}{role}.{pool}")
     if lines:
         return lines, ""
     if (r.get("review_state") or "") == "dropped":
@@ -544,6 +581,25 @@ def feeds_line(
     return {"lead": lead, "items": items, "now": now, "none_reason": none_reason}
 
 
+def described_line(ctx: dict, role: str) -> str:
+    """What the SOURCE says was done, in its own words (review theme 2, Pete 2026-10-12).
+
+    Supplemental irrigation counted as water harvesting, a plantation counted as forest
+    restoration and a protected area counted as restoration all got through because the
+    practice test was inferred from our tag instead of read from the paper. The reviewer
+    needs the paper's own description in front of them."""
+    d = str(ctx.get("practice_as_described") or "").strip()
+    if d:
+        return f"The source describes what was done as: “{d}”."
+    if role in ("nbs_effect", "asset_vulnerability"):
+        return (
+            "The source's own description of the practice was not captured for this unit "
+            "(it is required from ruleset v1.6.9 on) — read the quote and say whether what "
+            "was measured really is this practice."
+        )
+    return ""
+
+
 def practice_line(r: dict, fams: dict[str, str]) -> str:
     nbs = r["nbs_id"].replace("_", " ")
     fid = r.get("suitability_family_id") or ""
@@ -564,6 +620,7 @@ def plain_words(
     t5: dict[str, str] | None = None,
     places: list[dict[str, str]] | None = None,
     pol: dict[tuple[str, str], dict[str, str]] | None = None,
+    bands: list[dict] | None = None,
 ) -> dict:
     """Plain-English sentences for a reviewer: what the unit claims, how it was
     established, and in what context. The codes stay in the JSON for the record."""
@@ -651,6 +708,8 @@ def plain_words(
     compared = str(rel.get("outcome_raw") or "").strip()
     return {
         "practice": practice_line(r, fams or {}),
+        "described": described_line(ctx, r["use_role"]),
+        "band": check_bands.explain_unit(r, bands or []),
         "feeds": feeds_line(r, ctx, routes or {}, t5 or {}, places, pol),
         "compared": ("What the paper compared: " + compared + ".") if compared else "",
         "role": _ROLE.get(r["use_role"], r["use_role"]),
@@ -718,11 +777,12 @@ def main(argv: list[str] | None = None) -> int:
     labels = _labels()
     fams = _families()
     routes = _routes()
-    places = _placements()
     pol = _comparator_policy()
     t5 = _t5_labels()
+    bands = load_bands(BANDS)
     with EV.open(newline="", encoding="utf-8") as f:
         ev = {r["evidence_id"]: r for r in csv.DictReader(f)}
+    places = _placements({k: v["source_id"] for k, v in ev.items()})
     for eid, question in items.items():
         r = ev.get(eid)
         if not r:
@@ -782,6 +842,7 @@ def main(argv: list[str] | None = None) -> int:
                         "income_group",
                         "farming_system",
                         "comparator",
+                        "practice_as_described",
                         "note",
                     )
                     if ctx.get(k) not in (None, "")
@@ -791,7 +852,16 @@ def main(argv: list[str] | None = None) -> int:
                 "crop_note": crop_note,
                 "pdf_url": sharepoint_url(s_rec.get("library_path", ""), page or None),
                 "plain": plain_words(
-                    r, rel, ctx, labels, fams, routes, t5, places.get(eid) or [], pol
+                    r,
+                    rel,
+                    ctx,
+                    labels,
+                    fams,
+                    routes,
+                    t5,
+                    places.get(eid) or [],
+                    pol,
+                    bands,
                 ),
                 "picos": picos(r, rel, ctx, labels, fams, s_rec),
                 "library_path": s_rec.get("library_path", ""),

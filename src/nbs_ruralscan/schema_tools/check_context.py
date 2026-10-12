@@ -17,6 +17,8 @@ Flags (advisory, never fatal), on ACTIVE `nbs_effect` / `asset_vulnerability` un
 * `severity_without_hazard` — `hazard_severity` set on a unit with no `hazard_type` (v1.6.3)
 * `missing_severity_cue`  — `hazard_severity` other than `unspecified` with no `severity_cue`
 * `severity_cue_not_in_quote` — the cue is not a verbatim substring of quote / note / outcome_raw
+* `missing_practice_description` — an effect unit extracted under v1.6.9 or later with no
+                            `practice_as_described` (the source's own words for the practice)
 
 `check_context.py [EV.csv]` prints a summary; `check()` returns the flags.
 """
@@ -42,6 +44,12 @@ ALLOWED_KEYS = {
     "hazard_severity",  # v1.6.3: author-stated intensity of the hazard event
     "severity_cue",  # v1.6.3: verbatim words that justify hazard_severity
     "comparator",  # v1.6.4: what the practice is compared against (existing_forest)
+    # v1.6.9 (Pete 2026-10-12, review theme 2): the SOURCE's own words for what was done,
+    # so a reviewer can see whether the thing measured is really the NbS — supplemental
+    # irrigation counted as water harvesting, a plantation counted as restoration and a
+    # protected area counted as restoration all passed because the practice test was
+    # inferred from the tag rather than read from the paper
+    "practice_as_described",
     # v1.6.7 (Pete 2026-10-12, review themes 1/3/7): is the practice isolated or part of a
     # bundle, how much of the sample used the NbS component, is there a normal-year
     # reference for a hazard-year claim, and who the value accrues to
@@ -83,7 +91,18 @@ BENEFICIARY = {"farm_household", "community", "society"}
 #: a DESIGN share (the component is mandatory in every comparison) does not
 SHARE_KIND = {"adoption", "design"}
 TIMESCALE = {"immediate", "short_term_1_3yr", "medium_term_3_7yr", "long_term_7yr_plus"}
+#: `practice_as_described` is required from this ruleset on. Older units are NOT flagged:
+#: the field is filled going forward and back-filled where a reviewer asks for it, never by
+#: a retrospective sweep over 3,500 rows.
+PRACTICE_DESC_FROM = (1, 6, 9)
 _ISO3 = re.compile(r"^[A-Z]{3}$")
+
+
+def _ver(s: str | None) -> tuple[int, ...]:
+    """'v1.6.9' → (1, 6, 9); anything unparseable → (0,) so it never trips a from-version rule."""
+    parts = re.findall(r"\d+", str(s or ""))
+    return tuple(int(x) for x in parts) if parts else (0,)
+
 
 _ROOT = Path(__file__).resolve().parents[3]
 _EV = _ROOT / "schema" / "registers" / "EV_evidence_register.csv"
@@ -154,6 +173,11 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
         flag("missing_income_group", ",".join(countries))
     if row.get("use_role") == "asset_vulnerability" and not ctx.get("hazard_type"):
         flag("missing_hazard_type", row.get("variable", ""))
+    if (
+        _ver(row.get("ruleset_version")) >= PRACTICE_DESC_FROM
+        and not str(ctx.get("practice_as_described") or "").strip()
+    ):
+        flag("missing_practice_description", row.get("ruleset_version", ""))
     for key, vocab in (
         ("attribution", ATTRIBUTION),
         ("normal_year_reference", NORMAL_YEAR),
