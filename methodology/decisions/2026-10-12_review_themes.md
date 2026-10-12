@@ -48,10 +48,24 @@ Mangrove protection value mapped to rural poverty (Das, Marois): *"economic valu
 
 Options: **A** add a `beneficiary = farm_household | community | society` tag and keep societal values out of the poverty priority (they stay visible, in their own line); **B** re-route avoided-damage values to the flood-hazard priority instead of poverty; **C** both. I recommend **C**.
 
+## 8. One unit can set a top class on its own — **decide** (found while applying your review)
+
+Your question on Guáqueta ("what is the logic by which you have inferred this is a large amount?") led me to check every row. Three rows carry the highest class on the strength of a **single** unit while the rest of the pool says nothing about size:
+
+| row | class | units stating a size |
+|---|---|---|
+| forest restoration · drought asset threat | very high | 1 of 8 |
+| forest restoration · active planting · drought asset threat | very high | 1 of 7 |
+| agroforestry · drought asset threat | very high | 1 of 5 |
+
+This follows the ratified rule — strength is the weighted median over units that state a size, and units that state none affect agreement only — but the result reads wrong: seven narrative statements and one "all or nothing" sentence produce "very high". In the forest-restoration case the one unit is Svejcar's general remark about novel drought levels, which the severity pass had already found hard to place.
+
+Options: **A** leave it (the account and prose already say the rest is narrative); **B** when fewer than a third of the direction-bearing units state a size, cap the class at moderate and say so, the way the modelled-only cap works; **C** require at least two size-stating units before a class above moderate. I recommend **B**: it is the same shape as a cap you already accepted, and it only bites where the evidence really is one sentence.
+
 ## Also noted
 - One quote was the whole of a table (*"the coded field contains a huge amount of text"*). I will add a quote-width check: a quote must be the row plus its header, not the table.
 - Forest-restoration units should state the restoration type; I will add it to the practice description in item 2.
 - T4: the three suitability units are out of the queue and opportunistic T4 extraction is paused. **Medland 2020 (Ontario wetland suitability) looks highly relevant to the T4 analysis** — flagged for Namita to include there.
 
 ## To answer
-Reply with the numbers: e.g. "1A, 3A, 7C". Items 2, 4, 5, 6 and the quote-width check need no decision; I will build them next.
+Reply with the numbers: e.g. "1A, 3A, 7C, 8B". Items 2, 4, 5, 6 and the quote-width check need no decision; I will build them next.
