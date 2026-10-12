@@ -361,51 +361,187 @@ def picos(
     }
 
 
+RECIPES = ROOT / "schema" / "recipes"
+COMPARATOR_POLICY = ROOT / "schema" / "lookups" / "comparator_policy.csv"
+_T_FILE_LABEL = {
+    "T3_nbs_hazard_farming": "T3 — hazard table",
+    "T6_nbs_scorecard": "T6 — NbS scorecard",
+}
+
+
+def _placements() -> dict[str, list[dict[str, str]]]:
+    """evidence_id → the generated rows it is actually in. Ground truth beats a predicted
+    route: a unit can route somewhere and still land nowhere (kept out of a roll-up by the
+    comparator policy, or in a family row that needs two independent sources)."""
+    out: dict[str, list[dict[str, str]]] = {}
+    for d in sorted(RECIPES.glob("*")):
+        for stem, label in _T_FILE_LABEL.items():
+            f = d / f"{stem}.csv"
+            if not f.exists():
+                continue
+            with f.open(newline="", encoding="utf-8") as fh:
+                for r in csv.DictReader(fh):
+                    try:
+                        ids = json.loads(r.get("evidence_ids") or "[]")
+                    except json.JSONDecodeError:
+                        continue
+                    scope = (r.get("scope_id") or "").strip()
+                    where = {
+                        "table": label,
+                        "record_id": r.get("record_id", ""),
+                        "family": (r.get("suitability_family_id") or "").strip(),
+                        "scope": scope,
+                        "role": (r.get("risk_role") or "").strip(),
+                    }
+                    for eid in ids:
+                        out.setdefault(eid, []).append(where)
+    return out
+
+
+def _comparator_policy() -> dict[tuple[str, str], dict[str, str]]:
+    out: dict[tuple[str, str], dict[str, str]] = {}
+    try:
+        for r in csv.DictReader(COMPARATOR_POLICY.open(encoding="utf-8")):
+            out[(r["nbs_id"].strip(), r["comparator"].strip())] = r
+    except OSError:
+        pass
+    return out
+
+
+def placement_lines(
+    r: dict,
+    ctx: dict,
+    places: list[dict[str, str]],
+    pol: dict[tuple[str, str], dict[str, str]],
+) -> tuple[list[str], str]:
+    """(lines naming the rows this unit is in, reason when it is in none)."""
+    lines = []
+    for w in places:
+        scope = f", {w['scope']} rows only" if w["scope"] else ""
+        fam = (
+            f"the {w['family'].split('__', 1)[-1].replace('_', ' ')} family row"
+            if w["family"]
+            else "the NbS roll-up row"
+        )
+        role = " (asset threat)" if w["role"] == "asset_threat" else ""
+        lines.append(f"{w['table']}: {w['record_id']} — {fam}{scope}{role}.")
+    if lines:
+        return lines, ""
+    if (r.get("review_state") or "") == "dropped":
+        return [], "It was dropped in review, so it sets no score."
+    comp = str(ctx.get("comparator") or "")
+    pr = pol.get((r["nbs_id"], comp)) if comp else None
+    if pr and (pr.get("rollup_included") or "").strip().lower() != "true":
+        home = (pr.get("home_family") or "").split("__", 1)[-1].replace("_", " ")
+        return [], (
+            f"It is '{comp.replace('_', ' ')}' evidence, so it is deliberately kept out of the NbS roll-up "
+            f"and belongs only in the {home} family row — and that row is not generated yet, because a family "
+            "row needs at least two independent sources. Right now this unit sets no score anywhere."
+        )
+    return [], (
+        "It is not in any generated row yet — the cell it would join needs at least two independent "
+        "sources, or a gate (stated hazard, income band, significance) kept it out."
+    )
+
+
+def _now(r, ctx, places, pol) -> dict:
+    now, none_reason = placement_lines(r, ctx, places or [], pol or {})
+    return {"now": now, "none_reason": none_reason}
+
+
 def feeds_line(
-    r: dict, ctx: dict, routes: dict[str, list[dict]], t5: dict[str, str]
-) -> str:
+    r: dict,
+    ctx: dict,
+    routes: dict[str, list[dict]],
+    t5: dict[str, str],
+    places: list[dict[str, str]] | None = None,
+    pol: dict[tuple[str, str], dict[str, str]] | None = None,
+) -> dict:
+    """Which generated table(s) and cell(s) this unit lands in, and what question each
+    one answers. A hazard finding legitimately feeds BOTH tables (method §4, 'many-to-many
+    is allowed and expected': flood_hazard → T3 flood + T6 flood_hazard) because they are
+    read by different modules at different granularity — they are never added together."""
     role, var = r["use_role"], r["variable"]
     hz = (ctx.get("hazard_type") or "").replace("_", " ")
     if role == "asset_vulnerability":
-        return f"Feeds: T3 hazard table → asset-threat row for {hz or 'the hazard'} (damage to the works; Module 2b project-risk screen)."
+        return {
+            "lead": "",
+            **_now(r, ctx, places, pol),
+            "items": [
+                f"T3 — hazard table, asset-threat row for {hz or 'the hazard'}: can {hz or 'the hazard'} damage the works themselves? Read by the Module 2b project-risk screen, never by the livelihood cells."
+            ],
+        }
     if role == "operational_risk":
-        return "Feeds: no table cell — enabling / implementation factor for Module 6 next-steps and the Module 2b operational-risk filter."
+        return {
+            "lead": "",
+            **_now(r, ctx, places, pol),
+            "items": [
+                "No table cell. This is an enabling / implementation factor — it informs Module 6 next-steps and the Module 2b operational-risk filter, and never sets a score."
+            ],
+        }
     if role == "structural_suitability":
-        return f"Feeds: T4 suitability table → variable '{var}' for the family above (where the practice can establish)."
+        return {
+            "lead": "",
+            **_now(r, ctx, places, pol),
+            "items": [
+                f"T4 — suitability table, variable '{var}' for the family above: where the practice can physically establish."
+            ],
+        }
     rs = routes.get(var) or []
     if not rs:
-        return f"Feeds: NOTHING yet — '{var}' has no crosswalk route to T3 or T6 (ontology / routing decision pending)."
-    parts = []
+        return {
+            "lead": "",
+            **_now(r, ctx, places, pol),
+            "items": [
+                f"Nothing yet — '{var}' has no crosswalk route to T3 or T6, so this unit currently sets no score (routing / ontology decision pending)."
+            ],
+        }
     t3 = [x for x in rs if x["target_table"] == "T3"]
     t6 = [x for x in rs if x["target_table"] == "T6"]
-    for x in t6:
-        parts.append(
-            f"T6 scorecard → {t5.get(x['target_key'], x['target_key']).strip()} ({_PROX.get(x.get('proximity') or 'direct', x.get('proximity'))})"
-        )
-    # mirror the engine's gate (cell_synthesis.gather): a stated hazard selects ONE cell;
-    # no stated hazard → a single direct route still lands, several routes land nowhere
+    items: list[str] = []
+    n_dest = 0
+    # T3 — mirrors the engine's gate (cell_synthesis.gather): a stated hazard selects ONE
+    # cell; with no stated hazard a single direct route still lands, several land nowhere.
     if t3:
         hz_key = (ctx.get("hazard_type") or "").strip()
+        chosen = None
         if hz_key:
             m = [x for x in t3 if x["target_key"] == hz_key]
-            if m:
-                prox = m[0].get("proximity") or "direct"
-                parts.append(
-                    f"T3 hazard table → {hz_key.replace('_', ' ')} livelihood cell ({_PROX.get(prox, prox)}) because the unit states that hazard"
-                )
-            else:
-                parts.append(
-                    f"T3: no cell — the stated hazard '{hz_key}' has no route from '{var}'"
+            chosen = (m[0], "the unit states that hazard") if m else None
+            if not m:
+                items.append(
+                    f"T3 — no cell: the stated hazard '{hz_key.replace('_', ' ')}' has no route from '{var}'."
                 )
         elif len(t3) == 1 and (t3[0].get("proximity") or "direct") == "direct":
-            parts.append(
-                f"T3 hazard table → {t3[0]['target_key'].replace('_', ' ')} livelihood cell (direct)"
-            )
+            chosen = (t3[0], "the variable is itself a hazard variable")
         else:
-            parts.append(
-                "T3: no hazard cell — the unit states no hazard, so it is not hazard-year evidence"
+            items.append(
+                "T3 — no hazard cell: the unit names no hazard, so it is not hazard-year evidence."
             )
-    return "Feeds: " + "; ".join(parts) + "."
+        if chosen:
+            x, why = chosen
+            key = x["target_key"].replace("_", " ")
+            prox = x.get("proximity") or "direct"
+            n_dest += 1
+            items.append(
+                f"T3 — hazard table, the {key} cell for this NbS and farming system: does the practice reduce the impact of {key} on rural livelihoods? "
+                f"Counted {_PROX.get(prox, prox)}, because {why}. Read by Module 5 (NbS response) and the M2b screen."
+            )
+    for x in t6:
+        key = t5.get(x["target_key"], x["target_key"]).strip()
+        prox = x.get("proximity") or "direct"
+        n_dest += 1
+        items.append(
+            f"T6 — NbS scorecard, the '{key}' priority: how this NbS scores for a Task Team Leader who prioritises {key.lower()}. "
+            f"Counted {_PROX.get(prox, prox)}. Read by the Module 4 hotspot / NbS comparison, one row per NbS (no farming-system split)."
+        )
+    lead = (
+        "The same finding answers two different questions, so it is used in both tables. They are never added together:"
+        if n_dest > 1
+        else ""
+    )
+    now, none_reason = placement_lines(r, ctx, places or [], pol or {})
+    return {"lead": lead, "items": items, "now": now, "none_reason": none_reason}
 
 
 def practice_line(r: dict, fams: dict[str, str]) -> str:
@@ -426,6 +562,8 @@ def plain_words(
     fams: dict[str, str] | None = None,
     routes: dict[str, list[dict]] | None = None,
     t5: dict[str, str] | None = None,
+    places: list[dict[str, str]] | None = None,
+    pol: dict[tuple[str, str], dict[str, str]] | None = None,
 ) -> dict:
     """Plain-English sentences for a reviewer: what the unit claims, how it was
     established, and in what context. The codes stay in the JSON for the record."""
@@ -513,7 +651,7 @@ def plain_words(
     compared = str(rel.get("outcome_raw") or "").strip()
     return {
         "practice": practice_line(r, fams or {}),
-        "feeds": feeds_line(r, ctx, routes or {}, t5 or {}),
+        "feeds": feeds_line(r, ctx, routes or {}, t5 or {}, places, pol),
         "compared": ("What the paper compared: " + compared + ".") if compared else "",
         "role": _ROLE.get(r["use_role"], r["use_role"]),
         "claim": claim_sentence,
@@ -580,6 +718,8 @@ def main(argv: list[str] | None = None) -> int:
     labels = _labels()
     fams = _families()
     routes = _routes()
+    places = _placements()
+    pol = _comparator_policy()
     t5 = _t5_labels()
     with EV.open(newline="", encoding="utf-8") as f:
         ev = {r["evidence_id"]: r for r in csv.DictReader(f)}
@@ -650,7 +790,9 @@ def main(argv: list[str] | None = None) -> int:
                 "crop": crop,
                 "crop_note": crop_note,
                 "pdf_url": sharepoint_url(s_rec.get("library_path", ""), page or None),
-                "plain": plain_words(r, rel, ctx, labels, fams, routes, t5),
+                "plain": plain_words(
+                    r, rel, ctx, labels, fams, routes, t5, places.get(eid) or [], pol
+                ),
                 "picos": picos(r, rel, ctx, labels, fams, s_rec),
                 "library_path": s_rec.get("library_path", ""),
             }
