@@ -280,6 +280,18 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     may be registered as a source for T4 scoping context, never for T3/T6. 37 agroforestry
     PAD units were dropped under this code.
 
+24. **A quote is a sentence or a table ROW — never a whole table** (2026-10-12, Pete). Catalogue
+    #9 forbids the bare cell; this is the opposite end. Swallowing an entire table hides which
+    row the claim came from and lets `check_numbers` pass on numbers belonging to other rows
+    (caught on a Malawi food-security unit whose quote was all of Table 2). Quote the row plus
+    its header and caption; `check_quote` flags anything over 160 words (320 when the quote
+    carries its English translation).
+
+25. **Prefer the primary over the second-hand reading** (2026-10-12, Pete: "use the publications
+    referenced not a secondary interpretation"). A `cited_secondary` unit is a pointer, not a
+    destination: name the primary in `lineage_of` so `scripts/log-primary-references.py` can put
+    it on the acquisition list, and replace the unit once the original is in hand.
+
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
 `check_species.py` (species mis-tag), `quarantine.py` (auto-soft-deletes off-scope +
