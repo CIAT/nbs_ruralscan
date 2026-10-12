@@ -74,6 +74,11 @@ def bundle_factor(unit: EvidenceUnit) -> float:
     ctx = unit.context or {}
     if str(ctx.get("attribution") or "") != "bundled":
         return 1.0
+    # only an ADOPTION share scales the credit. A "design" share (the component is
+    # mandatory in every comparison, so 100 %) means the effect cannot be separated from
+    # the rest of the bundle at all — that is the flat discount, not full credit.
+    if str(ctx.get("component_share_kind") or "adoption") != "adoption":
+        return BUNDLE_W
     share = ctx.get("component_share_pct")
     try:
         if share is not None:

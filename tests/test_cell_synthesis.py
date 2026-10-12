@@ -2227,6 +2227,14 @@ def test_bundled_units_are_discounted_by_their_stated_share():
     tiny = copy.deepcopy(iso)
     tiny.context = {"attribution": "bundled", "component_share_pct": 2}
     assert w(tiny) == pytest.approx(w(iso) * cs.BUNDLE_SHARE_FLOOR)
+    # a DESIGN share of 100 % is not full credit — the component is simply inseparable
+    design = copy.deepcopy(iso)
+    design.context = {
+        "attribution": "bundled",
+        "component_share_pct": 100,
+        "component_share_kind": "design",
+    }
+    assert w(design) == pytest.approx(w(iso) * cs.BUNDLE_W)
 
 
 def test_hazard_claim_without_a_normal_year_reference_is_discounted():

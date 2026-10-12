@@ -17,7 +17,6 @@ Flags (advisory, never fatal), on ACTIVE `nbs_effect` / `asset_vulnerability` un
 * `severity_without_hazard` — `hazard_severity` set on a unit with no `hazard_type` (v1.6.3)
 * `missing_severity_cue`  — `hazard_severity` other than `unspecified` with no `severity_cue`
 * `severity_cue_not_in_quote` — the cue is not a verbatim substring of quote / note / outcome_raw
-* `share_without_bundle` — `component_share_pct` on a unit that is not `attribution=bundled` (v1.6.7)
 
 `check_context.py [EV.csv]` prints a summary; `check()` returns the flags.
 """
@@ -49,6 +48,8 @@ ALLOWED_KEYS = {
     "attribution",
     "bundle_components",
     "component_share_pct",
+    "component_share_kind",
+    "nbs_component",
     "normal_year_reference",
     "beneficiary",
     "landscape_scale_only",
@@ -78,6 +79,9 @@ COMPARATOR = {"existing_forest", "existing_wetland"}
 ATTRIBUTION = {"isolated", "bundled"}
 NORMAL_YEAR = {"present", "absent"}
 BENEFICIARY = {"farm_household", "community", "society"}
+#: an ADOPTION share (how many of the sample used the NbS component) scales attribution;
+#: a DESIGN share (the component is mandatory in every comparison) does not
+SHARE_KIND = {"adoption", "design"}
 TIMESCALE = {"immediate", "short_term_1_3yr", "medium_term_3_7yr", "long_term_7yr_plus"}
 _ISO3 = re.compile(r"^[A-Z]{3}$")
 
@@ -154,6 +158,7 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
         ("attribution", ATTRIBUTION),
         ("normal_year_reference", NORMAL_YEAR),
         ("beneficiary", BENEFICIARY),
+        ("component_share_kind", SHARE_KIND),
     ):
         v = ctx.get(key)
         if v is not None and v not in vocab:
@@ -165,11 +170,6 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
                 raise ValueError
         except (TypeError, ValueError):
             flag("bad_vocab", f"component_share_pct={share!r}")
-    if (
-        ctx.get("component_share_pct") is not None
-        and ctx.get("attribution") != "bundled"
-    ):
-        flag("share_without_bundle", str(ctx.get("component_share_pct")))
     comp = ctx.get("comparator")
     if comp is not None and comp not in COMPARATOR:
         flag("bad_vocab", f"comparator='{comp}'")
