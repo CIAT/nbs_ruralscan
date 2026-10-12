@@ -43,3 +43,47 @@ def test_cue_must_be_verbatim():
 def test_vocab_and_hazard_required():
     assert "bad_vocab" in _codes({"hazard_type": "drought", "hazard_severity": "harsh"})
     assert "severity_without_hazard" in _codes({"hazard_severity": "unspecified"})
+
+
+# ── practice_as_described (ruleset v1.6.9, review theme 2) ───────────────────────────
+
+
+def test_practice_description_required_from_v1_6_9_only():
+    old = dict(
+        _row({"country": ["KEN"], "income_group": "low"}), ruleset_version="v1.6.2"
+    )
+    assert "missing_practice_description" not in {
+        f["signal"] for f in cc.check_unit(old, set(), set())
+    }
+    new = dict(old, ruleset_version="v1.6.9")
+    assert "missing_practice_description" in {
+        f["signal"] for f in cc.check_unit(new, set(), set())
+    }
+    filled = dict(
+        new,
+        context=json.dumps(
+            {
+                "country": ["KEN"],
+                "income_group": "low",
+                "practice_as_described": "planting basins dug in the dry season",
+            }
+        ),
+    )
+    assert "missing_practice_description" not in {
+        f["signal"] for f in cc.check_unit(filled, set(), set())
+    }
+
+
+def test_practice_description_is_a_known_key():
+    row = dict(
+        _row({"practice_as_described": "contour stone bunds"}), ruleset_version="v1.6.9"
+    )
+    assert "unknown_context_key" not in {
+        f["signal"] for f in cc.check_unit(row, set(), set())
+    }
+
+
+def test_version_parse_is_lenient():
+    assert cc._ver("v1.6.10") > cc._ver("v1.6.9")
+    assert cc._ver("") == (0,)
+    assert cc._ver(None) == (0,)

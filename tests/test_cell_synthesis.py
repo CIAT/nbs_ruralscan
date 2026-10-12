@@ -2252,3 +2252,24 @@ def test_hazard_claim_without_a_normal_year_reference_is_discounted():
     absent.context = {"hazard_type": "drought", "normal_year_reference": "absent"}
     w = lambda u: cs.unit_weight(u, "high", "", 0, 1.0)  # noqa: E731
     assert w(absent) == pytest.approx(w(base) * cs.NO_NORMAL_YEAR_W)
+
+
+def test_account_says_how_many_units_and_sources_the_row_rests_on():
+    # review theme 5 (Pete 2026-10-12): three findings from one paper are not three sources
+    units = [
+        _u(
+            e,
+            s,
+            "household_income",
+            "positive",
+            "moderate",
+            ctx={"income_group": "low"},
+        )
+        for e, s in (("a1", "s1"), ("a2", "s1"), ("b1", "s2"))
+    ]
+    rows, _ = _t6(units, key="rural_poverty")
+    acc = rows[0]["justification"]
+    assert acc["n_units"] == 3
+    assert rows[0]["n_sources"] == 2
+    assert "3 evidence unit(s) from 2 source(s)" in acc["pool_note"]
+    assert "counts sources, not units" in acc["pool_note"]

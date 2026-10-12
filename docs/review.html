@@ -165,6 +165,12 @@
   .plain-feeds li { margin: 3px 0; font-size: 14px; line-height: 1.45; }
   .plain-feeds .feeds-now li { color: var(--text-primary); }
   .plain-feeds .feeds-none { margin: 2px 0 4px; font-size: 14px; line-height: 1.45; color: var(--accent-amber, #e0a030); }
+  .plain-described { margin: 2px 0 6px; font-style: italic; color: var(--text-primary); }
+  .plain-band { margin: 8px 0; padding: 8px 10px; border: 1px solid var(--border-color); border-radius: 6px; }
+  .plain-band.bad { border-color: var(--accent-amber, #e0a030); }
+  .plain-band p { margin: 2px 0; font-size: 14px; line-height: 1.45; }
+  .plain-band .band-head { font-weight: 700; color: var(--accent-amber, #e0a030); }
+  .plain-band .muted { font-size: 12px; color: var(--text-muted); }
   .plain-practice { font-weight: 600; color: var(--accent-blue, #4ea1ff); }
   .codes summary { cursor: pointer; font-size: 12px; color: var(--text-muted); margin: 6px 0; }
   .picos { margin: 12px 0; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 12px; }
@@ -479,7 +485,30 @@
   function renderList() {
     $('list-count').textContent = 'Units (' + S.filtered.length + ' of ' + S.units.length + ')';
     $('unit-list').innerHTML = S.filtered.map(function (u, i) {
-      var st = stateOf(u.evidence_id);
+    // Theme 4 (Pete 2026-10-12): "what is the logic by which you have inferred this is a
+  // large amount? is there a rule?" There is one, in the band register. Show it.
+  function bandHtml(b) {
+    if (!b || (!b.value && !b.rule)) return '';
+    var verdict = {
+      rule: 'the register\u2019s rule gives this size',
+      mismatch: 'the recorded size does NOT follow the rule \u2014 worth a flag',
+      no_rule: 'no rule covers this one',
+      no_size: 'no size recorded'
+    }[b.verdict] || '';
+    return '<div class="plain-band' + (b.verdict === 'mismatch' ? ' bad' : '') + '">' +
+      '<p class="band-head">How the size was decided</p>' +
+      (b.value ? '<p>The unit records ' + esc(b.value) + '.</p>' : '') +
+      '<p>Rule applied: ' + esc(b.rule || '') + '</p>' +
+      '<p class="band-verdict">Called <b>' + esc(b.class_claimed || 'unspecified') + '</b>' +
+        (b.class_by_rule && b.class_by_rule !== b.class_claimed
+          ? '; the rule gives <b>' + esc(b.class_by_rule) + '</b>' : '') +
+        (verdict ? ' \u2014 ' + esc(verdict) : '') + '.' +
+        (b.band_id ? ' <span class="muted">band ' + esc(b.band_id) + '</span>' : '') + '</p>' +
+      (b.basis ? '<p class="muted">' + esc(b.basis) + '</p>' : '') +
+      '</div>';
+  }
+
+    var st = stateOf(u.evidence_id);
       var others = othersFor(u.evidence_id);
       return '<li data-i="' + i + '"' + (i === S.pos ? ' class="current"' : '') + '>' +
         '<span class="pill ' + st + '">' + (st === 'undecided' ? '·' : esc(st)) + '</span>' +
@@ -532,8 +561,10 @@
           '<div class="why"><b>Why this needs a look</b>' + esc(u.question) + '</div>' +
         (u.plain ? '<div class="plain"><h3>In plain words</h3>' +
           (u.plain.practice ? '<p class="plain-practice">' + esc(u.plain.practice) + '</p>' : '') +
+          (u.plain.described ? '<p class="plain-described">' + esc(u.plain.described) + '</p>' : '') +
           '<p class="plain-claim">' + esc(u.plain.claim || '') + '</p>' +
           (u.plain.compared ? '<p>' + esc(u.plain.compared) + '</p>' : '') +
+          bandHtml(u.plain.band) +
           (u.plain.feeds
             ? '<div class="plain-feeds"><p class="feeds-head">Where this lands</p>' +
               ((u.plain.feeds.now && u.plain.feeds.now.length)
