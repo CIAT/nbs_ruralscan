@@ -10,8 +10,16 @@ species-envelope defects hide.
 Rule (extract-evidence skill #9): a quote must carry the full threshold SENTENCE plus the
 table caption/header that defines the variable & unit — never a bare cell.
 
-This flags active, unreviewed units whose quote is shorter than `MIN_WORDS`. Advisory
-(some legitimately-short claims exist), so it flags for review, never fails the build.
+The opposite defect is just as bad (Pete, 2026-10-12, on a unit whose quote was the whole
+of Table 2: *"seems to be an issue with the coded field contains a huge amount of text"*).
+A quote that swallows a whole table buries the claim: the reviewer cannot see which row
+was meant, and the number-provenance check passes on numbers that belong to other rows.
+Rule: a quote is the claim's sentence, or the table ROW plus its header and caption —
+never the whole table. `MAX_WORDS` flags the over-wide tail.
+
+This flags active, unreviewed units whose quote is shorter than `MIN_WORDS` or longer than
+`MAX_WORDS`. Advisory (some legitimately long passages exist), so it flags for review,
+never fails the build.
 """
 
 from __future__ import annotations
@@ -22,6 +30,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 MIN_WORDS = 15
+#: a quote longer than this is almost always a whole table or page swallowed whole
+MAX_WORDS = 160
+#: …unless it is a multilingual quote, which carries its English translation after it
+TRANSLATION_MARK = "(English:"
 
 
 def _fragment(q: str) -> str | None:
@@ -29,8 +41,13 @@ def _fragment(q: str) -> str | None:
     q = (q or "").strip()
     if not q:
         return None
-    if len(q.split()) < MIN_WORDS:
+    words = q.split()
+    if len(words) < MIN_WORDS:
         return f"<{MIN_WORDS}w"
+    # a translated quote is two copies of the same passage — judge it on half its length
+    budget = MAX_WORDS * 2 if TRANSLATION_MARK in q else MAX_WORDS
+    if len(words) > budget:
+        return f">{budget}w (whole table / page swallowed — quote the row + header)"
     if q[0].islower():
         return "starts mid-sentence"  # no subject / lead-in captured
     return None

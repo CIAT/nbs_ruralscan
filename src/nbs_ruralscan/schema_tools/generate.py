@@ -575,6 +575,16 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             f"  XW NOTES ({len(_xw_flags)} effect variable(s) with no VONT id or no "
             "crosswalk route — run check_xw.py; unmapped feeds no cell)"
         )
+    # Advisory: a quote that swallows a whole table hides the claim and lets number
+    # provenance pass on numbers from other rows (Pete 2026-10-12 review theme).
+    from nbs_ruralscan.schema_tools import check_quote as _cq
+
+    _wide = [f for f in _cq.check() if "whole table" in f["why"]]
+    if _wide:
+        print(
+            f"  QUOTE WIDTH: {len(_wide)} active unit(s) quote a whole table/page "
+            "(run check_quote.py; quote the table ROW + header instead)"
+        )
     # Guard B (2026-06-23): auto-quarantine off-scope/wrong-practice on the WRITE path only —
     # soft-delete (reversible) so junk stops reaching the worklist; never mutate on --check.
     if not check:
