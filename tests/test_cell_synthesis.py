@@ -6,6 +6,8 @@ doc (methodology/T3_T6_generation_method.md) promises.
 
 from __future__ import annotations
 
+import pytest
+
 import json
 
 from nbs_ruralscan.recipe import cell_synthesis as cs
@@ -2190,3 +2192,55 @@ def test_syntheses_outweigh_practitioner_ratings_on_direction():
         xw_rows=xw,
     )
     assert rows[0]["effect_direction"].endswith("negative")
+
+
+def test_size_sparse_cap_needs_a_pool_not_a_single_unit():
+    # one strong unit alone is thin, not size-sparse — no cap (its evidence level says it)
+    one = _u("a", "s1", "erosion_hazard", "negative", "strong")
+    rows, _ = _t6([one])
+    assert rows[0]["effect_direction"] == "strong_positive"
+    assert rows[0]["justification"]["size_sparse"] is False
+    # one strong unit among seven that state no size → capped at moderate, and said so
+    quiet = [
+        _u(f"q{i}", f"s{i}", "erosion_hazard", "negative", "unspecified")
+        for i in range(7)
+    ]
+    rows, _ = _t6([one] + quiet)
+    j = rows[0]["justification"]
+    assert rows[0]["effect_direction"] == "moderate_positive"
+    assert j["size_sparse"] is True
+    assert j["size_sparse_counts"] == {"stating_a_size": 1, "same_direction": 8}
+    assert "say how big the effect is" in j["statement"]
+
+
+def test_bundled_units_are_discounted_by_their_stated_share():
+    import copy
+
+    iso = _u("i", "s1", "erosion_hazard", "negative", "strong")
+    bundled = copy.deepcopy(iso)
+    bundled.context = {"attribution": "bundled"}
+    shared = copy.deepcopy(iso)
+    shared.context = {"attribution": "bundled", "component_share_pct": 34}
+    w = lambda u: cs.unit_weight(u, "high", "", 0, 1.0)  # noqa: E731
+    assert w(bundled) < w(iso)
+    assert w(shared) < w(bundled)  # 0.34 < the flat 0.6
+    tiny = copy.deepcopy(iso)
+    tiny.context = {"attribution": "bundled", "component_share_pct": 2}
+    assert w(tiny) == pytest.approx(w(iso) * cs.BUNDLE_SHARE_FLOOR)
+
+
+def test_hazard_claim_without_a_normal_year_reference_is_discounted():
+    import copy
+
+    base = _u(
+        "h",
+        "s1",
+        "drought_hazard",
+        "negative",
+        "strong",
+        ctx={"hazard_type": "drought"},
+    )
+    absent = copy.deepcopy(base)
+    absent.context = {"hazard_type": "drought", "normal_year_reference": "absent"}
+    w = lambda u: cs.unit_weight(u, "high", "", 0, 1.0)  # noqa: E731
+    assert w(absent) == pytest.approx(w(base) * cs.NO_NORMAL_YEAR_W)

@@ -17,6 +17,7 @@ Flags (advisory, never fatal), on ACTIVE `nbs_effect` / `asset_vulnerability` un
 * `severity_without_hazard` — `hazard_severity` set on a unit with no `hazard_type` (v1.6.3)
 * `missing_severity_cue`  — `hazard_severity` other than `unspecified` with no `severity_cue`
 * `severity_cue_not_in_quote` — the cue is not a verbatim substring of quote / note / outcome_raw
+* `share_without_bundle` — `component_share_pct` on a unit that is not `attribution=bundled` (v1.6.7)
 
 `check_context.py [EV.csv]` prints a summary; `check()` returns the flags.
 """
@@ -42,6 +43,14 @@ ALLOWED_KEYS = {
     "hazard_severity",  # v1.6.3: author-stated intensity of the hazard event
     "severity_cue",  # v1.6.3: verbatim words that justify hazard_severity
     "comparator",  # v1.6.4: what the practice is compared against (existing_forest)
+    # v1.6.7 (Pete 2026-10-12, review themes 1/3/7): is the practice isolated or part of a
+    # bundle, how much of the sample used the NbS component, is there a normal-year
+    # reference for a hazard-year claim, and who the value accrues to
+    "attribution",
+    "bundle_components",
+    "component_share_pct",
+    "normal_year_reference",
+    "beneficiary",
     "landscape_scale_only",
     "timescale_of_effect",
     "note",
@@ -66,6 +75,9 @@ HAZARDS = {
 }
 SEVERITY = {"mild", "moderate", "severe", "extreme", "unspecified"}
 COMPARATOR = {"existing_forest", "existing_wetland"}
+ATTRIBUTION = {"isolated", "bundled"}
+NORMAL_YEAR = {"present", "absent"}
+BENEFICIARY = {"farm_household", "community", "society"}
 TIMESCALE = {"immediate", "short_term_1_3yr", "medium_term_3_7yr", "long_term_7yr_plus"}
 _ISO3 = re.compile(r"^[A-Z]{3}$")
 
@@ -138,6 +150,26 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
         flag("missing_income_group", ",".join(countries))
     if row.get("use_role") == "asset_vulnerability" and not ctx.get("hazard_type"):
         flag("missing_hazard_type", row.get("variable", ""))
+    for key, vocab in (
+        ("attribution", ATTRIBUTION),
+        ("normal_year_reference", NORMAL_YEAR),
+        ("beneficiary", BENEFICIARY),
+    ):
+        v = ctx.get(key)
+        if v is not None and v not in vocab:
+            flag("bad_vocab", f"{key}={v!r}")
+    share = ctx.get("component_share_pct")
+    if share is not None:
+        try:
+            if not (0 <= float(share) <= 100):
+                raise ValueError
+        except (TypeError, ValueError):
+            flag("bad_vocab", f"component_share_pct={share!r}")
+    if (
+        ctx.get("component_share_pct") is not None
+        and ctx.get("attribution") != "bundled"
+    ):
+        flag("share_without_bundle", str(ctx.get("component_share_pct")))
     comp = ctx.get("comparator")
     if comp is not None and comp not in COMPARATOR:
         flag("bad_vocab", f"comparator='{comp}'")
