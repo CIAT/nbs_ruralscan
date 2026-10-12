@@ -163,6 +163,8 @@
   .plain-feeds .feeds-lead { margin: 0 0 4px; font-style: italic; }
   .plain-feeds ul { margin: 2px 0 0; padding-left: 18px; }
   .plain-feeds li { margin: 3px 0; font-size: 14px; line-height: 1.45; }
+  .plain-feeds .feeds-now li { color: var(--text-primary); }
+  .plain-feeds .feeds-none { margin: 2px 0 4px; font-size: 14px; line-height: 1.45; color: var(--accent-amber, #e0a030); }
   .plain-practice { font-weight: 600; color: var(--accent-blue, #4ea1ff); }
   .codes summary { cursor: pointer; font-size: 12px; color: var(--text-muted); margin: 6px 0; }
   .picos { margin: 12px 0; border: 1px solid var(--border-color); border-radius: 6px; padding: 10px 12px; }
@@ -532,10 +534,19 @@
           (u.plain.practice ? '<p class="plain-practice">' + esc(u.plain.practice) + '</p>' : '') +
           '<p class="plain-claim">' + esc(u.plain.claim || '') + '</p>' +
           (u.plain.compared ? '<p>' + esc(u.plain.compared) + '</p>' : '') +
-          (u.plain.feeds && u.plain.feeds.items && u.plain.feeds.items.length
+          (u.plain.feeds
             ? '<div class="plain-feeds"><p class="feeds-head">Where this lands</p>' +
-              (u.plain.feeds.lead ? '<p class="feeds-lead">' + esc(u.plain.feeds.lead) + '</p>' : '') +
-              '<ul>' + u.plain.feeds.items.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul></div>'
+              ((u.plain.feeds.now && u.plain.feeds.now.length)
+                ? '<p class="feeds-lead">In the generated tables right now:</p><ul class="feeds-now">' +
+                  u.plain.feeds.now.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>'
+                : (u.plain.feeds.none_reason
+                    ? '<p class="feeds-none">Not in any generated row. ' + esc(u.plain.feeds.none_reason) + '</p>'
+                    : '')) +
+              ((u.plain.feeds.items && u.plain.feeds.items.length)
+                ? '<p class="feeds-lead">' + esc(u.plain.feeds.lead || 'What each table is for:') + '</p><ul>' +
+                  u.plain.feeds.items.map(function (f) { return '<li>' + esc(f) + '</li>'; }).join('') + '</ul>'
+                : '') +
+              '</div>'
             : '') +
           (u.plain.how ? '<p>' + esc(u.plain.how) + '</p>' : '') +
           (u.plain.where ? '<p>' + esc(u.plain.where) + '</p>' : '') +
