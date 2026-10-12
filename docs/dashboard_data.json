@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-12T07:28:27.081635+00:00",
-  "git_commit": "095749769aa46638726751f6cb6ea97dd9c20850",
+  "timestamp": "2026-10-12T10:54:22.489670+00:00",
+  "git_commit": "25b94e7f21bc2bb14416afc0c85e14bff2393ec6",
   "registers": {
     "SRC_source_register": [
       {
@@ -122796,7 +122796,14 @@
           "strength_class": "unspecified"
         },
         "context": {
-          "note": "humid climate class, not a flood/waterlogging event -> no hazard; VONT gap yield_stability"
+          "note": "humid climate class, not a flood/waterlogging event -> no hazard; VONT gap yield_stability | process: bundle check 2026-10-12: The unit's claim (relative yield stability lower under no-tillage in humid climates) comes from the Pittelkow et al. no-tillage dataset and is a pure tillage contrast, NOT conservation agriculture as a bundle and not water harvesting. Residue retention appears only as a separate subgroup analysis (fig 5, p5: +RR+CR 141 observations / 67 studies, +RR only 83/52, +CR only 42/17, -RR-CR 15/11, overall 367/154); the dry-vs-humid climate result is not conditioned on residue at all, so no residue share applies to this claim. Dataset is global and dominated by temperate/high-income trials.; NbS component: none - the contrast is no-tillage vs conventional tillage; no water-harvesting or in-situ moisture-capture element is required or reported for this result",
+          "attribution": "isolated",
+          "bundle_components": [
+            "reduced or no tillage (the only component in the contrast)",
+            "residue retention - present in some observations, tested only as a subgroup",
+            "crop rotation - present in some observations, tested only as a subgroup"
+          ],
+          "nbs_component": "none - the contrast is no-tillage vs conventional tillage; no water-harvesting or in-situ moisture-capture element is required or reported for this result"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -122807,8 +122814,9 @@
         "page": 4,
         "reviewer_ok": false,
         "raw_name": "yield stability NT vs CT, humid climate",
-        "attribution": "[query 2026-10-12 by Peter; note:check if this can really be attributed to water havervesting or is just about no-tillage.]",
+        "attribution": "[dropped 2026-10-12 by orchestrator; reason:wrong_practice; note:Pete held 2026-10-12 asking whether this is water harvesting or just no-tillage; the paper check found no water-harvesting component.] [query 2026-10-12 by Peter; note:check if this can really be attributed to water havervesting or is just about no-tillage.]",
         "locator_type": "page",
+        "review_state": "dropped",
         "ruleset_version": "v1.6.2"
       },
       {
@@ -123079,8 +123087,15 @@
         },
         "context": {
           "hazard_type": "waterlogging",
-          "note": "climate class (high rainfall) with waterlogging named as the mechanism; vote share, not effect size",
-          "hazard_severity": "unspecified"
+          "note": "climate class (high rainfall) with waterlogging named as the mechanism; vote share, not effect size | process: bundle check 2026-10-12: Meta-analysis of long-term (5+ year) rain-fed maize trials. The mulch effect IS isolated by design: 'effect of mulching was analysed by comparing no-tillage without mulch and no-tillage with mulch; therefore, no-tillage without mulch was the control treatment' (p5). So the claim is a mulch-vs-no-mulch contrast on a common no-till base, not a package-vs-conventional contrast. No adoption share applies - these are controlled trials, not a farmer sample, so component_share_pct is null rather than guessed. Caveat: the 92% is a vote-count over data points reported only in the abstract (p1); and because both arms are no-till, the claim is a mulch effect conditional on no-till.; NbS component: mulch cover - 'No-tillage plus previous crop residues to achieve at least 30% soil cover after planting. Generally referred to as conservation agriculture (CA) treatment' (table 2, p5)",
+          "hazard_severity": "unspecified",
+          "attribution": "isolated",
+          "bundle_components": [
+            "no-tillage / reduced tillage (NT)",
+            "mulch: previous crop residues to at least 30% soil cover (NTM)",
+            "crop rotation with legumes (NTR)"
+          ],
+          "nbs_component": "mulch cover - 'No-tillage plus previous crop residues to achieve at least 30% soil cover after planting. Generally referred to as conservation agriculture (CA) treatment' (table 2, p5)"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -132404,7 +132419,7 @@
         "source_id": "marois_mitsch_2015_mangrove_tsunami_cyclone",
         "nbs_id": "forest_restoration",
         "suitability_family_id": "forest_restoration__mangrove_coastal",
-        "variable": "economic_return",
+        "variable": "avoided_damage_value",
         "relationship": {
           "direction": "positive",
           "metric": "absolute",
@@ -132423,7 +132438,8 @@
           "income_group": "upper_middle",
           "climate_zone": "tropical",
           "comparator": "existing_forest",
-          "note": "Barbier 2007; value per ha of mangrove, currency year not stated in the review; storm protection ~87% of total value"
+          "note": "Barbier 2007; value per ha of mangrove, currency year not stated in the review; storm protection ~87% of total value | process: re-tagged avoided_damage_value + beneficiary=society 2026-10-12 (Pete theme 7C)",
+          "beneficiary": "society"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -132443,7 +132459,7 @@
         "source_id": "marois_mitsch_2015_mangrove_tsunami_cyclone",
         "nbs_id": "forest_restoration",
         "suitability_family_id": "forest_restoration__mangrove_coastal",
-        "variable": "economic_return",
+        "variable": "avoided_damage_value",
         "relationship": {
           "direction": "positive",
           "metric": "absolute",
@@ -132461,7 +132477,8 @@
           "income_group": "upper_middle",
           "climate_zone": "tropical",
           "comparator": "existing_forest",
-          "note": "Balmford et al. 2002 after Sathirathai 1998; includes timber, NTFP, fisheries, coastal protection"
+          "note": "Balmford et al. 2002 after Sathirathai 1998; includes timber, NTFP, fisheries, coastal protection | process: re-tagged avoided_damage_value + beneficiary=society 2026-10-12 (Pete theme 7C)",
+          "beneficiary": "society"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -135725,7 +135742,7 @@
         "source_id": "das_2011_mangroves_property_loss_orissa",
         "nbs_id": "forest_restoration",
         "suitability_family_id": "forest_restoration__mangrove_coastal",
-        "variable": "economic_return",
+        "variable": "avoided_damage_value",
         "relationship": {
           "direction": "positive",
           "metric": "absolute",
@@ -135744,7 +135761,8 @@
           "climate_zone": "tropical",
           "region": "Kendrapada District, Orissa (Odisha)",
           "comparator": "existing_forest",
-          "note": "house-damage regressions (village / gram panchayat, census + GIS) for the 1999 super cyclone; cached file is SANDEE Working Paper 42-09 (same study as the cited book chapter) - page numbers refer to the working-paper PDF; single-event averted-damage value, rupee price year not stated; not annualised"
+          "note": "house-damage regressions (village / gram panchayat, census + GIS) for the 1999 super cyclone; cached file is SANDEE Working Paper 42-09 (same study as the cited book chapter) - page numbers refer to the working-paper PDF; single-event averted-damage value, rupee price year not stated; not annualised | process: re-tagged avoided_damage_value + beneficiary=society 2026-10-12 (Pete theme 7C)",
+          "beneficiary": "society"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -135764,7 +135782,7 @@
         "source_id": "das_2011_mangroves_property_loss_orissa",
         "nbs_id": "forest_restoration",
         "suitability_family_id": "forest_restoration__mangrove_coastal",
-        "variable": "economic_return",
+        "variable": "avoided_damage_value",
         "relationship": {
           "direction": "negative",
           "metric": "narrative",
@@ -135781,7 +135799,8 @@
           "climate_zone": "tropical",
           "region": "Kendrapada District, Orissa (Odisha)",
           "comparator": "existing_forest",
-          "note": "house-damage regressions (village / gram panchayat, census + GIS) for the 1999 super cyclone; cached file is SANDEE Working Paper 42-09 (same study as the cited book chapter) - page numbers refer to the working-paper PDF"
+          "note": "house-damage regressions (village / gram panchayat, census + GIS) for the 1999 super cyclone; cached file is SANDEE Working Paper 42-09 (same study as the cited book chapter) - page numbers refer to the working-paper PDF | process: re-tagged avoided_damage_value + beneficiary=society 2026-10-12 (Pete theme 7C)",
+          "beneficiary": "society"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -136401,9 +136420,17 @@
           "income_group": "lic_lmic",
           "climate_zone": "tropical",
           "farming_system": "cropping_rainfed",
-          "note": "meta-regression of maize yield ln(RR) conservation agriculture vs conventional tillage; rainfed (no irrigation) observations only",
+          "note": "meta-regression of maize yield ln(RR) conservation agriculture vs conventional tillage; rainfed (no irrigation) observations only | process: bundle check 2026-10-12: Meta-regression of 1042 paired observations, 85 sites, 42 publications. Conservation agriculture is defined as 'continuous soil surface cover and no-tillage or minimal tillage' vs conventional tillage, and EVERY paired comparison required both, so residue cover is present in 100% of the data but can never be separated from no-till. No water-harvesting structure anywhere in the dataset; irrigated experiments were excluded by screening criterion 4 ('no irrigation was used', p3). Crop diversification is an independent variable, not a required component.; NbS component: continuous soil surface cover (residue cover) - the moisture-conserving element; the paper's mechanism sentence (p5) names 'increased infiltration and soil moisture retention, reduced evaporation due to residue cover'; share basis (p4): All paired comparisons required\ncontinuous soil surface cover and reduced-tillage for conservation\nagriculture, but not crop diversiﬁcation (which was included as an in-\ndependent variable).",
           "hazard_type": "drought",
-          "hazard_severity": "unspecified"
+          "hazard_severity": "unspecified",
+          "attribution": "bundled",
+          "bundle_components": [
+            "continuous soil surface cover (residue/mulch)",
+            "no-tillage or minimal tillage",
+            "crop diversification (intercrop or rotation) - moderator, not required"
+          ],
+          "component_share_pct": 100.0,
+          "nbs_component": "continuous soil surface cover (residue cover) - the moisture-conserving element; the paper's mechanism sentence (p5) names 'increased infiltration and soil moisture retention, reduced evaporation due to residue cover'"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -136439,9 +136466,17 @@
           "income_group": "lic_lmic",
           "climate_zone": "tropical",
           "farming_system": "cropping_rainfed",
-          "note": "meta-regression of maize yield ln(RR) conservation agriculture vs conventional tillage; rainfed (no irrigation) observations only",
+          "note": "meta-regression of maize yield ln(RR) conservation agriculture vs conventional tillage; rainfed (no irrigation) observations only | process: bundle check 2026-10-12: Same dataset and same bundle as ev_crop_yield_stew18_1; this unit is the drought/heat-stress statement on p6. CA = continuous soil surface cover + no/minimal tillage in 100% of paired comparisons; no water-harvesting structure; irrigated trials excluded. Geographic caveat for applicability: 84.7% of observations are south-east Africa and 13.3% southern USA (p3).; NbS component: continuous soil surface cover (residue cover) - the moisture-conserving element; the paper's mechanism sentence (p5) names 'increased infiltration and soil moisture retention, reduced evaporation due to residue cover'; share basis (p4): All paired comparisons required\ncontinuous soil surface cover and reduced-tillage for conservation\nagriculture, but not crop diversiﬁcation (which was included as an in-\ndependent variable).",
           "hazard_type": "heat_stress",
-          "hazard_severity": "unspecified"
+          "hazard_severity": "unspecified",
+          "attribution": "bundled",
+          "bundle_components": [
+            "continuous soil surface cover (residue/mulch)",
+            "no-tillage or minimal tillage",
+            "crop diversification (intercrop or rotation) - moderator, not required"
+          ],
+          "component_share_pct": 100.0,
+          "nbs_component": "continuous soil surface cover (residue cover) - the moisture-conserving element; the paper's mechanism sentence (p5) names 'increased infiltration and soil moisture retention, reduced evaporation due to residue cover'"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -142169,13 +142204,26 @@
           ],
           "region": "12 districts, Natural Regions II-V",
           "farming_system": "mixed_crop_livestock",
-          "note": "hand-hoe conservation farming = dry-season planting basins (zai-type in-situ harvesting) + manure + micro-dosed N + residue; NGO-supported vulnerable households, 2006/07; CF package includes topdressing N absent from the no-fertiliser control (bundled effect); values match the low-rainfall (450-650 mm) row of the sensitivity table",
+          "note": "hand-hoe conservation farming = dry-season planting basins (zai-type in-situ harvesting) + manure + micro-dosed N + residue; NGO-supported vulnerable households, 2006/07; CF package includes topdressing N absent from the no-fertiliser control (bundled effect); values match the low-rainfall (450-650 mm) row of the sensitivity table | process: bundle check 2026-10-12: Conservation farming in Zimbabwe is an eight-component package (box 1, p2). Adoption shares in the season the yields come from (2006/07, table 4, p6): planting basins 90.0%, timely weeding 76.0%, winter weeding 74.5%, topdressing 74.0%, manure 70.0%, crop residues 68.8%, basal fertilizer 43.8%, crop rotation 25.0%. The water-harvesting component is therefore the DOMINANT one (90%), and in nine of the twelve districts every sampled household had planting basins (p3). BUT the 1520 vs 368 kg/ha contrast is the package vs conventional WITHOUT fertiliser: the CF budget (table 6, p6) includes 83.3 kg topdressing plus manure placement, while the 'no fertilizer' comparator has zero topdressing - so basin water capture is confounded with nutrient application. The paper's own fertilised conventional comparator (400 kg/ha) is the cleaner counterfactual and is in the same table.; NbS component: digging planting basins - 'The basins enable the farmer to plant the crop after the first effective rains when the basins have captured rainwater and drained naturally' (box 1, p2); crop-residue mulch is the second water-relevant component; share basis (p6): Digging planting basins\n100.0\n96.0\n90.0",
           "aez": "semi_arid",
           "climate_zone": "dryland",
           "hazard_type": "drought",
           "hazard_severity": "moderate",
           "severity_cue": "drought year",
-          "income_group": "lower_middle"
+          "income_group": "lower_middle",
+          "attribution": "bundled",
+          "bundle_components": [
+            "winter weeding",
+            "digging planting basins (15x15x15 cm, capture rainwater from first rains)",
+            "application of crop residues (at least 30% soil cover)",
+            "application of manure",
+            "application of basal inorganic fertilizer",
+            "application of topdressing (N)",
+            "timely weeding",
+            "crop rotation"
+          ],
+          "component_share_pct": 90.0,
+          "nbs_component": "digging planting basins - 'The basins enable the farmer to plant the crop after the first effective rains when the basins have captured rainwater and drained naturally' (box 1, p2); crop-residue mulch is the second water-relevant component"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -142215,10 +142263,23 @@
           ],
           "region": "12 districts, Natural Regions II-V",
           "farming_system": "mixed_crop_livestock",
-          "note": "hand-hoe conservation farming = dry-season planting basins (zai-type in-situ harvesting) + manure + micro-dosed N + residue; NGO-supported vulnerable households, 2006/07; USD 2006/07; prose on the next page states first-year CF gross margin about five times conventional",
+          "note": "hand-hoe conservation farming = dry-season planting basins (zai-type in-situ harvesting) + manure + micro-dosed N + residue; NGO-supported vulnerable households, 2006/07; USD 2006/07; prose on the next page states first-year CF gross margin about five times conventional | process: bundle check 2026-10-12: Same package and same adoption shares as ev_crop_yield_mazv09_1; the 473.36 vs 70.60 US$/ha figures are the low-rainfall row of table 7 (p7), derived from the table 6 enterprise budget. The gross margin for the CF arm embeds fertiliser and manure revenue effects AND their costs, and the comparator is the unfertilised conventional plot. Note the paper's fertilised conventional arm has a LOWER gross margin (48.19 US$/ha) than the unfertilised one (70.60), so 70.60 is the conservative comparator for economics even though it is the unfertilised one.; NbS component: digging planting basins (as above); the enterprise budget costs 'Establishing basins' as a separate labour line (27.63 days, US$24.31, table 6 p6); share basis (p6): Digging planting basins\n100.0\n96.0\n90.0",
           "aez": "semi_arid",
           "climate_zone": "dryland",
-          "income_group": "lower_middle"
+          "income_group": "lower_middle",
+          "attribution": "bundled",
+          "bundle_components": [
+            "winter weeding",
+            "digging planting basins (15x15x15 cm, capture rainwater from first rains)",
+            "application of crop residues (at least 30% soil cover)",
+            "application of manure",
+            "application of basal inorganic fertilizer",
+            "application of topdressing (N)",
+            "timely weeding",
+            "crop rotation"
+          ],
+          "component_share_pct": 90.0,
+          "nbs_component": "digging planting basins (as above); the enterprise budget costs 'Establishing basins' as a separate labour line (27.63 days, US$24.31, table 6 p6)"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -142538,8 +142599,17 @@
           "hazard_type": "drought",
           "hazard_severity": "severe",
           "severity_cue": "prolonged dry spells",
-          "note": "on-farm survey, Balaka & Machinga districts, 2015/16 El Nino season; mixed models of maize yield by practice; season characterised on p4 as 'The 2015/16 El Niño heavily affected Malawi with low rainfall, erratic timing and prolonged dry spells'",
-          "income_group": "low"
+          "note": "on-farm survey, Balaka & Machinga districts, 2015/16 El Nino season; mixed models of maize yield by practice; season characterised on p4 as 'The 2015/16 El Niño heavily affected Malawi with low rainfall, erratic timing and prolonged dry spells' | process: bundle check 2026-10-12: Malawi 2015/16 El Nino season. The 247->505 kg/ha figure is a single-practice LMM coefficient, not a whole-package effect: the paper found no significant interaction between the three CA pillars and reports each practice separately (p8, 'we found no significant effects of the interactions between the three CA pillars in both sites'). 24.9% of the 277 Malawi plots used reduced/zero tillage (table 1, p5). The practices in this paper that are genuinely in-situ water harvesting - planting basins / zai pits (11.9% in Malawi, 30.1% in Kenya) and box/contour ridges (41.9% Malawi, 52.4% Kenya) - were modelled separately and are NOT this unit; 'Water harvest' as its own practice is reported for Kenya only (24.3%) and is a dash for Malawi.; NbS component: reduced tillage (table 1 footnote a: includes 'hand ripping', 'oxen ripping', 'hand subsoiling' and 'zero tillage' practices); share basis (p5): Reduced tillagea and zero tillage)\n49\n47.6\n69\n24.9",
+          "income_group": "low",
+          "attribution": "isolated",
+          "bundle_components": [
+            "reduced or no tillage",
+            "permanent soil cover (crop residues / cover crops)",
+            "crop rotation or diversification",
+            "other on-farm practices modelled separately: fertiliser, composting, herbicide, early planting, hoe weeding, banking, box/contour ridges, planting basins (zai pits), agroforestry, hybrid seed, drought-tolerant varieties"
+          ],
+          "component_share_pct": 24.9,
+          "nbs_component": "reduced tillage (table 1 footnote a: includes 'hand ripping', 'oxen ripping', 'hand subsoiling' and 'zero tillage' practices)"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -142583,8 +142653,17 @@
           "hazard_type": "drought",
           "hazard_severity": "severe",
           "severity_cue": "prolonged dry spells",
-          "note": "on-farm survey, Balaka & Machinga districts, 2015/16 El Nino season; mixed models of maize yield by practice; season characterised on p4 as 'The 2015/16 El Niño heavily affected Malawi with low rainfall, erratic timing and prolonged dry spells'",
-          "income_group": "low"
+          "note": "on-farm survey, Balaka & Machinga districts, 2015/16 El Nino season; mixed models of maize yield by practice; season characterised on p4 as 'The 2015/16 El Niño heavily affected Malawi with low rainfall, erratic timing and prolonged dry spells' | process: bundle check 2026-10-12: Malawi 2015/16 El Nino season. 247->432 kg/ha is the ground-cover LMM coefficient alone, with no significant CA-pillar interactions (p8). 34.3% of the 277 Malawi plots had ground cover, overwhelmingly as mulch. Mulch is an in-situ moisture-conservation element (shading/evaporation suppression), so the NbS component is the practice actually being estimated here.; NbS component: ground cover (mulching and/or cover crop); in Malawi 'crop diversification occurs mainly through intercropping and ground cover through mulching' - mulching only 25.6%, cover crop only 1.4%, both 7.2%; share basis (p5): Ground cover\n20\n19.4\n95\n34.3",
+          "income_group": "low",
+          "attribution": "isolated",
+          "bundle_components": [
+            "reduced or no tillage",
+            "permanent soil cover (crop residues / cover crops)",
+            "crop rotation or diversification",
+            "other on-farm practices modelled separately: fertiliser, composting, herbicide, early planting, hoe weeding, banking, box/contour ridges, planting basins (zai pits), agroforestry, hybrid seed, drought-tolerant varieties"
+          ],
+          "component_share_pct": 34.3,
+          "nbs_component": "ground cover (mulching and/or cover crop); in Malawi 'crop diversification occurs mainly through intercropping and ground cover through mulching' - mulching only 25.6%, cover crop only 1.4%, both 7.2%"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -142628,8 +142707,17 @@
           "hazard_type": "drought",
           "hazard_severity": "severe",
           "severity_cue": "prolonged dry spells",
-          "note": "on-farm survey, Balaka & Machinga districts, 2015/16 El Nino season; mixed models of maize yield by practice; season characterised on p4 as 'The 2015/16 El Niño heavily affected Malawi with low rainfall, erratic timing and prolonged dry spells'",
-          "income_group": "low"
+          "note": "on-farm survey, Balaka & Machinga districts, 2015/16 El Nino season; mixed models of maize yield by practice; season characterised on p4 as 'The 2015/16 El Niño heavily affected Malawi with low rainfall, erratic timing and prolonged dry spells' | process: bundle check 2026-10-12: Same Malawi model family as ev_crop_yield_boil19_2, GLMM side: control OR 0.124 -> ground cover OR 0.475 for reaching the 840 kg/ha household maize threshold (table 2, p7). Isolated ground-cover coefficient; 34.3% of Malawi plots used ground cover. Caveat worth carrying: in the extended model that adds other practices, 'banking' (ridge reinforcement) significantly REDUCED both the odds (OR 0.054) and yield (153 kg/ha), i.e. a ridging practice in the same dataset is harmful in that season.; NbS component: ground cover (mulching and/or cover crop), as above; share basis (p5): Ground cover\n20\n19.4\n95\n34.3",
+          "income_group": "low",
+          "attribution": "isolated",
+          "bundle_components": [
+            "reduced or no tillage",
+            "permanent soil cover (crop residues / cover crops)",
+            "crop rotation or diversification",
+            "other on-farm practices modelled separately: fertiliser, composting, herbicide, early planting, hoe weeding, banking, box/contour ridges, planting basins (zai pits), agroforestry, hybrid seed, drought-tolerant varieties"
+          ],
+          "component_share_pct": 34.3,
+          "nbs_component": "ground cover (mulching and/or cover crop), as above"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -143215,11 +143303,22 @@
           "aez": "dryland_south_asia",
           "climate_zone": "dryland",
           "farming_system": "mixed_crop_livestock",
-          "note": "Research Square preprint of the Agroforestry Systems paper; on-farm survey of 85 farmers in 2021 comparing system types (only 11 with a farm pond); farm pond bundled with trees and livestock",
+          "note": "Research Square preprint of the Agroforestry Systems paper; on-farm survey of 85 farmers in 2021 comparing system types (only 11 with a farm pond); farm pond bundled with trees and livestock | process: bundle check 2026-10-12: On-farm survey of 85 rainfed farmers (p4) grouped into three system types in table 5 (p9): crop+livestock n=42, crop+tree+livestock n=32, farm pond+crop+tree+livestock n=11. So only 11 of 85 surveyed farmers (12.9%, derived from the two stated counts) had a farm pond - this is the lead's '20% rule' case. The pond is the only component that nominally differs between the two compared arms, but the arms also differ in landholding (2.1 vs 1.9 ha) and in the income share of each enterprise, and the figures are farmer-recalled percentages, not measured. Pond water IS used for irrigation: winter crops 'were provided one or two need based irrigations from the water harvested in farm pond through a sprinkler system' (p4) and 'Whenever MAI values become less than 50% of available water content, irrigation was applied from farm pond' (p10) - so the mechanism is supplementary irrigation from a runoff-catchment store, not in-situ moisture retention. This unit is the RAINY-season figure (20% -> 6% chance of crop failure). Rainy-season crops in this system are grown 'completely under rainfed condition' (p4), so the pond's role in the rainy season is the least well supported of the three claims.; NbS component: rain water harvesting farm pond (earthen pond + sprinkler recycling); 11 of the 85 surveyed farmers had one; share basis (p9): Farm pond + \nCrop + Tree + \nLivestock\n11",
           "hazard_type": "drought",
           "hazard_severity": "mild",
           "severity_cue": "aberrant rain",
-          "income_group": "lower_middle"
+          "income_group": "lower_middle",
+          "attribution": "bundled",
+          "bundle_components": [
+            "rain water harvesting farm pond (0.05 ha, 25 x 20 x 2.5 m, ~1.25 million litres) with sprinkler recycling",
+            "rainfed food crops (groundnut-barley, sorghum-chickpea, 0.55 ha)",
+            "agrihorticulture (Ziziphus mauritiana + sesame/chickpea, 0.2 ha)",
+            "silvipasture (Leucaena + tri-species hybrid grass + Stylosanthes, 0.2 ha)",
+            "boundary plantation (Leucaena, spineless fodder cactus, Grewia asiatica on pond dykes)",
+            "goats (intensive or semi-intensive small-ruminant rearing)"
+          ],
+          "component_share_pct": 12.9,
+          "nbs_component": "rain water harvesting farm pond (earthen pond + sprinkler recycling); 11 of the 85 surveyed farmers had one"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -143260,8 +143359,19 @@
           "aez": "dryland_south_asia",
           "climate_zone": "dryland",
           "farming_system": "mixed_crop_livestock",
-          "note": "Research Square preprint of the Agroforestry Systems paper; on-farm survey of 85 farmers in 2021 comparing system types (only 11 with a farm pond); farm pond bundled with trees and livestock; dry-season cropping made possible by stored water (supplemental irrigation), not buffering of a drought event - no hazard tag",
-          "income_group": "lower_middle"
+          "note": "Research Square preprint of the Agroforestry Systems paper; on-farm survey of 85 farmers in 2021 comparing system types (only 11 with a farm pond); farm pond bundled with trees and livestock; dry-season cropping made possible by stored water (supplemental irrigation), not buffering of a drought event - no hazard tag | process: bundle check 2026-10-12: On-farm survey of 85 rainfed farmers (p4) grouped into three system types in table 5 (p9): crop+livestock n=42, crop+tree+livestock n=32, farm pond+crop+tree+livestock n=11. So only 11 of 85 surveyed farmers (12.9%, derived from the two stated counts) had a farm pond - this is the lead's '20% rule' case. The pond is the only component that nominally differs between the two compared arms, but the arms also differ in landholding (2.1 vs 1.9 ha) and in the income share of each enterprise, and the figures are farmer-recalled percentages, not measured. Pond water IS used for irrigation: winter crops 'were provided one or two need based irrigations from the water harvested in farm pond through a sprinkler system' (p4) and 'Whenever MAI values become less than 50% of available water content, irrigation was applied from farm pond' (p10) - so the mechanism is supplementary irrigation from a runoff-catchment store, not in-situ moisture retention. This unit is the WINTER-season figure (100% -> 5-10% chance of crop failure). It is the best-supported of the three: the paper states 'no winter cropping is possible in the central part of India without rain water harvesting as evident from the on-farm situation' (p9-10), and the on-station water balance shows chickpea could not be sown without pre-irrigation from the pond in three of four seasons. The effect cannot plausibly be credited to the trees or goats.; NbS component: rain water harvesting farm pond used for pre-sowing and life-saving sprinkler irrigation of the winter crop; share basis (p9): Farm pond + \nCrop + Tree + \nLivestock\n11",
+          "income_group": "lower_middle",
+          "attribution": "bundled",
+          "bundle_components": [
+            "rain water harvesting farm pond (0.05 ha, 25 x 20 x 2.5 m, ~1.25 million litres) with sprinkler recycling",
+            "rainfed food crops (groundnut-barley, sorghum-chickpea, 0.55 ha)",
+            "agrihorticulture (Ziziphus mauritiana + sesame/chickpea, 0.2 ha)",
+            "silvipasture (Leucaena + tri-species hybrid grass + Stylosanthes, 0.2 ha)",
+            "boundary plantation (Leucaena, spineless fodder cactus, Grewia asiatica on pond dykes)",
+            "goats (intensive or semi-intensive small-ruminant rearing)"
+          ],
+          "component_share_pct": 12.9,
+          "nbs_component": "rain water harvesting farm pond used for pre-sowing and life-saving sprinkler irrigation of the winter crop"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -143302,8 +143412,19 @@
           "aez": "dryland_south_asia",
           "climate_zone": "dryland",
           "farming_system": "mixed_crop_livestock",
-          "note": "Research Square preprint of the Agroforestry Systems paper; on-farm survey of 85 farmers in 2021 comparing system types (only 11 with a farm pond); farm pond bundled with trees and livestock; USD at 65 INR",
-          "income_group": "lower_middle"
+          "note": "Research Square preprint of the Agroforestry Systems paper; on-farm survey of 85 farmers in 2021 comparing system types (only 11 with a farm pond); farm pond bundled with trees and livestock; USD at 65 INR | process: bundle check 2026-10-12: On-farm survey of 85 rainfed farmers (p4) grouped into three system types in table 5 (p9): crop+livestock n=42, crop+tree+livestock n=32, farm pond+crop+tree+livestock n=11. So only 11 of 85 surveyed farmers (12.9%, derived from the two stated counts) had a farm pond - this is the lead's '20% rule' case. The pond is the only component that nominally differs between the two compared arms, but the arms also differ in landholding (2.1 vs 1.9 ha) and in the income share of each enterprise, and the figures are farmer-recalled percentages, not measured. Pond water IS used for irrigation: winter crops 'were provided one or two need based irrigations from the water harvested in farm pond through a sprinkler system' (p4) and 'Whenever MAI values become less than 50% of available water content, irrigation was applied from farm pond' (p10) - so the mechanism is supplementary irrigation from a runoff-catchment store, not in-situ moisture retention. This unit is the net-return contrast (US$586 -> US$857 per ha). The paper decomposes that figure: crop contributes 80%, livestock 10%, tree 10% of net income in the pond system vs 70/18/12 without the pond (p9), so the uplift is a whole-farm figure and the pond's own contribution is never costed out. Landholding also differs (2.1 vs 1.9 ha) and the pond occupies 0.05 ha of productive land, which is not netted off.; NbS component: rain water harvesting farm pond; the pond itself produces no revenue line - it enters only through the crop component; share basis (p9): Farm pond + \nCrop + Tree + \nLivestock\n11",
+          "income_group": "lower_middle",
+          "attribution": "bundled",
+          "bundle_components": [
+            "rain water harvesting farm pond (0.05 ha, 25 x 20 x 2.5 m, ~1.25 million litres) with sprinkler recycling",
+            "rainfed food crops (groundnut-barley, sorghum-chickpea, 0.55 ha)",
+            "agrihorticulture (Ziziphus mauritiana + sesame/chickpea, 0.2 ha)",
+            "silvipasture (Leucaena + tri-species hybrid grass + Stylosanthes, 0.2 ha)",
+            "boundary plantation (Leucaena, spineless fodder cactus, Grewia asiatica on pond dykes)",
+            "goats (intensive or semi-intensive small-ruminant rearing)"
+          ],
+          "component_share_pct": 12.9,
+          "nbs_component": "rain water harvesting farm pond; the pond itself produces no revenue line - it enters only through the crop component"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -147331,6 +147452,25 @@
         "raised_by": "orchestrator",
         "raised_date": "2026-10-07",
         "comment": "Stability of yield across seasons / climates (higher = more stable; a LOWER variability finding is encoded as a positive direction). Distinct from crop_yield level. Split 2026-10-07 (drought-year round 2 followup): 9 units re-labelled from crop_yield with raw_name kept."
+      },
+      {
+        "canonical_variable_id": "avoided_damage_value",
+        "label": "Avoided damage value (hazard protection)",
+        "aliases": [
+          "avoided damage",
+          "damage averted",
+          "protection value",
+          "expected damage reduction"
+        ],
+        "canonical_unit": "usd_per_ha",
+        "unit_conversions": {},
+        "group_id": "economic",
+        "candidate_dataset_ids": [],
+        "context_sensitivity": "medium",
+        "review_status": "pending_review",
+        "raised_by": "orchestrator",
+        "raised_date": "2026-10-12",
+        "comment": "Monetised damage a hazard did NOT do because the ecosystem was there. Pete 2026-10-12 (theme 7C): this is hazard protection, not a rural-poverty indicator — it belongs to the hazard priority, and who it accrues to is recorded in context.beneficiary."
       }
     ],
     "BIND_dataset_binding": [
@@ -158143,18 +158283,18 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 672,
+    "total_reviews": 673,
     "queried": 118,
     "n_reviewers": 5,
     "by_reviewer": {
       "peetmate": 291,
-      "orchestrator": 289,
+      "orchestrator": 290,
       "Peter": 48,
       "Namita-J": 43,
       "Namita-J,peetmate": 1
     },
     "by_decision": {
-      "drop": 448,
+      "drop": 449,
       "flag": 118,
       "ok": 85,
       "reclassify": 17,
@@ -158173,7 +158313,7 @@
       "unusable_value": 13,
       "wrong_variable": 7,
       "wrong_table": 4,
-      "wrong_practice": 1,
+      "wrong_practice": 2,
       "smuggled_number": 1,
       "table_error": 1,
       "quote_too_narrow": 1,
@@ -158182,7 +158322,7 @@
     "by_verdict": {
       "unsupported": 10,
       "mismatch": 24,
-      "pass": 595,
+      "pass": 596,
       "scope": 24,
       "review": 19
     },
@@ -158197,8 +158337,8 @@
     "pass_eval": {
       "tn": 85,
       "fn": 1,
-      "out_of_remit": 424,
-      "checked": 510,
+      "out_of_remit": 425,
+      "checked": 511,
       "fn_rate_pct": 1.2
     },
     "recall_est_pct": 95.8,
@@ -173079,6 +173219,15 @@
       "decision": "flag",
       "note": "100% chance of failure reduce by 5-10% = 90-95% chance of failure right? \nIf combined iwht irrigation then the chance of failure reduces drastically, but is waterharvesting + irrigation still the NbS? how is this is an NbS how would it have an nature benefits?",
       "reviewer": "Peter"
+    },
+    {
+      "date": "2026-10-12",
+      "evidence_id": "ev_crop_yield_knapp18_3",
+      "source_id": "knapp_2018_ca_yield_stability_meta",
+      "decision": "drop",
+      "reason": "wrong_practice",
+      "note": "Pete held 2026-10-12 asking whether this is water harvesting or just no-tillage; the paper check found no water-harvesting component.",
+      "reviewer": "orchestrator"
     }
   ],
   "acquisition_funnel": {

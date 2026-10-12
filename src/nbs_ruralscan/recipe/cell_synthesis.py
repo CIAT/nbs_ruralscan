@@ -57,6 +57,37 @@ NS_FACTOR = 0.5
 #: weaker than an isolated-practice finding, so it votes at half weight (WH prose review
 #: 2026-10-05: a very_high drought class rested entirely on bundles). Pending ratification.
 BUNDLED_W = 0.5
+#: theme 1A (Pete 2026-10-12): an effect measured on a BUNDLE of practices cannot be
+#: credited in full to one of them. A stated share of the sample using the NbS component
+#: scales the weight directly (a 34 % ground-cover share → ×0.34, floored); an unstated
+#: share takes the flat discount.
+BUNDLE_W = 0.6
+BUNDLE_SHARE_FLOOR = 0.25
+#: theme 3A: hazard-year claim with no normal-year comparison
+NO_NORMAL_YEAR_W = 0.7
+#: theme 8B: a class above moderate needs more than one unit that states a size
+SIZE_SPARSE_SHARE = 1 / 3
+SIZE_SPARSE_MIN_UNITS = 3
+
+
+def bundle_factor(unit: EvidenceUnit) -> float:
+    ctx = unit.context or {}
+    if str(ctx.get("attribution") or "") != "bundled":
+        return 1.0
+    # only an ADOPTION share scales the credit. A "design" share (the component is
+    # mandatory in every comparison, so 100 %) means the effect cannot be separated from
+    # the rest of the bundle at all — that is the flat discount, not full credit.
+    if str(ctx.get("component_share_kind") or "adoption") != "adoption":
+        return BUNDLE_W
+    share = ctx.get("component_share_pct")
+    try:
+        if share is not None:
+            return max(BUNDLE_SHARE_FLOOR, min(1.0, float(share) / 100.0))
+    except (TypeError, ValueError):
+        pass
+    return BUNDLE_W
+
+
 #: XW proximity defaults (method §4)
 PROXIMITY_W = {"direct": 1.0, "proxy": 0.7, "component": 0.7}
 
@@ -593,6 +624,15 @@ def unit_weight(
         w *= NS_FACTOR
     if unit.evidence_type == "scoping_candidate":
         w *= BUNDLED_W
+    w *= bundle_factor(unit)
+    if (
+        str((unit.context or {}).get("hazard_type") or "")
+        and str((unit.context or {}).get("normal_year_reference") or "") == "absent"
+    ):
+        # theme 3A (Pete 2026-10-12): a hazard-year gain with no normal-year comparison
+        # cannot be separated from an ordinary production gain — it still counts, at a
+        # discount, and the account says so.
+        w *= NO_NORMAL_YEAR_W
     return w
 
 
@@ -1141,6 +1181,7 @@ def _statement(
     severity: dict[str, Any] | None = None,
     modelled_capped: bool = False,
     maladaptation: dict[str, Any] | None = None,
+    size_sparse: dict[str, Any] | None = None,
 ) -> str:
     """Calibrated-language statement; levels inserted by the engine (contract §5)."""
     # name the AEZs only when they cover at least half of the pooled units; a single
@@ -1217,6 +1258,12 @@ def _statement(
             tail += f"; no measured evidence at severe or extreme {key}"
         if modelled_capped:
             tail += "; strength rests on modelled results only, so the class is capped at moderate"
+        if size_sparse:
+            tail += (
+                f"; only {size_sparse.get('stating_a_size', 0)} of "
+                f"{size_sparse.get('same_direction', 0)} units in this direction say how big the "
+                "effect is, so the class is capped at moderate"
+            )
         if maladaptation and rank > 0:
             n = maladaptation.get("n_sources", 0)
             tail += (
@@ -1370,6 +1417,37 @@ def severity_coverage(measured: list[_Contrib]) -> dict[str, Any]:
         "severe_end": end,
         "severe_end_counts": {"gains": g, "failures": f},
     }
+
+
+def apply_size_sparse_cap(
+    rec: dict[str, Any], contribs: list[_Contrib]
+) -> dict[str, Any]:
+    """Theme 8B (Pete 2026-10-12): a class above moderate needs more than a single unit
+    that states a size. When fewer than a third of the direction-bearing units of the
+    majority sign give a magnitude, the class is capped at moderate and flagged
+    `size_sparse` — the evidence may all point one way, but only one sentence says how
+    much."""
+    modal = int(rec.get("modal_sign") or 0)
+    rank = int(rec.get("rank", 0))
+    if modal == 0 or abs(rank) <= 2:
+        return rec
+    same = [c for c in contribs if c.has_direction and c.sign == modal]
+    sized = [c for c in same if c.magnitude is not None]
+    # a one- or two-unit cell is thin, not size-sparse: its weakness already shows in the
+    # evidence level. The cap is for a pool big enough that "only one says how much" is
+    # a statement about the pool.
+    if len(same) < SIZE_SPARSE_MIN_UNITS:
+        return rec
+    if len(sized) / len(same) >= SIZE_SPARSE_SHARE:
+        return rec
+    rec = dict(rec)
+    rec["rank"] = 2 if rank > 0 else -2
+    rec["size_sparse"] = True
+    rec["size_sparse_counts"] = {
+        "stating_a_size": len(sized),
+        "same_direction": len(same),
+    }
+    return rec
 
 
 def apply_intensity_cap(
@@ -1601,6 +1679,7 @@ def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
         rec.get("severity_coverage"),
         bool(rec.get("modelled_capped", False)),
         rec.get("maladaptation"),
+        rec.get("size_sparse_counts") if rec.get("size_sparse") else None,
     )
 
 
@@ -1687,11 +1766,16 @@ def traceable_account(
             rec.get("severity_coverage"),
             bool(rec.get("modelled_capped", False)),
             rec.get("maladaptation"),
+            rec.get("size_sparse_counts") if rec.get("size_sparse") else None,
         ),
         "strength_basis": rec.get("strength_basis", "quantified"),
         "severity_coverage": rec.get("severity_coverage"),
         "proxy_capped": bool(rec.get("proxy_capped", False)),
         "modelled_capped": bool(rec.get("modelled_capped", False)),
+        "size_sparse": bool(rec.get("size_sparse", False)),
+        "size_sparse_counts": rec.get("size_sparse_counts"),
+        "bundled_units": rec.get("bundled_units"),
+        "no_normal_year_units": rec.get("no_normal_year_units"),
         "modelled_capped_ids": rec.get("modelled_capped_ids", []),
         "maladaptation": rec.get("maladaptation"),
         "intensity_limited": bool(rec.get("intensity_limited", False)),
@@ -1872,12 +1956,17 @@ def synthesise_cell(
             if xw_by_unit[c.unit.evidence_id].proximity != "direct"
         }
     )
-    g = apply_modelled_cap(
-        apply_proxy_cap(
-            _reconcile_group(contribs, tiers, matrix, target_ctx), contribs, xw_by_unit
+    g = apply_size_sparse_cap(
+        apply_modelled_cap(
+            apply_proxy_cap(
+                _reconcile_group(contribs, tiers, matrix, target_ctx),
+                contribs,
+                xw_by_unit,
+            ),
+            contribs,
+            xw_by_unit,
         ),
         contribs,
-        xw_by_unit,
     )
     if table == "T3" and role != "asset_vulnerability":
         g = apply_intensity_cap(g, contribs, target_key)
@@ -2040,14 +2129,17 @@ def synthesise_cell(
                         income_lookup,
                     )
                 _apply_shares(s_contribs, shares)
-                s_rec = apply_modelled_cap(
-                    apply_proxy_cap(
-                        _reconcile_group(s_contribs, tiers, matrix, s_target),
+                s_rec = apply_size_sparse_cap(
+                    apply_modelled_cap(
+                        apply_proxy_cap(
+                            _reconcile_group(s_contribs, tiers, matrix, s_target),
+                            s_contribs,
+                            xw_by_unit,
+                        ),
                         s_contribs,
                         xw_by_unit,
                     ),
                     s_contribs,
-                    xw_by_unit,
                 )
                 if table == "T3" and role != "asset_vulnerability":
                     s_rec = apply_intensity_cap(s_rec, s_contribs, target_key)
