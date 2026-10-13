@@ -79,10 +79,15 @@ def _ids(paths: list[str]) -> list[str]:
         pth = Path(p)
         if pth.suffix == ".json":
             for it in json.loads(pth.read_text(encoding="utf-8")):
-                out.append(it["sid"] if isinstance(it, dict) else str(it))
+                if isinstance(it, dict):
+                    # a staging unit file keys the source as `source_id`; the older lane
+                    # manifests used `sid` — accept either rather than failing on shape
+                    out.append(str(it.get("source_id") or it.get("sid") or ""))
+                else:
+                    out.append(str(it))
         else:
             out += [ln.strip() for ln in pth.read_text().splitlines() if ln.strip()]
-    return out
+    return sorted({o for o in out if o})
 
 
 def build_row(q: dict, meta: dict, cols: list[str], a) -> dict:

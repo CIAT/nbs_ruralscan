@@ -129,6 +129,12 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
             "evidence_id": eid,
             "use_role": u["use_role"],
             "variable": u["variable"],
+            # the QUOTE has to travel with the row: check_context verifies a `severity_cue`
+            # verbatim against quote / note / outcome_raw, and without it a cue that lives
+            # only in the quote (the normal case) failed here while passing the central
+            # guardrail — so lanes were pushing cues into `note` to satisfy a false flag
+            "quote": u.get("quote") or "",
+            "ruleset_version": u.get("ruleset_version") or "",
             "context": u.get("context") or {},
             "relationship": rel,
         }
