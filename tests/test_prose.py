@@ -101,3 +101,31 @@ def test_merge_writes_sidecar_keyed_to_current_ids(tmp_path):
     n, flags = P.merge_prose(tmp_path, [_row()], "T6", bad, writer="test", ev=EV)
     assert n == 0 and flags
     assert P.load_sidecar(tmp_path)["nbs__target"]["mechanism"].startswith("Shade")
+
+
+def test_size_sparse_counts_are_engine_arithmetic_not_evidence():
+    """A row carrying the v1.6.7 size-sparse cap must not fail its own account check.
+
+    `cell_synthesis` writes "only N of M units in this direction say how big the effect is"
+    into the statement; both counts are derived from the pool, so `check_account` has to
+    whitelist them the way it already whitelists the maladaptation and severe-end counts.
+    Without this, every capped row flagged `number_not_in_evidence` before any prose existed.
+    """
+    from nbs_ruralscan.schema_tools import check_account
+
+    row = {
+        "record_id": "x__y",
+        "n_sources": 3,
+        "evidence_ids": [],
+        "applicability": {},
+        "justification": {
+            "size_sparse_counts": {"stating_a_size": 1, "same_direction": 5},
+            "statement": (
+                "only 1 of 5 units in this direction say how big the effect is, "
+                "so the class is capped at moderate"
+            ),
+        },
+    }
+    assert (
+        check_account.check_row(row, {"ev_a": {"quote": "", "relationship": ""}}) == []
+    )

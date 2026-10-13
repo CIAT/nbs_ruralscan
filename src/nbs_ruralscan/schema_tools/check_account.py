@@ -94,6 +94,11 @@ def check_row(row: dict, ev: dict[str, dict]) -> list[dict]:
     # gain/failure counts, intensity share, discount origin — engine arithmetic, not claims
     mal = acc.get("maladaptation") or {}
     sev = (acc.get("severity_coverage") or {}).get("severe_end_counts") or {}
+    # v1.6.7 size-sparse cap: the statement says "only N of M units in this direction say
+    # how big the effect is". Both counts are engine arithmetic over the pool, exactly like
+    # the maladaptation and severe-end counts above — without them here a row carrying the
+    # cap fails its own account check before a word of prose is written.
+    spc = acc.get("size_sparse_counts") or {}
     whitelist |= {
         str(mal.get("n_sources", "")),
         str(mal.get("n_units", "")),
@@ -101,6 +106,9 @@ def check_row(row: dict, ev: dict[str, dict]) -> list[dict]:
         str(sev.get("failures", "")),
         str(acc.get("intensity_limit_share", "")),
         str(acc.get("intensity_discounted_from", "")),
+        str(spc.get("stating_a_size", "")),
+        str(spc.get("same_direction", "")),
+        str(acc.get("n_units", "")),
     }
     for fld in _PROSE_FIELDS:
         text = acc.get(fld)
