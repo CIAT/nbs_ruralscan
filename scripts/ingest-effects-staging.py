@@ -34,7 +34,8 @@ from nbs_ruralscan.schema_tools.migrate_effects import (
 )
 
 #: accepted extraction rulesets (methodology/RULESET_VERSIONS.md; v1.6.3–v1.6.6 are search /
-#: tagging / note-rule patches — the extraction contract is unchanged since v1.6.2)
+#: tagging / note-rule patches — the extraction contract is unchanged since v1.6.2, apart from
+#: v1.6.9's `context.practice_as_described`, which `check_context` polices)
 _RULESETS = {
     "v1.6.0",
     "v1.6.1",
@@ -45,6 +46,7 @@ _RULESETS = {
     "v1.6.6",
     "v1.6.7",
     "v1.6.8",
+    "v1.6.9",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
