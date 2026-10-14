@@ -292,6 +292,17 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     destination: name the primary in `lineage_of` so `scripts/log-primary-references.py` can put
     it on the acquisition list, and replace the unit once the original is in hand.
 
+26. **`outcome_raw` carries no number the quote does not** (2026-10-13 retro). The number check
+    walks the WHOLE `relationship` dict, so a study descriptor written into `outcome_raw` —
+    buffer width, exceedance probability, project length, bank height, a comparator figure
+    quoted from elsewhere in the paper — flags exactly like a smuggled magnitude, and real
+    smuggling then hides in the noise. The riparian/wetland round passed its own staging gate
+    and the next build flagged 23% of its units this way, all descriptors. `outcome_raw` says
+    WHAT was measured and against what; the descriptor goes in `context.note`, which is not a
+    claim surface (same split as #22). Number WORDS count too ("ten per cent" is 10), so
+    rewording round a digit does not help. The staging gate now runs the same whole-dict check
+    as `check_numbers`, so a lane cannot pass a file the build will flag.
+
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
 `check_species.py` (species mis-tag), `quarantine.py` (auto-soft-deletes off-scope +
