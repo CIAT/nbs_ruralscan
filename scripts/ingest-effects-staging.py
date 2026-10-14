@@ -118,7 +118,9 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
         # compare as FLOATS, like check_numbers.check: otherwise an integral float
         # magnitude (41.0) never matches a quote that prints "41"
         q = _nums(_native_part(u["quote"]))
-        missing = sorted(n for n in rn if n not in q and not (_floats({n}) & _floats(q)))
+        missing = sorted(
+            n for n in rn if n not in q and not (_floats({n}) & _floats(q))
+        )
         if missing:
             errs.append(
                 f"{eid}: numbers not in quote {missing} — if these are study descriptors, "
