@@ -26,7 +26,7 @@ import fitz
 
 from nbs_ruralscan.recipe.cell_synthesis import load_bands
 from nbs_ruralscan.schema_tools import check_bands, check_context
-from nbs_ruralscan.schema_tools.check_numbers import _floats, _nums
+from nbs_ruralscan.schema_tools.check_numbers import _floats, _nums, _rel_nums
 from nbs_ruralscan.schema_tools.validate_sources import _native_part
 from nbs_ruralscan.schema_tools.migrate_effects import (
     append_to_register,
@@ -108,23 +108,22 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
             except Exception as e:  # noqa: BLE001
                 errs.append(f"{eid}: page {u.get('page')} unreadable ({e})")
         rel = u.get("relationship") or {}
-        rn: set[str] = set()
-        for k in (
-            "magnitude",
-            "magnitude_low",
-            "magnitude_high",
-            "n",
-            "value_with",
-            "value_without",
-        ):
-            v = rel.get(k)
-            if isinstance(v, (int, float)) and not isinstance(v, bool):
-                rn |= _nums(str(v))
+        # the WHOLE relationship, exactly the surface `check_numbers.check` walks — not
+        # only the numeric fields. The 2026-10-13 retrospective found the gate passing
+        # lanes that the next build then flagged at 23%: every miss was a study descriptor
+        # (buffer width, exceedance probability, project geometry) written into
+        # `outcome_raw`, where a mis-stitched value would hide just as well. Descriptors
+        # belong in `context.note`, which is not a claim surface (catalogue #22).
+        rn = _rel_nums(json.dumps(rel, ensure_ascii=False))
         # compare as FLOATS, like check_numbers.check: otherwise an integral float
         # magnitude (41.0) never matches a quote that prints "41"
-        missing = _floats(rn) - _floats(_nums(_native_part(u["quote"])))
+        q = _nums(_native_part(u["quote"]))
+        missing = sorted(n for n in rn if n not in q and not (_floats({n}) & _floats(q)))
         if missing:
-            errs.append(f"{eid}: numbers not in quote {sorted(missing)}")
+            errs.append(
+                f"{eid}: numbers not in quote {missing} — if these are study descriptors, "
+                "move them to context.note; relationship carries claims only"
+            )
         row = {
             "evidence_id": eid,
             "use_role": u["use_role"],
