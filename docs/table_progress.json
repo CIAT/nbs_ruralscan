@@ -1,7 +1,7 @@
 {
   "build": {
-    "timestamp": "2026-10-14T11:06:19.294478+00:00",
-    "git_commit": "6102c3797cfde5169dd50ace352d677e05018042"
+    "timestamp": "2026-10-14T12:57:47.864020+00:00",
+    "git_commit": "f1832293715343f19f7bc0e638cfb66d1ab213cd"
   },
   "meta": {
     "nbs": [
@@ -2208,17 +2208,18 @@
     "wetland_management": {
       "T3": {
         "completion": {
-          "pct": 43,
+          "pct": 50,
           "n_done": 2,
-          "n_in_progress": 2
+          "n_in_progress": 3
         },
         "stages": {
           "searched": {
-            "status": "not_started",
-            "categories_done": [],
+            "status": "in_progress",
+            "categories_done": [
+              "updated_lit"
+            ],
             "categories_missing": [
               "stock",
-              "updated_lit",
               "grey",
               "tool"
             ],
@@ -2234,14 +2235,14 @@
                 "latest_search_date": ""
               },
               "updated_lit": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
                 "n_retrieved": 0,
                 "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "n_included": 49,
+                "latest_search_date": "2026-10-14"
               },
               "grey": {
                 "ledger_searched": "",
@@ -2268,12 +2269,12 @@
           },
           "acquired": {
             "status": "in_progress",
-            "discovered": 16,
-            "pending": 3,
+            "discovered": 52,
+            "pending": 39,
             "acquired": 3,
             "extracted": 10,
             "duplicate": 0,
-            "pct_in_hand": 81
+            "pct_in_hand": 25
           },
           "extracted": {
             "status": "in_progress",
@@ -2356,12 +2357,19 @@
         },
         "blockers": {
           "pending_by_reason": {
-            "needs_human": 1,
+            "needs_human": 7,
+            "oa_not_fetched": 28,
             "other": 1,
-            "paywalled": 1
+            "paywalled": 3
           },
           "acquired_not_extracted": 3,
           "top": [
+            {
+              "source_id": "cahoon_2006",
+              "citation": "Cahoon (2006). A review of major storm impacts on coastal wetland elevations. Estuaries and Coasts.",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
             {
               "source_id": "dohong_tropical_restoration_techniques_review_2018",
               "citation": "Dohong et al. (2018). A Review of Techniques for Effective Tropical Peatland Restoration. Wetlands.",
@@ -2369,16 +2377,52 @@
               "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
             },
             {
+              "source_id": "fynn_2015",
+              "citation": "Fynn et al. (2015). African wetlands and their seasonal use by wild and domestic herbivores. Wetlands Ecology and Manage",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "kadykalo_2016",
+              "citation": "Kadykalo et al. (2016). The flow regulation services of wetlands. Ecosystem Services.",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "knox_2022",
+              "citation": "Knox et al. (2022). Levees don't protect, they disconnect: A critical review of how artificial levees impact floodplain ",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "mandishona_2022",
+              "citation": "Mandishona et al. (2022). Inland wetlands in Africa: A review of their typologies and ecosystem services. Progress in Ph",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "stachowicz_2022",
+              "citation": "Stachowicz et al. (2022). To store or to drain — To lose or to gain? Rewetting drained peatlands as a measure for increa",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "fang_2022",
+              "citation": "Fang et al. (2022). Fifteen-year analysis of constructed wetland clogging: A critical review. Journal of Cleaner Product",
+              "reason": "paywalled",
+              "blocker": "paywalled (verified: Unpaywall + web search found no copy) → institutional"
+            },
+            {
+              "source_id": "gourevitch_2026",
+              "citation": "Gourevitch et al. (2026). The economic value of wetlands in reducing riverine flood losses in the USA. Nature Water.",
+              "reason": "paywalled",
+              "blocker": "paywalled (verified: Unpaywall + web search found no copy) → institutional"
+            },
+            {
               "source_id": "upper_mississippi_flood_reduction_1995",
               "citation": "Hey et al. (1995). Flood Reduction through Wetland Restoration: The Upper Mississippi River Basin as a Case History. Res",
               "reason": "paywalled",
               "blocker": "scanned, no text layer"
-            },
-            {
-              "source_id": "comparing_mcda_prioritize_wetland_sites_2017",
-              "citation": "Comparing Two Multi-Criteria Methods for Prioritizing Wetland Restoration and Creation Sites (2017).",
-              "reason": "other",
-              "blocker": "wrong artefact cached"
             }
           ],
           "unmapped_variables": [],
@@ -2386,25 +2430,33 @@
             "wetland_management__constructed"
           ],
           "weights_incomplete": [],
-          "ledger_notes": [],
+          "ledger_notes": [
+            {
+              "family": "",
+              "note": "synthesis-first round 2026-10-14; see SRCH wet_t3t6_2026-10-14_* rows + discovery logs",
+              "last_run_id": "wet_t3t6_2026-10-14",
+              "updated": "2026-10-14"
+            }
+          ],
           "warnings": [
-            "search not logged for: stock, updated_lit, grey, tool"
+            "search not logged for: stock, grey, tool"
           ]
         }
       },
       "T6": {
         "completion": {
-          "pct": 43,
+          "pct": 50,
           "n_done": 2,
-          "n_in_progress": 2
+          "n_in_progress": 3
         },
         "stages": {
           "searched": {
-            "status": "not_started",
-            "categories_done": [],
+            "status": "in_progress",
+            "categories_done": [
+              "updated_lit"
+            ],
             "categories_missing": [
               "stock",
-              "updated_lit",
               "grey",
               "tool"
             ],
@@ -2420,14 +2472,14 @@
                 "latest_search_date": ""
               },
               "updated_lit": {
-                "ledger_searched": "",
-                "ledger_screened": "",
-                "ledger_verified": "",
-                "srch_rows": 0,
+                "ledger_searched": "done",
+                "ledger_screened": "done",
+                "ledger_verified": "not_started",
+                "srch_rows": 1,
                 "n_retrieved": 0,
                 "n_screened": 0,
-                "n_included": 0,
-                "latest_search_date": ""
+                "n_included": 49,
+                "latest_search_date": "2026-10-14"
               },
               "grey": {
                 "ledger_searched": "",
@@ -2454,12 +2506,12 @@
           },
           "acquired": {
             "status": "in_progress",
-            "discovered": 7,
-            "pending": 1,
+            "discovered": 56,
+            "pending": 50,
             "acquired": 2,
             "extracted": 4,
             "duplicate": 3,
-            "pct_in_hand": 86
+            "pct_in_hand": 11
           },
           "extracted": {
             "status": "in_progress",
@@ -2544,15 +2596,70 @@
         },
         "blockers": {
           "pending_by_reason": {
-            "oa_not_fetched": 1
+            "needs_human": 11,
+            "oa_not_fetched": 39
           },
           "acquired_not_extracted": 2,
           "top": [
             {
-              "source_id": "steward_2023_nbs_economics_rproject",
-              "citation": "Steward, P.R., Rosenstock, T.S., Joshi, N., Magnan, N., Ombewa, B.V.A., Mumo, E.M. (2023). Economics of Nature Based Sol",
-              "reason": "oa_not_fetched",
-              "blocker": "DATASET/CODE INTAKE PAUSED (AGENTS lock): R project + data behind steward_2023_nbs_economics_wp. Needs a dataset-intake adapter (or the code route, ingest/githu"
+              "source_id": "wet_china_coastal_restoration_effectiveness_meta_2024",
+              "citation": "Liu et al. (2024). Effectiveness assessment of China's coastal wetland ecological restoration: A meta-analysis. Science ",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "wet_climate_smart_peatland_food_security_2023",
+              "citation": "Lupascu et al. (2023). Climate-smart peatland management and the potential for synergies between food security and clima",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "wet_conversion_coastal_riparian_peat_ghg_meta_2019",
+              "citation": "Tan et al. (2020). Conversion of coastal wetlands, riparian wetlands, and peatlands increases greenhouse gas emissions: ",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "wet_cultivation_hydrological_mgmt_east_africa_2003",
+              "citation": "Dixon et al. (2003). Wetland cultivation and hydrological management in eastern Africa: Matching community and hydrologi",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "wet_cutaway_rewetting_methane_hotspots_2008",
+              "citation": "Wilson et al. (2009). Rewetting of Cutaway Peatlands: Are We Re‐Creating Hot Spots of Methane Emissions?. Restoration Ec",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "wet_cw_developing_countries_review_2014",
+              "citation": "Zhang et al. (2014). Application of constructed wetlands for wastewater treatment in developing countries – A review of ",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "wet_methane_response_global_restoration_2025",
+              "citation": "Xu et al. (2025). Responses of methane emissions to global wetland restoration and influencing factors. Agricultural and",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "wet_paludiculture_commercial_viability_reed_2016",
+              "citation": "Wichmann (2017). Commercial viability of paludiculture: A comparison of harvesting reeds for biogas production, direct c",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "wet_poyang_farmer_willingness_participate_2020",
+              "citation": "Wei et al. (2021). Poyang lake wetlands restoration in China: An analysis of farmers’ perceptions and willingness to par",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
+            },
+            {
+              "source_id": "wet_soc_change_restoration_global_meta_2019",
+              "citation": "Xu et al. (2019). Soil organic carbon changes following wetland restoration: A global meta-analysis. Geoderma.",
+              "reason": "needs_human",
+              "blocker": "OA (websearch:researchgate/unverified) — HUMAN CHECK"
             }
           ],
           "unmapped_variables": [],
@@ -2560,9 +2667,16 @@
             "wetland_management__constructed"
           ],
           "weights_incomplete": [],
-          "ledger_notes": [],
+          "ledger_notes": [
+            {
+              "family": "",
+              "note": "synthesis-first round 2026-10-14; see SRCH wet_t3t6_2026-10-14_* rows + discovery logs",
+              "last_run_id": "wet_t3t6_2026-10-14",
+              "updated": "2026-10-14"
+            }
+          ],
           "warnings": [
-            "search not logged for: stock, updated_lit, grey, tool"
+            "search not logged for: stock, grey, tool"
           ]
         }
       }
