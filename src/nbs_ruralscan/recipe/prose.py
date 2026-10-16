@@ -3,7 +3,14 @@
 The cell-synthesis engine writes every level, class, id list and the calibrated ``statement``
 deterministically; the only text an AI may write is the *mechanism*, the *conditionality /
 caveats*, and optionally a re-worded ``evidence_summary`` / ``agreement_note``. That prose is
-kept OUT of the engine run, in a per-recipe sidecar ``schema/recipes/<nbs_id>/T3T6_prose.json``::
+kept OUT of the engine run, in a per-recipe sidecar ``schema/recipes/<nbs_id>/T3T6_prose.json``.
+
+A mechanism sentence may EXPLAIN, but never extend: every causal step it states must be in a
+used unit's own words, not inferred from them ("no longer completely saturated" does not
+license "a saturated headwater bog shedding storm water" — caught and reworded 2026-10-16).
+When a writer is unsure whether a phrasing is in the source, it flags the line in its report
+instead of shipping it; the account check cannot catch semantics, so this rule is on the
+writer. ::
 
     {
       "<record_id>": {
