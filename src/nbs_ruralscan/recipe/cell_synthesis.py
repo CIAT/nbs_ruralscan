@@ -1146,6 +1146,41 @@ def _reconcile_group(
     }
 
 
+def data_deficient_record(
+    contribs: list["_Contrib"],
+    why: str,
+    held_out: dict[str, list[str]],
+    target_ctx: dict[str, Any],
+) -> dict[str, Any]:
+    """A record for a cell that holds evidence but may not state a class (Pete 2026-10-16).
+
+    The row is still published, with its evidence, its sources and its applicability, because
+    a blank cell reads as "this does not work" when the truth is "nobody has looked, or what
+    has been looked at cannot answer the question". `rank = 0` keeps every downstream
+    consumer on the no-class path; `data_deficient` says so explicitly and `why` names what
+    is missing, so the gap is actionable rather than silent.
+    """
+    units = [c.unit for c in contribs]
+    return {
+        "rank": 0,
+        "agreement": 0.0,
+        "agreement_undefined": True,
+        "modal_sign": 0,
+        "evidence_level": "limited",
+        "agreement_level": "low",
+        "confidence": "very_low",
+        "applicability": build_applicability(contribs, target_ctx),
+        "n_sources": len({u.source_id for u in units}),
+        "evidence_ids": [u.evidence_id for u in units],
+        "sources": sorted({u.source_id for u in units}),
+        "source_mix": _source_mix(contribs),
+        "strength_basis": "direction_only",
+        "data_deficient": True,
+        "data_deficient_reason": why,
+        "held_out_of_class": held_out,
+    }
+
+
 def _source_mix(contribs: list[_Contrib]) -> dict[str, Any]:
     mix = {"peer_reviewed": 0, "grey": 0, "expert": 0}
     for c in contribs:
@@ -1679,8 +1714,40 @@ def apply_effect_locus(
     return rows
 
 
+def data_deficient_statement(rec: dict[str, Any], key: str) -> str:
+    """What a data-deficient cell says instead of a class (Pete 2026-10-16, thin rows = B).
+
+    Never "no effect": a cell with too little evidence to class is not a cell that found
+    nothing. It names what is missing so the gap can be filled.
+    """
+    n_u, n_s = len(rec.get("evidence_ids") or []), rec.get("n_sources", 0)
+    held = rec.get("held_out_of_class") or {}
+    why = rec.get("data_deficient_reason") or "its evidence cannot set a class"
+    extra = ""
+    if any(k != "below_evidence_floor" for k in held):
+        kinds = {
+            "not_a_net_balance": "single-gas figures with no net CO2e balance",
+            "reference_shortfall": "shortfalls against an intact reference rather than against the pre-restoration state",
+            "not_a_household_benefit": "value accruing to society rather than to the household",
+        }
+        extra = (
+            " The evidence here is "
+            + "; ".join(
+                kinds.get(k, k) for k in sorted(held) if k != "below_evidence_floor"
+            )
+            + "."
+        )
+    return (
+        f"{rec.get('nbs_id', '')} {key}: DATA DEFICIENT — {why}.{extra} "
+        f"The row carries {n_u} evidence unit(s) from {n_s} source(s); they are listed and "
+        "described, but none of them may set a class."
+    )
+
+
 def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
     """The calibrated statement for a reconciled record (used as the mechanism placeholder)."""
+    if rec.get("data_deficient"):
+        return data_deficient_statement(rec, key)
     return _statement(
         table,
         str(rec.get("nbs_id") or ""),
@@ -1708,10 +1775,15 @@ def traceable_account(
     rec: dict[str, Any],
     contribs: list[_Contrib],
     proxies: list[str],
+    voters: list[_Contrib] | None = None,
 ) -> dict[str, Any]:
     """Deterministic traceable account (contract §5). The optional AI prose writer may
     later REPLACE `evidence_summary`/`agreement_note`/`mechanism` text but never the levels,
-    the statement template, or the id lists."""
+    the statement template, or the id lists.
+
+    `voters` are the contributions that actually set the class (Pete 2026-10-16). The
+    evidence summary covers everything in the row; the AGREEMENT note covers the vote, so a
+    unit held out of the class is not counted as agreeing or disagreeing with it."""
     env = rec["applicability"]
     top = sorted(contribs, key=lambda c: c.weight, reverse=True)[:5]
     summary = []
@@ -1752,23 +1824,26 @@ def traceable_account(
             bits.append("(" + "; ".join(ctx_bits) + ")")
         bits.append(f"[{c.unit.evidence_id}]")
         summary.append(" · ".join(bits))
-    pos = [c.unit.evidence_id for c in contribs if c.sign > 0]
-    neg = [c.unit.evidence_id for c in contribs if c.sign < 0]
-    zero = [c.unit.evidence_id for c in contribs if c.sign == 0]
+    voting = contribs if voters is None else voters
+    pos = [c.unit.evidence_id for c in voting if c.sign > 0]
+    neg = [c.unit.evidence_id for c in voting if c.sign < 0]
+    zero = [c.unit.evidence_id for c in voting if c.sign == 0]
     head = (
         "sign agreement undefined (single independent source)"
         if rec.get("agreement_undefined")
         else f"weighted sign agreement {rec['agreement']}"
     )
-    w_pos = round(sum(c.weight for c in contribs if c.sign > 0), 2)
-    w_neg = round(sum(c.weight for c in contribs if c.sign < 0), 2)
-    w_zero = round(sum(c.weight for c in contribs if c.sign == 0), 2)
+    w_pos = round(sum(c.weight for c in voting if c.sign > 0), 2)
+    w_neg = round(sum(c.weight for c in voting if c.sign < 0), 2)
+    w_zero = round(sum(c.weight for c in voting if c.sign == 0), 2)
     agreement_note = (
         f"{head}: positive {len(pos)} (weight {w_pos}) {pos}; "
         f"negative {len(neg)} (weight {w_neg}) {neg}; null {len(zero)} (weight {w_zero}) {zero}."
     )
-    return {
-        "statement": _statement(
+    if rec.get("data_deficient"):
+        statement = data_deficient_statement(dict(rec, nbs_id=nbs_id), key)
+    else:
+        statement = _statement(
             table,
             nbs_id,
             key,
@@ -1784,7 +1859,9 @@ def traceable_account(
             bool(rec.get("modelled_capped", False)),
             rec.get("maladaptation"),
             rec.get("size_sparse_counts") if rec.get("size_sparse") else None,
-        ),
+        )
+    return {
+        "statement": statement,
         "strength_basis": rec.get("strength_basis", "quantified"),
         "severity_coverage": rec.get("severity_coverage"),
         "proxy_capped": bool(rec.get("proxy_capped", False)),
@@ -1812,10 +1889,142 @@ def traceable_account(
             "sources, not units, so several findings from one paper do not multiply its say."
         ),
         "n_units": len(contribs),
+        # units that are evidence for this row but may not set its class (Pete 2026-10-16):
+        # a single gas without a net CO2e balance, a shortfall against an intact reference,
+        # a benefit accruing to society rather than the household
+        "held_out_of_class": rec.get("held_out_of_class") or {},
+        "data_deficient": bool(rec.get("data_deficient")),
+        "data_deficient_reason": rec.get("data_deficient_reason", ""),
         "key_evidence_ids": [c.unit.evidence_id for c in top],
         "source_mix": rec["source_mix"],
         "prose_pending": True,  # mechanism / conditionality await the (gated) prose writer
     }
+
+
+# ── what may SET a class, vs what is only reported beside it (Pete 2026-10-16) ─────────
+#
+# Three rulings from the wetland round, where four rows ended up stating the opposite of
+# their own evidence. Each removes a kind of unit from the SIGN VOTE without deleting it:
+# the unit stays in the row, in the account, and in the prose.
+#
+# A — net CO2e decides a carbon class. "we need to know the CO2e net change - does methane
+#     emission exceed carbon removal? not point just having part of the picture it could be
+#     misleading." Rewetting lowers CO2 and raises CH4; a cell holding single-gas evidence
+#     may only be classed from a NET figure. With no net figure it reports that instead.
+# B — a restored wetland falling short of an INTACT one is not harm. "this is not a useful
+#     comparison, a more sensible baseline is needed (e.g. compared to what was there before
+#     the wetland was created or restored, or how the wetland increases biodiversity in the
+#     landscape, catchment or meta-population / ecological network)." Reference-shortfall
+#     units become a recovery note; the counterfactual is the pre-restoration state.
+# C — a poverty class is set by what reaches the HOUSEHOLD. Society-level value (avoided
+#     damage, benefit-cost ratios) is reported separately, never summed into it.
+
+#: gases whose unit is only one side of the balance
+PARTIAL_GASES = {"co2", "ch4", "n2o"}
+#: the EMISSION side. Pete's question — "does methane emission exceed carbon removal?" —
+#: only exists where methane (or nitrous oxide) is in the pool, so the net-balance rule fires
+#: on those and not on a cell whose evidence is carbon dioxide removal with no gas trade-off
+#: (forest restoration and agroforestry carbon would otherwise go data-deficient for a
+#: methane question nobody asked).
+EMISSION_GASES = {"ch4", "n2o"}
+NET_GAS = "net_co2e"
+#: comparators that measure a recovery SHORTFALL rather than an effect of the practice
+REFERENCE_COMPARATORS = {"reference_wetland", "reference_forest"}
+#: who the value has to reach before it may set a poverty class
+POVERTY_BENEFICIARIES = {"farm_household", "community"}
+#: Pete 2026-10-16 (thin rows, option B): a cell states a class only when its pool clears a
+#: floor — two independent sources, OR one MEASURED finding. Below it the row is published as
+#: DATA DEFICIENT, naming what is missing, because a blank reads as "this does not work"
+#: while the truth is "nobody has looked".
+MEASURED_BASES = {"primary_measured", "table"}
+
+
+def meets_evidence_floor(contribs: list["_Contrib"]) -> tuple[bool, str]:
+    """(may this cell state a class?, what is missing when it may not)."""
+    n_sources = len({c.unit.source_id for c in contribs})
+    measured = [c for c in contribs if c.unit.claim_basis in MEASURED_BASES]
+    if n_sources >= 2:
+        return True, ""
+    if measured:
+        return True, ""
+    if not contribs:
+        return False, "no evidence reaches this cell"
+    basis = sorted({str(c.unit.claim_basis) for c in contribs})
+    return False, (
+        f"one source, none of it measured (claim basis: {', '.join(basis)}) — "
+        "a second independent source or one measured finding would let this cell state a class"
+    )
+
+
+#: cells the gas rule and the beneficiary rule apply to
+GAS_SENSITIVE_KEYS = {"carbon_sequestration_potential"}
+HOUSEHOLD_KEYS = {"rural_poverty"}
+
+
+def _gas_of(c: "_Contrib") -> str:
+    return str((c.ctx or {}).get("gas") or (c.unit.context or {}).get("gas") or "")
+
+
+def _comparator_of(c: "_Contrib") -> str:
+    return str(
+        (c.ctx or {}).get("comparator")
+        or (c.unit.context or {}).get("comparator")
+        or ""
+    )
+
+
+def _beneficiary_of(c: "_Contrib") -> str:
+    return str(
+        (c.ctx or {}).get("beneficiary")
+        or (c.unit.context or {}).get("beneficiary")
+        or ""
+    )
+
+
+def partition_voters(
+    contribs: list["_Contrib"], table: str, target_key: str
+) -> tuple[list["_Contrib"], dict[str, list[str]]]:
+    """Split a cell's contributions into those that may set the class and those that may not.
+
+    Returns ``(voters, {reason: [evidence_id, …]})``. Nothing is deleted: the non-voters stay
+    in the row's evidence_ids and in the account, and the prose is expected to carry them.
+    """
+    held: dict[str, list[str]] = {}
+
+    def hold(c: "_Contrib", reason: str) -> None:
+        held.setdefault(reason, []).append(c.unit.evidence_id)
+
+    voters = list(contribs)
+    # B — reference shortfalls never vote, in any cell
+    keep = []
+    for c in voters:
+        if _comparator_of(c) in REFERENCE_COMPARATORS:
+            hold(c, "reference_shortfall")
+        else:
+            keep.append(c)
+    voters = keep
+    # A — a carbon class needs a net figure once any single-gas evidence is in the pool
+    if table == "T6" and target_key in GAS_SENSITIVE_KEYS:
+        gases = {_gas_of(c) for c in voters}
+        if gases & EMISSION_GASES:
+            keep = []
+            for c in voters:
+                if _gas_of(c) == NET_GAS:
+                    keep.append(c)
+                else:
+                    hold(c, "not_a_net_balance")
+            voters = keep
+    # C — a poverty class is set by what reaches the household
+    if table == "T6" and target_key in HOUSEHOLD_KEYS:
+        keep = []
+        for c in voters:
+            b = _beneficiary_of(c)
+            if b and b not in POVERTY_BENEFICIARIES:
+                hold(c, "not_a_household_benefit")
+            else:
+                keep.append(c)
+        voters = keep
+    return voters, held
 
 
 def synthesise_cell(
@@ -1982,25 +2191,56 @@ def synthesise_cell(
             if xw_by_unit[c.unit.evidence_id].proximity != "direct"
         }
     )
-    g = apply_size_sparse_cap(
-        apply_modelled_cap(
-            apply_proxy_cap(
-                _reconcile_group(contribs, tiers, matrix, target_ctx),
-                contribs,
+    # Pete 2026-10-16: some units are evidence for the row but may not SET its class —
+    # a single gas without the net balance, a shortfall against an intact reference, a
+    # benefit that lands on society rather than the household. They stay in the row and
+    # in the account; they simply do not vote (see `partition_voters`).
+    voters, held_out = partition_voters(contribs, table, target_key)
+    ok, missing = meets_evidence_floor(voters)
+    if voters and not ok:
+        held_out = dict(
+            held_out, below_evidence_floor=[c.unit.evidence_id for c in voters]
+        )
+        voters = []
+    data_deficient = not voters
+    if data_deficient:
+        why = missing or (
+            "none of its evidence may set a class ("
+            + "; ".join(f"{k}×{len(v)}" for k, v in sorted(held_out.items()))
+            + ")"
+        )
+        rep.notes.append(f"{target_key}: data deficient — {why}")
+        g = data_deficient_record(contribs, why, held_out, target_ctx)
+    else:
+        g = apply_size_sparse_cap(
+            apply_modelled_cap(
+                apply_proxy_cap(
+                    _reconcile_group(voters, tiers, matrix, target_ctx),
+                    voters,
+                    xw_by_unit,
+                ),
+                voters,
                 xw_by_unit,
             ),
-            contribs,
-            xw_by_unit,
-        ),
-        contribs,
-    )
-    if table == "T3" and role != "asset_vulnerability":
-        g = apply_intensity_cap(g, contribs, target_key)
-    if role != "asset_vulnerability":
-        g = dict(g)
-        g["maladaptation"] = maladaptation_signal(
-            contribs, int(g.get("modal_sign") or 0)
+            voters,
         )
+        if held_out:
+            # the non-voters are still EVIDENCE for this row — they belong in its id list,
+            # its source list and its account; they simply did not set the class
+            g = dict(
+                g,
+                held_out_of_class=held_out,
+                evidence_ids=[c.unit.evidence_id for c in contribs],
+                sources=sorted({c.unit.source_id for c in contribs}),
+                n_sources=len({c.unit.source_id for c in contribs}),
+            )
+        if table == "T3" and role != "asset_vulnerability":
+            g = apply_intensity_cap(g, voters, target_key)
+        if role != "asset_vulnerability":
+            g = dict(g)
+            g["maladaptation"] = maladaptation_signal(
+                voters, int(g.get("modal_sign") or 0)
+            )
     if table == "T6":
         cell = target_key
     elif role == "asset_vulnerability":
@@ -2008,6 +2248,7 @@ def synthesise_cell(
     else:
         cell = f"{target_key}__{farming_system}"
     rows: list[dict[str, Any]] = []
+    _held_ids = {e for v in (held_out or {}).values() for e in v}
 
     def _row(rec: dict[str, Any], scope: tuple[str, str] | None, cs: list[_Contrib]):
         rec = dict(rec, nbs_id=nbs_id)
@@ -2026,7 +2267,14 @@ def synthesise_cell(
             "evidence_ids": rec["evidence_ids"],
             "references": rec["sources"],
             "justification": traceable_account(
-                table, nbs_id, target_key, role, rec, cs, proxies
+                table,
+                nbs_id,
+                target_key,
+                role,
+                rec,
+                cs,
+                proxies,
+                voters=[c for c in cs if c.unit.evidence_id not in _held_ids],
             ),
         }
         if table == "T3":
@@ -2053,8 +2301,12 @@ def synthesise_cell(
                 r["asset_risk_weight"] = None
             else:
                 r["risk_role"] = "livelihood_mitigation"
-                r["mitigation_potential"] = t3_mitigation_potential(
-                    rec["rank"], rec["confidence"]
+                # a DATA-DEFICIENT cell states no class at all (Pete 2026-10-16): the row
+                # carries its evidence and says what is missing, which a blank cell cannot
+                r["mitigation_potential"] = (
+                    ""
+                    if rec.get("data_deficient")
+                    else t3_mitigation_potential(rec["rank"], rec["confidence"])
                 )
                 r["asset_sensitivity"] = ""
         else:
@@ -2075,7 +2327,9 @@ def synthesise_cell(
                     # cost-sign votes is meaningless there, so economic rows leave it blank
                     # (manifest: conditional, required unless variable_type=economic_indicator)
                     "effect_direction": (
-                        "" if is_econ else t6_effect_direction(rec["rank"])
+                        ""
+                        if is_econ or rec.get("data_deficient")
+                        else t6_effect_direction(rec["rank"])
                     ),
                     "effect_confidence": rec["confidence"],
                     "timescale_of_effect": _modal_ctx(cs, "timescale_of_effect"),

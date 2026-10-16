@@ -50,6 +50,10 @@ ALLOWED_KEYS = {
     # protected area counted as restoration all passed because the practice test was
     # inferred from the tag rather than read from the paper
     "practice_as_described",
+    # v1.6.11 (Pete 2026-10-16): which greenhouse gas a number refers to. Rewetting lowers
+    # CO2 and raises CH4, and without this the two halves of one sentence enter a cell as
+    # opposite signs. `net_co2e` is the only value that may SET a carbon class.
+    "gas",
     # v1.6.7 (Pete 2026-10-12, review themes 1/3/7): is the practice isolated or part of a
     # bundle, how much of the sample used the NbS component, is there a normal-year
     # reference for a hazard-year claim, and who the value accrues to
@@ -83,7 +87,19 @@ HAZARDS = {
     "landslide",  # 8b B (Pete 2026-10-07): asset-threat only, like sedimentation
 }
 SEVERITY = {"mild", "moderate", "severe", "extreme", "unspecified"}
-COMPARATOR = {"existing_forest", "existing_wetland"}
+#: v1.6.11 (Pete 2026-10-16): `reference_*` marks a RECOVERY SHORTFALL — a restored site
+#: measured against an intact one. Pete: "this is not a useful comparison, a more sensible
+#: baseline is needed." Those units are reported as a recovery note and never set a class.
+COMPARATOR = {
+    "existing_forest",
+    "existing_wetland",
+    "reference_wetland",
+    "reference_forest",
+    # coastal marsh measured where it already stands: same rule as existing_wetland, but it
+    # belongs in the coastal family row rather than the rewetting one
+    "existing_wetland_coastal",
+}
+GAS = {"co2", "ch4", "n2o", "net_co2e"}
 ATTRIBUTION = {"isolated", "bundled"}
 NORMAL_YEAR = {"present", "absent"}
 BENEFICIARY = {"farm_household", "community", "society"}
@@ -194,6 +210,9 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
                 raise ValueError
         except (TypeError, ValueError):
             flag("bad_vocab", f"component_share_pct={share!r}")
+    gas = ctx.get("gas")
+    if gas is not None and gas not in GAS:
+        flag("bad_vocab", f"gas='{gas}'")
     comp = ctx.get("comparator")
     if comp is not None and comp not in COMPARATOR:
         flag("bad_vocab", f"comparator='{comp}'")

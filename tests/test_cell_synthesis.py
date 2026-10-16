@@ -68,7 +68,7 @@ def _t6(units, tiers=None, **kw):
         table="T6",
         nbs_id="riparian_buffer",
         target_key=kw.pop("key", "soil_erosion_risk"),
-        xw_rows=XW,
+        xw_rows=kw.pop("xw_rows", XW),
         **kw,
     )
 
@@ -2273,3 +2273,154 @@ def test_account_says_how_many_units_and_sources_the_row_rests_on():
     assert rows[0]["n_sources"] == 2
     assert "3 evidence unit(s) from 2 source(s)" in acc["pool_note"]
     assert "counts sources, not units" in acc["pool_note"]
+
+
+# ── what may SET a class (Pete 2026-10-16) ──────────────────────────────────────────
+
+
+def test_single_gas_units_cannot_set_a_carbon_class_but_a_net_balance_can():
+    """A: 'does methane emission exceed carbon removal? not point just having part of the
+    picture it could be misleading.' A CO2 fall and a CH4 rise from the same study must not
+    class the cell between them; a net CO2e figure must."""
+    co2 = _u(
+        "g1",
+        "s1",
+        "carbon_sequestration",
+        "positive",
+        "strong",
+        ctx={"income_group": "low", "gas": "co2"},
+    )
+    ch4 = _u(
+        "g2",
+        "s1",
+        "carbon_sequestration",
+        "negative",
+        "strong",
+        ctx={"income_group": "low", "gas": "ch4"},
+    )
+    xw = XW + [
+        cs.XWRow(
+            "carbon_sequestration",
+            "T6",
+            "carbon_sequestration_potential",
+            "same",
+            "direct",
+        )
+    ]
+    rows, rep = _t6([co2, ch4], key="carbon_sequestration_potential", xw_rows=xw)
+    assert rows, "the row is still published"
+    assert rows[0]["effect_direction"] == "", "no class without a net balance"
+    acc = rows[0]["justification"]
+    assert acc["data_deficient"] is True
+    assert set(acc["held_out_of_class"]) == {"not_a_net_balance"}
+
+    net = _u(
+        "g3",
+        "s2",
+        "carbon_sequestration",
+        "positive",
+        "moderate",
+        ctx={"income_group": "low", "gas": "net_co2e"},
+    )
+    rows2, _ = _t6([co2, ch4, net], key="carbon_sequestration_potential", xw_rows=xw)
+    assert rows2[0]["effect_direction"].endswith("positive")
+    assert rows2[0]["justification"]["held_out_of_class"]["not_a_net_balance"] == [
+        "g1",
+        "g2",
+    ]
+    # held out of the CLASS, still in the row
+    assert set(rows2[0]["evidence_ids"]) == {"g1", "g2", "g3"}
+
+
+def test_reference_shortfall_never_votes():
+    """B: falling short of an INTACT wetland is a recovery note, not harm."""
+    short = _u(
+        "r1",
+        "s1",
+        "biodiversity_outcome",
+        "negative",
+        "moderate",
+        ctx={"income_group": "low", "comparator": "reference_wetland"},
+    )
+    gain = _u(
+        "r2",
+        "s2",
+        "biodiversity_outcome",
+        "positive",
+        "moderate",
+        ctx={"income_group": "low"},
+    )
+    xw = XW + [
+        cs.XWRow(
+            "biodiversity_outcome", "T6", "biodiversity_priority", "same", "direct"
+        )
+    ]
+    rows, _ = _t6([short, gain], key="biodiversity_priority", xw_rows=xw)
+    assert rows[0]["effect_direction"].endswith("positive"), (
+        "the degraded-baseline gain decides"
+    )
+    assert rows[0]["justification"]["held_out_of_class"]["reference_shortfall"] == [
+        "r1"
+    ]
+    assert "r1" in rows[0]["evidence_ids"]
+
+
+def test_society_benefit_cannot_set_a_poverty_class():
+    """C1: society-level value is reported beside a poverty row, never summed into it."""
+    soc = _u(
+        "p1",
+        "s1",
+        "household_income",
+        "positive",
+        "strong",
+        ctx={"income_group": "low", "beneficiary": "society"},
+    )
+    hh = _u(
+        "p2",
+        "s2",
+        "household_income",
+        "negative",
+        "moderate",
+        ctx={"income_group": "low", "beneficiary": "farm_household"},
+    )
+    rows, _ = _t6([soc, hh], key="rural_poverty")
+    assert rows[0]["justification"]["held_out_of_class"]["not_a_household_benefit"] == [
+        "p1"
+    ]
+    # household income DOWN → poverty concern worsens
+    assert rows[0]["effect_direction"].endswith("negative")
+
+
+def test_data_deficient_row_is_published_and_says_what_is_missing():
+    """Thin rows, option B: 'data deficient', never a silent blank."""
+    lone = _u(
+        "d1",
+        "s1",
+        "household_income",
+        "positive",
+        "moderate",
+        basis="expert_assertion",
+        ctx={"income_group": "low"},
+    )
+    rows, rep = _t6([lone], key="rural_poverty")
+    assert rows, "the row is published"
+    acc = rows[0]["justification"]
+    assert rows[0]["effect_direction"] == ""
+    assert acc["data_deficient"] is True
+    assert "measured" in acc["data_deficient_reason"]
+    assert any("data deficient" in n for n in rep.notes)
+
+
+def test_one_measured_source_clears_the_floor():
+    lone = _u(
+        "d2",
+        "s1",
+        "household_income",
+        "positive",
+        "moderate",
+        basis="primary_measured",
+        ctx={"income_group": "low"},
+    )
+    rows, _ = _t6([lone], key="rural_poverty")
+    assert rows[0]["effect_direction"].endswith("positive")
+    assert rows[0]["justification"]["data_deficient"] is False
