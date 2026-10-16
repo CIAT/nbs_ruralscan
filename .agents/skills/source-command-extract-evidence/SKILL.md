@@ -303,6 +303,22 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     rewording round a digit does not help. The staging gate now runs the same whole-dict check
     as `check_numbers`, so a lane cannot pass a file the build will flag.
 
+27. **A decaying service is not a harm** (2026-10-16 retro). "Sediment retention diminishing
+    after 10 years" was encoded `direction = negative` on an erosion variable and made a row
+    read "wetland management INCREASES erosion risk" — but the source measured a trapping
+    SERVICE weakening with age, not the practice adding erosion to anyone's land. Encode a
+    weakening benefit as what it is: the service variable with the decay stated in
+    `outcome_raw` (and a `timescale_of_effect`), never as the opposite harm. The same trap
+    exists for "removal efficiency declined", "protection weakened", "survival fell over
+    time". If the outcome the cell asks about was never measured, the unit does not belong
+    in that cell.
+
+28. **A baseline is not an effect** (2026-10-16 retro; extends #23). A baseline survey
+    reports treatment and comparison areas BEFORE the intervention does anything, so its
+    treatment-vs-comparison differences are sampling design, not effects — a "no difference
+    at baseline" must not enter an effect cell as a null vote. Extract baseline documents
+    only for context (and for the later endline's lineage); the endline carries the effect.
+
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
 `check_species.py` (species mis-tag), `quarantine.py` (auto-soft-deletes off-scope +
