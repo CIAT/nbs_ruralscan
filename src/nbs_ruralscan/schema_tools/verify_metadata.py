@@ -34,6 +34,7 @@ from __future__ import annotations
 
 import csv
 import json
+import time
 import re
 import sys
 import urllib.parse
@@ -65,16 +66,33 @@ def _overlap(crossref_title: str, citation: str) -> float:
     return len(ct & _toks(citation)) / max(1, len(ct)) if ct else 0.0
 
 
-def _crossref(doi: str) -> dict | None:
+def _crossref(doi: str) -> tuple[dict | None, str]:
+    """(record, outcome) where outcome is `ok` · `not_found` · `unreachable`.
+
+    The distinction is load-bearing and was added after a 2026-10-16 run blanked 113 VALID
+    DOIs: every transport failure (rate limit, timeout, reset) looked identical to "this DOI
+    does not resolve", and the caller blanks on failure. Crossref rate-limits a parallel
+    sweep readily, so an unreachable DOI must leave the row untouched; only a definitive
+    404 may blank one.
+    """
     doi = doi.replace("https://doi.org/", "").strip()
     url = f"https://api.crossref.org/works/{urllib.parse.quote(doi)}?mailto={MAILTO}"
-    try:
-        with urllib.request.urlopen(
-            urllib.request.Request(url, headers=_UA), timeout=12
-        ) as r:
-            return json.load(r)["message"]
-    except Exception:
-        return None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(
+                urllib.request.Request(url, headers=_UA), timeout=20
+            ) as r:
+                return json.load(r)["message"], "ok"
+        except urllib.error.HTTPError as e:  # noqa: PERF203
+            if e.code == 404:
+                return None, "not_found"
+            if e.code in (429, 500, 502, 503, 504):
+                time.sleep(2 * (attempt + 1))
+                continue
+            return None, "unreachable"
+        except Exception:
+            time.sleep(2 * (attempt + 1))
+    return None, "unreachable"
 
 
 def _authoritative_citation(m: dict) -> str:
@@ -184,14 +202,15 @@ def verify() -> int:
     with_doi = [r for r in pending if (r.get("doi") or "").strip()]
 
     def work(r: dict) -> dict:
-        m = _crossref(r["doi"])
+        m, outcome = _crossref(r["doi"])
         cite = r.get("citation", "")
         if not m:
             return {
                 "source_id": r["source_id"],
                 "doi": r["doi"],
                 "verified": False,
-                "reason": "doi_unresolved",
+                # `unreachable` means we never got an answer — it must NOT blank a DOI
+                "reason": "doi_unresolved" if outcome == "not_found" else "unreachable",
             }
         ov = _overlap((m.get("title") or [""])[0], cite)
         return {
@@ -204,10 +223,13 @@ def verify() -> int:
             "reason": "ok" if ov >= THRESH else "title_mismatch",
         }
 
-    with ThreadPoolExecutor(max_workers=6) as ex:
+    # 6 parallel workers rate-limited Crossref hard enough on 2026-10-16 that 117 of 152
+    # lookups failed at once; the polite pool is small and the retry in `_crossref` carries
+    # the rest.
+    with ThreadPoolExecutor(max_workers=2) as ex:
         results = {res["source_id"]: res for res in ex.map(work, with_doi)}
 
-    verified = mismatched = 0
+    verified = mismatched = unreachable = 0
     for r in rows:
         res = results.get(r["source_id"])
         if not res:
@@ -216,6 +238,9 @@ def verify() -> int:
             r["doi_verified"] = "true"
             r["citation"] = res["authoritative_citation"]  # authoritative rebuild
             verified += 1
+        elif res["reason"] == "unreachable":
+            # Crossref never answered: leave the row exactly as it was and report it
+            unreachable += 1
         else:
             # DOI is wrong/dead: blank it, keep the (title-bearing) citation, flag.
             note = (r.get("note") or "").strip()
@@ -236,13 +261,15 @@ def verify() -> int:
             "checked": len(with_doi),
             "verified": verified,
             "failed": mismatched,
+            "unreachable": unreachable,
             "results": list(results.values()),
         },
         REPORT.open("w", encoding="utf-8"),
         indent=1,
     )
     print(
-        f"verify: checked={len(with_doi)} verified={verified} failed(blanked)={mismatched}"
+        f"verify: checked={len(with_doi)} verified={verified} failed(blanked)={mismatched} "
+        f"unreachable(left alone)={unreachable}"
     )
     return 0
 
