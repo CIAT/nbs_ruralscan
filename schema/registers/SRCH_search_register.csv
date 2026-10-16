@@ -1448,3 +1448,355 @@ title_and_abstract.search:(peatland OR wetland OR ""rewetted"") AND (rewetting O
 ```
 
 `sort=relevance_score:desc` · `per-page=35` · `mailto=p.steward@cgiar.org` — **total 3682**, retrieved 35.",frame · source_type · relevance · credibility_six_axis · saturation_stop,"SYNTHESIS-FIRST (Pete 2026-10-01): meta-analyses / systematic reviews / maps / EGMs / reviews first, then MEL & impact-assessment grey literature; primaries only where a hazard / target / family has no synthesis; PADs excluded; datasets used as seed lists only. NbS wetland_management, table T6; practice must be explicit (PICOS).",retrieve<=200/query; screen<=80; include<=30 per lane; saturation stop,see discovery log,see discovery log,49,2026-10-14,wet_t3t6_2026-10-14_lit_t6,discovery-agent (opus) / orchestrator,v1.6.10,methodology/discovery_logs/wetland_T6_priorities_synthesis_2026-10.md,49 candidates queued from the lit_t6 lane; per-table count counts candidates tagged for T6.
+wetland_management__T3__grey__all__2026-10-16,wetland_management,,T3,grey,"[grey lane, grey] The only institutional repository in this lane with a usable machine interface. Queries were issued against `https://search.worldbank.org/api/v3/wds` with `format=json` and the field list `docdt,display_title,pdfurl,docty,repnb,count`.
+
+#### Verbatim queries — World Bank WDS
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland%20restoration%20livelihoods&fl=docdt,docna,count,display_title,pdfurl,docty,repnb&rows=20
+```
+— returned 20 records (mostly safeguards and resettlement documents; 1 ICR, 2 ICR Reviews, 1 PPAR).
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=peatland%20rewetting&fl=docdt,docna,count,display_title,pdfurl,docty,repnb&rows=20
+```
+— **total 0**. The World Bank has published nothing indexed under ""peatland rewetting"".
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=peatland&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 21 records, all Indonesia governance/accounting/PID material plus unrelated Japanese and Sri Lankan land-reclamation reports. **No peatland restoration evaluation.**
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshlands%20restoration&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 25 records, 23 of them Rwanda Rural Sector Support Project resettlement and safeguards volumes (see exclusions).
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland&docty_exact=Implementation%20Completion%20and%20Results%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 25 ICRs; 11 genuinely wetland-related. This was the productive query.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland&docty_exact=Project%20Performance%20Assessment%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=20
+```
+— 20 IEG PPARs; 4 wetland-relevant.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshland%20rehabilitation&docty_exact=Implementation%20Completion%20and%20Results%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=20
+```
+— **total 0**.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshlands%20Iraq&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 2 records, both about school construction. **The Bank has no Mesopotamian marshes restoration evaluation in WDS.** || #### Verbatim queries — GCF IEU
+
+```
+WebSearch: Adaptation Fund final evaluation wetland restoration project household income beneficiaries report
+WebSearch: GCF Independent Evaluation Unit Uganda wetlands FP034 impact evaluation household income food security
+WebFetch: https://ieu.greenclimate.fund/project/fp034
+WebFetch: https://ieu.greenclimate.fund/document/impact-evaluation-report-fp034
+WebFetch: https://ieu.greenclimate.fund/search?keywords=wetland
+```
+
+The IEU site search returned **exactly two substantive wetland documents** — the FP034 endline impact evaluation (June 2026) and its baseline (February 2025). Everything else was a news item, a blog or an event page. The GCF portfolio contains one evaluated wetland restoration project, and this lane found it. || ```
+WebFetch: https://openknowledge.fao.org/server/api/discover/search/objects?query=terminal%20evaluation%20wetland&size=30
+```
+— **HTTP 403**. The FAO DSpace API refuses tool requests. Fell back to:
+
+```
+WebSearch: FAO terminal evaluation GEF project peatland OR marshland OR wetland restoration rehabilitation livelihoods household openknowledge
+WebSearch: ""Climate Adaptation in Wetlands Areas"" CAWA Lao terminal evaluation FAO ""Project Evaluation Series"" 2024 title
+WebSearch: Laos Adaptation Fund terminal evaluation ""Xe Champhone"" OR ""Beung Kiat Ngong"" wetland household income fisheries
+```
+— surfaced the CAWA Lao PDR terminal evaluation (Project Evaluation Series 19/2024, GCP/LAO/022/LDF, GEF ID 5489) and several non-wetland FAO terminal evaluations. || ```
+WebFetch: https://developmentevidence.3ieimpact.org/search-result?page=1&...&search=wetland%20restoration&searchType=simple
+WebFetch: https://developmentevidence.3ieimpact.org/api/search?q=wetland&size=25
+WebSearch: 3ie impact evaluation wetland restoration household income evidence gap map
+WebSearch (allowed_domains = 3ieimpact.org, developmentevidence.3ieimpact.org, gapmaps.3ieimpact.org):
+ wetland restoration impact evaluation household income randomized Africa
+WebSearch (allowed_domains = developmentevidence.3ieimpact.org):
+ wetland peatland marsh restoration impact evaluation
+```
+
+**The 3ie Development Evidence Portal could not be queried by any tool available here.** Both the search-result URL and the API path returned a bare page title with no records — it is a client-side application. The domain-restricted web searches ignored the restriction and returned other domains, which means the portal's record pages are not in the general index either.
+
+What the open-web 3ie searches *did* return was instructive: 3ie's agriculture, resilience (REAPER) and payment-for-environmental-services evidence products, and an Ethiopian soil-and-water-conservation record in the climate-change-and-biodiversity gap map — **but no wetland, peatland or marsh restoration impact evaluation, and no wetland evidence gap map**. This corroborates the published lane's finding (its point 2) that no EGM covers this practice.
+
+**→ HUMAN STEP.** The 3ie Development Evidence Portal and the Climate Change & Biodiversity EGM need a browser-based search by a person before we can state that 3ie holds nothing. A tool cannot establish that, and this report does not claim it. || ```
+WebSearch: IFAD Independent Office of Evaluation wetland restoration project performance evaluation household income
+WebSearch: IFAD evaluation marshland development Rwanda OR Burundi rice household income impact evaluation IOE project performance
+```
+
+IFAD's document server bot-blocks tool fetches (a known constraint, already recorded in `search_protocol.md`). The searches returned IFAD's evaluation *manuals*, country strategy evaluations for Rwanda and Burundi, and the regional East Africa impact evaluation. The substantive IFAD marshland work — Burundi's 16,714 ha of ""developed or rehabilitated marshlands"", the Rwanda watershed operations — is **marshland drainage and development for irrigated rice**, which is the opposite intervention to restoration. See exclusions. **No IFAD IOE evaluation of a wetland restoration intervention was found.** || ```
+WebSearch: GEF Independent Evaluation Office terminal evaluation peatland wetland restoration livelihoods
+WebFetch: https://www.gefieo.org/search?keywords=wetland → HTTP 404
+WebSearch: UNDP GEF terminal evaluation peatland rewetting Belarus OR Russia OR Indonesia restoration local livelihoods income erc.undp.org
+```
+
+GEF IEO's own search endpoint 404'd. The open-web pass surfaced the GEF IEO Sustainable Forest Management evaluation (2022) and a drylands country-cluster evaluation, both of which mention wetlands rehabilitation only in passing (""showed promise in pilot areas but were",frame · source_type · relevance · credibility_six_axis · saturation_stop,"SYNTHESIS-FIRST (Pete 2026-10-01): meta-analyses / systematic reviews / maps / EGMs / reviews first, then MEL & impact-assessment grey literature; primaries only where a hazard / target / family has no synthesis; PADs excluded; datasets used as seed lists only. NbS wetland_management, table T3; practice must be explicit (PICOS).",retrieve<=200/query; screen<=80; include<=30 per lane; saturation stop,see discovery log,see discovery log,22,2026-10-16,wet_grey_2026-10-16_grey,discovery-agent (opus) / orchestrator,v1.6.10,methodology/discovery_logs/wetland_grey_evaluation_2026-10.md,22 candidates queued from the grey lane; per-table count counts candidates tagged for T3.
+wetland_management__T6__grey__all__2026-10-16,wetland_management,,T6,grey,"[grey lane, grey] The only institutional repository in this lane with a usable machine interface. Queries were issued against `https://search.worldbank.org/api/v3/wds` with `format=json` and the field list `docdt,display_title,pdfurl,docty,repnb,count`.
+
+#### Verbatim queries — World Bank WDS
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland%20restoration%20livelihoods&fl=docdt,docna,count,display_title,pdfurl,docty,repnb&rows=20
+```
+— returned 20 records (mostly safeguards and resettlement documents; 1 ICR, 2 ICR Reviews, 1 PPAR).
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=peatland%20rewetting&fl=docdt,docna,count,display_title,pdfurl,docty,repnb&rows=20
+```
+— **total 0**. The World Bank has published nothing indexed under ""peatland rewetting"".
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=peatland&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 21 records, all Indonesia governance/accounting/PID material plus unrelated Japanese and Sri Lankan land-reclamation reports. **No peatland restoration evaluation.**
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshlands%20restoration&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 25 records, 23 of them Rwanda Rural Sector Support Project resettlement and safeguards volumes (see exclusions).
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland&docty_exact=Implementation%20Completion%20and%20Results%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 25 ICRs; 11 genuinely wetland-related. This was the productive query.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland&docty_exact=Project%20Performance%20Assessment%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=20
+```
+— 20 IEG PPARs; 4 wetland-relevant.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshland%20rehabilitation&docty_exact=Implementation%20Completion%20and%20Results%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=20
+```
+— **total 0**.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshlands%20Iraq&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 2 records, both about school construction. **The Bank has no Mesopotamian marshes restoration evaluation in WDS.** || #### Verbatim queries — GCF IEU
+
+```
+WebSearch: Adaptation Fund final evaluation wetland restoration project household income beneficiaries report
+WebSearch: GCF Independent Evaluation Unit Uganda wetlands FP034 impact evaluation household income food security
+WebFetch: https://ieu.greenclimate.fund/project/fp034
+WebFetch: https://ieu.greenclimate.fund/document/impact-evaluation-report-fp034
+WebFetch: https://ieu.greenclimate.fund/search?keywords=wetland
+```
+
+The IEU site search returned **exactly two substantive wetland documents** — the FP034 endline impact evaluation (June 2026) and its baseline (February 2025). Everything else was a news item, a blog or an event page. The GCF portfolio contains one evaluated wetland restoration project, and this lane found it. || ```
+WebFetch: https://openknowledge.fao.org/server/api/discover/search/objects?query=terminal%20evaluation%20wetland&size=30
+```
+— **HTTP 403**. The FAO DSpace API refuses tool requests. Fell back to:
+
+```
+WebSearch: FAO terminal evaluation GEF project peatland OR marshland OR wetland restoration rehabilitation livelihoods household openknowledge
+WebSearch: ""Climate Adaptation in Wetlands Areas"" CAWA Lao terminal evaluation FAO ""Project Evaluation Series"" 2024 title
+WebSearch: Laos Adaptation Fund terminal evaluation ""Xe Champhone"" OR ""Beung Kiat Ngong"" wetland household income fisheries
+```
+— surfaced the CAWA Lao PDR terminal evaluation (Project Evaluation Series 19/2024, GCP/LAO/022/LDF, GEF ID 5489) and several non-wetland FAO terminal evaluations. || ```
+WebFetch: https://developmentevidence.3ieimpact.org/search-result?page=1&...&search=wetland%20restoration&searchType=simple
+WebFetch: https://developmentevidence.3ieimpact.org/api/search?q=wetland&size=25
+WebSearch: 3ie impact evaluation wetland restoration household income evidence gap map
+WebSearch (allowed_domains = 3ieimpact.org, developmentevidence.3ieimpact.org, gapmaps.3ieimpact.org):
+ wetland restoration impact evaluation household income randomized Africa
+WebSearch (allowed_domains = developmentevidence.3ieimpact.org):
+ wetland peatland marsh restoration impact evaluation
+```
+
+**The 3ie Development Evidence Portal could not be queried by any tool available here.** Both the search-result URL and the API path returned a bare page title with no records — it is a client-side application. The domain-restricted web searches ignored the restriction and returned other domains, which means the portal's record pages are not in the general index either.
+
+What the open-web 3ie searches *did* return was instructive: 3ie's agriculture, resilience (REAPER) and payment-for-environmental-services evidence products, and an Ethiopian soil-and-water-conservation record in the climate-change-and-biodiversity gap map — **but no wetland, peatland or marsh restoration impact evaluation, and no wetland evidence gap map**. This corroborates the published lane's finding (its point 2) that no EGM covers this practice.
+
+**→ HUMAN STEP.** The 3ie Development Evidence Portal and the Climate Change & Biodiversity EGM need a browser-based search by a person before we can state that 3ie holds nothing. A tool cannot establish that, and this report does not claim it. || ```
+WebSearch: IFAD Independent Office of Evaluation wetland restoration project performance evaluation household income
+WebSearch: IFAD evaluation marshland development Rwanda OR Burundi rice household income impact evaluation IOE project performance
+```
+
+IFAD's document server bot-blocks tool fetches (a known constraint, already recorded in `search_protocol.md`). The searches returned IFAD's evaluation *manuals*, country strategy evaluations for Rwanda and Burundi, and the regional East Africa impact evaluation. The substantive IFAD marshland work — Burundi's 16,714 ha of ""developed or rehabilitated marshlands"", the Rwanda watershed operations — is **marshland drainage and development for irrigated rice**, which is the opposite intervention to restoration. See exclusions. **No IFAD IOE evaluation of a wetland restoration intervention was found.** || ```
+WebSearch: GEF Independent Evaluation Office terminal evaluation peatland wetland restoration livelihoods
+WebFetch: https://www.gefieo.org/search?keywords=wetland → HTTP 404
+WebSearch: UNDP GEF terminal evaluation peatland rewetting Belarus OR Russia OR Indonesia restoration local livelihoods income erc.undp.org
+```
+
+GEF IEO's own search endpoint 404'd. The open-web pass surfaced the GEF IEO Sustainable Forest Management evaluation (2022) and a drylands country-cluster evaluation, both of which mention wetlands rehabilitation only in passing (""showed promise in pilot areas but were",frame · source_type · relevance · credibility_six_axis · saturation_stop,"SYNTHESIS-FIRST (Pete 2026-10-01): meta-analyses / systematic reviews / maps / EGMs / reviews first, then MEL & impact-assessment grey literature; primaries only where a hazard / target / family has no synthesis; PADs excluded; datasets used as seed lists only. NbS wetland_management, table T6; practice must be explicit (PICOS).",retrieve<=200/query; screen<=80; include<=30 per lane; saturation stop,see discovery log,see discovery log,22,2026-10-16,wet_grey_2026-10-16_grey,discovery-agent (opus) / orchestrator,v1.6.10,methodology/discovery_logs/wetland_grey_evaluation_2026-10.md,22 candidates queued from the grey lane; per-table count counts candidates tagged for T6.
+wetland_management__T3__updated_lit__all__2026-10-16,wetland_management,,T3,updated_lit,"[lit lane, updated_lit] The only institutional repository in this lane with a usable machine interface. Queries were issued against `https://search.worldbank.org/api/v3/wds` with `format=json` and the field list `docdt,display_title,pdfurl,docty,repnb,count`.
+
+#### Verbatim queries — World Bank WDS
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland%20restoration%20livelihoods&fl=docdt,docna,count,display_title,pdfurl,docty,repnb&rows=20
+```
+— returned 20 records (mostly safeguards and resettlement documents; 1 ICR, 2 ICR Reviews, 1 PPAR).
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=peatland%20rewetting&fl=docdt,docna,count,display_title,pdfurl,docty,repnb&rows=20
+```
+— **total 0**. The World Bank has published nothing indexed under ""peatland rewetting"".
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=peatland&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 21 records, all Indonesia governance/accounting/PID material plus unrelated Japanese and Sri Lankan land-reclamation reports. **No peatland restoration evaluation.**
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshlands%20restoration&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 25 records, 23 of them Rwanda Rural Sector Support Project resettlement and safeguards volumes (see exclusions).
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland&docty_exact=Implementation%20Completion%20and%20Results%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 25 ICRs; 11 genuinely wetland-related. This was the productive query.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland&docty_exact=Project%20Performance%20Assessment%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=20
+```
+— 20 IEG PPARs; 4 wetland-relevant.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshland%20rehabilitation&docty_exact=Implementation%20Completion%20and%20Results%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=20
+```
+— **total 0**.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshlands%20Iraq&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 2 records, both about school construction. **The Bank has no Mesopotamian marshes restoration evaluation in WDS.** || #### Verbatim queries — GCF IEU
+
+```
+WebSearch: Adaptation Fund final evaluation wetland restoration project household income beneficiaries report
+WebSearch: GCF Independent Evaluation Unit Uganda wetlands FP034 impact evaluation household income food security
+WebFetch: https://ieu.greenclimate.fund/project/fp034
+WebFetch: https://ieu.greenclimate.fund/document/impact-evaluation-report-fp034
+WebFetch: https://ieu.greenclimate.fund/search?keywords=wetland
+```
+
+The IEU site search returned **exactly two substantive wetland documents** — the FP034 endline impact evaluation (June 2026) and its baseline (February 2025). Everything else was a news item, a blog or an event page. The GCF portfolio contains one evaluated wetland restoration project, and this lane found it. || ```
+WebFetch: https://openknowledge.fao.org/server/api/discover/search/objects?query=terminal%20evaluation%20wetland&size=30
+```
+— **HTTP 403**. The FAO DSpace API refuses tool requests. Fell back to:
+
+```
+WebSearch: FAO terminal evaluation GEF project peatland OR marshland OR wetland restoration rehabilitation livelihoods household openknowledge
+WebSearch: ""Climate Adaptation in Wetlands Areas"" CAWA Lao terminal evaluation FAO ""Project Evaluation Series"" 2024 title
+WebSearch: Laos Adaptation Fund terminal evaluation ""Xe Champhone"" OR ""Beung Kiat Ngong"" wetland household income fisheries
+```
+— surfaced the CAWA Lao PDR terminal evaluation (Project Evaluation Series 19/2024, GCP/LAO/022/LDF, GEF ID 5489) and several non-wetland FAO terminal evaluations. || ```
+WebFetch: https://developmentevidence.3ieimpact.org/search-result?page=1&...&search=wetland%20restoration&searchType=simple
+WebFetch: https://developmentevidence.3ieimpact.org/api/search?q=wetland&size=25
+WebSearch: 3ie impact evaluation wetland restoration household income evidence gap map
+WebSearch (allowed_domains = 3ieimpact.org, developmentevidence.3ieimpact.org, gapmaps.3ieimpact.org):
+ wetland restoration impact evaluation household income randomized Africa
+WebSearch (allowed_domains = developmentevidence.3ieimpact.org):
+ wetland peatland marsh restoration impact evaluation
+```
+
+**The 3ie Development Evidence Portal could not be queried by any tool available here.** Both the search-result URL and the API path returned a bare page title with no records — it is a client-side application. The domain-restricted web searches ignored the restriction and returned other domains, which means the portal's record pages are not in the general index either.
+
+What the open-web 3ie searches *did* return was instructive: 3ie's agriculture, resilience (REAPER) and payment-for-environmental-services evidence products, and an Ethiopian soil-and-water-conservation record in the climate-change-and-biodiversity gap map — **but no wetland, peatland or marsh restoration impact evaluation, and no wetland evidence gap map**. This corroborates the published lane's finding (its point 2) that no EGM covers this practice.
+
+**→ HUMAN STEP.** The 3ie Development Evidence Portal and the Climate Change & Biodiversity EGM need a browser-based search by a person before we can state that 3ie holds nothing. A tool cannot establish that, and this report does not claim it. || ```
+WebSearch: IFAD Independent Office of Evaluation wetland restoration project performance evaluation household income
+WebSearch: IFAD evaluation marshland development Rwanda OR Burundi rice household income impact evaluation IOE project performance
+```
+
+IFAD's document server bot-blocks tool fetches (a known constraint, already recorded in `search_protocol.md`). The searches returned IFAD's evaluation *manuals*, country strategy evaluations for Rwanda and Burundi, and the regional East Africa impact evaluation. The substantive IFAD marshland work — Burundi's 16,714 ha of ""developed or rehabilitated marshlands"", the Rwanda watershed operations — is **marshland drainage and development for irrigated rice**, which is the opposite intervention to restoration. See exclusions. **No IFAD IOE evaluation of a wetland restoration intervention was found.** || ```
+WebSearch: GEF Independent Evaluation Office terminal evaluation peatland wetland restoration livelihoods
+WebFetch: https://www.gefieo.org/search?keywords=wetland → HTTP 404
+WebSearch: UNDP GEF terminal evaluation peatland rewetting Belarus OR Russia OR Indonesia restoration local livelihoods income erc.undp.org
+```
+
+GEF IEO's own search endpoint 404'd. The open-web pass surfaced the GEF IEO Sustainable Forest Management evaluation (2022) and a drylands country-cluster evaluation, both of which mention wetlands rehabilitation only in passing (""showed promise in pilot areas but were",frame · source_type · relevance · credibility_six_axis · saturation_stop,"SYNTHESIS-FIRST (Pete 2026-10-01): meta-analyses / systematic reviews / maps / EGMs / reviews first, then MEL & impact-assessment grey literature; primaries only where a hazard / target / family has no synthesis; PADs excluded; datasets used as seed lists only. NbS wetland_management, table T3; practice must be explicit (PICOS).",retrieve<=200/query; screen<=80; include<=30 per lane; saturation stop,see discovery log,see discovery log,6,2026-10-16,wet_grey_2026-10-16_lit,discovery-agent (opus) / orchestrator,v1.6.10,methodology/discovery_logs/wetland_grey_evaluation_2026-10.md,6 candidates queued from the lit lane; per-table count counts candidates tagged for T3.
+wetland_management__T6__updated_lit__all__2026-10-16,wetland_management,,T6,updated_lit,"[lit lane, updated_lit] The only institutional repository in this lane with a usable machine interface. Queries were issued against `https://search.worldbank.org/api/v3/wds` with `format=json` and the field list `docdt,display_title,pdfurl,docty,repnb,count`.
+
+#### Verbatim queries — World Bank WDS
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland%20restoration%20livelihoods&fl=docdt,docna,count,display_title,pdfurl,docty,repnb&rows=20
+```
+— returned 20 records (mostly safeguards and resettlement documents; 1 ICR, 2 ICR Reviews, 1 PPAR).
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=peatland%20rewetting&fl=docdt,docna,count,display_title,pdfurl,docty,repnb&rows=20
+```
+— **total 0**. The World Bank has published nothing indexed under ""peatland rewetting"".
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=peatland&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 21 records, all Indonesia governance/accounting/PID material plus unrelated Japanese and Sri Lankan land-reclamation reports. **No peatland restoration evaluation.**
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshlands%20restoration&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 25 records, 23 of them Rwanda Rural Sector Support Project resettlement and safeguards volumes (see exclusions).
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland&docty_exact=Implementation%20Completion%20and%20Results%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 25 ICRs; 11 genuinely wetland-related. This was the productive query.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=wetland&docty_exact=Project%20Performance%20Assessment%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=20
+```
+— 20 IEG PPARs; 4 wetland-relevant.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshland%20rehabilitation&docty_exact=Implementation%20Completion%20and%20Results%20Report&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=20
+```
+— **total 0**.
+
+```
+https://search.worldbank.org/api/v3/wds?format=json&qterm=marshlands%20Iraq&fl=docdt,display_title,pdfurl,docty,repnb,count&rows=25
+```
+— 2 records, both about school construction. **The Bank has no Mesopotamian marshes restoration evaluation in WDS.** || #### Verbatim queries — GCF IEU
+
+```
+WebSearch: Adaptation Fund final evaluation wetland restoration project household income beneficiaries report
+WebSearch: GCF Independent Evaluation Unit Uganda wetlands FP034 impact evaluation household income food security
+WebFetch: https://ieu.greenclimate.fund/project/fp034
+WebFetch: https://ieu.greenclimate.fund/document/impact-evaluation-report-fp034
+WebFetch: https://ieu.greenclimate.fund/search?keywords=wetland
+```
+
+The IEU site search returned **exactly two substantive wetland documents** — the FP034 endline impact evaluation (June 2026) and its baseline (February 2025). Everything else was a news item, a blog or an event page. The GCF portfolio contains one evaluated wetland restoration project, and this lane found it. || ```
+WebFetch: https://openknowledge.fao.org/server/api/discover/search/objects?query=terminal%20evaluation%20wetland&size=30
+```
+— **HTTP 403**. The FAO DSpace API refuses tool requests. Fell back to:
+
+```
+WebSearch: FAO terminal evaluation GEF project peatland OR marshland OR wetland restoration rehabilitation livelihoods household openknowledge
+WebSearch: ""Climate Adaptation in Wetlands Areas"" CAWA Lao terminal evaluation FAO ""Project Evaluation Series"" 2024 title
+WebSearch: Laos Adaptation Fund terminal evaluation ""Xe Champhone"" OR ""Beung Kiat Ngong"" wetland household income fisheries
+```
+— surfaced the CAWA Lao PDR terminal evaluation (Project Evaluation Series 19/2024, GCP/LAO/022/LDF, GEF ID 5489) and several non-wetland FAO terminal evaluations. || ```
+WebFetch: https://developmentevidence.3ieimpact.org/search-result?page=1&...&search=wetland%20restoration&searchType=simple
+WebFetch: https://developmentevidence.3ieimpact.org/api/search?q=wetland&size=25
+WebSearch: 3ie impact evaluation wetland restoration household income evidence gap map
+WebSearch (allowed_domains = 3ieimpact.org, developmentevidence.3ieimpact.org, gapmaps.3ieimpact.org):
+ wetland restoration impact evaluation household income randomized Africa
+WebSearch (allowed_domains = developmentevidence.3ieimpact.org):
+ wetland peatland marsh restoration impact evaluation
+```
+
+**The 3ie Development Evidence Portal could not be queried by any tool available here.** Both the search-result URL and the API path returned a bare page title with no records — it is a client-side application. The domain-restricted web searches ignored the restriction and returned other domains, which means the portal's record pages are not in the general index either.
+
+What the open-web 3ie searches *did* return was instructive: 3ie's agriculture, resilience (REAPER) and payment-for-environmental-services evidence products, and an Ethiopian soil-and-water-conservation record in the climate-change-and-biodiversity gap map — **but no wetland, peatland or marsh restoration impact evaluation, and no wetland evidence gap map**. This corroborates the published lane's finding (its point 2) that no EGM covers this practice.
+
+**→ HUMAN STEP.** The 3ie Development Evidence Portal and the Climate Change & Biodiversity EGM need a browser-based search by a person before we can state that 3ie holds nothing. A tool cannot establish that, and this report does not claim it. || ```
+WebSearch: IFAD Independent Office of Evaluation wetland restoration project performance evaluation household income
+WebSearch: IFAD evaluation marshland development Rwanda OR Burundi rice household income impact evaluation IOE project performance
+```
+
+IFAD's document server bot-blocks tool fetches (a known constraint, already recorded in `search_protocol.md`). The searches returned IFAD's evaluation *manuals*, country strategy evaluations for Rwanda and Burundi, and the regional East Africa impact evaluation. The substantive IFAD marshland work — Burundi's 16,714 ha of ""developed or rehabilitated marshlands"", the Rwanda watershed operations — is **marshland drainage and development for irrigated rice**, which is the opposite intervention to restoration. See exclusions. **No IFAD IOE evaluation of a wetland restoration intervention was found.** || ```
+WebSearch: GEF Independent Evaluation Office terminal evaluation peatland wetland restoration livelihoods
+WebFetch: https://www.gefieo.org/search?keywords=wetland → HTTP 404
+WebSearch: UNDP GEF terminal evaluation peatland rewetting Belarus OR Russia OR Indonesia restoration local livelihoods income erc.undp.org
+```
+
+GEF IEO's own search endpoint 404'd. The open-web pass surfaced the GEF IEO Sustainable Forest Management evaluation (2022) and a drylands country-cluster evaluation, both of which mention wetlands rehabilitation only in passing (""showed promise in pilot areas but were",frame · source_type · relevance · credibility_six_axis · saturation_stop,"SYNTHESIS-FIRST (Pete 2026-10-01): meta-analyses / systematic reviews / maps / EGMs / reviews first, then MEL & impact-assessment grey literature; primaries only where a hazard / target / family has no synthesis; PADs excluded; datasets used as seed lists only. NbS wetland_management, table T6; practice must be explicit (PICOS).",retrieve<=200/query; screen<=80; include<=30 per lane; saturation stop,see discovery log,see discovery log,6,2026-10-16,wet_grey_2026-10-16_lit,discovery-agent (opus) / orchestrator,v1.6.10,methodology/discovery_logs/wetland_grey_evaluation_2026-10.md,6 candidates queued from the lit lane; per-table count counts candidates tagged for T6.

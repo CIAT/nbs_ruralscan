@@ -68,3 +68,43 @@ def test_non_pending_rows_ignored(tmp_path, monkeypatch):
 def test_real_queue_is_clean():
     # The committed queue must pass the gate (regression guard for the 2026-08 fix).
     assert verify_metadata.check() == 0
+
+
+def test_unreachable_crossref_never_blanks_a_doi(monkeypatch, tmp_path):
+    """2026-10-16: a rate-limited sweep blanked 113 VALID DOIs, because every transport
+    failure looked like 'this DOI does not resolve'. Only a definitive 404 may blank one."""
+    from nbs_ruralscan.schema_tools import verify_metadata as vm
+
+    queue = tmp_path / "queue.csv"
+    queue.write_text(
+        "source_id,citation,doi,status,doi_verified,note,title_verified\n"
+        "a,Smith et al. (2020). A real paper.,10.1000/real,pending,,,\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(vm, "QUEUE", queue)
+    monkeypatch.setattr(vm, "REPORT", tmp_path / "report.json")
+    monkeypatch.setattr(vm, "_crossref", lambda doi: (None, "unreachable"))
+    vm.verify()
+    row = next(csv.DictReader(queue.open(encoding="utf-8")))
+    assert row["doi"] == "10.1000/real", (
+        "an unreachable lookup must leave the DOI alone"
+    )
+    assert "blanked" not in (row["note"] or "")
+
+
+def test_a_404_still_blanks(monkeypatch, tmp_path):
+    from nbs_ruralscan.schema_tools import verify_metadata as vm
+
+    queue = tmp_path / "queue.csv"
+    queue.write_text(
+        "source_id,citation,doi,status,doi_verified,note,title_verified\n"
+        "a,Smith et al. (2020). A real paper.,10.1000/dead,pending,,,\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(vm, "QUEUE", queue)
+    monkeypatch.setattr(vm, "REPORT", tmp_path / "report.json")
+    monkeypatch.setattr(vm, "_crossref", lambda doi: (None, "not_found"))
+    vm.verify()
+    row = next(csv.DictReader(queue.open(encoding="utf-8")))
+    assert row["doi"] == ""
+    assert "acquire by TITLE" in row["note"]
