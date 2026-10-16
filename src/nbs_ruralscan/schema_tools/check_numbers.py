@@ -23,9 +23,11 @@ from pathlib import Path
 # capture leading-dot decimals too (".13" as written in papers, not just "0.13")
 _NUM = re.compile(r"\d*\.\d+|\d+")
 # thousands grouped with a space (SI style, used by WOCAT/FAO: "1 001 - 1 500 mm"),
-# incl. no-break / thin / narrow no-break spaces
+# incl. no-break / thin / narrow no-break spaces, and \x0f — a control character some PDF
+# fonts emit as their narrow-space glyph (Wichmann 2021 prints "€ 127\x0f862"; caught
+# 2026-10-16 when the figure could not be cited from its own quote)
 _SPACED_THOUSANDS = re.compile(
-    r"(?<![\d.])\d{1,3}(?:[ \u00a0\u2009\u202f]\d{3})+(?:\.\d+)?(?![\d.])"
+    r"(?<![\d.])\d{1,3}(?:[ \u00a0\u2009\u202f\x0f]\d{3})+(?:\.\d+)?(?![\d.])"
 )
 
 
@@ -91,7 +93,7 @@ def _nums(text: str) -> set[str]:
             out.add(m.rstrip("0").rstrip("."))  # 25.0 -> 25
     for m in _SPACED_THOUSANDS.findall(text):
         joined = re.sub(
-            r"[ \u00a0\u2009\u202f]", "", m
+            r"[ \u00a0\u2009\u202f\x0f]", "", m
         )  # keep a decimal part: "3 945.60"
         out.add(joined)
         if "." in joined:

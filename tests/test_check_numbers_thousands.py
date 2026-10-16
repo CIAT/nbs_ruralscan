@@ -27,3 +27,12 @@ def test_locale_decimal_comma_and_thousands_dot():
     assert _nums("area 1,637,600 ha") == {"1637600"}
     # an integral float magnitude matches a quote printing the bare integer
     assert not _floats(_nums(str(41.0))) - _floats(_nums("41 trees per hectare"))
+
+
+def test_control_char_thousands_glyph_joins():
+    """Some PDF fonts emit \\x0f as their narrow-space glyph (Wichmann 2021: '€ 127\\x0f862').
+    The grouped figure must join to 127862 so the euro value can be cited from its own quote."""
+    from nbs_ruralscan.schema_tools.check_numbers import _nums
+
+    got = _nums("costs of € 127\x0f862 per hectare and € 98\x0f446 ha-1")
+    assert "127862" in got and "98446" in got
