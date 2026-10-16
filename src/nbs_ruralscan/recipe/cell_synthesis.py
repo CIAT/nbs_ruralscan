@@ -1932,6 +1932,17 @@ NET_GAS = "net_co2e"
 REFERENCE_COMPARATORS = {"reference_wetland", "reference_forest"}
 #: who the value has to reach before it may set a poverty class
 POVERTY_BENEFICIARIES = {"farm_household", "community"}
+#: Pete 2026-10-16 (decision 2, option A): income households already draw from an EXISTING
+#: wetland or forest is the OPPORTUNITY COST of restoring, not a benefit of it — in a
+#: livelihood cell it is a non-voting note even inside the comparator policy's home family
+#: row, where it previously voted and made the rewetting poverty row read positive against
+#: its own measured restoration studies.
+EXISTING_USE_COMPARATORS = {
+    "existing_wetland",
+    "existing_wetland_coastal",
+    "existing_forest",
+}
+LIVELIHOOD_KEYS = {"rural_poverty", "production_gap"}
 #: Pete 2026-10-16 (thin rows, option B): a cell states a class only when its pool clears a
 #: floor — two independent sources, OR one MEASURED finding. Below it the row is published as
 #: DATA DEFICIENT, naming what is missing, because a blank reads as "this does not work"
@@ -2014,6 +2025,15 @@ def partition_voters(
                 else:
                     hold(c, "not_a_net_balance")
             voters = keep
+    # existing-use income never votes in a livelihood cell (decision 2, 2026-10-16)
+    if table == "T6" and target_key in LIVELIHOOD_KEYS:
+        keep = []
+        for c in voters:
+            if _comparator_of(c) in EXISTING_USE_COMPARATORS:
+                hold(c, "existing_use_opportunity_cost")
+            else:
+                keep.append(c)
+        voters = keep
     # C — a poverty class is set by what reaches the household
     if table == "T6" and target_key in HOUSEHOLD_KEYS:
         keep = []
