@@ -164,6 +164,32 @@ def _title_coverage(title: str, text: str) -> float:
     return cov
 
 
+def _title_page_in_body(source_id: str, title: str) -> int | None:
+    """PDF page (1-indexed) whose text covers the citation title, or None.
+
+    A chapter inside a larger cached artefact is legitimate — the team decided on
+    2026-10-16 that the SharePoint library edition wins even when it is a whole book
+    (Jacobson: book page = chapter page + 206). The head-pages check then fails on the
+    book's front matter although the cited document is right there, so on failure the
+    title is sought across the body. A WRONG book still fails: it has no page covering
+    the chapter title.
+    """
+    f = CORPUS / f"{source_id}.pdf"
+    if not f.exists():
+        return None
+    import fitz  # PyMuPDF
+
+    with fitz.open(f) as doc:
+        prev = ""
+        for i in range(min(len(doc), 500)):
+            page = doc[i].get_text()
+            # a title may straddle a page turn; score the 2-page window
+            if _title_coverage(title, prev + " " + page) >= TITLE_THRESH:
+                return i + 1
+            prev = page
+    return None
+
+
 def verify_titles() -> int:
     rows, cols = _rows()
     passed = failed = uncached = 0
@@ -177,11 +203,24 @@ def verify_titles() -> int:
         if text is None:
             uncached += 1
             continue
-        cov = _title_coverage(_title_of(r.get("citation", "")), text)
+        title = _title_of(r.get("citation", ""))
+        cov = _title_coverage(title, text)
         ok = cov >= TITLE_THRESH
+        body_page = None
+        if not ok:
+            body_page = _title_page_in_body(r["source_id"], title)
+            ok = body_page is not None
         r["title_verified"] = "true" if ok else "false"
         if ok:
             passed += 1
+            if body_page is not None:
+                note = (r.get("note") or "").strip()
+                flag = (
+                    f"title verified at PDF page {body_page} — the cited document is a "
+                    "chapter/section inside a larger cached artefact"
+                )
+                if flag not in note:
+                    r["note"] = (note + " | " if note else "") + flag
         else:
             failed += 1
             note = (r.get("note") or "").strip()
