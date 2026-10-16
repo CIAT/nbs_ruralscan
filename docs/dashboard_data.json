@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-16T18:18:59.266112+00:00",
-  "git_commit": "8c8ee5e08bcbd6b17afe7e3574fab7bea9d4bc46",
+  "timestamp": "2026-10-16T18:45:15.349456+00:00",
+  "git_commit": "065cf44265ada42c964f2e5cb66b21025ca46448",
   "registers": {
     "SRC_source_register": [
       {
@@ -62658,7 +62658,7 @@
         "source_id": "wb_2022_uttarakhand2_watershed_icr",
         "nbs_id": "water_harvesting_conservation",
         "suitability_family_id": "water_harvesting__cross_family",
-        "variable": "water_yield",
+        "variable": "water_regulation",
         "relationship": {
           "direction": "positive",
           "metric": "pct_change",
@@ -62677,7 +62677,7 @@
           ],
           "income_group": "lower_middle",
           "region": "Uttarakhand mid-hills (Himalaya), India",
-          "note": "Source-sustainability + catchment treatment (recharge pits, trenches, ponds, check dams); family = water_harvesting__cross_family (no isolable sub-practice)."
+          "note": "Source-sustainability + catchment treatment (recharge pits, trenches, ponds, check dams); family = water_harvesting__cross_family (no isolable sub-practice). | process: variable re-homed water_yield -> water_regulation 2026-10-16 under Pete's water-stress split ('springs = local supply'): the unit measures spring and stream discharge serving nearby users, which the split keeps under water_stress; water_yield now means catchment outflow for downstream users. The unit id keeps its historical name."
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -63308,7 +63308,7 @@
         "source_id": "wb_2017_hp_midhimalayan_icr",
         "nbs_id": "water_harvesting_conservation",
         "suitability_family_id": "water_harvesting__cross_family",
-        "variable": "water_yield",
+        "variable": "water_regulation",
         "relationship": {
           "direction": "positive",
           "metric": "pct_change",
@@ -63327,7 +63327,7 @@
           ],
           "income_group": "lower_middle",
           "region": "Himachal Pradesh mid-Himalaya, India",
-          "note": "Catchment treatment (plantations, check dams, WH structures); family = water_harvesting__cross_family (no isolable sub-practice)."
+          "note": "Catchment treatment (plantations, check dams, WH structures); family = water_harvesting__cross_family (no isolable sub-practice). | process: variable re-homed water_yield -> water_regulation 2026-10-16 under Pete's water-stress split ('springs = local supply'): the unit measures spring and stream discharge serving nearby users, which the split keeps under water_stress; water_yield now means catchment outflow for downstream users. The unit id keeps its historical name."
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -178386,6 +178386,22 @@
         "aggregation_method": "weighted_mean",
         "normalisation_method": "minmax",
         "weight_default": 0.0,
+        "has_future_projection": false,
+        "is_active": true,
+        "evidence_ids": []
+      },
+      {
+        "variable_id": "catchment_water_yield",
+        "variable": "catchment_water_yield",
+        "mcda_role": "priority",
+        "theme": "nbs_response",
+        "directionality_of_concern": "higher_is_more_concern",
+        "ttl_priority_label": "Catchment water yield",
+        "ttl_priority_description": "Effect on catchment water yield, baseflow and downstream supply - split out of water_stress (Pete 2026-10-16): 'how does forest restoration help with drought stress for rural farmers? it is spatially distanced. The catchment results for downstream use are valid.' Local infiltration, soil moisture and dry-season on-farm supply stay under water_stress; what leaves the catchment for downstream users is scored here. Trees can improve the first while reducing the second, and the two must never be averaged into one class. No scoping-grade global layer: BIND requires_upload or a water-balance proxy.",
+        "is_climate_risk_component": false,
+        "aggregation_method": "weighted_mean",
+        "normalisation_method": "minmax",
+        "weight_default": 0.25,
         "has_future_projection": false,
         "is_active": true,
         "evidence_ids": []
