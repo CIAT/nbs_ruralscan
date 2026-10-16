@@ -2424,3 +2424,39 @@ def test_one_measured_source_clears_the_floor():
     rows, _ = _t6([lone], key="rural_poverty")
     assert rows[0]["effect_direction"].endswith("positive")
     assert rows[0]["justification"]["data_deficient"] is False
+
+
+def test_scope_rows_obey_the_class_eligibility_rules():
+    """2026-10-16: a society-beneficiary unit set a high-income poverty SCOPE row after the
+    global rule had held it out — the scope path bypassed partition_voters. Both paths must
+    hold the same units out."""
+    soc = _u(
+        "sp1",
+        "s1",
+        "household_income",
+        "positive",
+        "strong",
+        ctx={"income_group": "high", "beneficiary": "society"},
+    )
+    hh_a = _u(
+        "sp2",
+        "s2",
+        "household_income",
+        "negative",
+        "moderate",
+        ctx={"income_group": "high", "beneficiary": "farm_household"},
+    )
+    hh_b = _u(
+        "sp3",
+        "s3",
+        "household_income",
+        "negative",
+        "moderate",
+        ctx={"income_group": "low", "beneficiary": "farm_household"},
+    )
+    rows, rep = _t6([soc, hh_a, hh_b], key="rural_poverty")
+    scoped = [r for r in rows if r["scope_id"] == "high"]
+    if scoped:  # emitted only when it differs from the global row
+        acc = scoped[0]["justification"]
+        assert acc["held_out_of_class"].get("not_a_household_benefit") == ["sp1"]
+        assert not scoped[0]["effect_direction"].endswith("positive")

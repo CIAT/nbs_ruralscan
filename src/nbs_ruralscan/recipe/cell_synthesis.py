@@ -2248,9 +2248,12 @@ def synthesise_cell(
     else:
         cell = f"{target_key}__{farming_system}"
     rows: list[dict[str, Any]] = []
-    _held_ids = {e for v in (held_out or {}).values() for e in v}
 
     def _row(rec: dict[str, Any], scope: tuple[str, str] | None, cs: list[_Contrib]):
+        # each record carries ITS OWN held-out set (global and scope rows differ)
+        _held_ids = {
+            e for v in (rec.get("held_out_of_class") or {}).values() for e in v
+        }
         rec = dict(rec, nbs_id=nbs_id)
         r: dict[str, Any] = {
             "record_id": _record_id(nbs_id, cell, family, scope),
@@ -2409,25 +2412,52 @@ def synthesise_cell(
                         income_lookup,
                     )
                 _apply_shares(s_contribs, shares)
-                s_rec = apply_size_sparse_cap(
-                    apply_modelled_cap(
-                        apply_proxy_cap(
-                            _reconcile_group(s_contribs, tiers, matrix, s_target),
-                            s_contribs,
+                # the class-eligibility rules bind a SCOPE row exactly as they bind the
+                # global one (caught 2026-10-16: a society-beneficiary unit was setting a
+                # high-income poverty scope row the global rule had already held it out of)
+                s_voters, s_held = partition_voters(s_contribs, table, target_key)
+                s_ok, s_missing = meets_evidence_floor(s_voters)
+                if s_voters and not s_ok:
+                    s_held = dict(
+                        s_held,
+                        below_evidence_floor=[c.unit.evidence_id for c in s_voters],
+                    )
+                    s_voters = []
+                if not s_voters:
+                    s_why = s_missing or (
+                        "none of its evidence may set a class ("
+                        + "; ".join(f"{k}×{len(v)}" for k, v in sorted(s_held.items()))
+                        + ")"
+                    )
+                    s_rec = data_deficient_record(s_contribs, s_why, s_held, s_target)
+                else:
+                    s_rec = apply_size_sparse_cap(
+                        apply_modelled_cap(
+                            apply_proxy_cap(
+                                _reconcile_group(s_voters, tiers, matrix, s_target),
+                                s_voters,
+                                xw_by_unit,
+                            ),
+                            s_voters,
                             xw_by_unit,
                         ),
-                        s_contribs,
-                        xw_by_unit,
-                    ),
-                    s_contribs,
-                )
-                if table == "T3" and role != "asset_vulnerability":
-                    s_rec = apply_intensity_cap(s_rec, s_contribs, target_key)
-                if role != "asset_vulnerability":
-                    s_rec = dict(s_rec)
-                    s_rec["maladaptation"] = maladaptation_signal(
-                        s_contribs, int(s_rec.get("modal_sign") or 0)
+                        s_voters,
                     )
+                    if s_held:
+                        s_rec = dict(
+                            s_rec,
+                            held_out_of_class=s_held,
+                            evidence_ids=[c.unit.evidence_id for c in s_contribs],
+                            sources=sorted({c.unit.source_id for c in s_contribs}),
+                            n_sources=len({c.unit.source_id for c in s_contribs}),
+                        )
+                    if table == "T3" and role != "asset_vulnerability":
+                        s_rec = apply_intensity_cap(s_rec, s_voters, target_key)
+                    if role != "asset_vulnerability":
+                        s_rec = dict(s_rec)
+                        s_rec["maladaptation"] = maladaptation_signal(
+                            s_voters, int(s_rec.get("modal_sign") or 0)
+                        )
                 s_rec["applicability"]["scope"] = {dim: sid}
                 g_class_for_scope = recompute_transfer_class(
                     global_row, [(c.ctx, c.weight) for c in contribs], s_target
