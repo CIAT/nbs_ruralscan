@@ -482,10 +482,7 @@
     $('progress-bar').style.width = (n ? (100 * d / n) : 0) + '%';
   }
 
-  function renderList() {
-    $('list-count').textContent = 'Units (' + S.filtered.length + ' of ' + S.units.length + ')';
-    $('unit-list').innerHTML = S.filtered.map(function (u, i) {
-    // Theme 4 (Pete 2026-10-12): "what is the logic by which you have inferred this is a
+  // Theme 4 (Pete 2026-10-12): "what is the logic by which you have inferred this is a
   // large amount? is there a rule?" There is one, in the band register. Show it.
   function bandHtml(b) {
     if (!b || (!b.value && !b.rule)) return '';
@@ -508,6 +505,9 @@
       '</div>';
   }
 
+  function renderList() {
+    $('list-count').textContent = 'Units (' + S.filtered.length + ' of ' + S.units.length + ')';
+    $('unit-list').innerHTML = S.filtered.map(function (u, i) {
     var st = stateOf(u.evidence_id);
       var others = othersFor(u.evidence_id);
       return '<li data-i="' + i + '"' + (i === S.pos ? ' class="current"' : '') + '>' +
