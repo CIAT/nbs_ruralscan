@@ -144,10 +144,40 @@ def synthesise(nbs_id: str) -> dict[str, FamilyResult]:
     return out
 
 
+# Fields a person sets on purpose (model design, not evidence synthesis). A re-run must
+# never wipe them: they are carried onto the regenerated row for the same variable.
+DESIGN_FIELDS = (
+    "is_scenario_candidate",
+    "scenario_label",
+    "scenario_description",
+    "has_future_projection",
+    "baseline_dataset_id",
+    "future_dataset_ids",
+)
+
+
+def _is_synthesised(row: dict[str, str]) -> bool:
+    """A row the engine wrote (as opposed to a hand-set design row: an eligibility
+    filter, a hard exclusion mask, an M2b scenario lever)."""
+    return (row.get("justification") or "").startswith("Reconciled from")
+
+
+def _existing_rows(recipe_dir: Path) -> list[dict[str, str]]:
+    f = recipe_dir / "T4_suitability_mappings.csv"
+    if not f.exists():
+        return []
+    return list(csv.DictReader(io.StringIO(f.read_bytes().decode("utf-8"), newline="")))
+
+
 def write_recipe(
     nbs_id: str, results: dict[str, FamilyResult], vont_rows: list[dict[str, str]]
 ) -> None:
     recipe_dir = ROOT / "schema" / "recipes" / nbs_id
+    existing = _existing_rows(recipe_dir)
+    design_by_var: dict[str, dict[str, str]] = {}
+    for r in existing:
+        if any((r.get(k) or "") not in ("", "false") for k in DESIGN_FIELDS):
+            design_by_var.setdefault(r["variable"], r)
     ds_by_var = {
         r["canonical_variable_id"]: _first_dataset(r["candidate_dataset_ids"])
         for r in vont_rows
@@ -186,6 +216,20 @@ def write_recipe(
                     "paper_support_pct": row.get("paper_support_pct", ""),
                 }
             )
+            carried = design_by_var.get(row["variable"])
+            if carried:
+                csv_rows[-1].update({k: carried.get(k, "") for k in DESIGN_FIELDS})
+
+    # keep hand-set design rows the engine does not produce (eligibility filters, hard
+    # masks, M2b scenario levers); stale synthesised rows are replaced, never kept
+    produced = {(str(r["suitability_family_id"]), str(r["variable"])) for r in csv_rows}
+    kept = [
+        r
+        for r in existing
+        if not _is_synthesised(r)
+        and (r.get("suitability_family_id", ""), r["variable"]) not in produced
+    ]
+    csv_rows.extend({k: r.get(k, "") for k in T4_FIELDS} for r in kept)
 
     buf = io.StringIO(newline="")
     w = csv.DictWriter(buf, fieldnames=T4_FIELDS, lineterminator="\n")

@@ -10,11 +10,39 @@ and serve as a template for subsequent NbS recipes.
 |---|---|---|
 | `T0_nbs_registry.{csv,json}` | T0 — NbS Registry | 1 |
 | `T3_nbs_hazard_farming.{csv,json}` | T3 — NbS × Hazard × Farming (**generated**, cell synthesis) | 75 (generated; re-run 2026-10-06) |
-| `T4_suitability_mappings.{csv,json}` | T4 — Suitability Mappings | 11 |
+| `T4_suitability_mappings.{csv,json}` | T4 — Suitability Mappings (**generated** for evidence rows + kept design rows) | 18 (8 evidence + 10 design; re-run 2026-10-19) |
 | `T6_nbs_scorecard.{csv,json}` | T6 — NbS Scorecard (**generated**, cell synthesis) | 74 (generated; re-run 2026-10-06) |
 
 The cross-NbS tables this recipe joins to — `T1_data_registry`, `T2_climate_risk`, `T5_opportunity_space`,
 `T7_geographic_context` — live at the [schema root](../../) and merge rows from every recipe.
+
+## T4 is generated from the QC'd evidence (2026-10-19)
+
+`T4_suitability_mappings.csv` is written by **`scripts/synthesise-recipe.py agroforestry`** from the active
+`structural_suitability` units after human QA/QC (every active unit reviewed by Namita or Pete). Per-family rows
+and provenance are in `T4_agroforestry__<family>.json`. Do not hand-edit evidence rows — fix the evidence unit and
+re-run. The generator keeps hand-set **design rows** it does not produce (land-cover eligibility filter,
+protected-area hard exclusion, the eight M2b Stream-B scenario levers) and carries design fields
+(scenario flags, future-climate links) onto regenerated rows.
+
+**Status: thin, honest, traceable — not complete.** Of 152 active T4 units (41 sources), only 14 carry a numeric
+threshold; 88 are qualitative, 27 species/crop-specific (kept out by design), 23 observed-presence. Result:
+
+| Family | Evidence rows | Note |
+|---|---|---|
+| cross_family | 2 (rainfall, pH) | applies to all agroforestry |
+| planted_silvoarable | 3 (slope, canopy, soil depth) | slope `abs_min` 4.6 is an artefact — see below |
+| regeneration_farmland | 2 (rainfall, slope) | |
+| shaded_perennial | 1 (temperature) | |
+| silvopastoral · linear_boundary · homegardens_proximity | **0** | insufficient numeric evidence |
+
+Every row is below the 20% support floor (`review_low_support` — decide & record). **Known issue:**
+`ev_T4_slope_seja2022_1` encodes the lowest slope CLASS bound of the study's table (8%) as `abs_min`, which drags the
+planted-silvoarable slope minimum to 4.6% — re-open in QA/QC and re-run. Routes to a complete table (raised with
+Pete): expert-elicited rows for the gaps (Task H protocol, `evidence_type=expert`) and a re-read of the 88
+qualitative units for stated ranges (needs T4 extraction un-paused).
+
+The June 2026 T4 (one placeholder family, empty `evidence_ids`) is superseded; it is in git history.
 
 ## T3 / T6 are generated (2026-10-01)
 
@@ -46,10 +74,7 @@ Verify with `python3 src/nbs_ruralscan/schema_tools/structure.py schema` (expect
 - T4 `is_scenario_candidate = true` only for investment-influenceable variables (road access).
 
 **Content still pending (not structural):**
-- Only the **F1 × slope** row carries real evidence (`ev_slope_nath21/zomer14/nair93`, with quotes + pages); it
-  passes `--strict`. Every other row has `evidence_ids` empty pending literature extraction.
-- All 11 T4 rows are tagged to the placeholder family `agroforestry__planted_silvoarable`; the full F1–F5 scheme
-  awaits Namita + MFL review.
+- T4: see *T4 is generated from the QC'd evidence* above (evidence rows carry `evidence_ids`; design rows stay on the placeholder family `agroforestry__planted_silvoarable`).
 - Free-text `references`/`justification` were replaced by `evidence_ids` (→ EV) in the v0.2 trim.
 
 > Draft-0 content still needs literature-team review before the pilot review milestone.
