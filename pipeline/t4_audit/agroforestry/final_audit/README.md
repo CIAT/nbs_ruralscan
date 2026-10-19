@@ -17,7 +17,7 @@ The thin T4 table has several causes: genuine lack of transferable numerical rul
 | Full audit draft | 2 | Wotlolan slope rule and unapproved Mushtaq temperature claim |
 | Full audit approval-filtered candidate | 1 | Wotlolan source modelling exclusion: >35% slope, approximately 19.3 degrees |
 
-The remaining slope row is an explicit rule used by the source's crop-suitability model, not proof of a universal agroforestry limit. Regional/family transfer still needs a documented applicability decision. Mushtaq's 20–30°C sentence is secondary, in a mulberry paper; its family/host applicability remains unresolved. Four Morus crop-lane candidate rows remain separate from the generic CSV and are not approved F5 rules. Ten original design rows are preserved in the candidate CSV.
+The remaining slope row is an explicit rule used by the source's crop-suitability model, not proof of a universal agroforestry limit. Regional/family transfer still needs a documented applicability decision. Mushtaq's 20–30°C sentence is secondary, in a mulberry paper; its family/host applicability remains unresolved. Four Morus crop-lane candidate rows remain separate from the generic CSV and are not approved F5 rules. The original ten design rows were preserved at that audit stage; the categorical follow-up below retires the placeholder and carries nine other design rows plus three evidence-linked gates into the candidate CSV.
 
 **33 active structural records carrying class/rank/code encodings are surfaced in `class_evidence.csv` and the HTML view.** They include both general and species/crop lanes: this is an inventory, not 33 validated generic rules. Their original ranges, ranks, quotes, pages and context remain visible. Legacy encodings outside this category remain in `record_reconciliation.csv` with their untouched payloads.
 
@@ -62,7 +62,7 @@ Unsupported numeric payloads include AHP/tool weights, scenario grids, occurrenc
 4. Unknown screened corpus produces **null/blank support and corpus counts**, with `review_unknown_support`. The 20% floor cannot be evaluated. Counts in SRCH overlap and record included rather than complete screened membership; table-level searches also cannot be allocated to families by assumption. Discovery logs and acquisition queues contain useful subsets but cannot reconstruct the complete denominator.
 5. `--screened-corpus` accepts a complete, provenanced source-ID manifest. Unknown IDs and supporting evidence absent from supplied membership fail. Denominator membership stays fixed across approval filtering. No inferred manifest was supplied for this audit.
 6. Source tiers are normalized for T4 (`High` and `high` agree); enriched output resolves one dataset ID rather than an encoded list string.
-7. Original design rows remain intact; every input record has a visible disposition. Live analytical T4 has not been replaced.
+7. Every input record has a visible disposition. Numeric live T4 has not been replaced; the categorical follow-up below replaces its land-cover placeholder.
 
 ## What can and cannot be recovered automatically
 
@@ -113,3 +113,76 @@ Current live `agro_land_cover_eligibility` is a preserved design row with no evi
 Additional quality concerns surfaced without silently editing records: source-specific exclusion of shrubland/forest must not become a universal rule; Nath drainage codes require a source legend; the Singh land-cover code record repeats a soil-quality quotation; Seja allocation shares are not class memberships; Nath NDVI is tagged as land cover. These remain reviewable through original quotes and compiler dispositions.
 
 Validation: 24 tests passed for class tabulation and T4 compilation. Every selected source record has at least one table row, and all 33 existing active class-inventory records are represented.
+
+
+## Executable categorical gates — 19 October follow-up
+
+The live recipe now replaces `agro_land_cover_eligibility` with three family-specific,
+evidence-linked binary gates. The old row is archived in
+`executable_categories/retired_placeholder.csv`. Other live numeric rows are unchanged;
+the isolated numerical audit remains a separate candidate, not a deployed recipe.
+The nine other design rows remain preserved. Categorical gates are protected from
+replacement by numeric synthesis and have zero MCDA weight: apply them as hard masks.
+Numeric threshold uncertainty buffers are blank because they do not apply to class codes.
+
+| Family | Rule and evidence | Default execution |
+|---|---|---|
+| Planted silvoarable | Castle p8 (`ev_t4_land_cover_castle2025_1`): annual cropland; grassland only with confirmed managed forage without grazing | Approved evidence; conditional gate |
+| Regeneration farmland | WOCAT 507 p1 (`EV_wocat_507_2019_008`): depleted/degraded farmland | Approved evidence; every positive class requires a farmland/degradation mask |
+| Silvopastoral | Castle p8 (`ev_t4_land_cover_castle2025_2`): grassland with confirmed grazing system | Pending evidence review; default result unknown |
+| Linear/boundary | No usable reviewed class gate | Unknown; boundary geometry required, never infer boundary area from cropland pixels |
+| Shaded perennial | No reviewed generic host class gate | Unknown; observed host-crop distribution required; tree cover cannot identify crop |
+| Homegardens | FAM qualitative-only | No raster eligibility surface |
+
+Crosswalk uses ESA WorldCover 2021 v200, Product User Manual Table 3 (p15):
+https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf
+Annual cropland is code 40; perennial woody crops belong to tree/shrub classes.
+Grassland 30 includes grazed and ungrazed land. Tree cover 10 includes forest and
+plantations, so cannot establish an agroforestry host. Built-up 50, permanent snow/ice
+70 and permanent water 80 are excluded as incompatible with these agricultural hosts.
+Other unmapped classes remain unknown, not automatically excluded.
+
+These are explicit applicability crosswalks, not numerical suitability claims from the
+papers. The WOCAT example is Kenyan; its farmland restoration applicability must not
+be interpreted as globally validated regeneration performance. Each gate rests on one
+source. Source approval is retained; no new human approval or support denominator was
+invented. Castle silvopasture remains blocked. Other ordinal evidence remains tabulated
+without invented 0–1 scores (notably Haile pH, Nath drainage and Singh texture).
+
+### Runtime contract
+
+`nbs_ruralscan.runtime.categorical.evaluate_family(schema_root, nbs_id, family,
+datasets, masks=...)` reads generated T4, FAM and EV JSON. Dataset keys must identify the
+exact codebook. Arrays must already be spatially aligned; equal shape is checked but
+CRS/transform alignment remains caller responsibility. No download or host-mask derivation
+is implied. Mask arrays use 1 = confirmed, 0 = absent, NaN = unknown. Their inputs must
+be independently justified; never derive grazing or degradation from grassland alone.
+
+Required mask names live in T4 `relationship_params.class_requirements`:
+`managed_forage_without_grazing`, `depleted_farmland`, `degraded_farmland`,
+`grazing_system_present`. Unmapped codes, missing masks/datasets and pending/dropped
+or missing evidence return NaN plus a reason. `approved_only=False` allows an explicit
+trial of pending evidence, never dropped evidence. Outputs preserve FAM spatial product
+type. `apply_eligibility(suitability, result.values)` applies non-compensatory gates:
+0 excludes, 1 keeps the independently computed suitability, unknown stays unknown.
+Do not feed gates into a weighted average or count unknown as opportunity area.
+
+```python
+import numpy as np
+from nbs_ruralscan.runtime.categorical import evaluate_family, apply_eligibility
+
+result = evaluate_family(
+    "schema", "agroforestry", "agroforestry__planted_silvoarable",
+    {"esa_worldcover_2021": np.array([40, 30, 10, 80])},
+    masks={"managed_forage_without_grazing": np.array([0, 1, 0, 0])},
+)
+# result.values = [1, 1, NaN, 0]
+output = apply_eligibility(np.array([0.7, 0.8, 0.9, 1.0]), result.values)
+# output = [0.7, 0.8, NaN, 0]
+```
+
+`executable_categories/family_execution.csv` runs every family against all eleven
+WorldCover codes without auxiliary masks, exposing missing context. Regenerate it and
+the browser table with `PYTHONPATH=src python scripts/tabulate-t4-classes.py`.
+Per-family enriched synthesis JSON describes evidence synthesis; configured gates live
+in the canonical T4 CSV/generated JSON and must be executed from that canonical table.

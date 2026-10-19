@@ -233,7 +233,8 @@ def test_isolated_writer_preserves_design_rows_and_live_recipe(runner, tmp_path)
     design = [r for r in before if not runner._is_synthesised(r)]
     for r in design:
         assert r in after
-    assert len(design) == 10
+    assert len(design) >= 10
+    assert "agro_land_cover_eligibility" not in {r["mapping_id"] for r in after}
     for r in after:
         old = next((x for x in before if x["mapping_id"] == r["mapping_id"]), None)
         if old:
@@ -332,3 +333,30 @@ def test_approval_filter_cannot_hide_incomplete_corpus():
             group_map={},
             approved_only=True,
         )
+
+
+def test_numeric_candidate_cannot_overwrite_configured_categorical_gate(
+    runner, tmp_path
+):
+    import csv
+    import copy
+
+    results = runner.synthesise("agroforestry")
+    key = "agroforestry__planted_silvoarable"
+    collision = copy.deepcopy(results[key].rows[0])
+    collision.update(variable="land_cover", mapping_id="numeric_collision")
+    results[key].rows.append(collision)
+    runner.write_recipe(
+        "agroforestry",
+        results,
+        runner._rd(runner.REG / "VONT_variable_ontology.csv"),
+        output_dir=tmp_path,
+    )
+    rows = list(csv.DictReader((tmp_path / "T4_suitability_mappings.csv").open()))
+    gates = [
+        r
+        for r in rows
+        if r["suitability_family_id"] == key and r["variable"] == "land_cover"
+    ]
+    assert len(gates) == 1
+    assert gates[0]["mapping_id"] == "agro_planted_silvoarable_land_cover_gate"

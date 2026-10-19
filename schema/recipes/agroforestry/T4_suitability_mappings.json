@@ -235,52 +235,6 @@
     "paper_support_pct": 2.0
   },
   {
-    "mapping_id": "agro_land_cover_eligibility",
-    "nbs_id": "agroforestry",
-    "dataset_id": "esa_worldcover_2021",
-    "suitability_dimension": "system_constraint",
-    "relationship_type": "ranked_classes",
-    "relationship_params": {
-      "class_map": {
-        "10": 1.0,
-        "20": 0.9,
-        "30": 0.7,
-        "40": 0.5,
-        "50": 0.0,
-        "60": 0.3,
-        "70": 0.0,
-        "80": 0.0,
-        "90": 0.4,
-        "95": 0.0,
-        "100": 0.2
-      },
-      "class_labels": {
-        "10": "Tree cover (existing AF potential)",
-        "20": "Shrubland (high conversion potential)",
-        "30": "Grassland (high conversion potential)",
-        "40": "Cropland (primary target)",
-        "50": "Built-up (exclude)",
-        "60": "Bare/sparse vegetation (low potential)",
-        "70": "Snow/ice (exclude)",
-        "80": "Permanent water (exclude)",
-        "90": "Herbaceous wetland (low, conditional)",
-        "95": "Mangroves (different NbS)",
-        "100": "Moss/lichen (low)"
-      }
-    },
-    "uncertainty_pct": 0.0,
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1,
-    "weight_adjustable": false,
-    "justification": "Land cover is an eligibility filter, not a graduated suitability variable. Cropland (class 40) and grassland/pasture (20, 30) are the primary targets for agroforestry integration. Built-up, water, ice, and mangroves are hard exclusions. Used as the primary land-use mask in Ahmad et al. (2020), Castle et al. (2025), Baldwin et al. (2022), and the majority of stocktake papers.",
-    "variable": "land_cover",
-    "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 6,
-    "corpus_n": 36,
-    "paper_support_pct": 25.0
-  },
-  {
     "mapping_id": "agro_protected_areas_exclusion",
     "nbs_id": "agroforestry",
     "dataset_id": "protected_areas_wdpa",
@@ -493,5 +447,150 @@
     "n_sources": 0,
     "corpus_n": 36,
     "paper_support_pct": 0.0
+  },
+  {
+    "mapping_id": "agro_planted_silvoarable_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "40": 1,
+        "30": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "30": [
+          "managed_forage_without_grazing"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability"
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Evidence-backed categorical gate. Castle Table 2 (PDF p8) defines alley cropping on annual cropland or forage grown between tree rows without grazing, excluding existing tree crops. WorldCover 40 maps annual cropland. WorldCover 30 is conditional on a verified managed-forage/non-grazing mask; it is not treated as pasture proof. Built-up, permanent snow/ice and permanent water cannot satisfy this host definition. Tree/shrub cover remains unknown because those classes mix farms and non-farms.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": [
+      "ev_t4_land_cover_castle2025_1"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_regeneration_farmland_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "40": 1,
+        "30": 1,
+        "20": 1,
+        "60": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "40": [
+          "depleted_farmland"
+        ],
+        "30": [
+          "degraded_farmland"
+        ],
+        "20": [
+          "degraded_farmland"
+        ],
+        "60": [
+          "degraded_farmland"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability"
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Evidence-backed categorical gate. WOCAT 507 describes restoring degraded wasteland and improving depleted farmland (Kenya example, PDF p1). Within the regeneration-on-farmland family, WorldCover alone cannot identify degradation or farmland history. Positive classes require observed depleted/degraded farmland masks; bare soil alone is never evidence of restoration potential. This gate establishes land-use compatibility, not regeneration success or rootstock presence. Tree cover remains unresolved.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__regeneration_farmland",
+    "evidence_ids": [
+      "EV_wocat_507_2019_008"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_silvopastoral_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "30": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "30": [
+          "grazing_system_present"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability"
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Evidence-backed categorical gate. Castle Table 2 (PDF p8) defines trees integrated with forage and grazing animals on pasture/grassland. WorldCover grassland requires independent grazing-system confirmation. Other vegetation classes remain unresolved because they may mix wooded pasture, natural vegetation and other systems. Supporting evidence remains held by Pete; default execution returns pending_evidence_review until that review is resolved.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__silvopastoral",
+    "evidence_ids": [
+      "ev_t4_land_cover_castle2025_2"
+    ],
+    "n_sources": 1
   }
 ]

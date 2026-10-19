@@ -1,0 +1,159 @@
+"""Categorical gates must never turn missing evidence/context into eligibility."""
+
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from nbs_ruralscan.runtime.categorical import (
+    apply_eligibility,
+    evaluate_categorical,
+    evaluate_family,
+)
+
+SCHEMA = Path(__file__).resolve().parents[1] / "schema"
+
+
+def config():
+    return dict(
+        mapping_id="gate",
+        dataset_id="codes_v1",
+        relationship_type="ranked_classes",
+        evidence_ids=["ev"],
+        relationship_params=dict(
+            mapping_role="eligibility_gate",
+            class_map={"40": 1, "30": 1, "80": 0},
+            class_requirements={"30": ["host"]},
+        ),
+    )
+
+
+def evaluate(data, **kw):
+    return evaluate_categorical(
+        config(),
+        data,
+        dataset_id="codes_v1",
+        evidence={"ev": {"reviewer_ok": True}},
+        **kw,
+    )
+
+
+def test_unknown_codes_and_missing_host_are_not_excluded_or_eligible():
+    result = evaluate([40, 30, 80, 10, 40.1, np.nan])
+    np.testing.assert_equal(result.values, [1, np.nan, 0, np.nan, np.nan, np.nan])
+    assert result.status.tolist() == [
+        "mapped",
+        "missing_host_context",
+        "excluded",
+        "unmapped_class",
+        "unmapped_class",
+        "unmapped_class",
+    ]
+
+
+def test_masks_and_hard_gate_application():
+    result = evaluate([30, 30, 30], masks={"host": np.array([1, 0, np.nan])})
+    np.testing.assert_equal(result.values, [1, 0, np.nan])
+    np.testing.assert_equal(
+        apply_eligibility([0.9, np.nan, 1], result.values), [0.9, 0, np.nan]
+    )
+
+
+@pytest.mark.parametrize(
+    "evidence,status",
+    [
+        (None, "missing_evidence"),
+        ({}, "unavailable_evidence"),
+        (
+            {"ev": {"reviewer_ok": True, "review_state": "dropped"}},
+            "unavailable_evidence",
+        ),
+        ({"ev": {"reviewer_ok": False}}, "pending_evidence_review"),
+    ],
+)
+def test_review_gate(evidence, status):
+    result = evaluate_categorical(
+        config(), [40], dataset_id="codes_v1", evidence=evidence
+    )
+    assert np.isnan(result.values[0]) and result.status[0] == status
+
+
+def test_different_codebooks_cannot_be_substituted():
+    with pytest.raises(ValueError, match="Dataset mismatch"):
+        evaluate_categorical(config(), [40], dataset_id="other")
+
+
+@pytest.mark.parametrize("mask", [[0.5], [np.inf], [1, 0]])
+def test_invalid_host_masks_rejected(mask):
+    with pytest.raises(ValueError, match="Mask"):
+        evaluate([30], masks={"host": mask})
+
+
+def test_numeric_code_aliases_rejected():
+    row = config()
+    row["relationship_params"]["class_map"]["40.0"] = 0
+    with pytest.raises(ValueError, match="Duplicate"):
+        evaluate_categorical(row, [40], dataset_id="codes_v1")
+
+
+def test_false_host_dominates_unknown_host():
+    row = config()
+    row["relationship_params"]["class_requirements"]["30"] = ["missing", "absent"]
+    result = evaluate_categorical(
+        row,
+        [30],
+        dataset_id="codes_v1",
+        masks={"absent": [0]},
+        evidence={"ev": {"reviewer_ok": True}},
+    )
+    assert result.values[0] == 0
+
+
+def family(name, **kw):
+    return evaluate_family(
+        SCHEMA,
+        "agroforestry",
+        "agroforestry__" + name,
+        {"esa_worldcover_2021": np.array([40, 30, 10, 80])},
+        **kw,
+    )
+
+
+def test_live_schema_family_rules_and_missing_families():
+    np.testing.assert_equal(
+        family("planted_silvoarable").values, [1, np.nan, np.nan, 0]
+    )
+    np.testing.assert_equal(
+        family(
+            "planted_silvoarable",
+            masks={"managed_forage_without_grazing": [0, 1, 0, 0]},
+        ).values,
+        [1, 1, np.nan, 0],
+    )
+    np.testing.assert_equal(
+        family("regeneration_farmland").values, [np.nan, np.nan, np.nan, 0]
+    )
+    np.testing.assert_equal(
+        family(
+            "regeneration_farmland",
+            masks={
+                "depleted_farmland": [1, 0, 0, 0],
+                "degraded_farmland": [0, 1, 0, 0],
+            },
+        ).values,
+        [1, 1, np.nan, 0],
+    )
+    assert set(family("silvopastoral").status) == {"pending_evidence_review"}
+    np.testing.assert_equal(
+        family(
+            "silvopastoral",
+            approved_only=False,
+            masks={"grazing_system_present": [0, 1, 0, 0]},
+        ).values,
+        [np.nan, 1, np.nan, 0],
+    )
+    for name in ["linear_boundary", "shaded_perennial"]:
+        result = family(name)
+        assert np.isnan(result.values).all()
+        assert set(result.status) == {"no_categorical_evidence"}
+    assert set(family("homegardens_proximity").status) == {"qualitative_only"}

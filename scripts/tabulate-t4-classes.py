@@ -7,6 +7,10 @@ import argparse
 import csv
 import html
 import json
+
+import numpy as np
+
+from nbs_ruralscan.runtime.categorical import evaluate_family
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -123,13 +127,13 @@ def class_entries(rel):
 
 
 def read_csv(path):
-    with path.open() as f:
+    with path.open(encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
 def write_csv(path, rows):
-    with path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -204,6 +208,10 @@ def main(directory=OUT):
                     "quote": u["quote"],
                 }
             )
+    evidence = {
+        r["evidence_id"]: r
+        for r in read_csv(ROOT / "schema/registers/EV_evidence_register.csv")
+    }
     current = []
     for u in read_csv(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv"):
         if u["relationship_type"] != "ranked_classes":
@@ -218,14 +226,67 @@ def main(directory=OUT):
                     "dataset_code": code,
                     "existing_label": params.get("class_labels", {}).get(code, ""),
                     "current_score": score,
+                    "required_host_masks": ", ".join(
+                        params.get("class_requirements", {}).get(code, [])
+                    ),
                     "mapping_id": u["mapping_id"],
                     "evidence_ids": u["evidence_ids"],
                     "validation": "NO LINKED EVIDENCE"
-                    if not u["evidence_ids"]
-                    else "Requires applicability and coding review",
+                    if not json.loads(u["evidence_ids"] or "[]")
+                    else (
+                        "Executable; approved evidence"
+                        if all(
+                            evidence.get(eid, {}).get("reviewer_ok", "").lower()
+                            == "true"
+                            and evidence[eid]["review_state"] != "dropped"
+                            for eid in json.loads(u["evidence_ids"])
+                        )
+                        else "Blocked: pending evidence review"
+                    ),
                     "justification": u["justification"],
                 }
             )
+    linked = {}
+    for configured in current:
+        for eid in json.loads(configured["evidence_ids"] or "[]"):
+            linked.setdefault(eid, set()).add(configured["mapping_id"])
+    for source in source_rows:
+        if source["evidence_id"] in linked:
+            source["dataset_code_mapping"] = (
+                "Covered subset only; see configured mappings: "
+                + ", ".join(sorted(linked[source["evidence_id"]]))
+            )
+    coverage = []
+    families = sorted(
+        {
+            r["suitability_family_id"]
+            for r in read_csv(ROOT / "schema/registers/FAM_family_registry.csv")
+            if r["nbs_id"] == "agroforestry"
+        }
+    )
+    codes = [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100]
+    for family in families:
+        result = evaluate_family(
+            ROOT / "schema",
+            "agroforestry",
+            family,
+            {"esa_worldcover_2021": np.array(codes)},
+        )
+        for i, code in enumerate(codes):
+            coverage.append(
+                {
+                    "family": family,
+                    "spatial_product_type": result.spatial_product_type,
+                    "dataset_code": code,
+                    "value_without_host_masks": "unknown"
+                    if np.isnan(result.values[i])
+                    else int(result.values[i]),
+                    "runtime_status": result.status[i],
+                    "mapping_ids": ", ".join(result.mapping_ids),
+                }
+            )
+    (directory / "executable_categories").mkdir(exist_ok=True)
+    write_csv(directory / "executable_categories/family_execution.csv", coverage)
     write_csv(directory / "categorical_source_classes.csv", source_rows)
     write_csv(directory / "categorical_current_t4.csv", current)
     columns = [
@@ -241,7 +302,7 @@ def main(directory=OUT):
     ]
     land = [r for r in source_rows if r["variable"] == "land_cover"]
     other = [r for r in source_rows if r["variable"] != "land_cover"]
-    page = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 categorical class tables</title><style>body{font:15px system-ui;margin:30px;color:#183a34;background:#f6f8f7}section{background:white;padding:20px;margin:20px 0;border:1px solid #ceded7;overflow:auto}table{border-collapse:collapse;width:100%}td,th{border:1px solid #cbd8d2;padding:9px;text-align:left;vertical-align:top;min-width:100px}th{background:#e5f0ea;position:sticky;top:0}td{white-space:pre-wrap;overflow-wrap:anywhere}h1{font-size:29px}.warning{border-left:5px solid #ad6822;padding:14px;background:#fff0dd}input{font:inherit;padding:10px;min-width:360px}a{color:#066956}</style><h1>Land-use and other categorical classes</h1><p>Branch audit · Source classes remain visible even when no executable score exists.</p><p><a href="t4-pipeline-audit.html">Full evidence audit</a></p><p class="warning">Current land-cover design row describes an eligibility filter but uses graduated scores: tree cover 1.0, cropland 0.5. It has no evidence IDs. These are existing configuration values, not validated recovered thresholds. No analytical rule changed by this report.</p><section><h2>Current configured categorical T4</h2>"""
+    page = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 categorical class tables</title><style>body{font:15px system-ui;margin:30px;color:#183a34;background:#f6f8f7}section{background:white;padding:20px;margin:20px 0;border:1px solid #ceded7;overflow:auto}table{border-collapse:collapse;width:100%}td,th{border:1px solid #cbd8d2;padding:9px;text-align:left;vertical-align:top;min-width:100px}th{background:#e5f0ea;position:sticky;top:0}td{white-space:pre-wrap;overflow-wrap:anywhere}h1{font-size:29px}.warning{border-left:5px solid #ad6822;padding:14px;background:#fff0dd}input{font:inherit;padding:10px;min-width:360px}a{color:#066956}</style><h1>Land-use and other categorical classes</h1><p>Branch audit · Source classes remain visible even when no executable score exists.</p><p><a href="t4-pipeline-audit.html">Full evidence audit</a></p><p class="warning">Placeholder scores retired. Family-specific binary host gates now execute against ESA WorldCover 2021. Score 1 means compatible host class, not high suitability. Required host masks must be independently supplied; missing masks and unmapped classes remain unknown. Silvopastoral evidence remains pending: blocked by default. Linear/boundary and shaded-perennial gates lack usable reviewed mappings; homegardens remain qualitative-only.</p><section><h2>Current configured categorical T4</h2>"""
     page += table(
         current,
         [
@@ -251,8 +312,23 @@ def main(directory=OUT):
             "dataset_code",
             "existing_label",
             "current_score",
+            "required_host_masks",
             "validation",
+            "evidence_ids",
         ],
+    )
+    page += (
+        "</section><section><h2>Runtime check: every family, no optional host masks supplied</h2><p>Generated by the executor against the current schema. Unknown means missing evidence, unmapped code or missing host context; it is never counted as eligible area.</p>"
+        + table(
+            coverage,
+            [
+                "family",
+                "spatial_product_type",
+                "dataset_code",
+                "value_without_host_masks",
+                "runtime_status",
+            ],
+        )
     )
     page += f"""</section><p>{len(records)} active evidence records represented in {len(source_rows)} source-class/gate rows. Every selected record retained, including those with no encoded classes.</p><p>Source ranks and numeric bands are preserved exactly. Blank scores remain unknown. Class codes from HWSD, CDL, WorldCover or a study-specific legend are not interchangeable. Source approval does not establish a target-dataset crosswalk.</p><input id="search" aria-label="Filter source classes" placeholder="Filter source tables by family, variable or source"><section class="source"><h2>Land-use / land-cover source table</h2>"""
     page += table(land, columns)
@@ -260,8 +336,8 @@ def main(directory=OUT):
         '</section><section class="source"><h2>Other categories and ordinal bands</h2>'
         + table(other, columns)
     )
-    page += """</section><section><h2>Required compilation contract</h2><ol><li>Keep one record per family × variable × source class, with source label/code, role (eligible, excluded, ordinal rank, or observed only), context and evidence ID.</li><li>Resolve source classes against a named dataset and version. Missing codes remain unknown; they must not default to exclusion.</li><li>For explicit applicability gates, record eligible/excluded semantics separately from graded preference. Ordinary forest cover is not proof of existing agroforestry.</li><li>For ordinal classes, retain source ranks until a documented 0–1 scoring convention is agreed. Regional exclusions, crop-specific classes and observed-presence records must not become universal gates.</li><li>Compile only validated mappings to T4 ranked_classes. Existing placeholder scores require replacement through an evidence-backed family-specific decision.</li></ol><p>Examples needing attention: Castle cropland/pasture gates require class mapping; Nath drainage codes need their legend; the Singh land-cover 1–4 / 5–7 record shares its quote with a soil-quality record and needs source-context verification. Seja land-use allocation percentages and the Nath NDVI quote tagged land_cover are not categorical eligibility rules.</p></section><script>document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('.source tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))})</script></html>"""
-    (ROOT / "docs/review/t4-categorical-tables.html").write_text(page)
+    page += """</section><section><h2>Required compilation contract</h2><ol><li>Keep one record per family × variable × source class, with source label/code, role (eligible, excluded, ordinal rank, or observed only), context and evidence ID.</li><li>Resolve source classes against a named dataset and version. Missing codes remain unknown; they must not default to exclusion.</li><li>For explicit applicability gates, record eligible/excluded semantics separately from graded preference. Ordinary forest cover is not proof of existing agroforestry.</li><li>For ordinal classes, retain source ranks until a documented 0–1 scoring convention is agreed. Regional exclusions, crop-specific classes and observed-presence records must not become universal gates.</li><li>Compile only validated mappings to T4 ranked_classes. Executable mappings require explicit dataset codes, evidence IDs and independently supplied host masks. Unknown is never eligible by default.</li></ol><p>Examples needing attention: Castle silvopasture evidence still requires review; Nath drainage codes need their legend; the Singh land-cover 1–4 / 5–7 record shares its quote with a soil-quality record and needs source-context verification. Seja land-use allocation percentages and the Nath NDVI quote tagged land_cover are not categorical eligibility rules.</p></section><script>document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('.source tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))})</script></html>"""
+    (ROOT / "docs/review/t4-categorical-tables.html").write_text(page, encoding="utf-8")
     print(
         json.dumps(
             {

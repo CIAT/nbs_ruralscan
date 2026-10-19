@@ -224,11 +224,22 @@ def write_recipe(
         for r in vont_rows
     }
 
+    # Authored, evidence-linked eligibility gates are non-compensatory configuration.
+    # Numeric synthesis cannot overwrite a family-specific dataset crosswalk.
+    gates = {
+        (r["suitability_family_id"], r["variable"]): r
+        for r in existing
+        if r.get("relationship_type") == "ranked_classes"
+        and json.loads(r.get("relationship_params") or "{}").get("mapping_role")
+        == "eligibility_gate"
+    }
     csv_rows: list[dict[str, object]] = []
     for family, res in results.items():
         save_family(res, recipe_dir / f"T4_{family}.json")
         n_rows = len(res.rows) or 1
         for row in res.rows:
+            if (family, row["variable"]) in gates:
+                continue
             csv_rows.append(
                 {
                     "mapping_id": row["mapping_id"],
