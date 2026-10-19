@@ -1824,6 +1824,7 @@ def data_deficient_statement(rec: dict[str, Any], key: str) -> str:
         kinds = {
             "not_a_net_balance": "single-gas figures with no net CO2e balance",
             "reference_shortfall": "shortfalls against an intact reference rather than against the pre-restoration state",
+            "unmanaged_state_comparator": "comparisons against the unmanaged state rather than the farming-system counterfactual the cell asks about",
             "not_a_household_benefit": "value accruing to society rather than to the household",
         }
         extra = (
@@ -2043,6 +2044,13 @@ EXISTING_USE_COMPARATORS = {
     "existing_wetland_coastal",
     "existing_forest",
 }
+#: Pete 2026-10-19 (hazard_cell_comparator, from the batcheler24_6 hold): in a T3 cell a
+#: unit's sign must be read against the cell's FARMING-SYSTEM comparator (silvopasture vs
+#: open pasture), not against the unmanaged state (grazed vs non-grazed forest) — "grazing
+#: may reduce litter build up but we can assume there will be more litter or flammable
+#: materials than in the comparator system". Units tagged `comparator=unmanaged_state`
+#: inform the account and prose but never set a T3 class.
+UNMANAGED_COMPARATORS = {"unmanaged_state"}
 LIVELIHOOD_KEYS = {"rural_poverty", "production_gap"}
 #: Pete 2026-10-16 (thin rows, option B): a cell states a class only when its pool clears a
 #: floor — two independent sources, OR one MEASURED finding. Below it the row is published as
@@ -2148,6 +2156,16 @@ def partition_voters(
         for c in voters:
             if _comparator_of(c) in EXISTING_USE_COMPARATORS:
                 hold(c, "existing_use_opportunity_cost")
+            else:
+                keep.append(c)
+        voters = keep
+    # an unmanaged-state comparison answers a different question than the T3 cell asks
+    # (Pete 2026-10-19, hazard_cell_comparator): it informs the account, never the class
+    if table == "T3":
+        keep = []
+        for c in voters:
+            if _comparator_of(c) in UNMANAGED_COMPARATORS:
+                hold(c, "unmanaged_state_comparator")
             else:
                 keep.append(c)
         voters = keep

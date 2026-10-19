@@ -90,7 +90,7 @@ moderate, and `practice_as_described` must carry the comparator's own words when
 gives any. Where the same quote offers a *named* baseline (here: natural vegetation), the
 reviewer checks the sign against the counterfactual that matters for the cell.
 
-**How to answer:** "santos: cap / leave / drop".
+**Answered (Pete 2026-10-19): "drop, log reason."** Dropped (`insufficient_context`); his question is in the review log verbatim.
 
 ## 3. Hold card: batcheler24_6 — "turn the judgement down a notch"
 
@@ -104,7 +104,10 @@ woodland. Units whose comparator is the unmanaged state (grazed vs ungrazed fore
 the account but don't set the class. This is a comparator question, not a weighting knob —
 classes stay derived, nothing is hand-notched.
 
-**How to answer:** "fire: rule / leave".
+**Answered (Pete 2026-10-19): "rule."** Implemented as `context.comparator = unmanaged_state`:
+such units are held from every T3 class (`unmanaged_state_comparator`), staying in the row and
+the prose. The six Batcheler units are tagged; the four agroforestry fire cells now publish as
+data deficient, naming the missing comparison — silvopasture against treeless pasture.
 
 ## 4. Hold card: ojan20_4 — net emissions unclear
 
@@ -113,4 +116,4 @@ decides; a single-gas unit never sets a carbon class), and this unit IS a net st
 methane offsets "a major part" of the cooling in the first decades, which is exactly the
 decadal-warming / century-cooling story the wetland carbon row now tells. It stays a voter.
 
-**How to answer:** "ojan: ok" (or "drop" if you want it out).
+**Answered (Pete 2026-10-19): "ok."** Hold lifted; the unit keeps voting under the net-CO2e rule.
