@@ -319,6 +319,21 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     at baseline" must not enter an effect cell as a null vote. Extract baseline documents
     only for context (and for the later endline's lineage); the endline carries the effect.
 
+29. **A spread is not a sign → `unusable_value`** (2026-10-19 retro). A range of cost (or
+    outcome) estimates across implementers, sites or methods — "rehabilitation cost varied
+    from X to Y depending on the agency" — is DISPERSION, not a direction. One such unit was
+    encoded `direction = positive` on a cost variable and read as "the practice increases
+    costs". If the quote states only a spread, leave `direction = none` and put the range in
+    `economic_value_range` (gates permitting) or `outcome_raw`; a direction needs a stated
+    comparison or trend, not a min and a max.
+
+30. **An annualised establishment cost is not a recurrent cost** (2026-10-19 retro). Route a
+    cost by WHAT THE MONEY BUYS — initial works vs ongoing maintenance — never by its
+    denominator alone. A paper that annualises capital restoration cost over a horizon
+    ("$ ha−1 y−1, cost divided by years") still reports an ESTABLISHMENT cost; the usd_per_ha_yr
+    unit must not push it into the recurrent-cost cell. Recurrent = the paper names ongoing
+    operations (monitoring, maintenance, replanting share); say which in `outcome_raw`.
+
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
 `check_species.py` (species mis-tag), `quarantine.py` (auto-soft-deletes off-scope +

@@ -49,6 +49,7 @@ _RULESETS = {
     "v1.6.9",
     "v1.6.10",
     "v1.6.11",
+    "v1.6.12",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
