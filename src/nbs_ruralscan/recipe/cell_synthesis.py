@@ -27,6 +27,7 @@ import re
 import csv
 import dataclasses
 import json
+import math
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -2811,11 +2812,13 @@ def synthesise_cell_with_families(
         | {f for f in home_of.values() if f}
     )
     fam_ranks: list[int] = []
+    fam_votes: list[dict[str, Any]] = []
     for fam in fams:
         fam_units = [u for u in pooled if u.suitability_family_id == fam] + [
             _rehome(u, fam) for u in excluded if home_of.get(u.evidence_id) == fam
         ]
-        if len({u.source_id for u in fam_units}) < min_family_sources:
+        fam_srcs = {u.source_id for u in fam_units}
+        if len(fam_srcs) < min_family_sources:
             continue
         frows, frep = synthesise_cell(
             fam_units, tiers, family=fam, emit_scope_rows=False, **kw
@@ -2836,7 +2839,21 @@ def synthesise_cell_with_families(
         if frows:
             rows += frows
             fam_ranks.append(_rank_of(frows[0]))
+            # the vote weighs the CELL's voters, not the family's whole register slice:
+            # `units` arrives pre-XW, so fam_srcs over-counts — the family row's own
+            # n_sources / references are the per-cell truth (caught by the WH prose
+            # writer, 2026-10-19: in_situ "38 sources" where the flood cell held 7 units)
+            fam_votes.append(
+                {
+                    "family": fam,
+                    "label": _vote_label(frows[0]),
+                    "n_sources": int(frows[0].get("n_sources") or 0),
+                    "sources": set(frows[0].get("references") or []),
+                }
+            )
             rep.notes += frep.notes
+    if rows:
+        _family_vote(rows[0], rep, fam_votes, set(rows[0].get("references") or []))
     if len(fam_ranks) >= 2 and max(fam_ranks) - min(fam_ranks) >= 2:
         rows[0]["family_spread"] = True
     return rows, rep
@@ -2867,6 +2884,151 @@ def _rank_of(row: dict[str, Any]) -> int:
         or row.get("asset_sensitivity")
     )
     return _DIR_RANK.get(str(v), 0)
+
+
+#: Family-level roll-up vote (Pete 2026-10-19, `rollup_family_honesty` = "B-ish": "suggest
+#: the roll-up is not at the row level but the sub-practice level, with some weighting for
+#: units (but not simply n, maybe root n or log n or something?)"). The NbS-level class
+#: DEFERS to its family rows: each classed family row votes with weight sqrt(n_sources)
+#: (sources, not units — the engine's independence currency; root-n is Pete's damping);
+#: conflicting families plus the minority sign carrying >= CONFLICT_MIN_SHARE of the signed
+#: weight states conflicting_evidence (one conflict philosophy at both levels), otherwise
+#: the class is the weighted median of the modal-sign family ranks. Guards: at least
+#: FAMILY_VOTE_MIN_FAMILIES classed family rows covering at least FAMILY_VOTE_COVERAGE of
+#: the roll-up's sources — else the pooled class stands, with the reason in the account.
+FAMILY_VOTE_MIN_FAMILIES = 2
+FAMILY_VOTE_COVERAGE = 0.5
+
+
+def _vote_label(row: dict[str, Any]) -> str:
+    v = row.get("effect_direction")
+    if v is None or v == "":
+        v = row.get("mitigation_potential")
+    return str(v or "")
+
+
+def _family_vote(
+    top: dict[str, Any],
+    rep: CellReport,
+    votes: list[dict[str, Any]],
+    pooled_sources: set[str],
+) -> None:
+    """Re-derive the roll-up row's class from its family rows' votes, in place."""
+    if top.get("scope_type") or top.get("suitability_family_id"):
+        return
+    if top.get("risk_role") == "asset_threat":
+        return
+    old_label = _vote_label(top)
+    if not old_label:  # economic rows and data-deficient rows carry no class to defer
+        return
+    classed = [v for v in votes if v["label"]]
+    j = top.get("justification")
+    if not isinstance(j, dict):
+        return
+    if len(classed) < FAMILY_VOTE_MIN_FAMILIES:
+        j["family_vote"] = {
+            "outcome": "pooled_class_stands",
+            "reason": f"fewer than {FAMILY_VOTE_MIN_FAMILIES} classed family rows",
+        }
+        return
+    cover_srcs = set().union(*(v["sources"] for v in classed)) & pooled_sources
+    coverage = len(cover_srcs) / len(pooled_sources) if pooled_sources else 0.0
+    if coverage < FAMILY_VOTE_COVERAGE:
+        j["family_vote"] = {
+            "outcome": "pooled_class_stands",
+            "reason": (
+                f"family rows cover {coverage:.0%} of the roll-up's sources "
+                f"(floor {FAMILY_VOTE_COVERAGE:.0%})"
+            ),
+        }
+        return
+    pos_w = neg_w = conf_w = 0.0
+    signed: list[tuple[int, float]] = []
+    for v in classed:
+        w = math.sqrt(max(v["n_sources"], 1))
+        v["weight"] = round(w, 3)
+        if v["label"] == "conflicting_evidence":
+            conf_w += w
+            continue
+        r = _DIR_RANK.get(v["label"], 0)
+        if r > 0:
+            pos_w += w
+        elif r < 0:
+            neg_w += w
+        if r != 0:
+            signed.append((r, w))
+    base = pos_w + neg_w + conf_w
+    dissent = conf_w + min(pos_w, neg_w)
+    if base == 0:
+        new_label, rank = (
+            ("no_relationship", 0) if "effect_direction" in top else ("none", 0)
+        )
+    elif dissent / base >= CONFLICT_MIN_SHARE:
+        new_label, rank = "conflicting_evidence", None
+    else:
+        modal = 1 if pos_w >= neg_w else -1
+        rank = _wmedian([(r, w) for r, w in signed if (r > 0) == (modal > 0)])
+        conf = str(top.get("confidence") or top.get("effect_confidence") or "")
+        new_label = (
+            t6_effect_direction(rank)
+            if "effect_direction" in top
+            else t3_mitigation_potential(rank, conf)
+        )
+    j["family_vote"] = {
+        "rule": (
+            "family rows vote with weight sqrt(n_sources); dissent "
+            f">= {CONFLICT_MIN_SHARE:.2f} of signed weight -> conflicting_evidence "
+            "(Pete 2026-10-19, rollup_family_honesty B)"
+        ),
+        "votes": [
+            {k: v[k] for k in ("family", "label", "n_sources", "weight")}
+            for v in classed
+        ],
+        "dissent_share": round(dissent / base, 3) if base else None,
+        "coverage": round(coverage, 3),
+        "pooled_label": old_label,
+        "outcome": new_label,
+    }
+    if new_label == old_label:
+        return
+    field = "effect_direction" if "effect_direction" in top else "mitigation_potential"
+    top[field] = new_label
+    sides = ", ".join(f"{v['family'].split('__')[-1]}={v['label']}" for v in classed)
+    if new_label == "conflicting_evidence":
+        j["conflicting"] = True
+        top["agreement_level"] = "low"
+        new_conf = IPCC_MATRIX.get((str(top.get("evidence_level")), "low"), "low")
+        for cf in ("confidence", "effect_confidence"):
+            if cf in top:
+                top[cf] = new_conf
+        if isinstance(j.get("statement"), str):
+            j["statement"] += (
+                " CLASS SET BY SUB-PRACTICE VOTE: the family rows disagree "
+                f"({sides}), so the roll-up states conflicting evidence rather than the "
+                f"pooled {old_label}."
+            )
+    else:
+        j["conflicting"] = new_label == "conflicting_evidence"
+        if isinstance(j.get("statement"), str):
+            j["statement"] += (
+                f" CLASS SET BY SUB-PRACTICE VOTE ({sides}): {new_label}, "
+                f"replacing the pooled {old_label}."
+            )
+    rep.notes.append(
+        f"roll-up class set by sub-practice vote: {old_label} -> {new_label} ({sides})"
+    )
+
+
+def _wmedian(pairs: list[tuple[int, float]]) -> int:
+    """Weighted median of (rank, weight) pairs."""
+    pairs = sorted(pairs)
+    half = sum(w for _, w in pairs) / 2
+    run = 0.0
+    for r, w in pairs:
+        run += w
+        if run >= half:
+            return r
+    return pairs[-1][0]
 
 
 # ── runtime resolution (method §5.5) ──────────────────────────────────────────────────
