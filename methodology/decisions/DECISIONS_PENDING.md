@@ -30,6 +30,10 @@ your water-stress split:
 
 Every separator is already stated in its row's conditionality, so nothing is hidden meanwhile.
 
+**The full case for and against each — the evidence on both sides, what a split would concretely
+change, and a recommendation per item — is in
+[2026-10-19_conflict_splits.md](2026-10-19_conflict_splits.md). Read that, not this summary.**
+
 - **A. Split them all** (each needs a new route or target, the water-stress treatment).
 - **B. Leave them as conflicts** with the separator in prose (current state).
 - **C. Case by case** — say which numbers split. *(my recommendation: 1 and 3 have the cleanest
