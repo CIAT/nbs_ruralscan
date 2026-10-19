@@ -195,9 +195,9 @@ def main(directory=OUT):
                     "review_status": "approved"
                     if u["reviewer_ok"].lower() == "true"
                     else "unresolved",
-                    "compiler_status": dispositions[u["evidence_id"]][
-                        "approved_status"
-                    ],
+                    "compiler_status": dispositions.get(u["evidence_id"], {}).get(
+                        "approved_status", "awaiting_reconciliation"
+                    ),
                     "claim_scope": u["claim_scope"],
                     "source_id": u["source_id"],
                     "evidence_id": u["evidence_id"],
@@ -234,7 +234,12 @@ def main(directory=OUT):
                     "validation": "NO LINKED EVIDENCE"
                     if not json.loads(u["evidence_ids"] or "[]")
                     else (
-                        "Executable; approved evidence"
+                        (
+                            "Blocked: pending mapping review"
+                            if params.get("mapping_review_status", "approved")
+                            != "approved"
+                            else "Executable; approved evidence"
+                        )
                         if all(
                             evidence.get(eid, {}).get("reviewer_ok", "").lower()
                             == "true"
@@ -302,7 +307,7 @@ def main(directory=OUT):
     ]
     land = [r for r in source_rows if r["variable"] == "land_cover"]
     other = [r for r in source_rows if r["variable"] != "land_cover"]
-    page = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 categorical class tables</title><style>body{font:15px system-ui;margin:30px;color:#183a34;background:#f6f8f7}section{background:white;padding:20px;margin:20px 0;border:1px solid #ceded7;overflow:auto}table{border-collapse:collapse;width:100%}td,th{border:1px solid #cbd8d2;padding:9px;text-align:left;vertical-align:top;min-width:100px}th{background:#e5f0ea;position:sticky;top:0}td{white-space:pre-wrap;overflow-wrap:anywhere}h1{font-size:29px}.warning{border-left:5px solid #ad6822;padding:14px;background:#fff0dd}input{font:inherit;padding:10px;min-width:360px}a{color:#066956}</style><h1>Land-use and other categorical classes</h1><p>Branch audit · Source classes remain visible even when no executable score exists.</p><p><a href="t4-pipeline-audit.html">Full evidence audit</a></p><p class="warning">Placeholder scores retired. Family-specific binary host gates now execute against ESA WorldCover 2021. Score 1 means compatible host class, not high suitability. Required host masks must be independently supplied; missing masks and unmapped classes remain unknown. Silvopastoral evidence remains pending: blocked by default. Linear/boundary and shaded-perennial gates lack usable reviewed mappings; homegardens remain qualitative-only.</p><section><h2>Current configured categorical T4</h2>"""
+    page = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 categorical class tables</title><style>body{font:15px system-ui;margin:30px;color:#183a34;background:#f6f8f7}section{background:white;padding:20px;margin:20px 0;border:1px solid #ceded7;overflow:auto}table{border-collapse:collapse;width:100%}td,th{border:1px solid #cbd8d2;padding:9px;text-align:left;vertical-align:top;min-width:100px}th{background:#e5f0ea;position:sticky;top:0}td{white-space:pre-wrap;overflow-wrap:anywhere}h1{font-size:29px}.warning{border-left:5px solid #ad6822;padding:14px;background:#fff0dd}input{font:inherit;padding:10px;min-width:360px}a{color:#066956}</style><h1>Land-use and other categorical classes</h1><p>Branch audit · Source classes remain visible even when no executable score exists.</p><p><a href="t4-pipeline-audit.html">Full evidence audit</a></p><p class="warning">Placeholder scores retired. Family-specific binary host gates now execute against ESA WorldCover 2021. Score 1 means compatible host class, not high suitability. Required host masks must be independently supplied; missing masks and unmapped classes remain unknown. Silvopastoral evidence remains pending: blocked by default. Linear/boundary and shaded-perennial mappings now exist as review candidates. Boundary coverage is windbreak/shelterbelt only. Coffee/cocoa need separately observed host masks and provenance; modelled allocation does not pass. Homegardens remain qualitative-only.</p><section><h2>What still needs review</h2><p><strong>Mapping B1:</strong> Castle windbreak rule: cropland/pasture field boundaries, transferred outside US Midwest without imposing its 10 m study buffer. Does this candidate scope fit? Contour buffers remain unresolved.</p><p><strong>Mapping P1:</strong> Existing coffee/cocoa only; separate observed host masks, maximum across crops with crop identity retained. Source evidence supports host-system identity, not a numerical suitability threshold. Confirm crosswalk and mixed-pixel interpretation.</p><p><a href="../review.html?batch=agroforestry-t4-categorical-followup-oct19">Review four evidence records: boundary, shaded systems, silvopastoral and Haile pH</a>. Evidence approval and mapping approval are separate. No approvals applied here.</p><p><strong>Inputs still required:</strong> boundary geometry plus locally justified placement zone; managed pasture confirmation; observed crop-specific coffee/cocoa distribution. No AOI datasets were supplied or derived in this run. Report line length for windbreaks and observed crop area for perennial systems, never full eligible-pixel footprint.</p><p><strong>Other classes still unresolved:</strong> Nath drainage code legend; Singh texture-to-dataset crosswalk and land-cover/soil quote mismatch; mulberry-specific classes cannot establish generic coffee/cocoa eligibility. Other F5 crops need their own mappings.</p><p><a href="img/t4_boundary_castle_p8.png">Castle source table, PDF p8</a></p></section><section><h2>Current configured categorical T4</h2>"""
     page += table(
         current,
         [

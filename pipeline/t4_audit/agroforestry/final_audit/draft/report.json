@@ -3,8 +3,8 @@
   "input_sha256": {
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
-    "schema/registers/SRC_source_register.csv": "d53cbc68db270ab40f2b431627b81c293557100a0aaab85d1a342f575a592c08",
-    "schema/registers/EV_evidence_register.csv": "d24f3bb88fb864f5b95318990dae92dac95912752bcd921a478df163b161cc40",
+    "schema/registers/SRC_source_register.csv": "fb4be732550b437c624f813e27c6e29bb4a437d18309983721cbd4c001808102",
+    "schema/registers/EV_evidence_register.csv": "597e6272295e7daf75cf8e4a43d3b422d25a2f83722634a41bfc882679780d6d",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
@@ -4167,6 +4167,14 @@
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
         },
         {
+          "variable": "land_cover",
+          "support_pct": null,
+          "n_sources": 1,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
           "variable": "soil_erosion_risk",
           "support_pct": null,
           "n_sources": 1,
@@ -4209,6 +4217,15 @@
           "pct": null,
           "members": [
             "soil_erosion_wind"
+          ]
+        },
+        "land_use": {
+          "key": "land_use",
+          "n_sources": 1,
+          "corpus_n": null,
+          "pct": null,
+          "members": [
+            "land_cover"
           ]
         }
       },
@@ -4905,6 +4922,20 @@
             "framing": "presence",
             "strength_class": "slight"
           }
+        },
+        "ev_t4_land_cover_castle2025_windbreak": {
+          "source_id": "castle_2025",
+          "variable": "land_cover",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "class_or_gate_requires_mapping",
+          "relationship": {
+            "eligible_classes": [
+              "cropland",
+              "pasture/grassland"
+            ],
+            "placement": "buffers around delineated fields"
+          }
         }
       },
       "crop_results": {},
@@ -5012,6 +5043,21 @@
           "unresolved": [
             [
               "ev_market_value_chain_faosen24_19",
+              "class_or_gate_requires_mapping"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "land_cover": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_t4_land_cover_castle2025_windbreak",
               "class_or_gate_requires_mapping"
             ]
           ],

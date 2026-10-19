@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-19T18:50:57.834958+00:00",
-  "git_commit": "898fdee9dc6e36b036b0f2a447246023690adc75",
+  "timestamp": "2026-10-19T19:29:24.284582+00:00",
+  "git_commit": "0c33524cd788d2ac13dd2b1e5c85e63b869b7097",
   "registers": {
     "SRC_source_register": [
       {
@@ -285,7 +285,7 @@
         "study_country": "United States",
         "method_type": "empirical",
         "nbs_ids": "agroforestry",
-        "vars_extracted": "annual_precipitation|extension_governance|finance_credit_access|labour_availability|land_cover|market_value_chain|mean_annual_temperature|protected_area_status|soil_drainage|soil_ph|tenure_security",
+        "vars_extracted": "extension_governance|finance_credit_access|frost_free_period|labour_availability|land_cover|market_value_chain|soil_drainage|tenure_security",
         "extraction_status": "complete",
         "source_kind": "paper",
         "url": "https://doi.org/10.1088/1748-9326/adab09",
@@ -6426,7 +6426,8 @@
       },
       {
         "source_id": "vaast2016_double_dividend",
-        "citation": "Vaast P. & Somarriba E. (2014/2016). Shaded coffee and cocoa – double dividend for biodiversity and small-scale farmers. Ecological Economics / Agroforestry Systems.",
+        "citation": "Jezeer et al. (2017). Shaded Coffee and Cocoa – Double Dividend for Biodiversity and Small-scale Farmers. Ecological Economics.",
+        "doi": "10.1016/j.ecolecon.2017.04.019",
         "benchmark_tier": "medium",
         "region": "pantropical coffee and cocoa",
         "method_type": "meta_analysis",
@@ -177491,6 +177492,37 @@
         "taxon": "Zea mays",
         "locator_type": "page",
         "ruleset_version": "v1.6.11"
+      },
+      {
+        "evidence_id": "ev_t4_land_cover_castle2025_windbreak",
+        "source_id": "castle_2025",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__linear_boundary",
+        "variable": "land_cover",
+        "relationship": {
+          "eligible_classes": [
+            "cropland",
+            "pasture/grassland"
+          ],
+          "placement": "buffers around delineated fields"
+        },
+        "context": {
+          "region": "US Midwest",
+          "practice_as_described": "Windbreaks: buffers around delineated fields",
+          "note": "Table 2, Indicator 5 Agricultural extent. Source uses 10 m buffers; retained as source context, not a global width. Windbreak subtype only, not contour buffers or all boundary systems."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "table",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Windbreaks:\n10 m buffers\naround\ndelineated\nfields\nUSDA Crop\nSequence\nBoundaries [67]\n10 m buffers around delineated fields\nand on areas currently in cropland or\npasture/grassland use.",
+        "page": 8,
+        "reviewer_ok": false,
+        "locator_type": "page",
+        "selection_justification": "Explicit agricultural-extent and placement criterion in the source suitability model; not a site-description range. Transfer outside the US Midwest remains a mapping-review decision.",
+        "selection_justification_page": 8,
+        "ruleset_version": "v1.6.11"
       }
     ],
     "FAM_family_registry": [
@@ -187960,6 +187992,204 @@
             "ev_t4_land_cover_castle2025_2"
           ],
           "n_sources": 1
+        },
+        {
+          "mapping_id": "agro_linear_boundary_land_cover_gate",
+          "nbs_id": "agroforestry",
+          "dataset_id": "esa_worldcover_2021",
+          "suitability_dimension": "system_constraint",
+          "relationship_type": "ranked_classes",
+          "relationship_params": {
+            "class_map": {
+              "40": 1,
+              "30": 1,
+              "50": 0,
+              "70": 0,
+              "80": 0
+            },
+            "class_labels": {
+              "20": "Shrubland",
+              "30": "Grassland",
+              "40": "Cropland",
+              "50": "Built-up",
+              "60": "Bare / sparse vegetation",
+              "70": "Snow and ice",
+              "80": "Permanent water bodies",
+              "10": "Tree cover"
+            },
+            "mapping_role": "eligibility_gate",
+            "class_requirements": {
+              "40": [
+                "field_boundary_zone"
+              ],
+              "30": [
+                "field_boundary_zone",
+                "managed_pasture_present"
+              ]
+            },
+            "unmapped_policy": "unknown",
+            "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+            "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+            "mapping_review_status": "pending",
+            "applicable_subpractices": [
+              "windbreaks_shelterbelts"
+            ],
+            "required_mask_metadata": {
+              "field_boundary_zone": {
+                "data_basis": "observed_geometry",
+                "placement": "field_boundary"
+              }
+            },
+            "design_reference": "methodology/families/agroforestry.md#f4",
+            "footprint_rule": "candidate_lines_not_pixel_area"
+          },
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0,
+          "weight_adjustable": false,
+          "justification": "Candidate applicability gate for windbreaks/shelterbelts only. Castle Table 2 PDF p8 places windbreaks on delineated cropland/pasture field boundaries in the US Midwest. WorldCover cropland requires independently mapped field-boundary placement; grassland additionally requires managed pasture confirmation. No universal buffer width or contour-siting rule is inferred. Report applicability zones and candidate line length, never eligible pixel area as planting footprint. Source and cross-context mapping remain pending review.",
+          "variable": "land_cover",
+          "suitability_family_id": "agroforestry__linear_boundary",
+          "evidence_ids": [
+            "ev_t4_land_cover_castle2025_windbreak"
+          ],
+          "n_sources": 1
+        },
+        {
+          "mapping_id": "agro_shaded_coffee_host_gate",
+          "nbs_id": "agroforestry",
+          "dataset_id": "esa_worldcover_2021",
+          "suitability_dimension": "system_constraint",
+          "relationship_type": "ranked_classes",
+          "relationship_params": {
+            "class_map": {
+              "10": 1,
+              "20": 1,
+              "30": 1,
+              "40": 1,
+              "50": 0,
+              "70": 0,
+              "80": 0
+            },
+            "class_labels": {
+              "20": "Shrubland",
+              "30": "Grassland",
+              "40": "Cropland",
+              "50": "Built-up",
+              "60": "Bare / sparse vegetation",
+              "70": "Snow and ice",
+              "80": "Permanent water bodies",
+              "10": "Tree cover"
+            },
+            "mapping_role": "eligibility_gate",
+            "class_requirements": {
+              "10": [
+                "coffee_observed_present"
+              ],
+              "20": [
+                "coffee_observed_present"
+              ],
+              "30": [
+                "coffee_observed_present"
+              ],
+              "40": [
+                "coffee_observed_present"
+              ]
+            },
+            "unmapped_policy": "unknown",
+            "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+            "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+            "mapping_review_status": "pending",
+            "host_crop": "coffee",
+            "required_mask_metadata": {
+              "coffee_observed_present": {
+                "data_basis": "observed",
+                "host_crop": "coffee"
+              }
+            },
+            "design_reference": "methodology/families/agroforestry.md#f5",
+            "evidence_role": "host_system_identity_only",
+            "footprint_rule": "observed_crop_area_not_full_pixel_area"
+          },
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0,
+          "weight_adjustable": false,
+          "justification": "Candidate coffee host gate. Family-method F5 requires existing observed crop distribution. Jezeer et al. (2017), PDF p4, documents shade trees among coffee/cocoa plants; linked economic evidence supports host-system identity only, not a land-cover suitability score or threshold. WorldCover vegetation classes are permissive carriers ONLY when an independent observed coffee mask confirms the cultivated crop. Forest cover alone never passes. MapSPAM allocation is not observed presence. Presence does not establish a shade deficit or benefit; map target crop area, not full mixed-pixel area. Crosswalk and source evidence remain pending review.",
+          "variable": "land_cover",
+          "suitability_family_id": "agroforestry__shaded_perennial",
+          "evidence_ids": [
+            "ev_economic_return_jezeer17_1"
+          ],
+          "n_sources": 1
+        },
+        {
+          "mapping_id": "agro_shaded_cocoa_host_gate",
+          "nbs_id": "agroforestry",
+          "dataset_id": "esa_worldcover_2021",
+          "suitability_dimension": "system_constraint",
+          "relationship_type": "ranked_classes",
+          "relationship_params": {
+            "class_map": {
+              "10": 1,
+              "20": 1,
+              "30": 1,
+              "40": 1,
+              "50": 0,
+              "70": 0,
+              "80": 0
+            },
+            "class_labels": {
+              "20": "Shrubland",
+              "30": "Grassland",
+              "40": "Cropland",
+              "50": "Built-up",
+              "60": "Bare / sparse vegetation",
+              "70": "Snow and ice",
+              "80": "Permanent water bodies",
+              "10": "Tree cover"
+            },
+            "mapping_role": "eligibility_gate",
+            "class_requirements": {
+              "10": [
+                "cocoa_observed_present"
+              ],
+              "20": [
+                "cocoa_observed_present"
+              ],
+              "30": [
+                "cocoa_observed_present"
+              ],
+              "40": [
+                "cocoa_observed_present"
+              ]
+            },
+            "unmapped_policy": "unknown",
+            "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+            "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+            "mapping_review_status": "pending",
+            "host_crop": "cocoa",
+            "required_mask_metadata": {
+              "cocoa_observed_present": {
+                "data_basis": "observed",
+                "host_crop": "cocoa"
+              }
+            },
+            "design_reference": "methodology/families/agroforestry.md#f5",
+            "evidence_role": "host_system_identity_only",
+            "footprint_rule": "observed_crop_area_not_full_pixel_area"
+          },
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0,
+          "weight_adjustable": false,
+          "justification": "Candidate cocoa host gate. Family-method F5 requires existing observed crop distribution. Jezeer et al. (2017), PDF p4, documents shade trees among coffee/cocoa plants; linked economic evidence supports host-system identity only, not a land-cover suitability score or threshold. WorldCover vegetation classes are permissive carriers ONLY when an independent observed cocoa mask confirms the cultivated crop. Forest cover alone never passes. MapSPAM allocation is not observed presence. Presence does not establish a shade deficit or benefit; map target crop area, not full mixed-pixel area. Crosswalk and source evidence remain pending review.",
+          "variable": "land_cover",
+          "suitability_family_id": "agroforestry__shaded_perennial",
+          "evidence_ids": [
+            "ev_economic_return_jezeer17_1"
+          ],
+          "n_sources": 1
         }
       ]
     },
@@ -190064,11 +190294,11 @@
       "family": "agroforestry__linear_boundary",
       "searched": "done",
       "screened": "done",
-      "verified": "not_started",
-      "last_run_id": "targeted_discovery_2026-08",
-      "updated": "2026-08-05",
-      "by": "Pete/Claude",
-      "note": "targeted discovery fan-out; SRCH logged; extraction parked"
+      "verified": "in_progress",
+      "last_run_id": "categorical_family_followup_oct19",
+      "updated": "2026-10-19",
+      "by": "Codex",
+      "note": "Targeted Castle windbreak claim ingested through central staging gates; one claim verified, not a full family sweep. Source and cross-context mapping review pending. No new discovery claimed."
     },
     {
       "nbs_id": "agroforestry",

@@ -186,3 +186,66 @@ WorldCover codes without auxiliary masks, exposing missing context. Regenerate i
 the browser table with `PYTHONPATH=src python scripts/tabulate-t4-classes.py`.
 Per-family enriched synthesis JSON describes evidence synthesis; configured gates live
 in the canonical T4 CSV/generated JSON and must be executed from that canonical table.
+
+## Boundary and shaded-perennial follow-up
+
+The previous coverage gap is now narrowed to **reviewable candidate mappings**, not
+silently approved rules. `agro_linear_boundary_land_cover_gate` covers windbreaks and
+shelterbelts on cropland/managed-pasture field boundaries. It requires an independent
+`field_boundary_zone` mask, with `data_basis=observed_geometry`,
+`placement=field_boundary`, `dataset_id` and `source_reference` metadata. Grassland also
+requires `managed_pasture_present`. Castle's 10 m US-study buffer is preserved in the
+source quote only; no global width is encoded. Contour buffers, other boundary practices
+and target-country transfer remain unvalidated. Result carries `applicability_zone` and
+`applicable_subpractices`; no eligible-pixel area is a planting footprint.
+
+F5 has two candidate rows, `agro_shaded_coffee_host_gate` and
+`agro_shaded_cocoa_host_gate`. They follow the existing F5 method, requiring independent
+`coffee_observed_present` / `cocoa_observed_present` masks. Each mask needs metadata:
+`data_basis=observed`, matching `host_crop`, `dataset_id` and `source_reference`.
+Modelled allocation (including MapSPAM), niche predictions, missing provenance and the
+wrong crop do not satisfy that contract. WorldCover vegetation classes only carry the
+host mask; tree cover never proves crop presence. Crop-specific evaluation uses
+`crop="coffee"` or `crop="cocoa"`; the default takes the binary maximum across configured
+crops and retains every tied positive driver in `driver_crops`. Unknown alternatives
+cannot erase a known pass; absence in one crop cannot erase an unknown alternative.
+
+This gate implements **host-system applicability**, not shade benefit, shade deficit,
+yield potential or a planting recommendation. Jezeer et al.'s existing economic EV is
+linked **only as evidence of the coffee/cocoa-with-shade host system**; its economic
+magnitude is never read by the gate and it remains in its original effect role. The
+observed-host restriction comes from the project F5 method, not from reinterpreting the
+economic paper. Mapping P1 explicitly asks for review of this methodological crosswalk.
+For area reporting, require observed crop area/fraction; do not count whole mixed pixels.
+No AOI layers were supplied, downloaded or derived in this follow-up.
+
+All three new rows have `mapping_review_status=pending`. Production execution requires
+both source-evidence approval and mapping approval. `approved_only=False` runs explicit
+trials, still refusing dropped evidence and invalid/missing host provenance. Evidence
+approval alone never clears mapping review. Existing source approvals are unchanged.
+The browser table lists mapping decisions B1/P1 and links four source cards: new Castle
+windbreak claim, Jezeer host-system/economic evidence, existing Castle silvopastoral hold,
+and unresolved Haile pH. Other F5 crops and remaining ordinal crosswalks stay unresolved.
+
+### Targeted extraction and retrospective
+
+One new Castle land-cover/placement unit was extracted from a page-stamped bundle,
+programmatically sliced, visually checked against PDF p8, validated as an EvidenceUnit,
+and ingested through `ingest-effects-staging.py --allow-structural`. All central staging
+gates passed. The source DOI/title was verified using the project's Crossref verifier;
+proof is in `executable_categories/metadata_verification.json`. The Jezeer citation was
+also round-trip verified and repaired in SRC, keeping its stable source ID, PDF and
+existing evidence. No F5 outcome was relabelled as a structural extraction.
+
+Reconciliation now covers 440 T4/M2b records: 341 structural, 99 operational; 149 active
+structural and 192 soft-dropped. The ledger records only partial verification for the
+boundary family, not a completed family sweep. No new search is claimed. The single new
+claim has zero staging flags; existing source-geometry-as-global-threshold and
+observed-vs-modelled distinctions are covered by the existing extraction rules. New
+runtime regressions prevent modelled crop layers passing as observations, preserve crop
+alternatives and enforce independent mapping review.
+
+Sweep metrics were recorded under `agroforestry-categorical-boundary-oct19`: global
+number-provenance rate 5.9%, verification rate 0.5%. Changes since the previous October 16
+snapshot include unrelated intervening work; they are not attributed to this one-unit
+follow-up. No review feedback cursor or human approval was advanced.

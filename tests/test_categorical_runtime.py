@@ -155,5 +155,96 @@ def test_live_schema_family_rules_and_missing_families():
     for name in ["linear_boundary", "shaded_perennial"]:
         result = family(name)
         assert np.isnan(result.values).all()
-        assert set(result.status) == {"no_categorical_evidence"}
+        assert set(result.status) == {"pending_evidence_review"}
     assert set(family("homegardens_proximity").status) == {"qualitative_only"}
+
+
+def host_meta(crop, basis="observed"):
+    return {
+        "dataset_id": "survey_2026_" + crop,
+        "source_reference": "test survey",
+        "data_basis": basis,
+        "host_crop": crop,
+    }
+
+
+def test_crop_alternatives_use_max_and_retain_drivers():
+    masks = {
+        "coffee_observed_present": [1, 0, 1, 0],
+        "cocoa_observed_present": [0, 1, 1, 0],
+    }
+    meta = {crop + "_observed_present": host_meta(crop) for crop in ("coffee", "cocoa")}
+    result = family(
+        "shaded_perennial", approved_only=False, masks=masks, mask_metadata=meta
+    )
+    np.testing.assert_equal(result.values, [1, 1, 1, 0])
+    assert result.driver_crops.tolist() == ["coffee", "cocoa", "cocoa|coffee", ""]
+    np.testing.assert_equal(
+        family(
+            "shaded_perennial",
+            crop="coffee",
+            approved_only=False,
+            masks=masks,
+            mask_metadata=meta,
+        ).values,
+        [1, 0, 1, 0],
+    )
+    with pytest.raises(ValueError, match="Crop"):
+        family("shaded_perennial", crop="tea")
+
+
+def test_crop_unknown_alternative_does_not_erase_known_pass():
+    result = family(
+        "shaded_perennial",
+        approved_only=False,
+        masks={"coffee_observed_present": [1, 0, 0, 0]},
+        mask_metadata={"coffee_observed_present": host_meta("coffee")},
+    )
+    np.testing.assert_equal(result.values, [1, np.nan, np.nan, 0])
+    assert result.driver_crops[0] == "coffee"
+
+
+@pytest.mark.parametrize("basis", ["modelled_allocation", "niche_model"])
+def test_modelled_host_is_not_observed_presence(basis):
+    result = family(
+        "shaded_perennial",
+        crop="coffee",
+        approved_only=False,
+        masks={"coffee_observed_present": [1, 1, 1, 0]},
+        mask_metadata={"coffee_observed_present": host_meta("coffee", basis)},
+    )
+    np.testing.assert_equal(result.values, [np.nan, np.nan, np.nan, 0])
+    assert result.status[0] == "incompatible_host_data"
+
+
+def test_boundary_geometry_and_grassland_context_required():
+    result = family(
+        "linear_boundary",
+        approved_only=False,
+        masks={
+            "field_boundary_zone": [1, 1, 1, 0],
+            "managed_pasture_present": [0, 1, 0, 0],
+        },
+        mask_metadata={
+            "field_boundary_zone": {
+                "dataset_id": "fields",
+                "source_reference": "test boundary survey",
+                "data_basis": "observed_geometry",
+                "placement": "field_boundary",
+            }
+        },
+    )
+    np.testing.assert_equal(result.values, [1, 1, np.nan, 0])
+    assert result.spatial_product_type == "applicability_zone"
+    assert result.applicable_subpractices == ("windbreaks_shelterbelts",)
+    assert np.isnan(family("linear_boundary", approved_only=False).values[0])
+
+
+def test_mapping_approval_is_separate_from_evidence_approval():
+    row = config()
+    row["relationship_params"]["mapping_review_status"] = "pending"
+    result = evaluate_categorical(
+        row, [40], dataset_id="codes_v1", evidence={"ev": {"reviewer_ok": True}}
+    )
+    assert result.status[0] == "pending_mapping_review"
+    assert np.isnan(result.values[0])

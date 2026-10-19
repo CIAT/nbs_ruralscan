@@ -20,6 +20,8 @@ class CategoricalResult:
     status: np.ndarray
     mapping_ids: tuple[str, ...] = ()
     spatial_product_type: str = ""
+    driver_crops: np.ndarray | None = None
+    applicable_subpractices: tuple[str, ...] = ()
 
 
 def _object(value):
@@ -32,6 +34,7 @@ def evaluate_categorical(
     *,
     dataset_id: str,
     masks: Mapping[str, np.ndarray] | None = None,
+    mask_metadata: Mapping[str, dict] | None = None,
     evidence: Mapping[str, dict] | None = None,
     approved_only: bool = True,
 ) -> CategoricalResult:
@@ -89,6 +92,9 @@ def evaluate_categorical(
         if approved_only and str(ev.get("reviewer_ok", "")).lower() != "true":
             status[...] = "pending_evidence_review"
             return result
+    if approved_only and params.get("mapping_review_status", "approved") != "approved":
+        status[...] = "pending_mapping_review"
+        return result
     gate = params.get("mapping_role") == "eligibility_gate"
     if gate and any(score not in (0, 1) for score in scores.values()):
         raise ValueError("Eligibility gates require binary scores")
@@ -118,6 +124,19 @@ def evaluate_categorical(
                 np.isinf(mask)
             ):
                 raise ValueError(f"Mask {name} must contain 0, 1 or NaN")
+            expected = params.get("required_mask_metadata", {}).get(name)
+            if expected:
+                meta = (mask_metadata or {}).get(name, {})
+                reason = ""
+                if not meta.get("dataset_id") or not meta.get("source_reference"):
+                    reason = "missing_mask_provenance"
+                elif any(meta.get(k) != v for k, v in expected.items()):
+                    reason = "incompatible_host_data"
+                if reason:
+                    unresolved = match & (values != 0)
+                    values[unresolved] = np.nan
+                    status[unresolved] = reason
+                    continue
             absent = match & (mask == 0)
             unknown = match & np.isnan(mask) & (values != 0)
             values[absent] = 0
@@ -145,6 +164,8 @@ def evaluate_family(
     datasets: Mapping[str, np.ndarray],
     *,
     masks=None,
+    mask_metadata=None,
+    crop=None,
     approved_only=True,
 ) -> CategoricalResult:
     """Execute configured family gates from generated T4 JSON; never borrow a family.
@@ -191,6 +212,15 @@ def evaluate_family(
         and r.get("relationship_type") == "ranked_classes"
         and r.get("relationship_params", {}).get("mapping_role") == "eligibility_gate"
     ]
+    if crop is not None:
+        configured_crops = {r["relationship_params"].get("host_crop") for r in gates}
+        if crop not in configured_crops:
+            raise ValueError("Crop has no configured categorical mapping")
+        gates = [
+            r
+            for r in gates
+            if r["relationship_params"].get("host_crop") in (None, crop)
+        ]
     if not gates:
         return empty
     evidence = {
@@ -214,10 +244,52 @@ def evaluate_family(
                 datasets[ds],
                 dataset_id=ds,
                 masks=masks,
+                mask_metadata=mask_metadata,
                 evidence=evidence,
                 approved_only=approved_only,
             )
-        parts.append(part)
+        parts.append((row["relationship_params"].get("host_crop"), part))
+    common = [part for host, part in parts if host is None]
+    crops = sorted({host for host, _ in parts if host is not None})
+    subpractices = tuple(
+        sorted(
+            {
+                sub
+                for r in gates
+                for sub in r["relationship_params"].get("applicable_subpractices", [])
+            }
+        )
+    )
+    if not crops:
+        result = _and_gates(common, shape)
+    else:
+        variants = [
+            _and_gates(common + [part for host, part in parts if host == name], shape)
+            for name in crops
+        ]
+        stack = np.stack([r.values for r in variants])
+        yes = np.any(stack == 1, axis=0)
+        no = np.all(stack == 0, axis=0)
+        values = np.where(yes, 1, np.where(no, 0, np.nan))
+        status = np.full(shape, "excluded", dtype=object)
+        status[yes] = "eligible"
+        unknown = ~yes & ~no
+        for variant in variants:
+            hit = unknown & np.isnan(variant.values)
+            status[hit] = variant.status[hit]
+        # Retain all tied eligible crops; unknown alternatives never erase a known pass.
+        drivers = np.full(shape, "", dtype=object)
+        for name, variant in zip(crops, variants):
+            hit = variant.values == 1
+            drivers[hit] = np.where(drivers[hit] == "", name, drivers[hit] + "|" + name)
+        result = CategoricalResult(values, status, driver_crops=drivers)
+    result.mapping_ids = tuple(r["mapping_id"] for r in gates)
+    result.spatial_product_type = product
+    result.applicable_subpractices = subpractices
+    return result
+
+
+def _and_gates(parts, shape):
     values = np.ones(shape)
     status = np.full(shape, "eligible", dtype=object)
     for part in parts:
@@ -229,6 +301,4 @@ def evaluate_family(
         ]
         status[zero] = "excluded"
         values = np.where(zero, 0, np.where(unknown, np.nan, 1))
-    return CategoricalResult(
-        values, status, tuple(r["mapping_id"] for r in gates), product
-    )
+    return CategoricalResult(values, status)
