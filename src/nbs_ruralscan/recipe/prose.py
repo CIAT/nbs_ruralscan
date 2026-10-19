@@ -10,7 +10,13 @@ used unit's own words, not inferred from them ("no longer completely saturated" 
 license "a saturated headwater bog shedding storm water" — caught and reworded 2026-10-16).
 When a writer is unsure whether a phrasing is in the source, it flags the line in its report
 instead of shipping it; the account check cannot catch semantics, so this rule is on the
-writer. ::
+writer.
+
+Every aggregated outcome owes a narrative strongly linked to its evidence chain (Pete
+2026-10-19, conflict-split ruling 5): a ``conflicting_evidence`` row's conditionality must
+name both sides and the separator between them, and any held-out units (reference
+shortfalls, existing-use income, envelope misfits, non-household beneficiaries) are carried
+in the prose with why they do not set the class — the class never travels without its chain. ::
 
     {
       "<record_id>": {
