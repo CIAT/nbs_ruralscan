@@ -30,6 +30,17 @@ forest-restoration roll-up?
 **Recommendation: B**, by your own rationale — a monoculture plantation is not representative of
 the natural baseline restoration returns to. **How to answer:** "plantation roll-up: B" (or A/C).
 
+## NEW — two water-harvesting PICOS calls (one line each; three units held out of ingest)
+
+1. **Supplemental irrigation** (`wh_supplemental_irrigation`): Rwanda — terrace runoff stored in a
+   lined pond and drip-applied; maize 11,982 vs 4,755 kg/ha. Your own earlier question: is water
+   harvesting + irrigation still the NbS? **A** ingest as runoff-catchment WH · **B** drop as
+   irrigation · **C** ingest tagged bundled-with-irrigation (recommended). Answer: "irrigation: A/B/C".
+2. **Live mulch** (`wh_live_mulch`): Zimbabwe El Niño — no-till + Brachiaria/Desmodium fodder
+   intercrop; maize −91% but BCR 1.58 **from fodder sales**. Is a living fodder intercrop "soil
+   cover" (in-situ WH)? **A** yes, ingest both units · **B** not WH, drop · **C** ingest the yield
+   harm, drop the fodder-revenue BCR (recommended B or C). Answer: "live mulch: A/B/C".
+
 ## The review batch — units whose encoding contradicts their own quote
 
 https://ciat.github.io/nbs_ruralscan/review.html → batch "Signs that contradict their own quote
