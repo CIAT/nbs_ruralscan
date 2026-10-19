@@ -35,6 +35,9 @@ class FamilyResult:
         default_factory=list
     )  # incl. soft-floor flags
     groups: dict[str, Support] = field(default_factory=dict)  # group-level prevalence
+    dispositions: dict[str, dict[str, Any]] = field(default_factory=dict)
+    crop_results: dict[str, "FamilyResult"] = field(default_factory=dict)
+    support_basis: str = "provisional_logged_inclusions"
     reports: dict[str, SynthesisReport] = field(default_factory=dict)  # per variable
 
 
@@ -58,6 +61,8 @@ def synthesise_family(
     allow_crop_scope: bool = False,
     categories: dict[str, str] | None = None,
     unit_conversions: dict[str, dict[str, str]] | None = None,
+    approved_only: bool = False,
+    crop: str | None = None,
 ) -> FamilyResult:
     """Reconcile all of a family's evidence into enriched T4 rows + a selection table.
 
@@ -70,15 +75,58 @@ def synthesise_family(
     categories = categories or {}
     unit_conversions = unit_conversions or {}
 
-    # exclude soft-deleted (QA-dropped) units from all synthesis + support
-    units = [u for u in units if getattr(u, "review_state", "") != "dropped"]
-    # Fixed-form practice-database records (WOCAT 'Natural environment' ticks, tagged
-    # relationship.type="observed_presence") say where ONE documented case is applied.
-    # Every sheet carries the same fields, so as support votes they are 100% by
-    # construction, and a single case is not a limit (#16). Catalogued and reviewable,
-    # but kept OUT of support + threshold synthesis; their intended use is an observed
-    # envelope across many cases (not built yet).
-    units = [u for u in units if not is_observed_presence(u)]
+    dispositions = {}
+    active = []
+    crop_units = defaultdict(list)
+    for u in units:
+        reason = ""
+        if u.review_state == "dropped":
+            reason = "qa_dropped"
+        elif is_observed_presence(u):
+            reason = "observed_presence"
+        elif u.use_role not in {"structural_suitability", "operational_risk"}:
+            reason = "other_role"
+        elif u.claim_scope == "species_specific":
+            reason = "species_scope"
+        elif u.claim_scope == "crop_specific" and not allow_crop_scope:
+            reason = "crop_scope"
+        elif approved_only and not u.reviewer_ok:
+            reason = "unresolved_review"
+        elif u.claim_scope == "crop_specific" and not u.taxon:
+            reason = "missing_crop_taxon"
+        elif u.claim_scope == "crop_specific" and crop is None:
+            reason = "crop_lane"
+            crop_units[u.taxon].append(u)
+        dispositions[u.evidence_id] = {
+            "source_id": u.source_id,
+            "variable": u.variable,
+            "reviewer_ok": u.reviewer_ok,
+            "use_role": u.use_role,
+            "status": reason or "pending",
+            "relationship": u.relationship,
+        }
+        if not reason:
+            active.append(u)
+    units = active
+    crop_results = {
+        taxon: synthesise_family(
+            members,
+            tiers,
+            family=family,
+            corpus_n=corpus_n,
+            group_map=group_map,
+            canonical_units=canonical_units,
+            dataset_ids=dataset_ids,
+            ml_important=ml_important,
+            floor_pct=floor_pct,
+            allow_crop_scope=True,
+            categories=categories,
+            unit_conversions=unit_conversions,
+            approved_only=approved_only,
+            crop=taxon,
+        )
+        for taxon, members in sorted(crop_units.items())
+    }
 
     # support is measured over the structural-suitability candidates (what T4 considers)
     t4_units = [u for u in units if u.use_role == "structural_suitability"]
@@ -106,6 +154,12 @@ def synthesise_family(
             categories=categories,
             unit_conversions=(unit_conversions or {}).get(variable),
         )
+        for eid in rep.used:
+            dispositions[eid]["status"] = "parameter_contributor"
+        for eid, reason in rep.dropped + rep.unresolved:
+            dispositions[eid]["status"] = reason
+        for eid, origin in rep.collapsed:
+            dispositions[eid].update(status="citation_echo", origin=origin)
         if not row[
             "relationship_params"
         ]:  # nothing survived scope filter → skip the row, keep the report
@@ -123,6 +177,8 @@ def synthesise_family(
         selection=selection,
         groups=groups,
         reports=reports,
+        dispositions=dispositions,
+        crop_results=crop_results,
     )
 
 
