@@ -95,6 +95,9 @@ T6_FIELDS = [
 ]
 T3_HAZARDS = cs.T3_HAZARDS
 COMPARATOR_POLICY = cs.load_comparator_policy(LOOK / "comparator_policy.csv")
+# per-NbS route exclusions (Pete 2026-10-19: a variable-level XW route can carry a causal
+# presumption that fails for one NbS — wetland cooling has no rural receptor)
+XW_ROUTE_POLICY = cs.load_xw_route_policy(LOOK / "xw_route_policy.csv")
 
 
 def _rd(path: Path) -> list[dict[str, str]]:
@@ -196,7 +199,7 @@ def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
 
 def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
     units: list[EvidenceUnit] = inp["units"]
-    xw: list[cs.XWRow] = inp["xw"]
+    xw: list[cs.XWRow] = cs.filter_xw(inp["xw"], nbs_id, XW_ROUTE_POLICY)
     common: dict[str, Any] = {
         "categories": inp["categories"],
         "src_contexts": inp["src_contexts"],

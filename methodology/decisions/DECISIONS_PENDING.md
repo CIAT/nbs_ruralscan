@@ -1,47 +1,63 @@
 # Everything waiting on you, in one place
 
-**For:** Pete. **Updated:** 2026-10-16, afternoon (this file is refreshed whenever a decision opens or closes;
+**For:** Pete. **Updated:** 2026-10-19 (this file is refreshed whenever a decision opens or closes;
 the machine-readable register is `open_decisions.csv` in this folder, and the live progress page
 lists the same items).
 
-All four decisions from this morning are ANSWERED (water stress split A, existing wetland A,
-riparian A, crop scope A) and implemented. What remains is one review batch and three hand jobs.
+All six conflict-split answers from 19 October are implemented (record:
+`2026-10-19_conflict_split_rulings.md`). One NEW decision opened out of them, plus the standing
+review batch and hand jobs.
 
 ---
 
-## The review batch — seven units whose encoding contradicts their own quote
+## NEW — do plantations stay in the forest-restoration roll-up? (`plantation_rollup`)
 
-On the review page, batch "Signs that contradict their own quote (16 Oct 2026)". Each card shows
-the claim beside the highlighted passage and asks one specific question. Approve / hold / reject
-per card, add a note where useful, then Export CSV and send it to Pete or commit it under
-`pipeline/review/exports/`. Two of the seven change live classes.
+You ruled plantations are "tree farming and not forest restoration" and get their own category.
+The family split is being built. The one thing only you (with the MFL team) can settle: once
+`forest_restoration__plantation` exists, does its evidence still count toward the whole-NbS
+forest-restoration roll-up?
 
-**Where:** https://ciat.github.io/nbs_ruralscan/review.html → pick the batch at the top right.
-*(If the page says "bandHtml is not defined", pull request #332 fixes it — merge that first and
-give GitHub Pages two minutes to rebuild.)*
+- **A — keep it in the roll-up**, as its own family rows. A TTL reading "forest restoration"
+  then still inherits eucalypt/pine plantation results (the biodiversity losses, the big water
+  yield reductions).
+- **B — park it out of the roll-up** (evidence retained, like the existing-forest comparator
+  handling). "Forest restoration" then means restoration toward a natural baseline; plantation
+  rows are visible but separate.
+- **C — condition on planting type**: indigenous/diverse plantings in, monocultures out. Honest
+  to your "bio friendly plantation" caveat, but much of the evidence never states planting
+  diversity, so many units would be unclassifiable.
 
-## Three hand jobs (no judgement needed)
+**Recommendation: B**, by your own rationale — a monoculture plantation is not representative of
+the natural baseline restoration returns to. **How to answer:** "plantation roll-up: B" (or A/C).
 
-1. **Four browser clicks.** Four papers are confirmed free but bot-walled; each queue row carries
-   the direct URL. Open, save the PDF to the SharePoint wetlands folder, mark the row acquired.
-   Explicitly NOT institutional-access work.
-2. **One human look at 3ie.** Their evidence portal blocks tools; before we state in print that
-   3ie holds no wetland impact evaluation, someone needs two minutes in a browser.
-3. **The Vietnam income call.** The evaluation reports poverty down 38% and incomes up 55%, and
-   the lane refused to credit them to mangroves because the report attributes them to resettlement
-   and technology transfer. If you think any share belongs to the mangrove component, say so and
-   we encode it with that attribution; silence keeps it out.
+## The review batch — units whose encoding contradicts their own quote
 
-## Answered today, for the record
+https://ciat.github.io/nbs_ruralscan/review.html → batch "Signs that contradict their own quote
+(16 Oct 2026)". Approve / hold / reject per card, Export CSV, send or commit it.
 
-**Water stress split (A):** local infiltration and dry-season supply stay under water stress;
-catchment water yield is its own scorecard target for downstream users. Your framing is quoted in
-the new target's description. The planting family's water-stress row flipped from strongly
-negative to slightly positive once the yield losses stopped voting in it, and the yield losses now
-stand undiluted in their own row. **Existing wetland (A):** existing-use income is a non-voting
-note in every livelihood cell; the rewetting poverty row flipped to moderately negative in line
-with its measured studies. **Riparian (A):** retention evidence stays in its own family.
-**Crop scope (A):** paludiculture crop evidence re-enters the peatland cells.
+## Hand jobs (no judgement needed)
+
+1. **Browser clicks:** the desktop-session fetch list (33 free-but-bot-walled PDFs → OneDrive
+   library folders) — report file not yet seen in the library root.
+2. **One human look at 3ie** for any wetland impact evaluation (portal blocks tools).
+3. **The Vietnam income call:** poverty −38% / incomes +55% attributed by the evaluation to
+   resettlement + technology transfer, not mangroves. Any share you'd credit to the mangrove
+   component? Silence keeps it out.
+4. **MFL sign-off** on the mangrove family scheme (`methodology/families/mangrove.md`).
+
+## Answered 19 October, for the record
+
+**(1) Highland losses** = suitability caveat: author-attributed waterlogging losses are withheld
+from production classes, logged as performance caveats, kept as T3 hazard evidence; rainfall
+ceilings filed as deferred T4 pointers. **(2) Min till alone is not water harvesting:** 17
+no/minimum-till-alone units dropped (`wrong_practice`), including both Pittelkow no-till
+meta-analyses; structure-building tillage, mulch and CA bundles stay. **(3) Downstream users
+decide water stress:** infiltration route removed, recharge re-routed to catchment water yield.
+**(4) Plantations split** — see the new decision above. **(5) Boundary drought** stays a stated
+conflict; every aggregation now owes a narrative tied to its evidence chain. **(6) Wetland heat
+rows removed** — cooling measured in the wetland itself, no rural receptor; the route returns if
+a study shows cooling where people or crops are.
 
 Earlier rulings all remain live: net CO2e decides carbon classes, reference shortfalls never vote,
-society-level value never sets a poverty class, thin rows publish as data deficient.
+society-level value never sets a poverty class, existing-use income never votes in livelihood
+cells, thin rows publish as data deficient, balanced opposition reads as conflicting evidence.

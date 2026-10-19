@@ -34,6 +34,13 @@
     },
     {
       "table": "T6",
+      "cell": "catchment_water_yield",
+      "rows": 3,
+      "used": 4,
+      "scope_rows": []
+    },
+    {
+      "table": "T6",
       "cell": "cost_per_hectare_restored",
       "rows": 5,
       "used": 8,
@@ -73,15 +80,6 @@
     },
     {
       "table": "T6",
-      "cell": "heat_stress_hazard",
-      "rows": 2,
-      "used": 4,
-      "scope_rows": [
-        "wetland_management__heat_stress_hazard__income_group-high"
-      ]
-    },
-    {
-      "table": "T6",
       "cell": "production_gap",
       "rows": 5,
       "used": 7,
@@ -101,7 +99,7 @@
       "table": "T6",
       "cell": "rural_poverty",
       "rows": 10,
-      "used": 39,
+      "used": 38,
       "scope_rows": [
         "wetland_management__rural_poverty__aez-humid_tropics",
         "wetland_management__rural_poverty__income_group-high",
@@ -132,7 +130,7 @@
       "table": "T6",
       "cell": "water_stress",
       "rows": 5,
-      "used": 13,
+      "used": 9,
       "scope_rows": [
         "wetland_management__water_stress__income_group-high",
         "wetland_management__water_stress__income_group-mixed"
@@ -275,6 +273,36 @@
     [
       "T6",
       "carbon_sequestration_potential",
+      "ev_wet_econret_uda20_2",
+      "claim_scope=crop_specific"
+    ],
+    [
+      "T6",
+      "catchment_water_yield",
+      "ev_carbon_sequestration_tan21_3",
+      "claim_scope=crop_specific"
+    ],
+    [
+      "T6",
+      "catchment_water_yield",
+      "ev_carbon_sequestration_tan21_4",
+      "claim_scope=crop_specific"
+    ],
+    [
+      "T6",
+      "catchment_water_yield",
+      "ev_economic_return_tan21_9",
+      "claim_scope=crop_specific"
+    ],
+    [
+      "T6",
+      "catchment_water_yield",
+      "ev_wet_econret_uda20_1",
+      "claim_scope=crop_specific"
+    ],
+    [
+      "T6",
+      "catchment_water_yield",
       "ev_wet_econret_uda20_2",
       "claim_scope=crop_specific"
     ],
@@ -718,36 +746,6 @@
     ],
     [
       "T6",
-      "heat_stress_hazard",
-      "ev_carbon_sequestration_tan21_3",
-      "claim_scope=crop_specific"
-    ],
-    [
-      "T6",
-      "heat_stress_hazard",
-      "ev_carbon_sequestration_tan21_4",
-      "claim_scope=crop_specific"
-    ],
-    [
-      "T6",
-      "heat_stress_hazard",
-      "ev_economic_return_tan21_9",
-      "claim_scope=crop_specific"
-    ],
-    [
-      "T6",
-      "heat_stress_hazard",
-      "ev_wet_econret_uda20_1",
-      "claim_scope=crop_specific"
-    ],
-    [
-      "T6",
-      "heat_stress_hazard",
-      "ev_wet_econret_uda20_2",
-      "claim_scope=crop_specific"
-    ],
-    [
-      "T6",
       "production_gap",
       "ev_carbon_sequestration_tan21_3",
       "claim_scope=crop_specific"
@@ -1115,12 +1113,6 @@
     [
       "T3",
       "drought__all",
-      "ev_wet_hhinc_masa22_2",
-      "hazard unstated; household_income routes to 7 hazards"
-    ],
-    [
-      "T3",
-      "drought__all",
       "ev_wet_hhinc_masa22_3",
       "hazard unstated; household_income routes to 7 hazards"
     ],
@@ -1302,12 +1294,6 @@
       "T3",
       "fire__all",
       "ev_wet_hhinc_masa22_1",
-      "hazard unstated; household_income routes to 7 hazards"
-    ],
-    [
-      "T3",
-      "fire__all",
-      "ev_wet_hhinc_masa22_2",
       "hazard unstated; household_income routes to 7 hazards"
     ],
     [
@@ -1511,12 +1497,6 @@
     [
       "T3",
       "flood__all",
-      "ev_wet_hhinc_masa22_2",
-      "hazard unstated; household_income routes to 7 hazards"
-    ],
-    [
-      "T3",
-      "flood__all",
       "ev_wet_hhinc_masa22_3",
       "hazard unstated; household_income routes to 7 hazards"
     ],
@@ -1704,12 +1684,6 @@
       "T3",
       "waterlogging__all",
       "ev_wet_hhinc_masa22_1",
-      "hazard unstated; household_income routes to 7 hazards"
-    ],
-    [
-      "T3",
-      "waterlogging__all",
-      "ev_wet_hhinc_masa22_2",
       "hazard unstated; household_income routes to 7 hazards"
     ],
     [
@@ -1908,12 +1882,6 @@
       "T3",
       "wind_cyclone__all",
       "ev_wet_hhinc_masa22_1",
-      "hazard unstated; household_income routes to 7 hazards"
-    ],
-    [
-      "T3",
-      "wind_cyclone__all",
-      "ev_wet_hhinc_masa22_2",
       "hazard unstated; household_income routes to 7 hazards"
     ],
     [
@@ -2136,85 +2104,86 @@
   ],
   "notes": [
     "T6 wetland_management/biodiversity_priority: rank 2 A=0.847 robust×high→very_high; 4 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "T6 wetland_management/biodiversity_priority: rank 2 A=0.863 robust×high→very_high; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/biodiversity_priority: rank 1 A=1.0 medium×high→high; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/biodiversity_priority: rank 2 A=0.891 robust×high→very_high; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/biodiversity_priority: rank 3 A=0.904 robust×high→very_high; 0 scope row(s); transfer adjacent",
     "T6 wetland_management/carbon_sequestration_potential: rank 2 A=0.828 robust×high→very_high; 3 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "carbon_sequestration_potential: data deficient — no evidence reaches this cell",
     "T6 wetland_management/carbon_sequestration_potential: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/carbon_sequestration_potential: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/carbon_sequestration_potential: rank 2 A=0.767 robust×medium→high; 0 scope row(s); transfer adjacent",
     "T6 wetland_management/carbon_sequestration_potential: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer out_of_context",
+    "T6 wetland_management/catchment_water_yield: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "T6 wetland_management/catchment_water_yield: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
+    "T6 wetland_management/catchment_water_yield: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/cost_per_hectare_restored: rank 3 A=1.0 robust×high→very_high; 1 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "T6 wetland_management/cost_per_hectare_restored: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
     "T6 wetland_management/cost_per_hectare_restored: rank 3 A=1.0 limited×high→medium; 0 scope row(s); transfer adjacent",
     "T6 wetland_management/cost_per_hectare_restored: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/cost_reduction: rank -1 A=1.0 medium×high→high; 0 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "cost_reduction: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
     "T6 wetland_management/cost_reduction: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/cost_reduction: rank -1 A=1.0 limited×high→medium; 0 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "drought_hazard: data deficient — one source, none of it measured (claim basis: modelled) — a second independent source or one measured finding would let this cell state a class",
     "T6 wetland_management/drought_hazard: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
     "T6 wetland_management/establishment_cost: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "wetland_management__peatland: family row identical to the roll-up — not emitted",
     "T6 wetland_management/flood_hazard: rank 3 A=0.753 robust×medium→high; 1 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "T6 wetland_management/flood_hazard: rank 3 A=0.883 robust×high→very_high; 0 scope row(s); transfer out_of_context",
     "flood_hazard: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
     "T6 wetland_management/flood_hazard: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/flood_hazard: rank 3 A=0.75 robust×medium→high; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/flood_hazard: rank 2 A=0.684 robust×medium→high; 0 scope row(s); transfer out_of_context",
-    "T6 wetland_management/heat_stress_hazard: rank -1 A=0.538 limited×low→very_low; 1 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
-    "wetland_management__restoration_rewetting: family row identical to the roll-up — not emitted",
     "T6 wetland_management/production_gap: rank -1 A=0.76 robust×medium→high; 2 scope row(s); transfer adjacent",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "T6 wetland_management/production_gap: rank -1 A=1.0 limited×high→medium; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/production_gap: rank -1 A=0.65 medium×medium→medium; 0 scope row(s); transfer adjacent",
     "T6 wetland_management/recurrent_cost: rank 2 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "wetland_management__creation: family row identical to the roll-up — not emitted",
-    "T6 wetland_management/rural_poverty: rank -2 A=0.517 robust×low→medium; 5 scope row(s); transfer adjacent",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "T6 wetland_management/rural_poverty: rank -2 A=0.567 robust×low→medium; 5 scope row(s); transfer adjacent",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "rural_poverty: data deficient — no evidence reaches this cell",
     "T6 wetland_management/rural_poverty: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "rural_poverty: data deficient — one source, none of it measured (claim basis: expert_assertion) — a second independent source or one measured finding would let this cell state a class",
     "T6 wetland_management/rural_poverty: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer in_context",
     "T6 wetland_management/rural_poverty: rank 1 A=0.621 robust×medium→high; 0 scope row(s); transfer out_of_context",
-    "T6 wetland_management/rural_poverty: rank -2 A=0.614 robust×medium→high; 0 scope row(s); transfer adjacent",
+    "T6 wetland_management/rural_poverty: rank -2 A=0.723 robust×medium→high; 0 scope row(s); transfer adjacent",
     "T6 wetland_management/soil_erosion_risk: rank 1 A=0.687 robust×medium→high; 1 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "T6 wetland_management/soil_erosion_risk: rank 1 A=1.0 robust×high→very_high; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/soil_erosion_risk: rank -1 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/soil_erosion_risk: rank 1 A=0.606 limited×medium→low; 0 scope row(s); transfer out_of_context",
     "soil_erosion_risk: data deficient — one source, none of it measured (claim basis: expert_assertion) — a second independent source or one measured finding would let this cell state a class",
     "T6 wetland_management/soil_erosion_risk: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
     "T6 wetland_management/water_quality_risk: rank 3 A=0.89 robust×high→very_high; 1 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "water_quality_risk: data deficient — no evidence reaches this cell",
     "T6 wetland_management/water_quality_risk: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/water_quality_risk: rank 3 A=0.821 robust×high→very_high; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/water_quality_risk: rank 1 A=0.683 medium×medium→medium; 0 scope row(s); transfer out_of_context",
     "T6 wetland_management/water_quality_risk: rank 2 A=0.881 robust×high→very_high; 0 scope row(s); transfer out_of_context",
-    "T6 wetland_management/water_stress: rank 2 A=0.852 robust×high→very_high; 2 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
-    "T6 wetland_management/water_stress: rank 1 A=0.864 medium×high→high; 0 scope row(s); transfer out_of_context",
-    "T6 wetland_management/water_stress: rank 2 A=0.89 robust×high→very_high; 0 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "T6 wetland_management/water_stress: rank 2 A=0.843 robust×high→very_high; 2 scope row(s); transfer out_of_context",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "T6 wetland_management/water_stress: rank 1 A=0.781 medium×medium→medium; 0 scope row(s); transfer out_of_context",
+    "T6 wetland_management/water_stress: rank 2 A=0.949 medium×high→high; 0 scope row(s); transfer adjacent",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "drought: data deficient — one source, none of it measured (claim basis: modelled) — a second independent source or one measured finding would let this cell state a class",
     "T3 wetland_management/drought__all: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
     "T3 wetland_management/fire__all: rank 2 A=0.874 medium×high→high; 3 scope row(s); transfer adjacent",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "wetland_management__peatland: family row identical to the roll-up — not emitted",
     "T3 wetland_management/flood__all: rank 2 A=0.75 robust×medium→high; 1 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "T3 wetland_management/flood__all: rank 2 A=0.883 robust×high→very_high; 0 scope row(s); transfer out_of_context",
     "flood: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
     "T3 wetland_management/flood__all: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
@@ -2222,29 +2191,29 @@
     "T3 wetland_management/flood__all: rank 1 A=0.684 robust×medium→high; 0 scope row(s); transfer out_of_context",
     "waterlogging: data deficient — one source, none of it measured (claim basis: cited_secondary, expert_assertion) — a second independent source or one measured finding would let this cell state a class",
     "T3 wetland_management/waterlogging__all: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "wetland_management__peatland: family row identical to the roll-up — not emitted",
     "wind_cyclone: data deficient — one source, none of it measured (claim basis: expert_assertion) — a second independent source or one measured finding would let this cell state a class",
     "T3 wetland_management/wind_cyclone__all: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "T3 wetland_management/wind_cyclone__all: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T3 wetland_management/asset_threat__drought: rank 2 A=1.0 medium×high→high; 1 scope row(s); transfer adjacent",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "T3 wetland_management/asset_threat__drought: rank 3 A=1.0 limited×high→medium; 0 scope row(s); transfer adjacent",
     "T3 wetland_management/asset_threat__drought: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
     "flood: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
     "T3 wetland_management/asset_threat__flood: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "wetland_management__peatland: family row identical to the roll-up — not emitted",
     "fire: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
     "T3 wetland_management/asset_threat__fire: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "wetland_management__peatland: family row identical to the roll-up — not emitted",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "wind_cyclone: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
     "T3 wetland_management/asset_threat__wind_cyclone: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
     "T3 wetland_management/asset_threat__extreme_rainfall: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
-    "94 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
+    "95 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_agricultural_production_value_hooi12_3', 'ev_agricultural_production_value_ritz13_9', 'ev_avoided_damage_value_sun20_1', 'ev_avoided_damage_value_sun20_2', 'ev_avoided_damage_value_sun20_3', 'ev_avoided_damage_value_sun20_4']…",
     "wetland_management__peatland: family row identical to the roll-up — not emitted"
   ],
   "unmapped_variables": [
@@ -2258,5 +2227,5 @@
     ]
   ],
   "t3_rows": 22,
-  "t6_rows": 68
+  "t6_rows": 69
 }
