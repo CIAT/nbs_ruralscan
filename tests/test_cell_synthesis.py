@@ -2784,3 +2784,46 @@ def test_family_vote_skips_scope_family_and_econ_rows():
     econ = _vote_top(effect_direction="")
     cs._family_vote(econ, rep, [], {"a"})
     assert "family_vote" not in econ["justification"]
+
+
+def test_unmanaged_state_comparator_never_sets_a_t3_class():
+    """Pete 2026-10-19 (hazard_cell_comparator): a unit measured against the UNMANAGED
+    state (silvopasture vs non-grazed forest) informs a T3 account but never sets the
+    class — the cell's counterfactual is the farming system (open pasture)."""
+    xw = XW + [
+        cs.XWRow("fire_hazard", "T3", "fire", "same", "direct"),
+        cs.XWRow("fire_hazard", "T6", "soil_erosion_risk", "same", "direct"),
+    ]
+    unmanaged = _u(
+        "um1",
+        "s1",
+        "fire_hazard",
+        "negative",
+        "moderate",
+        ctx={
+            "income_group": "low",
+            "hazard_type": "fire",
+            "comparator": "unmanaged_state",
+        },
+    )
+    pasture = _u(
+        "um2",
+        "s2",
+        "fire_hazard",
+        "negative",
+        "moderate",
+        ctx={"income_group": "low", "hazard_type": "fire"},
+    )
+    rows, _ = cs.synthesise_cell(
+        [unmanaged, pasture],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="fire",
+        xw_rows=xw,
+    )
+    g = rows[0]
+    assert g["justification"]["held_out_of_class"]["unmanaged_state_comparator"] == [
+        "um1"
+    ]
+    assert "um1" in g["evidence_ids"], "held from the class, still in the row"
