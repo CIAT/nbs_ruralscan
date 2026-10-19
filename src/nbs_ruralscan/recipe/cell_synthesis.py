@@ -2672,6 +2672,9 @@ _ECON_UNITS: dict[str, set[str]] = {
         "usd_per_household_yr",
         "usd_per_farmer_yr",
         "usd_per_structure_yr",
+        # a recurring cost stated as a share of the initial investment is still recurrent
+        # (catalogue #30 companion: Taillardat's annual monitoring at ~20% of capex)
+        "pct_of_establishment_cost_per_yr",
     },
     "cost_per_hectare_restored": {"usd_per_ha"},
     "cost_per_beneficiary": {
@@ -2692,6 +2695,13 @@ _ECON_UNITS: dict[str, set[str]] = {
 #: relative metrics carry no denominator; they may vote direction in a cost cell but
 #: never set a value, so they pass the unit filter and fail the value gates by construction
 _RELATIVE_METRICS = {"ln_response_ratio", "pct_change", "smd_hedges_g", "narrative"}
+#: per-year denominators an establishment-natured unit may still carry (annualised capital)
+_ANNUALISED_UNITS = {
+    "usd_per_ha_yr",
+    "usd_per_household_yr",
+    "usd_per_farmer_yr",
+    "usd_per_structure_yr",
+}
 
 
 _COST_LEVEL_KEYS = {
@@ -2725,6 +2735,23 @@ def _unit_fits_econ_cell(unit: EvidenceUnit, target_key: str) -> bool:
     if allowed is None:
         return True  # unconstrained cell (market_access, subsidy_dependency, income…)
     if target_key in _COST_LEVEL_KEYS and (relative or direction == "negative"):
+        return False
+    # catalogue #30 (Pete-ratified, 2026-10-19): route a cost by WHAT THE MONEY BUYS, never
+    # by its denominator alone — Taillardat's "$ ha-1 yr-1 of the restoration event" figures
+    # are annualised capital, not maintenance. `context.cost_nature` overrides the
+    # denominator heuristic both ways; untagged units keep the denominator routing.
+    nature = str((unit.context or {}).get("cost_nature") or "")
+    if nature == "establishment":
+        if target_key == "recurrent_cost":
+            return False
+        if target_key == "establishment_cost" and not relative:
+            return str(rel.get("unit") or "").strip().lower() in (
+                allowed | _ANNUALISED_UNITS
+            )
+    if nature == "recurrent" and target_key in (
+        "establishment_cost",
+        "cost_per_hectare_restored",
+    ):
         return False
     if relative:
         return True

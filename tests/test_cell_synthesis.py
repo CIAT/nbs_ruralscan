@@ -2827,3 +2827,42 @@ def test_unmanaged_state_comparator_never_sets_a_t3_class():
         "um1"
     ]
     assert "um1" in g["evidence_ids"], "held from the class, still in the row"
+
+
+def test_cost_nature_routes_annualised_capital_out_of_recurrent_cost():
+    """Catalogue #30 (Pete 2026-10-19): an annualised establishment cost ($/ha/yr of the
+    restoration event) is capital, not maintenance — `context.cost_nature` overrides the
+    denominator heuristic in both directions; untagged units keep the denominator routing."""
+    est = _u(
+        "cn1",
+        "s1",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low", "cost_nature": "establishment"},
+        rel={"metric": "absolute", "unit": "usd_per_ha_yr", "value": 89660},
+    )
+    plain = _u(
+        "cn2",
+        "s2",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low"},
+        rel={"metric": "absolute", "unit": "usd_per_ha_yr", "value": 120},
+    )
+    rec = _u(
+        "cn3",
+        "s3",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low", "cost_nature": "recurrent"},
+        rel={"metric": "absolute", "unit": "usd_per_ha", "value": 50},
+    )
+    assert not cs._unit_fits_econ_cell(est, "recurrent_cost")
+    assert cs._unit_fits_econ_cell(est, "establishment_cost")
+    assert cs._unit_fits_econ_cell(plain, "recurrent_cost")
+    assert not cs._unit_fits_econ_cell(plain, "establishment_cost")
+    assert not cs._unit_fits_econ_cell(rec, "establishment_cost")
+    assert not cs._unit_fits_econ_cell(rec, "cost_per_hectare_restored")
