@@ -10,6 +10,8 @@ import argparse
 import csv
 import html
 import json
+import subprocess
+import sys
 from collections import Counter
 from pathlib import Path
 
@@ -223,7 +225,7 @@ def main() -> None:
 <style>body{font:16px system-ui;max-width:1400px;margin:40px auto;padding:0 24px;color:#16362b;background:#f6f8f5}h1{font-size:34px}section{padding:24px;background:white;border:1px solid #dce5df;margin:20px 0;border-radius:12px}table{border-collapse:collapse;font-size:12px;width:100%}td,th{text-align:left;padding:9px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}input{font:inherit;padding:12px;width:90%}pre,blockquote{white-space:pre-wrap;overflow-wrap:anywhere}summary{cursor:pointer;padding:12px}a{color:#17694c}.warn{background:#fff0cf;padding:18px;border-radius:8px}</style>
 <h1>Agroforestry T4: where evidence goes</h1><p>Branch audit · 19 October 2026 · Candidate outputs, not a published global recipe.</p>
 <section><h2>Result</h2><p><strong>SUMMARY_COUNTS</strong></p><p class="warn">Screened-source denominator unknown. No support percentages or 20% floor decisions inferred from overlapping search totals. One approved numeric rule is a source modelling choice requiring applicability review, not a universal validation.</p><p>REVIEW_STATUS Five earlier corrected holds remain approved. No evidence rows deleted.</p><p><a href="../review.html?batch=agroforestry-t4-final-audit-oct19">Review eleven corrections</a> · <a href="../review.html?batch=agroforestry-t4-holds-oct19">Earlier five approvals</a></p></section>
-<section><h2>Retained class evidence</h2><p>Original source ranks, ranges and codes preserved. These do not become calibrated 0–1 membership scores automatically. “Low” does not mean excluded; unknown dataset codes do not become land-cover classes.</p>CLASS_CARDS</section>
+<section><p><a href="t4-categorical-tables.html">Land-use and categorical class tables</a></p><h2>Retained class evidence</h2><p>Original source ranks, ranges and codes preserved. These do not become calibrated 0–1 membership scores automatically. “Low” does not mean excluded; unknown dataset codes do not become land-cover classes.</p>CLASS_CARDS</section>
 <section><h2>Every record accounted for</h2><input id="search" aria-label="Filter records" placeholder="Filter by source, variable, evidence ID or disposition"><table><thead><tr>TABLE_HEAD</tr></thead><tbody>TABLE_ROWS</tbody></table></section>
 <script>document.getElementById('search').addEventListener('input',e=>{let q=e.target.value.toLowerCase();document.querySelectorAll('tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))})</script></html>"""
     document = document.replace(
@@ -237,6 +239,16 @@ def main() -> None:
         .replace("TABLE_ROWS", table)
     )
     (ROOT / "docs/review/t4-pipeline-audit.html").write_text(document)
+    if args.nbs == "agroforestry":
+        subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts/tabulate-t4-classes.py"),
+                "--directory",
+                str(out),
+            ],
+            check=True,
+        )
     print(json.dumps(summary, indent=2))
 
 

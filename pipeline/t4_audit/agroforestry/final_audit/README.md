@@ -103,3 +103,13 @@ Haile §3.1.1 (PDF p5) treats pH as one of five equally weighted nutrient-availa
 
 Publisher precedent: https://www.biotech-asia.org/vol14no2/geospatial-approach-for-agroforestry-suitability-mapping-to-enhance-livelihood-and-reduce-poverty-fao-based-documented-procedure-case-study-of-dumka-district-jharkhand-india/
 General mechanism: https://www.fao.org/soils-portal/data-hub/soil-classification/numerical-systems/chemical-properties/en/
+
+## Categorical class tables
+
+`categorical_source_classes.csv` expands 63 active structural evidence records into 157 source class/gate rows (36 land-cover rows). Selection includes the class inventory plus categorical/class/ordinal variables from VONT. Named classes, source codes, ordinal bands, gates and missing encodings remain visible with family, source, scope, review status, original payload and quote. No class rank is automatically converted to a 0–1 score. `categorical_current_t4.csv` exposes the 11 currently configured land-cover classes separately. HTML: `docs/review/t4-categorical-tables.html`. The main audit regenerates both tables.
+
+Current live `agro_land_cover_eligibility` is a preserved design row with no evidence IDs. Its description calls it an eligibility filter, but scores are graduated (tree cover 1.0, cropland 0.5). These scores are not endorsed by this audit and need an evidence-backed family-specific replacement. Ordinary tree cover cannot establish existing agroforestry. Dataset-code crosswalks and ordinal calibration remain unresolved; labels are never guessed from numeric codes. No live schema or EV modifications were made by tabulation.
+
+Additional quality concerns surfaced without silently editing records: source-specific exclusion of shrubland/forest must not become a universal rule; Nath drainage codes require a source legend; the Singh land-cover code record repeats a soil-quality quotation; Seja allocation shares are not class memberships; Nath NDVI is tagged as land cover. These remain reviewable through original quotes and compiler dispositions.
+
+Validation: 24 tests passed for class tabulation and T4 compilation. Every selected source record has at least one table row, and all 33 existing active class-inventory records are represented.
