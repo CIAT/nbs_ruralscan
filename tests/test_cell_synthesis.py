@@ -2567,3 +2567,82 @@ def test_clear_majority_still_states_a_class():
     rows, _ = _t6(units, key="rural_poverty")
     assert rows[0]["effect_direction"].endswith("positive")
     assert rows[0]["justification"]["conflicting"] is False
+
+
+# ── envelope misfit: an out-of-envelope loss is a caveat, not production evidence ─────
+
+
+def test_envelope_misfit_is_held_out_of_production_but_votes_in_a_hazard_cell():
+    """Ruling 1, Pete 2026-10-19: a loss the author attributes to the practice sitting
+    outside its envelope (bunds under heavy rainfall → waterlogging) is withheld from the
+    T6 production class and logged as a caveat — while in a T3 hazard cell the failure
+    under the hazard IS the signal, so there it still votes."""
+    xw = XW + [
+        cs.XWRow("crop_yield", "T6", "production_gap", "same", "direct"),
+        cs.XWRow("crop_yield", "T3", "flood", "same", "direct"),
+    ]
+    gain = _u(
+        "em1",
+        "s1",
+        "crop_yield",
+        "positive",
+        "moderate",
+        ctx={"income_group": "low"},
+    )
+    misfit = _u(
+        "em2",
+        "s2",
+        "crop_yield",
+        "negative",
+        "strong",
+        ctx={"income_group": "low", "envelope_misfit": "waterlogging_high_rainfall"},
+    )
+    rows, _ = _t6([gain, misfit], key="production_gap", xw_rows=xw)
+    g = rows[0]
+    assert g["justification"]["held_out_of_class"]["envelope_misfit"] == ["em2"]
+    assert g["effect_direction"].endswith("positive")
+    assert "em2" in g["evidence_ids"], "held out of the class, still in the row"
+    # same unit, hazard-stated, in a T3 flood cell: it votes
+    misfit_hz = _u(
+        "em3",
+        "s2",
+        "crop_yield",
+        "negative",
+        "strong",
+        ctx={
+            "income_group": "low",
+            "hazard_type": "flood",
+            "envelope_misfit": "waterlogging_high_rainfall",
+        },
+    )
+    t3_rows, _ = cs.synthesise_cell(
+        [misfit_hz],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="flood",
+        xw_rows=xw,
+    )
+    acc = t3_rows[0]["justification"]
+    assert "envelope_misfit" not in (acc.get("held_out_of_class") or {})
+    assert "em3" in t3_rows[0]["evidence_ids"]
+
+
+# ── per-NbS XW route policy (ruling 6, Pete 2026-10-19) ──────────────────────────────
+
+
+def test_xw_route_policy_switches_a_route_off_for_one_nbs_only(tmp_path):
+    p = tmp_path / "xw_route_policy.csv"
+    p.write_text(
+        "nbs_id,ev_variable,target_table,target_key,included,rationale,ratified_by,ratified_date\n"
+        'wetland_management,microclimate_buffering,T3,heat_stress,false,"no rural receptor",pete,2026-10-19\n',
+        encoding="utf-8",
+    )
+    excluded = cs.load_xw_route_policy(p)
+    assert excluded == {
+        ("wetland_management", "microclimate_buffering", "T3", "heat_stress")
+    }
+    xw = [cs.XWRow("microclimate_buffering", "T3", "heat_stress", "same", "component")]
+    assert cs.filter_xw(xw, "wetland_management", excluded) == []
+    assert cs.filter_xw(xw, "agroforestry", excluded) == xw
+    assert cs.load_xw_route_policy(tmp_path / "absent.csv") == set()

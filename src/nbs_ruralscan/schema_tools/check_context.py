@@ -66,6 +66,10 @@ ALLOWED_KEYS = {
     "beneficiary",
     "landscape_scale_only",
     "timescale_of_effect",
+    # 2026-10-19 (Pete, conflict-split ruling 1): the author attributes this measured loss
+    # to the practice sitting outside its envelope (heavy rainfall → waterlogging). Held out
+    # of the T6 production class, kept as a performance caveat and as T3 hazard evidence.
+    "envelope_misfit",
     "note",
 }
 INCOME = {"low", "lower_middle", "upper_middle", "high", "lic_lmic"}

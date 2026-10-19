@@ -1654,6 +1654,46 @@ def load_comparator_policy(path: Path) -> dict[tuple[str, str], dict[str, Any]]:
 LOCUS_VALUES = ("on_farm", "mixed", "off_site")
 
 
+def load_xw_route_policy(path: Path) -> set[tuple[str, str, str, str]]:
+    """`schema/lookups/xw_route_policy.csv` → EXCLUDED (nbs_id, ev_variable, table, key).
+
+    An XW route is variable-level, but whether its causal claim holds can be NbS-specific:
+    microclimate_buffering → heat_stress presumes the cooled place hosts people or crops,
+    which is true of agroforestry shade and false of a wetland cooling its own surface
+    (Pete 2026-10-19). A row with ``included=false`` switches that route off for that NbS;
+    every other NbS keeps it. Routes default to included — the file lists exceptions only.
+    """
+    out: set[tuple[str, str, str, str]] = set()
+    p = Path(path)
+    if not p.exists():
+        return out
+    with open(p, encoding="utf-8", newline="") as f:
+        for r in csv.DictReader(f):
+            if (r.get("included") or "").strip().lower() == "false":
+                out.add(
+                    (
+                        r["nbs_id"].strip(),
+                        r["ev_variable"].strip(),
+                        r["target_table"].strip(),
+                        r["target_key"].strip(),
+                    )
+                )
+    return out
+
+
+def filter_xw(
+    xw_rows: list[XWRow], nbs_id: str, excluded: set[tuple[str, str, str, str]]
+) -> list[XWRow]:
+    """The XW rows that apply to this NbS under the route policy."""
+    if not excluded:
+        return xw_rows
+    return [
+        x
+        for x in xw_rows
+        if (nbs_id, x.ev_variable, x.target_table, x.target_key) not in excluded
+    ]
+
+
 def load_effect_locus(path: Path) -> dict[tuple[str, str], str]:
     """`schema/lookups/effect_locus.csv` → {(nbs_id, family_id or ""): locus}."""
     out: dict[tuple[str, str], str] = {}
@@ -2006,6 +2046,14 @@ def meets_evidence_floor(contribs: list["_Contrib"]) -> tuple[bool, str]:
 #: cells the gas rule and the beneficiary rule apply to
 GAS_SENSITIVE_KEYS = {"carbon_sequestration_potential"}
 HOUSEHOLD_KEYS = {"rural_poverty"}
+#: Pete 2026-10-19 (conflict-split ruling 1): a measured LOSS the author attributes to the
+#: practice sitting outside its envelope (bunds / zai / mulch under heavy rainfall →
+#: waterlogging) "speaks to where the practice is suitable ... it can be withheld from the
+#: production, but is an important caveat to performance to log if describing the practice."
+#: Such units carry `context.envelope_misfit`; they are held out of the T6 production class
+#: (the caveat and the prose keep them) and still vote in T3 hazard cells, where the failure
+#: under the hazard IS the signal the cell scores.
+PRODUCTION_KEYS = {"production_gap"}
 
 
 def _gas_of(c: "_Contrib") -> str:
@@ -2024,6 +2072,14 @@ def _beneficiary_of(c: "_Contrib") -> str:
     return str(
         (c.ctx or {}).get("beneficiary")
         or (c.unit.context or {}).get("beneficiary")
+        or ""
+    )
+
+
+def _misfit_of(c: "_Contrib") -> str:
+    return str(
+        (c.ctx or {}).get("envelope_misfit")
+        or (c.unit.context or {}).get("envelope_misfit")
         or ""
     )
 
@@ -2067,6 +2123,15 @@ def partition_voters(
         for c in voters:
             if _comparator_of(c) in EXISTING_USE_COMPARATORS:
                 hold(c, "existing_use_opportunity_cost")
+            else:
+                keep.append(c)
+        voters = keep
+    # an out-of-envelope loss is a suitability caveat, not production evidence (ruling 1)
+    if table == "T6" and target_key in PRODUCTION_KEYS:
+        keep = []
+        for c in voters:
+            if _misfit_of(c):
+                hold(c, "envelope_misfit")
             else:
                 keep.append(c)
         voters = keep
