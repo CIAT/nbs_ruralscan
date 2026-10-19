@@ -2460,3 +2460,34 @@ def test_scope_rows_obey_the_class_eligibility_rules():
         acc = scoped[0]["justification"]
         assert acc["held_out_of_class"].get("not_a_household_benefit") == ["sp1"]
         assert not scoped[0]["effect_direction"].endswith("positive")
+
+
+def test_existing_use_income_never_votes_in_a_livelihood_cell():
+    """Decision 2, Pete 2026-10-16: income from an EXISTING wetland is the opportunity cost
+    of restoring it, so it may not set a poverty or production class even in the comparator
+    policy's home family row."""
+    use = _u(
+        "eu1",
+        "s1",
+        "household_income",
+        "positive",
+        "strong",
+        ctx={
+            "income_group": "low",
+            "comparator": "existing_wetland",
+            "beneficiary": "farm_household",
+        },
+    )
+    rest = _u(
+        "eu2",
+        "s2",
+        "household_income",
+        "negative",
+        "moderate",
+        ctx={"income_group": "low", "beneficiary": "farm_household"},
+    )
+    rows, _ = _t6([use, rest], key="rural_poverty")
+    acc = rows[0]["justification"]
+    assert acc["held_out_of_class"]["existing_use_opportunity_cost"] == ["eu1"]
+    assert rows[0]["effect_direction"].endswith("negative")
+    assert "eu1" in rows[0]["evidence_ids"], "held out of the class, still in the row"
