@@ -656,29 +656,29 @@ def unit_weight(
 # ── reconciliation (method §7.2–§7.4) ─────────────────────────────────────────────────
 
 
-def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int]:
-    """(cell rank, sign agreement A, modal sign) over the contributing units.
+def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int, bool]:
+    """(cell rank, sign agreement A, modal sign, conflicting) over the contributing units.
 
     Units with no `direction` (magnitude / economics-only) are excluded here — a missing
     direction is not a null finding — but stay in the envelope, n_sources and the gated
     number summaries."""
     contribs = [c for c in contribs if c.has_direction]
     if not contribs:
-        return 0, 0.0, 0
+        return 0, 0.0, 0, False
     if all(c.ns for c in contribs):
         # every direction-bearing unit is non-significant: the honest class is "no
         # relationship", not a half-weight direction (a single ns meta-analysis was reading
         # as 'slightly reduces … very_high'; prose review 2026-10-05). Agreement = 1: they
         # agree there is no clear effect.
-        return 0, 1.0, 0
+        return 0, 1.0, 0, False
     pos = sum(c.weight for c in contribs if c.sign > 0)
     neg = sum(c.weight for c in contribs if c.sign < 0)
     zero = sum(c.weight for c in contribs if c.sign == 0)
     total = pos + neg + zero
     if total <= 0:
-        return 0, 0.0, 0
+        return 0, 0.0, 0, False
     if pos == 0 and neg == 0:
-        return 0, 1.0, 0
+        return 0, 1.0, 0, False
     modal = 1 if pos >= neg else -1
     agreement = ((pos if modal > 0 else neg) + zero / 2) / total
     # STRENGTH = the typical magnitude when the effect occurs (modal-sign units with a
@@ -688,18 +688,23 @@ def _reconcile_rank(contribs: list[_Contrib]) -> tuple[int, float, int]:
     # and floored the WH drought cell at `low` while every quantified positive was
     # strong (2026-10-06; vote-counting separates direction consistency from effect
     # size). Pending ratification.
+    # IPCC outcome distinction (Pete 2026-10-19): a balanced pos/neg pool CONFLICTS —
+    # it must not read as a weak signed class, and it must never read as a null
+    conflicting = (
+        min(pos, neg) / (pos + neg) >= CONFLICT_MIN_SHARE if (pos and neg) else False
+    )
     pairs = [
         (float(c.sign * c.magnitude), c.weight)
         for c in contribs
         if c.sign == modal and c.magnitude is not None
     ]
     if not pairs:  # direction known, strength never stated → weakest class of that sign
-        return modal * 1, agreement, modal
+        return modal * 1, agreement, modal, conflicting
     med = _weighted_median(pairs)
     rank = int(round(med if med is not None else modal))
     if rank == 0:
         rank = modal
-    return max(-3, min(3, rank)), agreement, modal
+    return max(-3, min(3, rank)), agreement, modal, conflicting
 
 
 def independent_sources(items: list[Any]) -> int:
@@ -741,6 +746,15 @@ def evidence_level(units: list[EvidenceUnit], tiers: dict[str, str]) -> str:
     if n >= 5 and (n_primary >= 2 or has_high_ma):
         return "robust"
     return "medium"
+
+
+#: Pete 2026-10-19 (IPCC-table outcome): positive and negative votes balancing out is NOT
+#: the same finding as null votes agreeing on no effect. When the minority sign carries at
+#: least this share of the SIGNED weight (nulls excluded from the test), the cell states
+#: CONFLICTING EVIDENCE instead of a near-tie class — the IPCC's "conflicting evidence,
+#: low agreement" category. `no_relationship` remains reserved for genuine nulls, never
+#: cancellation. The threshold is a starting point, flagged for tuning.
+CONFLICT_MIN_SHARE = 1 / 3
 
 
 def agreement_level(agreement: float) -> str:
@@ -1114,7 +1128,7 @@ def _reconcile_group(
     matrix: dict[tuple[str, str], str] | None,
     target_ctx: dict[str, Any],
 ) -> dict[str, Any]:
-    rank, agreement, modal = _reconcile_rank(contribs)
+    rank, agreement, modal, conflicting = _reconcile_rank(contribs)
     agreement_undefined = independent_sources(contribs) < 2
     if agreement_undefined:
         # agreement is undefined with one independent source: it cannot be "high"
@@ -1132,6 +1146,8 @@ def _reconcile_group(
         "agreement": round(agreement, 3),
         "agreement_undefined": agreement_undefined,
         "modal_sign": modal,
+        # IPCC outcome (Pete 2026-10-19): balanced pos/neg = CONFLICTING, not a weak class
+        "conflicting": conflicting,
         "evidence_level": ev_l,
         "agreement_level": ag_l,
         "confidence": conf,
@@ -1402,7 +1418,7 @@ def apply_proxy_cap(
         # (component) must not make a drought cell `very_high` while the drought-year
         # yield units say otherwise (agroforestry prose review, 2026-10-06). Agreement
         # and confidence still come from the whole pool.
-        d_rank, _, d_modal = _reconcile_rank(direct)
+        d_rank, _, d_modal, _conf = _reconcile_rank(direct)
         if d_modal == modal and d_rank != rec.get("rank"):
             rec = dict(rec)
             rec["rank"] = d_rank
@@ -1714,6 +1730,21 @@ def apply_effect_locus(
     return rows
 
 
+def conflicting_statement(rec: dict[str, Any], key: str) -> str:
+    """IPCC 'conflicting evidence' wording (Pete 2026-10-19): a balanced positive/negative
+    pool states the conflict instead of a near-tie class. No numbers here on purpose — the
+    agreement note carries the weights and ids."""
+    env = rec.get("applicability") or {}
+    transfer = env.get("transfer_class", "")
+    return (
+        f"{rec.get('nbs_id', '')} {key}: CONFLICTING EVIDENCE — material weight on both the "
+        "positive and the negative side, so no direction is stated. This is not a null "
+        "finding: studies found real effects, in opposite directions, and the agreement "
+        "note lists both sides. Read the conditionality for what separates them"
+        + (f" (transfer: {transfer})." if transfer else ".")
+    )
+
+
 def data_deficient_statement(rec: dict[str, Any], key: str) -> str:
     """What a data-deficient cell says instead of a class (Pete 2026-10-16, thin rows = B).
 
@@ -1748,6 +1779,8 @@ def rec_statement(rec: dict[str, Any], table: str, key: str, role: str) -> str:
     """The calibrated statement for a reconciled record (used as the mechanism placeholder)."""
     if rec.get("data_deficient"):
         return data_deficient_statement(rec, key)
+    if rec.get("conflicting"):
+        return conflicting_statement(rec, key)
     return _statement(
         table,
         str(rec.get("nbs_id") or ""),
@@ -1842,6 +1875,8 @@ def traceable_account(
     )
     if rec.get("data_deficient"):
         statement = data_deficient_statement(dict(rec, nbs_id=nbs_id), key)
+    elif rec.get("conflicting"):
+        statement = conflicting_statement(dict(rec, nbs_id=nbs_id), key)
     else:
         statement = _statement(
             table,
@@ -1894,6 +1929,7 @@ def traceable_account(
         # a benefit accruing to society rather than the household
         "held_out_of_class": rec.get("held_out_of_class") or {},
         "data_deficient": bool(rec.get("data_deficient")),
+        "conflicting": bool(rec.get("conflicting")),
         "data_deficient_reason": rec.get("data_deficient_reason", ""),
         "key_evidence_ids": [c.unit.evidence_id for c in top],
         "source_mix": rec["source_mix"],
@@ -2329,7 +2365,11 @@ def synthesise_cell(
                 r["mitigation_potential"] = (
                     ""
                     if rec.get("data_deficient")
-                    else t3_mitigation_potential(rec["rank"], rec["confidence"])
+                    else (
+                        "conflicting_evidence"
+                        if rec.get("conflicting")
+                        else t3_mitigation_potential(rec["rank"], rec["confidence"])
+                    )
                 )
                 r["asset_sensitivity"] = ""
         else:
@@ -2352,7 +2392,11 @@ def synthesise_cell(
                     "effect_direction": (
                         ""
                         if is_econ or rec.get("data_deficient")
-                        else t6_effect_direction(rec["rank"])
+                        else (
+                            "conflicting_evidence"
+                            if rec.get("conflicting")
+                            else t6_effect_direction(rec["rank"])
+                        )
                     ),
                     "effect_confidence": rec["confidence"],
                     "timescale_of_effect": _modal_ctx(cs, "timescale_of_effect"),
