@@ -469,9 +469,28 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     return changed
 
 
+def _safe_console() -> None:
+    """Never crash on printing: the build notes use arrows and symbols (→, ✓, ⓘ) that a
+    Windows cp1252 console cannot encode, and the dashboard's submit path calls generate()
+    without UTF-8 mode, so one arrow aborted a QA/QC submission (2026-10-19). Switch the
+    streams to UTF-8, falling back to replacing unencodable characters."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (OSError, ValueError):
+            try:
+                reconfigure(errors="replace")
+            except (OSError, ValueError):
+                pass
+
+
 def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     """Write (or, under ``check``, compare) every JSON from its CSV. Returns the
     list of paths that were written / are stale."""
+    _safe_console()
     schema_root = Path(schema_root)
 
     # Run the strict source and quote validation guardrails first
