@@ -102,6 +102,10 @@ COMPARATOR = {
     # coastal marsh measured where it already stands: same rule as existing_wetland, but it
     # belongs in the coastal family row rather than the rewetting one
     "existing_wetland_coastal",
+    # the practice measured against the UNMANAGED state (silvopasture vs non-grazed forest)
+    # rather than the farming-system counterfactual a T3 cell asks about (Pete 2026-10-19,
+    # hazard_cell_comparator): such units inform the account but never set a T3 class
+    "unmanaged_state",
 }
 GAS = {"co2", "ch4", "n2o", "net_co2e"}
 ATTRIBUTION = {"isolated", "bundled"}

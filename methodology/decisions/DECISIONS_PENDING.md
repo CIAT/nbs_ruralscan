@@ -13,10 +13,11 @@ Vietnam income call and the zhang preprint are all closed (below). What remains 
    weighting for units... maybe root n") — IMPLEMENTED: the NbS class is now a vote of the
    family rows, weight sqrt(n_sources), conflict at the same 1/3 threshold as the unit rule.
    18 roll-up rows re-classed (agroforestry production now states conflicting evidence).
-2. **santos25_8: drop, log reason** — being applied.
-3. **batcheler24_6 fire: rule** (mechanism units vote against the cell's farming-system
-   comparator) — being implemented.
-4. **ojan20_4: ok** — hold lifted, unit keeps voting.
+2. **santos25_8: drop, log reason** — done (insufficient_context; your question logged verbatim).
+3. **batcheler24_6 fire: rule** — done: `comparator=unmanaged_state` held from every T3 class;
+   the four agroforestry fire cells now publish data deficient, naming the missing comparison
+   (silvopasture vs treeless pasture).
+4. **ojan20_4: ok** — hold lifted, unit keeps voting (net-CO2e rule governs).
 
 Also open, no judgement needed:
 - **kumw24_4 ("is this off scope?"):** answered — nutrient removal routes to the T5 priority
