@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def payload_kind(rel: dict) -> str:
     if rel.get("type"):
         return str(rel["type"])
+
     def has_labelled_ranges(value: object) -> bool:
         if isinstance(value, dict):
             return ("label" in value and "range" in value) or any(
@@ -199,10 +200,19 @@ def main() -> None:
         + "</blockquote></details>"
         for r in classes
     )
+    imported_review = out / "review_import/Pete_Steward_2026-10-19.csv"
+    review_status = "Eleven further source corrections await review."
+    if imported_review.exists():
+        with imported_review.open() as f:
+            decisions = Counter(r["decision"] for r in csv.DictReader(f))
+        review_status = (
+            f"Pete's eleven-item review imported: {decisions['approve']} approved, "
+            f"{decisions['hold']} held, {decisions['reject']} rejected (soft-deleted)."
+        )
     document = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agroforestry T4 pipeline audit</title>
 <style>body{font:16px system-ui;max-width:1400px;margin:40px auto;padding:0 24px;color:#16362b;background:#f6f8f5}h1{font-size:34px}section{padding:24px;background:white;border:1px solid #dce5df;margin:20px 0;border-radius:12px}table{border-collapse:collapse;font-size:12px;width:100%}td,th{text-align:left;padding:9px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}input{font:inherit;padding:12px;width:90%}pre,blockquote{white-space:pre-wrap;overflow-wrap:anywhere}summary{cursor:pointer;padding:12px}a{color:#17694c}.warn{background:#fff0cf;padding:18px;border-radius:8px}</style>
 <h1>Agroforestry T4: where evidence goes</h1><p>Branch audit · 19 October 2026 · Candidate outputs, not a published global recipe.</p>
-<section><h2>Result</h2><p><strong>SUMMARY_COUNTS</strong></p><p class="warn">Screened-source denominator unknown. No support percentages or 20% floor decisions inferred from overlapping search totals. One approved numeric rule is a source modelling choice requiring applicability review, not a universal validation.</p><p>Eleven further source corrections await review. Five earlier corrected holds remain approved. No evidence rows deleted.</p><p><a href="../review.html?batch=agroforestry-t4-final-audit-oct19">Review eleven corrections</a> · <a href="../review.html?batch=agroforestry-t4-holds-oct19">Earlier five approvals</a></p></section>
+<section><h2>Result</h2><p><strong>SUMMARY_COUNTS</strong></p><p class="warn">Screened-source denominator unknown. No support percentages or 20% floor decisions inferred from overlapping search totals. One approved numeric rule is a source modelling choice requiring applicability review, not a universal validation.</p><p>REVIEW_STATUS Five earlier corrected holds remain approved. No evidence rows deleted.</p><p><a href="../review.html?batch=agroforestry-t4-final-audit-oct19">Review eleven corrections</a> · <a href="../review.html?batch=agroforestry-t4-holds-oct19">Earlier five approvals</a></p></section>
 <section><h2>Retained class evidence</h2><p>Original source ranks, ranges and codes preserved. These do not become calibrated 0–1 membership scores automatically. “Low” does not mean excluded; unknown dataset codes do not become land-cover classes.</p>CLASS_CARDS</section>
 <section><h2>Every record accounted for</h2><input id="search" aria-label="Filter records" placeholder="Filter by source, variable, evidence ID or disposition"><table><thead><tr>TABLE_HEAD</tr></thead><tbody>TABLE_ROWS</tbody></table></section>
 <script>document.getElementById('search').addEventListener('input',e=>{let q=e.target.value.toLowerCase();document.querySelectorAll('tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))})</script></html>"""
@@ -211,7 +221,8 @@ def main() -> None:
         f"{len(units)} T4/M2b records reconciled · {summary['structural_active']} active structural records · {summary['generic_rows']['draft']} draft numeric rows · {summary['generic_rows']['approved']} approval-filtered numeric row · {len(classes)} active class records retained",
     )
     document = (
-        document.replace("CLASS_CARDS", class_cards)
+        document.replace("REVIEW_STATUS", html.escape(review_status))
+        .replace("CLASS_CARDS", class_cards)
         .replace("TABLE_HEAD", "".join("<th>" + k + "</th>" for k in heads))
         .replace("TABLE_ROWS", table)
     )

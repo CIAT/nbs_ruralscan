@@ -6,7 +6,7 @@
 
 The thin T4 table has several causes: genuine lack of transferable numerical rules, evidence encoded as class tables rather than four trapezoid parameters, claim loss during deduplication, crop-policy routing errors, incorrect source meanings, and incomplete screened-corpus accounting. The former eight rows were not eight defensible global suitability rules. This audit separates those causes rather than treating every retained number as a threshold.
 
-**439 T4/M2b records reconciled** (340 structural, 99 operational). All 340 structural records have exactly one disposition in each compiler mode. **151 structural records remain active; 189 remain soft-dropped. No rows were deleted.** Earlier five corrections are approved; eleven further corrected encodings are flagged for review, with original records and notes preserved.
+**439 T4/M2b records reconciled** (340 structural, 99 operational). All 340 structural records have exactly one disposition in each compiler mode. **149 structural records remain active; 191 remain soft-dropped. No rows were deleted.** Earlier five corrections are approved; Pete’s eleven-item export is applied: six approvals, three holds and two soft-rejections, with original records and notes preserved.
 
 ## Before and after
 
@@ -19,17 +19,17 @@ The thin T4 table has several causes: genuine lack of transferable numerical rul
 
 The remaining slope row is an explicit rule used by the source's crop-suitability model, not proof of a universal agroforestry limit. Regional/family transfer still needs a documented applicability decision. Mushtaq's 20–30°C sentence is secondary, in a mulberry paper; its family/host applicability remains unresolved. Four Morus crop-lane candidate rows remain separate from the generic CSV and are not approved F5 rules. Ten original design rows are preserved in the candidate CSV.
 
-**34 active structural records carrying class/rank/code encodings are surfaced in `class_evidence.csv` and the HTML view.** They include both general and species/crop lanes: this is an inventory, not 34 validated generic rules. Their original ranges, ranks, quotes, pages and context remain visible. Legacy encodings outside this category remain in `record_reconciliation.csv` with their untouched payloads.
+**33 active structural records carrying class/rank/code encodings are surfaced in `class_evidence.csv` and the HTML view.** They include both general and species/crop lanes: this is an inventory, not 33 validated generic rules. Their original ranges, ranks, quotes, pages and context remain visible. Legacy encodings outside this category remain in `record_reconciliation.csv` with their untouched payloads.
 
 ## Structural disposition accounting (all-active draft)
 
 | Disposition | Records |
 |---|---:|
-| QA soft-dropped | 189 |
+| QA soft-dropped | 191 |
 | Unsupported numerical encoding | 45 |
-| Selection-only | 25 |
+| Selection-only | 24 |
 | Qualitative relationship | 20 |
-| Class/gate mapping needed | 18 |
+| Class/gate mapping needed | 17 |
 | Crop scope outside permitted lane | 13 |
 | Observed presence/context | 8 |
 | Species scope | 7 |
@@ -74,7 +74,7 @@ Nath Table 2 (PDF p11) explicitly defines ranks 1=Very good through 5=Unsuitable
 
 ## Remaining decisions and bounded follow-ups
 
-1. **Approve or amend the eleven corrections** using the new HTML review batch. Earlier five approvals remain untouched.
+1. **Resolve three holds:** Sprenkle pooled canopy maximum (Pete: “limit for max canopy cover in croplands”); Brandt canopy targeting (no note); Haile pH (Pete questions policy targeting versus suitability). Ahmad rainfall and Sprenkle biome targets were rejected and soft-deleted. Six other corrections were approved. Earlier five approvals remain untouched.
 2. **FMNR applicability:** the existing scoped Sahel pilot proposal remains open. Use observed agricultural systems and regeneration potential, not a hard 300–800 mm domain borrowed from one paper.
 3. **Class calibration and cross-family transfer:** record family/context applicability and a justified membership convention before turning regional ordinal evidence into executable T4. This is a methodology decision, not a parser repair. Existing Haile transfer and cross-family decision records remain relevant.
 4. **Screening membership:** recover complete source-level screened sets, including screened-out sources and cross-search deduplication. Current records support an honest “unknown,” not a recreated percentage. `source_inventory.csv` is a reconciliation seed, not the denominator.
@@ -91,4 +91,6 @@ PYTHONPATH=src python scripts/audit-t4-compilation.py agroforestry pipeline/t4_a
 
 ## Validation
 
-Final branch validation: 363 tests passed, including generated-JSON synchronization; five dependency deprecation warnings. Schema structure: zero errors, 3,274 advisory warnings. Changed compiler and audit files pass lint and type checks. All 439 T4/M2b records reconcile exactly once in each mode; no evidence IDs deleted. Eleven source-context corrections remain unapproved, and the five earlier human approvals remain intact. Live T4 was not replaced. Generator advisory QA and learning-loop notes remain visible; passing checks does not establish global scientific applicability.
+Before this CSV import, branch validation: 363 tests passed, including generated-JSON synchronization; five dependency deprecation warnings. Schema structure: zero errors, 3,274 advisory warnings. Changed compiler and audit files pass lint and type checks. All 439 T4/M2b records reconcile exactly once in each mode; no evidence IDs deleted. CSV import applied six approvals, three holds and two soft-rejections; five earlier human approvals remain intact. Live T4 was not replaced. Generator advisory QA and learning-loop notes remain visible; passing checks does not establish global scientific applicability.
+
+CSV-import validation: 27 review/compilation tests and four generation tests passed. Shared review-display and table-progress generators also passed synchronization checks after archiving the export in `docs/review/exports`. Exactly the eleven supplied EV records changed; their analytical relationships were unchanged. Structure: zero errors.

@@ -4,7 +4,7 @@
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
     "schema/registers/SRC_source_register.csv": "d53cbc68db270ab40f2b431627b81c293557100a0aaab85d1a342f575a592c08",
-    "schema/registers/EV_evidence_register.csv": "412cb5a14ad06ded7327fadbc4c4c5e8d38c67dcdc555c72e27d6892ef5be34b",
+    "schema/registers/EV_evidence_register.csv": "62109855f856a15f4858a7d9a32fc0b38ef1bfd07c7aee49b8c031478d95b6b9",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
@@ -32,6 +32,14 @@
         },
         {
           "variable": "distance_to_road",
+          "support_pct": null,
+          "n_sources": 1,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
+          "variable": "frost_free_period",
           "support_pct": null,
           "n_sources": 1,
           "ml_important": false,
@@ -115,11 +123,12 @@
         },
         "climatic": {
           "key": "climatic",
-          "n_sources": 3,
+          "n_sources": 4,
           "corpus_n": null,
           "pct": null,
           "members": [
             "annual_precipitation",
+            "frost_free_period",
             "mean_annual_temperature"
           ]
         },
@@ -191,7 +200,7 @@
           "variable": "annual_precipitation",
           "reviewer_ok": false,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "type": "source_ordinal_classes",
             "unit": "mm",
@@ -387,9 +396,9 @@
         "ev_t4_mat_castle2025_1": {
           "source_id": "castle_2025",
           "variable": "frost_free_period",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {
             "type": "variable_definition",
             "unit": "days",
@@ -3696,6 +3705,21 @@
           ],
           "parameter_evidence": {}
         },
+        "frost_free_period": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_t4_mat_castle2025_1",
+              "selection_only"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
         "land_cover": {
           "used": [],
           "dropped": [],
@@ -4976,7 +5000,7 @@
           "variable": "tree_canopy_cover",
           "reviewer_ok": false,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "type": "contextual_target_estimates",
             "unit": "percent",
@@ -9689,7 +9713,7 @@
         "EV_lohbeck_2020_001": {
           "source_id": "lohbeck_2020",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
           "status": "observed_presence",
           "relationship": {
@@ -9704,7 +9728,7 @@
         "EV_lohbeck_2020_002": {
           "source_id": "lohbeck_2020",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
           "status": "observed_presence",
           "relationship": {
@@ -9893,7 +9917,7 @@
         "EV_weston_2015_001": {
           "source_id": "weston_2015",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
           "status": "observed_presence",
           "relationship": {
@@ -9981,7 +10005,7 @@
         "EV_wri_regreening_2015_001": {
           "source_id": "wri_regreening_2015",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
           "status": "observed_presence",
           "relationship": {
@@ -10252,7 +10276,7 @@
         "EV_wocat_1358_2017_001": {
           "source_id": "wocat_1358_2017",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
           "status": "observed_presence",
           "relationship": {
