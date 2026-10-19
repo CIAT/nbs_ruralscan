@@ -7,27 +7,28 @@ live progress page lists the same items).
 The 19 October review round is applied: the sign-defects batch, both scheme sign-offs, the
 Vietnam income call and the zhang preprint are all closed (below). What remains open:
 
-## Open
+## Open — one page to answer: `2026-10-19_rollup_family_honesty.md`
 
-1. **Three hold cards from your own review** (logged as flags, awaiting a rule or a shrug):
-   - **santos25_8** (silvopastoral carbon): your question — "can only be compared to traditional
-     system, but what is the traditional system? is it a valid comparator?" The paper's
-     comparator is an unnamed conventional arm; if you want a rule (named-comparator-or-no-vote),
-     say so and it gets drafted as a decision.
-   - **ojan20_4** (wetland carbon): removals positive, methane negative, net unclear. The net-CO2e
-     rule (16 Oct) already governs the class; this unit stays a non-deciding voter. Nothing to do
-     unless you want it dropped.
-   - **batcheler24_6** (silvopasture fire): "turn the judgement down a notch" — classes are
-     derived, never hand-set, so a notch needs a rule (e.g. mechanism-evidence votes with reduced
-     weight in hazard cells). Say the word and it gets drafted; otherwise the unit keeps voting
-     and the conflict stays stated.
-2. **kumw24_4 (N/P removal — "is this off scope?"):** answered — nutrient removal routes to the
-   T5 priority `water_quality_risk`, which you added on 2026-10-01 as a riparian/wetland core
-   service. In scope; the hold is logged and can be lifted on your next pass.
-3. **Three browser clicks** for a future desktop run: verhoeven (PMC), the arslan IAAE
-   conference version (AgEcon Search), the Nguyen NbS food-security SR (PMC).
-4. **MFL domain review** of the mangrove and forest-restoration schemes — you signed both off
-   on 2026-10-19, so this is now welcome-not-blocking. filoso17 IUFRO reading also still open.
+That doc holds four one-word answers:
+
+1. **Roll-up honesty (the big one): A / B / C.** The NbS-level row pools all families, so
+   agroforestry production reads strong_positive (121 units) while three of six family rows
+   carrying 72 of those units read conflicting. Recommendation: B — the NbS class defers to
+   its families at the same 1/3 threshold as the unit-level conflict rule.
+2. **santos25_8: cap / leave / drop.** Unnamed "traditional system" comparator; drafted rule
+   caps strength at moderate on an undefined baseline.
+3. **batcheler24_6 fire: rule / leave.** Drafted rule reads fuel/mechanism units against the
+   cell's farming-system comparator (open pasture), not the unmanaged state — the honest form
+   of your "turn it down a notch".
+4. **ojan20_4: ok / drop.** No rule needed — the net-CO2e ruling already governs it.
+
+Also open, no judgement needed:
+- **kumw24_4 ("is this off scope?"):** answered — nutrient removal routes to the T5 priority
+  `water_quality_risk` you added 2026-10-01. In scope; lift the hold on your next pass.
+- **Three browser clicks** for a future desktop run: verhoeven (PMC), the arslan IAAE
+  conference version (AgEcon Search), the Nguyen NbS food-security SR (PMC).
+- **MFL domain review** of the mangrove and forest-restoration schemes (you signed both off;
+  non-blocking). filoso17 IUFRO reading also still open.
 
 ## Closed 19 October, night
 
