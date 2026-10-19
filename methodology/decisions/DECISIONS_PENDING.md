@@ -1,79 +1,52 @@
 # Everything waiting on you, in one place
 
-**For:** Pete. **Updated:** 2026-10-19, evening (this file is refreshed whenever a decision opens or closes;
-the machine-readable register is `open_decisions.csv` in this folder, and the live progress page
-lists the same items).
+**For:** Pete. **Updated:** 2026-10-19, late night (this file is refreshed whenever a decision
+opens or closes; the machine-readable register is `open_decisions.csv` in this folder, and the
+live progress page lists the same items).
 
-All six conflict-split answers from 19 October are implemented (record:
-`2026-10-19_conflict_split_rulings.md`). One NEW decision opened out of them, plus the standing
-review batch and hand jobs.
+The 19 October review round is applied: the sign-defects batch, both scheme sign-offs, the
+Vietnam income call and the zhang preprint are all closed (below). What remains open:
 
----
+## Open
 
-## NEW — do plantations stay in the forest-restoration roll-up? (`plantation_rollup`)
+1. **Three hold cards from your own review** (logged as flags, awaiting a rule or a shrug):
+   - **santos25_8** (silvopastoral carbon): your question — "can only be compared to traditional
+     system, but what is the traditional system? is it a valid comparator?" The paper's
+     comparator is an unnamed conventional arm; if you want a rule (named-comparator-or-no-vote),
+     say so and it gets drafted as a decision.
+   - **ojan20_4** (wetland carbon): removals positive, methane negative, net unclear. The net-CO2e
+     rule (16 Oct) already governs the class; this unit stays a non-deciding voter. Nothing to do
+     unless you want it dropped.
+   - **batcheler24_6** (silvopasture fire): "turn the judgement down a notch" — classes are
+     derived, never hand-set, so a notch needs a rule (e.g. mechanism-evidence votes with reduced
+     weight in hazard cells). Say the word and it gets drafted; otherwise the unit keeps voting
+     and the conflict stays stated.
+2. **kumw24_4 (N/P removal — "is this off scope?"):** answered — nutrient removal routes to the
+   T5 priority `water_quality_risk`, which you added on 2026-10-01 as a riparian/wetland core
+   service. In scope; the hold is logged and can be lifted on your next pass.
+3. **Three browser clicks** for a future desktop run: verhoeven (PMC), the arslan IAAE
+   conference version (AgEcon Search), the Nguyen NbS food-security SR (PMC).
+4. **MFL domain review** of the mangrove and forest-restoration schemes — you signed both off
+   on 2026-10-19, so this is now welcome-not-blocking. filoso17 IUFRO reading also still open.
 
-You ruled plantations are "tree farming and not forest restoration" and get their own category.
-The family split is being built. The one thing only you (with the MFL team) can settle: once
-`forest_restoration__plantation` exists, does its evidence still count toward the whole-NbS
-forest-restoration roll-up?
+## Closed 19 October, night
 
-- **A — keep it in the roll-up**, as its own family rows. A TTL reading "forest restoration"
-  then still inherits eucalypt/pine plantation results (the biodiversity losses, the big water
-  yield reductions).
-- **B — park it out of the roll-up** (evidence retained, like the existing-forest comparator
-  handling). "Forest restoration" then means restoration toward a natural baseline; plantation
-  rows are visible but separate.
-- **C — condition on planting type**: indigenous/diverse plantings in, monocultures out. Honest
-  to your "bio friendly plantation" caveat, but much of the evidence never states planting
-  diversity, so many units would be unclassifiable.
+- **Sign-defects review batch** — applied: cole20_1 and mits05_5 confirmed; fp034b_1 dropped (a
+  baseline is not an effect); allan23_8 corrected to neutral on your note ("no strong evidence
+  either way"); and your mits05_5 comment became a rule: **wetland sediment trapping no longer
+  votes on erosion cells** ("the wetland traps eroded sediment, but it does not actually prevent
+  the erosion of the landscape that generates that sediment") — it keeps voting on water quality.
+- **Vietnam income call** — not credited to the mangrove ("it is not the mangrove, we cannot
+  count it"). The lesson now lives in a running collation for the feasibility-guidelines team:
+  `methodology/feasibility_notes.md` (new file, append as we go).
+- **Mangrove scheme** — signed off by Pete (not MFL), 2026-10-19.
+- **Forest-restoration scheme (incl. plantation split)** — signed off by Pete, 2026-10-19.
+- **zhang_2026** — the SSRN preprint stays the artefact of record ("zhang preprint is fine").
 
-**Recommendation: B**, by your own rationale — a monoculture plantation is not representative of
-the natural baseline restoration returns to. **How to answer:** "plantation roll-up: B" (or A/C).
+## Standing rulings (all live)
 
-## NEW — two water-harvesting PICOS calls (one line each; three units held out of ingest)
-
-1. **Supplemental irrigation** (`wh_supplemental_irrigation`): Rwanda — terrace runoff stored in a
-   lined pond and drip-applied; maize 11,982 vs 4,755 kg/ha. Your own earlier question: is water
-   harvesting + irrigation still the NbS? **A** ingest as runoff-catchment WH · **B** drop as
-   irrigation · **C** ingest tagged bundled-with-irrigation (recommended). Answer: "irrigation: A/B/C".
-2. **Live mulch** (`wh_live_mulch`): Zimbabwe El Niño — no-till + Brachiaria/Desmodium fodder
-   intercrop; maize −91% but BCR 1.58 **from fodder sales**. Is a living fodder intercrop "soil
-   cover" (in-situ WH)? **A** yes, ingest both units · **B** not WH, drop · **C** ingest the yield
-   harm, drop the fodder-revenue BCR (recommended B or C). Answer: "live mulch: A/B/C".
-
-## The review batch — units whose encoding contradicts their own quote
-
-https://ciat.github.io/nbs_ruralscan/review.html → batch "Signs that contradict their own quote
-(16 Oct 2026)". Approve / hold / reject per card, Export CSV, send or commit it.
-
-## Hand jobs (no judgement needed)
-
-1. ~~Browser clicks~~ — DONE 19 Oct (28 acquired; report processed in #337). **Three clicks
-   remain for a future desktop run:** verhoeven (PMC), the arslan IAAE conference version
-   (AgEcon Search), the Nguyen NbS food-security SR (PMC).
-2. ~~3ie look~~ — DONE 19 Oct: the portal is NOT empty for wetlands; defensible wording is in
-   the wetland grey discovery log. Three candidates queued, two rejected on PICOS.
-3. **The Vietnam income call:** poverty −38% / incomes +55% attributed by the evaluation to
-   resettlement + technology transfer, not mangroves. Any share you'd credit to the mangrove
-   component? Silence keeps it out.
-4. **MFL sign-off** on the mangrove family scheme (`methodology/families/mangrove.md`).
-5. **zhang_2026 veto window:** the published J. Hydrology version is not open access, so the
-   SSRN preprint of the same study is now the artefact of record. Fine to leave; say the word
-   and it moves to the institutional-buy list instead.
-
-## Answered 19 October, for the record
-
-**(1) Highland losses** = suitability caveat: author-attributed waterlogging losses are withheld
-from production classes, logged as performance caveats, kept as T3 hazard evidence; rainfall
-ceilings filed as deferred T4 pointers. **(2) Min till alone is not water harvesting:** 17
-no/minimum-till-alone units dropped (`wrong_practice`), including both Pittelkow no-till
-meta-analyses; structure-building tillage, mulch and CA bundles stay. **(3) Downstream users
-decide water stress:** infiltration route removed, recharge re-routed to catchment water yield.
-**(4) Plantations split** — see the new decision above. **(5) Boundary drought** stays a stated
-conflict; every aggregation now owes a narrative tied to its evidence chain. **(6) Wetland heat
-rows removed** — cooling measured in the wetland itself, no rural receptor; the route returns if
-a study shows cooling where people or crops are.
-
-Earlier rulings all remain live: net CO2e decides carbon classes, reference shortfalls never vote,
-society-level value never sets a poverty class, existing-use income never votes in livelihood
-cells, thin rows publish as data deficient, balanced opposition reads as conflicting evidence.
+Net CO2e decides carbon classes · reference shortfalls never vote · society-level value never
+sets a poverty class · existing-use income never votes in livelihood cells · thin rows publish
+as data deficient · balanced opposition reads as conflicting evidence · plantations are parked
+out of the forest-restoration roll-up · min till alone is not water harvesting · wetland heat
+and wetland-erosion routes removed for want of a receptor/mechanism.

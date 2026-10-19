@@ -98,6 +98,9 @@ COMPARATOR_POLICY = cs.load_comparator_policy(LOOK / "comparator_policy.csv")
 # per-NbS route exclusions (Pete 2026-10-19: a variable-level XW route can carry a causal
 # presumption that fails for one NbS — wetland cooling has no rural receptor)
 XW_ROUTE_POLICY = cs.load_xw_route_policy(LOOK / "xw_route_policy.csv")
+# families parked out of the NbS roll-up but keeping their own rows (Pete 2026-10-19:
+# plantation forestry is tree farming, not forest restoration)
+FAMILY_ROLLUP_POLICY = cs.load_family_rollup_policy(LOOK / "family_rollup_policy.csv")
 
 
 def _rd(path: Path) -> list[dict[str, str]]:
@@ -258,6 +261,7 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
             table="T6",
             nbs_id=nbs_id,
             comparator_policy=COMPARATOR_POLICY,
+            family_rollup_policy=FAMILY_ROLLUP_POLICY,
             target_key=key,
             **common,
         )
@@ -277,6 +281,7 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
                 table="T3",
                 nbs_id=nbs_id,
                 comparator_policy=COMPARATOR_POLICY,
+                family_rollup_policy=FAMILY_ROLLUP_POLICY,
                 target_key=hz,
                 farming_system=fs,
                 **common,
@@ -293,6 +298,7 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
             table="T3",
             nbs_id=nbs_id,
             comparator_policy=COMPARATOR_POLICY,
+            family_rollup_policy=FAMILY_ROLLUP_POLICY,
             target_key=hz,
             role="asset_vulnerability",
             **common,

@@ -1,6 +1,6 @@
 # Forest Restoration — Suitability-Family Scheme (for review)
 
-*Draft for sign-off · August 2026 · sign-off Pete + domain review MFL (Sarah · Chris · Evert · Hannes), coordination + QA Namita. (Benson left the project Aug 2026; QA/QC → Namita.)*
+*Signed off by Pete Steward 2026-10-19 (including the plantation family split) · domain review MFL (Sarah · Chris · Evert · Hannes) still welcome, non-blocking · coordination + QA Namita. (Benson left the project Aug 2026; QA/QC → Namita.)*
 
 > **Why this document exists.** Suitability in the Rural NbS Scan is reasoned **per suitability family, not per
 > whole NbS** (a locked decision). T4 rows key to `suitability_family_id`. Before we populate T4 for forest
@@ -182,10 +182,12 @@ conflict — both its sides were plantation-vs-natural-regeneration evidence —
 large catchment water-yield reductions (Farley 2005) and most hard cost numbers to the
 plantation family.
 
-**Open (`plantation_rollup`, Pete + MFL):** does this family stay inside the forest-restoration
-NbS roll-up, is it parked as tree farming of unproven NbS alignment, or is inclusion
-conditioned on indigenous/diverse plantings? Until answered, plantation units still count in
-the whole-NbS rows.
+**Decided (`plantation_rollup`, Pete 2026-10-19): B — parked out of the roll-up.** The
+plantation family keeps its own T3/T6 rows but never sets an NbS-level forest-restoration
+class (`schema/lookups/family_rollup_policy.csv`). Pete: a plantation is "tree farming and
+not forest restoration... it is not representative of a natural baseline"; the conditional
+route (indigenous/diverse multi-use plantings) can reopen it if the evidence ever states
+planting type. Scheme signed off by Pete 2026-10-19.
 
 **Unresolved units (22, `mixed_or_unclear`)** stay in `active_planting` pending resolution —
 see the audit report (Cabo Verde WOCAT 1523 needs the full PDF species list; WOCAT 5243 pools
