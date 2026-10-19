@@ -7,20 +7,16 @@ live progress page lists the same items).
 The 19 October review round is applied: the sign-defects batch, both scheme sign-offs, the
 Vietnam income call and the zhang preprint are all closed (below). What remains open:
 
-## Open — one page to answer: `2026-10-19_rollup_family_honesty.md`
+## All four answered 19 October, late night
 
-That doc holds four one-word answers:
-
-1. **Roll-up honesty (the big one): A / B / C.** The NbS-level row pools all families, so
-   agroforestry production reads strong_positive (121 units) while three of six family rows
-   carrying 72 of those units read conflicting. Recommendation: B — the NbS class defers to
-   its families at the same 1/3 threshold as the unit-level conflict rule.
-2. **santos25_8: cap / leave / drop.** Unnamed "traditional system" comparator; drafted rule
-   caps strength at moderate on an undefined baseline.
-3. **batcheler24_6 fire: rule / leave.** Drafted rule reads fuel/mechanism units against the
-   cell's farming-system comparator (open pasture), not the unmanaged state — the honest form
-   of your "turn it down a notch".
-4. **ojan20_4: ok / drop.** No rule needed — the net-CO2e ruling already governs it.
+1. **Roll-up honesty: B-ish** ("not at the row level but the sub-practice level, with some
+   weighting for units... maybe root n") — IMPLEMENTED: the NbS class is now a vote of the
+   family rows, weight sqrt(n_sources), conflict at the same 1/3 threshold as the unit rule.
+   18 roll-up rows re-classed (agroforestry production now states conflicting evidence).
+2. **santos25_8: drop, log reason** — being applied.
+3. **batcheler24_6 fire: rule** (mechanism units vote against the cell's farming-system
+   comparator) — being implemented.
+4. **ojan20_4: ok** — hold lifted, unit keeps voting.
 
 Also open, no judgement needed:
 - **kumw24_4 ("is this off scope?"):** answered — nutrient removal routes to the T5 priority

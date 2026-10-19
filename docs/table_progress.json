@@ -1,7 +1,7 @@
 {
   "build": {
-    "timestamp": "2026-10-19T13:47:47.395571+00:00",
-    "git_commit": "63a3dd2458ce9817d40945728c1bee34f28f0ef2"
+    "timestamp": "2026-10-19T14:44:38.889294+00:00",
+    "git_commit": "0a72ce8c16731f4d296e049ff3d5ba5d0877e7a9"
   },
   "meta": {
     "nbs": [
@@ -179,9 +179,9 @@
               "agroforestry__silvopastoral": 12
             },
             "confidence": {
-              "high": 14,
-              "low": 5,
-              "medium": 31,
+              "high": 12,
+              "low": 6,
+              "medium": 32,
               "very_high": 10,
               "very_low": 35
             },
@@ -538,9 +538,9 @@
               "agroforestry__silvopastoral": 8
             },
             "confidence": {
-              "high": 17,
+              "high": 16,
               "low": 2,
-              "medium": 28,
+              "medium": 29,
               "very_high": 19,
               "very_low": 23
             },
@@ -594,11 +594,11 @@
             ],
             "effect_direction": {
               "": 23,
-              "conflicting_evidence": 6,
-              "moderate_positive": 12,
+              "conflicting_evidence": 7,
+              "moderate_positive": 13,
               "slight_negative": 1,
               "slight_positive": 40,
-              "strong_positive": 7
+              "strong_positive": 5
             }
           },
           "prose": {
@@ -895,8 +895,8 @@
               "forest_restoration__protection_cbfm": 9
             },
             "confidence": {
-              "high": 7,
-              "low": 2,
+              "high": 6,
+              "low": 3,
               "medium": 16,
               "very_high": 3,
               "very_low": 28
@@ -2226,8 +2226,8 @@
             "confidence": {
               "high": 13,
               "low": 3,
-              "medium": 37,
-              "very_high": 19,
+              "medium": 38,
+              "very_high": 18,
               "very_low": 14
             },
             "flags": {
@@ -2528,9 +2528,9 @@
               "conflicting_evidence": 4,
               "moderate_positive": 29,
               "slight_negative": 1,
-              "slight_positive": 21,
+              "slight_positive": 23,
               "strong_negative": 1,
-              "strong_positive": 21
+              "strong_positive": 19
             }
           },
           "prose": {
@@ -3217,18 +3217,6 @@
       "record": "methodology/decisions/2026-10-19_rollup_family_honesty.md"
     },
     {
-      "decision_id": "rollup_family_honesty",
-      "status": "open",
-      "owner": "Pete",
-      "raised": "2026-10-19",
-      "question": "The NbS-level row pools every unit from every family, so a big agreeable pool can swamp family conflicts: agroforestry production_gap reads strong_positive (121 units) while three of six family rows carrying 72 of those units read conflicting_evidence.",
-      "options": "A leave (pooled vote + family rows) | B NbS class defers to families: >=1/3 of evidence weight in conflicting/opposing families -> NbS row states conflicting_evidence, narrative names which families | C keep pooled class with a mandatory families_divided flag",
-      "recommendation": "B - one conflict philosophy at both levels (reuses the ratified 1/3 threshold)",
-      "decided": "",
-      "decided_on": "",
-      "record": "methodology/decisions/2026-10-19_rollup_family_honesty.md"
-    },
-    {
       "decision_id": "landslide_livelihood_cell",
       "status": "parked",
       "owner": "Pete",
@@ -3335,6 +3323,18 @@
       "decided": "B — parked out of the roll-up",
       "decided_on": "2026-10-19",
       "record": "methodology/decisions/2026-10-19_conflict_split_rulings.md"
+    },
+    {
+      "decision_id": "rollup_family_honesty",
+      "status": "decided",
+      "owner": "Pete",
+      "raised": "2026-10-19",
+      "question": "The NbS-level row pools every unit from every family, so a big agreeable pool can swamp family conflicts: agroforestry production_gap reads strong_positive (121 units) while three of six family rows carrying 72 of those units read conflicting_evidence.",
+      "options": "A leave (pooled vote + family rows) | B NbS class defers to families: >=1/3 of evidence weight in conflicting/opposing families -> NbS row states conflicting_evidence, narrative names which families | C keep pooled class with a mandatory families_divided flag",
+      "recommendation": "B - one conflict philosophy at both levels (reuses the ratified 1/3 threshold) | Pete 2026-10-19: 'suggest the roll-up is not at the row level but the sub-oractice level, with some weighting for units (but not simply n, maybe root n or log n or someting?) - so B-ish'. Implemented: family rows vote with weight sqrt(n_sources); dissent >= 1/3 of signed weight -> conflicting_evidence; guards = >=2 classed family rows covering >=50% of the roll-up's sources, else the pooled class stands with the reason in the account. 18 roll-up rows re-classed.",
+      "decided": "B — family-level vote, sqrt(n_sources) damping",
+      "decided_on": "2026-10-19",
+      "record": "src/nbs_ruralscan/recipe/cell_synthesis.py (_family_vote) + methodology/decisions/2026-10-19_rollup_family_honesty.md"
     },
     {
       "decision_id": "vietnam_income_credit",

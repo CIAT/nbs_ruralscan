@@ -57,7 +57,23 @@ to a positive headline built over divided families. B reuses the ratified 1/3 th
 there's one conflict philosophy in the engine, not two. C is the fallback if you want the
 headline class preserved for MCDA reasons.
 
-**How to answer:** "roll-up: A / B / C" (one word is enough).
+**Answered (Pete, 2026-10-19):** "suggest the roll-up is not at the row level but the
+sub-oractice level, with some weighting for units (but not simply n, maybe root n or log n or
+someting?) - so B-ish."
+
+**Implemented:** the NbS-level class is derived from a vote of the family rows, each weighted
+sqrt(n_sources) (sources are the engine's independence currency; root-n is the damping Pete
+asked for). Conflicting families plus the minority sign at >= 1/3 of the signed weight make
+the roll-up state conflicting evidence — the same threshold as the unit-level rule, one
+conflict philosophy at both levels. Guards: at least two classed family rows covering at least
+half the roll-up's sources, otherwise the pooled class stands and the account says why. The
+vote, its weights and the pooled class it replaced are recorded in every row's
+`justification.family_vote`. 18 roll-up rows re-classed (4 to conflicting evidence —
+agroforestry production and wind, water-harvesting waterlogging, forest-restoration fire;
+most others tempered one step; two strengthened where the families agree on more than the
+pool said). The first run weighted votes by each family's whole register slice — the WH
+prose writer caught it ("in_situ = 38 sources where the flood cell held 7 units"); weights
+now come from the family's row in the cell.
 
 ---
 

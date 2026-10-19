@@ -81,6 +81,16 @@ def conditionality_field(table: str) -> str:
     return "caveats" if table == "T3" else "conditionality"
 
 
+def _class_of(row: dict[str, Any]) -> str:
+    """The row's class label, whichever vocabulary its table uses."""
+    v = row.get("effect_direction")
+    if v is None or v == "":
+        v = row.get("mitigation_potential")
+    if v is None or v == "":
+        v = row.get("asset_sensitivity")
+    return str(v or "")
+
+
 def apply_prose(
     rows: list[dict[str, Any]], table: str, sidecar: dict[str, dict[str, Any]]
 ) -> tuple[int, int]:
@@ -91,6 +101,12 @@ def apply_prose(
         if not entry:
             continue
         if sorted(entry.get("evidence_ids") or []) != _ids(r):
+            stale += 1
+            continue
+        # the family-level vote (Pete 2026-10-19) can change a row's CLASS without touching
+        # its evidence_ids, and prose written for one class must not dress another; entries
+        # predating the "class" key fall back to the ids-only rule
+        if entry.get("class") is not None and entry["class"] != _class_of(r):
             stale += 1
             continue
         acc = r.get("justification")
@@ -190,6 +206,7 @@ def merge_prose(
     for rid, entry in prose.items():
         sidecar[rid] = {
             "evidence_ids": _ids(by_id[rid]),
+            "class": _class_of(by_id[rid]),
             "mechanism": entry["mechanism"].strip(),
             "conditionality": (entry.get("conditionality") or "").strip(),
             "evidence_summary": entry.get("evidence_summary") or None,

@@ -94,7 +94,12 @@ def _write_rows(
 
 def _needs_prose(row: dict[str, Any], sidecar: dict[str, dict[str, Any]]) -> bool:
     entry = sidecar.get(row["record_id"])
-    if entry and sorted(entry.get("evidence_ids") or []) == P._ids(row):
+    if (
+        entry
+        and sorted(entry.get("evidence_ids") or []) == P._ids(row)
+        and (entry.get("class") is None or entry["class"] == P._class_of(row))
+    ):
+        # same ids AND (for class-stamped entries) the same class — apply_prose's rule
         return False
     acc = row.get("justification") or {}
     return bool(acc.get("prose_pending", True))

@@ -2702,3 +2702,85 @@ def test_rollup_excluded_family_keeps_its_rows_but_never_sets_the_nbs_class(tmp_
     )
     assert set(fam_rows["riparian_buffer__planted"]["evidence_ids"]) == {"fr1", "fr2"}
     assert any("family_rollup_policy" in n for n in rep.notes)
+
+
+# ── family-level roll-up vote (Pete 2026-10-19, rollup_family_honesty = B) ──────────────
+
+
+def _vote_top(**over):
+    top = {
+        "scope_type": "",
+        "suitability_family_id": "",
+        "effect_direction": "strong_positive",
+        "effect_confidence": "high",
+        "evidence_level": "robust",
+        "agreement_level": "high",
+        "justification": {"statement": "s."},
+    }
+    top.update(over)
+    return top
+
+
+def _v(fam, label, n, srcs=None):
+    return {
+        "family": fam,
+        "label": label,
+        "n_sources": n,
+        "sources": set(srcs or [f"{fam}{i}" for i in range(n)]),
+    }
+
+
+def test_family_vote_dissent_flips_rollup_to_conflicting():
+    # three of six families conflicting, carrying most weight -> the headline defers
+    top = _vote_top()
+    rep = cs.CellReport()
+    pooled = {f"s{i}" for i in range(10)}
+    votes = [
+        _v("n__a", "strong_positive", 4, ["s0", "s1", "s2", "s3"]),
+        _v("n__b", "conflicting_evidence", 4, ["s4", "s5", "s6", "s7"]),
+        _v("n__c", "conflicting_evidence", 2, ["s8", "s9"]),
+    ]
+    cs._family_vote(top, rep, votes, pooled)
+    assert top["effect_direction"] == "conflicting_evidence"
+    assert top["agreement_level"] == "low"
+    assert top["effect_confidence"] == "medium"  # robust x low
+    fv = top["justification"]["family_vote"]
+    assert fv["pooled_label"] == "strong_positive"
+    assert fv["dissent_share"] >= 1 / 3
+    assert "SUB-PRACTICE VOTE" in top["justification"]["statement"]
+
+
+def test_family_vote_agreeing_families_set_the_median():
+    top = _vote_top(effect_direction="strong_positive")
+    rep = cs.CellReport()
+    pooled = {f"s{i}" for i in range(8)}
+    votes = [
+        _v("n__a", "moderate_positive", 4, ["s0", "s1", "s2", "s3"]),
+        _v("n__b", "slight_positive", 4, ["s4", "s5", "s6", "s7"]),
+    ]
+    cs._family_vote(top, rep, votes, pooled)
+    assert top["effect_direction"] in ("moderate_positive", "slight_positive")
+    assert top["justification"]["family_vote"]["outcome"] == top["effect_direction"]
+
+
+def test_family_vote_low_coverage_leaves_pooled_class():
+    top = _vote_top()
+    rep = cs.CellReport()
+    pooled = {f"s{i}" for i in range(10)}
+    votes = [
+        _v("n__a", "slight_negative", 2, ["s0", "s1"]),
+        _v("n__b", "slight_negative", 2, ["s2", "s3"]),
+    ]
+    cs._family_vote(top, rep, votes, pooled)
+    assert top["effect_direction"] == "strong_positive"
+    assert top["justification"]["family_vote"]["outcome"] == "pooled_class_stands"
+
+
+def test_family_vote_skips_scope_family_and_econ_rows():
+    rep = cs.CellReport()
+    scope = _vote_top(scope_type="income_group")
+    cs._family_vote(scope, rep, [], {"a"})
+    assert "family_vote" not in scope["justification"]
+    econ = _vote_top(effect_direction="")
+    cs._family_vote(econ, rep, [], {"a"})
+    assert "family_vote" not in econ["justification"]
