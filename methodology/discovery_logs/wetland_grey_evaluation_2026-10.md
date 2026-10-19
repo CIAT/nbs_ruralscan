@@ -342,3 +342,27 @@ That is a better position than before, and it should be presented as such: we ar
 4. Hand the mangrove content of the Vietnam and Guinea-Bissau operations to the **forest restoration** lane — do not borrow it here.
 5. Hand items 23–28 to the **published-literature** lane's ledger as `updated_lit`, not `grey`.
 6. `scripts/register-discovery.py wetland_management --date 2026-10-16 --ruleset v1.6.10 --candidates grey=pipeline/staging/discovery/wet_grey_2026-10-16.json --reports grey=pipeline/staging/discovery/wet_grey_2026-10-16_report.md --log-names grey=wetland_management_grey_evaluation_2026-10.md --ledger grey=done` — the ledger stamp belongs to whoever runs it, not to this agent.
+
+---
+
+## 2026-10-19 — the human step happened (browser check, Pete's desktop session)
+
+SRCH rows `wetland_management__T3/T6__grey__all__2026-10-19`. The 3ie Development Evidence
+Portal was searched by browser on 2026-10-19 (keywords: wetland, wetland restoration, peatland,
+rewetting, floodplain, swamp, marsh, nature-based solutions, ecosystem restoration; all study
+types).
+
+**The portal is NOT empty for wetlands — do not print "3ie holds no wetland impact
+evaluation."** Defensible wording: *the 3ie DEP (checked 19 Oct 2026) contains no impact
+evaluation of wetland **restoration** or peatland rewetting and no wetland evidence gap map. It
+holds a few impact evaluations of agriculture or infrastructure **in** wetlands (Bangladesh haor
+agriculture 2024, Ethiopia wetland-linked irrigation 2026, a China wetland-park DiD 2025) and
+systematic reviews that cover wetlands within NbS more broadly (Acreman et al. 2021, already in
+SRC).*
+
+Candidates surfaced, to screen before any registration: the ecosystem-based-DRR
+cost-effectiveness rapid SR (2025, LMICs), Chu & Zhang 2025 (wetland park construction DiD),
+Ahamed et al. 2024 (haor agriculture, income/employment), Geleta 2026 (off-season irrigated
+wheat on wetland-linked livelihoods), and the NbS food-security SR (2023). No evidence gap map
+covers wetland, peatland or floodplain terms — the earlier tool-based finding stands, now
+human-confirmed.
