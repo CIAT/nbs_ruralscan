@@ -50,3 +50,9 @@ sets a poverty class · existing-use income never votes in livelihood cells · t
 as data deficient · balanced opposition reads as conflicting evidence · plantations are parked
 out of the forest-restoration roll-up · min till alone is not water harvesting · wetland heat
 and wetland-erosion routes removed for want of a receptor/mechanism.
+
+## Agroforestry T4 — 19 October source-context review
+
+- **FMNR:** scoped semi-arid Sahel pilot within F2 proposed; no family redefinition or rainfall-domain exclusion authorized. `T4_af_fmnr_scope`.
+- **Haile rainfall:** regional ordinal ranks retained; family applicability and membership mapping pending. `T4_af_haile_transfer`.
+- [Five held units: corrections and source context](../../pipeline/t4_audit/agroforestry/holds_review/README.md). Human approvals remain pending.

@@ -60,3 +60,9 @@ The maintenance burden is continuous, not event-driven.
 
 **Feasibility implication:** coastal wetland investments should budget ongoing edge maintenance
 under the everyday wave climate rather than a post-cyclone repair reserve.
+
+## 2026-10-19 · agroforestry · trees must occur within agricultural land
+
+Pete's T4 canopy review flags that a coarse pixel may mix separate forest and cropland patches, without trees within cropland. Validate land-use/tree co-location at the input grain before aggregation; inspect registration, dates, resolution, and classification errors. No dataset binding adopted in this review.
+
+`ev_tree_canopy_cover_sprenkle24_1` (Sprenkle-Hyppolite 2024, PDF p4) supplies a 25% agricultural/forestry NCS accounting convention, not a physiological suitability limit. The source explicitly recognizes agriculture above 25%. Retain this distinction even if a better canopy dataset becomes available. The Sahel reconstruction paper (`researchsquare_fmnr_2025`, p5) describes 15 m tree-cover mapping on croplands: a candidate for fitness assessment, not proof of global availability or FMNR management.
