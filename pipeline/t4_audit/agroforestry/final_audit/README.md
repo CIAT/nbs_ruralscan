@@ -6,7 +6,7 @@
 
 The thin T4 table has several causes: genuine lack of transferable numerical rules, evidence encoded as class tables rather than four trapezoid parameters, claim loss during deduplication, crop-policy routing errors, incorrect source meanings, and incomplete screened-corpus accounting. The former eight rows were not eight defensible global suitability rules. This audit separates those causes rather than treating every retained number as a threshold.
 
-**439 T4/M2b records reconciled** (340 structural, 99 operational). All 340 structural records have exactly one disposition in each compiler mode. **149 structural records remain active; 191 remain soft-dropped. No rows were deleted.** Earlier five corrections are approved; Pete’s eleven-item export is applied: six approvals, three holds and two soft-rejections, with original records and notes preserved.
+**439 T4/M2b records reconciled** (340 structural, 99 operational). All 340 structural records have exactly one disposition in each compiler mode. **148 structural records remain active; 192 remain soft-dropped. No rows were deleted.** Earlier five corrections are approved; Pete’s latest decisions are applied: seven approvals, one hold and three soft-rejections, with original records and notes preserved.
 
 ## Before and after
 
@@ -25,9 +25,9 @@ The remaining slope row is an explicit rule used by the source's crop-suitabilit
 
 | Disposition | Records |
 |---|---:|
-| QA soft-dropped | 191 |
+| QA soft-dropped | 192 |
 | Unsupported numerical encoding | 45 |
-| Selection-only | 24 |
+| Selection-only | 23 |
 | Qualitative relationship | 20 |
 | Class/gate mapping needed | 17 |
 | Crop scope outside permitted lane | 13 |
@@ -74,7 +74,7 @@ Nath Table 2 (PDF p11) explicitly defines ranks 1=Very good through 5=Unsuitable
 
 ## Remaining decisions and bounded follow-ups
 
-1. **Resolve three holds:** Sprenkle pooled canopy maximum (Pete: “limit for max canopy cover in croplands”); Brandt canopy targeting (no note); Haile pH (Pete questions policy targeting versus suitability). Ahmad rainfall and Sprenkle biome targets were rejected and soft-deleted. Six other corrections were approved. Earlier five approvals remain untouched.
+1. **Haile pH remains held:** nutrient-suitability rationale is supported, but source classes overlap. Pete approved Sprenkle’s pooled canopy summary for combination with other sources and excluded Brandt. The pooled Sprenkle estimate remains selection/design evidence until comparable context-specific target estimates can be synthesised; approval alone does not create a generic current-canopy cutoff.
 2. **FMNR applicability:** the existing scoped Sahel pilot proposal remains open. Use observed agricultural systems and regeneration potential, not a hard 300–800 mm domain borrowed from one paper.
 3. **Class calibration and cross-family transfer:** record family/context applicability and a justified membership convention before turning regional ordinal evidence into executable T4. This is a methodology decision, not a parser repair. Existing Haile transfer and cross-family decision records remain relevant.
 4. **Screening membership:** recover complete source-level screened sets, including screened-out sources and cross-search deduplication. Current records support an honest “unknown,” not a recreated percentage. `source_inventory.csv` is a reconciliation seed, not the denominator.
@@ -94,3 +94,12 @@ PYTHONPATH=src python scripts/audit-t4-compilation.py agroforestry pipeline/t4_a
 Before this CSV import, branch validation: 363 tests passed, including generated-JSON synchronization; five dependency deprecation warnings. Schema structure: zero errors, 3,274 advisory warnings. Changed compiler and audit files pass lint and type checks. All 439 T4/M2b records reconcile exactly once in each mode; no evidence IDs deleted. CSV import applied six approvals, three holds and two soft-rejections; five earlier human approvals remain intact. Live T4 was not replaced. Generator advisory QA and learning-loop notes remain visible; passing checks does not establish global scientific applicability.
 
 CSV-import validation: 27 review/compilation tests and four generation tests passed. Shared review-display and table-progress generators also passed synchronization checks after archiving the export in `docs/review/exports`. Exactly the eleven supplied EV records changed; their analytical relationships were unchanged. Structure: zero errors.
+
+## Follow-up: pH rationale and chat decisions
+
+Pete explicitly approved Sprenkle for combination with other sources and rejected Brandt; applied through the standard review importer. Latest batch: seven approved, one held, three soft-deleted. Haile remains unchanged.
+
+Haile §3.1.1 (PDF p5) treats pH as one of five equally weighted nutrient-availability indicators, alongside N, P, K and organic carbon. Its 20% is an internal equal weight, not an empirical response coefficient. The stated basis is researcher/expert judgement, FAO plant-growth standards and reference [22]. That reference is Ahmad & Goparaju’s Dumka study, not the different Palamu paper cached under `ahmad_2017`. The Dumka publisher Table 6 assigns pH 6.6–7.3 high; 7.4–8.4 and 6.5–5.6 medium; <5.5 and >8.5 low. Haile’s four-class adaptation retains 6.6–7.3 but overlaps the alkaline classes. This supports the nutrient-availability interpretation, not a validated global pH optimum. No source bounds were silently repaired and no newly browsed source was registered as extracted evidence.
+
+Publisher precedent: https://www.biotech-asia.org/vol14no2/geospatial-approach-for-agroforestry-suitability-mapping-to-enhance-livelihood-and-reduce-poverty-fao-based-documented-procedure-case-study-of-dumka-district-jharkhand-india/
+General mechanism: https://www.fao.org/soils-portal/data-hub/soil-classification/numerical-systems/chemical-properties/en/

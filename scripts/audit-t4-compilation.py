@@ -200,13 +200,23 @@ def main() -> None:
         + "</blockquote></details>"
         for r in classes
     )
-    imported_review = out / "review_import/Pete_Steward_2026-10-19.csv"
+    export_dir = ROOT / "docs/review/exports"
+    latest = {}
+    for export in sorted(export_dir.glob("*.csv")):
+        with export.open(encoding="utf-8-sig") as f:
+            for r in csv.DictReader(f):
+                if (
+                    r.get("batch") == "agroforestry-t4-final-audit-oct19"
+                    and r.get("reviewer") == "Pete Steward"
+                ):
+                    eid = r["evidence_id"]
+                    if eid not in latest or r["date"] > latest[eid]["date"]:
+                        latest[eid] = r
     review_status = "Eleven further source corrections await review."
-    if imported_review.exists():
-        with imported_review.open() as f:
-            decisions = Counter(r["decision"] for r in csv.DictReader(f))
+    if latest:
+        decisions = Counter(r["decision"] for r in latest.values())
         review_status = (
-            f"Pete's eleven-item review imported: {decisions['approve']} approved, "
+            f"Pete's latest eleven-item decisions: {decisions['approve']} approved, "
             f"{decisions['hold']} held, {decisions['reject']} rejected (soft-deleted)."
         )
     document = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agroforestry T4 pipeline audit</title>
