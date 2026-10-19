@@ -1,8 +1,10 @@
-# Mangrove restoration — suitability-family scheme (draft for MFL sign-off)
+# Mangrove restoration — suitability-family scheme
 
-**Status:** draft, 2026-10-19. Promoted to its own NbS by Pete: "on mangroves these will be a
-separate category of restoration in the project and the worldbank team want to include these for
-pilot." MFL review requested (Sarah Jones, Chris Kettle, Evert Thomas, Hannes Gaisberger).
+**Status:** signed off by Pete Steward, 2026-10-19 (team lead; not yet MFL). Promoted to its own
+NbS by Pete: "on mangroves these will be a separate category of restoration in the project and
+the worldbank team want to include these for pilot." MFL domain review (Sarah Jones, Chris
+Kettle, Evert Thomas, Hannes Gaisberger) still welcome and may amend the scheme, but it no
+longer blocks use.
 
 ## Why its own NbS, not a forest-restoration family
 
