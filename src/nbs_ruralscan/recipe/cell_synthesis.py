@@ -2888,14 +2888,19 @@ def synthesise_cell_with_families(
             # `units` arrives pre-XW, so fam_srcs over-counts — the family row's own
             # n_sources / references are the per-cell truth (caught by the WH prose
             # writer, 2026-10-19: in_situ "38 sources" where the flood cell held 7 units)
-            fam_votes.append(
-                {
-                    "family": fam,
-                    "label": _vote_label(frows[0]),
-                    "n_sources": int(frows[0].get("n_sources") or 0),
-                    "sources": set(frows[0].get("references") or []),
-                }
-            )
+            fpol_fam = fam_policy.get((nbs_id, fam))
+            if fpol_fam is None or fpol_fam.get("rollup_included", True):
+                # a roll-up-excluded family (plantation) keeps its row but casts no vote
+                # on the NbS class — the same exclusion the unit pool already applies
+                # (caught by the FR prose writer, 2026-10-19)
+                fam_votes.append(
+                    {
+                        "family": fam,
+                        "label": _vote_label(frows[0]),
+                        "n_sources": int(frows[0].get("n_sources") or 0),
+                        "sources": set(frows[0].get("references") or []),
+                    }
+                )
             rep.notes += frep.notes
     if rows:
         _family_vote(rows[0], rep, fam_votes, set(rows[0].get("references") or []))
