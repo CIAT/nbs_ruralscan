@@ -19,6 +19,14 @@ Vietnam income call and the zhang preprint are all closed (below). What remains 
    (silvopasture vs treeless pasture).
 4. **ojan20_4: ok** — hold lifted, unit keeps voting (net-CO2e rule governs).
 
+**NEW — wh_pooled_msd_indicator:** Arslan 2015's minimum-soil-disturbance indicator pools
+planting basins, zero tillage and ripping (zero tillage the majority, never estimated
+separately). Ruling 2 says min till alone is not water harvesting — does the pooled indicator
+count? Four gate-clean units held out (`pipeline/staging/wh_arslan_A_HELD_msd.json`): overall
+null, robust-to-false-onset null, low-yield-risk null, one uncontrolled 2008 reversal.
+**A** ingest as in-situ WH · **B** keep held out (recommended — nothing attributes to the
+capture minority) · **C** ingest tagged bundled. One word.
+
 Also open, no judgement needed:
 - **kumw24_4 ("is this off scope?"):** answered — nutrient removal routes to the T5 priority
   `water_quality_risk` you added 2026-10-01. In scope; lift the hold on your next pass.

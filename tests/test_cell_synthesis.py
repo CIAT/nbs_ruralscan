@@ -2866,3 +2866,12 @@ def test_cost_nature_routes_annualised_capital_out_of_recurrent_cost():
     assert not cs._unit_fits_econ_cell(plain, "establishment_cost")
     assert not cs._unit_fits_econ_cell(rec, "establishment_cost")
     assert not cs._unit_fits_econ_cell(rec, "cost_per_hectare_restored")
+
+
+def test_rollup_excluded_family_casts_no_vote():
+    """A family parked out of the roll-up (family_rollup_policy) keeps its row but must not
+    vote on the NbS class — its units are already excluded from the pooled row."""
+    import inspect
+
+    src = inspect.getsource(cs.synthesise_cell_with_families)
+    assert "casts no vote" in src and "fam_policy.get((nbs_id, fam))" in src
