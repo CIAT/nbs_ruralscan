@@ -2491,3 +2491,79 @@ def test_existing_use_income_never_votes_in_a_livelihood_cell():
     assert acc["held_out_of_class"]["existing_use_opportunity_cost"] == ["eu1"]
     assert rows[0]["effect_direction"].endswith("negative")
     assert "eu1" in rows[0]["evidence_ids"], "held out of the class, still in the row"
+
+
+# ── IPCC outcome: conflicting evidence ≠ a weak class ≠ a null (Pete 2026-10-19) ──────
+
+
+def test_balanced_pos_and_neg_reads_conflicting_not_a_weak_class():
+    pos = _u(
+        "cf1",
+        "s1",
+        "household_income",
+        "positive",
+        "strong",
+        ctx={"income_group": "low", "beneficiary": "farm_household"},
+    )
+    neg = _u(
+        "cf2",
+        "s2",
+        "household_income",
+        "negative",
+        "strong",
+        ctx={"income_group": "low", "beneficiary": "farm_household"},
+    )
+    rows, _ = _t6([pos, neg], key="rural_poverty")
+    assert rows[0]["effect_direction"] == "conflicting_evidence"
+    acc = rows[0]["justification"]
+    assert acc["conflicting"] is True
+    assert "CONFLICTING EVIDENCE" in acc["statement"]
+    assert "not a null finding" in acc["statement"]
+
+
+def test_all_null_pool_still_reads_no_relationship():
+    a = _u(
+        "nl1",
+        "s1",
+        "household_income",
+        "none",
+        "unspecified",
+        ctx={"income_group": "low", "beneficiary": "farm_household"},
+    )
+    b = _u(
+        "nl2",
+        "s2",
+        "household_income",
+        "none",
+        "unspecified",
+        ctx={"income_group": "low", "beneficiary": "farm_household"},
+    )
+    rows, _ = _t6([a, b], key="rural_poverty")
+    assert rows[0]["effect_direction"] == "no_relationship"
+    assert rows[0]["justification"]["conflicting"] is False
+
+
+def test_clear_majority_still_states_a_class():
+    units = [
+        _u(
+            f"mj{i}",
+            f"s{i}",
+            "household_income",
+            "positive",
+            "moderate",
+            ctx={"income_group": "low", "beneficiary": "farm_household"},
+        )
+        for i in range(4)
+    ] + [
+        _u(
+            "mj9",
+            "s9",
+            "household_income",
+            "negative",
+            "moderate",
+            ctx={"income_group": "low", "beneficiary": "farm_household"},
+        )
+    ]
+    rows, _ = _t6(units, key="rural_poverty")
+    assert rows[0]["effect_direction"].endswith("positive")
+    assert rows[0]["justification"]["conflicting"] is False
