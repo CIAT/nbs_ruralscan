@@ -13,11 +13,14 @@ already allowed to carry them (the extractor/validator enforce that upstream).
 from __future__ import annotations
 
 import math
+import json
+from collections import defaultdict
 import re
 from dataclasses import dataclass, field
 from typing import Any
 
 from .evidence import EvidenceUnit
+from .t4_relationships import decode
 
 # weighting tables (defensible defaults; tune per RFC)
 TIER_W = {"high": 1.0, "medium": 0.6, "low": 0.35}
@@ -41,6 +44,8 @@ class SynthesisReport:
     )  # (evidence_id, reason)
     collapsed: list[tuple[str, str]] = field(default_factory=list)  # (echo_id, origin)
     notes: list[str] = field(default_factory=list)
+    unresolved: list[tuple[str, str]] = field(default_factory=list)
+    parameter_evidence: dict[str, list[str]] = field(default_factory=dict)
 
 
 def _pct_to_deg(v: float) -> float:
@@ -363,6 +368,64 @@ def _dedupe_lineage(
     return kept
 
 
+def _t4_claims(units, tiers, rep, categories):
+    """Collapse exact claim echoes, retaining distinct bounds and contexts per origin."""
+    by_id = {u.evidence_id: u for u in units}
+    by_source = defaultdict(list)
+    for u in units:
+        by_source[u.source_id].append(u)
+    origins = {u.evidence_id: _resolve_root_origin(u, by_id, by_source) for u in units}
+    groups = defaultdict(list)
+    for u in units:
+        key = (
+            origins[u.evidence_id],
+            json.dumps(u.relationship, sort_keys=True),
+            json.dumps(u.context, sort_keys=True),
+            u.taxon,
+        )
+        groups[key].append(u)
+    kept = []
+    for key, group in groups.items():
+        group.sort(
+            key=lambda u: (
+                not bool(u.lineage_of),
+                _weight(
+                    u, tiers.get(u.source_id, "medium"), categories.get(u.source_id, "")
+                ),
+                u.evidence_id,
+            ),
+            reverse=True,
+        )
+        kept.append(group[0])
+        rep.collapsed.extend((u.evidence_id, key[0]) for u in group[1:])
+    return kept, origins
+
+
+def _t4_reconcile(contribs, categories, origins):
+    """Each origin supplies at most one weighted vote per parameter.
+
+    Within-origin claims retain their contexts/provenance; their median is a single
+    vote with the strongest claim's weight, so repeated extraction adds no authority.
+    """
+    result = {}
+    for param in _PARAMS:
+        groups = defaultdict(list)
+        for u, tier, values in contribs:
+            if param in values:
+                groups[origins[u.evidence_id]].append(
+                    (values[param], _weight(u, tier, categories.get(u.source_id, "")))
+                )
+        votes = []
+        for pairs in groups.values():
+            median = _weighted_median(pairs)
+            if median is not None:
+                votes.append((median, max(w for _, w in pairs)))
+        value = _weighted_median(votes)
+        if value is not None:
+            result[param] = value
+    return result
+
+
 def synthesise_t4_row(
     units: list[EvidenceUnit],
     tiers: dict[str, str],
@@ -404,20 +467,99 @@ def synthesise_t4_row(
         else:
             kept.append(u)
 
-    # 2) lineage dedupe (anti pseudo-consensus)
-    kept = _dedupe_lineage(kept, tiers, rep, categories)
-    rep.used = [u.evidence_id for u in kept]
+    # 2) Decode before deduplication: a narrative must never displace a threshold.
+    usable = []
+    decoded = {}
+    for u in kept:
+        if u.evidence_type not in {"literature_relationship", "expert"}:
+            rep.unresolved.append((u.evidence_id, "selection_only"))
+            continue
+        kind, params, reason = decode(normalize_shape_keys(u.relationship or {}))
+        if reason:
+            rep.unresolved.append((u.evidence_id, reason))
+        else:
+            decoded[u.evidence_id] = (kind, params)
+            usable.append(u)
+    kept, origins = _t4_claims(usable, tiers, rep, categories)
+    kinds = {decoded[u.evidence_id][0] for u in kept}
+    # Different shapes are not interchangeable. Keep the claims visible for a decision.
+    if len(kinds) > 1:
+        rep.unresolved.extend((u.evidence_id, "mixed_relationship_types") for u in kept)
+        kept = []
+    elif kinds:
+        relationship_type = next(iter(kinds))
 
-    # 3) harmonise + contributions
-    contribs = [
-        (
-            u,
-            tiers.get(u.source_id, "medium"),
-            _harmonise(u, canonical_unit, unit_conversions, rep),
-        )
-        for u in kept
-    ]
-    global_params = _reconcile(contribs, categories)
+    contribs: list[tuple[EvidenceUnit, str, dict[str, Any]]] = []
+    for u in kept:
+        kind, params = decoded[u.evidence_id]
+        if kind == "trapezoidal":
+            values = _harmonise(u, canonical_unit, unit_conversions, rep)
+        elif kind in {"threshold", "piecewise"}:
+            # Reuse the exact unit conversion guard for all numeric x coordinates.
+            from dataclasses import replace
+
+            xs = (
+                [params["threshold"]]
+                if kind == "threshold"
+                else [p[0] for p in params["points"]]
+            )
+            converted = []
+            for x in xs:
+                probe = replace(
+                    u,
+                    relationship={
+                        "abs_max": x,
+                        "unit": (u.relationship or {}).get("unit", canonical_unit),
+                    },
+                )
+                value = _harmonise(probe, canonical_unit, unit_conversions, rep)
+                if not value:
+                    break
+                converted.append(value["abs_max"])
+            values = {}
+            if len(converted) == len(xs):
+                values = (
+                    {
+                        "threshold": converted[0],
+                        "above_is_suitable": params["above_is_suitable"],
+                    }
+                    if kind == "threshold"
+                    else {
+                        "points": [
+                            [x, p[1]] for x, p in zip(converted, params["points"])
+                        ]
+                    }
+                )
+        else:
+            values = params
+        if values:
+            contribs.append((u, tiers.get(u.source_id, "medium"), values))
+    if relationship_type == "trapezoidal":
+        global_params = _t4_reconcile(contribs, categories, origins)
+        ordered = [global_params[k] for k in _PARAMS if k in global_params]
+        if ordered != sorted(ordered):
+            rep.unresolved.extend(
+                (u.evidence_id, "inconsistent_bound_order") for u, _, _ in contribs
+            )
+            contribs = []
+            global_params = {}
+    else:
+        # Categorical scores/custom curves/hard thresholds require agreement. Do not
+        # invent a new scoring or hard-exclusion consensus policy here.
+        variants = {json.dumps(p, sort_keys=True) for _, _, p in contribs}
+        global_params = contribs[0][2] if len(variants) == 1 else {}
+        if len(variants) > 1:
+            rep.unresolved.extend(
+                (u.evidence_id, "conflicting_typed_relationships")
+                for u, _, _ in contribs
+            )
+            contribs = []
+    kept = [u for u, _, _ in contribs]
+    rep.used = [u.evidence_id for u in kept]
+    rep.parameter_evidence = {
+        key: [u.evidence_id for u, _, params in contribs if key in params]
+        for key in global_params
+    }
 
     # 4) uncertainty from spread of values across all parameters (widen, never narrow); humility bumps
     unc = 10.0
@@ -428,7 +570,7 @@ def synthesise_t4_row(
             if denom != 0:
                 spread_pct = (max(vals) - min(vals)) / abs(denom) * 100
                 unc = max(unc, round(spread_pct, 0))
-    n_independent = len({u.source_id for u in kept})
+    n_independent = len({origins[u.evidence_id] for u in kept})
     if n_independent < 3:
         unc += 10  # thin evidence → less, not more, confidence
         rep.notes.append(
@@ -448,10 +590,10 @@ def synthesise_t4_row(
     ctx_groups: dict[str, list[tuple[EvidenceUnit, str, dict[str, float]]]] = {}
     for c in contribs:
         cid = (c[0].context or {}).get(context_field)
-        if cid:
+        if isinstance(cid, str) and relationship_type == "trapezoidal":
             ctx_groups.setdefault(cid, []).append(c)
     for cid, group in ctx_groups.items():
-        cp = _reconcile(group)
+        cp = _t4_reconcile(group, categories, origins)
         diverges = any(
             k in cp
             and k in global_params
@@ -470,8 +612,13 @@ def synthesise_t4_row(
             )
 
     # 6) justification + row
+    method = (
+        "source-balanced weighted median, tier×claim_basis"
+        if relationship_type == "trapezoidal"
+        else "exact agreement on typed relationship"
+    )
     just = (
-        f"Reconciled from {len(kept)} evidence unit(s) (weighted median, tier×claim_basis). "
+        f"Reconciled from {len(kept)} contributing evidence unit(s) ({method}). "
         f"Global {global_params}; uncertainty ±{unc:.0f}% from spread. "
         + (f"{len(overrides)} context override(s). " if overrides else "")
         + (f"Dropped {len(rep.dropped)} (scope/role). " if rep.dropped else "")
@@ -487,7 +634,11 @@ def synthesise_t4_row(
         "variable": variable,
         "variable_unit": canonical_unit,
         "dataset_id": dataset_id,
-        "suitability_dimension": "biophysical_constraint",
+        "suitability_dimension": (
+            "operational_constraint"
+            if kept and all(u.use_role == "operational_risk" for u in kept)
+            else "biophysical_constraint"
+        ),
         "relationship_type": relationship_type,
         "relationship_params": global_params,
         "uncertainty_pct": unc,

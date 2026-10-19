@@ -23,10 +23,13 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import hashlib
 import json
+from dataclasses import asdict
 from pathlib import Path
 
-from nbs_ruralscan.recipe.evidence import load_units
+from nbs_ruralscan.recipe.evidence import EvidenceUnit
+from nbs_ruralscan.schema_tools.generate import _csv_to_rows
 from nbs_ruralscan.recipe.family import (
     is_observed_presence,
     FamilyResult,
@@ -79,7 +82,7 @@ def _first_dataset(raw: str | None) -> str:
     return ids[0] if ids else ""
 
 
-def synthesise(nbs_id: str) -> dict[str, FamilyResult]:
+def synthesise(nbs_id: str, *, approved_only: bool = False) -> dict[str, FamilyResult]:
     src, vont, srch = (
         _rd(REG / n)
         for n in (
@@ -105,13 +108,22 @@ def synthesise(nbs_id: str) -> dict[str, FamilyResult]:
 
     corpus: dict[str, int] = {}
     for r in srch:
-        if r["nbs_id"] == nbs_id and r["suitability_family_id"]:
+        if r["nbs_id"] == nbs_id and r["suitability_family_id"] and r["table"] == "T4":
             corpus[r["suitability_family_id"]] = corpus.get(
                 r["suitability_family_id"], 0
             ) + int(r["n_included"] or 0)
 
+    policies = _rd(ROOT / "schema" / "lookups" / "crop_scope_policy.csv")
     units = [
-        u for u in load_units(REG / "EV_evidence_register.json") if u.nbs_id == nbs_id
+        EvidenceUnit(
+            **{
+                k: value
+                for k, value in row.items()
+                if k in EvidenceUnit.__dataclass_fields__
+            }
+        )
+        for row in _csv_to_rows(REG / "EV_evidence_register.csv")
+        if row["nbs_id"] == nbs_id
     ]
     families = sorted(
         {u.suitability_family_id for u in units if u.suitability_family_id}
@@ -120,6 +132,23 @@ def synthesise(nbs_id: str) -> dict[str, FamilyResult]:
     out: dict[str, FamilyResult] = {}
     for family in families:
         fam_units = [u for u in units if u.suitability_family_id == family]
+        policy = next(
+            (
+                r
+                for r in policies
+                if r["nbs_id"] == nbs_id and r["suitability_family_id"] == family
+            ),
+            None,
+        )
+        if policy is None:
+            policy = next(
+                (
+                    r
+                    for r in policies
+                    if r["nbs_id"] == nbs_id and not r["suitability_family_id"]
+                ),
+                {},
+            )
         # sources that contribute ONLY fixed-form observed-presence records (WOCAT sheets)
         # leave the support denominator too, or they would dilute every variable their
         # form never asks about
@@ -132,14 +161,31 @@ def synthesise(nbs_id: str) -> dict[str, FamilyResult]:
             fam_units,
             tiers,
             family=family,
-            corpus_n=corpus.get(family, len(fam_units)),
+            corpus_n=corpus.get(
+                family,
+                len(
+                    {
+                        u.source_id
+                        for u in fam_units
+                        if u.use_role == "structural_suitability"
+                        and u.review_state != "dropped"
+                        and not is_observed_presence(u)
+                    }
+                ),
+            ),
             group_map=group_map,
             canonical_units=canonical_units,
             dataset_ids=dataset_ids,
             categories=categories,
             unit_conversions=unit_conversions,
             floor_pct=20.0,
-            allow_crop_scope=family.endswith("shaded_perennial_crop"),
+            allow_crop_scope=policy.get("allow_crop_scope", "").lower() == "true",
+            approved_only=approved_only,
+        )
+        out[family].support_basis = (
+            "provisional_T4_inclusion_sum_not_unique_screened_sources"
+            if family in corpus
+            else "active_structural_sources_only_not_screened_corpus"
         )
     return out
 
@@ -170,14 +216,20 @@ def _existing_rows(recipe_dir: Path) -> list[dict[str, str]]:
 
 
 def write_recipe(
-    nbs_id: str, results: dict[str, FamilyResult], vont_rows: list[dict[str, str]]
+    nbs_id: str,
+    results: dict[str, FamilyResult],
+    vont_rows: list[dict[str, str]],
+    *,
+    output_dir: Path | None = None,
 ) -> None:
-    recipe_dir = ROOT / "schema" / "recipes" / nbs_id
-    existing = _existing_rows(recipe_dir)
-    design_by_var: dict[str, dict[str, str]] = {}
+    source_dir = ROOT / "schema" / "recipes" / nbs_id
+    recipe_dir = output_dir or source_dir
+    recipe_dir.mkdir(parents=True, exist_ok=True)
+    existing = _existing_rows(source_dir)
+    design_by_var: dict[tuple[str, str], dict[str, str]] = {}
     for r in existing:
         if any((r.get(k) or "") not in ("", "false") for k in DESIGN_FIELDS):
-            design_by_var.setdefault(r["variable"], r)
+            design_by_var.setdefault((r["suitability_family_id"], r["variable"]), r)
     ds_by_var = {
         r["canonical_variable_id"]: _first_dataset(r["candidate_dataset_ids"])
         for r in vont_rows
@@ -216,7 +268,7 @@ def write_recipe(
                     "paper_support_pct": row.get("paper_support_pct", ""),
                 }
             )
-            carried = design_by_var.get(row["variable"])
+            carried = design_by_var.get((family, row["variable"]))
             if carried:
                 csv_rows[-1].update({k: carried.get(k, "") for k in DESIGN_FIELDS})
 
@@ -243,16 +295,30 @@ def write_recipe(
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("nbs_id", help="e.g. riparian_buffer")
+    ap.add_argument(
+        "--approved-only", action="store_true", help="exclude unresolved review records"
+    )
+    ap.add_argument(
+        "--output-dir",
+        type=Path,
+        help="write isolated trial outputs; preserve live recipe",
+    )
+    ap.add_argument(
+        "--report",
+        type=Path,
+        help="write complete evidence-disposition and crop-lane report",
+    )
     ap.add_argument("--dry-run", action="store_true", help="report only; write nothing")
     args = ap.parse_args(argv)
 
-    results = synthesise(args.nbs_id)
+    results = synthesise(args.nbs_id, approved_only=args.approved_only)
     if not results:
         print(f"no evidence units for {args.nbs_id!r}")
         return 1
 
     for family, res in results.items():
         print(f"\n{family}  corpus_n={res.corpus_n}  rows={len(res.rows)}")
+        print(f"  support basis: {res.support_basis}; percentages provisional")
         for row in res.rows:
             print(
                 f"  {row['variable']:26s} {json.dumps(row['relationship_params']):44s} "
@@ -268,14 +334,51 @@ def main(argv: list[str] | None = None) -> int:
                     f"  {sel.decision:20s} {sel.variable:26s} {sel.support_pct}%  {sel.note}"
                 )
 
+    report_path = args.report
+    if report_path is None and not args.dry_run:
+        report_path = (
+            args.output_dir or ROOT / "schema" / "recipes" / args.nbs_id
+        ) / "T4_synthesis_report.json"
+    if report_path:
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(
+            json.dumps(
+                {
+                    "status": "draft_requires_evidence_and_applicability_review",
+                    "input_sha256": {
+                        str(path.relative_to(ROOT)): hashlib.sha256(
+                            path.read_bytes()
+                        ).hexdigest()
+                        for path in [
+                            *REG.glob("*.csv"),
+                            ROOT / "schema/lookups/crop_scope_policy.csv",
+                        ]
+                    },
+                    "review_mode": "approved_only"
+                    if args.approved_only
+                    else "all_active_draft",
+                    "families": {f: asdict(r) for f, r in results.items()},
+                },
+                indent=2,
+                ensure_ascii=False,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
     if args.dry_run:
         print("\n--dry-run: nothing written")
         return 0
-    write_recipe(args.nbs_id, results, _rd(REG / "VONT_variable_ontology.csv"))
-    print(
-        f"\nwrote schema/recipes/{args.nbs_id}/T4_*.json + T4_suitability_mappings.csv"
+    write_recipe(
+        args.nbs_id,
+        results,
+        _rd(REG / "VONT_variable_ontology.csv"),
+        output_dir=args.output_dir,
     )
-    print("now run: python3 src/nbs_ruralscan/schema_tools/generate.py schema")
+    print(
+        f"\nwrote {args.output_dir or ROOT / 'schema' / 'recipes' / args.nbs_id}/T4_*.json + T4_suitability_mappings.csv"
+    )
+    if not args.output_dir:
+        print("now run: python3 src/nbs_ruralscan/schema_tools/generate.py schema")
     return 0
 
 
