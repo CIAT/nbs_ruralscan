@@ -60,7 +60,12 @@ forest restoration 1), consistent with the ruling's framing.
 > meta-population connectivity in the lanscape, but still pretty shitty habitat (unless using
 > indigenous and diverse plantings to have a multi-use more bio friendly plantation)."
 
-**Scoped as its own change (next PR).** A `forest_restoration__plantation` family split from
+**Implemented 2026-10-19 (same day, follow-up PR).** `forest_restoration__plantation` exists;
+87 units re-homed on a per-unit audit (spot-checked 14/14); the active-planting biodiversity
+conflict dissolved — both sides were plantation evidence. Audit + flags (incl. the filoso17
+question: IUFRO characterises that pool as plantation-dominated, but PICOS forbids reclassifying
+filoso17's units from another paper's words): `pipeline/staging/plantation_audit/REPORT.md`.
+Originally scoped as: A `forest_restoration__plantation` family split from
 `active_planting`, with a unit-level audit (clear cases: farley05 ×6, inrae23 biodiversity ×6,
 busch24 plantation arms, busch19_2, lagan09 ×13, keyes97 ×3, iufro18 plantation units, ieg18
 smallholder plantations). **Open for Pete + MFL** (`plantation_rollup` in `open_decisions.csv`):

@@ -153,3 +153,40 @@ discipline as the agroforestry F1/F2 planted-vs-regenerated split.)
 - **v0.1** (August 2026) — first standalone scheme for sign-off. Grounded in the restoration continuum + the 62
   benchmarked stocktake forest-restoration rows. F1–F3 proposed in-scope; F4 (mangrove) and F5 (protection/CBFM)
   proposed but **parked from discovery** pending the scope calls in §6.
+
+
+---
+
+## Family added 2026-10-19 — `forest_restoration__plantation` (tree farming)
+
+Pete (conflict-split ruling 4, verbatim): "plantations should be a separate category of forest
+restoration, as an ecologist I would treat them as tree farming and not forest restoration, we
+need to make sure plantation is aligned with NbS. In general we would expect the restoration of
+natural forests to improve biodiversity strongly (diversity and connectivity metrics at
+different spatial or temporal scales). How would a plantation restore anything? it is not
+representative of a natural baseline we are trying to return to. Plantations could potentially
+provide some meta-population connectivity in the landscape, but still pretty shitty habitat
+(unless using indigenous and diverse plantings to have a multi-use more bio friendly
+plantation)."
+
+**Definition.** Production tree plantations: commercial / cyclical-harvest planting,
+monocultures or plantation genera (pine, eucalypt, hybrid poplar, teak, Cedrela), including
+afforestation of grasslands and shrublands with plantation species. The criterion is plantation
+STRUCTURE, not species origin — a commercial Cedrela trial is plantation; Tugai floodplain
+reafforestation and Karakum saxaul planting are restoration planting even where WOCAT labels
+them PLANTATION.
+
+**What moved.** 87 evidence units out of `active_planting` (audit:
+`pipeline/staging/plantation_audit/`). The split dissolved the active-planting biodiversity
+conflict — both its sides were plantation-vs-natural-regeneration evidence — and moved the
+large catchment water-yield reductions (Farley 2005) and most hard cost numbers to the
+plantation family.
+
+**Open (`plantation_rollup`, Pete + MFL):** does this family stay inside the forest-restoration
+NbS roll-up, is it parked as tree farming of unproven NbS alignment, or is inclusion
+conditioned on indigenous/diverse plantings? Until answered, plantation units still count in
+the whole-NbS rows.
+
+**Unresolved units (22, `mixed_or_unclear`)** stay in `active_planting` pending resolution —
+see the audit report (Cabo Verde WOCAT 1523 needs the full PDF species list; WOCAT 5243 pools
+three components in one cost; WRI Table 3.7 pools eucalyptus and native species).
