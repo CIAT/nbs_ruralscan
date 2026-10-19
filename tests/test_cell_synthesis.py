@@ -2646,3 +2646,59 @@ def test_xw_route_policy_switches_a_route_off_for_one_nbs_only(tmp_path):
     assert cs.filter_xw(xw, "wetland_management", excluded) == []
     assert cs.filter_xw(xw, "agroforestry", excluded) == xw
     assert cs.load_xw_route_policy(tmp_path / "absent.csv") == set()
+
+
+# ── family roll-up policy (plantation_rollup = B, Pete 2026-10-19) ────────────────────
+
+
+def test_rollup_excluded_family_keeps_its_rows_but_never_sets_the_nbs_class(tmp_path):
+    p = tmp_path / "family_rollup_policy.csv"
+    p.write_text(
+        "nbs_id,suitability_family_id,rollup_included,rationale,ratified_by,ratified_date\n"
+        'riparian_buffer,riparian_buffer__planted,false,"tree farming",pete,2026-10-19\n',
+        encoding="utf-8",
+    )
+    pol = cs.load_family_rollup_policy(p)
+    assert (
+        pol[("riparian_buffer", "riparian_buffer__planted")]["rollup_included"] is False
+    )
+    assert cs.load_family_rollup_policy(tmp_path / "absent.csv") == {}
+    plant = [
+        _u("fr1", "s1", ctx={"income_group": "low"}),
+        _u("fr2", "s2", ctx={"income_group": "low"}),
+    ]  # default family riparian_buffer__planted
+    other = [
+        _u("fr3", "s3", family="riparian_buffer__grass", ctx={"income_group": "low"}),
+        _u(
+            "fr4",
+            "s4",
+            family="riparian_buffer__grass",
+            direction="negative",
+            strength="slight",
+            ctx={"income_group": "low"},
+        ),
+    ]
+    rows, rep = cs.synthesise_cell_with_families(
+        plant + other,
+        {},
+        table="T6",
+        nbs_id="riparian_buffer",
+        target_key="soil_erosion_risk",
+        xw_rows=XW,
+        family_rollup_policy=pol,
+    )
+    rollup = [r for r in rows if not r.get("suitability_family_id")]
+    fam_rows = {
+        r.get("suitability_family_id"): r
+        for r in rows
+        if r.get("suitability_family_id")
+    }
+    assert rollup, "roll-up row exists"
+    assert set(rollup[0]["evidence_ids"]) == {"fr3", "fr4"}, (
+        "excluded family out of the roll-up"
+    )
+    assert "riparian_buffer__planted" in fam_rows, (
+        "the excluded family keeps its own row"
+    )
+    assert set(fam_rows["riparian_buffer__planted"]["evidence_ids"]) == {"fr1", "fr2"}
+    assert any("family_rollup_policy" in n for n in rep.notes)

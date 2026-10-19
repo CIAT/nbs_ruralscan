@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-19T11:46:08.316619+00:00",
-  "git_commit": "a47423cdccf8495cf1b7aa87ed25ebd60bf3c99b",
+  "timestamp": "2026-10-19T12:19:00.726520+00:00",
+  "git_commit": "60ee5ae87545afab7c8905127165aadd3efa5ca5",
   "registers": {
     "SRC_source_register": [
       {
@@ -121262,7 +121262,7 @@
         "evidence_id": "ev_biodiversity_outcome_inrae23_3",
         "source_id": "inrae_2023_plantation_vs_regeneration_biodiversite",
         "nbs_id": "forest_restoration",
-        "suitability_family_id": "forest_restoration__passive_regeneration",
+        "suitability_family_id": "forest_restoration__plantation",
         "variable": "biodiversity_outcome",
         "relationship": {
           "direction": "negative",
@@ -121278,7 +121278,7 @@
         "context": {
           "climate_zone": "temperate",
           "region": "global (all biomes)",
-          "note": "cited Chaudhary et al. 2016; comparator = UNCUT forest; natural-regeneration observations short term (<10 yr)"
+          "note": "cited Chaudhary et al. 2016; comparator = UNCUT forest; natural-regeneration observations short term (<10 yr); process: family re-homed passive_regeneration -> plantation 2026-10-19 (post-audit correction, flagged by the prose writer): the quote's claim subject is 'les plantations forestieres' losing 40% local species richness vs the unplanted control - a plantation effect, not a regeneration claim; the audit's 'keep' verdict read the row's family, not the claim"
         },
         "use_role": "nbs_effect",
         "evidence_type": "literature_relationship",
@@ -177364,6 +177364,50 @@
         "raw_name": "land tenure and adoption of erosion control",
         "locator_type": "page",
         "ruleset_version": "v1.6.11"
+      },
+      {
+        "evidence_id": "ev_crop_yield_uwiz18h1_3",
+        "source_id": "uwizeyimana_2018_water_conservation_rwanda",
+        "nbs_id": "water_harvesting_conservation",
+        "suitability_family_id": "water_harvesting__runoff_catchment",
+        "variable": "crop_yield",
+        "relationship": {
+          "direction": "positive",
+          "metric": "contrast",
+          "value_with": 11982,
+          "value_without": 4755,
+          "unit": "kg_per_ha",
+          "significance": "sig",
+          "design": "rct",
+          "outcome_raw": "maize grain yield, drip supplementary irrigation from a dug runoff pond vs flat rainfed control",
+          "framing": "presence",
+          "strength_class": "strong"
+        },
+        "context": {
+          "country": [
+            "RWA"
+          ],
+          "region": "Cyili sub-catchment, Huye and Gisagara districts, Southern Province (Mayaga AEZ)",
+          "climate_zone": "tropical",
+          "farming_system": "cropping_rainfed",
+          "income_group": "low",
+          "practice_as_described": "runoff from the terrace waterways collected in a dug, lined pond, filtered and applied to the plot by a gravity drum-kit drip system",
+          "attribution": "bundled",
+          "note": "completely randomised design, 3 reps, single season (land prepared Aug-Sep 2016); site on bench (radical) terraces built 2013; every plot received 10 t/ha farmyard manure + DAP + urea; control = flat sowing on the terrace as local farmers do. No hazard event is named for the trial season (the paper calls the zone drought prone; annual rainfall about 1141 mm) - no hazard tag. PICOS FLAG: this arm is supplemental irrigation; the water source is harvested runoff (ex-situ storage) but the yield effect is delivered by irrigation - the 2026-10-12 review theme 2 case ('is water harvesting + irrigation still the NbS?'). Orchestrator to decide.; Pete 2026-10-19 (wh_supplemental_irrigation = A+C): ingested as runoff_catchment water harvesting, tagged bundled — the capture IS the practice, the yield is delivered through irrigation hardware, so the bundle discount applies",
+          "bundle_components": "terrace runoff capture + lined storage pond + drip irrigation"
+        },
+        "use_role": "nbs_effect",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "primary_measured",
+        "claim_scope": "crop_specific",
+        "extraction_confidence": "low",
+        "quote": "Supplementary irrigation treatment was highly signiﬁcance\ndifference\nincreased\ngrain\nyield\n(11,982 kg/ha),\nfollowed\nby\nmulching (8089 kg/ha) and contour ridge (5937 kg/ha), while grain\nyield between contour ridge and rainfed there is on signiﬁcance\ndifference was found between them, 5937 kg/ha and 4755 kg/ha,\nrespectively.",
+        "page": 6,
+        "reviewer_ok": false,
+        "raw_name": "maize grain yield, supplementary irrigation from harvested runoff vs rainfed",
+        "taxon": "Zea mays",
+        "locator_type": "page",
+        "ruleset_version": "v1.6.11"
       }
     ],
     "FAM_family_registry": [
@@ -191887,11 +191931,11 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 753,
+    "total_reviews": 754,
     "queried": 118,
     "n_reviewers": 5,
     "by_reviewer": {
-      "orchestrator": 317,
+      "orchestrator": 318,
       "peetmate": 291,
       "Namita-J": 96,
       "Peter": 48,
@@ -191903,7 +191947,7 @@
       "ok": 117,
       "reclassify": 17,
       "retag": 4,
-      "keep": 7
+      "keep": 8
     },
     "by_reason": {
       "accepted_correction": 225,
@@ -191915,7 +191959,7 @@
       "speculative_evidence": 46,
       "insufficient_context": 38,
       "constrained_aoi": 32,
-      "wrong_practice": 25,
+      "wrong_practice": 26,
       "unusable_value": 24,
       "wrong_variable": 7,
       "wrong_table": 4,
@@ -191927,7 +191971,7 @@
     "by_verdict": {
       "unsupported": 10,
       "mismatch": 43,
-      "pass": 644,
+      "pass": 645,
       "scope": 37,
       "review": 19
     },
@@ -207545,6 +207589,15 @@
       "decision": "drop",
       "reason": "unusable_value",
       "reviewer": "Namita-J"
+    },
+    {
+      "date": "2026-10-19",
+      "evidence_id": "ev_biodiversity_outcome_inrae23_3",
+      "source_id": "inrae_2023_plantation_vs_regeneration_biodiversite",
+      "decision": "keep",
+      "reason": "wrong_practice",
+      "note": "family corrected passive_regeneration -> plantation (prose-writer catch; plantation claim in a regen-tagged row leaked plantation evidence into the FR roll-up that ruling plantation_rollup=B excludes)",
+      "reviewer": "orchestrator"
     }
   ],
   "acquisition_funnel": {

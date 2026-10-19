@@ -1,6 +1,6 @@
 # Everything waiting on you, in one place
 
-**For:** Pete. **Updated:** 2026-10-19, evening (this file is refreshed whenever a decision opens or closes;
+**For:** Pete. **Updated:** 2026-10-19, night (this file is refreshed whenever a decision opens or closes;
 the machine-readable register is `open_decisions.csv` in this folder, and the live progress page
 lists the same items).
 
@@ -9,37 +9,6 @@ All six conflict-split answers from 19 October are implemented (record:
 review batch and hand jobs.
 
 ---
-
-## NEW — do plantations stay in the forest-restoration roll-up? (`plantation_rollup`)
-
-You ruled plantations are "tree farming and not forest restoration" and get their own category.
-The family split is being built. The one thing only you (with the MFL team) can settle: once
-`forest_restoration__plantation` exists, does its evidence still count toward the whole-NbS
-forest-restoration roll-up?
-
-- **A — keep it in the roll-up**, as its own family rows. A TTL reading "forest restoration"
-  then still inherits eucalypt/pine plantation results (the biodiversity losses, the big water
-  yield reductions).
-- **B — park it out of the roll-up** (evidence retained, like the existing-forest comparator
-  handling). "Forest restoration" then means restoration toward a natural baseline; plantation
-  rows are visible but separate.
-- **C — condition on planting type**: indigenous/diverse plantings in, monocultures out. Honest
-  to your "bio friendly plantation" caveat, but much of the evidence never states planting
-  diversity, so many units would be unclassifiable.
-
-**Recommendation: B**, by your own rationale — a monoculture plantation is not representative of
-the natural baseline restoration returns to. **How to answer:** "plantation roll-up: B" (or A/C).
-
-## NEW — two water-harvesting PICOS calls (one line each; three units held out of ingest)
-
-1. **Supplemental irrigation** (`wh_supplemental_irrigation`): Rwanda — terrace runoff stored in a
-   lined pond and drip-applied; maize 11,982 vs 4,755 kg/ha. Your own earlier question: is water
-   harvesting + irrigation still the NbS? **A** ingest as runoff-catchment WH · **B** drop as
-   irrigation · **C** ingest tagged bundled-with-irrigation (recommended). Answer: "irrigation: A/B/C".
-2. **Live mulch** (`wh_live_mulch`): Zimbabwe El Niño — no-till + Brachiaria/Desmodium fodder
-   intercrop; maize −91% but BCR 1.58 **from fodder sales**. Is a living fodder intercrop "soil
-   cover" (in-situ WH)? **A** yes, ingest both units · **B** not WH, drop · **C** ingest the yield
-   harm, drop the fodder-revenue BCR (recommended B or C). Answer: "live mulch: A/B/C".
 
 ## The review batch — units whose encoding contradicts their own quote
 
@@ -60,6 +29,14 @@ https://ciat.github.io/nbs_ruralscan/review.html → batch "Signs that contradic
 5. **zhang_2026 veto window:** the published J. Hydrology version is not open access, so the
    SSRN preprint of the same study is now the artefact of record. Fine to leave; say the word
    and it moves to the institutional-buy list instead.
+
+## Answered 19 October, evening
+
+**Plantation roll-up: B** — the plantation family keeps its own rows and never sets an NbS-level
+forest-restoration class (`family_rollup_policy.csv`). **Supplemental irrigation: A+C** — the
+Rwanda pond-and-drip unit is in, as runoff-catchment water harvesting tagged bundled with
+irrigation. **Live mulch: B** — a living fodder intercrop is not water harvesting; the two units
+were rejected at the gate, never ingested.
 
 ## Answered 19 October, for the record
 

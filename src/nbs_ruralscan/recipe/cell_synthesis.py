@@ -1654,6 +1654,30 @@ def load_comparator_policy(path: Path) -> dict[tuple[str, str], dict[str, Any]]:
 LOCUS_VALUES = ("on_farm", "mixed", "off_site")
 
 
+def load_family_rollup_policy(path: Path) -> dict[tuple[str, str], dict[str, Any]]:
+    """`schema/lookups/family_rollup_policy.csv` → {(nbs_id, family_id): {rollup_included,
+    rationale}}.
+
+    Pete 2026-10-19 (`plantation_rollup` = B): a family can be a legitimate practice surface
+    while NOT counting toward the whole-NbS roll-up — plantation forestry is tree farming,
+    not restoration toward a natural baseline, so its evidence keeps its own family rows but
+    never sets an NbS-level forest-restoration class. Families default to included; the file
+    lists exceptions only.
+    """
+    out: dict[tuple[str, str], dict[str, Any]] = {}
+    p = Path(path)
+    if not p.exists():
+        return out
+    with open(p, encoding="utf-8", newline="") as f:
+        for r in csv.DictReader(f):
+            out[(r["nbs_id"].strip(), r["suitability_family_id"].strip())] = {
+                "rollup_included": (r.get("rollup_included") or "").strip().lower()
+                == "true",
+                "rationale": (r.get("rationale") or "").strip(),
+            }
+    return out
+
+
 def load_xw_route_policy(path: Path) -> set[tuple[str, str, str, str]]:
     """`schema/lookups/xw_route_policy.csv` → EXCLUDED (nbs_id, ev_variable, table, key).
 
@@ -2736,19 +2760,30 @@ def synthesise_cell_with_families(
     """NbS roll-up row(s) (always, pooled) + family rows where ≥ 2 independent sources.
     Sets `family_spread` on the roll-up global row when family ranks differ by ≥ 2."""
     policy = kw.pop("comparator_policy", None) or {}
+    fam_policy = kw.pop("family_rollup_policy", None) or {}
     nbs_id = str(kw.get("nbs_id") or "")
     # PICOS B (Pete 2026-10-07): units measured against an existing-forest / forest-loss
     # comparator leave the roll-up and every family but their own (or the policy's
     # home family when they are cross_family) — see comparator_policy.csv.
+    # Family roll-up policy (Pete 2026-10-19): a whole family can be parked out of the
+    # NbS roll-up while keeping its own rows — plantation forestry is tree farming, not
+    # restoration toward a natural baseline. See family_rollup_policy.csv.
     home_of: dict[str, str] = {}
     excluded: list[EvidenceUnit] = []
+    fam_excluded: list[EvidenceUnit] = []
     pooled: list[EvidenceUnit] = []
     for u in units:
+        fam_u0 = u.suitability_family_id or ""
+        fpol = fam_policy.get((nbs_id, fam_u0))
+        if fpol and not fpol.get("rollup_included", True):
+            fam_excluded.append(u)
+            home_of[u.evidence_id] = fam_u0
+            continue
         comp = str((u.context or {}).get("comparator") or "")
         pol = policy.get((nbs_id, comp)) if comp else None
         if pol and not pol.get("rollup_included", False):
             excluded.append(u)
-            fam_u = u.suitability_family_id or ""
+            fam_u = fam_u0
             if fam_u.endswith("__cross_family") or not fam_u:
                 fam_u = pol.get("home_family") or fam_u
             home_of[u.evidence_id] = fam_u
@@ -2760,6 +2795,13 @@ def synthesise_cell_with_families(
             f"{len(excluded)} existing-forest comparator unit(s) kept out of the roll-up "
             f"(PICOS B): {sorted(u.evidence_id for u in excluded)[:6]}…"
         )
+    if fam_excluded:
+        rep.notes.append(
+            f"{len(fam_excluded)} unit(s) in roll-up-excluded families kept out of the "
+            f"NbS roll-up (family_rollup_policy): "
+            f"{sorted(u.evidence_id for u in fam_excluded)[:6]}…"
+        )
+    excluded = excluded + fam_excluded
     if not rows:
         if not excluded:
             return rows, rep
