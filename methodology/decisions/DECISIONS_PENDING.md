@@ -1,6 +1,6 @@
 # Everything waiting on you, in one place
 
-**For:** Pete. **Updated:** 2026-10-19 (this file is refreshed whenever a decision opens or closes;
+**For:** Pete. **Updated:** 2026-10-19, evening (this file is refreshed whenever a decision opens or closes;
 the machine-readable register is `open_decisions.csv` in this folder, and the live progress page
 lists the same items).
 
@@ -37,13 +37,18 @@ https://ciat.github.io/nbs_ruralscan/review.html → batch "Signs that contradic
 
 ## Hand jobs (no judgement needed)
 
-1. **Browser clicks:** the desktop-session fetch list (33 free-but-bot-walled PDFs → OneDrive
-   library folders) — report file not yet seen in the library root.
-2. **One human look at 3ie** for any wetland impact evaluation (portal blocks tools).
+1. ~~Browser clicks~~ — DONE 19 Oct (28 acquired; report processed in #337). **Three clicks
+   remain for a future desktop run:** verhoeven (PMC), the arslan IAAE conference version
+   (AgEcon Search), the Nguyen NbS food-security SR (PMC).
+2. ~~3ie look~~ — DONE 19 Oct: the portal is NOT empty for wetlands; defensible wording is in
+   the wetland grey discovery log. Three candidates queued, two rejected on PICOS.
 3. **The Vietnam income call:** poverty −38% / incomes +55% attributed by the evaluation to
    resettlement + technology transfer, not mangroves. Any share you'd credit to the mangrove
    component? Silence keeps it out.
 4. **MFL sign-off** on the mangrove family scheme (`methodology/families/mangrove.md`).
+5. **zhang_2026 veto window:** the published J. Hydrology version is not open access, so the
+   SSRN preprint of the same study is now the artefact of record. Fine to leave; say the word
+   and it moves to the institutional-buy list instead.
 
 ## Answered 19 October, for the record
 
