@@ -35,6 +35,7 @@ from nbs_ruralscan.schema_tools.ledger import CATEGORIES, tables_for, xw_routes
 NBS = [
     "agroforestry",
     "forest_restoration",
+    "mangrove_restoration",
     "riparian_buffer",
     "water_harvesting_conservation",
     "wetland_management",

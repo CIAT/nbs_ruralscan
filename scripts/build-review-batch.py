@@ -213,7 +213,8 @@ def _t5_labels() -> dict[str, str]:
 _PRACTICE_WORDS = {
     "agroforestry": r"agro-?forest|agro-?silvo|silvo-?(pastor|arable|cultur)|parkland|shade tree|shaded (coffee|cocoa)|live fence|windbreak|shelterbelt|alley crop|home-?garden|farmer[- ]managed natural regeneration|\bFMNR\b|scattered tree|tree[s]? on farm|intercrop",
     "water_harvesting_conservation": r"water harvest|rain-?water|\bza[iï]\b|tassa|demi-?lune|bund|terrac|check dam|farm pond|percolation|sand dam|subsurface dam|cistern|tank|runoff|run-?on|mulch|conservation agricultur|no-?till|minimum tillage|reduced tillage|tied ridg|contour|trench|banquette|jessour|spate",
-    "forest_restoration": r"restorat|reforest|afforest|regenerat|\bANR\b|mangrove|tree planting|planted forest|enrichment planting|community forest|forest protect|exclosure|rewild",
+    "forest_restoration": r"restorat|reforest|afforest|regenerat|\bANR\b|tree planting|planted forest|enrichment planting|community forest|forest protect|exclosure|rewild",
+    "mangrove_restoration": r"mangrove|\bEMR\b|tidal re-?establish|hydrological restoration|avicennia|rhizophora|sonneratia",
     "riparian_buffer": r"riparian|buffer strip|vegetat(ed|ive) (filter|buffer)|streamside|stream-?bank|filter strip",
     "wetland_management": r"wetland|peat-?land|re-?wetting|marsh|floodplain|drainage block|re-?flood|constructed wetland",
 }
