@@ -55,4 +55,4 @@ and wetland-erosion routes removed for want of a receptor/mechanism.
 
 - **FMNR:** scoped semi-arid Sahel pilot within F2 proposed; no family redefinition or rainfall-domain exclusion authorized. `T4_af_fmnr_scope`.
 - **Haile rainfall:** regional ordinal ranks retained; family applicability and membership mapping pending. `T4_af_haile_transfer`.
-- [Five held units: corrections and source context](../../pipeline/t4_audit/agroforestry/holds_review/README.md). Human approvals remain pending.
+- [Five held units: corrections and source context](../../pipeline/t4_audit/agroforestry/holds_review/README.md). Pete approved all five corrected encodings in chat on 19 October; the two methodology decisions above remain open.

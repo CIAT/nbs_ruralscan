@@ -1,5 +1,7 @@
 # Agroforestry T4 holds: source-context review, 19 October 2026
 
+**Approval update:** Pete approved all five corrected records in chat on 19 October 2026 ("I approved all"). All five now have `reviewer_ok=true`; the account below describes the preceding source-context review. Original holds and AI corrections remain in history. The chat-derived CSV explicitly identifies its provenance; browser-only notes were not recovered. `after_approval/` holds the current approval-filtered trial: **four generic rows**, unchanged. Three observed records remain excluded; Haile still needs class/applicability mapping; canopy remains selection-only. The two methodology decisions remain open. Focused tests: 15 passed; all five approval events verified.
+
 Branch: `codex/t4-review-oct19`. Five existing units corrected after inspecting complete cached PDF pages and adjacent context. No evidence rows deleted, no new sources registered, no family definition changed. These are AI source-context corrections, not human approvals: all five remain `reviewer_ok=false`, with Pete's original notes preserved and a separate `Codex source-context review` event.
 
 ## Findings and actions

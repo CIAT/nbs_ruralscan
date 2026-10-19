@@ -1,0 +1,302 @@
+{
+  "batch": {
+    "id": "agroforestry-t4-holds-oct19",
+    "title": "Agroforestry T4 — five holds reviewed and corrected",
+    "date": "2026-10-19",
+    "n": 5,
+    "notes": "All five corrected records approved by Pete in chat (\"I approved all\"). Approvals logged on branch. Open methodology decisions: Sahel FMNR scope and Haile family applicability. Approval accepts corrected encoding, not a global threshold."
+  },
+  "reasons": [
+    "smuggled_number",
+    "wrong_variable",
+    "wrong_practice",
+    "species_envelope",
+    "table_error",
+    "off_scope",
+    "quote_too_narrow",
+    "relationship_missed",
+    "insufficient_context",
+    "unusable_value",
+    "speculative_evidence",
+    "wrong_table",
+    "constrained_aoi",
+    "false_flag",
+    "accepted_correction",
+    "confirmed_pass",
+    "missed_error",
+    "other"
+  ],
+  "units": [
+    {
+      "evidence_id": "ev_tree_canopy_cover_sprenkle24_1",
+      "source_id": "sprenkle_hyppolite_2024",
+      "citation": "Sprenkle-Hyppolite, S., Griscom, B., Griffey, V., Munshi, E., & Chapman, M. (2024). Maximizing tree carbon in croplands and grazing lands while sustaining yields. Carbon Balance and Management, 19(1), 23.",
+      "benchmark_tier": "high",
+      "nbs_id": "agroforestry",
+      "use_role": "structural_suitability",
+      "variable": "tree_canopy_cover",
+      "suitability_family_id": "agroforestry__planted_silvoarable",
+      "claim_scope": "practice_technology",
+      "claim_basis": "modelled",
+      "page": 4,
+      "locator": "",
+      "quote": "While definitions of forests using tree cover differ \n(depending on the use and ecosystem, definitions range \nfrom 10 to 30%) and agriculture does occur in areas with \n> 25% tree cover, we used 25% tree cover as a cutoff in \norder to avoid any double counting of natural climate \nsolution potential with forestry-based solutions (please \nsee the following paragraph for further discussion of tree \ncover). This cutoff also avoids the need for distinguish­\ning high-shade agroforestry from natural forests using \nremote sensing, which is not yet available globally [30].",
+      "relationship": {
+        "type": "accounting_convention",
+        "accounting_cutoff_percent": 25,
+        "note": "Avoids double counting agricultural and forestry natural climate solutions; source explicitly acknowledges agriculture above 25% tree cover. Not a biological suitability threshold."
+      },
+      "context": {},
+      "question": "Correction applied on branch; approved by Pete in chat. Sprenkle-Hyppolite PDF p4 Geospatial data processing: 25% separates agricultural and forestry NCS accounting and avoids distinguishing high-shade agroforestry from natural forests. Source explicitly allows agriculture above 25%. Removed executable threshold. Require evidence of trees within agricultural land before spatial aggregation; coarse forest/crop mixture is insufficient.",
+      "crop": "review/img/holds_ev_tree_canopy_cover_sprenkle24_1.png",
+      "crop_note": "Complete source page; corrected quote shown alongside. Click image to enlarge.",
+      "pdf_url": "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/ClimateActionNetZero/1_Projects/D591_Rural-Scan_NBS/2_Technical_%26_Data/library/1_Agroforestry/sprenkle_hyppolite_2024.pdf#page=4",
+      "plain": {
+        "practice": "Practice: agroforestry → planted silvoarable (Alley cropping; Tree intercropping; Planted boundary / live fence on cropland).",
+        "described": "Your original hold: need to be carefull as if pixel size large then forest and cropland will get muddled togher suggesting that there are trees in croplands (where as they may be spatially disaggregrated and there are no trees in croplands) -> would need a decent dataset on trees in cropland or rangeland to make this work.",
+        "claim": "Sprenkle-Hyppolite PDF p4 Geospatial data processing: 25% separates agricultural and forestry NCS accounting and avoids distinguishing high-shade agroforestry from natural forests. Source explicitly allows agriculture above 25%. Removed executable threshold. Require evidence of trees within agricultural land before spatial aggregation; coarse forest/crop mixture is insufficient.",
+        "role": "Retained evidence; no approved threshold contribution.",
+        "where": "sprenkle_hyppolite_2024, PDF page 4"
+      },
+      "picos": {
+        "P": "Global (from the source record, not the quote)",
+        "I": "agroforestry → planted silvoarable (Alley cropping; Tree intercropping; Planted boundary / live fence on cropland)",
+        "I_named": true,
+        "I_note": "the source's own description of the practice is NOT captured — judge the practice from the quote. the practice is named in the quote",
+        "C": "not applicable to this kind of unit",
+        "O": "Tree canopy cover",
+        "S": "produced by a model, not measured; source type: empirical; source tier: high",
+        "gaps": [
+          "O"
+        ]
+      },
+      "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/1_Agroforestry/sprenkle_hyppolite_2024.pdf"
+    },
+    {
+      "evidence_id": "ev_T4_precip_haile2024_2",
+      "source_id": "haile_2024",
+      "citation": "Haile, Getachew (2024). Land Suitability Evaluation for Agroforestry Using Geospatial Techniques in Genale Sub-basin Oromia, Ethiopia. Agriculture, Forestry and Fisheries.",
+      "benchmark_tier": "Low",
+      "nbs_id": "agroforestry",
+      "use_role": "structural_suitability",
+      "variable": "annual_precipitation",
+      "suitability_family_id": "agroforestry__cross_family",
+      "claim_scope": "practice_technology",
+      "claim_basis": "table",
+      "page": 5,
+      "locator": "",
+      "quote": "Agroforestry factor \nWeights \nValue/Description \nClass/Rank \nSuitability \nWetness factor \n15 \n<0 \n1 \nLow \n0 – 1.5 \n2 \nMedium \n1.5-2 \n3 \nHigh \n>2 \n4 \nVery high \nRainfall \n12 \n<600mm \n1 \nLow \n600mm-800mm \n2 \nMedium \n800mm-1200mm \n3 \nHigh \n>1200mm \n4 \nVery high",
+      "relationship": {
+        "type": "source_ordinal_classes",
+        "unit": "mm",
+        "ahp_weight_pct": 12,
+        "classes": [
+          {
+            "range": "<600",
+            "rank": 1,
+            "label": "Low"
+          },
+          {
+            "range": "600-800",
+            "rank": 2,
+            "label": "Medium"
+          },
+          {
+            "range": "800-1200",
+            "rank": 3,
+            "label": "High"
+          },
+          {
+            "range": ">1200",
+            "rank": 4,
+            "label": "Very high"
+          }
+        ],
+        "note": "Regional ordinal suitability ranks; no absolute bounds, no normalized membership scores, no cross-family inheritance."
+      },
+      "context": {
+        "study_area": "Genale sub-basin, Oromia, Ethiopia"
+      },
+      "question": "Correction applied on branch; approved by Pete in chat. Haile Table 3 (PDF pp4-5) ranks >1200 mm Very high, above the 800-1200 mm High class. Removed false optimum plateau. <600 mm is Low, not excluded. Preserve ranks and regional context; family applicability and membership mapping remain unresolved.",
+      "crop": "review/img/holds_ev_T4_precip_haile2024_2.png",
+      "crop_note": "Complete source page; corrected quote shown alongside. Click image to enlarge.",
+      "pdf_url": "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/ClimateActionNetZero/1_Projects/D591_Rural-Scan_NBS/2_Technical_%26_Data/Stocktake%20Review/Manual%20Screening/Zotero_Full_Text_Screening/Agroforestry/Haile%20-%202024%20-%20Land%20Suitability%20Evaluation%20for%20Agroforestry%20Using%20Geospatial%20Techniques%20in%20Genale%20Sub-basin%20Oromia%2C.pdf#page=5",
+      "plain": {
+        "practice": "Practice: agroforestry (no sub-practice stated in the source — pooled across the whole NbS).",
+        "described": "Your original hold: despite being general agroforestry can we establish or infer anything more? for example if FMNR is agroforestry then clear we cannot have a generic catch all average (it would perhaps add a lower bound though).",
+        "claim": "Haile Table 3 (PDF pp4-5) ranks >1200 mm Very high, above the 800-1200 mm High class. Removed false optimum plateau. <600 mm is Low, not excluded. Preserve ranks and regional context; family applicability and membership mapping remain unresolved.",
+        "role": "Retained evidence; no approved threshold contribution.",
+        "where": "haile_2024, PDF page 5"
+      },
+      "picos": {
+        "P": "Ethiopia (from the source record, not the quote)",
+        "I": "agroforestry (no sub-practice stated — pooled across the NbS)",
+        "I_named": false,
+        "I_note": "the source's own description of the practice is NOT captured — judge the practice from the quote. the practice is NOT named in the quoted text — check the source before keeping this tag",
+        "C": "not applicable to this kind of unit",
+        "O": "Mean annual precipitation",
+        "S": "read from a table in the paper; source type: empirical; source tier: Low",
+        "gaps": [
+          "I",
+          "O"
+        ]
+      },
+      "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/Stocktake Review/Manual Screening/Zotero_Full_Text_Screening/Agroforestry/Haile - 2024 - Land Suitability Evaluation for Agroforestry Using Geospatial Techniques in Genale Sub-basin Oromia,.pdf"
+    },
+    {
+      "evidence_id": "ev_soildepth_inab_p92_aa_example",
+      "source_id": "inab_landcap_guatemala",
+      "citation": "INAB (Instituto Nacional de Bosques), Guatemala. Clasificación de tierras por capacidad de uso (manual). National land-capability classification.",
+      "benchmark_tier": "Medium",
+      "nbs_id": "agroforestry",
+      "use_role": "structural_suitability",
+      "variable": "soil_depth_to_bedrock",
+      "suitability_family_id": "agroforestry__planted_silvoarable",
+      "claim_scope": "practice_technology",
+      "claim_basis": "primary_measured",
+      "page": 92,
+      "locator": "",
+      "quote": "Area ubicada en\nPurulhá Baja Verapaz.\nEl área señalada, cuya\npendiente es de 22 % y\nprofundidad efectiva\ndel suelo mayor de 90\ncm. sin problemas de\npedregosidad o drenaje,\nfue clasificada como\nAa.",
+      "relationship": {
+        "type": "observed_presence",
+        "observed_depth": ">90",
+        "unit": "cm",
+        "observed_slope_percent": 22,
+        "note": "Photo 8 is a worked land-capability allocation example, not a minimum agroforestry soil depth."
+      },
+      "context": {
+        "country": "Guatemala",
+        "location": "Purulhá, Baja Verapaz",
+        "class_code": "Aa"
+      },
+      "question": "Correction applied on branch; approved by Pete in chat. INAB PDF p92 Photo 8 describes one site. Aa is a land-capability allocation class (definition p27; matrices pp29-35 include shallower soils). Removed false 90 cm absolute minimum; retained observed site context. No inference from effective soil depth to a universal bedrock limit.",
+      "crop": "review/img/holds_ev_soildepth_inab_p92_aa_example.png",
+      "crop_note": "Complete source page; corrected quote shown alongside. Click image to enlarge.",
+      "pdf_url": "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/ClimateActionNetZero/1_Projects/D591_Rural-Scan_NBS/2_Technical_%26_Data/library/1_Agroforestry/inab_landcap_guatemala.pdf#page=92",
+      "plain": {
+        "practice": "Practice: agroforestry → planted silvoarable (Alley cropping; Tree intercropping; Planted boundary / live fence on cropland).",
+        "described": "Your original hold: insufficent contenxt in this review for me to judge this",
+        "claim": "INAB PDF p92 Photo 8 describes one site. Aa is a land-capability allocation class (definition p27; matrices pp29-35 include shallower soils). Removed false 90 cm absolute minimum; retained observed site context. No inference from effective soil depth to a universal bedrock limit.",
+        "role": "Retained evidence; no approved threshold contribution.",
+        "where": "inab_landcap_guatemala, PDF page 92"
+      },
+      "picos": {
+        "P": "Guatemala",
+        "I": "agroforestry → planted silvoarable (Alley cropping; Tree intercropping; Planted boundary / live fence on cropland)",
+        "I_named": false,
+        "I_note": "the source's own description of the practice is NOT captured — judge the practice from the quote. the practice is NOT named in the quoted text — check the source before keeping this tag",
+        "C": "not applicable to this kind of unit",
+        "O": "Soil depth to bedrock",
+        "S": "measured by the authors themselves; source type: fao landeval; source tier: Medium",
+        "gaps": [
+          "I",
+          "O"
+        ]
+      },
+      "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/1_Agroforestry/inab_landcap_guatemala.pdf"
+    },
+    {
+      "evidence_id": "EV_researchsquare_fmnr_2025_001",
+      "source_id": "researchsquare_fmnr_2025",
+      "citation": "Farmer Managed Natural Regeneration Promotes Expansion of Trees on Croplands in the Sahel (2025). Research Square preprint.",
+      "benchmark_tier": "Low",
+      "nbs_id": "agroforestry",
+      "use_role": "structural_suitability",
+      "variable": "annual_precipitation",
+      "suitability_family_id": "agroforestry__regeneration_farmland",
+      "claim_scope": "practice_technology",
+      "claim_basis": "primary_measured",
+      "page": 5,
+      "locator": "",
+      "quote": "Yet, the scattered distribution of trees on croplands has historically made it difficult to track \n118 \nchanges over time using coarse-resolution satellite imagery34. To overcome this limitation, we \n119 \nreconstructed annual tree cover from 1999 to 2024 across the Sahel (300–800 mm mean \n120 \nannual rainfall) using dry-season median composites from Landsat 7, 8, and 9. We focused \n121 \nspecifically on 2.4 million km² of croplands identified in the 2000 land cover map38, and applied \n122 \na deep learning model trained on the 9.9 billion tree detections29 to predict annual percentage \n123 \ntree cover at 15 m resolution (Fig. 1a). The resulting maps reveal large areas with high tree \n124 \ncover on croplands, particularly in Senegal, Niger, and northern Nigeria (Fig. 1b–c). \n125",
+      "relationship": {
+        "type": "observed_presence",
+        "study_domain_rainfall_mm": [
+          300,
+          800
+        ],
+        "note": "Sahel reconstruction study domain, not FMNR establishment limits."
+      },
+      "context": {
+        "region": "Sahel",
+        "landcover": "cropland"
+      },
+      "question": "Correction applied on branch; approved by Pete in chat. PDF p5 Results defines a Sahel cropland reconstruction domain (300-800 mm), not physiological limits. Removed hard bounds; retained study domain. Proposed semi-arid Sahel FMNR scope is a separate pending methodology decision.",
+      "crop": "review/img/holds_EV_researchsquare_fmnr_2025_001.png",
+      "crop_note": "Complete source page; corrected quote shown alongside. Click image to enlarge.",
+      "pdf_url": "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/ClimateActionNetZero/1_Projects/D591_Rural-Scan_NBS/2_Technical_%26_Data/library/1_Agroforestry/researchsquare_fmnr_2025.pdf#page=5",
+      "plain": {
+        "practice": "Practice: agroforestry → regeneration farmland (Farmer-managed natural regeneration (FMNR); Parkland tree retention; Assisted natural regeneration on farmland).",
+        "described": "Your original hold: it is the study area you are correct, but:\n\nI think this all depends on the definition we use for FMNR -> if we narrow to the approach taken in Semi-arid regions like the Sahel it will be easier to build the suitabiliy map (rather than a generic nothing burger)",
+        "claim": "PDF p5 Results defines a Sahel cropland reconstruction domain (300-800 mm), not physiological limits. Removed hard bounds; retained study domain. Proposed semi-arid Sahel FMNR scope is a separate pending methodology decision.",
+        "role": "Retained evidence; no approved threshold contribution.",
+        "where": "researchsquare_fmnr_2025, PDF page 5"
+      },
+      "picos": {
+        "P": "not recorded — where/for whom does this hold?",
+        "I": "agroforestry → regeneration farmland (Farmer-managed natural regeneration (FMNR); Parkland tree retention; Assisted natural regeneration on farmland)",
+        "I_named": false,
+        "I_note": "the source's own description of the practice is NOT captured — judge the practice from the quote. the practice is NOT named in the quoted text — check the source before keeping this tag",
+        "C": "not applicable to this kind of unit",
+        "O": "Mean annual precipitation",
+        "S": "measured by the authors themselves; source type: empirical; source tier: Low",
+        "gaps": [
+          "P",
+          "I",
+          "O"
+        ]
+      },
+      "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/1_Agroforestry/researchsquare_fmnr_2025.pdf"
+    },
+    {
+      "evidence_id": "EV_wocat_1358_2017_003",
+      "source_id": "wocat_1358_2017",
+      "citation": "WOCAT (2017). Assisted Natural Regeneration of Degraded Land. WOCAT SLM Technologies Database, Technology 1358 (Burkina Faso, newTree).",
+      "benchmark_tier": "Medium",
+      "nbs_id": "agroforestry",
+      "use_role": "structural_suitability",
+      "variable": "slope",
+      "suitability_family_id": "agroforestry__regeneration_farmland",
+      "claim_scope": "practice_technology",
+      "claim_basis": "expert_assertion",
+      "page": 4,
+      "locator": "",
+      "quote": "NATURAL ENVIRONMENT\nAverage annual rainfall\n251 – 500 mm\n501 – 750 mm\nAgro-climatic zone\nsemi-arid\nSpecifications on climate\n300-600 mm\nThermal climate class: tropics\nSlope\nflat (0-2%)\nLandforms\nplateau/plains\nAltitude\n0 – 100 m a.s.l.\nTechnology is applied in",
+      "relationship": {
+        "type": "observed_presence",
+        "observed_slope_class": "flat (0-2%)",
+        "unit": "percent",
+        "note": "Selected Natural Environment checkbox describes the documented technology site, not an exclusion above 2%."
+      },
+      "context": {
+        "country": "Burkina Faso",
+        "landform": "plateau/plains"
+      },
+      "question": "Correction applied on branch; approved by Pete in chat. WOCAT PDF p4 Natural Environment describes the documented site: selected flat (0-2%) checkbox. It does not state that FMNR cannot work on steeper land. Removed shape parameters and retained observation; family applicability remains unconfirmed.",
+      "crop": "review/img/holds_EV_wocat_1358_2017_003.png",
+      "crop_note": "Complete source page; corrected quote shown alongside. Click image to enlarge.",
+      "pdf_url": "https://cgiar.sharepoint.com/sites/Alliance-ClimateActionNetZero/Shared%20Documents/ClimateActionNetZero/1_Projects/D591_Rural-Scan_NBS/2_Technical_%26_Data/library/1_Agroforestry/wocat_1358_2017.pdf#page=4",
+      "plain": {
+        "practice": "Practice: agroforestry → regeneration farmland (Farmer-managed natural regeneration (FMNR); Parkland tree retention; Assisted natural regeneration on farmland).",
+        "described": "Your original hold: I do not understand what your question is",
+        "claim": "WOCAT PDF p4 Natural Environment describes the documented site: selected flat (0-2%) checkbox. It does not state that FMNR cannot work on steeper land. Removed shape parameters and retained observation; family applicability remains unconfirmed.",
+        "role": "Retained evidence; no approved threshold contribution.",
+        "where": "wocat_1358_2017, PDF page 4"
+      },
+      "picos": {
+        "P": "Burkina Faso",
+        "I": "agroforestry → regeneration farmland (Farmer-managed natural regeneration (FMNR); Parkland tree retention; Assisted natural regeneration on farmland)",
+        "I_named": false,
+        "I_note": "the source's own description of the practice is NOT captured — judge the practice from the quote. the practice is NOT named in the quoted text — check the source before keeping this tag",
+        "C": "not applicable to this kind of unit",
+        "O": "Terrain slope",
+        "S": "asserted by the authors without a measurement; source type: guidance; source tier: Medium",
+        "gaps": [
+          "I",
+          "O"
+        ]
+      },
+      "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/1_Agroforestry/wocat_1358_2017.pdf"
+    }
+  ]
+}
