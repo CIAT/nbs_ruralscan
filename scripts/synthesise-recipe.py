@@ -10,8 +10,8 @@ T4 method section 6) and writes both artefacts the recipe needs:
 
 Inputs are read from the registers, never hand-passed: tiers from `SRC.benchmark_tier`,
 grouping/units/datasets/conversions from `VONT`, grey-discount categories from
-`SRC.source_category`, and `corpus_n` from the family's `SRCH` screened-in counts summed
-over the four discovery processes.
+`SRC.source_category`. Screened-corpus membership must be supplied explicitly; aggregate
+SRCH counts cannot establish a deduplicated denominator.
 
 Usage:
     python3 scripts/synthesise-recipe.py riparian_buffer
@@ -31,7 +31,6 @@ from pathlib import Path
 from nbs_ruralscan.recipe.evidence import EvidenceUnit
 from nbs_ruralscan.schema_tools.generate import _csv_to_rows
 from nbs_ruralscan.recipe.family import (
-    is_observed_presence,
     FamilyResult,
     save_family,
     synthesise_family,
@@ -82,21 +81,27 @@ def _first_dataset(raw: str | None) -> str:
     return ids[0] if ids else ""
 
 
-def synthesise(nbs_id: str, *, approved_only: bool = False) -> dict[str, FamilyResult]:
-    src, vont, srch = (
+def synthesise(
+    nbs_id: str,
+    *,
+    approved_only: bool = False,
+    screened_sources: dict[str, set[str]] | None = None,
+) -> dict[str, FamilyResult]:
+    src, vont = (
         _rd(REG / n)
         for n in (
             "SRC_source_register.csv",
             "VONT_variable_ontology.csv",
-            "SRCH_search_register.csv",
         )
     )
-    tiers = {r["source_id"]: (r["benchmark_tier"] or "medium") for r in src}
+    tiers = {
+        r["source_id"]: (r["benchmark_tier"] or "medium").strip().lower() for r in src
+    }
     categories = {r["source_id"]: r["source_category"] for r in src}
     group_map = {r["canonical_variable_id"]: r["group_id"] for r in vont}
     canonical_units = {r["canonical_variable_id"]: r["canonical_unit"] for r in vont}
     dataset_ids = {
-        r["canonical_variable_id"]: r["candidate_dataset_ids"]
+        r["canonical_variable_id"]: _first_dataset(r["candidate_dataset_ids"])
         for r in vont
         if (r["candidate_dataset_ids"] or "[]") != "[]"
     }
@@ -106,12 +111,15 @@ def synthesise(nbs_id: str, *, approved_only: bool = False) -> dict[str, FamilyR
         if (r["unit_conversions"] or "{}") != "{}"
     }
 
-    corpus: dict[str, int] = {}
-    for r in srch:
-        if r["nbs_id"] == nbs_id and r["suitability_family_id"] and r["table"] == "T4":
-            corpus[r["suitability_family_id"]] = corpus.get(
-                r["suitability_family_id"], 0
-            ) + int(r["n_included"] or 0)
+    # SRCH stores overlapping search totals, not screened-source membership.
+    # Unknown is explicit; never substitute active/extracted sources or included counts.
+    screened_sources = screened_sources or {}
+    known = {r["source_id"] for r in src}
+    for family, source_ids in screened_sources.items():
+        if source_ids - known:
+            raise ValueError(
+                f"Unknown screened source IDs for {family}: {sorted(source_ids - known)}"
+            )
 
     policies = _rd(ROOT / "schema" / "lookups" / "crop_scope_policy.csv")
     units = [
@@ -149,30 +157,11 @@ def synthesise(nbs_id: str, *, approved_only: bool = False) -> dict[str, FamilyR
                 ),
                 {},
             )
-        # sources that contribute ONLY fixed-form observed-presence records (WOCAT sheets)
-        # leave the support denominator too, or they would dilute every variable their
-        # form never asks about
-        form_only = {u.source_id for u in fam_units if is_observed_presence(u)} - {
-            u.source_id for u in fam_units if not is_observed_presence(u)
-        }
-        if family in corpus:
-            corpus[family] = max(0, corpus[family] - len(form_only))
         out[family] = synthesise_family(
             fam_units,
             tiers,
             family=family,
-            corpus_n=corpus.get(
-                family,
-                len(
-                    {
-                        u.source_id
-                        for u in fam_units
-                        if u.use_role == "structural_suitability"
-                        and u.review_state != "dropped"
-                        and not is_observed_presence(u)
-                    }
-                ),
-            ),
+            corpus_n=screened_sources.get(family),
             group_map=group_map,
             canonical_units=canonical_units,
             dataset_ids=dataset_ids,
@@ -183,9 +172,9 @@ def synthesise(nbs_id: str, *, approved_only: bool = False) -> dict[str, FamilyR
             approved_only=approved_only,
         )
         out[family].support_basis = (
-            "provisional_T4_inclusion_sum_not_unique_screened_sources"
-            if family in corpus
-            else "active_structural_sources_only_not_screened_corpus"
+            "explicit_screened_source_membership"
+            if family in screened_sources
+            else "unknown_screened_source_membership"
         )
     return out
 
@@ -308,17 +297,33 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         help="write complete evidence-disposition and crop-lane report",
     )
+    ap.add_argument(
+        "--screened-corpus",
+        type=Path,
+        help="JSON: {families: {family: {source_ids: [...], provenance: ..., complete: true}}}",
+    )
     ap.add_argument("--dry-run", action="store_true", help="report only; write nothing")
     args = ap.parse_args(argv)
 
-    results = synthesise(args.nbs_id, approved_only=args.approved_only)
+    screened_sources = {}
+    if args.screened_corpus:
+        manifest = json.loads(args.screened_corpus.read_text())
+        for family, entry in manifest["families"].items():
+            if entry.get("complete") is not True or not entry.get("provenance"):
+                raise ValueError(
+                    f"Screened corpus must be complete and provenanced: {family}"
+                )
+            screened_sources[family] = set(entry["source_ids"])
+    results = synthesise(
+        args.nbs_id, approved_only=args.approved_only, screened_sources=screened_sources
+    )
     if not results:
         print(f"no evidence units for {args.nbs_id!r}")
         return 1
 
     for family, res in results.items():
         print(f"\n{family}  corpus_n={res.corpus_n}  rows={len(res.rows)}")
-        print(f"  support basis: {res.support_basis}; percentages provisional")
+        print(f"  support basis: {res.support_basis}")
         for row in res.rows:
             print(
                 f"  {row['variable']:26s} {json.dumps(row['relationship_params']):44s} "
@@ -354,6 +359,14 @@ def main(argv: list[str] | None = None) -> int:
                             ROOT / "schema/lookups/crop_scope_policy.csv",
                         ]
                     },
+                    "screened_corpus_manifest": {
+                        "path": str(args.screened_corpus),
+                        "sha256": hashlib.sha256(
+                            args.screened_corpus.read_bytes()
+                        ).hexdigest(),
+                    }
+                    if args.screened_corpus
+                    else None,
                     "review_mode": "approved_only"
                     if args.approved_only
                     else "all_active_draft",

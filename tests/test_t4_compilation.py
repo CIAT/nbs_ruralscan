@@ -206,12 +206,12 @@ def runner():
     return module
 
 
-def test_runner_uses_t4_counts_and_actual_f5_policy(runner):
+def test_runner_does_not_invent_screened_corpus_and_uses_actual_f5_policy(runner):
     result = runner.synthesise("agroforestry")
-    assert result["agroforestry__regeneration_farmland"].corpus_n == 14
-    assert result["agroforestry__cross_family"].corpus_n == 7
+    assert result["agroforestry__regeneration_farmland"].corpus_n is None
+    assert result["agroforestry__cross_family"].corpus_n is None
     assert result["agroforestry__shaded_perennial"].crop_results
-    assert "not_unique" in result["agroforestry__cross_family"].support_basis
+    assert "unknown" in result["agroforestry__cross_family"].support_basis
 
 
 def test_isolated_writer_preserves_design_rows_and_live_recipe(runner, tmp_path):
@@ -263,3 +263,72 @@ def test_opposite_bounds_are_held_for_review():
     assert not result["relationship_params"]
     assert not report.used
     assert {reason for _, reason in report.unresolved} == {"inconsistent_bound_order"}
+
+
+def test_unknown_corpus_preserves_counts_without_percentages():
+    result = synthesise_family(
+        [unit("a"), unit("b", "second")],
+        {},
+        family="F1",
+        corpus_n=None,
+        group_map={"slope": "terrain"},
+    )
+    assert result.corpus_n is None
+    assert result.rows[0]["paper_support_pct"] is None
+    assert result.rows[0]["n_sources"] == 2
+    assert result.rows[0]["n_parameter_sources"] == 2
+    assert result.selection[0].decision == "review_unknown_support"
+    assert result.groups["terrain"].pct is None
+
+
+def test_explicit_corpus_has_stable_denominator_across_approval_filters():
+    units = [unit("approved", "high"), unit("pending", "low", reviewer_ok=False)]
+    result = synthesise_family(
+        units,
+        {"high": "High", "low": "low"},
+        family="F1",
+        corpus_n={"high", "low"},
+        group_map={},
+        approved_only=True,
+    )
+    assert result.corpus_n == 2
+    assert result.support_sources == ["high", "low"]
+    assert result.rows[0]["paper_support_pct"] == 74.1
+
+
+def test_explicit_corpus_rejects_evidence_outside_membership():
+    with pytest.raises(ValueError, match="absent from screened corpus"):
+        synthesise_family(
+            [unit("a", "missing")],
+            {},
+            family="F1",
+            corpus_n={"different"},
+            group_map={},
+        )
+
+
+def test_support_and_parameter_sources_are_separate():
+    result = family([unit("number"), unit("narrative", "second", relationship=None)])
+    assert result.rows[0]["n_sources"] == 2
+    assert result.rows[0]["n_parameter_sources"] == 1
+    assert result.rows[0]["parameter_source_ids"] == ["source"]
+
+
+def test_runner_resolves_one_dataset_id_and_normalizes_tiers(runner):
+    result = runner.synthesise("agroforestry")
+    for f in result.values():
+        for r in f.rows:
+            assert not (r["dataset_id"] or "").startswith("[")
+    assert all(f.corpus_n is None for f in result.values())
+
+
+def test_approval_filter_cannot_hide_incomplete_corpus():
+    with pytest.raises(ValueError, match="absent from screened corpus"):
+        synthesise_family(
+            [unit("a", "approved"), unit("b", "unreviewed", reviewer_ok=False)],
+            {},
+            family="F1",
+            corpus_n={"approved"},
+            group_map={},
+            approved_only=True,
+        )

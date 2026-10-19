@@ -310,20 +310,21 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "tree_canopy_cover",
     "relationship": {
-      "opt_high": 27,
-      "unit": "percent_tree_cover",
-      "note": "Delphi-elicited mean maximum tree cover across all biomes and agricultural systems without reducing yields; SD=16%"
+      "type": "expert_target_summary",
+      "mean_maximum_cover_percent": 27,
+      "standard_deviation_percent": 16,
+      "note": "Across biomes and crop/grazing systems; target tree cover without reducing yield, not baseline canopy eligibility."
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "expert_assertion",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "The mean estimation across all biomes and agricultural systems was 27% with a relatively large standard deviation of 16%.",
+    "quote": "The mean estimation across forested biomes was around \n35%, a level that is sometimes considered shade-agro­\nforestry, so these estimations must be applied with cau­\ntion and close monitoring of agricultural yield impacts \non shade-intolerant crops. The mean estimation across \nall biomes and agricultural systems was 27% with a rela­\ntively large standard deviation of 16%",
     "page": 11,
-    "reviewer_ok": true,
+    "reviewer_ok": false,
     "raw_name": "maximum tree cover",
-    "attribution": "[reviewed 2026-09-18 by peetmate; reason:confirmed_pass; note:error is very useful to collect we should review how this is handled.] Delphi expert elicitation across 53 regional cropping and grazing system categories",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:The 27% is a pooled expert estimate of achievable maximum tree cover without yield loss, not an existing-canopy suitability breakpoint. Retained for design/target assessment with biome and system disaggregation required.] [reviewed 2026-09-18 by peetmate; reason:confirmed_pass; note:error is very useful to collect we should review how this is handled.] Delphi expert elicitation across 53 regional cropping and grazing system categories",
     "locator_type": "page",
     "selection_justification": "Expert-elicited maximum tree cover per biome/land-use type that maximizes tree density without significantly reducing long-term agricultural yields",
     "selection_justification_page": 4
@@ -364,25 +365,28 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "tree_canopy_cover",
     "relationship": {
-      "opt_low": 21,
-      "opt_high": 42,
-      "unit": "percent_tree_cover",
-      "note": "Range across forest biomes for cropland; Moist Broadleaf=21%, Dry Broadleaf=42%; Delphi expert elicitation"
+      "type": "contextual_target_estimates",
+      "unit": "percent",
+      "cropland_maximum_estimates": {
+        "Moist Broadleaf Forests": 21,
+        "Dry Broadleaf Forests": 42
+      },
+      "note": "Different biome-specific means; not endpoints of one optimum band."
     },
     "context": {
       "biome_group": "forest_biomes",
       "land_use": "cropland"
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "expert_assertion",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "The mean estimated maximum in croplands in Temperate and Tropical/Subtropical Forest biomes range from 21% in Moist Broadleaf Forests up to 42% for cropland in Dry Broadleaf Forests.",
+    "quote": "The mean estimated maximum in \ncroplands in Temperate and Tropical/Subtropical Forest \nbiomes range from 21% in Moist Broadleaf Forests up to \n42% for cropland in Dry Broadleaf Forests. Two experts \nestimated 100% maximum tree cover in the that biome, \nspecifically suggesting a reverse-deciduous tree native to \nAfrica, Faidherbia albida. We concluded it may not be \nappropriate to apply this estimation to other continents \nwhere the tree is not present. Hence, we excluded these \nvalues- which would have increased the mean estimation \nto 65%, while noting that there is a possibility for higher \nlevels of tree integration within the native range of Faid­\nherbia albida.",
     "page": 7,
-    "reviewer_ok": true,
+    "reviewer_ok": false,
     "raw_name": "maximum tree cover",
-    "attribution": "[reviewed 2026-09-18 by peetmate; reason:confirmed_pass] Delphi expert elicitation, Temperate and Tropical/Subtropical Forest biomes",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:The 21% and 42% values belong to different biomes. Removed invented optimum band; retained separate biome target estimates, including source caveat against transferring species-dependent maxima.] [reviewed 2026-09-18 by peetmate; reason:confirmed_pass] Delphi expert elicitation, Temperate and Tropical/Subtropical Forest biomes",
     "locator_type": "page"
   },
   {
@@ -921,11 +925,26 @@
     "suitability_family_id": "agroforestry__cross_family",
     "variable": "annual_precipitation",
     "relationship": {
-      "opt_low": 985,
-      "sub_low": 965,
-      "sub_high": 985,
-      "unit": "mm (annual inferred)",
-      "direction": "higher_is_better"
+      "type": "source_ordinal_classes",
+      "unit": "mm",
+      "classes": [
+        {
+          "range": "<965",
+          "rank": 1,
+          "label": "Low"
+        },
+        {
+          "range": "965-985",
+          "rank": 2,
+          "label": "Medium"
+        },
+        {
+          "range": ">985",
+          "rank": 3,
+          "label": "High"
+        }
+      ],
+      "ahp_weight_pct": 10.4
     },
     "context": {
       "country": "India",
@@ -938,9 +957,9 @@
     "extraction_confidence": "low",
     "quote": "Rainfall\n10.4\n<965mm\n965-985mm\n>985mm\n1\n2\n3\nLow\nMedium\nHigh",
     "page": 7,
-    "reviewer_ok": true,
+    "reviewer_ok": false,
     "raw_name": "Rainfall",
-    "attribution": "[reviewed 2026-10-19 by Namita-J] general — applies cross-family; AHP weight 10.4%",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Table 5 rainfall ranks are a regional classification, not a universal optimum starting at 985 mm. All original classes retained; membership and transfer unresolved.] [reviewed 2026-10-19 by Namita-J] general — applies cross-family; AHP weight 10.4%",
     "locator_type": "page"
   },
   {
@@ -1275,23 +1294,24 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "tree_canopy_cover",
     "relationship": {
-      "abs_max": 10,
-      "unit": "%",
-      "direction": "suitable_below"
+      "type": "policy_targeting",
+      "target_canopy_percent": 10,
+      "unit": "percent",
+      "note": "Kenya policy-aligned expansion proxy: target cropland with existing tree cover below 10%; not a maximum canopy for establishment."
     },
     "context": {
       "country": "Kenya"
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
-    "quote": "Proxy dataset: percentage of cropland area (Fritz et al., 2015) restricted to regions with a tree cover b10% (Hansen et al., 2013).\nAssumption: regions with higher proportions of cropland show potential for integrating trees into agricultural landscapes that lack a minimum tree cover aligning this CSA practice with the national policy target in Kenya to achieve a tree cover of at least 10%\n(Government of Kenya, 2007).",
+    "quote": "Proxy dataset: percentage of cropland area (Fritz et al., 2015) restricted to regions with a\ntree cover b10% (Hansen et al., 2013).\nAssumption: regions with higher proportions of cropland show potential for integrating\ntrees into agricultural landscapes that lack a minimum tree cover aligning this CSA\npractice with the national policy target in Kenya to achieve a tree cover of at least 10%\n(Government of Kenya, 2007).\nBiophysical: ‘soil organic matter’\nEconomic: ‘female participation in economic activities’",
     "page": 6,
-    "reviewer_ok": true,
+    "reviewer_ok": false,
     "raw_name": "tree cover",
-    "attribution": "[reviewed 2026-09-18 by peetmate; reason:confirmed_pass] Government of Kenya, 2007. Kenya Vision 2030.",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Tree cover below 10% targets low-cover cropland against a Kenya national tree-cover target. Removed false biophysical maximum; retained explicit policy/scenario evidence.] [reviewed 2026-09-18 by peetmate; reason:confirmed_pass] Government of Kenya, 2007. Kenya Vision 2030.",
     "locator_type": "page",
     "selection_justification": "Used as proxy for agroforestry suitability: cropland areas with <10% tree cover indicate potential for integrating trees.",
     "selection_justification_page": 6
@@ -1494,22 +1514,22 @@
     "source_id": "castle_2025",
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__cross_family",
-    "variable": "mean_annual_temperature",
+    "variable": "frost_free_period",
     "relationship": {
+      "type": "variable_definition",
       "unit": "days",
-      "resolution_m": 30,
-      "variable_note": "frost_free_period, not mean_annual_temperature"
+      "resolution_m": 30
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "low",
-    "quote": "Frost-free period SSURGO [62] Expected number of days between last freeze in spring and first freeze in fall, 30 m spatial resolution",
+    "quote": "Frost-free\nperiod\nSSURGO [62]\nExpected number of days between last\nfreeze in spring and first freeze in fall,\n30 m spatial resolution",
     "page": 7,
-    "reviewer_ok": true,
+    "reviewer_ok": false,
     "raw_name": "Frost-free period",
-    "attribution": "[reviewed 2026-10-19 by Pete Steward; reason:confirmed_pass; note:sounds resoanable] [reviewed 2026-10-19 by Namita-J] general — applies cross-family",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Source Table 2 defines frost-free period in days, not mean annual temperature. Retagged to existing VONT frost_free_period; selection evidence only, no numerical threshold.] [reviewed 2026-10-19 by Pete Steward; reason:confirmed_pass; note:sounds resoanable] [reviewed 2026-10-19 by Namita-J] general — applies cross-family",
     "locator_type": "page"
   },
   {
@@ -2039,10 +2059,32 @@
     "suitability_family_id": "agroforestry__cross_family",
     "variable": "soil_ph",
     "relationship": {
-      "opt_low": 6.6,
-      "opt_high": 7.3,
+      "type": "source_ordinal_classes",
       "unit": "pH",
-      "classes": "low:<5_OR_>8, medium:5.1-5.5_OR_8-8.3, high:7.4-8.4_OR_6.5-5.6, very_high:6.6-7.3"
+      "classes": [
+        {
+          "range": "<5 OR >8",
+          "rank": 1,
+          "label": "Low"
+        },
+        {
+          "range": "5.1-5.5 OR 8-8.3",
+          "rank": 2,
+          "label": "Medium"
+        },
+        {
+          "range": "7.4-8.4 OR 6.5-5.6",
+          "rank": 3,
+          "label": "High"
+        },
+        {
+          "range": "6.6-7.3",
+          "rank": 4,
+          "label": "Very high"
+        }
+      ],
+      "ahp_weight_pct": 20,
+      "note": "Source table contains overlapping and reversed intervals; retained exactly, no repair inferred."
     },
     "context": {
       "study_area": "Genale sub-basin, Oromia, Ethiopia"
@@ -2054,9 +2096,9 @@
     "extraction_confidence": "low",
     "quote": "Soil pH(H2O) \n20 \n<5OR >8 \n1 \nLow \n5.1-5.5 OR 8-8.3 \n2 \nMedium \n7.4-8.4 OR 6.5-5.6 \n3 \nHigh \n6.6-7.3 \n4 \nVery high",
     "page": 6,
-    "reviewer_ok": true,
+    "reviewer_ok": false,
     "raw_name": "Soil pH(H2O)",
-    "attribution": "[reviewed 2026-10-19 by Namita-J] general — applies cross-family; FAO standards cited for plant growth",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Regional nutrient-class table contains overlapping/reversed ranges. Preserved all source ranks rather than extracting highest class as a generic pH optimum. Requires source-table ambiguity and applicability review.] [reviewed 2026-10-19 by Namita-J] general — applies cross-family; FAO standards cited for plant growth",
     "locator_type": "page"
   },
   {
@@ -9407,27 +9449,27 @@
     "suitability_family_id": "agroforestry__regeneration_farmland",
     "variable": "annual_precipitation",
     "relationship": {
-      "variable": "annual_precipitation",
-      "unit": "mm_yr",
-      "direction": "envelope",
-      "context": "arid_to_sub_humid",
-      "abs_min": 100,
-      "abs_max": 950
+      "type": "observed_presence",
+      "reported_adoption_rainfall_mm": [
+        100,
+        950
+      ],
+      "note": "Evidence distribution in reviewed studies; suitability outside studied contexts remains unknown."
     },
     "context": {
       "region": "sub-Saharan Africa",
       "aez": "arid_to_sub_humid"
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "expert_assertion",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "Africa is conﬁned to speciﬁc agroecological contexts characterized by arid to sub- humid climate, with a wide range of mean annual rainfall of between 100 and 950 mm yr−1 and low fertility soils vulnerable to degradation.",
+    "quote": "Evidence of adoption of FMNR in Africa is conﬁned\nto speciﬁc agroecological contexts characterized by arid to sub-\nhumid climate, with a wide range of mean annual rainfall of\nbetween 100 and 950 mm yr−1 and low fertility soils vulnerable\nto degradation. There is an indication that soil improvement,\nindicated by increased SOC content is greater on sandier soils\n(Bayala et al., 2019). There is need for further research to\nestablish how suitable FMNR could be outside these conditions,\ngiven the interest in promoting the practice in other regions\nin Africa that may beneﬁt from FMNR but fall outside these\nclimatic and edaphic contexts.",
     "page": 11,
-    "reviewer_ok": "False",
+    "reviewer_ok": false,
     "raw_name": "mean annual rainfall",
-    "attribution": "[query 2026-09-18 by peetmate; reason:other; note:the statement is secondary and has no reference. Is this information available elsewhere in the paper with reference? if so we can drop without issue.]",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Review discussion describes where adoption evidence exists and explicitly calls for research outside these conditions. Removed 100-950 mm physiological limits.] [query 2026-09-18 by peetmate; reason:other; note:the statement is secondary and has no reference. Is this information available elsewhere in the paper with reference? if so we can drop without issue.]",
     "locator_type": "page",
     "commit_sha": "b688621632ab86d13d784de709c818f0c4efa704",
     "ruleset_version": "v1.2"
@@ -9439,27 +9481,27 @@
     "suitability_family_id": "agroforestry__regeneration_farmland",
     "variable": "annual_precipitation",
     "relationship": {
-      "variable": "annual_precipitation",
-      "unit": "mm_yr",
-      "direction": "envelope",
-      "context": "arid_and_semi_arid",
-      "abs_min": 100,
-      "abs_max": 950
+      "type": "observed_presence",
+      "reported_practice_rainfall_mm": [
+        100,
+        950
+      ],
+      "note": "Ecological contexts of reported FMNR practice; not a tested establishment envelope."
     },
     "context": {
       "region": "sub-Saharan Africa",
       "aez": "arid_semi_arid_sub_humid"
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "largely being practiced in arid and semi-arid areas, also referred to as dry and sub-humid areas in sub-Saharan Africa. Rainfall is unevenly distributed and ranges between 100 and 950 mm per year (Haglund et al., 2011; Sendzimir et al., 2011; Gonza",
+    "quote": "FMNR is largely being practiced in arid and semi-arid areas,\nalso referred to as dry and sub-humid areas in sub-Saharan\nAfrica. Rainfall is unevenly distributed and ranges between\n100 and 950 mm per year (Haglund et al., 2011; Sendzimir\net al., 2011; Gonzalez et al., 2012; Binam et al., 2015).",
     "page": 4,
-    "reviewer_ok": "False",
+    "reviewer_ok": false,
     "raw_name": "Rainfall ... ranges between 100 and 950 mm per year",
-    "attribution": "[query 2026-08-06 by Namita-J; note:do not constrain FMNR to a hard 950mm per year range.] cited from Haglund et al. 2011; Sendzimir et al. 2011; Gonzalez et al.",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Review ecological-context section describes reported practice distribution. Removed hard limits; retained cited observations.] [query 2026-08-06 by Namita-J; note:do not constrain FMNR to a hard 950mm per year range.] cited from Haglund et al. 2011; Sendzimir et al. 2011; Gonzalez et al.",
     "locator_type": "page",
     "commit_sha": "b688621632ab86d13d784de709c818f0c4efa704",
     "ruleset_version": "v1.2"
@@ -9877,12 +9919,13 @@
     "suitability_family_id": "agroforestry__regeneration_farmland",
     "variable": "annual_precipitation",
     "relationship": {
-      "variable": "annual_precipitation",
-      "unit": "mm_per_year",
-      "sudanian_zone_max": 1000,
-      "direction": "practice_occurs_across_dryland_rainfall_band",
-      "abs_min": 250,
-      "abs_max": 500
+      "type": "observed_presence",
+      "sahelian_rainfall_mm": [
+        250,
+        500
+      ],
+      "sudanian_rainfall_up_to_mm": 1000,
+      "note": "Background bioclimatic zones where FMNR developed, not hard rainfall limits."
     },
     "context": {
       "region": "West Africa",
@@ -9890,15 +9933,15 @@
       "zones": "Sahelian to Sudanian"
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "FMNR has principally been developed in the drylands of West Africa. These are the bioclimatic zones that separate the Sahara desert from West Africa’s humid coastal equatorial zone. They range from the arid Sahelian zone to the north, with highly variable rainfall totalling 250-500 mm/yr, to the sub-humid Sudanian zone to the south, with up to 1000 mm/yr (UNCCD and CFC 2009).",
+    "quote": "FMNR has principally been developed in the drylands of West Africa. These are the bioclimatic zones that separate the \nSahara desert from West Africa’s humid coastal equatorial zone. They range from the arid Sahelian zone to the north, \nwith highly variable rainfall totalling 250-500 mm/yr, to the sub-humid Sudanian zone to the south, with up to 1000 \nmm/yr (UNCCD and CFC 2009). Typically, agriculture in this zone is smallholder pastoralism and seasonal rain-fed crop \nfarming for subsistence and market purposes (Darkoh 2003).",
     "page": 2,
-    "reviewer_ok": true,
+    "reviewer_ok": false,
     "raw_name": "rainfall totalling 250-500 mm/yr ... up to 1000 mm/yr",
-    "attribution": "[reviewed 2026-09-18 by peetmate] cited from UNCCD and CFC 2009",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Weston describes West African development regions from Sahelian 250-500 mm to Sudanian up to 1000 mm. Old 500 mm maximum truncated the same sentence; none of these values is an establishment limit.] [reviewed 2026-09-18 by peetmate] cited from UNCCD and CFC 2009",
     "locator_type": "page",
     "commit_sha": "b688621632ab86d13d784de709c818f0c4efa704",
     "ruleset_version": "v1.2"
@@ -10072,11 +10115,13 @@
     "suitability_family_id": "agroforestry__regeneration_farmland",
     "variable": "annual_precipitation",
     "relationship": {
-      "type": "range",
-      "direction": "growth rate increases with rainfall; occurs below 400 mm but slower",
-      "abs_min": 400,
-      "opt_low": 400,
-      "opt_high": 800
+      "type": "observed_presence",
+      "greatest_observed_spread_rainfall_mm": [
+        400,
+        800
+      ],
+      "occurs_below_400_mm": true,
+      "note": "Advice for rapid spread; lower-rainfall growth slower, not excluded. No upper suitability limit stated."
     },
     "context": {
       "region": "Sahel",
@@ -10084,15 +10129,15 @@
       "study_context": "SSA"
     },
     "use_role": "structural_suitability",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "expert_assertion",
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
-    "quote": "Rainfall in excess of 400 mm/year. Experience in the Sahel shows that regreening has spread most in areas with 400–800 millimeters of annual rainfall. This does not imply that regreening does not occur in regions with less than 400 millimeters, but growth rates of the vegetation in areas with low rainfall is usually much slower than in areas of higher rainfall.",
+    "quote": "Rainfall in excess of 400 mm/year. \nExperience in the Sahel shows that regreening \nhas spread most in areas with 400–800 \nmillimeters of annual rainfall. This does not \nimply that regreening does not occur in regions \nwith less than 400 millimeters, but growth \nrates of the vegetation in areas with low rainfall \nis usually much slower than in areas of higher \nrainfall.\n▪▪",
     "page": 58,
-    "reviewer_ok": true,
+    "reviewer_ok": false,
     "raw_name": "Rainfall in excess of 400 mm/year",
-    "attribution": "[reviewed 2026-10-19 by Pete Steward; reason:confirmed_pass] [query 2026-09-18 by peetmate; reason:other; note:why is rainfall not included as the variable in the encoded variable?]",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:WRI p54 (PDF p58) advises where to target rapid results. Regreening occurs below 400 mm; 400-800 mm describes greatest spread. Removed hard minimum and invented optimum bounds; retained observed context and qualitative growth response.] [reviewed 2026-10-19 by Pete Steward; reason:confirmed_pass] [query 2026-09-18 by peetmate; reason:other; note:why is rainfall not included as the variable in the encoded variable?]",
     "locator_type": "page",
     "commit_sha": "b688621632ab86d13d784de709c818f0c4efa704",
     "ruleset_version": "v1.2"
@@ -10714,10 +10759,13 @@
     "suitability_family_id": "agroforestry__regeneration_farmland",
     "variable": "annual_precipitation",
     "relationship": {
-      "direction": "suitable_range",
-      "climate_spec_mm": "300-600",
-      "abs_min": 251,
-      "abs_max": 750
+      "type": "observed_presence",
+      "rainfall_classes_mm": [
+        "251-500",
+        "501-750"
+      ],
+      "climate_specification_mm": "300-600",
+      "note": "Natural Environment checkbox/site description, not a suitability range."
     },
     "context": {
       "country": "Burkina Faso",
@@ -10728,11 +10776,11 @@
     "claim_basis": "expert_assertion",
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
-    "quote": "NATURAL ENVIRONMENT Average annual rainfall 251 – 500 mm 501 – 750 mm Agro-climatic zone semi-arid Specifications on climate 300-600 mm Thermal climate class: trop",
+    "quote": "NATURAL ENVIRONMENT\nAverage annual rainfall\n251 – 500 mm\n501 – 750 mm\nAgro-climatic zone\nsemi-arid\nSpecifications on climate\n300-600 mm\nThermal climate class: tropics",
     "page": 4,
-    "reviewer_ok": true,
+    "reviewer_ok": false,
     "raw_name": "Average annual rainfall / Specifications on climate 300-600 mm",
-    "attribution": "[reviewed 2026-10-19 by Pete Steward; reason:confirmed_pass; note:I think this all depends on the definition we use for FMNR -> if we narrow to the approach taken in Semi-arid regions like the Sahel it will be easier to build the suitabiliy map (rather than a generic nothing burger)] [query 2026-09-18 by peetmate; reason:insufficient_context; note:the table has no caption, I cannot interpret without it.]",
+    "attribution": "[query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Same WOCAT Natural Environment panel as approved slope correction: selected rainfall classes describe this technology site. Removed shape parameters, retained site climate.] [reviewed 2026-10-19 by Pete Steward; reason:confirmed_pass; note:I think this all depends on the definition we use for FMNR -> if we narrow to the approach taken in Semi-arid regions like the Sahel it will be easier to build the suitabiliy map (rather than a generic nothing burger)] [query 2026-09-18 by peetmate; reason:insufficient_context; note:the table has no caption, I cannot interpret without it.]",
     "locator_type": "page",
     "commit_sha": "b688621632ab86d13d784de709c818f0c4efa704",
     "ruleset_version": "v1.2"
