@@ -22,10 +22,11 @@
     "binding_id": "cocoa_distribution__global",
     "variable": "cocoa_distribution",
     "scope_type": "global",
-    "dataset_id": "mapspam_cocoa_2020",
+    "dataset_id": "mapspam_physical_area_2020",
     "preference_rank": 2,
     "status": "catalogued",
-    "fitness_note": "MapSPAM ~10 km harvested-area fraction — coarse global default."
+    "fitness_note": "Cocoa physical-area ha / pixel area ha. MapSPAM allocation fallback for scoping; prefer accurate commodity map. Not harvested-area intensity or a suitability score.",
+    "band": 34
   },
   {
     "binding_id": "cocoa_distribution__SLE",
@@ -307,5 +308,103 @@
     "status": "catalogued",
     "fitness_note": "30 m water-surface complement for lakes and wide rivers; does not carry the headwater network, so it supplements rank 1 rather than replacing it.",
     "band": "occurrence"
+  },
+  {
+    "binding_id": "coffee_arabica_distribution__global",
+    "variable": "coffee_arabica_distribution",
+    "scope_type": "global",
+    "dataset_id": "mapspam_physical_area_2020",
+    "preference_rank": 2,
+    "status": "catalogued",
+    "fitness_note": "Physical-area ha, all technologies; published crop order. Prefer accurate local commodity map; coarse allocation fallback accepted by Pete 2026-10-20.",
+    "band": 32
+  },
+  {
+    "binding_id": "coffee_robusta_distribution__global",
+    "variable": "coffee_robusta_distribution",
+    "scope_type": "global",
+    "dataset_id": "mapspam_physical_area_2020",
+    "preference_rank": 2,
+    "status": "catalogued",
+    "fitness_note": "Physical-area ha, all technologies; published crop order. Prefer accurate local commodity map; coarse allocation fallback accepted by Pete 2026-10-20.",
+    "band": 33
+  },
+  {
+    "binding_id": "tea_distribution__global",
+    "variable": "tea_distribution",
+    "scope_type": "global",
+    "dataset_id": "mapspam_physical_area_2020",
+    "preference_rank": 2,
+    "status": "catalogued",
+    "fitness_note": "Physical-area ha, all technologies; published crop order. Prefer accurate local commodity map; coarse allocation fallback accepted by Pete 2026-10-20.",
+    "band": 35
+  },
+  {
+    "binding_id": "grassland_class__global",
+    "variable": "grassland_class",
+    "scope_type": "global",
+    "dataset_id": "gpw_grassland_class_v1",
+    "preference_rank": 2,
+    "status": "catalogued",
+    "fitness_note": "Publisher GEE; use 2020 for livestock alignment; class 1 cultivated, 2 natural/semi-natural, 0 other. Grazing interpretation remains separate.",
+    "band": "dominant_class"
+  },
+  {
+    "binding_id": "ruminant_density__global",
+    "variable": "ruminant_density",
+    "scope_type": "global",
+    "dataset_id": "glw4_livestock_2020",
+    "preference_rank": 2,
+    "status": "catalogued",
+    "fitness_note": "Named species COGs, head/km2. Supports grazing context; no universal density threshold or management inference.",
+    "band": "cattle|buffalo|goat|sheep"
+  },
+  {
+    "binding_id": "field_boundary_zone__global",
+    "variable": "field_boundary_zone",
+    "scope_type": "global",
+    "preference_rank": 2,
+    "status": "requires_upload",
+    "fitness_note": "Buffered field boundaries; geometry plus regionally justified width required."
+  },
+  {
+    "binding_id": "grazing_system_present__global",
+    "variable": "grazing_system_present",
+    "scope_type": "global",
+    "preference_rank": 2,
+    "status": "requires_upload",
+    "fitness_note": "Grazing management confirmation; GPW grassland and GLW4 ruminants are supporting inputs, not direct proof."
+  },
+  {
+    "binding_id": "managed_pasture_present__global",
+    "variable": "managed_pasture_present",
+    "scope_type": "global",
+    "preference_rank": 2,
+    "status": "requires_upload",
+    "fitness_note": "Managed pasture confirmation; combine grassland context and grazing management."
+  },
+  {
+    "binding_id": "managed_forage_without_grazing__global",
+    "variable": "managed_forage_without_grazing",
+    "scope_type": "global",
+    "preference_rank": 2,
+    "status": "requires_upload",
+    "fitness_note": "Forage management without grazing; grassland class alone is insufficient."
+  },
+  {
+    "binding_id": "depleted_farmland__global",
+    "variable": "depleted_farmland",
+    "scope_type": "global",
+    "preference_rank": 2,
+    "status": "requires_upload",
+    "fitness_note": "Locally verified depleted farmland mask."
+  },
+  {
+    "binding_id": "degraded_farmland__global",
+    "variable": "degraded_farmland",
+    "scope_type": "global",
+    "preference_rank": 2,
+    "status": "requires_upload",
+    "fitness_note": "Locally verified degraded farmland mask."
   }
 ]

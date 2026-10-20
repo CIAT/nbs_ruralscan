@@ -1,238 +1,27 @@
 [
   {
-    "mapping_id": "agroforestry__cross_family__annual_precipitation",
-    "nbs_id": "agroforestry",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 800.0,
-      "opt_high": 1200.0
-    },
-    "uncertainty_pct": 23.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": true,
-    "baseline_dataset_id": "worldclim_v2_bioclim",
-    "future_dataset_ids": {
-      "ssp245": "chelsa_bioclim_ssp245_2050"
-    },
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 800.0, 'opt_high': 1200.0}; uncertainty ±23% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "agroforestry__cross_family",
-    "evidence_ids": [
-      "ev_t4_precip_ahmad17_1",
-      "ev_T4_precip_haile2024_2",
-      "ev_t4_annualp_nath21_02",
-      "ev_t4_precip_yadav24_2"
-    ],
-    "n_sources": 4,
-    "corpus_n": 35,
-    "paper_support_pct": 10.0
-  },
-  {
-    "mapping_id": "agroforestry__cross_family__soil_ph",
-    "nbs_id": "agroforestry",
-    "dataset_id": "isric_soilgrids250_v2",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 6.6,
-      "opt_high": 7.3
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 6.6, 'opt_high': 7.3}; uncertainty ±20% from spread. ",
-    "variable": "soil_ph",
-    "suitability_family_id": "agroforestry__cross_family",
-    "evidence_ids": [
-      "ev_T4_ph_haile2024_1",
-      "ev_t4_soilph_nath21_01"
-    ],
-    "n_sources": 2,
-    "corpus_n": 35,
-    "paper_support_pct": 5.0
-  },
-  {
     "mapping_id": "agroforestry__planted_silvoarable__slope",
     "nbs_id": "agroforestry",
     "dataset_id": "srtm_dem_30m",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "threshold",
     "relationship_params": {
-      "abs_min": 4.6,
-      "abs_max": 35.8
-    },
-    "uncertainty_pct": 10.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 4.6, 'abs_max': 35.8}; uncertainty ±10% from spread. Dropped 1 (scope/role). ",
-    "variable": "slope",
-    "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": [
-      "ev_T4_slope_haris2021_3",
-      "ev_T4_slope_seja2022_1",
-      "ev_T4_slope_wotlolan2021_1",
-      "ev_slope_singh26"
-    ],
-    "n_sources": 4,
-    "corpus_n": 34,
-    "paper_support_pct": 9.8
-  },
-  {
-    "mapping_id": "agroforestry__planted_silvoarable__tree_canopy_cover",
-    "nbs_id": "agroforestry",
-    "dataset_id": "hansen_treecover2000",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_max": 10.0
+      "threshold": 19.3,
+      "above_is_suitable": false
     },
     "uncertainty_pct": 20.0,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 10.0}; uncertainty ±20% from spread. Collapsed 2 citation echo(es). ",
-    "variable": "tree_canopy_cover",
-    "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": [
-      "ev_tree_canopy_cover_sprenkle24_1",
-      "ev_t4_tcc_brandt2015_1"
-    ],
-    "n_sources": 2,
-    "corpus_n": 34,
-    "paper_support_pct": 7.4
-  },
-  {
-    "mapping_id": "agroforestry__planted_silvoarable__soil_depth_to_bedrock",
-    "nbs_id": "agroforestry",
-    "dataset_id": "ssurgo_statsgo",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 90.0
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 90.0}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "soil_depth_to_bedrock",
-    "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": [
-      "ev_soildepth_inab_p92_aa_example"
-    ],
-    "n_sources": 1,
-    "corpus_n": 34,
-    "paper_support_pct": 2.5
-  },
-  {
-    "mapping_id": "agroforestry__regeneration_farmland__annual_precipitation",
-    "nbs_id": "agroforestry",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 300.0,
-      "opt_low": 400.0,
-      "opt_high": 800.0,
-      "abs_max": 800.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": true,
-    "baseline_dataset_id": "worldclim_v2_bioclim",
-    "future_dataset_ids": {
-      "ssp245": "chelsa_bioclim_ssp245_2050"
-    },
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 7 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 300.0, 'opt_low': 400.0, 'opt_high': 800.0, 'abs_max': 800.0}; uncertainty ±60% from spread. Collapsed 2 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "agroforestry__regeneration_farmland",
-    "evidence_ids": [
-      "EV_lohbeck_2020_001",
-      "EV_researchsquare_fmnr_2025_001",
-      "EV_weston_2015_002",
-      "EV_sendzimir_2011_001",
-      "EV_wri_regreening_2015_001",
-      "EV_wocat_507_2019_003",
-      "EV_wocat_1358_2017_001"
-    ],
-    "n_sources": 7,
-    "corpus_n": 38,
-    "paper_support_pct": 16.3
-  },
-  {
-    "mapping_id": "agroforestry__regeneration_farmland__slope",
-    "nbs_id": "agroforestry",
-    "dataset_id": "srtm_dem_30m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.0,
-      "abs_max": 2.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.0, 'abs_max': 2.0}; uncertainty ±30% from spread. ",
-    "variable": "slope",
-    "suitability_family_id": "agroforestry__regeneration_farmland",
-    "evidence_ids": [
-      "EV_wocat_507_2019_004",
-      "EV_wocat_1358_2017_003"
-    ],
-    "n_sources": 2,
-    "corpus_n": 38,
-    "paper_support_pct": 4.7
-  },
-  {
-    "mapping_id": "agroforestry__shaded_perennial__mean_annual_temperature",
-    "nbs_id": "agroforestry",
-    "dataset_id": "worldclim_v2_bioclim",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 20.0,
-      "opt_high": 30.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": true,
-    "baseline_dataset_id": "worldclim_v2_bioclim",
-    "future_dataset_ids": {
-      "ssp245": "chelsa_bioclim_ssp245_2050"
-    },
     "weight_default": 1.0,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 20.0, 'opt_high': 30.0}; uncertainty ±30% from spread. Dropped 2 (scope/role). ",
-    "variable": "mean_annual_temperature",
-    "suitability_family_id": "agroforestry__shaded_perennial",
+    "justification": "Reconciled from 1 contributing evidence unit(s) (exact agreement on typed relationship). Global {'threshold': 19.3, 'above_is_suitable': False}; uncertainty ±20% from spread. ",
+    "variable": "slope",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
     "evidence_ids": [
-      "ev_t4_mat_mushtaq2023_2"
+      "ev_T4_slope_wotlolan2021_1"
     ],
-    "n_sources": 1,
-    "corpus_n": 41,
-    "paper_support_pct": 2.0
+    "n_sources": 1
   },
   {
     "mapping_id": "agro_protected_areas_exclusion",
@@ -479,7 +268,22 @@
       },
       "unmapped_policy": "unknown",
       "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
-      "interpretation": "binary host-system compatibility; not graded biophysical suitability"
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "host_bindings": {
+        "managed_forage_without_grazing": {
+          "variables": [
+            "managed_forage_without_grazing"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "supporting_variables": [
+            "grassland_class",
+            "ruminant_density"
+          ],
+          "note": "GPW grassland + GLW4 ruminants support scoping; livestock density alone does not prove grazing. Local management interpretation required."
+        }
+      }
     },
     "is_scenario_candidate": false,
     "has_future_projection": false,
@@ -535,7 +339,25 @@
       },
       "unmapped_policy": "unknown",
       "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
-      "interpretation": "binary host-system compatibility; not graded biophysical suitability"
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "host_bindings": {
+        "degraded_farmland": {
+          "variables": [
+            "degraded_farmland"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown"
+        },
+        "depleted_farmland": {
+          "variables": [
+            "depleted_farmland"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown"
+        }
+      }
     },
     "is_scenario_candidate": false,
     "has_future_projection": false,
@@ -579,7 +401,22 @@
       },
       "unmapped_policy": "unknown",
       "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
-      "interpretation": "binary host-system compatibility; not graded biophysical suitability"
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "host_bindings": {
+        "grazing_system_present": {
+          "variables": [
+            "grazing_system_present"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "supporting_variables": [
+            "grassland_class",
+            "ruminant_density"
+          ],
+          "note": "GPW grassland + GLW4 ruminants support scoping; livestock density alone does not prove grazing. Local management interpretation required."
+        }
+      }
     },
     "is_scenario_candidate": false,
     "has_future_projection": false,
@@ -644,7 +481,31 @@
       "footprint_rule": "candidate_lines_not_pixel_area",
       "mapping_reviewer": "Pete Steward",
       "mapping_review_date": "2026-10-20",
-      "boundary_width_policy": "context_specific_from_publications_and_regions"
+      "boundary_width_policy": "context_specific_from_publications_and_regions",
+      "host_bindings": {
+        "field_boundary_zone": {
+          "variables": [
+            "field_boundary_zone"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "note": "Upload field-boundary geometry and locally justified buffered zone; no global buffer width."
+        },
+        "managed_pasture_present": {
+          "variables": [
+            "managed_pasture_present"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "supporting_variables": [
+            "grassland_class",
+            "ruminant_density"
+          ],
+          "note": "GPW grassland + GLW4 ruminants support scoping; livestock density alone does not prove grazing. Local management interpretation required."
+        }
+      }
     },
     "is_scenario_candidate": false,
     "has_future_projection": false,
@@ -727,7 +588,24 @@
       },
       "host_fraction_mask": "coffee_host_fraction",
       "preferred_host_data": "accurate_commodity_maps",
-      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping"
+      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
+      "host_bindings": {
+        "coffee_host_fraction": {
+          "variables": [
+            "coffee_arabica_distribution",
+            "coffee_robusta_distribution"
+          ],
+          "operation": "crop_area_fraction",
+          "input_unit": "ha",
+          "output_unit": "fraction_of_pixel",
+          "data_basis": "modelled_allocation",
+          "technology": "all",
+          "area_measure": "physical_area",
+          "aggregation": "sum_area_then_divide_by_pixel_area",
+          "no_data": "propagate_unknown",
+          "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+        }
+      }
     },
     "is_scenario_candidate": false,
     "has_future_projection": false,
@@ -810,7 +688,23 @@
       },
       "host_fraction_mask": "cocoa_host_fraction",
       "preferred_host_data": "accurate_commodity_maps",
-      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping"
+      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
+      "host_bindings": {
+        "cocoa_host_fraction": {
+          "variables": [
+            "cocoa_distribution"
+          ],
+          "operation": "crop_area_fraction",
+          "input_unit": "ha",
+          "output_unit": "fraction_of_pixel",
+          "data_basis": "modelled_allocation",
+          "technology": "all",
+          "area_measure": "physical_area",
+          "aggregation": "sum_area_then_divide_by_pixel_area",
+          "no_data": "propagate_unknown",
+          "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+        }
+      }
     },
     "is_scenario_candidate": false,
     "has_future_projection": false,
@@ -894,7 +788,23 @@
       "host_fraction_mask": "tea_host_fraction",
       "preferred_host_data": "accurate_commodity_maps",
       "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
-      "crop_authority": "Pete Steward explicit design decision, 2026-10-20; source evidence is coffee/cocoa only"
+      "crop_authority": "Pete Steward explicit design decision, 2026-10-20; source evidence is coffee/cocoa only",
+      "host_bindings": {
+        "tea_host_fraction": {
+          "variables": [
+            "tea_distribution"
+          ],
+          "operation": "crop_area_fraction",
+          "input_unit": "ha",
+          "output_unit": "fraction_of_pixel",
+          "data_basis": "modelled_allocation",
+          "technology": "all",
+          "area_measure": "physical_area",
+          "aggregation": "sum_area_then_divide_by_pixel_area",
+          "no_data": "propagate_unknown",
+          "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+        }
+      }
     },
     "is_scenario_candidate": false,
     "has_future_projection": false,

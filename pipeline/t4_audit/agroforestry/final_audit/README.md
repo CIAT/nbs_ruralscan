@@ -280,3 +280,44 @@ Watch and GLW4 2020 as potential input layers. No AOI data acquired or dataset b
 claimed. Remaining: boundary widths/geometry, host data, contour buffers, other crop
 mappings, Nath drainage legend, Singh class crosswalk and quote mismatch, and Haile
 class interpretation.
+
+
+## Live promotion and dataset bindings — 20 October 2026
+
+Approval-filtered numeric output promoted to live T4: eight stale numeric rows replaced
+by one source-model slope exclusion (>19.3 degrees, converted from 35% source slope).
+Seven categorical gates and nine design/operational rows retained. One-source regional
+transfer remains a limitation; missing numeric evidence is not an inferred optimum.
+CSV is source of truth; runtime JSON regenerated. No frozen columns changed.
+
+Host requirements now declare `host_bindings` inside T4 relationship_params.
+`runtime.host_inputs.plan_family_inputs` resolves each variable through BIND and returns
+used dataset, band, upload flag and source metadata. BIND loader now retains band.
+Country overrides still win; SLE cocoa upload request falls back to global MapSPAM.
+
+MapSPAM 2020 v2r2: verified CGIAR-hosted COG physical_area/all; bands 32 Arabica,
+33 Robusta, 34 cocoa, 35 tea. Both coffee components needed. Physical area / native
+pixel area yields host fraction; do not use harvested-area intensity, sum all plus
+irrigated/rainfed, silently clip >1, or resample hectares as if intensive. Converter
+`crop_area_fraction` preserves missing components as unknown and rejects invalid extents.
+Accurate commodity-map overrides must provide compatible units/provenance; resolver
+does not download, normalize an unknown upload, or align raster grids automatically.
+
+GPW v1 grassland uses publisher GEE collection and dominant_class, aligned to 2020
+where combined with GLW4. GLW4 metadata corrected from obsolete 2010-paper/2015-baseline
+wording to FAO 2020 data; four ruminant species identified. These sources support
+management interpretation; neither supplies confirmed grazing or no-grazing masks.
+Boundary zones, grazing/forage confirmation, degraded/depleted farmland remain explicit
+requires_upload bindings without invented fallbacks. No AOI data run is claimed.
+
+Verified source documentation (20 October 2026):
+- https://cgiar-climate-data-hub.github.io/catalog/spam2020/
+- https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/crop-codes.json
+- https://developers.google.com/earth-engine/datasets/catalog/projects_global-pasture-watch_assets_ggc-30m_v1_grassland_c
+- https://www.fao.org/livestock-systems/global-distributions/en/
+- https://cgiar-climate-data-hub.github.io/catalog/glw4-2020/
+
+No fitness-equivalent MapSPAM 2020 GEE asset verified in this pass; hosted COG windows
+provide partial reads. Source documentation and header checks establish access metadata,
+not local fitness or boundary-width defaults. Dataset acquisition here is T1/BIND
+configuration, not literature EV extraction from a paused CSV/XLSX dataset adapter.
