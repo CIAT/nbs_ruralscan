@@ -369,33 +369,31 @@
   {
     "mapping_id": "agro_silvopastoral_land_cover_gate",
     "nbs_id": "agroforestry",
-    "dataset_id": "esa_worldcover_2021",
+    "dataset_id": "gpw_grassland_class_v1",
     "suitability_dimension": "system_constraint",
     "relationship_type": "ranked_classes",
     "relationship_params": {
       "class_map": {
-        "30": 1,
-        "50": 0,
-        "70": 0,
-        "80": 0
+        "0": 0,
+        "1": 1,
+        "2": 1
       },
       "class_labels": {
-        "20": "Shrubland",
-        "30": "Grassland",
-        "40": "Cropland",
-        "50": "Built-up",
-        "60": "Bare / sparse vegetation",
-        "70": "Snow and ice",
-        "80": "Permanent water bodies"
+        "0": "Other",
+        "1": "Cultivated grassland",
+        "2": "Natural / semi-natural grassland"
       },
       "mapping_role": "eligibility_gate",
       "class_requirements": {
-        "30": [
+        "1": [
+          "grazing_system_present"
+        ],
+        "2": [
           "grazing_system_present"
         ]
       },
       "unmapped_policy": "unknown",
-      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "codebook_reference": "https://developers.google.com/earth-engine/datasets/catalog/projects_global-pasture-watch_assets_ggc-30m_v1_grassland_c",
       "interpretation": "binary host-system compatibility; not graded biophysical suitability",
       "host_bindings": {
         "grazing_system_present": {
@@ -406,18 +404,21 @@
           "output_unit": "binary",
           "no_data": "propagate_unknown",
           "supporting_variables": [
-            "grassland_class",
-            "ruminant_density"
+            "grassland_class"
           ],
-          "note": "GPW grassland + GLW4 ruminants support scoping; livestock density alone does not prove grazing. Local management interpretation required."
+          "note": "Local grazing confirmation required for both GPW grassland classes. GLW density cannot replace confirmation."
         }
-      }
+      },
+      "mapping_review_status": "approved",
+      "mapping_reviewer": "Pete",
+      "mapping_review_date": "2026-10-20",
+      "input_decision_reference": "pipeline/t4_audit/agroforestry/final_audit/README.md#gpw-clarification--20-october-2026"
     },
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 0,
     "weight_adjustable": false,
-    "justification": "Evidence-backed categorical gate. Castle Table 2 (PDF p8) defines trees integrated with forage and grazing animals on pasture/grassland. WorldCover grassland requires independent grazing-system confirmation. Other vegetation classes remain unresolved because they may mix wooded pasture, natural vegetation and other systems. Supporting evidence remains held by Pete; default execution returns pending_evidence_review until that review is resolved.",
+    "justification": "Evidence-backed categorical gate. Castle Table 2 (PDF p8) defines trees integrated with forage and grazing animals on pasture/grassland. WorldCover grassland requires independent grazing-system confirmation. Other vegetation classes remain unresolved because they may mix wooded pasture, natural vegetation and other systems. Supporting evidence remains held by Pete; default execution returns pending_evidence_review until that review is resolved. Pete clarification 2026-10-20: GPW cultivated or natural/semi-natural grassland plus local grazing confirmation; no GLW substitute.",
     "variable": "land_cover",
     "suitability_family_id": "agroforestry__silvopastoral",
     "evidence_ids": [

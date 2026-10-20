@@ -333,3 +333,8 @@ Version `2026-10-20-v1`; proposals only, no analytical changes or approvals appl
 ## Input decisions imported — 20 October 2026
 
 Original Pete export preserved in `docs/review/exports/review_agroforestry-t4-input-decisions-oct20_Pete_2026-10-20.csv`. Outcome report: `docs/review/t4-input-decisions-applied.html`. G2 free-text explicitly removes pasture distinction for boundary planting and supersedes its conditional dropdown. D1 removes universal depletion gate; D2 substitutes agricultural/fallow/former-farmland identity for degradation. Depletion remains targeting context, without a new severity cutoff or T5 priority. G1 local-confirmation selection conflicts with F1 grassland scoping assumption; clarification requested before changing silvopastoral gate. B2 approved, FTW candidate recorded; C1 existing MapSPAM fallback retained. No source evidence rewritten or new evidence extracted. Rangeland FMNR extension remains unresolved.
+
+
+## GPW clarification — 20 October 2026
+
+Pete answered: “GPW grassland plus local grazing confirmation”. This supersedes the G1/F1 ambiguity above. Silvopastoral gate now reads GPW dominant_class: 1 cultivated and 2 natural/semi-natural grassland both require `grazing_system_present`; 0 other is ineligible; unrecognized/nodata stays unknown. Local confirmation remains upload-dependent. GLW density is not a substitute or required dependency. Planted silvoarable optional ungrazed forage branch remains unchanged. Review export retained verbatim; this follow-up records the separate explicit clarification.

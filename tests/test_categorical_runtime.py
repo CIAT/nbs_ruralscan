@@ -114,7 +114,10 @@ def family(name, **kw):
         SCHEMA,
         "agroforestry",
         "agroforestry__" + name,
-        {"esa_worldcover_2021": np.array([40, 30, 10, 80])},
+        {
+            "esa_worldcover_2021": np.array([40, 30, 10, 80]),
+            "gpw_grassland_class_v1": np.array([0, 1, 2, 0]),
+        },
         **kw,
     )
 
@@ -149,7 +152,7 @@ def test_live_schema_family_rules_and_missing_families():
             approved_only=False,
             masks={"grazing_system_present": [0, 1, 0, 0]},
         ).values,
-        [np.nan, 1, np.nan, 0],
+        [0, 1, 0, 0],
     )
     for name in ["linear_boundary", "shaded_perennial"]:
         result = family(name)
@@ -294,3 +297,32 @@ def test_fraction_mask_requires_fraction_unit_provenance():
     )
     assert result.status[0] == "incompatible_host_data"
     assert np.isnan(result.crop_fractions["coffee"][0])
+
+
+def test_gpw_both_grassland_classes_require_local_confirmation():
+    for mask, expected in [([0, 1, 1, 0], [0, 1, 1, 0]), ([0, 0, 0, 0], [0, 0, 0, 0])]:
+        np.testing.assert_equal(
+            family("silvopastoral", masks={"grazing_system_present": mask}).values,
+            expected,
+        )
+    np.testing.assert_equal(family("silvopastoral").values, [0, np.nan, np.nan, 0])
+
+
+def test_gpw_unknown_codes_and_missing_dataset_stay_unknown():
+    result = evaluate_family(
+        SCHEMA,
+        "agroforestry",
+        "agroforestry__silvopastoral",
+        {"gpw_grassland_class_v1": np.array([np.nan, 99])},
+        masks={"grazing_system_present": [1, 1]},
+    )
+    assert np.isnan(result.values).all()
+    result = evaluate_family(
+        SCHEMA,
+        "agroforestry",
+        "agroforestry__silvopastoral",
+        {"esa_worldcover_2021": np.array([30])},
+        masks={"grazing_system_present": [1]},
+    )
+    assert np.isnan(result.values).all()
+    assert result.status[0] == "missing_dataset"

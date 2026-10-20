@@ -34,7 +34,7 @@ def test_boundary_and_grazing_do_not_get_fabricated_fallback():
     grazing = p["grazing_system_present"]
     assert grazing["status"] == "requires_upload"
     assert grazing["inputs"]["grassland_class"]["band"] == "dominant_class"
-    assert grazing["inputs"]["ruminant_density"]["dataset_id"] == "glw4_livestock_2020"
+    assert "ruminant_density" not in grazing["inputs"]
 
 
 def test_physical_area_conversion_preserves_unknown_and_rejects_overallocation():
