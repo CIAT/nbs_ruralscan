@@ -81,20 +81,46 @@ def main():
         f"<tr><td>{html.escape(r['source_id'])}</td><td>{html.escape(r['finding'])}</td><td>{html.escape(r['source_locator'])}</td></tr>"
         for r in coverage
     )
+    extraction = json.loads(
+        (
+            ROOT / "pipeline/t4_audit/agroforestry/five_source_extraction.json"
+        ).read_text()
+    )
+    extraction_rows = []
+    for sid, source in extraction["sources"].items():
+        claims = source["claims"]
+        entries = []
+        for claim in claims:
+            values = html.escape(
+                json.dumps(claim.get("extracted_values", {}), ensure_ascii=False)
+            )
+            quote = html.escape(claim.get("quote", ""))
+            entries.append(
+                f"<tr><td>{html.escape(claim['label'])}</td><td>{', '.join(map(str, claim['pages']))}</td><td>{html.escape(claim['destination'].replace('_', ' '))}</td><td>{html.escape(claim['reason'])}<br>{values}<details><summary>Source quote</summary><blockquote>{quote or 'See cited page; contextual disposition, not an EV claim.'}</blockquote></details></td></tr>"
+            )
+        supplements = " ".join(
+            item.get("reason", item.get("disposition", ""))
+            for item in source["supplements"]
+        )
+        extraction_rows.append(
+            f"<tr><th>{html.escape(sid.replace('_', ' '))}</th><td>{len(source['evidence_ids'])}</td><td>{source['page_count']} pages accounted for.<br>{html.escape(supplements)}<details><summary>{len(claims)} extracted claims / dispositions</summary><table><tr><th>Claim</th><th>PDF page</th><th>Destination</th><th>Meaning and evidence</th></tr>{''.join(entries)}</table></details></td></tr>"
+        )
+    extraction_html = "".join(extraction_rows)
     page = f"""<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 evidence recovery</title>
 <style>body{{font:17px/1.5 system-ui;color:#163d32;background:#f5f8f6;margin:32px auto;max-width:1500px;padding:0 24px}}table{{border-collapse:collapse;width:100%;background:white;margin:20px 0}}th,td{{text-align:left;vertical-align:top;padding:16px;border:1px solid #ceddd5}}th{{background:#edf4ef}}code{{font-size:13px;overflow-wrap:anywhere}}summary{{cursor:pointer;font-weight:600}}h1{{margin-bottom:8px}}a{{color:#096b50}}</style>
-<h1>T4: recovered evidence</h1><p>One approved numeric profile recovered into live T4. Eight new evidence records await human review. All 23 scoping-review papers now accounted for in the source register.</p>
+<h1>T4: recovered evidence</h1><p>One approved numeric profile recovered into live T4. Twenty-one new evidence records across both recovery passes; active records await human review. All 23 scoping-review papers now accounted for in the source register.</p>
 <p><a href="t4-categorical-tables.html">Full live T4</a> · <a href="t4-harmonization-results.html">Cross-paper comparisons</a></p>
 <table><thead><tr><th>Study / variable</th><th>Live T4 now</th><th>With pending evidence</th><th>Meaning / review needed</th></tr></thead><tbody>{table}</tbody></table>
 <p><strong>Reading ranges:</strong> source endpoint conventions remain in machine-readable profiles. Overlapping boundary values stay unknown. Scores are shared ordinal conventions, not probabilities.</p>
 <details><summary>Inspect Chuma’s original class table (p6)</summary><img src="img/chuma2021_table_recovery.png" alt="Chuma Table 3" style="max-width:100%"></details><details><summary>Inspect Haile’s continuation (p6)</summary><img src="img/haile2024_continuation_recovery.png" alt="Haile SOC continuation" style="max-width:100%"></details><h2>Other recovered evidence</h2><p><strong>Ahmad 2020:</strong> Table 2 supplies model weights: temperature, rainfall and aridity 11.11% each; NDVI and slope 16.66% each. Combined soil-condition weight 33.33% stays unallocated among soil variables. These document variable importance within this paper; they do not set T4 thresholds or default weights. Five new records await image-reading review.</p>
 <details><summary>Inspect Ahmad’s original Table 2</summary><img src="img/ahmad2020_table2_recovery.png" alt="Original Ahmad Table 2 page" style="max-width:100%"></details>
-<p><strong>Baldwin 2022:</strong> agricultural/open-land statement retained but quarantined by the scope guardrail (speculative wording). Review whether it supports a host rule, then transfer to agroforestry systems and dataset classes before executing a new mask.</p>
+<h2>Five missing papers: full main-paper extraction</h2><p><strong>13 additional EV records:</strong> 3 structural candidates, 5 operational-risk criteria and 5 species-selection dataset records. No new general biophysical suitability curve. Mendonça’s priority classes and weights are retained in the claim inventory, outside T4.</p><table><tr><th>Paper</th><th>New records</th><th>Extraction and remaining review</th></tr>{extraction_html}</table><p><strong>Review decisions:</strong> Baldwin — confirm NLCD class crosswalk and transfer from US pine-pasture/row-crop systems. Pinto — confirm Montado programme scope and meaning of tree-occupied area; these numbers must not become universal silvopasture thresholds. Ellis — species-selection use counts separately from practice-level agreement. Mendonça — priority routing retained; contradictory small-fragment inequality remains unresolved. Its supplementary worksheets await the project’s dataset-intake adapter.</p><p>Baldwin’s old speculative discussion record stays quarantined. Explicit methods on p8 now provide the replacement pending record.</p>
 <p><strong>Still ambiguous:</strong> Ahmad’s scaled aridity and response interpolation; Haile SOC attribution/unit; Baldwin’s class crosswalk; regional transfer of Chuma elevation. Existing holds remain visible in full T4 review. Castle’s companion code contains species envelopes and environmental-priority weights: neither becomes a general agroforestry threshold.</p>
-<details><summary>Eight new records for human review</summary><table><tr><th>Source</th><th>Variable</th><th>PDF page</th><th>Review ID</th></tr>{pending_html}</table></details>
+<details><summary>Recovery records and review IDs</summary><table><tr><th>Source</th><th>Variable</th><th>PDF page</th><th>Review ID</th></tr>{pending_html}</table></details>
 <details><summary>All 23 scoping papers: disposition and locator</summary><table><tr><th>Source</th><th>Disposition</th><th>Locator</th></tr>{coverage_html}</table></details>
 <h2>Why evidence was missed</h2><p>QA reviewed extracted records, but did not reconcile every paper or every table class. Chuma’s approved numeric fields fell through an unsupported encoding; Haile’s table continued onto another page; Ahmad’s weights were image-only. Five shared PDFs never reached the source register.</p>
 <p>New CI checks reconcile source coverage, inventoried class counts, live approval boundaries, exact reviewer follow-up notes and figure checksums. Compiler tests reject incompatible or overlapping table fragments. These checks protect documented coverage; they cannot prove an unseen PDF contains no further evidence.</p></html>"""
+    page = "\n".join(line.rstrip() for line in page.splitlines()) + "\n"
     (ROOT / "docs/review/t4-evidence-recovery.html").write_text(page)
     (ROOT / "docs/review/t4-evidence-coverage.html").write_text(page)
 

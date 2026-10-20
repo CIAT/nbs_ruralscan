@@ -1,14 +1,407 @@
 <!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 evidence recovery</title>
 <style>body{font:17px/1.5 system-ui;color:#163d32;background:#f5f8f6;margin:32px auto;max-width:1500px;padding:0 24px}table{border-collapse:collapse;width:100%;background:white;margin:20px 0}th,td{text-align:left;vertical-align:top;padding:16px;border:1px solid #ceddd5}th{background:#edf4ef}code{font-size:13px;overflow-wrap:anywhere}summary{cursor:pointer;font-weight:600}h1{margin-bottom:8px}a{color:#096b50}</style>
-<h1>T4: recovered evidence</h1><p>One approved numeric profile recovered into live T4. Eight new evidence records await human review. All 23 scoping-review papers now accounted for in the source register.</p>
+<h1>T4: recovered evidence</h1><p>One approved numeric profile recovered into live T4. Twenty-one new evidence records across both recovery passes; active records await human review. All 23 scoping-review papers now accounted for in the source register.</p>
 <p><a href="t4-categorical-tables.html">Full live T4</a> · <a href="t4-harmonization-results.html">Cross-paper comparisons</a></p>
 <table><thead><tr><th>Study / variable</th><th>Live T4 now</th><th>With pending evidence</th><th>Meaning / review needed</th></tr></thead><tbody><tr><th>Chuma 2021 · slope</th><td>&lt; 2.86 degrees: very high → 0.9<br>[2.86, 11.31] degrees: high → 0.75<br>&gt; 11.31 degrees: moderate → 0.5</td><td>&lt; 2.86 degrees: very high → 0.9<br>[2.86, 11.31] degrees: high → 0.75<br>&gt; 11.31 degrees: moderate → 0.5</td><td>Live: existing human approval preserved. Source slope percentages converted to degrees. Regional response retained; no unsupported transfer to every agroforestry system.</td></tr><tr><th>Haile 2024 · soil organic carbon</th><td>&lt; 5.00 g/kg: low → 0.25<br>[5.00, 7.00] g/kg:  medium → 0.5</td><td>&lt; 5.00 g/kg: low → 0.25<br>[5.00, 7.00] g/kg:  medium → 0.5<br>[7.00, 7.50] g/kg: high → 0.75<br>&gt; 7.50 g/kg:  very high → 0.9</td><td>Review: confirm continuation belongs to SOC and inherited % unit. Two missing classes on p6 join p5 as one source profile; they do not add a second paper vote. Display converted to g/kg.</td></tr><tr><th>Chuma 2021 · elevation</th><td>Not in live T4 — human review pending.</td><td>&lt; 500.00 m: very high → 0.9<br>[500.00, 1000.00] m: high → 0.75<br>[1000.00, 1500.00] m: moderate → 0.5<br>[1500.00, 2000.00] m: low → 0.25<br>&gt; 2000.00 m: marginal → 0.25</td><td>Review: confirm five source classes and regional scope. No global elevation limit inferred.</td></tr></tbody></table>
 <p><strong>Reading ranges:</strong> source endpoint conventions remain in machine-readable profiles. Overlapping boundary values stay unknown. Scores are shared ordinal conventions, not probabilities.</p>
 <details><summary>Inspect Chuma’s original class table (p6)</summary><img src="img/chuma2021_table_recovery.png" alt="Chuma Table 3" style="max-width:100%"></details><details><summary>Inspect Haile’s continuation (p6)</summary><img src="img/haile2024_continuation_recovery.png" alt="Haile SOC continuation" style="max-width:100%"></details><h2>Other recovered evidence</h2><p><strong>Ahmad 2020:</strong> Table 2 supplies model weights: temperature, rainfall and aridity 11.11% each; NDVI and slope 16.66% each. Combined soil-condition weight 33.33% stays unallocated among soil variables. These document variable importance within this paper; they do not set T4 thresholds or default weights. Five new records await image-reading review.</p>
 <details><summary>Inspect Ahmad’s original Table 2</summary><img src="img/ahmad2020_table2_recovery.png" alt="Original Ahmad Table 2 page" style="max-width:100%"></details>
-<p><strong>Baldwin 2022:</strong> agricultural/open-land statement retained but quarantined by the scope guardrail (speculative wording). Review whether it supports a host rule, then transfer to agroforestry systems and dataset classes before executing a new mask.</p>
+<h2>Five missing papers: full main-paper extraction</h2><p><strong>13 additional EV records:</strong> 3 structural candidates, 5 operational-risk criteria and 5 species-selection dataset records. No new general biophysical suitability curve. Mendonça’s priority classes and weights are retained in the claim inventory, outside T4.</p><table><tr><th>Paper</th><th>New records</th><th>Extraction and remaining review</th></tr><tr><th>baldwin 2022</th><td>4</td><td>28 pages accounted for.<br><details><summary>11 extracted claims / dispositions</summary><table><tr><th>Claim</th><th>PDF page</th><th>Destination</th><th>Meaning and evidence</th></tr><tr><td>land_cover</td><td>8</td><td>structural suitability</td><td>Review NLCD class crosswalk and F1/F3 applicability. Methods p6 and p9 include pine-pasture and row-crop agroforestry. No transfer to all systems.<br>{&quot;source_classes&quot;: [&quot;Grassland/Herbaceous&quot;, &quot;Pasture/Hay&quot;, &quot;Cultivated Crops&quot;], &quot;classification&quot;: &quot;NLCD&quot;}<details><summary>Source quote</summary><blockquote>Cropland and Open Land: Open land suitable for most FloodWise practices include
+National Land Cover Database (NLCD) land classes of Grassland/Herbaceous, Pasture/Hay,
+or Cultivated Crops.</blockquote></details></td></tr><tr><td>tenure_security</td><td>10</td><td>operational risk</td><td>Ownership consolidation is adoption feasibility, not proof of secure tenure or structural exclusion.<br>{&quot;source_criterion&quot;: &quot;contiguous parcels with common ownership&quot;}<details><summary>Source quote</summary><blockquote>Single Entity Ownership: Suitable land owned by one consistent owner or ownership
+group affords more opportunities to establish FloodWise practices than suitable land
+split across multiple parcels, each with a different owner or ownership group. Limiting
+opportunity areas to contiguous land with consistent ownership reduces the number of
+stakeholders and decision-makers, increasing the feasibility of FloodWise practice adoption.</blockquote></details></td></tr><tr><td>restorable_patch_area</td><td>10</td><td>operational risk</td><td>Project cost-effectiveness minimum; retain source units and rounded conversion. Not a universal establishment threshold.<br>{&quot;source_minimum_area&quot;: 5, &quot;source_unit&quot;: &quot;acre&quot;, &quot;author_rounded_hectares&quot;: 2}<details><summary>Source quote</summary><blockquote>5-acre Minimum: We determined that a ﬁve-acre (2 ha) minimum area was required
+for all FloodWise practices to be cost-effective to adopt and provide measurable ﬂood
+reduction beneﬁts. After calculating acreage, all ﬁve-acre or greater areas were selected
+and exported to a new dataset, representing opportunity areas for forest and tree planting.</blockquote></details></td></tr><tr><td>built_up_areas</td><td>8</td><td>operational risk</td><td>Project infrastructure-conflict assumptions; not statutory setbacks. Do not execute as global legal masks.<br>{&quot;road_buffer_ft&quot;: 20, &quot;structure_buffer_ft&quot;: 100, &quot;excluded_parcel_uses&quot;: [&quot;solar energy generation&quot;, &quot;communication towers&quot;]}<details><summary>Source quote</summary><blockquote>Existing Infrastructure: To minimize conﬂicts with existing infrastructure, areas within a
+20-foot buffer of existing roads [38], areas within a 100-foot buffer of existing structures [39],
+all parcels used for solar energy generation [40], and all parcels containing communication
+towers [41] were excluded from further analysis (Appendix A). Additionally, areas with
+rural-residential land-use patterns were identiﬁed as posing a high potential for infrastruc-
+ture conﬂicts. As a proxy for rural-residential land-use patterns, all parcels under four acres
+(1.6 ha) were excluded from further analysis.</blockquote></details></td></tr><tr><td>High-value crops</td><td>8</td><td>operational assumption unmapped</td><td>Author assumption about payment-programme uptake, not crop incompatibility.<br>{&quot;excluded&quot;: [&quot;peanuts&quot;, &quot;tobacco&quot;, &quot;sweet potatoes&quot;, &quot;grapes&quot;, &quot;strawberries&quot;, &quot;blueberries&quot;], &quot;years&quot;: [2016, 2020]}<details><summary>Source quote</summary><blockquote>High-Value Crops: Various fruits and vegetables, including peanuts, tobacco, sweet
+potatoes, grapes, strawberries, and blueberries, were identiﬁed as crops with higher prof-
+itability potential in Robeson County. The project team assumed that farmers growing
+crops with potential higher proﬁtability would be less willing to participate in a payment
+program for establishing ﬂood mitigation practices than those farmers that do not make as
+high proﬁtability; therefore, areas identiﬁed as producing high-value crops between 2016
+and 2020 were excluded from further consideration. High-value crop production areas
+were identiﬁed using the Cropland Data Layer, a nationwide dataset published annually by
+NASS that uses satellite imagery to estimate the acreage of major commodity crops [37].
+High-value crop areas were extracted from each cropland dataset for 2016–2020 and merged
+into a single layer.</blockquote></details></td></tr><tr><td>NCCPI low-productivity selection</td><td>9, 10</td><td>operational assumption unmapped</td><td>Economic targeting of less profitable land; no equivalent canonical variable. Do not relabel soil fertility or production gap.<br>{&quot;index_range&quot;: [0, 1], &quot;selected_below&quot;: 0.33}<details><summary>Source quote</summary><blockquote>which ranges from ‘0′ to ‘1′, was used as a proxy for soil productivity, and, for this study,
+low-productivity soils were deﬁned as areas with an NCCPI value of less than ‘0.33′. A
+new raster layer representing low-productivity soils was created by reclassifying all soil
+areas with an NCCPI value below ‘0.33′.</blockquote></details></td></tr><tr><td>Small residential parcel proxy</td><td>8</td><td>operational assumption unmapped</td><td>Residential-conflict proxy distinct from five-acre cost-effectiveness criterion.<br>{&quot;excluded_below_acres&quot;: 4, &quot;author_rounded_ha&quot;: 1.6}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Drainage and floodplain species matching</td><td>10</td><td>species selection method</td><td>Pine versus bottomland hardwood choice, not agroforestry exclusion. No named-taxon envelope.<br>{&quot;floodplain_return_period_years&quot;: [100, 500]}<details><summary>Source quote</summary><blockquote>Lowland vs. Upland Conditions: Appropriate forest species differ depending on lowland
+or upland planting locations, although the differences in elevation in low-lying Robson
+County are small. Pine species require adequate drainage, so they are better suited for
+slightly more upland areas. They also have better ﬁnancial returns, so they are preferred
+when possible. Bottomland hardwoods are more suited for wetter, lowland areas, although
+some hardwoods will grow in most locations in the county. The FEMA 100-year and
+500-year ﬂoodplains were used to approximate the locations of lowland areas. This criterion
+was not exclusionary in identifying opportunity areas but was used as an additional layer
+of information to enhance understanding of existing conditions and tree species suitability.
+The FEMA 100-year and 500-year ﬂoodplain layers were merged and intersected with the
+opportunity areas to identify lowland areas that would be more suitable for bottomland
+hardwood forest species. Other sites that could support forests well on slightly higher
+ground were designated as pine areas.</blockquote></details></td></tr><tr><td>Wetland, stream and dry-dam thresholds</td><td>11, 12, 13, 14</td><td>excluded wrong practice</td><td>Slope, stream buffers and sinuosity belong to other FloodWise practices; not agroforestry.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Speculative land-use discussion</td><td>16</td><td>superseded</td><td>Old dropped record retained; explicit methods now support new pending record.<br>{&quot;superseded_evidence_id&quot;: &quot;ev_T4_landcover_baldwin2022_recovery&quot;}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Remaining sections and Appendix A</td><td>1, 2, 3, 4, 5, 6, 7, 15, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28</td><td>context only</td><td>Rationale, mapped areas, datasets, limitations and references; no additional agroforestry response curve or measured intervention outcome.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr></table></details></td></tr><tr><th>pinto 2019</th><td>4</td><td>11 pages accounted for.<br>MARZONE literature review; no additional primary Montado establishment criteria. Workflow/data inputs, no new eligibility thresholds. Opportunity costs by CORINE class; not class-specific permission. AEM2 costs retained below.<details><summary>9 extracted claims / dispositions</summary><table><tr><th>Claim</th><th>PDF page</th><th>Destination</th><th>Meaning and evidence</th></tr><tr><td>tree_canopy_cover</td><td>5</td><td>structural suitability</td><td>Montado AEM2 eligibility only. Review meaning of occupied-by-trees versus canopy cover before binding. Not an optimum or general silvopasture cutoff.<br>{&quot;criterion_kind&quot;: &quot;programme_eligibility&quot;, &quot;occupied_by_trees_pct&quot;: {&quot;greater_than&quot;: 10}}<details><summary>Source quote</summary><blockquote>AEM_2
+Cattle extensification and
+regeneration of the open
+Montado
+Areas of natural regeneration of cork and
+holm oaks by installing protectors or
+fences, allowing for the minimal tree
+density of 20 trees ha−1 for targeted tree
+species
+&gt;5 ha, &gt;10% occupied by
+trees, 0.15–0.50 cattle
+heads ha−1
+BSPA, SCI, NPA
+15–51</blockquote></details></td></tr><tr><td>silvopastoral_grazing</td><td>5</td><td>operational risk</td><td>Programme stocking range; cattle only. Do not substitute total ruminant density or infer ecological bounds.<br>{&quot;criterion_kind&quot;: &quot;programme_eligibility&quot;, &quot;cattle_heads_per_ha&quot;: [0.15, 0.5], &quot;regeneration_protection&quot;: [&quot;protectors&quot;, &quot;fences&quot;]}<details><summary>Source quote</summary><blockquote>AEM_2
+Cattle extensification and
+regeneration of the open
+Montado
+Areas of natural regeneration of cork and
+holm oaks by installing protectors or
+fences, allowing for the minimal tree
+density of 20 trees ha−1 for targeted tree
+species
+&gt;5 ha, &gt;10% occupied by
+trees, 0.15–0.50 cattle
+heads ha−1
+BSPA, SCI, NPA
+15–51</blockquote></details></td></tr><tr><td>restorable_patch_area</td><td>5</td><td>operational risk</td><td>Programme minimum area, not biological suitability.<br>{&quot;criterion_kind&quot;: &quot;programme_eligibility&quot;, &quot;area_greater_than_ha&quot;: 5}<details><summary>Source quote</summary><blockquote>AEM_2
+Cattle extensification and
+regeneration of the open
+Montado
+Areas of natural regeneration of cork and
+holm oaks by installing protectors or
+fences, allowing for the minimal tree
+density of 20 trees ha−1 for targeted tree
+species
+&gt;5 ha, &gt;10% occupied by
+trees, 0.15–0.50 cattle
+heads ha−1
+BSPA, SCI, NPA
+15–51</blockquote></details></td></tr><tr><td>land_cover</td><td>5</td><td>structural suitability</td><td>Montado conservation planning excludes urban/industrial pixels. Review crosswalk; other classes are not automatically eligible.<br>{&quot;excluded_source_classes&quot;: [&quot;urban&quot;, &quot;industrial&quot;]}<details><summary>Source quote</summary><blockquote>Pixels without suitable areas for the
+implementation of the SEMs and AEMs, such as urban or
+industrial areas, are excluded from further analysis.</blockquote></details></td></tr><tr><td>AEM2 tree-density target</td><td>5</td><td>implementation target</td><td>At least 20 trees/ha is restoration target, not existing-host eligibility.<br>{&quot;target_min_trees_per_ha&quot;: 20}<details><summary>Source quote</summary><blockquote>AEM_2
+Cattle extensification and
+regeneration of the open
+Montado
+Areas of natural regeneration of cork and
+holm oaks by installing protectors or
+fences, allowing for the minimal tree
+density of 20 trees ha−1 for targeted tree
+species
+&gt;5 ha, &gt;10% occupied by
+trees, 0.15–0.50 cattle
+heads ha−1
+BSPA, SCI, NPA
+15–51</blockquote></details></td></tr><tr><td>AEM1, SEM1, SEM2</td><td>5</td><td>excluded other measures</td><td>Rainfed rotation and forest-conservation measures do not independently establish silvopastoral suitability; retain separate programme definitions.<br>{&quot;AEM1&quot;: {&quot;area_gt_ha&quot;: 5, &quot;trees_lt_per_ha&quot;: 10, &quot;cattle_lt_per_ha&quot;: 0.7}, &quot;SEM1&quot;: {&quot;area_ha&quot;: [0.5, 50], &quot;trees_gt_per_ha&quot;: 50, &quot;buffer_m&quot;: 20}, &quot;SEM2&quot;: {&quot;area_gt_ha&quot;: 0.5}}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Rainfall and slope at study site</td><td>3</td><td>excluded site descriptor</td><td>Observed site climate/terrain are not suitability bounds.<br>{&quot;rainfall_mm&quot;: 500, &quot;slope_pct&quot;: [0, 5]}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Conservation species, payments and costs</td><td>5, 6, 7, 8, 9, 10</td><td>priority and economic context</td><td>Biodiversity targets and opportunity costs are not establishment response curves; payments are not implementation costs.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Other pages</td><td>1, 2, 4, 11</td><td>context only</td><td>Cover, introduction, workflow and bibliography; no additional establishment functions.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr></table></details></td></tr><tr><th>ellis 2000</th><td>5</td><td>15 pages accounted for.<br><details><summary>10 extracted claims / dispositions</summary><table><tr><th>Claim</th><th>PDF page</th><th>Destination</th><th>Meaning and evidence</th></tr><tr><td>annual_precipitation</td><td>10</td><td>dataset</td><td>FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.<br>{}<details><summary>Source quote</summary><blockquote>The ﬁrst part of an SQL query built during run time is based on climate and soils
+parameters and conditions associated with a selected location. Climate parameters
+of annual precipitation, minimum temperature and average growing season are
+represented and extracted at the county level. Soils information including pH,
+texture, drainage and ﬂooding conditions are linked to the general soils areas
+mapped out by the USDA-NRCS State Soil Surveys. After a location has been
+selected and the user continues using FADSS, the SQL query of the plants database
+will include statements that select trees adapted (or tolerant) to numerical parame-
+ters such as rainfall, temperature and soil pH and descriptive conditions such as
+drainage type and texture composition. Fig. 4 shows a sample Delphi script which
+tests for a variety conditions and builds the appropriate SQL queries that incorpo-
+rate climate and soil variables of the selected location.</blockquote></details></td></tr><tr><td>frost_free_period</td><td>10</td><td>dataset</td><td>FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.<br>{}<details><summary>Source quote</summary><blockquote>The ﬁrst part of an SQL query built during run time is based on climate and soils
+parameters and conditions associated with a selected location. Climate parameters
+of annual precipitation, minimum temperature and average growing season are
+represented and extracted at the county level. Soils information including pH,
+texture, drainage and ﬂooding conditions are linked to the general soils areas
+mapped out by the USDA-NRCS State Soil Surveys. After a location has been
+selected and the user continues using FADSS, the SQL query of the plants database
+will include statements that select trees adapted (or tolerant) to numerical parame-
+ters such as rainfall, temperature and soil pH and descriptive conditions such as
+drainage type and texture composition. Fig. 4 shows a sample Delphi script which
+tests for a variety conditions and builds the appropriate SQL queries that incorpo-
+rate climate and soil variables of the selected location.</blockquote></details></td></tr><tr><td>soil_ph</td><td>10</td><td>dataset</td><td>FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.<br>{}<details><summary>Source quote</summary><blockquote>The ﬁrst part of an SQL query built during run time is based on climate and soils
+parameters and conditions associated with a selected location. Climate parameters
+of annual precipitation, minimum temperature and average growing season are
+represented and extracted at the county level. Soils information including pH,
+texture, drainage and ﬂooding conditions are linked to the general soils areas
+mapped out by the USDA-NRCS State Soil Surveys. After a location has been
+selected and the user continues using FADSS, the SQL query of the plants database
+will include statements that select trees adapted (or tolerant) to numerical parame-
+ters such as rainfall, temperature and soil pH and descriptive conditions such as
+drainage type and texture composition. Fig. 4 shows a sample Delphi script which
+tests for a variety conditions and builds the appropriate SQL queries that incorpo-
+rate climate and soil variables of the selected location.</blockquote></details></td></tr><tr><td>soil_texture</td><td>10</td><td>dataset</td><td>FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.<br>{}<details><summary>Source quote</summary><blockquote>The ﬁrst part of an SQL query built during run time is based on climate and soils
+parameters and conditions associated with a selected location. Climate parameters
+of annual precipitation, minimum temperature and average growing season are
+represented and extracted at the county level. Soils information including pH,
+texture, drainage and ﬂooding conditions are linked to the general soils areas
+mapped out by the USDA-NRCS State Soil Surveys. After a location has been
+selected and the user continues using FADSS, the SQL query of the plants database
+will include statements that select trees adapted (or tolerant) to numerical parame-
+ters such as rainfall, temperature and soil pH and descriptive conditions such as
+drainage type and texture composition. Fig. 4 shows a sample Delphi script which
+tests for a variety conditions and builds the appropriate SQL queries that incorpo-
+rate climate and soil variables of the selected location.</blockquote></details></td></tr><tr><td>soil_drainage</td><td>10</td><td>dataset</td><td>FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.<br>{}<details><summary>Source quote</summary><blockquote>The ﬁrst part of an SQL query built during run time is based on climate and soils
+parameters and conditions associated with a selected location. Climate parameters
+of annual precipitation, minimum temperature and average growing season are
+represented and extracted at the county level. Soils information including pH,
+texture, drainage and ﬂooding conditions are linked to the general soils areas
+mapped out by the USDA-NRCS State Soil Surveys. After a location has been
+selected and the user continues using FADSS, the SQL query of the plants database
+will include statements that select trees adapted (or tolerant) to numerical parame-
+ters such as rainfall, temperature and soil pH and descriptive conditions such as
+drainage type and texture composition. Fig. 4 shows a sample Delphi script which
+tests for a variety conditions and builds the appropriate SQL queries that incorpo-
+rate climate and soil variables of the selected location.</blockquote></details></td></tr><tr><td>Other database fields</td><td>5, 10, 11</td><td>species selection unmapped</td><td>Minimum temperature, salinity, flooding and hydric conditions need exact ontology matches; do not substitute mean temperature.<br>{&quot;fields&quot;: [&quot;minimum temperature&quot;, &quot;soil salinity&quot;, &quot;soil flooding&quot;, &quot;hydric conditions&quot;]}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>SQL example</td><td>11</td><td>species selection method</td><td>Dynamic comparisons use species tolerances; not fixed agroforestry thresholds. Preserve printed pH OR logic, not silently correct it.<br>{&quot;pH_query_join&quot;: &quot;OR&quot;, &quot;soil_texture_codes&quot;: [&quot;FS&quot;, &quot;S&quot;], &quot;anaerobic_tolerance&quot;: [&quot;H&quot;, &quot;M&quot;]}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Root-depth trait</td><td>14</td><td>unresolved source unit</td><td>Figure 7 root-depth minimum &gt;20 has no displayed unit and no specified species; cannot become soil-depth limit.<br>{&quot;root_depth_minimum_greater_than&quot;: 20, &quot;unit&quot;: null}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Practice descriptions and tool workflow</td><td>3, 4, 6, 7, 8, 9, 12, 13</td><td>method context</td><td>Alley cropping, silvopasture, windbreaks and riparian systems select species. Forest farming excluded by tool, not by agroforestry feasibility.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Introduction and references</td><td>1, 2, 15</td><td>context only</td><td>No additional attributable establishment response.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr></table></details></td></tr><tr><th>mendonca 2022</th><td>0</td><td>20 pages accounted for.<br><details><summary>8 extracted claims / dispositions</summary><table><tr><th>Claim</th><th>PDF page</th><th>Destination</th><th>Meaning and evidence</th></tr><tr><td>SIPA-AFS weights</td><td>5</td><td>deferred priority need</td><td>Restoration priority combines environmental vulnerability and alternative anthropogenic factors; these are not variable weights for establishment suitability.<br>{&quot;geology&quot;: 0.056, &quot;soil&quot;: 0.122, &quot;slope&quot;: 0.263, &quot;alternative_anthropogenic_factor&quot;: 0.558}<details><summary>Source quote</summary><blockquote>environment in river basins, composed of multiple environmental factors
+that characterized the erosion risks and erosion rate, which is a measure
+of the exposure of the land to the environment by some risk (natural loss
+of soil). To calculate the natural vulnerability (secondary data), the process-
+ing, classiﬁcation and integration of environmental factors (primary data)
+were carried out in a GIS environment. Each factor represents a vulnerabil-
+ity agent and corresponds to a raster layer (information plan).
+The basic territorial units are the elementary cells of information on en-
+vironmental factors and anthropogenic factors. Each cell (pixel) contains
+the set of information to perform the functions in the development of the
+geographical unit of the hydrographic basin. The primary data of each
+cell (considered as one pixel per unit from remote sensing raster image)
+was composed of environmental factors: geology (geological units), pedol-
+ogy (soil type), relief (slope) and anthropogenic factors (context of land-
+scape and suitability for AFS):
+2.2.2.1. Geology. The geological data raster was obtained from the Geolog-
+ical Map of the State of São Paulo. The raster ﬁle was clipped from the edge
+of the study area and classiﬁed according to Table 2 for the thematic map
+production and its use in Eq. (1). Area information (ha) of each geological
+class was also extracted.
+2.2.2.2. Soil type. The information on soil types in the study area were ex-
+tracted from the Soil Map of the State of São Paulo. The raster ﬁle was ex-
+tracted, projected and classiﬁed at category level: Order and reclassify
+according to MDCA propositions and ranking (Table 2). A cross-
+tabulation was also performed to obtain the area according to class.
+2.2.2.3. Slope. The slope data were derived from the Digital Elevation Model
+(DEM) reprocessed by the Brazilian National Institute for Space Research
+(INPE) with a spatial resolution of 30 m × 30 m, from the scanned informa-
+tion of the orbital sensors from the Shuttle Radar Topography Mission
+(SRTM), which represents the terrestrial topography with a spatial resolu-
+tion of 90 m × 90 m. The DEM model has been utilized to generate the
+slope map. Though the Spatial Analyst tools, was performed ﬁlls sinks in
+the surface raster to remove small imperfections in the data, and then
+slope was calculated by the bilinear resampling method (default) of the
+Surface and Slope functions of ArcMap. The elevation output of slope values
+is expressed in percentage and was classiﬁed in a range according to
+the classiﬁcation proposed by Embrapa (2006): 0–3% (ﬂat); 3–8% (gentle
+undulating); 8–20% (Undulating); 20–45% (high undulating); 45–75%
+(mountainous) and 75–100% (cliff). Subsequently, the layer was reclassi-
+ﬁed according to the weights of the MDCA classiﬁcation for the processing
+of natural vulnerability.
+The algebraic operations were carried out with the same methodology
+performed in the tools, operators and functions of the ArcGIS Spatial Ana-
+lyst extension to perform the geographical analysis of the secondary data
+set. Through information plan algebra, equated by the arithmetic mean of
+all factors and by the hierarchy of processes analysis (Analytic Hierarchy
+Process-AHP), the weight (that is, AHP normalized classiﬁcation) of the
+various classes for each environmental and anthropic factor was classiﬁed
+in terms of the relative strength of each class within each factor and the im-
+portance of these for the analysis, based on the review of the relevant liter-
+ature for each factor and in the decision making of the relative importance
+among the criteria calculated using the pair comparison matrix proposed by
+Saaty (1987, 1977), Table 2.
+Table 2
+Ranking in values of the mutual importance for each environmental and anthropogenic factor the comparator scale (Saaty, 1977).
+Metrics
+Class
+Ratings
+Ranking of
+importance
+Weight
+Produced map
+Algebra map
+Environmental factors - EF
+Geology (geological units)
+Serra Geral
+7
+1
+0.056
+Environmental factors. Fig. 3a)
+Natural vulnerability Fig. 4
+Vale do Rio do Peixe
+5
+Aluvial deposits
+3
+Pedology (soil type)
+Argisols
+9
+3
+0.122
+Environmental factors. Fig. 3b)
+Oxisols
+7
+Gleisols
+5
+Nitosols
+4
+Neosols
+3
+Organosols
+2
+Relief (slope %)
+0 -I 3
+Flat
+1
+5
+0.263
+Environmental factors. Fig. 3c)
+3 -I 8
+Gently undulating
+3
+8 -I 20
+Undulating
+7
+20 -I 45
+Highly undulating
+9
+Anthropogenic factors - AF (alternating variablea)
+Land use and land cover (LULC)
+Forest
+9
+7
+0.558a
+Anthropogenic factors. Fig. 5a)
+Exploratory scenario Fig. 7a) SI
+Agriculture
+5
+Grassland
+7
+Anthropic uses
+1
+Forest fragments (FF) - size class (ha)
+&lt;10
+Small
+9
+7
+0.558a
+Anthropogenic factors. Fig. 5b)
+Exploratory scenario Fig. 7b) SII
+10 -I 50
+Average
+7
+50 -I 100
+Large
+5
+100–325
+Very large
+3
+Potential land use capacity (PLUC)
+Class II
+2
+7
+0.558a
+Anthropogenic factors. Fig. 6a)
+Exploratory scenario Fig. 7c) SII
+Class III
+3
+Class IV
+4
+Class V
+5
+Class VI
+7
+Class VII
+9
+Unclassiﬁed
+1
+Urban areas
+1
+Legal reserve (LR)
+Legally protected areas
+9
+7
+0.558a
+Anthropogenic factors. Fig. 6a)
+Exploratory scenario Fig. 7c) SIV
+No data
+1
+Combined factors
+Buffer zones + legal reserve
+9
+7
+0.558a
+Combined factors. Fig. 9
+Priority areas Fig. 10
+No data
+1
+a Variable factor, that alternates in the equation according to the objective approach for simulating scenarios of AFS implementation: landscape approach (current land use,
+forest fragments); suitability approach (land use capacity, protected areas - legal reserve).
+G.C. de Mendonça et al.
+Science of the Total Environment 839 (2022) 156185
+5
+</blockquote></details></td></tr><tr><td>Slope priority classes</td><td>5</td><td>deferred priority need</td><td>Higher slope receives higher erosion-vulnerability priority. Never use as increasing establishment suitability.<br>{&quot;unit&quot;: &quot;%&quot;, &quot;classes&quot;: [{&quot;range&quot;: [0, 3], &quot;score&quot;: 1}, {&quot;range&quot;: [3, 8], &quot;score&quot;: 3}, {&quot;range&quot;: [8, 20], &quot;score&quot;: 7}, {&quot;range&quot;: [20, 45], &quot;score&quot;: 9}], &quot;endpoint_convention&quot;: &quot;not explicit; not harmonized&quot;}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Other priority classes</td><td>5</td><td>deferred priority need</td><td>Source Table 2 values retained without T4 harmonization.<br>{&quot;geology&quot;: {&quot;Serra Geral&quot;: 7, &quot;Vale Rio Peixe&quot;: 5, &quot;alluvial deposits&quot;: 3}, &quot;soil&quot;: {&quot;Argisols&quot;: 9, &quot;Oxisols&quot;: 7, &quot;Gleisols&quot;: 5, &quot;Nitosols&quot;: 4, &quot;Neosols&quot;: 3, &quot;Organosols&quot;: 2}, &quot;land_use&quot;: {&quot;forest&quot;: 9, &quot;agriculture&quot;: 5, &quot;grassland&quot;: 7, &quot;anthropic&quot;: 1}, &quot;fragment_size_ha&quot;: {&quot;&lt;10&quot;: 9, &quot;10–50&quot;: 7, &quot;50–100&quot;: 5, &quot;100–325&quot;: 3}, &quot;land_capability&quot;: {&quot;II&quot;: 2, &quot;III&quot;: 3, &quot;IV&quot;: 4, &quot;V&quot;: 5, &quot;VI&quot;: 7, &quot;VII&quot;: 9, &quot;unclassified&quot;: 1, &quot;urban&quot;: 1}, &quot;legal_reserve&quot;: {&quot;present&quot;: 9, &quot;no_data&quot;: 1}, &quot;buffer_and_reserve&quot;: {&quot;present&quot;: 9, &quot;no_data&quot;: 1}}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Fragment buffer distances</td><td>7, 8</td><td>deferred priority need</td><td>Forest-edge restoration prioritization; not windbreak/boundary establishment buffers.<br>{&quot;land_capability_II_III_m&quot;: 50, &quot;IV_V_m&quot;: 250, &quot;VI_VII_m&quot;: 500}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Small-fragment inequality contradiction</td><td>5, 6, 15</td><td>unresolved source conflict</td><td>Table 2 uses &lt;10 ha; narrative says &gt;10 ha. Preserve table transcription and flag before priority implementation.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Land capability Table 3</td><td>7</td><td>secondary classification</td><td>General land capability classification; not direct agroforestry response calibration.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Brazilian legal restoration provisions</td><td>15</td><td>jurisdiction context</td><td>Historical regulated restoration conditions, not universal protected-area exclusion or permission. Requires current jurisdiction-specific validation.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Remaining pages and area results</td><td>1, 2, 3, 4, 6, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20</td><td>context only</td><td>Priority area outputs, scenarios, discussion and references do not provide new establishment functions or observed intervention effects.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr></table></details></td></tr><tr><th>mendonca 2023</th><td>0</td><td>15 pages accounted for.<br>Dataset intake remains paused; no spreadsheet adapter. Main-paper extraction complete; supplementary dataset validation not claimed.<details><summary>5 extracted claims / dispositions</summary><table><tr><th>Claim</th><th>PDF page</th><th>Destination</th><th>Meaning and evidence</th></tr><tr><td>SIPA-AFS weights</td><td>5</td><td>deferred priority need</td><td>Restoration priority combines environmental vulnerability and alternative anthropogenic factors; these are not variable weights for establishment suitability.<br>{&quot;geology&quot;: 0.056, &quot;soil&quot;: 0.122, &quot;slope&quot;: 0.263, &quot;alternative_anthropogenic_factor&quot;: 0.558}<details><summary>Source quote</summary><blockquote>G.C. de Mendonça, L.M. da Costa, M.T.V.N. Abdo et al.
+MethodsX 10 (2023) 102052
+The section Method validation provides an overview of the source and processing of the selected criteria (geodataset factors) used
+in this methodology. All data sets are georeferenced and are either vector (shapeﬁle) or raster ﬁles so that the overall processing
+of the geodatabases follows the speciﬁc executions of each GIS package. Therefore, the methodology description will emphasize the
+general procedures and tools for the creation, conversion, and analysis of each input database (EF and AF) and the combination of
+the information sets for the corresponding outputs (V, ES, SIPA-AFS).
+Step 1: natural vulnerability (V)
+The determination of V is the ﬁrst step in the development of this method and is based on the evaluation framework of the Land
+vulnerability (Vu) methodology proposed by Pissarra [16] . With this, we establish a general basis that reinforces the priority of the
+areas of highest risk of natural land loss in the agroecosystem, regardless of which decision-making approach may be employed. The
+method of identiﬁes the fragility of the natural environment in watersheds based on multiple environmental factors that characterize
+erosion risks, which is a measure of the exposure of land to the environment for some risk (natural soil loss). It is a multi-criteria
+spatial analysis implemented in GIS software, where land vulnerability (secondary data) is derived from the spatial distribution of
+three environmental factors: geology (G), soil (S), slope (SL), and, an anthropogenic factor: land cover - primary data. Each factor
+represents an agent of vulnerability and corresponds to the input of a layer (raster) in the spatial modeling of map algebra. The factors
+are expressed in numerical (SL) and categorical (G, S) scales, but independently are evaluated within the landscape and subsequently
+converted to a shared dimensionless scale (rank and weight) to allow consistent aggregation and mutual comparison within the
+mathematical framework of multicriteria decision analysis and thus estimate the natural vulnerability of the landscape. The MDCA
+method adopted was the Analytic Hierarchy Process (AHP), which equates and weights each criterion (factor) by the arithmetic mean
+of the information plan and its relative importance among the criteria calculated by the pairwise comparison matrix as proposed by
+Saaty [58–60] , which evaluates the relative importance in a set of weights from 1 to 9. The participatory decision-making process
+consulted researchers specialized in forest conservation and sustainable production. The authors technical background and their
+articulation with diﬀerent stakeholders - small land owners and governance agents, were also considered [9] . The factors are ranked
+as to relevance in the landscape structure and as to the classiﬁcation of the attributes of each factor: geology (lithological types),
+soil (soil types), slope (slope classes), and land cover (land use and land cover classes). Additionally, all factors are ranked by their
+overall inﬂuence on natural vulnerability, as a dimensionless parameter to become comparable. The weight value is the importance
+of each factor on the landscape scale, higher weights point to the most important parameters, and higher rankings also indicate the
+most vulnerable classes. The consistency of judgments regarding the importance of factors to land vulnerability presented by Pissarra
+[16] is validated by the Consistency Index (CI) at a rate above &lt; 0.1 [60] . All class ratings of each factor, factor ranking of importance,
+and weight are available in the supplementary material (sheet 1). Once the weights of each class and each factor are validated, the
+algebraic operations of the “Spatial Analyst Tool: Map Algebra/Raster Calculator ” functions of the ArcMap GIS combine the maps
+(raster ﬁles) corresponding to each factor and multiply them by the corresponding MDCA weights to determine the land vulnerability
+’according to the equation:
+𝑉 𝑢 = ( 0 . 056 𝐺 ) + ( 0 . 122 𝑆 ) + ( 0 . 263 𝑆𝑙 ) + ( 0 . 558 𝐿𝑈𝐿𝐶 )
+(1)
+Where: Vu = land vulnerability; G = geology; S = soil; Sl = slope; LULC = land cover
+Here it is highlighted that in Pissarra [16] the default anthropogenic factor is land cover, and for this reason, the proposed indicator
+methodology (SIPA-AFS) assumes at ﬁrst as natural vulnerability (V) only the algebraic combination of environmental factors (G, S,
+Sl), i.e., it suppresses the aggregation of the LULC component, a partial application of Eq. (1) proposed in the previous methodology.
+Then, the map algebra for determining the natural vulnerability of the landscape only computes V = (0.056 G) + (0.122 S) + (0.263
+Sl). From the partial application of Eq. (1) a map of continuous values is generated depending mainly on the quantity and ratings of
+the classes of each factor. It is emphasized that the weighting of the weights of each class and the global importance of the factors was
+established in relation to the intrinsic potential for erosion, either by comparison of one factor in relation to the other, or intra-classes.
+In this methodology, we maintained the greatest weight for the slope factor, which has a direct expression in the intensity of water
+ﬂows and the kinetic potential of surface runoﬀ[ 61 , 62 ]. Following in importance the type of soil of the landscape by observing the
+erodibility coeﬃcient (K factor) of the Universal Soil Loss Equation (USLE), reviewed in the literature [ 26 , 63 ]. Geology follows in
+expressiveness as an erosive agent but provides the basic conditions for inﬁltration of surface water ﬂows or mass movement [64] . The
+anthropogenic factor, to be used in step 2, holds the greatest weight in the decision making, as it reﬂects the actual exposure and risk
+of degradation and the socioeconomic and environmental demands for the implementation of the AFS. When drawing a vulnerability
+map this range is simpliﬁed through the equal interval classiﬁcation method, that divides attribute values into four equal size ranges
+where the highest values correspond to the highest risk of landscape degradation through soil erosion, sorted into 4 qualitative
+vulnerability classes: (1) Low vulnerability; (2) Average vulnerability; (3) High vulnerability; (4) Extreme vulnerability. In general,
+geoprocessing software provides many standard classiﬁcation methods that are used for classifying numerical ﬁelds for graduated
+symbology. In this case, in ArcMap we generate the 4 intervals from the classiﬁcation of the raster ﬁle, by the commands: Layer
+Properties/ Symbology/ Classiﬁed/Classify. We deﬁned only four classes to optimize the visualization in decision-making process
+and selected the equal interval classiﬁcation method to create classes of equal sizes, since the range of values is normally distributed.
+Step 2: exploratory scenarios (ES)
+This module is responsible for the aggregation of the anthropogenic factor to the evaluation of V, discriminated here in four
+anthropogenic factors (LU, FF, PLUC, PA), which represent the human pressure on the environment and its implications for the
+recovery of the landscape by the AFS. These are supporting indicators for the simulation of scenarios favorable to the implementation
+5
+</blockquote></details></td></tr><tr><td>Companion method inputs and classes</td><td>6, 7, 8, 9, 10, 11, 12</td><td>deferred priority need</td><td>Same SIPA-AFS lineage; companion explanations do not create independent paper votes.<br>{&quot;fragment_buffers_m&quot;: [50, 250, 500], &quot;natural_vulnerability_weight_sum&quot;: 0.441, &quot;anthropogenic_factor_alternatives&quot;: true}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Brazilian legal restoration provisions</td><td>7</td><td>jurisdiction context</td><td>Historical scoped restoration provision; no global T4 legal rule.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Small-fragment inequality</td><td>12</td><td>unresolved source conflict</td><td>Narrative &gt;10 ha conflicts with 2022 Table 2 &lt;10 ha; do not resolve by inference.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr><tr><td>Other pages and supplements</td><td>1, 2, 3, 4, 13, 14, 15</td><td>context only</td><td>Method overview, data availability and references; no independent numeric establishment response.<br>{}<details><summary>Source quote</summary><blockquote>See cited page; contextual disposition, not an EV claim.</blockquote></details></td></tr></table></details></td></tr></table><p><strong>Review decisions:</strong> Baldwin — confirm NLCD class crosswalk and transfer from US pine-pasture/row-crop systems. Pinto — confirm Montado programme scope and meaning of tree-occupied area; these numbers must not become universal silvopasture thresholds. Ellis — species-selection use counts separately from practice-level agreement. Mendonça — priority routing retained; contradictory small-fragment inequality remains unresolved. Its supplementary worksheets await the project’s dataset-intake adapter.</p><p>Baldwin’s old speculative discussion record stays quarantined. Explicit methods on p8 now provide the replacement pending record.</p>
 <p><strong>Still ambiguous:</strong> Ahmad’s scaled aridity and response interpolation; Haile SOC attribution/unit; Baldwin’s class crosswalk; regional transfer of Chuma elevation. Existing holds remain visible in full T4 review. Castle’s companion code contains species envelopes and environmental-priority weights: neither becomes a general agroforestry threshold.</p>
-<details><summary>Eight new records for human review</summary><table><tr><th>Source</th><th>Variable</th><th>PDF page</th><th>Review ID</th></tr><tr><td>haile_2024</td><td>soil_organic_carbon</td><td>6</td><td><code>ev_T4_soc_haile2024_continuation</code></td></tr><tr><td>ahmad_2020</td><td>mean_annual_temperature</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_mean_annual_temperature</code></td></tr><tr><td>ahmad_2020</td><td>annual_precipitation</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_annual_precipitation</code></td></tr><tr><td>ahmad_2020</td><td>aridity_index</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_aridity_index</code></td></tr><tr><td>ahmad_2020</td><td>ndvi</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_ndvi</code></td></tr><tr><td>ahmad_2020</td><td>slope</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_slope</code></td></tr><tr><td>baldwin_2022</td><td>land_cover</td><td>16</td><td><code>ev_T4_landcover_baldwin2022_recovery</code></td></tr><tr><td>chuma_2021</td><td>elevation</td><td>6</td><td><code>ev_T4_elevation_chuma2021_recovery</code></td></tr></table></details>
-<details><summary>All 23 scoping papers: disposition and locator</summary><table><tr><th>Source</th><th>Disposition</th><th>Locator</th></tr><tr><td>brandt_2015</td><td>Reviewed exclusion</td><td>Prior review; no reopening</td></tr><tr><td>castle_2025</td><td>Already contributes; code adds methods</td><td>PDF pp7–8; code lines 137–145, 578–579, 689</td></tr><tr><td>mendonca_2022</td><td>Registered; restoration priority, not establishment suitability</td><td>PDF pp5–6, Table1 and equation1</td></tr><tr><td>mendonca_2023</td><td>Registered; corrected DOI; same SIPA-AFS lineage; restoration priority</td><td>PDF p1; MethodsX 10 (2023), article102052</td></tr><tr><td>palma_2007</td><td>Different evidence purpose</td><td>Existing reviewed records; PDF method/table screening</td></tr><tr><td>ahmad_2020</td><td>Image-table model weights recovered; pending human review</td><td>PDF p10 Table2; pp5–6 methods</td></tr><tr><td>baldwin_2022</td><td>Registered; land-use claim recovered, pending human review</td><td>PDF pp6,9–10,16</td></tr><tr><td>chuma_2021</td><td>Approved slope recovered into numeric compiler; elevation pending review</td><td>PDF p5 Table2, p6 Table3; ev_T4_slope_chuma21_1</td></tr><tr><td>kiziridis_2026</td><td>Scenario and model evidence</td><td>Existing source-specific audit; active scenario-grid records</td></tr><tr><td>marinis_2022</td><td>Reviewed scope exclusion supported</td><td>PDF pp6–8, Tables1–3; review log</td></tr><tr><td>mushtaq_2023</td><td>Species scope; generic statement retained</td><td>Previous full-text review; PDF p17</td></tr><tr><td>nath_2021</td><td>Already contributes; ambiguities retained</td><td>Previous full-text review; PDF p11 Table2</td></tr><tr><td>pinto_2019</td><td>Registered; conservation prioritisation, not establishment thresholds</td><td>PDF p4 (printed p253), methods</td></tr><tr><td>singh_2024</td><td>No extracted T4 response</td><td>Stocktake narrative and source/EV reconciliation; detailed recovery lower priority</td></tr><tr><td>unger_2023</td><td>Categorical/context evidence</td><td>Existing reviewed records; PDF methods screening</td></tr><tr><td>wotlolan_2021</td><td>Already contributes; crop evidence retained</td><td>Existing reviewed source profiles and scope audit</td></tr><tr><td>yadav_2024</td><td>Species scope corrected</td><td>Previous full-text review; PDF pp5–7</td></tr><tr><td>ahmad_2017</td><td>Reviewed exclusions; do not restore blindly</td><td>Review log 2026-10-19; source table screening</td></tr><tr><td>ahmad_2018</td><td>Already contributes</td><td>Previous full-text review; PDF pp8–10</td></tr><tr><td>ellis_2000</td><td>Registered; species-selection layer, not general practice thresholds</td><td>PDF pp5–7,10,13; Tables2–3</td></tr><tr><td>haile_2024</td><td>SOC continuation recovered; pending human review</td><td>PDF pp5–6 Table4; ev_T4_soc_haile2024_1</td></tr><tr><td>seja_2022</td><td>Land allocation rather than generic envelope</td><td>Existing reviewed records; PDF methods screening</td></tr><tr><td>haris_2021</td><td>Crop/land-capability evidence</td><td>PDF pp3–5; existing scope audit</td></tr></table></details>
+<details><summary>Recovery records and review IDs</summary><table><tr><th>Source</th><th>Variable</th><th>PDF page</th><th>Review ID</th></tr><tr><td>haile_2024</td><td>soil_organic_carbon</td><td>6</td><td><code>ev_T4_soc_haile2024_continuation</code></td></tr><tr><td>ahmad_2020</td><td>mean_annual_temperature</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_mean_annual_temperature</code></td></tr><tr><td>ahmad_2020</td><td>annual_precipitation</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_annual_precipitation</code></td></tr><tr><td>ahmad_2020</td><td>aridity_index</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_aridity_index</code></td></tr><tr><td>ahmad_2020</td><td>ndvi</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_ndvi</code></td></tr><tr><td>ahmad_2020</td><td>slope</td><td>6</td><td><code>ev_T4_model_use_ahmad2020_slope</code></td></tr><tr><td>baldwin_2022</td><td>land_cover</td><td>16</td><td><code>ev_T4_landcover_baldwin2022_recovery</code></td></tr><tr><td>chuma_2021</td><td>elevation</td><td>6</td><td><code>ev_T4_elevation_chuma2021_recovery</code></td></tr><tr><td>baldwin_2022</td><td>land_cover</td><td>8</td><td><code>ev_structural_suitability_land_cover_baldwin_2022_full</code></td></tr><tr><td>baldwin_2022</td><td>tenure_security</td><td>10</td><td><code>ev_operational_risk_tenure_security_baldwin_2022_full</code></td></tr><tr><td>baldwin_2022</td><td>restorable_patch_area</td><td>10</td><td><code>ev_operational_risk_restorable_patch_area_baldwin_2022_full</code></td></tr><tr><td>baldwin_2022</td><td>built_up_areas</td><td>8</td><td><code>ev_operational_risk_built_up_areas_baldwin_2022_full</code></td></tr><tr><td>pinto_2019</td><td>tree_canopy_cover</td><td>5</td><td><code>ev_structural_suitability_tree_canopy_cover_pinto_2019_full</code></td></tr><tr><td>pinto_2019</td><td>silvopastoral_grazing</td><td>5</td><td><code>ev_operational_risk_silvopastoral_grazing_pinto_2019_full</code></td></tr><tr><td>pinto_2019</td><td>restorable_patch_area</td><td>5</td><td><code>ev_operational_risk_restorable_patch_area_pinto_2019_full</code></td></tr><tr><td>pinto_2019</td><td>land_cover</td><td>5</td><td><code>ev_structural_suitability_land_cover_pinto_2019_full</code></td></tr><tr><td>ellis_2000</td><td>annual_precipitation</td><td>10</td><td><code>ev_dataset_annual_precipitation_ellis_2000_full</code></td></tr><tr><td>ellis_2000</td><td>frost_free_period</td><td>10</td><td><code>ev_dataset_frost_free_period_ellis_2000_full</code></td></tr><tr><td>ellis_2000</td><td>soil_ph</td><td>10</td><td><code>ev_dataset_soil_ph_ellis_2000_full</code></td></tr><tr><td>ellis_2000</td><td>soil_texture</td><td>10</td><td><code>ev_dataset_soil_texture_ellis_2000_full</code></td></tr><tr><td>ellis_2000</td><td>soil_drainage</td><td>10</td><td><code>ev_dataset_soil_drainage_ellis_2000_full</code></td></tr></table></details>
+<details><summary>All 23 scoping papers: disposition and locator</summary><table><tr><th>Source</th><th>Disposition</th><th>Locator</th></tr><tr><td>brandt_2015</td><td>Reviewed exclusion</td><td>Prior review; no reopening</td></tr><tr><td>castle_2025</td><td>Already contributes; code adds methods</td><td>PDF pp7–8; code lines 137–145, 578–579, 689</td></tr><tr><td>mendonca_2022</td><td>Main-paper extraction completed; see claim inventory</td><td>pipeline/t4_audit/agroforestry/five_source_extraction.json</td></tr><tr><td>mendonca_2023</td><td>Main-paper extraction completed; see claim inventory</td><td>pipeline/t4_audit/agroforestry/five_source_extraction.json</td></tr><tr><td>palma_2007</td><td>Different evidence purpose</td><td>Existing reviewed records; PDF method/table screening</td></tr><tr><td>ahmad_2020</td><td>Image-table model weights recovered; pending human review</td><td>PDF p10 Table2; pp5–6 methods</td></tr><tr><td>baldwin_2022</td><td>Main-paper extraction completed; see claim inventory</td><td>pipeline/t4_audit/agroforestry/five_source_extraction.json</td></tr><tr><td>chuma_2021</td><td>Approved slope recovered into numeric compiler; elevation pending review</td><td>PDF p5 Table2, p6 Table3; ev_T4_slope_chuma21_1</td></tr><tr><td>kiziridis_2026</td><td>Scenario and model evidence</td><td>Existing source-specific audit; active scenario-grid records</td></tr><tr><td>marinis_2022</td><td>Reviewed scope exclusion supported</td><td>PDF pp6–8, Tables1–3; review log</td></tr><tr><td>mushtaq_2023</td><td>Species scope; generic statement retained</td><td>Previous full-text review; PDF p17</td></tr><tr><td>nath_2021</td><td>Already contributes; ambiguities retained</td><td>Previous full-text review; PDF p11 Table2</td></tr><tr><td>pinto_2019</td><td>Main-paper extraction completed; see claim inventory</td><td>pipeline/t4_audit/agroforestry/five_source_extraction.json</td></tr><tr><td>singh_2024</td><td>No extracted T4 response</td><td>Stocktake narrative and source/EV reconciliation; detailed recovery lower priority</td></tr><tr><td>unger_2023</td><td>Categorical/context evidence</td><td>Existing reviewed records; PDF methods screening</td></tr><tr><td>wotlolan_2021</td><td>Already contributes; crop evidence retained</td><td>Existing reviewed source profiles and scope audit</td></tr><tr><td>yadav_2024</td><td>Species scope corrected</td><td>Previous full-text review; PDF pp5–7</td></tr><tr><td>ahmad_2017</td><td>Reviewed exclusions; do not restore blindly</td><td>Review log 2026-10-19; source table screening</td></tr><tr><td>ahmad_2018</td><td>Already contributes</td><td>Previous full-text review; PDF pp8–10</td></tr><tr><td>ellis_2000</td><td>Main-paper extraction completed; see claim inventory</td><td>pipeline/t4_audit/agroforestry/five_source_extraction.json</td></tr><tr><td>haile_2024</td><td>SOC continuation recovered; pending human review</td><td>PDF pp5–6 Table4; ev_T4_soc_haile2024_1</td></tr><tr><td>seja_2022</td><td>Land allocation rather than generic envelope</td><td>Existing reviewed records; PDF methods screening</td></tr><tr><td>haris_2021</td><td>Crop/land-capability evidence</td><td>PDF pp3–5; existing scope audit</td></tr></table></details>
 <h2>Why evidence was missed</h2><p>QA reviewed extracted records, but did not reconcile every paper or every table class. Chuma’s approved numeric fields fell through an unsupported encoding; Haile’s table continued onto another page; Ahmad’s weights were image-only. Five shared PDFs never reached the source register.</p>
 <p>New CI checks reconcile source coverage, inventoried class counts, live approval boundaries, exact reviewer follow-up notes and figure checksums. Compiler tests reject incompatible or overlapping table fragments. These checks protect documented coverage; they cannot prove an unseen PDF contains no further evidence.</p></html>

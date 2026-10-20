@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-20T17:40:28.524582+00:00",
-  "git_commit": "741115f900c3fa36d9d330e1cf27548241e637b9",
+  "timestamp": "2026-10-20T18:34:16.448875+00:00",
+  "git_commit": "889ebf4825a0cd2bf1e56df2cb0fb81e16e3627c",
   "registers": {
     "SRC_source_register": [
       {
@@ -10575,8 +10575,8 @@
         "nbs_ids": "agroforestry",
         "extraction_status": "swept",
         "extraction_date": "2026-10-20",
-        "extraction_run_id": "t4_stocktake_recovery_2026-10-20",
-        "extractor": "Codex source recovery",
+        "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+        "extractor": "codex; full main-paper sweep; pending human review",
         "source_kind": "paper",
         "url": "https://doi.org/10.1016/j.scitotenv.2022.156185",
         "artifact_sha1": "010186d0e7c13e4c656be373125e474eec3d4167",
@@ -10595,8 +10595,8 @@
         "nbs_ids": "agroforestry",
         "extraction_status": "swept",
         "extraction_date": "2026-10-20",
-        "extraction_run_id": "t4_stocktake_recovery_2026-10-20",
-        "extractor": "Codex source recovery",
+        "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+        "extractor": "codex; full main-paper sweep; pending human review",
         "source_kind": "paper",
         "url": "https://doi.org/10.1016/j.mex.2023.102052",
         "artifact_sha1": "9ccb52a0f7e4199321a82b6f81e602aa0024c521",
@@ -10613,11 +10613,11 @@
         "benchmark_tier": "medium",
         "study_country": "United States",
         "nbs_ids": "agroforestry",
-        "vars_extracted": "land_cover",
-        "extraction_status": "in_progress",
+        "vars_extracted": "built_up_areas|land_cover|restorable_patch_area|tenure_security",
+        "extraction_status": "swept",
         "extraction_date": "2026-10-20",
-        "extraction_run_id": "t4_stocktake_recovery_2026-10-20",
-        "extractor": "Codex source recovery",
+        "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+        "extractor": "codex; full main-paper sweep; pending human review",
         "source_kind": "paper",
         "url": "https://doi.org/10.3390/land11091504",
         "artifact_sha1": "78c828e52254e21abcac5bd75061d266a04cfc2d",
@@ -10634,10 +10634,11 @@
         "benchmark_tier": "medium",
         "study_country": "Portugal",
         "nbs_ids": "agroforestry",
+        "vars_extracted": "land_cover|restorable_patch_area|silvopastoral_grazing|tree_canopy_cover",
         "extraction_status": "swept",
         "extraction_date": "2026-10-20",
-        "extraction_run_id": "t4_stocktake_recovery_2026-10-20",
-        "extractor": "Codex source recovery",
+        "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+        "extractor": "codex; full main-paper sweep; pending human review",
         "source_kind": "paper",
         "url": "https://doi.org/10.1017/S0376892919000249",
         "artifact_sha1": "7ac8a2d18be65ffdd1686bf9dbbbce5ba444ba6f",
@@ -10654,10 +10655,11 @@
         "benchmark_tier": "low",
         "study_country": "United States",
         "nbs_ids": "agroforestry",
+        "vars_extracted": "annual_precipitation|frost_free_period|soil_drainage|soil_ph|soil_texture",
         "extraction_status": "swept",
         "extraction_date": "2026-10-20",
-        "extraction_run_id": "t4_stocktake_recovery_2026-10-20",
-        "extractor": "Codex source recovery",
+        "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+        "extractor": "codex; full main-paper sweep; pending human review",
         "source_kind": "paper",
         "url": "https://doi.org/10.1016/S0168-1699(00)00095-8",
         "artifact_sha1": "5e77910a58e91a28b30bf95b6ecdce01b3c1db29",
@@ -180081,7 +180083,8 @@
           "recovery_review": {
             "status": "awaiting_human_review",
             "note": "Broad forestry/agroforestry host statement. Table 1 also describes pine/pasture systems. Do not apply wetland/dry-dam slope criteria or economic parcel thresholds to structural agroforestry. Family and dataset crosswalk require review."
-          }
+          },
+          "superseded_by": "ev_structural_suitability_land_cover_baldwin_2022_full"
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -180146,6 +180149,432 @@
         "raw_name": "Elevation",
         "attribution": "Recovered by Codex from original source; human approval pending.",
         "locator_type": "page",
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_structural_suitability_land_cover_baldwin_2022_full",
+        "source_id": "baldwin_2022",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "cross_family",
+        "variable": "land_cover",
+        "relationship": {
+          "source_classes": [
+            "Grassland/Herbaceous",
+            "Pasture/Hay",
+            "Cultivated Crops"
+          ],
+          "classification": "NLCD"
+        },
+        "context": {
+          "study_country": "United States",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "Review NLCD class crosswalk and F1/F3 applicability. Methods p6 and p9 include pine-pasture and row-crop agroforestry. No transfer to all systems.",
+          "transfer_status": "source_context_only",
+          "candidate_systems": [
+            "agroforestry__planted_silvoarable",
+            "agroforestry__silvopastoral"
+          ]
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Cropland and Open Land: Open land suitable for most FloodWise practices include\nNational Land Cover Database (NLCD) land classes of Grassland/Herbaceous, Pasture/Hay,\nor Cultivated Crops.",
+        "page": 8,
+        "reviewer_ok": false,
+        "raw_name": "land_cover",
+        "locator_type": "page",
+        "justification_quote": "2.2.2. Forest and Tree Planting (Afforestation)\nAfforestation involves transitioning agricultural land from row crop or pasture pro-\nduction to forest lands, either actively managed for forest products or as a restoration\nactivity. Agroforestry practices also fall into this category and integrate tree production\nwith traditional row crop agricultural operations and livestock husbandry. Agroforestry\npractices may increase income for farmers, particularly on sites with poor soil [42]. Suitable\nsites for forest and tree planting were determined to have low-productivity soils, owned by\na single entity, and consisted of at least ﬁve acres (2 ha) in area (Figure 6).\nFigure 6. Diagram illustrating the general method of geospatial analysis for identifying forest and\ntree planting opportunities.\nLow-Productivity Soils:",
+        "justification_page": 9,
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_operational_risk_tenure_security_baldwin_2022_full",
+        "source_id": "baldwin_2022",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "cross_family",
+        "variable": "tenure_security",
+        "relationship": {
+          "source_criterion": "contiguous parcels with common ownership"
+        },
+        "context": {
+          "study_country": "United States",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "Ownership consolidation is adoption feasibility, not proof of secure tenure or structural exclusion.",
+          "transfer_status": "source_context_only"
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Single Entity Ownership: Suitable land owned by one consistent owner or ownership\ngroup affords more opportunities to establish FloodWise practices than suitable land\nsplit across multiple parcels, each with a different owner or ownership group. Limiting\nopportunity areas to contiguous land with consistent ownership reduces the number of\nstakeholders and decision-makers, increasing the feasibility of FloodWise practice adoption.",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "tenure_security",
+        "locator_type": "page",
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_operational_risk_restorable_patch_area_baldwin_2022_full",
+        "source_id": "baldwin_2022",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "cross_family",
+        "variable": "restorable_patch_area",
+        "relationship": {
+          "source_minimum_area": 5,
+          "source_unit": "acre",
+          "author_rounded_hectares": 2
+        },
+        "context": {
+          "study_country": "United States",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "Project cost-effectiveness minimum; retain source units and rounded conversion. Not a universal establishment threshold.",
+          "transfer_status": "source_context_only"
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "5-acre Minimum: We determined that a ﬁve-acre (2 ha) minimum area was required\nfor all FloodWise practices to be cost-effective to adopt and provide measurable ﬂood\nreduction beneﬁts. After calculating acreage, all ﬁve-acre or greater areas were selected\nand exported to a new dataset, representing opportunity areas for forest and tree planting.",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "restorable_patch_area",
+        "locator_type": "page",
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_operational_risk_built_up_areas_baldwin_2022_full",
+        "source_id": "baldwin_2022",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "cross_family",
+        "variable": "built_up_areas",
+        "relationship": {
+          "road_buffer_ft": 20,
+          "structure_buffer_ft": 100,
+          "excluded_parcel_uses": [
+            "solar energy generation",
+            "communication towers"
+          ]
+        },
+        "context": {
+          "study_country": "United States",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "Project infrastructure-conflict assumptions; not statutory setbacks. Do not execute as global legal masks.",
+          "transfer_status": "source_context_only"
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Existing Infrastructure: To minimize conﬂicts with existing infrastructure, areas within a\n20-foot buffer of existing roads [38], areas within a 100-foot buffer of existing structures [39],\nall parcels used for solar energy generation [40], and all parcels containing communication\ntowers [41] were excluded from further analysis (Appendix A). Additionally, areas with\nrural-residential land-use patterns were identiﬁed as posing a high potential for infrastruc-\nture conﬂicts. As a proxy for rural-residential land-use patterns, all parcels under four acres\n(1.6 ha) were excluded from further analysis.",
+        "page": 8,
+        "reviewer_ok": false,
+        "raw_name": "built_up_areas",
+        "locator_type": "page",
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_structural_suitability_tree_canopy_cover_pinto_2019_full",
+        "source_id": "pinto_2019",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__silvopastoral",
+        "variable": "tree_canopy_cover",
+        "relationship": {
+          "criterion_kind": "programme_eligibility",
+          "occupied_by_trees_pct": {
+            "greater_than": 10
+          }
+        },
+        "context": {
+          "study_country": "Portugal",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "Montado AEM2 eligibility only. Review meaning of occupied-by-trees versus canopy cover before binding. Not an optimum or general silvopasture cutoff.",
+          "transfer_status": "source_context_only",
+          "programme": "AEM_2",
+          "host_system": "open Montado"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "table",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "AEM_2\nCattle extensification and\nregeneration of the open\nMontado\nAreas of natural regeneration of cork and\nholm oaks by installing protectors or\nfences, allowing for the minimal tree\ndensity of 20 trees ha−1 for targeted tree\nspecies\n>5 ha, >10% occupied by\ntrees, 0.15–0.50 cattle\nheads ha−1\nBSPA, SCI, NPA\n15–51",
+        "page": 5,
+        "reviewer_ok": false,
+        "raw_name": "tree_canopy_cover",
+        "locator_type": "page",
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_operational_risk_silvopastoral_grazing_pinto_2019_full",
+        "source_id": "pinto_2019",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__silvopastoral",
+        "variable": "silvopastoral_grazing",
+        "relationship": {
+          "criterion_kind": "programme_eligibility",
+          "cattle_heads_per_ha": [
+            0.15,
+            0.5
+          ],
+          "regeneration_protection": [
+            "protectors",
+            "fences"
+          ]
+        },
+        "context": {
+          "study_country": "Portugal",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "Programme stocking range; cattle only. Do not substitute total ruminant density or infer ecological bounds.",
+          "transfer_status": "source_context_only"
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "table",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "AEM_2\nCattle extensification and\nregeneration of the open\nMontado\nAreas of natural regeneration of cork and\nholm oaks by installing protectors or\nfences, allowing for the minimal tree\ndensity of 20 trees ha−1 for targeted tree\nspecies\n>5 ha, >10% occupied by\ntrees, 0.15–0.50 cattle\nheads ha−1\nBSPA, SCI, NPA\n15–51",
+        "page": 5,
+        "reviewer_ok": false,
+        "raw_name": "silvopastoral_grazing",
+        "locator_type": "page",
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_operational_risk_restorable_patch_area_pinto_2019_full",
+        "source_id": "pinto_2019",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__silvopastoral",
+        "variable": "restorable_patch_area",
+        "relationship": {
+          "criterion_kind": "programme_eligibility",
+          "area_greater_than_ha": 5
+        },
+        "context": {
+          "study_country": "Portugal",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "Programme minimum area, not biological suitability.",
+          "transfer_status": "source_context_only"
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "table",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "AEM_2\nCattle extensification and\nregeneration of the open\nMontado\nAreas of natural regeneration of cork and\nholm oaks by installing protectors or\nfences, allowing for the minimal tree\ndensity of 20 trees ha−1 for targeted tree\nspecies\n>5 ha, >10% occupied by\ntrees, 0.15–0.50 cattle\nheads ha−1\nBSPA, SCI, NPA\n15–51",
+        "page": 5,
+        "reviewer_ok": false,
+        "raw_name": "restorable_patch_area",
+        "locator_type": "page",
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_structural_suitability_land_cover_pinto_2019_full",
+        "source_id": "pinto_2019",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__silvopastoral",
+        "variable": "land_cover",
+        "relationship": {
+          "excluded_source_classes": [
+            "urban",
+            "industrial"
+          ]
+        },
+        "context": {
+          "study_country": "Portugal",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "Montado conservation planning excludes urban/industrial pixels. Review crosswalk; other classes are not automatically eligible.",
+          "transfer_status": "source_context_only"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Pixels without suitable areas for the\nimplementation of the SEMs and AEMs, such as urban or\nindustrial areas, are excluded from further analysis.",
+        "page": 5,
+        "reviewer_ok": false,
+        "raw_name": "land_cover",
+        "locator_type": "page",
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_dataset_annual_precipitation_ellis_2000_full",
+        "source_id": "ellis_2000",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "cross_family",
+        "variable": "annual_precipitation",
+        "relationship": {},
+        "context": {
+          "study_country": "United States",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.",
+          "transfer_status": "source_context_only",
+          "model_use": {
+            "verified": true,
+            "scope": "species_selection",
+            "method": "FADSS species database query",
+            "page": "5,10",
+            "weight_path_pct": []
+          },
+          "method_scope": "species_selection"
+        },
+        "use_role": "dataset",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "The ﬁrst part of an SQL query built during run time is based on climate and soils\nparameters and conditions associated with a selected location. Climate parameters\nof annual precipitation, minimum temperature and average growing season are\nrepresented and extracted at the county level. Soils information including pH,\ntexture, drainage and ﬂooding conditions are linked to the general soils areas\nmapped out by the USDA-NRCS State Soil Surveys. After a location has been\nselected and the user continues using FADSS, the SQL query of the plants database\nwill include statements that select trees adapted (or tolerant) to numerical parame-\nters such as rainfall, temperature and soil pH and descriptive conditions such as\ndrainage type and texture composition. Fig. 4 shows a sample Delphi script which\ntests for a variety conditions and builds the appropriate SQL queries that incorpo-\nrate climate and soil variables of the selected location.",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "annual_precipitation",
+        "locator_type": "page",
+        "justification_quote": "Table 2\nSpatial layers, data tables and data ﬁelds utilized by the FADSS\nTable description\nRole in FADSS\nAttributes/ﬁelds\nCategory\nused by FADSS\nFL highways\nNone\nUsed for visual geographical reference\nSpatial data\nUsed for visual geographical reference\nNone\nFL cities\nMap unit ID\nFL soils\nDeﬁne soils regions within the state of\n(MUID)\nFlorida\nFL\nCounty name\nDelimit counties which are linked to\nclimate data for each county\ncounty/climate\nAnnual\nFL\nClimate data\nLinks to precipitation tolerances of trees,\nshrubs and grasses\ncounty/climate\nprecipitation\nMinimum\nLinks to temperature tolerances of trees,\nshrubs and grasses\ntemperature\nLinks to frost-free day requirements of\nGrowing season\ntrees, shrubs and grasses\nSoil composition\nMUID\nLinks geo-spatial soils regions to their\nSoils data\ncorresponding soils characteristics\nSoil texture\nLinks to tree, shrub and grass\nadaptability to soil textures\nLinks to plant tolerances to drought\nSoil drainage\nconditions and their moisture use\nSoil ﬂooding\nLinks to plants tolerances to anaerobic\nconditions\nLinks to plants tolerances to anaerobic\nSoil hydric\nconditions\nconditions\nLinks to plants tolerances to saline\nSoil salinity\nconditions\nMUID\nSoil layer\nLinks soils regions to appropriate pH\nconditions\nLinks to plants minimum pH tolerances\nMinimum pH\nLinks to plants maximum pH tolerances\nMaximum pH\nCrop/forage data\nMUID\nLinks soils regions to suitable crops and\nSoil yields\nforages\nSuitable crops/forages",
+        "justification_page": 5,
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_dataset_frost_free_period_ellis_2000_full",
+        "source_id": "ellis_2000",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "cross_family",
+        "variable": "frost_free_period",
+        "relationship": {},
+        "context": {
+          "study_country": "United States",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.",
+          "transfer_status": "source_context_only",
+          "model_use": {
+            "verified": true,
+            "scope": "species_selection",
+            "method": "FADSS species database query",
+            "page": "5,10",
+            "weight_path_pct": []
+          },
+          "method_scope": "species_selection"
+        },
+        "use_role": "dataset",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "The ﬁrst part of an SQL query built during run time is based on climate and soils\nparameters and conditions associated with a selected location. Climate parameters\nof annual precipitation, minimum temperature and average growing season are\nrepresented and extracted at the county level. Soils information including pH,\ntexture, drainage and ﬂooding conditions are linked to the general soils areas\nmapped out by the USDA-NRCS State Soil Surveys. After a location has been\nselected and the user continues using FADSS, the SQL query of the plants database\nwill include statements that select trees adapted (or tolerant) to numerical parame-\nters such as rainfall, temperature and soil pH and descriptive conditions such as\ndrainage type and texture composition. Fig. 4 shows a sample Delphi script which\ntests for a variety conditions and builds the appropriate SQL queries that incorpo-\nrate climate and soil variables of the selected location.",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "frost_free_period",
+        "locator_type": "page",
+        "justification_quote": "Table 2\nSpatial layers, data tables and data ﬁelds utilized by the FADSS\nTable description\nRole in FADSS\nAttributes/ﬁelds\nCategory\nused by FADSS\nFL highways\nNone\nUsed for visual geographical reference\nSpatial data\nUsed for visual geographical reference\nNone\nFL cities\nMap unit ID\nFL soils\nDeﬁne soils regions within the state of\n(MUID)\nFlorida\nFL\nCounty name\nDelimit counties which are linked to\nclimate data for each county\ncounty/climate\nAnnual\nFL\nClimate data\nLinks to precipitation tolerances of trees,\nshrubs and grasses\ncounty/climate\nprecipitation\nMinimum\nLinks to temperature tolerances of trees,\nshrubs and grasses\ntemperature\nLinks to frost-free day requirements of\nGrowing season\ntrees, shrubs and grasses\nSoil composition\nMUID\nLinks geo-spatial soils regions to their\nSoils data\ncorresponding soils characteristics\nSoil texture\nLinks to tree, shrub and grass\nadaptability to soil textures\nLinks to plant tolerances to drought\nSoil drainage\nconditions and their moisture use\nSoil ﬂooding\nLinks to plants tolerances to anaerobic\nconditions\nLinks to plants tolerances to anaerobic\nSoil hydric\nconditions\nconditions\nLinks to plants tolerances to saline\nSoil salinity\nconditions\nMUID\nSoil layer\nLinks soils regions to appropriate pH\nconditions\nLinks to plants minimum pH tolerances\nMinimum pH\nLinks to plants maximum pH tolerances\nMaximum pH\nCrop/forage data\nMUID\nLinks soils regions to suitable crops and\nSoil yields\nforages\nSuitable crops/forages",
+        "justification_page": 5,
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_dataset_soil_ph_ellis_2000_full",
+        "source_id": "ellis_2000",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "cross_family",
+        "variable": "soil_ph",
+        "relationship": {},
+        "context": {
+          "study_country": "United States",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.",
+          "transfer_status": "source_context_only",
+          "model_use": {
+            "verified": true,
+            "scope": "species_selection",
+            "method": "FADSS species database query",
+            "page": "5,10",
+            "weight_path_pct": []
+          },
+          "method_scope": "species_selection"
+        },
+        "use_role": "dataset",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "The ﬁrst part of an SQL query built during run time is based on climate and soils\nparameters and conditions associated with a selected location. Climate parameters\nof annual precipitation, minimum temperature and average growing season are\nrepresented and extracted at the county level. Soils information including pH,\ntexture, drainage and ﬂooding conditions are linked to the general soils areas\nmapped out by the USDA-NRCS State Soil Surveys. After a location has been\nselected and the user continues using FADSS, the SQL query of the plants database\nwill include statements that select trees adapted (or tolerant) to numerical parame-\nters such as rainfall, temperature and soil pH and descriptive conditions such as\ndrainage type and texture composition. Fig. 4 shows a sample Delphi script which\ntests for a variety conditions and builds the appropriate SQL queries that incorpo-\nrate climate and soil variables of the selected location.",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "soil_ph",
+        "locator_type": "page",
+        "justification_quote": "Table 2\nSpatial layers, data tables and data ﬁelds utilized by the FADSS\nTable description\nRole in FADSS\nAttributes/ﬁelds\nCategory\nused by FADSS\nFL highways\nNone\nUsed for visual geographical reference\nSpatial data\nUsed for visual geographical reference\nNone\nFL cities\nMap unit ID\nFL soils\nDeﬁne soils regions within the state of\n(MUID)\nFlorida\nFL\nCounty name\nDelimit counties which are linked to\nclimate data for each county\ncounty/climate\nAnnual\nFL\nClimate data\nLinks to precipitation tolerances of trees,\nshrubs and grasses\ncounty/climate\nprecipitation\nMinimum\nLinks to temperature tolerances of trees,\nshrubs and grasses\ntemperature\nLinks to frost-free day requirements of\nGrowing season\ntrees, shrubs and grasses\nSoil composition\nMUID\nLinks geo-spatial soils regions to their\nSoils data\ncorresponding soils characteristics\nSoil texture\nLinks to tree, shrub and grass\nadaptability to soil textures\nLinks to plant tolerances to drought\nSoil drainage\nconditions and their moisture use\nSoil ﬂooding\nLinks to plants tolerances to anaerobic\nconditions\nLinks to plants tolerances to anaerobic\nSoil hydric\nconditions\nconditions\nLinks to plants tolerances to saline\nSoil salinity\nconditions\nMUID\nSoil layer\nLinks soils regions to appropriate pH\nconditions\nLinks to plants minimum pH tolerances\nMinimum pH\nLinks to plants maximum pH tolerances\nMaximum pH\nCrop/forage data\nMUID\nLinks soils regions to suitable crops and\nSoil yields\nforages\nSuitable crops/forages",
+        "justification_page": 5,
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_dataset_soil_texture_ellis_2000_full",
+        "source_id": "ellis_2000",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "cross_family",
+        "variable": "soil_texture",
+        "relationship": {},
+        "context": {
+          "study_country": "United States",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.",
+          "transfer_status": "source_context_only",
+          "model_use": {
+            "verified": true,
+            "scope": "species_selection",
+            "method": "FADSS species database query",
+            "page": "5,10",
+            "weight_path_pct": []
+          },
+          "method_scope": "species_selection"
+        },
+        "use_role": "dataset",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "The ﬁrst part of an SQL query built during run time is based on climate and soils\nparameters and conditions associated with a selected location. Climate parameters\nof annual precipitation, minimum temperature and average growing season are\nrepresented and extracted at the county level. Soils information including pH,\ntexture, drainage and ﬂooding conditions are linked to the general soils areas\nmapped out by the USDA-NRCS State Soil Surveys. After a location has been\nselected and the user continues using FADSS, the SQL query of the plants database\nwill include statements that select trees adapted (or tolerant) to numerical parame-\nters such as rainfall, temperature and soil pH and descriptive conditions such as\ndrainage type and texture composition. Fig. 4 shows a sample Delphi script which\ntests for a variety conditions and builds the appropriate SQL queries that incorpo-\nrate climate and soil variables of the selected location.",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "soil_texture",
+        "locator_type": "page",
+        "justification_quote": "Table 2\nSpatial layers, data tables and data ﬁelds utilized by the FADSS\nTable description\nRole in FADSS\nAttributes/ﬁelds\nCategory\nused by FADSS\nFL highways\nNone\nUsed for visual geographical reference\nSpatial data\nUsed for visual geographical reference\nNone\nFL cities\nMap unit ID\nFL soils\nDeﬁne soils regions within the state of\n(MUID)\nFlorida\nFL\nCounty name\nDelimit counties which are linked to\nclimate data for each county\ncounty/climate\nAnnual\nFL\nClimate data\nLinks to precipitation tolerances of trees,\nshrubs and grasses\ncounty/climate\nprecipitation\nMinimum\nLinks to temperature tolerances of trees,\nshrubs and grasses\ntemperature\nLinks to frost-free day requirements of\nGrowing season\ntrees, shrubs and grasses\nSoil composition\nMUID\nLinks geo-spatial soils regions to their\nSoils data\ncorresponding soils characteristics\nSoil texture\nLinks to tree, shrub and grass\nadaptability to soil textures\nLinks to plant tolerances to drought\nSoil drainage\nconditions and their moisture use\nSoil ﬂooding\nLinks to plants tolerances to anaerobic\nconditions\nLinks to plants tolerances to anaerobic\nSoil hydric\nconditions\nconditions\nLinks to plants tolerances to saline\nSoil salinity\nconditions\nMUID\nSoil layer\nLinks soils regions to appropriate pH\nconditions\nLinks to plants minimum pH tolerances\nMinimum pH\nLinks to plants maximum pH tolerances\nMaximum pH\nCrop/forage data\nMUID\nLinks soils regions to suitable crops and\nSoil yields\nforages\nSuitable crops/forages",
+        "justification_page": 5,
+        "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_dataset_soil_drainage_ellis_2000_full",
+        "source_id": "ellis_2000",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "cross_family",
+        "variable": "soil_drainage",
+        "relationship": {},
+        "context": {
+          "study_country": "United States",
+          "extraction_run_id": "agroforestry_five_sources_2026-10-20",
+          "review_needed": "FADSS uses this field to select species; no practice-level threshold or importance weight. Table 2 p5 confirms field meaning.",
+          "transfer_status": "source_context_only",
+          "model_use": {
+            "verified": true,
+            "scope": "species_selection",
+            "method": "FADSS species database query",
+            "page": "5,10",
+            "weight_path_pct": []
+          },
+          "method_scope": "species_selection"
+        },
+        "use_role": "dataset",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "The ﬁrst part of an SQL query built during run time is based on climate and soils\nparameters and conditions associated with a selected location. Climate parameters\nof annual precipitation, minimum temperature and average growing season are\nrepresented and extracted at the county level. Soils information including pH,\ntexture, drainage and ﬂooding conditions are linked to the general soils areas\nmapped out by the USDA-NRCS State Soil Surveys. After a location has been\nselected and the user continues using FADSS, the SQL query of the plants database\nwill include statements that select trees adapted (or tolerant) to numerical parame-\nters such as rainfall, temperature and soil pH and descriptive conditions such as\ndrainage type and texture composition. Fig. 4 shows a sample Delphi script which\ntests for a variety conditions and builds the appropriate SQL queries that incorpo-\nrate climate and soil variables of the selected location.",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "soil_drainage",
+        "locator_type": "page",
+        "justification_quote": "Table 2\nSpatial layers, data tables and data ﬁelds utilized by the FADSS\nTable description\nRole in FADSS\nAttributes/ﬁelds\nCategory\nused by FADSS\nFL highways\nNone\nUsed for visual geographical reference\nSpatial data\nUsed for visual geographical reference\nNone\nFL cities\nMap unit ID\nFL soils\nDeﬁne soils regions within the state of\n(MUID)\nFlorida\nFL\nCounty name\nDelimit counties which are linked to\nclimate data for each county\ncounty/climate\nAnnual\nFL\nClimate data\nLinks to precipitation tolerances of trees,\nshrubs and grasses\ncounty/climate\nprecipitation\nMinimum\nLinks to temperature tolerances of trees,\nshrubs and grasses\ntemperature\nLinks to frost-free day requirements of\nGrowing season\ntrees, shrubs and grasses\nSoil composition\nMUID\nLinks geo-spatial soils regions to their\nSoils data\ncorresponding soils characteristics\nSoil texture\nLinks to tree, shrub and grass\nadaptability to soil textures\nLinks to plant tolerances to drought\nSoil drainage\nconditions and their moisture use\nSoil ﬂooding\nLinks to plants tolerances to anaerobic\nconditions\nLinks to plants tolerances to anaerobic\nSoil hydric\nconditions\nconditions\nLinks to plants tolerances to saline\nSoil salinity\nconditions\nMUID\nSoil layer\nLinks soils regions to appropriate pH\nconditions\nLinks to plants minimum pH tolerances\nMinimum pH\nLinks to plants maximum pH tolerances\nMaximum pH\nCrop/forage data\nMUID\nLinks soils regions to suitable crops and\nSoil yields\nforages\nSuitable crops/forages",
+        "justification_page": 5,
         "ruleset_version": "v1.6.14"
       }
     ],

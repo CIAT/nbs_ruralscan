@@ -33,6 +33,27 @@ Sweep metrics recorded as `agroforestry-t4-recovery-oct20`: register number-prov
 1. Haile: confirm p6 continuation attribution to SOC and the inherited percent unit; approve the two recovered classes if correct.
 2. Chuma: confirm elevation class transcription and intended regional/system applicability; no global transfer presumed.
 3. Ahmad: confirm five image-read model weights against Table 2. Scaled aridity and response interpolation remain unresolved and do not generate numeric responses.
-4. Baldwin: decide whether the speculative agricultural/open-land statement is admissible for a host rule. Dataset crosswalk and system applicability need review before use.
+4. Baldwin: explicit methods p8 supersede the speculative p16 record (which remains dropped). Review NLCD crosswalk and transfer from pine-pasture/row-crop systems.
 
 Review surface: `docs/review/t4-evidence-recovery.html`; original table images and exact evidence IDs included. Pilot execution remains Diego's task.
+
+
+## Full five-paper extraction follow-through
+
+The earlier source disposition pass was screening, not a completed extraction. This sweep read the main papers and retained 43 claim dispositions in `pipeline/t4_audit/agroforestry/five_source_extraction.json`. It adds 13 EV records, all pending human review:
+
+| Source | New EV | Destination and meaning |
+|---|---:|---|
+| Baldwin 2022 | 4 | One explicit NLCD host-class candidate; three operational criteria (ownership consolidation, project minimum area, infrastructure conflicts). Low NCCPI and high-value-crop exclusion remain author adoption assumptions, not biological limits. |
+| Pinto 2019 | 4 | Two structural candidates (Montado tree-occupied area and urban/industrial exclusions); two operational programme criteria (cattle stocking/protection and minimum area). AEM2 criteria remain programme-specific. |
+| Ellis 2000 | 5 | Species-selection dataset/model-use records: rainfall, frost-free period, pH, texture and drainage. No additional practice-level threshold agreement or invented taxon. |
+| Mendonça 2022 | 0 | Priority scores, classes and weights extracted into deferred priority-need inventory. Higher slope receives higher vulnerability priority; this cannot become higher establishment suitability. |
+| Mendonça 2023 | 0 | Companion SIPA-AFS method, same lineage. No independent suitability calibration. |
+
+Pinto's publisher supplements were acquired and once-rendered; originals and PDFs copied to the shared-library mirror, with hashes and paths retained in the inventory (cloud sync itself not independently verified). S3 is an opportunity-cost matrix, not an eligibility crosswalk. Its AEM2 costs are retained separately. S1 is a MARZONE literature review; S2 documents workflow. Mendonça 2023's supplemental worksheets remain explicitly deferred under the project's paused dataset-intake rule. Main-paper completion does not claim supplementary dataset validation.
+
+Remaining genuine interpretation issues: Pinto's tree-occupied area versus EO canopy cover; transfer of regional programme and FloodWise criteria; Ellis's unitless root-depth example; Mendonça's conflicting <10 versus >10 ha small-fragment wording. These do not create new global biophysical curves. All prior approved evidence stays approved; new records are not silently promoted.
+
+Regression tests now remove a tracked extraction, change its role, remove a covered page, or replace extraction with screening and require failure. Species-selection usage has a separate count. These checks protect documented completeness; they cannot prove no unknown claim remains in an unseen source.
+
+Validation follow-through: full suite reached 462 passed with one UTF-8 guard failure in the new inventory reader; explicit UTF-8 fixed and all 22 affected/encoding tests passed on rerun. No new number-provenance flags (global rate remains 5.9%, rounded; verification rate 0.2%). Catalogue #34–35 and deterministic accounting checks tighten scope/completion requirements despite unchanged rounded global rates. Structure: zero errors; existing advisory warnings remain.

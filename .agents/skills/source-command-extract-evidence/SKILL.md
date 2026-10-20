@@ -349,3 +349,9 @@ the build flags unprocessed review decisions (run `/sweep-retro` → encode → 
 33. Check approved numeric class payloads against executable T4. Unknown encodings must fail coverage or carry an explicit hold, never silently become qualitative. Image-read model weights retain page, image checksum and human-review status; weights are not suitability thresholds.
 
 Enforcement: schema_tools.t4_coverage in CI; numeric compiler checks expected class counts and continuation compatibility. Inventory checks detect regression in documented tables, not every unknown omission in a PDF.
+
+
+## Main-paper extraction accounting (v1.6.15)
+
+34. **Screening is not extraction.** Before calling a source swept, account for its pages, tables, figures and referenced supplements in a claim inventory. Each relevant claim needs an EV ID or an explicit destination/exclusion reason with page and retained values. A zero-T4 paper still requires this accounting. Distinguish completed main-paper extraction from deferred supplemental datasets; never infer completion from SRC presence or zero admitted thresholds. Check expected EV IDs and routes in CI.
+35. **Species-selection use is not practice-level agreement.** A tool may use rainfall/pH to select species without calibrating an agroforestry establishment curve. Retain method-use evidence as dataset records with `context.model_use.scope=species_selection`; count separately from practice-level and named-species/crop calibrations. Do not invent a taxon for generic query logic. Preserve restoration-priority weights outside suitability even when the paper calls its result suitable.
