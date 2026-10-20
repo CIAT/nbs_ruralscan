@@ -164,6 +164,8 @@ def _harmonise(
     canonical_unit: str,
     conversions: dict[str, str] | None = None,
     rep: SynthesisReport | None = None,
+    *,
+    precise: bool = False,
 ) -> dict[str, float]:
     """Return the unit's threshold params converted to the canonical unit.
 
@@ -208,9 +210,15 @@ def _harmonise(
         if k in rel and isinstance(rel[k], (int, float)):
             val = float(rel[k])
             if conv_pct_to_deg:
-                out[k] = _pct_to_deg(val)
+                out[k] = (
+                    math.degrees(math.atan(val / 100.0))
+                    if precise
+                    else _pct_to_deg(val)
+                )
             elif conv_deg_to_pct:
-                out[k] = _deg_to_pct(val)
+                out[k] = (
+                    math.tan(math.radians(val)) * 100.0 if precise else _deg_to_pct(val)
+                )
             elif rule:
                 converted = _apply_conversion(val, rule)
                 if converted is None:

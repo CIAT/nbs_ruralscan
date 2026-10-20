@@ -918,3 +918,14 @@ new NbS later requires only adding rows, not code changes.
 
 *Ported from `NbS_Schema_Reference_v01_1.docx` — v0.1 Draft, Peter Steward (Team Lead), 7 May 2026.
 For queries: P.Steward@cgiar.org*
+
+### T4 numeric harmonization policy (2026-10-20; issue #365)
+
+Optional `harmonization` JSON on `T4_NUMERIC_POLICY` stores the approved semantic
+score crosswalk and explicit compatible-pool assignments. See the policy contract
+in `methodology/T4_generation_method.md`. T4 `relationship_params` retains original
+source profiles and adds `harmonization.pools` (exact interval/endpoint summaries)
+and `harmonization.review` (unresolved crosswalks/applicability). Each summary cell
+retains median bounds, scalar score or null, source range, independent-source
+counts, weight coverage and flags. Null is unknown, never zero. Derived summaries
+are regenerated from CSV policy and evidence; no new T4 columns are introduced.

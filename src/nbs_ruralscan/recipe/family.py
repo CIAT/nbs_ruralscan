@@ -188,6 +188,8 @@ def synthesise_family(
                 numeric_policies,
                 canonical_units.get(variable, "native"),
                 unit_conversions.get(variable),
+                tiers=tiers,
+                categories=categories,
             )
             rep.unresolved.extend(unresolved)
             if params and row["relationship_params"]:
@@ -201,7 +203,7 @@ def synthesise_family(
                     relationship_params=params,
                     evidence_ids=used,
                     uncertainty_pct=20,
-                    justification="Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+                    justification="Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
                     references=sorted(
                         {u.source_id for u in band_units if u.evidence_id in used}
                     ),

@@ -9,7 +9,8 @@ import json
 import re
 from dataclasses import replace
 
-from .synthesis import SynthesisReport, _harmonise
+from .synthesis import SynthesisReport, _harmonise, _weight, _resolve_root_origin
+from .harmonization import harmonize, standardize
 
 NUMBER = r"-?(?:\d+(?:\.\d*)?|\.\d+)"
 
@@ -138,8 +139,15 @@ def parse_profiles(rel, policy):
     return profiles
 
 
-def compile_bands(units, policies, canonical_unit, conversions):
+def compile_bands(
+    units, policies, canonical_unit, conversions, *, tiers=None, categories=None
+):
     profiles, used, unresolved = [], [], []
+    tiers, categories = tiers or {}, categories or {}
+    by_id = {u.evidence_id: u for u in units}
+    by_source = {}
+    for unit in units:
+        by_source.setdefault(unit.source_id, []).append(unit)
     for u in units:
         policy = policies[u.evidence_id]
         if u.evidence_type not in {"literature_relationship", "expert"}:
@@ -150,8 +158,28 @@ def compile_bands(units, policies, canonical_unit, conversions):
             continue
         try:
             parsed = parse_profiles(u.relationship or {}, policy)
+            hp = policy.get("harmonization") or {}
+            if isinstance(hp, str):
+                hp = json.loads(hp)
+            origin = _resolve_root_origin(u, by_id, by_source)
+            origin_units = [x for x in units if x.source_id == origin]
+            if origin_units:
+                weight = max(
+                    _weight(
+                        x,
+                        tiers.get(x.source_id, "medium"),
+                        categories.get(x.source_id, ""),
+                    )
+                    for x in origin_units
+                )
+            else:
+                weight = _weight(
+                    u, tiers.get(u.source_id, "medium"), categories.get(u.source_id, "")
+                )
             converted_profiles = []
             for group, bands in parsed.items():
+                if hp:
+                    standardize(bands, hp)
                 for band in bands:
                     for key in ("lower", "upper"):
                         if band[key] is not None:
@@ -163,7 +191,11 @@ def compile_bands(units, policies, canonical_unit, conversions):
                                 },
                             )
                             value = _harmonise(
-                                probe, canonical_unit, conversions, SynthesisReport()
+                                probe,
+                                canonical_unit,
+                                conversions,
+                                SynthesisReport(),
+                                precise=True,
                             )
                             if not value:
                                 raise ValueError(
@@ -182,6 +214,19 @@ def compile_bands(units, policies, canonical_unit, conversions):
                         "applicability_note": policy["applicability_note"],
                         "unit": canonical_unit,
                         "intervals": bands,
+                        "origin_id": origin,
+                        "source_weight": weight,
+                        "variable": u.variable,
+                        "score_policy": hp.get("version", "legacy_rank_max"),
+                        "pool_id": hp.get("pool_id", ""),
+                        "system_id": hp.get("system_id", ""),
+                        "context_id": hp.get("context_id", ""),
+                        "compatibility_approved": hp.get(
+                            "compatibility_approved", False
+                        ),
+                        "pool_review": hp.get(
+                            "pool_review", "compatibility_review_required"
+                        ),
                     }
                 )
             profiles.extend(converted_profiles)
@@ -194,8 +239,9 @@ def compile_bands(units, policies, canonical_unit, conversions):
             "profile_selection": "explicit",
             "outside_domain": "unknown",
             "conflicting_boundaries": "unknown",
-            "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
-            "score_interpretation": "Relative source suitability rank; not probability or measured performance",
+            "score_policy": "per_profile_schema_policy",
+            "harmonization": harmonize(profiles),
+            "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance",
         }
         if profiles
         else {},

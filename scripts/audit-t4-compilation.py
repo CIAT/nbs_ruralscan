@@ -327,6 +327,11 @@ def main() -> None:
             ],
             check=True,
         )
+    if args.nbs == "agroforestry":
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts/report-t4-harmonization.py")],
+            check=True,
+        )
     print(json.dumps(summary, indent=2))
 
 

@@ -9,12 +9,30 @@ import json
 import numpy as np
 
 
-def evaluate_numeric(row, values, *, profile_id=None):
+def evaluate_numeric(row, values, *, profile_id=None, pool_id=None):
     params = row["relationship_params"]
     if isinstance(params, str):
         params = json.loads(params)
     x = np.asarray(values, dtype=float)
     result = np.full(x.shape, np.nan)
+    if pool_id is not None:
+        if profile_id is not None:
+            raise ValueError("Choose a profile or a harmonized pool, not both")
+        pools = [
+            p
+            for p in params.get("harmonization", {}).get("pools", [])
+            if p["pool_id"] == pool_id
+        ]
+        if len(pools) != 1:
+            raise ValueError("Unknown or duplicate harmonized pool")
+        # Ties and exclusion conflicts have score=None and remain unknown.
+        selected = {
+            "relationship_type": "piecewise",
+            "relationship_params": {
+                "profiles": [{"profile_id": pool_id, "intervals": pools[0]["cells"]}]
+            },
+        }
+        return evaluate_numeric(selected, x, profile_id=pool_id)
     if row["relationship_type"] == "threshold":
         cut = params.get("threshold")
         if isinstance(cut, bool) or not isinstance(cut, (float, int)):
@@ -39,7 +57,9 @@ def evaluate_numeric(row, values, *, profile_id=None):
                 mask &= (
                     x <= band["upper"] if band["upper_inclusive"] else x < band["upper"]
                 )
-            result = np.where(mask, band["score"], result)
+            result = np.where(
+                mask, np.nan if band["score"] is None else band["score"], result
+            )
             count += mask
         result = np.where(count == 1, result, np.nan)
     elif row["relationship_type"] == "piecewise" and "points" in params:
