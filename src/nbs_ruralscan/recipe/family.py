@@ -64,6 +64,7 @@ def synthesise_family(
     unit_conversions: dict[str, dict[str, str]] | None = None,
     approved_only: bool = False,
     crop: str | None = None,
+    numeric_policies: dict[str, dict] | None = None,
 ) -> FamilyResult:
     """Reconcile all of a family's evidence into enriched T4 rows + a selection table.
 
@@ -71,6 +72,7 @@ def synthesise_family(
     `canonical_units`/`dataset_ids` map variable → its canonical unit / T1 dataset.
     `categories` maps source_id → source_category (e.g. "grey") for the grey-lit discount.
     """
+    numeric_policies = numeric_policies or {}
     tiers = {sid: tier.strip().lower() for sid, tier in tiers.items()}
     canonical_units = canonical_units or {}
     dataset_ids = dataset_ids or {}
@@ -145,6 +147,7 @@ def synthesise_family(
             unit_conversions=unit_conversions,
             approved_only=approved_only,
             crop=taxon,
+            numeric_policies=numeric_policies,
         )
         for taxon, members in sorted(crop_units.items())
     }
@@ -164,8 +167,10 @@ def synthesise_family(
     rows: list[dict[str, Any]] = []
     reports: dict[str, SynthesisReport] = {}
     for variable, var_units in by_var.items():
+        band_units = [u for u in var_units if u.evidence_id in numeric_policies]
+        ordinary_units = [u for u in var_units if u.evidence_id not in numeric_policies]
         row, rep = synthesise_t4_row(
-            var_units,
+            ordinary_units,
             tiers,
             variable=variable,
             family=family,
@@ -175,6 +180,37 @@ def synthesise_family(
             categories=categories,
             unit_conversions=(unit_conversions or {}).get(variable),
         )
+        if band_units:
+            from .numeric_bands import compile_bands
+
+            params, used, unresolved = compile_bands(
+                band_units,
+                numeric_policies,
+                canonical_units.get(variable, "native"),
+                unit_conversions.get(variable),
+            )
+            rep.unresolved.extend(unresolved)
+            if params and row["relationship_params"]:
+                rep.unresolved.extend(
+                    (eid, "numeric_profile_conflicts_with_canonical_response")
+                    for eid in used
+                )
+            elif params:
+                row.update(
+                    relationship_type="piecewise",
+                    relationship_params=params,
+                    evidence_ids=used,
+                    uncertainty_pct=20,
+                    justification="Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+                    references=sorted(
+                        {u.source_id for u in band_units if u.evidence_id in used}
+                    ),
+                )
+                rep.used = used
+                rep.parameter_evidence = {"profiles": used}
+                rep.notes.append(
+                    "Regional profiles retained separately; uncertainty floor 20%, not a measured confidence interval."
+                )
         for eid in rep.used:
             dispositions[eid]["status"] = "parameter_contributor"
         for eid, reason in rep.dropped + rep.unresolved:

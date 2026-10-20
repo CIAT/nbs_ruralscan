@@ -62,9 +62,13 @@ def test_stale_numeric_t4_rows_removed():
     numeric = [
         r for r in rows if r["suitability_dimension"] == "biophysical_constraint"
     ]
-    assert len(numeric) == 1
-    assert numeric[0]["variable"] == "slope"
-    assert numeric[0]["relationship_params"] == {
+    assert len(numeric) == 8
+    slope = next(
+        r
+        for r in numeric
+        if r["mapping_id"] == "agroforestry__planted_silvoarable__slope"
+    )
+    assert slope["relationship_params"] == {
         "threshold": 19.3,
         "above_is_suitable": False,
     }

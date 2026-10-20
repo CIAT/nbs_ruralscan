@@ -241,10 +241,12 @@ def test_isolated_writer_preserves_design_rows_and_live_recipe(runner, tmp_path)
             assert {k: old[k] for k in runner.DESIGN_FIELDS} == {
                 k: r[k] for k in runner.DESIGN_FIELDS
             }
-    assert (
-        json.loads((tmp_path / "T4_agroforestry__shaded_perennial.json").read_text())
-        == []
+    shaded = json.loads(
+        (tmp_path / "T4_agroforestry__shaded_perennial.json").read_text()
     )
+    assert len(shaded) == 1
+    assert shaded[0]["variable"] == "annual_precipitation"
+    assert shaded[0]["evidence_ids"] == ["ev_t4_precip_mushtaq2023_2"]
 
 
 def test_custom_curve_units_and_order_are_checked():

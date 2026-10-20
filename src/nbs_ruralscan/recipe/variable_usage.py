@@ -1,0 +1,80 @@
+"""Report verified model use independently of numeric-response admissibility."""
+
+from __future__ import annotations
+
+import json
+from collections import defaultdict
+from math import prod
+
+
+def variable_usage(evidence, sources):
+    """One paper vote per variable/scope, not one vote per extracted record.
+
+    A rejected response can still document model use. Only explicit source-verified
+    model_use metadata qualifies; missing metadata means unverified, not non-use.
+    Importance remains source-specific and never changes runtime default weights.
+    """
+    grouped = defaultdict(list)
+    for unit in evidence:
+        context = unit.get("context") or {}
+        if isinstance(context, str):
+            context = json.loads(context)
+        use = context.get("model_use", {})
+        if use.get("verified") is not True:
+            continue
+        sid = unit["source_id"]
+        source = sources.get(sid, {})
+        paper = source.get("doi") or sid
+        grouped[
+            (unit["variable"], use.get("scope", unit["claim_scope"]), paper)
+        ].append((unit, use))
+    records = []
+    for (variable, scope, paper), items in sorted(grouped.items()):
+        paths = {tuple(use.get("weight_path_pct", [])) for _, use in items}
+        methods = {use["method"] for _, use in items}
+        path = next(iter(paths)) if len(paths) == 1 else ()
+        effective = 100 * prod(w / 100 for w in path) if path else None
+        records.append(
+            {
+                "variable": variable,
+                "claim_scope": scope,
+                "paper_key": paper,
+                "source_id": items[0][0]["source_id"],
+                "evidence_ids": sorted({u["evidence_id"] for u, _ in items}),
+                "families": sorted({u["suitability_family_id"] for u, _ in items}),
+                "method": "; ".join(sorted(methods)),
+                "weight_path_pct": list(path),
+                "effective_model_weight_pct": round(effective, 6)
+                if effective is not None
+                else None,
+                "weight_conflict": len(paths) > 1,
+                "pages": sorted({use["page"] for _, use in items}),
+                "note": "Verified use, not agreement on thresholds. Weight is source-specific; nested soil paths may describe one branch only.",
+            }
+        )
+    return records
+
+
+def summarize_usage(records):
+    result = []
+    for variable in sorted({r["variable"] for r in records}):
+        selected = [r for r in records if r["variable"] == variable]
+        general = {
+            r["paper_key"]
+            for r in selected
+            if r["claim_scope"] == "practice_technology"
+        }
+        scoped = {
+            r["paper_key"]
+            for r in selected
+            if r["claim_scope"] != "practice_technology"
+        }
+        result.append(
+            {
+                "variable": variable,
+                "verified_general_model_papers": len(general),
+                "verified_crop_species_model_papers": len(scoped),
+                "source_ids": sorted({r["source_id"] for r in selected}),
+            }
+        )
+    return result

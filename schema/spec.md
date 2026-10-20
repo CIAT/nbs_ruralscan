@@ -544,6 +544,26 @@ This is the **one canonical list** of membership/response functions. It supersed
 | `ranked_classes` | `{ class_map: { value: score } }` | Categorical input (soil type, land use) → 0–1 scores. | categorical — separate control |
 | `piecewise` | `{ points: [[x, y], …] }` | User-defined custom curve. | "Custom (piecewise)" · `custom` |
 
+**Numeric source-band profiles (issue #362, October 2026).** `piecewise` also accepts
+`{profiles: [{profile_id, source_id, evidence_id, context, source_group, unit,
+ordinal_scale, applicability_note, intervals: [{lower, upper, lower_inclusive,
+upper_inclusive, label, rank, score}]}], profile_selection: "explicit",
+outside_domain: "unknown", conflicting_boundaries: "unknown", score_policy,
+score_interpretation}`. Null bounds are open-ended; they are not fabricated finite limits.
+The executor requires a `profile_id`; absent selection returns unknown. Overlapping
+interval interiors are rejected at compilation. Shared boundaries belonging to two
+classes return unknown. Unreported gaps/tails stay unknown. Existing `points` syntax
+remains supported. Numeric profiles do not participate in categorical host-mask execution.
+
+`schema/lookups/t4_numeric_compilation_policy.csv` is manifest-validated configuration
+keyed by evidence ID. It names the approved source encoding, declared source unit, full
+ordinal scale, optional descending-range permission, applicability note, and explicit
+holds. It does not override EV approval, role or species/crop routing. Scores use source
+rank / configured full scale maximum; a low class is positive and zero is reserved for
+explicitly unsuitable. These are design scores, not measured probabilities. Source
+profiles remain separate, with no automatic regional or cross-family inheritance.
+
+
 > `ecocrop` is **not** a base type — it is a multi-dimensional composite (`{ t_min, t_opt_low, t_opt_high, t_max }`
 > replicated per dimension) built from `trapezoidal`/`threshold` limits. Document it as a composite where used.
 >
