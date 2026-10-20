@@ -1,0 +1,527 @@
+{
+  "status": "planning_only_no_aoi_confirmed_no_data_fetched",
+  "context_assumption": "SLE, provisional from project docs; not approved AOI",
+  "families": {
+    "agroforestry__linear_boundary": {
+      "gate_datasets": [
+        "esa_worldcover_2021"
+      ],
+      "host_inputs": {
+        "field_boundary_zone": {
+          "status": "requires_upload",
+          "spec": {
+            "variables": [
+              "field_boundary_zone"
+            ],
+            "operation": "supplied_mask",
+            "output_unit": "binary",
+            "no_data": "propagate_unknown",
+            "note": "Upload field-boundary geometry and locally justified buffered zone; no global buffer width."
+          },
+          "inputs": {
+            "field_boundary_zone": {
+              "variable": "field_boundary_zone",
+              "dataset_id": null,
+              "winning_binding": {
+                "binding_id": "field_boundary_zone__global",
+                "variable": "field_boundary_zone",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "",
+                "preference_rank": 2,
+                "status": "requires_upload",
+                "fitness_note": "Buffered field boundaries; geometry plus regionally justified width required.",
+                "band": ""
+              },
+              "needs_upload": true,
+              "fell_back_to": null,
+              "prompt": "field_boundary_zone: preferred dataset for this AOI requires upload (Buffered field boundaries; geometry plus regionally justified width required.). No catalogued fallback available.",
+              "band": "",
+              "dataset": null
+            }
+          }
+        }
+      }
+    },
+    "agroforestry__planted_silvoarable": {
+      "gate_datasets": [
+        "esa_worldcover_2021"
+      ],
+      "host_inputs": {
+        "managed_forage_without_grazing": {
+          "status": "requires_upload",
+          "spec": {
+            "variables": [
+              "managed_forage_without_grazing"
+            ],
+            "operation": "supplied_mask",
+            "output_unit": "binary",
+            "no_data": "propagate_unknown",
+            "supporting_variables": [
+              "grassland_class",
+              "ruminant_density"
+            ],
+            "note": "GPW grassland + GLW4 ruminants support scoping; livestock density alone does not prove grazing. Local management interpretation required."
+          },
+          "inputs": {
+            "managed_forage_without_grazing": {
+              "variable": "managed_forage_without_grazing",
+              "dataset_id": null,
+              "winning_binding": {
+                "binding_id": "managed_forage_without_grazing__global",
+                "variable": "managed_forage_without_grazing",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "",
+                "preference_rank": 2,
+                "status": "requires_upload",
+                "fitness_note": "Forage management without grazing; grassland class alone is insufficient.",
+                "band": ""
+              },
+              "needs_upload": true,
+              "fell_back_to": null,
+              "prompt": "managed_forage_without_grazing: preferred dataset for this AOI requires upload (Forage management without grazing; grassland class alone is insufficient.). No catalogued fallback available.",
+              "band": "",
+              "dataset": null
+            },
+            "grassland_class": {
+              "variable": "grassland_class",
+              "dataset_id": "gpw_grassland_class_v1",
+              "winning_binding": {
+                "binding_id": "grassland_class__global",
+                "variable": "grassland_class",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "gpw_grassland_class_v1",
+                "preference_rank": 2,
+                "status": "catalogued",
+                "fitness_note": "Publisher GEE; use 2020 for livestock alignment; class 1 cultivated, 2 natural/semi-natural, 0 other. Grazing interpretation remains separate.",
+                "band": "dominant_class"
+              },
+              "needs_upload": false,
+              "fell_back_to": null,
+              "prompt": null,
+              "band": "dominant_class",
+              "dataset": {
+                "dataset_id": "gpw_grassland_class_v1",
+                "dataset_name": "Global Pasture Watch dominant grassland class v1",
+                "analytical_module": "structural_suitability",
+                "time_period": "2000-2022; select 2020 for GLW4 alignment",
+                "spatial_resolution_m": 30,
+                "geographic_coverage": [
+                  "global"
+                ],
+                "data_format": "geotiff",
+                "access_type": "gee_asset",
+                "download_url": "https://developers.google.com/earth-engine/datasets/catalog/projects_global-pasture-watch_assets_ggc-30m_v1_grassland_c",
+                "gee_asset_id": "projects/global-pasture-watch/assets/ggc-30m/v1/grassland_c",
+                "license": "CC-BY-4.0",
+                "citation": "Parente et al. (2024), Global Pasture Watch annual grassland class and extent maps; publisher Earth Engine catalogue.",
+                "version": "v1",
+                "preprocessing_notes": "Select 2020 annual image and dominant_class band. Classes 0 other, 1 cultivated grassland, 2 natural/semi-natural grassland. Derive class fractions before aggregation. Supports pasture context; does not alone confirm grazing.",
+                "limitations": "Known regional underprediction and cropland confusion. Cultivated class includes managed forage; grazing needs independent confirmation.",
+                "description": "Publisher-hosted annual 30 m grassland classes.",
+                "grain_type": "grid"
+              }
+            },
+            "ruminant_density": {
+              "variable": "ruminant_density",
+              "dataset_id": "glw4_livestock_2020",
+              "winning_binding": {
+                "binding_id": "ruminant_density__global",
+                "variable": "ruminant_density",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "glw4_livestock_2020",
+                "preference_rank": 2,
+                "status": "catalogued",
+                "fitness_note": "Named species COGs, head/km2. Supports grazing context; no universal density threshold or management inference.",
+                "band": "cattle|buffalo|goat|sheep"
+              },
+              "needs_upload": false,
+              "fell_back_to": null,
+              "prompt": null,
+              "band": "cattle|buffalo|goat|sheep",
+              "dataset": {
+                "dataset_id": "glw4_livestock_2020",
+                "dataset_name": "Gridded Livestock of the World v4 (GLW4, 2020)",
+                "analytical_module": "geographic_context",
+                "time_period": 2020,
+                "spatial_resolution_m": 10000,
+                "geographic_coverage": [
+                  "global"
+                ],
+                "data_format": "geotiff",
+                "access_type": "direct_download",
+                "download_url": "https://cgiar-climate-data-hub.github.io/catalog/glw4-2020/",
+                "license": "CC-BY-4.0",
+                "citation": "FAO (2024). Gridded Livestock of the World 4, 2020. https://www.fao.org/livestock-systems/global-distributions/en/",
+                "version": "v4 (2024)",
+                "preprocessing_notes": "Hosted species COGs: https://digital-atlas.s3.amazonaws.com/cdh/data/glw4-2020/cog/glw4-2020-{species}.tif ; species cattle, buffalo, goat, sheep for ruminants. Units head/km2; preserve nodata. Do not treat modelled livestock presence as confirmed grazing management.",
+                "limitations": "Census-downscaled modelled density at 5 arc-minutes; pastoral mobility and housed animals limit grazing inference.",
+                "description": "FAO GLW4 modelled densities for buffalo, cattle, chicken, goat, pig and sheep; 2020 reference year.",
+                "grain_type": "grid"
+              }
+            }
+          }
+        }
+      }
+    },
+    "agroforestry__regeneration_farmland": {
+      "gate_datasets": [
+        "esa_worldcover_2021"
+      ],
+      "host_inputs": {
+        "farmland_context": {
+          "status": "requires_upload",
+          "spec": {
+            "variables": [
+              "farmland_context"
+            ],
+            "operation": "supplied_mask",
+            "output_unit": "binary",
+            "no_data": "propagate_unknown",
+            "note": "Agricultural, fallow or former-farmland identity; degradation alone cannot establish this context."
+          },
+          "inputs": {
+            "farmland_context": {
+              "variable": "farmland_context",
+              "dataset_id": null,
+              "winning_binding": {
+                "binding_id": "farmland_context__global",
+                "variable": "farmland_context",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "",
+                "preference_rank": 2,
+                "status": "requires_upload",
+                "fitness_note": "Validated agricultural/fallow/former-farmland context. Degradation and grassland cover alone do not establish this.",
+                "band": ""
+              },
+              "needs_upload": true,
+              "fell_back_to": null,
+              "prompt": "farmland_context: preferred dataset for this AOI requires upload (Validated agricultural/fallow/former-farmland context. Degradation and grassland cover alone do not establish this.). No catalogued fallback available.",
+              "band": "",
+              "dataset": null
+            }
+          }
+        }
+      }
+    },
+    "agroforestry__shaded_perennial": {
+      "gate_datasets": [
+        "esa_worldcover_2021"
+      ],
+      "host_inputs": {
+        "coffee_host_fraction": {
+          "status": "ready_to_fetch",
+          "spec": {
+            "variables": [
+              "coffee_arabica_distribution",
+              "coffee_robusta_distribution"
+            ],
+            "operation": "crop_area_fraction",
+            "input_unit": "ha",
+            "output_unit": "fraction_of_pixel",
+            "data_basis": "modelled_allocation",
+            "technology": "all",
+            "area_measure": "physical_area",
+            "aggregation": "sum_area_then_divide_by_pixel_area",
+            "no_data": "propagate_unknown",
+            "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+          },
+          "inputs": {
+            "coffee_arabica_distribution": {
+              "variable": "coffee_arabica_distribution",
+              "dataset_id": "mapspam_physical_area_2020",
+              "winning_binding": {
+                "binding_id": "coffee_arabica_distribution__global",
+                "variable": "coffee_arabica_distribution",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "mapspam_physical_area_2020",
+                "preference_rank": 2,
+                "status": "catalogued",
+                "fitness_note": "Physical-area ha, all technologies; published crop order. Prefer accurate local commodity map; coarse allocation fallback accepted by Pete 2026-10-20.",
+                "band": "32"
+              },
+              "needs_upload": false,
+              "fell_back_to": null,
+              "prompt": null,
+              "band": "32",
+              "dataset": {
+                "dataset_id": "mapspam_physical_area_2020",
+                "dataset_name": "MapSPAM 2020 v2r2 physical crop area, all technologies",
+                "analytical_module": "structural_suitability",
+                "time_period": 2020,
+                "spatial_resolution_m": 10000,
+                "geographic_coverage": [
+                  "global"
+                ],
+                "data_format": "geotiff_cog",
+                "access_type": "direct_download",
+                "download_url": "https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/cog/spam2020-physical_area-all.tif",
+                "license": "CC-BY-SA-4.0",
+                "citation": "IFPRI MapSPAM 2020 v2r2; cloud-optimized distribution: CGIAR Climate Action Data Hub, https://cgiar-climate-data-hub.github.io/catalog/spam2020/",
+                "version": "2020 v2r2",
+                "preprocessing_notes": "Physical crop area in ha, 46 crop bands in published crop-code order. Select BIND band; coffee includes coff and rcof. Sum component physical areas, divide by geodesic pixel area in ha. Preserve nodata; reject fractions outside [0,1]. Read COG windows, never download full raster. All technologies already includes irrigated and rainfed; do not add them again.",
+                "limitations": "Modelled allocation, not direct observation. ~5 arc-minute support cannot be sharpened by resampling. Crop fractions retain extent, not suitability strength. Cross-crop overlap must be checked before area totals.",
+                "description": "Hosted physical-area COG for explicit crop host scoping. Metadata: https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/crop-codes.json",
+                "grain_type": "grid"
+              }
+            },
+            "coffee_robusta_distribution": {
+              "variable": "coffee_robusta_distribution",
+              "dataset_id": "mapspam_physical_area_2020",
+              "winning_binding": {
+                "binding_id": "coffee_robusta_distribution__global",
+                "variable": "coffee_robusta_distribution",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "mapspam_physical_area_2020",
+                "preference_rank": 2,
+                "status": "catalogued",
+                "fitness_note": "Physical-area ha, all technologies; published crop order. Prefer accurate local commodity map; coarse allocation fallback accepted by Pete 2026-10-20.",
+                "band": "33"
+              },
+              "needs_upload": false,
+              "fell_back_to": null,
+              "prompt": null,
+              "band": "33",
+              "dataset": {
+                "dataset_id": "mapspam_physical_area_2020",
+                "dataset_name": "MapSPAM 2020 v2r2 physical crop area, all technologies",
+                "analytical_module": "structural_suitability",
+                "time_period": 2020,
+                "spatial_resolution_m": 10000,
+                "geographic_coverage": [
+                  "global"
+                ],
+                "data_format": "geotiff_cog",
+                "access_type": "direct_download",
+                "download_url": "https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/cog/spam2020-physical_area-all.tif",
+                "license": "CC-BY-SA-4.0",
+                "citation": "IFPRI MapSPAM 2020 v2r2; cloud-optimized distribution: CGIAR Climate Action Data Hub, https://cgiar-climate-data-hub.github.io/catalog/spam2020/",
+                "version": "2020 v2r2",
+                "preprocessing_notes": "Physical crop area in ha, 46 crop bands in published crop-code order. Select BIND band; coffee includes coff and rcof. Sum component physical areas, divide by geodesic pixel area in ha. Preserve nodata; reject fractions outside [0,1]. Read COG windows, never download full raster. All technologies already includes irrigated and rainfed; do not add them again.",
+                "limitations": "Modelled allocation, not direct observation. ~5 arc-minute support cannot be sharpened by resampling. Crop fractions retain extent, not suitability strength. Cross-crop overlap must be checked before area totals.",
+                "description": "Hosted physical-area COG for explicit crop host scoping. Metadata: https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/crop-codes.json",
+                "grain_type": "grid"
+              }
+            }
+          }
+        },
+        "cocoa_host_fraction": {
+          "status": "ready_to_fetch",
+          "spec": {
+            "variables": [
+              "cocoa_distribution"
+            ],
+            "operation": "crop_area_fraction",
+            "input_unit": "ha",
+            "output_unit": "fraction_of_pixel",
+            "data_basis": "modelled_allocation",
+            "technology": "all",
+            "area_measure": "physical_area",
+            "aggregation": "sum_area_then_divide_by_pixel_area",
+            "no_data": "propagate_unknown",
+            "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+          },
+          "inputs": {
+            "cocoa_distribution": {
+              "variable": "cocoa_distribution",
+              "dataset_id": "mapspam_physical_area_2020",
+              "winning_binding": {
+                "binding_id": "cocoa_distribution__SLE",
+                "variable": "cocoa_distribution",
+                "scope_type": "admin_country",
+                "scope_id": "SLE",
+                "dataset_id": "",
+                "preference_rank": 1,
+                "status": "requires_upload",
+                "fitness_note": "National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot.",
+                "band": ""
+              },
+              "needs_upload": true,
+              "fell_back_to": {
+                "binding_id": "cocoa_distribution__global",
+                "variable": "cocoa_distribution",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "mapspam_physical_area_2020",
+                "preference_rank": 2,
+                "status": "catalogued",
+                "fitness_note": "Cocoa physical-area ha / pixel area ha. MapSPAM allocation fallback for scoping; prefer accurate commodity map. Not harvested-area intensity or a suitability score.",
+                "band": "34"
+              },
+              "prompt": "cocoa_distribution: preferred dataset for this AOI requires upload (National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot.). Using fallback 'mapspam_physical_area_2020' meanwhile.",
+              "band": "34",
+              "dataset": {
+                "dataset_id": "mapspam_physical_area_2020",
+                "dataset_name": "MapSPAM 2020 v2r2 physical crop area, all technologies",
+                "analytical_module": "structural_suitability",
+                "time_period": 2020,
+                "spatial_resolution_m": 10000,
+                "geographic_coverage": [
+                  "global"
+                ],
+                "data_format": "geotiff_cog",
+                "access_type": "direct_download",
+                "download_url": "https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/cog/spam2020-physical_area-all.tif",
+                "license": "CC-BY-SA-4.0",
+                "citation": "IFPRI MapSPAM 2020 v2r2; cloud-optimized distribution: CGIAR Climate Action Data Hub, https://cgiar-climate-data-hub.github.io/catalog/spam2020/",
+                "version": "2020 v2r2",
+                "preprocessing_notes": "Physical crop area in ha, 46 crop bands in published crop-code order. Select BIND band; coffee includes coff and rcof. Sum component physical areas, divide by geodesic pixel area in ha. Preserve nodata; reject fractions outside [0,1]. Read COG windows, never download full raster. All technologies already includes irrigated and rainfed; do not add them again.",
+                "limitations": "Modelled allocation, not direct observation. ~5 arc-minute support cannot be sharpened by resampling. Crop fractions retain extent, not suitability strength. Cross-crop overlap must be checked before area totals.",
+                "description": "Hosted physical-area COG for explicit crop host scoping. Metadata: https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/crop-codes.json",
+                "grain_type": "grid"
+              }
+            }
+          }
+        },
+        "tea_host_fraction": {
+          "status": "ready_to_fetch",
+          "spec": {
+            "variables": [
+              "tea_distribution"
+            ],
+            "operation": "crop_area_fraction",
+            "input_unit": "ha",
+            "output_unit": "fraction_of_pixel",
+            "data_basis": "modelled_allocation",
+            "technology": "all",
+            "area_measure": "physical_area",
+            "aggregation": "sum_area_then_divide_by_pixel_area",
+            "no_data": "propagate_unknown",
+            "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+          },
+          "inputs": {
+            "tea_distribution": {
+              "variable": "tea_distribution",
+              "dataset_id": "mapspam_physical_area_2020",
+              "winning_binding": {
+                "binding_id": "tea_distribution__global",
+                "variable": "tea_distribution",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "mapspam_physical_area_2020",
+                "preference_rank": 2,
+                "status": "catalogued",
+                "fitness_note": "Physical-area ha, all technologies; published crop order. Prefer accurate local commodity map; coarse allocation fallback accepted by Pete 2026-10-20.",
+                "band": "35"
+              },
+              "needs_upload": false,
+              "fell_back_to": null,
+              "prompt": null,
+              "band": "35",
+              "dataset": {
+                "dataset_id": "mapspam_physical_area_2020",
+                "dataset_name": "MapSPAM 2020 v2r2 physical crop area, all technologies",
+                "analytical_module": "structural_suitability",
+                "time_period": 2020,
+                "spatial_resolution_m": 10000,
+                "geographic_coverage": [
+                  "global"
+                ],
+                "data_format": "geotiff_cog",
+                "access_type": "direct_download",
+                "download_url": "https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/cog/spam2020-physical_area-all.tif",
+                "license": "CC-BY-SA-4.0",
+                "citation": "IFPRI MapSPAM 2020 v2r2; cloud-optimized distribution: CGIAR Climate Action Data Hub, https://cgiar-climate-data-hub.github.io/catalog/spam2020/",
+                "version": "2020 v2r2",
+                "preprocessing_notes": "Physical crop area in ha, 46 crop bands in published crop-code order. Select BIND band; coffee includes coff and rcof. Sum component physical areas, divide by geodesic pixel area in ha. Preserve nodata; reject fractions outside [0,1]. Read COG windows, never download full raster. All technologies already includes irrigated and rainfed; do not add them again.",
+                "limitations": "Modelled allocation, not direct observation. ~5 arc-minute support cannot be sharpened by resampling. Crop fractions retain extent, not suitability strength. Cross-crop overlap must be checked before area totals.",
+                "description": "Hosted physical-area COG for explicit crop host scoping. Metadata: https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/crop-codes.json",
+                "grain_type": "grid"
+              }
+            }
+          }
+        }
+      }
+    },
+    "agroforestry__silvopastoral": {
+      "gate_datasets": [
+        "gpw_grassland_class_v1"
+      ],
+      "host_inputs": {
+        "grazing_system_present": {
+          "status": "requires_upload",
+          "spec": {
+            "variables": [
+              "grazing_system_present"
+            ],
+            "operation": "supplied_mask",
+            "output_unit": "binary",
+            "no_data": "propagate_unknown",
+            "supporting_variables": [
+              "grassland_class"
+            ],
+            "note": "Local grazing confirmation required for both GPW grassland classes. GLW density cannot replace confirmation."
+          },
+          "inputs": {
+            "grazing_system_present": {
+              "variable": "grazing_system_present",
+              "dataset_id": null,
+              "winning_binding": {
+                "binding_id": "grazing_system_present__global",
+                "variable": "grazing_system_present",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "",
+                "preference_rank": 2,
+                "status": "requires_upload",
+                "fitness_note": "Grazing management confirmation; GPW grassland and GLW4 ruminants are supporting inputs, not direct proof.",
+                "band": ""
+              },
+              "needs_upload": true,
+              "fell_back_to": null,
+              "prompt": "grazing_system_present: preferred dataset for this AOI requires upload (Grazing management confirmation; GPW grassland and GLW4 ruminants are supporting inputs, not direct proof.). No catalogued fallback available.",
+              "band": "",
+              "dataset": null
+            },
+            "grassland_class": {
+              "variable": "grassland_class",
+              "dataset_id": "gpw_grassland_class_v1",
+              "winning_binding": {
+                "binding_id": "grassland_class__global",
+                "variable": "grassland_class",
+                "scope_type": "global",
+                "scope_id": "",
+                "dataset_id": "gpw_grassland_class_v1",
+                "preference_rank": 2,
+                "status": "catalogued",
+                "fitness_note": "Publisher GEE; use 2020 for livestock alignment; class 1 cultivated, 2 natural/semi-natural, 0 other. Grazing interpretation remains separate.",
+                "band": "dominant_class"
+              },
+              "needs_upload": false,
+              "fell_back_to": null,
+              "prompt": null,
+              "band": "dominant_class",
+              "dataset": {
+                "dataset_id": "gpw_grassland_class_v1",
+                "dataset_name": "Global Pasture Watch dominant grassland class v1",
+                "analytical_module": "structural_suitability",
+                "time_period": "2000-2022; select 2020 for GLW4 alignment",
+                "spatial_resolution_m": 30,
+                "geographic_coverage": [
+                  "global"
+                ],
+                "data_format": "geotiff",
+                "access_type": "gee_asset",
+                "download_url": "https://developers.google.com/earth-engine/datasets/catalog/projects_global-pasture-watch_assets_ggc-30m_v1_grassland_c",
+                "gee_asset_id": "projects/global-pasture-watch/assets/ggc-30m/v1/grassland_c",
+                "license": "CC-BY-4.0",
+                "citation": "Parente et al. (2024), Global Pasture Watch annual grassland class and extent maps; publisher Earth Engine catalogue.",
+                "version": "v1",
+                "preprocessing_notes": "Select 2020 annual image and dominant_class band. Classes 0 other, 1 cultivated grassland, 2 natural/semi-natural grassland. Derive class fractions before aggregation. Supports pasture context; does not alone confirm grazing.",
+                "limitations": "Known regional underprediction and cropland confusion. Cultivated class includes managed forage; grazing needs independent confirmation.",
+                "description": "Publisher-hosted annual 30 m grassland classes.",
+                "grain_type": "grid"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

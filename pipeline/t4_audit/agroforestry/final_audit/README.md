@@ -338,3 +338,8 @@ Original Pete export preserved in `docs/review/exports/review_agroforestry-t4-in
 ## GPW clarification — 20 October 2026
 
 Pete answered: “GPW grassland plus local grazing confirmation”. This supersedes the G1/F1 ambiguity above. Silvopastoral gate now reads GPW dominant_class: 1 cultivated and 2 natural/semi-natural grassland both require `grazing_system_present`; 0 other is ineligible; unrecognized/nodata stays unknown. Local confirmation remains upload-dependent. GLW density is not a substitute or required dependency. Planted silvoarable optional ungrazed forage branch remains unchanged. Review export retained verbatim; this follow-up records the separate explicit clarification.
+
+
+## Next input sourcing — 20 October 2026
+
+`docs/review/t4-next-inputs.html` records candidate-source triage and categorical input readiness. `executable_categories/pilot_input_plan.json` is generated from existing T4/BIND with provisional SLE context, not a confirmed AOI or fetched-data claim. FTW global outputs merit evaluation before API deployment, but pasture is outside documented training scope and smallholder fragmentation matters for line length. Forest Data Partnership 2026a cocoa/coffee probabilities require validated classification before aggregation to crop-area fractions; no direct probability-to-fraction substitution. Sierra Leone AAS 2024 pasture/feed modules are a candidate confirmation source; geolocation and question semantics remain unverified. Candidate documentation only: no analytical binding switched, no microdata ingested, no EV extraction.
