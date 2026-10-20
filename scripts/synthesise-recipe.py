@@ -122,6 +122,11 @@ def synthesise(
             )
 
     policies = _rd(ROOT / "schema" / "lookups" / "crop_scope_policy.csv")
+    numeric_policies = {
+        r["evidence_id"]: r
+        for r in _rd(ROOT / "schema/lookups/t4_numeric_compilation_policy.csv")
+        if r["nbs_id"] == nbs_id
+    }
     units = [
         EvidenceUnit(
             **{
@@ -133,6 +138,20 @@ def synthesise(
         for row in _csv_to_rows(REG / "EV_evidence_register.csv")
         if row["nbs_id"] == nbs_id
     ]
+    source_context = {
+        r["source_id"]: {
+            k: r[k]
+            for k in ("study_country", "region", "aez", "farming_system")
+            if r[k]
+        }
+        for r in src
+    }
+    for unit in units:
+        if unit.evidence_id in numeric_policies:
+            unit.context = {
+                **source_context.get(unit.source_id, {}),
+                **(unit.context or {}),
+            }
     families = sorted(
         {u.suitability_family_id for u in units if u.suitability_family_id}
     )
@@ -170,6 +189,7 @@ def synthesise(
             floor_pct=20.0,
             allow_crop_scope=policy.get("allow_crop_scope", "").lower() == "true",
             approved_only=approved_only,
+            numeric_policies=numeric_policies,
         )
         out[family].support_basis = (
             "explicit_screened_source_membership"
@@ -412,6 +432,7 @@ def main(argv: list[str] | None = None) -> int:
                         for path in [
                             *REG.glob("*.csv"),
                             ROOT / "schema/lookups/crop_scope_policy.csv",
+                            ROOT / "schema/lookups/t4_numeric_compilation_policy.csv",
                         ]
                     },
                     "screened_corpus_manifest": {

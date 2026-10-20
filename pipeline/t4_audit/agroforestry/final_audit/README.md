@@ -1,3 +1,12 @@
+## Numeric compilation correction — 20 October 2026
+
+Supersedes the earlier one-numeric-row completion claim below. Reviewed ordinal bands
+were still being lost by the compiler. T4 now contains 23 rows: 7 numeric biophysical,
+7 categorical host gates and 9 retained operational/design rows. Ten more reviewed
+records now supply 12 explicit source-context numeric profiles. Values outside known
+bands remain unknown. Scoring and interpretation policy: schema/spec.md, numeric
+compilation policy CSV, issue #362. No new literature extraction or pilot run.
+
 # Agroforestry T4 compilation audit — completed diagnostic and branch repairs
 
 19 October 2026 · `codex/t4-review-oct19` · not published to main.

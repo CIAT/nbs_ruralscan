@@ -621,6 +621,35 @@ One variable (within one suitability family) at a time: combine its evidence uni
 - **Filter before T4? Soft floor, not a hard cut.** Carry every candidate variable into T4 *with* its `paper_support_pct`, `n_sources` and ML flag. A variable below a prevalence floor (default 20 %) is **flagged `review_low_support` for a recorded inclusion decision**, not auto-dropped — because prevalence is as much *convention* (citation echo, publication bias) as importance, and a rarely-published variable can be locally decisive (ML can rescue it → `include_ml_override`). Hard, statistical pruning is left to correlation clustering; inclusion/exclusion is an auditable, admin-gated decision (mirrors the wireframe's "edit included variables").
 - **Output** → a T4 row with `relationship_type` + `relationship_params`, `uncertainty_pct`, `context_overrides`, `weight_default`, **`paper_support_pct` + `n_sources` + `corpus_n`**, `justification` (citing `evidence_id`s), `references`, and `dataset_id` resolved via the ontology.
 
+### Reviewed numeric class tables (October 2026; issue #362)
+
+Numeric variables can be reported as ordinal bands rather than smooth response curves.
+Compile those bands into `piecewise.profiles` instead of discarding the reviewed record
+or pretending its highest-ranked band is a universal optimum. The numeric compilation
+policy lives in schema and names the full source ordinal scale. Use rank / full-scale
+maximum as an explicit scoping design convention; never normalize only the observed
+subset (a partial low/medium table must not become medium=1). No interpolation across
+classes or extrapolation outside reported bounds. Shared boundaries with different
+classes stay unknown. A favourable-only threshold yields a positive band with an
+unknown complement, not a hard exclusion.
+
+Preserve distinct source/context profiles within the family × variable row. The caller
+must explicitly select a profile and determine transfer applicability; no source is
+chosen automatically. Cross-family evidence remains a reference row, not a sixth
+agroforestry family or a universal rule inherited by all families. Family-specific
+mapping decisions remain explicit. The same rule applies to conflicting climate groups
+within one source. Profiles retain each source and evidence ID; source disagreement is
+not averaged into a fabricated consensus. The 20% uncertainty floor is a humility flag,
+not an estimated confidence interval for ordinal scores.
+
+Every reviewed numeric payload must be either compiled or assigned a meaningful reason:
+source ambiguity, variable mismatch, parameter-choice grid, importance weight, observed
+site descriptor, unsupported applicability, or scope exclusion. Evidence approval alone
+does not turn site conditions or AHP weights into response curves. The approved Singh
+pH bands now compile; Haile's overlapping pH bands remain held. Ahmad's explicitly
+permitted descending SOC band is reordered without changing its endpoints; Haile's
+contradictory pH table is not repaired by that rule.
+
 ### 6.1 Publication bias & uncertainty (pragmatic)
 
 The evidence base skews **optimistic** — papers map where an NbS *works*, rarely where it fails — so it

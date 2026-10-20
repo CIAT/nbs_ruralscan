@@ -27,5 +27,88 @@
     "paper_support_pct": null,
     "n_sources": 3,
     "corpus_n": null
+  },
+  {
+    "mapping_id": "agroforestry__planted_silvoarable__soil_ph",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "variable": "soil_ph",
+    "variable_unit": "pH_units",
+    "dataset_id": "isric_soilgrids250_v2",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "piecewise",
+    "relationship_params": {
+      "profiles": [
+        {
+          "profile_id": "ev_soil_ph_singh26",
+          "source_id": "singh_2026",
+          "evidence_id": "ev_soil_ph_singh26",
+          "context": {
+            "study_country": "India",
+            "study_region": "Odisha",
+            "study_income_group": "LMIC"
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "moderate": 2,
+            "medium": 2,
+            "high": 3,
+            "very_high": 4
+          },
+          "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+          "unit": "pH_units",
+          "intervals": [
+            {
+              "lower": 5.5,
+              "upper": 6.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "high",
+              "rank": 3,
+              "score": 0.75
+            },
+            {
+              "lower": 6.5,
+              "upper": 7.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "very_high",
+              "rank": 4,
+              "score": 1.0
+            },
+            {
+              "lower": 7.5,
+              "upper": 8.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5
+            }
+          ]
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
+      "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+    },
+    "uncertainty_pct": 20,
+    "context_overrides": [],
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "references": [
+      "singh_2026"
+    ],
+    "evidence_ids": [
+      "ev_soil_ph_singh26"
+    ],
+    "parameter_source_ids": [
+      "singh_2026"
+    ],
+    "n_parameter_sources": 1,
+    "paper_support_pct": null,
+    "n_sources": 1,
+    "corpus_n": null
   }
 ]

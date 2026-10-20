@@ -27,5 +27,64 @@
     "paper_support_pct": null,
     "n_sources": 1,
     "corpus_n": null
+  },
+  {
+    "mapping_id": "agroforestry__shaded_perennial__annual_precipitation",
+    "suitability_family_id": "agroforestry__shaded_perennial",
+    "variable": "annual_precipitation",
+    "variable_unit": "mm/year",
+    "dataset_id": "worldclim_v2_precip",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "piecewise",
+    "relationship_params": {
+      "profiles": [
+        {
+          "profile_id": "ev_t4_precip_mushtaq2023_2",
+          "source_id": "mushtaq_2023",
+          "evidence_id": "ev_t4_precip_mushtaq2023_2",
+          "context": {
+            "study_country": "India"
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "favourable": 1
+          },
+          "applicability_note": "Only >1200 mm/year is described as favourable. Lower rainfall remains unknown, not unsuitable. Secondary assertion; crop applicability must be checked.",
+          "unit": "mm/year",
+          "intervals": [
+            {
+              "lower": 1200.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "favourable",
+              "rank": 1,
+              "score": 1.0
+            }
+          ]
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
+      "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+    },
+    "uncertainty_pct": 20,
+    "context_overrides": [],
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "references": [
+      "mushtaq_2023"
+    ],
+    "evidence_ids": [
+      "ev_t4_precip_mushtaq2023_2"
+    ],
+    "parameter_source_ids": [
+      "mushtaq_2023"
+    ],
+    "n_parameter_sources": 1,
+    "paper_support_pct": null,
+    "n_sources": 1,
+    "corpus_n": null
   }
 ]

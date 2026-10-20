@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-20T09:32:23.228951+00:00",
-  "git_commit": "1dc14a3b8955ccdbb061a83673ba20ffd8bef5d3",
+  "timestamp": "2026-10-20T13:04:56.313105+00:00",
+  "git_commit": "7cf75d71035915552aeb40d244469b481477317f",
   "registers": {
     "SRC_source_register": [
       {
@@ -179514,7 +179514,9 @@
           "organic carbon"
         ],
         "canonical_unit": "g/kg",
-        "unit_conversions": {},
+        "unit_conversions": {
+          "%->g/kg": "*10"
+        },
         "group_id": "edaphic",
         "candidate_dataset_ids": [
           "isric_soilgrids250_v2",
@@ -188875,6 +188877,677 @@
       ],
       "T4_suitability_mappings": [
         {
+          "mapping_id": "agroforestry__cross_family__slope",
+          "nbs_id": "agroforestry",
+          "dataset_id": "srtm_dem_30m",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_T4_slope_ahmad2018_1",
+                "source_id": "ahmad_2018",
+                "evidence_id": "ev_T4_slope_ahmad2018_1",
+                "context": {
+                  "study_country": "India"
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "low": 1,
+                  "medium": 2,
+                  "high": 3
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "degrees",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 2.9,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "High",
+                    "rank": 3,
+                    "score": 1.0
+                  },
+                  {
+                    "lower": 2.9,
+                    "upper": 8.5,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "Medium",
+                    "rank": 2,
+                    "score": 0.6666666666666666
+                  },
+                  {
+                    "lower": 8.5,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "Low",
+                    "rank": 1,
+                    "score": 0.3333333333333333
+                  }
+                ]
+              },
+              {
+                "profile_id": "ev_T4_slope_haile2024_1",
+                "source_id": "haile_2024",
+                "evidence_id": "ev_T4_slope_haile2024_1",
+                "context": {
+                  "study_country": "Ethiopia",
+                  "study_area": "Genale sub-basin, Oromia, Ethiopia",
+                  "aez": "semi-arid to sub-humid"
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "low": 1,
+                  "moderate": 2,
+                  "medium": 2,
+                  "high": 3,
+                  "very_high": 4
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "degrees",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 2.3,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "very_high",
+                    "rank": 4,
+                    "score": 1.0
+                  },
+                  {
+                    "lower": 2.3,
+                    "upper": 4.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": " high",
+                    "rank": 3,
+                    "score": 0.75
+                  },
+                  {
+                    "lower": 4.0,
+                    "upper": 5.1,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": " medium",
+                    "rank": 2,
+                    "score": 0.5
+                  },
+                  {
+                    "lower": 5.1,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": " low",
+                    "rank": 1,
+                    "score": 0.25
+                  }
+                ]
+              },
+              {
+                "profile_id": "ev_t4_slope_nath21_01",
+                "source_id": "nath_2021",
+                "evidence_id": "ev_t4_slope_nath21_01",
+                "context": {
+                  "study_country": "India"
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "unsuitable": 0,
+                  "marginal": 1,
+                  "moderate": 2,
+                  "good": 3,
+                  "very_good": 4
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "degrees",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 5.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "very_good",
+                    "rank": 4,
+                    "score": 1.0
+                  },
+                  {
+                    "lower": 5.0,
+                    "upper": 10.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "good",
+                    "rank": 3,
+                    "score": 0.75
+                  },
+                  {
+                    "lower": 10.0,
+                    "upper": 15.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "moderate",
+                    "rank": 2,
+                    "score": 0.5
+                  },
+                  {
+                    "lower": 15.0,
+                    "upper": 20.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "marginal",
+                    "rank": 1,
+                    "score": 0.25
+                  },
+                  {
+                    "lower": 20.0,
+                    "upper": null,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "unsuitable",
+                    "rank": 0,
+                    "score": 0.0
+                  }
+                ]
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
+            "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.25,
+          "weight_adjustable": true,
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "variable": "slope",
+          "suitability_family_id": "agroforestry__cross_family",
+          "evidence_ids": [
+            "ev_T4_slope_ahmad2018_1",
+            "ev_T4_slope_haile2024_1",
+            "ev_t4_slope_nath21_01"
+          ],
+          "n_sources": 4
+        },
+        {
+          "mapping_id": "agroforestry__cross_family__soil_organic_carbon",
+          "nbs_id": "agroforestry",
+          "dataset_id": "isric_soilgrids250_v2",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_T4_soc_ahmad2018_1",
+                "source_id": "ahmad_2018",
+                "evidence_id": "ev_T4_soc_ahmad2018_1",
+                "context": {
+                  "study_country": "India"
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "low": 1,
+                  "medium": 2,
+                  "high": 3
+                },
+                "applicability_note": "Source prints middle band descending (0.75–0.50%); normalize order only. No overlapping ranges. Regional model, explicit selection required.",
+                "unit": "g/kg",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 5.0,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "Low",
+                    "rank": 1,
+                    "score": 0.3333333333333333
+                  },
+                  {
+                    "lower": 5.0,
+                    "upper": 7.5,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "Medium",
+                    "rank": 2,
+                    "score": 0.6666666666666666
+                  },
+                  {
+                    "lower": 7.5,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "High",
+                    "rank": 3,
+                    "score": 1.0
+                  }
+                ]
+              },
+              {
+                "profile_id": "ev_T4_soc_haile2024_1",
+                "source_id": "haile_2024",
+                "evidence_id": "ev_T4_soc_haile2024_1",
+                "context": {
+                  "study_country": "Ethiopia",
+                  "study_area": "Genale sub-basin, Oromia, Ethiopia"
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "low": 1,
+                  "moderate": 2,
+                  "medium": 2,
+                  "high": 3,
+                  "very_high": 4
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "g/kg",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 5.0,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "low",
+                    "rank": 1,
+                    "score": 0.25
+                  },
+                  {
+                    "lower": 5.0,
+                    "upper": 7.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": " medium",
+                    "rank": 2,
+                    "score": 0.5
+                  }
+                ]
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
+            "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.25,
+          "weight_adjustable": true,
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "variable": "soil_organic_carbon",
+          "suitability_family_id": "agroforestry__cross_family",
+          "evidence_ids": [
+            "ev_T4_soc_ahmad2018_1",
+            "ev_T4_soc_haile2024_1"
+          ],
+          "n_sources": 3
+        },
+        {
+          "mapping_id": "agroforestry__cross_family__annual_precipitation",
+          "nbs_id": "agroforestry",
+          "dataset_id": "worldclim_v2_precip",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_T4_precip_haile2024_2",
+                "source_id": "haile_2024",
+                "evidence_id": "ev_T4_precip_haile2024_2",
+                "context": {
+                  "study_country": "Ethiopia",
+                  "study_area": "Genale sub-basin, Oromia, Ethiopia"
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "low": 1,
+                  "moderate": 2,
+                  "medium": 2,
+                  "high": 3,
+                  "very_high": 4
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "mm/year",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 600.0,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "Low",
+                    "rank": 1,
+                    "score": 0.25
+                  },
+                  {
+                    "lower": 600.0,
+                    "upper": 800.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "Medium",
+                    "rank": 2,
+                    "score": 0.5
+                  },
+                  {
+                    "lower": 800.0,
+                    "upper": 1200.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "High",
+                    "rank": 3,
+                    "score": 0.75
+                  },
+                  {
+                    "lower": 1200.0,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "Very high",
+                    "rank": 4,
+                    "score": 1.0
+                  }
+                ]
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
+            "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.25,
+          "weight_adjustable": true,
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "variable": "annual_precipitation",
+          "suitability_family_id": "agroforestry__cross_family",
+          "evidence_ids": [
+            "ev_T4_precip_haile2024_2"
+          ],
+          "n_sources": 2
+        },
+        {
+          "mapping_id": "agroforestry__cross_family__mean_annual_temperature",
+          "nbs_id": "agroforestry",
+          "dataset_id": "worldclim_v2_bioclim",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_t4_meanann_nath21_01",
+                "source_id": "nath_2021",
+                "evidence_id": "ev_t4_meanann_nath21_01",
+                "context": {
+                  "study_country": "India"
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "unsuitable": 0,
+                  "marginal": 1,
+                  "moderate": 2,
+                  "good": 3,
+                  "very_good": 4
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "degC",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 5.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "unsuitable",
+                    "rank": 0,
+                    "score": 0.0
+                  },
+                  {
+                    "lower": 5.0,
+                    "upper": 10.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "marginal",
+                    "rank": 1,
+                    "score": 0.25
+                  },
+                  {
+                    "lower": 10.0,
+                    "upper": 15.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "moderate",
+                    "rank": 2,
+                    "score": 0.5
+                  },
+                  {
+                    "lower": 15.0,
+                    "upper": 20.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "good",
+                    "rank": 3,
+                    "score": 0.75
+                  },
+                  {
+                    "lower": 20.0,
+                    "upper": 25.5,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "very_good",
+                    "rank": 4,
+                    "score": 1.0
+                  }
+                ]
+              },
+              {
+                "profile_id": "ev_t4_mat_yadav24_1__group1_temperate_warm",
+                "source_id": "yadav_2024",
+                "evidence_id": "ev_t4_mat_yadav24_1",
+                "context": {
+                  "study_country": "India",
+                  "region": "Punjab, India",
+                  "climate_classification": "Cwa/BSh",
+                  "ranking_scale": "4=very high, 3=high, 2=moderate, 1=low",
+                  "method": "AHP-GIS"
+                },
+                "source_group": "group1_temperate_warm",
+                "ordinal_scale": {
+                  "low": 1,
+                  "moderate": 2,
+                  "high": 3,
+                  "very_high": 4
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "degC",
+                "intervals": [
+                  {
+                    "lower": 18.0,
+                    "upper": 20.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "very_high",
+                    "rank": 4,
+                    "score": 1.0
+                  },
+                  {
+                    "lower": 20.0,
+                    "upper": 22.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "high",
+                    "rank": 3,
+                    "score": 0.75
+                  },
+                  {
+                    "lower": 22.0,
+                    "upper": 24.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "moderate",
+                    "rank": 2,
+                    "score": 0.5
+                  },
+                  {
+                    "lower": 24.0,
+                    "upper": 50.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "low",
+                    "rank": 1,
+                    "score": 0.25
+                  }
+                ]
+              },
+              {
+                "profile_id": "ev_t4_mat_yadav24_1__group2_temperate_hot",
+                "source_id": "yadav_2024",
+                "evidence_id": "ev_t4_mat_yadav24_1",
+                "context": {
+                  "study_country": "India",
+                  "region": "Punjab, India",
+                  "climate_classification": "Cwa/BSh",
+                  "ranking_scale": "4=very high, 3=high, 2=moderate, 1=low",
+                  "method": "AHP-GIS"
+                },
+                "source_group": "group2_temperate_hot",
+                "ordinal_scale": {
+                  "low": 1,
+                  "moderate": 2,
+                  "high": 3,
+                  "very_high": 4
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "degC",
+                "intervals": [
+                  {
+                    "lower": 18.0,
+                    "upper": 20.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "high",
+                    "rank": 3,
+                    "score": 0.75
+                  },
+                  {
+                    "lower": 20.0,
+                    "upper": 22.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "very_high",
+                    "rank": 4,
+                    "score": 1.0
+                  },
+                  {
+                    "lower": 22.0,
+                    "upper": 24.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "moderate",
+                    "rank": 2,
+                    "score": 0.5
+                  },
+                  {
+                    "lower": 24.0,
+                    "upper": 50.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "low",
+                    "rank": 1,
+                    "score": 0.25
+                  }
+                ]
+              },
+              {
+                "profile_id": "ev_t4_mat_yadav24_1__group3_arid_hot",
+                "source_id": "yadav_2024",
+                "evidence_id": "ev_t4_mat_yadav24_1",
+                "context": {
+                  "study_country": "India",
+                  "region": "Punjab, India",
+                  "climate_classification": "Cwa/BSh",
+                  "ranking_scale": "4=very high, 3=high, 2=moderate, 1=low",
+                  "method": "AHP-GIS"
+                },
+                "source_group": "group3_arid_hot",
+                "ordinal_scale": {
+                  "low": 1,
+                  "moderate": 2,
+                  "high": 3,
+                  "very_high": 4
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "degC",
+                "intervals": [
+                  {
+                    "lower": 18.0,
+                    "upper": 20.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "high",
+                    "rank": 3,
+                    "score": 0.75
+                  },
+                  {
+                    "lower": 20.0,
+                    "upper": 22.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "very_high",
+                    "rank": 4,
+                    "score": 1.0
+                  },
+                  {
+                    "lower": 22.0,
+                    "upper": 24.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "moderate",
+                    "rank": 2,
+                    "score": 0.5
+                  },
+                  {
+                    "lower": 24.0,
+                    "upper": 50.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "low",
+                    "rank": 1,
+                    "score": 0.25
+                  }
+                ]
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
+            "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.25,
+          "weight_adjustable": true,
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "variable": "mean_annual_temperature",
+          "suitability_family_id": "agroforestry__cross_family",
+          "evidence_ids": [
+            "ev_t4_meanann_nath21_01",
+            "ev_t4_mat_yadav24_1"
+          ],
+          "n_sources": 2
+        },
+        {
           "mapping_id": "agroforestry__planted_silvoarable__slope",
           "nbs_id": "agroforestry",
           "dataset_id": "srtm_dem_30m",
@@ -188888,13 +189561,145 @@
           "context_overrides": [],
           "is_scenario_candidate": false,
           "has_future_projection": false,
-          "weight_default": 1.0,
+          "weight_default": 0.5,
           "weight_adjustable": true,
           "justification": "Reconciled from 1 contributing evidence unit(s) (exact agreement on typed relationship). Global {'threshold': 19.3, 'above_is_suitable': False}; uncertainty ±20% from spread. ",
           "variable": "slope",
           "suitability_family_id": "agroforestry__planted_silvoarable",
           "evidence_ids": [
             "ev_T4_slope_wotlolan2021_1"
+          ],
+          "n_sources": 1
+        },
+        {
+          "mapping_id": "agroforestry__planted_silvoarable__soil_ph",
+          "nbs_id": "agroforestry",
+          "dataset_id": "isric_soilgrids250_v2",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_soil_ph_singh26",
+                "source_id": "singh_2026",
+                "evidence_id": "ev_soil_ph_singh26",
+                "context": {
+                  "study_country": "India",
+                  "study_region": "Odisha",
+                  "study_income_group": "LMIC"
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "low": 1,
+                  "moderate": 2,
+                  "medium": 2,
+                  "high": 3,
+                  "very_high": 4
+                },
+                "applicability_note": "Regional source model; explicit profile selection required. Not validated as a global family envelope.",
+                "unit": "pH_units",
+                "intervals": [
+                  {
+                    "lower": 5.5,
+                    "upper": 6.5,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "high",
+                    "rank": 3,
+                    "score": 0.75
+                  },
+                  {
+                    "lower": 6.5,
+                    "upper": 7.5,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "very_high",
+                    "rank": 4,
+                    "score": 1.0
+                  },
+                  {
+                    "lower": 7.5,
+                    "upper": 8.5,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "moderate",
+                    "rank": 2,
+                    "score": 0.5
+                  }
+                ]
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
+            "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.5,
+          "weight_adjustable": true,
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "variable": "soil_ph",
+          "suitability_family_id": "agroforestry__planted_silvoarable",
+          "evidence_ids": [
+            "ev_soil_ph_singh26"
+          ],
+          "n_sources": 1
+        },
+        {
+          "mapping_id": "agroforestry__shaded_perennial__annual_precipitation",
+          "nbs_id": "agroforestry",
+          "dataset_id": "worldclim_v2_precip",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_t4_precip_mushtaq2023_2",
+                "source_id": "mushtaq_2023",
+                "evidence_id": "ev_t4_precip_mushtaq2023_2",
+                "context": {
+                  "study_country": "India"
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "favourable": 1
+                },
+                "applicability_note": "Only >1200 mm/year is described as favourable. Lower rainfall remains unknown, not unsuitable. Secondary assertion; crop applicability must be checked.",
+                "unit": "mm/year",
+                "intervals": [
+                  {
+                    "lower": 1200.0,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "favourable",
+                    "rank": 1,
+                    "score": 1.0
+                  }
+                ]
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
+            "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 1.0,
+          "weight_adjustable": true,
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "variable": "annual_precipitation",
+          "suitability_family_id": "agroforestry__shaded_perennial",
+          "evidence_ids": [
+            "ev_t4_precip_mushtaq2023_2"
           ],
           "n_sources": 1
         },
