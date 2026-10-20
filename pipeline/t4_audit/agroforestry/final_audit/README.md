@@ -321,3 +321,10 @@ No fitness-equivalent MapSPAM 2020 GEE asset verified in this pass; hosted COG w
 provide partial reads. Source documentation and header checks establish access metadata,
 not local fitness or boundary-width defaults. Dataset acquisition here is T1/BIND
 configuration, not literature EV extraction from a paused CSV/XLSX dataset adapter.
+
+
+## Input decision context — 20 October 2026
+
+Seven proposed decision cards now collect definitions, source quotes, evidence limits, candidate datasets, missing-data behaviour, ownership and exact questions. Open `docs/review/t4-input-decisions.html` (linked from categorical tables). Authoring source: `executable_categories/input_decision_cards.csv`; regenerate with `python3 scripts/build-t4-input-decisions.py`.
+
+Version `2026-10-20-v1`; proposals only, no analytical changes or approvals applied. B2 covers boundary geometry/width; G1/G2 grazing and pasture proxies; F1 ungrazed forage; D1/D2 whether WOCAT depletion/degradation descriptions justify universal FMNR gates. C1 documents the already-approved crop-host fallback and optional local refinement. Browser choices export as a separate mapping-decision CSV; they are not Evidence Register QA decisions.
