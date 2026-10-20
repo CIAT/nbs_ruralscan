@@ -19,13 +19,17 @@ Vietnam income call and the zhang preprint are all closed (below). What remains 
    (silvopasture vs treeless pasture).
 4. **ojan20_4: ok** — hold lifted, unit keeps voting (net-CO2e rule governs).
 
-**NEW — wh_pooled_msd_indicator:** Arslan 2015's minimum-soil-disturbance indicator pools
-planting basins, zero tillage and ripping (zero tillage the majority, never estimated
-separately). Ruling 2 says min till alone is not water harvesting — does the pooled indicator
-count? Four gate-clean units held out (`pipeline/staging/wh_arslan_A_HELD_msd.json`): overall
-null, robust-to-false-onset null, low-yield-risk null, one uncontrolled 2008 reversal.
-**A** ingest as in-situ WH · **B** keep held out (recommended — nothing attributes to the
-capture minority) · **C** ingest tagged bundled. One word.
+## Closed late 19 October
+
+- **wh_pooled_msd_indicator: B** — Arslan's pooled MSD regressions stay held out (nothing
+  attributes to the capture minority); the four units remain on file, never ingested.
+- **existing_wetland_nonlivelihood_vote:** the biodiversity vote STAYS POSITIVE ("it should
+  have positive vote for biodiversity") — what an existing wetland holds is evidence for the
+  value restoration protects; non-voting remains confined to livelihood cells.
+- **The 13 primaries are queued and 12 are IN HAND** (you fetched six, including all three
+  'paywalled' ones; five auto-fetched; Seddon CC-BY). Only Rockström 2009 remains: the EcoPort
+  copy timed out server-side — one more browser click
+  (http://ecoport.org/storedReference/558496.pdf) or ResearchGate.
 
 Also open, no judgement needed:
 - **kumw24_4 ("is this off scope?"):** answered — nutrient removal routes to the T5 priority
