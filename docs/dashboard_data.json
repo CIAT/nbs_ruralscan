@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-20T06:29:24.037264+00:00",
-  "git_commit": "20136dbd89e23549be9a930dd628c5cb465185b1",
+  "timestamp": "2026-10-20T07:53:54.491122+00:00",
+  "git_commit": "251f76448a4ed1d9d1cfbb6f554dbebe76fd30f7",
   "registers": {
     "SRC_source_register": [
       {
@@ -181264,6 +181264,23 @@
         "raised_by": "Pete Steward approved B1/P1 implementation",
         "raised_date": "2026-10-20",
         "comment": "Locally verified degraded farmland mask."
+      },
+      {
+        "canonical_variable_id": "farmland_context",
+        "label": "Agricultural / fallow / former farmland context",
+        "aliases": [],
+        "canonical_unit": "binary",
+        "unit_conversions": {},
+        "group_id": "land_use",
+        "candidate_dataset_ids": [],
+        "min_meaningful_resolution_m": 30,
+        "resolution_sensitivity": "low",
+        "derive_then_aggregate": false,
+        "context_sensitivity": "high",
+        "review_status": "canonical",
+        "raised_by": "Pete input decision D2",
+        "raised_date": "2026-10-20",
+        "comment": "Validated agricultural land-use context; independent of degradation. Required for non-cropland FMNR branches."
       }
     ],
     "BIND_dataset_binding": [
@@ -181674,6 +181691,14 @@
         "preference_rank": 2,
         "status": "requires_upload",
         "fitness_note": "Locally verified degraded farmland mask."
+      },
+      {
+        "binding_id": "farmland_context__global",
+        "variable": "farmland_context",
+        "scope_type": "global",
+        "preference_rank": 2,
+        "status": "requires_upload",
+        "fitness_note": "Validated agricultural/fallow/former-farmland context. Degradation and grassland cover alone do not establish this."
       }
     ],
     "TOOL_tool_registry": [
@@ -188058,46 +188083,41 @@
             },
             "mapping_role": "eligibility_gate",
             "class_requirements": {
-              "40": [
-                "depleted_farmland"
+              "20": [
+                "farmland_context"
               ],
               "30": [
-                "degraded_farmland"
-              ],
-              "20": [
-                "degraded_farmland"
+                "farmland_context"
               ],
               "60": [
-                "degraded_farmland"
+                "farmland_context"
               ]
             },
             "unmapped_policy": "unknown",
             "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
             "interpretation": "binary host-system compatibility; not graded biophysical suitability",
             "host_bindings": {
-              "degraded_farmland": {
+              "farmland_context": {
                 "variables": [
-                  "degraded_farmland"
+                  "farmland_context"
                 ],
                 "operation": "supplied_mask",
                 "output_unit": "binary",
-                "no_data": "propagate_unknown"
-              },
-              "depleted_farmland": {
-                "variables": [
-                  "depleted_farmland"
-                ],
-                "operation": "supplied_mask",
-                "output_unit": "binary",
-                "no_data": "propagate_unknown"
+                "no_data": "propagate_unknown",
+                "note": "Agricultural, fallow or former-farmland identity; degradation alone cannot establish this context."
               }
-            }
+            },
+            "condition_role": "Depletion/degradation characterize restoration need, not universal suitability. No severity cutoff established.",
+            "mapping_review_status": "approved",
+            "mapping_reviewer": "Pete",
+            "mapping_review_date": "2026-10-20",
+            "input_decision_reference": "docs/review/exports/review_agroforestry-t4-input-decisions-oct20_Pete_2026-10-20.csv"
           },
           "is_scenario_candidate": false,
           "has_future_projection": false,
           "weight_default": 0,
           "weight_adjustable": false,
-          "justification": "Evidence-backed categorical gate. WOCAT 507 describes restoring degraded wasteland and improving depleted farmland (Kenya example, PDF p1). Within the regeneration-on-farmland family, WorldCover alone cannot identify degradation or farmland history. Positive classes require observed depleted/degraded farmland masks; bare soil alone is never evidence of restoration potential. This gate establishes land-use compatibility, not regeneration success or rootstock presence. Tree cover remains unresolved.",
+          "justification": "Evidence-backed categorical gate. WOCAT 507 describes restoring degraded wasteland and improving depleted farmland (Kenya example, PDF p1). Within the regeneration-on-farmland family, WorldCover alone cannot identify degradation or farmland history. Positive classes require observed depleted/degraded farmland masks; bare soil alone is never evidence of restoration potential. This gate establishes land-use compatibility, not regeneration success or rootstock presence. Tree cover remains unresolved. Pete input review 2026-10-20: depletion/degradation are targeting context; non-cropland requires farmland identity.",
           "variable": "land_cover",
           "suitability_family_id": "agroforestry__regeneration_farmland",
           "evidence_ids": [
@@ -188190,12 +188210,11 @@
             },
             "mapping_role": "eligibility_gate",
             "class_requirements": {
-              "40": [
+              "30": [
                 "field_boundary_zone"
               ],
-              "30": [
-                "field_boundary_zone",
-                "managed_pasture_present"
+              "40": [
+                "field_boundary_zone"
               ]
             },
             "unmapped_policy": "unknown",
@@ -188213,7 +188232,7 @@
             },
             "design_reference": "methodology/families/agroforestry.md#f4",
             "footprint_rule": "candidate_lines_not_pixel_area",
-            "mapping_reviewer": "Pete Steward",
+            "mapping_reviewer": "Pete",
             "mapping_review_date": "2026-10-20",
             "boundary_width_policy": "context_specific_from_publications_and_regions",
             "host_bindings": {
@@ -188225,27 +188244,16 @@
                 "output_unit": "binary",
                 "no_data": "propagate_unknown",
                 "note": "Upload field-boundary geometry and locally justified buffered zone; no global buffer width."
-              },
-              "managed_pasture_present": {
-                "variables": [
-                  "managed_pasture_present"
-                ],
-                "operation": "supplied_mask",
-                "output_unit": "binary",
-                "no_data": "propagate_unknown",
-                "supporting_variables": [
-                  "grassland_class",
-                  "ruminant_density"
-                ],
-                "note": "GPW grassland + GLW4 ruminants support scoping; livestock density alone does not prove grazing. Local management interpretation required."
               }
-            }
+            },
+            "boundary_source_candidate": "https://github.com/fieldsoftheworld/ftw-inference-api",
+            "input_decision_reference": "docs/review/exports/review_agroforestry-t4-input-decisions-oct20_Pete_2026-10-20.csv"
           },
           "is_scenario_candidate": false,
           "has_future_projection": false,
           "weight_default": 0,
           "weight_adjustable": false,
-          "justification": "Candidate applicability gate for windbreaks/shelterbelts only. Castle Table 2 PDF p8 places windbreaks on delineated cropland/pasture field boundaries in the US Midwest. WorldCover cropland requires independently mapped field-boundary placement; grassland additionally requires managed pasture confirmation. No universal buffer width or contour-siting rule is inferred. Report applicability zones and candidate line length, never eligible pixel area as planting footprint. Source and cross-context mapping remain pending review. Pete Steward approved B1 on 2026-10-20: boundary geometry required; buffer width varies by publications and regions. Field delineation may be less available in African extensive systems; missing geometry remains unknown.",
+          "justification": "Candidate applicability gate for windbreaks/shelterbelts only. Castle Table 2 PDF p8 places windbreaks on delineated cropland/pasture field boundaries in the US Midwest. WorldCover cropland requires independently mapped field-boundary placement; grassland additionally requires managed pasture confirmation. No universal buffer width or contour-siting rule is inferred. Report applicability zones and candidate line length, never eligible pixel area as planting footprint. Source and cross-context mapping remain pending review. Pete Steward approved B1 on 2026-10-20: boundary geometry required; buffer width varies by publications and regions. Field delineation may be less available in African extensive systems; missing geometry remains unknown. Pete input review 2026-10-20: field boundaries required for both cropland and pasture; no separate pasture-management gate.",
           "variable": "land_cover",
           "suitability_family_id": "agroforestry__linear_boundary",
           "evidence_ids": [

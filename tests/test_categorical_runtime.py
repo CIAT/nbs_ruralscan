@@ -131,14 +131,13 @@ def test_live_schema_family_rules_and_missing_families():
         [1, 1, np.nan, 0],
     )
     np.testing.assert_equal(
-        family("regeneration_farmland").values, [np.nan, np.nan, np.nan, 0]
+        family("regeneration_farmland").values, [1, np.nan, np.nan, 0]
     )
     np.testing.assert_equal(
         family(
             "regeneration_farmland",
             masks={
-                "depleted_farmland": [1, 0, 0, 0],
-                "degraded_farmland": [0, 1, 0, 0],
+                "farmland_context": [0, 1, 0, 0],
             },
         ).values,
         [1, 1, np.nan, 0],
@@ -221,13 +220,12 @@ def test_modelled_host_is_not_observed_presence(basis):
     assert result.status[0] == "incompatible_host_data"
 
 
-def test_boundary_geometry_and_grassland_context_required():
+def test_boundary_geometry_suffices_for_cropland_and_grassland():
     result = family(
         "linear_boundary",
         approved_only=False,
         masks={
             "field_boundary_zone": [1, 1, 1, 0],
-            "managed_pasture_present": [0, 1, 0, 0],
         },
         mask_metadata={
             "field_boundary_zone": {

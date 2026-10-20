@@ -328,3 +328,8 @@ configuration, not literature EV extraction from a paused CSV/XLSX dataset adapt
 Seven proposed decision cards now collect definitions, source quotes, evidence limits, candidate datasets, missing-data behaviour, ownership and exact questions. Open `docs/review/t4-input-decisions.html` (linked from categorical tables). Authoring source: `executable_categories/input_decision_cards.csv`; regenerate with `python3 scripts/build-t4-input-decisions.py`.
 
 Version `2026-10-20-v1`; proposals only, no analytical changes or approvals applied. B2 covers boundary geometry/width; G1/G2 grazing and pasture proxies; F1 ungrazed forage; D1/D2 whether WOCAT depletion/degradation descriptions justify universal FMNR gates. C1 documents the already-approved crop-host fallback and optional local refinement. Browser choices export as a separate mapping-decision CSV; they are not Evidence Register QA decisions.
+
+
+## Input decisions imported — 20 October 2026
+
+Original Pete export preserved in `docs/review/exports/review_agroforestry-t4-input-decisions-oct20_Pete_2026-10-20.csv`. Outcome report: `docs/review/t4-input-decisions-applied.html`. G2 free-text explicitly removes pasture distinction for boundary planting and supersedes its conditional dropdown. D1 removes universal depletion gate; D2 substitutes agricultural/fallow/former-farmland identity for degradation. Depletion remains targeting context, without a new severity cutoff or T5 priority. G1 local-confirmation selection conflicts with F1 grassland scoping assumption; clarification requested before changing silvopastoral gate. B2 approved, FTW candidate recorded; C1 existing MapSPAM fallback retained. No source evidence rewritten or new evidence extracted. Rangeland FMNR extension remains unresolved.
