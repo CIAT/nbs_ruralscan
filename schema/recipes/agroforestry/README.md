@@ -1,3 +1,5 @@
+> **Current T4 handoff (20 October 2026):** use `T4_suitability_mappings.csv` / generated JSON: 17 rows (1 numeric, 7 categorical, 9 operational/design). See [Diego handoff](../../../handoff/agroforestry-t4/README.md). The October 19 synthesis narrative below is historical and superseded for T4; per-family synthesis JSON is not the audited live table.
+
 # recipes/agroforestry/ — draft-0 example
 
 **Status: draft 0 — worked example, not yet review-signed.** Populated schema tables for the pilot NbS
