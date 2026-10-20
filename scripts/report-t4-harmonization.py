@@ -94,147 +94,179 @@ def build():
     def esc(x):
         return html.escape(str(x))
 
+    def pretty(value):
+        return (
+            value.strip().replace("_", " ").capitalize().replace("Soil ph", "Soil pH")
+        )
+
+    def short_range(raw):
+        left, right = raw[1:-1].split(", ")
+
+        def number(value):
+            return f"{float(value):.3f}".rstrip("0").rstrip(".")
+
+        if left == "−∞":
+            return ("≤ " if raw[-1] == "]" else "< ") + number(right)
+        if right == "∞":
+            return ("≥ " if raw[0] == "[" else "> ") + number(left)
+        return number(left) + "–" + number(right)
+
+    variables = list(dict.fromkeys(r["variable"] for r in records))
+    if "slope" in variables:
+        variables.remove("slope")
+        variables.insert(0, "slope")
     doc = [
-        '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 harmonization — actual evidence</title><style>body{max-width:1600px;margin:30px auto;padding:0 20px;font:16px system-ui;color:#203c30;background:#f4f7f5}p,li{line-height:1.6}details,section{padding:18px;background:white;border:1px solid #d4e0d8;border-radius:8px;margin:14px 0}summary{cursor:pointer;font-weight:650}table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:9px;text-align:left;border-bottom:1px solid #dbe6df}a{color:#176447}.scroll{overflow:auto}.note{border-left:4px solid #a87926;padding-left:15px}#comparison th{background:#e6efe9;vertical-align:top}#comparison td{vertical-align:top}#comparison th button{border:0;background:none;font:inherit;font-weight:650;cursor:pointer;text-align:left;padding:0}#comparison input{display:block;width:100%;box-sizing:border-box;margin-top:8px;padding:6px;border:1px solid #a9beb0;border-radius:4px}#comparison td details{padding:0;border:0;margin:5px 0;font-size:12px}#comparison td details p{max-width:320px}#comparison td small{display:block;color:#51695c;margin-top:5px}#comparison .changed{background:#fff4d8;font-weight:650}.toolbar{display:flex;gap:18px;align-items:center;margin:14px 0}.toolbar button{padding:7px 12px;font:inherit}#comparison{min-width:1150px}#comparison th:nth-child(1){width:11%}#comparison th:nth-child(2){width:12%}#comparison th:nth-child(3){width:17%}#comparison th:nth-child(4){width:14%}#comparison th:nth-child(8){width:16%}</style><h1>Agroforestry: what harmonization changes</h1>',
-        f"<p><strong>{len(records)} source profiles · {report['bands']} class bands · {changed} scores changed · {unknown} unresolved score band · {len(pools)} approved combined pools</strong></p>",
-        "<p>Scores now follow the approved common class convention. Below, “previous score” means the previous compiler’s rank ÷ full-scale maximum—not necessarily a score reported by the paper. Source ranks and cutoffs remain traceable. Slope conversions now retain full precision.</p>",
-        '<details><summary>What still needs review?</summary><ul><li><strong>System and context applicability:</strong> no compatible cross-paper pools have yet been assigned in schema. Most multi-paper records are regional, unassigned agroforestry evidence. Their cutoffs are comparable for inspection, but not yet authorized as one universal system response.</li><li><strong>Favourable rainfall above 1,200 mm:</strong> Mushtaq’s retained statement does not identify an ordinal class or calibrated score. The range remains recorded, but its previous score of 1 is now unknown.</li><li><strong>FMNR rainfall:</strong> observed study ranges and spread remain evidence, not an establishment response curve. Harmonization cannot turn those descriptions into cutoffs.</li><li><strong>Class meanings:</strong> marginal→low, good→high and very good→very high use the approved semantic convention. They remain design crosswalks, not measured calibration.</li></ul><p class="note">Engine can combine explicitly approved compatible pools. No automatic pool was invented for these records. Ties and conflicting exclusion claims stay unknown when evaluated.</p></details>',
-        "<h2>Compare all source bands</h2><p>One row per source class. Filter a variable to compare papers together. Click any heading to sort; use its box to filter. Yellow marks a changed score. Parentheses exclude endpoints; brackets include them. Ambiguous shared boundaries stay unknown.</p>",
-        '<div class="toolbar"><button id="clear">Clear filters</button><span id="visible-count" role="status"></span></div><div class="scroll"><table id="comparison"><thead><tr>',
+        """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 · Studies side by side</title><style>
+*{box-sizing:border-box}body{max-width:1500px;margin:26px auto;padding:0 18px;font:15px system-ui;color:#203c30;background:#f4f7f5}h1{font-size:27px;margin-bottom:8px}p{line-height:1.5}.intro{color:#52695d;margin-top:0}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.tabs button{font:inherit;padding:9px 14px;border:1px solid #adc4b5;background:white;border-radius:6px;cursor:pointer}.tabs button[aria-pressed=true]{background:#1c6147;color:white;border-color:#1c6147}.matrix-wrap{overflow-x:auto;background:white;border:1px solid #cbdcd1;border-radius:7px}table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:580px}th,td{padding:14px 12px;text-align:left;vertical-align:top;border-bottom:1px solid #dbe6df;border-right:1px solid #e3ebe6}thead th{background:#e8f1eb;font-weight:650}tbody th{background:#f0f5f2;width:130px}thead th:first-child{width:130px}small{display:block;font-size:12px;font-weight:400;color:#52695d;line-height:1.45;margin-top:6px}.range{font-size:19px;font-weight:650;display:block;line-height:1.5}.missing{color:#7a877f;font-size:13px}.previous{color:#855d18}.source-label{font-style:italic}details{font-size:13px;margin-top:8px}summary{cursor:pointer;color:#23634b}details p{font-weight:400;overflow-wrap:anywhere}.foot{color:#52695d;font-size:13px}.review{margin-top:22px;padding:12px 16px;background:#edf2ee;border-radius:6px}.review li{margin:7px 0}a{color:#176447}.unit{font-size:15px;color:#52695d;font-weight:400}h2{font-size:21px}.profile{margin-top:8px}.score{font-weight:400;color:#577063}button:focus-visible,summary:focus-visible{outline:3px solid #c49e39} [hidden]{display:none!important}
+</style><h1>Agroforestry: compare studies side by side</h1><p class="intro">Choose a variable. Each column is a study or climate profile; each row aligns classes with the same common score.</p><div class="tabs" aria-label="Choose variable">"""
     ]
-    headings = [
-        "Variable",
-        "Paper",
-        "System / study context",
-        "Range (unit)",
-        "Source class",
-        "Previous score",
-        "Common score",
-        "Review needed",
-    ]
-    for index, heading in enumerate(headings):
+    for index, variable in enumerate(variables):
         doc.append(
-            f'<th scope="col" aria-sort="none"><button data-column="{index}" aria-label="Sort by {esc(heading)}">{esc(heading)}</button><input data-column="{index}" aria-label="Filter {esc(heading)}" placeholder="Filter"></th>'
+            f'<button data-variable="{esc(variable)}" aria-pressed="{str(index == 0).lower()}" aria-controls="panel-{esc(variable)}">{esc(pretty(variable))}</button>'
         )
-    doc.append("</tr></thead><tbody>")
-    for r in sorted(
-        records,
-        key=lambda item: (item["variable"], item["source_id"], item["source_group"]),
-    ):
-        system = (
-            "System unassigned"
-            if r["system"].endswith("cross_family")
-            else r["system"]
-            .replace("agroforestry__", "")
-            .replace("_", " ")
-            .capitalize()
+    doc.append("</div>")
+    aliases = {
+        "medium": "moderate",
+        "marginal": "low",
+        "good": "high",
+        "very_good": "very_high",
+    }
+    for index, variable in enumerate(variables):
+        profiles = [r for r in records if r["variable"] == variable]
+        levels = sorted(
+            {
+                b["new_score"]
+                for r in profiles
+                for b in r["scores"]
+                if b["new_score"] is not None
+            },
+            reverse=True,
         )
-        context = r["context"]
-        geography = list(
-            dict.fromkeys(
-                str(context[k])
-                for k in ("study_area", "region", "study_country", "aez")
-                if context.get(k)
-            )
-        )
-        if r["source_group"] != "default":
-            geography.append(r["source_group"].replace("_", " "))
-        context_text = "; ".join(geography) or "Study context not specified"
-        source_label = r["source_id"].replace("_", " ").title()
+        if any(b["new_score"] is None for r in profiles for b in r["scores"]):
+            levels.append(None)
         unit = {
-            "degrees": "°",
+            "degrees": "degrees",
             "degC": "°C",
             "pH_units": "pH",
-            "g/kg": "g/kg",
-            "mm/year": "mm/year",
-        }.get(r["unit"], r["unit"])
-        for band in r["scores"]:
-
-            def fmt(value):
-                return "Unknown" if value is None else f"{value:.4g}"
-
-            old, current = band["old_score"], band["new_score"]
-            review_note = "System/context compatibility"
-            if current is None:
-                review_note = "Class meaning + context compatibility"
-            cells = [
-                esc(
-                    r["variable"]
-                    .replace("_", " ")
-                    .capitalize()
-                    .replace("Soil ph", "Soil pH")
-                ),
-                esc(source_label)
-                + "<details><summary>Citation</summary><p>"
+            "g/kg": "g carbon/kg soil",
+        }.get(profiles[0]["unit"], profiles[0]["unit"])
+        hidden = " hidden" if index else ""
+        doc.append(
+            f'<section class="panel" id="panel-{esc(variable)}"{hidden}><h2>{esc(pretty(variable))} <span class="unit">· {esc(unit)}</span></h2><div class="matrix-wrap"><table aria-label="{esc(pretty(variable))} study comparison"><thead><tr><th scope="col">Suitability<br><small>Common score</small></th>'
+        )
+        for r in profiles:
+            context = r["context"]
+            location = (
+                context.get("study_area")
+                or context.get("region")
+                or context.get("study_country")
+                or "Location not specified"
+            )
+            system = (
+                "System unassigned"
+                if r["system"].endswith("cross_family")
+                else pretty(r["system"].replace("agroforestry__", ""))
+            )
+            group = (
+                ""
+                if r["source_group"] == "default"
+                else pretty(r["source_group"].split("_", 1)[-1])
+            )
+            doc.append(
+                '<th scope="col">'
+                + esc(r["source_id"].replace("_", " ").title())
+                + "<small>"
+                + esc(location)
+                + "</small>"
+                + (('<div class="profile">' + esc(group) + "</div>") if group else "")
+                + "<small>"
+                + esc(system)
+                + "</small><details><summary>Source</summary><p>"
                 + esc(r["citation"])
                 + "</p><p>"
                 + esc(r["profile_id"])
-                + "</p></details>",
-                esc(system) + "<small>" + esc(context_text) + "</small>",
-                esc(band["range"] + " " + unit),
-                esc(band["label"].replace("_", " ").capitalize()),
-                esc(fmt(old)),
-                esc(fmt(current)),
-                esc(review_note),
-            ]
-            doc.append("<tr>")
-            for index, cell in enumerate(cells):
-                attr = ' class="changed"' if index == 6 and old != current else ""
-                sort = ""
-                if index in (5, 6):
-                    value = old if index == 5 else current
-                    sort = f' data-value="{value if value is not None else ""}"'
-                doc.append(f"<td{attr}{sort}>{cell}</td>")
+                + "</p></details></th>"
+            )
+        doc.append("</tr></thead><tbody>")
+        for score in levels:
+            labels = list(
+                dict.fromkeys(
+                    aliases.get(
+                        b["label"].strip().lower().replace(" ", "_"),
+                        b["label"].strip().lower().replace(" ", "_"),
+                    )
+                    for r in profiles
+                    for b in r["scores"]
+                    if b["new_score"] == score
+                )
+            )
+            label = (
+                "Score unresolved"
+                if score is None
+                else " / ".join(pretty(label) for label in labels)
+            )
+            score_text = "—" if score is None else f"{score:g}"
+            doc.append(
+                '<tr><th scope="row">'
+                + esc(label)
+                + '<small class="score">'
+                + score_text
+                + "</small></th>"
+            )
+            for r in profiles:
+                bands = [b for b in r["scores"] if b["new_score"] == score]
+                if not bands:
+                    doc.append('<td class="missing">Not reported</td>')
+                    continue
+                doc.append("<td>")
+                for band in bands:
+                    doc.append(
+                        '<div title="Original interval: '
+                        + esc(band["range"])
+                        + '"><span class="range">'
+                        + esc(short_range(band["range"]))
+                        + '</span><small class="source-label">'
+                        + esc(pretty(band["label"]))
+                        + "</small>"
+                    )
+                    if band["old_score"] != band["new_score"]:
+                        previous = (
+                            "unknown"
+                            if band["old_score"] is None
+                            else f"{band['old_score']:.3g}"
+                        )
+                        doc.append(
+                            '<small class="previous">Previous compiler score: '
+                            + previous
+                            + "</small>"
+                        )
+                    doc.append("</div>")
+                doc.append("</td>")
             doc.append("</tr>")
-    doc.append("</tbody></table></div>")
-    doc.append("""<script>
-const table=document.getElementById('comparison'), body=table.tBodies[0];
-const filters=[...table.querySelectorAll('thead input')];
-let sortColumn=-1, direction=1;
-function filterRows(){
- let visible=0;
- for(const row of body.rows){
-  row.hidden=!filters.every((input,i)=>row.cells[i].textContent.toLowerCase().includes(input.value.trim().toLowerCase()));
-  if(!row.hidden)visible++;
- }
- document.getElementById('visible-count').textContent=visible+' of '+body.rows.length+' source bands';
-}
-filters.forEach(input=>input.addEventListener('input',filterRows));
-table.querySelectorAll('thead button').forEach(button=>button.addEventListener('click',()=>{
- const index=Number(button.dataset.column);
- direction=sortColumn===index?-direction:1;sortColumn=index;
- const rows=[...body.rows];
- rows.sort((a,b)=>{
-  const x=a.cells[index],y=b.cells[index];
-  if(index===5||index===6){
-   if(x.dataset.value==='')return y.dataset.value===''?0:1;
-   if(y.dataset.value==='')return -1;
-   return direction*(Number(x.dataset.value)-Number(y.dataset.value));
-  }
-  return direction*x.textContent.localeCompare(y.textContent,undefined,{numeric:true,sensitivity:'base'});
- });
- rows.forEach(row=>body.append(row));
- table.querySelectorAll('th').forEach((th,i)=>th.setAttribute('aria-sort',i===index?(direction===1?'ascending':'descending'):'none'));
-}));
-document.getElementById('clear').addEventListener('click',()=>{filters.forEach(input=>input.value='');filterRows()});
-filterRows();
-</script>""")
+        doc.append(
+            '</tbody></table></div><p class="foot">“Not reported” means this class is absent from that profile—not unsuitable. Cutoffs rounded for display; hover for original interval brackets. Shared ambiguous endpoints remain unknown. Original class names appear beneath each range.</p></section>'
+        )
     doc.append(
-        "<details><summary>Existing source defects still held ("
-        + str(len(holds))
-        + ")</summary><ul>"
+        '<details class="review"><summary>What still needs review?</summary><ul><li>System and context compatibility before combining studies. These columns compare evidence; they are not an approved pooled response.</li><li>Mushtaq’s “favourable above 1,200 mm” has no identified class score.</li><li>FMNR rainfall study ranges describe observations, not a suitability function.</li>'
     )
-    for h in holds:
+    for hold in holds:
         doc.append(
             "<li>"
-            + esc(h["evidence_id"])
+            + esc(hold["evidence_id"])
             + ": "
-            + esc(h["reason"].replace("_", " "))
+            + esc(hold["reason"].replace("_", " "))
             + "</li>"
         )
     doc.append(
-        '</ul><p>See the live T4 review for additional categorical crosswalks and mapping holds; this page reports numeric harmonization.</p></details><p><a href="t4-categorical-tables.html">Open live T4</a> · <a href="t4-harmonization-examples.html">Worked conventions</a></p></html>'
+        '</ul></details><p class="foot">Previous scores came from the old compiler, not necessarily the papers. Common scores follow the approved convention; they are not probabilities. <a href="t4-categorical-tables.html">Live T4</a> · <a href="t4-harmonization-examples.html">Worked conventions</a></p>'
     )
+    doc.append("""<script>
+const buttons=[...document.querySelectorAll('[data-variable]')];
+buttons.forEach(button=>button.addEventListener('click',()=>{
+ buttons.forEach(other=>other.setAttribute('aria-pressed',String(other===button)));
+ document.querySelectorAll('.panel').forEach(panel=>panel.hidden=panel.id!=='panel-'+button.dataset.variable);
+}));
+</script></html>""")
     (ROOT / "docs/review/t4-harmonization-results.html").write_text(
         "\n".join(doc) + "\n"
     )
