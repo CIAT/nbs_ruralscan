@@ -655,7 +655,11 @@ one vote. Preserve source range, eligible/contributing source counts and weight
 coverage. Median ties and zero-versus-positive conflicts have no executable scalar;
 unknown regions remain unknown. A combined zero is not a legal or universal hard
 exclusion. Pools require explicit runtime selection (`pool_id`); no auto-selection.
-Current agroforestry regional evidence has no approved compatible pools. The 20% uncertainty floor is a humility flag,
+The 2026-10-20 source review defines three conditional India-derived planted-tree/crop
+scoping pools: slope and soil organic carbon (Ahmad + Nath), and pH (Nath + Singh).
+These are explicit analytical transfers from regional models, not globally validated
+system limits. Climate profiles remain regional; Haile parkland establishment remains
+unresolved. See `audits/agroforestry_t4_system_applicability_2026-10-20.md`. The 20% uncertainty floor is a humility flag,
 not an estimated confidence interval for ordinal scores.
 
 Every reviewed numeric payload must be either compiled or assigned a meaningful reason:

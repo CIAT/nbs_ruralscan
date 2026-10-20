@@ -25,7 +25,10 @@ def live(variable, family):
 
 def test_reviewed_ph_reaches_t4_and_unstated_ranges_stay_unknown():
     row = live("soil_ph", "planted_silvoarable")
-    assert json.loads(row["evidence_ids"]) == ["ev_soil_ph_singh26"]
+    assert set(json.loads(row["evidence_ids"])) == {
+        "ev_soil_ph_singh26",
+        "ev_t4_soilph_nath21_01",
+    }
     np.testing.assert_allclose(
         evaluate_numeric(
             row, [5, 6, 6.5, 7, 8, 9, np.nan], profile_id="ev_soil_ph_singh26"
@@ -39,7 +42,7 @@ def test_reviewed_ph_reaches_t4_and_unstated_ranges_stay_unknown():
 
 
 def test_rainfall_favourable_tail_does_not_invent_exclusion():
-    row = live("annual_precipitation", "shaded_perennial")
+    row = live("annual_precipitation", "cross_family")
     np.testing.assert_allclose(
         evaluate_numeric(
             row, [500, 1200, 1500], profile_id="ev_t4_precip_mushtaq2023_2"
@@ -50,32 +53,35 @@ def test_rainfall_favourable_tail_does_not_invent_exclusion():
 
 
 def test_organic_carbon_percent_is_converted_to_grams_per_kg():
-    row = live("soil_organic_carbon", "cross_family")
+    row = live("soil_organic_carbon", "planted_silvoarable")
     values = evaluate_numeric(row, [4, 6, 8], profile_id="ev_T4_soc_ahmad2018_1")
     np.testing.assert_allclose(values, [0.25, 0.5, 0.75])
     assert np.isnan(
-        evaluate_numeric(row, [8], profile_id="ev_T4_soc_haile2024_1")
+        evaluate_numeric(
+            live("soil_organic_carbon", "cross_family"),
+            [8],
+            profile_id="ev_T4_soc_haile2024_1",
+        )
     ).all()
 
 
-def test_context_profiles_do_not_get_averaged_or_auto_selected():
-    row = live("mean_annual_temperature", "cross_family")
-    np.testing.assert_allclose(
-        evaluate_numeric(
-            row, [19, 21], profile_id="ev_t4_mat_yadav24_1__group1_temperate_warm"
-        ),
-        [0.9, 0.75],
-    )
-    np.testing.assert_allclose(
-        evaluate_numeric(
-            row, [19, 21], profile_id="ev_t4_mat_yadav24_1__group2_temperate_hot"
-        ),
-        [0.75, 0.9],
-    )
+def test_species_clusters_are_retained_but_not_used_for_practice_temperature():
+    row = live("mean_annual_temperature", "planted_silvoarable")
     assert np.isnan(evaluate_numeric(row, [19])).all()
     assert np.isnan(
         evaluate_numeric(row, [26], profile_id="ev_t4_meanann_nath21_01")
     ).all()
+    with pytest.raises(ValueError, match="Unknown"):
+        evaluate_numeric(
+            row, [19], profile_id="ev_t4_mat_yadav24_1__group1_temperate_warm"
+        )
+    evidence = list(
+        csv.DictReader((ROOT / "schema/registers/EV_evidence_register.csv").open())
+    )
+    unit = next(u for u in evidence if u["evidence_id"] == "ev_t4_mat_yadav24_1")
+    assert unit["claim_scope"] == "species_specific"
+    assert unit["review_state"] != "dropped"
+    assert "group1" in unit["relationship"]
 
 
 def test_ranges_require_explicit_permission_to_reverse():
@@ -165,13 +171,15 @@ def test_all_numeric_policy_rows_accounted_for_without_unhandled_encoding():
     )
     for p in policies:
         assert dispositions[p["evidence_id"]]["status"] == (
-            "parameter_contributor" if p["action"] == "compile" else p["reason"]
+            "species_scope"
+            if p["evidence_id"] == "ev_t4_mat_yadav24_1"
+            else ("parameter_contributor" if p["action"] == "compile" else p["reason"])
         )
     assert sum(len(f.rows) for f in results.values()) == 8
 
 
 def test_nath_recovered_ph_and_carbon_preserve_source_classes():
-    ph = live("soil_ph", "cross_family")
+    ph = live("soil_ph", "planted_silvoarable")
     np.testing.assert_allclose(
         evaluate_numeric(
             ph, [4, 5, 6, 7.3, 7.5, 8], profile_id="ev_t4_soilph_nath21_01"
@@ -179,8 +187,36 @@ def test_nath_recovered_ph_and_carbon_preserve_source_classes():
         [np.nan, 0.75, 0.9, 0.75, 0.5, np.nan],
         equal_nan=True,
     )
-    carbon = live("soil_organic_carbon", "cross_family")
+    carbon = live("soil_organic_carbon", "planted_silvoarable")
     np.testing.assert_allclose(
         evaluate_numeric(carbon, [3, 8, 15, 25], profile_id="ev_t4_soilorg_nath21_01"),
         [0.25, 0.5, 0.75, 0.9],
     )
+
+
+def test_actual_compatible_pools_and_conflicts():
+    slope = live("slope", "planted_silvoarable")
+    params = json.loads(slope["relationship_params"])
+    pool = params["harmonization"]["pools"][0]
+    assert set(pool["profile_ids"]) == {
+        "ev_T4_slope_ahmad2018_1",
+        "ev_t4_slope_nath21_01",
+    }
+    assert pool["context_id"] == "india_regional_models_scoping_transfer"
+    assert any("exclusion_conflict" in c["flags"] for c in pool["cells"])
+    assert np.isnan(evaluate_numeric(slope, [25], pool_id=pool["pool_id"])).all()
+    # The older standalone threshold remains distinct from source alternatives.
+    np.testing.assert_allclose(evaluate_numeric(slope, [10, 25]), [1, 0])
+    np.testing.assert_allclose(
+        evaluate_numeric(slope, [25], profile_id="ev_T4_slope_ahmad2018_1"), [0.25]
+    )
+    ph = live("soil_ph", "planted_silvoarable")
+    np.testing.assert_allclose(
+        evaluate_numeric(ph, [6.7, 7.3], pool_id="india_planted_scoping__soil_ph"),
+        [0.9, np.nan],
+        equal_nan=True,
+    )
+    carbon = live("soil_organic_carbon", "planted_silvoarable")
+    assert len(json.loads(carbon["relationship_params"])["harmonization"]["pools"]) == 1
+    haile = live("slope", "cross_family")
+    assert json.loads(haile["relationship_params"])["harmonization"]["pools"] == []

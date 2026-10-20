@@ -244,9 +244,10 @@ def test_isolated_writer_preserves_design_rows_and_live_recipe(runner, tmp_path)
     shaded = json.loads(
         (tmp_path / "T4_agroforestry__shaded_perennial.json").read_text()
     )
-    assert len(shaded) == 1
-    assert shaded[0]["variable"] == "annual_precipitation"
-    assert shaded[0]["evidence_ids"] == ["ev_t4_precip_mushtaq2023_2"]
+    assert shaded == []  # Generic secondary rainfall is not a shaded-host rule.
+    shared = json.loads((tmp_path / "T4_agroforestry__cross_family.json").read_text())
+    rainfall = next(r for r in shared if r["variable"] == "annual_precipitation")
+    assert "ev_t4_precip_mushtaq2023_2" in rainfall["evidence_ids"]
 
 
 def test_custom_curve_units_and_order_are_checked():

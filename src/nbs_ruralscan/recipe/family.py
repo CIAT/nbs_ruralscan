@@ -193,10 +193,18 @@ def synthesise_family(
             )
             rep.unresolved.extend(unresolved)
             if params and row["relationship_params"]:
-                rep.unresolved.extend(
-                    (eid, "numeric_profile_conflicts_with_canonical_response")
-                    for eid in used
+                # Keep the typed response intact; source profiles/pools are explicit alternatives.
+                row["relationship_params"].update(params)
+                row["evidence_ids"] = sorted(set(row["evidence_ids"] + used))
+                row["references"] = sorted(
+                    set(row["references"])
+                    | {u.source_id for u in band_units if u.evidence_id in used}
                 )
+                row["justification"] += (
+                    " Reviewed ordinal profiles and conditional scoping pools are retained as explicit alternatives; they do not replace or blend with the standalone typed response."
+                )
+                rep.used = sorted(set(rep.used + used))
+                rep.parameter_evidence["profiles"] = used
             elif params:
                 row.update(
                     relationship_type="piecewise",
