@@ -339,77 +339,174 @@ def main(directory=OUT):
                 )
     write_csv(directory / "executable_categories/dataset_bindings.csv", binding_rows)
 
-    columns = [
-        "variable",
-        "family",
-        "source_category_or_range",
-        "source_rating_or_role",
-        "review_status",
-        "compiler_status",
-        "claim_scope",
-        "source_id",
-        "page",
-    ]
-    land = [r for r in source_rows if r["variable"] == "land_cover"]
-    other = [r for r in source_rows if r["variable"] != "land_cover"]
-    page = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 categorical class tables</title><style>body{font:15px system-ui;margin:30px;color:#183a34;background:#f6f8f7}section{background:white;padding:20px;margin:20px 0;border:1px solid #ceded7;overflow:auto}table{border-collapse:collapse;width:100%}td,th{border:1px solid #cbd8d2;padding:9px;text-align:left;vertical-align:top;min-width:100px}th{background:#e5f0ea;position:sticky;top:0}td{white-space:pre-wrap;overflow-wrap:anywhere}h1{font-size:29px}.warning{border-left:5px solid #ad6822;padding:14px;background:#fff0dd}input{font:inherit;padding:10px;min-width:360px}a{color:#066956}</style><h1>Land-use and other categorical classes</h1><p><strong><a href="t4-input-decisions-applied.html">20 October: imported decisions and confirmed grazing rule</a></strong></p><p><strong><a href="t4-input-decisions.html">Review remaining inputs: seven detailed decision cards</a></strong> — evidence, dataset options, proposed rules and CSV decision export.</p><p>Branch audit · Source classes remain visible even when no executable score exists.</p><p><a href="t4-pipeline-audit.html">Full evidence audit</a></p><p class="warning">Placeholder scores retired. Family-specific binary host gates now execute against ESA WorldCover 2021. Score 1 means compatible host class, not high suitability. Required host masks must be independently supplied; missing masks and unmapped classes remain unknown. Pete Steward approved all four follow-up evidence records and B1/P1 mapping policies on 20 October 2026. Boundary coverage is windbreak/shelterbelt only. Coffee/cocoa/tea use OR host masks. Accurate commodity maps preferred; MapSPAM fractions accepted for scoping with provenance. Fractions indicate host extent, not suitability strength. Homegardens remain qualitative-only.</p><section><h2>Approved decisions and remaining gaps</h2><p><strong>Mapping B1:</strong> Approved: boundary geometry required; buffer width determined across publications/regions, no universal 10 m. Field delineation can be difficult in African extensive systems. Contour buffers remain unresolved.</p><p><strong>Mapping P1:</strong> Approved: suitable host crop required; OR across coffee, cocoa and tea, with crop identity and fractions retained. Accurate commodity maps preferred; MapSPAM crop fractions acceptable for high-level scoping. Tea is an explicit design addition, not a claim from coffee/cocoa source evidence. Other suitable crops need configured mappings.</p><p><a href="../review.html?batch=agroforestry-t4-categorical-followup-oct19">View four approved evidence records: boundary, shaded systems, silvopastoral and Haile pH</a>. All four approvals applied. Jezeer economic-return evidence remains T6; no hazard-score claim. Haile approval retains the source table; overlapping/reversed pH classes still prevent automatic numerical mapping.</p><p><strong>Inputs still required:</strong> boundary geometry plus locally justified placement zone; farmland context for non-cropland regeneration; GPW grassland plus local grazing confirmation; crop-specific coffee/cocoa/tea distribution or allocated crop fractions (0–1). No AOI datasets were supplied or derived in this run. Report line length for windbreaks and crop area fractions for perennial systems, never full eligible-pixel footprint or an unchecked sum of overlapping crop areas.</p><p><strong>Other classes still unresolved:</strong> Nath drainage code legend; Singh texture-to-dataset crosswalk and land-cover/soil quote mismatch; mulberry-specific classes cannot establish generic coffee/cocoa eligibility. Other F5 crops need their own mappings.</p><p><a href="img/t4_boundary_castle_p8.png">Castle source table, PDF p8</a></p></section><section><h2>Current configured categorical T4</h2>"""
-    binding_section = (
-        "<section><h2>Live T4 and dataset bindings</h2><p>Seven stale numeric rows retired. Audited slope rule retained: above 19.3 degrees excluded for planted silvoarable, from one source model. Regional transfer remains a limitation; no universal optimum inferred. Nine design/operational rows and seven categorical gates retained.</p><p>Bindings resolve sources and bands; no AOI has been processed. MapSPAM physical area (ha) is divided by native pixel area (ha), with Arabica and Robusta combined. Accurate local commodity maps can override defaults. GPW and GLW4 support grazing assessment; management masks and boundary geometry still require local inputs.</p>"
-        + table(
-            binding_rows,
-            ["family", "mask", "mask_status", "variable", "dataset_id", "band", "note"],
+    live = read_csv(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")
+    registry = read_csv(ROOT / "schema/registers/FAM_family_registry.csv")
+    rows = []
+    for row in live:
+        params = json.loads(row["relationship_params"] or "{}")
+        family = row["suitability_family_id"]
+        practices = [r for r in registry if r["suitability_family_id"] == family]
+        selected = params.get("applicable_subpractices")
+        practice = "; ".join(
+            r["name"]
+            for r in practices
+            if selected is None or r["subpractice_id"] in selected
         )
-        + "</section>"
-    )
-    page = page.replace(
-        "<section><h2>Current configured categorical T4</h2>",
-        binding_section + "<section><h2>Current configured categorical T4</h2>",
-    )
-    page += table(
-        current,
-        [
-            "variable",
-            "family",
-            "dataset_id",
-            "dataset_code",
-            "existing_label",
-            "current_score",
-            "required_host_masks",
-            "validation",
-            "evidence_ids",
-        ],
-    )
-    page += (
-        "</section><section><h2>Runtime check: every family, no optional host masks supplied</h2><p>Generated by the executor against the current schema. Unknown means missing evidence, unmapped code or missing host context; it is never counted as eligible area.</p>"
-        + table(
+        if selected is None:
+            practice = "Family scope: " + practice
+        role = (
+            "M2b scenario"
+            if row["is_scenario_candidate"].lower() == "true"
+            else "Hard exclusion"
+            if row["suitability_dimension"] == "operational_constraint"
+            else "Host eligibility"
+            if row["relationship_type"] == "ranked_classes"
+            else "Biophysical suitability"
+        )
+        if "class_map" in params:
+            parts = []
+            for code, score in params["class_map"].items():
+                label = params.get("class_labels", {}).get(code, code)
+                requires = params.get("class_requirements", {}).get(code, [])
+                parts.append(
+                    f"{label}: {score}"
+                    + (" if " + " AND ".join(requires) if requires else "")
+                )
+            rule = "; ".join(parts) + "; unmapped = unknown"
+            kind = "Categorical mask"
+        elif isinstance(params.get("threshold"), (int, float)):
+            unit = ontology.get(row["variable"], {}).get("canonical_unit", "")
+            rule = (
+                ("> " if params.get("above_is_suitable") else "≤ ")
+                + str(params["threshold"])
+                + " "
+                + unit
+            )
+            kind = "Continuous input / threshold"
+        else:
+            rule = row["relationship_type"] + ": " + json.dumps(params)
+            kind = (
+                "Retained scenario" if role == "M2b scenario" else "Category exclusion"
+            )
+        rows.append(
+            {
+                "Family": family.removeprefix("agroforestry__")
+                .replace("_", " ")
+                .capitalize(),
+                "Subpractice / scope": practice,
+                "Crop parameter": params.get("host_crop", "—"),
+                "Variable": row["variable"],
+                "Role": role,
+                "Type": kind,
+                "Rule": rule,
+                "Dataset": row["dataset_id"],
+                "details": {
+                    "Mapping ID": row["mapping_id"],
+                    "Evidence IDs": row["evidence_ids"] or "No linked evidence IDs",
+                    "Source count": row["n_sources"],
+                    "Justification (stored)": row["justification"],
+                    "Parameters": params,
+                },
+            }
+        )
+    page = render_overview(rows, binding_rows, current, coverage, source_rows)
+    (ROOT / "docs/review/t4-categorical-tables.html").write_text(page, encoding="utf-8")
+    print(json.dumps({"live_rows": len(rows), "source_rows": len(source_rows)}))
+
+
+def render_overview(rows, bindings, classes, coverage, sources):
+    """Single T4 overview; technical exports remain available behind disclosure."""
+    payload = json.dumps(rows, ensure_ascii=False).replace("<", "\\u003c")
+    page = """<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Agroforestry · T4</title>
+<style>
+*{box-sizing:border-box}body{font:15px system-ui;color:#183a34;background:#f7f9f8;margin:24px}
+h1{margin-bottom:8px}p{max-width:1000px;line-height:1.5}.muted{color:#52675e}
+.notice{padding:12px 16px;border-left:4px solid #b47b31;background:#fff5e5}
+.table-wrap{overflow:auto;background:white;border:1px solid #d6e0da;margin:16px 0}
+table{border-collapse:collapse;width:100%}td,th{padding:10px;border-bottom:1px solid #dce5df;text-align:left;vertical-align:top}
+th{background:#eaf1ed}th button{border:0;background:none;text-align:left;font:inherit;font-weight:650;cursor:pointer;padding:0}
+th input{display:block;width:100%;min-width:115px;margin-top:8px;padding:6px;border:1px solid #aabdb2;border-radius:4px}
+td{min-width:120px;max-width:370px;overflow-wrap:anywhere}td:nth-child(2){min-width:200px}td:nth-child(7){min-width:280px}
+button,select{font:inherit;padding:7px}details{margin:12px 0}summary{cursor:pointer;font-weight:600}
+pre{white-space:pre-wrap;font:13px system-ui}a{color:#08694d}.toolbar{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+</style></head><body><h1>Agroforestry T4</h1>
+<p class="muted">Current recipe · 17 rows: 1 numeric biophysical rule, 7 host gates, 1 retained hard exclusion, 8 M2b scenarios.</p>
+<p class="notice"><strong>Continuous suitability remains incomplete.</strong> Only slope has a published numeric biophysical rule: ≤19.3° for planted silvoarable, from one regional source. Previous rainfall, pH, soil-depth, canopy and temperature bounds were retired during audit. They are not hidden elsewhere in this table. Host masks establish compatibility, not graded suitability.</p>
+<div class="toolbar"><label>Show <select id="role"><option value="">All T4 rows</option><option>Biophysical suitability</option><option>Host eligibility</option><option>Hard exclusion</option><option>M2b scenario</option></select></label><button id="reset">Reset filters</button><span id="count" aria-live="polite"></span><a href="t4-pipeline-audit.html">Evidence audit / unresolved records</a></div>
+<p class="muted">Click a column heading to sort; type below it to filter. Family scope lists registered practices, not independent practice-level validation. Coffee, cocoa and tea are crop parameters, not subfamilies.</p>
+<div class="table-wrap"><table id="main"><thead></thead><tbody></tbody></table></div>
+<p class="muted">M2b scenarios stay outside structural suitability. Protected-area exclusion still needs legal category-mask handling and scope review. Missing host inputs remain unknown. Support percentages are unavailable because the screened-source denominator is unknown.</p>
+<details><summary>How to read this table and its inputs</summary><p>T4 is the rule table. Categorical rows expand into dataset codes; continuous rows specify numeric responses. Dataset bindings tell the runtime which data and bands supply the inputs. These are different views of the same configuration, not alternative versions of T4.</p><p>Host gates require aligned datasets and additional masks. Shaded crops combine by OR while retaining crop fractions. Linear placement requires boundaries and a locally justified width. Silvopasture requires GPW grassland plus local grazing confirmation.</p></details>
+<details><summary>Technical detail — bindings, class codes and diagnostic checks</summary>
+<p>For implementation review. The runtime check uses synthetic class codes with no host masks supplied. It verifies missing context stays unknown; it is not a geographic run, evidence-strength measure, or pilot result.</p>
+"""
+    for title, data, columns in [
+        (
+            "Dataset bindings — additional host inputs",
+            bindings,
+            ["family", "mask", "variable", "dataset_id", "band", "note"],
+        ),
+        (
+            "Expanded categorical codes",
+            classes,
+            [
+                "family",
+                "dataset_code",
+                "existing_label",
+                "current_score",
+                "required_host_masks",
+            ],
+        ),
+        (
+            "Synthetic missing-input diagnostic",
             coverage,
             [
                 "family",
-                "spatial_product_type",
+                "dataset_id",
                 "dataset_code",
                 "value_without_host_masks",
                 "runtime_status",
             ],
+        ),
+        (
+            "Source categories — evidence, not configured rules",
+            sources,
+            [
+                "family",
+                "variable",
+                "source_category_or_range",
+                "source_rating_or_role",
+                "review_status",
+                "evidence_id",
+            ],
+        ),
+    ]:
+        page += (
+            "<details><summary>"
+            + title
+            + '</summary><div class="table-wrap">'
+            + table(data, columns)
+            + "</div></details>"
         )
-    )
-    page += f"""</section><p>{len(records)} active evidence records represented in {len(source_rows)} source-class/gate rows. Every selected record retained, including those with no encoded classes.</p><p>Source ranks and numeric bands are preserved exactly. Blank scores remain unknown. Class codes from HWSD, CDL, WorldCover or a study-specific legend are not interchangeable. Source approval does not establish a target-dataset crosswalk.</p><input id="search" aria-label="Filter source classes" placeholder="Filter source tables by family, variable or source"><section class="source"><h2>Land-use / land-cover source table</h2>"""
-    page += table(land, columns)
     page += (
-        '</section><section class="source"><h2>Other categories and ordinal bands</h2>'
-        + table(other, columns)
+        '</details><script id="rows" type="application/json">' + payload + "</script>"
     )
-    page += """</section><section><h2>Required compilation contract</h2><ol><li>Keep one record per family × variable × source class, with source label/code, role (eligible, excluded, ordinal rank, or observed only), context and evidence ID.</li><li>Resolve source classes against a named dataset and version. Missing codes remain unknown; they must not default to exclusion.</li><li>For explicit applicability gates, record eligible/excluded semantics separately from graded preference. Ordinary forest cover is not proof of existing agroforestry.</li><li>For ordinal classes, retain source ranks until a documented 0–1 scoring convention is agreed. Regional exclusions, crop-specific classes and observed-presence records must not become universal gates.</li><li>Compile only validated mappings to T4 ranked_classes. Executable mappings require explicit dataset codes, evidence IDs and independently supplied host masks. Unknown is never eligible by default.</li></ol><p>Examples needing attention: Castle silvopasture now requires grassland plus grazing inputs; Nath drainage codes need their legend; the Singh land-cover 1–4 / 5–7 record shares its quote with a soil-quality record and needs source-context verification. Seja land-use allocation percentages and the Nath NDVI quote tagged land_cover are not categorical eligibility rules.</p></section><script>document.getElementById('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();document.querySelectorAll('.source tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))})</script></html>"""
-    (ROOT / "docs/review/t4-categorical-tables.html").write_text(page, encoding="utf-8")
-    print(
-        json.dumps(
-            {
-                "records": len(records),
-                "source_rows": len(source_rows),
-                "land_cover_rows": len(land),
-                "current_t4_classes": len(current),
-            }
-        )
-    )
+    page += """<script>
+const rows=JSON.parse(document.getElementById('rows').textContent);
+const keys=Object.keys(rows[0]).filter(k=>k!=='details'), filters={};let sortKey='',direction=1;
+const head=document.querySelector('#main thead'),body=document.querySelector('#main tbody');
+const tr=document.createElement('tr');
+keys.concat(['Evidence / details']).forEach(key=>{const th=document.createElement('th');
+if(keys.includes(key)){const b=document.createElement('button');b.textContent=key+' ↕';b.onclick=()=>{direction=sortKey===key?-direction:1;sortKey=key;head.querySelectorAll('th').forEach(t=>t.removeAttribute('aria-sort'));th.setAttribute('aria-sort',direction===1?'ascending':'descending');render()};th.append(b);
+const input=document.createElement('input');input.setAttribute('aria-label','Filter '+key);input.placeholder='Filter…';input.oninput=()=>{filters[key]=input.value.toLowerCase();render()};th.append(input)}else{th.textContent=key}tr.append(th)});head.append(tr);
+function render(){const role=document.getElementById('role').value;let visible=rows.filter(r=>(!role||r.Role===role)&&keys.every(k=>!filters[k]||String(r[k]).toLowerCase().includes(filters[k])));
+if(sortKey)visible.sort((a,b)=>direction*String(a[sortKey]).localeCompare(String(b[sortKey]),undefined,{numeric:true}));body.replaceChildren();
+visible.forEach(r=>{const tr=document.createElement('tr');keys.forEach(k=>{const td=document.createElement('td');td.textContent=r[k];tr.append(td)});
+const td=document.createElement('td'),d=document.createElement('details'),s=document.createElement('summary'),pre=document.createElement('pre');s.textContent='Inspect';pre.textContent=JSON.stringify(r.details,null,2);d.append(s,pre);td.append(d);tr.append(td);body.append(tr)});document.getElementById('count').textContent=visible.length+' / '+rows.length+' rows'}
+document.getElementById('role').onchange=render;document.getElementById('reset').onclick=()=>{keys.forEach(k=>delete filters[k]);head.querySelectorAll('input').forEach(i=>i.value='');document.getElementById('role').value='';sortKey='';head.querySelectorAll('th').forEach(t=>t.removeAttribute('aria-sort'));render()};render();
+</script></body></html>"""
+    return page
 
 
 if __name__ == "__main__":
