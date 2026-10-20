@@ -1,0 +1,152 @@
+"""Recovery regressions: source omissions, continuations and review boundaries."""
+
+import copy
+import csv
+import json
+from pathlib import Path
+import shutil
+
+import pytest
+
+from nbs_ruralscan.recipe.numeric_bands import join_continuations
+from nbs_ruralscan.schema_tools.t4_coverage import check
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def profiles(path):
+    result = {}
+    for row in csv.DictReader(path.open()):
+        for profile in json.loads(row["relationship_params"]).get("profiles", []):
+            result[profile["profile_id"]] = profile
+    return result
+
+
+def test_recovered_evidence_preserves_approval_and_one_source_vote():
+    live = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")
+    draft = profiles(
+        ROOT
+        / "pipeline/t4_audit/agroforestry/final_audit/draft/T4_suitability_mappings.csv"
+    )
+    assert len(live["ev_T4_slope_chuma21_1"]["intervals"]) == 3
+    assert len(live["ev_T4_soc_haile2024_1"]["intervals"]) == 2
+    assert len(draft["ev_T4_soc_haile2024_1"]["intervals"]) == 4
+    assert draft["ev_T4_soc_haile2024_1"]["page_locators"] == {
+        "ev_T4_soc_haile2024_1": 5,
+        "ev_T4_soc_haile2024_continuation": 6,
+    }
+    assert "ev_T4_soc_haile2024_continuation" not in draft
+    assert "ev_T4_elevation_chuma2021_recovery" not in live
+    assert len(draft["ev_T4_elevation_chuma2021_recovery"]["intervals"]) == 5
+
+
+@pytest.mark.parametrize(
+    "mismatch", ["source_id", "variable", "unit", "context_id", "system_id", "pool_id"]
+)
+def test_continuations_reject_incompatible_context(mismatch):
+    base = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")[
+        "ev_T4_soc_haile2024_1"
+    ]
+    part = copy.deepcopy(base)
+    part.update(
+        profile_id="part", evidence_id="part", continuation_of=base["profile_id"]
+    )
+    part[mismatch] = "different"
+    _, rejected = join_continuations([base, part])
+    assert rejected == [("part", "incompatible_or_missing_table_continuation")]
+
+
+def test_continuation_rejects_overlapping_table():
+    base = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")[
+        "ev_T4_soc_haile2024_1"
+    ]
+    part = copy.deepcopy(base)
+    part.update(
+        profile_id="part", evidence_id="part", continuation_of=base["profile_id"]
+    )
+    _, rejected = join_continuations([base, part])
+    assert rejected == [("part", "overlapping_table_continuation")]
+
+
+@pytest.fixture
+def coverage_tree(tmp_path):
+    for path in [
+        "pipeline/t4_audit/agroforestry",
+        "pipeline/metrics",
+        "schema/registers",
+        "schema/lookups",
+        "schema/recipes/agroforestry",
+        "reference/stocktake",
+        "docs/review/img",
+    ]:
+        shutil.copytree(ROOT / path, tmp_path / path)
+    return tmp_path
+
+
+def test_coverage_gate_passes():
+    assert check(ROOT) == []
+
+
+@pytest.mark.parametrize("filename", ["table_inventory.json", "review_followups.json"])
+def test_missing_tracked_evidence_fails(coverage_tree, filename):
+    if filename == "review_followups.json":
+        (coverage_tree / "pipeline/t4_audit/agroforestry" / filename).write_text("{}")
+    else:
+        path = coverage_tree / "schema/lookups/t4_numeric_compilation_policy.csv"
+        rows = list(csv.DictReader(path.open()))
+        with path.open("w") as f:
+            writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+            writer.writeheader()
+            writer.writerows(
+                row for row in rows if row["evidence_id"] != "ev_T4_slope_chuma21_1"
+            )
+    assert check(coverage_tree)
+
+
+def test_missing_stocktake_source_fails(coverage_tree):
+    path = (
+        coverage_tree
+        / "pipeline/t4_audit/agroforestry/stocktake_coverage_2026-10-20.csv"
+    )
+    rows = list(csv.DictReader(path.open()))
+    with path.open("w") as f:
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
+        writer.writeheader()
+        writer.writerows(rows[1:])
+    assert any("Unaccounted stocktake" in error for error in check(coverage_tree))
+
+
+def test_wrong_class_count_is_an_explicit_compiler_hold():
+    from nbs_ruralscan.recipe.evidence import load_units
+    from nbs_ruralscan.recipe.numeric_bands import compile_bands
+
+    unit = next(
+        u
+        for u in load_units(ROOT / "schema/registers/EV_evidence_register.json")
+        if u.evidence_id == "ev_T4_slope_chuma21_1"
+    )
+    policy = next(
+        r
+        for r in csv.DictReader(
+            (ROOT / "schema/lookups/t4_numeric_compilation_policy.csv").open()
+        )
+        if r["evidence_id"] == unit.evidence_id
+    )
+    hp = json.loads(policy["harmonization"])
+    hp["expected_class_count"] = 4
+    policy["harmonization"] = hp
+    result, used, unresolved = compile_bands(
+        [unit], {unit.evidence_id: policy}, "%", {}
+    )
+    assert not result and not used
+    assert unresolved == [(unit.evidence_id, "incomplete_source_class_table")]
+
+
+def test_orphan_continuation_cannot_become_independent_vote():
+    part = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")[
+        "ev_T4_soc_haile2024_1"
+    ]
+    part["continuation_of"] = "missing_parent"
+    result, rejected = join_continuations([part])
+    assert not result
+    assert rejected[0][1] == "incompatible_or_missing_table_continuation"

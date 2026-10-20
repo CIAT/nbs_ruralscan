@@ -556,5 +556,114 @@
     "ordinal_scale": {},
     "reason": "P_over_PET_identified_scaled_integer_conversion_unverified",
     "applicability_note": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope."
+  },
+  {
+    "evidence_id": "ev_T4_slope_chuma21_1",
+    "nbs_id": "agroforestry",
+    "action": "compile",
+    "encoding": "field_ranges",
+    "field": {
+      "very_high": "very_high_suitability_slope_pct",
+      "high": "high_suitability_slope_pct",
+      "moderate": "moderate_suitability_slope_pct"
+    },
+    "input_unit": "%",
+    "ordinal_scale": {
+      "moderate": 1,
+      "high": 2,
+      "very_high": 3
+    },
+    "applicability_note": "DR Congo regional agroforestry response. Source labels gradient Aspects and prints overlapping suitability-index ranges; retain ordinal class meanings only. No automatic transfer into India pool.",
+    "harmonization": {
+      "version": "semantic_classes_v1",
+      "score_kind": "ordinal",
+      "class_scores": {
+        "low": 0.25,
+        "moderate": 0.5,
+        "medium": 0.5,
+        "high": 0.75,
+        "very_high": 0.9
+      },
+      "crosswalk_note": "Approved common class convention; marginal=low, good=high, very_good=very_high. Favourable alone has no cardinal anchor. Original ranks retained.",
+      "pool_id": "",
+      "pool_review": "regional_context_requires_selection",
+      "compatibility_approved": false,
+      "expected_class_count": 3
+    }
+  },
+  {
+    "evidence_id": "ev_T4_soc_haile2024_continuation",
+    "nbs_id": "agroforestry",
+    "action": "compile",
+    "encoding": "labelled_ranges",
+    "field": "classes",
+    "input_unit": "%",
+    "ordinal_scale": {
+      "low": 1,
+      "moderate": 2,
+      "medium": 2,
+      "high": 3,
+      "very_high": 4
+    },
+    "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+    "harmonization": {
+      "version": "semantic_classes_v1",
+      "score_kind": "ordinal",
+      "class_scores": {
+        "low": 0.25,
+        "moderate": 0.5,
+        "medium": 0.5,
+        "high": 0.75,
+        "very_high": 0.9
+      },
+      "crosswalk_note": "Approved common class convention; marginal=low, good=high, very_good=very_high. Favourable alone has no cardinal anchor. Original ranks retained.",
+      "pool_id": "",
+      "pool_review": "establishment_pathway_unresolved",
+      "applicability_review": {
+        "pages": [
+          2,
+          9
+        ],
+        "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+        "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+        "status": "establishment_pathway_unresolved",
+        "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+      },
+      "continuation_of": "ev_T4_soc_haile2024_1",
+      "expected_class_count": 2
+    }
+  },
+  {
+    "evidence_id": "ev_T4_elevation_chuma2021_recovery",
+    "nbs_id": "agroforestry",
+    "action": "compile",
+    "encoding": "labelled_ranges",
+    "field": "classes",
+    "input_unit": "m",
+    "ordinal_scale": {
+      "marginal": 1,
+      "low": 2,
+      "moderate": 3,
+      "high": 4,
+      "very_high": 5
+    },
+    "applicability_note": "Regional DR Congo altitude ranking; not globally transferable. Marginal remains low suitability, not exclusion.",
+    "harmonization": {
+      "version": "semantic_classes_v1",
+      "score_kind": "ordinal",
+      "class_scores": {
+        "low": 0.25,
+        "moderate": 0.5,
+        "medium": 0.5,
+        "high": 0.75,
+        "very_high": 0.9,
+        "marginal": 0.25
+      },
+      "crosswalk_note": "Approved common class convention; marginal=low, good=high, very_good=very_high. Favourable alone has no cardinal anchor. Original ranks retained.",
+      "pool_id": "",
+      "pool_review": "regional_context_requires_selection",
+      "compatibility_approved": false,
+      "expected_class_count": 5
+    }
   }
 ]

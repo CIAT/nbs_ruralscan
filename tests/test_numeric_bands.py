@@ -169,7 +169,16 @@ def test_all_numeric_policy_rows_accounted_for_without_unhandled_encoding():
             (ROOT / "schema/lookups/t4_numeric_compilation_policy.csv").open()
         )
     )
+    reviewed = {
+        r["evidence_id"]: r["reviewer_ok"].lower() == "true"
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
     for p in policies:
+        if not reviewed[p["evidence_id"]]:
+            assert dispositions[p["evidence_id"]]["status"] == "unresolved_review"
+            continue
         assert dispositions[p["evidence_id"]]["status"] == (
             "species_scope"
             if p["evidence_id"] == "ev_t4_mat_yadav24_1"

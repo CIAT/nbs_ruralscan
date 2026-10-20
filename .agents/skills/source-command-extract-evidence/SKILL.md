@@ -341,3 +341,11 @@ wrong-practice on build, reversible), and the adversarial relationship-verify. A
 own self-check is advisory — do not rely on it. After a sweep, the learning loop is only
 honest if feedback is incorporated: `learnings.py` tracks `review_log` vs adjustments and
 the build flags unprocessed review decisions (run `/sweep-retro` → encode → `learnings.record`).
+
+## T4 completeness recovery (v1.6.14)
+
+31. Inventory each source table before extraction: list variables, class counts, pages and image-only cells. Read the following page for continuations; preserve separate page quotes and explicit continuation links. A successfully retrieved paragraph does not establish table completeness.
+32. Reconcile every scoping-review paper to SRC and an explicit disposition. Track human table/figure/missing-data flags by evidence ID and exact note until resolved; never infer closure from reviewer_ok.
+33. Check approved numeric class payloads against executable T4. Unknown encodings must fail coverage or carry an explicit hold, never silently become qualitative. Image-read model weights retain page, image checksum and human-review status; weights are not suitability thresholds.
+
+Enforcement: schema_tools.t4_coverage in CI; numeric compiler checks expected class counts and continuation compatibility. Inventory checks detect regression in documented tables, not every unknown omission in a PDF.
