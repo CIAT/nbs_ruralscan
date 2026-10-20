@@ -167,4 +167,20 @@ def test_all_numeric_policy_rows_accounted_for_without_unhandled_encoding():
         assert dispositions[p["evidence_id"]]["status"] == (
             "parameter_contributor" if p["action"] == "compile" else p["reason"]
         )
-    assert sum(len(f.rows) for f in results.values()) == 7
+    assert sum(len(f.rows) for f in results.values()) == 8
+
+
+def test_nath_recovered_ph_and_carbon_preserve_source_classes():
+    ph = live("soil_ph", "cross_family")
+    np.testing.assert_allclose(
+        evaluate_numeric(
+            ph, [4, 5, 6, 7.3, 7.5, 8], profile_id="ev_t4_soilph_nath21_01"
+        ),
+        [np.nan, 0.75, 1, 0.75, 0.5, np.nan],
+        equal_nan=True,
+    )
+    carbon = live("soil_organic_carbon", "cross_family")
+    np.testing.assert_allclose(
+        evaluate_numeric(carbon, [3, 8, 15, 25], profile_id="ev_t4_soilorg_nath21_01"),
+        [0.25, 0.5, 0.75, 1],
+    )

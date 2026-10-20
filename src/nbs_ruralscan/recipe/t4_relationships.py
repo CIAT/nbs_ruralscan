@@ -92,13 +92,17 @@ def decode(rel: dict) -> tuple[str, dict, str]:
     if "natural_recovery_years_low" in rel:
         return "", {}, "implementation_duration_not_response"
     if "weight" in rel or any(
-        k.startswith("AHP_weight") or k == "ahp_weight" for k in rel
+        k.startswith("AHP_weight") or k == "ahp_weight" or "importance" in k
+        for k in rel
     ):
         return "", {}, "importance_weight_not_response"
     if "% suitability area" in str(rel.get("unit", "")):
         return "", {}, "mapped_area_statistic_not_response"
     # Preserve the original encoding; classification is advisory, never conversion.
-    if any("class" in k or "gating" in k for k in rel):
+    if any(
+        "class" in k or "gating" in k or k.endswith(("_code", "_codes")) or k == "gate"
+        for k in rel
+    ):
         return "", {}, "class_or_gate_requires_mapping"
 
     def contains_number(value):

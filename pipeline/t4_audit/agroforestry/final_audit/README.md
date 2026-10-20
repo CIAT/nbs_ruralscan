@@ -1,3 +1,13 @@
+## 20 October source-resolution follow-up
+
+Supersedes earlier unresolved-review counts below. All 44 active structural source holds
+received source checks: 37 corrected/verified; seven soft-quarantined, never deleted.
+Review log identifies Codex source verification explicitly. Human approvals were not invented.
+Live T4 now has 24 rows, including eight numeric rows and 15 source-band profiles.
+Genuine source contradictions and dataset crosswalk requirements remain explicit.
+Verified model-use counts and source weights are in `verified_model_use.csv` and
+`variable_use_summary.csv`; these cover a verified subset, not the entire screened corpus.
+
 ## Numeric compilation correction — 20 October 2026
 
 Supersedes the earlier one-numeric-row completion claim below. Reviewed ordinal bands

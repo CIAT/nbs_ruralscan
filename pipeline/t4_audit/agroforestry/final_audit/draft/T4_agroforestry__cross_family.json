@@ -61,7 +61,17 @@
           "context": {
             "study_country": "Ethiopia",
             "study_area": "Genale sub-basin, Oromia, Ethiopia",
-            "aez": "semi-arid to sub-humid"
+            "aez": "semi-arid to sub-humid",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "4-6",
+              "weight_path_pct": [
+                30
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            }
           },
           "source_group": "default",
           "ordinal_scale": {
@@ -117,7 +127,18 @@
           "source_id": "nath_2021",
           "evidence_id": "ev_t4_slope_nath21_01",
           "context": {
-            "study_country": "India"
+            "study_country": "India",
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                40,
+                25
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            }
           },
           "source_group": "default",
           "ordinal_scale": {
@@ -268,7 +289,18 @@
           "evidence_id": "ev_T4_soc_haile2024_1",
           "context": {
             "study_country": "Ethiopia",
-            "study_area": "Genale sub-basin, Oromia, Ethiopia"
+            "study_area": "Genale sub-basin, Oromia, Ethiopia",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "4-6",
+              "weight_path_pct": [
+                20,
+                35
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            }
           },
           "source_group": "default",
           "ordinal_scale": {
@@ -300,6 +332,82 @@
               "score": 0.5
             }
           ]
+        },
+        {
+          "profile_id": "ev_t4_soilorg_nath21_01",
+          "source_id": "nath_2021",
+          "evidence_id": "ev_t4_soilorg_nath21_01",
+          "context": {
+            "study_country": "India",
+            "country": "India",
+            "region": "Eastern Indian Himalayan Region",
+            "transfer_note": "Regional model only; explicit source profile required.",
+            "source_check": {
+              "date": "2026-10-20",
+              "reviewer": "Codex source verification",
+              "resolution": "Full Table 2 p11: <0.6 is MARGINAL, not unsuitable. Variable weight 25% within topsoil nutrient group, 20% within soil, soil 20% of final model: effective 1%."
+            },
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                25,
+                20,
+                20
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "unsuitable": 0,
+            "marginal": 1,
+            "moderate": 2,
+            "good": 3,
+            "very_good": 4
+          },
+          "applicability_note": "Eastern Indian Himalayan regional model. Explicit profile selection required; not a global family envelope.",
+          "unit": "g/kg",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 6.0,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "marginal",
+              "rank": 1,
+              "score": 0.25
+            },
+            {
+              "lower": 6.0,
+              "upper": 10.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5
+            },
+            {
+              "lower": 10.0,
+              "upper": 20.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75
+            },
+            {
+              "lower": 20.0,
+              "upper": 37.1,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "very_good",
+              "rank": 4,
+              "score": 1.0
+            }
+          ]
         }
       ],
       "profile_selection": "explicit",
@@ -313,17 +421,20 @@
     "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
     "references": [
       "ahmad_2018",
-      "haile_2024"
+      "haile_2024",
+      "nath_2021"
     ],
     "evidence_ids": [
       "ev_T4_soc_ahmad2018_1",
-      "ev_T4_soc_haile2024_1"
+      "ev_T4_soc_haile2024_1",
+      "ev_t4_soilorg_nath21_01"
     ],
     "parameter_source_ids": [
       "ahmad_2018",
-      "haile_2024"
+      "haile_2024",
+      "nath_2021"
     ],
-    "n_parameter_sources": 2,
+    "n_parameter_sources": 3,
     "paper_support_pct": null,
     "n_sources": 4,
     "corpus_n": null
@@ -344,7 +455,17 @@
           "evidence_id": "ev_T4_precip_haile2024_2",
           "context": {
             "study_country": "Ethiopia",
-            "study_area": "Genale sub-basin, Oromia, Ethiopia"
+            "study_area": "Genale sub-basin, Oromia, Ethiopia",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "4-6",
+              "weight_path_pct": [
+                12
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            }
           },
           "source_group": "default",
           "ordinal_scale": {
@@ -394,6 +515,90 @@
               "score": 1.0
             }
           ]
+        },
+        {
+          "profile_id": "ev_t4_annualp_nath21_02",
+          "source_id": "nath_2021",
+          "evidence_id": "ev_t4_annualp_nath21_02",
+          "context": {
+            "study_country": "India",
+            "country": "India",
+            "region": "Eastern Indian Himalayan Region",
+            "transfer_note": "Regional model only; explicit source profile required.",
+            "source_check": {
+              "date": "2026-10-20",
+              "reviewer": "Codex source verification",
+              "resolution": "Full Table 2 p11 verified. Restricted to Eastern Indian Himalayan regional profile; does not exclude dryland agroforestry elsewhere."
+            },
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                35,
+                35
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "unsuitable": 0,
+            "marginal": 1,
+            "moderate": 2,
+            "good": 3,
+            "very_good": 4
+          },
+          "applicability_note": "Eastern Indian Himalayan regional model. Explicit profile selection required; not a global family envelope.",
+          "unit": "mm/year",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 1000.0,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "unsuitable",
+              "rank": 0,
+              "score": 0.0
+            },
+            {
+              "lower": 1000.0,
+              "upper": 1300.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "marginal",
+              "rank": 1,
+              "score": 0.25
+            },
+            {
+              "lower": 1300.0,
+              "upper": 1500.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5
+            },
+            {
+              "lower": 1500.0,
+              "upper": 2000.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75
+            },
+            {
+              "lower": 2000.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "very_good",
+              "rank": 4,
+              "score": 1.0
+            }
+          ]
         }
       ],
       "profile_selection": "explicit",
@@ -406,17 +611,130 @@
     "context_overrides": [],
     "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
     "references": [
-      "haile_2024"
+      "haile_2024",
+      "nath_2021"
     ],
     "evidence_ids": [
-      "ev_T4_precip_haile2024_2"
+      "ev_T4_precip_haile2024_2",
+      "ev_t4_annualp_nath21_02"
     ],
     "parameter_source_ids": [
-      "haile_2024"
+      "haile_2024",
+      "nath_2021"
+    ],
+    "n_parameter_sources": 2,
+    "paper_support_pct": null,
+    "n_sources": 3,
+    "corpus_n": null
+  },
+  {
+    "mapping_id": "agroforestry__cross_family__soil_ph",
+    "suitability_family_id": "agroforestry__cross_family",
+    "variable": "soil_ph",
+    "variable_unit": "pH_units",
+    "dataset_id": "isric_soilgrids250_v2",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "piecewise",
+    "relationship_params": {
+      "profiles": [
+        {
+          "profile_id": "ev_t4_soilph_nath21_01",
+          "source_id": "nath_2021",
+          "evidence_id": "ev_t4_soilph_nath21_01",
+          "context": {
+            "study_country": "India",
+            "country": "India",
+            "region": "Eastern Indian Himalayan Region",
+            "transfer_note": "Regional model only; explicit source profile required.",
+            "source_check": {
+              "date": "2026-10-20",
+              "reviewer": "Codex source verification",
+              "resolution": "Full Table 2 p11 visually checked: good class has two disjoint ranges. All four ranges printed explicitly. No extrapolation outside source bands."
+            },
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                25,
+                20,
+                20
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "unsuitable": 0,
+            "marginal": 1,
+            "moderate": 2,
+            "good": 3,
+            "very_good": 4
+          },
+          "applicability_note": "Eastern Indian Himalayan regional model. Explicit profile selection required; not a global family envelope.",
+          "unit": "pH_units",
+          "intervals": [
+            {
+              "lower": 4.6,
+              "upper": 5.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75
+            },
+            {
+              "lower": 5.5,
+              "upper": 7.2,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "very_good",
+              "rank": 4,
+              "score": 1.0
+            },
+            {
+              "lower": 7.2,
+              "upper": 7.4,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75
+            },
+            {
+              "lower": 7.4,
+              "upper": 7.6,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5
+            }
+          ]
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
+      "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+    },
+    "uncertainty_pct": 20,
+    "context_overrides": [],
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "references": [
+      "nath_2021"
+    ],
+    "evidence_ids": [
+      "ev_t4_soilph_nath21_01"
+    ],
+    "parameter_source_ids": [
+      "nath_2021"
     ],
     "n_parameter_sources": 1,
     "paper_support_pct": null,
-    "n_sources": 3,
+    "n_sources": 2,
     "corpus_n": null
   },
   {
@@ -434,7 +752,18 @@
           "source_id": "nath_2021",
           "evidence_id": "ev_t4_meanann_nath21_01",
           "context": {
-            "study_country": "India"
+            "study_country": "India",
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                35,
+                35
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            }
           },
           "source_group": "default",
           "ordinal_scale": {

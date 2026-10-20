@@ -262,6 +262,55 @@ def render(root, read_csv, table, bindings, coverage):
             + html.escape(hold["reason"])
             + "</p>"
         )
+    from nbs_ruralscan.recipe.variable_usage import variable_usage, summarize_usage
+
+    usage = variable_usage(list(evidence.values()), sources)
+    summary = summarize_usage(usage)
+    page += "<details><summary>Why these variables? Verified paper use and source weights</summary>"
+    page += "<p>Counts below mean papers explicitly used a variable in their model. Repeated records from one paper count once. Crop/species models stay separate. This verification is incomplete: missing counts mean unchecked, not unused. These counts measure method agreement, not agreement on thresholds.</p>"
+    friendly_summary = [
+        {
+            "Variable": ontology.get(r["variable"], {}).get(
+                "label", pretty(r["variable"])
+            ),
+            "General model papers": r["verified_general_model_papers"],
+            "Crop/species model papers": r["verified_crop_species_model_papers"],
+            "Sources": "; ".join(pretty(x) for x in r["source_ids"]),
+        }
+        for r in summary
+    ]
+    page += table(
+        friendly_summary,
+        ["Variable", "General model papers", "Crop/species model papers", "Sources"],
+    )
+    page += "<p>Current default T4 weights are equal; these are not literature-derived importance weights. Evidence-quality weights used to synthesize responses are a separate calculation. Source weights below retain their method and hierarchy; AHP weights, RF importance and MaxEnt permutation importance must not be averaged indiscriminately.</p>"
+    friendly_weights = [
+        {
+            "Variable": pretty(r["variable"]),
+            "Source": pretty(r["source_id"]),
+            "Method": pretty(r["method"]),
+            "Nested weights (%)": " × ".join(str(w) for w in r["weight_path_pct"])
+            or "Not reported here",
+            "Model share from this branch (%)": r["effective_model_weight_pct"]
+            if r["effective_model_weight_pct"] is not None
+            else "Unknown",
+            "Source pages": ", ".join(r["pages"]),
+        }
+        for r in usage
+    ]
+    page += table(
+        friendly_weights,
+        [
+            "Variable",
+            "Source",
+            "Method",
+            "Nested weights (%)",
+            "Model share from this branch (%)",
+            "Source pages",
+        ],
+    )
+    page += "<p>Weight path example: Nath topsoil carbon 25% × topsoil nutrient group 20% × soil criterion 20% = 1% of final model. Nath pH also occurs in the rooting branch; this displayed path is not its total across branches.</p></details>"
+    page += "<details><summary>FMNR rainfall — retained evidence, no defensible numeric cutoff</summary><p>Previous 300–800 mm range combined study domains with suitability limits. WRI reports greatest observed spread at 400–800 mm and explicitly permits regreening below 400 mm. Chomba review reports adoption contexts of 100–950 mm and says suitability elsewhere remains uncertain. These are retained observations, not an upper exclusion or an optimum. Rainfall remains a candidate variable; no numeric FMNR response is currently justified by these records.</p></details>"
     page += """<p>Scenario parameter grids still need a parameter choice. Site observations, study weights and mapped-area percentages are retained in the audit; they cannot define numeric suitability responses.</p><a href="t4-pipeline-audit.html">Every-record audit and unresolved reviews</a></details><details><summary>Developer detail — data bindings and synthetic missing-input check</summary><p>Bindings identify datasets supplying additional host inputs. The synthetic check tests missing-data handling; it is not a pilot run or suitability result.</p>"""
     page += table(
         bindings, ["family", "mask", "variable", "dataset_id", "band", "note"]

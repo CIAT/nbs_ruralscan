@@ -353,6 +353,30 @@ def main(directory=OUT):
 
     from nbs_ruralscan.schema_tools.t4_review_view import render
 
+    from nbs_ruralscan.recipe.variable_usage import variable_usage, summarize_usage
+
+    usage = variable_usage(
+        read_csv(ROOT / "schema/registers/EV_evidence_register.csv"),
+        {
+            r["source_id"]: r
+            for r in read_csv(ROOT / "schema/registers/SRC_source_register.csv")
+        },
+    )
+    for name, records in (
+        ("verified_model_use.csv", usage),
+        ("variable_use_summary.csv", summarize_usage(usage)),
+    ):
+        if records:
+            with (directory / name).open("w", newline="", encoding="utf-8") as handle:
+                writer = csv.DictWriter(handle, fieldnames=list(records[0]))
+                writer.writeheader()
+                writer.writerows(
+                    {
+                        k: json.dumps(v) if isinstance(v, (list, dict)) else v
+                        for k, v in row.items()
+                    }
+                    for row in records
+                )
     page = render(ROOT, read_csv, table, binding_rows, coverage)
     (ROOT / "docs/review/t4-categorical-tables.html").write_text(page, encoding="utf-8")
     print(json.dumps({"source_rows": len(source_rows)}))
