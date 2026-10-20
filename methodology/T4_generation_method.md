@@ -623,6 +623,8 @@ One variable (within one suitability family) at a time: combine its evidence uni
 
 ### Reviewed numeric class tables (October 2026; issue #362)
 
+**Cross-paper harmonization proposal (20 October 2026):** [16 worked scenarios](examples/t4_cross_paper_harmonization.md) define score crosswalks, unequal class counts, missing ranges, exclusion conflicts, independence and weighted-median ties. [Browser review](../docs/review/t4-harmonization-examples.html). This is a design proposal; the live compilation convention below remains unchanged pending implementation and validation.
+
 Numeric variables can be reported as ordinal bands rather than smooth response curves.
 Compile those bands into `piecewise.profiles` instead of discarding the reviewed record
 or pretending its highest-ranked band is a universal optimum. The numeric compilation
