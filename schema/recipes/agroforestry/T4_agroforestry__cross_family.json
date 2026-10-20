@@ -1,60 +1,519 @@
 [
   {
+    "mapping_id": "agroforestry__cross_family__slope",
+    "suitability_family_id": "agroforestry__cross_family",
+    "variable": "slope",
+    "variable_unit": "degrees",
+    "dataset_id": "srtm_dem_30m",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "piecewise",
+    "relationship_params": {
+      "profiles": [
+        {
+          "profile_id": "ev_T4_slope_haile2024_1",
+          "source_id": "haile_2024",
+          "evidence_id": "ev_T4_slope_haile2024_1",
+          "context": {
+            "study_country": "Ethiopia",
+            "study_area": "Genale sub-basin, Oromia, Ethiopia",
+            "aez": "semi-arid to sub-humid",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "4-6",
+              "weight_path_pct": [
+                30
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                2,
+                9
+              ],
+              "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+              "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+              "status": "establishment_pathway_unresolved",
+              "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "moderate": 2,
+            "medium": 2,
+            "high": 3,
+            "very_high": 4
+          },
+          "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+          "unit": "degrees",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 2.2906100426385296,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "very_high",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 2.2906100426385296,
+              "upper": 4.004172940709388,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": " high",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 4.004172940709388,
+              "upper": 5.142764557884242,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": " medium",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 5.142764557884242,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": " low",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "haile_2024",
+          "source_weight": 0.315,
+          "variable": "slope",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              2,
+              9
+            ],
+            "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+            "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+            "status": "establishment_pathway_unresolved",
+            "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+          },
+          "pool_review": "establishment_pathway_unresolved"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_T4_slope_haile2024_1",
+            "reason": "establishment_pathway_unresolved"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
+    },
+    "uncertainty_pct": 20,
+    "context_overrides": [],
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "references": [
+      "haile_2024"
+    ],
+    "evidence_ids": [
+      "ev_T4_slope_haile2024_1"
+    ],
+    "parameter_source_ids": [
+      "haile_2024"
+    ],
+    "n_parameter_sources": 1,
+    "paper_support_pct": null,
+    "n_sources": 2,
+    "corpus_n": null
+  },
+  {
     "mapping_id": "agroforestry__cross_family__annual_precipitation",
     "suitability_family_id": "agroforestry__cross_family",
     "variable": "annual_precipitation",
     "variable_unit": "mm/year",
-    "dataset_id": "[\"worldclim_v2_precip\",\"chelsa_bioclim_v21_baseline\",\"chirps_precipitation_v2\"]",
+    "dataset_id": "worldclim_v2_precip",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "opt_low": 800.0,
-      "opt_high": 1200.0
+      "profiles": [
+        {
+          "profile_id": "ev_T4_precip_haile2024_2",
+          "source_id": "haile_2024",
+          "evidence_id": "ev_T4_precip_haile2024_2",
+          "context": {
+            "study_country": "Ethiopia",
+            "study_area": "Genale sub-basin, Oromia, Ethiopia",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "4-6",
+              "weight_path_pct": [
+                12
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                2,
+                9
+              ],
+              "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+              "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+              "status": "establishment_pathway_unresolved",
+              "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "moderate": 2,
+            "medium": 2,
+            "high": 3,
+            "very_high": 4
+          },
+          "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+          "unit": "mm/year",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 600.0,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "Low",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 600.0,
+              "upper": 800.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "Medium",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 800.0,
+              "upper": 1200.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "High",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 1200.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "Very high",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "haile_2024",
+          "source_weight": 0.315,
+          "variable": "annual_precipitation",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              2,
+              9
+            ],
+            "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+            "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+            "status": "establishment_pathway_unresolved",
+            "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+          },
+          "pool_review": "establishment_pathway_unresolved"
+        },
+        {
+          "profile_id": "ev_t4_precip_mushtaq2023_2",
+          "source_id": "mushtaq_2023",
+          "evidence_id": "ev_t4_precip_mushtaq2023_2",
+          "context": {
+            "study_country": "India",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "13",
+              "weight_path_pct": [
+                14.98
+              ],
+              "scope": "species_specific",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                1,
+                17
+              ],
+              "source_scope": "Mulberry-tree production study; >1200 mm statement is secondary generic agroforestry discussion, citing Ahmad 2019.",
+              "decision": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
+              "status": "generic_secondary_context",
+              "quote": "Agroforestry-friendly climates are characterized by mean annual precipitation exceeding 1200 mm"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "favourable": 1
+          },
+          "applicability_note": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
+          "unit": "mm/year",
+          "intervals": [
+            {
+              "lower": 1200.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "favourable",
+              "rank": 1,
+              "score": null,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "unresolved_class_meaning"
+            }
+          ],
+          "origin_id": "Ahmad et al. (2019). Agroforestry suitability mapping of India. Agroforestry Systems 93(4):1319–1336.",
+          "source_weight": 0.24,
+          "variable": "annual_precipitation",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              1,
+              17
+            ],
+            "source_scope": "Mulberry-tree production study; >1200 mm statement is secondary generic agroforestry discussion, citing Ahmad 2019.",
+            "decision": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
+            "status": "generic_secondary_context",
+            "quote": "Agroforestry-friendly climates are characterized by mean annual precipitation exceeding 1200 mm"
+          },
+          "pool_review": "generic_secondary_context"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_T4_precip_haile2024_2",
+            "reason": "establishment_pathway_unresolved"
+          },
+          {
+            "profile_id": "ev_t4_precip_mushtaq2023_2",
+            "reason": "generic_secondary_context"
+          },
+          {
+            "profile_id": "ev_t4_precip_mushtaq2023_2",
+            "reason": "unresolved_class_meaning"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 23.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
-    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 800.0, 'opt_high': 1200.0}; uncertainty ±23% from spread. Collapsed 1 citation echo(es). ",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
     "references": [
-      "ahmad_2017",
       "haile_2024",
-      "nath_2021",
-      "yadav_2024"
+      "mushtaq_2023"
     ],
     "evidence_ids": [
-      "ev_t4_precip_ahmad17_1",
       "ev_T4_precip_haile2024_2",
-      "ev_t4_annualp_nath21_02",
-      "ev_t4_precip_yadav24_2"
+      "ev_t4_precip_mushtaq2023_2"
     ],
-    "paper_support_pct": 10.0,
-    "n_sources": 4,
-    "corpus_n": 35
+    "parameter_source_ids": [
+      "haile_2024",
+      "mushtaq_2023"
+    ],
+    "n_parameter_sources": 2,
+    "paper_support_pct": null,
+    "n_sources": 3,
+    "corpus_n": null
   },
   {
-    "mapping_id": "agroforestry__cross_family__soil_ph",
+    "mapping_id": "agroforestry__cross_family__soil_organic_carbon",
     "suitability_family_id": "agroforestry__cross_family",
-    "variable": "soil_ph",
-    "variable_unit": "pH_units",
-    "dataset_id": "[\"isric_soilgrids250_v2\"]",
+    "variable": "soil_organic_carbon",
+    "variable_unit": "g/kg",
+    "dataset_id": "isric_soilgrids250_v2",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "opt_low": 6.6,
-      "opt_high": 7.3
+      "profiles": [
+        {
+          "profile_id": "ev_T4_soc_haile2024_1",
+          "source_id": "haile_2024",
+          "evidence_id": "ev_T4_soc_haile2024_1",
+          "context": {
+            "study_country": "Ethiopia",
+            "study_area": "Genale sub-basin, Oromia, Ethiopia",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "4-6",
+              "weight_path_pct": [
+                20,
+                35
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                2,
+                9
+              ],
+              "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+              "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+              "status": "establishment_pathway_unresolved",
+              "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "moderate": 2,
+            "medium": 2,
+            "high": 3,
+            "very_high": 4
+          },
+          "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+          "unit": "g/kg",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 5.0,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "low",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 5.0,
+              "upper": 7.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": " medium",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "haile_2024",
+          "source_weight": 0.315,
+          "variable": "soil_organic_carbon",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              2,
+              9
+            ],
+            "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+            "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+            "status": "establishment_pathway_unresolved",
+            "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+          },
+          "pool_review": "establishment_pathway_unresolved"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_T4_soc_haile2024_1",
+            "reason": "establishment_pathway_unresolved"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 6.6, 'opt_high': 7.3}; uncertainty ±20% from spread. ",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
     "references": [
-      "haile_2024",
-      "nath_2021"
+      "haile_2024"
     ],
     "evidence_ids": [
-      "ev_T4_ph_haile2024_1",
-      "ev_t4_soilph_nath21_01"
+      "ev_T4_soc_haile2024_1"
     ],
-    "paper_support_pct": 5.0,
+    "parameter_source_ids": [
+      "haile_2024"
+    ],
+    "n_parameter_sources": 1,
+    "paper_support_pct": null,
     "n_sources": 2,
-    "corpus_n": 35
+    "corpus_n": null
   }
 ]

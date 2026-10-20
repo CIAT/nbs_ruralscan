@@ -1,284 +1,2513 @@
 [
   {
+    "mapping_id": "agroforestry__cross_family__slope",
+    "nbs_id": "agroforestry",
+    "dataset_id": "srtm_dem_30m",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "piecewise",
+    "relationship_params": {
+      "profiles": [
+        {
+          "profile_id": "ev_T4_slope_haile2024_1",
+          "source_id": "haile_2024",
+          "evidence_id": "ev_T4_slope_haile2024_1",
+          "context": {
+            "study_country": "Ethiopia",
+            "study_area": "Genale sub-basin, Oromia, Ethiopia",
+            "aez": "semi-arid to sub-humid",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "4-6",
+              "weight_path_pct": [
+                30
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                2,
+                9
+              ],
+              "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+              "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+              "status": "establishment_pathway_unresolved",
+              "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "moderate": 2,
+            "medium": 2,
+            "high": 3,
+            "very_high": 4
+          },
+          "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+          "unit": "degrees",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 2.2906100426385296,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "very_high",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 2.2906100426385296,
+              "upper": 4.004172940709388,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": " high",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 4.004172940709388,
+              "upper": 5.142764557884242,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": " medium",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 5.142764557884242,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": " low",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "haile_2024",
+          "source_weight": 0.315,
+          "variable": "slope",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              2,
+              9
+            ],
+            "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+            "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+            "status": "establishment_pathway_unresolved",
+            "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+          },
+          "pool_review": "establishment_pathway_unresolved"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_T4_slope_haile2024_1",
+            "reason": "establishment_pathway_unresolved"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
+    },
+    "uncertainty_pct": 20,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.3333,
+    "weight_adjustable": true,
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "variable": "slope",
+    "suitability_family_id": "agroforestry__cross_family",
+    "evidence_ids": [
+      "ev_T4_slope_haile2024_1"
+    ],
+    "n_sources": 2
+  },
+  {
     "mapping_id": "agroforestry__cross_family__annual_precipitation",
     "nbs_id": "agroforestry",
     "dataset_id": "worldclim_v2_precip",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "opt_low": 800.0,
-      "opt_high": 1200.0
+      "profiles": [
+        {
+          "profile_id": "ev_T4_precip_haile2024_2",
+          "source_id": "haile_2024",
+          "evidence_id": "ev_T4_precip_haile2024_2",
+          "context": {
+            "study_country": "Ethiopia",
+            "study_area": "Genale sub-basin, Oromia, Ethiopia",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "4-6",
+              "weight_path_pct": [
+                12
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                2,
+                9
+              ],
+              "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+              "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+              "status": "establishment_pathway_unresolved",
+              "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "moderate": 2,
+            "medium": 2,
+            "high": 3,
+            "very_high": 4
+          },
+          "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+          "unit": "mm/year",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 600.0,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "Low",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 600.0,
+              "upper": 800.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "Medium",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 800.0,
+              "upper": 1200.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "High",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 1200.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "Very high",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "haile_2024",
+          "source_weight": 0.315,
+          "variable": "annual_precipitation",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              2,
+              9
+            ],
+            "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+            "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+            "status": "establishment_pathway_unresolved",
+            "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+          },
+          "pool_review": "establishment_pathway_unresolved"
+        },
+        {
+          "profile_id": "ev_t4_precip_mushtaq2023_2",
+          "source_id": "mushtaq_2023",
+          "evidence_id": "ev_t4_precip_mushtaq2023_2",
+          "context": {
+            "study_country": "India",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "13",
+              "weight_path_pct": [
+                14.98
+              ],
+              "scope": "species_specific",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                1,
+                17
+              ],
+              "source_scope": "Mulberry-tree production study; >1200 mm statement is secondary generic agroforestry discussion, citing Ahmad 2019.",
+              "decision": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
+              "status": "generic_secondary_context",
+              "quote": "Agroforestry-friendly climates are characterized by mean annual precipitation exceeding 1200 mm"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "favourable": 1
+          },
+          "applicability_note": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
+          "unit": "mm/year",
+          "intervals": [
+            {
+              "lower": 1200.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "favourable",
+              "rank": 1,
+              "score": null,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "unresolved_class_meaning"
+            }
+          ],
+          "origin_id": "Ahmad et al. (2019). Agroforestry suitability mapping of India. Agroforestry Systems 93(4):1319–1336.",
+          "source_weight": 0.24,
+          "variable": "annual_precipitation",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              1,
+              17
+            ],
+            "source_scope": "Mulberry-tree production study; >1200 mm statement is secondary generic agroforestry discussion, citing Ahmad 2019.",
+            "decision": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
+            "status": "generic_secondary_context",
+            "quote": "Agroforestry-friendly climates are characterized by mean annual precipitation exceeding 1200 mm"
+          },
+          "pool_review": "generic_secondary_context"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_T4_precip_haile2024_2",
+            "reason": "establishment_pathway_unresolved"
+          },
+          {
+            "profile_id": "ev_t4_precip_mushtaq2023_2",
+            "reason": "generic_secondary_context"
+          },
+          {
+            "profile_id": "ev_t4_precip_mushtaq2023_2",
+            "reason": "unresolved_class_meaning"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 23.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": true,
-    "baseline_dataset_id": "worldclim_v2_bioclim",
-    "future_dataset_ids": {
-      "ssp245": "chelsa_bioclim_ssp245_2050"
-    },
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 800.0, 'opt_high': 1200.0}; uncertainty ±23% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "agroforestry__cross_family",
-    "evidence_ids": [
-      "ev_t4_precip_ahmad17_1",
-      "ev_T4_precip_haile2024_2",
-      "ev_t4_annualp_nath21_02",
-      "ev_t4_precip_yadav24_2"
-    ],
-    "n_sources": 4,
-    "corpus_n": 35,
-    "paper_support_pct": 10.0
-  },
-  {
-    "mapping_id": "agroforestry__cross_family__soil_ph",
-    "nbs_id": "agroforestry",
-    "dataset_id": "isric_soilgrids250_v2",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 6.6,
-      "opt_high": 7.3
-    },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
-    "weight_default": 0.5,
+    "weight_default": 0.3333,
     "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 6.6, 'opt_high': 7.3}; uncertainty ±20% from spread. ",
-    "variable": "soil_ph",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "variable": "annual_precipitation",
     "suitability_family_id": "agroforestry__cross_family",
     "evidence_ids": [
-      "ev_T4_ph_haile2024_1",
-      "ev_t4_soilph_nath21_01"
+      "ev_T4_precip_haile2024_2",
+      "ev_t4_precip_mushtaq2023_2"
     ],
-    "n_sources": 2,
-    "corpus_n": 35,
-    "paper_support_pct": 5.0
+    "n_sources": 3
+  },
+  {
+    "mapping_id": "agroforestry__cross_family__soil_organic_carbon",
+    "nbs_id": "agroforestry",
+    "dataset_id": "isric_soilgrids250_v2",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "piecewise",
+    "relationship_params": {
+      "profiles": [
+        {
+          "profile_id": "ev_T4_soc_haile2024_1",
+          "source_id": "haile_2024",
+          "evidence_id": "ev_T4_soc_haile2024_1",
+          "context": {
+            "study_country": "Ethiopia",
+            "study_area": "Genale sub-basin, Oromia, Ethiopia",
+            "model_use": {
+              "verified": true,
+              "method": "AHP_weight",
+              "page": "4-6",
+              "weight_path_pct": [
+                20,
+                35
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                2,
+                9
+              ],
+              "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+              "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+              "status": "establishment_pathway_unresolved",
+              "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "moderate": 2,
+            "medium": 2,
+            "high": 3,
+            "very_high": 4
+          },
+          "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+          "unit": "g/kg",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 5.0,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "low",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 5.0,
+              "upper": 7.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": " medium",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "haile_2024",
+          "source_weight": 0.315,
+          "variable": "soil_organic_carbon",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              2,
+              9
+            ],
+            "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+            "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+            "status": "establishment_pathway_unresolved",
+            "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+          },
+          "pool_review": "establishment_pathway_unresolved"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_T4_soc_haile2024_1",
+            "reason": "establishment_pathway_unresolved"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
+    },
+    "uncertainty_pct": 20,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.3333,
+    "weight_adjustable": true,
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "variable": "soil_organic_carbon",
+    "suitability_family_id": "agroforestry__cross_family",
+    "evidence_ids": [
+      "ev_T4_soc_haile2024_1"
+    ],
+    "n_sources": 2
   },
   {
     "mapping_id": "agroforestry__planted_silvoarable__slope",
     "nbs_id": "agroforestry",
     "dataset_id": "srtm_dem_30m",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "threshold",
     "relationship_params": {
-      "abs_min": 4.6,
-      "abs_max": 35.8
+      "threshold": 19.3,
+      "above_is_suitable": false,
+      "profiles": [
+        {
+          "profile_id": "ev_T4_slope_ahmad2018_1",
+          "source_id": "ahmad_2018",
+          "evidence_id": "ev_T4_slope_ahmad2018_1",
+          "context": {
+            "study_country": "India",
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                8,
+                9,
+                10
+              ],
+              "source_scope": "Broad regional agroforestry model; explicitly includes agrisilviculture and silvopastoral systems.",
+              "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
+              "status": "conditional_scoping_transfer",
+              "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "medium": 2,
+            "high": 3
+          },
+          "applicability_note": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
+          "unit": "degrees",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 2.862405226111748,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "High",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 2.862405226111748,
+              "upper": 8.530765609948133,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "Medium",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.6666666666666666,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 8.530765609948133,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "Low",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.3333333333333333,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "ahmad_2018",
+          "source_weight": 0.315,
+          "variable": "slope",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "india_planted_scoping__slope",
+          "system_id": "agroforestry__planted_silvoarable",
+          "context_id": "india_regional_models_scoping_transfer",
+          "compatibility_approved": true,
+          "applicability_review": {
+            "pages": [
+              8,
+              9,
+              10
+            ],
+            "source_scope": "Broad regional agroforestry model; explicitly includes agrisilviculture and silvopastoral systems.",
+            "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
+            "status": "conditional_scoping_transfer",
+            "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
+          },
+          "pool_review": "reviewed_conditional_scoping_transfer"
+        },
+        {
+          "profile_id": "ev_t4_slope_nath21_01",
+          "source_id": "nath_2021",
+          "evidence_id": "ev_t4_slope_nath21_01",
+          "context": {
+            "study_country": "India",
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                40,
+                25
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                11,
+                19,
+                20
+              ],
+              "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+              "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+              "status": "conditional_scoping_transfer",
+              "quote": "without targeting any specific species or agroforestry model"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "unsuitable": 0,
+            "marginal": 1,
+            "moderate": 2,
+            "good": 3,
+            "very_good": 4
+          },
+          "applicability_note": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+          "unit": "degrees",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 5.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "very_good",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 5.0,
+              "upper": 10.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 10.0,
+              "upper": 15.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 15.0,
+              "upper": 20.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "marginal",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 20.0,
+              "upper": null,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "unsuitable",
+              "rank": 0,
+              "score": 0,
+              "legacy_score": 0.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "nath_2021",
+          "source_weight": 0.54,
+          "variable": "slope",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "india_planted_scoping__slope",
+          "system_id": "agroforestry__planted_silvoarable",
+          "context_id": "india_regional_models_scoping_transfer",
+          "compatibility_approved": true,
+          "applicability_review": {
+            "pages": [
+              11,
+              19,
+              20
+            ],
+            "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+            "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+            "status": "conditional_scoping_transfer",
+            "quote": "without targeting any specific species or agroforestry model"
+          },
+          "pool_review": "reviewed_conditional_scoping_transfer"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [
+          {
+            "pool_id": "india_planted_scoping__slope",
+            "system_id": "agroforestry__planted_silvoarable",
+            "context_id": "india_regional_models_scoping_transfer",
+            "profile_ids": [
+              "ev_T4_slope_ahmad2018_1",
+              "ev_t4_slope_nath21_01"
+            ],
+            "cells": [
+              {
+                "lower": null,
+                "upper": 2.862405226111748,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.75,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 2.862405226111748,
+                "upper": 2.862405226111748,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.5,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 2.862405226111748,
+                "upper": 5.0,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.5,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 5.0,
+                "upper": 5.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.5,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.368421052631579,
+                "origins": [
+                  "ahmad_2018"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 5.0,
+                "upper": 8.530765609948133,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.5,
+                "source_max": 0.75,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 8.530765609948133,
+                "upper": 8.530765609948133,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.5,
+                "source_max": 0.75,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 8.530765609948133,
+                "upper": 10.0,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.25,
+                "source_max": 0.75,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 10.0,
+                "upper": 10.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.25,
+                "median_upper": 0.25,
+                "score": 0.25,
+                "source_min": 0.25,
+                "source_max": 0.25,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.368421052631579,
+                "origins": [
+                  "ahmad_2018"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 10.0,
+                "upper": 15.0,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.25,
+                "source_max": 0.5,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 15.0,
+                "upper": 15.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.25,
+                "median_upper": 0.25,
+                "score": 0.25,
+                "source_min": 0.25,
+                "source_max": 0.25,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.368421052631579,
+                "origins": [
+                  "ahmad_2018"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 15.0,
+                "upper": 20.0,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.25,
+                "median_upper": 0.25,
+                "score": 0.25,
+                "source_min": 0.25,
+                "source_max": 0.25,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": []
+              },
+              {
+                "lower": 20.0,
+                "upper": 20.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.25,
+                "median_upper": 0.25,
+                "score": 0.25,
+                "source_min": 0.25,
+                "source_max": 0.25,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.368421052631579,
+                "origins": [
+                  "ahmad_2018"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 20.0,
+                "upper": null,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0,
+                "median_upper": 0,
+                "score": null,
+                "source_min": 0,
+                "source_max": 0.25,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "exclusion_conflict",
+                  "source_disagreement"
+                ]
+              }
+            ],
+            "hard_exclusion": false,
+            "selection": "explicit",
+            "score_policy": "semantic_classes_v1"
+          }
+        ],
+        "review": []
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 10.0,
+    "uncertainty_pct": 20.0,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
-    "weight_default": 0.3333,
+    "weight_default": 0.2,
     "weight_adjustable": true,
-    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 4.6, 'abs_max': 35.8}; uncertainty ±10% from spread. Dropped 1 (scope/role). ",
+    "justification": "Reconciled from 1 contributing evidence unit(s) (exact agreement on typed relationship). Global {'threshold': 19.3, 'above_is_suitable': False}; uncertainty ±20% from spread.  Reviewed ordinal profiles and conditional scoping pools are retained as explicit alternatives; they do not replace or blend with the standalone typed response.",
     "variable": "slope",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "evidence_ids": [
-      "ev_T4_slope_haris2021_3",
-      "ev_T4_slope_seja2022_1",
+      "ev_T4_slope_ahmad2018_1",
       "ev_T4_slope_wotlolan2021_1",
-      "ev_slope_singh26"
+      "ev_t4_slope_nath21_01"
     ],
-    "n_sources": 4,
-    "corpus_n": 34,
-    "paper_support_pct": 9.8
+    "n_sources": 5
   },
   {
-    "mapping_id": "agroforestry__planted_silvoarable__tree_canopy_cover",
+    "mapping_id": "agroforestry__planted_silvoarable__soil_organic_carbon",
     "nbs_id": "agroforestry",
-    "dataset_id": "hansen_treecover2000",
+    "dataset_id": "isric_soilgrids250_v2",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "abs_max": 10.0
+      "profiles": [
+        {
+          "profile_id": "ev_T4_soc_ahmad2018_1",
+          "source_id": "ahmad_2018",
+          "evidence_id": "ev_T4_soc_ahmad2018_1",
+          "context": {
+            "study_country": "India",
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                8,
+                9,
+                10
+              ],
+              "source_scope": "Broad regional agroforestry model; explicitly includes agrisilviculture and silvopastoral systems.",
+              "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
+              "status": "conditional_scoping_transfer",
+              "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "medium": 2,
+            "high": 3
+          },
+          "applicability_note": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
+          "unit": "g/kg",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 5.0,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "Low",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.3333333333333333,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 5.0,
+              "upper": 7.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "Medium",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.6666666666666666,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 7.5,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "High",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "ahmad_2018",
+          "source_weight": 0.315,
+          "variable": "soil_organic_carbon",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "india_planted_scoping__soil_organic_carbon",
+          "system_id": "agroforestry__planted_silvoarable",
+          "context_id": "india_regional_models_scoping_transfer",
+          "compatibility_approved": true,
+          "applicability_review": {
+            "pages": [
+              8,
+              9,
+              10
+            ],
+            "source_scope": "Broad regional agroforestry model; explicitly includes agrisilviculture and silvopastoral systems.",
+            "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
+            "status": "conditional_scoping_transfer",
+            "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
+          },
+          "pool_review": "reviewed_conditional_scoping_transfer"
+        },
+        {
+          "profile_id": "ev_t4_soilorg_nath21_01",
+          "source_id": "nath_2021",
+          "evidence_id": "ev_t4_soilorg_nath21_01",
+          "context": {
+            "study_country": "India",
+            "country": "India",
+            "region": "Eastern Indian Himalayan Region",
+            "transfer_note": "Regional model only; explicit source profile required.",
+            "source_check": {
+              "date": "2026-10-20",
+              "reviewer": "Codex source verification",
+              "resolution": "Full Table 2 p11: <0.6 is MARGINAL, not unsuitable. Variable weight 25% within topsoil nutrient group, 20% within soil, soil 20% of final model: effective 1%."
+            },
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                25,
+                20,
+                20
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                11,
+                19,
+                20
+              ],
+              "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+              "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+              "status": "conditional_scoping_transfer",
+              "quote": "without targeting any specific species or agroforestry model"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "unsuitable": 0,
+            "marginal": 1,
+            "moderate": 2,
+            "good": 3,
+            "very_good": 4
+          },
+          "applicability_note": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+          "unit": "g/kg",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 6.0,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "marginal",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 6.0,
+              "upper": 10.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 10.0,
+              "upper": 20.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 20.0,
+              "upper": 37.1,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "very_good",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "nath_2021",
+          "source_weight": 0.54,
+          "variable": "soil_organic_carbon",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "india_planted_scoping__soil_organic_carbon",
+          "system_id": "agroforestry__planted_silvoarable",
+          "context_id": "india_regional_models_scoping_transfer",
+          "compatibility_approved": true,
+          "applicability_review": {
+            "pages": [
+              11,
+              19,
+              20
+            ],
+            "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+            "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+            "status": "conditional_scoping_transfer",
+            "quote": "without targeting any specific species or agroforestry model"
+          },
+          "pool_review": "reviewed_conditional_scoping_transfer"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [
+          {
+            "pool_id": "india_planted_scoping__soil_organic_carbon",
+            "system_id": "agroforestry__planted_silvoarable",
+            "context_id": "india_regional_models_scoping_transfer",
+            "profile_ids": [
+              "ev_T4_soc_ahmad2018_1",
+              "ev_t4_soilorg_nath21_01"
+            ],
+            "cells": [
+              {
+                "lower": null,
+                "upper": 5.0,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.25,
+                "median_upper": 0.25,
+                "score": 0.25,
+                "source_min": 0.25,
+                "source_max": 0.25,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": []
+              },
+              {
+                "lower": 5.0,
+                "upper": 5.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.25,
+                "median_upper": 0.25,
+                "score": 0.25,
+                "source_min": 0.25,
+                "source_max": 0.5,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 5.0,
+                "upper": 6.0,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.25,
+                "median_upper": 0.25,
+                "score": 0.25,
+                "source_min": 0.25,
+                "source_max": 0.5,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 6.0,
+                "upper": 6.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.5,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": []
+              },
+              {
+                "lower": 6.0,
+                "upper": 7.5,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.5,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": []
+              },
+              {
+                "lower": 7.5,
+                "upper": 7.5,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.5,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": []
+              },
+              {
+                "lower": 7.5,
+                "upper": 10.0,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.75,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 10.0,
+                "upper": 10.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.75,
+                "source_max": 0.75,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.368421052631579,
+                "origins": [
+                  "ahmad_2018"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 10.0,
+                "upper": 20.0,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.75,
+                "source_max": 0.75,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": []
+              },
+              {
+                "lower": 20.0,
+                "upper": 20.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.75,
+                "source_max": 0.75,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.368421052631579,
+                "origins": [
+                  "ahmad_2018"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 20.0,
+                "upper": 37.1,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.75,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 37.1,
+                "upper": 37.1,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.75,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 37.1,
+                "upper": null,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.75,
+                "source_max": 0.75,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.368421052631579,
+                "origins": [
+                  "ahmad_2018"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              }
+            ],
+            "hard_exclusion": false,
+            "selection": "explicit",
+            "score_policy": "semantic_classes_v1"
+          }
+        ],
+        "review": []
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
-    "weight_default": 0.3333,
+    "weight_default": 0.2,
     "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 10.0}; uncertainty ±20% from spread. Collapsed 2 citation echo(es). ",
-    "variable": "tree_canopy_cover",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "variable": "soil_organic_carbon",
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "evidence_ids": [
-      "ev_tree_canopy_cover_sprenkle24_1",
-      "ev_t4_tcc_brandt2015_1"
+      "ev_T4_soc_ahmad2018_1",
+      "ev_t4_soilorg_nath21_01"
     ],
-    "n_sources": 2,
-    "corpus_n": 34,
-    "paper_support_pct": 7.4
+    "n_sources": 3
   },
   {
-    "mapping_id": "agroforestry__planted_silvoarable__soil_depth_to_bedrock",
-    "nbs_id": "agroforestry",
-    "dataset_id": "ssurgo_statsgo",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 90.0
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 90.0}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "soil_depth_to_bedrock",
-    "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": [
-      "ev_soildepth_inab_p92_aa_example"
-    ],
-    "n_sources": 1,
-    "corpus_n": 34,
-    "paper_support_pct": 2.5
-  },
-  {
-    "mapping_id": "agroforestry__regeneration_farmland__annual_precipitation",
-    "nbs_id": "agroforestry",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 300.0,
-      "opt_low": 400.0,
-      "opt_high": 800.0,
-      "abs_max": 800.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": true,
-    "baseline_dataset_id": "worldclim_v2_bioclim",
-    "future_dataset_ids": {
-      "ssp245": "chelsa_bioclim_ssp245_2050"
-    },
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 7 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 300.0, 'opt_low': 400.0, 'opt_high': 800.0, 'abs_max': 800.0}; uncertainty ±60% from spread. Collapsed 2 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "agroforestry__regeneration_farmland",
-    "evidence_ids": [
-      "EV_lohbeck_2020_001",
-      "EV_researchsquare_fmnr_2025_001",
-      "EV_weston_2015_002",
-      "EV_sendzimir_2011_001",
-      "EV_wri_regreening_2015_001",
-      "EV_wocat_507_2019_003",
-      "EV_wocat_1358_2017_001"
-    ],
-    "n_sources": 7,
-    "corpus_n": 38,
-    "paper_support_pct": 16.3
-  },
-  {
-    "mapping_id": "agroforestry__regeneration_farmland__slope",
-    "nbs_id": "agroforestry",
-    "dataset_id": "srtm_dem_30m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.0,
-      "abs_max": 2.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.0, 'abs_max': 2.0}; uncertainty ±30% from spread. ",
-    "variable": "slope",
-    "suitability_family_id": "agroforestry__regeneration_farmland",
-    "evidence_ids": [
-      "EV_wocat_507_2019_004",
-      "EV_wocat_1358_2017_003"
-    ],
-    "n_sources": 2,
-    "corpus_n": 38,
-    "paper_support_pct": 4.7
-  },
-  {
-    "mapping_id": "agroforestry__shaded_perennial__mean_annual_temperature",
+    "mapping_id": "agroforestry__planted_silvoarable__mean_annual_temperature",
     "nbs_id": "agroforestry",
     "dataset_id": "worldclim_v2_bioclim",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "opt_low": 20.0,
-      "opt_high": 30.0
+      "profiles": [
+        {
+          "profile_id": "ev_t4_meanann_nath21_01",
+          "source_id": "nath_2021",
+          "evidence_id": "ev_t4_meanann_nath21_01",
+          "context": {
+            "study_country": "India",
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                35,
+                35
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                11,
+                19,
+                20
+              ],
+              "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+              "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+              "status": "conditional_scoping_transfer",
+              "quote": "without targeting any specific species or agroforestry model"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "unsuitable": 0,
+            "marginal": 1,
+            "moderate": 2,
+            "good": 3,
+            "very_good": 4
+          },
+          "applicability_note": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+          "unit": "degC",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 5.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "unsuitable",
+              "rank": 0,
+              "score": 0,
+              "legacy_score": 0.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 5.0,
+              "upper": 10.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "marginal",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 10.0,
+              "upper": 15.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 15.0,
+              "upper": 20.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 20.0,
+              "upper": 25.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "very_good",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "nath_2021",
+          "source_weight": 0.54,
+          "variable": "mean_annual_temperature",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              11,
+              19,
+              20
+            ],
+            "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+            "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+            "status": "conditional_scoping_transfer",
+            "quote": "without targeting any specific species or agroforestry model"
+          },
+          "pool_review": "conditional_scoping_transfer"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_t4_meanann_nath21_01",
+            "reason": "conditional_scoping_transfer"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 30.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
     "is_scenario_candidate": false,
-    "has_future_projection": true,
-    "baseline_dataset_id": "worldclim_v2_bioclim",
-    "future_dataset_ids": {
-      "ssp245": "chelsa_bioclim_ssp245_2050"
-    },
-    "weight_default": 1.0,
+    "has_future_projection": false,
+    "weight_default": 0.2,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 20.0, 'opt_high': 30.0}; uncertainty ±30% from spread. Dropped 2 (scope/role). ",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
     "variable": "mean_annual_temperature",
-    "suitability_family_id": "agroforestry__shaded_perennial",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
     "evidence_ids": [
-      "ev_t4_mat_mushtaq2023_2"
+      "ev_t4_meanann_nath21_01"
     ],
-    "n_sources": 1,
-    "corpus_n": 41,
-    "paper_support_pct": 2.0
+    "n_sources": 3
   },
   {
-    "mapping_id": "agro_land_cover_eligibility",
+    "mapping_id": "agroforestry__planted_silvoarable__annual_precipitation",
     "nbs_id": "agroforestry",
-    "dataset_id": "esa_worldcover_2021",
-    "suitability_dimension": "system_constraint",
-    "relationship_type": "ranked_classes",
+    "dataset_id": "worldclim_v2_precip",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "class_map": {
-        "10": 1.0,
-        "20": 0.9,
-        "30": 0.7,
-        "40": 0.5,
-        "50": 0.0,
-        "60": 0.3,
-        "70": 0.0,
-        "80": 0.0,
-        "90": 0.4,
-        "95": 0.0,
-        "100": 0.2
+      "profiles": [
+        {
+          "profile_id": "ev_t4_annualp_nath21_02",
+          "source_id": "nath_2021",
+          "evidence_id": "ev_t4_annualp_nath21_02",
+          "context": {
+            "study_country": "India",
+            "country": "India",
+            "region": "Eastern Indian Himalayan Region",
+            "transfer_note": "Regional model only; explicit source profile required.",
+            "source_check": {
+              "date": "2026-10-20",
+              "reviewer": "Codex source verification",
+              "resolution": "Full Table 2 p11 verified. Restricted to Eastern Indian Himalayan regional profile; does not exclude dryland agroforestry elsewhere."
+            },
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                35,
+                35
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                11,
+                19,
+                20
+              ],
+              "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+              "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+              "status": "conditional_scoping_transfer",
+              "quote": "without targeting any specific species or agroforestry model"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "unsuitable": 0,
+            "marginal": 1,
+            "moderate": 2,
+            "good": 3,
+            "very_good": 4
+          },
+          "applicability_note": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+          "unit": "mm/year",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": 1000.0,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "unsuitable",
+              "rank": 0,
+              "score": 0,
+              "legacy_score": 0.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 1000.0,
+              "upper": 1300.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "marginal",
+              "rank": 1,
+              "score": 0.25,
+              "legacy_score": 0.25,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 1300.0,
+              "upper": 1500.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 1500.0,
+              "upper": 2000.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 2000.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "very_good",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "nath_2021",
+          "source_weight": 0.54,
+          "variable": "annual_precipitation",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "applicability_review": {
+            "pages": [
+              11,
+              19,
+              20
+            ],
+            "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+            "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+            "status": "conditional_scoping_transfer",
+            "quote": "without targeting any specific species or agroforestry model"
+          },
+          "pool_review": "conditional_scoping_transfer"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_t4_annualp_nath21_02",
+            "reason": "conditional_scoping_transfer"
+          }
+        ]
       },
-      "class_labels": {
-        "10": "Tree cover (existing AF potential)",
-        "20": "Shrubland (high conversion potential)",
-        "30": "Grassland (high conversion potential)",
-        "40": "Cropland (primary target)",
-        "50": "Built-up (exclude)",
-        "60": "Bare/sparse vegetation (low potential)",
-        "70": "Snow/ice (exclude)",
-        "80": "Permanent water (exclude)",
-        "90": "Herbaceous wetland (low, conditional)",
-        "95": "Mangroves (different NbS)",
-        "100": "Moss/lichen (low)"
-      }
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 0.0,
+    "uncertainty_pct": 20,
+    "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
-    "weight_default": 0.1,
-    "weight_adjustable": false,
-    "justification": "Land cover is an eligibility filter, not a graduated suitability variable. Cropland (class 40) and grassland/pasture (20, 30) are the primary targets for agroforestry integration. Built-up, water, ice, and mangroves are hard exclusions. Used as the primary land-use mask in Ahmad et al. (2020), Castle et al. (2025), Baldwin et al. (2022), and the majority of stocktake papers.",
-    "variable": "land_cover",
+    "weight_default": 0.2,
+    "weight_adjustable": true,
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "variable": "annual_precipitation",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 6,
-    "corpus_n": 36,
-    "paper_support_pct": 25.0
+    "evidence_ids": [
+      "ev_t4_annualp_nath21_02"
+    ],
+    "n_sources": 2
+  },
+  {
+    "mapping_id": "agroforestry__planted_silvoarable__soil_ph",
+    "nbs_id": "agroforestry",
+    "dataset_id": "isric_soilgrids250_v2",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "piecewise",
+    "relationship_params": {
+      "profiles": [
+        {
+          "profile_id": "ev_t4_soilph_nath21_01",
+          "source_id": "nath_2021",
+          "evidence_id": "ev_t4_soilph_nath21_01",
+          "context": {
+            "study_country": "India",
+            "country": "India",
+            "region": "Eastern Indian Himalayan Region",
+            "transfer_note": "Regional model only; explicit source profile required.",
+            "source_check": {
+              "date": "2026-10-20",
+              "reviewer": "Codex source verification",
+              "resolution": "Full Table 2 p11 visually checked: good class has two disjoint ranges. All four ranges printed explicitly. No extrapolation outside source bands."
+            },
+            "model_use": {
+              "verified": true,
+              "method": "direct_expert_weight",
+              "page": "11",
+              "weight_path_pct": [
+                25,
+                20,
+                20
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                11,
+                19,
+                20
+              ],
+              "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+              "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+              "status": "conditional_scoping_transfer",
+              "quote": "without targeting any specific species or agroforestry model"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "unsuitable": 0,
+            "marginal": 1,
+            "moderate": 2,
+            "good": 3,
+            "very_good": 4
+          },
+          "applicability_note": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+          "unit": "pH_units",
+          "intervals": [
+            {
+              "lower": 4.6,
+              "upper": 5.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 5.5,
+              "upper": 7.2,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "very_good",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 7.2,
+              "upper": 7.4,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "good",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 7.4,
+              "upper": 7.6,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "nath_2021",
+          "source_weight": 0.54,
+          "variable": "soil_ph",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "india_planted_scoping__soil_ph",
+          "system_id": "agroforestry__planted_silvoarable",
+          "context_id": "india_regional_models_scoping_transfer",
+          "compatibility_approved": true,
+          "applicability_review": {
+            "pages": [
+              11,
+              19,
+              20
+            ],
+            "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
+            "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
+            "status": "conditional_scoping_transfer",
+            "quote": "without targeting any specific species or agroforestry model"
+          },
+          "pool_review": "reviewed_conditional_scoping_transfer"
+        },
+        {
+          "profile_id": "ev_soil_ph_singh26",
+          "source_id": "singh_2026",
+          "evidence_id": "ev_soil_ph_singh26",
+          "context": {
+            "study_country": "India",
+            "study_region": "Odisha",
+            "study_income_group": "LMIC",
+            "model_use": {
+              "verified": true,
+              "method": "RF_relative_weight",
+              "page": "8",
+              "weight_path_pct": [
+                3
+              ],
+              "scope": "practice_technology",
+              "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            },
+            "system_applicability_review": {
+              "reviewer": "Codex source review",
+              "date": "2026-10-20",
+              "pages": [
+                4,
+                5,
+                8,
+                11
+              ],
+              "source_scope": "Wadi/agro-horti-forestry, bund/boundary plantings, intercropping, home gardens and block plantings; intervention mapping uses crop intensity.",
+              "decision": "Retain F1 pH assignment for planted trees with crops. Boundary component still needs F4 geometry; no numeric-only expansion into F4 or homegardens. Pool pH with Nath as an India-derived scoping prior, retaining uncertainty and regional profiles.",
+              "status": "supported_planted_tree_crop",
+              "quote": "Bund plantations and intercropping are prescribed in single cropping agricultural lands"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "low": 1,
+            "moderate": 2,
+            "medium": 2,
+            "high": 3,
+            "very_high": 4
+          },
+          "applicability_note": "Retain F1 pH assignment for planted trees with crops. Boundary component still needs F4 geometry; no numeric-only expansion into F4 or homegardens. Pool pH with Nath as an India-derived scoping prior, retaining uncertainty and regional profiles.",
+          "unit": "pH_units",
+          "intervals": [
+            {
+              "lower": 5.5,
+              "upper": 6.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "high",
+              "rank": 3,
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 6.5,
+              "upper": 7.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "very_high",
+              "rank": 4,
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            },
+            {
+              "lower": 7.5,
+              "upper": 8.5,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
+            }
+          ],
+          "origin_id": "singh_2026",
+          "source_weight": 0.54,
+          "variable": "soil_ph",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "india_planted_scoping__soil_ph",
+          "system_id": "agroforestry__planted_silvoarable",
+          "context_id": "india_regional_models_scoping_transfer",
+          "compatibility_approved": true,
+          "applicability_review": {
+            "pages": [
+              4,
+              5,
+              8,
+              11
+            ],
+            "source_scope": "Wadi/agro-horti-forestry, bund/boundary plantings, intercropping, home gardens and block plantings; intervention mapping uses crop intensity.",
+            "decision": "Retain F1 pH assignment for planted trees with crops. Boundary component still needs F4 geometry; no numeric-only expansion into F4 or homegardens. Pool pH with Nath as an India-derived scoping prior, retaining uncertainty and regional profiles.",
+            "status": "supported_planted_tree_crop",
+            "quote": "Bund plantations and intercropping are prescribed in single cropping agricultural lands"
+          },
+          "pool_review": "reviewed_conditional_scoping_transfer"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [
+          {
+            "pool_id": "india_planted_scoping__soil_ph",
+            "system_id": "agroforestry__planted_silvoarable",
+            "context_id": "india_regional_models_scoping_transfer",
+            "profile_ids": [
+              "ev_soil_ph_singh26",
+              "ev_t4_soilph_nath21_01"
+            ],
+            "cells": [
+              {
+                "lower": null,
+                "upper": 4.6,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": null,
+                "median_upper": null,
+                "score": null,
+                "source_min": null,
+                "source_max": null,
+                "n_sources": 0,
+                "eligible_sources": 2,
+                "weight_coverage": 0.0,
+                "origins": [],
+                "flags": [
+                  "no_evidence_at_value",
+                  "partial_coverage"
+                ]
+              },
+              {
+                "lower": 4.6,
+                "upper": 4.6,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.75,
+                "source_max": 0.75,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.5,
+                "origins": [
+                  "nath_2021"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 4.6,
+                "upper": 5.5,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.75,
+                "source_max": 0.75,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.5,
+                "origins": [
+                  "nath_2021"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 5.5,
+                "upper": 5.5,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.75,
+                "source_max": 0.75,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.5,
+                "origins": [
+                  "singh_2026"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 5.5,
+                "upper": 6.5,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.75,
+                "median_upper": 0.9,
+                "score": null,
+                "source_min": 0.75,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "nath_2021",
+                  "singh_2026"
+                ],
+                "flags": [
+                  "median_tie",
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 6.5,
+                "upper": 6.5,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.9,
+                "source_max": 0.9,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.5,
+                "origins": [
+                  "nath_2021"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 6.5,
+                "upper": 7.2,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.9,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "nath_2021",
+                  "singh_2026"
+                ],
+                "flags": []
+              },
+              {
+                "lower": 7.2,
+                "upper": 7.2,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.9,
+                "source_max": 0.9,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.5,
+                "origins": [
+                  "singh_2026"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 7.2,
+                "upper": 7.4,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.75,
+                "median_upper": 0.9,
+                "score": null,
+                "source_min": 0.75,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "nath_2021",
+                  "singh_2026"
+                ],
+                "flags": [
+                  "median_tie",
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 7.4,
+                "upper": 7.4,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.9,
+                "source_max": 0.9,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.5,
+                "origins": [
+                  "singh_2026"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 7.4,
+                "upper": 7.5,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.5,
+                "median_upper": 0.9,
+                "score": null,
+                "source_min": 0.5,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "nath_2021",
+                  "singh_2026"
+                ],
+                "flags": [
+                  "median_tie",
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 7.5,
+                "upper": 7.5,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.5,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.5,
+                "origins": [
+                  "nath_2021"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 7.5,
+                "upper": 7.6,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.5,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "nath_2021",
+                  "singh_2026"
+                ],
+                "flags": []
+              },
+              {
+                "lower": 7.6,
+                "upper": 7.6,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.5,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "nath_2021",
+                  "singh_2026"
+                ],
+                "flags": []
+              },
+              {
+                "lower": 7.6,
+                "upper": 8.5,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.5,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.5,
+                "origins": [
+                  "singh_2026"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 8.5,
+                "upper": 8.5,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.5,
+                "median_upper": 0.5,
+                "score": 0.5,
+                "source_min": 0.5,
+                "source_max": 0.5,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.5,
+                "origins": [
+                  "singh_2026"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 8.5,
+                "upper": null,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": null,
+                "median_upper": null,
+                "score": null,
+                "source_min": null,
+                "source_max": null,
+                "n_sources": 0,
+                "eligible_sources": 2,
+                "weight_coverage": 0.0,
+                "origins": [],
+                "flags": [
+                  "no_evidence_at_value",
+                  "partial_coverage"
+                ]
+              }
+            ],
+            "hard_exclusion": false,
+            "selection": "explicit",
+            "score_policy": "semantic_classes_v1"
+          }
+        ],
+        "review": []
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
+    },
+    "uncertainty_pct": 20,
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.2,
+    "weight_adjustable": true,
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "variable": "soil_ph",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": [
+      "ev_t4_soilph_nath21_01",
+      "ev_soil_ph_singh26"
+    ],
+    "n_sources": 2
   },
   {
     "mapping_id": "agro_protected_areas_exclusion",
@@ -298,9 +2527,7 @@
     "justification": "Strict nature reserves (IUCN I–II) prohibit agricultural intervention including agroforestry. Hard exclusion required regardless of biophysical suitability. Chuma et al. (2021) use the Itombwe Nature Reserve boundary as a hard exclusion layer in DR Congo agroforestry suitability mapping. Pinto et al. (2019) use protected area boundaries as planning zones in Montado conservation prioritisation.",
     "variable": "protected_area_status",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 3,
-    "corpus_n": 36,
-    "paper_support_pct": 13.2
+    "n_sources": 3
   },
   {
     "mapping_id": "agro_accessibility_scenario",
@@ -322,9 +2549,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "accessibility_travel_time",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_electrification_scenario",
@@ -346,9 +2571,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "electrification_index",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_tenure_scenario",
@@ -370,9 +2593,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "tenure_security",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 1,
-    "corpus_n": 36,
-    "paper_support_pct": 4.5
+    "n_sources": 1
   },
   {
     "mapping_id": "agro_conflict_scenario",
@@ -394,9 +2615,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "conflict_fragility_index",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_extension_scenario",
@@ -418,9 +2637,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "extension_governance",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_finance_scenario",
@@ -442,9 +2659,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "finance_credit_access",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 1,
-    "corpus_n": 36,
-    "paper_support_pct": 4.5
+    "n_sources": 1
   },
   {
     "mapping_id": "agro_market_value_chain_scenario",
@@ -466,9 +2681,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "market_value_chain",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_labour_scenario",
@@ -490,8 +2703,571 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "labour_availability",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
+  },
+  {
+    "mapping_id": "agro_planted_silvoarable_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "40": 1,
+        "30": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "30": [
+          "managed_forage_without_grazing"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "host_bindings": {
+        "managed_forage_without_grazing": {
+          "variables": [
+            "managed_forage_without_grazing"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "supporting_variables": [
+            "grassland_class",
+            "ruminant_density"
+          ],
+          "note": "GPW grassland + GLW4 ruminants support scoping; livestock density alone does not prove grazing. Local management interpretation required."
+        }
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Evidence-backed categorical gate. Castle Table 2 (PDF p8) defines alley cropping on annual cropland or forage grown between tree rows without grazing, excluding existing tree crops. WorldCover 40 maps annual cropland. WorldCover 30 is conditional on a verified managed-forage/non-grazing mask; it is not treated as pasture proof. Built-up, permanent snow/ice and permanent water cannot satisfy this host definition. Tree/shrub cover remains unknown because those classes mix farms and non-farms.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": [
+      "ev_t4_land_cover_castle2025_1"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_regeneration_farmland_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "40": 1,
+        "30": 1,
+        "20": 1,
+        "60": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "20": [
+          "farmland_context"
+        ],
+        "30": [
+          "farmland_context"
+        ],
+        "60": [
+          "farmland_context"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "host_bindings": {
+        "farmland_context": {
+          "variables": [
+            "farmland_context"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "note": "Agricultural, fallow or former-farmland identity; degradation alone cannot establish this context."
+        }
+      },
+      "condition_role": "Depletion/degradation characterize restoration need, not universal suitability. No severity cutoff established.",
+      "mapping_review_status": "approved",
+      "mapping_reviewer": "Pete",
+      "mapping_review_date": "2026-10-20",
+      "input_decision_reference": "docs/review/exports/review_agroforestry-t4-input-decisions-oct20_Pete_2026-10-20.csv"
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Evidence-backed categorical gate. WOCAT 507 describes restoring degraded wasteland and improving depleted farmland (Kenya example, PDF p1). Within the regeneration-on-farmland family, WorldCover alone cannot identify degradation or farmland history. Positive classes require observed depleted/degraded farmland masks; bare soil alone is never evidence of restoration potential. This gate establishes land-use compatibility, not regeneration success or rootstock presence. Tree cover remains unresolved. Pete input review 2026-10-20: depletion/degradation are targeting context; non-cropland requires farmland identity.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__regeneration_farmland",
+    "evidence_ids": [
+      "EV_wocat_507_2019_008"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_silvopastoral_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "gpw_grassland_class_v1",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "0": 0,
+        "1": 1,
+        "2": 1
+      },
+      "class_labels": {
+        "0": "Other",
+        "1": "Cultivated grassland",
+        "2": "Natural / semi-natural grassland"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "1": [
+          "grazing_system_present"
+        ],
+        "2": [
+          "grazing_system_present"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://developers.google.com/earth-engine/datasets/catalog/projects_global-pasture-watch_assets_ggc-30m_v1_grassland_c",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "host_bindings": {
+        "grazing_system_present": {
+          "variables": [
+            "grazing_system_present"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "supporting_variables": [
+            "grassland_class"
+          ],
+          "note": "Local grazing confirmation required for both GPW grassland classes. GLW density cannot replace confirmation."
+        }
+      },
+      "mapping_review_status": "approved",
+      "mapping_reviewer": "Pete",
+      "mapping_review_date": "2026-10-20",
+      "input_decision_reference": "pipeline/t4_audit/agroforestry/final_audit/README.md#gpw-clarification--20-october-2026"
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Evidence-backed categorical gate. Castle Table 2 (PDF p8) defines trees integrated with forage and grazing animals on pasture/grassland. WorldCover grassland requires independent grazing-system confirmation. Other vegetation classes remain unresolved because they may mix wooded pasture, natural vegetation and other systems. Supporting evidence remains held by Pete; default execution returns pending_evidence_review until that review is resolved. Pete clarification 2026-10-20: GPW cultivated or natural/semi-natural grassland plus local grazing confirmation; no GLW substitute.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__silvopastoral",
+    "evidence_ids": [
+      "ev_t4_land_cover_castle2025_2"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_linear_boundary_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "40": 1,
+        "30": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies",
+        "10": "Tree cover"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "30": [
+          "field_boundary_zone"
+        ],
+        "40": [
+          "field_boundary_zone"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "mapping_review_status": "approved",
+      "applicable_subpractices": [
+        "windbreaks_shelterbelts"
+      ],
+      "required_mask_metadata": {
+        "field_boundary_zone": {
+          "data_basis": "observed_geometry",
+          "placement": "field_boundary"
+        }
+      },
+      "design_reference": "methodology/families/agroforestry.md#f4",
+      "footprint_rule": "candidate_lines_not_pixel_area",
+      "mapping_reviewer": "Pete",
+      "mapping_review_date": "2026-10-20",
+      "boundary_width_policy": "context_specific_from_publications_and_regions",
+      "host_bindings": {
+        "field_boundary_zone": {
+          "variables": [
+            "field_boundary_zone"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "note": "Upload field-boundary geometry and locally justified buffered zone; no global buffer width."
+        }
+      },
+      "boundary_source_candidate": "https://github.com/fieldsoftheworld/ftw-inference-api",
+      "input_decision_reference": "docs/review/exports/review_agroforestry-t4-input-decisions-oct20_Pete_2026-10-20.csv"
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Candidate applicability gate for windbreaks/shelterbelts only. Castle Table 2 PDF p8 places windbreaks on delineated cropland/pasture field boundaries in the US Midwest. WorldCover cropland requires independently mapped field-boundary placement; grassland additionally requires managed pasture confirmation. No universal buffer width or contour-siting rule is inferred. Report applicability zones and candidate line length, never eligible pixel area as planting footprint. Source and cross-context mapping remain pending review. Pete Steward approved B1 on 2026-10-20: boundary geometry required; buffer width varies by publications and regions. Field delineation may be less available in African extensive systems; missing geometry remains unknown. Pete input review 2026-10-20: field boundaries required for both cropland and pasture; no separate pasture-management gate.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__linear_boundary",
+    "evidence_ids": [
+      "ev_t4_land_cover_castle2025_windbreak"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_shaded_coffee_host_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "10": 1,
+        "20": 1,
+        "30": 1,
+        "40": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies",
+        "10": "Tree cover"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "10": [
+          "coffee_host_fraction"
+        ],
+        "20": [
+          "coffee_host_fraction"
+        ],
+        "30": [
+          "coffee_host_fraction"
+        ],
+        "40": [
+          "coffee_host_fraction"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "mapping_review_status": "approved",
+      "host_crop": "coffee",
+      "required_mask_metadata": {
+        "coffee_host_fraction": {
+          "data_basis": [
+            "observed",
+            "modelled_allocation"
+          ],
+          "host_crop": "coffee",
+          "unit": "fraction_of_pixel"
+        }
+      },
+      "design_reference": "methodology/families/agroforestry.md#f5",
+      "evidence_role": "host_system_identity_only",
+      "footprint_rule": "retain_crop_fractions_do_not_sum_without_overlap_check",
+      "mapping_reviewer": "Pete Steward",
+      "mapping_review_date": "2026-10-20",
+      "mask_value_types": {
+        "coffee_host_fraction": "fraction"
+      },
+      "mask_presence_thresholds": {
+        "coffee_host_fraction": 0
+      },
+      "host_fraction_mask": "coffee_host_fraction",
+      "preferred_host_data": "accurate_commodity_maps",
+      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
+      "host_bindings": {
+        "coffee_host_fraction": {
+          "variables": [
+            "coffee_arabica_distribution",
+            "coffee_robusta_distribution"
+          ],
+          "operation": "crop_area_fraction",
+          "input_unit": "ha",
+          "output_unit": "fraction_of_pixel",
+          "data_basis": "modelled_allocation",
+          "technology": "all",
+          "area_measure": "physical_area",
+          "aggregation": "sum_area_then_divide_by_pixel_area",
+          "no_data": "propagate_unknown",
+          "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+        }
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Pete Steward approved P1 on 2026-10-20: shade agroforestry requires a suitable host crop; OR across crops. Prefer accurate commodity distributions; crop fraction per pixel from MapSPAM is acceptable for high-level scoping. Positive crop fraction establishes host presence, not suitability strength. Retain fractions; no full-pixel area or unverified overlap sum. Source evidence identifies coffee/cocoa systems, not a numeric suitability threshold. No niche-model substitution.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__shaded_perennial",
+    "evidence_ids": [
+      "ev_economic_return_jezeer17_1"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_shaded_cocoa_host_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "10": 1,
+        "20": 1,
+        "30": 1,
+        "40": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies",
+        "10": "Tree cover"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "10": [
+          "cocoa_host_fraction"
+        ],
+        "20": [
+          "cocoa_host_fraction"
+        ],
+        "30": [
+          "cocoa_host_fraction"
+        ],
+        "40": [
+          "cocoa_host_fraction"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "mapping_review_status": "approved",
+      "host_crop": "cocoa",
+      "required_mask_metadata": {
+        "cocoa_host_fraction": {
+          "data_basis": [
+            "observed",
+            "modelled_allocation"
+          ],
+          "host_crop": "cocoa",
+          "unit": "fraction_of_pixel"
+        }
+      },
+      "design_reference": "methodology/families/agroforestry.md#f5",
+      "evidence_role": "host_system_identity_only",
+      "footprint_rule": "retain_crop_fractions_do_not_sum_without_overlap_check",
+      "mapping_reviewer": "Pete Steward",
+      "mapping_review_date": "2026-10-20",
+      "mask_value_types": {
+        "cocoa_host_fraction": "fraction"
+      },
+      "mask_presence_thresholds": {
+        "cocoa_host_fraction": 0
+      },
+      "host_fraction_mask": "cocoa_host_fraction",
+      "preferred_host_data": "accurate_commodity_maps",
+      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
+      "host_bindings": {
+        "cocoa_host_fraction": {
+          "variables": [
+            "cocoa_distribution"
+          ],
+          "operation": "crop_area_fraction",
+          "input_unit": "ha",
+          "output_unit": "fraction_of_pixel",
+          "data_basis": "modelled_allocation",
+          "technology": "all",
+          "area_measure": "physical_area",
+          "aggregation": "sum_area_then_divide_by_pixel_area",
+          "no_data": "propagate_unknown",
+          "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+        }
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Pete Steward approved P1 on 2026-10-20: shade agroforestry requires a suitable host crop; OR across crops. Prefer accurate commodity distributions; crop fraction per pixel from MapSPAM is acceptable for high-level scoping. Positive crop fraction establishes host presence, not suitability strength. Retain fractions; no full-pixel area or unverified overlap sum. Source evidence identifies coffee/cocoa systems, not a numeric suitability threshold. No niche-model substitution.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__shaded_perennial",
+    "evidence_ids": [
+      "ev_economic_return_jezeer17_1"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_shaded_tea_host_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "10": 1,
+        "20": 1,
+        "30": 1,
+        "40": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies",
+        "10": "Tree cover"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "10": [
+          "tea_host_fraction"
+        ],
+        "20": [
+          "tea_host_fraction"
+        ],
+        "30": [
+          "tea_host_fraction"
+        ],
+        "40": [
+          "tea_host_fraction"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "mapping_review_status": "approved",
+      "host_crop": "tea",
+      "required_mask_metadata": {
+        "tea_host_fraction": {
+          "data_basis": [
+            "observed",
+            "modelled_allocation"
+          ],
+          "host_crop": "tea",
+          "unit": "fraction_of_pixel"
+        }
+      },
+      "design_reference": "methodology/families/agroforestry.md#f5",
+      "evidence_role": "family_host_requirement_only",
+      "footprint_rule": "retain_crop_fractions_do_not_sum_without_overlap_check",
+      "mapping_reviewer": "Pete Steward",
+      "mapping_review_date": "2026-10-20",
+      "mask_value_types": {
+        "tea_host_fraction": "fraction"
+      },
+      "mask_presence_thresholds": {
+        "tea_host_fraction": 0
+      },
+      "host_fraction_mask": "tea_host_fraction",
+      "preferred_host_data": "accurate_commodity_maps",
+      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
+      "crop_authority": "Pete Steward explicit design decision, 2026-10-20; source evidence is coffee/cocoa only",
+      "host_bindings": {
+        "tea_host_fraction": {
+          "variables": [
+            "tea_distribution"
+          ],
+          "operation": "crop_area_fraction",
+          "input_unit": "ha",
+          "output_unit": "fraction_of_pixel",
+          "data_basis": "modelled_allocation",
+          "technology": "all",
+          "area_measure": "physical_area",
+          "aggregation": "sum_area_then_divide_by_pixel_area",
+          "no_data": "propagate_unknown",
+          "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+        }
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Pete Steward approved P1 on 2026-10-20: shade agroforestry requires a suitable host crop; OR across crops. Prefer accurate commodity distributions; crop fraction per pixel from MapSPAM is acceptable for high-level scoping. Positive crop fraction establishes host presence, not suitability strength. Retain fractions; no full-pixel area or unverified overlap sum. Source evidence identifies coffee/cocoa systems, not a numeric suitability threshold. No niche-model substitution. Tea added by explicit Pete Steward design decision, not inferred from Jezeer coffee/cocoa evidence. This gate establishes host presence only; crop-specific shade response still requires separate evidence.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__shaded_perennial",
+    "evidence_ids": [
+      "ev_economic_return_jezeer17_1"
+    ],
+    "n_sources": 1
   }
 ]

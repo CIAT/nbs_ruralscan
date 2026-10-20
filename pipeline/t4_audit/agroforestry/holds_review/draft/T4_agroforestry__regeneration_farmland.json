@@ -1,0 +1,46 @@
+[
+  {
+    "mapping_id": "agroforestry__regeneration_farmland__annual_precipitation",
+    "suitability_family_id": "agroforestry__regeneration_farmland",
+    "variable": "annual_precipitation",
+    "variable_unit": "mm/year",
+    "dataset_id": "[\"worldclim_v2_precip\",\"chelsa_bioclim_v21_baseline\",\"chirps_precipitation_v2\"]",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 250.0,
+      "opt_low": 400.0,
+      "opt_high": 800.0,
+      "abs_max": 950.0
+    },
+    "uncertainty_pct": 60.0,
+    "context_overrides": [
+      {
+        "context_type": "aez",
+        "context_id": "semi_arid",
+        "relationship_params": {
+          "abs_min": 400.0,
+          "opt_low": 400.0,
+          "opt_high": 800.0,
+          "abs_max": 500.0
+        },
+        "note": "Context-specific evidence (EV_weston_2015_001, EV_wri_regreening_2015_001)."
+      }
+    ],
+    "justification": "Reconciled from 4 contributing evidence unit(s) (source-balanced weighted median, tier×claim_basis). Global {'abs_min': 250.0, 'opt_low': 400.0, 'opt_high': 800.0, 'abs_max': 950.0}; uncertainty ±60% from spread. 1 context override(s). ",
+    "references": [
+      "lohbeck_2020",
+      "weston_2015",
+      "wri_regreening_2015"
+    ],
+    "evidence_ids": [
+      "EV_lohbeck_2020_001",
+      "EV_lohbeck_2020_002",
+      "EV_weston_2015_001",
+      "EV_wri_regreening_2015_001"
+    ],
+    "paper_support_pct": 41.1,
+    "n_sources": 6,
+    "corpus_n": 14
+  }
+]

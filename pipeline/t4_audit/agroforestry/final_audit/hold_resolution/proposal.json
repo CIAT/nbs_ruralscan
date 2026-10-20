@@ -1,0 +1,61 @@
+{
+  "status": "not_executable_not_ratified",
+  "canopy_headroom": {
+    "definition": "max(0, context-specific target canopy percent - observed canopy percent)",
+    "unit": "percentage_points",
+    "meaning": "potential increase in canopy, not probability of suitability or plantable hectares",
+    "target_requirements": [
+      "source-verified biome \u00d7 cropping/grazing values",
+      "observed host-system gate",
+      "matching canopy definition and spatial support",
+      "documented uncertainty and extrapolated-biome flags"
+    ],
+    "missing_target": "unknown; never substitute pooled 27%",
+    "no_headroom": "no additional canopy under this scenario; does not establish agroforestry infeasibility",
+    "illustrative_only": {
+      "target_percent": 20,
+      "observed_percent": 12,
+      "headroom_percentage_points": 8
+    },
+    "runtime_change": false
+  },
+  "holds": [
+    {
+      "evidence_id": "ev_tree_canopy_cover_sprenkle24_2",
+      "status": "human_approved_for_combination_with_other_sources",
+      "finding": "Your note is supported: this study estimates maximum tree cover compatible with maintaining agricultural yields. The pooled 27% (SD 16%) covers both cropping and grazing systems. It cannot be used as a cropland-only universal ceiling.",
+      "recommendation": "Approve the corrected summary as retained design evidence; keep the pooled value out of executable generic T4. Develop biome \u00d7 farming-system canopy headroom using the source\u2019s disaggregated values.",
+      "source_id": "sprenkle_hyppolite_2024",
+      "pages": [
+        3,
+        5,
+        11
+      ],
+      "pdf_sha256": "d6d28a22ab86dc57255cda98ee6f8bb8dc18340ed2907738be83e10148e74717"
+    },
+    {
+      "evidence_id": "ev_t4_tcc_brandt2015_1",
+      "status": "human_rejected_soft_deleted",
+      "finding": "This source explicitly targets Kenyan cropland below 10% existing tree cover to align with a national policy target. Areas above 10% are not thereby unsuitable for agroforestry.",
+      "recommendation": "Approve the corrected policy-targeting interpretation as retained context evidence. Do not restore a generic \u226410% suitability mask. Any future Kenya targeting scenario requires explicit scope and policy-date validation.",
+      "source_id": "brandt_2015",
+      "pages": [
+        6
+      ],
+      "pdf_sha256": "e03143c52086c8d528667f2d61a04bf80d094bbabd18f4b5e18a6b37e8fcdb9c"
+    },
+    {
+      "evidence_id": "ev_T4_ph_haile2024_1",
+      "status": "proposal_only_human_hold_preserved",
+      "finding": "The abstract and methods describe a nutrient-availability component of agroforestry land suitability in the Genale sub-basin. Policy relevance is an intended use, not the basis of the pH classes. However pH 8.2 falls in Low (>8), Medium (8\u20138.3), and High (7.4\u20138.4). The High class also prints a reversed interval (6.5\u20135.6).",
+      "recommendation": "Keep held for table ambiguity. Retain the record and exact classes; do not infer corrected bounds or reuse 6.6\u20137.3 as a global optimum. Resolution requires a verified correction or independent, applicable evidence.",
+      "source_id": "haile_2024",
+      "pages": [
+        1,
+        5,
+        6
+      ],
+      "pdf_sha256": "f9aba0e5ce1dad8d21d9c3922dc81e15de6d92b6a6f352492cc67140abcb9eb0"
+    }
+  ]
+}

@@ -73,9 +73,47 @@ def decode(rel: dict) -> tuple[str, dict, str]:
         return "trapezoidal", params, ""
     if not rel:
         return "", {}, "selection_only_or_missing_relationship"
+    if any(
+        k in rel for k in ("threshold_values_degrees", "max_threshold_range_pct_low")
+    ):
+        return "", {}, "scenario_grid_requires_parameter_choice"
+    if any(
+        k in rel
+        for k in (
+            "context_value",
+            "rainfall_gradient_mm_y",
+            "median_tree_density_per_ha",
+            "pct_plots_eroded",
+            "pct_grassland",
+            "share_land_degraded_pct",
+        )
+    ):
+        return "", {}, "observed_site_description_not_response"
+    if "natural_recovery_years_low" in rel:
+        return "", {}, "implementation_duration_not_response"
+    if "weight" in rel or any(
+        k.startswith("AHP_weight") or k == "ahp_weight" or "importance" in k
+        for k in rel
+    ):
+        return "", {}, "importance_weight_not_response"
+    if "% suitability area" in str(rel.get("unit", "")):
+        return "", {}, "mapped_area_statistic_not_response"
     # Preserve the original encoding; classification is advisory, never conversion.
-    if any("class" in k or "gating" in k for k in rel):
+    if any(
+        "class" in k or "gating" in k or k.endswith(("_code", "_codes")) or k == "gate"
+        for k in rel
+    ):
         return "", {}, "class_or_gate_requires_mapping"
-    if any(numeric(v) or isinstance(v, (dict, list)) for v in rel.values()):
+
+    def contains_number(value):
+        if numeric(value):
+            return True
+        if isinstance(value, dict):
+            return any(contains_number(v) for v in value.values())
+        if isinstance(value, list):
+            return any(contains_number(v) for v in value)
+        return False
+
+    if contains_number(rel):
         return "", {}, "unsupported_numeric_encoding"
     return "", {}, "qualitative_relationship"

@@ -174,6 +174,12 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
     kept, dropped, resolved, queried, reclassified = [], 0, 0, 0, 0
     reasons: Counter = Counter()
     logrows = []
+    # A different reviewer or note is a new event even if state is unchanged.
+    previous = {}
+    if LOG.exists():
+        with LOG.open(newline="", encoding="utf-8") as f:
+            for event in csv.DictReader(f):
+                previous[(event["evidence_id"], event["reviewer"])] = event
 
     def _already_applied(r: dict, dec: str, dv) -> bool:
         """Row already reflects this decision → skip (no duplicate log row / stacked tag).
@@ -184,6 +190,12 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
         (found 2026-09-18: 445 duplicate log rows, 128 rows with stacked tags). A re-opened
         row passes the guard again because reopen clears review_state / restores the flag.
         """
+        old = previous.get((r["evidence_id"], who))
+        if old is None or any(
+            (old.get(key) or "").strip() != value
+            for key, value in (("decision", dec), ("reason", reason), ("note", note))
+        ):
+            return False
         attr = r.get("attribution", "") or ""
         state = (r.get("review_state") or "").strip()
         if dec == "drop":
@@ -195,7 +207,11 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
                 and not _FLAG_RE.search(attr)
             )
         if dec in ("flag", "query"):
-            return bool(re.search(r"\[query [0-9-]+ by " + re.escape(who), attr))
+            return (
+                state == ""
+                and str(r.get("reviewer_ok", "")).lower() != "true"
+                and bool(re.search(r"\[query [0-9-]+ by " + re.escape(who), attr))
+            )
         if dec == "reclassify":
             scope = "species_specific"
             taxon = ""
@@ -255,6 +271,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             # flag (if any) is kept so the record stays in the queue for resolution; the
             # query + note (the question) are stamped + logged.
             r["review_state"] = ""
+            r["reviewer_ok"] = "false"
             tag = (
                 f"[query {today} by {who}"
                 + (f"; reason:{reason}" if reason else "")

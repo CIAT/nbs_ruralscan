@@ -1036,6 +1036,39 @@
         ]
       },
       "note": "v0.4.0. Machine-readable magnitude->strength_class bands used at extraction (check_bands.py verifies). abs_min inclusive, abs_max exclusive, on |magnitude|. ordinal_rating rows map a source scale value (source_scale_value) to a class per adapter."
+    },
+    "T4_NUMERIC_POLICY": {
+      "name": "T4 numeric compilation policy",
+      "location": "lookups/t4_numeric_compilation_policy.{csv,json}",
+      "per_nbs": false,
+      "primary_key": "evidence_id",
+      "required": [
+        "evidence_id",
+        "nbs_id",
+        "action",
+        "applicability_note"
+      ],
+      "optional": [
+        "encoding",
+        "field",
+        "input_unit",
+        "ordinal_scale",
+        "threshold_direction",
+        "reason",
+        "range_order",
+        "harmonization"
+      ],
+      "conditional": [],
+      "derived": [],
+      "enum_values": {
+        "action": [
+          "compile",
+          "hold"
+        ]
+      },
+      "fk": {
+        "evidence_id": "EV.evidence_id"
+      }
     }
   }
 }

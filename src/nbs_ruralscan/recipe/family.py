@@ -29,7 +29,7 @@ from .synthesis import SynthesisReport, synthesise_t4_row
 @dataclass
 class FamilyResult:
     family: str
-    corpus_n: int
+    corpus_n: int | None
     rows: list[dict[str, Any]] = field(default_factory=list)  # enriched T4 rows
     selection: list[SelectionRow] = field(
         default_factory=list
@@ -37,7 +37,8 @@ class FamilyResult:
     groups: dict[str, Support] = field(default_factory=dict)  # group-level prevalence
     dispositions: dict[str, dict[str, Any]] = field(default_factory=dict)
     crop_results: dict[str, "FamilyResult"] = field(default_factory=dict)
-    support_basis: str = "provisional_logged_inclusions"
+    support_basis: str = "caller_supplied_corpus"
+    support_sources: list[str] = field(default_factory=list)
     reports: dict[str, SynthesisReport] = field(default_factory=dict)  # per variable
 
 
@@ -52,7 +53,7 @@ def synthesise_family(
     tiers: dict[str, str],
     *,
     family: str,
-    corpus_n: int,
+    corpus_n: int | set[str] | None,
     group_map: dict[str, str],
     canonical_units: dict[str, str] | None = None,
     dataset_ids: dict[str, str] | None = None,
@@ -63,6 +64,7 @@ def synthesise_family(
     unit_conversions: dict[str, dict[str, str]] | None = None,
     approved_only: bool = False,
     crop: str | None = None,
+    numeric_policies: dict[str, dict] | None = None,
 ) -> FamilyResult:
     """Reconcile all of a family's evidence into enriched T4 rows + a selection table.
 
@@ -70,10 +72,31 @@ def synthesise_family(
     `canonical_units`/`dataset_ids` map variable → its canonical unit / T1 dataset.
     `categories` maps source_id → source_category (e.g. "grey") for the grey-lit discount.
     """
+    numeric_policies = numeric_policies or {}
+    tiers = {sid: tier.strip().lower() for sid, tier in tiers.items()}
     canonical_units = canonical_units or {}
     dataset_ids = dataset_ids or {}
     categories = categories or {}
     unit_conversions = unit_conversions or {}
+
+    if isinstance(corpus_n, set):
+        # Validate against the unfiltered family, so approval cannot hide an incomplete
+        # denominator. Species-only evidence and observed locations are not candidates.
+        required_sources = {
+            u.source_id
+            for u in units
+            if u.review_state != "dropped"
+            and not is_observed_presence(u)
+            and u.use_role == "structural_suitability"
+            and (
+                u.claim_scope == "practice_technology"
+                or (u.claim_scope == "crop_specific" and allow_crop_scope)
+            )
+        }
+        if required_sources - corpus_n:
+            raise ValueError(
+                f"Evidence sources absent from screened corpus: {sorted(required_sources - corpus_n)}"
+            )
 
     dispositions = {}
     active = []
@@ -124,6 +147,7 @@ def synthesise_family(
             unit_conversions=unit_conversions,
             approved_only=approved_only,
             crop=taxon,
+            numeric_policies=numeric_policies,
         )
         for taxon, members in sorted(crop_units.items())
     }
@@ -143,8 +167,10 @@ def synthesise_family(
     rows: list[dict[str, Any]] = []
     reports: dict[str, SynthesisReport] = {}
     for variable, var_units in by_var.items():
+        band_units = [u for u in var_units if u.evidence_id in numeric_policies]
+        ordinary_units = [u for u in var_units if u.evidence_id not in numeric_policies]
         row, rep = synthesise_t4_row(
-            var_units,
+            ordinary_units,
             tiers,
             variable=variable,
             family=family,
@@ -154,6 +180,47 @@ def synthesise_family(
             categories=categories,
             unit_conversions=(unit_conversions or {}).get(variable),
         )
+        if band_units:
+            from .numeric_bands import compile_bands
+
+            params, used, unresolved = compile_bands(
+                band_units,
+                numeric_policies,
+                canonical_units.get(variable, "native"),
+                unit_conversions.get(variable),
+                tiers=tiers,
+                categories=categories,
+            )
+            rep.unresolved.extend(unresolved)
+            if params and row["relationship_params"]:
+                # Keep the typed response intact; source profiles/pools are explicit alternatives.
+                row["relationship_params"].update(params)
+                row["evidence_ids"] = sorted(set(row["evidence_ids"] + used))
+                row["references"] = sorted(
+                    set(row["references"])
+                    | {u.source_id for u in band_units if u.evidence_id in used}
+                )
+                row["justification"] += (
+                    " Reviewed ordinal profiles and conditional scoping pools are retained as explicit alternatives; they do not replace or blend with the standalone typed response."
+                )
+                rep.used = sorted(set(rep.used + used))
+                rep.parameter_evidence["profiles"] = used
+            elif params:
+                row.update(
+                    relationship_type="piecewise",
+                    relationship_params=params,
+                    evidence_ids=used,
+                    uncertainty_pct=20,
+                    justification="Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+                    references=sorted(
+                        {u.source_id for u in band_units if u.evidence_id in used}
+                    ),
+                )
+                rep.used = used
+                rep.parameter_evidence = {"profiles": used}
+                rep.notes.append(
+                    "Regional profiles retained separately; uncertainty floor 20%, not a measured confidence interval."
+                )
         for eid in rep.used:
             dispositions[eid]["status"] = "parameter_contributor"
         for eid, reason in rep.dropped + rep.unresolved:
@@ -165,14 +232,19 @@ def synthesise_family(
         ]:  # nothing survived scope filter → skip the row, keep the report
             reports[variable] = rep
             continue
+        row["parameter_source_ids"] = sorted(
+            {u.source_id for u in var_units if u.evidence_id in rep.used}
+        )
+        row["n_parameter_sources"] = len(row["parameter_source_ids"])
         attach_support(row, var_support)
         rows.append(row)
         reports[variable] = rep
 
-    rows.sort(key=lambda r: r.get("paper_support_pct", 0.0), reverse=True)
+    rows.sort(key=lambda r: r.get("paper_support_pct") or 0.0, reverse=True)
     return FamilyResult(
         family=family,
-        corpus_n=corpus_n,
+        corpus_n=len(corpus_n) if isinstance(corpus_n, set) else corpus_n,
+        support_sources=sorted(corpus_n) if isinstance(corpus_n, set) else [],
         rows=rows,
         selection=selection,
         groups=groups,
