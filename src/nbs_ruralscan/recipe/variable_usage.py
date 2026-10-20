@@ -49,7 +49,15 @@ def variable_usage(evidence, sources):
                 else None,
                 "weight_conflict": len(paths) > 1,
                 "pages": sorted({use["page"] for _, use in items}),
-                "note": "Verified use, not agreement on thresholds. Weight is source-specific; nested soil paths may describe one branch only.",
+                "note": (
+                    "Source-checked model use; human review pending. "
+                    if any(
+                        str(u.get("reviewer_ok", "")).lower() != "true"
+                        for u, _ in items
+                    )
+                    else "Human-reviewed model-use evidence. "
+                )
+                + "Not agreement on thresholds. Weight is source-specific; nested soil paths may describe one branch only.",
             }
         )
     return records

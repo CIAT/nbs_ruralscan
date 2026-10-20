@@ -80,6 +80,12 @@ def parse_profiles(rel, policy):
             )
             for x in items
         ]
+    elif encoding == "field_ranges":
+        mapping = json.loads(policy["field"])
+        profiles["default"] = [
+            _interval(*bounds(rel[field])[:2], label, scale, *bounds(rel[field])[2:])
+            for label, field in mapping.items()
+        ]
     elif encoding == "favourable_above":
         profiles["default"] = [
             _interval(rel["favorable_above"], None, "favourable", scale, False, False)
@@ -178,6 +184,11 @@ def compile_bands(
                 )
             converted_profiles = []
             for group, bands in parsed.items():
+                if (
+                    hp.get("expected_class_count")
+                    and len(bands) != hp["expected_class_count"]
+                ):
+                    raise ValueError("incomplete_source_class_table")
                 if hp:
                     standardize(bands, hp)
                 for band in bands:
@@ -207,6 +218,9 @@ def compile_bands(
                         "profile_id": u.evidence_id
                         + ("" if group == "default" else "__" + group),
                         "source_id": u.source_id,
+                        "continuation_of": hp.get("continuation_of", ""),
+                        "evidence_ids": [u.evidence_id],
+                        "page_locators": {u.evidence_id: u.page},
                         "evidence_id": u.evidence_id,
                         "context": u.context or {},
                         "source_group": group,
@@ -234,6 +248,9 @@ def compile_bands(
             used.append(u.evidence_id)
         except (ValueError, KeyError, TypeError) as exc:
             unresolved.append((u.evidence_id, str(exc)))
+    profiles, rejected = join_continuations(profiles)
+    unresolved.extend(rejected)
+    used = [eid for eid in used if eid not in {eid for eid, _ in rejected}]
     return (
         {
             "profiles": profiles,
@@ -249,3 +266,50 @@ def compile_bands(
         used,
         unresolved,
     )
+
+
+def join_continuations(profiles):
+    """Join explicitly linked table fragments without inventing cross-page quotes.
+
+    Only identical source, variable, context and scale may continue a response.
+    Missing/unapproved parents and overlaps remain explicit unresolved records.
+    """
+    bases = {p["profile_id"]: p for p in profiles if not p.get("continuation_of")}
+    rejected = []
+    for part in profiles:
+        parent_id = part.get("continuation_of")
+        if not parent_id:
+            continue
+        parent = bases.get(parent_id)
+        keys = (
+            "source_id",
+            "variable",
+            "unit",
+            "ordinal_scale",
+            "score_policy",
+            "origin_id",
+            "system_id",
+            "context_id",
+            "pool_id",
+        )
+        if parent is None or any(parent[k] != part[k] for k in keys):
+            rejected.append(
+                (part["evidence_id"], "incompatible_or_missing_table_continuation")
+            )
+            continue
+        bands = sorted(
+            parent["intervals"] + part["intervals"],
+            key=lambda b: float("-inf") if b["lower"] is None else b["lower"],
+        )
+        if any(
+            a["upper"] is None or b["lower"] is None or a["upper"] > b["lower"]
+            for a, b in zip(bands, bands[1:])
+        ):
+            rejected.append((part["evidence_id"], "overlapping_table_continuation"))
+            continue
+        parent["intervals"] = bands
+        parent["evidence_ids"] = sorted(
+            set(parent["evidence_ids"] + part["evidence_ids"])
+        )
+        parent["page_locators"].update(part["page_locators"])
+    return list(bases.values()), rejected

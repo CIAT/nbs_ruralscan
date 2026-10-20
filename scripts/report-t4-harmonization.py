@@ -149,8 +149,10 @@ def build():
                     previous.get(key) == cell.get(key)
                     for key in ("score", "n_sources", "flags")
                 )
-                touching = previous and previous["upper"] == cell["lower"] and (
-                    previous["upper_inclusive"] or cell["lower_inclusive"]
+                touching = (
+                    previous
+                    and previous["upper"] == cell["lower"]
+                    and (previous["upper_inclusive"] or cell["lower_inclusive"])
                 )
                 if same and touching:
                     previous["upper"] = cell["upper"]
