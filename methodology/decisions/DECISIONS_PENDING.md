@@ -31,6 +31,16 @@ Vietnam income call and the zhang preprint are all closed (below). What remains 
   copy timed out server-side — one more browser click
   (http://ecoport.org/storedReference/558496.pdf) or ResearchGate.
 
+**For Namita — institutional download (3, verified paywalled after Unpaywall + web search +
+Pete's ResearchGate check, 2026-10-20):**
+- Tan-Soo et al. (2016) Econometric evidence on forest ecosystem services: deforestation and
+  flooding in Malaysia. *Environ. Resource Econ.* 63(1). https://doi.org/10.1007/s10640-014-9834-4
+- Reid & Page (2003) Magnitude and frequency of landsliding in a large New Zealand catchment.
+  *Geomorphology* 49. https://doi.org/10.1016/s0169-555x(02)00164-2
+- Dymond et al. (2012) Tradeoffs between soil, water, and carbon — a national scale analysis
+  from New Zealand. *J. Env. Management* 95(1). https://doi.org/10.1016/j.jenvman.2011.09.019
+Save to `library/2_ForestRestoration/` as `<source_id>.pdf` (ids in the acquisition queue).
+
 Also open, no judgement needed:
 - **kumw24_4 ("is this off scope?"):** answered — nutrient removal routes to the T5 priority
   `water_quality_risk` you added 2026-10-01. In scope; lift the hold on your next pass.
