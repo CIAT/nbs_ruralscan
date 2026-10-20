@@ -44,7 +44,8 @@ def interval_text(band, unit):
         span = ("≥ " if band["lower_inclusive"] else "> ") + f"{low:g}"
     else:
         span = f"{low:g}–{high:g}"
-    return f"{span} {unit}: {pretty(band['label']).lower()} (score {band['score']:.2g})"
+    score = "unresolved" if band["score"] is None else f"{band['score']:.2g}"
+    return f"{span} {unit}: {pretty(band['label']).lower()} (score {score})"
 
 
 def render(root, read_csv, table, bindings, coverage):
@@ -72,7 +73,7 @@ def render(root, read_csv, table, bindings, coverage):
         family = pretty(row["suitability_family_id"])
         shared = family == "Cross family"
         if shared:
-            family = "Shared evidence — family not assigned"
+            family = "Agroforestry — system applicability unresolved"
         family = {
             "Planted silvoarable": "Planted trees with crops",
             "Regeneration farmland": "Natural tree regeneration on farmland",
@@ -128,8 +129,10 @@ def render(root, read_csv, table, bindings, coverage):
                 else f"{len(profiles)} regional responses retained. Open source rules below to compare bands."
             )
             status = "Ready to use after selecting the regional source response. Unreported ranges and conflicting class boundaries stay unknown."
+            if any(b["score"] is None for p in profiles for b in p["intervals"]):
+                status = "Score crosswalk needs review. Reported ranges remain retained; no suitability score is inferred for unclassified meanings."
             if shared:
-                status += " Family applicability must be chosen explicitly."
+                status += " System applicability must be chosen explicitly."
             kind = "Numeric suitability"
         elif "class_map" in params:
             allowed = []
@@ -217,7 +220,7 @@ def render(root, read_csv, table, bindings, coverage):
         )
         rows.append(
             {
-                "Family": family,
+                "Agroforestry system": family,
                 "Variable": variable,
                 "What the rule says": rule,
                 "Use and limits": status,
@@ -231,9 +234,9 @@ def render(root, read_csv, table, bindings, coverage):
     page = """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agroforestry · Suitability rules</title><style>
 *{box-sizing:border-box}body{font:15px system-ui;color:#1c3a30;background:#f6f8f7;margin:24px}h1{margin-bottom:8px}p{line-height:1.5;max-width:1100px}.muted{color:#54685e}.intro{background:#e9f2ed;padding:12px 18px;border-radius:8px}.toolbar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:20px 0}button,select,input{font:inherit;padding:7px}button,summary{cursor:pointer}table{width:100%;border-collapse:collapse;background:white}td,th{text-align:left;vertical-align:top;padding:12px;border-bottom:1px solid #d9e3dc}th{background:#e5eee8}th button{border:0;background:none;font-weight:650;text-align:left;padding:0}th input{display:block;width:100%;min-width:80px;margin-top:8px;border:1px solid #afc3b5;border-radius:4px}td{overflow-wrap:anywhere}td:first-child{width:15%}td:nth-child(2){width:18%}td:nth-child(3){width:37%}td:nth-child(4){width:30%}.help{font-size:13px;color:#52685b;display:block;margin-top:7px}.tag{display:block;font-size:12px;color:#577062;margin-top:6px}details{margin:12px 0}summary{color:#146445;font-weight:600}pre{white-space:pre-wrap;font:14px system-ui;line-height:1.5}.table-wrap{overflow:auto}a{color:#146445}.ref{font:12px monospace;color:#68766d}section{margin:18px 0;padding:14px;border:1px solid #dce5df;border-radius:6px}
 </style></head><body><h1>Agroforestry: suitability rules (T4)</h1>
-<div class="intro"><p><strong>How to read this:</strong> agroforestry is the overall solution. A <strong>family</strong> groups practices with similar establishment needs (for example, planted silvoarable includes alley cropping and tree intercropping). Each row below describes one variable and how it affects that family.</p><p><strong>Numeric rules</strong> describe rainfall, temperature, soils or slope. <strong>Host conditions</strong> check that suitable existing farmland, pasture or crops are present. A passed host condition does not establish overall suitability. Scores express relative source ranks: 1 is the highest rank, 0 means explicitly unsuitable. They are not probabilities; unknown means the evidence or input does not determine an answer.</p></div>
+<div class="intro"><p><strong>How to read this:</strong> agroforestry is the overall solution. An <strong>agroforestry system</strong> groups practices with similar establishment needs (for example, planted silvoarable includes alley cropping and tree intercropping). Each row below describes one variable and how it affects that system.</p><p><strong>Numeric rules</strong> describe rainfall, temperature, soils or slope. <strong>Host conditions</strong> check that suitable existing farmland, pasture or crops are present. A passed host condition does not establish overall suitability. Scores use a common class convention: low 0.25, moderate 0.50, high 0.75, very high 0.90; 0 means explicitly unsuitable. A highest-ranked class is not automatically an optimum of 1. They are not probabilities; unknown means the evidence or input does not determine an answer.</p></div>
 """
-    page += f"<p><strong>{numeric} numeric suitability rows</strong> · 7 host conditions · 1 retained legal exclusion · 8 investment scenarios. Shared evidence remains separate until family applicability is assigned.</p>"
+    page += f"<p><strong>{numeric} numeric suitability rows</strong> · 7 host conditions · 1 retained legal exclusion · 8 investment scenarios. Unassigned evidence remains separate until system applicability is established. <a href='t4-harmonization-results.html'>Harmonization results and remaining review</a>.</p>"
     page += """<div class="toolbar"><label>Show <select id="category"><option value="core">Suitability, host conditions and exclusions</option><option value="all">All T4 rows</option><option>Numeric suitability</option><option>Existing host system</option><option>Investment scenario</option></select></label><button id="reset">Reset filters</button><span id="count" aria-live="polite"></span></div><p class="muted">Click headings to sort. Type under headings to filter. Open “Source rules and explanation” within a row for numeric bands, source context and input data.</p><div class="table-wrap"><table id="main"><thead></thead><tbody></tbody></table></div>
 <details><summary>Still needs resolution — source ambiguities and missing mappings</summary><p>These are retained as evidence, not silently converted into suitability scores.</p>"""
     holds = read_csv(
@@ -322,7 +325,7 @@ def render(root, read_csv, table, bindings, coverage):
     )
     page += '<script id="rows" type="application/json">' + payload + "</script>"
     page += """<script>
-const rows=JSON.parse(document.getElementById('rows').textContent),keys=['Family','Variable','What the rule says','Use and limits'],filters={};let sortKey='',direction=1;
+const rows=JSON.parse(document.getElementById('rows').textContent),keys=['Agroforestry system','Variable','What the rule says','Use and limits'],filters={};let sortKey='',direction=1;
 const head=document.querySelector('#main thead'),body=document.querySelector('#main tbody'),tr=document.createElement('tr');
 keys.forEach(key=>{const th=document.createElement('th'),button=document.createElement('button'),input=document.createElement('input');button.textContent=key+' ↕';button.onclick=()=>{direction=sortKey===key?-direction:1;sortKey=key;head.querySelectorAll('th').forEach(t=>t.removeAttribute('aria-sort'));th.setAttribute('aria-sort',direction===1?'ascending':'descending');render()};input.placeholder='Filter…';input.setAttribute('aria-label','Filter '+key);input.oninput=()=>{filters[key]=input.value.toLowerCase();render()};th.append(button,input);tr.append(th)});head.append(tr);
 function render(){const category=document.getElementById('category').value;let visible=rows.filter(r=>(category==='all'||(category==='core'?r['Rule category']!=='Investment scenario':r['Rule category']===category))&&keys.every(k=>!filters[k]||r[k].toLowerCase().includes(filters[k])));if(sortKey)visible.sort((a,b)=>direction*a[sortKey].localeCompare(b[sortKey],undefined,{numeric:true}));body.replaceChildren();visible.forEach(r=>{const tr=document.createElement('tr');keys.forEach(k=>{const td=document.createElement('td');td.textContent=r[k];if(k==='Variable'){const help=document.createElement('span');help.className='help';help.textContent=r.explanation;td.append(help)}if(k==='Use and limits'){const tag=document.createElement('span');tag.className='tag';tag.textContent=r['Rule category'];td.append(tag)}if(k==='What the rule says'){const d=document.createElement('details'),s=document.createElement('summary');s.textContent='Source rules and explanation';d.append(s);r.details.forEach(item=>{const h=document.createElement('strong'),p=document.createElement('pre'),cite=document.createElement('p'),ref=document.createElement('span');h.textContent=item.title;p.textContent=item.text;cite.textContent=item.citation;ref.className='ref';ref.textContent=item.reference;const section=document.createElement('section');section.append(h,p,cite,ref);d.append(section)});td.append(d)}tr.append(td)});body.append(tr)});document.getElementById('count').textContent=visible.length+' of '+rows.length+' rows'}

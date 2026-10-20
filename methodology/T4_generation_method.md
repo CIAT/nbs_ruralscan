@@ -623,14 +623,21 @@ One variable (within one suitability family) at a time: combine its evidence uni
 
 ### Reviewed numeric class tables (October 2026; issue #362)
 
-**Cross-paper harmonization proposal (20 October 2026):** [16 worked scenarios](examples/t4_cross_paper_harmonization.md) define score crosswalks, unequal class counts, missing ranges, exclusion conflicts, independence and weighted-median ties. [Browser review](../docs/review/t4-harmonization-examples.html). This is a design proposal; the live compilation convention below remains unchanged pending implementation and validation.
+**Cross-paper harmonization proposal (20 October 2026):** [16 worked scenarios](examples/t4_cross_paper_harmonization.md) define score crosswalks, unequal class counts, missing ranges, exclusion conflicts, independence and weighted-median ties. [Browser review](../docs/review/t4-harmonization-examples.html). Conventions approved by Pete on 20 October 2026; implemented in `recipe/harmonization.py` with schema policy and regression tests (issue #365). [Actual evidence results](../docs/review/t4-harmonization-results.html).
 
 Numeric variables can be reported as ordinal bands rather than smooth response curves.
 Compile those bands into `piecewise.profiles` instead of discarding the reviewed record
 or pretending its highest-ranked band is a universal optimum. The numeric compilation
-policy lives in schema and names the full source ordinal scale. Use rank / full-scale
-maximum as an explicit scoping design convention; never normalize only the observed
-subset (a partial low/medium table must not become medium=1). No interpolation across
+policy lives in schema and retains the full source ordinal scale. Its optional
+`harmonization` JSON defines a versioned semantic score crosswalk, source scores where
+reported, and explicit compatible-pool assignment. The approved convention is very
+low=0.10, low=0.25, moderate=0.50, high=0.75, very high=0.90; explicit unsuitable=0
+and explicit optimum=1. Marginal/good/very good map to low/high/very high in the
+current agroforestry policies. These are design scores, not empirical calibration.
+Unmapped meanings (including “favourable” without an ordinal class) remain unknown.
+Original ranks, legacy compiler scores and any reported scores are retained separately.
+Never normalize only the observed subset. Equivalent cardinal scales may be rescaled
+only with verified score meaning and declared endpoints, not observed extrema. No interpolation across
 classes or extrapolation outside reported bounds. Shared boundaries with different
 classes stay unknown. A favourable-only threshold yields a positive band with an
 unknown complement, not a hard exclusion.
@@ -641,7 +648,14 @@ chosen automatically. Cross-family evidence remains a reference row, not a sixth
 agroforestry family or a universal rule inherited by all families. Family-specific
 mapping decisions remain explicit. The same rule applies to conflicting climate groups
 within one source. Profiles retain each source and evidence ID; source disagreement is
-not averaged into a fabricated consensus. The 20% uncertainty floor is a humility flag,
+not averaged into a fabricated consensus. With explicit system/context compatibility
+approval, partition step responses at every breakpoint and exact endpoint, then
+compute a source-quality-weighted median set per cell. One independent origin gets
+one vote. Preserve source range, eligible/contributing source counts and weight
+coverage. Median ties and zero-versus-positive conflicts have no executable scalar;
+unknown regions remain unknown. A combined zero is not a legal or universal hard
+exclusion. Pools require explicit runtime selection (`pool_id`); no auto-selection.
+Current agroforestry regional evidence has no approved compatible pools. The 20% uncertainty floor is a humility flag,
 not an estimated confidence interval for ordinal scores.
 
 Every reviewed numeric payload must be either compiled or assigned a meaningful reason:
@@ -796,3 +810,20 @@ relationships unstructured, which is exactly this method's job.
 keying, no uncertainty from spread. The Evidence Register + harmonisation + family-keyed synthesis is that
 missing layer. **Skip:** re-running discovery/screening for agroforestry, IF/CPY weighting, and the free-text
 Narrative as the carrier.
+
+#### Harmonization policy contract (issue #365)
+
+`T4_NUMERIC_POLICY.harmonization` is optional JSON. Fields: `version`, `score_kind`
+(`ordinal` or `comparable_cardinal`), `class_scores` (source label to common score),
+optional `source_scores` (actual reported label scores), and `crosswalk_note`.
+Cardinal conversion additionally requires `meaning_verified=true`, `source_min`,
+and `source_max` with equivalent endpoint meanings. Pooling requires `pool_id`,
+`system_id`, `context_id`, and `compatibility_approved=true`; absent assignments
+produce review reasons, not implicit compatibility. `pool_review` explains the gap.
+Profile origin is resolved from evidence lineage; source quality uses the existing
+benchmark-tier × claim-basis × grey-discount weighting. Context is an explicit pool
+eligibility check, not an implemented numerical context/recency weight. Conflicting
+within-origin values are unresolved, never counted as multiple independent votes.
+No cardinal conversion or pooled application is inferred for the current regional
+records. Continuous-curve integration and score-convention sensitivity remain future
+extensions; this implementation combines compatible step profiles only.

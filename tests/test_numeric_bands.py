@@ -30,7 +30,7 @@ def test_reviewed_ph_reaches_t4_and_unstated_ranges_stay_unknown():
         evaluate_numeric(
             row, [5, 6, 6.5, 7, 8, 9, np.nan], profile_id="ev_soil_ph_singh26"
         ),
-        [np.nan, 0.75, np.nan, 1, 0.5, np.nan, np.nan],
+        [np.nan, 0.75, np.nan, 0.9, 0.5, np.nan, np.nan],
         equal_nan=True,
     )
     assert np.isnan(evaluate_numeric(row, [7])).all()
@@ -44,7 +44,7 @@ def test_rainfall_favourable_tail_does_not_invent_exclusion():
         evaluate_numeric(
             row, [500, 1200, 1500], profile_id="ev_t4_precip_mushtaq2023_2"
         ),
-        [np.nan, np.nan, 1],
+        [np.nan, np.nan, np.nan],
         equal_nan=True,
     )
 
@@ -52,7 +52,7 @@ def test_rainfall_favourable_tail_does_not_invent_exclusion():
 def test_organic_carbon_percent_is_converted_to_grams_per_kg():
     row = live("soil_organic_carbon", "cross_family")
     values = evaluate_numeric(row, [4, 6, 8], profile_id="ev_T4_soc_ahmad2018_1")
-    np.testing.assert_allclose(values, [1 / 3, 2 / 3, 1])
+    np.testing.assert_allclose(values, [0.25, 0.5, 0.75])
     assert np.isnan(
         evaluate_numeric(row, [8], profile_id="ev_T4_soc_haile2024_1")
     ).all()
@@ -64,13 +64,13 @@ def test_context_profiles_do_not_get_averaged_or_auto_selected():
         evaluate_numeric(
             row, [19, 21], profile_id="ev_t4_mat_yadav24_1__group1_temperate_warm"
         ),
-        [1, 0.75],
+        [0.9, 0.75],
     )
     np.testing.assert_allclose(
         evaluate_numeric(
             row, [19, 21], profile_id="ev_t4_mat_yadav24_1__group2_temperate_hot"
         ),
-        [0.75, 1],
+        [0.75, 0.9],
     )
     assert np.isnan(evaluate_numeric(row, [19])).all()
     assert np.isnan(
@@ -176,11 +176,11 @@ def test_nath_recovered_ph_and_carbon_preserve_source_classes():
         evaluate_numeric(
             ph, [4, 5, 6, 7.3, 7.5, 8], profile_id="ev_t4_soilph_nath21_01"
         ),
-        [np.nan, 0.75, 1, 0.75, 0.5, np.nan],
+        [np.nan, 0.75, 0.9, 0.75, 0.5, np.nan],
         equal_nan=True,
     )
     carbon = live("soil_organic_carbon", "cross_family")
     np.testing.assert_allclose(
         evaluate_numeric(carbon, [3, 8, 15, 25], profile_id="ev_t4_soilorg_nath21_01"),
-        [0.25, 0.5, 0.75, 1],
+        [0.25, 0.5, 0.75, 0.9],
     )

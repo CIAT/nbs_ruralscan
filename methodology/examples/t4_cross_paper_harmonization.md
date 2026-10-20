@@ -1,6 +1,6 @@
 # T4 cross-paper harmonization: worked proposal
 
-Worked design proposal • 20 October 2026. All papers, values and weights below are hypothetical. This page defines expected behaviour for a future harmonizer; it does not change live T4 scores. Agroforestry is the NbS type; comparisons must refer to the same agroforestry system and compatible context.
+Approved conventions • 20 October 2026. All papers, values and weights below are hypothetical. Conventions are implemented for step profiles in recipe/harmonization.py. See docs/review/t4-harmonization-results.html for regenerated live T4 effects. Agroforestry is the NbS type; comparisons must refer to the same agroforestry system and compatible context.
 
 ## Proposed sequence
 
@@ -206,11 +206,11 @@ These are explicit design choices, not values extracted from papers. Class defin
 
 - Coverage denominator is the compatible, eligible independent-source pool for this response, not every paper in the agroforestry corpus. Report eligible count and contributing count alongside weight coverage.
 
-- No schema columns, source records, live T4 rows or runtime behaviour change in this worked proposal. Production policy belongs in schema-backed configuration; schema structure changes require the existing manifest and issue process.
+- Implementation adds an optional schema policy field and regenerates T4 profile scores; evidence records are preserved. Production policy belongs in schema-backed configuration; schema structure changes require the existing manifest and issue process.
 
 ## Current versus proposed behaviour
 
-Current compiler reconciles compatible trapezoidal bounds and keeps recovered ordinal source profiles separate. Its ordinal convention is rank / full source scale maximum. The semantic anchors and median-set outputs here are proposed replacements/extensions, not descriptions of current behaviour. Existing source profiles must remain traceable through any migration.
+Compiler now supports the semantic anchors and median-set outputs described here. Ordinal source profiles remain separate unless an explicit compatible pool is assigned. Legacy rank/max scores remain alongside the new common scores. Continuous-curve pooling is not implemented.
 
 ## Acceptance checks before enabling live synthesis
 

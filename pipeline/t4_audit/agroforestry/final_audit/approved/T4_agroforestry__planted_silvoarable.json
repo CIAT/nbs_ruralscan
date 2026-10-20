@@ -75,7 +75,10 @@
               "upper_inclusive": true,
               "label": "high",
               "rank": 3,
-              "score": 0.75
+              "score": 0.75,
+              "legacy_score": 0.75,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
             },
             {
               "lower": 6.5,
@@ -84,7 +87,10 @@
               "upper_inclusive": true,
               "label": "very_high",
               "rank": 4,
-              "score": 1.0
+              "score": 0.9,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
             },
             {
               "lower": 7.5,
@@ -93,20 +99,41 @@
               "upper_inclusive": true,
               "label": "moderate",
               "rank": 2,
-              "score": 0.5
+              "score": 0.5,
+              "legacy_score": 0.5,
+              "source_score": null,
+              "score_basis": "schema_class_convention"
             }
-          ]
+          ],
+          "origin_id": "singh_2026",
+          "source_weight": 0.54,
+          "variable": "soil_ph",
+          "score_policy": "semantic_classes_v1",
+          "pool_id": "",
+          "system_id": "",
+          "context_id": "",
+          "compatibility_approved": false,
+          "pool_review": "system_and_context_applicability_required"
         }
       ],
       "profile_selection": "explicit",
       "outside_domain": "unknown",
       "conflicting_boundaries": "unknown",
-      "score_policy": "ordinal_rank_divided_by_full_scale_maximum",
-      "score_interpretation": "Relative source suitability rank; not probability or measured performance"
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_soil_ph_singh26",
+            "reason": "system_and_context_applicability_required"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
     "uncertainty_pct": 20,
     "context_overrides": [],
-    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores = source rank / declared full scale maximum (design convention, not measured probabilities). Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
     "references": [
       "singh_2026"
     ],
