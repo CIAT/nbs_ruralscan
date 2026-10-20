@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-19T19:29:24.284582+00:00",
-  "git_commit": "0c33524cd788d2ac13dd2b1e5c85e63b869b7097",
+  "timestamp": "2026-10-20T05:27:14.286339+00:00",
+  "git_commit": "53aedd7e0914f37514e2fa2a5bdff6af7ca2e4f9",
   "registers": {
     "SRC_source_register": [
       {
@@ -12063,9 +12063,9 @@
         "extraction_confidence": "high",
         "quote": "Areas currently in pasture/grassland use. Silvopasture includes growing any arrangement of trees and forage with grazing animals.",
         "page": 8,
-        "reviewer_ok": false,
+        "reviewer_ok": true,
         "raw_name": "Agricultural extent — Silvopasture",
-        "attribution": "[query 2026-09-18 by peetmate; note:sure land cover is important but how it be actioned? what classes are in or out?]",
+        "attribution": "[reviewed 2026-10-20 by Pete Steward; reason:confirmed_pass; note:yes so we need grassland (e.g. global pasture watch) and livestock grazing (e.g. GLW4 2020)] [query 2026-09-18 by peetmate; note:sure land cover is important but how it be actioned? what classes are in or out?]",
         "locator_type": "page"
       },
       {
@@ -12590,9 +12590,9 @@
         "extraction_confidence": "low",
         "quote": "Soil pH(H2O) \n20 \n<5OR >8 \n1 \nLow \n5.1-5.5 OR 8-8.3 \n2 \nMedium \n7.4-8.4 OR 6.5-5.6 \n3 \nHigh \n6.6-7.3 \n4 \nVery high",
         "page": 6,
-        "reviewer_ok": false,
+        "reviewer_ok": true,
         "raw_name": "Soil pH(H2O)",
-        "attribution": "[query 2026-10-19 by Pete Steward; note:seems to be targeting a policy outcome not agroforestry suitability?] [query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Regional nutrient-class table contains overlapping/reversed ranges. Preserved all source ranks rather than extracting highest class as a generic pH optimum. Requires source-table ambiguity and applicability review.] [reviewed 2026-10-19 by Namita-J] general — applies cross-family; FAO standards cited for plant growth",
+        "attribution": "[reviewed 2026-10-20 by Pete Steward; reason:confirmed_pass] [query 2026-10-19 by Pete Steward; note:seems to be targeting a policy outcome not agroforestry suitability?] [query 2026-10-19 by Codex source-context review; reason:accepted_correction; note:Regional nutrient-class table contains overlapping/reversed ranges. Preserved all source ranks rather than extracting highest class as a generic pH optimum. Requires source-table ambiguity and applicability review.] [reviewed 2026-10-19 by Namita-J] general — applies cross-family; FAO standards cited for plant growth",
         "locator_type": "page"
       },
       {
@@ -130860,9 +130860,10 @@
         "extraction_confidence": "high",
         "quote": "Additionally, the average net return of shaded systems in the subset was signiﬁcantly higher by 23% (p b 0.05; t = 2.31; df = 14), showing a higher proﬁt per hectare for farmers with shade trees planted between their coffee and cocoa plants.",
         "page": 4,
-        "reviewer_ok": false,
+        "reviewer_ok": true,
         "raw_name": "net revenue (US$/ha)",
         "taxon": "Coffea|Theobroma cacao",
+        "attribution": "[reviewed 2026-10-20 by Pete Steward; reason:confirmed_pass; note:I would not say this feeds the hazards scorecard, but yes feeds T6]",
         "locator_type": "page",
         "ruleset_version": "v1.6.6"
       },
@@ -177518,7 +177519,8 @@
         "extraction_confidence": "high",
         "quote": "Windbreaks:\n10 m buffers\naround\ndelineated\nfields\nUSDA Crop\nSequence\nBoundaries [67]\n10 m buffers around delineated fields\nand on areas currently in cropland or\npasture/grassland use.",
         "page": 8,
-        "reviewer_ok": false,
+        "reviewer_ok": true,
+        "attribution": "[reviewed 2026-10-20 by Pete Steward; reason:confirmed_pass; note:yes this is a suitability requirement we need a vector of field boundaries that can be buffered, which is good for intensive systems, not so good for africa]",
         "locator_type": "page",
         "selection_justification": "Explicit agricultural-extent and placement criterion in the source suitability model; not a site-description range. Transfer outside the US Midwest remains a mapping-review decision.",
         "selection_justification_page": 8,
@@ -188030,7 +188032,7 @@
             "unmapped_policy": "unknown",
             "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
             "interpretation": "binary host-system compatibility; not graded biophysical suitability",
-            "mapping_review_status": "pending",
+            "mapping_review_status": "approved",
             "applicable_subpractices": [
               "windbreaks_shelterbelts"
             ],
@@ -188041,13 +188043,16 @@
               }
             },
             "design_reference": "methodology/families/agroforestry.md#f4",
-            "footprint_rule": "candidate_lines_not_pixel_area"
+            "footprint_rule": "candidate_lines_not_pixel_area",
+            "mapping_reviewer": "Pete Steward",
+            "mapping_review_date": "2026-10-20",
+            "boundary_width_policy": "context_specific_from_publications_and_regions"
           },
           "is_scenario_candidate": false,
           "has_future_projection": false,
           "weight_default": 0,
           "weight_adjustable": false,
-          "justification": "Candidate applicability gate for windbreaks/shelterbelts only. Castle Table 2 PDF p8 places windbreaks on delineated cropland/pasture field boundaries in the US Midwest. WorldCover cropland requires independently mapped field-boundary placement; grassland additionally requires managed pasture confirmation. No universal buffer width or contour-siting rule is inferred. Report applicability zones and candidate line length, never eligible pixel area as planting footprint. Source and cross-context mapping remain pending review.",
+          "justification": "Candidate applicability gate for windbreaks/shelterbelts only. Castle Table 2 PDF p8 places windbreaks on delineated cropland/pasture field boundaries in the US Midwest. WorldCover cropland requires independently mapped field-boundary placement; grassland additionally requires managed pasture confirmation. No universal buffer width or contour-siting rule is inferred. Report applicability zones and candidate line length, never eligible pixel area as planting footprint. Source and cross-context mapping remain pending review. Pete Steward approved B1 on 2026-10-20: boundary geometry required; buffer width varies by publications and regions. Field delineation may be less available in African extensive systems; missing geometry remains unknown.",
           "variable": "land_cover",
           "suitability_family_id": "agroforestry__linear_boundary",
           "evidence_ids": [
@@ -188084,38 +188089,53 @@
             "mapping_role": "eligibility_gate",
             "class_requirements": {
               "10": [
-                "coffee_observed_present"
+                "coffee_host_fraction"
               ],
               "20": [
-                "coffee_observed_present"
+                "coffee_host_fraction"
               ],
               "30": [
-                "coffee_observed_present"
+                "coffee_host_fraction"
               ],
               "40": [
-                "coffee_observed_present"
+                "coffee_host_fraction"
               ]
             },
             "unmapped_policy": "unknown",
             "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
             "interpretation": "binary host-system compatibility; not graded biophysical suitability",
-            "mapping_review_status": "pending",
+            "mapping_review_status": "approved",
             "host_crop": "coffee",
             "required_mask_metadata": {
-              "coffee_observed_present": {
-                "data_basis": "observed",
-                "host_crop": "coffee"
+              "coffee_host_fraction": {
+                "data_basis": [
+                  "observed",
+                  "modelled_allocation"
+                ],
+                "host_crop": "coffee",
+                "unit": "fraction_of_pixel"
               }
             },
             "design_reference": "methodology/families/agroforestry.md#f5",
             "evidence_role": "host_system_identity_only",
-            "footprint_rule": "observed_crop_area_not_full_pixel_area"
+            "footprint_rule": "retain_crop_fractions_do_not_sum_without_overlap_check",
+            "mapping_reviewer": "Pete Steward",
+            "mapping_review_date": "2026-10-20",
+            "mask_value_types": {
+              "coffee_host_fraction": "fraction"
+            },
+            "mask_presence_thresholds": {
+              "coffee_host_fraction": 0
+            },
+            "host_fraction_mask": "coffee_host_fraction",
+            "preferred_host_data": "accurate_commodity_maps",
+            "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping"
           },
           "is_scenario_candidate": false,
           "has_future_projection": false,
           "weight_default": 0,
           "weight_adjustable": false,
-          "justification": "Candidate coffee host gate. Family-method F5 requires existing observed crop distribution. Jezeer et al. (2017), PDF p4, documents shade trees among coffee/cocoa plants; linked economic evidence supports host-system identity only, not a land-cover suitability score or threshold. WorldCover vegetation classes are permissive carriers ONLY when an independent observed coffee mask confirms the cultivated crop. Forest cover alone never passes. MapSPAM allocation is not observed presence. Presence does not establish a shade deficit or benefit; map target crop area, not full mixed-pixel area. Crosswalk and source evidence remain pending review.",
+          "justification": "Pete Steward approved P1 on 2026-10-20: shade agroforestry requires a suitable host crop; OR across crops. Prefer accurate commodity distributions; crop fraction per pixel from MapSPAM is acceptable for high-level scoping. Positive crop fraction establishes host presence, not suitability strength. Retain fractions; no full-pixel area or unverified overlap sum. Source evidence identifies coffee/cocoa systems, not a numeric suitability threshold. No niche-model substitution.",
           "variable": "land_cover",
           "suitability_family_id": "agroforestry__shaded_perennial",
           "evidence_ids": [
@@ -188152,38 +188172,137 @@
             "mapping_role": "eligibility_gate",
             "class_requirements": {
               "10": [
-                "cocoa_observed_present"
+                "cocoa_host_fraction"
               ],
               "20": [
-                "cocoa_observed_present"
+                "cocoa_host_fraction"
               ],
               "30": [
-                "cocoa_observed_present"
+                "cocoa_host_fraction"
               ],
               "40": [
-                "cocoa_observed_present"
+                "cocoa_host_fraction"
               ]
             },
             "unmapped_policy": "unknown",
             "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
             "interpretation": "binary host-system compatibility; not graded biophysical suitability",
-            "mapping_review_status": "pending",
+            "mapping_review_status": "approved",
             "host_crop": "cocoa",
             "required_mask_metadata": {
-              "cocoa_observed_present": {
-                "data_basis": "observed",
-                "host_crop": "cocoa"
+              "cocoa_host_fraction": {
+                "data_basis": [
+                  "observed",
+                  "modelled_allocation"
+                ],
+                "host_crop": "cocoa",
+                "unit": "fraction_of_pixel"
               }
             },
             "design_reference": "methodology/families/agroforestry.md#f5",
             "evidence_role": "host_system_identity_only",
-            "footprint_rule": "observed_crop_area_not_full_pixel_area"
+            "footprint_rule": "retain_crop_fractions_do_not_sum_without_overlap_check",
+            "mapping_reviewer": "Pete Steward",
+            "mapping_review_date": "2026-10-20",
+            "mask_value_types": {
+              "cocoa_host_fraction": "fraction"
+            },
+            "mask_presence_thresholds": {
+              "cocoa_host_fraction": 0
+            },
+            "host_fraction_mask": "cocoa_host_fraction",
+            "preferred_host_data": "accurate_commodity_maps",
+            "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping"
           },
           "is_scenario_candidate": false,
           "has_future_projection": false,
           "weight_default": 0,
           "weight_adjustable": false,
-          "justification": "Candidate cocoa host gate. Family-method F5 requires existing observed crop distribution. Jezeer et al. (2017), PDF p4, documents shade trees among coffee/cocoa plants; linked economic evidence supports host-system identity only, not a land-cover suitability score or threshold. WorldCover vegetation classes are permissive carriers ONLY when an independent observed cocoa mask confirms the cultivated crop. Forest cover alone never passes. MapSPAM allocation is not observed presence. Presence does not establish a shade deficit or benefit; map target crop area, not full mixed-pixel area. Crosswalk and source evidence remain pending review.",
+          "justification": "Pete Steward approved P1 on 2026-10-20: shade agroforestry requires a suitable host crop; OR across crops. Prefer accurate commodity distributions; crop fraction per pixel from MapSPAM is acceptable for high-level scoping. Positive crop fraction establishes host presence, not suitability strength. Retain fractions; no full-pixel area or unverified overlap sum. Source evidence identifies coffee/cocoa systems, not a numeric suitability threshold. No niche-model substitution.",
+          "variable": "land_cover",
+          "suitability_family_id": "agroforestry__shaded_perennial",
+          "evidence_ids": [
+            "ev_economic_return_jezeer17_1"
+          ],
+          "n_sources": 1
+        },
+        {
+          "mapping_id": "agro_shaded_tea_host_gate",
+          "nbs_id": "agroforestry",
+          "dataset_id": "esa_worldcover_2021",
+          "suitability_dimension": "system_constraint",
+          "relationship_type": "ranked_classes",
+          "relationship_params": {
+            "class_map": {
+              "10": 1,
+              "20": 1,
+              "30": 1,
+              "40": 1,
+              "50": 0,
+              "70": 0,
+              "80": 0
+            },
+            "class_labels": {
+              "20": "Shrubland",
+              "30": "Grassland",
+              "40": "Cropland",
+              "50": "Built-up",
+              "60": "Bare / sparse vegetation",
+              "70": "Snow and ice",
+              "80": "Permanent water bodies",
+              "10": "Tree cover"
+            },
+            "mapping_role": "eligibility_gate",
+            "class_requirements": {
+              "10": [
+                "tea_host_fraction"
+              ],
+              "20": [
+                "tea_host_fraction"
+              ],
+              "30": [
+                "tea_host_fraction"
+              ],
+              "40": [
+                "tea_host_fraction"
+              ]
+            },
+            "unmapped_policy": "unknown",
+            "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+            "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+            "mapping_review_status": "approved",
+            "host_crop": "tea",
+            "required_mask_metadata": {
+              "tea_host_fraction": {
+                "data_basis": [
+                  "observed",
+                  "modelled_allocation"
+                ],
+                "host_crop": "tea",
+                "unit": "fraction_of_pixel"
+              }
+            },
+            "design_reference": "methodology/families/agroforestry.md#f5",
+            "evidence_role": "family_host_requirement_only",
+            "footprint_rule": "retain_crop_fractions_do_not_sum_without_overlap_check",
+            "mapping_reviewer": "Pete Steward",
+            "mapping_review_date": "2026-10-20",
+            "mask_value_types": {
+              "tea_host_fraction": "fraction"
+            },
+            "mask_presence_thresholds": {
+              "tea_host_fraction": 0
+            },
+            "host_fraction_mask": "tea_host_fraction",
+            "preferred_host_data": "accurate_commodity_maps",
+            "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
+            "crop_authority": "Pete Steward explicit design decision, 2026-10-20; source evidence is coffee/cocoa only"
+          },
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0,
+          "weight_adjustable": false,
+          "justification": "Pete Steward approved P1 on 2026-10-20: shade agroforestry requires a suitable host crop; OR across crops. Prefer accurate commodity distributions; crop fraction per pixel from MapSPAM is acceptable for high-level scoping. Positive crop fraction establishes host presence, not suitability strength. Retain fractions; no full-pixel area or unverified overlap sum. Source evidence identifies coffee/cocoa systems, not a numeric suitability threshold. No niche-model substitution. Tea added by explicit Pete Steward design decision, not inferred from Jezeer coffee/cocoa evidence. This gate establishes host presence only; crop-specific shade response still requires separate evidence.",
           "variable": "land_cover",
           "suitability_family_id": "agroforestry__shaded_perennial",
           "evidence_ids": [
@@ -192343,31 +192462,31 @@
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 799,
-    "queried": 140,
+    "total_reviews": 802,
+    "queried": 139,
     "n_reviewers": 7,
     "by_reviewer": {
       "orchestrator": 319,
       "peetmate": 291,
       "Namita-J": 96,
       "Peter": 56,
-      "Pete Steward": 20,
+      "Pete Steward": 23,
       "Codex source-context review": 16,
       "Namita-J,peetmate": 1
     },
     "by_decision": {
       "drop": 495,
-      "flag": 140,
-      "ok": 134,
+      "flag": 139,
+      "ok": 138,
       "reclassify": 17,
       "retag": 4,
       "keep": 9
     },
     "by_reason": {
       "accepted_correction": 248,
-      "unspecified": 140,
+      "unspecified": 139,
       "other": 64,
-      "confirmed_pass": 59,
+      "confirmed_pass": 63,
       "off_scope": 58,
       "species_envelope": 46,
       "speculative_evidence": 46,
@@ -192385,7 +192504,7 @@
     "by_verdict": {
       "unsupported": 10,
       "mismatch": 46,
-      "pass": 685,
+      "pass": 688,
       "scope": 38,
       "review": 19,
       "sign_review": 1
@@ -192399,10 +192518,10 @@
       "tp_corrected": 12
     },
     "pass_eval": {
-      "tn": 122,
+      "tn": 126,
       "fn": 1,
       "out_of_remit": 463,
-      "checked": 586,
+      "checked": 590,
       "fn_rate_pct": 0.8
     },
     "recall_est_pct": 97.7,
@@ -208489,6 +208608,41 @@
       "decision": "drop",
       "reason": "other",
       "note": "User chat: Bramdt - do not include this",
+      "reviewer": "Pete Steward"
+    },
+    {
+      "date": "2026-10-20",
+      "evidence_id": "ev_t4_land_cover_castle2025_2",
+      "source_id": "castle_2025",
+      "decision": "ok",
+      "reason": "confirmed_pass",
+      "note": "yes so we need grassland (e.g. global pasture watch) and livestock grazing (e.g. GLW4 2020)",
+      "reviewer": "Pete Steward"
+    },
+    {
+      "date": "2026-10-20",
+      "evidence_id": "ev_T4_ph_haile2024_1",
+      "source_id": "haile_2024",
+      "decision": "ok",
+      "reason": "confirmed_pass",
+      "reviewer": "Pete Steward"
+    },
+    {
+      "date": "2026-10-20",
+      "evidence_id": "ev_economic_return_jezeer17_1",
+      "source_id": "vaast2016_double_dividend",
+      "decision": "ok",
+      "reason": "confirmed_pass",
+      "note": "I would not say this feeds the hazards scorecard, but yes feeds T6",
+      "reviewer": "Pete Steward"
+    },
+    {
+      "date": "2026-10-20",
+      "evidence_id": "ev_t4_land_cover_castle2025_windbreak",
+      "source_id": "castle_2025",
+      "decision": "ok",
+      "reason": "confirmed_pass",
+      "note": "yes this is a suitability requirement we need a vector of field boundaries that can be buffered, which is good for intensive systems, not so good for africa",
       "reviewer": "Pete Steward"
     }
   ],

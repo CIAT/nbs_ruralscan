@@ -249,3 +249,34 @@ Sweep metrics were recorded under `agroforestry-categorical-boundary-oct19`: glo
 number-provenance rate 5.9%, verification rate 0.5%. Changes since the previous October 16
 snapshot include unrelated intervening work; they are not attributed to this one-unit
 follow-up. No review feedback cursor or human approval was advanced.
+
+
+## Pete review applied — 20 October 2026 (supersedes pending policies above)
+
+All four decisions in the categorical-followup export were applied through the review
+workflow: Castle boundary and silvopastoral claims, Jezeer economic return, and Haile pH.
+Jezeer remains an effect record for T6, not a hazard claim. Haile approval preserves the
+quoted table; reversed/overlapping classes are not silently converted to pH thresholds.
+
+B1: field boundaries required. Buffer width remains context-specific, derived across
+publications/regions. No universal source 10 m width. Pete noted field delineation is
+more practical in intensive systems than many African settings. No missing-geometry
+substitution or pixel-area planting footprint.
+
+P1: OR across suitable crop hosts. Accurate commodity maps preferred; MapSPAM allocated
+crop fractions accepted for high-level scoping, explicitly labelled modelled allocation.
+Masks are now `<crop>_host_fraction`, in 0–1 fraction of pixel (percent/100; crop hectares
+divided by pixel hectares). Positive fraction passes the binary host gate; fractional
+coverage is retained in `CategoricalResult.crop_fractions`, not used as suitability
+strength. Crop identities retained; overlapping crops are not summed automatically.
+Metadata requires dataset_id, source_reference, data_basis, host_crop and
+unit=fraction_of_pixel. Niche predictions still do not establish existing crop presence.
+Coffee/cocoa retain source identity evidence. Tea is an explicit Pete design decision;
+the coffee/cocoa paper does not supply tea-specific shade response evidence. Other
+suitable crops can be configured through schema, not hardcoded runtime rules.
+
+Silvopastoral: approved grassland plus grazing requirement; Pete suggests Global Pasture
+Watch and GLW4 2020 as potential input layers. No AOI data acquired or dataset binding
+claimed. Remaining: boundary widths/geometry, host data, contour buffers, other crop
+mappings, Nath drainage legend, Singh class crosswalk and quote mismatch, and Haile
+class interpretation.

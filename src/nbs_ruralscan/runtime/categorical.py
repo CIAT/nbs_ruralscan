@@ -22,6 +22,7 @@ class CategoricalResult:
     spatial_product_type: str = ""
     driver_crops: np.ndarray | None = None
     applicable_subpractices: tuple[str, ...] = ()
+    crop_fractions: dict[str, np.ndarray] | None = None
 
 
 def _object(value):
@@ -41,6 +42,7 @@ def evaluate_categorical(
     """Map exact dataset codes, then apply required boolean host conditions.
 
     Masks use 1/0/NaN = confirmed/absent/unknown and must match input shape.
+    Schema-declared fraction masks accept [0,1], with a schema presence threshold.
     Zero is exclusion from this gate, not overall suitability. No implicit default.
     """
     if row.get("relationship_type") != "ranked_classes":
@@ -120,17 +122,31 @@ def evaluate_categorical(
             mask = np.asarray(masks.get(name, np.full(arr.shape, np.nan)), dtype=float)
             if mask.shape != arr.shape:
                 raise ValueError(f"Mask {name} shape does not match input")
-            if np.any(np.isfinite(mask) & ~np.isin(mask, [0, 1])) or np.any(
-                np.isinf(mask)
-            ):
-                raise ValueError(f"Mask {name} must contain 0, 1 or NaN")
+            fractional = params.get("mask_value_types", {}).get(name) == "fraction"
+            invalid = (mask < 0) | (mask > 1) if fractional else ~np.isin(mask, [0, 1])
+            if np.any(np.isfinite(mask) & invalid) or np.any(np.isinf(mask)):
+                raise ValueError(
+                    f"Mask {name} must contain {'fractions in [0,1]' if fractional else '0, 1'} or NaN"
+                )
+            if fractional:
+                threshold = params.get("mask_presence_thresholds", {}).get(name)
+                if not isinstance(threshold, (float, int)) or not 0 <= threshold < 1:
+                    raise ValueError(
+                        "Fraction mask requires a schema presence threshold in [0,1)"
+                    )
+                mask = np.where(
+                    np.isnan(mask), np.nan, (mask > threshold).astype(float)
+                )
             expected = params.get("required_mask_metadata", {}).get(name)
             if expected:
                 meta = (mask_metadata or {}).get(name, {})
                 reason = ""
                 if not meta.get("dataset_id") or not meta.get("source_reference"):
                     reason = "missing_mask_provenance"
-                elif any(meta.get(k) != v for k, v in expected.items()):
+                elif any(
+                    meta.get(k) not in v if isinstance(v, list) else meta.get(k) != v
+                    for k, v in expected.items()
+                ):
                     reason = "incompatible_host_data"
                 if reason:
                     unresolved = match & (values != 0)
@@ -143,6 +159,16 @@ def evaluate_categorical(
             status[absent] = "host_absent"
             values[unknown] = np.nan
             status[unknown] = "missing_host_context"
+    fraction_name = params.get("host_fraction_mask")
+    if fraction_name:
+        fraction = np.asarray(
+            masks.get(fraction_name, np.full(arr.shape, np.nan)), dtype=float
+        )
+        result.crop_fractions = {
+            params["host_crop"]: np.where(
+                values == 0, 0, np.where(values == 1, fraction, np.nan)
+            )
+        }
     return result
 
 
@@ -283,6 +309,18 @@ def evaluate_family(
             hit = variant.values == 1
             drivers[hit] = np.where(drivers[hit] == "", name, drivers[hit] + "|" + name)
         result = CategoricalResult(values, status, driver_crops=drivers)
+    if crops:
+        result.crop_fractions = {}
+        for name, variant in zip(crops, variants):
+            candidates = [
+                part.crop_fractions[name]
+                for host, part in parts
+                if host == name and part.crop_fractions and name in part.crop_fractions
+            ]
+            fraction = candidates[0] if candidates else np.full(shape, np.nan)
+            result.crop_fractions[name] = np.where(
+                variant.values == 0, 0, np.where(variant.values == 1, fraction, np.nan)
+            )
     result.mapping_ids = tuple(r["mapping_id"] for r in gates)
     result.spatial_product_type = product
     result.applicable_subpractices = subpractices

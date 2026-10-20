@@ -143,7 +143,7 @@ def test_live_schema_family_rules_and_missing_families():
         ).values,
         [1, 1, np.nan, 0],
     )
-    assert set(family("silvopastoral").status) == {"pending_evidence_review"}
+    assert family("silvopastoral").status[1] == "missing_host_context"
     np.testing.assert_equal(
         family(
             "silvopastoral",
@@ -154,8 +154,8 @@ def test_live_schema_family_rules_and_missing_families():
     )
     for name in ["linear_boundary", "shaded_perennial"]:
         result = family(name)
-        assert np.isnan(result.values).all()
-        assert set(result.status) == {"pending_evidence_review"}
+        assert np.isnan(result.values[:3]).all()
+        assert result.values[-1] == 0
     assert set(family("homegardens_proximity").status) == {"qualitative_only"}
 
 
@@ -165,15 +165,19 @@ def host_meta(crop, basis="observed"):
         "source_reference": "test survey",
         "data_basis": basis,
         "host_crop": crop,
+        "unit": "fraction_of_pixel",
     }
 
 
 def test_crop_alternatives_use_max_and_retain_drivers():
     masks = {
-        "coffee_observed_present": [1, 0, 1, 0],
-        "cocoa_observed_present": [0, 1, 1, 0],
+        "coffee_host_fraction": [1, 0, 1, 0],
+        "cocoa_host_fraction": [0, 1, 1, 0],
+        "tea_host_fraction": [0, 0, 0, 0],
     }
-    meta = {crop + "_observed_present": host_meta(crop) for crop in ("coffee", "cocoa")}
+    meta = {
+        crop + "_host_fraction": host_meta(crop) for crop in ("coffee", "cocoa", "tea")
+    }
     result = family(
         "shaded_perennial", approved_only=False, masks=masks, mask_metadata=meta
     )
@@ -190,28 +194,28 @@ def test_crop_alternatives_use_max_and_retain_drivers():
         [1, 0, 1, 0],
     )
     with pytest.raises(ValueError, match="Crop"):
-        family("shaded_perennial", crop="tea")
+        family("shaded_perennial", crop="unconfigured_crop")
 
 
 def test_crop_unknown_alternative_does_not_erase_known_pass():
     result = family(
         "shaded_perennial",
         approved_only=False,
-        masks={"coffee_observed_present": [1, 0, 0, 0]},
-        mask_metadata={"coffee_observed_present": host_meta("coffee")},
+        masks={"coffee_host_fraction": [1, 0, 0, 0]},
+        mask_metadata={"coffee_host_fraction": host_meta("coffee")},
     )
     np.testing.assert_equal(result.values, [1, np.nan, np.nan, 0])
     assert result.driver_crops[0] == "coffee"
 
 
-@pytest.mark.parametrize("basis", ["modelled_allocation", "niche_model"])
+@pytest.mark.parametrize("basis", ["niche_model"])
 def test_modelled_host_is_not_observed_presence(basis):
     result = family(
         "shaded_perennial",
         crop="coffee",
         approved_only=False,
-        masks={"coffee_observed_present": [1, 1, 1, 0]},
-        mask_metadata={"coffee_observed_present": host_meta("coffee", basis)},
+        masks={"coffee_host_fraction": [1, 1, 1, 0]},
+        mask_metadata={"coffee_host_fraction": host_meta("coffee", basis)},
     )
     np.testing.assert_equal(result.values, [np.nan, np.nan, np.nan, 0])
     assert result.status[0] == "incompatible_host_data"
@@ -248,3 +252,47 @@ def test_mapping_approval_is_separate_from_evidence_approval():
     )
     assert result.status[0] == "pending_mapping_review"
     assert np.isnan(result.values[0])
+
+
+def test_scoping_fraction_or_retains_crop_extent_and_tea_driver():
+    result = family(
+        "shaded_perennial",
+        masks={
+            "coffee_host_fraction": [0.2, 0, 0.1, 1],
+            "cocoa_host_fraction": [0, 0, 0.3, 0],
+            "tea_host_fraction": [0, 0.15, 0, 0],
+        },
+        mask_metadata={
+            crop + "_host_fraction": host_meta(crop, "modelled_allocation")
+            for crop in ("coffee", "cocoa", "tea")
+        },
+    )
+    np.testing.assert_equal(result.values, [1, 1, 1, 0])
+    assert result.driver_crops.tolist() == ["coffee", "tea", "cocoa|coffee", ""]
+    np.testing.assert_equal(result.crop_fractions["coffee"], [0.2, 0, 0.1, 0])
+    np.testing.assert_equal(result.crop_fractions["cocoa"], [0, 0, 0.3, 0])
+    np.testing.assert_equal(result.crop_fractions["tea"], [0, 0.15, 0, 0])
+
+
+@pytest.mark.parametrize("value", [-0.1, 20, float("inf")])
+def test_fraction_masks_reject_invalid_units_and_values(value):
+    with pytest.raises(ValueError, match="fractions"):
+        family(
+            "shaded_perennial",
+            crop="coffee",
+            masks={"coffee_host_fraction": [value, 0, 0, 0]},
+            mask_metadata={"coffee_host_fraction": host_meta("coffee")},
+        )
+
+
+def test_fraction_mask_requires_fraction_unit_provenance():
+    meta = host_meta("coffee", "modelled_allocation")
+    meta["unit"] = "hectares"
+    result = family(
+        "shaded_perennial",
+        crop="coffee",
+        masks={"coffee_host_fraction": [0.2, 0, 0, 0]},
+        mask_metadata={"coffee_host_fraction": meta},
+    )
+    assert result.status[0] == "incompatible_host_data"
+    assert np.isnan(result.crop_fractions["coffee"][0])

@@ -4,7 +4,7 @@
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
     "schema/registers/SRC_source_register.csv": "fb4be732550b437c624f813e27c6e29bb4a437d18309983721cbd4c001808102",
-    "schema/registers/EV_evidence_register.csv": "597e6272295e7daf75cf8e4a43d3b422d25a2f83722634a41bfc882679780d6d",
+    "schema/registers/EV_evidence_register.csv": "6a5b0e674a4a9caf78f361f9fce3c8bd06774ae4d77a729092884288b232747f",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
@@ -95,6 +95,14 @@
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
         },
         {
+          "variable": "soil_ph",
+          "support_pct": null,
+          "n_sources": 1,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
           "variable": "soil_texture_hsg",
           "support_pct": null,
           "n_sources": 1,
@@ -140,6 +148,7 @@
           "members": [
             "soil_drainage",
             "soil_organic_carbon",
+            "soil_ph",
             "soil_texture_hsg"
           ]
         },
@@ -613,9 +622,9 @@
         "ev_T4_ph_haile2024_1": {
           "source_id": "haile_2024",
           "variable": "soil_ph",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "class_or_gate_requires_mapping",
           "relationship": {
             "type": "source_ordinal_classes",
             "unit": "pH",
@@ -3769,6 +3778,21 @@
           ],
           "parameter_evidence": {}
         },
+        "soil_ph": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_T4_ph_haile2024_1",
+              "class_or_gate_requires_mapping"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
         "mean_annual_temperature": {
           "used": [],
           "dropped": [],
@@ -3914,6 +3938,14 @@
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
         },
         {
+          "variable": "land_cover",
+          "support_pct": null,
+          "n_sources": 1,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
           "variable": "soil_erosion_risk",
           "support_pct": null,
           "n_sources": 1,
@@ -3956,6 +3988,15 @@
           "pct": null,
           "members": [
             "soil_erosion_wind"
+          ]
+        },
+        "land_use": {
+          "key": "land_use",
+          "n_sources": 1,
+          "corpus_n": null,
+          "pct": null,
+          "members": [
+            "land_cover"
           ]
         }
       },
@@ -4656,9 +4697,9 @@
         "ev_t4_land_cover_castle2025_windbreak": {
           "source_id": "castle_2025",
           "variable": "land_cover",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "class_or_gate_requires_mapping",
           "relationship": {
             "eligible_classes": [
               "cropland",
@@ -4725,6 +4766,21 @@
             [
               "ev_carbon_sequestration_potential_saraheb3_p4_soil",
               "unsupported_numeric_encoding"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "land_cover": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_t4_land_cover_castle2025_windbreak",
+              "class_or_gate_requires_mapping"
             ]
           ],
           "parameter_evidence": {}
@@ -14683,7 +14739,7 @@
         "ev_economic_return_jezeer17_1": {
           "source_id": "vaast2016_double_dividend",
           "variable": "economic_return",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -15079,6 +15135,14 @@
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
         },
         {
+          "variable": "land_cover",
+          "support_pct": null,
+          "n_sources": 1,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
           "variable": "protected_area_status",
           "support_pct": null,
           "n_sources": 1,
@@ -15150,10 +15214,11 @@
         },
         "land_use": {
           "key": "land_use",
-          "n_sources": 1,
+          "n_sources": 2,
           "corpus_n": null,
           "pct": null,
           "members": [
+            "land_cover",
             "tree_canopy_cover"
           ]
         },
@@ -15191,9 +15256,9 @@
         "ev_t4_land_cover_castle2025_2": {
           "source_id": "castle_2025",
           "variable": "land_cover",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "class_or_gate_requires_mapping",
           "relationship": {
             "gating_condition": "pasture/grassland"
           }
@@ -17404,6 +17469,21 @@
       "support_basis": "unknown_screened_source_membership",
       "support_sources": [],
       "reports": {
+        "land_cover": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_t4_land_cover_castle2025_2",
+              "class_or_gate_requires_mapping"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
         "slope": {
           "used": [],
           "dropped": [],
