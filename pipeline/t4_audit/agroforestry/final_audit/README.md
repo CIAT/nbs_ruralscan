@@ -343,3 +343,8 @@ Pete answered: “GPW grassland plus local grazing confirmation”. This superse
 ## Next input sourcing — 20 October 2026
 
 `docs/review/t4-next-inputs.html` records candidate-source triage and categorical input readiness. `executable_categories/pilot_input_plan.json` is generated from existing T4/BIND with provisional SLE context, not a confirmed AOI or fetched-data claim. FTW global outputs merit evaluation before API deployment, but pasture is outside documented training scope and smallholder fragmentation matters for line length. Forest Data Partnership 2026a cocoa/coffee probabilities require validated classification before aggregation to crop-area fractions; no direct probability-to-fraction substitution. Sierra Leone AAS 2024 pasture/feed modules are a candidate confirmation source; geolocation and question semantics remain unverified. Candidate documentation only: no analytical binding switched, no microdata ingested, no EV extraction.
+
+
+## Haiti confirmed — 20 October 2026
+
+Pete selected Haiti (HTI), superseding provisional SLE context. Input plan regenerated against HTI bindings; MapSPAM cocoa uses global binding without the SLE-specific upload prompt. National extent assumed for planning only; geometry not acquired. Pete asked whether GPW + GLW4 2020 could supply confirmation. This is a modelled grazing proxy, not local confirmation: proposed flagged trial uses GPW grassland with positive cattle/goat/sheep density, preserving native livestock support and nodata. Asked whether to adopt trial or keep it as separate comparison; no live T4 change pending answer. Sierra Leone survey candidate is not applicable to Haiti.

@@ -1,6 +1,5 @@
 {
-  "status": "planning_only_no_aoi_confirmed_no_data_fetched",
-  "context_assumption": "SLE, provisional from project docs; not approved AOI",
+  "status": "planning_only_country_confirmed_no_data_fetched",
   "families": {
     "agroforestry__linear_boundary": {
       "gate_datasets": [
@@ -332,18 +331,6 @@
               "variable": "cocoa_distribution",
               "dataset_id": "mapspam_physical_area_2020",
               "winning_binding": {
-                "binding_id": "cocoa_distribution__SLE",
-                "variable": "cocoa_distribution",
-                "scope_type": "admin_country",
-                "scope_id": "SLE",
-                "dataset_id": "",
-                "preference_rank": 1,
-                "status": "requires_upload",
-                "fitness_note": "National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot.",
-                "band": ""
-              },
-              "needs_upload": true,
-              "fell_back_to": {
                 "binding_id": "cocoa_distribution__global",
                 "variable": "cocoa_distribution",
                 "scope_type": "global",
@@ -354,7 +341,9 @@
                 "fitness_note": "Cocoa physical-area ha / pixel area ha. MapSPAM allocation fallback for scoping; prefer accurate commodity map. Not harvested-area intensity or a suitability score.",
                 "band": "34"
               },
-              "prompt": "cocoa_distribution: preferred dataset for this AOI requires upload (National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot.). Using fallback 'mapspam_physical_area_2020' meanwhile.",
+              "needs_upload": false,
+              "fell_back_to": null,
+              "prompt": null,
               "band": "34",
               "dataset": {
                 "dataset_id": "mapspam_physical_area_2020",
@@ -523,5 +512,18 @@
         }
       }
     }
+  },
+  "country": "Haiti",
+  "country_code": "HTI",
+  "extent_assumption": "National extent for planning; boundary geometry not fetched.",
+  "grazing_proxy": {
+    "status": "proposed_not_applied",
+    "inputs": [
+      "GPW dominant_class 2020",
+      "GLW4 cattle/goats/sheep 2020"
+    ],
+    "candidate_rule": "GPW class 1 or 2 AND positive cattle/goat/sheep density",
+    "limits": "Modelled livestock presence does not confirm grazing; no validated density cutoff. Preserve native livestock support and missing data.",
+    "live_policy": "Local grazing confirmation remains required pending response."
   }
 }
