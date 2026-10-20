@@ -68,10 +68,10 @@ def test_stale_numeric_t4_rows_removed():
         for r in numeric
         if r["mapping_id"] == "agroforestry__planted_silvoarable__slope"
     )
-    assert slope["relationship_params"] == {
-        "threshold": 19.3,
-        "above_is_suitable": False,
-    }
+    assert slope["relationship_params"]["threshold"] == 19.3
+    assert slope["relationship_params"]["above_is_suitable"] is False
+    assert len(slope["relationship_params"]["profiles"]) == 2
+    assert len(slope["relationship_params"]["harmonization"]["pools"]) == 1
     assert (
         len(
             [

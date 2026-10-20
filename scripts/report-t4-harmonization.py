@@ -57,6 +57,7 @@ def build():
                     context=profile["context"],
                     pool_status=profile.get("pool_review", ""),
                     source_weight=profile["source_weight"],
+                    applicability_review=profile.get("applicability_review", {}),
                 )
             )
         for item in params.get("harmonization", {}).get("review", []):
@@ -87,6 +88,7 @@ def build():
         records=records,
         review=review,
         held_numeric_policies=holds,
+        combined_responses=pools,
     )
     out = ROOT / "pipeline/t4_audit/agroforestry/final_audit/harmonization.json"
     out.write_text(json.dumps(report, indent=2) + "\n")
@@ -109,6 +111,8 @@ def build():
             return ("≤ " if raw[-1] == "]" else "< ") + number(right)
         if right == "∞":
             return ("≥ " if raw[0] == "[" else "> ") + number(left)
+        if left == right:
+            return "Exactly " + number(left)
         return number(left) + "–" + number(right)
 
     variables = list(dict.fromkeys(r["variable"] for r in records))
@@ -133,6 +137,68 @@ def build():
     }
     for index, variable in enumerate(variables):
         profiles = [r for r in records if r["variable"] == variable]
+        for pool in pools:
+            if not pool["pool_id"].endswith("__" + variable):
+                continue
+            pooled_bands = []
+            display_cells = []
+            for original in pool["cells"]:
+                cell = dict(original)
+                previous = display_cells[-1] if display_cells else None
+                same = previous and all(
+                    previous.get(key) == cell.get(key)
+                    for key in ("score", "n_sources", "flags")
+                )
+                touching = previous and previous["upper"] == cell["lower"] and (
+                    previous["upper_inclusive"] or cell["lower_inclusive"]
+                )
+                if same and touching:
+                    previous["upper"] = cell["upper"]
+                    previous["upper_inclusive"] = cell["upper_inclusive"]
+                else:
+                    display_cells.append(cell)
+            for cell in display_cells:
+                if not cell["n_sources"]:
+                    continue
+                lo, hi = cell["lower"], cell["upper"]
+                raw = (
+                    ("[" if cell["lower_inclusive"] else "(")
+                    + (f"{lo:g}" if lo is not None else "−∞")
+                    + ", "
+                    + (f"{hi:g}" if hi is not None else "∞")
+                    + ("]" if cell["upper_inclusive"] else ")")
+                )
+                label = (
+                    ("Unresolved: " + ", ".join(cell["flags"]))
+                    if cell["score"] is None
+                    else (
+                        "Both studies contribute"
+                        if cell["n_sources"] == 2
+                        else "One study contributes"
+                    )
+                )
+                pooled_bands.append(
+                    dict(
+                        range=raw,
+                        label=label,
+                        old_score=cell["score"],
+                        new_score=cell["score"],
+                    )
+                )
+            profiles.append(
+                dict(
+                    variable=variable,
+                    system=pool["system_id"],
+                    profile_id=pool["pool_id"],
+                    source_id="Combined scoping response",
+                    source_group="default",
+                    citation="Conditional India-derived planted-tree/crop scoping prior. Original studies retained; not a validated global envelope. Exact endpoints and disagreement flags remain in T4.",
+                    unit=profiles[0]["unit"],
+                    scores=pooled_bands,
+                    context={"region": "India-derived regional models"},
+                    applicability_review={"status": "combined_scoping_prior"},
+                )
+            )
         levels = sorted(
             {
                 b["new_score"]
@@ -167,6 +233,13 @@ def build():
                 if r["system"].endswith("cross_family")
                 else pretty(r["system"].replace("agroforestry__", ""))
             )
+            assessment = r.get("applicability_review", {})
+            if assessment.get("status") == "establishment_pathway_unresolved":
+                system = "Parkland: planting or regeneration unclear"
+            elif assessment.get("status") == "generic_secondary_context":
+                system = "Generic statement; no shaded-crop assignment"
+            elif assessment.get("status") == "conditional_scoping_transfer":
+                system = "Planted trees with crops — scoping prior"
             group = (
                 ""
                 if r["source_group"] == "default"
@@ -185,6 +258,8 @@ def build():
                 + esc(r["citation"])
                 + "</p><p>"
                 + esc(r["profile_id"])
+                + "</p><p>"
+                + esc(assessment.get("decision", ""))
                 + "</p></details></th>"
             )
         doc.append("</tr></thead><tbody>")
@@ -196,6 +271,7 @@ def build():
                         b["label"].strip().lower().replace(" ", "_"),
                     )
                     for r in profiles
+                    if r["source_id"] != "Combined scoping response"
                     for b in r["scores"]
                     if b["new_score"] == score
                 )
@@ -229,17 +305,6 @@ def build():
                         + esc(pretty(band["label"]))
                         + "</small>"
                     )
-                    if band["old_score"] != band["new_score"]:
-                        previous = (
-                            "unknown"
-                            if band["old_score"] is None
-                            else f"{band['old_score']:.3g}"
-                        )
-                        doc.append(
-                            '<small class="previous">Previous compiler score: '
-                            + previous
-                            + "</small>"
-                        )
                     doc.append("</div>")
                 doc.append("</td>")
             doc.append("</tr>")
@@ -247,7 +312,7 @@ def build():
             '</tbody></table></div><p class="foot">“Not reported” means this class is absent from that profile—not unsuitable. Cutoffs rounded for display; hover for original interval brackets. Shared ambiguous endpoints remain unknown. Original class names appear beneath each range.</p></section>'
         )
     doc.append(
-        '<details class="review"><summary>What still needs review?</summary><ul><li>System and context compatibility before combining studies. These columns compare evidence; they are not an approved pooled response.</li><li>Mushtaq’s “favourable above 1,200 mm” has no identified class score.</li><li>FMNR rainfall study ranges describe observations, not a suitability function.</li>'
+        '<details class="review"><summary>What still needs review?</summary><ul><li>Three conditional planted-tree/crop pools are now compiled: slope (Ahmad + Nath), soil carbon (Ahmad + Nath), pH (Nath + Singh). Combined columns show available-source medians; one-source regions are identified. These India-derived model priors are not globally validated limits.</li><li>Haile: parkland is established, but planted versus regenerated origin is unspecified. Its profiles remain separate.</li><li>Yadav’s temperature groups describe tree species, not agroforestry systems; moved to the species lane.</li><li>Mushtaq’s “favourable above 1,200 mm” is generic secondary discussion, not shaded-perennial evidence, and has no class score.</li><li>FMNR rainfall study ranges describe observations, not a suitability function.</li>'
     )
     for hold in holds:
         doc.append(
@@ -258,7 +323,7 @@ def build():
             + "</li>"
         )
     doc.append(
-        '</ul></details><p class="foot">Previous scores came from the old compiler, not necessarily the papers. Common scores follow the approved convention; they are not probabilities. <a href="t4-categorical-tables.html">Live T4</a> · <a href="t4-harmonization-examples.html">Worked conventions</a></p>'
+        '</ul></details><p class="foot">Common scores align the papers’ class labels on one agreed scale; they are not probabilities. <a href="t4-categorical-tables.html">Live T4</a> · <a href="t4-harmonization-examples.html">Worked conventions</a></p>'
     )
     doc.append("""<script>
 const buttons=[...document.querySelectorAll('[data-variable]')];

@@ -133,6 +133,9 @@ def render(root, read_csv, table, bindings, coverage):
                 status = "Score crosswalk needs review. Reported ranges remain retained; no suitability score is inferred for unclassified meanings."
             if shared:
                 status += " System applicability must be chosen explicitly."
+            if isinstance(params.get("threshold"), (int, float)):
+                rule += f" Separate existing threshold: {params['threshold']} {profiles[0]['unit']}."
+                status += " Default execution retains that threshold; source profiles and combined responses require explicit selection. They are alternatives, not blended rules."
             kind = "Numeric suitability"
         elif "class_map" in params:
             allowed = []

@@ -224,6 +224,7 @@ def compile_bands(
                         "compatibility_approved": hp.get(
                             "compatibility_approved", False
                         ),
+                        "applicability_review": hp.get("applicability_review", {}),
                         "pool_review": hp.get(
                             "pool_review", "compatibility_review_required"
                         ),

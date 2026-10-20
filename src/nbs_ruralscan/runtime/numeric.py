@@ -33,6 +33,14 @@ def evaluate_numeric(row, values, *, profile_id=None, pool_id=None):
             },
         }
         return evaluate_numeric(selected, x, profile_id=pool_id)
+    if profile_id is not None and row["relationship_type"] != "piecewise":
+        if "profiles" not in params:
+            raise ValueError("No numeric profiles available")
+        return evaluate_numeric(
+            {"relationship_type": "piecewise", "relationship_params": params},
+            x,
+            profile_id=profile_id,
+        )
     if row["relationship_type"] == "threshold":
         cut = params.get("threshold")
         if isinstance(cut, bool) or not isinstance(cut, (float, int)):
