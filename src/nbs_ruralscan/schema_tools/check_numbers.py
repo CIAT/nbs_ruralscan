@@ -53,10 +53,11 @@ _NUMBER_WORDS = {
     "twelve": "12",
     "fifteen": "15",
     "twenty": "20",
-    "double[ds]?|twice|twofold": "2",
-    "tripled?|threefold|thrice": "3",
-    "fourfold|quadrupled?": "4",
+    "doubl(?:ed?|es|ing)|twice|twofold": "2",
+    "tripl(?:ed?|es|ing)|threefold|thrice": "3",
+    "fourfold|quadrupl(?:ed?|es|ing)": "4",
     "fivefold": "5",
+    "halv(?:ed|es|ing)": "0.5",
     "tenfold": "10",
 }
 

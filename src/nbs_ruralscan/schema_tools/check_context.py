@@ -70,6 +70,8 @@ ALLOWED_KEYS = {
     # to the practice sitting outside its envelope (heavy rainfall → waterlogging). Held out
     # of the T6 production class, kept as a performance caveat and as T3 hazard evidence.
     "envelope_misfit",
+    # catalogue #30: what the money buys (establishment | recurrent); routing, not a claim
+    "cost_nature",
     "note",
 }
 INCOME = {"low", "lower_middle", "upper_middle", "high", "lic_lmic"}
@@ -102,6 +104,10 @@ COMPARATOR = {
     # coastal marsh measured where it already stands: same rule as existing_wetland, but it
     # belongs in the coastal family row rather than the rewetting one
     "existing_wetland_coastal",
+    # the practice measured against the UNMANAGED state (silvopasture vs non-grazed forest)
+    # rather than the farming-system counterfactual a T3 cell asks about (Pete 2026-10-19,
+    # hazard_cell_comparator): such units inform the account but never set a T3 class
+    "unmanaged_state",
 }
 GAS = {"co2", "ch4", "n2o", "net_co2e"}
 ATTRIBUTION = {"isolated", "bundled"}
@@ -110,6 +116,9 @@ BENEFICIARY = {"farm_household", "community", "society"}
 #: an ADOPTION share (how many of the sample used the NbS component) scales attribution;
 #: a DESIGN share (the component is mandatory in every comparison) does not
 SHARE_KIND = {"adoption", "design"}
+#: catalogue #30 (2026-10-19): route a cost by WHAT THE MONEY BUYS, never by its denominator —
+#: an annualised capital cost ($ ha-1 yr-1 over the restoration event) is still establishment
+COST_NATURE = {"establishment", "recurrent"}
 TIMESCALE = {"immediate", "short_term_1_3yr", "medium_term_3_7yr", "long_term_7yr_plus"}
 #: `practice_as_described` is required from this ruleset on. Older units are NOT flagged:
 #: the field is filled going forward and back-filled where a reviewer asks for it, never by
@@ -203,6 +212,7 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
         ("normal_year_reference", NORMAL_YEAR),
         ("beneficiary", BENEFICIARY),
         ("component_share_kind", SHARE_KIND),
+        ("cost_nature", COST_NATURE),
     ):
         v = ctx.get(key)
         if v is not None and v not in vocab:

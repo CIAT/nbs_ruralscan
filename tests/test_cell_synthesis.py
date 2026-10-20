@@ -2702,3 +2702,176 @@ def test_rollup_excluded_family_keeps_its_rows_but_never_sets_the_nbs_class(tmp_
     )
     assert set(fam_rows["riparian_buffer__planted"]["evidence_ids"]) == {"fr1", "fr2"}
     assert any("family_rollup_policy" in n for n in rep.notes)
+
+
+# ── family-level roll-up vote (Pete 2026-10-19, rollup_family_honesty = B) ──────────────
+
+
+def _vote_top(**over):
+    top = {
+        "scope_type": "",
+        "suitability_family_id": "",
+        "effect_direction": "strong_positive",
+        "effect_confidence": "high",
+        "evidence_level": "robust",
+        "agreement_level": "high",
+        "justification": {"statement": "s."},
+    }
+    top.update(over)
+    return top
+
+
+def _v(fam, label, n, srcs=None):
+    return {
+        "family": fam,
+        "label": label,
+        "n_sources": n,
+        "sources": set(srcs or [f"{fam}{i}" for i in range(n)]),
+    }
+
+
+def test_family_vote_dissent_flips_rollup_to_conflicting():
+    # three of six families conflicting, carrying most weight -> the headline defers
+    top = _vote_top()
+    rep = cs.CellReport()
+    pooled = {f"s{i}" for i in range(10)}
+    votes = [
+        _v("n__a", "strong_positive", 4, ["s0", "s1", "s2", "s3"]),
+        _v("n__b", "conflicting_evidence", 4, ["s4", "s5", "s6", "s7"]),
+        _v("n__c", "conflicting_evidence", 2, ["s8", "s9"]),
+    ]
+    cs._family_vote(top, rep, votes, pooled)
+    assert top["effect_direction"] == "conflicting_evidence"
+    assert top["agreement_level"] == "low"
+    assert top["effect_confidence"] == "medium"  # robust x low
+    fv = top["justification"]["family_vote"]
+    assert fv["pooled_label"] == "strong_positive"
+    assert fv["dissent_share"] >= 1 / 3
+    assert "SUB-PRACTICE VOTE" in top["justification"]["statement"]
+
+
+def test_family_vote_agreeing_families_set_the_median():
+    top = _vote_top(effect_direction="strong_positive")
+    rep = cs.CellReport()
+    pooled = {f"s{i}" for i in range(8)}
+    votes = [
+        _v("n__a", "moderate_positive", 4, ["s0", "s1", "s2", "s3"]),
+        _v("n__b", "slight_positive", 4, ["s4", "s5", "s6", "s7"]),
+    ]
+    cs._family_vote(top, rep, votes, pooled)
+    assert top["effect_direction"] in ("moderate_positive", "slight_positive")
+    assert top["justification"]["family_vote"]["outcome"] == top["effect_direction"]
+
+
+def test_family_vote_low_coverage_leaves_pooled_class():
+    top = _vote_top()
+    rep = cs.CellReport()
+    pooled = {f"s{i}" for i in range(10)}
+    votes = [
+        _v("n__a", "slight_negative", 2, ["s0", "s1"]),
+        _v("n__b", "slight_negative", 2, ["s2", "s3"]),
+    ]
+    cs._family_vote(top, rep, votes, pooled)
+    assert top["effect_direction"] == "strong_positive"
+    assert top["justification"]["family_vote"]["outcome"] == "pooled_class_stands"
+
+
+def test_family_vote_skips_scope_family_and_econ_rows():
+    rep = cs.CellReport()
+    scope = _vote_top(scope_type="income_group")
+    cs._family_vote(scope, rep, [], {"a"})
+    assert "family_vote" not in scope["justification"]
+    econ = _vote_top(effect_direction="")
+    cs._family_vote(econ, rep, [], {"a"})
+    assert "family_vote" not in econ["justification"]
+
+
+def test_unmanaged_state_comparator_never_sets_a_t3_class():
+    """Pete 2026-10-19 (hazard_cell_comparator): a unit measured against the UNMANAGED
+    state (silvopasture vs non-grazed forest) informs a T3 account but never sets the
+    class — the cell's counterfactual is the farming system (open pasture)."""
+    xw = XW + [
+        cs.XWRow("fire_hazard", "T3", "fire", "same", "direct"),
+        cs.XWRow("fire_hazard", "T6", "soil_erosion_risk", "same", "direct"),
+    ]
+    unmanaged = _u(
+        "um1",
+        "s1",
+        "fire_hazard",
+        "negative",
+        "moderate",
+        ctx={
+            "income_group": "low",
+            "hazard_type": "fire",
+            "comparator": "unmanaged_state",
+        },
+    )
+    pasture = _u(
+        "um2",
+        "s2",
+        "fire_hazard",
+        "negative",
+        "moderate",
+        ctx={"income_group": "low", "hazard_type": "fire"},
+    )
+    rows, _ = cs.synthesise_cell(
+        [unmanaged, pasture],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="fire",
+        xw_rows=xw,
+    )
+    g = rows[0]
+    assert g["justification"]["held_out_of_class"]["unmanaged_state_comparator"] == [
+        "um1"
+    ]
+    assert "um1" in g["evidence_ids"], "held from the class, still in the row"
+
+
+def test_cost_nature_routes_annualised_capital_out_of_recurrent_cost():
+    """Catalogue #30 (Pete 2026-10-19): an annualised establishment cost ($/ha/yr of the
+    restoration event) is capital, not maintenance — `context.cost_nature` overrides the
+    denominator heuristic in both directions; untagged units keep the denominator routing."""
+    est = _u(
+        "cn1",
+        "s1",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low", "cost_nature": "establishment"},
+        rel={"metric": "absolute", "unit": "usd_per_ha_yr", "value": 89660},
+    )
+    plain = _u(
+        "cn2",
+        "s2",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low"},
+        rel={"metric": "absolute", "unit": "usd_per_ha_yr", "value": 120},
+    )
+    rec = _u(
+        "cn3",
+        "s3",
+        "project_cost",
+        "positive",
+        "unspecified",
+        ctx={"income_group": "low", "cost_nature": "recurrent"},
+        rel={"metric": "absolute", "unit": "usd_per_ha", "value": 50},
+    )
+    assert not cs._unit_fits_econ_cell(est, "recurrent_cost")
+    assert cs._unit_fits_econ_cell(est, "establishment_cost")
+    assert cs._unit_fits_econ_cell(plain, "recurrent_cost")
+    assert not cs._unit_fits_econ_cell(plain, "establishment_cost")
+    assert not cs._unit_fits_econ_cell(rec, "establishment_cost")
+    assert not cs._unit_fits_econ_cell(rec, "cost_per_hectare_restored")
+
+
+def test_rollup_excluded_family_casts_no_vote():
+    """A family parked out of the roll-up (family_rollup_policy) keeps its row but must not
+    vote on the NbS class — its units are already excluded from the pooled row."""
+    import inspect
+
+    src = inspect.getsource(cs.synthesise_cell_with_families)
+    assert "casts no vote" in src and "fam_policy.get((nbs_id, fam))" in src

@@ -419,3 +419,23 @@ def test_final_reconciliation_covers_live_links_and_parks_ambiguous_classes():
         if r["final_disposition"] == "parked_source_mapping"
     }
     assert all(r["final_disposition"] != "pending" for r in rows)
+
+
+def test_preserved_gate_cannot_bypass_evidence_review(runner, tmp_path, monkeypatch):
+    import copy
+    import json
+
+    existing = copy.deepcopy(
+        runner._existing_rows(runner.ROOT / "schema/recipes/agroforestry")
+    )
+    gate = next(r for r in existing if r["relationship_type"] == "ranked_classes")
+    gate["evidence_ids"] = json.dumps(["missing_or_unreviewed"])
+    monkeypatch.setattr(runner, "_existing_rows", lambda _: existing)
+    with pytest.raises(ValueError, match="unapproved/dropped/missing evidence"):
+        runner.write_recipe(
+            "agroforestry",
+            runner.synthesise("agroforestry"),
+            runner._rd(runner.REG / "VONT_variable_ontology.csv"),
+            output_dir=tmp_path,
+        )
+    assert not (tmp_path / "T4_suitability_mappings.csv").exists()

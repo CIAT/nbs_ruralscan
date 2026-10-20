@@ -233,6 +233,21 @@ def write_recipe(
         and json.loads(r.get("relationship_params") or "{}").get("mapping_role")
         == "eligibility_gate"
     }
+    evidence = {r["evidence_id"]: r for r in _rd(REG / "EV_evidence_register.csv")}
+    for gate in gates.values():
+        ids = json.loads(gate.get("evidence_ids") or "[]")
+        if not ids:
+            raise ValueError(f"Categorical gate lacks evidence: {gate['mapping_id']}")
+        for eid in ids:
+            unit = evidence.get(eid)
+            if (
+                unit is None
+                or unit["review_state"] == "dropped"
+                or unit["reviewer_ok"].lower() != "true"
+            ):
+                raise ValueError(
+                    f"Categorical gate references unapproved/dropped/missing evidence: {eid}"
+                )
     csv_rows: list[dict[str, object]] = []
     for family, res in results.items():
         save_family(res, recipe_dir / f"T4_{family}.json")
@@ -385,7 +400,11 @@ def main(argv: list[str] | None = None) -> int:
         report_path.write_text(
             json.dumps(
                 {
-                    "status": "draft_requires_evidence_and_applicability_review",
+                    "status": (
+                        "reviewed_compilation_with_explicit_gaps"
+                        if args.approved_only
+                        else "draft_requires_evidence_and_applicability_review"
+                    ),
                     "input_sha256": {
                         str(path.relative_to(ROOT)): hashlib.sha256(
                             path.read_bytes()

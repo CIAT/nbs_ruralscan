@@ -293,29 +293,16 @@ def main() -> None:
         + "</blockquote></details>"
         for r in classes
     )
-    export_dir = ROOT / "docs/review/exports"
-    latest = {}
-    for export in sorted(export_dir.glob("*.csv")):
-        with export.open(encoding="utf-8-sig") as f:
-            for r in csv.DictReader(f):
-                if (
-                    r.get("batch") == "agroforestry-t4-final-audit-oct19"
-                    and r.get("reviewer") == "Pete Steward"
-                ):
-                    eid = r["evidence_id"]
-                    if eid not in latest or r["date"] > latest[eid]["date"]:
-                        latest[eid] = r
-    review_status = "Eleven further source corrections await review."
-    if latest:
-        decisions = Counter(r["decision"] for r in latest.values())
-        review_status = (
-            f"Pete's latest eleven-item decisions: {decisions['approve']} approved, "
-            f"{decisions['hold']} held, {decisions['reject']} rejected (soft-deleted)."
-        )
+    active = [u for u in units if u["review_state"] != "dropped"]
+    reviewed = sum(u["reviewer_ok"].lower() == "true" for u in active)
+    review_status = (
+        f"Current register: {reviewed} of {len(active)} active audited records have reviewer_ok=true. "
+        f"{len(parked)} source mappings are explicitly parked; source approval does not resolve their class semantics."
+    )
     document = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agroforestry T4 pipeline audit</title>
 <style>body{font:16px system-ui;max-width:1400px;margin:40px auto;padding:0 24px;color:#16362b;background:#f6f8f5}h1{font-size:34px}section{padding:24px;background:white;border:1px solid #dce5df;margin:20px 0;border-radius:12px}table{border-collapse:collapse;font-size:12px;width:100%}td,th{text-align:left;padding:9px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}input{font:inherit;padding:12px;width:90%}pre,blockquote{white-space:pre-wrap;overflow-wrap:anywhere}summary{cursor:pointer;padding:12px}a{color:#17694c}.warn{background:#fff0cf;padding:18px;border-radius:8px}</style>
 <h1>Agroforestry T4: where evidence goes</h1><p>Final branch reconciliation · 20 October 2026 · Reviewed live T4; pilot testing belongs to Diego.</p>
-<section><h2>Result</h2><p><strong>SUMMARY_COUNTS</strong></p><p class="warn">Screened-source denominator unknown. No support percentages or 20% floor decisions inferred from overlapping search totals. One approved numeric rule is a source modelling choice requiring applicability review, not a universal validation.</p><p>REVIEW_STATUS Five earlier corrected holds remain approved. No evidence rows deleted.</p><p><a href="../review.html?batch=agroforestry-t4-final-audit-oct19">Review eleven corrections</a> · <a href="../review.html?batch=agroforestry-t4-holds-oct19">Earlier five approvals</a></p></section>
+<section><h2>Result</h2><p><strong>SUMMARY_COUNTS</strong></p><p class="warn">Screened-source denominator unknown. No support percentages or 20% floor decisions inferred from overlapping search totals. One approved numeric rule is a source modelling choice requiring applicability review, not a universal validation.</p><p>REVIEW_STATUS Quarantined records remain retained.</p><p><a href="../review.html?batch=agroforestry-t4-final-audit-oct19">Review eleven corrections</a> · <a href="../review.html?batch=agroforestry-t4-holds-oct19">Earlier five approvals</a></p></section>
 <section><p><a href="t4-categorical-tables.html">Land-use and categorical class tables</a></p><h2>Retained class evidence</h2><p>Original source ranks, ranges and codes preserved. These do not become calibrated 0–1 membership scores automatically. “Low” does not mean excluded; unknown dataset codes do not become land-cover classes.</p>CLASS_CARDS</section>
 <section><h2>Every record accounted for</h2><input id="search" aria-label="Filter records" placeholder="Filter by source, variable, evidence ID or disposition"><table><thead><tr>TABLE_HEAD</tr></thead><tbody>TABLE_ROWS</tbody></table></section>
 <script>document.getElementById('search').addEventListener('input',e=>{let q=e.target.value.toLowerCase();document.querySelectorAll('tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))})</script></html>"""

@@ -7,27 +7,37 @@ live progress page lists the same items).
 The 19 October review round is applied: the sign-defects batch, both scheme sign-offs, the
 Vietnam income call and the zhang preprint are all closed (below). What remains open:
 
-## Open
+## All four answered 19 October, late night
 
-1. **Three hold cards from your own review** (logged as flags, awaiting a rule or a shrug):
-   - **santos25_8** (silvopastoral carbon): your question — "can only be compared to traditional
-     system, but what is the traditional system? is it a valid comparator?" The paper's
-     comparator is an unnamed conventional arm; if you want a rule (named-comparator-or-no-vote),
-     say so and it gets drafted as a decision.
-   - **ojan20_4** (wetland carbon): removals positive, methane negative, net unclear. The net-CO2e
-     rule (16 Oct) already governs the class; this unit stays a non-deciding voter. Nothing to do
-     unless you want it dropped.
-   - **batcheler24_6** (silvopasture fire): "turn the judgement down a notch" — classes are
-     derived, never hand-set, so a notch needs a rule (e.g. mechanism-evidence votes with reduced
-     weight in hazard cells). Say the word and it gets drafted; otherwise the unit keeps voting
-     and the conflict stays stated.
-2. **kumw24_4 (N/P removal — "is this off scope?"):** answered — nutrient removal routes to the
-   T5 priority `water_quality_risk`, which you added on 2026-10-01 as a riparian/wetland core
-   service. In scope; the hold is logged and can be lifted on your next pass.
-3. **Three browser clicks** for a future desktop run: verhoeven (PMC), the arslan IAAE
-   conference version (AgEcon Search), the Nguyen NbS food-security SR (PMC).
-4. **MFL domain review** of the mangrove and forest-restoration schemes — you signed both off
-   on 2026-10-19, so this is now welcome-not-blocking. filoso17 IUFRO reading also still open.
+1. **Roll-up honesty: B-ish** ("not at the row level but the sub-practice level, with some
+   weighting for units... maybe root n") — IMPLEMENTED: the NbS class is now a vote of the
+   family rows, weight sqrt(n_sources), conflict at the same 1/3 threshold as the unit rule.
+   18 roll-up rows re-classed (agroforestry production now states conflicting evidence).
+2. **santos25_8: drop, log reason** — done (insufficient_context; your question logged verbatim).
+3. **batcheler24_6 fire: rule** — done: `comparator=unmanaged_state` held from every T3 class;
+   the four agroforestry fire cells now publish data deficient, naming the missing comparison
+   (silvopasture vs treeless pasture).
+4. **ojan20_4: ok** — hold lifted, unit keeps voting (net-CO2e rule governs).
+
+## Closed late 19 October
+
+- **wh_pooled_msd_indicator: B** — Arslan's pooled MSD regressions stay held out (nothing
+  attributes to the capture minority); the four units remain on file, never ingested.
+- **existing_wetland_nonlivelihood_vote:** the biodiversity vote STAYS POSITIVE ("it should
+  have positive vote for biodiversity") — what an existing wetland holds is evidence for the
+  value restoration protects; non-voting remains confined to livelihood cells.
+- **The 13 primaries are queued and 12 are IN HAND** (you fetched six, including all three
+  'paywalled' ones; five auto-fetched; Seddon CC-BY). Only Rockström 2009 remains: the EcoPort
+  copy timed out server-side — one more browser click
+  (http://ecoport.org/storedReference/558496.pdf) or ResearchGate.
+
+Also open, no judgement needed:
+- **kumw24_4 ("is this off scope?"):** answered — nutrient removal routes to the T5 priority
+  `water_quality_risk` you added 2026-10-01. In scope; lift the hold on your next pass.
+- **Three browser clicks** for a future desktop run: verhoeven (PMC), the arslan IAAE
+  conference version (AgEcon Search), the Nguyen NbS food-security SR (PMC).
+- **MFL domain review** of the mangrove and forest-restoration schemes (you signed both off;
+  non-blocking). filoso17 IUFRO reading also still open.
 
 ## Closed 19 October, night
 
@@ -50,9 +60,3 @@ sets a poverty class · existing-use income never votes in livelihood cells · t
 as data deficient · balanced opposition reads as conflicting evidence · plantations are parked
 out of the forest-restoration roll-up · min till alone is not water harvesting · wetland heat
 and wetland-erosion routes removed for want of a receptor/mechanism.
-
-## Agroforestry T4 — 19 October source-context review
-
-- **FMNR:** scoped semi-arid Sahel pilot within F2 proposed; no family redefinition or rainfall-domain exclusion authorized. `T4_af_fmnr_scope`.
-- **Haile rainfall:** regional ordinal ranks retained; family applicability and membership mapping pending. `T4_af_haile_transfer`.
-- [Five held units: corrections and source context](../../pipeline/t4_audit/agroforestry/holds_review/README.md). Pete approved all five corrected encodings in chat on 19 October; the two methodology decisions above remain open.
