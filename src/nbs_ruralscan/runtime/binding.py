@@ -46,6 +46,7 @@ class Binding:
     preference_rank: int
     status: str  # catalogued | community | requires_upload
     fitness_note: str = ""
+    band: str = ""
 
     @property
     def specificity(self) -> int:
@@ -82,6 +83,7 @@ def load_bindings(schema_root: str | Path) -> list[Binding]:
             preference_rank=int(r["preference_rank"]),
             status=r["status"],
             fitness_note=str(r.get("fitness_note") or ""),
+            band=str(r.get("band") or ""),
         )
         for r in rows
     ]

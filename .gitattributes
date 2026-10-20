@@ -34,3 +34,7 @@ schema/structure/columns.json  merge=text
 # checkout — `integrity_problems()` then flags them and Apply returns 400 (issue #190). Pin all
 # *.md to LF so a fresh Windows clone reads identically. (Run `git add --renormalize .` once.)
 *.md                           text eol=lf
+
+# T4 audit reports are reproducible outputs; keep source and disposition CSVs visible.
+pipeline/t4_audit/**/report.json linguist-generated=true
+docs/review/t4-*.html linguist-generated=true

@@ -1,284 +1,27 @@
 [
   {
-    "mapping_id": "agroforestry__cross_family__annual_precipitation",
-    "nbs_id": "agroforestry",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 800.0,
-      "opt_high": 1200.0
-    },
-    "uncertainty_pct": 23.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": true,
-    "baseline_dataset_id": "worldclim_v2_bioclim",
-    "future_dataset_ids": {
-      "ssp245": "chelsa_bioclim_ssp245_2050"
-    },
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 800.0, 'opt_high': 1200.0}; uncertainty ±23% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "agroforestry__cross_family",
-    "evidence_ids": [
-      "ev_t4_precip_ahmad17_1",
-      "ev_T4_precip_haile2024_2",
-      "ev_t4_annualp_nath21_02",
-      "ev_t4_precip_yadav24_2"
-    ],
-    "n_sources": 4,
-    "corpus_n": 35,
-    "paper_support_pct": 10.0
-  },
-  {
-    "mapping_id": "agroforestry__cross_family__soil_ph",
-    "nbs_id": "agroforestry",
-    "dataset_id": "isric_soilgrids250_v2",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 6.6,
-      "opt_high": 7.3
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 6.6, 'opt_high': 7.3}; uncertainty ±20% from spread. ",
-    "variable": "soil_ph",
-    "suitability_family_id": "agroforestry__cross_family",
-    "evidence_ids": [
-      "ev_T4_ph_haile2024_1",
-      "ev_t4_soilph_nath21_01"
-    ],
-    "n_sources": 2,
-    "corpus_n": 35,
-    "paper_support_pct": 5.0
-  },
-  {
     "mapping_id": "agroforestry__planted_silvoarable__slope",
     "nbs_id": "agroforestry",
     "dataset_id": "srtm_dem_30m",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "threshold",
     "relationship_params": {
-      "abs_min": 4.6,
-      "abs_max": 35.8
-    },
-    "uncertainty_pct": 10.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 4 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 4.6, 'abs_max': 35.8}; uncertainty ±10% from spread. Dropped 1 (scope/role). ",
-    "variable": "slope",
-    "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": [
-      "ev_T4_slope_haris2021_3",
-      "ev_T4_slope_seja2022_1",
-      "ev_T4_slope_wotlolan2021_1",
-      "ev_slope_singh26"
-    ],
-    "n_sources": 4,
-    "corpus_n": 34,
-    "paper_support_pct": 9.8
-  },
-  {
-    "mapping_id": "agroforestry__planted_silvoarable__tree_canopy_cover",
-    "nbs_id": "agroforestry",
-    "dataset_id": "hansen_treecover2000",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_max": 10.0
+      "threshold": 19.3,
+      "above_is_suitable": false
     },
     "uncertainty_pct": 20.0,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 10.0}; uncertainty ±20% from spread. Collapsed 2 citation echo(es). ",
-    "variable": "tree_canopy_cover",
-    "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": [
-      "ev_tree_canopy_cover_sprenkle24_1",
-      "ev_t4_tcc_brandt2015_1"
-    ],
-    "n_sources": 2,
-    "corpus_n": 34,
-    "paper_support_pct": 7.4
-  },
-  {
-    "mapping_id": "agroforestry__planted_silvoarable__soil_depth_to_bedrock",
-    "nbs_id": "agroforestry",
-    "dataset_id": "ssurgo_statsgo",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 90.0
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 90.0}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
-    "variable": "soil_depth_to_bedrock",
-    "suitability_family_id": "agroforestry__planted_silvoarable",
-    "evidence_ids": [
-      "ev_soildepth_inab_p92_aa_example"
-    ],
-    "n_sources": 1,
-    "corpus_n": 34,
-    "paper_support_pct": 2.5
-  },
-  {
-    "mapping_id": "agroforestry__regeneration_farmland__annual_precipitation",
-    "nbs_id": "agroforestry",
-    "dataset_id": "worldclim_v2_precip",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 300.0,
-      "opt_low": 400.0,
-      "opt_high": 800.0,
-      "abs_max": 800.0
-    },
-    "uncertainty_pct": 60.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": true,
-    "baseline_dataset_id": "worldclim_v2_bioclim",
-    "future_dataset_ids": {
-      "ssp245": "chelsa_bioclim_ssp245_2050"
-    },
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 7 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 300.0, 'opt_low': 400.0, 'opt_high': 800.0, 'abs_max': 800.0}; uncertainty ±60% from spread. Collapsed 2 citation echo(es). ",
-    "variable": "annual_precipitation",
-    "suitability_family_id": "agroforestry__regeneration_farmland",
-    "evidence_ids": [
-      "EV_lohbeck_2020_001",
-      "EV_researchsquare_fmnr_2025_001",
-      "EV_weston_2015_002",
-      "EV_sendzimir_2011_001",
-      "EV_wri_regreening_2015_001",
-      "EV_wocat_507_2019_003",
-      "EV_wocat_1358_2017_001"
-    ],
-    "n_sources": 7,
-    "corpus_n": 38,
-    "paper_support_pct": 16.3
-  },
-  {
-    "mapping_id": "agroforestry__regeneration_farmland__slope",
-    "nbs_id": "agroforestry",
-    "dataset_id": "srtm_dem_30m",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 0.0,
-      "abs_max": 2.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.0, 'abs_max': 2.0}; uncertainty ±30% from spread. ",
-    "variable": "slope",
-    "suitability_family_id": "agroforestry__regeneration_farmland",
-    "evidence_ids": [
-      "EV_wocat_507_2019_004",
-      "EV_wocat_1358_2017_003"
-    ],
-    "n_sources": 2,
-    "corpus_n": 38,
-    "paper_support_pct": 4.7
-  },
-  {
-    "mapping_id": "agroforestry__shaded_perennial__mean_annual_temperature",
-    "nbs_id": "agroforestry",
-    "dataset_id": "worldclim_v2_bioclim",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "opt_low": 20.0,
-      "opt_high": 30.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": true,
-    "baseline_dataset_id": "worldclim_v2_bioclim",
-    "future_dataset_ids": {
-      "ssp245": "chelsa_bioclim_ssp245_2050"
-    },
     "weight_default": 1.0,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 20.0, 'opt_high': 30.0}; uncertainty ±30% from spread. Dropped 2 (scope/role). ",
-    "variable": "mean_annual_temperature",
-    "suitability_family_id": "agroforestry__shaded_perennial",
-    "evidence_ids": [
-      "ev_t4_mat_mushtaq2023_2"
-    ],
-    "n_sources": 1,
-    "corpus_n": 41,
-    "paper_support_pct": 2.0
-  },
-  {
-    "mapping_id": "agro_land_cover_eligibility",
-    "nbs_id": "agroforestry",
-    "dataset_id": "esa_worldcover_2021",
-    "suitability_dimension": "system_constraint",
-    "relationship_type": "ranked_classes",
-    "relationship_params": {
-      "class_map": {
-        "10": 1.0,
-        "20": 0.9,
-        "30": 0.7,
-        "40": 0.5,
-        "50": 0.0,
-        "60": 0.3,
-        "70": 0.0,
-        "80": 0.0,
-        "90": 0.4,
-        "95": 0.0,
-        "100": 0.2
-      },
-      "class_labels": {
-        "10": "Tree cover (existing AF potential)",
-        "20": "Shrubland (high conversion potential)",
-        "30": "Grassland (high conversion potential)",
-        "40": "Cropland (primary target)",
-        "50": "Built-up (exclude)",
-        "60": "Bare/sparse vegetation (low potential)",
-        "70": "Snow/ice (exclude)",
-        "80": "Permanent water (exclude)",
-        "90": "Herbaceous wetland (low, conditional)",
-        "95": "Mangroves (different NbS)",
-        "100": "Moss/lichen (low)"
-      }
-    },
-    "uncertainty_pct": 0.0,
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.1,
-    "weight_adjustable": false,
-    "justification": "Land cover is an eligibility filter, not a graduated suitability variable. Cropland (class 40) and grassland/pasture (20, 30) are the primary targets for agroforestry integration. Built-up, water, ice, and mangroves are hard exclusions. Used as the primary land-use mask in Ahmad et al. (2020), Castle et al. (2025), Baldwin et al. (2022), and the majority of stocktake papers.",
-    "variable": "land_cover",
+    "justification": "Reconciled from 1 contributing evidence unit(s) (exact agreement on typed relationship). Global {'threshold': 19.3, 'above_is_suitable': False}; uncertainty ±20% from spread. ",
+    "variable": "slope",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 6,
-    "corpus_n": 36,
-    "paper_support_pct": 25.0
+    "evidence_ids": [
+      "ev_T4_slope_wotlolan2021_1"
+    ],
+    "n_sources": 1
   },
   {
     "mapping_id": "agro_protected_areas_exclusion",
@@ -298,9 +41,7 @@
     "justification": "Strict nature reserves (IUCN I–II) prohibit agricultural intervention including agroforestry. Hard exclusion required regardless of biophysical suitability. Chuma et al. (2021) use the Itombwe Nature Reserve boundary as a hard exclusion layer in DR Congo agroforestry suitability mapping. Pinto et al. (2019) use protected area boundaries as planning zones in Montado conservation prioritisation.",
     "variable": "protected_area_status",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 3,
-    "corpus_n": 36,
-    "paper_support_pct": 13.2
+    "n_sources": 3
   },
   {
     "mapping_id": "agro_accessibility_scenario",
@@ -322,9 +63,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "accessibility_travel_time",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_electrification_scenario",
@@ -346,9 +85,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "electrification_index",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_tenure_scenario",
@@ -370,9 +107,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "tenure_security",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 1,
-    "corpus_n": 36,
-    "paper_support_pct": 4.5
+    "n_sources": 1
   },
   {
     "mapping_id": "agro_conflict_scenario",
@@ -394,9 +129,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "conflict_fragility_index",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_extension_scenario",
@@ -418,9 +151,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "extension_governance",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_finance_scenario",
@@ -442,9 +173,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "finance_credit_access",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 1,
-    "corpus_n": 36,
-    "paper_support_pct": 4.5
+    "n_sources": 1
   },
   {
     "mapping_id": "agro_market_value_chain_scenario",
@@ -466,9 +195,7 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "market_value_chain",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_labour_scenario",
@@ -490,8 +217,571 @@
     "justification": "M2b Stream-B operational lever (v0.3.0). Scenario candidate — TTL toggles in M4 to see how investment-addressable enabling-environment improvements expand the opportunity space. Filter/flag, never summed.",
     "variable": "labour_availability",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 0,
-    "corpus_n": 36,
-    "paper_support_pct": 0.0
+    "n_sources": 0
+  },
+  {
+    "mapping_id": "agro_planted_silvoarable_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "40": 1,
+        "30": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "30": [
+          "managed_forage_without_grazing"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "host_bindings": {
+        "managed_forage_without_grazing": {
+          "variables": [
+            "managed_forage_without_grazing"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "supporting_variables": [
+            "grassland_class",
+            "ruminant_density"
+          ],
+          "note": "GPW grassland + GLW4 ruminants support scoping; livestock density alone does not prove grazing. Local management interpretation required."
+        }
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Evidence-backed categorical gate. Castle Table 2 (PDF p8) defines alley cropping on annual cropland or forage grown between tree rows without grazing, excluding existing tree crops. WorldCover 40 maps annual cropland. WorldCover 30 is conditional on a verified managed-forage/non-grazing mask; it is not treated as pasture proof. Built-up, permanent snow/ice and permanent water cannot satisfy this host definition. Tree/shrub cover remains unknown because those classes mix farms and non-farms.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__planted_silvoarable",
+    "evidence_ids": [
+      "ev_t4_land_cover_castle2025_1"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_regeneration_farmland_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "40": 1,
+        "30": 1,
+        "20": 1,
+        "60": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "20": [
+          "farmland_context"
+        ],
+        "30": [
+          "farmland_context"
+        ],
+        "60": [
+          "farmland_context"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "host_bindings": {
+        "farmland_context": {
+          "variables": [
+            "farmland_context"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "note": "Agricultural, fallow or former-farmland identity; degradation alone cannot establish this context."
+        }
+      },
+      "condition_role": "Depletion/degradation characterize restoration need, not universal suitability. No severity cutoff established.",
+      "mapping_review_status": "approved",
+      "mapping_reviewer": "Pete",
+      "mapping_review_date": "2026-10-20",
+      "input_decision_reference": "docs/review/exports/review_agroforestry-t4-input-decisions-oct20_Pete_2026-10-20.csv"
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Evidence-backed categorical gate. WOCAT 507 describes restoring degraded wasteland and improving depleted farmland (Kenya example, PDF p1). Within the regeneration-on-farmland family, WorldCover alone cannot identify degradation or farmland history. Positive classes require observed depleted/degraded farmland masks; bare soil alone is never evidence of restoration potential. This gate establishes land-use compatibility, not regeneration success or rootstock presence. Tree cover remains unresolved. Pete input review 2026-10-20: depletion/degradation are targeting context; non-cropland requires farmland identity.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__regeneration_farmland",
+    "evidence_ids": [
+      "EV_wocat_507_2019_008"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_silvopastoral_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "gpw_grassland_class_v1",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "0": 0,
+        "1": 1,
+        "2": 1
+      },
+      "class_labels": {
+        "0": "Other",
+        "1": "Cultivated grassland",
+        "2": "Natural / semi-natural grassland"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "1": [
+          "grazing_system_present"
+        ],
+        "2": [
+          "grazing_system_present"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://developers.google.com/earth-engine/datasets/catalog/projects_global-pasture-watch_assets_ggc-30m_v1_grassland_c",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "host_bindings": {
+        "grazing_system_present": {
+          "variables": [
+            "grazing_system_present"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "supporting_variables": [
+            "grassland_class"
+          ],
+          "note": "Local grazing confirmation required for both GPW grassland classes. GLW density cannot replace confirmation."
+        }
+      },
+      "mapping_review_status": "approved",
+      "mapping_reviewer": "Pete",
+      "mapping_review_date": "2026-10-20",
+      "input_decision_reference": "pipeline/t4_audit/agroforestry/final_audit/README.md#gpw-clarification--20-october-2026"
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Evidence-backed categorical gate. Castle Table 2 (PDF p8) defines trees integrated with forage and grazing animals on pasture/grassland. WorldCover grassland requires independent grazing-system confirmation. Other vegetation classes remain unresolved because they may mix wooded pasture, natural vegetation and other systems. Supporting evidence remains held by Pete; default execution returns pending_evidence_review until that review is resolved. Pete clarification 2026-10-20: GPW cultivated or natural/semi-natural grassland plus local grazing confirmation; no GLW substitute.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__silvopastoral",
+    "evidence_ids": [
+      "ev_t4_land_cover_castle2025_2"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_linear_boundary_land_cover_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "40": 1,
+        "30": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies",
+        "10": "Tree cover"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "30": [
+          "field_boundary_zone"
+        ],
+        "40": [
+          "field_boundary_zone"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "mapping_review_status": "approved",
+      "applicable_subpractices": [
+        "windbreaks_shelterbelts"
+      ],
+      "required_mask_metadata": {
+        "field_boundary_zone": {
+          "data_basis": "observed_geometry",
+          "placement": "field_boundary"
+        }
+      },
+      "design_reference": "methodology/families/agroforestry.md#f4",
+      "footprint_rule": "candidate_lines_not_pixel_area",
+      "mapping_reviewer": "Pete",
+      "mapping_review_date": "2026-10-20",
+      "boundary_width_policy": "context_specific_from_publications_and_regions",
+      "host_bindings": {
+        "field_boundary_zone": {
+          "variables": [
+            "field_boundary_zone"
+          ],
+          "operation": "supplied_mask",
+          "output_unit": "binary",
+          "no_data": "propagate_unknown",
+          "note": "Upload field-boundary geometry and locally justified buffered zone; no global buffer width."
+        }
+      },
+      "boundary_source_candidate": "https://github.com/fieldsoftheworld/ftw-inference-api",
+      "input_decision_reference": "docs/review/exports/review_agroforestry-t4-input-decisions-oct20_Pete_2026-10-20.csv"
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Candidate applicability gate for windbreaks/shelterbelts only. Castle Table 2 PDF p8 places windbreaks on delineated cropland/pasture field boundaries in the US Midwest. WorldCover cropland requires independently mapped field-boundary placement; grassland additionally requires managed pasture confirmation. No universal buffer width or contour-siting rule is inferred. Report applicability zones and candidate line length, never eligible pixel area as planting footprint. Source and cross-context mapping remain pending review. Pete Steward approved B1 on 2026-10-20: boundary geometry required; buffer width varies by publications and regions. Field delineation may be less available in African extensive systems; missing geometry remains unknown. Pete input review 2026-10-20: field boundaries required for both cropland and pasture; no separate pasture-management gate.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__linear_boundary",
+    "evidence_ids": [
+      "ev_t4_land_cover_castle2025_windbreak"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_shaded_coffee_host_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "10": 1,
+        "20": 1,
+        "30": 1,
+        "40": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies",
+        "10": "Tree cover"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "10": [
+          "coffee_host_fraction"
+        ],
+        "20": [
+          "coffee_host_fraction"
+        ],
+        "30": [
+          "coffee_host_fraction"
+        ],
+        "40": [
+          "coffee_host_fraction"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "mapping_review_status": "approved",
+      "host_crop": "coffee",
+      "required_mask_metadata": {
+        "coffee_host_fraction": {
+          "data_basis": [
+            "observed",
+            "modelled_allocation"
+          ],
+          "host_crop": "coffee",
+          "unit": "fraction_of_pixel"
+        }
+      },
+      "design_reference": "methodology/families/agroforestry.md#f5",
+      "evidence_role": "host_system_identity_only",
+      "footprint_rule": "retain_crop_fractions_do_not_sum_without_overlap_check",
+      "mapping_reviewer": "Pete Steward",
+      "mapping_review_date": "2026-10-20",
+      "mask_value_types": {
+        "coffee_host_fraction": "fraction"
+      },
+      "mask_presence_thresholds": {
+        "coffee_host_fraction": 0
+      },
+      "host_fraction_mask": "coffee_host_fraction",
+      "preferred_host_data": "accurate_commodity_maps",
+      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
+      "host_bindings": {
+        "coffee_host_fraction": {
+          "variables": [
+            "coffee_arabica_distribution",
+            "coffee_robusta_distribution"
+          ],
+          "operation": "crop_area_fraction",
+          "input_unit": "ha",
+          "output_unit": "fraction_of_pixel",
+          "data_basis": "modelled_allocation",
+          "technology": "all",
+          "area_measure": "physical_area",
+          "aggregation": "sum_area_then_divide_by_pixel_area",
+          "no_data": "propagate_unknown",
+          "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+        }
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Pete Steward approved P1 on 2026-10-20: shade agroforestry requires a suitable host crop; OR across crops. Prefer accurate commodity distributions; crop fraction per pixel from MapSPAM is acceptable for high-level scoping. Positive crop fraction establishes host presence, not suitability strength. Retain fractions; no full-pixel area or unverified overlap sum. Source evidence identifies coffee/cocoa systems, not a numeric suitability threshold. No niche-model substitution.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__shaded_perennial",
+    "evidence_ids": [
+      "ev_economic_return_jezeer17_1"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_shaded_cocoa_host_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "10": 1,
+        "20": 1,
+        "30": 1,
+        "40": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies",
+        "10": "Tree cover"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "10": [
+          "cocoa_host_fraction"
+        ],
+        "20": [
+          "cocoa_host_fraction"
+        ],
+        "30": [
+          "cocoa_host_fraction"
+        ],
+        "40": [
+          "cocoa_host_fraction"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "mapping_review_status": "approved",
+      "host_crop": "cocoa",
+      "required_mask_metadata": {
+        "cocoa_host_fraction": {
+          "data_basis": [
+            "observed",
+            "modelled_allocation"
+          ],
+          "host_crop": "cocoa",
+          "unit": "fraction_of_pixel"
+        }
+      },
+      "design_reference": "methodology/families/agroforestry.md#f5",
+      "evidence_role": "host_system_identity_only",
+      "footprint_rule": "retain_crop_fractions_do_not_sum_without_overlap_check",
+      "mapping_reviewer": "Pete Steward",
+      "mapping_review_date": "2026-10-20",
+      "mask_value_types": {
+        "cocoa_host_fraction": "fraction"
+      },
+      "mask_presence_thresholds": {
+        "cocoa_host_fraction": 0
+      },
+      "host_fraction_mask": "cocoa_host_fraction",
+      "preferred_host_data": "accurate_commodity_maps",
+      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
+      "host_bindings": {
+        "cocoa_host_fraction": {
+          "variables": [
+            "cocoa_distribution"
+          ],
+          "operation": "crop_area_fraction",
+          "input_unit": "ha",
+          "output_unit": "fraction_of_pixel",
+          "data_basis": "modelled_allocation",
+          "technology": "all",
+          "area_measure": "physical_area",
+          "aggregation": "sum_area_then_divide_by_pixel_area",
+          "no_data": "propagate_unknown",
+          "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+        }
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Pete Steward approved P1 on 2026-10-20: shade agroforestry requires a suitable host crop; OR across crops. Prefer accurate commodity distributions; crop fraction per pixel from MapSPAM is acceptable for high-level scoping. Positive crop fraction establishes host presence, not suitability strength. Retain fractions; no full-pixel area or unverified overlap sum. Source evidence identifies coffee/cocoa systems, not a numeric suitability threshold. No niche-model substitution.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__shaded_perennial",
+    "evidence_ids": [
+      "ev_economic_return_jezeer17_1"
+    ],
+    "n_sources": 1
+  },
+  {
+    "mapping_id": "agro_shaded_tea_host_gate",
+    "nbs_id": "agroforestry",
+    "dataset_id": "esa_worldcover_2021",
+    "suitability_dimension": "system_constraint",
+    "relationship_type": "ranked_classes",
+    "relationship_params": {
+      "class_map": {
+        "10": 1,
+        "20": 1,
+        "30": 1,
+        "40": 1,
+        "50": 0,
+        "70": 0,
+        "80": 0
+      },
+      "class_labels": {
+        "20": "Shrubland",
+        "30": "Grassland",
+        "40": "Cropland",
+        "50": "Built-up",
+        "60": "Bare / sparse vegetation",
+        "70": "Snow and ice",
+        "80": "Permanent water bodies",
+        "10": "Tree cover"
+      },
+      "mapping_role": "eligibility_gate",
+      "class_requirements": {
+        "10": [
+          "tea_host_fraction"
+        ],
+        "20": [
+          "tea_host_fraction"
+        ],
+        "30": [
+          "tea_host_fraction"
+        ],
+        "40": [
+          "tea_host_fraction"
+        ]
+      },
+      "unmapped_policy": "unknown",
+      "codebook_reference": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/docs/WorldCover_PUM_V2.0.pdf#page=15",
+      "interpretation": "binary host-system compatibility; not graded biophysical suitability",
+      "mapping_review_status": "approved",
+      "host_crop": "tea",
+      "required_mask_metadata": {
+        "tea_host_fraction": {
+          "data_basis": [
+            "observed",
+            "modelled_allocation"
+          ],
+          "host_crop": "tea",
+          "unit": "fraction_of_pixel"
+        }
+      },
+      "design_reference": "methodology/families/agroforestry.md#f5",
+      "evidence_role": "family_host_requirement_only",
+      "footprint_rule": "retain_crop_fractions_do_not_sum_without_overlap_check",
+      "mapping_reviewer": "Pete Steward",
+      "mapping_review_date": "2026-10-20",
+      "mask_value_types": {
+        "tea_host_fraction": "fraction"
+      },
+      "mask_presence_thresholds": {
+        "tea_host_fraction": 0
+      },
+      "host_fraction_mask": "tea_host_fraction",
+      "preferred_host_data": "accurate_commodity_maps",
+      "fallback_host_data": "MapSPAM crop area divided by pixel area; modelled allocation for high-level scoping",
+      "crop_authority": "Pete Steward explicit design decision, 2026-10-20; source evidence is coffee/cocoa only",
+      "host_bindings": {
+        "tea_host_fraction": {
+          "variables": [
+            "tea_distribution"
+          ],
+          "operation": "crop_area_fraction",
+          "input_unit": "ha",
+          "output_unit": "fraction_of_pixel",
+          "data_basis": "modelled_allocation",
+          "technology": "all",
+          "area_measure": "physical_area",
+          "aggregation": "sum_area_then_divide_by_pixel_area",
+          "no_data": "propagate_unknown",
+          "preferred_override": "accurate local commodity map; normalize to fraction_of_pixel before evaluation"
+        }
+      }
+    },
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0,
+    "weight_adjustable": false,
+    "justification": "Pete Steward approved P1 on 2026-10-20: shade agroforestry requires a suitable host crop; OR across crops. Prefer accurate commodity distributions; crop fraction per pixel from MapSPAM is acceptable for high-level scoping. Positive crop fraction establishes host presence, not suitability strength. Retain fractions; no full-pixel area or unverified overlap sum. Source evidence identifies coffee/cocoa systems, not a numeric suitability threshold. No niche-model substitution. Tea added by explicit Pete Steward design decision, not inferred from Jezeer coffee/cocoa evidence. This gate establishes host presence only; crop-specific shade response still requires separate evidence.",
+    "variable": "land_cover",
+    "suitability_family_id": "agroforestry__shaded_perennial",
+    "evidence_ids": [
+      "ev_economic_return_jezeer17_1"
+    ],
+    "n_sources": 1
   }
 ]

@@ -99,7 +99,7 @@ _SCOPE = {
     "crop_specific": "about one crop only",
 }
 _ROLE = {
-    "nbs_effect": "an EFFECT of the practice on people or land (feeds the hazard and scorecard tables)",
+    "nbs_effect": "an EFFECT of the practice on people or land (routed to relevant effect tables by the variable crosswalk)",
     "asset_vulnerability": "DAMAGE to the works themselves by a hazard (asset threat)",
     "operational_risk": "an enabling / implementation factor (next-steps guidance, not an effect)",
     "structural_suitability": "a condition for where the practice can be established (suitability table)",

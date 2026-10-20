@@ -23,8 +23,8 @@ from .evidence import EvidenceUnit
 class Support:
     key: str  # variable id or group id
     n_sources: int  # distinct sources with ≥1 unit
-    corpus_n: int  # denominator: sources screened for the family
-    pct: float  # 100 * n_sources / corpus_n
+    corpus_n: int | None  # denominator: sources screened for the family
+    pct: float | None  # 100 * n_sources / corpus_n
     members: list[str] = field(default_factory=list)  # group members (group-level only)
 
 
@@ -34,18 +34,30 @@ TIER_W = {"high": 1.0, "medium": 0.6, "low": 0.35}
 def _get_weight(source_id: str, tiers: dict[str, str] | None) -> float:
     if not tiers:
         return 1.0
-    return TIER_W.get(tiers.get(source_id, "medium"), 0.5)
+    return TIER_W.get(tiers.get(source_id, "medium").strip().lower(), 0.5)
 
 
 def variable_support(
     units: list[EvidenceUnit],
-    corpus_n: int | set[str],
+    corpus_n: int | set[str] | None,
     tiers: dict[str, str] | None = None,
 ) -> dict[str, Support]:
     """Distinct-source prevalence per canonical variable (weighted by paper authority if tiers provided)."""
     srcs: dict[str, set[str]] = defaultdict(set)
     for u in units:
         srcs[u.variable].add(u.source_id)
+
+    if corpus_n is None:
+        return {
+            key: Support(key, len(sources), None, None)
+            for key, sources in sorted(srcs.items())
+        }
+    if isinstance(corpus_n, set):
+        missing = set().union(*srcs.values()) - corpus_n
+        if missing:
+            raise ValueError(
+                f"Evidence sources absent from screened corpus: {sorted(missing)}"
+            )
 
     # Resolve denominator count and weight
     if isinstance(corpus_n, set):
@@ -86,7 +98,7 @@ def variable_support(
 def group_support(
     units: list[EvidenceUnit],
     group_map: dict[str, str],
-    corpus_n: int | set[str],
+    corpus_n: int | set[str] | None,
     tiers: dict[str, str] | None = None,
 ) -> dict[str, Support]:
     """Roll variable prevalence up to its group (set-union over members, weighted if tiers provided)."""
@@ -96,6 +108,18 @@ def group_support(
         g = group_map.get(u.variable, "ungrouped")
         srcs[g].add(u.source_id)
         members[g].add(u.variable)
+
+    if corpus_n is None:
+        return {
+            key: Support(key, len(sources), None, None, sorted(members[key]))
+            for key, sources in sorted(srcs.items())
+        }
+    if isinstance(corpus_n, set):
+        missing = set().union(*srcs.values()) - corpus_n
+        if missing:
+            raise ValueError(
+                f"Evidence sources absent from screened corpus: {sorted(missing)}"
+            )
 
     # Resolve denominator count and weight
     if isinstance(corpus_n, set):
@@ -135,7 +159,7 @@ def group_support(
 @dataclass
 class SelectionRow:
     variable: str
-    support_pct: float
+    support_pct: float | None
     n_sources: int
     ml_important: bool
     decision: str  # "include" | "review_low_support" | "include_ml_override"
@@ -157,7 +181,18 @@ def selection_table(
     ml_important = ml_important or set()
     rows: list[SelectionRow] = []
     for v, s in var_support.items():
-        if s.pct >= floor_pct:
+        if s.pct is None:
+            rows.append(
+                SelectionRow(
+                    v,
+                    None,
+                    s.n_sources,
+                    v in ml_important,
+                    "review_unknown_support",
+                    "Screened source membership unavailable; prevalence and floor cannot be evaluated",
+                )
+            )
+        elif s.pct >= floor_pct:
             rows.append(
                 SelectionRow(v, s.pct, s.n_sources, v in ml_important, "include")
             )

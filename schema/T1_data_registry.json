@@ -461,20 +461,20 @@
   },
   {
     "dataset_id": "mapspam_cocoa_2020",
-    "dataset_name": "MapSPAM 2020 cocoa harvested area",
+    "dataset_name": "MapSPAM 2020 v2r2 cocoa physical area",
     "analytical_module": "structural_suitability",
     "time_period": 2020,
     "spatial_resolution_m": 10000,
     "geographic_coverage": [
       "global"
     ],
-    "data_format": "geotiff",
+    "data_format": "geotiff_cog",
     "access_type": "direct_download",
-    "download_url": "https://mapspam.info/",
-    "license": "CC-BY-4.0",
-    "citation": "IFPRI (2024) MapSPAM 2020 Global Spatially-Disaggregated Crop Production.",
-    "version": 2020,
-    "preprocessing_notes": "Use harvested-area fraction as graded crop-presence constraint.",
+    "download_url": "https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/cog/spam2020-physical_area-all.tif",
+    "license": "CC-BY-SA-4.0",
+    "citation": "IFPRI MapSPAM 2020 v2r2; CGIAR Climate Action Data Hub, https://cgiar-climate-data-hub.github.io/catalog/spam2020/",
+    "version": "2020 v2r2",
+    "preprocessing_notes": "Select cocoa (coco) band 34 from physical_area/all COG; divide hectares by pixel hectares. Positive fraction is host presence; retain fraction for extent. Not a graded suitability score.",
     "limitations": "~10 km; allocation-model estimate, not observed. Coarse for sub-national targeting. Not for: plot siting.",
     "description": "MapSPAM 2020 — gridded crop production allocation for cocoa at ~10 km.",
     "grain_type": "grid"
@@ -543,20 +543,20 @@
     "dataset_id": "glw4_livestock_2020",
     "dataset_name": "Gridded Livestock of the World v4 (GLW4, 2020)",
     "analytical_module": "geographic_context",
+    "time_period": 2020,
     "spatial_resolution_m": 10000,
     "geographic_coverage": [
       "global"
     ],
     "data_format": "geotiff",
     "access_type": "direct_download",
-    "download_url": "https://dataverse.harvard.edu/dataverse/glw",
+    "download_url": "https://cgiar-climate-data-hub.github.io/catalog/glw4-2020/",
     "license": "CC-BY-4.0",
-    "citation": "Gilbert, M., Nicolas, G., Cinardi, G., Van Boeckel, T. P., Vanwambeke, S. O., Wint, G. R. W., & Robinson, T. P. (2018). Global distribution data for cattle, buffaloes, horses, sheep, goats, pigs, chickens and ducks in 2010. Scientific Data, 5, 180227. (v4 update 2024).",
-    "doi": "10.1038/sdata.2018.227",
+    "citation": "FAO (2024). Gridded Livestock of the World 4, 2020. https://www.fao.org/livestock-systems/global-distributions/en/",
     "version": "v4 (2024)",
-    "preprocessing_notes": "Sum across ruminant species (cattle + buffalo + sheep + goats) for total ruminant density; convert TLU using ILRI weights for fair comparison.",
-    "limitations": "Modelled (dasymetric), not observed; uncertainty highest in pastoral / mobile-herd contexts.",
-    "description": "FAO/ILRI/UMR-SELMET gridded livestock density (per species: cattle, buffalo, sheep, goats, pigs, chickens, ducks, horses) at ~10 km, year 2015 baseline (v4 release 2024).",
+    "preprocessing_notes": "Hosted species COGs: https://digital-atlas.s3.amazonaws.com/cdh/data/glw4-2020/cog/glw4-2020-{species}.tif ; species cattle, buffalo, goat, sheep for ruminants. Units head/km2; preserve nodata. Do not treat modelled livestock presence as confirmed grazing management.",
+    "limitations": "Census-downscaled modelled density at 5 arc-minutes; pastoral mobility and housed animals limit grazing inference.",
+    "description": "FAO GLW4 modelled densities for buffalo, cattle, chicken, goat, pig and sheep; 2020 reference year.",
     "grain_type": "grid"
   },
   {
@@ -959,6 +959,47 @@
     "preprocessing_notes": "Use the occurrence/seasonality bands to mask permanent and seasonal water bodies; complements the MERIT stream network for lakes and wide rivers at 30 m.",
     "limitations": "Maps water SURFACES, not the channel network - narrow headwater streams are largely invisible, so it cannot stand alone as the riparian reference layer. Not for: small-stream delineation.",
     "description": "30 m global surface-water occurrence, change and seasonality from 38 years of Landsat, used as the water-body complement to the derived stream network.",
+    "grain_type": "grid"
+  },
+  {
+    "dataset_id": "mapspam_physical_area_2020",
+    "dataset_name": "MapSPAM 2020 v2r2 physical crop area, all technologies",
+    "analytical_module": "structural_suitability",
+    "time_period": 2020,
+    "spatial_resolution_m": 10000,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff_cog",
+    "access_type": "direct_download",
+    "download_url": "https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/cog/spam2020-physical_area-all.tif",
+    "license": "CC-BY-SA-4.0",
+    "citation": "IFPRI MapSPAM 2020 v2r2; cloud-optimized distribution: CGIAR Climate Action Data Hub, https://cgiar-climate-data-hub.github.io/catalog/spam2020/",
+    "version": "2020 v2r2",
+    "preprocessing_notes": "Physical crop area in ha, 46 crop bands in published crop-code order. Select BIND band; coffee includes coff and rcof. Sum component physical areas, divide by geodesic pixel area in ha. Preserve nodata; reject fractions outside [0,1]. Read COG windows, never download full raster. All technologies already includes irrigated and rainfed; do not add them again.",
+    "limitations": "Modelled allocation, not direct observation. ~5 arc-minute support cannot be sharpened by resampling. Crop fractions retain extent, not suitability strength. Cross-crop overlap must be checked before area totals.",
+    "description": "Hosted physical-area COG for explicit crop host scoping. Metadata: https://digital-atlas.s3.amazonaws.com/cdh/data/mapspam2020-v2r2/crop-codes.json",
+    "grain_type": "grid"
+  },
+  {
+    "dataset_id": "gpw_grassland_class_v1",
+    "dataset_name": "Global Pasture Watch dominant grassland class v1",
+    "analytical_module": "structural_suitability",
+    "time_period": "2000-2022; select 2020 for GLW4 alignment",
+    "spatial_resolution_m": 30,
+    "geographic_coverage": [
+      "global"
+    ],
+    "data_format": "geotiff",
+    "access_type": "gee_asset",
+    "download_url": "https://developers.google.com/earth-engine/datasets/catalog/projects_global-pasture-watch_assets_ggc-30m_v1_grassland_c",
+    "gee_asset_id": "projects/global-pasture-watch/assets/ggc-30m/v1/grassland_c",
+    "license": "CC-BY-4.0",
+    "citation": "Parente et al. (2024), Global Pasture Watch annual grassland class and extent maps; publisher Earth Engine catalogue.",
+    "version": "v1",
+    "preprocessing_notes": "Select 2020 annual image and dominant_class band. Classes 0 other, 1 cultivated grassland, 2 natural/semi-natural grassland. Derive class fractions before aggregation. Supports pasture context; does not alone confirm grazing.",
+    "limitations": "Known regional underprediction and cropland confusion. Cultivated class includes managed forage; grazing needs independent confirmation.",
+    "description": "Publisher-hosted annual 30 m grassland classes.",
     "grain_type": "grid"
   }
 ]
