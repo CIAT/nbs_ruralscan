@@ -127,6 +127,62 @@ def check(root):
                 errors.append(
                     "Missing/changed model-weight image: " + row["evidence_id"]
                 )
+    errors.extend(check_extraction_inventory(root, evidence, live_ids))
+    return errors
+
+
+FIVE_SOURCES = {
+    "baldwin_2022",
+    "pinto_2019",
+    "ellis_2000",
+    "mendonca_2022",
+    "mendonca_2023",
+}
+
+
+def check_extraction_inventory(root, evidence, live_ids):
+    """A screened source cannot masquerade as an accounted extraction sweep."""
+    path = root / "pipeline/t4_audit/agroforestry/five_source_extraction.json"
+    if not path.exists():
+        return ["Missing five-source extraction inventory"]
+    inventory = json.loads(path.read_text(encoding="utf-8"))["sources"]
+    errors = []
+    for sid in sorted(FIVE_SOURCES):
+        source = inventory.get(sid)
+        if not source or source.get("main_paper_status") != "extracted":
+            errors.append("Missing completed main-paper extraction: " + sid)
+            continue
+        pages = set(source.get("pages_inspected", []))
+        claims = source.get("claims", [])
+        accounted = {page for claim in claims for page in claim.get("pages", [])}
+        if pages != set(range(1, source["page_count"] + 1)) or not pages <= accounted:
+            errors.append("Unaccounted paper pages: " + sid)
+        if not claims or any(
+            not c.get("destination") or not c.get("reason") for c in claims
+        ):
+            errors.append("Missing claim disposition: " + sid)
+        claimed_ids = {c["evidence_id"] for c in claims if c.get("evidence_id")}
+        if claimed_ids != set(source.get("evidence_ids", [])):
+            errors.append("Claim/register inventory mismatch: " + sid)
+        for eid in claimed_ids:
+            unit = evidence.get(eid)
+            if not unit or unit["source_id"] != sid:
+                errors.append("Missing extracted evidence: " + eid)
+                continue
+            claim = next(c for c in claims if c.get("evidence_id") == eid)
+            if (
+                unit["quote"] != claim["quote"]
+                or unit["use_role"] != claim["destination"]
+            ):
+                errors.append("Extraction provenance or routing changed: " + eid)
+            if unit["reviewer_ok"].lower() != "true" and eid in live_ids:
+                errors.append("Unapproved extraction entered live T4: " + eid)
+        pdf = root / ".cache/corpus" / (sid + ".pdf")
+        if (
+            pdf.exists()
+            and hashlib.sha256(pdf.read_bytes()).hexdigest() != source["pdf_sha256"]
+        ):
+            errors.append("Extraction source artifact changed: " + sid)
     return errors
 
 

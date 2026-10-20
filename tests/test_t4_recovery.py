@@ -150,3 +150,32 @@ def test_orphan_continuation_cannot_become_independent_vote():
     result, rejected = join_continuations([part])
     assert not result
     assert rejected[0][1] == "incompatible_or_missing_table_continuation"
+
+
+@pytest.mark.parametrize(
+    "defect", ["missing_unit", "missing_page", "screened_only", "wrong_lane"]
+)
+def test_five_source_extraction_cannot_silently_regress(coverage_tree, defect):
+    path = coverage_tree / "pipeline/t4_audit/agroforestry/five_source_extraction.json"
+    inventory = json.loads(path.read_text())
+    source = inventory["sources"]["ellis_2000"]
+    if defect == "missing_page":
+        source["pages_inspected"].pop()
+    elif defect == "screened_only":
+        source["main_paper_status"] = "screened"
+    else:
+        path_ev = coverage_tree / "schema/registers/EV_evidence_register.csv"
+        rows = list(csv.DictReader(path_ev.open()))
+        eid = source["evidence_ids"][0]
+        if defect == "missing_unit":
+            rows = [r for r in rows if r["evidence_id"] != eid]
+        else:
+            next(r for r in rows if r["evidence_id"] == eid)["use_role"] = (
+                "structural_suitability"
+            )
+        with path_ev.open("w") as stream:
+            writer = csv.DictWriter(stream, fieldnames=rows[0].keys())
+            writer.writeheader()
+            writer.writerows(rows)
+    path.write_text(json.dumps(inventory))
+    assert check(coverage_tree)

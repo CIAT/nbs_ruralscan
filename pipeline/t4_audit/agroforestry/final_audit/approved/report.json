@@ -3,8 +3,8 @@
   "input_sha256": {
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
-    "schema/registers/SRC_source_register.csv": "a11783bab4ecea5657660610e38d6f9be5e9806e6e82bf32c2e082b82ae68b77",
-    "schema/registers/EV_evidence_register.csv": "fdd5247fee68bb9279baac6a1832c0a541159c2a9190d73cc2c32a860fe1ca2c",
+    "schema/registers/SRC_source_register.csv": "b88fa802839f5158681c489b1a3e745626ca29c7f3836a7d11acfb34b895af2d",
+    "schema/registers/EV_evidence_register.csv": "e1af1c2c03c2aea87f5e2c154355e1df8ceea5b3bf9e29e00a9b8c8b43a6c4ba",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
@@ -4242,7 +4242,7 @@
           "variable": "land_cover",
           "reviewer_ok": false,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "type": "source_land_use_classes",
             "eligible_classes": [
@@ -20561,6 +20561,61 @@
             "framing": "presence",
             "strength_class": "unspecified"
           }
+        },
+        "ev_structural_suitability_tree_canopy_cover_pinto_2019_full": {
+          "source_id": "pinto_2019",
+          "variable": "tree_canopy_cover",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "criterion_kind": "programme_eligibility",
+            "occupied_by_trees_pct": {
+              "greater_than": 10
+            }
+          }
+        },
+        "ev_operational_risk_silvopastoral_grazing_pinto_2019_full": {
+          "source_id": "pinto_2019",
+          "variable": "silvopastoral_grazing",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "criterion_kind": "programme_eligibility",
+            "cattle_heads_per_ha": [
+              0.15,
+              0.5
+            ],
+            "regeneration_protection": [
+              "protectors",
+              "fences"
+            ]
+          }
+        },
+        "ev_operational_risk_restorable_patch_area_pinto_2019_full": {
+          "source_id": "pinto_2019",
+          "variable": "restorable_patch_area",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "criterion_kind": "programme_eligibility",
+            "area_greater_than_ha": 5
+          }
+        },
+        "ev_structural_suitability_land_cover_pinto_2019_full": {
+          "source_id": "pinto_2019",
+          "variable": "land_cover",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "excluded_source_classes": [
+              "urban",
+              "industrial"
+            ]
+          }
         }
       },
       "crop_results": {},
@@ -20719,6 +20774,111 @@
           "parameter_evidence": {}
         }
       }
+    },
+    "cross_family": {
+      "family": "cross_family",
+      "corpus_n": null,
+      "rows": [],
+      "selection": [],
+      "groups": {},
+      "dispositions": {
+        "ev_structural_suitability_land_cover_baldwin_2022_full": {
+          "source_id": "baldwin_2022",
+          "variable": "land_cover",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_classes": [
+              "Grassland/Herbaceous",
+              "Pasture/Hay",
+              "Cultivated Crops"
+            ],
+            "classification": "NLCD"
+          }
+        },
+        "ev_operational_risk_tenure_security_baldwin_2022_full": {
+          "source_id": "baldwin_2022",
+          "variable": "tenure_security",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_criterion": "contiguous parcels with common ownership"
+          }
+        },
+        "ev_operational_risk_restorable_patch_area_baldwin_2022_full": {
+          "source_id": "baldwin_2022",
+          "variable": "restorable_patch_area",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_minimum_area": 5,
+            "source_unit": "acre",
+            "author_rounded_hectares": 2
+          }
+        },
+        "ev_operational_risk_built_up_areas_baldwin_2022_full": {
+          "source_id": "baldwin_2022",
+          "variable": "built_up_areas",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "road_buffer_ft": 20,
+            "structure_buffer_ft": 100,
+            "excluded_parcel_uses": [
+              "solar energy generation",
+              "communication towers"
+            ]
+          }
+        },
+        "ev_dataset_annual_precipitation_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "annual_precipitation",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_dataset_frost_free_period_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "frost_free_period",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_dataset_soil_ph_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "soil_ph",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_dataset_soil_texture_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "soil_texture",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_dataset_soil_drainage_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "soil_drainage",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        }
+      },
+      "crop_results": {},
+      "support_basis": "unknown_screened_source_membership",
+      "support_sources": [],
+      "reports": {}
     }
   }
 }

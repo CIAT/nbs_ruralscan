@@ -50,3 +50,18 @@ def test_model_scope_does_not_inherit_generic_scope_of_secondary_quote():
     result = summarize_usage(variable_usage([row], {}))[0]
     assert result["verified_general_model_papers"] == 0
     assert result["verified_crop_species_model_papers"] == 1
+
+
+def test_species_selection_method_does_not_inflate_practice_agreement():
+    records = [
+        {
+            "variable": "soil_ph",
+            "claim_scope": "species_selection",
+            "paper_key": "ellis",
+            "source_id": "ellis_2000",
+        }
+    ]
+    summary = summarize_usage(records)[0]
+    assert summary["verified_general_model_papers"] == 0
+    assert summary["verified_crop_species_model_papers"] == 0
+    assert summary["verified_species_selection_model_papers"] == 1

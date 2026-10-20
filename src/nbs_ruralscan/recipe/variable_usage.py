@@ -75,13 +75,20 @@ def summarize_usage(records):
         scoped = {
             r["paper_key"]
             for r in selected
-            if r["claim_scope"] != "practice_technology"
+            if r["claim_scope"] in {"species_specific", "crop_specific"}
         }
         result.append(
             {
                 "variable": variable,
                 "verified_general_model_papers": len(general),
                 "verified_crop_species_model_papers": len(scoped),
+                "verified_species_selection_model_papers": len(
+                    {
+                        r["paper_key"]
+                        for r in selected
+                        if r["claim_scope"] == "species_selection"
+                    }
+                ),
                 "source_ids": sorted({r["source_id"] for r in selected}),
             }
         )
