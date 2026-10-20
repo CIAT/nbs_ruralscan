@@ -348,3 +348,26 @@ Pete answered: “GPW grassland plus local grazing confirmation”. This superse
 ## Haiti confirmed — 20 October 2026
 
 Pete selected Haiti (HTI), superseding provisional SLE context. Input plan regenerated against HTI bindings; MapSPAM cocoa uses global binding without the SLE-specific upload prompt. National extent assumed for planning only; geometry not acquired. Pete asked whether GPW + GLW4 2020 could supply confirmation. This is a modelled grazing proxy, not local confirmation: proposed flagged trial uses GPW grassland with positive cattle/goat/sheep density, preserving native livestock support and nodata. Asked whether to adopt trial or keep it as separate comparison; no live T4 change pending answer. Sierra Leone survey candidate is not applicable to Haiti.
+
+## Final pipeline reconciliation — 20 October 2026
+
+This section supersedes earlier snapshot counts and publication instructions.
+
+- Current live T4: 17 rows (1 numeric, 7 categorical, 9 retained operational/design).
+- Reconciled 441 records: 341 structural (149 active, 192 quarantined), 99 operational-risk, and one effect record referenced only for host identity. Every record has a final disposition; six unique evidence records directly support live numeric/categorical rows. Seven gates do not mean seven independent sources.
+- Five ambiguous source mappings are explicitly parked in `parked_mappings.csv`: Haile pH, Nath drainage, Singh texture, Singh soil-quality class identity and Singh land-cover quote identity. Each has a reopening requirement; no source content or review verdict was invented.
+- Active records still include qualitative/selection support, crop/species lanes, observed presence, unsupported numeric encodings and unresolved reviews. These are retained and accounted for, not asserted to be recoverable numeric thresholds. Thirty-five records retain `unresolved_review` as their final disposition; this audit does not fabricate human sign-off.
+- Screened-source membership remains unknown. No defensible denominator can be reconstructed from overlapping aggregate searches. All live support percentages and corpus denominators are blank, including retained design rows; do not label these rows “below 20%”. Known evidence-source counts remain distinct from screened-corpus support.
+- Publication defaults to approved-only. `--include-unreviewed` is allowed only in an isolated output directory or a dry run; it cannot overwrite the live recipe. Authored categorical gates survive numeric regeneration.
+- Regression check compares the default generated CSV record-for-record against live T4. Audit rejects stale input hashes, unapproved/dropped live references, missing evidence and parked evidence entering the live table.
+- Diego owns pilot testing. Haiti/GPW/GLW exploratory plans and the local ZIP are not publication inputs. Canonical GitHub tables and this reconciliation are the deliverable.
+
+Rebuild from current registers:
+
+```sh
+PYTHONPATH=src python scripts/synthesise-recipe.py agroforestry --include-unreviewed --output-dir pipeline/t4_audit/agroforestry/final_audit/draft --report pipeline/t4_audit/agroforestry/final_audit/draft/report.json
+PYTHONPATH=src python scripts/synthesise-recipe.py agroforestry --output-dir pipeline/t4_audit/agroforestry/final_audit/approved --report pipeline/t4_audit/agroforestry/final_audit/approved/report.json
+PYTHONPATH=src python scripts/audit-t4-compilation.py agroforestry pipeline/t4_audit/agroforestry/final_audit
+```
+
+To publish regenerated T4 locally: run `scripts/synthesise-recipe.py agroforestry` (approved-only default), then `src/nbs_ruralscan/schema_tools/generate.py schema`. Review the diff and submit through a PR. Do not use per-family JSON files as a replacement for the assembled live table: numeric synthesis intermediates intentionally omit authored categorical gates.

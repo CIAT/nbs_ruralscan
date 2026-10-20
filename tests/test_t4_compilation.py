@@ -241,7 +241,10 @@ def test_isolated_writer_preserves_design_rows_and_live_recipe(runner, tmp_path)
             assert {k: old[k] for k in runner.DESIGN_FIELDS} == {
                 k: r[k] for k in runner.DESIGN_FIELDS
             }
-    assert json.loads((tmp_path / "T4_agroforestry__shaded_perennial.json").read_text())
+    assert (
+        json.loads((tmp_path / "T4_agroforestry__shaded_perennial.json").read_text())
+        == []
+    )
 
 
 def test_custom_curve_units_and_order_are_checked():
@@ -360,3 +363,59 @@ def test_numeric_candidate_cannot_overwrite_configured_categorical_gate(
     ]
     assert len(gates) == 1
     assert gates[0]["mapping_id"] == "agro_planted_silvoarable_land_cover_gate"
+
+
+def test_publication_defaults_to_reviewed_and_reproduces_live_table(runner, tmp_path):
+    import csv
+
+    result = runner.synthesise("agroforestry")
+    assert result == runner.synthesise("agroforestry", approved_only=True)
+    runner.write_recipe(
+        "agroforestry",
+        result,
+        runner._rd(runner.REG / "VONT_variable_ontology.csv"),
+        output_dir=tmp_path,
+    )
+    with (tmp_path / "T4_suitability_mappings.csv").open() as handle:
+        actual = list(csv.DictReader(handle))
+    with Path(
+        "schema/recipes/agroforestry/T4_suitability_mappings.csv"
+    ).open() as handle:
+        expected = list(csv.DictReader(handle))
+    assert actual == expected
+    assert all(not r["corpus_n"] and not r["paper_support_pct"] for r in actual)
+
+
+@pytest.mark.parametrize("extra", [[], ["--output-dir", "schema/recipes/agroforestry"]])
+def test_unreviewed_publication_rejected_before_writes(runner, extra):
+    path = Path("schema/recipes/agroforestry/T4_suitability_mappings.csv")
+    before = path.read_bytes()
+    with pytest.raises(SystemExit) as exc:
+        runner.main(["agroforestry", "--include-unreviewed", *extra])
+    assert exc.value.code == 2
+    assert path.read_bytes() == before
+
+
+def test_final_reconciliation_covers_live_links_and_parks_ambiguous_classes():
+    import csv
+    import json
+
+    root = Path("pipeline/t4_audit/agroforestry/final_audit")
+    with (root / "record_reconciliation.csv").open() as handle:
+        rows = list(csv.DictReader(handle))
+    assert len({r["evidence_id"] for r in rows}) == len(rows)
+    with Path(
+        "schema/recipes/agroforestry/T4_suitability_mappings.csv"
+    ).open() as handle:
+        live = list(csv.DictReader(handle))
+    linked = {eid for r in live for eid in json.loads(r["evidence_ids"] or "[]")}
+    assert linked == {r["evidence_id"] for r in rows if r["live_mapping_ids"]}
+    with (root / "parked_mappings.csv").open() as handle:
+        parked = {r["evidence_id"] for r in csv.DictReader(handle)}
+    assert parked.isdisjoint(linked)
+    assert parked == {
+        r["evidence_id"]
+        for r in rows
+        if r["final_disposition"] == "parked_source_mapping"
+    }
+    assert all(r["final_disposition"] != "pending" for r in rows)

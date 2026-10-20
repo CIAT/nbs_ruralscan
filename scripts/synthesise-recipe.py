@@ -84,7 +84,7 @@ def _first_dataset(raw: str | None) -> str:
 def synthesise(
     nbs_id: str,
     *,
-    approved_only: bool = False,
+    approved_only: bool = True,
     screened_sources: dict[str, set[str]] | None = None,
 ) -> dict[str, FamilyResult]:
     src, vont = (
@@ -281,7 +281,13 @@ def write_recipe(
         if not _is_synthesised(r)
         and (r.get("suitability_family_id", ""), r["variable"]) not in produced
     ]
-    csv_rows.extend({k: r.get(k, "") for k in T4_FIELDS} for r in kept)
+    for row in kept:
+        preserved = {k: row.get(k, "") for k in T4_FIELDS}
+        # Retained design/crosswalk rows have no verified screened-source calculation.
+        # Do not perpetuate historical search-total percentages across regeneration.
+        preserved["corpus_n"] = ""
+        preserved["paper_support_pct"] = ""
+        csv_rows.append(preserved)
 
     buf = io.StringIO(newline="")
     w = csv.DictWriter(buf, fieldnames=T4_FIELDS, lineterminator="\n")
@@ -295,8 +301,17 @@ def write_recipe(
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("nbs_id", help="e.g. riparian_buffer")
-    ap.add_argument(
-        "--approved-only", action="store_true", help="exclude unresolved review records"
+    review = ap.add_mutually_exclusive_group()
+    review.add_argument(
+        "--approved-only",
+        action="store_true",
+        default=True,
+        help="exclude unresolved review records (publication default)",
+    )
+    review.add_argument(
+        "--include-unreviewed",
+        action="store_true",
+        help="diagnostic draft only; requires isolated --output-dir or --dry-run",
     )
     ap.add_argument(
         "--output-dir",
@@ -315,6 +330,16 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--dry-run", action="store_true", help="report only; write nothing")
     args = ap.parse_args(argv)
+    if args.include_unreviewed:
+        live = (ROOT / "schema" / "recipes" / args.nbs_id).resolve()
+        isolated = args.output_dir is not None and args.output_dir.resolve() != live
+        if not args.dry_run and not isolated:
+            ap.error(
+                "--include-unreviewed cannot write the live recipe; use isolated --output-dir or --dry-run"
+            )
+        if args.report is not None and args.report.resolve().is_relative_to(live):
+            ap.error("unreviewed diagnostic reports must stay outside the live recipe")
+        args.approved_only = False
 
     screened_sources = {}
     if args.screened_corpus:

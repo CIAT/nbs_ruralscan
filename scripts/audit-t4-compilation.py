@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import csv
 import html
+import hashlib
 import json
 import subprocess
 import sys
@@ -63,6 +64,23 @@ def main() -> None:
         mode: json.loads((out / mode / "report.json").read_text())
         for mode in ("draft", "approved")
     }
+    for report in reports.values():
+        for relative, expected in report["input_sha256"].items():
+            if hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() != expected:
+                raise ValueError(f"Stale synthesis report input: {relative}")
+    with (ROOT / f"schema/recipes/{args.nbs}/T4_suitability_mappings.csv").open(
+        encoding="utf-8"
+    ) as handle:
+        live = list(csv.DictReader(handle))
+    live_links = {}
+    for mapping in live:
+        for eid in json.loads(mapping["evidence_ids"] or "[]"):
+            live_links.setdefault(eid, []).append(mapping)
+    parked_path = out / "parked_mappings.csv"
+    parked = {}
+    if parked_path.exists():
+        with parked_path.open(encoding="utf-8") as handle:
+            parked = {r["evidence_id"]: r for r in csv.DictReader(handle)}
     dispositions = {}
     for mode, report in reports.items():
         flat = {}
@@ -77,14 +95,33 @@ def main() -> None:
             r
             for r in csv.DictReader(f)
             if r["nbs_id"] == args.nbs
-            and r["use_role"] in {"structural_suitability", "operational_risk"}
+            and (
+                r["use_role"] in {"structural_suitability", "operational_risk"}
+                or r["evidence_id"] in live_links
+            )
         ]
     reconciliation = []
     classes = []
     for u in units:
         eid = u["evidence_id"]
         if any(eid not in dispositions[mode] for mode in reports):
-            raise ValueError(f"Missing disposition: {eid}")
+            if (
+                u["use_role"] not in {"structural_suitability", "operational_risk"}
+                and eid in live_links
+            ):
+                for mode in reports:
+                    dispositions[mode][eid] = {
+                        "status": "other_role_host_identity_reference"
+                    }
+            else:
+                raise ValueError(f"Missing disposition: {eid}")
+        mappings = live_links.get(eid, [])
+        if mappings and (
+            u["review_state"] == "dropped" or u["reviewer_ok"].lower() != "true"
+        ):
+            raise ValueError(f"Live T4 references unapproved/dropped evidence: {eid}")
+        if mappings and eid in parked:
+            raise ValueError(f"Parked mapping entered live T4: {eid}")
         rel = json.loads(u["relationship"] or "{}")
         row = {
             key: u[key]
@@ -105,6 +142,35 @@ def main() -> None:
             draft_status=dispositions["draft"][eid]["status"],
             approved_status=dispositions["approved"][eid]["status"],
             payload_kind=payload_kind(rel),
+            live_mapping_ids="|".join(r["mapping_id"] for r in mappings),
+            final_disposition=(
+                "live_categorical_host_reference"
+                if mappings
+                and all(r["relationship_type"] == "ranked_classes" for r in mappings)
+                else "live_numeric_contributor"
+                if mappings
+                else "parked_source_mapping"
+                if eid in parked
+                else "operational_risk_retained"
+                if u["use_role"] == "operational_risk"
+                and u["review_state"] != "dropped"
+                else dispositions["approved"][eid]["status"]
+            ),
+            disposition_reason=(
+                parked[eid]["reason"]
+                if eid in parked
+                else "Evidence-linked categorical host identity; not numeric suitability or effect magnitude."
+                if mappings
+                and all(r["relationship_type"] == "ranked_classes" for r in mappings)
+                else "Contributes to reviewed numeric rule."
+                if mappings
+                else "M2b/implementation evidence retained outside structural T4."
+                if u["use_role"] == "operational_risk"
+                and u["review_state"] != "dropped"
+                else dispositions["approved"][eid].get(
+                    "reason", dispositions["approved"][eid]["status"]
+                )
+            ),
         )
         if "pending" in (row["draft_status"], row["approved_status"]):
             raise ValueError(f"Unaccounted compiler disposition: {eid}")
@@ -115,6 +181,13 @@ def main() -> None:
             and u["use_role"] == "structural_suitability"
         ):
             classes.append({**row, "quote": u["quote"], "context": u["context"]})
+    missing_links = set(live_links) - {u["evidence_id"] for u in units}
+    if missing_links:
+        raise ValueError(
+            f"Live mapping references missing evidence: {sorted(missing_links)}"
+        )
+    if set(parked) - {u["evidence_id"] for u in units}:
+        raise ValueError("Parked mapping references missing evidence")
     write_csv(
         out / "record_reconciliation.csv", reconciliation, list(reconciliation[0])
     )
@@ -170,6 +243,21 @@ def main() -> None:
         "active_class_records": len(classes),
         "screened_corpus": "unknown: aggregate search counts and acquisition lists are not complete source-level screening records",
         "all_records_accounted_for": True,
+        "final_dispositions": dict(
+            Counter(r["final_disposition"] for r in reconciliation)
+        ),
+        "live_rows": len(live),
+        "live_categorical_rows": sum(
+            r["relationship_type"] == "ranked_classes" for r in live
+        ),
+        "unique_live_evidence_references": len(live_links),
+        "parked_mapping_records": len(parked),
+        "support_percentages_present": sum(bool(r["paper_support_pct"]) for r in live),
+        "live_t4_sha256": hashlib.sha256(
+            (
+                ROOT / f"schema/recipes/{args.nbs}/T4_suitability_mappings.csv"
+            ).read_bytes()
+        ).hexdigest(),
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     heads = [
@@ -179,6 +267,9 @@ def main() -> None:
         "draft_status",
         "approved_status",
         "payload_kind",
+        "final_disposition",
+        "live_mapping_ids",
+        "disposition_reason",
     ]
     table = "".join(
         "<tr>"
@@ -223,14 +314,14 @@ def main() -> None:
         )
     document = """<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agroforestry T4 pipeline audit</title>
 <style>body{font:16px system-ui;max-width:1400px;margin:40px auto;padding:0 24px;color:#16362b;background:#f6f8f5}h1{font-size:34px}section{padding:24px;background:white;border:1px solid #dce5df;margin:20px 0;border-radius:12px}table{border-collapse:collapse;font-size:12px;width:100%}td,th{text-align:left;padding:9px;border-bottom:1px solid #ddd;overflow-wrap:anywhere}input{font:inherit;padding:12px;width:90%}pre,blockquote{white-space:pre-wrap;overflow-wrap:anywhere}summary{cursor:pointer;padding:12px}a{color:#17694c}.warn{background:#fff0cf;padding:18px;border-radius:8px}</style>
-<h1>Agroforestry T4: where evidence goes</h1><p>Branch audit · 19 October 2026 · Candidate outputs, not a published global recipe.</p>
+<h1>Agroforestry T4: where evidence goes</h1><p>Final branch reconciliation · 20 October 2026 · Reviewed live T4; pilot testing belongs to Diego.</p>
 <section><h2>Result</h2><p><strong>SUMMARY_COUNTS</strong></p><p class="warn">Screened-source denominator unknown. No support percentages or 20% floor decisions inferred from overlapping search totals. One approved numeric rule is a source modelling choice requiring applicability review, not a universal validation.</p><p>REVIEW_STATUS Five earlier corrected holds remain approved. No evidence rows deleted.</p><p><a href="../review.html?batch=agroforestry-t4-final-audit-oct19">Review eleven corrections</a> · <a href="../review.html?batch=agroforestry-t4-holds-oct19">Earlier five approvals</a></p></section>
 <section><p><a href="t4-categorical-tables.html">Land-use and categorical class tables</a></p><h2>Retained class evidence</h2><p>Original source ranks, ranges and codes preserved. These do not become calibrated 0–1 membership scores automatically. “Low” does not mean excluded; unknown dataset codes do not become land-cover classes.</p>CLASS_CARDS</section>
 <section><h2>Every record accounted for</h2><input id="search" aria-label="Filter records" placeholder="Filter by source, variable, evidence ID or disposition"><table><thead><tr>TABLE_HEAD</tr></thead><tbody>TABLE_ROWS</tbody></table></section>
 <script>document.getElementById('search').addEventListener('input',e=>{let q=e.target.value.toLowerCase();document.querySelectorAll('tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))})</script></html>"""
     document = document.replace(
         "SUMMARY_COUNTS",
-        f"{len(units)} T4/M2b records reconciled · {summary['structural_active']} active structural records · {summary['generic_rows']['draft']} draft numeric rows · {summary['generic_rows']['approved']} approval-filtered numeric row · {len(classes)} active class records retained",
+        f"{len(live)} live T4 rows · {len(live_links)} unique linked evidence records · {len(parked)} mappings explicitly parked · {len(units)} records reconciled (including cross-role host references) · {summary['structural_active']} active structural records · {summary['generic_rows']['draft']} draft numeric rows · {summary['generic_rows']['approved']} approval-filtered numeric row · {len(classes)} active class records retained",
     )
     document = (
         document.replace("REVIEW_STATUS", html.escape(review_status))
