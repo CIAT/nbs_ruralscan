@@ -33,3 +33,9 @@ After the subsequent WOCAT pass, 7 historical requests remain: Ahmad figure/tabl
 ## Subsequent WOCAT pass
 
 Six WOCAT requests answered from full source pages. Natural Environment panels describe selected site observations; the Burkina Faso technology combines predominantly forest regeneration with an agricultural strip. Classification panels describe restoration purposes, not suitability scores. One soil record lacked its observed-presence marker; corrected it without changing its values, quotation or human review state. Review cards now explain site context and show existing source-check interpretations.
+
+## Two-column context pass
+
+CGSpace p73 soil classes are separate from its cropland mask. Wotlolan p1523 introduces crop criteria in the left column and continues its 35% slope filter in the right. Sperandio p3 explicitly names organic carbon across the column break. Full-page source inspection resolves these three display/context requests without changing analytical rules.
+
+Current open requests: four — Ahmad figure/table recovery, CGSpace soil-variable mapping, ELD dryland-zone interpretation, and Nath forest-cover context. Earlier counts above describe prior passes.
