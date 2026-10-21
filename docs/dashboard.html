@@ -2811,7 +2811,11 @@
     function obj(value){ if(value && typeof value==='object')return value; try{return JSON.parse(value||'{}')||{};}catch(e){return {};} }
     var c=obj(ev.context), r=obj(ev.relationship), m=c.model_use||{}, provenance=c.model_use_provenance||{};
     var values='', purpose='', question='', image='';
-    if(Object.keys(m).length){
+    if(r.type==='observed_presence'){
+      values='Observed conditions at documented sites; not a tested suitability range.';
+      purpose='Retained as site context. Does not vote for suitability thresholds or exclude places with different conditions.';
+      question='Check which boxes are selected in the Natural Environment panel, and distinguish topsoil from subsoil. Unselected options are not observations.';
+    } else if(Object.keys(m).length){
       var path=Array.isArray(m.weight_path_pct)?m.weight_path_pct:[];
       values=path.length ? 'Weight in this paper: '+path.map(function(w){return String(w)+'%';}).join(' × ') : 'Paper uses this variable; no numeric importance weight recorded.';
       if(path.length>1) values+=' (nested model branches; not necessarily the variable’s total weight).';
@@ -2831,7 +2835,8 @@
     }
     if(ev.review_state==='dropped') purpose='Quarantined record; excluded from synthesis. '+purpose;
     var note=(c.recovery_review||{}).note;
-    return '<section style="margin:10px 0;padding:10px 12px;border:1px solid var(--border-color);border-radius:5px;font-size:12px;line-height:1.5">'+(values?'<div><b>Extracted information:</b> '+vfEsc(values)+'</div>':'')+'<div><b>How it will be used:</b> '+vfEsc(purpose)+'</div><div><b>What to review:</b> '+vfEsc(question)+'</div>'+(note&&note!==question?'<div><b>Source limitation:</b> '+vfEsc(note)+'</div>':'')+image+'</section>';
+    var interpretation=(c.source_check||{}).resolution;
+    return '<section style="margin:10px 0;padding:10px 12px;border:1px solid var(--border-color);border-radius:5px;font-size:12px;line-height:1.5">'+(values?'<div><b>Extracted information:</b> '+vfEsc(values)+'</div>':'')+'<div><b>How it will be used:</b> '+vfEsc(purpose)+'</div><div><b>What to review:</b> '+vfEsc(question)+'</div>'+(note&&note!==question?'<div><b>Source limitation:</b> '+vfEsc(note)+'</div>':'')+(interpretation?'<div><b>Source interpretation:</b> '+vfEsc(interpretation)+'</div>':'')+image+'</section>';
   }
   function _vfTabular(q){ q=q||''; return /\d+\s*[–-]\s*\d+/.test(q)||((q).match(/\d+(\.\d+)?/g)||[]).length>=3||q.indexOf('\n')>=0; }
   function _vfVerdictColor(v){ return v==='unsupported'?'var(--accent-rose)':v==='mismatch'?'var(--accent-amber)':v==='pass'?'var(--accent-sky)':v==='scope'?'var(--accent-amber)':'var(--text-secondary)'; }
