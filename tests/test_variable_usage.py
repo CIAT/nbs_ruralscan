@@ -185,3 +185,154 @@ def test_source_proxy_labels_do_not_assert_tenure_or_canopy_equivalence():
     assert trees["raw_name"] == "land occupied by trees"
     assert trees["review_state"] == "dropped"
     assert json.loads(trees["context"])["canonical_mapping_hold"]
+
+
+def test_paper_review_counts_partition_duplicates_and_quarantine():
+    def unit(eid, source, approved=False, dropped=False, scope="practice_technology"):
+        return dict(
+            evidence_id=eid,
+            source_id=source,
+            variable="slope",
+            claim_scope=scope,
+            suitability_family_id="regional",
+            reviewer_ok=approved,
+            review_state="dropped" if dropped else "",
+            context={
+                "model_use": {
+                    "verified": True,
+                    "method": "AHP",
+                    "page": "5",
+                    "weight_path_pct": [10],
+                }
+            },
+        )
+
+    units = [
+        unit("a1", "a", True),
+        unit("a2", "a"),
+        unit("a3", "a", True, True),
+        unit("b1", "b"),
+        unit("b2", "b"),
+        unit("c1", "c", True, True),
+        unit("crop1", "a", False, False, "crop_specific"),
+    ]
+    usage = variable_usage(units, {})
+    summary = summarize_usage(usage)[0]
+    assert summary["verified_general_model_papers"] == 3
+    assert summary["reviewed_general_model_papers"] == 1
+    assert summary["pending_general_model_papers"] == 1
+    assert summary["quarantined_only_general_model_papers"] == 1
+    assert summary["pending_crop_species_model_papers"] == 1
+    a = next(
+        r
+        for r in usage
+        if r["source_id"] == "a" and r["claim_scope"] == "practice_technology"
+    )
+    assert a["reviewed_evidence_ids"] == ["a1"]
+    assert a["pending_evidence_ids"] == ["a2"]
+    assert a["quarantined_evidence_ids"] == ["a3"]
+    assert "not all reported weights are human-approved" in a["note"]
+    # Source aliases sharing a DOI still supply one paper vote.
+    alias = unit("alias", "alias")
+    summary = summarize_usage(
+        variable_usage(
+            [unit("orig", "a", True), alias],
+            {"a": {"doi": "same"}, "alias": {"doi": "same"}},
+        )
+    )[0]
+    assert summary["reviewed_general_model_papers"] == 1
+    assert summary["pending_general_model_papers"] == 0
+
+
+def test_model_lineage_keeps_threshold_citations_separate_and_holds_bad_links():
+    def unit(eid, sid, origin=None, setting="north"):
+        use = {"verified": True, "method": "AHP", "page": "1", "weight_path_pct": [10]}
+        if origin:
+            use["lineage_of"] = origin
+        return dict(
+            evidence_id=eid,
+            source_id=sid,
+            variable="slope",
+            claim_scope="practice_technology",
+            suitability_family_id="regional",
+            context={"study_area": setting, "model_use": use},
+        )
+
+    primary = unit("primary", "a")
+    secondary = unit("secondary", "b", "primary")
+    own_model = unit("own", "c")
+    own_model["lineage_of"] = (
+        "primary"  # Threshold borrowed; own model use is distinct.
+    )
+    broken = unit("broken", "d", "missing")
+    cycle1, cycle2 = unit("cycle1", "e", "cycle2"), unit("cycle2", "f", "cycle1")
+    rows = variable_usage([primary, secondary, own_model, broken, cycle1, cycle2], {})
+    by_source = {r["source_id"]: r for r in rows}
+    assert (
+        by_source["a"]["model_origin_ids"]
+        == by_source["b"]["model_origin_ids"]
+        == ["a"]
+    )
+    assert by_source["c"]["model_origin_ids"] == ["c"]
+    assert by_source["c"]["response_lineage"] == ["primary"]
+    assert by_source["d"]["origin_status"] == "held"
+    assert (
+        by_source["e"]["model_origin_ids"] == by_source["f"]["model_origin_ids"] == []
+    )
+    summary = summarize_usage(rows)[0]
+    assert summary["verified_general_model_papers"] == 6
+    assert summary["recorded_general_model_origins"] == 2
+    assert summary["general_papers_with_origin_holds"] == 3
+    # Same paper, different settings: separate weight records, one paper count.
+    south = unit("south", "a", setting="south")
+    south["context"]["model_use"]["weight_path_pct"] = [20]
+    rows = variable_usage([primary, south], {})
+    assert len(rows) == 2
+    assert not any(r["weight_conflict"] for r in rows)
+    assert summarize_usage(rows)[0]["verified_general_model_papers"] == 1
+    # DOI aliases normalize case and resolver prefixes, preserving all source IDs.
+    rows = variable_usage(
+        [primary, unit("alias", "alias")],
+        {"a": {"doi": "https://doi.org/10.1/ABC"}, "alias": {"doi": "10.1/abc"}},
+    )
+    assert len(rows) == 1
+    assert rows[0]["source_ids"] == ["a", "alias"]
+    # Source references resolve directly; an unverified evidence target is held.
+    rows = variable_usage([unit("ref", "b", "a")], {"a": {"doi": "DOI:10.1/ABC"}})
+    assert rows[0]["model_origin_ids"] == ["10.1/abc"]
+    unverified = unit("unverified", "a")
+    unverified["context"]["model_use"]["verified"] = False
+    rows = variable_usage([unverified, unit("ref", "b", "unverified")], {})
+    assert rows[0]["model_origin_ids"] == []
+    assert "lacks verified" in rows[0]["model_origin_holds"][0]
+
+
+def test_singh_reused_model_lineage_matches_importance_inventory():
+    import csv
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    audit = root / "pipeline/t4_audit/agroforestry"
+    with (audit / "importance_2026-10-21/source_weight_trees.csv").open() as handle:
+        lineages = {
+            r["lineage"]
+            for r in csv.DictReader(handle)
+            if r["source_id"] == "singh_2026" and not r["parent_id"]
+        }
+    assert len(lineages) == 1
+    with (root / "schema/registers/EV_evidence_register.csv").open() as handle:
+        units = list(csv.DictReader(handle))
+    checked = []
+    for unit in units:
+        use = json.loads(unit["context"] or "{}").get("model_use", {})
+        if unit["source_id"] == "singh_2026" and use.get("verified"):
+            assert use["lineage_of"] in lineages
+            assert use["lineage_provenance"]["page"] == "5"
+            assert "2022" in use["lineage_provenance"]["quote"]
+            checked.append(unit)
+    assert checked
+    usage = variable_usage(checked, {})
+    assert all(r["origin_status"] == "held" for r in usage)
+    assert all(r["model_origin_ids"] == [] for r in usage)
+    assert summarize_usage(usage)[0]["verified_general_model_papers"] == 1

@@ -98,3 +98,51 @@ Pete approved the candidate-comparison recommendation in chat ("ok proveed agree
 - Retain Haile Table 5 as the provisional computed-AHP representation, with Table 3 as an alternative; which weights generated the published map remains unresolved.
 
 This approves the comparison approach and recommendation. It does not approve new evidence records, global transfer, a complete family-specific variable set, or changed runtime weights.
+
+### Review status of model-use counts
+
+The variable-use inventory retains all source-checked model-use claims, including
+claims carried only by quarantined records. Its summary partitions papers, within
+each variable and claim scope, into reviewed (at least one active `reviewer_ok`
+record), pending (active records but none approved), and quarantined-only. Repeated
+records and DOI aliases count once; a reviewed paper with additional pending
+records is counted as reviewed, while the detailed inventory lists those pending
+records explicitly. Approval is record-level: later metadata corrections and
+reported importance weights may still require review. These are counts of paper
+use, not independent-origin agreement, compatible-context support, or agreement
+on numerical suitability thresholds. No runtime weight changes follow from them.
+
+### Model origins and study contexts
+
+Paper-use totals remain bibliographic counts. Weight inventories are additionally
+split by recorded family, taxon, study setting and explicit context ID. Missing or
+matching context is not approval to pool responses or weights. Review-status
+paper totals still deduplicate across these context records.
+
+`EV.lineage_of` describes the extracted claim's lineage and can concern borrowed
+thresholds even where that paper uses its own model. Preserve it separately as
+`response_lineage`; never automatically assign that paper's model weights to the
+cited threshold source. Only explicit `context.model_use.lineage_of` traces a
+model-use origin, by evidence ID or registered source ID. Evidence-ID chains are
+followed; cycles, unknown targets and targets without verified model use remain
+held. A source-ID reference identifies that source without selecting an arbitrary
+evidence row to continue the chain. DOI aliases are normalized and retained in the
+source-ID inventory. Recorded model origins are not verified independent studies;
+absence of a lineage link does not establish independence. These diagnostics do
+not modify runtime weights, response-pooling approvals or source review decisions.
+
+Source-method check, 21 October 2026: Singh 2026 §4.2 (PDF p5) explicitly reuses
+Singh 2022's trained model. The importance-tree inventory already recorded that
+lineage; it is now also attached to all 16 source-checked Singh model-use records.
+The 2022 source is not registered, so origin resolution stays held until that
+source is acquired and checked. The 2026 paper still documents use of 11 variables;
+it is not counted as a newly independent weight calibration. This does not prove
+its pH class boundaries came from the same source.
+
+Nath 2021 §2.4 (PDF p10) attributes class scores to literature, peers and domain
+experts. Ahmad 2018 (PDF p6) describes similar methodology/weights in earlier work.
+Neither passage identifies a shared row-specific threshold origin for the current
+pools. Retain existing conditional India planted-system combinations, without
+upgrading them to independent empirical validation or global transfer approval.
+Exact source passages and artifact hashes are recorded in
+`pipeline/t4_audit/agroforestry/bounded_review_2026-10-21/source_dependency_review.json`.

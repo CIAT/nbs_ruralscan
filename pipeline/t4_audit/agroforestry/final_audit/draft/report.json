@@ -4,7 +4,7 @@
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
     "schema/registers/SRC_source_register.csv": "8d1446e666377d9d9e7079e0f84d83c0ad9981e063f873a92a1a6b8dfe96a4d8",
-    "schema/registers/EV_evidence_register.csv": "c4610b15fd3bd2817483035be32def5c63bea5769fad9e77c394822b4bce8f08",
+    "schema/registers/EV_evidence_register.csv": "d969690b27f00f463329a8670575e03fff664a24bd6f750e415479dfe782c0cb",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
@@ -9045,7 +9045,17 @@
                       3
                     ],
                     "scope": "practice_technology",
-                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch.",
+                    "lineage_of": "Singh et al. 2022 weight model (as reported by Singh 2026)",
+                    "lineage_provenance": {
+                      "source_id": "singh_2026",
+                      "page": "5",
+                      "quote": "The previous \ntrained model using the RF model (Singh et al., 2022) and \nvalidated in Belpada was used in the current study (Table 2).",
+                      "status": "reuse_explicit_in_reporting_paper; original model source not registered",
+                      "reference_title": "Agroforestry suitability for planning site-specific interventions using machine learning approaches",
+                      "reference_year": 2022,
+                      "review_date": "2026-10-21"
+                    }
                   },
                   "system_applicability_review": {
                     "reviewer": "Codex source review",
@@ -9060,7 +9070,15 @@
                     "decision": "Retain F1 pH assignment for planted trees with crops. Boundary component still needs F4 geometry; no numeric-only expansion into F4 or homegardens. Pool pH with Nath as an India-derived scoping prior, retaining uncertainty and regional profiles.",
                     "status": "supported_planted_tree_crop",
                     "quote": "Bund plantations and intercropping are prescribed in single cropping agricultural lands"
-                  }
+                  },
+                  "source_corrections": [
+                    {
+                      "date": "2026-10-21",
+                      "agent": "Codex",
+                      "note": "Align model-use lineage with existing source_weight_trees.csv: Singh 2026 reuses Singh 2022 model (PDF p5). Model weights and response lineage remain separate; no new human approval.",
+                      "human_review_state_changed": false
+                    }
+                  ]
                 },
                 "source_group": "default",
                 "ordinal_scale": {
