@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-21T16:47:09.839843+00:00",
-  "git_commit": "8dbf9978659bf956787886d76bb031ac7fc06567",
+  "timestamp": "2026-10-21T16:49:14.475854+00:00",
+  "git_commit": "91d0d49db505f906cae16a135949f7e7aeee7000",
   "registers": {
     "SRC_source_register": [
       {
@@ -16054,11 +16054,16 @@
         "source_id": "nath_2021",
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__cross_family",
-        "variable": "tree_canopy_cover",
+        "variable": "land_cover",
         "relationship": {
           "suitable_classes": "Non-forest, Scrub, OF",
           "restricted_classes": "Water, MDF & VDF",
-          "variable_weight_pct": 50
+          "variable_weight_pct": 50,
+          "class_definitions": {
+            "NF": "Non-forest",
+            "OF": "Open forest"
+          },
+          "note": "Categorical forest-cover map. MDF and VDF retained as source codes; no numeric canopy boundaries inferred."
         },
         "context": {
           "model_use": {
@@ -16071,6 +16076,20 @@
             ],
             "scope": "practice_technology",
             "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+          },
+          "source_corrections": [
+            {
+              "date": "2026-10-21",
+              "previous_variable": "tree_canopy_cover",
+              "previous_raw_name": "Forest Cover map",
+              "reason": "Table 2 p11 reports categorical forest-cover classes: Non-forest, Scrub and OF in very-good class; Water, MDF and VDF in unsuitable class. NF means Non-forest and OF Open forest in source note. This is not percent canopy. Original 50% ecology-branch weight retained; no global land-cover crosswalk or percent-canopy cutoff inferred.",
+              "human_review_state_changed": false
+            }
+          ],
+          "source_check": {
+            "date": "2026-10-21",
+            "reviewer": "Codex source verification",
+            "resolution": "Table 2 p11 reports categorical forest-cover classes: Non-forest, Scrub and OF in very-good class; Water, MDF and VDF in unsuitable class. NF means Non-forest and OF Open forest in source note. This is not percent canopy. Original 50% ecology-branch weight retained; no global land-cover crosswalk or percent-canopy cutoff inferred."
           }
         },
         "use_role": "structural_suitability",
@@ -16081,7 +16100,7 @@
         "quote": "Forest Cover map Category Water, NF, Scrub, Forest Non-forest, Scrub, OF - - - Water, MDF & VDF 50%",
         "page": 11,
         "reviewer_ok": true,
-        "raw_name": "Forest Cover map",
+        "raw_name": "Forest Cover map categories",
         "attribution": "[reviewed 2026-10-19 by Namita-J; reason:insufficient_context] general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
         "locator_type": "page"
       },
@@ -21707,10 +21726,24 @@
         "source_id": "cgspace_singh_southasia_2020",
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__cross_family",
-        "variable": "soil_texture_hsg",
+        "variable": "soil_quality_class",
         "context": {
           "region": "South Asia",
-          "dataset": "HWSD"
+          "dataset": "HWSD",
+          "source_corrections": [
+            {
+              "date": "2026-10-21",
+              "previous_variable": "soil_texture_hsg",
+              "previous_raw_name": "harmonized soil data suitability classes",
+              "reason": "Source p73 class codes describe soil-quality suitability, not texture or Hydrologic Soil Group. Retained under pending soil_quality_class ontology; exact dataset/theme crosswalk remains unapproved.",
+              "human_review_state_changed": false
+            }
+          ],
+          "source_check": {
+            "date": "2026-10-21",
+            "reviewer": "Codex source verification",
+            "resolution": "Source p73 class codes describe soil-quality suitability, not texture or Hydrologic Soil Group. Retained under pending soil_quality_class ontology; exact dataset/theme crosswalk remains unapproved."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -21720,7 +21753,7 @@
         "quote": "low suitable for plant growth (Fischer et al. 2008). Class 5 is non-soil, class 6 is permanent frost and class 7 is water areas (Fischer et al. 2008).",
         "page": 3,
         "reviewer_ok": true,
-        "raw_name": "harmonized soil data suitability classes",
+        "raw_name": "HWSD soil-quality suitability class",
         "attribution": "[reviewed 2026-10-19 by Namita-J; reason:confirmed_pass] [dropped 2026-09-18 by peetmate; reason:insufficient_context] [reviewed 2026-08-06 by Namita-J; reason:confirmed_pass] Fischer et al. 2008",
         "locator_type": "page",
         "ruleset_version": "2026-06-23.cgspace-oa"
@@ -21730,7 +21763,7 @@
         "source_id": "cgspace_singh_southasia_2020",
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__cross_family",
-        "variable": "soil_texture_hsg",
+        "variable": "soil_quality_class",
         "relationship": {
           "direction": "positive",
           "classes_suitable": "1-4",
@@ -21740,7 +21773,21 @@
         "context": {
           "region": "South Asia",
           "dataset": "HWSD",
-          "system": "FAO land suitability criteria"
+          "system": "FAO land suitability criteria",
+          "source_corrections": [
+            {
+              "date": "2026-10-21",
+              "previous_variable": "soil_texture_hsg",
+              "previous_raw_name": "harmonized soil data suitability classes 1-4",
+              "reason": "Source p73 uses classes 1–4 and excludes 5–7 (non-soil, permanent frost, water). These are soil-quality class codes, not texture/HSG. Retain source codes; no executable crosswalk without matching dataset semantics.",
+              "human_review_state_changed": false
+            }
+          ],
+          "source_check": {
+            "date": "2026-10-21",
+            "reviewer": "Codex source verification",
+            "resolution": "Source p73 uses classes 1–4 and excludes 5–7 (non-soil, permanent frost, water). These are soil-quality class codes, not texture/HSG. Retain source codes; no executable crosswalk without matching dataset semantics."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -21750,7 +21797,7 @@
         "quote": "The current study utilized class 1 to class 4 for agroforestry suitability mapping whereas class 5 to class 7 were categorized not suitable due to difficulties/constraints.",
         "page": 3,
         "reviewer_ok": true,
-        "raw_name": "harmonized soil data suitability classes 1-4",
+        "raw_name": "HWSD soil-quality suitability class",
         "attribution": "[reviewed 2026-09-18 by peetmate; reason:confirmed_pass]",
         "locator_type": "page",
         "ruleset_version": "2026-06-23.cgspace-oa"
@@ -23144,11 +23191,18 @@
         "relationship": {
           "direction": "constraint_by_zone",
           "arid_zone": "tree_establishment_very_difficult_without_irrigation",
-          "semi_arid_zone": "FMNR_foundational_on_agricultural_land"
+          "semi_arid_zone": "FMNR_foundational_on_agricultural_land",
+          "arid_zone_recommendation": "assisted_natural_regeneration_of_trees_and_shrubs_in_pastoral_conditions",
+          "note": "Qualitative Table 3 zone guidance; tree-establishment difficulty without irrigation is not an exclusion of assisted regeneration. No numeric aridity-index cutoff."
         },
         "context": {
           "region": "West & East Africa",
-          "aez": "arid_and_semi_arid"
+          "aez": "arid_and_semi_arid",
+          "source_check": {
+            "date": "2026-10-21",
+            "reviewer": "Codex source verification",
+            "resolution": "Full Table 3 PDF p25 distinguishes zone characteristics from recommended systems. Arid-zone column recommends assisted natural regeneration; semi-arid and dry sub-humid columns recommend FMNR. Retain qualitative guidance, not a hard aridity or irrigation mask."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -198417,6 +198471,24 @@
         "raised_by": "ev_operational_risk_tenure_security_baldwin_2022_full",
         "raised_date": "2026-10-21",
         "comment": "Baldwin 2022 p10: common ownership reduces stakeholders and decision-makers for FloodWise adoption. Operational feasibility criterion, not evidence of legal or customary tenure security. Source-context inventory only; no global response, weight, spatial resolution or dataset binding established."
+      },
+      {
+        "canonical_variable_id": "soil_quality_class",
+        "label": "Source soil-quality suitability class",
+        "aliases": [
+          "HWSD soil-quality suitability class"
+        ],
+        "canonical_unit": "class",
+        "unit_conversions": {},
+        "group_id": "edaphic",
+        "candidate_dataset_ids": [],
+        "resolution_sensitivity": "medium",
+        "derive_then_aggregate": false,
+        "context_sensitivity": "high",
+        "review_status": "pending_review",
+        "raised_by": "cgspace_singh_southasia_2020__soil_texture_hsg__02",
+        "raised_date": "2026-10-21",
+        "comment": "Preserves source-coded soil-quality suitability classes separately from soil texture and HSG. Exact HWSD theme/version crosswalk unresolved; no runtime binding or universal class scoring approved."
       }
     ],
     "BIND_dataset_binding": [

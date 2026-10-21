@@ -355,3 +355,41 @@ def test_answered_source_questions_do_not_become_general_numeric_curves():
     assert slope["taxon"] == "Falcataria moluccana"
     drainage = json.loads(evidence["ev_T4_soildrainage_haris2021_1"]["relationship"])
     assert drainage == {"land_capability_class": "IVd", "limitation": "drainage"}
+
+
+def test_source_classes_keep_correct_variable_and_calibration_limits():
+    from nbs_ruralscan.recipe.variable_usage import _paper_key
+
+    evidence = {
+        r["evidence_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    for suffix in ("01", "02"):
+        row = evidence[f"cgspace_singh_southasia_2020__soil_texture_hsg__{suffix}"]
+        assert row["variable"] == "soil_quality_class"
+    forest = evidence["ev_t4_treecan_nath21_01"]
+    assert forest["variable"] == "land_cover"
+    assert json.loads(forest["context"])["model_use"]["weight_path_pct"] == [50, 10]
+    assert (
+        json.loads(forest["relationship"])["class_definitions"]["OF"] == "Open forest"
+    )
+    eld = json.loads(evidence["EV_eld_fmnr_2020_003"]["relationship"])
+    assert (
+        eld["arid_zone_recommendation"]
+        == "assisted_natural_regeneration_of_trees_and_shrubs_in_pastoral_conditions"
+    )
+    assert "threshold" not in eld
+    sources = {
+        r["source_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/SRC_source_register.csv").open()
+        )
+    }
+    assert _paper_key("ahmad_2020", sources) == _paper_key(
+        "cgspace_singh_southasia_2020", sources
+    )
+    live = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")
+    assert "ev_t4_treecan_nath21_01" not in live
+    assert "EV_eld_fmnr_2020_003" not in live

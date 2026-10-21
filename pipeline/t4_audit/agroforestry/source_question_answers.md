@@ -39,3 +39,7 @@ Six WOCAT requests answered from full source pages. Natural Environment panels d
 CGSpace p73 soil classes are separate from its cropland mask. Wotlolan p1523 introduces crop criteria in the left column and continues its 35% slope filter in the right. Sperandio p3 explicitly names organic carbon across the column break. Full-page source inspection resolves these three display/context requests without changing analytical rules.
 
 Current open requests: four — Ahmad figure/table recovery, CGSpace soil-variable mapping, ELD dryland-zone interpretation, and Nath forest-cover context. Earlier counts above describe prior passes.
+
+## Final historical-request pass
+
+All 64 tracked requests now have dispositions: 24 answered and 40 concern quarantined evidence. Corrected two CGSpace soil records to pending soil-quality classes, corrected Nath forest categories to land cover, retained ELD arid-zone regeneration guidance, and verified Ahmad’s recovered image-based directions and weights. No source quotations or human approval states changed. Remaining calibration and mapping limits are listed in [remaining_source_limits.md](remaining_source_limits.md); answered requests do not imply executable curves.
