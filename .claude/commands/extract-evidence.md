@@ -51,3 +51,6 @@ cited from another source. Capture exclusion/failure thresholds too. No silent u
 `check_scope.py` flags `results_description` / `trend_description` / `speculation` / study-site / carbon-biomass / problem-intro; **`check_picos.py`** flags wrong-practice; both feed **`quarantine.py`** which auto-soft-deletes off-scope + wrong-practice on build (reversible). Getting these right at extraction time keeps them out of the quarantine in the first place.
 
 Reference: methodology/examples/t4_slice_agroforestry_F1_slope.md (the gold standard to reproduce).
+
+
+Mandatory T4 review contract (v1.6.16, Pete 2026-10-21): read `.agents/skills/extraction_contracts/T4_review_contract.md`. Separate variable use, suitability direction and numeric calibration; retain supported direction without cutoffs, with no invented executable curve. Audit all table rows and shared weights; review omissions as well as unsupported additions. Report source-deduplicated, scope-compatible agreement separately from calibrated functions.

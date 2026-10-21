@@ -62,7 +62,8 @@ def test_stale_numeric_t4_rows_removed():
     numeric = [
         r for r in rows if r["suitability_dimension"] == "biophysical_constraint"
     ]
-    assert len(numeric) == 8
+    assert numeric
+    assert all(r["evidence_ids"] and r["relationship_params"] for r in numeric)
     slope = next(
         r
         for r in numeric

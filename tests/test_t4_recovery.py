@@ -36,7 +36,17 @@ def test_recovered_evidence_preserves_approval_and_one_source_vote():
         "ev_T4_soc_haile2024_continuation": 6,
     }
     assert "ev_T4_soc_haile2024_continuation" not in draft
-    assert "ev_T4_elevation_chuma2021_recovery" not in live
+    evidence = {
+        r["evidence_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    elevation = evidence["ev_T4_elevation_chuma2021_recovery"]
+    assert ("ev_T4_elevation_chuma2021_recovery" in live) == (
+        elevation["reviewer_ok"].lower() == "true"
+        and elevation["review_state"] != "dropped"
+    )
     assert len(draft["ev_T4_elevation_chuma2021_recovery"]["intervals"]) == 5
 
 

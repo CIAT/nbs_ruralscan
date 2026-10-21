@@ -1,10 +1,10 @@
 ---
 name: "source-command-extract-evidence"
 description: "Extract Evidence-Register units for one variable x suitability family from the ingested corpus (T4 method)"
-version: "v1.4.1"
+version: "v1.6.16"
 ---
 
-<!-- ruleset version v1.4.1 — log: methodology/RULESET_VERSIONS.md · snapshots: .agents/skills/_versions/.
+<!-- ruleset version v1.6.16 — log: methodology/RULESET_VERSIONS.md · snapshots: .agents/skills/_versions/.
      Bump + snapshot on any change to the screening funnel, defect catalogue, or discovery protocol.
      Stamp the version on SRCH.ruleset_version + EV.ruleset_version. -->
 
@@ -23,13 +23,13 @@ Inputs: a canonical variable, a suitability family, optionally a source set (ask
 Workflow:
 1. Canonical variable(s) + aliases + min_meaningful_resolution_m from the Variable Ontology; the family
    target spec; tiers from the benchmarked CSV (Source Register).
-2. **Dedup check** (saves tokens — skip work already done):
+2. **Coverage check before deduplication**: existing records do not prove a table row is fully extracted. Check variable use, direction, reported values and numeric calibration separately under `../extraction_contracts/T4_review_contract.md`. Only skip a demonstrably complete pair:
      from nbs_ruralscan.recipe.evidence import already_extracted
      # Check for each variable in the set
      existing = already_extracted(sid, variable)
      if existing:
        print(f"SKIP {sid} × {variable} — already extracted: {existing}")
-       # skip unless the user explicitly says --force / re-extract
+       # skip only if all supported dimensions are already captured; otherwise supplement with provenance
    Report skipped pairs so the user knows what was cached.
 3. Ingest + retrieve (deterministic):
      from nbs_ruralscan.ingest import build_index, load_index, save_index
@@ -84,9 +84,8 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
 >    has no caption, I cannot interpret without it."* Quoting an isolated cell is useless — the quote
 >    MUST carry the table caption + the row/column header that name what the number is. If you can't
 >    get them, flag `insufficient_context`, don't guess.
-> 3. **Directional/qualitative value with no mappable scale** (`unusable_value`, #13). Reviewer verbatim:
->    *"just a direction … no mechanism for using this in suitability analysis."* A "higher is better" with
->    no threshold/scale is not a T4 rule. Encode a usable bound or flag `unusable_value`.
+> 3. **Direction without calibration is retained evidence** (Pete, 2026-10-21; supersedes earlier advice). A supported “higher is better” contributes directional evidence even without cutoffs. Flag numeric calibration as incomplete; do not reject the whole claim. Raw-variable map extrema alone do not establish suitability direction. Follow `../extraction_contracts/T4_review_contract.md`.
+
 
 
 1. **Smuggled numbers** — every value in `relationship` MUST appear in the SAME quote.
@@ -355,3 +354,8 @@ Enforcement: schema_tools.t4_coverage in CI; numeric compiler checks expected cl
 
 34. **Screening is not extraction.** Before calling a source swept, account for its pages, tables, figures and referenced supplements in a claim inventory. Each relevant claim needs an EV ID or an explicit destination/exclusion reason with page and retained values. A zero-T4 paper still requires this accounting. Distinguish completed main-paper extraction from deferred supplemental datasets; never infer completion from SRC presence or zero admitted thresholds. Check expected EV IDs and routes in CI.
 35. **Species-selection use is not practice-level agreement.** A tool may use rainfall/pH to select species without calibrating an agroforestry establishment curve. Retain method-use evidence as dataset records with `context.model_use.scope=species_selection`; count separately from practice-level and named-species/crop calibrations. Do not invent a taxon for generic query logic. Preserve restoration-priority weights outside suitability even when the paper calls its result suitable.
+
+
+## Complete directional evidence and review (v1.6.16)
+
+36. **Weight-only extraction is incomplete when the table also gives direction.** Read and apply [T4 extraction and adversarial review contract](../extraction_contracts/T4_review_contract.md) before extraction or verification. Assess variable use, suitability direction and numeric calibration independently; inventory every table row. Existing records do not justify skipping missing supported dimensions. Reviewers check omissions as well as invented values. Direction-only evidence remains non-executable until calibration is supported.
