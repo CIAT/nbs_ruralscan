@@ -65,3 +65,23 @@ def test_observed_presence_neither_votes_nor_sets_thresholds():
     assert [r["evidence_ids"] for r in base.rows] == [
         r["evidence_ids"] for r in with_forms.rows
     ]
+
+
+def test_reviewed_wocat_site_soils_do_not_vote_in_t4():
+    from pathlib import Path
+    from nbs_ruralscan.recipe.evidence import load_units
+
+    units = load_units(Path("schema/registers/EV_evidence_register.json"))
+    ids = {"EV_wocat_1358_2017_004", "EV_wocat_507_2019_005"}
+    sites = [u for u in units if u.evidence_id in ids]
+    assert len(sites) == 2
+    assert all(is_observed_presence(u) for u in sites)
+    result = synthesise_family(
+        sites,
+        {},
+        family=sites[0].suitability_family_id,
+        corpus_n=0,
+        group_map={},
+    )
+    assert not result.rows
+    assert all(result.dispositions[eid]["status"] == "observed_presence" for eid in ids)
