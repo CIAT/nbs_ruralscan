@@ -1,78 +1,156 @@
-from nbs_ruralscan.recipe.evidence_assessment import assessments
+"""Build a grouped, local-feedback T4 review surface; never writes review decisions."""
+
 from pathlib import Path
 import csv
+import hashlib
 import json
-import html
 
-R = Path(__file__).resolve().parents[1]
-A = R / "pipeline/t4_audit/agroforestry/bounded_review_2026-10-21"
-m = json.loads((A / "manifest.json").read_text())
-E = {
-    r["evidence_id"]: r
-    for r in csv.DictReader((R / "schema/registers/EV_evidence_register.csv").open())
+ROOT = Path(__file__).resolve().parents[1]
+AUDIT = ROOT / "pipeline/t4_audit/agroforestry/bounded_review_2026-10-21"
+LABELS = {
+    "annual_precipitation": "Annual rainfall",
+    "mean_annual_temperature": "Temperature",
+    "soil_ph": "Soil pH",
+    "soil_ph_subsoil": "Subsoil pH",
+    "ndvi": "Vegetation greenness (NDVI)",
+    "evapotranspiration_ref": "Reference evapotranspiration",
+    "soil_cation_exchange_capacity": "Soil nutrient-holding capacity (CEC)",
+    "soil_available_water_capacity": "Plant-available soil water",
+    "soil_organic_carbon_subsoil": "Subsoil organic carbon",
+    "soil_depth": "Depth to bedrock",
+}
+PROPOSALS = {
+    "slope": (
+        "Keep each paper’s slope classes within its stated crop and region. Treat values outside the reported range as unknown.",
+        "Nath stops at 44°; the existing extension above that needs correction. WOCAT slopes describe observed sites, not suitability limits.",
+    ),
+    "soil_ph": (
+        "Keep topsoil and subsoil results distinct. Retain all reported classes; hold contradictory cutoffs and unresolved weight totals.",
+        "Haile pH classes conflict. Nath repeats pH in nutrient and rooting branches. Species-selection criteria do not establish a universal pH range.",
+    ),
+    "ndvi": (
+        "Replace the mistaken canopy-cover interpretation with vegetation greenness (NDVI).",
+        "NDVI measures vegetation greenness; it is not percentage tree cover. Existing approved record needs a traceable correction.",
+    ),
+    "land_cover": (
+        "Keep named land-use classes with their original study scope. Count Chuma’s use of land cover, but do not invent missing classes.",
+        "Ahmad exclusions remain in the source inventory pending exact claim-specific provenance. Tea remains your explicit design choice, not evidence from the coffee/cocoa paper.",
+    ),
+    "elevation": (
+        "Retain regional elevation classes. Show both Haile weight sets without choosing one.",
+        "Haile Table 3 gives 8%; Table 5 gives 6.5%. Source data alone do not resolve which should govern.",
+    ),
+    "evapotranspiration_ref": (
+        "Keep the reported direction and classes, but hold numeric application until units are resolved.",
+        "Nath labels values mm/day, but their magnitude looks annual. We must not silently change units.",
+    ),
+    "soil_texture": (
+        "Retain named textures and source codes; translate to dataset classes only after checking each codebook.",
+        "Numbers such as 5, 7 and 9 are category codes, not increasing amounts of texture. Topsoil and subsoil remain separate.",
+    ),
+    "soil_cation_exchange_capacity": (
+        "Retain the source classes as evidence; hold executable cutoffs.",
+        "Nath’s classes overlap and its printed unit needs clarification.",
+    ),
+    "soil_organic_carbon_subsoil": (
+        "Keep subsoil carbon separate from topsoil; hold the apparent source range typo.",
+        "Nath prints a range “2 to 1.03”. Preserve the source rather than guessing its correction.",
+    ),
 }
 
-src = {
-    r["source_id"]: r
-    for r in csv.DictReader((R / "schema/registers/SRC_source_register.csv").open())
-}
-(A / "direction_assessment.json").write_text(
-    json.dumps(assessments(list(E.values()), src), indent=2) + "\n"
-)
-esc = html.escape
-rows = []
-for eid in m["new_evidence_ids"]:
-    r = E[eid]
-    c = json.loads(r["context"])
-    rel = json.loads(r["relationship"])
-    use = c.get("model_use", {})
-    detail = {
-        "relationship": rel,
-        "source_weights": use,
-        "source_context": c,
-        "quote": r["quote"],
-    }
-    rows.append(
-        "<tr><td>"
-        + esc(r["source_id"])
-        + "</td><td>"
-        + esc(
-            r["variable"].replace("_", " ")
-            + (
-                " [quarantined: model-use only]"
-                if r["review_state"] == "dropped"
-                else ""
-            )
+
+def build_data(root=ROOT):
+    audit = root / "pipeline/t4_audit/agroforestry/bounded_review_2026-10-21"
+    manifest = json.loads((audit / "manifest.json").read_text())
+    evidence = {
+        r["evidence_id"]: r
+        for r in csv.DictReader(
+            (root / "schema/registers/EV_evidence_register.csv").open()
         )
-        + "</td><td>"
-        + esc(c["t4_assessment"]["scope"].replace("_", " "))
-        + "</td><td>"
-        + esc(rel.get("direction", "No single numeric direction"))
-        + "</td><td>"
-        + esc(str(c.get("calibration_hold") or c["review_needed"]))
-        + "<details><summary>Source claim, weights and review details · p"
-        + esc(r["page"])
-        + "</summary><pre>"
-        + esc(json.dumps(detail, indent=2, ensure_ascii=False))
-        + "</pre><small>"
-        + esc(eid)
-        + "</small></details></td></tr>"
+    }
+    groups = {}
+    for eid in manifest["new_evidence_ids"]:
+        r = evidence[eid]
+        key = "soil_ph" if r["variable"] == "soil_ph_subsoil" else r["variable"]
+        proposal, issue = PROPOSALS.get(
+            key,
+            (
+                "Retain the paper’s evidence with its stated scope. Combine only compatible systems, units and contexts.",
+                "A variable used to select tree species does not automatically define a general agroforestry limit. Source weights remain specific to each paper.",
+            ),
+        )
+        group = groups.setdefault(
+            key,
+            {
+                "id": key,
+                "label": LABELS.get(key, key.replace("_", " ").capitalize()),
+                "proposal": proposal,
+                "issue": issue,
+                "records": [],
+            },
+        )
+        c = json.loads(r["context"] or "{}")
+        group["records"].append(
+            {
+                "id": eid,
+                "source": r["source_id"],
+                "variable": r["variable"],
+                "label": LABELS.get(
+                    r["variable"], r["variable"].replace("_", " ").capitalize()
+                ),
+                "page": r["page"],
+                "quote": r["quote"],
+                "header": r.get("justification_quote", ""),
+                "header_page": r.get("justification_page", ""),
+                "relationship": json.loads(r["relationship"] or "{}"),
+                "scope": c.get("t4_assessment", {}).get("scope", r["claim_scope"]),
+                "branch": c.get("branch", ""),
+                "issue": c.get("calibration_hold") or c.get("review_needed", ""),
+                "weights": c.get("model_use", {}),
+                "image": c.get("direction_provenance", {}).get("image", ""),
+                "image_page": c.get("direction_provenance", {}).get("page"),
+                "state": r["review_state"],
+                "role": r["use_role"],
+            }
+        )
+    order = [
+        "slope",
+        "soil_ph",
+        "ndvi",
+        "annual_precipitation",
+        "mean_annual_temperature",
+        "land_cover",
+        "elevation",
+    ]
+    result = sorted(
+        groups.values(),
+        key=lambda g: (order.index(g["id"]) if g["id"] in order else 99, g["label"]),
     )
-summary = "".join(
-    "<tr><td>"
-    + esc(sid)
-    + "</td><td>"
-    + str(len(d["new_evidence_ids"]))
-    + "</td><td><details><summary>Reviewed tables and remaining issues</summary><pre>"
-    + esc(json.dumps(d["review"], indent=2, ensure_ascii=False))
-    + "</pre></details></td></tr>"
-    for sid, d in sorted(m["sources"].items())
-)
-page = (
-    """<!doctype html><meta charset="utf-8"><title>T4 bounded evidence review</title><style>body{font:16px system-ui;margin:35px;color:#18372e;background:#f6faf8}table{border-collapse:collapse;width:100%;background:white}th,td{text-align:left;vertical-align:top;border-bottom:1px solid #cddbd5;padding:12px}th{position:sticky;top:0;background:#dfeee6}pre{white-space:pre-wrap;font:13px system-ui;max-width:850px}input{padding:12px;width:65%;margin:15px 0}summary{cursor:pointer;color:#075e45}li{margin:8px 0}</style><h1>T4: bounded evidence re-review</h1><p>16 sources reviewed · 53 staged records (52 active pending; 1 quarantined) · no new literature search. Existing approval states preserved. New records do not authorize executable suitability curves.</p><h2>Decisions still needed</h2><ul><li>Ahmad 2018: existing canopy-cover record describes NDVI. Review replacement and retire incorrect mapping.</li><li>Haile: Table 3 and Table 5 weights disagree. No settled importance weight emitted. pH classes still conflict.</li><li>Nath: source slope stops at 44°; existing unbounded extension needs correction. Other class gaps/overlaps remain explicit.</li><li>Castle / Wotłolan / Mushtaq: species-selection or crop envelopes cannot automatically become general agroforestry rules.</li><li>WOCAT: observed slopes are context, not cutoffs; rootstock routing needs correction.</li><li>Ahmad 2020: six soil properties retain directions and nested weights in inventory, but lack safe canonical mappings. Categorical exclusions remain inventory-only pending exact claim-specific provenance.</li><li>Tea host mask remains Pete’s design decision; coffee/cocoa paper does not establish tea suitability.</li></ul><h2>New records: one review table</h2><p>Direction tells how suitability changes. It does not establish numeric cutoffs. Source weights are reported importance within each paper, not default runtime weights.</p><input id="search" placeholder="Filter by paper, variable, scope or issue"><table id="records"><thead><tr><th>Paper</th><th>Variable</th><th>Applies to</th><th>Direction</th><th>What needs review / source details</th></tr></thead><tbody>"""
-    + "".join(rows)
-    + """</tbody></table><h2>Coverage: all 16 sources</h2><table><tr><th>Source</th><th>New pending records</th><th>Source inventory</th></tr>"""
-    + summary
-    + """</table><script>document.getElementById('search').oninput=function(){const q=this.value.toLowerCase();document.querySelectorAll('#records tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))}</script>"""
-)
-(R / "docs/review/t4-bounded-review.html").write_text(page)
+    for g in result:
+        # Binding feedback to the exact shown evidence and proposal prevents silent reuse after regeneration.
+        g["fingerprint"] = hashlib.sha256(
+            json.dumps(g, sort_keys=True).encode()
+        ).hexdigest()
+    return {
+        "version": 1,
+        "review_id": "agroforestry-t4-bounded-2026-10-21",
+        "groups": result,
+        "source_count": len(manifest["sources"]),
+        "record_count": len(manifest["new_evidence_ids"]),
+    }
+
+
+def main():
+    data = build_data()
+    template = (ROOT / "scripts/templates/t4-feedback.html").read_text()
+    payload = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
+    (ROOT / "docs/review/t4-bounded-review.html").write_text(
+        template.replace("__REVIEW_DATA__", payload)
+    )
+    print(
+        f"Built {len(data['groups'])} variable groups covering {data['record_count']} records"
+    )
+
+
+if __name__ == "__main__":
+    main()
