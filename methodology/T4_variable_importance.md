@@ -88,3 +88,13 @@ Singh's printed weights total 99%, Haile Table 5 totals 99.9%; ratios normalise 
 The three-paper diagnostic now includes an explicit slope/rainfall subset. Normalising median hierarchy-adjusted ratios gives provisional 73.75%/26.25%; substituting Haile Table 3 gives 71.43%/28.57%. Excluding Singh moves the pair close to equal weights. These outcomes expose panel sensitivity, not a validated runtime-weight recommendation. Retain equal weights as the comparison baseline pending system/context compatibility and full variable-selection review.
 
 Haile Table 5 approximately reproduces its printed pairwise matrix using the stated algorithm; this supports its use as the provisional computed-AHP representation. It does not resolve which weights generated the published map. Both tables remain available; no human approval or runtime rule is changed.
+
+## Pete's decision — 21 October 2026
+
+Pete approved the candidate-comparison recommendation in chat ("ok proveed agreed"):
+
+- Retain equal weights as the baseline for the declared slope/rainfall comparison.
+- Keep pooled importance-based weights as sensitivity scenarios, not runtime defaults.
+- Retain Haile Table 5 as the provisional computed-AHP representation, with Table 3 as an alternative; which weights generated the published map remains unresolved.
+
+This approves the comparison approach and recommendation. It does not approve new evidence records, global transfer, a complete family-specific variable set, or changed runtime weights.
