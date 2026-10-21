@@ -158,6 +158,11 @@ def build_data(root=ROOT):
                     number = int(token)
                     if number > 0:
                         pages.setdefault(number, []).append(purpose)
+            # Audit locator: Haile Table 5 is the conflicting weight set.
+            if record["source"] == "haile_2024" and record["weights"].get(
+                "weight_conflict"
+            ):
+                pages.setdefault(9, []).append("Alternative weights (Table 5)")
             record["source_pages"] = [
                 {
                     "page": number,
