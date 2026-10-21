@@ -13,7 +13,7 @@ from nbs_ruralscan.runtime.binding import Binding, resolve_binding
 from nbs_ruralscan.schema_tools.t4_review_view import interval_text
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 DEST = ROOT / "handoff/agroforestry-t4" / ("v" + VERSION)
 AUDIT = "pipeline/t4_audit/agroforestry/final_audit/"
 
@@ -47,6 +47,7 @@ def build(root, destination, version=VERSION):
     t4, vont, bind, datasets, evidence, sources, reconciliation, hosts, importance = [
         read(root / p) for p in inputs
     ]
+    inputs.append("schema/registers/FAM_family_registry.csv")
     ontology = {r["canonical_variable_id"]: r for r in vont}
     catalog = {r["dataset_id"]: r for r in datasets}
     ev = {r["evidence_id"]: r for r in evidence}
@@ -55,6 +56,11 @@ def build(root, destination, version=VERSION):
         Binding(**(r | {"preference_rank": int(r["preference_rank"])})) for r in bind
     ]
     destination.mkdir(parents=True, exist_ok=True)
+    families = read(root / "schema/registers/FAM_family_registry.csv")
+    write(
+        destination / "practice_vocabulary.csv",
+        [r for r in families if r["nbs_id"] == "agroforestry"],
+    )
     rules = []
     selected_datasets = set()
     referenced = set()
@@ -134,6 +140,19 @@ def build(root, destination, version=VERSION):
                 .replace("agroforestry__", "")
                 .replace("cross_family", "System not specified")
                 .replace("_", " "),
+                practices="; ".join(
+                    f["name"]
+                    for f in families
+                    if f["suitability_family_id"] == row["suitability_family_id"]
+                    and "cross_family" not in f["suitability_family_id"]
+                ),
+                applicability_reason=" | ".join(
+                    dict.fromkeys(
+                        p.get("applicability_note", "")
+                        for p in profiles
+                        if p.get("applicability_note")
+                    )
+                ),
                 variable=variable,
                 label=ont.get("label", variable),
                 canonical_unit=ont.get("canonical_unit", ""),
@@ -255,6 +274,11 @@ def build(root, destination, version=VERSION):
         p.name: hashlib.sha256(p.read_bytes()).hexdigest()
         for p in sorted(destination.glob("*.csv"))
     }
+    manifest["plot_sha256"] = {
+        str(p.relative_to(destination)): hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in sorted((destination / "plots").glob("*"))
+        if p.is_file()
+    }
     (destination / "manifest.json").write_text(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
     )
@@ -265,21 +289,61 @@ def build(root, destination, version=VERSION):
 <p><b>{kinds.get("Numeric response", 0)} numeric rows · {kinds.get("Categorical host gate", 0)} host gates · {kinds.get("Hard exclusion", 0)} hard exclusion.</b> {kinds.get("Operational scenario", 0)} operational scenarios kept separate. Configuration ready for inspection; field applicability and pilot execution remain to validate.</p>
 <p>Hierarchy: suitability theme → variable group → canonical measurement → dataset. Aliases stay in variables.csv. Related proxies remain separate until context-specific selection; dataset resolution alone does not establish quality. Source importance stays separate from runtime weights.</p>
 <details><summary>Remaining limitations and required inputs</summary><p>Numeric rows retain regional source profiles; they are not universal pooled curves. FMNR rainfall remains contextual evidence, without an executable rainfall cutoff. Soil pH/source boundary conflicts remain held. Local inputs: {esc(", ".join(gaps))}. Recipe/BIND differences: {esc(", ".join(conflicts))}. Read dataset notes before execution. No pilot run performed.</p></details>
+<details><summary>How to read curves, weights and practice names</summary><p>Plots show retained source bands on the common suitability scale, not automatic runtime curves. Open circles exclude endpoints; filled circles include them. Arrows mark unbounded reported tails clipped to the plotting window. Empty regions have no plotted score; overlapping segments remain unresolved. No interpolation is added. A row with a separate default threshold retains that default until a source response is selected.</p><p>Numeric defaults are equal (0.2 in current T4). Masks are gates, not weighted votes. Relative importance ratios compare each variable with its study's equal-importance reference; 1 means equal, 2 means twice that reference. Full study denominators and alternative models remain separate. These ratios are not adopted runtime weights.</p><p>Standard vocabulary: Agroforestry (NbS) → suitability system → practice. Practice membership shown here is registry membership, not proof every source applies to every listed practice. Unassigned evidence is not automatically planted silvoarable. Haile parklands may be planted or regenerated; Chuma is regional; Ahmad NDVI describes mixed systems. Any planted-system assumption must be a separate sensitivity scenario, preserving original classification.</p><a href="practice_vocabulary.csv">Full practice vocabulary</a></details>
 <p><a href="T4_review.csv">Readable table CSV</a> · <a href="T4_suitability_mappings.csv">Authoritative T4 snapshot</a> · <a href="evidence_accounting.csv">Every evidence record</a> · <a href="source_relative_importance.csv">Relative importance within studies</a> · <a href="host_inputs.csv">Host dataset requirements</a> · <a href="manifest.json">Version and hashes</a></p>
 <input id="search" placeholder="Filter variable, system, theme or dataset" aria-label="Search release"><label><input id="operational" type="checkbox">Show operational scenarios</label>
-<div class="scroll"><table><thead><tr><th>Theme / group</th><th>System</th><th>Variable</th><th>Rule and evidence</th><th>Dataset</th><th>Use status</th></tr></thead><tbody>"""
+<div class="scroll"><table><thead><tr><th>Theme</th><th>Variable group</th><th>System / practices</th><th>Variable</th><th>Rule and evidence</th><th>Dataset</th><th>Weighting</th><th>Use status</th></tr></thead><tbody>"""
     for r in rules:
+        comparison_variable = {
+            "annual_precipitation": "precipitation",
+            "mean_annual_temperature": "mean_temperature",
+        }.get(r["variable"], r["variable"])
+        ratios = [x for x in importance if x["variable"] == comparison_variable]
+        importance_html = (
+            "<details><summary>Available source-relative importance</summary><p>Diagnostic models; not all contribute to this row. Alternatives are not independent studies.</p>"
+            + "".join(
+                "<p>"
+                + esc(x["model_id"])
+                + ": "
+                + esc(
+                    f"{float(x['hierarchy_adjusted_ratio']):.2f} × equal-hierarchy reference"
+                )
+                + "</p>"
+                for x in ratios
+            )
+            + "</details>"
+            if ratios
+            else "<p>No reconstructed within-study ratio for this variable.</p>"
+        )
         page += (
             '<tr data-operational="'
             + str(r["kind"] == "Operational scenario").lower()
             + '"><td>'
-            + esc(r["theme"] + " / " + r["variable_group"].replace("_", " "))
+            + esc(r["theme"])
+            + "</td><td>"
+            + esc(r["variable_group"].replace("_", " "))
             + "</td><td>"
             + esc(r["system"])
+            + "<details><summary>Practice names and applicability</summary>"
+            + esc(r["practices"] or "Source does not establish a single system")
+            + "<p>"
+            + esc(r["applicability_reason"])
+            + "</p></details>"
             + "</td><td>"
             + esc(r["label"])
             + "</td><td>"
             + esc(r["kind"])
+            + (
+                (
+                    '<a href="plots/'
+                    + esc(r["mapping_id"])
+                    + '.svg"><img style="display:block;width:360px;max-width:100%" alt="Source suitability bands" src="plots/'
+                    + esc(r["mapping_id"])
+                    + '.svg"></a>'
+                )
+                if r["kind"] == "Numeric response"
+                else ""
+            )
             + "<details><summary>Rule and sources</summary><p>"
             + esc(r["rules"])
             + "</p><p>"
@@ -291,6 +355,20 @@ def build(root, destination, version=VERSION):
             + "<details><summary>Choice and limitations</summary>"
             + esc(r["dataset_choice_note"] + " " + r["dataset_limitations"])
             + "</details></td><td>"
+            + esc(
+                (
+                    "Equal numeric default: "
+                    + r["weight_default"]
+                    + ". Not a literature-derived weight."
+                )
+                if r["kind"] == "Numeric response"
+                else "Mask, not additive weight"
+                if r["kind"] in {"Categorical host gate", "Hard exclusion"}
+                else "Operational scenario default: " + r["weight_default"]
+            )
+            + importance_html
+            + '<br><a href="source_relative_importance.csv">Within-study importance ratios</a>'
+            + "</td><td>"
             + esc(r["status"])
             + "</td></tr>"
         )
