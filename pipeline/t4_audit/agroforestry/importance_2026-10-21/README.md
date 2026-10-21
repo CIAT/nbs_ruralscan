@@ -18,3 +18,13 @@ Source reconstruction:
 Every original input remains in the comparison denominator, including access variables outside structural T4. Audit variable names preserve source distinctions and do not establish new canonical ontology mappings. Positive RF importance is compared on its own scale, not pooled numerically with expert/AHP weights.
 
 Open decisions: Haile table conflict; compatibility and independence for any later cross-study synthesis. Source ratio calculations themselves do not resolve geographic transferability, response-function conflicts, or runtime weight selection.
+
+## Candidate comparison follow-up
+
+`candidate_scenarios.csv` declares model variants and the common-variable subset. `scripts/report-t4-candidate-weights.py` generates `candidate_results.json` and `docs/review/t4-candidate-weights.html`. Pooling uses medians of hierarchy-adjusted ratios, then normalises within the explicitly declared subset. One representation per lineage is enforced; missing variables hold rather than changing the panel silently.
+
+This is a two-variable transfer sensitivity experiment across regional models, not a claim that their full models, agroforestry families or ecological responses are interchangeable. Slope and annual rainfall share definitions and source direction. Their numeric suitability curves are not pooled here. Mean temperature has only two-model coverage. Soil variables need depth alignment; distinct moisture/access measures are not merged.
+
+Direction evidence is the existing bounded-review manifest: Singh claims (Table 1 p4), Nath table_rows (Table 2 p11), Haile table_rows (slope p7 and rainfall p5). Each reports decreasing slope/increasing precipitation; these inspection counts do not confer human approval. Eligible denominator here is the three reconstructed models, not the full evidence corpus.
+
+Haile §3.2 and Table 5 p9 identify the computed AHP weights. Column-normalise the printed 5×5 matrix and average rows: [34.5511,29.5367,18.9507,10.4772,6.4842]%. These approximately reproduce Table 5, not Table 3. Paper does not establish which set produced the final map, so Table 5 is provisional for diagnostics only. Table 3 sensitivity remains visible.

@@ -82,3 +82,9 @@ Scope remains the current bounded T4 evidence base. No new discovery sweep or pi
 Flat **path** ratios use all leaf slots; flat **variable** ratios use distinct variable/scope inputs after additive consolidation. Nath therefore has 26 paths and 24 distinct inputs. Hierarchy benchmarks retain each original branch. All source inputs, including operational variables, remain in the original model denominator. Source names in this audit are not newly approved ontology bindings.
 
 Singh's printed weights total 99%, Haile Table 5 totals 99.9%; ratios normalise the observed sums and retain printed values. Singh's RF importance column is a separate comparison, not an extra source. Haile's two conflicting tables remain alternatives. Source model lineage, PDF hash and table/page locators are retained.
+
+## Candidate-weight sensitivity follow-up
+
+The three-paper diagnostic now includes an explicit slope/rainfall subset. Normalising median hierarchy-adjusted ratios gives provisional 73.75%/26.25%; substituting Haile Table 3 gives 71.43%/28.57%. Excluding Singh moves the pair close to equal weights. These outcomes expose panel sensitivity, not a validated runtime-weight recommendation. Retain equal weights as the comparison baseline pending system/context compatibility and full variable-selection review.
+
+Haile Table 5 approximately reproduces its printed pairwise matrix using the stated algorithm; this supports its use as the provisional computed-AHP representation. It does not resolve which weights generated the published map. Both tables remain available; no human approval or runtime rule is changed.
