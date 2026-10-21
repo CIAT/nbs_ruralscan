@@ -28,3 +28,11 @@ This is a two-variable transfer sensitivity experiment across regional models, n
 Direction evidence is the existing bounded-review manifest: Singh claims (Table 1 p4), Nath table_rows (Table 2 p11), Haile table_rows (slope p7 and rainfall p5). Each reports decreasing slope/increasing precipitation; these inspection counts do not confer human approval. Eligible denominator here is the three reconstructed models, not the full evidence corpus.
 
 Haile §3.2 and Table 5 p9 identify the computed AHP weights. Column-normalise the printed 5×5 matrix and average rows: [34.5511,29.5367,18.9507,10.4772,6.4842]%. These approximately reproduce Table 5, not Table 3. Paper does not establish which set produced the final map, so Table 5 is provisional for diagnostics only. Table 3 sensitivity remains visible.
+
+## Family evidence coverage
+
+`PYTHONPATH=src python3 scripts/report-t4-family-coverage.py` generates `family_coverage.json` and `docs/review/t4-family-coverage.html` directly from EV/SRC CSV and configured T4 CSV. This makes the system applicability gap visible beside the importance scenarios. It does not run synthesis or assign shared regional evidence to named families.
+
+Counts include only active general-practice structural evidence. DOI/source identity deduplicates records, but is not a guarantee of independent publication lineage. Human-reviewed counts mean at least one retained approved record in the cell, not approval of every claim. Explicit model use, canonical response direction and observed presence are separate counts. Species/crop and operational evidence are outside general-practice counts; configured crop-host mappings remain visible separately. Direction disagreement within a paper counts as one conflict, not two votes. Missing canonical direction is not proof of no response.
+
+Current inventory has 60 family-variable cells across six represented system columns. FMNR annual rainfall retains seven reviewed source identities, including five explicitly typed observed-presence sources; no rainfall mapping is currently configured. These records must not be converted to hard establishment limits merely to fill a table cell. Current T4 mapping evidence references were checked: none refer directly to dropped or missing evidence IDs.
