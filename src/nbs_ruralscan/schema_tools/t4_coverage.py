@@ -83,7 +83,11 @@ def check_review_followups(log, evidence, followups, root=None):
             continue
         for artifact in item.get("resolution_artifacts", []):
             path = (root / artifact["path"]) if root is not None else None
-            content = path.read_text() if path is not None and path.is_file() else ""
+            content = (
+                path.read_text(encoding="utf-8")
+                if path is not None and path.is_file()
+                else ""
+            )
             start, end = (
                 artifact.get("start_marker", ""),
                 artifact.get("end_marker", ""),
