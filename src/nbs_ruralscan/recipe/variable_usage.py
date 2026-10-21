@@ -45,6 +45,18 @@ def _model_origin(unit, sources, by_id):
                 target, sources
             ), "Explicit model-source reference; independence not assessed"
         else:
+            provenance = use.get("lineage_provenance", {})
+            if (
+                provenance.get("source_id") == current["source_id"]
+                and provenance.get("page")
+                and provenance.get("quote")
+                and provenance.get("reference_title")
+                and provenance.get("reference_year")
+            ):
+                return (
+                    "external:" + str(target),
+                    "Model reuse documented by reporting source; original not inspected. Independence not assessed",
+                )
             return None, "Unresolved model-use lineage target: " + str(target)
 
 
@@ -154,7 +166,12 @@ def variable_usage(evidence, sources):
                 "model_origin_holds": lineage_holds,
                 "origin_status": "held"
                 if lineage_holds
-                else "recorded_not_independence_verified",
+                else (
+                    "documented_external_lineage"
+                    if any(o.startswith("external:") for o in origin_ids)
+                    else "recorded_not_independence_verified"
+                ),
+                "model_origin_notes": sorted({reason for _, reason in origins}),
                 "response_lineage": sorted(
                     {u["lineage_of"] for u, _ in items if u.get("lineage_of")}
                 ),

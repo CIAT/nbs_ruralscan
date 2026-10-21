@@ -124,8 +124,11 @@ thresholds even where that paper uses its own model. Preserve it separately as
 `response_lineage`; never automatically assign that paper's model weights to the
 cited threshold source. Only explicit `context.model_use.lineage_of` traces a
 model-use origin, by evidence ID or registered source ID. Evidence-ID chains are
-followed; cycles, unknown targets and targets without verified model use remain
-held. A source-ID reference identifies that source without selecting an arbitrary
+followed; cycles, undocumented unknown targets and targets without verified model
+use remain held. A reporting paper can establish an external model lineage through
+its own page-linked quotation, cited title and year: the original need not be
+registered or inspected to retain that documented dependency. Such origins are
+labelled `documented_external_lineage`, not independently verified calibrations. A source-ID reference identifies that source without selecting an arbitrary
 evidence row to continue the chain. DOI aliases are normalized and retained in the
 source-ID inventory. Recorded model origins are not verified independent studies;
 absence of a lineage link does not establish independence. These diagnostics do
@@ -134,8 +137,9 @@ not modify runtime weights, response-pooling approvals or source review decision
 Source-method check, 21 October 2026: Singh 2026 §4.2 (PDF p5) explicitly reuses
 Singh 2022's trained model. The importance-tree inventory already recorded that
 lineage; it is now also attached to all 16 source-checked Singh model-use records.
-The 2022 source is not registered, so origin resolution stays held until that
-source is acquired and checked. The 2026 paper still documents use of 11 variables;
+The 2022 source is not registered, but the 2026 paper establishes model reuse.
+Record a documented external lineage; original-source acquisition is optional
+unless needed to resolve missing essential values or contradictions. The 2026 paper still documents use of 11 variables;
 it is not counted as a newly independent weight calibration. This does not prove
 its pH class boundaries came from the same source.
 
@@ -146,3 +150,9 @@ pools. Retain existing conditional India planted-system combinations, without
 upgrading them to independent empirical validation or global transfer approval.
 Exact source passages and artifact hashes are recorded in
 `pipeline/t4_audit/agroforestry/bounded_review_2026-10-21/source_dependency_review.json`.
+
+Pete clarification, 21 October 2026: missing original source is not itself a hold
+on usable values reported by a later paper. Preserve the shared model lineage,
+retain uncertainty about original derivation, and distinguish new validation from
+new calibration. When the original is registered, reconcile its source identity
+with existing external lineage references before adding it to a combined count.

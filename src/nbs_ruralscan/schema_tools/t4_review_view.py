@@ -313,7 +313,11 @@ def render(root, read_csv, table, bindings, coverage):
             ),
             "Origin check": "; ".join(r["model_origin_holds"])
             if r["model_origin_holds"]
-            else "Independence not assessed",
+            else (
+                "Documented reuse; original not inspected"
+                if r["origin_status"] == "documented_external_lineage"
+                else "Independence not assessed"
+            ),
             "Method": pretty(r["method"]),
             "Nested weights (%)": " × ".join(str(w) for w in r["weight_path_pct"])
             or "Not reported here",
