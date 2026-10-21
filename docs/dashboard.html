@@ -2794,6 +2794,33 @@
     if(r) return '<code style="font-size:10.5px;">'+vfEsc(typeof r==='string'?r:JSON.stringify(r))+'</code>';
     return '<span style="color:var(--text-muted);">(no encoded value — qualitative claim; judge the variable + quote)</span>';
   }
+  // Review the extracted claim and its intended use, not only relationship fields.
+  function vfReviewMeaning(ev){
+    function obj(value){ if(value && typeof value==='object')return value; try{return JSON.parse(value||'{}')||{};}catch(e){return {};} }
+    var c=obj(ev.context), r=obj(ev.relationship), m=c.model_use||{}, provenance=c.model_use_provenance||{};
+    var values='', purpose='', question='', image='';
+    if(Object.keys(m).length){
+      var path=Array.isArray(m.weight_path_pct)?m.weight_path_pct:[];
+      values=path.length ? 'Weight in this paper: '+path.map(function(w){return String(w)+'%';}).join(' × ') : 'Paper uses this variable; no numeric importance weight recorded.';
+      if(path.length>1) values+=' (nested model branches; not necessarily the variable’s total weight).';
+      purpose=m.scope==='species_selection' ? 'Documents an input used to choose species. Counted separately from practice-level suitability agreement.' : 'Counts one paper using this variable in its model. Records the paper’s importance weight separately from agreement on suitability thresholds.';
+      purpose+=' Model-use information alone does not set a T4 cutoff, response score or default runtime weight.';
+      question='Confirm variable use'+(path.length?' and the displayed weight':'')+' against '+(provenance.table||'the source')+' (PDF p'+(provenance.page||m.page||ev.page||'not recorded')+'). '+(Object.keys(r).length?'Also verify the extracted response values below; model use does not validate their thresholds.':'Keep approves this extraction, not a new suitability rule.');
+      var img=provenance.image||'';
+      if(/^docs\/review\/img\/[A-Za-z0-9_.-]+\.(png|jpg|jpeg)$/.test(img)) image='<details><summary>Inspect '+vfEsc(provenance.table||'source table')+' · PDF p'+vfEsc(provenance.page||'')+'</summary><img loading="lazy" src="'+vfEsc(img.slice(5))+'" alt="Original model-weight table" style="max-width:100%;background:white"></details>';
+    } else {
+      if(!Object.keys(r).length) values='No numeric threshold or class rule extracted. Review the qualitative claim and its scope.';
+      if(ev.use_role==='operational_risk') purpose='Implementation feasibility evidence for M2b / next steps; does not set core biophysical suitability.';
+      else if(ev.use_role==='dataset') purpose='Documents a dataset or selection method; does not itself define a suitability response.';
+      else if(r.criterion_kind==='programme_eligibility') purpose='Eligibility condition for the named programme only. Not a universal agroforestry threshold.';
+      else if(ev.use_role==='structural_suitability') purpose='Candidate suitability evidence. Extraction approval alone does not establish system applicability, dataset mapping or cross-paper combination.';
+      else purpose='Evidence for its stated analytical role; review source meaning and applicability before synthesis.';
+      question=c.review_needed||(c.recovery_review||{}).note||'Check extracted information against the source, including units and scope. Keep confirms the evidence; query records an unresolved interpretation.';
+    }
+    if(ev.review_state==='dropped') purpose='Quarantined record; excluded from synthesis. '+purpose;
+    var note=(c.recovery_review||{}).note;
+    return '<section style="margin:10px 0;padding:10px 12px;border:1px solid var(--border-color);border-radius:5px;font-size:12px;line-height:1.5">'+(values?'<div><b>Extracted information:</b> '+vfEsc(values)+'</div>':'')+'<div><b>How it will be used:</b> '+vfEsc(purpose)+'</div><div><b>What to review:</b> '+vfEsc(question)+'</div>'+(note&&note!==question?'<div><b>Source limitation:</b> '+vfEsc(note)+'</div>':'')+image+'</section>';
+  }
   function _vfTabular(q){ q=q||''; return /\d+\s*[–-]\s*\d+/.test(q)||((q).match(/\d+(\.\d+)?/g)||[]).length>=3||q.indexOf('\n')>=0; }
   function _vfVerdictColor(v){ return v==='unsupported'?'var(--accent-rose)':v==='mismatch'?'var(--accent-amber)':v==='pass'?'var(--accent-sky)':v==='scope'?'var(--accent-amber)':'var(--text-secondary)'; }
 
@@ -2917,8 +2944,9 @@
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+(ev.page?('<a href="#" onclick="vfSetSubset(\'section\',\''+vfEsc(String(ev.page))+'\');return false;" title="subset the worklist to page '+vfEsc(String(ev.page))+' of this source" style="color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(page)+'</a>'):vfEsc(page))+' · '+vfEsc(vfLocHint(ev))+'</span>'
       +'</div>'))
       +_chipRow
-      +'<div style="font-size:11.5px; margin:5px 0;"><b style="color:var(--text-muted);" title="'+(passed?'The value the AI encoded from the quote.':'What the verify pass KEPT — only the fields the quote supports. The disputed field was removed and is described in the Flagged line below. These shown values are the confirmed ones, not the disputed ones.')+'">'+(passed?'Encoded value:':'Encoded value (kept after verify — disputed part removed):')+'</b> '+vfRelHtml(ev)+'</div>'
-      +'<div style="font-size:11.5px; margin:5px 0; color:'+vc+';"><b>'+(passed?'Spot-check:':'Flagged — what was removed / disputed:')+'</b> '+vfEsc(reason)+'</div>'
+      +vfReviewMeaning(ev)
+      +(ev.relationship && JSON.stringify(ev.relationship)!=='{}' && ev.relationship!=='{}' ? '<div style="font-size:11.5px;margin:5px 0;"><b>Extracted rule / values:</b> '+vfRelHtml(ev)+'</div>' : '')
+      +(!passed?'<div style="font-size:11.5px;margin:5px 0;color:'+vc+';"><b>AI review flag:</b> '+vfEsc(reason)+'</div>':'')
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
       +cropImg
       +decodedBlock
