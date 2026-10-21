@@ -20,3 +20,12 @@ def test_provenance_tokens_are_not_numbers():
     # publication years and real values still count
     assert "2021" in cn._rel_nums('{"note": "Castle 2021 pooled estimate"}')
     assert "1" in cn._rel_nums('{"outcome_raw": "1 fallen tree, 3 defoliated"}')
+
+
+def test_nums_reads_fraction_words_ligatures_and_linebroken_thousands():
+    """2026-10-21 retro: three provenance gaps the primaries-round lanes hit."""
+    from nbs_ruralscan.schema_tools.check_numbers import _nums
+
+    assert "4.5" in _nums("four and one-half or more times")
+    assert {"5", "7"} <= _nums("ﬁve to seven times higher")
+    assert "25000" in _nums("BDT 20,000-25,\n000 per year")

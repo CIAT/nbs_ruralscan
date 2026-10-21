@@ -333,6 +333,20 @@ waves found ~34-51% of numeric units defective. Recurring patterns to avoid:
     unit must not push it into the recurrent-cost cell. Recurrent = the paper names ongoing
     operations (monitoring, maintenance, replanting share); say which in `outcome_raw`.
 
+31. **A tillage implement is not a capture structure** (2026-10-21, Pete ripping ruling A).
+    Ripping / rip lines, zero and minimum tillage are reduced tillage — NOT water harvesting
+    (ruling 2), even where a paper calls conservation farming "a water harvesting strategy".
+    Capture structures are basins, pits, zai, tied ridges, bunds, half-moons. A pooled arm
+    that cannot separate basins from ripping is ingested `attribution=bundled` with tillage as
+    a co-practice; ripping-alone and no-tillage-labelled arms yield NO water-harvesting unit.
+    Never let a lane brief decide a practice-boundary question — raise it for a ruling.
+
+32. **Second-hand readings drift; the primary wins** (2026-10-21 retro, extends #25). Three
+    of Arslan 2015's cited findings misstated their primaries (a significant reversal
+    reported as "no benefit", a vanished effect that never existed, a budget on the wrong
+    baseline). When a primary is acquired, list the second-hand units it supersedes; the
+    orchestrator drops them with the primary named in the reason.
+
 The trustworthy gates are CENTRAL: the verbatim+page guardrail (`validate_sources.py`),
 `check_numbers.py`, `check_scope.py`, `check_quote.py`, `check_picos.py` (wrong-practice),
 `check_species.py` (species mis-tag), `quarantine.py` (auto-soft-deletes off-scope +
