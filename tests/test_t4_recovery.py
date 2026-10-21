@@ -241,3 +241,72 @@ def test_ahmad_ndvi_is_not_canopy_and_retains_source_classes():
     assert evaluate_numeric(
         row, [0.1, 0.3, 0.6], profile_id=unit["evidence_id"]
     ).tolist() == [0.25, 0.5, 0.75]
+
+
+def test_coded_feedback_without_keywords_is_tracked():
+    from nbs_ruralscan.schema_tools.t4_coverage import (
+        FOLLOWUP_REASONS,
+        check_review_followups,
+    )
+
+    evidence = {"unit": {"use_role": "structural_suitability"}}
+    row = dict(evidence_id="unit", reviewer="human", note="", reason="")
+    for reason in FOLLOWUP_REASONS:
+        row["reason"] = reason
+        assert check_review_followups([row], evidence, {}) == [
+            "Untracked review follow-up: unit"
+        ]
+    evidence["unit"]["use_role"] = "effect"
+    assert check_review_followups([row], evidence, {}) == []
+    row["reviewer"] = "codex"
+    evidence["unit"]["use_role"] = "structural_suitability"
+    assert check_review_followups([row], evidence, {}) == []
+
+
+def test_resolution_requires_existing_evidence_and_unchanged_corrective_field():
+    import hashlib
+    from nbs_ruralscan.schema_tools.t4_coverage import (
+        check_review_followups,
+        followup_key,
+    )
+
+    evidence = {"unit": {"use_role": "operational_risk", "review_state": "active"}}
+    item = dict(
+        evidence_id="unit",
+        reviewer="human",
+        note="Wrong destination",
+        status="resolved",
+        resolution="Routed to operational risk",
+        resolution_evidence_ids=["unit"],
+        resolution_checks=[
+            {
+                "evidence_id": "unit",
+                "field": "use_role",
+                "sha256": hashlib.sha256(b"operational_risk").hexdigest(),
+            }
+        ],
+    )
+    followups = {followup_key(item): item}
+    assert check_review_followups([], evidence, followups) == []
+    evidence["unit"]["use_role"] = "structural_suitability"
+    assert any(
+        "corrective field changed" in x
+        for x in check_review_followups([], evidence, followups)
+    )
+    item["resolution_evidence_ids"] = ["nonexistent"]
+    assert any(
+        "lacks valid evidence" in x
+        for x in check_review_followups([], evidence, followups)
+    )
+    item["resolution_checks"] = []
+    assert any(
+        "lacks corrective field checks" in x
+        for x in check_review_followups([], evidence, followups)
+    )
+    item["status"] = "quarantined"
+    assert any(
+        "quarantine no longer holds" in x
+        for x in check_review_followups([], evidence, followups)
+    )
+    evidence["unit"]["review_state"] = "dropped"
+    assert check_review_followups([], evidence, followups) == []

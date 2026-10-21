@@ -26,6 +26,80 @@ def followup_key(row):
     ).hexdigest()
 
 
+# Defect codes must work even when a reviewer leaves no free-text note.
+FOLLOWUP_REASONS = {
+    "relationship_missed",
+    "insufficient_context",
+    "wrong_table",
+    "wrong_variable",
+    "unusable_value",
+    "uninterpretable_weight",
+    "quote_too_narrow",
+    "smuggled_number",
+    "table_error",
+    "cross_row_stitch",
+    "table_garble",
+    "missed_error",
+}
+
+
+def needs_followup(row, evidence):
+    unit = evidence.get(row["evidence_id"])
+    if not unit or row["reviewer"].lower().startswith(("codex", "ai")):
+        return False
+    # Preserve historically tracked notes; expand coded defects only in T4/M2b.
+    return bool(
+        re.search(
+            r"figure|fig\.?\s*\d|table\s*\d|screen.?grab|missing", row["note"], re.I
+        )
+        or (
+            unit["use_role"] in ("structural_suitability", "operational_risk")
+            and row.get("reason") in FOLLOWUP_REASONS
+        )
+    )
+
+
+def check_review_followups(log, evidence, followups):
+    errors = []
+    for row in log:
+        if needs_followup(row, evidence) and followup_key(row) not in followups:
+            errors.append("Untracked review follow-up: " + row["evidence_id"])
+    # Validate historical entries too, including evidence subsequently rerouted.
+    for key, item in followups.items():
+        eid = item.get("evidence_id", "")
+        status = item.get("status")
+        if key != followup_key(item) or eid not in evidence:
+            errors.append("Invalid follow-up identity: " + eid)
+        if status not in ("needs_review", "resolved", "quarantined") or not item.get(
+            "resolution"
+        ):
+            errors.append("Invalid follow-up disposition: " + eid)
+        if (
+            status == "quarantined"
+            and evidence.get(eid, {}).get("review_state") != "dropped"
+        ):
+            errors.append("Follow-up quarantine no longer holds: " + eid)
+        if status != "resolved":
+            continue
+        ids = item.get("resolution_evidence_ids", [])
+        checks = item.get("resolution_checks", [])
+        if not ids or any(ref not in evidence for ref in ids):
+            errors.append("Resolved follow-up lacks valid evidence: " + eid)
+        if not checks:
+            errors.append("Resolved follow-up lacks corrective field checks: " + eid)
+        for assertion in checks:
+            ref, field = assertion.get("evidence_id"), assertion.get("field")
+            value = evidence.get(ref, {}).get(field)
+            if (
+                ref not in ids
+                or value is None
+                or not value
+                or hashlib.sha256(value.encode()).hexdigest() != assertion.get("sha256")
+            ):
+                errors.append("Resolved follow-up corrective field changed: " + eid)
+    return errors
+
+
 def check(root):
     errors = []
     audit = root / "pipeline/t4_audit/agroforestry"
@@ -94,26 +168,11 @@ def check(root):
     followups = json.loads(
         (audit / "review_followups.json").read_text(encoding="utf-8")
     )
-    for row in read(root, "pipeline/metrics/review_log.csv"):
-        if row["evidence_id"] not in evidence or row["reviewer"].lower().startswith(
-            ("codex", "ai")
-        ):
-            continue
-        if not re.search(
-            r"figure|fig\.?\s*\d|table\s*\d|screen.?grab|missing", row["note"], re.I
-        ):
-            continue
-        followup = followups.get(followup_key(row))
-        if (
-            not followup
-            or followup["status"] not in ("needs_review", "resolved")
-            or not followup["resolution"]
-        ):
-            errors.append("Untracked review follow-up: " + row["evidence_id"])
-        elif followup["status"] == "resolved" and not followup.get(
-            "resolution_evidence_ids"
-        ):
-            errors.append("Resolved follow-up lacks evidence: " + row["evidence_id"])
+    errors.extend(
+        check_review_followups(
+            read(root, "pipeline/metrics/review_log.csv"), evidence, followups
+        )
+    )
     for row in evidence.values():
         context = json.loads(row["context"] or "{}")
         provenance = context.get("model_use_provenance", {})
