@@ -27,7 +27,7 @@ from .check_numbers import _nums
 
 _ROOT = Path(__file__).resolve().parents[3]
 _EV = _ROOT / "schema" / "registers" / "EV_evidence_register.csv"
-_EID = re.compile(r"\bev_[a-z0-9_]+\b")
+_EID = re.compile(r"\bev_[A-Za-z0-9_]+\b")
 # identifiers (source_ids like lee_2004, metric names like smd_hedges_g) carry digits that are
 # not evidence numbers — mask any underscore-joined token before extracting numbers
 _IDENT = re.compile(r"\b\w*_\w*\b")
