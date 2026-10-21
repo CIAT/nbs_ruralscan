@@ -69,3 +69,12 @@ Over sweeps, as the spec tightens, fewer units should reach the LLM pass.
 ## 21 October 2026 — T4 omission feedback
 
 Pete identified weight-only Ahmad records despite Table 2 giving suitability directions and additional soil criteria. Conflicting old skill advice treated uncalibrated direction as unusable, while catalogue #12 required preserving relationships. Ruleset v1.6.16 removes that conflict and supplies a mandatory extraction/adversarial-review contract. Review must audit omissions, table coverage and shared weights, not only fidelity of emitted records. This instruction update is not a completed evidence backfill: Ahmad directions, six soil properties and categorical exclusions still require source-provenanced extraction/review. Existing human decisions remain unchanged. No extraction sweep or improved defect-rate claim is made here.
+
+
+## 21 October 2026 — bounded agroforestry T4 re-review
+
+Scope: 16 sources reached through live T4 evidence links plus recent recovery sources; no new discovery or full corpus sweep. Three source-review agents used v1.6.16 contract; remaining three sources were checked by the coordinating agent. Inventories and unresolved claims live in `pipeline/t4_audit/agroforestry/bounded_review_2026-10-21/`.
+
+53 pending companions were staged. One Chuma land-use record was automatically quarantined because it documents model use without classes; its model-use metadata remains available. No prior human approval was changed. Six Ahmad soil-property mappings and categorical exclusions remain source-inventory holds. Conflicting Haile table weights now suppress a settled effective weight. New regression checks cover current live-source coverage, approval preservation, image identity, lineage/context-separated directions and conflicting weights.
+
+Numeric provenance caught comma-separated categorical codes being parsed as decimals/thousands; source codes are now explicit lists. Whole-table Mushtaq quotes were narrowed to the relevant row with a separate native caption/header. Short native table-row quotes retain separate header provenance; advisory width flags are not treated as automatic evidence rejection. Global metrics are recorded but do not demonstrate a full-sweep improvement. Existing source/mapping defects remain explicit review items rather than silently rewriting approved evidence.

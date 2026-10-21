@@ -65,3 +65,52 @@ def test_species_selection_method_does_not_inflate_practice_agreement():
     assert summary["verified_general_model_papers"] == 0
     assert summary["verified_crop_species_model_papers"] == 0
     assert summary["verified_species_selection_model_papers"] == 1
+
+
+def test_conflicting_source_tables_do_not_emit_settled_weight():
+    row = dict(
+        variable="slope",
+        claim_scope="practice_technology",
+        source_id="haile",
+        evidence_id="slope",
+        suitability_family_id="regional",
+        context={
+            "model_use": {
+                "verified": True,
+                "method": "AHP",
+                "page": "4,9",
+                "weight_path_pct": [30],
+                "weight_alternatives_pct": [[30], [29.5]],
+                "weight_conflict": True,
+            }
+        },
+    )
+    result = variable_usage([row], {})[0]
+    assert result["weight_conflict"]
+    assert result["effective_model_weight_pct"] is None
+    assert result["reported_weight_paths_pct"] == [[29.5], [30]]
+
+
+def test_identical_weights_in_distinct_branches_are_not_a_total():
+    def row(eid, branch):
+        return dict(
+            variable="soil_ph",
+            claim_scope="practice_technology",
+            source_id="nath",
+            evidence_id=eid,
+            suitability_family_id="regional",
+            context={
+                "branch": branch,
+                "model_use": {
+                    "verified": True,
+                    "method": "expert",
+                    "page": "11",
+                    "weight_path_pct": [25, 20, 20],
+                },
+            },
+        )
+
+    result = variable_usage([row("a", "nutrients"), row("b", "rooting")], {})[0]
+    assert result["branch_aggregation_unresolved"]
+    assert result["effective_model_weight_pct"] is None
+    assert result["weight_branches"] == ["nutrients", "rooting"]

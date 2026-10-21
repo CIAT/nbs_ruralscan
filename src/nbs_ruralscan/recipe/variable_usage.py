@@ -31,9 +31,21 @@ def variable_usage(evidence, sources):
     records = []
     for (variable, scope, paper), items in sorted(grouped.items()):
         paths = {tuple(use.get("weight_path_pct", [])) for _, use in items}
+        for _, use in items:
+            paths.update(tuple(p) for p in use.get("weight_alternatives_pct", []))
+        conflict = len(paths) > 1 or any(use.get("weight_conflict") for _, use in items)
         methods = {use["method"] for _, use in items}
-        path = next(iter(paths)) if len(paths) == 1 else ()
-        effective = 100 * prod(w / 100 for w in path) if path else None
+        path = next(iter(paths)) if len(paths) == 1 and not conflict else ()
+        branches = set()
+        for unit, _ in items:
+            context = unit.get("context") or {}
+            if isinstance(context, str):
+                context = json.loads(context)
+            if context.get("branch"):
+                branches.add(context["branch"])
+        effective = (
+            100 * prod(w / 100 for w in path) if path and len(branches) <= 1 else None
+        )
         records.append(
             {
                 "variable": variable,
@@ -47,7 +59,10 @@ def variable_usage(evidence, sources):
                 "effective_model_weight_pct": round(effective, 6)
                 if effective is not None
                 else None,
-                "weight_conflict": len(paths) > 1,
+                "weight_conflict": conflict,
+                "weight_branches": sorted(branches),
+                "branch_aggregation_unresolved": len(branches) > 1,
+                "reported_weight_paths_pct": [list(p) for p in sorted(paths)],
                 "pages": sorted({use["page"] for _, use in items}),
                 "note": (
                     "Source-checked model use; human review pending. "
