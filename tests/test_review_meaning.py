@@ -16,3 +16,14 @@ def test_review_card_meaning():
         cwd=Path(__file__).resolve().parents[1],
         check=True,
     )
+
+
+def test_review_status_filters():
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node.js needed for dashboard JavaScript test")
+    subprocess.run(
+        [node, "tests/js/review_status.test.cjs"],
+        cwd=Path(__file__).resolve().parents[1],
+        check=True,
+    )

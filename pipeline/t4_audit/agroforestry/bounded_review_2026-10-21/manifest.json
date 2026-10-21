@@ -4725,7 +4725,12 @@
     {
       "issue": "Dropped records re-enter ordinary queue",
       "evidence": "docs/dashboard.html renderVfWorklist _uni explicitly appends dashboardData._evDropped; secondary filters lack active-only predicate",
-      "fix": "Active/dropped status filter default active, history accessible, counts evaluated against same filter; regression autoquarantined record not treated as fresh undecided review."
+      "fix": "Active/dropped status filter default active, history accessible, counts evaluated against same filter; regression autoquarantined record not treated as fresh undecided review.",
+      "resolution": {
+        "date": "2026-10-21",
+        "status": "workflow_correction_applied",
+        "note": "Dashboard defaults to Active; explicit Dropped history / All options preserve inspection and reopening. Status shares rendered-list and axis-count predicate; verdict counts and search-round counts respect status. Executed JavaScript regression covers automatic quarantine without human review, human-drop history and reopened records."
+      }
     },
     {
       "issue": "Silent compilation loss gate partial",
