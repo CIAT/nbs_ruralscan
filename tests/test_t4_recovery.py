@@ -328,3 +328,30 @@ def test_caption_resolution_reopens_when_display_code_changes(coverage_tree):
     assert check(coverage_tree) == []
     path.write_text(path.read_text().replace("&full=1", "&full=0"))
     assert any("display artifact changed" in x for x in check(coverage_tree))
+
+
+def test_answered_source_questions_do_not_become_general_numeric_curves():
+    evidence = {
+        r["evidence_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    live = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")
+    ids = {
+        "ev_dist_settlement_qual_singh26",
+        "ev_t4_slope_kizir_2",
+        "ev_T4_slope_haris2021_2",
+        "ev_T4_soildrainage_haris2021_1",
+    }
+    assert not ids.intersection(live)
+    settlement = evidence["ev_dist_settlement_qual_singh26"]
+    assert settlement["use_role"] == "operational_risk"
+    assert (
+        json.loads(settlement["relationship"])["shape"] == "monotonic_decreasing_linear"
+    )
+    slope = evidence["ev_T4_slope_haris2021_2"]
+    assert slope["claim_scope"] == "species_specific"
+    assert slope["taxon"] == "Falcataria moluccana"
+    drainage = json.loads(evidence["ev_T4_soildrainage_haris2021_1"]["relationship"])
+    assert drainage == {"land_capability_class": "IVd", "limitation": "drainage"}
