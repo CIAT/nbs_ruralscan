@@ -1930,30 +1930,57 @@
     "source_id": "chuma_2021",
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__cross_family",
-    "variable": "accessibility_travel_time",
+    "variable": "distance_to_road",
     "relationship": {
-      "climate_weight_pct": "28.9",
-      "distance_rivers_weight_pct": "20.1",
-      "villages_airports_weight_pct": "15",
-      "roads_weight_pct": "10",
-      "combined_top4_weight_pct": "84",
-      "note": "These are AHP factor weights, not travel-time thresholds; variable should be relabelled to reflect factor-weight evidence"
+      "type": "model_use_only",
+      "weight_pct": 10.8,
+      "note": "Source model importance only, not a distance threshold or runtime weight."
     },
     "context": {
       "study_location": "eastern DR Congo",
-      "study_income_group": "low_income"
+      "study_income_group": "low_income",
+      "source_corrections": [
+        {
+          "date": "2026-10-21",
+          "agent": "Codex",
+          "note": "Correct mixed-factor paragraph falsely assigned to travel time. Table 2 PDF p5 explicitly identifies Euclidean distance to road and weight 10.80%. Stable evidence ID retained for review history; no human approval changed. Original multi-factor paragraph retained below; its aggregate 84% is not adopted.",
+          "original_record": {
+            "variable": "accessibility_travel_time",
+            "relationship": "{\"climate_weight_pct\": \"28.9\", \"distance_rivers_weight_pct\": \"20.1\", \"villages_airports_weight_pct\": \"15\", \"roads_weight_pct\": \"10\", \"combined_top4_weight_pct\": \"84\", \"note\": \"These are AHP factor weights, not travel-time thresholds; variable should be relabelled to reflect factor-weight evidence\"}",
+            "quote": "Nine factors were combined to assess suitability for agroforestry, and from these factors, four had contributed up to 84% of the suitability. These were climate types (~28.9%), Euclidean distance to rivers (~20.1%), to local villages, local airports (15%) and roads (10%).",
+            "page": "6",
+            "raw_name": "Euclidean distance to villages/airports/roads",
+            "attribution": "[VERIFY-FLAG mismatch: Variable is labelled 'accessibility_travel_time' but the quote describes AHP factor weights (%, contribution to suitability score) for climate, rivers, villages/airports, and roads — not travel-time thresholds or accessibility distances. Mislabeled variable; the encoded numbers are factor weight percentages, which the quote does support.] general — applies cross-family",
+            "evidence_type": "literature_relationship"
+          },
+          "human_review_state_changed": false
+        }
+      ],
+      "model_use": {
+        "verified": true,
+        "method": "AHP",
+        "page": "5",
+        "weight_path_pct": [
+          10.8
+        ],
+        "scope": "practice_technology",
+        "weight_provenance": "Table 2, ED to road (km), Weight (%) column; table image visually checked."
+      },
+      "review_needed": "Confirm road-distance criterion and 10.80% source weight against Table 2 p5. This is model-use evidence only; road response classes remain in separate road-distance records. Original paragraph mixes factors and reports an inconsistent aggregate; no aggregate weight inferred.",
+      "calibration_hold": "Weight-only record; does not define a suitability response or runtime weight. Road access is operational risk, outside structural T4."
     },
     "use_role": "operational_risk",
-    "evidence_type": "literature_relationship",
+    "evidence_type": "scoping_candidate",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
     "extraction_confidence": "low",
-    "quote": "Nine factors were combined to assess suitability for agroforestry, and from these factors, four had contributed up to 84% of the suitability. These were climate types (~28.9%), Euclidean distance to rivers (~20.1%), to local villages, local airports (15%) and roads (10%).",
-    "page": 6,
+    "quote": "Table 2 \nPairwise comparison matrix for multi-criteria decision problems (weights, Consistency Index (CI) and Ratio (CR)).  \nCriteria \nLand \nuse \nElevation \n(m) \nAspect \nSlope \n(%) \nED to Road \n(km) \nED to villages \n(km) \nED to rivers \n(km) \nClimate \nSoil \nMatrix \nWeight \n(%) \nLand use \n1.000 \n0.143 \n0.250 \n0.250 \n0.200 \n0.125 \n0.250 \n0.143 \n0.333 \n0.2308 \n01.92 \nElevation (m) \n7.000 \n1.000 \n0.500 \n0.333 \n0.250 \n0.200 \n0.200 \n0.111 \n4.000 \n0.4356 \n03.62 \nAspect \n4.000 \n2.000 \n1.000 \n0.125 \n0.143 \n0.500 \n0.250 \n0.167 \n0.200 \n0.4832 \n04.03 \nSlope (%) \n4.000 \n3.000 \n8.000 \n1.000 \n0.125 \n0.167 \n0.125 \n0.500 \n7.000 \n0.7711 \n06.42 \nED to road (km) \n5.000 \n4.000 \n7.000 \n8.000 \n1.000 \n0.143 \n0.250 \n0.200 \n0.500 \n1.2968 \n10.80",
+    "page": 5,
     "reviewer_ok": false,
-    "raw_name": "Euclidean distance to villages/airports/roads",
-    "attribution": "[VERIFY-FLAG mismatch: Variable is labelled 'accessibility_travel_time' but the quote describes AHP factor weights (%, contribution to suitability score) for climate, rivers, villages/airports, and roads — not travel-time thresholds or accessibility distances. Mislabeled variable; the encoded numbers are factor weight percentages, which the quote does support.] general — applies cross-family",
-    "locator_type": "page"
+    "raw_name": "ED to road (km)",
+    "attribution": "[source correction 2026-10-21 by Codex: road-distance model weight, Table 2 p5; previous mislabel and quote retained in context.source_corrections; human review unchanged] [VERIFY-FLAG mismatch: Variable is labelled 'accessibility_travel_time' but the quote describes AHP factor weights (%, contribution to suitability score) for climate, rivers, villages/airports, and roads — not travel-time thresholds or accessibility distances. Mislabeled variable; the encoded numbers are factor weight percentages, which the quote does support.] general — applies cross-family",
+    "locator_type": "page",
+    "locator": 5
   },
   {
     "evidence_id": "ev_T4_conflict_fragility_index_chuma21_1",
@@ -169622,7 +169649,7 @@
     "source_id": "baldwin_2022",
     "nbs_id": "agroforestry",
     "suitability_family_id": "cross_family",
-    "variable": "tenure_security",
+    "variable": "ownership_consolidation",
     "relationship": {
       "source_criterion": "contiguous parcels with common ownership"
     },
@@ -169630,7 +169657,20 @@
       "study_country": "United States",
       "extraction_run_id": "agroforestry_five_sources_2026-10-20",
       "review_needed": "Ownership consolidation is adoption feasibility, not proof of secure tenure or structural exclusion.",
-      "transfer_status": "source_context_only"
+      "transfer_status": "source_context_only",
+      "source_corrections": [
+        {
+          "date": "2026-10-21",
+          "agent": "Codex",
+          "note": "Corrected ownership consolidation mislabel: contiguous land with one owner/group reduces decision-makers; does not measure tenure security. Separate pending ontology entry; no runtime binding or global response authorized.",
+          "original_record": {
+            "variable": "tenure_security",
+            "raw_name": "tenure_security",
+            "attribution": ""
+          },
+          "human_review_state_changed": false
+        }
+      ]
     },
     "use_role": "operational_risk",
     "evidence_type": "scoping_candidate",
@@ -169640,7 +169680,8 @@
     "quote": "Single Entity Ownership: Suitable land owned by one consistent owner or ownership\ngroup affords more opportunities to establish FloodWise practices than suitable land\nsplit across multiple parcels, each with a different owner or ownership group. Limiting\nopportunity areas to contiguous land with consistent ownership reduces the number of\nstakeholders and decision-makers, increasing the feasibility of FloodWise practice adoption.",
     "page": 10,
     "reviewer_ok": false,
-    "raw_name": "tenure_security",
+    "raw_name": "Single Entity Ownership",
+    "attribution": "[source correction 2026-10-21 by Codex: Corrected ownership consolidation mislabel: contiguous land with one owner/group reduces decision-makers; does not measure tenure security. Separate pending ontology entry; no runtime binding or global response authorized.] ",
     "locator_type": "page",
     "ruleset_version": "v1.6.14"
   },
@@ -169723,7 +169764,21 @@
       "review_needed": "Montado AEM2 eligibility only. Review meaning of occupied-by-trees versus canopy cover before binding. Not an optimum or general silvopasture cutoff.",
       "transfer_status": "source_context_only",
       "programme": "AEM_2",
-      "host_system": "open Montado"
+      "host_system": "open Montado",
+      "source_corrections": [
+        {
+          "date": "2026-10-21",
+          "agent": "Codex",
+          "note": "Restore literal source term. Programme eligibility for land occupied by trees is not established as canopy cover; record remains dropped and cannot set a canopy threshold.",
+          "original_record": {
+            "variable": "tree_canopy_cover",
+            "raw_name": "tree_canopy_cover",
+            "attribution": "[dropped 2026-10-21 by peetmate; reason:other; note:it seems these are conservation objectives not suitability factors]"
+          },
+          "human_review_state_changed": false
+        }
+      ],
+      "canonical_mapping_hold": "Occupied by trees has not been established as tree_canopy_cover. Preserve source claim only; no dataset binding or canopy response."
     },
     "use_role": "structural_suitability",
     "evidence_type": "scoping_candidate",
@@ -169733,8 +169788,8 @@
     "quote": "AEM_2\nCattle extensification and\nregeneration of the open\nMontado\nAreas of natural regeneration of cork and\nholm oaks by installing protectors or\nfences, allowing for the minimal tree\ndensity of 20 trees ha−1 for targeted tree\nspecies\n>5 ha, >10% occupied by\ntrees, 0.15–0.50 cattle\nheads ha−1\nBSPA, SCI, NPA\n15–51",
     "page": 5,
     "reviewer_ok": false,
-    "raw_name": "tree_canopy_cover",
-    "attribution": "[dropped 2026-10-21 by peetmate; reason:other; note:it seems these are conservation objectives not suitability factors]",
+    "raw_name": "land occupied by trees",
+    "attribution": "[source correction 2026-10-21 by Codex: Restore literal source term. Programme eligibility for land occupied by trees is not established as canopy cover; record remains dropped and cannot set a canopy threshold.] [dropped 2026-10-21 by peetmate; reason:other; note:it seems these are conservation objectives not suitability factors]",
     "locator_type": "page",
     "review_state": "dropped",
     "ruleset_version": "v1.6.14"
