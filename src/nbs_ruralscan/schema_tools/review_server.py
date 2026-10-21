@@ -129,7 +129,12 @@ def _resolve_pdf(source_id: str) -> Path | None:
 
 
 def render_region_png(
-    pdf_path: Path, quote: str, page: int | None, rot: int = 0
+    pdf_path: Path,
+    quote: str,
+    page: int | None,
+    rot: int = 0,
+    *,
+    full_page: bool = False,
 ) -> bytes | None:
     """Render a highlighted page-region screengrab (PNG bytes) around ``quote`` on ``page``.
 
@@ -138,7 +143,7 @@ def render_region_png(
     the whole page), auto-detects a sideways/rotated table, draws amber highlight annots
     over the located quote rects, and renders to PNG. A search miss with no clip is fine
     (whole page). Returns ``None`` only on a hard failure (no such file / no page / render
-    error). ``rot`` (0/90/180/270) forces a rotation override; 0 = auto-detect.
+    error). ``full_page`` retains captions and both columns without cropping. ``rot`` (0/90/180/270) forces a rotation override; 0 = auto-detect.
     """
     try:
         import fitz  # PyMuPDF
@@ -187,6 +192,8 @@ def render_region_png(
                 clip = fitz.Rect(0, y0, pg.rect.width, y1) & pg.rect
             else:
                 clip = pg.rect
+        if full_page:
+            clip = pg.rect
         # Detect a rotated (sideways) table so we can render it upright. Wide
         # landscape tables on a portrait page have vertical writing direction.
         det_rot = 0
@@ -481,7 +488,14 @@ class Handler(SimpleHTTPRequestHandler):
             _rq = parse_qs(urlparse(self.path).query).get("rot", [""])[0]
             rot = int(_rq) if _rq in ("0", "90", "180", "270") else 0
             try:
-                data = render_region_png(pdf, row.get("quote") or "", pno, rot)
+                data = render_region_png(
+                    pdf,
+                    row.get("quote") or "",
+                    pno,
+                    rot,
+                    full_page=parse_qs(urlparse(self.path).query).get("full", [""])[0]
+                    == "1",
+                )
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"error": f"crop failed: {e}"})
             if data is None:

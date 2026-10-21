@@ -90,6 +90,12 @@ def coverage_tree(tmp_path):
         "docs/review/img",
     ]:
         shutil.copytree(ROOT / path, tmp_path / path)
+    for file in (
+        "docs/dashboard.html",
+        "src/nbs_ruralscan/schema_tools/review_server.py",
+    ):
+        (tmp_path / file).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(ROOT / file, tmp_path / file)
     return tmp_path
 
 
@@ -310,3 +316,15 @@ def test_resolution_requires_existing_evidence_and_unchanged_corrective_field():
     )
     evidence["unit"]["review_state"] = "dropped"
     assert check_review_followups([], evidence, followups) == []
+
+
+def test_caption_resolution_reopens_when_display_code_changes(coverage_tree):
+    path = coverage_tree / "docs/dashboard.html"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ROOT / "docs/dashboard.html", path)
+    server = "src/nbs_ruralscan/schema_tools/review_server.py"
+    (coverage_tree / server).parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ROOT / server, coverage_tree / server)
+    assert check(coverage_tree) == []
+    path.write_text(path.read_text().replace("&full=1", "&full=0"))
+    assert any("display artifact changed" in x for x in check(coverage_tree))
