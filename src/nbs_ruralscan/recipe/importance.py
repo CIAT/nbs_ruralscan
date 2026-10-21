@@ -172,3 +172,48 @@ def load_weight_models(path):
             )
         )
     return models
+
+
+def candidate_weights(models, variables):
+    """Summarise one representation per lineage for a declared comparison subset.
+
+    Eligibility is supplied by reviewed configuration, not inferred from names.
+    Missing inputs hold the comparison rather than silently changing its panel.
+    """
+    from statistics import median
+
+    if not models or not variables or len(set(variables)) != len(variables):
+        raise ValueError("Nonempty models and unique variables required")
+    lineages = [m["provenance"]["lineage"] for m in models]
+    if any(not lineage for lineage in lineages) or len(set(lineages)) != len(lineages):
+        raise ValueError("One model representation per independent lineage required")
+    rows = []
+    for variable in variables:
+        values = []
+        scopes = set()
+        for model in models:
+            if model["status"] != "calculated":
+                raise ValueError("Held source model")
+            matches = [r for r in model["variables"] if r["variable"] == variable]
+            if len(matches) != 1:
+                raise ValueError(f"{variable}: missing or ambiguous scope")
+            scopes.add(matches[0]["scope"])
+            values.append(matches[0]["hierarchy_adjusted_ratio"])
+        if len(scopes) != 1:
+            raise ValueError(f"{variable}: incompatible scopes")
+        rows.append(
+            dict(
+                variable=variable,
+                source_count=len(values),
+                median_ratio=median(values),
+                minimum=min(values),
+                maximum=max(values),
+            )
+        )
+    total = sum(r["median_ratio"] for r in rows)
+    if total <= 0:
+        raise ValueError("No positive importance for candidate weights")
+    for row in rows:
+        row["candidate_weight"] = row["median_ratio"] / total
+        row["equal_weight"] = 1 / len(rows)
+    return rows

@@ -206,3 +206,54 @@ def test_loader_rejects_invalid_graph(tmp_path, bad_rows):
             )
     with pytest.raises(ValueError):
         load_weight_models(path)
+
+
+def test_candidate_weights_deduplicate_and_hold_missing():
+    from nbs_ruralscan.recipe.importance import candidate_weights
+
+    def result(lineage, weights):
+        r = compare_importance(model([leaf(k, v) for k, v in weights.items()]))
+        r["provenance"] = {"lineage": lineage}
+        return r
+
+    a = result("one", {"slope": 75, "rain": 25})
+    b = result("two", {"slope": 50, "rain": 50})
+    rows = candidate_weights([a, b], ["slope", "rain"])
+    assert rows[0]["candidate_weight"] == pytest.approx(0.625)
+    assert rows[0]["equal_weight"] == 0.5
+    assert sum(r["candidate_weight"] for r in rows) == pytest.approx(1)
+    with pytest.raises(ValueError, match="lineage"):
+        candidate_weights([a, a], ["slope", "rain"])
+    with pytest.raises(ValueError, match="missing"):
+        candidate_weights([a, b], ["slope", "ph"])
+    with pytest.raises(ValueError, match="unique"):
+        candidate_weights([a], ["slope", "slope"])
+
+
+def test_real_candidate_alternatives_and_stability():
+    import csv
+    from pathlib import Path
+    from nbs_ruralscan.recipe.importance import load_weight_models, candidate_weights
+
+    folder = (
+        Path(__file__).resolve().parents[1]
+        / "pipeline/t4_audit/agroforestry/importance_2026-10-21"
+    )
+    models = {}
+    for m in load_weight_models(folder / "source_weight_trees.csv"):
+        models[m["model_id"]] = {**compare_importance(m), "provenance": m["provenance"]}
+    with (folder / "candidate_scenarios.csv").open() as handle:
+        scenarios = list(csv.DictReader(handle))
+    results = {
+        s["scenario"]: candidate_weights(
+            [models[m] for m in s["models"].split("|")], s["variables"].split("|")
+        )
+        for s in scenarios
+    }
+    assert results["Three-study provisional"][0]["source_count"] == 3
+    assert results["Haile alternative"][0]["source_count"] == 3
+    assert results["Three-study provisional"][0]["candidate_weight"] == pytest.approx(
+        29.5 / 40
+    )
+    assert results["Haile alternative"][0]["candidate_weight"] == pytest.approx(30 / 42)
+    assert results["Without Singh"][0]["candidate_weight"] < 0.51
