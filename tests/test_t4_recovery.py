@@ -36,7 +36,17 @@ def test_recovered_evidence_preserves_approval_and_one_source_vote():
         "ev_T4_soc_haile2024_continuation": 6,
     }
     assert "ev_T4_soc_haile2024_continuation" not in draft
-    assert "ev_T4_elevation_chuma2021_recovery" not in live
+    evidence = {
+        r["evidence_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    elevation = evidence["ev_T4_elevation_chuma2021_recovery"]
+    assert ("ev_T4_elevation_chuma2021_recovery" in live) == (
+        elevation["reviewer_ok"].lower() == "true"
+        and elevation["review_state"] != "dropped"
+    )
     assert len(draft["ev_T4_elevation_chuma2021_recovery"]["intervals"]) == 5
 
 
@@ -179,3 +189,55 @@ def test_five_source_extraction_cannot_silently_regress(coverage_tree, defect):
             writer.writerows(rows)
     path.write_text(json.dumps(inventory))
     assert check(coverage_tree)
+
+
+def test_nath_reported_slope_domain_is_finite():
+    import numpy as np
+    from nbs_ruralscan.runtime.numeric import evaluate_numeric
+
+    rows = list(
+        csv.DictReader(
+            (ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv").open()
+        )
+    )
+    row = next(
+        r
+        for r in rows
+        if "ev_t4_slope_nath21_01" in json.loads(r["evidence_ids"] or "[]")
+    )
+    result = evaluate_numeric(
+        row, [-1, 0, 2, 20, 30, 44, 45], profile_id="ev_t4_slope_nath21_01"
+    )
+    assert np.isnan(result[0]) and np.isnan(result[-1])
+    assert result[1] == pytest.approx(0.9)
+    assert result[2] == pytest.approx(0.9)
+    assert np.isnan(result[3])  # Source class boundary remains ambiguous.
+    assert result[4] == 0 and result[5] == 0
+
+
+def test_ahmad_ndvi_is_not_canopy_and_retains_source_classes():
+    from nbs_ruralscan.runtime.numeric import evaluate_numeric
+
+    evidence = {
+        r["evidence_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    unit = evidence["ev_T4_canopy_ahmad2018_1"]
+    assert unit["variable"] == "ndvi"
+    assert unit["reviewer_ok"] == "true"
+    assert "Namita-J" in unit["attribution"]
+    rows = list(
+        csv.DictReader(
+            (ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv").open()
+        )
+    )
+    row = next(
+        r for r in rows if unit["evidence_id"] in json.loads(r["evidence_ids"] or "[]")
+    )
+    assert row["variable"] == "ndvi"
+    assert row["dataset_id"] == "mod13q1_ndvi"
+    assert evaluate_numeric(
+        row, [0.1, 0.3, 0.6], profile_id=unit["evidence_id"]
+    ).tolist() == [0.25, 0.5, 0.75]

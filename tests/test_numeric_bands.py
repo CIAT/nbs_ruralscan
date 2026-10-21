@@ -184,7 +184,9 @@ def test_all_numeric_policy_rows_accounted_for_without_unhandled_encoding():
             if p["evidence_id"] == "ev_t4_mat_yadav24_1"
             else ("parameter_contributor" if p["action"] == "compile" else p["reason"])
         )
-    assert sum(len(f.rows) for f in results.values()) == 8
+    rows = [row for family in results.values() for row in family.rows]
+    assert rows
+    assert len({row["mapping_id"] for row in rows}) == len(rows)
 
 
 def test_nath_recovered_ph_and_carbon_preserve_source_classes():

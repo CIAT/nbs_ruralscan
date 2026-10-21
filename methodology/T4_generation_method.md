@@ -831,3 +831,12 @@ within-origin values are unresolved, never counted as multiple independent votes
 No cardinal conversion or pooled application is inferred for the current regional
 records. Continuous-curve integration and score-convention sensitivity remain future
 extensions; this implementation combines compatible step profiles only.
+
+
+### Directional evidence is distinct from numeric calibration (21 October 2026)
+
+Pete ratified three independent assessments: variable use, suitability direction and numeric calibration. Supported directional claims remain evidence even when no executable curve is defensible. Counts are deduplicated by independent lineage, variable and compatible system/context; source weights do not become runtime weights. Extraction and adversarial review follow [.agents/skills/extraction_contracts/T4_review_contract.md](../.agents/skills/extraction_contracts/T4_review_contract.md), including full-table coverage, shared-weight handling and retention of unresolved source values. Earlier instructions to discard direction solely for lacking a scale are superseded.
+
+## Within-study relative importance — decision 21 October 2026
+
+Raw percentages are not directly comparable across models with different variable counts and hierarchies. Pete accepted the relative-to-mean and hierarchy-adjusted comparison conventions, including three theoretical tests, recorded in [T4 variable importance](T4_variable_importance.md). Preserve raw weights, branch structure, flat ratios and local ranks; use hierarchy-adjusted ratios as the primary hierarchical comparison. Implementation and real-source validation remain next steps; this decision does not change runtime weights.

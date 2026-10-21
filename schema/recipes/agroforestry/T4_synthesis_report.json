@@ -3,17 +3,17 @@
   "input_sha256": {
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
-    "schema/registers/SRC_source_register.csv": "a11783bab4ecea5657660610e38d6f9be5e9806e6e82bf32c2e082b82ae68b77",
-    "schema/registers/EV_evidence_register.csv": "fdd5247fee68bb9279baac6a1832c0a541159c2a9190d73cc2c32a860fe1ca2c",
+    "schema/registers/SRC_source_register.csv": "8d1446e666377d9d9e7079e0f84d83c0ad9981e063f873a92a1a6b8dfe96a4d8",
+    "schema/registers/EV_evidence_register.csv": "c470c8f1f46a873556cabfd73e2c4a424f3795721ed7388328d4bb8d388e48c6",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
     "schema/registers/CV_lit_review_agroforestry.csv": "f5f2cf246c2ed624cc45fad741c39523b69daf6471a746272431ee80b132b7c5",
-    "schema/registers/BIND_dataset_binding.csv": "a4da05c9691154e148dc360cc89ec822bb621b1f4430b62ce4bdaf94f5abc606",
+    "schema/registers/BIND_dataset_binding.csv": "6aeb5481a121cca768efd69ebe277b95a85e2c7f1ef9941e9cc74536c9bcfa35",
     "schema/registers/VONT_variable_ontology.csv": "7bbce615714d21dda92758d09cd38ce760e85604b8931a90117ff19cc088e494",
     "schema/registers/BANDS_magnitude_bands.csv": "5da05fc9bb4664ab0b2482806bcf25a6edc7461a00be42ea5be6d481310998c5",
     "schema/lookups/crop_scope_policy.csv": "62f6bf68b618116e63d4bee57d7b01c6710b4a2ba62b4405bf7daf1662f9a5b4",
-    "schema/lookups/t4_numeric_compilation_policy.csv": "dcb890f6869858de87c91c10482a26ef9e0e37ba9e6da6e29d8738f7d3113b33"
+    "schema/lookups/t4_numeric_compilation_policy.csv": "e793f15b921866e47cad9ae69fa457fc226bc5d39f0c19fba28fd47d20728541"
   },
   "screened_corpus_manifest": null,
   "review_mode": "approved_only",
@@ -22,6 +22,150 @@
       "family": "agroforestry__cross_family",
       "corpus_n": null,
       "rows": [
+        {
+          "mapping_id": "agroforestry__cross_family__ndvi",
+          "suitability_family_id": "agroforestry__cross_family",
+          "variable": "ndvi",
+          "variable_unit": "unitless",
+          "dataset_id": "mod13q1_ndvi",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_T4_canopy_ahmad2018_1",
+                "source_id": "ahmad_2018",
+                "continuation_of": "",
+                "evidence_ids": [
+                  "ev_T4_canopy_ahmad2018_1"
+                ],
+                "page_locators": {
+                  "ev_T4_canopy_ahmad2018_1": 8
+                },
+                "evidence_id": "ev_T4_canopy_ahmad2018_1",
+                "context": {
+                  "study_country": "India",
+                  "system_applicability_review": {
+                    "reviewer": "Codex source review",
+                    "date": "2026-10-20",
+                    "pages": [
+                      8,
+                      9,
+                      10
+                    ],
+                    "source_scope": "Broad regional agroforestry model; explicitly includes agrisilviculture and silvopastoral systems.",
+                    "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
+                    "status": "conditional_scoping_transfer",
+                    "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
+                  },
+                  "model_use": {
+                    "verified": true,
+                    "method": "source_weight",
+                    "page": "8",
+                    "weight_path_pct": [
+                      14.4
+                    ],
+                    "scope": "practice_technology"
+                  },
+                  "source_corrections": [
+                    {
+                      "date": "2026-10-21",
+                      "agent": "Codex",
+                      "note": "Table 2 PDF p8 explicitly labels NDVI, not tree canopy cover. Corrected canonical variable; retained original classes and 14.4% source weight. Existing reviewer attribution already identifies NDVI.",
+                      "human_review_state_changed": false
+                    }
+                  ]
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "low": 1,
+                  "medium": 2,
+                  "high": 3
+                },
+                "applicability_note": "Samastipur regional NDVI classes; no automatic transfer into named systems. NDVI is vegetation greenness, not tree-cover percentage.",
+                "unit": "unitless",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 0.2,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "Low",
+                    "rank": 1,
+                    "score": 0.25,
+                    "legacy_score": 0.3333333333333333,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 0.2,
+                    "upper": 0.5,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "Medium",
+                    "rank": 2,
+                    "score": 0.5,
+                    "legacy_score": 0.6666666666666666,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 0.5,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "High",
+                    "rank": 3,
+                    "score": 0.75,
+                    "legacy_score": 1.0,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  }
+                ],
+                "origin_id": "ahmad_2018",
+                "source_weight": 0.315,
+                "variable": "ndvi",
+                "score_policy": "semantic_classes_v1",
+                "pool_id": "",
+                "system_id": "",
+                "context_id": "",
+                "compatibility_approved": false,
+                "applicability_review": {},
+                "pool_review": "regional_context_requires_selection"
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "per_profile_schema_policy",
+            "harmonization": {
+              "pools": [],
+              "review": [
+                {
+                  "profile_id": "ev_T4_canopy_ahmad2018_1",
+                  "reason": "regional_context_requires_selection"
+                }
+              ]
+            },
+            "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "references": [
+            "ahmad_2018"
+          ],
+          "evidence_ids": [
+            "ev_T4_canopy_ahmad2018_1"
+          ],
+          "parameter_source_ids": [
+            "ahmad_2018"
+          ],
+          "n_parameter_sources": 1,
+          "paper_support_pct": null,
+          "n_sources": 3,
+          "corpus_n": null
+        },
         {
           "mapping_id": "agroforestry__cross_family__slope",
           "suitability_family_id": "agroforestry__cross_family",
@@ -146,7 +290,17 @@
                       30
                     ],
                     "scope": "practice_technology",
-                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch.",
+                    "weight_alternatives_pct": [
+                      [
+                        30
+                      ],
+                      [
+                        29.5
+                      ]
+                    ],
+                    "weight_conflict": true,
+                    "weight_conflict_note": "Table3 p4–5 classification weights conflict with Table5 p9 final AHP weights; human resolution required."
                   },
                   "system_applicability_review": {
                     "reviewer": "Codex source review",
@@ -278,7 +432,7 @@
           ],
           "n_parameter_sources": 2,
           "paper_support_pct": null,
-          "n_sources": 2,
+          "n_sources": 3,
           "corpus_n": null
         },
         {
@@ -313,7 +467,17 @@
                       12
                     ],
                     "scope": "practice_technology",
-                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch.",
+                    "weight_alternatives_pct": [
+                      [
+                        12
+                      ],
+                      [
+                        10.5
+                      ]
+                    ],
+                    "weight_conflict": true,
+                    "weight_conflict_note": "Table3 p4–5 classification weights conflict with Table5 p9 final AHP weights; human resolution required."
                   },
                   "system_applicability_review": {
                     "reviewer": "Codex source review",
@@ -525,7 +689,7 @@
           ],
           "n_parameter_sources": 2,
           "paper_support_pct": null,
-          "n_sources": 3,
+          "n_sources": 4,
           "corpus_n": null
         },
         {
@@ -561,7 +725,19 @@
                       35
                     ],
                     "scope": "practice_technology",
-                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch.",
+                    "weight_alternatives_pct": [
+                      [
+                        35,
+                        20
+                      ],
+                      [
+                        34.5,
+                        20
+                      ]
+                    ],
+                    "weight_conflict": true,
+                    "weight_conflict_note": "Table3 p4–5 classification weights conflict with Table5 p9 final AHP weights; human resolution required."
                   },
                   "system_applicability_review": {
                     "reviewer": "Codex source review",
@@ -664,19 +840,171 @@
           "paper_support_pct": null,
           "n_sources": 2,
           "corpus_n": null
+        },
+        {
+          "mapping_id": "agroforestry__cross_family__elevation",
+          "suitability_family_id": "agroforestry__cross_family",
+          "variable": "elevation",
+          "variable_unit": "m",
+          "dataset_id": "srtm_dem_90m",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_T4_elevation_chuma2021_recovery",
+                "source_id": "chuma_2021",
+                "continuation_of": "",
+                "evidence_ids": [
+                  "ev_T4_elevation_chuma2021_recovery"
+                ],
+                "page_locators": {
+                  "ev_T4_elevation_chuma2021_recovery": 6
+                },
+                "evidence_id": "ev_T4_elevation_chuma2021_recovery",
+                "context": {
+                  "study_country": "DR Congo",
+                  "recovery_review": {
+                    "status": "awaiting_human_review",
+                    "note": "Table 3 regional altitude ranking. Do not transfer across climates or interpret marginal as unsuitable."
+                  }
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "marginal": 1,
+                  "low": 2,
+                  "moderate": 3,
+                  "high": 4,
+                  "very_high": 5
+                },
+                "applicability_note": "Regional DR Congo altitude ranking; not globally transferable. Marginal remains low suitability, not exclusion.",
+                "unit": "m",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 500.0,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "very_high",
+                    "rank": 5,
+                    "score": 0.9,
+                    "legacy_score": 1.0,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 500.0,
+                    "upper": 1000.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "high",
+                    "rank": 4,
+                    "score": 0.75,
+                    "legacy_score": 0.8,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 1000.0,
+                    "upper": 1500.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "moderate",
+                    "rank": 3,
+                    "score": 0.5,
+                    "legacy_score": 0.6,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 1500.0,
+                    "upper": 2000.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "low",
+                    "rank": 2,
+                    "score": 0.25,
+                    "legacy_score": 0.4,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 2000.0,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "marginal",
+                    "rank": 1,
+                    "score": 0.25,
+                    "legacy_score": 0.2,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  }
+                ],
+                "origin_id": "chuma_2021",
+                "source_weight": 0.54,
+                "variable": "elevation",
+                "score_policy": "semantic_classes_v1",
+                "pool_id": "",
+                "system_id": "",
+                "context_id": "",
+                "compatibility_approved": false,
+                "applicability_review": {},
+                "pool_review": "regional_context_requires_selection"
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "per_profile_schema_policy",
+            "harmonization": {
+              "pools": [],
+              "review": [
+                {
+                  "profile_id": "ev_T4_elevation_chuma2021_recovery",
+                  "reason": "regional_context_requires_selection"
+                }
+              ]
+            },
+            "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "references": [
+            "chuma_2021"
+          ],
+          "evidence_ids": [
+            "ev_T4_elevation_chuma2021_recovery"
+          ],
+          "parameter_source_ids": [
+            "chuma_2021"
+          ],
+          "n_parameter_sources": 1,
+          "paper_support_pct": null,
+          "n_sources": 1,
+          "corpus_n": null
         }
       ],
       "selection": [
         {
           "variable": "annual_precipitation",
           "support_pct": null,
-          "n_sources": 3,
+          "n_sources": 4,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
         },
         {
           "variable": "aridity_index",
+          "support_pct": null,
+          "n_sources": 1,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
+          "variable": "elevation",
           "support_pct": null,
           "n_sources": 1,
           "ml_important": false,
@@ -694,7 +1022,15 @@
         {
           "variable": "land_cover",
           "support_pct": null,
-          "n_sources": 2,
+          "n_sources": 3,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
+          "variable": "mean_annual_temperature",
+          "support_pct": null,
+          "n_sources": 1,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -702,7 +1038,7 @@
         {
           "variable": "ndvi",
           "support_pct": null,
-          "n_sources": 1,
+          "n_sources": 3,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -718,7 +1054,7 @@
         {
           "variable": "slope",
           "support_pct": null,
-          "n_sources": 2,
+          "n_sources": 3,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -758,7 +1094,7 @@
         {
           "variable": "tree_canopy_cover",
           "support_pct": null,
-          "n_sources": 2,
+          "n_sources": 1,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -776,13 +1112,14 @@
         },
         "climatic": {
           "key": "climatic",
-          "n_sources": 5,
+          "n_sources": 6,
           "corpus_n": null,
           "pct": null,
           "members": [
             "annual_precipitation",
             "aridity_index",
-            "frost_free_period"
+            "frost_free_period",
+            "mean_annual_temperature"
           ]
         },
         "edaphic": {
@@ -799,7 +1136,7 @@
         },
         "land_cover_vegetation": {
           "key": "land_cover_vegetation",
-          "n_sources": 1,
+          "n_sources": 3,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -818,10 +1155,11 @@
         },
         "topographic": {
           "key": "topographic",
-          "n_sources": 2,
+          "n_sources": 3,
           "corpus_n": null,
           "pct": null,
           "members": [
+            "elevation",
             "slope"
           ]
         }
@@ -925,12 +1263,12 @@
         },
         "ev_T4_canopy_ahmad2018_1": {
           "source_id": "ahmad_2018",
-          "variable": "tree_canopy_cover",
+          "variable": "ndvi",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "variable_mismatch_quote_is_NDVI_not_canopy_cover",
+          "status": "parameter_contributor",
           "relationship": {
-            "direction": "positive",
+            "direction": "increasing",
             "thresholds": [
               {
                 "label": "Low",
@@ -1081,7 +1419,7 @@
           "variable": "land_cover",
           "reviewer_ok": false,
           "use_role": "structural_suitability",
-          "status": "qa_dropped",
+          "status": "unresolved_review",
           "relationship": {}
         },
         "ev_T4_distance_to_road_chuma21_1": {
@@ -4200,17 +4538,17 @@
         "ev_T4_model_use_ahmad2020_mean_annual_temperature": {
           "source_id": "ahmad_2020",
           "variable": "mean_annual_temperature",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_T4_model_use_ahmad2020_annual_precipitation": {
           "source_id": "ahmad_2020",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_T4_model_use_ahmad2020_aridity_index": {
@@ -4224,25 +4562,25 @@
         "ev_T4_model_use_ahmad2020_ndvi": {
           "source_id": "ahmad_2020",
           "variable": "ndvi",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_T4_model_use_ahmad2020_slope": {
           "source_id": "ahmad_2020",
           "variable": "slope",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_T4_landcover_baldwin2022_recovery": {
           "source_id": "baldwin_2022",
           "variable": "land_cover",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "class_or_gate_requires_mapping",
           "relationship": {
             "type": "source_land_use_classes",
             "eligible_classes": [
@@ -4254,9 +4592,9 @@
         "ev_T4_elevation_chuma2021_recovery": {
           "source_id": "chuma_2021",
           "variable": "elevation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "parameter_contributor",
           "relationship": {
             "unit": "m",
             "classes": [
@@ -4282,30 +4620,922 @@
               }
             ]
           }
+        },
+        "ev_T4_rereview_nath_2021_evapotranspiration_ref_1": {
+          "source_id": "nath_2021",
+          "variable": "evapotranspiration_ref",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "increasing",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "1450-1663"
+              },
+              {
+                "label": "good",
+                "range": "1250-1450"
+              },
+              {
+                "label": "moderate",
+                "range": "1100-1250"
+              },
+              {
+                "label": "marginal",
+                "range": "1000-1100"
+              },
+              {
+                "label": "unsuitable",
+                "range": "<1000"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_soil_texture_2": {
+          "source_id": "nath_2021",
+          "variable": "soil_texture",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "fine"
+              },
+              {
+                "label": "good",
+                "range": "medium"
+              },
+              {
+                "label": "moderate",
+                "range": "coarse"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_soil_cation_exchange_capacity_3": {
+          "source_id": "nath_2021",
+          "variable": "soil_cation_exchange_capacity",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "unclear",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "3-23"
+              },
+              {
+                "label": "good",
+                "range": ">10"
+              },
+              {
+                "label": "moderate",
+                "range": "5-10"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_soil_ph_subsoil_4": {
+          "source_id": "nath_2021",
+          "variable": "soil_ph_subsoil",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "optimum_range",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "5.5-7.2"
+              },
+              {
+                "label": "good",
+                "range": "7.2-7.4; 4.7-5.5"
+              },
+              {
+                "label": "moderate",
+                "range": "7.4-7.6"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_soil_organic_carbon_subsoil_5": {
+          "source_id": "nath_2021",
+          "variable": "soil_organic_carbon_subsoil",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "increasing",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "0.6-1.03"
+              },
+              {
+                "label": "good",
+                "range": "0.4-0.6"
+              },
+              {
+                "label": "moderate",
+                "range": "0.2-0.4"
+              },
+              {
+                "label": "marginal",
+                "range": "<0.2"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_soil_texture_6": {
+          "source_id": "nath_2021",
+          "variable": "soil_texture",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "classes": [
+              {
+                "label": "very_good",
+                "codes": [
+                  5,
+                  7,
+                  9
+                ]
+              },
+              {
+                "label": "good",
+                "codes": [
+                  4,
+                  12
+                ]
+              },
+              {
+                "label": "moderate",
+                "codes": [
+                  1,
+                  3,
+                  10
+                ]
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_soil_ph_7": {
+          "source_id": "nath_2021",
+          "variable": "soil_ph",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "optimum_range",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "5.5-7.2"
+              },
+              {
+                "label": "good",
+                "range": "7.2-7.4;4.6-5.5"
+              },
+              {
+                "label": "moderate",
+                "range": "7.4-7.6"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_soil_bulk_density_8": {
+          "source_id": "nath_2021",
+          "variable": "soil_bulk_density",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "decreasing",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "<1.40"
+              },
+              {
+                "label": "good",
+                "range": "1.40-1.44"
+              },
+              {
+                "label": "moderate",
+                "range": "1.44-1.48"
+              },
+              {
+                "label": "marginal",
+                "range": ">1.48"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_soil_ph_subsoil_9": {
+          "source_id": "nath_2021",
+          "variable": "soil_ph_subsoil",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "optimum_range",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "5.5-7.2"
+              },
+              {
+                "label": "good",
+                "range": "7.2-7.4;4.7-5.5"
+              },
+              {
+                "label": "moderate",
+                "range": "7.4-7.6"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_soil_available_water_capacity_10": {
+          "source_id": "nath_2021",
+          "variable": "soil_available_water_capacity",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "unclear",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "1"
+              },
+              {
+                "label": "good",
+                "range": "3"
+              },
+              {
+                "label": "moderate",
+                "range": "5"
+              },
+              {
+                "label": "marginal",
+                "range": "6"
+              },
+              {
+                "label": "unsuitable",
+                "range": "7"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_elevation_11": {
+          "source_id": "nath_2021",
+          "variable": "elevation",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "decreasing",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "3-1500"
+              },
+              {
+                "label": "good",
+                "range": "1500-2200"
+              },
+              {
+                "label": "moderate",
+                "range": "2200-3500"
+              },
+              {
+                "label": "marginal",
+                "range": "3500-4500"
+              },
+              {
+                "label": "unsuitable",
+                "range": "4500-7496"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_aspect_12": {
+          "source_id": "nath_2021",
+          "variable": "aspect",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "S,E,W"
+              },
+              {
+                "label": "moderate",
+                "range": "N"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_nath_2021_distance_to_settlement_13": {
+          "source_id": "nath_2021",
+          "variable": "distance_to_settlement",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "decreasing",
+            "classes": [
+              {
+                "label": "very_good",
+                "range": "0-5"
+              },
+              {
+                "label": "good",
+                "range": "5-10"
+              },
+              {
+                "label": "moderate",
+                "range": "10-15"
+              },
+              {
+                "label": "marginal",
+                "range": "15-25"
+              },
+              {
+                "label": "unsuitable",
+                "range": ">25"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_haile_2024_elevation_1": {
+          "source_id": "haile_2024",
+          "variable": "elevation",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "decreasing",
+            "classes": [
+              {
+                "label": "low",
+                "range": ">1500m"
+              },
+              {
+                "label": "medium",
+                "range": "1000m-1500m"
+              },
+              {
+                "label": "high",
+                "range": "500m-1000m"
+              },
+              {
+                "label": "very_high",
+                "range": "<500m"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_ahmad_2018_ndvi_1": {
+          "source_id": "ahmad_2018",
+          "variable": "ndvi",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "increasing",
+            "classes": [
+              {
+                "label": "low",
+                "range": "<0.2"
+              },
+              {
+                "label": "medium",
+                "range": "0.2-0.5"
+              },
+              {
+                "label": "high",
+                "range": ">0.5"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_chuma_2021_aspect_1": {
+          "source_id": "chuma_2021",
+          "variable": "aspect",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "classes": [
+              {
+                "label": "very_high",
+                "range": "Dish"
+              },
+              {
+                "label": "high",
+                "range": "North"
+              },
+              {
+                "label": "moderate",
+                "range": "South"
+              },
+              {
+                "label": "low",
+                "range": "East"
+              },
+              {
+                "label": "marginal",
+                "range": "West"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_chuma_2021_distance_to_settlement_2": {
+          "source_id": "chuma_2021",
+          "variable": "distance_to_settlement",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "decreasing",
+            "classes": [
+              {
+                "label": "very_high",
+                "range": "<5 km"
+              },
+              {
+                "label": "high",
+                "range": "5 to 10 km"
+              },
+              {
+                "label": "moderate",
+                "range": "10 to 15 km"
+              },
+              {
+                "label": "low",
+                "range": "15 to 20 km"
+              },
+              {
+                "label": "marginal",
+                "range": "20 km"
+              }
+            ]
+          }
+        },
+        "ev_T4_rereview_chuma_2021_land_cover_3": {
+          "source_id": "chuma_2021",
+          "variable": "land_cover",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "qa_dropped",
+          "relationship": {
+            "type": "source_ordinal_classes",
+            "direction": "unclear",
+            "classes": []
+          }
+        },
+        "ev_T4_rereview_castle_2025_soil_drainage_1": {
+          "source_id": "castle_2025",
+          "variable": "soil_drainage",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_castle_2025_frost_free_period_2": {
+          "source_id": "castle_2025",
+          "variable": "frost_free_period",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_castle_2025_soil_depth_3": {
+          "source_id": "castle_2025",
+          "variable": "soil_depth",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_castle_2025_soil_ph_4": {
+          "source_id": "castle_2025",
+          "variable": "soil_ph",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_castle_2025_soil_texture_5": {
+          "source_id": "castle_2025",
+          "variable": "soil_texture",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_castle_2025_elevation_6": {
+          "source_id": "castle_2025",
+          "variable": "elevation",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_castle_2025_annual_precipitation_7": {
+          "source_id": "castle_2025",
+          "variable": "annual_precipitation",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_mushtaq_2023_slope_1": {
+          "source_id": "mushtaq_2023",
+          "variable": "slope",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "species_scope",
+          "relationship": {
+            "source_class_ranks": {
+              "Below 10": 8,
+              "10–20": 5,
+              "20–30": 3,
+              "30–40": 2,
+              "Above 40": 1
+            },
+            "direction": "decreasing"
+          }
+        },
+        "ev_T4_rereview_mushtaq_2023_mean_annual_temperature_2": {
+          "source_id": "mushtaq_2023",
+          "variable": "mean_annual_temperature",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "species_scope",
+          "relationship": {
+            "source_class_ranks": {
+              "20–24": 7,
+              "24–28": 4,
+              "28–32": 2,
+              "<20 and >32": 1
+            },
+            "direction": "optimum_range"
+          }
+        },
+        "ev_T4_rereview_mushtaq_2023_land_cover_3": {
+          "source_id": "mushtaq_2023",
+          "variable": "land_cover",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "species_scope",
+          "relationship": {
+            "source_class_ranks": {
+              "Agriculture": 8,
+              "Scrubland": 7,
+              "Wasteland": 4,
+              "Forest": 2,
+              "Water": 1,
+              "Built up": 1,
+              "Snow/glacier": 1,
+              "Dense forest": 1
+            }
+          }
+        },
+        "ev_T4_rereview_mushtaq_2023_annual_precipitation_4": {
+          "source_id": "mushtaq_2023",
+          "variable": "annual_precipitation",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "species_scope",
+          "relationship": {
+            "source_class_ranks": {
+              "500–750": 7,
+              "750–2000": 5,
+              "2000–3400": 3,
+              "<500 and >3400": 1
+            },
+            "direction": "optimum_range"
+          }
+        },
+        "ev_T4_rereview_mushtaq_2023_soil_texture_5": {
+          "source_id": "mushtaq_2023",
+          "variable": "soil_texture",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "species_scope",
+          "relationship": {
+            "source_class_ranks": {
+              "Loamy": 8,
+              "Silt clayey loamy": 5,
+              "Fine loamy": 3,
+              "Coarse loamy": 1
+            }
+          }
+        },
+        "ev_T4_rereview_mushtaq_2023_soil_drainage_6": {
+          "source_id": "mushtaq_2023",
+          "variable": "soil_drainage",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "species_scope",
+          "relationship": {
+            "source_class_ranks": {
+              "Well drained": 7,
+              "Moderate drained": 5,
+              "Excessively drained": 2,
+              "Poorly drained": 1
+            }
+          }
+        },
+        "ev_T4_rereview_mushtaq_2023_soil_ph_7": {
+          "source_id": "mushtaq_2023",
+          "variable": "soil_ph",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "species_scope",
+          "relationship": {
+            "source_class_ranks": {
+              "6.5–7.5": 8,
+              "5.5–6.5,7.5–8.5": 7,
+              "8.5–9.5": 3,
+              ">4.5,<9.5": 1
+            },
+            "direction": "optimum_range"
+          }
+        },
+        "ev_T4_rereview_wotlolan_2021_soil_ph_1": {
+          "source_id": "wotlolan_2021",
+          "variable": "soil_ph",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_wotlolan_2021_soil_drainage_2": {
+          "source_id": "wotlolan_2021",
+          "variable": "soil_drainage",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_wotlolan_2021_mean_annual_temperature_3": {
+          "source_id": "wotlolan_2021",
+          "variable": "mean_annual_temperature",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_wotlolan_2021_elevation_4": {
+          "source_id": "wotlolan_2021",
+          "variable": "elevation",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_wotlolan_2021_annual_precipitation_5": {
+          "source_id": "wotlolan_2021",
+          "variable": "annual_precipitation",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_T4_rereview_singh_2026_soil_texture_1": {
+          "source_id": "singh_2026",
+          "variable": "soil_texture",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "very_high": "Fine",
+            "high": "Fine to course",
+            "moderate": "Course"
+          }
+        },
+        "ev_T4_rereview_singh_2026_soil_drainage_2": {
+          "source_id": "singh_2026",
+          "variable": "soil_drainage",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "very_high": "Very well",
+            "high": "Well",
+            "moderate": "Mod well"
+          }
+        },
+        "ev_T4_rereview_singh_2026_soil_ph_3": {
+          "source_id": "singh_2026",
+          "variable": "soil_ph",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "very_high": "6.5–7.5",
+            "high": "5.5–6.5",
+            "moderate": "7.5–8.5",
+            "direction": "optimum_range"
+          }
+        },
+        "ev_T4_rereview_singh_2026_slope_4": {
+          "source_id": "singh_2026",
+          "variable": "slope",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_shape": "Sigmoidal decreasing",
+            "direction": "decreasing"
+          }
+        },
+        "ev_T4_rereview_singh_2026_mean_annual_temperature_5": {
+          "source_id": "singh_2026",
+          "variable": "mean_annual_temperature",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_shape": "Monotonically increasing linear",
+            "direction": "increasing"
+          }
+        },
+        "ev_T4_rereview_singh_2026_annual_precipitation_6": {
+          "source_id": "singh_2026",
+          "variable": "annual_precipitation",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_shape": "Sigmoidal increasing",
+            "direction": "increasing"
+          }
+        },
+        "ev_T4_rereview_singh_2026_distance_to_forest_7": {
+          "source_id": "singh_2026",
+          "variable": "distance_to_forest",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_shape": "Monotonically decreasing linear",
+            "direction": "decreasing"
+          }
+        },
+        "ev_T4_rereview_singh_2026_distance_to_settlement_8": {
+          "source_id": "singh_2026",
+          "variable": "distance_to_settlement",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_shape": "Monotonically decreasing linear",
+            "direction": "decreasing"
+          }
+        },
+        "ev_T4_rereview_singh_2026_distance_to_waterbody_9": {
+          "source_id": "singh_2026",
+          "variable": "distance_to_waterbody",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_shape": "Monotonically decreasing linear",
+            "direction": "decreasing"
+          }
+        },
+        "ev_T4_rereview_singh_2026_distance_to_cropland_10": {
+          "source_id": "singh_2026",
+          "variable": "distance_to_cropland",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_shape": "Monotonically decreasing linear",
+            "direction": "decreasing"
+          }
+        },
+        "ev_T4_rereview_singh_2026_distance_to_road_11": {
+          "source_id": "singh_2026",
+          "variable": "distance_to_road",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_shape": "Monotonically decreasing linear",
+            "direction": "decreasing"
+          }
+        },
+        "ev_T4_rereview_ahmad_2020_mean_annual_temperature_1": {
+          "source_id": "ahmad_2020",
+          "variable": "mean_annual_temperature",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "direction": "increasing"
+          }
+        },
+        "ev_T4_rereview_ahmad_2020_annual_precipitation_2": {
+          "source_id": "ahmad_2020",
+          "variable": "annual_precipitation",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "direction": "increasing"
+          }
+        },
+        "ev_T4_rereview_ahmad_2020_aridity_index_3": {
+          "source_id": "ahmad_2020",
+          "variable": "aridity_index",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "direction": "increasing"
+          }
+        },
+        "ev_T4_rereview_ahmad_2020_ndvi_4": {
+          "source_id": "ahmad_2020",
+          "variable": "ndvi",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "direction": "increasing"
+          }
+        },
+        "ev_T4_rereview_ahmad_2020_slope_5": {
+          "source_id": "ahmad_2020",
+          "variable": "slope",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "direction": "decreasing"
+          }
         }
       },
       "crop_results": {},
       "support_basis": "unknown_screened_source_membership",
       "support_sources": [],
       "reports": {
-        "tree_canopy_cover": {
-          "used": [],
+        "ndvi": {
+          "used": [
+            "ev_T4_canopy_ahmad2018_1"
+          ],
           "dropped": [],
           "collapsed": [],
           "notes": [
-            "only 0 independent source(s) → uncertainty bumped"
+            "only 0 independent source(s) → uncertainty bumped",
+            "Regional profiles retained separately; uncertainty floor 20%, not a measured confidence interval."
           ],
           "unresolved": [
             [
-              "ev_t4_treecan_nath21_01",
-              "class_or_gate_requires_mapping"
+              "ev_T4_model_use_ahmad2020_ndvi",
+              "selection_only"
             ],
             [
-              "ev_T4_canopy_ahmad2018_1",
-              "variable_mismatch_quote_is_NDVI_not_canopy_cover"
+              "ev_t4_landcov_nath21_01",
+              "source_prints_overlapping_NDVI_unsuitable_class"
             ]
           ],
-          "parameter_evidence": {}
+          "parameter_evidence": {
+            "profiles": [
+              "ev_T4_canopy_ahmad2018_1"
+            ]
+          }
         },
         "soil_drainage": {
           "used": [],
@@ -4356,6 +5586,10 @@
             [
               "cgspace_singh_southasia_2020__land_cover__01",
               "class_or_gate_requires_mapping"
+            ],
+            [
+              "ev_T4_landcover_baldwin2022_recovery",
+              "class_or_gate_requires_mapping"
             ]
           ],
           "parameter_evidence": {}
@@ -4375,6 +5609,10 @@
             [
               "ev_T4_slope_haile2024_2",
               "qualitative_relationship"
+            ],
+            [
+              "ev_T4_model_use_ahmad2020_slope",
+              "selection_only"
             ]
           ],
           "parameter_evidence": {
@@ -4414,6 +5652,10 @@
             [
               "ev_t4_precip_yadav24_5",
               "importance_weight_not_response"
+            ],
+            [
+              "ev_T4_model_use_ahmad2020_annual_precipitation",
+              "selection_only"
             ]
           ],
           "parameter_evidence": {
@@ -4475,7 +5717,7 @@
           ],
           "parameter_evidence": {}
         },
-        "ndvi": {
+        "tree_canopy_cover": {
           "used": [],
           "dropped": [],
           "collapsed": [],
@@ -4484,8 +5726,8 @@
           ],
           "unresolved": [
             [
-              "ev_t4_landcov_nath21_01",
-              "source_prints_overlapping_NDVI_unsuitable_class"
+              "ev_t4_treecan_nath21_01",
+              "class_or_gate_requires_mapping"
             ]
           ],
           "parameter_evidence": {}
@@ -4523,6 +5765,38 @@
             ]
           ],
           "parameter_evidence": {}
+        },
+        "mean_annual_temperature": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_T4_model_use_ahmad2020_mean_annual_temperature",
+              "selection_only"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "elevation": {
+          "used": [
+            "ev_T4_elevation_chuma2021_recovery"
+          ],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped",
+            "Regional profiles retained separately; uncertainty floor 20%, not a measured confidence interval."
+          ],
+          "unresolved": [],
+          "parameter_evidence": {
+            "profiles": [
+              "ev_T4_elevation_chuma2021_recovery"
+            ]
+          }
         }
       }
     },
@@ -5611,7 +6885,15 @@
                     "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
                     "status": "conditional_scoping_transfer",
                     "quote": "without targeting any specific species or agroforestry model"
-                  }
+                  },
+                  "source_corrections": [
+                    {
+                      "date": "2026-10-21",
+                      "agent": "Codex",
+                      "note": "Table 2 PDF p11 explicitly reports slope classes 0–5, 5–10, 10–15, 15–20, 20–44 degrees. Added omitted finite endpoints; original shared-boundary ambiguity remains.",
+                      "human_review_state_changed": false
+                    }
+                  ]
                 },
                 "source_group": "default",
                 "ordinal_scale": {
@@ -5625,7 +6907,7 @@
                 "unit": "degrees",
                 "intervals": [
                   {
-                    "lower": null,
+                    "lower": 0.0,
                     "upper": 5.0,
                     "lower_inclusive": true,
                     "upper_inclusive": true,
@@ -5674,7 +6956,7 @@
                   },
                   {
                     "lower": 20.0,
-                    "upper": null,
+                    "upper": 44.0,
                     "lower_inclusive": true,
                     "upper_inclusive": true,
                     "label": "unsuitable",
@@ -5724,6 +7006,48 @@
                   "cells": [
                     {
                       "lower": null,
+                      "upper": 0.0,
+                      "lower_inclusive": false,
+                      "upper_inclusive": false,
+                      "median_lower": 0.75,
+                      "median_upper": 0.75,
+                      "score": 0.75,
+                      "source_min": 0.75,
+                      "source_max": 0.75,
+                      "n_sources": 1,
+                      "eligible_sources": 2,
+                      "weight_coverage": 0.368421052631579,
+                      "origins": [
+                        "ahmad_2018"
+                      ],
+                      "flags": [
+                        "partial_coverage",
+                        "single_source"
+                      ]
+                    },
+                    {
+                      "lower": 0.0,
+                      "upper": 0.0,
+                      "lower_inclusive": true,
+                      "upper_inclusive": true,
+                      "median_lower": 0.9,
+                      "median_upper": 0.9,
+                      "score": 0.9,
+                      "source_min": 0.75,
+                      "source_max": 0.9,
+                      "n_sources": 2,
+                      "eligible_sources": 2,
+                      "weight_coverage": 1.0,
+                      "origins": [
+                        "ahmad_2018",
+                        "nath_2021"
+                      ],
+                      "flags": [
+                        "source_disagreement"
+                      ]
+                    },
+                    {
+                      "lower": 0.0,
                       "upper": 2.862405226111748,
                       "lower_inclusive": false,
                       "upper_inclusive": false,
@@ -5974,7 +7298,7 @@
                     },
                     {
                       "lower": 20.0,
-                      "upper": null,
+                      "upper": 44.0,
                       "lower_inclusive": false,
                       "upper_inclusive": false,
                       "median_lower": 0,
@@ -5992,6 +7316,49 @@
                       "flags": [
                         "exclusion_conflict",
                         "source_disagreement"
+                      ]
+                    },
+                    {
+                      "lower": 44.0,
+                      "upper": 44.0,
+                      "lower_inclusive": true,
+                      "upper_inclusive": true,
+                      "median_lower": 0,
+                      "median_upper": 0,
+                      "score": null,
+                      "source_min": 0,
+                      "source_max": 0.25,
+                      "n_sources": 2,
+                      "eligible_sources": 2,
+                      "weight_coverage": 1.0,
+                      "origins": [
+                        "ahmad_2018",
+                        "nath_2021"
+                      ],
+                      "flags": [
+                        "exclusion_conflict",
+                        "source_disagreement"
+                      ]
+                    },
+                    {
+                      "lower": 44.0,
+                      "upper": null,
+                      "lower_inclusive": false,
+                      "upper_inclusive": false,
+                      "median_lower": 0.25,
+                      "median_upper": 0.25,
+                      "score": 0.25,
+                      "source_min": 0.25,
+                      "source_max": 0.25,
+                      "n_sources": 1,
+                      "eligible_sources": 2,
+                      "weight_coverage": 0.368421052631579,
+                      "origins": [
+                        "ahmad_2018"
+                      ],
+                      "flags": [
+                        "partial_coverage",
+                        "single_source"
                       ]
                     }
                   ],
@@ -8407,7 +9774,9 @@
             "marginal_min_deg": 15,
             "marginal_max_deg": 20,
             "unsuitable_min_deg": 20,
-            "variable_weight_pct": 40
+            "variable_weight_pct": 40,
+            "very_good_min_deg": 0,
+            "unsuitable_max_deg": 44
           }
         },
         "ev_t4_treecanopy_palma2007_01": {
@@ -18172,7 +19541,7 @@
         {
           "variable": "annual_precipitation",
           "support_pct": null,
-          "n_sources": 1,
+          "n_sources": 2,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -18188,7 +19557,7 @@
         {
           "variable": "land_cover",
           "support_pct": null,
-          "n_sources": 2,
+          "n_sources": 4,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -18291,7 +19660,7 @@
         },
         "land_use": {
           "key": "land_use",
-          "n_sources": 2,
+          "n_sources": 4,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -18529,9 +19898,9 @@
         "ev_t4_precip_kizir_1": {
           "source_id": "kiziridis_2026",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "qa_dropped",
+          "status": "selection_only",
           "relationship": null
         },
         "ev_t4_temp_kizir_1": {
@@ -18628,9 +19997,9 @@
         "ev_t4_lcover_moisa25_1": {
           "source_id": "moisa_2025",
           "variable": "land_cover",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "qa_dropped",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_t4_road_moisa25_1": {
@@ -20561,6 +21930,61 @@
             "framing": "presence",
             "strength_class": "unspecified"
           }
+        },
+        "ev_structural_suitability_tree_canopy_cover_pinto_2019_full": {
+          "source_id": "pinto_2019",
+          "variable": "tree_canopy_cover",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "qa_dropped",
+          "relationship": {
+            "criterion_kind": "programme_eligibility",
+            "occupied_by_trees_pct": {
+              "greater_than": 10
+            }
+          }
+        },
+        "ev_operational_risk_silvopastoral_grazing_pinto_2019_full": {
+          "source_id": "pinto_2019",
+          "variable": "silvopastoral_grazing",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "criterion_kind": "programme_eligibility",
+            "cattle_heads_per_ha": [
+              0.15,
+              0.5
+            ],
+            "regeneration_protection": [
+              "protectors",
+              "fences"
+            ]
+          }
+        },
+        "ev_operational_risk_restorable_patch_area_pinto_2019_full": {
+          "source_id": "pinto_2019",
+          "variable": "restorable_patch_area",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "criterion_kind": "programme_eligibility",
+            "area_greater_than_ha": 5
+          }
+        },
+        "ev_structural_suitability_land_cover_pinto_2019_full": {
+          "source_id": "pinto_2019",
+          "variable": "land_cover",
+          "reviewer_ok": true,
+          "use_role": "structural_suitability",
+          "status": "selection_only",
+          "relationship": {
+            "excluded_source_classes": [
+              "urban",
+              "industrial"
+            ]
+          }
         }
       },
       "crop_results": {},
@@ -20585,6 +22009,14 @@
             ],
             [
               "ev_t4_lc_kizir_2",
+              "selection_only"
+            ],
+            [
+              "ev_t4_lcover_moisa25_1",
+              "selection_only"
+            ],
+            [
+              "ev_structural_suitability_land_cover_pinto_2019_full",
               "selection_only"
             ]
           ],
@@ -20624,6 +22056,25 @@
             [
               "ev_t4_tcc_kizir_1",
               "scenario_grid_requires_parameter_choice"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "annual_precipitation": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_t4_precip_kizir_1",
+              "selection_only"
+            ],
+            [
+              "ev_annual_precipitation_batcheler24_1",
+              "selection_only"
             ]
           ],
           "parameter_evidence": {}
@@ -20673,21 +22124,6 @@
           ],
           "parameter_evidence": {}
         },
-        "annual_precipitation": {
-          "used": [],
-          "dropped": [],
-          "collapsed": [],
-          "notes": [
-            "only 0 independent source(s) → uncertainty bumped"
-          ],
-          "unresolved": [
-            [
-              "ev_annual_precipitation_batcheler24_1",
-              "selection_only"
-            ]
-          ],
-          "parameter_evidence": {}
-        },
         "soil_erosion_wind": {
           "used": [],
           "dropped": [],
@@ -20719,6 +22155,111 @@
           "parameter_evidence": {}
         }
       }
+    },
+    "cross_family": {
+      "family": "cross_family",
+      "corpus_n": null,
+      "rows": [],
+      "selection": [],
+      "groups": {},
+      "dispositions": {
+        "ev_structural_suitability_land_cover_baldwin_2022_full": {
+          "source_id": "baldwin_2022",
+          "variable": "land_cover",
+          "reviewer_ok": false,
+          "use_role": "structural_suitability",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_classes": [
+              "Grassland/Herbaceous",
+              "Pasture/Hay",
+              "Cultivated Crops"
+            ],
+            "classification": "NLCD"
+          }
+        },
+        "ev_operational_risk_tenure_security_baldwin_2022_full": {
+          "source_id": "baldwin_2022",
+          "variable": "tenure_security",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_criterion": "contiguous parcels with common ownership"
+          }
+        },
+        "ev_operational_risk_restorable_patch_area_baldwin_2022_full": {
+          "source_id": "baldwin_2022",
+          "variable": "restorable_patch_area",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "source_minimum_area": 5,
+            "source_unit": "acre",
+            "author_rounded_hectares": 2
+          }
+        },
+        "ev_operational_risk_built_up_areas_baldwin_2022_full": {
+          "source_id": "baldwin_2022",
+          "variable": "built_up_areas",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "road_buffer_ft": 20,
+            "structure_buffer_ft": 100,
+            "excluded_parcel_uses": [
+              "solar energy generation",
+              "communication towers"
+            ]
+          }
+        },
+        "ev_dataset_annual_precipitation_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "annual_precipitation",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_dataset_frost_free_period_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "frost_free_period",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_dataset_soil_ph_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "soil_ph",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_dataset_soil_texture_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "soil_texture",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        },
+        "ev_dataset_soil_drainage_ellis_2000_full": {
+          "source_id": "ellis_2000",
+          "variable": "soil_drainage",
+          "reviewer_ok": false,
+          "use_role": "dataset",
+          "status": "other_role",
+          "relationship": {}
+        }
+      },
+      "crop_results": {},
+      "support_basis": "unknown_screened_source_membership",
+      "support_sources": [],
+      "reports": {}
     }
   }
 }
