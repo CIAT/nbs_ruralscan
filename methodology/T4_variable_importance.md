@@ -130,3 +130,19 @@ evidence row to continue the chain. DOI aliases are normalized and retained in t
 source-ID inventory. Recorded model origins are not verified independent studies;
 absence of a lineage link does not establish independence. These diagnostics do
 not modify runtime weights, response-pooling approvals or source review decisions.
+
+Source-method check, 21 October 2026: Singh 2026 §4.2 (PDF p5) explicitly reuses
+Singh 2022's trained model. The importance-tree inventory already recorded that
+lineage; it is now also attached to all 16 source-checked Singh model-use records.
+The 2022 source is not registered, so origin resolution stays held until that
+source is acquired and checked. The 2026 paper still documents use of 11 variables;
+it is not counted as a newly independent weight calibration. This does not prove
+its pH class boundaries came from the same source.
+
+Nath 2021 §2.4 (PDF p10) attributes class scores to literature, peers and domain
+experts. Ahmad 2018 (PDF p6) describes similar methodology/weights in earlier work.
+Neither passage identifies a shared row-specific threshold origin for the current
+pools. Retain existing conditional India planted-system combinations, without
+upgrading them to independent empirical validation or global transfer approval.
+Exact source passages and artifact hashes are recorded in
+`pipeline/t4_audit/agroforestry/bounded_review_2026-10-21/source_dependency_review.json`.

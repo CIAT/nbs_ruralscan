@@ -305,3 +305,34 @@ def test_model_lineage_keeps_threshold_citations_separate_and_holds_bad_links():
     rows = variable_usage([unverified, unit("ref", "b", "unverified")], {})
     assert rows[0]["model_origin_ids"] == []
     assert "lacks verified" in rows[0]["model_origin_holds"][0]
+
+
+def test_singh_reused_model_lineage_matches_importance_inventory():
+    import csv
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    audit = root / "pipeline/t4_audit/agroforestry"
+    with (audit / "importance_2026-10-21/source_weight_trees.csv").open() as handle:
+        lineages = {
+            r["lineage"]
+            for r in csv.DictReader(handle)
+            if r["source_id"] == "singh_2026" and not r["parent_id"]
+        }
+    assert len(lineages) == 1
+    with (root / "schema/registers/EV_evidence_register.csv").open() as handle:
+        units = list(csv.DictReader(handle))
+    checked = []
+    for unit in units:
+        use = json.loads(unit["context"] or "{}").get("model_use", {})
+        if unit["source_id"] == "singh_2026" and use.get("verified"):
+            assert use["lineage_of"] in lineages
+            assert use["lineage_provenance"]["page"] == "5"
+            assert "2022" in use["lineage_provenance"]["quote"]
+            checked.append(unit)
+    assert checked
+    usage = variable_usage(checked, {})
+    assert all(r["origin_status"] == "held" for r in usage)
+    assert all(r["model_origin_ids"] == [] for r in usage)
+    assert summarize_usage(usage)[0]["verified_general_model_papers"] == 1
