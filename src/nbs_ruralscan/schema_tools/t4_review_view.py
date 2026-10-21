@@ -301,11 +301,19 @@ def render(root, read_csv, table, bindings, coverage):
             "Sources",
         ],
     )
-    page += "<p>Current default T4 weights are equal; these are not literature-derived importance weights. Evidence-quality weights used to synthesize responses are a separate calculation. Source weights below retain their method and hierarchy; AHP weights, RF importance and MaxEnt permutation importance must not be averaged indiscriminately.</p>"
+    page += "<p>Current default T4 weights are equal; these are not literature-derived importance weights. Evidence-quality weights used to synthesize responses are a separate calculation. Source weights below stay separate by recorded study setting; matching settings do not authorize pooling. Missing context does not establish compatibility. Threshold citations are not automatically model-use origins. Source weights retain their method and hierarchy; AHP weights, RF importance and MaxEnt permutation importance must not be averaged indiscriminately.</p>"
     friendly_weights = [
         {
             "Variable": pretty(r["variable"]),
             "Source": pretty(r["source_id"]),
+            "Study setting": "; ".join(
+                f"{pretty(k)}: {pretty(v) if isinstance(v, str) else v}"
+                for k, v in r["study_context"].items()
+                if k != "context_id"
+            ),
+            "Origin check": "; ".join(r["model_origin_holds"])
+            if r["model_origin_holds"]
+            else "Independence not assessed",
             "Method": pretty(r["method"]),
             "Nested weights (%)": " × ".join(str(w) for w in r["weight_path_pct"])
             or "Not reported here",
@@ -327,6 +335,8 @@ def render(root, read_csv, table, bindings, coverage):
         [
             "Variable",
             "Source",
+            "Study setting",
+            "Origin check",
             "Method",
             "Nested weights (%)",
             "Model share from this branch (%)",

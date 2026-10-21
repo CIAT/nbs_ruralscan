@@ -111,3 +111,22 @@ records explicitly. Approval is record-level: later metadata corrections and
 reported importance weights may still require review. These are counts of paper
 use, not independent-origin agreement, compatible-context support, or agreement
 on numerical suitability thresholds. No runtime weight changes follow from them.
+
+### Model origins and study contexts
+
+Paper-use totals remain bibliographic counts. Weight inventories are additionally
+split by recorded family, taxon, study setting and explicit context ID. Missing or
+matching context is not approval to pool responses or weights. Review-status
+paper totals still deduplicate across these context records.
+
+`EV.lineage_of` describes the extracted claim's lineage and can concern borrowed
+thresholds even where that paper uses its own model. Preserve it separately as
+`response_lineage`; never automatically assign that paper's model weights to the
+cited threshold source. Only explicit `context.model_use.lineage_of` traces a
+model-use origin, by evidence ID or registered source ID. Evidence-ID chains are
+followed; cycles, unknown targets and targets without verified model use remain
+held. A source-ID reference identifies that source without selecting an arbitrary
+evidence row to continue the chain. DOI aliases are normalized and retained in the
+source-ID inventory. Recorded model origins are not verified independent studies;
+absence of a lineage link does not establish independence. These diagnostics do
+not modify runtime weights, response-pooling approvals or source review decisions.
