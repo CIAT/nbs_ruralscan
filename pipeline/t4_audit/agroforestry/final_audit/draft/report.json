@@ -3,8 +3,8 @@
   "input_sha256": {
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
-    "schema/registers/SRC_source_register.csv": "8d1446e666377d9d9e7079e0f84d83c0ad9981e063f873a92a1a6b8dfe96a4d8",
-    "schema/registers/EV_evidence_register.csv": "d969690b27f00f463329a8670575e03fff664a24bd6f750e415479dfe782c0cb",
+    "schema/registers/SRC_source_register.csv": "eacaf8379cb62cd82ffed9c5863412ea7d786f1ff45abdf678b06b8cb05c55f7",
+    "schema/registers/EV_evidence_register.csv": "263f9420b4356b0aa5e82982ae6f8d31cb43dccfc6ae81177cf27e60e2acef7e",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
@@ -5601,6 +5601,90 @@
           "relationship": {
             "direction": "decreasing"
           }
+        },
+        "ev_rural_poverty_pandit19_1": {
+          "source_id": "pandit_2019_market_agroforestry_nepal",
+          "variable": "rural_poverty",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "contrast",
+            "value_with": 34,
+            "value_without": 48,
+            "unit": "percent_households",
+            "significance": "sig",
+            "design": "observational",
+            "framing": "presence",
+            "strength_class": "moderate",
+            "outcome_raw": "share of participating households below the national poverty line, after vs before the market-oriented AF intervention"
+          }
+        },
+        "ev_food_security_pandit19_1": {
+          "source_id": "pandit_2019_market_agroforestry_nepal",
+          "variable": "food_security",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "contrast",
+            "value_with": 69,
+            "value_without": 52,
+            "unit": "percent_households",
+            "significance": "sig",
+            "design": "observational",
+            "framing": "presence",
+            "strength_class": "strong",
+            "outcome_raw": "share of households food-sufficient, after vs before the market-oriented AF intervention"
+          }
+        },
+        "ev_household_income_pandit19_1": {
+          "source_id": "pandit_2019_market_agroforestry_nepal",
+          "variable": "household_income",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "observational",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "change in average farm income 2013 to 2016, driven mainly by understorey crops, vs a fall in off-farm income"
+          }
+        },
+        "ev_biodiversity_outcome_seddon21_3": {
+          "source_id": "seddon_2021_nbs_message_right",
+          "variable": "biodiversity_outcome",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "framing": "presence",
+            "outcome_raw": "agroforestry vs conventional arable, pasture or forestry: likely biodiversity benefit, conditional on tree species variety, abundance and suitability",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_labour_availability_snapp10_1": {
+          "source_id": "snapp_2010_econ",
+          "variable": "labour_availability",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "qualitative_relationship",
+          "relationship": {
+            "direction": "negative",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "outcome_raw": "agroforestry labour demand (seedling establishment and frequent pruning) is often onerous - a constraint"
+          }
         }
       },
       "crop_results": {},
@@ -5748,6 +5832,10 @@
             [
               "ev_labour_availability_stubble26_1",
               "class_or_gate_requires_mapping"
+            ],
+            [
+              "ev_labour_availability_snapp10_1",
+              "qualitative_relationship"
             ]
           ],
           "parameter_evidence": {}
@@ -6396,6 +6484,22 @@
             "significance": "not_reported",
             "framing": "presence",
             "design": "expert"
+          }
+        },
+        "ev_food_security_kumar22_1": {
+          "source_id": "kumar_2022_coconut_nbs_kerala",
+          "variable": "food_security",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "food security (and other multifunctional outcomes) of integrated coconut-based multispecies systems vs monospecific production systems"
           }
         }
       },
@@ -7202,6 +7306,44 @@
               "pasture/grassland"
             ],
             "placement": "buffers around delineated fields"
+          }
+        },
+        "ev_crop_yield_barbeau18_1": {
+          "source_id": "barbeau_2018_willow_windbreak_subarctic",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "contrast",
+            "value_with": 300,
+            "value_without": 60,
+            "unit": "g_per_m2",
+            "significance": "sig",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "strong",
+            "outcome_raw": "bush bean pod fresh yield, windbreak-lined (treed) vs open site"
+          }
+        },
+        "ev_crop_yield_barbeau18_2": {
+          "source_id": "barbeau_2018_willow_windbreak_subarctic",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "contrast",
+            "value_with": 3200,
+            "value_without": 2400,
+            "unit": "g_per_m2",
+            "significance": "sig",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "strong",
+            "outcome_raw": "potato tuber yield, windbreak-lined (treed) vs open site"
           }
         }
       },
@@ -14028,6 +14170,117 @@
             "framing": "presence",
             "strength_class": "moderate"
           }
+        },
+        "ev_crop_yield_snapp10_1": {
+          "source_id": "snapp_2010_econ",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "maize grain yield, Tephrosia relay intercrop vs fertilised monoculture maize"
+          }
+        },
+        "ev_soil_organic_carbon_snapp10_1": {
+          "source_id": "snapp_2010_econ",
+          "variable": "soil_organic_carbon",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "contrast",
+            "value_with": 1.57,
+            "value_without": 1.46,
+            "unit": "soil_c_as_reported",
+            "significance": "ns",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "slight",
+            "outcome_raw": "soil C, Tephrosia SP intercrop vs monoculture maize, Songani (non-significant trend)"
+          }
+        },
+        "ev_economic_return_snapp10_1": {
+          "source_id": "snapp_2010_econ",
+          "variable": "economic_return",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "value-cost ratio under a higher fertiliser-price scenario: SP intercrop (and rotations) stay profitable while monoculture maize VCR falls"
+          }
+        },
+        "ev_household_income_ahammad13_5": {
+          "source_id": "ahammad_2013_eba_coastal_bangladesh",
+          "variable": "household_income",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "case_study",
+            "framing": "presence",
+            "outcome_raw": "household income from selling vegetables grown on Forest-Fish-Fruit dykes (between the tree seedlings), per family, versus fallow land before",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_household_income_ahammad13_6": {
+          "source_id": "ahammad_2013_eba_coastal_bangladesh",
+          "variable": "household_income",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "model",
+            "framing": "presence",
+            "outcome_raw": "estimated fruit-tree income per dyke per year in the Forest-Fish-Fruit model",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_labour_availability_snapp10_2": {
+          "source_id": "snapp_2010_econ",
+          "variable": "labour_availability",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "qualitative_relationship",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "outcome_raw": "maize-Tephrosia relay intercrop has relatively modest labour requirements compared with other agroforestry"
+          }
+        },
+        "ev_adoption_rate_snapp10_1": {
+          "source_id": "snapp_2010_econ",
+          "variable": "adoption_rate",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "qualitative_relationship",
+          "relationship": {
+            "direction": "negative",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "case_study",
+            "outcome_raw": "farmer interest in the Tephrosia SP intercrop was limited at Ekwendeni (northern Malawi)"
+          }
         }
       },
       "crop_results": {},
@@ -14436,6 +14689,10 @@
             [
               "ev_labour_availability_maliki12_1",
               "qualitative_relationship"
+            ],
+            [
+              "ev_labour_availability_snapp10_2",
+              "qualitative_relationship"
             ]
           ],
           "parameter_evidence": {}
@@ -14500,6 +14757,10 @@
             [
               "ev_adoption_rate_place05_7",
               "class_or_gate_requires_mapping"
+            ],
+            [
+              "ev_adoption_rate_snapp10_1",
+              "qualitative_relationship"
             ]
           ],
           "parameter_evidence": {}
@@ -14578,7 +14839,7 @@
         {
           "variable": "soil_texture",
           "support_pct": null,
-          "n_sources": 4,
+          "n_sources": 3,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -14606,7 +14867,7 @@
         },
         "edaphic": {
           "key": "edaphic",
-          "n_sources": 4,
+          "n_sources": 3,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -15524,10 +15785,12 @@
           "variable": "soil_texture",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "selection_only",
+          "status": "observed_presence",
           "relationship": {
             "topsoil_texture": "fine/heavy (clay)",
-            "topsoil_organic_matter": "low (<1%)"
+            "topsoil_organic_matter": "low (<1%)",
+            "type": "observed_presence",
+            "note": "Natural Environment site description; selected clay texture and low organic matter are observations, not suitability requirements."
           }
         },
         "EV_wocat_1358_2017_005": {
@@ -15585,7 +15848,7 @@
           "variable": "microclimate_buffering",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "strength_class": "unspecified",
@@ -17644,6 +17907,176 @@
             "significance": "not_reported",
             "framing": "presence"
           }
+        },
+        "ev_crop_yield_sida18_1": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "pct_change",
+            "magnitude_low": 23,
+            "magnitude_high": 26,
+            "unit": "percent",
+            "significance": "sig",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "moderate",
+            "outcome_raw": "wheat grain yield under F. albida crowns vs open-field sole wheat, normal-rainfall seasons"
+          }
+        },
+        "ev_crop_yield_sida18_2": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "pct_change",
+            "magnitude": 85,
+            "unit": "percent",
+            "significance": "sig",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "strong",
+            "outcome_raw": "wheat grain yield under F. albida crowns vs open-field sole wheat in the El Nino (dry) season; reported as 'up to'"
+          }
+        },
+        "ev_microclimate_buffering_sida18_1": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "microclimate_buffering",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "absolute",
+            "magnitude": 6,
+            "unit": "degrees_celsius",
+            "significance": "sig",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "midday air temperature at wheat floral height under F. albida canopy vs open field, anthesis to grain filling"
+          }
+        },
+        "ev_crop_yield_sida18_3": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "model",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "APSIM-simulated wheat yield response to the lower maximum temperature observed under F. albida shade, with moderate-to-high N"
+          }
+        },
+        "ev_crop_yield_sida18_4": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "model",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "APSIM-simulated wheat yield did not respond to temperature (shade-equivalent cooling) without applied N"
+          }
+        },
+        "ev_soil_nitrogen_sida18_1": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "soil_nitrogen",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "pct_change",
+            "magnitude_low": 35,
+            "magnitude_high": 55,
+            "unit": "percent",
+            "significance": "not_reported",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "strong",
+            "outcome_raw": "topsoil available mineral N close to F. albida crowns vs sole wheat"
+          }
+        },
+        "ev_soil_organic_carbon_sida18_1": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "soil_organic_carbon",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "ns",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "soil organic C under vs outside F. albida canopy"
+          }
+        },
+        "ev_soil_nitrogen_sida18_2": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "soil_nitrogen",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "ns",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "soil total N under vs outside F. albida canopy"
+          }
+        },
+        "ev_soil_water_retention_sida18_1": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "soil_water_retention",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "subsoil moisture content: least with tree + wheat, intermediate sole tree, highest open-field wheat"
+          }
+        },
+        "ev_soil_water_retention_sida18_2": {
+          "source_id": "sida_2018_faidherbia_wheat",
+          "variable": "soil_water_retention",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "quasi_experimental",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "topsoil moisture content under F. albida vs open field"
+          }
         }
       },
       "crop_results": {},
@@ -17860,10 +18293,6 @@
             [
               "EV_wri_regreening_2015_002",
               "class_or_gate_requires_mapping"
-            ],
-            [
-              "EV_wocat_1358_2017_004",
-              "selection_only"
             ]
           ],
           "parameter_evidence": {}
@@ -20269,6 +20698,300 @@
             "strength_class": "strong",
             "framing": "presence",
             "design": "observational"
+          }
+        },
+        "ev_crop_yield_kumar22_1": {
+          "source_id": "kumar_2022_coconut_nbs_kerala",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "coconut nut yield with pasture, black pepper and coffee intercropped vs (implied) sole coconut"
+          }
+        },
+        "ev_crop_yield_kumar22_2": {
+          "source_id": "kumar_2022_coconut_nbs_kerala",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "coconut palm yield with trees grown in the interspaces: no strong adverse impact, except where the trees shade the palms"
+          }
+        },
+        "ev_crop_yield_kumar22_3": {
+          "source_id": "kumar_2022_coconut_nbs_kerala",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "galangal rhizome yield with vs without over-canopy"
+          }
+        },
+        "ev_carbon_sequestration_kumar22_1": {
+          "source_id": "kumar_2022_coconut_nbs_kerala",
+          "variable": "carbon_sequestration",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "carbon storage of coconut-based mixed stands vs sole coconut stands"
+          }
+        },
+        "ev_soil_organic_carbon_kumar22_1": {
+          "source_id": "kumar_2022_coconut_nbs_kerala",
+          "variable": "soil_organic_carbon",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "soil carbon sequestration, coconut + intercropped fruit trees vs sole coconut"
+          }
+        },
+        "ev_wind_cyclone_hazard_kumar22_1": {
+          "source_id": "kumar_2022_coconut_nbs_kerala",
+          "variable": "wind_cyclone_hazard",
+          "reviewer_ok": false,
+          "use_role": "asset_vulnerability",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "coconut palm withstands typhoons (asset tolerance)"
+          }
+        },
+        "ev_flood_hazard_kumar22_2": {
+          "source_id": "kumar_2022_coconut_nbs_kerala",
+          "variable": "flood_hazard",
+          "reviewer_ok": false,
+          "use_role": "asset_vulnerability",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "not_reported",
+            "design": "review",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "coconut palm withstands flooding (asset tolerance)"
+          }
+        },
+        "ev_crop_yield_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "pct_change",
+            "magnitude": 25,
+            "unit": "percent",
+            "significance": "sig",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "moderate",
+            "outcome_raw": "cocoa bean yield, cocoa agroforestry vs full-sun monoculture"
+          }
+        },
+        "ev_crop_yield_niether20_2": {
+          "source_id": "niether_2020",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "absolute",
+            "magnitude": 10,
+            "unit": "fold_change",
+            "significance": "sig",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "strong",
+            "outcome_raw": "total system yield (cocoa plus all by-crops), cocoa agroforestry vs monoculture, 'about ten times higher'"
+          }
+        },
+        "ev_household_income_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "household_income",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "ns",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "system revenue (USD/ha/yr), agroforestry vs monoculture"
+          }
+        },
+        "ev_economic_return_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "economic_return",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "ns",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "net present value (USD/ha), agroforestry vs monoculture"
+          }
+        },
+        "ev_project_cost_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "project_cost",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "ns",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "total production costs (USD/ha/yr), agroforestry vs monoculture"
+          }
+        },
+        "ev_soil_organic_carbon_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "soil_organic_carbon",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "ns",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "soil organic carbon and total soil C, agroforestry vs monoculture"
+          }
+        },
+        "ev_soil_nitrogen_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "soil_nitrogen",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "significance": "ns",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "soil total N, agroforestry vs monoculture"
+          }
+        },
+        "ev_soil_water_retention_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "soil_water_retention",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "narrative",
+            "significance": "sig",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "soil volumetric water content lower in cocoa agroforestry than monoculture (possible tree-cocoa water competition)"
+          }
+        },
+        "ev_microclimate_buffering_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "microclimate_buffering",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "sig",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "mean temperature lower and daily max/min temperatures buffered in cocoa agroforestry vs monoculture"
+          }
+        },
+        "ev_carbon_sequestration_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "carbon_sequestration",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "absolute",
+            "magnitude": 2.5,
+            "unit": "fold_change",
+            "significance": "sig",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "strong",
+            "outcome_raw": "total biomass carbon stock (cocoa + shade trees, above- and belowground), agroforestry vs monoculture"
+          }
+        },
+        "ev_biodiversity_outcome_niether20_1": {
+          "source_id": "niether_2020",
+          "variable": "biodiversity_outcome",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "significance": "sig",
+            "design": "meta_analysis",
+            "framing": "presence",
+            "strength_class": "unspecified",
+            "outcome_raw": "animal species richness (pooled animal taxa), cocoa agroforestry vs monoculture"
           }
         }
       },
