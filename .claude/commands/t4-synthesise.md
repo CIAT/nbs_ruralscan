@@ -24,3 +24,6 @@ Species/crop claims never set a practice row (except F5). Uncertainty only widen
 its evidence_ids.
 
 Reference: methodology/examples/t4_slice_agroforestry_F1_slope.md.
+
+
+Mandatory T4 review contract (v1.6.16, Pete 2026-10-21): read `.agents/skills/extraction_contracts/T4_review_contract.md`. Separate variable use, suitability direction and numeric calibration; retain supported direction without cutoffs, with no invented executable curve. Audit all table rows and shared weights; review omissions as well as unsupported additions. Report source-deduplicated, scope-compatible agreement separately from calibrated functions.

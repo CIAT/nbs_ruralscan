@@ -64,3 +64,8 @@ Over sweeps, as the spec tightens, fewer units should reach the LLM pass.
 - `numberprov_rate_pct` ↓ (fewer smuggled numbers)
 - `verify_rate_pct` ↓ (fewer faithfulness defects)
 - catalogue grows; share of defects caught deterministically (vs by LLM) grows.
+
+
+## 21 October 2026 — T4 omission feedback
+
+Pete identified weight-only Ahmad records despite Table 2 giving suitability directions and additional soil criteria. Conflicting old skill advice treated uncalibrated direction as unusable, while catalogue #12 required preserving relationships. Ruleset v1.6.16 removes that conflict and supplies a mandatory extraction/adversarial-review contract. Review must audit omissions, table coverage and shared weights, not only fidelity of emitted records. This instruction update is not a completed evidence backfill: Ahmad directions, six soil properties and categorical exclusions still require source-provenanced extraction/review. Existing human decisions remain unchanged. No extraction sweep or improved defect-rate claim is made here.
