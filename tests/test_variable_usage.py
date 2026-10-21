@@ -114,3 +114,45 @@ def test_identical_weights_in_distinct_branches_are_not_a_total():
     assert result["branch_aggregation_unresolved"]
     assert result["effective_model_weight_pct"] is None
     assert result["weight_branches"] == ["nutrients", "rooting"]
+
+
+def test_chuma_road_weight_does_not_become_travel_time_or_structural_response():
+    """Table 2 criterion weights must not inherit the old false proxy label."""
+    import csv
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    with (root / "schema/registers/EV_evidence_register.csv").open() as handle:
+        units = [r for r in csv.DictReader(handle) if r["source_id"] == "chuma_2021"]
+    record = next(
+        r
+        for r in units
+        if r["evidence_id"] == "ev_T4_accessibility_travel_time_chuma21_1"
+    )
+    assert record["variable"] == "distance_to_road"
+    assert record["use_role"] == "operational_risk"
+    assert record["evidence_type"] == "scoping_candidate"
+    assert json.loads(record["relationship"])["type"] == "model_use_only"
+    original = json.loads(record["context"])["source_corrections"][-1][
+        "original_record"
+    ]
+    assert original["variable"] == "accessibility_travel_time"
+    assert "84%" in original["quote"]
+    usage = variable_usage(units, {})
+    assert not any(r["variable"] == "accessibility_travel_time" for r in usage)
+    roads = [r for r in usage if r["variable"] == "distance_to_road"]
+    assert len(roads) == 1
+    assert roads[0]["effective_model_weight_pct"] == 10.8
+    with (
+        root / "schema/recipes/agroforestry/T4_suitability_mappings.csv"
+    ).open() as handle:
+        structural = [
+            r
+            for r in csv.DictReader(handle)
+            if r["suitability_dimension"] != "operational_constraint"
+        ]
+    assert all(
+        record["evidence_id"] not in json.loads(r["evidence_ids"] or "[]")
+        for r in structural
+    )
