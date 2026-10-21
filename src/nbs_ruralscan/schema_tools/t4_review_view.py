@@ -272,6 +272,7 @@ def render(root, read_csv, table, bindings, coverage):
 
     usage = variable_usage(list(evidence.values()), sources)
     summary = summarize_usage(usage)
+    page += '<p><a href="t4-direction-agreement.html">Compare reported directions across papers — side-by-side matrix</a></p>'
     page += "<details><summary>Why these variables? Reviewed and pending paper use</summary>"
     page += "<p>Counts below mean papers explicitly used a variable in their model. Repeated records from one paper count once. Crop/species models stay separate. This verification is incomplete: missing counts mean unchecked, not unused. Reviewed counts require model-use evidence on at least one active human-reviewed record. Review status is record-level: later metadata corrections may still need review. Pending and quarantined-only papers are separate; a paper counts once within each scope. A reviewed use does not approve every reported weight. These counts measure variable use, not agreement on thresholds or independent study origins.</p>"
     friendly_summary = [

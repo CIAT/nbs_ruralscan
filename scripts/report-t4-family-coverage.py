@@ -81,14 +81,10 @@ def main():
                 continue
             rules = "; ".join(r["relationship_types"]) or "No configured rule"
             directions = (
-                "; ".join(
-                    f"{k.replace('_', ' ')}: {v}"
-                    for k, v in r["direction_counts"].items()
-                )
-                or "Direction not explicitly encoded"
+                "Direction counts by review status: see paper comparison matrix"
             )
             cells.append(
-                f"<td><b>{esc(rules)}</b><br>Evidence papers: {r['evidence_papers']}<br>Human-reviewed: {r['reviewed_papers']}<br>Verified model use: {r['verified_model_use_papers']}<br>Observed-presence papers: {r['observed_presence_papers']}<br>{esc(directions)}<details><summary>Sources and mappings</summary>{esc('; '.join(r['source_ids']))}<p>{esc('; '.join(r['mapping_ids']))}</p><p>Configured weights: {esc(str(r['configured_weights']))}</p></details></td>"
+                f"<td><b>{esc(rules)}</b><br>Evidence papers: {r['evidence_papers']}<br>Human-reviewed: {r['reviewed_papers']}<br>Verified model use: {r['verified_model_use_papers']}<br>Observed-presence papers: {r['observed_presence_papers']}<br>{esc(directions)}<a href='t4-direction-agreement.html'>Compare directions</a><details><summary>Sources and mappings</summary>{esc('; '.join(r['source_ids']))}<p>{esc('; '.join(r['mapping_ids']))}</p><p>Configured weights: {esc(str(r['configured_weights']))}</p></details></td>"
             )
         body.append(
             f'<tr data-core="{str(visible).lower()}"><th>{esc(variable.replace("_", " "))}</th>'
