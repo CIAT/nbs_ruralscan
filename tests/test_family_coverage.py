@@ -69,3 +69,37 @@ def test_conflicts_and_model_scope_and_configured_rule_independent():
     assert shared["verified_model_use_papers"] == 0
     assert planted["evidence_papers"] == 0
     assert planted["mapping_ids"] == ["rule"]
+
+
+def test_required_boundary_geometry_is_separate_from_land_cover():
+    mapping = dict(
+        nbs_id="af",
+        suitability_family_id="af__linear",
+        variable="land_cover",
+        mapping_id="host_gate",
+        relationship_type="ranked_classes",
+        weight_default="0",
+        evidence_ids=["source_claim"],
+        relationship_params={
+            "class_requirements": {
+                "30": ["field_boundary_zone"],
+                "40": ["field_boundary_zone"],
+            },
+            "host_bindings": {
+                "field_boundary_zone": {
+                    "variables": ["field_boundary_zone"],
+                    "operation": "supplied_mask",
+                    "note": "Observed geometry; locally justified width.",
+                }
+            },
+        },
+    )
+    rows = family_coverage([], [mapping], {}, "af")
+    boundary = next(r for r in rows if r["variable"] == "field_boundary_zone")
+    land = next(r for r in rows if r["variable"] == "land_cover")
+    assert boundary["mapping_ids"] == []
+    assert boundary["evidence_papers"] == 0
+    assert len(boundary["required_input_for"]) == 1
+    assert boundary["required_input_for"][0]["evidence_ids"] == ["source_claim"]
+    assert land["mapping_ids"] == ["host_gate"]
+    assert land["required_input_for"] == []
