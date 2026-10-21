@@ -4,6 +4,7 @@ from pathlib import Path
 import csv
 import hashlib
 import json
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT / "pipeline/t4_audit/agroforestry/bounded_review_2026-10-21"
@@ -131,6 +132,40 @@ def build_data(root=ROOT):
         g["fingerprint"] = hashlib.sha256(
             json.dumps(g, sort_keys=True).encode()
         ).hexdigest()
+    sources = {
+        r["source_id"]: r
+        for r in csv.DictReader(
+            (root / "schema/registers/SRC_source_register.csv").open()
+        )
+    }
+    # Display-only source images must not invalidate feedback on unchanged claims.
+    for group in result:
+        for record in group["records"]:
+            raw = evidence[record["id"]]
+            record["source_row"] = raw.get("raw_name") or record["label"]
+            record["citation"] = sources[record["source"]].get(
+                "citation", record["source"]
+            )
+            record["source_url"] = sources[record["source"]].get("url", "")
+            pages = {}
+            for value, purpose in [
+                (record["page"], "Claim"),
+                (record["header_page"], "Table heading"),
+                (record["weights"].get("page"), "Weight / method"),
+                (record["image_page"], "Direction table"),
+            ]:
+                for token in re.findall(r"\d+", str(value or "")):
+                    number = int(token)
+                    if number > 0:
+                        pages.setdefault(number, []).append(purpose)
+            record["source_pages"] = [
+                {
+                    "page": number,
+                    "purpose": ", ".join(purposes),
+                    "image": f"/review/source-pages/{record['source']}-p{number}.png",
+                }
+                for number, purposes in sorted(pages.items())
+            ]
     return {
         "version": 1,
         "review_id": "agroforestry-t4-bounded-2026-10-21",

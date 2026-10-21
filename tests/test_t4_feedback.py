@@ -44,3 +44,20 @@ def test_generated_page_matches_current_evidence_and_cannot_submit_approvals():
     assert "/api/submit" not in page
     assert "/api/apply" not in page
     assert "t4_group_feedback_v1" in page
+
+
+def test_every_source_page_has_a_rendered_image_and_claim_locator():
+    data = MOD.build_data()
+    for group in data["groups"]:
+        for record in group["records"]:
+            assert record["source_row"]
+            assert int(record["page"]) in {p["page"] for p in record["source_pages"]}
+            for page in record["source_pages"]:
+                assert (ROOT / "docs" / page["image"].lstrip("/")).is_file()
+    singh = next(
+        r
+        for g in data["groups"]
+        for r in g["records"]
+        if r["source"] == "singh_2026" and r["variable"] == "slope"
+    )
+    assert {4, 8} <= {p["page"] for p in singh["source_pages"]}
