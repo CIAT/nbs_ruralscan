@@ -4,7 +4,7 @@
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
     "schema/registers/SRC_source_register.csv": "8d1446e666377d9d9e7079e0f84d83c0ad9981e063f873a92a1a6b8dfe96a4d8",
-    "schema/registers/EV_evidence_register.csv": "2c35681d406e55d1f59c6c68559d7f3019d36432d1563d74b1694bdf7c5f0c11",
+    "schema/registers/EV_evidence_register.csv": "ffbdcdbdf6cdbf6d3bedd5eafefc7c2785ecb23e38d61d7c47d3c6e0c6af4003",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
@@ -288,7 +288,7 @@
           ],
           "n_parameter_sources": 2,
           "paper_support_pct": null,
-          "n_sources": 2,
+          "n_sources": 3,
           "corpus_n": null
         },
         {
@@ -545,7 +545,7 @@
           ],
           "n_parameter_sources": 2,
           "paper_support_pct": null,
-          "n_sources": 3,
+          "n_sources": 4,
           "corpus_n": null
         },
         {
@@ -696,19 +696,171 @@
           "paper_support_pct": null,
           "n_sources": 2,
           "corpus_n": null
+        },
+        {
+          "mapping_id": "agroforestry__cross_family__elevation",
+          "suitability_family_id": "agroforestry__cross_family",
+          "variable": "elevation",
+          "variable_unit": "m",
+          "dataset_id": "srtm_dem_90m",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_T4_elevation_chuma2021_recovery",
+                "source_id": "chuma_2021",
+                "continuation_of": "",
+                "evidence_ids": [
+                  "ev_T4_elevation_chuma2021_recovery"
+                ],
+                "page_locators": {
+                  "ev_T4_elevation_chuma2021_recovery": 6
+                },
+                "evidence_id": "ev_T4_elevation_chuma2021_recovery",
+                "context": {
+                  "study_country": "DR Congo",
+                  "recovery_review": {
+                    "status": "awaiting_human_review",
+                    "note": "Table 3 regional altitude ranking. Do not transfer across climates or interpret marginal as unsuitable."
+                  }
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "marginal": 1,
+                  "low": 2,
+                  "moderate": 3,
+                  "high": 4,
+                  "very_high": 5
+                },
+                "applicability_note": "Regional DR Congo altitude ranking; not globally transferable. Marginal remains low suitability, not exclusion.",
+                "unit": "m",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 500.0,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "very_high",
+                    "rank": 5,
+                    "score": 0.9,
+                    "legacy_score": 1.0,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 500.0,
+                    "upper": 1000.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "high",
+                    "rank": 4,
+                    "score": 0.75,
+                    "legacy_score": 0.8,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 1000.0,
+                    "upper": 1500.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "moderate",
+                    "rank": 3,
+                    "score": 0.5,
+                    "legacy_score": 0.6,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 1500.0,
+                    "upper": 2000.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "low",
+                    "rank": 2,
+                    "score": 0.25,
+                    "legacy_score": 0.4,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 2000.0,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "marginal",
+                    "rank": 1,
+                    "score": 0.25,
+                    "legacy_score": 0.2,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  }
+                ],
+                "origin_id": "chuma_2021",
+                "source_weight": 0.54,
+                "variable": "elevation",
+                "score_policy": "semantic_classes_v1",
+                "pool_id": "",
+                "system_id": "",
+                "context_id": "",
+                "compatibility_approved": false,
+                "applicability_review": {},
+                "pool_review": "regional_context_requires_selection"
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "per_profile_schema_policy",
+            "harmonization": {
+              "pools": [],
+              "review": [
+                {
+                  "profile_id": "ev_T4_elevation_chuma2021_recovery",
+                  "reason": "regional_context_requires_selection"
+                }
+              ]
+            },
+            "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "references": [
+            "chuma_2021"
+          ],
+          "evidence_ids": [
+            "ev_T4_elevation_chuma2021_recovery"
+          ],
+          "parameter_source_ids": [
+            "chuma_2021"
+          ],
+          "n_parameter_sources": 1,
+          "paper_support_pct": null,
+          "n_sources": 1,
+          "corpus_n": null
         }
       ],
       "selection": [
         {
           "variable": "annual_precipitation",
           "support_pct": null,
-          "n_sources": 3,
+          "n_sources": 4,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
         },
         {
           "variable": "aridity_index",
+          "support_pct": null,
+          "n_sources": 1,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
+          "variable": "elevation",
           "support_pct": null,
           "n_sources": 1,
           "ml_important": false,
@@ -726,7 +878,15 @@
         {
           "variable": "land_cover",
           "support_pct": null,
-          "n_sources": 2,
+          "n_sources": 3,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
+          "variable": "mean_annual_temperature",
+          "support_pct": null,
+          "n_sources": 1,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -734,7 +894,7 @@
         {
           "variable": "ndvi",
           "support_pct": null,
-          "n_sources": 1,
+          "n_sources": 2,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -750,7 +910,7 @@
         {
           "variable": "slope",
           "support_pct": null,
-          "n_sources": 2,
+          "n_sources": 3,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -808,13 +968,14 @@
         },
         "climatic": {
           "key": "climatic",
-          "n_sources": 5,
+          "n_sources": 6,
           "corpus_n": null,
           "pct": null,
           "members": [
             "annual_precipitation",
             "aridity_index",
-            "frost_free_period"
+            "frost_free_period",
+            "mean_annual_temperature"
           ]
         },
         "edaphic": {
@@ -831,7 +992,7 @@
         },
         "land_cover_vegetation": {
           "key": "land_cover_vegetation",
-          "n_sources": 1,
+          "n_sources": 2,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -840,7 +1001,7 @@
         },
         "land_use": {
           "key": "land_use",
-          "n_sources": 4,
+          "n_sources": 5,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -850,10 +1011,11 @@
         },
         "topographic": {
           "key": "topographic",
-          "n_sources": 2,
+          "n_sources": 3,
           "corpus_n": null,
           "pct": null,
           "members": [
+            "elevation",
             "slope"
           ]
         }
@@ -1113,7 +1275,7 @@
           "variable": "land_cover",
           "reviewer_ok": false,
           "use_role": "structural_suitability",
-          "status": "qa_dropped",
+          "status": "unresolved_review",
           "relationship": {}
         },
         "ev_T4_distance_to_road_chuma21_1": {
@@ -4232,17 +4394,17 @@
         "ev_T4_model_use_ahmad2020_mean_annual_temperature": {
           "source_id": "ahmad_2020",
           "variable": "mean_annual_temperature",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_T4_model_use_ahmad2020_annual_precipitation": {
           "source_id": "ahmad_2020",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_T4_model_use_ahmad2020_aridity_index": {
@@ -4256,25 +4418,25 @@
         "ev_T4_model_use_ahmad2020_ndvi": {
           "source_id": "ahmad_2020",
           "variable": "ndvi",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_T4_model_use_ahmad2020_slope": {
           "source_id": "ahmad_2020",
           "variable": "slope",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_T4_landcover_baldwin2022_recovery": {
           "source_id": "baldwin_2022",
           "variable": "land_cover",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "qa_dropped",
+          "status": "class_or_gate_requires_mapping",
           "relationship": {
             "type": "source_land_use_classes",
             "eligible_classes": [
@@ -4286,9 +4448,9 @@
         "ev_T4_elevation_chuma2021_recovery": {
           "source_id": "chuma_2021",
           "variable": "elevation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "parameter_contributor",
           "relationship": {
             "unit": "m",
             "classes": [
@@ -4462,15 +4624,26 @@
             "classes": [
               {
                 "label": "very_good",
-                "range": "5,7,9"
+                "codes": [
+                  5,
+                  7,
+                  9
+                ]
               },
               {
                 "label": "good",
-                "range": "4,12"
+                "codes": [
+                  4,
+                  12
+                ]
               },
               {
                 "label": "moderate",
-                "range": "1,3,10"
+                "codes": [
+                  1,
+                  3,
+                  10
+                ]
               }
             ]
           }
@@ -5262,6 +5435,10 @@
             [
               "cgspace_singh_southasia_2020__land_cover__01",
               "class_or_gate_requires_mapping"
+            ],
+            [
+              "ev_T4_landcover_baldwin2022_recovery",
+              "class_or_gate_requires_mapping"
             ]
           ],
           "parameter_evidence": {}
@@ -5281,6 +5458,10 @@
             [
               "ev_T4_slope_haile2024_2",
               "qualitative_relationship"
+            ],
+            [
+              "ev_T4_model_use_ahmad2020_slope",
+              "selection_only"
             ]
           ],
           "parameter_evidence": {
@@ -5320,6 +5501,10 @@
             [
               "ev_t4_precip_yadav24_5",
               "importance_weight_not_response"
+            ],
+            [
+              "ev_T4_model_use_ahmad2020_annual_precipitation",
+              "selection_only"
             ]
           ],
           "parameter_evidence": {
@@ -5390,6 +5575,10 @@
           ],
           "unresolved": [
             [
+              "ev_T4_model_use_ahmad2020_ndvi",
+              "selection_only"
+            ],
+            [
               "ev_t4_landcov_nath21_01",
               "source_prints_overlapping_NDVI_unsuitable_class"
             ]
@@ -5429,6 +5618,38 @@
             ]
           ],
           "parameter_evidence": {}
+        },
+        "mean_annual_temperature": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_T4_model_use_ahmad2020_mean_annual_temperature",
+              "selection_only"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "elevation": {
+          "used": [
+            "ev_T4_elevation_chuma2021_recovery"
+          ],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped",
+            "Regional profiles retained separately; uncertainty floor 20%, not a measured confidence interval."
+          ],
+          "unresolved": [],
+          "parameter_evidence": {
+            "profiles": [
+              "ev_T4_elevation_chuma2021_recovery"
+            ]
+          }
         }
       }
     },
@@ -19078,7 +19299,7 @@
         {
           "variable": "annual_precipitation",
           "support_pct": null,
-          "n_sources": 1,
+          "n_sources": 2,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -19094,7 +19315,7 @@
         {
           "variable": "land_cover",
           "support_pct": null,
-          "n_sources": 2,
+          "n_sources": 4,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -19197,7 +19418,7 @@
         },
         "land_use": {
           "key": "land_use",
-          "n_sources": 2,
+          "n_sources": 4,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -19435,9 +19656,9 @@
         "ev_t4_precip_kizir_1": {
           "source_id": "kiziridis_2026",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "qa_dropped",
+          "status": "selection_only",
           "relationship": null
         },
         "ev_t4_temp_kizir_1": {
@@ -19534,9 +19755,9 @@
         "ev_t4_lcover_moisa25_1": {
           "source_id": "moisa_2025",
           "variable": "land_cover",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "qa_dropped",
+          "status": "selection_only",
           "relationship": {}
         },
         "ev_t4_road_moisa25_1": {
@@ -21473,7 +21694,7 @@
           "variable": "tree_canopy_cover",
           "reviewer_ok": false,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "criterion_kind": "programme_eligibility",
             "occupied_by_trees_pct": {
@@ -21513,9 +21734,9 @@
         "ev_structural_suitability_land_cover_pinto_2019_full": {
           "source_id": "pinto_2019",
           "variable": "land_cover",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {
             "excluded_source_classes": [
               "urban",
@@ -21546,6 +21767,14 @@
             ],
             [
               "ev_t4_lc_kizir_2",
+              "selection_only"
+            ],
+            [
+              "ev_t4_lcover_moisa25_1",
+              "selection_only"
+            ],
+            [
+              "ev_structural_suitability_land_cover_pinto_2019_full",
               "selection_only"
             ]
           ],
@@ -21585,6 +21814,25 @@
             [
               "ev_t4_tcc_kizir_1",
               "scenario_grid_requires_parameter_choice"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "annual_precipitation": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_t4_precip_kizir_1",
+              "selection_only"
+            ],
+            [
+              "ev_annual_precipitation_batcheler24_1",
+              "selection_only"
             ]
           ],
           "parameter_evidence": {}
@@ -21629,21 +21877,6 @@
           "unresolved": [
             [
               "ev_t4_pa_mucida23_1",
-              "selection_only"
-            ]
-          ],
-          "parameter_evidence": {}
-        },
-        "annual_precipitation": {
-          "used": [],
-          "dropped": [],
-          "collapsed": [],
-          "notes": [
-            "only 0 independent source(s) → uncertainty bumped"
-          ],
-          "unresolved": [
-            [
-              "ev_annual_precipitation_batcheler24_1",
               "selection_only"
             ]
           ],

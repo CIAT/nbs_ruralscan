@@ -6,6 +6,38 @@ import json
 from pathlib import Path
 
 
+def documented_review_transition(row, old, log, since):
+    """Accept later human decisions only when ledger, attribution and state agree."""
+    if (
+        not row
+        or not since
+        or str(old.get("reviewer_ok", "false")).lower() not in {"true", "false", ""}
+    ):
+        return False
+    entries = [
+        r for r in log if r["evidence_id"] == row["evidence_id"] and r["date"] >= since
+    ]
+    if not entries:
+        return False
+    decision = entries[-1]
+    reviewer = decision.get("reviewer", "")
+    if not reviewer or decision.get("source_id") != row["source_id"]:
+        return False
+    action = decision["decision"]
+    tag = {"ok": "reviewed", "flag": "query", "drop": "dropped"}.get(action)
+    if not tag or f"[{tag} {decision['date']} by {reviewer}" not in row.get(
+        "attribution", ""
+    ):
+        return False
+    approved = str(row.get("reviewer_ok", "")).lower() == "true"
+    state = row.get("review_state", "")
+    return (
+        (action == "ok" and approved and state == "")
+        or (action == "flag" and not approved and state == "")
+        or (action == "drop" and not approved and state == "dropped")
+    )
+
+
 def check(root, audit):
     manifest = json.loads((audit / "manifest.json").read_text())
     evidence = {
@@ -14,6 +46,9 @@ def check(root, audit):
             (root / "schema/registers/EV_evidence_register.csv").open()
         )
     }
+    with (root / "pipeline/metrics/review_log.csv").open() as handle:
+        review_log = list(csv.DictReader(handle))
+    since = manifest.get("review_snapshot_date")
     expected = set(manifest["expected_source_ids"])
     errors = []
     for row in csv.DictReader(
@@ -39,7 +74,9 @@ def check(root, audit):
             errors.append(f"Reviewed source artifact changed: {sid}")
     for eid, old in manifest["existing_approval_snapshot"].items():
         row = evidence.get(eid)
-        if row is None or any(row[k] != v for k, v in old.items()):
+        if (
+            row is None or any(row[k] != v for k, v in old.items())
+        ) and not documented_review_transition(row, old, review_log, since):
             errors.append(f"Existing human review state changed: {eid}")
     declared = [
         eid
@@ -55,7 +92,9 @@ def check(root, audit):
         if row is None:
             errors.append(f"Missing staged record: {eid}")
             continue
-        if row["reviewer_ok"].lower() == "true":
+        if row["reviewer_ok"].lower() == "true" and not documented_review_transition(
+            row, {}, review_log, since
+        ):
             errors.append(f"Bounded review must not invent human approval: {eid}")
         c = json.loads(row["context"] or "{}")
         if not row["quote"] or not row["page"] or not c.get("review_needed"):

@@ -30,3 +30,30 @@ def test_human_approval_drift_is_detected(tmp_path):
     assert any(
         "Existing human review state changed" in e for e in MOD.check(ROOT, tmp_path)
     )
+
+
+def test_documented_later_review_is_allowed_but_unlogged_approval_is_not():
+    row = dict(
+        evidence_id="unit",
+        source_id="paper",
+        reviewer_ok="true",
+        review_state="",
+        attribution="[reviewed 2026-10-22 by Pete]",
+    )
+    entry = dict(
+        evidence_id="unit",
+        source_id="paper",
+        date="2026-10-22",
+        reviewer="Pete",
+        decision="ok",
+    )
+    old = {"reviewer_ok": "false", "review_state": ""}
+    assert MOD.documented_review_transition(row, old, [entry], "2026-10-21")
+    assert not MOD.documented_review_transition(row, old, [], "2026-10-21")
+    assert not MOD.documented_review_transition(
+        row, old, [dict(entry, reviewer="Other")], "2026-10-21"
+    )
+    assert not MOD.documented_review_transition(
+        row, old, [entry, dict(entry, decision="flag")], "2026-10-21"
+    )
+    assert not MOD.documented_review_transition(row, old, [entry], "2026-10-23")
