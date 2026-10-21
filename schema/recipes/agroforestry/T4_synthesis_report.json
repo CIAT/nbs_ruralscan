@@ -4,13 +4,13 @@
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
     "schema/registers/SRC_source_register.csv": "eacaf8379cb62cd82ffed9c5863412ea7d786f1ff45abdf678b06b8cb05c55f7",
-    "schema/registers/EV_evidence_register.csv": "263f9420b4356b0aa5e82982ae6f8d31cb43dccfc6ae81177cf27e60e2acef7e",
+    "schema/registers/EV_evidence_register.csv": "945c5307907826aeb0296c012767e74cdd1fa7f261969f186212fbeba07923b6",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
     "schema/registers/CV_lit_review_agroforestry.csv": "f5f2cf246c2ed624cc45fad741c39523b69daf6471a746272431ee80b132b7c5",
     "schema/registers/BIND_dataset_binding.csv": "6aeb5481a121cca768efd69ebe277b95a85e2c7f1ef9941e9cc74536c9bcfa35",
-    "schema/registers/VONT_variable_ontology.csv": "4adcfb325e873e5c33ca7ab44f04553496df8c4217c05a12e359bc17f292e796",
+    "schema/registers/VONT_variable_ontology.csv": "271fb6cd56769cd78e204aa9c36ff26412ce54614b91588ce1d9a7a422490029",
     "schema/registers/BANDS_magnitude_bands.csv": "5da05fc9bb4664ab0b2482806bcf25a6edc7461a00be42ea5be6d481310998c5",
     "schema/lookups/crop_scope_policy.csv": "62f6bf68b618116e63d4bee57d7b01c6710b4a2ba62b4405bf7daf1662f9a5b4",
     "schema/lookups/t4_numeric_compilation_policy.csv": "e793f15b921866e47cad9ae69fa457fc226bc5d39f0c19fba28fd47d20728541"
@@ -1022,7 +1022,7 @@
         {
           "variable": "land_cover",
           "support_pct": null,
-          "n_sources": 3,
+          "n_sources": 4,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -1084,15 +1084,7 @@
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
         },
         {
-          "variable": "soil_texture_hsg",
-          "support_pct": null,
-          "n_sources": 1,
-          "ml_important": false,
-          "decision": "review_unknown_support",
-          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
-        },
-        {
-          "variable": "tree_canopy_cover",
+          "variable": "soil_quality_class",
           "support_pct": null,
           "n_sources": 1,
           "ml_important": false,
@@ -1131,7 +1123,7 @@
             "soil_drainage",
             "soil_organic_carbon",
             "soil_ph",
-            "soil_texture_hsg"
+            "soil_quality_class"
           ]
         },
         "land_cover_vegetation": {
@@ -1149,8 +1141,7 @@
           "corpus_n": null,
           "pct": null,
           "members": [
-            "land_cover",
-            "tree_canopy_cover"
+            "land_cover"
           ]
         },
         "topographic": {
@@ -1656,14 +1647,19 @@
         },
         "ev_t4_treecan_nath21_01": {
           "source_id": "nath_2021",
-          "variable": "tree_canopy_cover",
+          "variable": "land_cover",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
           "status": "class_or_gate_requires_mapping",
           "relationship": {
             "suitable_classes": "Non-forest, Scrub, OF",
             "restricted_classes": "Water, MDF & VDF",
-            "variable_weight_pct": 50
+            "variable_weight_pct": 50,
+            "class_definitions": {
+              "NF": "Non-forest",
+              "OF": "Open forest"
+            },
+            "note": "Categorical forest-cover map. MDF and VDF retained as source codes; no numeric canopy boundaries inferred."
           }
         },
         "ev_t4_distance_nath21_01": {
@@ -1851,7 +1847,7 @@
         },
         "cgspace_singh_southasia_2020__soil_texture_hsg__01": {
           "source_id": "cgspace_singh_southasia_2020",
-          "variable": "soil_texture_hsg",
+          "variable": "soil_quality_class",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
           "status": "selection_only_or_missing_relationship",
@@ -1859,7 +1855,7 @@
         },
         "cgspace_singh_southasia_2020__soil_texture_hsg__02": {
           "source_id": "cgspace_singh_southasia_2020",
-          "variable": "soil_texture_hsg",
+          "variable": "soil_quality_class",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
           "status": "class_or_gate_requires_mapping",
@@ -5665,6 +5661,10 @@
               "class_or_gate_requires_mapping"
             ],
             [
+              "ev_t4_treecan_nath21_01",
+              "class_or_gate_requires_mapping"
+            ],
+            [
               "cgspace_singh_southasia_2020__land_cover__01",
               "class_or_gate_requires_mapping"
             ],
@@ -5798,21 +5798,6 @@
           ],
           "parameter_evidence": {}
         },
-        "tree_canopy_cover": {
-          "used": [],
-          "dropped": [],
-          "collapsed": [],
-          "notes": [
-            "only 0 independent source(s) → uncertainty bumped"
-          ],
-          "unresolved": [
-            [
-              "ev_t4_treecan_nath21_01",
-              "class_or_gate_requires_mapping"
-            ]
-          ],
-          "parameter_evidence": {}
-        },
         "production_gap": {
           "used": [],
           "dropped": [],
@@ -5828,7 +5813,7 @@
           ],
           "parameter_evidence": {}
         },
-        "soil_texture_hsg": {
+        "soil_quality_class": {
           "used": [],
           "dropped": [],
           "collapsed": [],
@@ -14917,7 +14902,9 @@
           "relationship": {
             "direction": "constraint_by_zone",
             "arid_zone": "tree_establishment_very_difficult_without_irrigation",
-            "semi_arid_zone": "FMNR_foundational_on_agricultural_land"
+            "semi_arid_zone": "FMNR_foundational_on_agricultural_land",
+            "arid_zone_recommendation": "assisted_natural_regeneration_of_trees_and_shrubs_in_pastoral_conditions",
+            "note": "Qualitative Table 3 zone guidance; tree-establishment difficulty without irrigation is not an exclusion of assisted regeneration. No numeric aridity-index cutoff."
           }
         },
         "EV_wocat_507_2019_001": {
