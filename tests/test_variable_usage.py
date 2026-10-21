@@ -242,3 +242,66 @@ def test_paper_review_counts_partition_duplicates_and_quarantine():
     )[0]
     assert summary["reviewed_general_model_papers"] == 1
     assert summary["pending_general_model_papers"] == 0
+
+
+def test_model_lineage_keeps_threshold_citations_separate_and_holds_bad_links():
+    def unit(eid, sid, origin=None, setting="north"):
+        use = {"verified": True, "method": "AHP", "page": "1", "weight_path_pct": [10]}
+        if origin:
+            use["lineage_of"] = origin
+        return dict(
+            evidence_id=eid,
+            source_id=sid,
+            variable="slope",
+            claim_scope="practice_technology",
+            suitability_family_id="regional",
+            context={"study_area": setting, "model_use": use},
+        )
+
+    primary = unit("primary", "a")
+    secondary = unit("secondary", "b", "primary")
+    own_model = unit("own", "c")
+    own_model["lineage_of"] = (
+        "primary"  # Threshold borrowed; own model use is distinct.
+    )
+    broken = unit("broken", "d", "missing")
+    cycle1, cycle2 = unit("cycle1", "e", "cycle2"), unit("cycle2", "f", "cycle1")
+    rows = variable_usage([primary, secondary, own_model, broken, cycle1, cycle2], {})
+    by_source = {r["source_id"]: r for r in rows}
+    assert (
+        by_source["a"]["model_origin_ids"]
+        == by_source["b"]["model_origin_ids"]
+        == ["a"]
+    )
+    assert by_source["c"]["model_origin_ids"] == ["c"]
+    assert by_source["c"]["response_lineage"] == ["primary"]
+    assert by_source["d"]["origin_status"] == "held"
+    assert (
+        by_source["e"]["model_origin_ids"] == by_source["f"]["model_origin_ids"] == []
+    )
+    summary = summarize_usage(rows)[0]
+    assert summary["verified_general_model_papers"] == 6
+    assert summary["recorded_general_model_origins"] == 2
+    assert summary["general_papers_with_origin_holds"] == 3
+    # Same paper, different settings: separate weight records, one paper count.
+    south = unit("south", "a", setting="south")
+    south["context"]["model_use"]["weight_path_pct"] = [20]
+    rows = variable_usage([primary, south], {})
+    assert len(rows) == 2
+    assert not any(r["weight_conflict"] for r in rows)
+    assert summarize_usage(rows)[0]["verified_general_model_papers"] == 1
+    # DOI aliases normalize case and resolver prefixes, preserving all source IDs.
+    rows = variable_usage(
+        [primary, unit("alias", "alias")],
+        {"a": {"doi": "https://doi.org/10.1/ABC"}, "alias": {"doi": "10.1/abc"}},
+    )
+    assert len(rows) == 1
+    assert rows[0]["source_ids"] == ["a", "alias"]
+    # Source references resolve directly; an unverified evidence target is held.
+    rows = variable_usage([unit("ref", "b", "a")], {"a": {"doi": "DOI:10.1/ABC"}})
+    assert rows[0]["model_origin_ids"] == ["10.1/abc"]
+    unverified = unit("unverified", "a")
+    unverified["context"]["model_use"]["verified"] = False
+    rows = variable_usage([unverified, unit("ref", "b", "unverified")], {})
+    assert rows[0]["model_origin_ids"] == []
+    assert "lacks verified" in rows[0]["model_origin_holds"][0]
