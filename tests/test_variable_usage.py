@@ -185,3 +185,60 @@ def test_source_proxy_labels_do_not_assert_tenure_or_canopy_equivalence():
     assert trees["raw_name"] == "land occupied by trees"
     assert trees["review_state"] == "dropped"
     assert json.loads(trees["context"])["canonical_mapping_hold"]
+
+
+def test_paper_review_counts_partition_duplicates_and_quarantine():
+    def unit(eid, source, approved=False, dropped=False, scope="practice_technology"):
+        return dict(
+            evidence_id=eid,
+            source_id=source,
+            variable="slope",
+            claim_scope=scope,
+            suitability_family_id="regional",
+            reviewer_ok=approved,
+            review_state="dropped" if dropped else "",
+            context={
+                "model_use": {
+                    "verified": True,
+                    "method": "AHP",
+                    "page": "5",
+                    "weight_path_pct": [10],
+                }
+            },
+        )
+
+    units = [
+        unit("a1", "a", True),
+        unit("a2", "a"),
+        unit("a3", "a", True, True),
+        unit("b1", "b"),
+        unit("b2", "b"),
+        unit("c1", "c", True, True),
+        unit("crop1", "a", False, False, "crop_specific"),
+    ]
+    usage = variable_usage(units, {})
+    summary = summarize_usage(usage)[0]
+    assert summary["verified_general_model_papers"] == 3
+    assert summary["reviewed_general_model_papers"] == 1
+    assert summary["pending_general_model_papers"] == 1
+    assert summary["quarantined_only_general_model_papers"] == 1
+    assert summary["pending_crop_species_model_papers"] == 1
+    a = next(
+        r
+        for r in usage
+        if r["source_id"] == "a" and r["claim_scope"] == "practice_technology"
+    )
+    assert a["reviewed_evidence_ids"] == ["a1"]
+    assert a["pending_evidence_ids"] == ["a2"]
+    assert a["quarantined_evidence_ids"] == ["a3"]
+    assert "not all reported weights are human-approved" in a["note"]
+    # Source aliases sharing a DOI still supply one paper vote.
+    alias = unit("alias", "alias")
+    summary = summarize_usage(
+        variable_usage(
+            [unit("orig", "a", True), alias],
+            {"a": {"doi": "same"}, "alias": {"doi": "same"}},
+        )
+    )[0]
+    assert summary["reviewed_general_model_papers"] == 1
+    assert summary["pending_general_model_papers"] == 0

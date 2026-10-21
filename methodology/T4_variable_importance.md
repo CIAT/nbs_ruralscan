@@ -98,3 +98,16 @@ Pete approved the candidate-comparison recommendation in chat ("ok proveed agree
 - Retain Haile Table 5 as the provisional computed-AHP representation, with Table 3 as an alternative; which weights generated the published map remains unresolved.
 
 This approves the comparison approach and recommendation. It does not approve new evidence records, global transfer, a complete family-specific variable set, or changed runtime weights.
+
+### Review status of model-use counts
+
+The variable-use inventory retains all source-checked model-use claims, including
+claims carried only by quarantined records. Its summary partitions papers, within
+each variable and claim scope, into reviewed (at least one active `reviewer_ok`
+record), pending (active records but none approved), and quarantined-only. Repeated
+records and DOI aliases count once; a reviewed paper with additional pending
+records is counted as reviewed, while the detailed inventory lists those pending
+records explicitly. Approval is record-level: later metadata corrections and
+reported importance weights may still require review. These are counts of paper
+use, not independent-origin agreement, compatible-context support, or agreement
+on numerical suitability thresholds. No runtime weight changes follow from them.
