@@ -141,7 +141,15 @@
               "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
               "status": "conditional_scoping_transfer",
               "quote": "without targeting any specific species or agroforestry model"
-            }
+            },
+            "source_corrections": [
+              {
+                "date": "2026-10-21",
+                "agent": "Codex",
+                "note": "Table 2 PDF p11 explicitly reports slope classes 0–5, 5–10, 10–15, 15–20, 20–44 degrees. Added omitted finite endpoints; original shared-boundary ambiguity remains.",
+                "human_review_state_changed": false
+              }
+            ]
           },
           "source_group": "default",
           "ordinal_scale": {
@@ -155,7 +163,7 @@
           "unit": "degrees",
           "intervals": [
             {
-              "lower": null,
+              "lower": 0.0,
               "upper": 5.0,
               "lower_inclusive": true,
               "upper_inclusive": true,
@@ -204,7 +212,7 @@
             },
             {
               "lower": 20.0,
-              "upper": null,
+              "upper": 44.0,
               "lower_inclusive": true,
               "upper_inclusive": true,
               "label": "unsuitable",
@@ -254,6 +262,48 @@
             "cells": [
               {
                 "lower": null,
+                "upper": 0.0,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.75,
+                "median_upper": 0.75,
+                "score": 0.75,
+                "source_min": 0.75,
+                "source_max": 0.75,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.368421052631579,
+                "origins": [
+                  "ahmad_2018"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
+                ]
+              },
+              {
+                "lower": 0.0,
+                "upper": 0.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0.9,
+                "median_upper": 0.9,
+                "score": 0.9,
+                "source_min": 0.75,
+                "source_max": 0.9,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 0.0,
                 "upper": 2.862405226111748,
                 "lower_inclusive": false,
                 "upper_inclusive": false,
@@ -504,7 +554,7 @@
               },
               {
                 "lower": 20.0,
-                "upper": null,
+                "upper": 44.0,
                 "lower_inclusive": false,
                 "upper_inclusive": false,
                 "median_lower": 0,
@@ -522,6 +572,49 @@
                 "flags": [
                   "exclusion_conflict",
                   "source_disagreement"
+                ]
+              },
+              {
+                "lower": 44.0,
+                "upper": 44.0,
+                "lower_inclusive": true,
+                "upper_inclusive": true,
+                "median_lower": 0,
+                "median_upper": 0,
+                "score": null,
+                "source_min": 0,
+                "source_max": 0.25,
+                "n_sources": 2,
+                "eligible_sources": 2,
+                "weight_coverage": 1.0,
+                "origins": [
+                  "ahmad_2018",
+                  "nath_2021"
+                ],
+                "flags": [
+                  "exclusion_conflict",
+                  "source_disagreement"
+                ]
+              },
+              {
+                "lower": 44.0,
+                "upper": null,
+                "lower_inclusive": false,
+                "upper_inclusive": false,
+                "median_lower": 0.25,
+                "median_upper": 0.25,
+                "score": 0.25,
+                "source_min": 0.25,
+                "source_max": 0.25,
+                "n_sources": 1,
+                "eligible_sources": 2,
+                "weight_coverage": 0.368421052631579,
+                "origins": [
+                  "ahmad_2018"
+                ],
+                "flags": [
+                  "partial_coverage",
+                  "single_source"
                 ]
               }
             ],

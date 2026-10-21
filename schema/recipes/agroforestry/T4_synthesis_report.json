@@ -4,7 +4,7 @@
     "schema/registers/XW_target_crosswalk.csv": "5a3afb62e1ab1cb4151575567fbc6f3b181d805bd66802def95451998646a1c6",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
     "schema/registers/SRC_source_register.csv": "8d1446e666377d9d9e7079e0f84d83c0ad9981e063f873a92a1a6b8dfe96a4d8",
-    "schema/registers/EV_evidence_register.csv": "ffbdcdbdf6cdbf6d3bedd5eafefc7c2785ecb23e38d61d7c47d3c6e0c6af4003",
+    "schema/registers/EV_evidence_register.csv": "c470c8f1f46a873556cabfd73e2c4a424f3795721ed7388328d4bb8d388e48c6",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
@@ -13,7 +13,7 @@
     "schema/registers/VONT_variable_ontology.csv": "7bbce615714d21dda92758d09cd38ce760e85604b8931a90117ff19cc088e494",
     "schema/registers/BANDS_magnitude_bands.csv": "5da05fc9bb4664ab0b2482806bcf25a6edc7461a00be42ea5be6d481310998c5",
     "schema/lookups/crop_scope_policy.csv": "62f6bf68b618116e63d4bee57d7b01c6710b4a2ba62b4405bf7daf1662f9a5b4",
-    "schema/lookups/t4_numeric_compilation_policy.csv": "2b329b115adcbbfab4e7d6d066c4f10131883fe5460e071f853af33a956f4176"
+    "schema/lookups/t4_numeric_compilation_policy.csv": "e793f15b921866e47cad9ae69fa457fc226bc5d39f0c19fba28fd47d20728541"
   },
   "screened_corpus_manifest": null,
   "review_mode": "approved_only",
@@ -22,6 +22,150 @@
       "family": "agroforestry__cross_family",
       "corpus_n": null,
       "rows": [
+        {
+          "mapping_id": "agroforestry__cross_family__ndvi",
+          "suitability_family_id": "agroforestry__cross_family",
+          "variable": "ndvi",
+          "variable_unit": "unitless",
+          "dataset_id": "mod13q1_ndvi",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_T4_canopy_ahmad2018_1",
+                "source_id": "ahmad_2018",
+                "continuation_of": "",
+                "evidence_ids": [
+                  "ev_T4_canopy_ahmad2018_1"
+                ],
+                "page_locators": {
+                  "ev_T4_canopy_ahmad2018_1": 8
+                },
+                "evidence_id": "ev_T4_canopy_ahmad2018_1",
+                "context": {
+                  "study_country": "India",
+                  "system_applicability_review": {
+                    "reviewer": "Codex source review",
+                    "date": "2026-10-20",
+                    "pages": [
+                      8,
+                      9,
+                      10
+                    ],
+                    "source_scope": "Broad regional agroforestry model; explicitly includes agrisilviculture and silvopastoral systems.",
+                    "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
+                    "status": "conditional_scoping_transfer",
+                    "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
+                  },
+                  "model_use": {
+                    "verified": true,
+                    "method": "source_weight",
+                    "page": "8",
+                    "weight_path_pct": [
+                      14.4
+                    ],
+                    "scope": "practice_technology"
+                  },
+                  "source_corrections": [
+                    {
+                      "date": "2026-10-21",
+                      "agent": "Codex",
+                      "note": "Table 2 PDF p8 explicitly labels NDVI, not tree canopy cover. Corrected canonical variable; retained original classes and 14.4% source weight. Existing reviewer attribution already identifies NDVI.",
+                      "human_review_state_changed": false
+                    }
+                  ]
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "low": 1,
+                  "medium": 2,
+                  "high": 3
+                },
+                "applicability_note": "Samastipur regional NDVI classes; no automatic transfer into named systems. NDVI is vegetation greenness, not tree-cover percentage.",
+                "unit": "unitless",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 0.2,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "Low",
+                    "rank": 1,
+                    "score": 0.25,
+                    "legacy_score": 0.3333333333333333,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 0.2,
+                    "upper": 0.5,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "Medium",
+                    "rank": 2,
+                    "score": 0.5,
+                    "legacy_score": 0.6666666666666666,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 0.5,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "High",
+                    "rank": 3,
+                    "score": 0.75,
+                    "legacy_score": 1.0,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  }
+                ],
+                "origin_id": "ahmad_2018",
+                "source_weight": 0.315,
+                "variable": "ndvi",
+                "score_policy": "semantic_classes_v1",
+                "pool_id": "",
+                "system_id": "",
+                "context_id": "",
+                "compatibility_approved": false,
+                "applicability_review": {},
+                "pool_review": "regional_context_requires_selection"
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "per_profile_schema_policy",
+            "harmonization": {
+              "pools": [],
+              "review": [
+                {
+                  "profile_id": "ev_T4_canopy_ahmad2018_1",
+                  "reason": "regional_context_requires_selection"
+                }
+              ]
+            },
+            "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "references": [
+            "ahmad_2018"
+          ],
+          "evidence_ids": [
+            "ev_T4_canopy_ahmad2018_1"
+          ],
+          "parameter_source_ids": [
+            "ahmad_2018"
+          ],
+          "n_parameter_sources": 1,
+          "paper_support_pct": null,
+          "n_sources": 3,
+          "corpus_n": null
+        },
         {
           "mapping_id": "agroforestry__cross_family__slope",
           "suitability_family_id": "agroforestry__cross_family",
@@ -894,7 +1038,7 @@
         {
           "variable": "ndvi",
           "support_pct": null,
-          "n_sources": 2,
+          "n_sources": 3,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -950,7 +1094,7 @@
         {
           "variable": "tree_canopy_cover",
           "support_pct": null,
-          "n_sources": 2,
+          "n_sources": 1,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -992,7 +1136,7 @@
         },
         "land_cover_vegetation": {
           "key": "land_cover_vegetation",
-          "n_sources": 2,
+          "n_sources": 3,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -1001,7 +1145,7 @@
         },
         "land_use": {
           "key": "land_use",
-          "n_sources": 5,
+          "n_sources": 4,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -1119,12 +1263,12 @@
         },
         "ev_T4_canopy_ahmad2018_1": {
           "source_id": "ahmad_2018",
-          "variable": "tree_canopy_cover",
+          "variable": "ndvi",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "variable_mismatch_quote_is_NDVI_not_canopy_cover",
+          "status": "parameter_contributor",
           "relationship": {
-            "direction": "positive",
+            "direction": "increasing",
             "thresholds": [
               {
                 "label": "Low",
@@ -5367,24 +5511,31 @@
       "support_basis": "unknown_screened_source_membership",
       "support_sources": [],
       "reports": {
-        "tree_canopy_cover": {
-          "used": [],
+        "ndvi": {
+          "used": [
+            "ev_T4_canopy_ahmad2018_1"
+          ],
           "dropped": [],
           "collapsed": [],
           "notes": [
-            "only 0 independent source(s) → uncertainty bumped"
+            "only 0 independent source(s) → uncertainty bumped",
+            "Regional profiles retained separately; uncertainty floor 20%, not a measured confidence interval."
           ],
           "unresolved": [
             [
-              "ev_t4_treecan_nath21_01",
-              "class_or_gate_requires_mapping"
+              "ev_T4_model_use_ahmad2020_ndvi",
+              "selection_only"
             ],
             [
-              "ev_T4_canopy_ahmad2018_1",
-              "variable_mismatch_quote_is_NDVI_not_canopy_cover"
+              "ev_t4_landcov_nath21_01",
+              "source_prints_overlapping_NDVI_unsuitable_class"
             ]
           ],
-          "parameter_evidence": {}
+          "parameter_evidence": {
+            "profiles": [
+              "ev_T4_canopy_ahmad2018_1"
+            ]
+          }
         },
         "soil_drainage": {
           "used": [],
@@ -5566,7 +5717,7 @@
           ],
           "parameter_evidence": {}
         },
-        "ndvi": {
+        "tree_canopy_cover": {
           "used": [],
           "dropped": [],
           "collapsed": [],
@@ -5575,12 +5726,8 @@
           ],
           "unresolved": [
             [
-              "ev_T4_model_use_ahmad2020_ndvi",
-              "selection_only"
-            ],
-            [
-              "ev_t4_landcov_nath21_01",
-              "source_prints_overlapping_NDVI_unsuitable_class"
+              "ev_t4_treecan_nath21_01",
+              "class_or_gate_requires_mapping"
             ]
           ],
           "parameter_evidence": {}
@@ -6738,7 +6885,15 @@
                     "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
                     "status": "conditional_scoping_transfer",
                     "quote": "without targeting any specific species or agroforestry model"
-                  }
+                  },
+                  "source_corrections": [
+                    {
+                      "date": "2026-10-21",
+                      "agent": "Codex",
+                      "note": "Table 2 PDF p11 explicitly reports slope classes 0–5, 5–10, 10–15, 15–20, 20–44 degrees. Added omitted finite endpoints; original shared-boundary ambiguity remains.",
+                      "human_review_state_changed": false
+                    }
+                  ]
                 },
                 "source_group": "default",
                 "ordinal_scale": {
@@ -6752,7 +6907,7 @@
                 "unit": "degrees",
                 "intervals": [
                   {
-                    "lower": null,
+                    "lower": 0.0,
                     "upper": 5.0,
                     "lower_inclusive": true,
                     "upper_inclusive": true,
@@ -6801,7 +6956,7 @@
                   },
                   {
                     "lower": 20.0,
-                    "upper": null,
+                    "upper": 44.0,
                     "lower_inclusive": true,
                     "upper_inclusive": true,
                     "label": "unsuitable",
@@ -6851,6 +7006,48 @@
                   "cells": [
                     {
                       "lower": null,
+                      "upper": 0.0,
+                      "lower_inclusive": false,
+                      "upper_inclusive": false,
+                      "median_lower": 0.75,
+                      "median_upper": 0.75,
+                      "score": 0.75,
+                      "source_min": 0.75,
+                      "source_max": 0.75,
+                      "n_sources": 1,
+                      "eligible_sources": 2,
+                      "weight_coverage": 0.368421052631579,
+                      "origins": [
+                        "ahmad_2018"
+                      ],
+                      "flags": [
+                        "partial_coverage",
+                        "single_source"
+                      ]
+                    },
+                    {
+                      "lower": 0.0,
+                      "upper": 0.0,
+                      "lower_inclusive": true,
+                      "upper_inclusive": true,
+                      "median_lower": 0.9,
+                      "median_upper": 0.9,
+                      "score": 0.9,
+                      "source_min": 0.75,
+                      "source_max": 0.9,
+                      "n_sources": 2,
+                      "eligible_sources": 2,
+                      "weight_coverage": 1.0,
+                      "origins": [
+                        "ahmad_2018",
+                        "nath_2021"
+                      ],
+                      "flags": [
+                        "source_disagreement"
+                      ]
+                    },
+                    {
+                      "lower": 0.0,
                       "upper": 2.862405226111748,
                       "lower_inclusive": false,
                       "upper_inclusive": false,
@@ -7101,7 +7298,7 @@
                     },
                     {
                       "lower": 20.0,
-                      "upper": null,
+                      "upper": 44.0,
                       "lower_inclusive": false,
                       "upper_inclusive": false,
                       "median_lower": 0,
@@ -7119,6 +7316,49 @@
                       "flags": [
                         "exclusion_conflict",
                         "source_disagreement"
+                      ]
+                    },
+                    {
+                      "lower": 44.0,
+                      "upper": 44.0,
+                      "lower_inclusive": true,
+                      "upper_inclusive": true,
+                      "median_lower": 0,
+                      "median_upper": 0,
+                      "score": null,
+                      "source_min": 0,
+                      "source_max": 0.25,
+                      "n_sources": 2,
+                      "eligible_sources": 2,
+                      "weight_coverage": 1.0,
+                      "origins": [
+                        "ahmad_2018",
+                        "nath_2021"
+                      ],
+                      "flags": [
+                        "exclusion_conflict",
+                        "source_disagreement"
+                      ]
+                    },
+                    {
+                      "lower": 44.0,
+                      "upper": null,
+                      "lower_inclusive": false,
+                      "upper_inclusive": false,
+                      "median_lower": 0.25,
+                      "median_upper": 0.25,
+                      "score": 0.25,
+                      "source_min": 0.25,
+                      "source_max": 0.25,
+                      "n_sources": 1,
+                      "eligible_sources": 2,
+                      "weight_coverage": 0.368421052631579,
+                      "origins": [
+                        "ahmad_2018"
+                      ],
+                      "flags": [
+                        "partial_coverage",
+                        "single_source"
                       ]
                     }
                   ],
@@ -9534,7 +9774,9 @@
             "marginal_min_deg": 15,
             "marginal_max_deg": 20,
             "unsuitable_min_deg": 20,
-            "variable_weight_pct": 40
+            "variable_weight_pct": 40,
+            "very_good_min_deg": 0,
+            "unsuitable_max_deg": 44
           }
         },
         "ev_t4_treecanopy_palma2007_01": {

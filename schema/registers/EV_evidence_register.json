@@ -1187,9 +1187,9 @@
     "source_id": "ahmad_2018",
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__cross_family",
-    "variable": "tree_canopy_cover",
+    "variable": "ndvi",
     "relationship": {
-      "direction": "positive",
+      "direction": "increasing",
       "thresholds": [
         {
           "label": "Low",
@@ -1219,7 +1219,24 @@
         "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
         "status": "conditional_scoping_transfer",
         "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
-      }
+      },
+      "model_use": {
+        "verified": true,
+        "method": "source_weight",
+        "page": "8",
+        "weight_path_pct": [
+          14.4
+        ],
+        "scope": "practice_technology"
+      },
+      "source_corrections": [
+        {
+          "date": "2026-10-21",
+          "agent": "Codex",
+          "note": "Table 2 PDF p8 explicitly labels NDVI, not tree canopy cover. Corrected canonical variable; retained original classes and 14.4% source weight. Existing reviewer attribution already identifies NDVI.",
+          "human_review_state_changed": false
+        }
+      ]
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -1230,7 +1247,7 @@
     "page": 8,
     "reviewer_ok": true,
     "raw_name": "NDVI",
-    "attribution": "[reviewed 2026-10-19 by Namita-J] NDVI used as vegetation density proxy for agroforestry suitability scoring; general — applies cross-family",
+    "attribution": "[source correction 2026-10-21 by Codex: Table 2 PDF p8 explicitly labels NDVI, not tree canopy cover. Corrected canonical variable; retained original classes and 14.4% source weight. Existing reviewer attribution already identifies NDVI.] [reviewed 2026-10-19 by Namita-J] NDVI used as vegetation density proxy for agroforestry suitability scoring; general — applies cross-family",
     "locator_type": "page",
     "ruleset_version": "2026-06-18.section-scope"
   },
@@ -4504,7 +4521,9 @@
       "marginal_min_deg": 15,
       "marginal_max_deg": 20,
       "unsuitable_min_deg": 20,
-      "variable_weight_pct": 40
+      "variable_weight_pct": 40,
+      "very_good_min_deg": 0,
+      "unsuitable_max_deg": 44
     },
     "context": {
       "model_use": {
@@ -4530,7 +4549,15 @@
         "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
         "status": "conditional_scoping_transfer",
         "quote": "without targeting any specific species or agroforestry model"
-      }
+      },
+      "source_corrections": [
+        {
+          "date": "2026-10-21",
+          "agent": "Codex",
+          "note": "Table 2 PDF p11 explicitly reports slope classes 0–5, 5–10, 10–15, 15–20, 20–44 degrees. Added omitted finite endpoints; original shared-boundary ambiguity remains.",
+          "human_review_state_changed": false
+        }
+      ]
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
@@ -4541,7 +4568,7 @@
     "page": 11,
     "reviewer_ok": true,
     "raw_name": "Slope",
-    "attribution": "[reviewed 2026-10-19 by Pete Steward; reason:confirmed_pass; note:this is akey table overall we need to make sure this type of data is being conserved] [reviewed 2026-09-18 by peetmate; reason:confirmed_pass] general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
+    "attribution": "[source correction 2026-10-21 by Codex: Table 2 PDF p11 explicitly reports slope classes 0–5, 5–10, 10–15, 15–20, 20–44 degrees. Added omitted finite endpoints; original shared-boundary ambiguity remains.] [reviewed 2026-10-19 by Pete Steward; reason:confirmed_pass; note:this is akey table overall we need to make sure this type of data is being conserved] [reviewed 2026-09-18 by peetmate; reason:confirmed_pass] general — applies cross-family (Nath et al. 2021 MCDA study, EIHR)",
     "locator_type": "page"
   },
   {
