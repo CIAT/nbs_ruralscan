@@ -9,7 +9,7 @@ def object_value(value, default):
 
 
 def family_coverage(evidence, mappings, sources, nbs_id):
-    cells = defaultdict(lambda: {"units": [], "mappings": []})
+    cells = defaultdict(lambda: {"units": [], "mappings": [], "dependencies": []})
     for unit in evidence:
         if unit.get("nbs_id") != nbs_id or unit.get("review_state") == "dropped":
             continue
@@ -32,6 +32,27 @@ def family_coverage(evidence, mappings, sources, nbs_id):
         cells[(mapping["suitability_family_id"], mapping["variable"])][
             "mappings"
         ].append(mapping)
+        params = object_value(mapping.get("relationship_params"), {})
+        required = {
+            name
+            for names in params.get("class_requirements", {}).values()
+            for name in names
+        }
+        for name in sorted(required):
+            spec = params.get("host_bindings", {}).get(name, {})
+            for variable in spec.get("variables", [name]):
+                cells[(mapping["suitability_family_id"], variable)][
+                    "dependencies"
+                ].append(
+                    {
+                        "mapping_id": mapping["mapping_id"],
+                        "mask": name,
+                        "parent_variable": mapping["variable"],
+                        "note": spec.get("note", ""),
+                        "operation": spec.get("operation", ""),
+                        "evidence_ids": object_value(mapping.get("evidence_ids"), []),
+                    }
+                )
     result = []
     for (family, variable), cell in sorted(cells.items()):
         papers, reviewed, model_use, directions = set(), set(), set(), defaultdict(set)
@@ -70,6 +91,7 @@ def family_coverage(evidence, mappings, sources, nbs_id):
         result.append(
             dict(
                 family=family,
+                required_input_for=cell["dependencies"],
                 variable=variable,
                 evidence_papers=len(papers),
                 reviewed_papers=len(reviewed),

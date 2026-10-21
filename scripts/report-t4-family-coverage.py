@@ -45,13 +45,39 @@ def main():
     for variable in sorted({r["variable"] for r in rows}):
         selected = [r for r in rows if r["variable"] == variable]
         visible = any(
-            r["mapping_ids"] or r["verified_model_use_papers"] for r in selected
+            r["mapping_ids"]
+            or r["verified_model_use_papers"]
+            or r["required_input_for"]
+            for r in selected
         )
         cells = []
         for family in families:
             r = next((r for r in selected if r["family"] == family), None)
             if not r:
                 cells.append("<td>—</td>")
+                continue
+            if (
+                r["required_input_for"]
+                and not r["mapping_ids"]
+                and not r["evidence_ids"]
+            ):
+                details = "".join(
+                    "<p>"
+                    + esc(
+                        d["note"]
+                        or "Required input for "
+                        + d["parent_variable"].replace("_", " ")
+                    )
+                    + "</p><small>Used by: "
+                    + esc(d["mapping_id"])
+                    + "</small>"
+                    for d in r["required_input_for"]
+                )
+                cells.append(
+                    "<td><b>Separate required input</b>"
+                    + details
+                    + "<p>Linked to parent rule; no additional paper vote or suitability weight.</p></td>"
+                )
                 continue
             rules = "; ".join(r["relationship_types"]) or "No configured rule"
             directions = (
@@ -76,6 +102,7 @@ def main():
         """<!doctype html><html lang="en"><meta charset="utf-8"><title>T4 family evidence matrix</title><style>body{font:16px system-ui;color:#203e34;background:#f5f8f6;margin:28px}p{max-width:1150px;line-height:1.5}.scroll{overflow:auto;max-height:75vh}table{border-collapse:collapse;background:white}th,td{min-width:220px;padding:14px;vertical-align:top;border:1px solid #d5dfda}th{background:#e1ece6;position:sticky;top:0}input{padding:10px;margin:10px}details{margin-top:10px}</style><h1>T4: evidence by agroforestry system</h1>
 <p>Read across to compare systems. Counts stay within assigned system; shared regional evidence is not automatically inherited. “System not assigned” means source applicability still needs a system/context decision. No percentage support shown: this is an evidence inventory, not a complete screened-paper denominator. Counts deduplicate DOI/source identity; secondary-source lineage still requires checking before independent agreement is claimed.</p>
 <p>Evidence papers count active general-practice structural records; human-reviewed means at least one retained record for that paper and cell was approved, not that every claim is settled. Verified model use is separate source-checked metadata. Direction counts require explicit encoding and do not create numeric curves. Dropped, crop/species and soft scenario evidence stay outside these general-practice counts. Configured crop-host rules remain visible independently.</p>
+<p>Boundary plantings require two distinct inputs: <strong>land cover</strong> describes the host land use; <strong>field-boundary zone</strong> identifies placement geometry and a locally justified buffer. Boundary geometry is not a land-cover class. Other required inputs are likewise shown separately, without duplicating evidence votes.</p>
 <p><strong>Configured does not mean ready everywhere:</strong> piecewise rules can require explicit regional profile selection; categorical rules require their dataset inputs. No new weight or applicability approval follows from this matrix.</p>
 <p><a href="t4-importance-comparison.html">Study importance matrix</a> · <a href="t4-candidate-weights.html">Approved comparison baseline and sensitivity</a>. These importance comparisons remain regional; they have not been assigned as weights to each system.</p>
 <input id="search" aria-label="Filter variables" placeholder="Filter variable"><label><input id="all" type="checkbox">Include evidence-only variables without configured rules or verified model use</label><div class="scroll"><table><thead><tr><th>Variable</th>"""
