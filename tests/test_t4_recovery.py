@@ -9,7 +9,7 @@ import shutil
 import pytest
 
 from nbs_ruralscan.recipe.numeric_bands import join_continuations
-from nbs_ruralscan.schema_tools.t4_coverage import check
+from nbs_ruralscan.schema_tools.t4_coverage import check, check_direction_inventory
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -393,3 +393,80 @@ def test_source_classes_keep_correct_variable_and_calibration_limits():
     live = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")
     assert "ev_t4_treecan_nath21_01" not in live
     assert "EV_eld_fmnr_2020_003" not in live
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "missing",
+        "direction",
+        "raw_value",
+        "numeric_curve",
+        "weight",
+        "calibration",
+        "live",
+    ],
+)
+def test_audited_direction_retention_rejects_regressions(defect):
+    evidence = {
+        r["evidence_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    before = copy.deepcopy(evidence)
+    eid = "ev_T4_rereview_ahmad_2020_mean_annual_temperature_1"
+    row = evidence[eid]
+    context = json.loads(row["context"])
+    rel = json.loads(row["relationship"])
+    live_ids = set()
+    if defect == "missing":
+        del evidence[eid]
+    elif defect == "direction":
+        rel["direction"] = "decreasing"
+    elif defect == "raw_value":
+        context["reported_values"]["table_high"] = 30.06
+    elif defect == "numeric_curve":
+        rel["min"] = -27.21
+    elif defect == "weight":
+        context["model_use"]["weight_path_pct"] = [100]
+    elif defect == "calibration":
+        context["t4_assessment"]["calibration_status"] = "approved"
+    elif defect == "live":
+        live_ids.add(eid)
+    row["context"] = json.dumps(context)
+    row["relationship"] = json.dumps(rel)
+    assert check_direction_inventory(ROOT, evidence, live_ids)
+    # Validation never manufactures approval or modifies evidence.
+    snapshot = copy.deepcopy(evidence)
+    check_direction_inventory(ROOT, evidence, live_ids)
+    assert evidence == snapshot
+    assert row["reviewer_ok"] == before[eid]["reviewer_ok"]
+    assert row["review_state"] == before[eid]["review_state"]
+
+
+@pytest.mark.parametrize(
+    "defect",
+    ["missing_inventory", "empty", "lost_record", "missing_image", "changed_image"],
+)
+def test_direction_inventory_and_source_image_required(coverage_tree, defect):
+    path = (
+        coverage_tree
+        / "pipeline/t4_audit/agroforestry/direction_retention_inventory.json"
+    )
+    inventory = json.loads(path.read_text())
+    image = coverage_tree / inventory["records"][0]["direction_provenance"]["image"]
+    if defect == "missing_inventory":
+        path.unlink()
+    elif defect == "empty":
+        inventory["records"] = []
+        path.write_text(json.dumps(inventory))
+    elif defect == "lost_record":
+        inventory["records"].pop()
+        path.write_text(json.dumps(inventory))
+    elif defect == "missing_image":
+        image.unlink()
+    else:
+        image.write_bytes(b"changed")
+    errors = check(coverage_tree)
+    assert any("direction" in error for error in errors)

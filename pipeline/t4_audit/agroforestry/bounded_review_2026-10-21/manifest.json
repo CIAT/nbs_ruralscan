@@ -4715,7 +4715,13 @@
     {
       "issue": "Direction/calibration retention not executable check",
       "evidence": "v1.6.16 contract exists; t4_coverage lacks supported-direction presence or reported-value preservation checks",
-      "fix": "Regression expected directions and raw values from audited tables; forbid direction-only rows generating thresholds/scores."
+      "fix": "Regression expected directions and raw values from audited tables; forbid direction-only rows generating thresholds/scores.",
+      "progress": {
+        "date": "2026-10-21",
+        "status": "partially_corrected",
+        "completed": "Executable gate preserves five visually audited Ahmad 2020 Table 2 directions, literal values, weight paths, calibration holds and source-image fingerprints. These uncalibrated records cannot enter live T4. Mutation tests cover loss, altered values and unsupported promotion.",
+        "remaining": "Six raw soil properties and other sources remain outside this initial direction-retention inventory. This is bounded regression coverage, not proof of complete extraction or direction agreement."
+      }
     },
     {
       "issue": "Variable use independence/review state incomplete",

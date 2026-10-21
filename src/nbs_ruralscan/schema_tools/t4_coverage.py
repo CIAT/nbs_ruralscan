@@ -121,6 +121,54 @@ def check_review_followups(log, evidence, followups, root=None):
     return errors
 
 
+def check_direction_inventory(root, evidence, live_ids):
+    """Check source-audited expectations, never infer calibration from endpoints."""
+    path = root / "pipeline/t4_audit/agroforestry/direction_retention_inventory.json"
+    if not path.is_file():
+        return ["Missing direction-retention inventory"]
+    inventory = json.loads(path.read_text(encoding="utf-8"))
+    records = inventory.get("records", [])
+    errors = []
+    if (
+        not records
+        or len(records) != inventory.get("expected_records")
+        or len({r["evidence_id"] for r in records}) != len(records)
+    ):
+        errors.append("Incomplete direction-retention inventory")
+    for expected in records:
+        eid = expected["evidence_id"]
+        row = evidence.get(eid)
+        if not row:
+            errors.append("Missing audited directional evidence: " + eid)
+            continue
+        rel = json.loads(row["relationship"] or "{}")
+        context = json.loads(row["context"] or "{}")
+        actual = {
+            "source_id": row["source_id"],
+            "variable": row["variable"],
+            "relationship": rel,
+            "reported_values": context.get("reported_values"),
+            "weight_path_pct": context.get("model_use", {}).get("weight_path_pct"),
+            "direction_provenance": context.get("direction_provenance"),
+            "calibration_status": context.get("t4_assessment", {}).get(
+                "calibration_status"
+            ),
+        }
+        for field, value in actual.items():
+            if value != expected[field]:
+                errors.append(f"Audited directional {field} changed: {eid}")
+        provenance = expected["direction_provenance"]
+        image = root / provenance["image"]
+        if (
+            not image.is_file()
+            or hashlib.sha256(image.read_bytes()).hexdigest() != provenance["sha256"]
+        ):
+            errors.append("Audited direction source image changed: " + eid)
+        if eid in live_ids:
+            errors.append("Uncalibrated direction entered executable T4: " + eid)
+    return errors
+
+
 def check(root):
     errors = []
     audit = root / "pipeline/t4_audit/agroforestry"
@@ -207,6 +255,7 @@ def check(root):
                 errors.append(
                     "Missing/changed model-weight image: " + row["evidence_id"]
                 )
+    errors.extend(check_direction_inventory(root, evidence, live_ids))
     errors.extend(check_extraction_inventory(root, evidence, live_ids))
     return errors
 
