@@ -156,3 +156,32 @@ def test_chuma_road_weight_does_not_become_travel_time_or_structural_response():
         record["evidence_id"] not in json.loads(r["evidence_ids"] or "[]")
         for r in structural
     )
+
+
+def test_source_proxy_labels_do_not_assert_tenure_or_canopy_equivalence():
+    """Preserve distinct source constructs and existing quarantine decisions."""
+    import csv
+    import json
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    with (root / "schema/registers/EV_evidence_register.csv").open() as handle:
+        rows = {r["evidence_id"]: r for r in csv.DictReader(handle)}
+    ownership = rows["ev_operational_risk_tenure_security_baldwin_2022_full"]
+    assert ownership["variable"] == "ownership_consolidation"
+    assert ownership["raw_name"] == "Single Entity Ownership"
+    assert ownership["use_role"] == "operational_risk"
+    assert not any(
+        r["source_id"] == "baldwin_2022" and r["variable"] == "tenure_security"
+        for r in rows.values()
+    )
+    with (root / "schema/registers/VONT_variable_ontology.csv").open() as handle:
+        ontology = {r["canonical_variable_id"]: r for r in csv.DictReader(handle)}
+    assert ontology["ownership_consolidation"]["review_status"] == "pending_review"
+    assert (
+        json.loads(ontology["ownership_consolidation"]["candidate_dataset_ids"]) == []
+    )
+    trees = rows["ev_structural_suitability_tree_canopy_cover_pinto_2019_full"]
+    assert trees["raw_name"] == "land occupied by trees"
+    assert trees["review_state"] == "dropped"
+    assert json.loads(trees["context"])["canonical_mapping_hold"]

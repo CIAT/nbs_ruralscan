@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-21T12:55:44.684675+00:00",
-  "git_commit": "9e315e89c5b175845c6fa8d6f9030dec72d5856b",
+  "timestamp": "2026-10-21T13:01:09.136669+00:00",
+  "git_commit": "bcf3899274fbc8a6c766843d63f3d50c36ebf460",
   "registers": {
     "SRC_source_register": [
       {
@@ -180321,7 +180321,7 @@
         "source_id": "baldwin_2022",
         "nbs_id": "agroforestry",
         "suitability_family_id": "cross_family",
-        "variable": "tenure_security",
+        "variable": "ownership_consolidation",
         "relationship": {
           "source_criterion": "contiguous parcels with common ownership"
         },
@@ -180329,7 +180329,20 @@
           "study_country": "United States",
           "extraction_run_id": "agroforestry_five_sources_2026-10-20",
           "review_needed": "Ownership consolidation is adoption feasibility, not proof of secure tenure or structural exclusion.",
-          "transfer_status": "source_context_only"
+          "transfer_status": "source_context_only",
+          "source_corrections": [
+            {
+              "date": "2026-10-21",
+              "agent": "Codex",
+              "note": "Corrected ownership consolidation mislabel: contiguous land with one owner/group reduces decision-makers; does not measure tenure security. Separate pending ontology entry; no runtime binding or global response authorized.",
+              "original_record": {
+                "variable": "tenure_security",
+                "raw_name": "tenure_security",
+                "attribution": ""
+              },
+              "human_review_state_changed": false
+            }
+          ]
         },
         "use_role": "operational_risk",
         "evidence_type": "scoping_candidate",
@@ -180339,7 +180352,8 @@
         "quote": "Single Entity Ownership: Suitable land owned by one consistent owner or ownership\ngroup affords more opportunities to establish FloodWise practices than suitable land\nsplit across multiple parcels, each with a different owner or ownership group. Limiting\nopportunity areas to contiguous land with consistent ownership reduces the number of\nstakeholders and decision-makers, increasing the feasibility of FloodWise practice adoption.",
         "page": 10,
         "reviewer_ok": false,
-        "raw_name": "tenure_security",
+        "raw_name": "Single Entity Ownership",
+        "attribution": "[source correction 2026-10-21 by Codex: Corrected ownership consolidation mislabel: contiguous land with one owner/group reduces decision-makers; does not measure tenure security. Separate pending ontology entry; no runtime binding or global response authorized.] ",
         "locator_type": "page",
         "ruleset_version": "v1.6.14"
       },
@@ -180422,7 +180436,21 @@
           "review_needed": "Montado AEM2 eligibility only. Review meaning of occupied-by-trees versus canopy cover before binding. Not an optimum or general silvopasture cutoff.",
           "transfer_status": "source_context_only",
           "programme": "AEM_2",
-          "host_system": "open Montado"
+          "host_system": "open Montado",
+          "source_corrections": [
+            {
+              "date": "2026-10-21",
+              "agent": "Codex",
+              "note": "Restore literal source term. Programme eligibility for land occupied by trees is not established as canopy cover; record remains dropped and cannot set a canopy threshold.",
+              "original_record": {
+                "variable": "tree_canopy_cover",
+                "raw_name": "tree_canopy_cover",
+                "attribution": "[dropped 2026-10-21 by peetmate; reason:other; note:it seems these are conservation objectives not suitability factors]"
+              },
+              "human_review_state_changed": false
+            }
+          ],
+          "canonical_mapping_hold": "Occupied by trees has not been established as tree_canopy_cover. Preserve source claim only; no dataset binding or canopy response."
         },
         "use_role": "structural_suitability",
         "evidence_type": "scoping_candidate",
@@ -180432,8 +180460,8 @@
         "quote": "AEM_2\nCattle extensification and\nregeneration of the open\nMontado\nAreas of natural regeneration of cork and\nholm oaks by installing protectors or\nfences, allowing for the minimal tree\ndensity of 20 trees ha−1 for targeted tree\nspecies\n>5 ha, >10% occupied by\ntrees, 0.15–0.50 cattle\nheads ha−1\nBSPA, SCI, NPA\n15–51",
         "page": 5,
         "reviewer_ok": false,
-        "raw_name": "tree_canopy_cover",
-        "attribution": "[dropped 2026-10-21 by peetmate; reason:other; note:it seems these are conservation objectives not suitability factors]",
+        "raw_name": "land occupied by trees",
+        "attribution": "[source correction 2026-10-21 by Codex: Restore literal source term. Programme eligibility for land occupied by trees is not established as canopy cover; record remains dropped and cannot set a canopy threshold.] [dropped 2026-10-21 by peetmate; reason:other; note:it seems these are conservation objectives not suitability factors]",
         "locator_type": "page",
         "review_state": "dropped",
         "ruleset_version": "v1.6.14"
@@ -187278,6 +187306,24 @@
         "raised_by": "Pete input decision D2",
         "raised_date": "2026-10-20",
         "comment": "Validated agricultural land-use context; independent of degradation. Required for non-cropland FMNR branches."
+      },
+      {
+        "canonical_variable_id": "ownership_consolidation",
+        "label": "Contiguous land under common ownership",
+        "aliases": [
+          "Single Entity Ownership",
+          "contiguous parcels with common ownership"
+        ],
+        "canonical_unit": "unitless",
+        "unit_conversions": {},
+        "group_id": "socio_economic",
+        "candidate_dataset_ids": [],
+        "derive_then_aggregate": false,
+        "context_sensitivity": "high",
+        "review_status": "pending_review",
+        "raised_by": "ev_operational_risk_tenure_security_baldwin_2022_full",
+        "raised_date": "2026-10-21",
+        "comment": "Baldwin 2022 p10: common ownership reduces stakeholders and decision-makers for FloodWise adoption. Operational feasibility criterion, not evidence of legal or customary tenure security. Source-context inventory only; no global response, weight, spatial resolution or dataset binding established."
       }
     ],
     "BIND_dataset_binding": [
