@@ -33,11 +33,7 @@ Vietnam income call and the zhang preprint are all closed (below). What remains 
 
 **Charity handoff (2026-10-07 workbook) — priority 1 worked 2026-10-21:** 5 of 14 auto-fetched
 and filed (Niether 2020, Badola & Hussain 2005, Brancalion 2019, Hajjar 2021, Miranda/Embrapa
-2019). **Browser clicks (5, all free):** Snapp 2010 https://pmc.ncbi.nlm.nih.gov/articles/PMC2996441/
-· Mak-Mensah 2021 https://pmc.ncbi.nlm.nih.gov/articles/PMC8378338/ · Michler 2019
-https://pmc.ncbi.nlm.nih.gov/articles/PMC6358000/ · Bruelle 2014
-http://agritrop.cirad.fr/575595/1/document_575595.pdf · Gonzalez-Sanchez 2019
-https://helvia.uco.es/handle/10396/27169. Moges 2011 PARKED (rooftop cisterns, a parked
+2019). **Browser clicks: all 5 DONE 2026-10-21** (Pete; Bruelle via the published version). Moges 2011 PARKED (rooftop cisterns, a parked
 family). The **56 priority-3 ResearchGate rows are parked**: revisit only when a thin or
 data-deficient cell needs one — the workbook itself is retired.
 
