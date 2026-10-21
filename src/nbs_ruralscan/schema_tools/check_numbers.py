@@ -18,6 +18,7 @@ from __future__ import annotations
 import csv
 import json
 import re
+import unicodedata
 from pathlib import Path
 
 # capture leading-dot decimals too (".13" as written in papers, not just "0.13")
@@ -63,6 +64,30 @@ _NUMBER_WORDS = {
 
 
 def _nums(text: str) -> set[str]:
+    """Union of the readings of the text as printed and of its normalised form.
+
+    Normalisation only ever ADDS readings (2026-10-21 retro): NFKC folds typographic
+    ligatures ("ﬁve" -> "five") and a thousands group split across a line break
+    ("25,\n000") is rejoined, but the as-printed tokens are kept, so no unit that
+    matched before can stop matching.
+    """
+    raw = text or ""
+    norm = re.sub(
+        r"(\d),\s*\n\s*(\d{3})\b", r"\1,\2", unicodedata.normalize("NFKC", raw)
+    )
+    out = _nums_one(raw)
+    if norm != raw:
+        out |= _nums_one(norm)
+    # "four and one-half (times)" = 4.5 — Bishop & Stevens 1964 (2026-10-21 retro)
+    for word, val in _NUMBER_WORDS.items():
+        if val.isdigit() and re.search(
+            rf"\b{word}\s+and\s+(?:one-|a\s+)half\b", norm, flags=re.IGNORECASE
+        ):
+            out.add(f"{val}.5")
+    return out
+
+
+def _nums_one(text: str) -> set[str]:
     """Numeric tokens, comma-stripped, trailing-zero-normalised (e.g. 1,637,600 / 25.0).
 
     Space-grouped thousands ("1 001") are ALSO added joined ("1001"), so a relationship
@@ -136,11 +161,13 @@ def _rel_nums(rel: str) -> set[str]:
     try:
         data = json.loads(rel)
     except (json.JSONDecodeError, TypeError):
-        return _nums(_strip_provenance(rel))
+        return _nums_one(_strip_provenance(rel))
     # " ; " not " ": adjacent values (observed_min 251, observed_max 500) must never fuse
     # into a space-grouped "thousands" number on the relationship side
     vals = " ; ".join(_strip_provenance(str(v)) for v in _walk(data))
-    return _nums(vals)
+    # claims are read as written: normalisation widens only the QUOTE side, so it can
+    # only ever make a unit pass, never demand a number its quote lacks
+    return _nums_one(vals)
 
 
 def _walk(obj):
