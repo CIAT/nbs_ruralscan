@@ -31,6 +31,16 @@ Vietnam income call and the zhang preprint are all closed (below). What remains 
   copy timed out server-side — one more browser click
   (http://ecoport.org/storedReference/558496.pdf) or ResearchGate.
 
+**Charity handoff (2026-10-07 workbook) — priority 1 worked 2026-10-21:** 5 of 14 auto-fetched
+and filed (Niether 2020, Badola & Hussain 2005, Brancalion 2019, Hajjar 2021, Miranda/Embrapa
+2019). **Browser clicks (5, all free):** Snapp 2010 https://pmc.ncbi.nlm.nih.gov/articles/PMC2996441/
+· Mak-Mensah 2021 https://pmc.ncbi.nlm.nih.gov/articles/PMC8378338/ · Michler 2019
+https://pmc.ncbi.nlm.nih.gov/articles/PMC6358000/ · Bruelle 2014
+http://agritrop.cirad.fr/575595/1/document_575595.pdf · Gonzalez-Sanchez 2019
+https://helvia.uco.es/handle/10396/27169. Moges 2011 PARKED (rooftop cisterns, a parked
+family). The **56 priority-3 ResearchGate rows are parked**: revisit only when a thin or
+data-deficient cell needs one — the workbook itself is retired.
+
 **For Namita — institutional download (3, verified paywalled after Unpaywall + web search +
 Pete's ResearchGate check, 2026-10-20):**
 - Tan-Soo et al. (2016) Econometric evidence on forest ecosystem services: deforestation and
@@ -40,6 +50,11 @@ Pete's ResearchGate check, 2026-10-20):**
 - Dymond et al. (2012) Tradeoffs between soil, water, and carbon — a national scale analysis
   from New Zealand. *J. Env. Management* 95(1). https://doi.org/10.1016/j.jenvman.2011.09.019
 Save to `library/2_ForestRestoration/` as `<source_id>.pdf` (ids in the acquisition queue).
+Plus three from the charity handoff (no free copy): Tonye et al. 1995
+https://doi.org/10.1016/0167-8809(95)00634-6 → `1_Agroforestry/tonye_1995_econ.pdf` · Nyamadzawo
+et al. 2013 (contour ridges, Zimbabwe; *Phys. Chem. Earth*, sciencedirect pii S1474706513001253)
+→ `3_Water_Harvesting/nyamadzawo_contour_ridges_zimbabwe_2013.pdf` · Didy et al. 2026
+https://doi.org/10.3917/afco1.281.0163 → `2_ForestRestoration/didy_2026_mangroves_sainte_marie_reboisement_vs_rna.pdf`.
 
 Also open, no judgement needed:
 - **kumw24_4 ("is this off scope?"):** answered — nutrient removal routes to the T5 priority
