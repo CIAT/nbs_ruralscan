@@ -51,3 +51,12 @@ PYTHONPATH=src python3 -m pytest tests/test_t4_bounded_review.py tests/test_evid
 ```
 
 The approval snapshot is an audit guard. Intentional later human-review changes require explicitly updating this audit expectation; they must never be hidden as incidental regeneration drift.
+
+## Source corrections applied, 21 October 2026
+
+Two previously flagged defects are now corrected against retained table images:
+
+- Nath Table 2, PDF p11: slope classes span 0–44 degrees. Added `very_good_min_deg=0` and `unsuitable_max_deg=44` to the existing evidence relationship. Values outside this source domain remain unknown; shared class endpoints are not silently repaired.
+- Ahmad Table 2, PDF p8: the 14.4% row is NDVI, with low <0.2, medium 0.2–0.5 and high >0.5. Corrected the original record's variable from canopy cover to NDVI, retained its stable evidence ID and original human-review attribution, and compiled its three regional classes. No automatic family transfer or cross-paper NDVI pool is approved.
+
+Both records retain their prior `reviewer_ok` and `review_state`. `context.source_corrections` records exactly what Codex changed and why; no new human review is claimed. The audit's original findings remain as history with a resolution entry. Pending companion records remain pending; these corrections do not bulk-approve the bounded review queue.

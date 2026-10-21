@@ -23,15 +23,15 @@ LABELS = {
 PROPOSALS = {
     "slope": (
         "Keep each paper’s slope classes within its stated crop and region. Treat values outside the reported range as unknown.",
-        "Nath stops at 44°; the existing extension above that needs correction. WOCAT slopes describe observed sites, not suitability limits.",
+        "Nath’s corrected profile now stops at 44°; outside 0–44° stays unknown. WOCAT slopes describe observed sites, not suitability limits.",
     ),
     "soil_ph": (
         "Keep topsoil and subsoil results distinct. Retain all reported classes; hold contradictory cutoffs and unresolved weight totals.",
         "Haile pH classes conflict. Nath repeats pH in nutrient and rooting branches. Species-selection criteria do not establish a universal pH range.",
     ),
     "ndvi": (
-        "Replace the mistaken canopy-cover interpretation with vegetation greenness (NDVI).",
-        "NDVI measures vegetation greenness; it is not percentage tree cover. Existing approved record needs a traceable correction.",
+        "Retain corrected vegetation-greenness (NDVI) interpretation.",
+        "NDVI measures vegetation greenness; it is not percentage tree cover. Existing approved record now has a traceable source correction; regional classes remain separate from global defaults.",
     ),
     "land_cover": (
         "Keep named land-use classes with their original study scope. Count Chuma’s use of land cover, but do not invent missing classes.",

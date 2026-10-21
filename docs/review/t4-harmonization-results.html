@@ -2,6 +2,7 @@
 *{box-sizing:border-box}body{max-width:1500px;margin:26px auto;padding:0 18px;font:15px system-ui;color:#203c30;background:#f4f7f5}h1{font-size:27px;margin-bottom:8px}p{line-height:1.5}.intro{color:#52695d;margin-top:0}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}.tabs button{font:inherit;padding:9px 14px;border:1px solid #adc4b5;background:white;border-radius:6px;cursor:pointer}.tabs button[aria-pressed=true]{background:#1c6147;color:white;border-color:#1c6147}.matrix-wrap{overflow-x:auto;background:white;border:1px solid #cbdcd1;border-radius:7px}table{width:100%;border-collapse:collapse;table-layout:fixed;min-width:580px}th,td{padding:14px 12px;text-align:left;vertical-align:top;border-bottom:1px solid #dbe6df;border-right:1px solid #e3ebe6}thead th{background:#e8f1eb;font-weight:650}tbody th{background:#f0f5f2;width:130px}thead th:first-child{width:130px}small{display:block;font-size:12px;font-weight:400;color:#52695d;line-height:1.45;margin-top:6px}.range{font-size:19px;font-weight:650;display:block;line-height:1.5}.missing{color:#7a877f;font-size:13px}.previous{color:#855d18}.source-label{font-style:italic}details{font-size:13px;margin-top:8px}summary{cursor:pointer;color:#23634b}details p{font-weight:400;overflow-wrap:anywhere}.foot{color:#52695d;font-size:13px}.review{margin-top:22px;padding:12px 16px;background:#edf2ee;border-radius:6px}.review li{margin:7px 0}a{color:#176447}.unit{font-size:15px;color:#52695d;font-weight:400}h2{font-size:21px}.profile{margin-top:8px}.score{font-weight:400;color:#577063}button:focus-visible,summary:focus-visible{outline:3px solid #c49e39} [hidden]{display:none!important}
 </style><h1>Agroforestry: compare studies side by side</h1><p class="intro">Choose a variable. Each column is a study or climate profile; each row aligns classes with the same common score.</p><div class="tabs" aria-label="Choose variable">
 <button data-variable="slope" aria-pressed="true" aria-controls="panel-slope">Slope</button>
+<button data-variable="ndvi" aria-pressed="false" aria-controls="panel-ndvi">Ndvi</button>
 <button data-variable="annual_precipitation" aria-pressed="false" aria-controls="panel-annual_precipitation">Annual precipitation</button>
 <button data-variable="soil_organic_carbon" aria-pressed="false" aria-controls="panel-soil_organic_carbon">Soil organic carbon</button>
 <button data-variable="elevation" aria-pressed="false" aria-controls="panel-elevation">Elevation</button>
@@ -26,11 +27,11 @@
 </td>
 <td class="missing">Not reported</td>
 <td>
-<div title="Original interval: [−∞, 5]"><span class="range">≤ 5</span><small class="source-label">Very good</small>
+<div title="Original interval: [0, 5]"><span class="range">0–5</span><small class="source-label">Very good</small>
 </div>
 </td>
 <td>
-<div title="Original interval: (−∞, 5)"><span class="range">&lt; 5</span><small class="source-label">Both studies contribute</small>
+<div title="Original interval: [0, 5)"><span class="range">0–5</span><small class="source-label">Both studies contribute</small>
 </div>
 </td>
 </tr>
@@ -52,6 +53,8 @@
 </div>
 </td>
 <td>
+<div title="Original interval: (−∞, 0)"><span class="range">&lt; 0</span><small class="source-label">One study contributes</small>
+</div>
 <div title="Original interval: (5, 10)"><span class="range">5–10</span><small class="source-label">Both studies contribute</small>
 </div>
 </td>
@@ -103,6 +106,8 @@
 </div>
 <div title="Original interval: [20, 20]"><span class="range">Exactly 20</span><small class="source-label">One study contributes</small>
 </div>
+<div title="Original interval: (44, ∞)"><span class="range">&gt; 44</span><small class="source-label">One study contributes</small>
+</div>
 </td>
 </tr>
 <tr><th scope="row">Unsuitable<small class="score">0</small></th>
@@ -110,7 +115,7 @@
 <td class="missing">Not reported</td>
 <td class="missing">Not reported</td>
 <td>
-<div title="Original interval: [20, ∞]"><span class="range">≥ 20</span><small class="source-label">Unsuitable</small>
+<div title="Original interval: [20, 44]"><span class="range">20–44</span><small class="source-label">Unsuitable</small>
 </div>
 </td>
 <td class="missing">Not reported</td>
@@ -121,7 +126,29 @@
 <td class="missing">Not reported</td>
 <td class="missing">Not reported</td>
 <td>
-<div title="Original interval: (20, ∞)"><span class="range">&gt; 20</span><small class="source-label">Unresolved: exclusion conflict, source disagreement</small>
+<div title="Original interval: (20, 44]"><span class="range">20–44</span><small class="source-label">Unresolved: exclusion conflict, source disagreement</small>
+</div>
+</td>
+</tr>
+</tbody></table></div><p class="foot">“Not reported” means this class is absent from that profile—not unsuitable. Cutoffs rounded for display; hover for original interval brackets. Shared ambiguous endpoints remain unknown. Original class names appear beneath each range.</p></section>
+<section class="panel" id="panel-ndvi" hidden><h2>Ndvi <span class="unit">· unitless</span></h2><div class="matrix-wrap"><table aria-label="Ndvi study comparison"><thead><tr><th scope="col">Suitability<br><small>Common score</small></th>
+<th scope="col">Ahmad 2018<small>India</small><small>System unassigned</small><details><summary>Source</summary><p>Ahmad, Firoz; Uddin, Md Meraj; Goparaju, Laxmi (2018). Assessment of remote sensing and GIS application in identification of land suitability for agroforestry: A case study of Samastipur, Bihar, India. Contemporary Trends in Geoscience.</p><p>ev_T4_canopy_ahmad2018_1</p><p></p></details></th>
+</tr></thead><tbody>
+<tr><th scope="row">High<small class="score">0.75</small></th>
+<td>
+<div title="Original interval: (0.5, ∞)"><span class="range">&gt; 0.5</span><small class="source-label">High</small>
+</div>
+</td>
+</tr>
+<tr><th scope="row">Moderate<small class="score">0.5</small></th>
+<td>
+<div title="Original interval: [0.2, 0.5]"><span class="range">0.2–0.5</span><small class="source-label">Medium</small>
+</div>
+</td>
+</tr>
+<tr><th scope="row">Low<small class="score">0.25</small></th>
+<td>
+<div title="Original interval: (−∞, 0.2)"><span class="range">&lt; 0.2</span><small class="source-label">Low</small>
 </div>
 </td>
 </tr>
@@ -411,7 +438,6 @@
 <details class="review"><summary>What still needs review?</summary><ul><li>Three conditional planted-tree/crop pools are now compiled: slope (Ahmad + Nath), soil carbon (Ahmad + Nath), pH (Nath + Singh). Combined columns show available-source medians; one-source regions are identified. These India-derived model priors are not globally validated limits.</li><li>Haile: parkland is established, but planted versus regenerated origin is unspecified. Its profiles remain separate.</li><li>Yadav’s temperature groups describe tree species, not agroforestry systems; moved to the species lane.</li><li>Mushtaq’s “favourable above 1,200 mm” is generic secondary discussion, not shaded-perennial evidence, and has no class score.</li><li>FMNR rainfall study ranges describe observations, not a suitability function.</li>
 <li>ev_t4_mat_yadav24_1: species group envelopes not agroforestry systems</li>
 <li>ev_T4_ph_haile2024_1: overlapping and reversed ph classes</li>
-<li>ev_T4_canopy_ahmad2018_1: variable mismatch quote is NDVI not canopy cover</li>
 <li>ev_t4_landcov_nath21_01: source prints overlapping NDVI unsuitable class</li>
 <li>ev_t4_aridity_nath21_03: P over PET identified scaled integer conversion unverified</li>
 </ul></details><p class="foot">Common scores align the papers’ class labels on one agreed scale; they are not probabilities. <a href="t4-categorical-tables.html">Live T4</a> · <a href="t4-harmonization-examples.html">Worked conventions</a></p>
