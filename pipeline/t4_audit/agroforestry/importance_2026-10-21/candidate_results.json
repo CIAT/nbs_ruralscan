@@ -1,0 +1,158 @@
+[
+  {
+    "scenario": "Three-study provisional",
+    "models": "singh_2026_relative_weights|nath_2021_table2|haile_2024_table5",
+    "variables": "slope|precipitation",
+    "purpose": "Regional model comparison only; Table 5 computed AHP weights",
+    "results": [
+      {
+        "variable": "slope",
+        "source_count": 3,
+        "median_ratio": 1.4764764764764764,
+        "minimum": 0.15151515151515152,
+        "maximum": 1.5,
+        "candidate_weight": 0.7375,
+        "equal_weight": 0.5
+      },
+      {
+        "variable": "precipitation",
+        "source_count": 3,
+        "median_ratio": 0.5255255255255254,
+        "minimum": 0.15151515151515152,
+        "maximum": 2.4499999999999997,
+        "candidate_weight": 0.2625,
+        "equal_weight": 0.5
+      }
+    ]
+  },
+  {
+    "scenario": "Haile alternative",
+    "models": "singh_2026_relative_weights|nath_2021_table2|haile_2024_table3",
+    "variables": "slope|precipitation",
+    "purpose": "Table 3 classification weights replace Table 5; same source count",
+    "results": [
+      {
+        "variable": "slope",
+        "source_count": 3,
+        "median_ratio": 1.4999999999999998,
+        "minimum": 0.15151515151515152,
+        "maximum": 1.5,
+        "candidate_weight": 0.7142857142857143,
+        "equal_weight": 0.5
+      },
+      {
+        "variable": "precipitation",
+        "source_count": 3,
+        "median_ratio": 0.6,
+        "minimum": 0.15151515151515152,
+        "maximum": 2.4499999999999997,
+        "candidate_weight": 0.28571428571428575,
+        "equal_weight": 0.5
+      }
+    ]
+  },
+  {
+    "scenario": "Singh RF alternative",
+    "models": "singh_2026_rf_importance|nath_2021_table2|haile_2024_table5",
+    "variables": "slope|precipitation",
+    "purpose": "RF importance replaces rounded relative weights; same source count",
+    "results": [
+      {
+        "variable": "slope",
+        "source_count": 3,
+        "median_ratio": 1.4764764764764764,
+        "minimum": 0.17068273092369476,
+        "maximum": 1.5,
+        "candidate_weight": 0.7375,
+        "equal_weight": 0.5
+      },
+      {
+        "variable": "precipitation",
+        "source_count": 3,
+        "median_ratio": 0.5255255255255254,
+        "minimum": 0.1465863453815261,
+        "maximum": 2.4499999999999997,
+        "candidate_weight": 0.2625,
+        "equal_weight": 0.5
+      }
+    ]
+  },
+  {
+    "scenario": "Without Singh",
+    "models": "nath_2021_table2|haile_2024_table5",
+    "variables": "slope|precipitation",
+    "purpose": "Expert/AHP sensitivity excluding inherited RF model",
+    "results": [
+      {
+        "variable": "slope",
+        "source_count": 2,
+        "median_ratio": 1.4882382382382382,
+        "minimum": 1.4764764764764764,
+        "maximum": 1.5,
+        "candidate_weight": 0.5000798849656495,
+        "equal_weight": 0.5
+      },
+      {
+        "variable": "precipitation",
+        "source_count": 2,
+        "median_ratio": 1.4877627627627625,
+        "minimum": 0.5255255255255254,
+        "maximum": 2.4499999999999997,
+        "candidate_weight": 0.4999201150343505,
+        "equal_weight": 0.5
+      }
+    ]
+  },
+  {
+    "scenario": "Without Nath",
+    "models": "singh_2026_relative_weights|haile_2024_table5",
+    "variables": "slope|precipitation",
+    "purpose": "Leave-one-study-out stability check",
+    "results": [
+      {
+        "variable": "slope",
+        "source_count": 2,
+        "median_ratio": 0.813995813995814,
+        "minimum": 0.15151515151515152,
+        "maximum": 1.4764764764764764,
+        "candidate_weight": 0.7062771417291749,
+        "equal_weight": 0.5
+      },
+      {
+        "variable": "precipitation",
+        "source_count": 2,
+        "median_ratio": 0.33852033852033847,
+        "minimum": 0.15151515151515152,
+        "maximum": 0.5255255255255254,
+        "candidate_weight": 0.29372285827082506,
+        "equal_weight": 0.5
+      }
+    ]
+  },
+  {
+    "scenario": "Without Haile",
+    "models": "singh_2026_relative_weights|nath_2021_table2",
+    "variables": "slope|precipitation",
+    "purpose": "Leave-one-study-out stability check",
+    "results": [
+      {
+        "variable": "slope",
+        "source_count": 2,
+        "median_ratio": 0.8257575757575758,
+        "minimum": 0.15151515151515152,
+        "maximum": 1.5,
+        "candidate_weight": 0.38831492696829356,
+        "equal_weight": 0.5
+      },
+      {
+        "variable": "precipitation",
+        "source_count": 2,
+        "median_ratio": 1.3007575757575756,
+        "minimum": 0.15151515151515152,
+        "maximum": 2.4499999999999997,
+        "candidate_weight": 0.6116850730317064,
+        "equal_weight": 0.5
+      }
+    ]
+  }
+]
