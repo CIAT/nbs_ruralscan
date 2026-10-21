@@ -46,6 +46,24 @@ def variable_usage(evidence, sources):
         effective = (
             100 * prod(w / 100 for w in path) if path and len(branches) <= 1 else None
         )
+        reviewed = sorted(
+            u["evidence_id"]
+            for u, _ in items
+            if u.get("review_state") != "dropped"
+            and str(u.get("reviewer_ok", "")).lower() == "true"
+        )
+        pending = sorted(
+            u["evidence_id"]
+            for u, _ in items
+            if u.get("review_state") != "dropped"
+            and str(u.get("reviewer_ok", "")).lower() != "true"
+        )
+        quarantined = sorted(
+            u["evidence_id"] for u, _ in items if u.get("review_state") == "dropped"
+        )
+        status = (
+            "reviewed" if reviewed else ("pending" if pending else "quarantined_only")
+        )
         records.append(
             {
                 "variable": variable,
@@ -54,6 +72,10 @@ def variable_usage(evidence, sources):
                 "source_id": items[0][0]["source_id"],
                 "evidence_ids": sorted({u["evidence_id"] for u, _ in items}),
                 "families": sorted({u["suitability_family_id"] for u, _ in items}),
+                "model_use_review_status": status,
+                "reviewed_evidence_ids": reviewed,
+                "pending_evidence_ids": pending,
+                "quarantined_evidence_ids": quarantined,
                 "method": "; ".join(sorted(methods)),
                 "weight_path_pct": list(path),
                 "effective_model_weight_pct": round(effective, 6)
@@ -64,15 +86,22 @@ def variable_usage(evidence, sources):
                 "branch_aggregation_unresolved": len(branches) > 1,
                 "reported_weight_paths_pct": [list(p) for p in sorted(paths)],
                 "pages": sorted({use["page"] for _, use in items}),
-                "note": (
-                    "Source-checked model use; human review pending. "
-                    if any(
-                        str(u.get("reviewer_ok", "")).lower() != "true"
-                        for u, _ in items
-                    )
-                    else "Human-reviewed model-use evidence. "
+                "note": {
+                    "reviewed": "Model use is carried by at least one active human-reviewed record. ",
+                    "pending": "Source-checked model use; human review pending. ",
+                    "quarantined_only": "Model use retained only in quarantined records; not active reviewed support. ",
+                }[status]
+                + (
+                    "Additional records remain pending; not all reported weights are human-approved. "
+                    if reviewed and pending
+                    else ""
                 )
-                + "Not agreement on thresholds. Weight is source-specific; nested soil paths may describe one branch only.",
+                + (
+                    "Quarantined records retained for traceability. "
+                    if quarantined
+                    else ""
+                )
+                + "Review status is record-level; later metadata corrections may still need review. Not agreement on thresholds. Weight is source-specific; nested soil paths may describe one branch only.",
             }
         )
     return records
@@ -92,6 +121,30 @@ def summarize_usage(records):
             for r in selected
             if r["claim_scope"] in {"species_specific", "crop_specific"}
         }
+        review_counts = {}
+        for label, scopes in (
+            ("general", {"practice_technology"}),
+            ("crop_species", {"species_specific", "crop_specific"}),
+            ("species_selection", {"species_selection"}),
+        ):
+            eligible = [r for r in selected if r["claim_scope"] in scopes]
+            reviewed = {
+                r["paper_key"]
+                for r in eligible
+                if r.get("model_use_review_status") == "reviewed"
+            }
+            pending = {
+                r["paper_key"]
+                for r in eligible
+                if r.get("model_use_review_status", "pending") == "pending"
+            } - reviewed
+            quarantined = {r["paper_key"] for r in eligible} - reviewed - pending
+            for status, papers in (
+                ("reviewed", reviewed),
+                ("pending", pending),
+                ("quarantined_only", quarantined),
+            ):
+                review_counts[f"{status}_{label}_model_papers"] = len(papers)
         result.append(
             {
                 "variable": variable,
@@ -104,6 +157,7 @@ def summarize_usage(records):
                         if r["claim_scope"] == "species_selection"
                     }
                 ),
+                **review_counts,
                 "source_ids": sorted({r["source_id"] for r in selected}),
             }
         )

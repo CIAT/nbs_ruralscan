@@ -272,22 +272,34 @@ def render(root, read_csv, table, bindings, coverage):
 
     usage = variable_usage(list(evidence.values()), sources)
     summary = summarize_usage(usage)
-    page += "<details><summary>Why these variables? Verified paper use and source weights</summary>"
-    page += "<p>Counts below mean papers explicitly used a variable in their model. Repeated records from one paper count once. Crop/species models stay separate. This verification is incomplete: missing counts mean unchecked, not unused. These counts measure method agreement, not agreement on thresholds.</p>"
+    page += "<details><summary>Why these variables? Reviewed and pending paper use</summary>"
+    page += "<p>Counts below mean papers explicitly used a variable in their model. Repeated records from one paper count once. Crop/species models stay separate. This verification is incomplete: missing counts mean unchecked, not unused. Reviewed counts require model-use evidence on at least one active human-reviewed record. Review status is record-level: later metadata corrections may still need review. Pending and quarantined-only papers are separate; a paper counts once within each scope. A reviewed use does not approve every reported weight. These counts measure variable use, not agreement on thresholds or independent study origins.</p>"
     friendly_summary = [
         {
             "Variable": ontology.get(r["variable"], {}).get(
                 "label", pretty(r["variable"])
             ),
-            "General model papers": r["verified_general_model_papers"],
-            "Crop/species model papers": r["verified_crop_species_model_papers"],
+            "General: reviewed": r["reviewed_general_model_papers"],
+            "General: pending": r["pending_general_model_papers"],
+            "General: quarantined only": r["quarantined_only_general_model_papers"],
+            "Crop/species: reviewed / pending / quarantined": " / ".join(
+                str(r[f"{status}_crop_species_model_papers"])
+                for status in ("reviewed", "pending", "quarantined_only")
+            ),
             "Sources": "; ".join(pretty(x) for x in r["source_ids"]),
         }
         for r in summary
     ]
     page += table(
         friendly_summary,
-        ["Variable", "General model papers", "Crop/species model papers", "Sources"],
+        [
+            "Variable",
+            "General: reviewed",
+            "General: pending",
+            "General: quarantined only",
+            "Crop/species: reviewed / pending / quarantined",
+            "Sources",
+        ],
     )
     page += "<p>Current default T4 weights are equal; these are not literature-derived importance weights. Evidence-quality weights used to synthesize responses are a separate calculation. Source weights below retain their method and hierarchy; AHP weights, RF importance and MaxEnt permutation importance must not be averaged indiscriminately.</p>"
     friendly_weights = [
@@ -301,6 +313,12 @@ def render(root, read_csv, table, bindings, coverage):
             if r["effective_model_weight_pct"] is not None
             else "Unknown",
             "Source pages": ", ".join(r["pages"]),
+            "Review status": {
+                "reviewed": "Reviewed record"
+                + ("; additional records pending" if r["pending_evidence_ids"] else ""),
+                "pending": "Pending review",
+                "quarantined_only": "Quarantined only",
+            }[r["model_use_review_status"]],
         }
         for r in usage
     ]
@@ -313,6 +331,7 @@ def render(root, read_csv, table, bindings, coverage):
             "Nested weights (%)",
             "Model share from this branch (%)",
             "Source pages",
+            "Review status",
         ],
     )
     page += "<p>Weight path example: Nath topsoil carbon 25% × topsoil nutrient group 20% × soil criterion 20% = 1% of final model. Nath pH also occurs in the rooting branch; this displayed path is not its total across branches.</p></details>"
