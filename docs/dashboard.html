@@ -2364,6 +2364,11 @@
   // are access-controlled library links, never inline public content.
   function vfCropOnErr(eid,img){
     var d=document.createElement('div');
+    if((window._cropManifest||new Set()).has(eid) && !img.dataset.cropFallback){
+      img.dataset.cropFallback='1';
+      d.textContent='Full page unavailable locally. Showing saved crop; caption may be incomplete. Use source PDF link for context.';
+      img.before(d); img.src='crops/'+encodeURIComponent(eid)+'.jpg'; return;
+    }
     var spCrop=(window._cropSharePointMap||{})[eid];
     if(spCrop){ var u=vfSharePointUrl(spCrop); if(u){ d.style.cssText='font-size:10.5px; color:var(--text-secondary); padding:8px 4px;'; d.innerHTML='PDF not synced on this machine — <a href="'+u+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open highlighted source region in SharePoint ↗</a><div style="font-size:9.5px; color:var(--text-muted); margin-top:4px;">needs CGIAR library access. To see crops inline, make the library available offline in OneDrive (see the <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">reviewer guide</a>).</div>'; img.replaceWith(d); return; } }
     var evAll=((dashboardData||{}).registers||{}).EV_evidence_register||[]; var ev=evAll.find(function(e){return e.evidence_id===eid;})||{};
@@ -2452,12 +2457,12 @@
         box.dataset.loaded='1'; box.style.display='block'; btn.textContent='💻 hide source code'; return;
       }
       var manifest=window._cropManifest||new Set();
-      if(manifest.has(eid)){
+      if(manifest.has(eid) && !window._reviewApi){
         // 1) committed crop (works on Pages + local, zero setup). Highlight baked in; client-side rotate for sideways tables.
-        box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="crops/'+q+'.jpg" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="crops/'+q+'.jpg" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>';
+        box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="crops/'+q+'.jpg" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open crop ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="crops/'+q+'.jpg" style="max-width:100%; display:block;" alt="source region screengrab" onerror="this.replaceWith(document.createTextNode(\'crop unavailable\'));"></div>';
       } else if(window._reviewApi){
-        // 2) live review server with the PDF locally — keep rotate / open-full.
-        box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° (server re-renders crisp) — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="/api/crop?eid='+q+'" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="/api/crop?eid='+q+'" style="max-width:100%; display:block;" alt="source region screengrab" onerror="vfCropOnErr(\''+eid+'\',this)"></div>';
+        // 2) Prefer the full page on the live server: old committed crops may omit captions.
+        box.innerHTML='<div style="display:flex; gap:10px; align-items:center; margin-bottom:5px;"><button onclick="vfRotateCrop(\''+eid+'\',this)" title="rotate 90° (server re-renders crisp) — for sideways/landscape tables" style="font-size:10px; padding:2px 9px; border-radius:4px; background:transparent; color:var(--accent-sky); border:1px solid var(--border-color); cursor:pointer;">↻ rotate</button><a href="/api/crop?eid='+q+'&full=1" target="_blank" rel="noopener noreferrer" style="font-size:10px; color:var(--accent-sky);">open full page ↗</a><span style="font-size:9.5px; color:var(--text-muted);">scroll to see the whole region</span></div><div style="max-height:72vh; overflow:auto; border:1px solid var(--border-color); border-radius:4px;"><img src="/api/crop?eid='+q+'&full=1" style="max-width:100%; display:block;" alt="source region screengrab" onerror="vfCropOnErr(\''+eid+'\',this)"></div>';
       } else if(window._cropSharePointMap && window._cropSharePointMap[eid]){
         // 3) non-OA crop lives in the access-controlled library — link (can't embed an
         // auth'd SharePoint image). Copyright-safe: same access control as the PDF.
@@ -2469,6 +2474,13 @@
         var srcAll=((dashboardData||{}).registers||{}).SRC_source_register||[]; var src=srcAll.find(function(s){return s.source_id===ev.source_id;})||{};
         var sp=vfSharePointUrl(src.library_path||''); if(sp&&ev.page)sp+='#page='+ev.page;
         box.innerHTML=sp?('<div style="font-size:10.5px; color:var(--text-secondary); padding:8px 4px;">No committed crop and no local review server — <a href="'+sp+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">open source region in SharePoint'+(ev.page?(' p.'+ev.page):'')+' ↗</a></div>'):('<div style="font-size:10.5px; color:var(--text-muted); padding:8px 4px;">No committed crop, no review server, and no SharePoint copy for this source.</div>');
+      }
+      if(window._reviewApi && _evC.source_id){
+        var pdfLink=document.createElement('a');
+        pdfLink.href='/api/pdf?sid='+encodeURIComponent(_evC.source_id)+'#page='+(parseInt(_evC.page,10)||1);
+        pdfLink.target='_blank'; pdfLink.rel='noopener noreferrer';
+        pdfLink.textContent='Open original PDF — adjacent pages and full table';
+        box.prepend(pdfLink);
       }
       box.dataset.loaded='1'; } box.style.display='block'; btn.textContent='📷 hide source region'; } else { box.style.display='none'; btn.textContent='📷 show source region'; } }
   // Client-side rotate (canvas) — works for committed crops, live /api/crop, and on GitHub Pages

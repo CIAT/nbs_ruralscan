@@ -59,7 +59,7 @@ def needs_followup(row, evidence):
     )
 
 
-def check_review_followups(log, evidence, followups):
+def check_review_followups(log, evidence, followups, root=None):
     errors = []
     for row in log:
         if needs_followup(row, evidence) and followup_key(row) not in followups:
@@ -81,6 +81,27 @@ def check_review_followups(log, evidence, followups):
             errors.append("Follow-up quarantine no longer holds: " + eid)
         if status != "resolved":
             continue
+        for artifact in item.get("resolution_artifacts", []):
+            path = (root / artifact["path"]) if root is not None else None
+            content = (
+                path.read_text(encoding="utf-8")
+                if path is not None and path.is_file()
+                else ""
+            )
+            start, end = (
+                artifact.get("start_marker", ""),
+                artifact.get("end_marker", ""),
+            )
+            if start and end and start in content and end in content:
+                content = content[
+                    content.index(start) : content.index(end, content.index(start))
+                ]
+            else:
+                content = ""
+            if not content or hashlib.sha256(
+                content.encode()
+            ).hexdigest() != artifact.get("sha256"):
+                errors.append("Resolved follow-up display artifact changed: " + eid)
         ids = item.get("resolution_evidence_ids", [])
         checks = item.get("resolution_checks", [])
         if not ids or any(ref not in evidence for ref in ids):
@@ -170,7 +191,7 @@ def check(root):
     )
     errors.extend(
         check_review_followups(
-            read(root, "pipeline/metrics/review_log.csv"), evidence, followups
+            read(root, "pipeline/metrics/review_log.csv"), evidence, followups, root
         )
     )
     for row in evidence.values():

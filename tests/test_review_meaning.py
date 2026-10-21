@@ -27,3 +27,14 @@ def test_review_status_filters():
         cwd=Path(__file__).resolve().parents[1],
         check=True,
     )
+
+
+def test_review_source_context():
+    node = shutil.which("node")
+    if not node:
+        pytest.skip("Node.js needed for dashboard JavaScript test")
+    subprocess.run(
+        [node, "tests/js/review_source_context.test.cjs"],
+        cwd=Path(__file__).resolve().parents[1],
+        check=True,
+    )
