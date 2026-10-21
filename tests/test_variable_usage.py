@@ -333,6 +333,52 @@ def test_singh_reused_model_lineage_matches_importance_inventory():
             checked.append(unit)
     assert checked
     usage = variable_usage(checked, {})
-    assert all(r["origin_status"] == "held" for r in usage)
-    assert all(r["model_origin_ids"] == [] for r in usage)
+    assert all(r["origin_status"] == "documented_external_lineage" for r in usage)
+    assert all(
+        r["model_origin_ids"] == ["external:" + next(iter(lineages))] for r in usage
+    )
+    assert all(not r["model_origin_holds"] for r in usage)
     assert summarize_usage(usage)[0]["verified_general_model_papers"] == 1
+
+
+def test_documented_external_model_reuse_counts_one_origin_without_original():
+    from copy import deepcopy
+
+    unit = dict(
+        evidence_id="one",
+        source_id="report_a",
+        variable="slope",
+        claim_scope="practice_technology",
+        suitability_family_id="regional",
+        context={
+            "model_use": {
+                "verified": True,
+                "method": "AHP",
+                "page": "5",
+                "lineage_of": "shared original model",
+                "lineage_provenance": {
+                    "source_id": "report_a",
+                    "page": "5",
+                    "quote": "We reused the original model.",
+                    "reference_title": "Original model study",
+                    "reference_year": 2022,
+                },
+            }
+        },
+    )
+    other = deepcopy(unit)
+    other.update(evidence_id="two", source_id="report_b")
+    other["context"]["model_use"]["lineage_provenance"]["source_id"] = "report_b"
+    rows = variable_usage([unit, other], {})
+    summary = summarize_usage(rows)[0]
+    assert summary["verified_general_model_papers"] == 2
+    assert summary["recorded_general_model_origins"] == 1
+    assert summary["general_papers_with_origin_holds"] == 0
+    assert all(r["origin_status"] == "documented_external_lineage" for r in rows)
+    # Mere unresolved text or provenance from a different reporting source is insufficient.
+    bad = deepcopy(unit)
+    del bad["context"]["model_use"]["lineage_provenance"]["quote"]
+    assert variable_usage([bad], {})[0]["origin_status"] == "held"
+    bad = deepcopy(unit)
+    bad["context"]["model_use"]["lineage_provenance"]["source_id"] = "unrelated"
+    assert variable_usage([bad], {})[0]["origin_status"] == "held"
