@@ -379,6 +379,16 @@ def main(directory=OUT):
                     }
                     for row in records
                 )
+    from nbs_ruralscan.recipe.direction_usage import write_direction_report
+
+    write_direction_report(
+        ROOT,
+        read_csv(ROOT / "schema/registers/EV_evidence_register.csv"),
+        {
+            r["source_id"]: r
+            for r in read_csv(ROOT / "schema/registers/SRC_source_register.csv")
+        },
+    )
     page = render(ROOT, read_csv, table, binding_rows, coverage)
     (ROOT / "docs/review/t4-categorical-tables.html").write_text(page, encoding="utf-8")
     print(json.dumps({"source_rows": len(source_rows)}))
