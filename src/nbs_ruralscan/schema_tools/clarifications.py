@@ -1,4 +1,4 @@
-"""Clarification workflow, independent of extraction approval and consensus."""
+"""Questions and answers attached to the normal evidence review workflow."""
 
 import csv
 import hashlib
@@ -80,11 +80,10 @@ def build(root):
     )
     groups = {}
     for eid, ev in evidence.items():
-        if (
-            ev["nbs_id"] != "agroforestry"
-            or ev["use_role"] not in {"structural_suitability", "operational_risk"}
-            or ev["review_state"] == "dropped"
-        ):
+        if ev["nbs_id"] != "agroforestry" or ev["use_role"] not in {
+            "structural_suitability",
+            "operational_risk",
+        }:
             continue
         reviews = list(latest.get(eid, {}).values())
         concerns = [r for r in reviews if r["decision"].lower() not in {"ok", "keep"}]
@@ -97,6 +96,26 @@ def build(root):
                     decision="query",
                 )
             ]
+        # Retain answered questions after a record decision; acceptance is history,
+        # never a substitute for reviewing the evidence. Only recover actual queries.
+        for old in log:
+            if old["evidence_id"] != eid or old["decision"].lower() not in {
+                "query",
+                "flag",
+            }:
+                continue
+            if any(
+                a["evidence_id"] == eid
+                and a.get("reviewer") == old["reviewer"]
+                and a.get("note", "").strip() == old.get("note", "").strip()
+                for a in followups
+            ):
+                if not any(
+                    c["reviewer"] == old["reviewer"]
+                    and c.get("note", "").strip() == old.get("note", "").strip()
+                    for c in concerns
+                ):
+                    concerns.append(old)
         for r in concerns:
             question = r.get("note", "").strip() or (
                 "Review reason: "
@@ -165,13 +184,32 @@ def build(root):
         if any(a.get("needs_judgement") for a in g["answers"]):
             g["status"] = "needs_judgement"
         g["history"] = [e for e in events if e["issue_id"] == g["id"]]
-        for e in g["history"]:
-            if e["fingerprint"] != g["fingerprint"]:
-                continue
-            if e["action"] == "accept":
-                g["status"] = "resolved"
-            elif e["action"] in {"reply", "reopen"}:
-                g["status"] = "needs_investigation"
+        # A decision closes only this reviewer's question on this record.
+        # Shared answers remain open on other records. Legacy accept events do not close.
+        for item in g["records"]:
+            decision = latest.get(item["evidence_id"], {}).get(g["reviewer"], {})
+            closed = decision.get("decision", "").lower() in {"ok", "keep", "drop"}
+            superseded = decision.get("decision", "").lower() in {"query", "flag"} and (
+                decision.get("note", "").strip() != g["question"].strip()
+                and bool(decision.get("note", "").strip())
+            )
+            followup = any(
+                e["fingerprint"] == g["fingerprint"]
+                and e["action"] in {"reply", "reopen"}
+                and item["evidence_id"] in e.get("evidence_ids", [])
+                for e in g["history"]
+            )
+            item["review_status"] = (
+                "resolved"
+                if closed or superseded
+                else "needs_investigation"
+                if followup
+                else g["status"]
+            )
+        if all(r["review_status"] == "needs_investigation" for r in g["records"]):
+            g["status"] = "needs_investigation"
+        if all(r["review_status"] == "resolved" for r in g["records"]):
+            g["status"] = "resolved"
         result.append(g)
     return sorted(result, key=lambda g: (g["status"], g["source"], g["id"]))
 
@@ -194,6 +232,11 @@ def record(root, payload):
             raise ValueError(
                 "Only a complete answer awaiting confirmation can be accepted."
             )
+        ids = [r["evidence_id"] for r in issue["records"]]
+        if payload.get("evidence_id"):
+            if payload["evidence_id"] not in ids:
+                raise ValueError("Record does not belong to this question")
+            ids = [payload["evidence_id"]]
         event = dict(
             issue_id=issue["id"],
             fingerprint=issue["fingerprint"],
@@ -201,7 +244,7 @@ def record(root, payload):
             reviewer=reviewer,
             note=note,
             date=datetime.now(timezone.utc).isoformat(),
-            evidence_ids=[r["evidence_id"] for r in issue["records"]],
+            evidence_ids=ids,
         )
         path = root / "pipeline/review/clarifications.json"
         events = read_json(path, [])

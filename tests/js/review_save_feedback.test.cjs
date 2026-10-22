@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('nod
 const html=fs.readFileSync('docs/dashboard.html','utf8');
 let saved=[],notices=[];
 const window={_vfReviewer:'Pete',_reviewApi:true,_vfClarificationFilter:'answer_ready',_vfReconcile:'unresolved'};
-const ctx=vm.createContext({window,Promise,localStorage:{setItem:()=>{}},vfNotice:m=>notices.push(m),renderVfWorklist:()=>{},vfRefreshReview:async()=>{},document:{querySelector:()=>null},fetch:async(url,opt)=>{const body=JSON.parse(opt.body);saved.push([url,body]);return {ok:true,json:async()=>({ok:true,reopened:1})};}});
+const ctx=vm.createContext({window,Promise,localStorage:{setItem:()=>{}},vfNotice:m=>notices.push(m),renderVfWorklist:()=>{},vfRefreshReview:async()=>{},vfLoadClarifications:async()=>{},vfClarificationsFor:()=>[],document:{querySelector:()=>null},fetch:async(url,opt)=>{const body=JSON.parse(opt.body);saved.push([url,body]);return {ok:true,json:async()=>({ok:true,reopened:1})};}});
 vm.runInContext(html.slice(html.indexOf('function setVfDecision('),html.indexOf('// A per-card DROP')),ctx);
 vm.runInContext(html.slice(html.indexOf('async function reopenVf('),html.indexOf('async function challengeVf(')),ctx);
 (async()=>{
