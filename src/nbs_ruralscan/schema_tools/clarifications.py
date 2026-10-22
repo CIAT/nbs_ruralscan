@@ -15,7 +15,7 @@ def digest(value):
 
 
 def read_json(path, default):
-    return json.loads(path.read_text()) if path.exists() else default
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else default
 
 
 def event_key(event):
@@ -49,7 +49,7 @@ def publish(root):
             return 0
         path = root / "pipeline/metrics/clarification_log.json"
         tmp = path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(all_events(root), indent=2) + "\n")
+        tmp.write_text(json.dumps(all_events(root), indent=2) + "\n", encoding="utf-8")
         tmp.replace(path)
         return len(pending)
 
@@ -207,6 +207,6 @@ def record(root, payload):
         events = read_json(path, [])
         events.append(event)
         tmp = path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(events, indent=2) + "\n")
+        tmp.write_text(json.dumps(events, indent=2) + "\n", encoding="utf-8")
         tmp.replace(path)
         return event
