@@ -444,7 +444,7 @@ def test_statement_templates():
         nbs_label="Agroforestry",
     )
     assert t3["statement_short"] == (
-        "Agroforestry under drought (all farming systems): low mitigation "
+        "Agroforestry — protects farmers from drought (all farming systems): low mitigation "
         "(high confidence; 1 unit, 1 source)"
     )
     dd = builder.at_a_glance(
@@ -461,7 +461,8 @@ def test_statement_templates():
     )
     assert dd["headline"] == "DATA DEFICIENT"
     assert dd["statement_short"] == (
-        "Fire threat to the works: not enough evidence to state a class (1 source, none measured)"
+        "Agroforestry — threat to the works from fire: not enough evidence to state a class "
+        "(1 source, none measured)"
     )
     na = builder.at_a_glance(
         "",
@@ -478,4 +479,19 @@ def test_statement_templates():
             "risk_role": "asset_threat",
         },
     )
-    assert na["statement_short"] == "Flood threat to the works: not assessed"
+    assert (
+        na["statement_short"]
+        == "Agroforestry — threat to the works from flood: not assessed"
+    )
+
+
+def test_batch_carries_display_vocab(tmp_path):
+    """The batch ships the controlled display vocabulary the page renders labels from."""
+    builder.write_batch("vocab_test", "t", [], out_dir=tmp_path)
+    data = json.loads((tmp_path / "vocab_test.json").read_text(encoding="utf-8"))
+    v = data["vocab"]
+    rr = v["risk_role"]["livelihood_mitigation"]
+    assert rr["ttl_label"] == "Protects farmers from <hazard>"
+    assert set(rr) == {"label", "ttl_label", "definition", "source_ref", "source_url"}
+    assert v["confidence"]["high"]["source_url"].startswith("https://")
+    assert "data_deficient" in v["row_state"]

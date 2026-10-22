@@ -16,7 +16,10 @@ Each card also carries an ``at_a_glance`` block for rapid triage, computed deter
 from the same data (no new prose): headline, a one-line statement,
 basis mix, top-source share, income mix, a one-line family vote and rule-based red flags.
 The statement is built from the row's own fields, never the engine prose, so it always agrees
-with the headline (a family-vote re-class included).
+with the headline (a family-vote re-class included); its T3 lead takes the TTL wording of the
+risk role from ``schema/lookups/display_vocab.csv`` (the controlled display vocabulary, also
+copied into the batch as ``"vocab"`` so the page shows labels, definitions and provenance
+instead of raw codes).
 Weights there are a REVIEW APPROXIMATION of the engine's (tier × claim basis × design ×
 grey discount, then one vote per source split across its units) — good for spotting a row
 that leans on one paper or on ratings, not a replay of cell_synthesis.
@@ -47,6 +50,7 @@ RECIPES = ROOT / "schema" / "recipes"
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 SRC = ROOT / "schema" / "registers" / "SRC_source_register.csv"
 OUT = ROOT / "docs" / "review"
+VOCAB = ROOT / "schema" / "lookups" / "display_vocab.csv"
 TABLES = {"T3": "T3_nbs_hazard_farming.csv", "T6": "T6_nbs_scorecard.csv"}
 QUOTE_MAX = 400
 #: row reject codes (the page carries the same list + gloss)
@@ -67,6 +71,36 @@ def _j(s: str | None, default=None):
         return json.loads(s)
     except json.JSONDecodeError:
         return default
+
+
+#: fields of display_vocab.csv copied into the batch for each code
+VOCAB_KEYS = ("label", "ttl_label", "definition", "source_ref", "source_url")
+
+
+def load_vocab(path: Path = VOCAB) -> dict[str, dict[str, dict[str, str]]]:
+    """display_vocab.csv → {field: {code: {label, ttl_label, definition, source_ref, source_url}}}."""
+    out: dict[str, dict[str, dict[str, str]]] = {}
+    if not path.exists():
+        return out
+    with path.open(newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            out.setdefault(r["field"], {})[r["code"]] = {
+                k: (r.get(k) or "").strip() for k in VOCAB_KEYS
+            }
+    return out
+
+
+_VOCAB = load_vocab()
+
+
+def ttl(field: str, code: str, hazard: str = "", default: str = "") -> str:
+    """The TTL wording for a code, `<hazard>` filled in; `default` when the vocab lacks it."""
+    t = (_VOCAB.get(field, {}).get(code, {}).get("ttl_label") or default).strip()
+    return t.replace("<hazard>", hazard)
+
+
+def _lc_first(s: str) -> str:
+    return s[:1].lower() + s[1:] if s else s
 
 
 def _trim(q: str, n: int = QUOTE_MAX) -> str:
@@ -107,6 +141,7 @@ def _unit(eid: str, ev: dict, src: dict) -> dict:
     if not r:
         return {"evidence_id": eid, "missing": True}
     rel = _j(r.get("relationship"), {}) or {}
+    ctx = _j(r.get("context"), {}) or {}
     s = src.get(r.get("source_id", ""), {})
     return {
         "evidence_id": eid,
@@ -116,6 +151,13 @@ def _unit(eid: str, ev: dict, src: dict) -> dict:
         "direction": rel.get("direction", ""),
         "strength": rel.get("strength_class", ""),
         "claim_basis": r.get("claim_basis", ""),
+        "basis_bucket": _basis_bucket(
+            r.get("claim_basis", ""), str(rel.get("design") or "")
+        ),
+        "comparator": str(ctx.get("comparator") or ""),
+        "attribution": str(ctx.get("attribution") or ""),
+        "beneficiary": str(ctx.get("beneficiary") or ""),
+        "cost_nature": str(ctx.get("cost_nature") or ""),
         "suitability_family_id": r.get("suitability_family_id", ""),
         "page": r.get("page", ""),
         "review_state": r.get("review_state", ""),
@@ -253,15 +295,22 @@ def build_statement(
 ) -> str:
     """One-line statement built ONLY from the row's own fields (never the engine prose),
     so it always agrees with the headline — a family-vote re-class included."""
-    asset = table == "T3" and target.get("risk_role") == "asset_threat"
+    role = target.get("risk_role") or "livelihood_mitigation"
+    asset = table == "T3" and role == "asset_threat"
+    hz = _words(target.get("hazard", ""))
     if table == "T6":
         lead = f"{nbs_label} → {_words(target.get('priority', ''))}"
     elif asset:
-        lead = f"{_words(target.get('hazard', '')).capitalize()} threat to the works"
+        lead = f"{nbs_label} — " + _lc_first(
+            ttl("risk_role", role, hz, "Threat to the works from <hazard>")
+        )
     else:
         fs = target.get("farming_system", "")
         fs = "all farming systems" if fs in ("", "all") else _words(fs)
-        lead = f"{nbs_label} under {_words(target.get('hazard', ''))} ({fs})"
+        lead = f"{nbs_label} — " + _lc_first(
+            ttl("risk_role", role, hz, "Protects farmers from <hazard>")
+        )
+        lead += f" ({fs})"
     src_s = f"{n_sources} source{'' if n_sources == 1 else 's'}"
     if data_deficient:
         meas = (
@@ -554,6 +603,7 @@ def write_batch(
                     "kind": "rows",
                 },
                 "reasons": ROW_REASONS,
+                "vocab": _VOCAB,
                 "rows": cards,
             },
             ensure_ascii=False,
