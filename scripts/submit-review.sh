@@ -35,6 +35,10 @@ root="$(git rev-parse --show-toplevel)"; cd "$root"
 
 git fetch -q origin
 branch="review/${reviewer}-$(git rev-parse --short origin/main)"
+if [ -s pipeline/review/clarifications.json ] && ! git cat-file -e origin/main:src/nbs_ruralscan/schema_tools/clarifications.py 2>/dev/null; then
+  echo "Clarification submission needs the dashboard workflow PR merged into main first. All local replies are preserved." >&2
+  exit 1
+fi
 
 # Park any local working changes so we can branch cleanly off main. decisions.json is
 # gitignored (the source of truth for your review), so it is NOT stashed and carries over.
@@ -51,20 +55,20 @@ echo "• branched $branch off latest main"
 # `uv run python3` escapes to PATH and hits the MS Store alias stub. Issue #212.
 uv run python -m nbs_ruralscan.schema_tools.submit_review
 
-if git diff --quiet -- schema/registers/EV_evidence_register.csv pipeline/metrics/review_log.csv; then
+if git diff --quiet -- schema/registers/EV_evidence_register.csv pipeline/metrics/review_log.csv pipeline/metrics/clarification_log.json; then
   echo "• no register changes produced — nothing agreed to apply. Stopping."
   exit 0
 fi
 
 git add schema/registers/EV_evidence_register.csv schema/registers/EV_evidence_register.json \
-        pipeline/metrics/review_log.csv docs/dashboard_data.json docs/progress.json
+        pipeline/metrics/review_log.csv pipeline/metrics/clarification_log.json docs/dashboard_data.json docs/progress.json
 git commit -q -m "$title"
 git push -q -u origin "$branch"
 echo "• pushed $branch"
 
 if command -v gh >/dev/null 2>&1; then
   gh pr create --base main --head "$branch" --title "$title" \
-    --body "QA review decisions by **$reviewer**, replayed cleanly onto main (decisions.json → consensus apply → regenerate). Registers + review_log + generated JSON only; no stale-branch reverts." \
+    --body "QA review decisions by **$reviewer**, replayed cleanly onto main (decisions.json → consensus apply → regenerate). Registers + review_log + clarification history + generated JSON; no stale-branch reverts. Clarification acceptance does not approve extraction." \
     && echo "• PR opened"
   if [ "$auto" = "1" ]; then
     if gh pr merge "$branch" --squash --delete-branch 2>/dev/null; then

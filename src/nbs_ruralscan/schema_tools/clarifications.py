@@ -18,6 +18,42 @@ def read_json(path, default):
     return json.loads(path.read_text()) if path.exists() else default
 
 
+def event_key(event):
+    return digest(event)
+
+
+def shared_events(root):
+    return read_json(Path(root) / "pipeline/metrics/clarification_log.json", [])
+
+
+def pending_events(root):
+    known = {event_key(e) for e in shared_events(root)}
+    return [
+        e
+        for e in read_json(Path(root) / "pipeline/review/clarifications.json", [])
+        if event_key(e) not in known
+    ]
+
+
+def all_events(root):
+    events = {event_key(e): e for e in shared_events(root) + pending_events(root)}
+    return sorted(events.values(), key=lambda e: (e["date"], event_key(e)))
+
+
+def publish(root):
+    """Replay local events onto latest shared history, preserving others' events."""
+    root = Path(root)
+    with LOCK:
+        pending = pending_events(root)
+        if not pending:
+            return 0
+        path = root / "pipeline/metrics/clarification_log.json"
+        tmp = path.with_suffix(".tmp")
+        tmp.write_text(json.dumps(all_events(root), indent=2) + "\n")
+        tmp.replace(path)
+        return len(pending)
+
+
 def build(root):
     root = Path(root)
     with (root / "schema/registers/EV_evidence_register.csv").open() as f:
@@ -115,7 +151,7 @@ def build(root):
                             source_check=answer.get("source_check", {}),
                         )
                     )
-    events = read_json(root / "pipeline/review/clarifications.json", [])
+    events = all_events(root)
     result = []
     for g in groups.values():
         g["records"].sort(key=lambda r: r["evidence_id"])

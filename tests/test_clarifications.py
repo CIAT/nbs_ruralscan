@@ -168,3 +168,76 @@ def test_explicit_judgement_request_is_not_inferred_or_autoaccepted(tmp_path):
                 action="accept",
             ),
         )
+
+
+def test_publish_merges_history_and_preserves_local_replies(tmp_path):
+    from nbs_ruralscan.schema_tools.clarifications import (
+        pending_events,
+        publish,
+        all_events,
+    )
+
+    setup(tmp_path)
+    g = build(tmp_path)[0]
+    event = record(
+        tmp_path,
+        dict(
+            issue_id=g["id"],
+            fingerprint=g["fingerprint"],
+            reviewer="Pete",
+            action="accept",
+        ),
+    )
+    local = tmp_path / "pipeline/review/clarifications.json"
+    before = local.read_bytes()
+    shared = tmp_path / "pipeline/metrics/clarification_log.json"
+    other = dict(
+        event,
+        reviewer="Namita",
+        date="2020-01-01T00:00:00+00:00",
+        action="reply",
+        note="Earlier reply",
+    )
+    shared.write_text(json.dumps([other]))
+    assert len(pending_events(tmp_path)) == 1
+    assert publish(tmp_path) == 1
+    assert pending_events(tmp_path) == []
+    assert publish(tmp_path) == 0
+    assert local.read_bytes() == before
+    assert len(all_events(tmp_path)) == 2
+    assert build(tmp_path)[0]["status"] == "resolved"
+
+
+def test_submit_replays_clarifications_without_extraction_decisions(
+    tmp_path, monkeypatch
+):
+    from nbs_ruralscan.schema_tools import submit_review
+
+    setup(tmp_path)
+    g = build(tmp_path)[0]
+    record(
+        tmp_path,
+        dict(
+            issue_id=g["id"],
+            fingerprint=g["fingerprint"],
+            reviewer="Pete",
+            action="reply",
+            note="Please clarify",
+        ),
+    )
+    monkeypatch.setattr(submit_review, "ROOT", tmp_path)
+    monkeypatch.setattr(submit_review, "_load_store", lambda: {})
+    monkeypatch.setattr(
+        submit_review,
+        "apply_decisions",
+        lambda *a: pytest.fail("No extraction decisions to apply"),
+    )
+    assert submit_review.main() == 0
+    assert (
+        len(
+            json.loads(
+                (tmp_path / "pipeline/metrics/clarification_log.json").read_text()
+            )
+        )
+        == 1
+    )

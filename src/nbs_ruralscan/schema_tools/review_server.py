@@ -354,8 +354,11 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):  # noqa: N802
         if self.path == "/api/clarifications":
-            from .clarifications import build
-            return self._json(200, {"issues": build(ROOT)})
+            from .clarifications import build, pending_events
+
+            return self._json(
+                200, {"issues": build(ROOT), "pending": len(pending_events(ROOT))}
+            )
         if self.path == "/api/health":
             return self._json(200, {"ok": True})
         if self.path == "/api/version":
@@ -544,6 +547,7 @@ class Handler(SimpleHTTPRequestHandler):
 
         if self.path == "/api/clarifications":
             from .clarifications import record
+
             try:
                 return self._json(200, {"event": record(ROOT, payload)})
             except ValueError as exc:
