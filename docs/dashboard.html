@@ -2494,17 +2494,20 @@
     if(nl>=3 && nums>=4) return '\uD83D\uDCCA likely a table (cells flattened)';
     return '\u00B6 main text';
   }
+  function vfReviewingConflict(id){
+    return ((dashboardData.registers||{}).EV_evidence_register||[]).some(function(e){return e.evidence_id===id&&e._reviewConflict;});
+  }
   function setVfDecision(id,d){
     window._vfSaveQueue=(window._vfSaveQueue||Promise.resolve()).then(async function(){
       var me=window._vfReviewer||'reviewer';var val=d; // Repeated clicks are idempotent, not undo.
       if(window._reviewApi){
         vfNotice('Saving decision…');
-        var response=await fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,answered_issue_ids:vfClarificationsFor(id).filter(function(g){return g.answers.length;}).map(function(g){return g.id;}),reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||''),reviewer:me})});
+        var response=await fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reviewed_conflict:vfReviewingConflict(id),answered_issue_ids:vfClarificationsFor(id).filter(function(g){return g.answers.length;}).map(function(g){return g.id;}),reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||''),reviewer:me})});
         var result=await response.json();if(!response.ok||result.error)throw Error(result.error||'Save failed');
       }
       window._vfDecisions=window._vfDecisions||{};window._vfDecisions[id]=val;
       window._vfAllReviews=window._vfAllReviews||{};window._vfAllReviews[id]=window._vfAllReviews[id]||{};
-      window._vfAllReviews[id][me]={decision:val,applied:false};localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));if(window._reviewApi)await vfLoadClarifications();renderVfWorklist();vfNotice('Decision saved locally. Apply & submit when finished.');
+      window._vfAllReviews[id][me]={decision:val,applied:false,reviewed_conflict_at:vfReviewingConflict(id)?new Date().toISOString():null};localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));if(window._reviewApi)await vfLoadClarifications();renderVfWorklist();vfNotice('Decision saved locally. Apply & submit when finished.');
     }).catch(function(e){vfNotice('Decision NOT saved: '+e.message+' — click again to retry.',true);});
   }
   // A per-card DROP must carry a coded reason (mirrors the bulk-flag + query-note guards).
@@ -2664,7 +2667,7 @@
   async function challengeVf(eid, dec){
     var rev=(window._vfReviewer||'').trim();if(!rev){vfNotice('Select your reviewer handle first.',true);return;}
     vfNotice('Saving revised decision…');
-    try{var r=await fetch('/api/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:eid,decision:dec,reviewer:rev,reason:((window._vfReasons||{})[eid]||''),note:((window._vfNotes||{})[eid]||'')})});var res=await r.json();if(!r.ok||res.error)throw Error(res.error||'Save failed');await vfRefreshReview();vfNotice(res.conflict?'Decision saved; disagreement remains for resolution.':'Decision saved locally. Apply & submit when finished.');}
+    try{var r=await fetch('/api/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:eid,decision:dec,reviewer:rev,reviewed_conflict:vfReviewingConflict(eid),reason:((window._vfReasons||{})[eid]||''),note:((window._vfNotes||{})[eid]||'')})});var res=await r.json();if(!r.ok||res.error)throw Error(res.error||'Save failed');await vfRefreshReview();vfNotice(res.conflict?'Decision saved; disagreement remains for resolution.':'Decision saved locally. Apply & submit when finished.');}
     catch(e){vfNotice('Decision not saved: '+e.message,true);}
   }
 
@@ -2763,6 +2766,7 @@
     var waiting=vfClarificationsFor(u.ev.evidence_id).some(function(g){var r=g.records.find(function(r){return r.evidence_id===u.ev.evidence_id;});return g.reviewer!=='Status reconciliation'&&(r.review_status||g.status)==='needs_investigation';});
     if(view==='waiting')return (query||waiting)&&!answered&&!u.ev._reviewConflict;
     if(pending)return false;
+    if(u.conflictReviewed&&!answered)return false;
     return answered||u.ev._reviewConflict||u.ev._reviewQueue==='first';
   }
   // Site descriptions do not define suitability rules. Do not confuse these
@@ -3248,7 +3252,7 @@
       ev._reviewQueue=_vfReviewBucket(ev,decisions);
       var calls=Object.values(decisions).map(function(d){return d==='keep'?'ok':d;});ev._reviewConflict=calls.indexOf('ok')>=0&&calls.indexOf('drop')>=0;
       if(!isDrop&&vfHasAnswerForReview(id))ev._reviewQueue='first';
-      _uni.push({ev:ev,origin:origin,verdict:verdict,reason:reason,me:_uMe(id),other:_uOther(id),myDec:_uMyDec(id),meApplied:_meApplied(id),dropped:isDrop}); };
+      _uni.push({ev:ev,origin:origin,verdict:verdict,reason:reason,me:_uMe(id),other:_uOther(id),myDec:_uMyDec(id),conflictReviewed:!!((_store[id]||{})[_meH]||{}).reviewed_conflict_at,meApplied:_meApplied(id),dropped:isDrop}); };
     flaggedRows.forEach(function(r){ _pushU(r.ev,'flagged',r.verdict,r.reason); });
     passedAll.forEach(function(ev){ _pushU(ev,'passed','pass','AI accepted this extraction — spot-check: is the encoded value faithful to the quote?'); });
     ((dashboardData._evDropped)||[]).forEach(function(ev){ if(ev.use_role==='dataset')return; if(!_vfInScope(ev))return; var o=/\[VERIFY-FLAG/.test(ev.attribution||'')?'flagged':'passed'; _pushU(ev,o,o==='flagged'?'flagged':'pass',''); });
