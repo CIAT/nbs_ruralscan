@@ -353,6 +353,9 @@ class Handler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):  # noqa: N802
+        if self.path == "/api/clarifications":
+            from .clarifications import build
+            return self._json(200, {"issues": build(ROOT)})
         if self.path == "/api/health":
             return self._json(200, {"ok": True})
         if self.path == "/api/version":
@@ -538,6 +541,13 @@ class Handler(SimpleHTTPRequestHandler):
             payload = json.loads(self.rfile.read(length) or b"{}")
         except Exception:
             return self._json(400, {"error": "bad json"})
+
+        if self.path == "/api/clarifications":
+            from .clarifications import record
+            try:
+                return self._json(200, {"event": record(ROOT, payload)})
+            except ValueError as exc:
+                return self._json(400, {"error": str(exc)})
 
         if self.path == "/api/decision":
             # store is nested: {evidence_id: {reviewer: {decision, reason, note}}} — one per person.
