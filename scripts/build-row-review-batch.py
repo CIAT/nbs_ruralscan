@@ -11,6 +11,15 @@ confidence, prose, statement, family vote, held-out units and the evidence it re
 unit with its citation and a trimmed verbatim quote) and adds the batch to
 `docs/review/index.json` with kind "rows". Reads the recipe tables + EV/SRC registers only;
 never edits them. Decisions come back through scripts/apply-row-review-export.py.
+
+Each card also carries an ``at_a_glance`` block for rapid triage, computed deterministically
+from the same data (no new prose): headline, a one-line statement,
+basis mix, top-source share, income mix, a one-line family vote and rule-based red flags.
+The statement is built from the row's own fields, never the engine prose, so it always agrees
+with the headline (a family-vote re-class included).
+Weights there are a REVIEW APPROXIMATION of the engine's (tier × claim basis × design ×
+grey discount, then one vote per source split across its units) — good for spotting a row
+that leans on one paper or on ratings, not a replay of cell_synthesis.
 """
 
 from __future__ import annotations
@@ -18,10 +27,22 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
+import sys
+from collections import defaultdict
 from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+from nbs_ruralscan.recipe.synthesis import (  # noqa: E402
+    _DEFAULT_GREY_DISCOUNT,
+    BASIS_W,
+    GREY_DISCOUNT,
+    TIER_W,
+)
+
+DESIGN_WEIGHTS = ROOT / "schema" / "lookups" / "design_weights.csv"
 RECIPES = ROOT / "schema" / "recipes"
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 SRC = ROOT / "schema" / "registers" / "SRC_source_register.csv"
@@ -64,6 +85,16 @@ def load_rows(nbs_id: str, recipes: Path = RECIPES) -> list[tuple[str, dict]]:
     return out
 
 
+def _nbs_label(nbs_id: str, recipes: Path = RECIPES) -> str:
+    p = recipes / nbs_id / "T0_nbs_registry.csv"
+    if p.exists():
+        with p.open(newline="", encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                if r.get("nbs_id") == nbs_id and (r.get("nbs_name") or "").strip():
+                    return r["nbs_name"].strip()
+    return nbs_id.replace("_", " ").capitalize()
+
+
 def is_rollup(r: dict) -> bool:
     return (
         not (r.get("suitability_family_id") or "").strip()
@@ -92,7 +123,322 @@ def _unit(eid: str, ev: dict, src: dict) -> dict:
     }
 
 
-def card(table: str, r: dict, ev: dict, src: dict, question: str = "") -> dict:
+# ── at-a-glance (rapid triage; deterministic, no prose) ──────────────────────────────
+_MEASURED = {"primary_measured", "primary_measurement", "table", "figure_read"}
+BASIS_BUCKETS = [
+    "measured",
+    "cited_secondary",
+    "practitioner_rating",
+    "modelled",
+    "expert",
+]
+INCOME_BUCKETS = ["LIC/LMIC", "UMIC", "HIC", "unknown"]
+_FAM_SHORT = {
+    "planted_silvoarable": "silvoarable",
+    "linear_boundary": "boundary",
+    "shaded_perennial": "shaded",
+    "regeneration_farmland": "regeneration",
+    "homegardens_proximity": "homegardens",
+    "cross_family": "cross-family",
+}
+_LABEL_SYM = {
+    "strong_positive": "+3",
+    "moderate_positive": "+2",
+    "slight_positive": "+1",
+    "slight_negative": "−1",
+    "moderate_negative": "−2",
+    "strong_negative": "−3",
+    "very_high": "+4",
+    "high": "+3",
+    "moderate": "+2",
+    "low": "+1",
+    "none": "0",
+    "no_relationship": "0",
+    "conflicting_evidence": "±",
+    "data_deficient": "?",
+}
+
+
+def _design_weights(path: Path = DESIGN_WEIGHTS) -> dict[str, float]:
+    if not path.exists():
+        return {}
+    with path.open(newline="", encoding="utf-8") as f:
+        return {
+            r["design"].strip(): float(r["weight_factor"])
+            for r in csv.DictReader(f)
+            if (r.get("weight_factor") or "").strip()
+        }
+
+
+_DW = _design_weights()
+
+
+def _basis_bucket(claim_basis: str, design: str) -> str:
+    if design == "practitioner_rating":
+        return "practitioner_rating"
+    if claim_basis == "cited_secondary":
+        return "cited_secondary"
+    if claim_basis == "modelled" or design == "model":
+        return "modelled"
+    if claim_basis in _MEASURED:
+        return "measured"
+    return "expert"
+
+
+def _income_bucket(*vals: str) -> str:
+    for v in vals:
+        toks = {t for t in re.split(r"[|/_ ]+|,", (v or "").lower()) if t}
+        toks -= {"mostly", "income"}
+        if not toks:
+            continue
+        if toks <= {"low", "lower", "middle", "lic", "lmic"} and "upper" not in toks:
+            return "LIC/LMIC"
+        if toks <= {"upper", "middle"}:
+            return "UMIC"
+        if toks == {"high"}:
+            return "HIC"
+        return "unknown"  # mixed bands
+    return "unknown"
+
+
+def short_citation(citation: str, source_id: str = "") -> str:
+    c = (citation or "").strip()
+    if not c:
+        return source_id
+    first = re.split(r"[,(]", c, maxsplit=1)[0].strip()
+    first = re.sub(r"\s+et al\.?$", "", first).rstrip(". ") or source_id
+    yr = re.search(r"\b(19|20)\d{2}\b", c)
+    head = c[: yr.start()] if yr else c[:150]
+    many = " et al." if re.search(r"et al|&| and |;", head) else ""
+    return f"{first}{many} {yr.group(0)}".strip() if yr else first + many
+
+
+_CLASS_WORDS = {
+    "strong_positive": "strongly positive",
+    "moderate_positive": "moderately positive",
+    "slight_positive": "slightly positive",
+    "slight_negative": "slightly negative",
+    "moderate_negative": "moderately negative",
+    "strong_negative": "strongly negative",
+    "no_relationship": "no clear effect",
+    "very_high": "very high",
+}
+
+
+def _words(v: str) -> str:
+    return (v or "").replace("_", " ").strip()
+
+
+def class_words(cls_value: str, table: str = "T6", asset: bool = False) -> str:
+    w = _CLASS_WORDS.get(cls_value, _words(cls_value))
+    if table == "T3" and w and cls_value != "no_relationship":
+        w += " sensitivity" if asset else " mitigation"
+    return w
+
+
+def build_statement(
+    *,
+    table: str,
+    nbs_label: str,
+    target: dict,
+    cls_value: str,
+    confidence: str,
+    n_units: int,
+    n_sources: int,
+    measured_share: float,
+    vote_line: str,
+    data_deficient: bool,
+    conflicting: bool,
+    harm_sources: int,
+) -> str:
+    """One-line statement built ONLY from the row's own fields (never the engine prose),
+    so it always agrees with the headline — a family-vote re-class included."""
+    asset = table == "T3" and target.get("risk_role") == "asset_threat"
+    if table == "T6":
+        lead = f"{nbs_label} → {_words(target.get('priority', ''))}"
+    elif asset:
+        lead = f"{_words(target.get('hazard', '')).capitalize()} threat to the works"
+    else:
+        fs = target.get("farming_system", "")
+        fs = "all farming systems" if fs in ("", "all") else _words(fs)
+        lead = f"{nbs_label} under {_words(target.get('hazard', ''))} ({fs})"
+    src_s = f"{n_sources} source{'' if n_sources == 1 else 's'}"
+    if data_deficient:
+        meas = (
+            "none measured"
+            if measured_share <= 0
+            else f"{round(100 * measured_share)}% measured"
+        )
+        body = f"not enough evidence to state a class ({src_s}, {meas})"
+    elif conflicting:
+        body = (
+            f"evidence conflicts — sub-practices disagree ({vote_line})"
+            if vote_line
+            else "evidence conflicts (minority side ≥ 1/3 of the weight)"
+        )
+    elif asset and not cls_value:
+        body = "not assessed"
+    else:
+        body = (
+            f"{class_words(cls_value, table, asset) or 'no class'} "
+            f"({_words(confidence) or 'unrated'} confidence; {n_units} unit{'' if n_units == 1 else 's'}, {src_s})"
+        )
+    out = f"{lead}: {body}"
+    if harm_sources:
+        out += f" · harm reported in {harm_sources} source{'' if harm_sources == 1 else 's'}"
+    return out
+
+
+def family_vote_line(fv: dict | None, nbs_id: str = "") -> str:
+    if not fv or not fv.get("votes"):
+        return ""
+    out = []
+    for v in fv["votes"]:
+        fam = str(v.get("family") or "")
+        if nbs_id and fam.startswith(nbs_id + "__"):
+            fam = fam[len(nbs_id) + 2 :]
+        fam = _FAM_SHORT.get(fam, fam.split("_")[0] if fam else "?")
+        lab = str(v.get("label") or "")
+        out.append(f"{fam} {_LABEL_SYM.get(lab, lab.replace('_', ' '))}")
+    return " · ".join(out)
+
+
+def _unit_weight(r: dict, s: dict) -> float:
+    rel = _j(r.get("relationship"), {}) or {}
+    w = TIER_W.get((s.get("benchmark_tier") or "").lower(), 0.5)
+    w *= BASIS_W.get(r.get("claim_basis", ""), 0.5)
+    w *= _DW.get(str(rel.get("design") or "").strip().lower(), 1.0)
+    if (s.get("source_category") or "").lower() == "grey":
+        w *= GREY_DISCOUNT.get(r.get("use_role", ""), _DEFAULT_GREY_DISCOUNT)
+    return w
+
+
+def at_a_glance(
+    cls_value: str,
+    confidence: str,
+    j: dict,
+    evidence_ids: list[str],
+    ev: dict,
+    src: dict,
+    nbs_id: str = "",
+    table: str = "T6",
+    target: dict | None = None,
+    nbs_label: str = "",
+) -> dict:
+    target = target or {}
+    units = [
+        ev[e]
+        for e in evidence_ids
+        if e in ev and (ev[e].get("review_state") or "") != "dropped"
+    ]
+    by_src: dict[str, list[dict]] = defaultdict(list)
+    for r in units:
+        by_src[r.get("source_id", "")].append(r)
+    # one vote per source = its mean unit weight, split evenly across its units
+    src_w = {
+        sid: sum(_unit_weight(r, src.get(sid, {})) for r in rs) / len(rs)
+        for sid, rs in by_src.items()
+    }
+    total = sum(src_w.values()) or 1.0
+    counts = dict.fromkeys(BASIS_BUCKETS, 0)
+    wshare = dict.fromkeys(BASIS_BUCKETS, 0.0)
+    inc_n = dict.fromkeys(INCOME_BUCKETS, 0)
+    for sid, rs in by_src.items():
+        for r in rs:
+            rel = _j(r.get("relationship"), {}) or {}
+            ctx = _j(r.get("context"), {}) or {}
+            b = _basis_bucket(r.get("claim_basis", ""), str(rel.get("design") or ""))
+            counts[b] += 1
+            wshare[b] += src_w[sid] / len(rs) / total
+            inc = _income_bucket(
+                str(ctx.get("income_group") or ""),
+                src.get(sid, {}).get("study_income_group", ""),
+            )
+            inc_n[inc] += 1
+    n = len(units)
+    income_mix = {k: round(v / n, 3) if n else 0.0 for k, v in inc_n.items()}
+    top_sid = max(src_w, key=lambda k: src_w[k]) if src_w else ""
+    top_share = round(src_w[top_sid] / total, 3) if top_sid else 0.0
+    dd = bool(j.get("data_deficient")) or cls_value == "data_deficient"
+    conf = bool(j.get("conflicting")) or cls_value == "conflicting_evidence"
+    headline = (
+        "DATA DEFICIENT"
+        if dd
+        else "CONFLICTING"
+        if conf
+        else f"{_words(cls_value) or 'no class'} · {_words(confidence) or '—'}"
+    )
+    flags = []
+    if len(by_src) == 1:
+        flags.append("rests on 1 source")
+    if top_share > 0.4 and len(by_src) > 1:
+        flags.append("single source carries >40%")
+    if wshare["cited_secondary"] > 0.5:
+        flags.append("mostly second-hand")
+    if wshare["practitioner_rating"] > 0.5:
+        flags.append("mostly practitioner ratings")
+    if income_mix["HIC"] > 0.5:
+        flags.append("HIC-dominated")
+    if n and inc_n["LIC/LMIC"] == 0:
+        flags.append("no LIC/LMIC evidence")
+    if (cls_value.startswith("slight") or cls_value == "low") and confidence in (
+        "high",
+        "very_high",
+    ):
+        flags.append("weak class but high confidence")
+    mal = j.get("maladaptation")
+    harm_sources = 0
+    if mal and (not isinstance(mal, dict) or mal.get("n_units") or mal.get("ids")):
+        flags.append("harm units present")
+        harm_sources = int(mal.get("n_sources") or 1) if isinstance(mal, dict) else 1
+    if conf:
+        flags.append("conflicting")
+    if dd:
+        flags.append("data deficient")
+    s_top = src.get(top_sid, {})
+    vote_line = family_vote_line(j.get("family_vote"), nbs_id)
+    statement = build_statement(
+        table=table,
+        nbs_label=nbs_label or _words(nbs_id).capitalize(),
+        target=target,
+        cls_value=cls_value,
+        confidence=confidence,
+        n_units=n,
+        n_sources=len(by_src),
+        measured_share=wshare["measured"],
+        vote_line=vote_line,
+        data_deficient=dd,
+        conflicting=conf,
+        harm_sources=harm_sources,
+    )
+    return {
+        "headline": headline,
+        "statement_short": statement,
+        "basis": {
+            "n_units": n,
+            "n_sources": len(by_src),
+            "counts": counts,
+            "weight_share": {k: round(v, 3) for k, v in wshare.items()},
+        },
+        "top_source_share": {
+            "share": top_share,
+            "source_id": top_sid,
+            "citation": short_citation(s_top.get("citation", ""), top_sid),
+        },
+        "income_mix": income_mix,
+        "family_vote_line": vote_line,
+        "red_flags": flags,
+    }
+
+
+def card(
+    table: str,
+    r: dict,
+    ev: dict,
+    src: dict,
+    question: str = "",
+    nbs_label: str = "",
+) -> dict:
     j = _j(r.get("justification"), {}) or {}
     if table == "T6":
         target = {"priority": r.get("variable_id", "")}
@@ -116,6 +462,8 @@ def card(table: str, r: dict, ev: dict, src: dict, question: str = "") -> dict:
         confidence = r.get("confidence", "")
         mech_col, cond_col = "mitigation_mechanism", "caveats"
     held = j.get("held_out_of_class") or {}
+    ev_ids = _j(r.get("evidence_ids"), []) or []
+    cls_value = r.get(cls_field, "") or ""
     return {
         "record_id": r.get("record_id", ""),
         "table": table,
@@ -142,8 +490,20 @@ def card(table: str, r: dict, ev: dict, src: dict, question: str = "") -> dict:
             {"reason": k, "units": [_unit(e, ev, src) for e in (ids or [])]}
             for k, ids in held.items()
         ],
-        "evidence": [_unit(e, ev, src) for e in (_j(r.get("evidence_ids"), []) or [])],
+        "evidence": [_unit(e, ev, src) for e in ev_ids],
         "question": question,
+        "at_a_glance": at_a_glance(
+            cls_value,
+            confidence,
+            j,
+            ev_ids,
+            ev,
+            src,
+            r.get("nbs_id", ""),
+            table=table,
+            target=target,
+            nbs_label=nbs_label,
+        ),
     }
 
 
@@ -162,10 +522,11 @@ def build_cards(
     with src_path.open(newline="", encoding="utf-8") as f:
         src = {r["source_id"]: r for r in csv.DictReader(f)}
     cards, seen = [], set()
+    label = _nbs_label(nbs_id, recipes)
     for table, r in load_rows(nbs_id, recipes):
         rid = r.get("record_id", "")
         if rid in wanted or (all_rollups and is_rollup(r)):
-            cards.append(card(table, r, ev, src, wanted.get(rid, "")))
+            cards.append(card(table, r, ev, src, wanted.get(rid, ""), label))
             seen.add(rid)
     return cards, [k for k in wanted if k not in seen]
 

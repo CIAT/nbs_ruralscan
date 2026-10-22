@@ -225,6 +225,24 @@
   .held-reason { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--accent-amber); margin-top: 6px; }
   .vote-tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 6px; }
   .vote-tbl th, .vote-tbl td { text-align: left; padding: 4px 6px 4px 0; border-top: 1px solid var(--border-color); overflow-wrap: anywhere; }
+  .glance { margin-bottom: 12px; padding: 10px 12px; }
+  .glance-top { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 13.5px; }
+  .glance-target { color: var(--text-secondary); overflow-wrap: anywhere; }
+  .chip-class.chip-alert { background: rgba(var(--accent-rose-rgb), 0.18); border-color: var(--accent-rose); }
+  .glance-stmt { margin: 6px 0; font-size: 14.5px; }
+  .flag-chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 6px; }
+  .chip-flag { font-size: 12px; padding: 1px 8px; border-radius: 10px; background: var(--accent-amber); color: #111; font-weight: 600; }
+  .basis-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--bg-tertiary); margin-top: 4px; }
+  .basis-bar .seg { display: block; height: 100%; }
+  .basis-txt { font-size: 12.5px; color: var(--text-secondary); margin-top: 3px; }
+  .basis-txt .key { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: middle; }
+  .seg-measured, .key-measured { background: var(--accent-emerald); }
+  .seg-cited_secondary, .key-cited_secondary { background: var(--accent-amber); }
+  .seg-practitioner_rating, .key-practitioner_rating { background: var(--accent-purple); }
+  .seg-modelled, .key-modelled { background: var(--accent-sky); }
+  .seg-expert, .key-expert { background: var(--text-muted); }
+  .glance-meta { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; overflow-wrap: anywhere; }
+  #unit-list li .flagn { font-size: 11px; padding: 0 6px; border-radius: 9px; background: var(--accent-amber); color: #111; font-weight: 700; flex: 0 0 auto; }
   body.kind-rows #unit .muted { color: var(--text-muted); font-size: 12.5px; }
 </style>
 </head>
@@ -248,6 +266,7 @@
       <option value="reject">rejected</option>
       <option value="others">decided by others</option>
     </select></label>
+    <label id="sort-wrap" hidden><input type="checkbox" id="f-flags"> flags first</label>
     <input type="search" id="f-search" placeholder="Search citation, variable, question">
   </div>
   <div class="progress"><span id="progress-text">0 / 0 decided</span><div class="bar"><div id="progress-bar"></div></div></div>
@@ -328,6 +347,9 @@
   function glossOf(r) { return (S.kind === 'rows' ? ROW_GLOSS : GLOSS)[r] || ''; }
   // the decision key: evidence_id for a unit card, record_id for a generated-row card
   function idOf(u) { return u ? (u.evidence_id || u.record_id || '') : ''; }
+  function nFlags(u) { return (u && u.at_a_glance && u.at_a_glance.red_flags) ? u.at_a_glance.red_flags.length : 0; }
+  var UNIT_KEYS = 'Keys: A approve · H hold · R reject · ← → move';
+  var ROW_KEYS = 'Keys: A approve · H hold · R reject (pick reason) · N/→ next · P/← previous';
 
   var S = {
     index: [], batchId: null, batch: null, kind: 'units', units: [], reasons: DEFAULT_REASONS.slice(),
@@ -442,6 +464,9 @@
     if (r.indexOf('other') < 0) r.push('other');
     S.reasons = r;
     document.body.classList.toggle('kind-rows', S.kind === 'rows');
+    if ($('sort-wrap')) $('sort-wrap').hidden = S.kind !== 'rows';
+    var keysEl = document.querySelector('.nav .keys');
+    if (keysEl) keysEl.textContent = S.kind === 'rows' ? ROW_KEYS : UNIT_KEYS;
     renderReasons();
     $('batch-notes').innerHTML = present(S.batch.notes) ? esc(S.batch.notes) : '';
     var nbs = {};
@@ -511,6 +536,10 @@
       }
       return true;
     });
+    if (S.kind === 'rows' && $('f-flags') && $('f-flags').checked) {
+      S.filtered = S.filtered.map(function (u, k) { return [u, k]; }).sort(function (a, b) {
+        return (nFlags(b[0]) - nFlags(a[0])) || (a[1] - b[1]); }).map(function (x) { return x[0]; });
+    }
     var i = curId ? S.filtered.map(function (u) { return idOf(u); }).indexOf(curId) : -1;
     S.pos = i >= 0 ? i : Math.min(S.pos, Math.max(0, S.filtered.length - 1));
     renderList();
@@ -567,6 +596,7 @@
         '<span class="lbl" title="' + esc(idOf(u)) + '">' + (S.kind === 'rows'
           ? esc(u.table) + ' ' + esc(u.target_label) + (present(u.suitability_family_id) ? ' — ' + esc(u.suitability_family_id) : ' — roll-up')
           : esc(u.variable) + ' — ' + esc(u.source_id)) + '</span>' +
+        (S.kind === 'rows' && nFlags(u) ? '<span class="flagn" title="' + esc((u.at_a_glance.red_flags || []).join('; ')) + '">' + nFlags(u) + '</span>' : '') +
         (others.length ? '<span class="othermark" title="' + esc(others.length + ' other reviewer(s) decided this unit') + '">◆</span>' : '') +
         '</li>';
     }).join('');
@@ -705,28 +735,55 @@
     var target = u.table === 'T6' ? 'priority: ' + esc(u.target && u.target.priority)
       : 'hazard: ' + esc(u.target && u.target.hazard) + ' <span class="sep">·</span> farming system: ' + esc(u.target && u.target.farming_system) +
         (u.target && present(u.target.risk_role) ? ' <span class="sep">·</span> ' + esc(u.target.risk_role) : '');
+    var g = u.at_a_glance || {};
+    var b = g.basis || {}, ws = b.weight_share || {}, bc = b.counts || {};
+    var BASIS_LBL = [['measured', 'measured'], ['cited_secondary', 'second-hand'], ['practitioner_rating', 'ratings'],
+      ['modelled', 'modelled'], ['expert', 'expert']];
+    var pct = function (x) { return Math.round(100 * (+x || 0)) + '%'; };
+    var basisSegs = BASIS_LBL.filter(function (k) { return (+ws[k[0]] || 0) > 0; });
+    var basisBar = basisSegs.length ? '<div class="basis-bar" title="share of (approximate) voting weight by claim basis">' +
+      basisSegs.map(function (k) { return '<span class="seg seg-' + k[0] + '" style="width:' + (100 * ws[k[0]]).toFixed(1) + '%"></span>'; }).join('') + '</div>' +
+      '<div class="basis-txt">' + basisSegs.map(function (k) {
+        return '<span class="key key-' + k[0] + '"></span>' + esc(k[1]) + ' ' + pct(ws[k[0]]) + ' <span class="muted">(' + esc(bc[k[0]]) + ')</span>';
+      }).join(' <span class="sep">·</span> ') + '</div>' : '';
+    var im = g.income_mix || {};
+    var incomeTxt = ['LIC/LMIC', 'UMIC', 'HIC', 'unknown'].filter(function (k) { return (+im[k] || 0) > 0; })
+      .map(function (k) { return esc(k) + ' ' + pct(im[k]); }).join(' <span class="sep">·</span> ');
+    var ts = g.top_source_share || {};
+    var gFlags = g.red_flags || [];
+    var headCls = /DATA DEFICIENT|CONFLICTING/.test(g.headline || '') ? ' chip-alert' : '';
+    var glance =
+      '<div class="card glance">' +
+        '<div class="glance-top"><span class="chip-class' + headCls + '" title="' + esc(cls.field) + ': ' + esc(cls.value) + '">' +
+          esc(g.headline || ((cls.value || 'no class') + ' · ' + (u.confidence || '—'))) + '</span>' +
+          '<span class="glance-target"><b>' + esc(u.table) + '</b> ' + target + ' <span class="sep">·</span> ' +
+            (present(u.suitability_family_id) ? esc(u.suitability_family_id) : 'NbS roll-up') +
+            (present(u.scope) ? ' <span class="sep">·</span> ' + esc(u.scope) : '') + '</span>' +
+          '<span class="muted">evidence ' + esc(u.evidence_level) + ' · agreement ' + esc(u.agreement_level) + '</span></div>' +
+        '<p class="glance-stmt">' + esc(g.statement_short || u.statement) + '</p>' +
+        (gFlags.length ? '<div class="flag-chips">' + gFlags.map(function (f) { return '<span class="chip-flag">' + esc(f) + '</span>'; }).join('') + '</div>' : '') +
+        basisBar +
+        '<p class="glance-meta">' + esc(b.n_units) + ' units / ' + esc(b.n_sources) + ' sources' +
+          (present(ts.source_id) ? ' <span class="sep">·</span> top source <b>' + esc(ts.citation || ts.source_id) + '</b> ' + pct(ts.share) : '') +
+          (incomeTxt ? ' <span class="sep">·</span> income ' + incomeTxt : '') + '</p>' +
+        (present(g.family_vote_line) ? '<p class="glance-meta">families: ' + esc(g.family_vote_line) + '</p>' : '') +
+      '</div>';
+    var narrative = '<h3>Mechanism</h3><p>' + esc(u.mechanism) + '</p><h3>Conditionality</h3><p>' + esc(u.conditionality) + '</p>' +
+      '<h3>Engine statement</h3><p>' + esc(u.statement) + '</p>' +
+      (present(u.pool_note) ? '<p class="muted">' + esc(u.pool_note) + '</p>' : '') +
+      (u.data_deficient && present(u.data_deficient_reason) ? '<p class="muted">' + esc(u.data_deficient_reason) + '</p>' : '');
     el.innerHTML =
       '<div class="unit-head"><span>' + (S.pos + 1) + ' / ' + S.filtered.length + '</span><code>' + esc(idOf(u)) +
-      '</code><span class="pill ' + st + '">' + esc(st) + '</span></div>' +
+      '</code><span class="pill ' + st + '">' + esc(st) + '</span>' + flags + '</div>' +
+      glance +
       '<div class="cols">' +
-        '<div class="card"><h2>' + esc(u.table) + ' row — ' + esc(u.nbs_id) + '</h2>' +
+        '<div class="card">' +
           (present(u.question) ? '<div class="why"><b>Why this needs a look</b>' + esc(u.question) + '</div>' : '') +
-          '<p class="row-target">' + target + '<br>' +
-            (present(u.suitability_family_id) ? 'family: ' + esc(u.suitability_family_id) : 'NbS roll-up') +
-            (present(u.scope) ? ' <span class="sep">·</span> scope: ' + esc(u.scope) : '') + '</p>' +
-          '<div class="row-chips"><span class="chip-class" title="' + esc(cls.field) + '">' + esc(cls.value || 'no class') + '</span>' +
-            '<span class="chip-conf">confidence: <b>' + esc(u.confidence) + '</b></span>' +
-            '<span class="chip-conf">evidence ' + esc(u.evidence_level) + ' <span class="sep">·</span> agreement ' + esc(u.agreement_level) + '</span>' +
-            flags + '</div>' +
-          (u.data_deficient && present(u.data_deficient_reason) ? '<p class="muted">' + esc(u.data_deficient_reason) + '</p>' : '') +
-          '<div class="plain"><h3>Mechanism</h3><p>' + esc(u.mechanism) + '</p>' +
-            '<h3>Conditionality</h3><p>' + esc(u.conditionality) + '</p></div>' +
-          '<div class="why"><b>Statement</b>' + esc(u.statement) + '</div>' +
-          (present(u.pool_note) ? '<p class="muted">' + esc(u.pool_note) + '</p>' : '') +
+          foldHtml('Full narrative', '<div class="plain">' + narrative + '</div>', '', false) +
         '</div>' +
-        '<div class="card"><h2>What it rests on</h2>' +
+        '<div class="card">' +
           (foldHtml('Family vote', fvBody, '', false) || '<p class="muted">No family vote on this row.</p>') +
-          foldHtml('Evidence (' + ev.length + ' unit' + (ev.length === 1 ? '' : 's') + ')', evBody, '', true) +
+          foldHtml('Evidence (' + ev.length + ' unit' + (ev.length === 1 ? '' : 's') + ')', evBody, '', false) +
           foldHtml('Held out of the class (' + nHeld + ')', heldBody, nHeld ? '<span class="badge">' + nHeld + ' held out</span>' : '', false) +
         '</div>' +
       '</div>';
@@ -850,6 +907,13 @@
       go(idx >= 0 ? idx + 1 : keepPos);
     }
     return true;
+  }
+
+  // rows: R opens the reason picker without saving; choosing a reason saves the reject
+  function rejectPrompt() {
+    if (!current()) return false;
+    $('reason').value = '';
+    return decide('reject', { reason: '' });
   }
 
   function saveNote() {
@@ -980,6 +1044,7 @@
       try { var u = new URL(location.href); u.searchParams.set('batch', id); history.replaceState(null, '', u); } catch (e) { /* ignore */ }
       S.filtered = []; load(id);
     });
+    $('f-flags').addEventListener('change', function () { S.pos = 0; applyFilters(); });
     ['f-nbs', 'f-state'].forEach(function (id) {
       $(id).addEventListener('change', function () { S.pos = 0; applyFilters(); if (id === 'f-nbs') syncUrl(); });
     });
@@ -1033,7 +1098,10 @@
       var k = e.key;
       if (k === 'a' || k === 'A') { decide('approve'); e.preventDefault(); }
       else if (k === 'h' || k === 'H') { decide('hold'); e.preventDefault(); }
+      else if ((k === 'r' || k === 'R') && S.kind === 'rows') { rejectPrompt(); e.preventDefault(); }
       else if (k === 'r' || k === 'R') { decide('reject'); e.preventDefault(); }
+      else if ((k === 'n' || k === 'N') && S.kind === 'rows') { go(S.pos + 1); e.preventDefault(); }
+      else if ((k === 'p' || k === 'P') && S.kind === 'rows') { go(S.pos - 1); e.preventDefault(); }
       else if (k === 'ArrowLeft') { go(S.pos - 1); e.preventDefault(); }
       else if (k === 'ArrowRight') { go(S.pos + 1); e.preventDefault(); }
     });
