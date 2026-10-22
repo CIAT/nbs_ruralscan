@@ -495,3 +495,59 @@ def test_batch_carries_display_vocab(tmp_path):
     assert set(rr) == {"label", "ttl_label", "definition", "source_ref", "source_url"}
     assert v["confidence"]["high"]["source_url"].startswith("https://")
     assert "data_deficient" in v["row_state"]
+
+
+def _prio_card(cls="moderate", conf="high", dd=False, flags=()):
+    return {
+        "class": {"field": "effect_direction", "value": cls},
+        "confidence": conf,
+        "data_deficient": dd,
+        "evidence": [
+            {
+                "evidence_id": "ev_a",
+                "citation": "Smith, J. (2020). A paper.",
+                "source_id": "smith20",
+            }
+        ],
+        "at_a_glance": {"red_flags": list(flags)},
+    }
+
+
+def test_priority_none_without_inputs():
+    assert builder.priority(_prio_card(), None, None) is None
+
+
+def test_priority_fragile_confident_row_ranks_and_names_unit():
+    frag = {"n_units": 5, "n_pivotal": 2, "pivotal": [("ev_a", "conflicting_evidence")]}
+    p = builder.priority(_prio_card(), frag, None)
+    assert p["level"] == "medium"
+    sev = {"verdict": "concern", "severity": 2, "why": "Ratings only."}
+    assert builder.priority(_prio_card(), frag, sev)["level"] == "high"
+    assert any("ev_a" in w and "conflicting evidence" in w for w in p["why"])
+    assert any("confidence" in w for w in p["why"])
+
+
+def test_priority_second_reader_concern_dominates_and_consistent_is_low():
+    sev = {"verdict": "concern", "severity": 3, "why": "Unit X is a bundle."}
+    assert builder.priority(_prio_card(conf="low"), None, sev)["level"] == "high"
+    ok = {"verdict": "consistent", "severity": 0, "why": "Signs agree."}
+    p = builder.priority(_prio_card(conf="low"), None, ok)
+    assert p["level"] == "low" and p["why"][0].startswith("Second reader found")
+
+
+def test_priority_data_deficient_flip_counts_half():
+    frag = {"n_units": 1, "n_pivotal": 1, "pivotal": [("ev_a", "row gone")]}
+    dd = builder.priority(_prio_card(cls="data_deficient", dd=True), frag, None)
+    full = builder.priority(_prio_card(conf="low"), frag, None)
+    assert dd["score"] < full["score"]
+
+
+def test_load_fragility_parses_pivots(tmp_path):
+    p = tmp_path / "f.csv"
+    p.write_text(
+        "record_id,class,n_units,n_pivotal,pivotal_units\n"
+        "r1,moderate,4,2,ev_a -> low; ev_b -> row gone\n",
+        encoding="utf-8",
+    )
+    f = builder.load_fragility(p)
+    assert f["r1"]["pivotal"] == [("ev_a", "low"), ("ev_b", "row gone")]
