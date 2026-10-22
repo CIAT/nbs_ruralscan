@@ -1,0 +1,24 @@
+binding_id,variable,scope_type,scope_id,dataset_id,preference_rank,status,fitness_note,band
+slope__global,slope,global,,srtm_dem_30m,1,catalogued,30 m SRTM; derive-then-aggregate for slope.,
+annual_precipitation__global,annual_precipitation,global,,chelsa_bioclim_v21_baseline,1,catalogued,CHELSA v2.1 BIO12 (annual precip) — bias-corrected high-res; preferred over CHIRPS for static climatology.,BIO12
+cocoa_distribution__global,cocoa_distribution,global,,mapspam_physical_area_2020,2,catalogued,Cocoa physical-area ha / pixel area ha. MapSPAM allocation fallback for scoping; prefer accurate commodity map. Not harvested-area intensity or a suitability score.,34
+cocoa_distribution__SLE,cocoa_distribution,admin_country,SLE,,1,requires_upload,"National EO cocoa map (~10 m, 2023) known to exist; upload to override MapSPAM for the SLE pilot.",
+mean_annual_temperature__global,mean_annual_temperature,global,,chelsa_bioclim_v21_baseline,1,catalogued,"CHELSA BIO1 = annual mean temperature; multi-band asset, band-resolved via this binding.",BIO1
+accessibility_travel_time__global,accessibility_travel_time,global,,nelson_accessibility_2015,1,catalogued,Weiss/Nelson 2015 baseline ~1 km global accessibility surface. Travel-time minutes.,
+electrification_index__global,electrification_index,global,,viirs_nighttime_lights,1,catalogued,VIIRS annual night-lights composite at ~500 m as electrification proxy.,
+tenure_security__global,tenure_security,global,,landmark_iplc_lands,1,catalogued,LandMark IPLC vector layer. FPIC_REQUIRED flag triggers on overlap with the M1 opportunity-space mask. Coverage patchy — absence ≠ no IPLC presence.,
+conflict_fragility_index__global,conflict_fragility_index,global,,acled_conflict_events,1,catalogued,ACLED rolling 5-year event-density grid; pair with WB FCV admin0 list for binary fragility flag.,
+extension_governance__global,extension_governance,global,,wb_wgi_governance,1,catalogued,"WB WGI 'government effectiveness' (admin0). Per the T5 spatial-grain rule (admin0 → qualified flag, not hotspot driver). Subnational requires_upload.",
+finance_credit_access__global,finance_credit_access,global,,wb_findex_access,1,catalogued,WB Global Findex (admin0). Subnational requires_upload via LSMS-ISA / FinScope.,
+market_value_chain__global,market_value_chain,global,,faostat_country_indicators,1,catalogued,FAOSTAT country indicators (producer prices + trade) as market-depth proxy. Subnational requires country uploads.,
+labour_availability__global,labour_availability,global,,ilo_labour_statistics,1,catalogued,ILOSTAT agricultural employment share. Subnational requires LSMS-ISA or country uploads.,
+market_access__global,accessibility_travel_time,global,,nelson_accessibility_2015,1,catalogued,"Same Nelson/Weiss surface as accessibility_travel_time — re-bound here for the T5 descriptor framing (market connectivity context, not scenario lever).",
+coffee_arabica_distribution__global,coffee_arabica_distribution,global,,mapspam_physical_area_2020,2,catalogued,"Physical-area ha, all technologies; published crop order. Prefer accurate local commodity map; coarse allocation fallback accepted by Pete 2026-10-20.",32
+coffee_robusta_distribution__global,coffee_robusta_distribution,global,,mapspam_physical_area_2020,2,catalogued,"Physical-area ha, all technologies; published crop order. Prefer accurate local commodity map; coarse allocation fallback accepted by Pete 2026-10-20.",33
+tea_distribution__global,tea_distribution,global,,mapspam_physical_area_2020,2,catalogued,"Physical-area ha, all technologies; published crop order. Prefer accurate local commodity map; coarse allocation fallback accepted by Pete 2026-10-20.",35
+grassland_class__global,grassland_class,global,,gpw_grassland_class_v1,2,catalogued,"Publisher GEE; use 2020 for livestock alignment; class 1 cultivated, 2 natural/semi-natural, 0 other. Grazing interpretation remains separate.",dominant_class
+ruminant_density__global,ruminant_density,global,,glw4_livestock_2020,2,catalogued,"Named species COGs, head/km2. Supports grazing context; no universal density threshold or management inference.",cattle|buffalo|goat|sheep
+field_boundary_zone__global,field_boundary_zone,global,,,2,requires_upload,Buffered field boundaries; geometry plus regionally justified width required.,
+grazing_system_present__global,grazing_system_present,global,,,2,requires_upload,"Grazing management confirmation; GPW grassland and GLW4 ruminants are supporting inputs, not direct proof.",
+managed_forage_without_grazing__global,managed_forage_without_grazing,global,,,2,requires_upload,Forage management without grazing; grassland class alone is insufficient.,
+farmland_context__global,farmland_context,global,,,2,requires_upload,Validated agricultural/fallow/former-farmland context. Degradation and grassland cover alone do not establish this.,

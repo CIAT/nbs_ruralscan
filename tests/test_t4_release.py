@@ -29,7 +29,7 @@ def test_release_is_exact_accounted_snapshot_with_dataset_differences(tmp_path):
     assert "not executable" in legal["status"]
     assert "field_boundary_zone" in manifest["required_local_inputs"]
     page = (tmp_path / "index.html").read_text(encoding="utf-8")
-    assert 'data-operational="true"' in page
+    assert 'data-module="M2b"' in page
     assert "pilot execution remain to validate" in page
     assert json.loads((tmp_path / "manifest.json").read_text()) == manifest
 
@@ -57,6 +57,9 @@ def test_rule_view_separates_hierarchy_and_exposes_weights_and_scope(tmp_path):
     release.build(ROOT, tmp_path)
     page = (tmp_path / "index.html").read_text(encoding="utf-8")
     assert "<th>Theme</th><th>Variable group</th>" in page
+    assert "<th>Group inclusion</th>" in page
+    assert "<th>Variable inclusion</th>" in page
+    assert (tmp_path / "inclusion_estimates.csv").exists()
     assert "<th>Weighting</th>" in page
     assert "Equal numeric default: 0.2" in page
     assert "equal-hierarchy reference" in page
@@ -64,3 +67,29 @@ def test_rule_view_separates_hierarchy_and_exposes_weights_and_scope(tmp_path):
     assert "planting versus natural retention/regeneration not established" in page
     assert "Alley cropping" in page
     assert (tmp_path / "practice_vocabulary.csv").exists()
+
+
+def test_operational_module_visible_and_evidence_only_rows_not_executable(tmp_path):
+    manifest = release.build(ROOT, tmp_path)
+    rows = release.read(tmp_path / "T4_review.csv")
+    road = next(r for r in rows if r["variable"] == "distance_to_road")
+    travel = next(r for r in rows if r["variable"] == "accessibility_travel_time")
+    assert road["module"].startswith("M2b")
+    assert road["kind"] == "Operational evidence (not configured)"
+    assert road["weight_default"] == ""
+    assert road["related_operational_evidence_ids"]
+    assert travel["related_operational_evidence_ids"]
+    assert travel["related_operational_sources"]
+    assert "No verified model-use record" in travel["variable_inclusion"]
+    assert manifest["operational_evidence_only_rows"] > 0
+    assert (
+        len(rows)
+        == sum(manifest["row_counts"].values())
+        + manifest["operational_evidence_only_rows"]
+    )
+    assert "distance_to_road" not in {
+        r["variable"] for r in release.read(tmp_path / "T4_suitability_mappings.csv")
+    }
+    page = (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert '<option value="all">All modules</option>' in page
+    assert "<th>Module</th>" in page
