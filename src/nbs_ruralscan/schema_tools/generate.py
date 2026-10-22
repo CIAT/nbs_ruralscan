@@ -487,6 +487,23 @@ def _safe_console() -> None:
                 pass
 
 
+def refresh_review_state(schema_root: str | Path) -> None:
+    """Refresh review-only UI artifacts; full source validation still runs on Apply.
+
+    Reopening changes review metadata, not source claims. Avoid re-reading every PDF
+    before returning the editable card to the reviewer.
+    """
+    schema_root = Path(schema_root)
+    path = schema_root / "registers/EV_evidence_register.csv"
+    path.with_suffix(".json").write_text(
+        json.dumps(_csv_to_rows(path), ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+        newline="\n",
+    )
+    generate_dashboard_data(schema_root)
+    generate_progress_report(schema_root)
+
+
 def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     """Write (or, under ``check``, compare) every JSON from its CSV. Returns the
     list of paths that were written / are stale."""

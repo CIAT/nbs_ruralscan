@@ -16,3 +16,9 @@ Replies remain append-only local events in gitignored `pipeline/review/clarifica
 The workflow PR must reach main before replay can publish these events; the submit script fails explicitly rather than silently dropping pending replies on an older main. Existing PR protection is unchanged: clarification-history batches are outside the review-only auto-approval allowlist and require ordinary PR approval. Publishing a reply never approves extraction or changes T4 rules.
 
 Initial reconciliation (22 October 2026): 73 active general-practice records produce 77 threads, with 17 answers ready and 60 requiring investigation. No new judgement requests or user acceptances were invented. This is bounded matching against the tracked follow-up register, not a claim that every chat message or untracked document has been reconciled.
+
+## Focused answer review
+
+Answers ready shows one shared issue once, with question, answer, source context on demand, Accept answer → next and Ask a follow-up. Extraction decision buttons and advanced filters are hidden in this view. Accepting an answer removes it from this queue; replying moves it to team investigation. Pending answer actions and pending extraction decisions are labelled separately. Feedback is inline, not a blocking dialog.
+
+Reopen clears the requesting reviewer’s stored decision and resets stale queue filters. It refreshes review artifacts through the canonical CSV conversion without re-reading the full PDF corpus; full validation remains on Apply/submit. Decision transactions are serialized through read-modify-write, and repeated keep/drop clicks are idempotent. Save errors stay visible rather than being swallowed.

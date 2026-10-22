@@ -267,7 +267,7 @@ def _load() -> dict:
 # rewrite) could interleave. write_text is not atomic — an interleaved short write over
 # longer prior content left a valid-prefix + stale-tail file that failed to parse
 # ("Extra data"), silently hiding all pending decisions. Lock + write-temp-then-replace.
-_STORE_LOCK = threading.Lock()
+_STORE_LOCK = threading.RLock()
 
 
 def _save(d: dict) -> None:
@@ -539,6 +539,19 @@ class Handler(SimpleHTTPRequestHandler):
         return super().do_GET()
 
     def do_POST(self):  # noqa: N802
+        # Serialize whole read-modify-write transactions, not only final file writes.
+        if self.path in {
+            "/api/decision",
+            "/api/challenge",
+            "/api/reopen",
+            "/api/apply",
+            "/api/clear",
+        }:
+            with _STORE_LOCK:
+                return self._handle_post()
+        return self._handle_post()
+
+    def _handle_post(self):
         length = int(self.headers.get("Content-Length", 0))
         try:
             payload = json.loads(self.rfile.read(length) or b"{}")
@@ -816,11 +829,11 @@ class Handler(SimpleHTTPRequestHandler):
             reopened = 0
             if conflict:
                 from nbs_ruralscan.schema_tools.review import reopen_units
-                from nbs_ruralscan.schema_tools.generate import generate
+                from nbs_ruralscan.schema_tools.generate import refresh_review_state
 
                 try:
                     res = reopen_units([eid], rev)
-                    generate(ROOT / "schema")
+                    refresh_review_state(ROOT / "schema")
                     reopened = res.get("reopened", 0)
                 except Exception as e:  # noqa: BLE001
                     return self._json(500, {"error": str(e)})
@@ -842,11 +855,19 @@ class Handler(SimpleHTTPRequestHandler):
             if not eids:
                 return self._json(400, {"error": "evidence_id(s) required"})
             from nbs_ruralscan.schema_tools.review import reopen_units
-            from nbs_ruralscan.schema_tools.generate import generate
+            from nbs_ruralscan.schema_tools.generate import refresh_review_state
 
             try:
                 res = reopen_units(eids, rev)
-                generate(ROOT / "schema")
+                # Clear only this reviewer's saved call; other reviewers stay intact.
+                store = _load()
+                for eid in eids:
+                    if eid in store:
+                        store[eid].pop(rev, None)
+                        if not store[eid]:
+                            store.pop(eid)
+                _save(store)
+                refresh_review_state(ROOT / "schema")
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"error": str(e)})
             return self._json(200, {"ok": True, **res})
