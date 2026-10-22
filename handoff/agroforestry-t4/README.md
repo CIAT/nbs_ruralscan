@@ -1,8 +1,8 @@
 # Agroforestry T4 — first-pass release
 
-**Current release: [v0.1.2](v0.1.2/README.md), 22 October 2026.** Built for inspection ahead of the November World Bank meeting. Pilot testing remains Diego's work.
+**Current release: [v0.1.3](v0.1.3/README.md), 22 October 2026.** Built for inspection ahead of the November World Bank meeting. Pilot testing remains Diego's work.
 
-Start with the [single-table browser view](v0.1.2/index.html) or [readable CSV](v0.1.2/T4_review.csv). The versioned [T4 snapshot](v0.1.2/T4_suitability_mappings.csv) contains **26 rows: 10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
+Start with the [single-table browser view](v0.1.3/index.html) or [readable CSV](v0.1.3/T4_review.csv). The versioned [T4 snapshot](v0.1.3/T4_suitability_mappings.csv) contains **26 rows: 10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
 
 This replaces the stale handoff that described only one numeric row. It packages existing reviewed work; it does not claim ten new rules were extracted during release preparation.
 
@@ -11,7 +11,7 @@ The editable source remains `schema/recipes/agroforestry/T4_suitability_mappings
 ## What the first pass establishes
 
 - A traceable configuration: theme → variable group → canonical variable → dataset, with source profiles and evidence identifiers.
-- Numeric and categorical rules in one table; operational scenarios kept out of core suitability.
+- Numeric and categorical rules in one table; M2b operational scenarios and evidence shown as a separate module, kept out of core suitability scoring.
 - Dataset resolution, time period, choice rationale, alternatives and local upload requirements visible.
 - Every current structural/operational evidence record accounted for, including quarantine, qualitative evidence and calibration holds.
 - Within-study relative importance supplied separately from runtime weights. A ratio above one means greater importance than the stated comparator, not an automatic suitability weight; alternative source models remain separate.
@@ -28,6 +28,6 @@ No raster run, complete M1 runner, or pilot validation is claimed. Missing input
 
 ## Reproduce and version
 
-`PYTHONPATH=src python3 scripts/release-t4-first-pass.py` builds v0.1.2 from current CSVs. The release manifest records source commit and input/output hashes. Preserve published versions; change the generator version before issuing a subsequent release. Use GitHub for delivery; no separate upload or message to Diego is required.
+`PYTHONPATH=src python3 scripts/release-t4-first-pass.py` builds v0.1.3 from current CSVs. The release manifest records source commit and input/output hashes. Preserve published versions; change the generator version before issuing a subsequent release. Use GitHub for delivery; no separate upload or message to Diego is required.
 
 Rule plots: `uv run --no-project --with matplotlib python scripts/plot-t4-release.py`, then rebuild the release table. v0.1.0 remains preserved.

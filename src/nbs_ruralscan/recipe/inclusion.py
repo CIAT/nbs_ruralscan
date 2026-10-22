@@ -7,7 +7,7 @@ from .variable_usage import _object, _paper_key
 def inclusion_estimates(evidence, sources, ontology, nbs_id="agroforestry"):
     """Reporting-paper frequencies, not independent agreement or runtime weights.
 
-    Cohort: papers with at least one active, explicitly verified structural model
+    Cohort: papers with at least one active, explicitly verified structural or operational model
     input in the selected scope/system. A missing entry is unknown, not non-use.
     Reviewed estimates require reviewed numerator records; an approval on another
     variable cannot approve this variable. Group numerators union papers once.
@@ -16,7 +16,7 @@ def inclusion_estimates(evidence, sources, ontology, nbs_id="agroforestry"):
     for row in evidence:
         if (
             row.get("nbs_id") != nbs_id
-            or row.get("use_role") != "structural_suitability"
+            or row.get("use_role") not in {"structural_suitability", "operational_risk"}
             or row.get("review_state") == "dropped"
         ):
             continue
@@ -54,20 +54,29 @@ def inclusion_estimates(evidence, sources, ontology, nbs_id="agroforestry"):
                 }
 
             groups = {
-                ontology.get(r["variable"], {}).get("group_id") or "unmapped"
+                (
+                    r["use_role"],
+                    ontology.get(r["variable"], {}).get("group_id") or "unmapped",
+                )
                 for r in rows
             }
-            for group in sorted(groups):
+            for role, group in sorted(groups):
                 members = {
                     r["variable"]
                     for r in rows
                     if (ontology.get(r["variable"], {}).get("group_id") or "unmapped")
                     == group
+                    and r["use_role"] == role
                 }
-                group_rows = [r for r in eligible if r["variable"] in members]
+                group_rows = [
+                    r
+                    for r in eligible
+                    if r["variable"] in members and r["use_role"] == role
+                ]
                 group_papers = {_paper_key(r["source_id"], sources) for r in group_rows}
                 result.append(
                     {
+                        "module": "M2b" if role == "operational_risk" else "M1",
                         "claim_scope": scope,
                         "system": system,
                         "review_lane": lane,
@@ -84,6 +93,7 @@ def inclusion_estimates(evidence, sources, ontology, nbs_id="agroforestry"):
                     value = stats(selected, denominator)
                     result.append(
                         {
+                            "module": "M2b" if role == "operational_risk" else "M1",
                             "claim_scope": scope,
                             "system": system,
                             "review_lane": lane,

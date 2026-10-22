@@ -13,7 +13,7 @@ from nbs_ruralscan.runtime.binding import Binding, resolve_binding
 from nbs_ruralscan.schema_tools.t4_review_view import interval_text
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.2"
+VERSION = "0.1.3"
 DEST = ROOT / "handoff/agroforestry-t4" / ("v" + VERSION)
 AUDIT = "pipeline/t4_audit/agroforestry/final_audit/"
 
@@ -62,6 +62,7 @@ def build(root, destination, version=VERSION):
         [r for r in families if r["nbs_id"] == "agroforestry"],
     )
     from nbs_ruralscan.recipe.inclusion import inclusion_estimates
+    from nbs_ruralscan.recipe.variable_usage import _paper_key
 
     inclusion = inclusion_estimates(evidence, src, ontology)
     write(
@@ -72,18 +73,18 @@ def build(root, destination, version=VERSION):
         ],
     )
     inclusion_index = {
-        (r["level"], r["group"], r["variable"], r["review_lane"]): r
+        (r["module"], r["level"], r["group"], r["variable"], r["review_lane"]): r
         for r in inclusion
         if r["claim_scope"] == "practice_technology" and r["system"] == "all_systems"
     }
 
-    def inclusion_text(level, group, variable):
+    def inclusion_text(level, group, variable, module="M1"):
         parts = []
         for lane, label in (
             ("reviewed", "Reviewed"),
             ("all_recorded", "Including pending"),
         ):
-            r = inclusion_index.get((level, group, variable, lane))
+            r = inclusion_index.get((module, level, group, variable, lane))
             parts.append(
                 label
                 + ": "
@@ -168,20 +169,25 @@ def build(root, destination, version=VERSION):
             dict(
                 mapping_id=row["mapping_id"],
                 kind=kind,
+                module="M2b — Operational feasibility"
+                if operational
+                else "M1 — Core suitability",
                 theme=row["suitability_dimension"]
                 .replace("_constraint", "")
                 .replace("_", " "),
                 variable_group=ont.get("group_id", "Unmapped"),
                 group_inclusion=inclusion_text(
-                    "group", ont.get("group_id", "unmapped"), ""
-                )
-                if not operational
-                else "Outside structural model-use estimate",
+                    "group",
+                    ont.get("group_id", "unmapped"),
+                    "",
+                    "M2b" if operational else "M1",
+                ),
                 variable_inclusion=inclusion_text(
-                    "variable", ont.get("group_id", "unmapped"), variable
-                )
-                if not operational
-                else "Outside structural model-use estimate",
+                    "variable",
+                    ont.get("group_id", "unmapped"),
+                    variable,
+                    "M2b" if operational else "M1",
+                ),
                 system=row["suitability_family_id"]
                 .replace("agroforestry__", "")
                 .replace("cross_family", "System not specified")
@@ -217,6 +223,81 @@ def build(root, destination, version=VERSION):
                 source_citations=" | ".join(src[sid]["citation"] for sid in sids),
             )
         )
+    # Surface operational evidence even when no executable scenario is configured.
+    configured_operational = {
+        r["variable"] for r in rules if r["module"].startswith("M2b")
+    }
+    operational_units = [
+        r
+        for r in evidence
+        if r["nbs_id"] == "agroforestry"
+        and r["use_role"] == "operational_risk"
+        and r["review_state"] != "dropped"
+    ]
+    for variable in sorted(
+        {r["variable"] for r in operational_units} - configured_operational
+    ):
+        units = [r for r in operational_units if r["variable"] == variable]
+        ont = ontology.get(variable, {})
+        candidates = json.loads(ont.get("candidate_dataset_ids") or "[]")
+        dataset = candidates[0] if candidates else "Not bound"
+        try:
+            resolution = resolve_binding(bindings, variable, set())
+            dataset = resolution.dataset_id or "Upload required"
+            note = resolution.prompt or resolution.winning_binding.fitness_note
+        except KeyError:
+            note = "Ontology candidate only; no global BIND resolution or executable T4 scenario"
+        if dataset in catalog:
+            selected_datasets.add(dataset)
+        ds = catalog.get(dataset, {})
+        ids = sorted({u["evidence_id"] for u in units})
+        sids = sorted({u["source_id"] for u in units})
+        record = {k: "" for k in rules[0]}
+        record.update(
+            mapping_id="inventory__" + variable,
+            kind="Operational evidence (not configured)",
+            module="M2b — Operational feasibility",
+            theme="operational",
+            variable_group=ont.get("group_id", "Unmapped"),
+            group_inclusion=inclusion_text(
+                "group", ont.get("group_id", "unmapped"), "", "M2b"
+            ),
+            variable_inclusion=inclusion_text(
+                "variable", ont.get("group_id", "unmapped"), variable, "M2b"
+            ),
+            system="Multiple source contexts; no common applicability assumed",
+            variable=variable,
+            label=ont.get("label", variable),
+            canonical_unit=ont.get("canonical_unit", ""),
+            rules=f"{len(units)} active evidence records retained. No executable curve or scenario weight is inferred. Inspect evidence IDs and source contexts.",
+            status="Evidence inventory only; interpretation, context, dataset and rule require selection before operational use. Excluded from core suitability.",
+            global_binding_dataset=dataset,
+            spatial_resolution_m=ds.get("spatial_resolution_m", ""),
+            time_period=ds.get("time_period", ""),
+            dataset_choice_note=note,
+            dataset_limitations=ds.get("limitations", ""),
+            weight_note="No configured runtime weight",
+            contributing_source_ids="; ".join(sids),
+            evidence_ids="; ".join(ids),
+            source_citations=" | ".join(src[sid]["citation"] for sid in sids),
+        )
+        rules.append(record)
+    for record in rules:
+        related = (
+            [u for u in operational_units if u["variable"] == record["variable"]]
+            if record["module"].startswith("M2b")
+            else []
+        )
+        record["related_operational_evidence_ids"] = "; ".join(
+            sorted({u["evidence_id"] for u in related})
+        )
+        record["related_operational_sources"] = "; ".join(
+            sorted({u["source_id"] for u in related})
+        )
+        record["related_operational_papers"] = (
+            len({_paper_key(u["source_id"], src) for u in related}) if related else ""
+        )
+        record["related_operational_records"] = len(related) if related else ""
     write(destination / "T4_review.csv", rules)
     shutil.copyfile(root / inputs[0], destination / "T4_suitability_mappings.csv")
     # CSV snapshots preserve authoritative values. No generated schema JSON is edited.
@@ -283,7 +364,9 @@ def build(root, destination, version=VERSION):
     write(destination / "evidence_accounting.csv", accounting)
     kinds = {
         kind: sum(r["kind"] == kind for r in rules)
-        for kind in sorted({r["kind"] for r in rules})
+        for kind in sorted(
+            {r["kind"] for r in rules if not r["mapping_id"].startswith("inventory__")}
+        )
     }
     gaps = sorted(
         {r["variable"] for r in hosts if r["dataset_id"] == "upload required"}
@@ -292,7 +375,8 @@ def build(root, destination, version=VERSION):
         {
             r["variable"]
             for r in rules
-            if r["recipe_dataset"] != r["global_binding_dataset"]
+            if r["recipe_dataset"]
+            and r["recipe_dataset"] != r["global_binding_dataset"]
         }
     )
     manifest = {
@@ -302,6 +386,9 @@ def build(root, destination, version=VERSION):
             ["git", "rev-parse", "HEAD"], cwd=root, text=True
         ).strip(),
         "row_counts": kinds,
+        "operational_evidence_only_rows": sum(
+            r["mapping_id"].startswith("inventory__") for r in rules
+        ),
         "numeric_variables": sorted(
             {r["variable"] for r in rules if r["kind"] == "Numeric response"}
         ),
@@ -331,19 +418,20 @@ def build(root, destination, version=VERSION):
     esc = html.escape
     page = f"""<!doctype html><html lang="en"><meta charset="utf-8"><title>Agroforestry T4 v{esc(version)}</title>
 <style>body{{font:16px system-ui;color:#234237;margin:24px;background:#f6f9f7}}table{{border-collapse:collapse;width:100%;background:white}}td,th{{padding:12px;border:1px solid #d5ded8;vertical-align:top;text-align:left}}th{{background:#e1ece5;position:sticky;top:0}}details{{max-width:650px}}input,select{{padding:10px;margin:8px}}.scroll{{max-height:70vh;overflow:auto}}p{{max-width:1100px}}</style>
-<h1>Agroforestry T4 — first pass v{esc(version)}</h1>
-<p><b>{kinds.get("Numeric response", 0)} numeric rows · {kinds.get("Categorical host gate", 0)} host gates · {kinds.get("Hard exclusion", 0)} hard exclusion.</b> {kinds.get("Operational scenario", 0)} operational scenarios kept separate. Configuration ready for inspection; field applicability and pilot execution remain to validate.</p>
+<h1>Agroforestry T4 — first pass v{esc(version)}</h1><p><b>Modules: M1 core suitability + M2b operational feasibility.</b> M2b is required in this analysis but is not added to the core suitability score. This view covers M2b's operational stream; physical-hazard screening still uses T2/T3.</p>
+<p><b>{kinds.get("Numeric response", 0)} numeric rows · {kinds.get("Categorical host gate", 0)} host gates · {kinds.get("Hard exclusion", 0)} hard exclusion.</b> {kinds.get("Operational scenario", 0)} operational scenarios plus evidence-only operational variables shown as M2b; excluded from core suitability scoring. Configuration ready for inspection; field applicability and pilot execution remain to validate.</p>
 <p>Hierarchy: suitability theme → variable group → canonical measurement → dataset. Aliases stay in variables.csv. Related proxies remain separate until context-specific selection; dataset resolution alone does not establish quality. Source importance stays separate from runtime weights.</p>
 <details><summary>Remaining limitations and required inputs</summary><p>Numeric rows retain regional source profiles; they are not universal pooled curves. FMNR rainfall remains contextual evidence, without an executable rainfall cutoff. Soil pH/source boundary conflicts remain held. Local inputs: {esc(", ".join(gaps))}. Recipe/BIND differences: {esc(", ".join(conflicts))}. Read dataset notes before execution. No pilot run performed.</p></details>
-<details><summary>What inclusion estimates mean</summary><p>Group inclusion = papers using at least one variable in the group / eligible contributing model papers. Variable inclusion = papers using this variable / the same denominator. A paper counts once even when several group members are used. DOI aliases are deduplicated.</p><p>The displayed cohort is general-practice agroforestry models across systems with at least one active, explicitly verified structural input. Reviewed n/N uses only human-reviewed records; including pending uses all active verified records. Missing extractions are not recorded use, not confirmed non-use. These are bounded observed-inclusion estimates, not systematic-review prevalence, independent agreement, or weights. Full table extraction is incomplete. Shared model origins can still appear in multiple reporting papers. No family transfer is implied.</p><a href="inclusion_estimates.csv">Counts, denominator papers, evidence IDs, system/scope breakdowns and variable-within-group estimates</a></details>
+<details><summary>What inclusion estimates mean</summary><p>Group inclusion = papers using at least one variable in the group / eligible contributing model papers. Variable inclusion = papers using this variable / the same denominator. A paper counts once even when several group members are used. DOI aliases are deduplicated.</p><p>The displayed cohort is general-practice agroforestry models across systems with at least one active, explicitly verified structural or operational input. Both modules use the same paper denominator; group numerators are module-specific. Reviewed n/N uses only human-reviewed records; including pending uses all active verified records. Missing extractions are not recorded use, not confirmed non-use. These are bounded observed-inclusion estimates, not systematic-review prevalence, independent agreement, or weights. Full table extraction is incomplete. Shared model origins can still appear in multiple reporting papers. No family transfer is implied.</p><a href="inclusion_estimates.csv">Counts, denominator papers, evidence IDs, system/scope breakdowns and variable-within-group estimates</a></details>
 <details><summary>How to read curves, weights and practice names</summary><p>Plots show retained source bands on the common suitability scale, not automatic runtime curves. Open circles exclude endpoints; filled circles include them. Arrows mark unbounded reported tails clipped to the plotting window. Empty regions have no plotted score; overlapping segments remain unresolved. No interpolation is added. A row with a separate default threshold retains that default until a source response is selected.</p><p>Numeric defaults are equal (0.2 in current T4). Masks are gates, not weighted votes. Relative importance ratios compare each variable with its study's equal-importance reference; 1 means equal, 2 means twice that reference. Full study denominators and alternative models remain separate. These ratios are not adopted runtime weights.</p><p>Standard vocabulary: Agroforestry (NbS) → suitability system → practice. Practice membership shown here is registry membership, not proof every source applies to every listed practice. Unassigned evidence is not automatically planted silvoarable. Haile parklands may be planted or regenerated; Chuma is regional; Ahmad NDVI describes mixed systems. Any planted-system assumption must be a separate sensitivity scenario, preserving original classification.</p><a href="practice_vocabulary.csv">Full practice vocabulary</a></details>
 <p><a href="T4_review.csv">Readable table CSV</a> · <a href="T4_suitability_mappings.csv">Authoritative T4 snapshot</a> · <a href="evidence_accounting.csv">Every evidence record</a> · <a href="source_relative_importance.csv">Relative importance within studies</a> · <a href="host_inputs.csv">Host dataset requirements</a> · <a href="manifest.json">Version and hashes</a></p>
-<input id="search" placeholder="Filter variable, system, theme or dataset" aria-label="Search release"><label><input id="operational" type="checkbox">Show operational scenarios</label>
-<div class="scroll"><table><thead><tr><th>Theme</th><th>Variable group</th><th>Group inclusion</th><th>System / practices</th><th>Variable</th><th>Variable inclusion</th><th>Rule and evidence</th><th>Dataset</th><th>Weighting</th><th>Use status</th></tr></thead><tbody>"""
+<input id="search" placeholder="Filter variable, system, theme or dataset" aria-label="Search release"><label>Module <select id="module"><option value="all">All modules</option><option value="M1">M1 — Core suitability</option><option value="M2b">M2b — Operational feasibility</option></select></label>
+<div class="scroll"><table><thead><tr><th>Module</th><th>Theme</th><th>Variable group</th><th>Group inclusion</th><th>System / practices</th><th>Variable</th><th>Variable inclusion</th><th>Rule and evidence</th><th>Dataset</th><th>Weighting</th><th>Use status</th></tr></thead><tbody>"""
     for r in rules:
         comparison_variable = {
             "annual_precipitation": "precipitation",
             "mean_annual_temperature": "mean_temperature",
+            "distance_to_road": "distance_road",
         }.get(r["variable"], r["variable"])
         ratios = [x for x in importance if x["variable"] == comparison_variable]
         importance_html = (
@@ -363,9 +451,11 @@ def build(root, destination, version=VERSION):
             else "<p>No reconstructed within-study ratio for this variable.</p>"
         )
         page += (
-            '<tr data-operational="'
-            + str(r["kind"] == "Operational scenario").lower()
+            '<tr data-module="'
+            + ("M2b" if r["module"].startswith("M2b") else "M1")
             + '"><td>'
+            + esc(r["module"])
+            + "</td><td>"
             + esc(r["theme"])
             + "</td><td>"
             + esc(r["variable_group"].replace("_", " "))
@@ -382,6 +472,21 @@ def build(root, destination, version=VERSION):
             + esc(r["label"])
             + "</td><td>"
             + esc(r["variable_inclusion"])
+            + (
+                "<p>Retained evidence: "
+                + str(r["related_operational_papers"])
+                + " papers / "
+                + str(r["related_operational_records"])
+                + " records</p><details><summary>Related evidence across contexts</summary>"
+                + esc(
+                    r["related_operational_sources"]
+                    + ": "
+                    + r["related_operational_evidence_ids"]
+                )
+                + "<p>Related evidence is not automatically support for a configured scenario or proof of model inclusion.</p></details>"
+                if r["related_operational_papers"]
+                else ""
+            )
             + "</td><td>"
             + esc(r["kind"])
             + (
@@ -416,6 +521,8 @@ def build(root, destination, version=VERSION):
                 else "Mask, not additive weight"
                 if r["kind"] in {"Categorical host gate", "Hard exclusion"}
                 else "Operational scenario default: " + r["weight_default"]
+                if r["weight_default"]
+                else "No configured weight"
             )
             + importance_html
             + '<br><a href="source_relative_importance.csv">Within-study importance ratios</a>'
@@ -423,7 +530,7 @@ def build(root, destination, version=VERSION):
             + esc(r["status"])
             + "</td></tr>"
         )
-    page += """</tbody></table></div><script>function filter(){const q=document.querySelector('#search').value.toLowerCase();for(const r of document.querySelectorAll('tbody tr'))r.hidden=(!document.querySelector('#operational').checked&&r.dataset.operational==='true')||!r.textContent.toLowerCase().includes(q)}document.querySelector('#search').oninput=filter;document.querySelector('#operational').onchange=filter;filter();</script></html>"""
+    page += """</tbody></table></div><script>function filter(){const q=document.querySelector('#search').value.toLowerCase();for(const r of document.querySelectorAll('tbody tr'))r.hidden=(document.querySelector('#module').value!=='all'&&r.dataset.module!==document.querySelector('#module').value)||!r.textContent.toLowerCase().includes(q)}document.querySelector('#search').oninput=filter;document.querySelector('#module').onchange=filter;filter();</script></html>"""
     (destination / "index.html").write_text(page, encoding="utf-8")
     return manifest
 

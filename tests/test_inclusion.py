@@ -104,3 +104,27 @@ def test_empty_review_cohort_is_unknown_not_zero_percent():
     result = inclusion_estimates([unit("a", "a", "slope", False)], {}, ONTOLOGY)
     assert find(result)["N"] == 0
     assert find(result)["percent"] is None
+
+
+def test_modules_share_cohort_but_not_group_numerators():
+    a, b = unit("a", "a", "slope"), unit("b", "b", "elevation", False)
+    b["use_role"] = "operational_risk"
+    rows = inclusion_estimates([a, b], {}, ONTOLOGY)
+    groups = [
+        r
+        for r in rows
+        if r["level"] == "group"
+        and r["review_lane"] == "all_recorded"
+        and r["system"] == "all_systems"
+    ]
+    assert {r["module"] for r in groups} == {"M1", "M2b"}
+    assert all((r["n"], r["N"], r["percent"]) == (1, 2, 50) for r in groups)
+    reviewed_op = next(
+        r
+        for r in rows
+        if r["module"] == "M2b"
+        and r["level"] == "group"
+        and r["review_lane"] == "reviewed"
+        and r["system"] == "all_systems"
+    )
+    assert (reviewed_op["n"], reviewed_op["N"]) == (0, 1)
