@@ -118,20 +118,29 @@ def _cell(v: Any) -> str:
     return str(v)
 
 
-def crop_scope_policy(nbs_id: str) -> bool:
+def crop_scope_policy(nbs_id: str) -> bool | frozenset[str]:
     """`allow_crop_scope` for an NbS from `schema/lookups/crop_scope_policy.csv`.
 
-    A row with an empty `suitability_family_id` sets the NbS-wide policy; family rows are
-    recorded for the T4 recipe engine (`synthesise-recipe.py`) and future per-family use.
+    A row with an empty `suitability_family_id` sets the NbS-wide policy (returns True).
+    Family rows re-include crop_specific units of THOSE families only (returns the set) —
+    e.g. AF F5 shaded perennials, wetland peatland paludiculture. Until 2026-10-22 family
+    rows were ignored here, so those ratified rulings never reached T3/T6.
     Default False = the species/crop lock (`claim_scope=crop_specific` routed out)."""
     path = SCHEMA / "lookups" / "crop_scope_policy.csv"
     if not path.exists():
         return False
+    fams: set[str] = set()
     with path.open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
-            if r["nbs_id"] == nbs_id and not (r.get("suitability_family_id") or ""):
-                return str(r.get("allow_crop_scope") or "").lower() == "true"
-    return False
+            if r["nbs_id"] != nbs_id:
+                continue
+            if str(r.get("allow_crop_scope") or "").lower() != "true":
+                continue
+            fam = (r.get("suitability_family_id") or "").strip()
+            if not fam:
+                return True
+            fams.add(fam)
+    return frozenset(fams) if fams else False
 
 
 def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:

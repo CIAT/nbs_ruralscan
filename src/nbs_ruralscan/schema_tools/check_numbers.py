@@ -81,7 +81,7 @@ def _nums(text: str) -> set[str]:
     # "four and one-half (times)" = 4.5 — Bishop & Stevens 1964 (2026-10-21 retro)
     for word, val in _NUMBER_WORDS.items():
         if val.isdigit() and re.search(
-            rf"\b{word}\s+and\s+(?:one-|a\s+)half\b", norm, flags=re.IGNORECASE
+            rf"\b(?:{word})\s+and\s+(?:one-|a\s+)half\b", norm, flags=re.IGNORECASE
         ):
             out.add(f"{val}.5")
     return out

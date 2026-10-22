@@ -98,6 +98,7 @@ def _needs_prose(row: dict[str, Any], sidecar: dict[str, dict[str, Any]]) -> boo
         entry
         and sorted(entry.get("evidence_ids") or []) == P._ids(row)
         and (entry.get("class") is None or entry["class"] == P._class_of(row))
+        and not (entry.get("class") is None and P._is_dd_or_conflict(row))
     ):
         # same ids AND (for class-stamped entries) the same class — apply_prose's rule
         return False

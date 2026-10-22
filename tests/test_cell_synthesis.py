@@ -2875,3 +2875,63 @@ def test_rollup_excluded_family_casts_no_vote():
 
     src = inspect.getsource(cs.synthesise_cell_with_families)
     assert "casts no vote" in src and "fam_policy.get((nbs_id, fam))" in src
+
+
+def test_family_level_crop_scope_admits_only_that_family():
+    """2026-10-22 bug fix: a family-level crop_scope_policy row (AF F5, wetland peatland)
+    re-includes crop_specific units of THAT family only; it used to be ignored."""
+    xw = XW + [cs.XWRow("crop_yield", "T6", "production_gap", "same", "direct")]
+    f5 = _u(
+        "cs1",
+        "s1",
+        "crop_yield",
+        "positive",
+        "moderate",
+        ctx={"income_group": "low"},
+        family="riparian_buffer__planted",
+        scope="crop_specific",
+    )
+    other = _u(
+        "cs2",
+        "s2",
+        "crop_yield",
+        "positive",
+        "moderate",
+        ctx={"income_group": "low"},
+        family="riparian_buffer__natural_restored",
+        scope="crop_specific",
+    )
+    rows, rep = _t6(
+        [f5, other],
+        key="production_gap",
+        xw_rows=xw,
+        allow_crop_scope=frozenset({"riparian_buffer__planted"}),
+    )
+    used = set(rows[0]["evidence_ids"]) if rows else set()
+    assert "cs1" in used and "cs2" not in used
+    assert ("cs2", "claim_scope=crop_specific") in rep.dropped
+
+
+def test_data_deficient_asset_row_states_no_sensitivity():
+    """2026-10-22 bug fix: a data-deficient asset cell must not tell M2b 'none'."""
+    lone = _u(
+        "ad1",
+        "s1",
+        "establishment_survival",
+        "positive",
+        "unspecified",
+        role="asset_vulnerability",
+        basis="expert_assertion",
+        ctx={"income_group": "low", "hazard_type": "drought"},
+    )
+    rows, _ = cs.synthesise_cell(
+        [lone],
+        {},
+        table="T3",
+        nbs_id="riparian_buffer",
+        target_key="drought",
+        xw_rows=XW,
+        role="asset_vulnerability",
+    )
+    assert rows and rows[0]["justification"]["data_deficient"]
+    assert rows[0]["asset_sensitivity"] == ""
