@@ -2660,6 +2660,21 @@
   // Combined review queue only: operational evidence keeps its M2b analytical role.
   // Including it here does not add it to the core suitability score.
   var _vfR2T={structural_suitability:'T4',operational_risk:'T4',nbs_effect:'T3/T6',asset_vulnerability:'T3/T6'};
+  // Reconcile stored approval with current reviewer decisions; never infer approval.
+  function _vfReviewBucket(ev, decisions){
+    if(ev.review_state==='dropped')return 'dropped';
+    var ds=Object.values(decisions||{}).filter(Boolean).map(function(d){d=String(d).toLowerCase(); return d==='keep'?'ok':d;});
+    var approved=String(ev.reviewer_ok).toLowerCase()==='true';
+    if(ds.some(function(d){return d!=='ok';}))return 'unresolved';
+    if(ds.length)return approved?'recorded':'unresolved';
+    return approved?'approval_only':'first';
+  }
+  function vfReviewQueue(key){
+    window._vfReconcile=key; window._vfAxStatus=key==='dropped'?'dropped':'active';
+    window._vfAxOrigin='any'; window._vfAxMe='any'; window._vfAxOther='any';
+    window._vfMyCall='all'; window._vfVerdictFilter='all'; window._vfTablesOnly=false;
+    renderVfWorklist();
+  }
   function _vfInScope(ev){ var sc=window._vfScope||{}; if(!sc.nbs)return true;
     if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false;
     if(sc.table&&sc.table!=='all'&&_vfR2T[ev.use_role]!==sc.table)return false;
@@ -3114,6 +3129,11 @@
     var _uni=[], _useen={};
     var _pushU=function(ev,origin,verdict,reason){ var id=ev.evidence_id; if(_useen[id])return; _useen[id]=1;
       var isDrop=((ev.review_state||'')==='dropped');
+      var decisions=Object.assign({},_rlByRev[id]||{});
+      Object.keys(_store[id]||{}).forEach(function(who){var d=_store[id][who]; if(d&&d.decision)decisions[who]=d.decision;});
+      if(_reopMe[id])delete decisions[_meH];
+      if(_pend[id])decisions[_meH]=_pend[id];
+      ev._reviewQueue=_vfReviewBucket(ev,decisions);
       _uni.push({ev:ev,origin:origin,verdict:verdict,reason:reason,me:_uMe(id),other:_uOther(id),myDec:_uMyDec(id),meApplied:_meApplied(id),dropped:isDrop}); };
     flaggedRows.forEach(function(r){ _pushU(r.ev,'flagged',r.verdict,r.reason); });
     passedAll.forEach(function(ev){ _pushU(ev,'passed','pass','AI accepted this extraction — spot-check: is the encoded value faithful to the quote?'); });
@@ -3123,6 +3143,7 @@
     // predicate as if a candidate axis value were applied. A non-'conflict' verdict is ignored when
     // origin=passed (its control is hidden there) so a stale verdict can't silently zero the list.
     var _sec=function(u,effOrigin,effMe,effStatus,effVerdict){
+      if(window._vfReconcile&&window._vfReconcile!=='all'&&u.ev._reviewQueue!==window._vfReconcile)return false;
       var status=effStatus||window._vfAxStatus||'active';
       if(status==='active'&&u.dropped)return false;
       if(status==='dropped'&&!u.dropped)return false;
@@ -3170,7 +3191,11 @@
       if(window._vfAxOrigin!=='passed'){ var verdicts=['all'].concat(Array.from(new Set(_uni.filter(function(u){return u.origin==='flagged';}).map(function(u){return u.verdict;})))).concat(['conflict']);
         _extra=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; var n=(v==='all')?0:_axN('verdict',v); return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All':(v+' ('+n+')'))+'</button>'; }).join('')+'<span style="width:1px; height:16px; background:var(--border-color); margin:0 5px;"></span>'; }
       _bar+='<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:3px 0 0; padding-top:4px; border-top:1px solid var(--border-color);" title="The AI verify verdict on a flagged unit (mismatch / unsupported / conflict), plus a tabular-quotes-only toggle."><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">Verdict</span>'+_extra+_tblPill+'</div>';
-      fd.innerHTML=_bar; }
+      var queues=[['first','First review'],['unresolved','Resolve decision / status'],['approval_only','Approval flag: history missing'],['recorded','Recorded approval'],['dropped','Dropped history']];
+      var summary='<div style="margin-bottom:12px"><b>Review queues — separate, non-overlapping counts</b><p>Counts cover the selected scope, before the filters below. Start with First review. Resolve decision / status includes queries, disagreements and decisions not reflected in the approval flag. History missing needs reconciliation, not automatic re-review. Recorded approval is not a new review request; reviewer history can include agent entries.</p>';
+      queues.forEach(function(q){var n=_uni.filter(function(u){return u.ev._reviewQueue===q[0];}).length; summary+='<button class="pill-btn '+(window._vfReconcile===q[0]?'active sky':'')+'" onclick="vfReviewQueue(\''+q[0]+'\')">'+q[1]+' ('+n+')</button> ';});
+      summary+='<button class="pill-btn" onclick="vfReviewQueue(\'all\')">Use filters only</button></div>';
+      fd.innerHTML=summary+_bar; }
     // ---- apply the toggle filters to the universe (secondary filters via the shared _sec) ----
     var _list=_uni.filter(function(u){
       if(window._vfAxOrigin!=='any'&&u.origin!==window._vfAxOrigin)return false;
