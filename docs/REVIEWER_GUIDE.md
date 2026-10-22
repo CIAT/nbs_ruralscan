@@ -135,3 +135,9 @@ My reviewed; outstanding questions appear in Waiting for answers. Technical filt
 dropped history, and team status reconciliation are under **More filters**. Use the
 bottom **Submit reviews** bar to submit saved decisions; discussion updates travel
 with them. Counts on the three tabs reflect the current scope and search.
+
+Site observations are deferred by default. Under **More filters → Site observations**,
+choose **Include** to bring them back or **Only observations** to review them later.
+This hides observed-presence/site-description evidence, not every observational study:
+tested relationships and operational-barrier evidence remain visible. Evidence and
+saved decisions are retained; this filter does not alter approval or synthesis rules.

@@ -2765,7 +2765,23 @@
     if(pending)return false;
     return answered||u.ev._reviewConflict||u.ev._reviewQueue==='first';
   }
-  function _vfInScope(ev){ var sc=window._vfScope||{}; if(!sc.nbs)return true;
+  // Site descriptions do not define suitability rules. Do not confuse these
+  // with observational studies that estimate an effect or adoption relationship.
+  function vfIsSiteObservation(ev){
+    if(ev.use_role!=='structural_suitability')return false;
+    var r=ev.relationship||{};
+    if(typeof r==='string'){try{r=JSON.parse(r);}catch(e){return false;}}
+    if(!r||typeof r!=='object')return false;
+    if(r.type==='observed_presence'||r.type==='site_context')return true;
+    if(r.type||r.shape||r.metric)return false;
+    return r.note==='case_study_site_context'||r.direction==='observed_existing_tree_stock_where_FMNR_occurs'
+      ||Object.keys(r).some(function(k){return k.indexOf('observed_')===0;});
+  }
+  function _vfInScope(ev){ var sc=window._vfScope||{};
+    var observations=sc.observations||'hide';var site=vfIsSiteObservation(ev);
+    if(observations==='hide'&&site)return false;
+    if(observations==='only'&&!site)return false;
+    if(!sc.nbs)return true;
     if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false;
     if(sc.table&&sc.table!=='all'&&_vfR2T[ev.use_role]!==sc.table)return false;
     if(sc.family&&sc.family!=='all'&&ev.suitability_family_id!==sc.family)return false;
@@ -3145,6 +3161,7 @@
     // scope filter — pills derived from the data model; NbS controls table + family options
     var _nbsOpts=Array.from(new Set(evAll.map(function(e){return e.nbs_id;}).filter(Boolean))).sort();
     if(!window._vfScope)window._vfScope={nbs:(_nbsOpts.indexOf('agroforestry')>=0?'agroforestry':(_nbsOpts[0]||'all')),table:'T4',family:'all',source:'all',access:'all',claimScope:'general',sourceId:'',section:''};
+    if(window._vfScope.observations===undefined)window._vfScope.observations='hide';
     if(window._vfScope.source===undefined)window._vfScope.source='all';
     if(window._vfScope.round===undefined)window._vfScope.round='all';
     if(window._vfScope.access===undefined)window._vfScope.access='all';
@@ -3183,7 +3200,8 @@
       scEl.innerHTML=select('nbs','Practice',_nbsOpts.map(function(n){return [n,_capNbs(n)];}))
         +select('table','Evidence type',[['T4','T4 + operational feasibility'],['T3/T6','T3/T6 effects']])
         +'<label>Search <input id="vf-search" type="search" placeholder="Paper, variable or text" value="'+vfEsc(window._vfSearch||'')+'" oninput="vfSearch(this.value)" style="padding:7px;background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:5px"></label>';
-      window._vfAdvancedScopeHtml=_mkPills('family','Sub-practice',_famOpts,_capFam,'emerald',false)
+      window._vfAdvancedScopeHtml=_mkPills('observations','Site observations',['hide','show','only'],function(o){return {hide:'Hide (default)',show:'Include',only:'Only observations'}[o];},'sky',true,'Site descriptions and observed presence are deferred; tested relationships remain in review.')
+        +_mkPills('family','Sub-practice',_famOpts,_capFam,'emerald',false)
         +_mkPills('claimScope','Scope',['general','species','crop'],_csFmt,'sky',false)
         +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber',false)
         +_mkPills('access','Access',['oa','restricted'],function(o){return o==='oa'?'Open-access':'Restricted';},'emerald',false);
@@ -3295,7 +3313,7 @@
       var summary='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+[['todo','To review'],['waiting','Waiting for answers'],['mine','My reviewed']].map(function(q){return '<button class="pill-btn '+(window._vfSimpleView===q[0]?'active sky':'')+'" onclick="vfSimpleQueue(\''+q[0]+'\')">'+q[1]+' ('+_uni.filter(function(u){return matches(u,q[0]);}).length+')</button>';}).join('')+'</div>';
       var maintenance='<details><summary>Team maintenance</summary>'+[['unresolved','Decision / status checks'],['approval_only','Missing review history'],['dropped','Dropped history'],['all','All records']].map(function(q){return '<button class="pill-btn" onclick="vfReviewQueue(\''+q[0]+'\')">'+q[1]+'</button>';}).join('')+'</details>';
       var cl=window._vfClarificationError?'<p>'+vfEsc(window._vfClarificationError)+'</p>':'';
-      fd.innerHTML=summary+cl+'<details '+(window._vfMoreFilters?'open':'')+' ontoggle="window._vfMoreFilters=this.open"><summary style="cursor:pointer">More filters'+(window._vfSimpleView==='advanced'?' — custom view active':'')+'</summary><button class="pill-btn" onclick="vfSimpleQueue(\'advanced\')">Use custom filters</button>'+(window._vfAdvancedScopeHtml||'')+_bar+maintenance+'<details><summary>Review a whole source</summary><div id="vf-bulk"></div></details></details>'; }
+      fd.innerHTML=summary+cl+'<details '+(window._vfMoreFilters?'open':'')+' ontoggle="window._vfMoreFilters=this.open"><summary style="cursor:pointer">More filters'+((window._vfScope.observations||'hide')==='hide'?' · site observations hidden':'')+(window._vfSimpleView==='advanced'?' — custom view active':'')+'</summary><button class="pill-btn" onclick="vfSimpleQueue(\'advanced\')">Use custom filters</button>'+(window._vfAdvancedScopeHtml||'')+_bar+maintenance+'<details><summary>Review a whole source</summary><div id="vf-bulk"></div></details></details>'; }
     // ---- apply the toggle filters to the universe (secondary filters via the shared _sec) ----
     var _list=_uni.filter(function(u){
       if(window._vfSimpleView!=='advanced')return _sec(u,'any','any');
