@@ -213,8 +213,30 @@
   /* generated-row cards (batch kind "rows") */
   .row-target { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
   .row-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+  /* the ROW'S class chip: never the decision green — blue graded by strength, red negative,
+     amber conflicting, grey data deficient (the reviewer's own decision owns green/amber/red pills) */
   .chip-class { font-family: var(--font-outfit); font-weight: 700; font-size: 15px; padding: 3px 12px; border-radius: 12px;
-    background: rgba(var(--accent-emerald-rgb), 0.18); border: 1px solid var(--accent-emerald); }
+    background: var(--bg-tertiary); border: 1px solid var(--border-color); }
+  .chip-class .chip-k, .chip-conf .chip-k { font-weight: 400; font-size: 12px; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .04em; margin-right: 4px; }
+  .chip-class.tone-p1 { background: rgba(var(--accent-sky-rgb), 0.10); border-color: rgba(var(--accent-sky-rgb), 0.45); }
+  .chip-class.tone-p2 { background: rgba(var(--accent-sky-rgb), 0.20); border-color: rgba(var(--accent-sky-rgb), 0.7); }
+  .chip-class.tone-p3 { background: rgba(var(--accent-sky-rgb), 0.32); border-color: var(--accent-sky); }
+  .chip-class.tone-p4 { background: rgba(var(--accent-sky-rgb), 0.45); border-color: var(--accent-sky); }
+  .chip-class.tone-neg { background: rgba(var(--accent-rose-rgb), 0.18); border-color: var(--accent-rose); }
+  .chip-class.tone-conf { background: rgba(245, 158, 11, 0.2); border-color: var(--accent-amber); }
+  .chip-class.tone-dd { background: var(--bg-tertiary); border: 1px dashed var(--text-muted); color: var(--text-secondary); }
+  .chip-state { font-size: 11px; padding: 1px 7px; border-radius: 10px; border: 1px dashed var(--text-muted); color: var(--text-secondary); white-space: nowrap; }
+  /* ⓘ: definition + provenance from batch.vocab (schema/lookups/display_vocab.csv) */
+  .vi { position: relative; display: inline-block; margin-left: 3px; font-size: 12px; font-weight: 400; color: var(--accent-sky); cursor: help; outline: none; }
+  .vi .vi-pop { display: none; position: absolute; left: 0; top: 100%; z-index: 30; width: min(300px, 78vw);
+    background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+    padding: 8px 10px; font-family: inherit; font-weight: 400; font-size: 12.5px; line-height: 1.4; text-transform: none; letter-spacing: normal;
+    text-align: left; white-space: normal; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); }
+  .vi:hover .vi-pop, .vi:focus .vi-pop, .vi:focus-within .vi-pop { display: block; }
+  .vi .vi-pop b { display: block; margin-bottom: 2px; }
+  .vi .vi-src { display: block; margin-top: 4px; color: var(--text-muted); font-size: 11.5px; }
+  .vi .vi-pop a { display: inline-block; margin-top: 3px; }
+  .list-legend { padding: 4px 10px; font-size: 11.5px; color: var(--text-muted); border-bottom: 1px solid var(--border-color); }
   .chip-conf { font-size: 13px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border-color); }
   ul.ev-list { list-style: none; }
   li.ev-unit { padding: 8px 0; border-top: 1px solid var(--border-color); }
@@ -228,7 +250,6 @@
   .glance { margin-bottom: 12px; padding: 10px 12px; }
   .glance-top { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; font-size: 13.5px; }
   .glance-target { color: var(--text-secondary); overflow-wrap: anywhere; }
-  .chip-class.chip-alert { background: rgba(var(--accent-rose-rgb), 0.18); border-color: var(--accent-rose); }
   .glance-stmt { margin: 6px 0; font-size: 14.5px; }
   .flag-chips { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 6px; }
   .chip-flag { font-size: 12px; padding: 1px 8px; border-radius: 10px; background: var(--accent-amber); color: #111; font-weight: 600; }
@@ -275,6 +296,7 @@
 <div class="layout">
   <aside id="list-panel">
     <div class="list-head"><span id="list-count">Units</span><button type="button" id="list-toggle">Hide</button></div>
+    <div class="list-legend" id="list-legend" hidden>Your decision · flags</div>
     <ul id="unit-list"></ul>
   </aside>
   <section id="main-col" style="flex:1;min-width:0">
@@ -365,6 +387,28 @@
     return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
+  // ---- display vocabulary (batch.vocab, built from schema/lookups/display_vocab.csv) ----
+  function vget(field, code) { var v = S.vocab || {}; return (v[field] || {})[code] || null; }
+  function vlabel(field, code) {
+    var e = vget(field, code);
+    return e && e.label ? e.label : String(code || '').replace(/_/g, ' ');
+  }
+  function vinfo(field, code) {
+    var e = vget(field, code);
+    if (!e || !e.definition) return '';
+    return '<span class="vi" tabindex="0" role="button" aria-label="What does this mean?">ⓘ<span class="vi-pop" role="tooltip">' +
+      '<b>' + esc(e.label) + '</b>' + esc(e.definition) +
+      (e.source_ref ? '<span class="vi-src">Source: ' + esc(e.source_ref) + '</span>' : '') +
+      (e.source_url ? '<a href="' + esc(e.source_url) + '" target="_blank" rel="noopener">Open the source</a>' : '') +
+      '</span></span>';
+  }
+  function vterm(field, code, text) { return esc(text || vlabel(field, code)) + vinfo(field, code); }
+  // short form for a labelled chip ("High confidence" → "high" under the key "Confidence")
+  function vshort(field, code) {
+    return vlabel(field, code).replace(/\s+(confidence|evidence|agreement)$/i, '').toLowerCase();
+  }
+  // reviewer's OWN decision, unmistakable (rows only; unit batches keep their pills)
+  var DECISION_TXT = { approve: '✓ approved', hold: '⏸ on hold', reject: '✗ rejected', undecided: '· to review' };
   function present(v) { return !(v === null || v === undefined || v === '' || (Array.isArray(v) && !v.length)); }
   function joinParts(parts) {
     var out = parts.filter(present).map(esc);
@@ -457,6 +501,7 @@
 
   function setBatch(data) {
     S.batch = (data && data.batch) || {};
+    S.vocab = (data && data.vocab) || {};
     S.kind = (data && (data.kind || (data.batch && data.batch.kind))) === 'rows' ? 'rows' : 'units';
     S.units = (S.kind === 'rows' ? (data && data.rows) : (data && data.units)) || [];
     var base = S.kind === 'rows' ? ROW_REASONS : DEFAULT_REASONS;
@@ -465,6 +510,7 @@
     S.reasons = r;
     document.body.classList.toggle('kind-rows', S.kind === 'rows');
     if ($('sort-wrap')) $('sort-wrap').hidden = S.kind !== 'rows';
+    if ($('list-legend')) $('list-legend').hidden = S.kind !== 'rows';
     var keysEl = document.querySelector('.nav .keys');
     if (keysEl) keysEl.textContent = S.kind === 'rows' ? ROW_KEYS : UNIT_KEYS;
     renderReasons();
@@ -592,11 +638,14 @@
     var st = stateOf(idOf(u));
       var others = othersFor(idOf(u));
       return '<li data-i="' + i + '"' + (i === S.pos ? ' class="current"' : '') + '>' +
-        '<span class="pill ' + st + '">' + (st === 'undecided' ? '·' : esc(st)) + '</span>' +
+        (S.kind === 'rows'
+          ? '<span class="pill ' + st + '" title="Your decision">' + esc(DECISION_TXT[st] || st) + '</span>'
+          : '<span class="pill ' + st + '">' + (st === 'undecided' ? '·' : esc(st)) + '</span>') +
         '<span class="lbl" title="' + esc(idOf(u)) + '">' + (S.kind === 'rows'
           ? esc(u.table) + ' ' + esc(u.target_label) + (present(u.suitability_family_id) ? ' — ' + esc(u.suitability_family_id) : ' — roll-up')
           : esc(u.variable) + ' — ' + esc(u.source_id)) + '</span>' +
-        (S.kind === 'rows' && nFlags(u) ? '<span class="flagn" title="' + esc((u.at_a_glance.red_flags || []).join('; ')) + '">' + nFlags(u) + '</span>' : '') +
+        (S.kind === 'rows' && nFlags(u) ? '<span class="flagn" title="' + esc(nFlags(u) + ' red flag' + (nFlags(u) === 1 ? '' : 's') + ' on this row: ' +
+          (u.at_a_glance.red_flags || []).join('; ')) + '">' + nFlags(u) + '</span>' : '') +
         (others.length ? '<span class="othermark" title="' + esc(others.length + ' other reviewer(s) decided this unit') + '">◆</span>' : '') +
         '</li>';
     }).join('');
@@ -702,18 +751,59 @@
     if (e.missing) return '<li class="ev-unit"><code>' + esc(e.evidence_id) + '</code> <span class="warn">not in the register</span></li>';
     return '<li class="ev-unit">' +
       '<div class="ev-cite">' + esc(e.citation || e.source_id) + (present(e.page) ? ' <span class="sep">·</span> p. ' + esc(e.page) : '') + '</div>' +
-      '<div class="ev-meta">' + joinParts([e.variable, e.direction, e.strength, e.claim_basis, e.suitability_family_id]) +
+      '<div class="ev-meta">' + joinParts([e.variable, e.direction, e.strength, e.suitability_family_id]) +
+        (present(e.basis_bucket) ? ' <span class="sep">·</span> <span title="claim_basis: ' + esc(e.claim_basis) + '">' + vterm('claim_basis_bucket', e.basis_bucket) + '</span>'
+          : (present(e.claim_basis) ? ' <span class="sep">·</span> ' + esc(e.claim_basis) : '')) +
         (e.review_state && e.review_state !== 'active' ? ' <span class="pill hold">' + esc(e.review_state) + '</span>' : '') +
         ' <code>' + esc(e.evidence_id) + '</code></div>' +
+      evCtxHtml(e) +
       (present(e.quote) ? '<blockquote>' + esc(e.quote) + '</blockquote>' : '') +
       '</li>';
+  }
+  // comparator / attribution / beneficiary / cost nature of a unit, as labelled terms
+  function evCtxHtml(e) {
+    var parts = [];
+    if (present(e.comparator)) parts.push('compared with: ' + vterm('comparator', e.comparator));
+    if (present(e.attribution)) parts.push(vterm('attribution', e.attribution));
+    if (present(e.beneficiary)) parts.push('benefit to: ' + vterm('beneficiary', e.beneficiary));
+    if (present(e.cost_nature)) parts.push(vterm('cost_nature', e.cost_nature));
+    return parts.length ? '<div class="ev-meta">' + parts.join(' <span class="sep">·</span> ') + '</div>' : '';
+  }
+  // tone of the row's class chip: graded by strength, never the decision colours
+  var CLASS_RANK = { slight_positive: 1, low: 1, moderate_positive: 2, moderate: 2, strong_positive: 3, high: 3, very_high: 4 };
+  function classTone(u) {
+    var v = (u['class'] || {}).value || '';
+    if (u.data_deficient || v === 'data_deficient') return 'tone-dd';
+    if (u.conflicting || v === 'conflicting_evidence') return 'tone-conf';
+    if (/negative/.test(v)) return 'tone-neg';
+    return CLASS_RANK[v] ? 'tone-p' + CLASS_RANK[v] : '';
+  }
+  // the class chip text + ⓘ, from the vocab
+  function classTerm(u) {
+    var cls = u['class'] || {};
+    if (u.data_deficient || cls.value === 'data_deficient') return vterm('row_state', 'data_deficient');
+    if (u.conflicting && cls.value !== 'conflicting_evidence') return vterm(cls.field || 'effect_direction', 'conflicting_evidence');
+    if (!present(cls.value)) return esc(u.table === 'T3' && u.target && u.target.risk_role === 'asset_threat' ? 'not assessed' : 'no class');
+    return vterm(cls.field, cls.value);
+  }
+  // red flags that name a vocab term get its ⓘ
+  var FLAG_TERM = {
+    'conflicting': null, 'data deficient': ['row_state', 'data_deficient'],
+    'mostly practitioner ratings': ['claim_basis_bucket', 'practitioner_rating'],
+    'mostly second-hand': ['claim_basis_bucket', 'cited_secondary']
+  };
+  function flagHtml(f, u) {
+    var t = FLAG_TERM[f];
+    if (f === 'conflicting') t = [(u['class'] || {}).field || 'effect_direction', 'conflicting_evidence'];
+    return '<span class="chip-flag">' + esc(f) + (t ? vinfo(t[0], t[1]) : '') + '</span>';
   }
   function renderRow(u) {
     var el = $('unit');
     var st = stateOf(idOf(u));
     var cls = u['class'] || {};
-    var flags = (u.data_deficient ? '<span class="pill reject" title="' + esc(u.data_deficient_reason) + '">data deficient</span>' : '') +
-      (u.conflicting ? '<span class="pill hold">conflicting</span>' : '');
+    // row STATE (not a decision): neutral dashed chips, so nothing here reads as approve/hold/reject
+    var flags = (u.data_deficient ? '<span class="chip-state" title="' + esc(u.data_deficient_reason) + '">' + vterm('row_state', 'data_deficient') + '</span>' : '') +
+      (u.conflicting ? '<span class="chip-state">' + vterm(cls.field || 'effect_direction', 'conflicting_evidence') + '</span>' : '');
     var fv = u.family_vote, fvBody = '';
     if (fv && fv.votes && fv.votes.length) {
       fvBody = '<table class="vote-tbl"><tr><th>Family</th><th>Label</th><th>Sources</th><th>Weight</th></tr>' +
@@ -734,34 +824,39 @@
     }).join('');
     var target = u.table === 'T6' ? 'priority: ' + esc(u.target && u.target.priority)
       : 'hazard: ' + esc(u.target && u.target.hazard) + ' <span class="sep">·</span> farming system: ' + esc(u.target && u.target.farming_system) +
-        (u.target && present(u.target.risk_role) ? ' <span class="sep">·</span> ' + esc(u.target.risk_role) : '');
+        (u.target && present(u.target.risk_role) ? ' <span class="sep">·</span> ' + vterm('risk_role', u.target.risk_role) : '');
     var g = u.at_a_glance || {};
     var b = g.basis || {}, ws = b.weight_share || {}, bc = b.counts || {};
     var BASIS_LBL = [['measured', 'measured'], ['cited_secondary', 'second-hand'], ['practitioner_rating', 'ratings'],
-      ['modelled', 'modelled'], ['expert', 'expert']];
+      ['modelled', 'modelled'], ['expert', 'expert']].map(function (k) {
+      return vget('claim_basis_bucket', k[0]) ? [k[0], vlabel('claim_basis_bucket', k[0]).toLowerCase()] : k; });
     var pct = function (x) { return Math.round(100 * (+x || 0)) + '%'; };
     var basisSegs = BASIS_LBL.filter(function (k) { return (+ws[k[0]] || 0) > 0; });
     var basisBar = basisSegs.length ? '<div class="basis-bar" title="share of (approximate) voting weight by claim basis">' +
       basisSegs.map(function (k) { return '<span class="seg seg-' + k[0] + '" style="width:' + (100 * ws[k[0]]).toFixed(1) + '%"></span>'; }).join('') + '</div>' +
       '<div class="basis-txt">' + basisSegs.map(function (k) {
-        return '<span class="key key-' + k[0] + '"></span>' + esc(k[1]) + ' ' + pct(ws[k[0]]) + ' <span class="muted">(' + esc(bc[k[0]]) + ')</span>';
+        return '<span class="key key-' + k[0] + '"></span>' + esc(k[1]) + vinfo('claim_basis_bucket', k[0]) + ' ' + pct(ws[k[0]]) + ' <span class="muted">(' + esc(bc[k[0]]) + ')</span>';
       }).join(' <span class="sep">·</span> ') + '</div>' : '';
     var im = g.income_mix || {};
     var incomeTxt = ['LIC/LMIC', 'UMIC', 'HIC', 'unknown'].filter(function (k) { return (+im[k] || 0) > 0; })
       .map(function (k) { return esc(k) + ' ' + pct(im[k]); }).join(' <span class="sep">·</span> ');
     var ts = g.top_source_share || {};
     var gFlags = g.red_flags || [];
-    var headCls = /DATA DEFICIENT|CONFLICTING/.test(g.headline || '') ? ' chip-alert' : '';
+    var tone = classTone(u);
+    var dd = u.data_deficient || cls.value === 'data_deficient';
     var glance =
       '<div class="card glance">' +
-        '<div class="glance-top"><span class="chip-class' + headCls + '" title="' + esc(cls.field) + ': ' + esc(cls.value) + '">' +
-          esc(g.headline || ((cls.value || 'no class') + ' · ' + (u.confidence || '—'))) + '</span>' +
+        '<div class="glance-top"><span class="chip-class ' + tone + '" title="The row\'s class (' + esc(cls.field) + ' = ' + esc(cls.value) + ') — not your decision">' +
+          '<span class="chip-k">Class</span>' + classTerm(u) + '</span>' +
+          (!dd && present(u.confidence) ? '<span class="chip-conf" title="IPCC calibrated confidence of this row"><span class="chip-k">Confidence</span>' +
+            esc(vshort('confidence', u.confidence)) + vinfo('confidence', u.confidence) + '</span>' : '') +
           '<span class="glance-target"><b>' + esc(u.table) + '</b> ' + target + ' <span class="sep">·</span> ' +
             (present(u.suitability_family_id) ? esc(u.suitability_family_id) : 'NbS roll-up') +
             (present(u.scope) ? ' <span class="sep">·</span> ' + esc(u.scope) : '') + '</span>' +
-          '<span class="muted">evidence ' + esc(u.evidence_level) + ' · agreement ' + esc(u.agreement_level) + '</span></div>' +
+          '<span class="muted">evidence ' + (present(u.evidence_level) ? esc(vshort('evidence_level', u.evidence_level)) + vinfo('evidence_level', u.evidence_level) : '—') +
+            ' · agreement ' + (present(u.agreement_level) ? esc(vshort('agreement_level', u.agreement_level)) + vinfo('agreement_level', u.agreement_level) : '—') + '</span></div>' +
         '<p class="glance-stmt">' + esc(g.statement_short || u.statement) + '</p>' +
-        (gFlags.length ? '<div class="flag-chips">' + gFlags.map(function (f) { return '<span class="chip-flag">' + esc(f) + '</span>'; }).join('') + '</div>' : '') +
+        (gFlags.length ? '<div class="flag-chips">' + gFlags.map(function (f) { return flagHtml(f, u); }).join('') + '</div>' : '') +
         basisBar +
         '<p class="glance-meta">' + esc(b.n_units) + ' units / ' + esc(b.n_sources) + ' sources' +
           (present(ts.source_id) ? ' <span class="sep">·</span> top source <b>' + esc(ts.citation || ts.source_id) + '</b> ' + pct(ts.share) : '') +
@@ -774,7 +869,7 @@
       (u.data_deficient && present(u.data_deficient_reason) ? '<p class="muted">' + esc(u.data_deficient_reason) + '</p>' : '');
     el.innerHTML =
       '<div class="unit-head"><span>' + (S.pos + 1) + ' / ' + S.filtered.length + '</span><code>' + esc(idOf(u)) +
-      '</code><span class="pill ' + st + '">' + esc(st) + '</span>' + flags + '</div>' +
+      '</code><span class="pill ' + st + '" title="Your decision">Your decision: ' + esc(DECISION_TXT[st] || st) + '</span>' + flags + '</div>' +
       glance +
       '<div class="cols">' +
         '<div class="card">' +
