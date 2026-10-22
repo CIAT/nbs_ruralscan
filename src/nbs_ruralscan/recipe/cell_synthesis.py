@@ -1053,7 +1053,11 @@ def asset_risk_weights(
         and not r.get("scope_type")
         and not r.get("suitability_family_id")
     ]
-    by_h = {r["hazard_type"]: r for r in global_rows}
+    # a data-deficient asset row (blank sensitivity) is NOT assessed: it counts as a
+    # missing hazard, so M2b falls back to equal weights rather than reading it as zero
+    by_h = {
+        r["hazard_type"]: r for r in global_rows if (r.get("asset_sensitivity") or "")
+    }
     if set(by_h) != set(T3_HAZARDS):
         if report is not None:
             report.weights_incomplete.append(nbs_id)
@@ -2207,7 +2211,7 @@ def synthesise_cell(
     income_lookup: dict[str, str] | None = None,
     matrix: dict[tuple[str, str], str] | None = None,
     target_ctx: dict[str, Any] | None = None,
-    allow_crop_scope: bool = False,
+    allow_crop_scope: bool | frozenset[str] = False,
     emit_scope_rows: bool = True,
     min_scope_sources: int = 2,
 ) -> tuple[list[dict[str, Any]], CellReport]:
@@ -2230,8 +2234,16 @@ def synthesise_cell(
             continue
         if u.nbs_id != nbs_id or (family and u.suitability_family_id != family):
             continue
+        # allow_crop_scope: True = whole NbS; a set = only those families (a family-level
+        # row of crop_scope_policy.csv, e.g. AF F5 shaded perennials, wetland peatland —
+        # these were silently ignored before 2026-10-22, so the ratified rulings never ran)
+        crop_ok = (
+            allow_crop_scope
+            if isinstance(allow_crop_scope, bool)
+            else (u.suitability_family_id or "") in allow_crop_scope
+        )
         if u.claim_scope == "species_specific" or (
-            u.claim_scope == "crop_specific" and not allow_crop_scope
+            u.claim_scope == "crop_specific" and not crop_ok
         ):
             rep.dropped.append((u.evidence_id, f"claim_scope={u.claim_scope}"))
             continue
@@ -2461,8 +2473,13 @@ def synthesise_cell(
             )
             if role == "asset_vulnerability":
                 r["risk_role"] = "asset_threat"
-                r["asset_sensitivity"] = asset_sensitivity(
-                    rec["rank"], rec["confidence"]
+                # a DATA-DEFICIENT asset cell states no sensitivity: "none" would tell M2b
+                # the works are undamaged when the truth is "not enough evidence" (2026-10-22
+                # evaluation: one such row's prose describes 35-40% seedling mortality)
+                r["asset_sensitivity"] = (
+                    ""
+                    if rec.get("data_deficient")
+                    else asset_sensitivity(rec["rank"], rec["confidence"])
                 )
                 r["mitigation_potential"] = ""
                 r["asset_risk_weight"] = None

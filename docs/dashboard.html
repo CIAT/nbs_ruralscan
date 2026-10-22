@@ -1500,7 +1500,7 @@
                 <span style="font-size:11px; padding:5px 10px; border-radius:6px; background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.25); color:var(--text-secondary);"><b style="color:#f59e0b;">UNSUPPORTED</b> — AI-flagged: a value the quote never contained (stripped)</span>
               </div>
               <div style="font-size:11.5px; color:var(--text-secondary); line-height:1.6;">
-                <b style="color:var(--text-primary);">To review:</b> set your handle &#8594; choose <b style="color:var(--accent-emerald);">ok</b> (keep) or <b style="color:var(--accent-rose);">drop</b> (remove) + a reason &#8594; <b>Apply &amp; submit to main</b> writes it to the register, re-gates, and opens a PR that auto-merges on green CI.
+                <b style="color:var(--text-primary);">To review:</b> set your handle &#8594; choose <b style="color:var(--accent-emerald);">ok</b> (keep) or <b style="color:var(--accent-rose);">drop</b> (remove) + a reason &#8594; <b>Apply &amp; submit to main</b> writes it to the register, re-gates, and opens a PR subject to checks and required approvals.
                 <span style="color:var(--text-muted);">No live server? Use <b>Download decisions CSV</b> &#8594; <code style="font-size:10.5px;">review.py apply</code>.</span>
                 <br><span style="color:var(--text-muted);">Per card: <b style="color:var(--accent-emerald);">ok</b> = keep · <b style="color:var(--accent-rose);">drop</b> = remove (needs a coded reason) · <b style="color:var(--accent-amber);">&#9873; query</b> = keep tentatively but raise an open question (write it in the note).</span>
               </div>
@@ -1554,7 +1554,7 @@
             <div id="vf-actionbar" style="position:sticky; top:86px; z-index:19; background:var(--bg-primary); border-bottom:1px solid var(--border-color); padding:6px 0 7px; display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
               <span id="vf-pending-count" style="font-size:11.5px; font-weight:700;" title="Your decisions saved locally but NOT yet applied + submitted to main. Applies EVERY pending decision (AI-flagged + AI-passed), not just the current queue. Click Apply & submit to main to ship them."></span>
               <span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Applies your decisions to the registers AND submits them to main (opens a PR that auto-merges on green CI). One click." style="display:none; font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply &amp; submit to main</button>
+                <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Applies your decisions to the registers AND submits them to main (opens a PR subject to checks and required approvals). One click." style="display:none; font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply &amp; submit to main</button>
                 <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
                 <span style="width:1px; height:17px; background:var(--border-color);"></span>
                 <button onclick="openGapModal()" title="Report a variable / figure / table that should exist but isn't in the register — e.g. after checking a figure's variables are all extracted" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">&#9888; Report missing evidence</button>
@@ -2440,7 +2440,8 @@
     var nf=0,np=0; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true'){ var e=byId[eid]; if(e&&/\[VERIFY-FLAG/.test(e.attribution||''))nf++; else np++; } });
     var n=nf+np;
     el.innerHTML=n>0?('<span style="color:var(--accent-amber);">&#9873; '+n+' decision'+(n>1?'s':'')+' pending</span> <span style="color:var(--text-muted); font-weight:400;">— '+nf+' AI-flagged + '+np+' AI-passed. Apply submits <b>all</b> of them (any queue).</span>'):'<span style="color:var(--text-muted); font-weight:400;">No decisions pending apply.</span>';
-    _vfStyleApply(n); }
+    var nc=window._vfClarificationPending||0; if(nc)el.innerHTML+='<span style="color:var(--accent-amber)"> · '+nc+' clarification event(s) pending submission (all reviewers).</span>';
+    _vfStyleApply(n+nc); }
   function _vfRenderSubsetBanner(){ var el=document.getElementById('vf-subset-banner'); if(!el)return; var sc=window._vfScope||{}; var chips=[]; if(sc.sourceId)chips.push(['sourceId','📄 source: '+sc.sourceId, sc.sourceId]); if(sc.section)chips.push(['section','📍 page '+sc.section, sc.section]); if(!chips.length){ el.style.display='none'; el.innerHTML=''; return; } el.style.display='block'; el.innerHTML='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.3); border-radius:6px; padding:6px 10px; font-size:11px;"><span style="color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em;">Subset</span>'+chips.map(function(c){return '<span style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:2px 9px;">'+vfEsc(c[1])+' <a href="#" title="remove this subset" onclick="vfSetSubset(\''+c[0]+'\',\''+vfEsc(String(c[2]))+'\');return false;" style="color:var(--accent-rose); text-decoration:none; font-weight:700;">✕</a></span>';}).join('')+'<a href="#" onclick="window._vfScope.sourceId=\'\';window._vfScope.section=\'\';renderVfWorklist();return false;" style="color:var(--accent-sky); margin-left:auto;">clear all</a></div>'; }
   function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid);
       // CODE source (tool / GEE script): render the actual code lines from /api/code — NOT a PDF
@@ -2553,9 +2554,9 @@
       } else if(el){ el.remove(); document.body.style.paddingTop=''; }
     }).catch(function(){});
   }
-  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ checkVersion(); if(!window._vfVerPoll){window._vfVerPoll=setInterval(checkVersion,60000);} if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
+  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ vfLoadClarifications(); checkVersion(); if(!window._vfVerPoll){window._vfVerPoll=setInterval(checkVersion,60000);} if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
   function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
-    if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply &amp; submit to main</b>: writes to the register, re-gates, and opens an auto-merging PR.'; }
+    if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply &amp; submit to main</b>: writes to the register, re-gates, and opens a PR including clarification replies. Required checks and approvals still apply.'; }
     else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block';
       // Offline branch was previously silent — the hint stayed blank on GitHub Pages, so a
       // reviewer had no idea why Apply was missing. Say what to run to get it back.
@@ -2577,7 +2578,7 @@
           var _today=new Date().toISOString().slice(0,10);
           fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer'),title:'qaqc: review '+_today})}).then(function(r){return r.json();}).then(function(sb){
             if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';}
-            if(sb.ok){ alert(msg+'\n\n\u2705 Submitted to main \u2014 '+(sb.pr_url||'PR opened')+'\n(bot-approves + auto-merges once CI is green).'); }
+            if(sb.ok){ vfLoadClarifications(); alert(msg+'\n\n\u2705 Submitted for main \u2014 '+(sb.pr_url||'PR opened')+'\n(subject to checks and required approvals; clarification-history PRs require review).'); }
             else { alert(msg+'\n\n\u26a0 Submit to main FAILED \u2014 decisions ARE saved locally; run scripts/submit-review.sh manually.\n\n'+((sb.error||sb.output)||'').slice(-600)); }
           }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} alert(msg+'\n\nSubmit error: '+e); }); });
       });
@@ -2657,11 +2658,57 @@
   // Module-level SCOPE predicate — the single source of truth for "is this row in the current
   // scope" (Practice · Sub-practice · Evidence-type · Source channel · Access · source/section
   // subset). Used by EVERY queue count so they all filter to the same scope + reconcile.
-  // use_role -> recipe table. T4 = structural suitability; T3/T6 = the generated effect tables
-  // (nbs_effect + asset_vulnerability units, live since the 2026-10 synthesis-first rounds).
-  // operational_risk (M2b / next-steps routing) is deliberately NOT mapped here — it is
-  // catalogued + traceable but never bucketed into a scored surface.
-  var _vfR2T={structural_suitability:'T4',nbs_effect:'T3/T6',asset_vulnerability:'T3/T6'};
+  // Combined review queue only: operational evidence keeps its M2b analytical role.
+  // Including it here does not add it to the core suitability score.
+  var _vfR2T={structural_suitability:'T4',operational_risk:'T4',nbs_effect:'T3/T6',asset_vulnerability:'T3/T6'};
+  // Reconcile stored approval with current reviewer decisions; never infer approval.
+  function vfLoadClarifications(){
+    if(!window._reviewApi)return Promise.resolve();
+    return fetch('/api/clarifications').then(function(r){if(!r.ok)throw Error('Could not load clarification history');return r.json();}).then(function(data){
+      window._vfClarifications=data.issues||[];window._vfClarificationPending=data.pending||0;window._vfClarificationError='';
+      renderVfWorklist();
+    }).catch(function(e){window._vfClarificationError=e.message;renderVfWorklist();});
+  }
+  function vfClarificationQueue(status){
+    vfReviewQueue('all');window._vfClarificationFilter=status;window._vfMode='review';renderVfWorklist();
+  }
+  function vfClarificationsFor(eid){return (window._vfClarifications||[]).filter(function(g){return g.records.some(function(r){return r.evidence_id===eid;});});}
+  function vfClarificationHtml(ev){
+    var labels={answer_ready:'Answer ready — confirm or reply',needs_judgement:'Needs your judgement',needs_investigation:'Team investigation',resolved:'Clarification resolved'};
+    return vfClarificationsFor(ev.evidence_id).map(function(g){
+      var field='clarification-'+g.id+'-'+ev.evidence_id;
+      var button=function(action,label){return '<button class="pill-btn" onclick="vfClarificationRespond(\''+g.id+'\',\''+action+'\',\''+field+'\')">'+label+'</button>';};
+      return '<section style="border:1px solid var(--accent-sky);border-radius:6px;padding:12px;margin:12px 0;font-size:12px"><b>'+vfEsc(labels[g.status])+'</b><p><b>Question — '+vfEsc(g.reviewer)+'</b><br>'+vfEsc(g.question)+'</p>'
+        +g.answers.map(function(a){return '<p><b>Existing answer</b><br>'+vfEsc(a.response)+'<br><small>Source pages '+vfEsc((a.source_check.pdf_pages||[]).join(', ')||'see record')+'</small></p>';}).join('')
+        +(!g.answers.length?'<p>No verified answer yet. Team investigation; no repeated extraction review requested.</p>':'')
+        +'<details><summary>Shared issue: '+g.records.length+' affected record(s) — acceptance covers this list</summary>'+g.records.map(function(r){return '<p><code>'+vfEsc(r.evidence_id)+'</code> · '+vfEsc(r.variable)+' · <a target="_blank" href="/api/crop?eid='+encodeURIComponent(r.evidence_id)+'&amp;full=1">source page '+vfEsc(r.page)+'</a></p>';}).join('')+'</details>'
+        +'<details><summary>Reply history ('+g.history.length+')</summary>'+g.history.map(function(h){return '<p><b>'+vfEsc(h.reviewer)+' · '+vfEsc(h.action)+'</b> · '+vfEsc(h.date)+(h.fingerprint!==g.fingerprint?' (earlier version)':'')+'<br>'+vfEsc(h.note)+'</p>';}).join('')+'</details>'
+        +'<textarea id="'+field+'" placeholder="Reply / explain remaining issue" style="width:95%;margin:8px 0;background:var(--bg-primary);color:var(--text-primary)"></textarea><div>'
+        +(g.status==='answer_ready'?button('accept','Accept answer for listed records'):'')+button('reply','Save reply')+(g.status==='resolved'?button('reopen','Reopen clarification'):'')+'</div><small>Uses your dashboard reviewer handle. Apply &amp; submit includes these replies. Accepting an answer does not approve extraction.</small></section>';
+    }).join('');
+  }
+  async function vfClarificationRespond(id,action,field){
+    var g=(window._vfClarifications||[]).find(function(x){return x.id===id;});var reviewer=(window._vfReviewer||'').trim();
+    if(!reviewer){alert('Select your dashboard reviewer handle first.');return;}
+    var note=document.getElementById(field).value;
+    try{var r=await fetch('/api/clarifications',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({issue_id:id,fingerprint:g.fingerprint,action:action,reviewer:reviewer,note:note})});var result=await r.json();if(!r.ok)throw Error(result.error);await vfLoadClarifications();}
+    catch(e){alert('Reply not saved: '+e.message);}
+  }
+
+  function _vfReviewBucket(ev, decisions){
+    if(ev.review_state==='dropped')return 'dropped';
+    var ds=Object.values(decisions||{}).filter(Boolean).map(function(d){d=String(d).toLowerCase(); return d==='keep'?'ok':d;});
+    var approved=String(ev.reviewer_ok).toLowerCase()==='true';
+    if(ds.some(function(d){return d!=='ok';}))return 'unresolved';
+    if(ds.length)return approved?'recorded':'unresolved';
+    return approved?'approval_only':'first';
+  }
+  function vfReviewQueue(key){
+    window._vfClarificationFilter='all'; window._vfReconcile=key; window._vfAxStatus=key==='dropped'?'dropped':'active';
+    window._vfAxOrigin='any'; window._vfAxMe='any'; window._vfAxOther='any';
+    window._vfMyCall='all'; window._vfVerdictFilter='all'; window._vfTablesOnly=false;
+    renderVfWorklist();
+  }
   function _vfInScope(ev){ var sc=window._vfScope||{}; if(!sc.nbs)return true;
     if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false;
     if(sc.table&&sc.table!=='all'&&_vfR2T[ev.use_role]!==sc.table)return false;
@@ -2926,8 +2973,8 @@
     var _srcChip=_vfChip(vfEsc(ev.source_id||''),'var(--text-muted)','Source — click to subset the worklist to this source',"vfSetSubset('sourceId','"+vfEsc(ev.source_id||'')+"')",true);
     var _pageChip=ev.page?_vfChip('p.'+vfEsc(String(ev.page)),'var(--text-muted)','Page — click to subset the worklist to page '+vfEsc(String(ev.page))+' of this source',"vfSetSubset('section','"+vfEsc(String(ev.page))+"')",true):'';
     // Recipe table this evidence feeds (T4 suitability), from use_role.
-    var _R2Tc={structural_suitability:'T4',nbs_effect:'T3/T6',asset_vulnerability:'T3/T6'}; var _tbl=_R2Tc[ev.use_role]||'';
-    var _tblChip=_tbl?_vfChip(_tbl,'var(--accent-purple)','Recipe table (Evidence type) this evidence contributes to — click to filter the worklist to '+_tbl,"vfScopeSet('table','"+_tbl+"')"):'';
+    var _R2Tc={structural_suitability:'T4',operational_risk:'M2b',nbs_effect:'T3/T6',asset_vulnerability:'T3/T6'}; var _tbl=_R2Tc[ev.use_role]||'';
+    var _tblChip=_tbl?_vfChip(_tbl,'var(--accent-purple)','Recipe table (Evidence type) this evidence contributes to — click to filter the worklist to '+_tbl,"vfScopeSet('table','"+(_tbl==='M2b'?'T4':_tbl)+"')"):'';
     var _chipRow='<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:2px 0 9px 0;"><span style="font-size:11px; color:var(--text-muted); margin-right:1px;" title="what this evidence contributes to">🧩</span>'+_nbsChip+_famChip+_taxonChip+_geoChip+'<span style="margin-left:auto; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'+_tblChip+_oaBadge+_chanBadge+_roundBadge+_srcChip+_pageChip+'</span></div>';
     var _hasCommittedCrop=(window._cropManifest&&window._cropManifest.has(ev.evidence_id));
     var _hasSharePointCrop=(window._cropSharePointMap && window._cropSharePointMap[ev.evidence_id]);
@@ -2961,6 +3008,7 @@
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+(ev.page?('<a href="#" onclick="vfSetSubset(\'section\',\''+vfEsc(String(ev.page))+'\');return false;" title="subset the worklist to page '+vfEsc(String(ev.page))+' of this source" style="color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(page)+'</a>'):vfEsc(page))+' · '+vfEsc(vfLocHint(ev))+'</span>'
       +'</div>'))
       +_chipRow
+      +vfClarificationHtml(ev)
       +vfReviewMeaning(ev)
       +(ev.relationship && JSON.stringify(ev.relationship)!=='{}' && ev.relationship!=='{}' ? '<div style="font-size:11.5px;margin:5px 0;"><b>Extracted rule / values:</b> '+vfRelHtml(ev)+'</div>' : '')
       +(!passed?'<div style="font-size:11.5px;margin:5px 0;color:'+vc+';"><b>AI review flag:</b> '+vfEsc(reason)+'</div>':'')
@@ -3062,7 +3110,7 @@
       var _mkPills=function(key,label,opts,fmt,cls,noAll,tip){ var cur=window._vfScope[key]; var list=(noAll?[]:['all']).concat(opts); var btns=list.map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\'){window._vfScope.family=\'all\';window._vfScope.round=\'all\';} renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
       // Evidence type: T4 (suitability) or T3/T6 (effect + asset-vulnerability units behind the
       // generated hazard / scorecard rows; QA items from the prose reviews land here, 2026-10).
-      var _tblDesc={T4:'<b>T4 · Suitability</b> — where the NbS can physically establish (climate · terrain · soils · land system).','T3/T6':'<b>T3/T6 · Effects</b> — what the NbS does to hazards and priorities (effect units) and what hazards do to the works (asset vulnerability). Generated rows; review = these units.'};
+      var _tblDesc={T4:'<b>T4 analysis · Suitability + operational feasibility</b> — review establishment conditions and M2b implementation evidence together. Operational evidence remains separate from the core suitability score.','T3/T6':'<b>T3/T6 · Effects</b> — what the NbS does to hazards and priorities (effect units) and what hazards do to the works (asset vulnerability). Generated rows; review = these units.'};
       var _tblLegend='<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">'+(_tblDesc[window._vfScope.table]||'')+'</div>';
       var _capNbs=function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
       var _capFam=function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
@@ -3075,7 +3123,7 @@
       var _csHint=(window._vfScope.claimScope&&window._vfScope.claimScope!=='general'&&window._vfScope.claimScope!=='all')?'<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">🧬 <b>Species / crop lane</b> — per-taxon evidence, <b>kept &amp; banked for reuse</b> but filtered out of the practice-level MCDA. Fix a mis-tagged row by re-classifying it (keep), not dropping it.</div>':'';
       scEl.innerHTML=_mkPills('nbs','Practice',_nbsOpts,_capNbs,'sky',true,'The Nature-based Solution this evidence supports. Pick one.')
         +_mkPills('family','Sub-practice',_famOpts,_capFam,'emerald',false,'Suitability family / sub-practice within the practice. All = every sub-practice.')
-        +_mkPills('table','Evidence type',['T4','T3/T6'],function(o){return o;},'rose',true,'T4 = suitability evidence. T3/T6 = effect and asset-vulnerability evidence behind the generated hazard and scorecard rows.')
+        +_mkPills('table','Evidence type',['T4','T3/T6'],function(o){return o;},'rose',true,'T4 = suitability plus M2b operational feasibility evidence. T3/T6 = effect and asset-vulnerability evidence behind the generated hazard and scorecard rows.')
         +_tblLegend
         +_mkPills('claimScope','Scope',['general','species','crop'],_csFmt,'sky',false,'General = practice-level suitability (the everyday MCDA work). Species / Crop = per-taxon evidence, kept + banked for reuse but filtered from the practice MCDA. Default = General.')
         +_csHint
@@ -3116,6 +3164,11 @@
     var _uni=[], _useen={};
     var _pushU=function(ev,origin,verdict,reason){ var id=ev.evidence_id; if(_useen[id])return; _useen[id]=1;
       var isDrop=((ev.review_state||'')==='dropped');
+      var decisions=Object.assign({},_rlByRev[id]||{});
+      Object.keys(_store[id]||{}).forEach(function(who){var d=_store[id][who]; if(d&&d.decision)decisions[who]=d.decision;});
+      if(_reopMe[id])delete decisions[_meH];
+      if(_pend[id])decisions[_meH]=_pend[id];
+      ev._reviewQueue=_vfReviewBucket(ev,decisions);
       _uni.push({ev:ev,origin:origin,verdict:verdict,reason:reason,me:_uMe(id),other:_uOther(id),myDec:_uMyDec(id),meApplied:_meApplied(id),dropped:isDrop}); };
     flaggedRows.forEach(function(r){ _pushU(r.ev,'flagged',r.verdict,r.reason); });
     passedAll.forEach(function(ev){ _pushU(ev,'passed','pass','AI accepted this extraction — spot-check: is the encoded value faithful to the quote?'); });
@@ -3125,6 +3178,8 @@
     // predicate as if a candidate axis value were applied. A non-'conflict' verdict is ignored when
     // origin=passed (its control is hidden there) so a stale verdict can't silently zero the list.
     var _sec=function(u,effOrigin,effMe,effStatus,effVerdict){
+      if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'&&!vfClarificationsFor(u.ev.evidence_id).some(function(g){return g.status===window._vfClarificationFilter;}))return false;
+      if(window._vfReconcile&&window._vfReconcile!=='all'&&u.ev._reviewQueue!==window._vfReconcile)return false;
       var status=effStatus||window._vfAxStatus||'active';
       if(status==='active'&&u.dropped)return false;
       if(status==='dropped'&&!u.dropped)return false;
@@ -3172,7 +3227,18 @@
       if(window._vfAxOrigin!=='passed'){ var verdicts=['all'].concat(Array.from(new Set(_uni.filter(function(u){return u.origin==='flagged';}).map(function(u){return u.verdict;})))).concat(['conflict']);
         _extra=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; var n=(v==='all')?0:_axN('verdict',v); return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All':(v+' ('+n+')'))+'</button>'; }).join('')+'<span style="width:1px; height:16px; background:var(--border-color); margin:0 5px;"></span>'; }
       _bar+='<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:3px 0 0; padding-top:4px; border-top:1px solid var(--border-color);" title="The AI verify verdict on a flagged unit (mismatch / unsupported / conflict), plus a tabular-quotes-only toggle."><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">Verdict</span>'+_extra+_tblPill+'</div>';
-      fd.innerHTML=_bar; }
+      var queues=[['first','First review'],['unresolved','Resolve decision / status'],['approval_only','Approval flag: history missing'],['recorded','Recorded approval'],['dropped','Dropped history']];
+      var summary='<div style="margin-bottom:12px"><b>Review queues — separate, non-overlapping counts</b><p>Counts cover the selected scope, before the filters below. Start with First review. Resolve decision / status includes queries, disagreements and decisions not reflected in the approval flag. History missing needs reconciliation, not automatic re-review. Recorded approval is not a new review request; reviewer history can include agent entries.</p>';
+      queues.forEach(function(q){var n=_uni.filter(function(u){return u.ev._reviewQueue===q[0];}).length; summary+='<button class="pill-btn '+(window._vfReconcile===q[0]?'active sky':'')+'" onclick="vfReviewQueue(\''+q[0]+'\')">'+q[1]+' ('+n+')</button> ';});
+      summary+='<button class="pill-btn" onclick="vfReviewQueue(\'all\')">Use filters only</button></div>';
+      var cl='<div style="margin:10px 0"><b>Clarifications on evidence cards</b> ';
+      if(window._vfClarificationError)cl+='<span>'+vfEsc(window._vfClarificationError)+'</span> ';
+      [['answer_ready','Answers ready'],['needs_judgement','Needs your judgement'],['needs_investigation','Team investigation'],['resolved','Resolved']].forEach(function(q){
+        var groups=(window._vfClarifications||[]).filter(function(g){return g.status===q[0]&&g.records.some(function(r){return _uni.some(function(u){return u.ev.evidence_id===r.evidence_id;});});});
+        cl+='<button class="pill-btn '+(window._vfClarificationFilter===q[0]?'active sky':'')+'" onclick="vfClarificationQueue(\''+q[0]+'\')">'+q[1]+' ('+groups.length+' issues)</button> ';
+      });
+      cl+='<small>Issue counts; shared issues appear on each linked card. Extraction review stays separate.</small></div>';
+      fd.innerHTML=summary+cl+_bar; }
     // ---- apply the toggle filters to the universe (secondary filters via the shared _sec) ----
     var _list=_uni.filter(function(u){
       if(window._vfAxOrigin!=='any'&&u.origin!==window._vfAxOrigin)return false;
@@ -3197,7 +3263,7 @@
     // One collapsible card per unit. Furled (closed) when I've already applied a decision — the
     // summary row shows my call; expand for the full evidence + challenge / re-open. Unfurled (open)
     // for anything I still need to act on (to-review, 2nd opinion, or my pending unapplied decision).
-    _list.forEach(function(u){ host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed', {collapsible:true, open:!u.meApplied, settled:u.meApplied, myDec:u.myDec})); });
+    _list.forEach(function(u){ host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed', {collapsible:true, open:!u.meApplied||(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'), settled:u.meApplied, myDec:u.myDec})); });
     _vfSyncStickyBars();
   }
 

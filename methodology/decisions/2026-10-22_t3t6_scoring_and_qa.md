@@ -38,6 +38,30 @@ high-leverage units).
    confidence badge per outcome row. So the design question is how to fill the wireframe honestly,
    not how to invent an index.
 
+## Done the same day (D1 and D2 implemented after Pete's "yes")
+
+- **The three bugs are fixed.**
+  - Family-level crop-scope rows now apply. AF F5 cocoa and coffee units vote, and so does the
+    wetland paludiculture ruling.
+  - Data-deficient asset rows state no sensitivity, and M2b treats a blank as not assessed.
+  - Unstamped legacy prose is now stale on data-deficient and conflicting rows.
+- **A fourth bug surfaced and is fixed.** The prose check stopped checking exactly those rows,
+  because its trial entry had no class stamp.
+- **179 rows across six NbS were re-prosed.** The full sweep of live prose shows 0 flags and 0
+  rows pending.
+- **Two orchestrator corrections:**
+  - Dobhal 2024's second-hand reading of Philpott 2008 is superseded by the primary, which found no
+    effect on coffee harvest. The shaded-perennial wind rows now read "none", and the NbS wind row
+    reads conflicting.
+  - A number-checker regex bug (ungrouped alternation that turned "twice" into 2.5) is fixed.
+- **Review batches are live** (after the PR merges and Pages rebuilds):
+  - Unit QA: `review.html?batch=af_qa_2026-10-22`. 166 high-leverage units, 2 flagged cards, and a
+    random 40 (20 general, 20 newly voting F5).
+  - Row review: `review.html?batch=af_rollups_2026-10-22`. The 46 agroforestry roll-up rows, each
+    with its class, confidence, prose, family vote and evidence.
+
+D3–D8 (the scoring and dashboard decisions) are still open.
+
 ## Part 1 — Human QA/QC for agroforestry
 
 **What exists:** the review page (one card at a time, approve / hold / reject, PICOS panel), the

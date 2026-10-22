@@ -75,6 +75,10 @@ def consensus_decisions(store: dict) -> tuple[dict, list[str]]:
 
 
 def main() -> int:
+    from nbs_ruralscan.schema_tools.clarifications import publish
+
+    clarification_count = publish(ROOT)
+    print(f"submit_review: replayed {clarification_count} clarification events")
     store = _load_store()
     decisions, conflicts = consensus_decisions(store)
     if not decisions:

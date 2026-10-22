@@ -210,6 +210,22 @@
   ul.others-list li { font-size: 13px; padding: 3px 0; overflow-wrap: anywhere; }
   .others-date { color: var(--text-muted); font-size: 12px; }
   .chip-dis { font-size: 11px; padding: 1px 7px; border-radius: 10px; background: var(--accent-rose); color: #fff; white-space: nowrap; }
+  /* generated-row cards (batch kind "rows") */
+  .row-target { font-size: 14px; color: var(--text-secondary); margin-bottom: 8px; }
+  .row-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+  .chip-class { font-family: var(--font-outfit); font-weight: 700; font-size: 15px; padding: 3px 12px; border-radius: 12px;
+    background: rgba(var(--accent-emerald-rgb), 0.18); border: 1px solid var(--accent-emerald); }
+  .chip-conf { font-size: 13px; padding: 2px 8px; border-radius: 10px; border: 1px solid var(--border-color); }
+  ul.ev-list { list-style: none; }
+  li.ev-unit { padding: 8px 0; border-top: 1px solid var(--border-color); }
+  li.ev-unit:first-child { border-top: none; }
+  .ev-cite { font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+  .ev-meta { font-size: 12.5px; color: var(--text-secondary); overflow-wrap: anywhere; }
+  li.ev-unit blockquote { margin-top: 6px; font-size: 13.5px; }
+  .held-reason { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--accent-amber); margin-top: 6px; }
+  .vote-tbl { width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 6px; }
+  .vote-tbl th, .vote-tbl td { text-align: left; padding: 4px 6px 4px 0; border-top: 1px solid var(--border-color); overflow-wrap: anywhere; }
+  body.kind-rows #unit .muted { color: var(--text-muted); font-size: 12.5px; }
 </style>
 </head>
 <body data-theme="dark">
@@ -298,9 +314,23 @@
     other: 'Anything else: explain in the note.'
   };
   var DEFAULT_REASONS = Object.keys(GLOSS);
+  // reject codes for a GENERATED T3/T6 row (batch kind "rows"): the row is a synthesis
+  // output, so the codes say what is wrong with the synthesis, not with one quote
+  var ROW_GLOSS = {
+    wrong_class: 'The class (direction / strength / mitigation level) does not follow from the evidence.',
+    wrong_confidence: 'Confidence, evidence level or agreement is set too high or too low.',
+    prose_misleading: 'The mechanism / conditionality text overstates, misreads or omits something material.',
+    evidence_misrouted: 'One or more units do not belong in this row (wrong priority, hazard, family or practice).',
+    should_be_split: 'The row pools evidence that should be separate rows (by family, scope or context).',
+    other: 'Anything else: explain in the note.'
+  };
+  var ROW_REASONS = Object.keys(ROW_GLOSS);
+  function glossOf(r) { return (S.kind === 'rows' ? ROW_GLOSS : GLOSS)[r] || ''; }
+  // the decision key: evidence_id for a unit card, record_id for a generated-row card
+  function idOf(u) { return u ? (u.evidence_id || u.record_id || '') : ''; }
 
   var S = {
-    index: [], batchId: null, batch: null, units: [], reasons: DEFAULT_REASONS.slice(),
+    index: [], batchId: null, batch: null, kind: 'units', units: [], reasons: DEFAULT_REASONS.slice(),
     reviewer: '', decisions: {}, filtered: [], pos: 0, pendingReject: false,
     shared: {}, sharedBuilt: ''
   };
@@ -405,12 +435,13 @@
 
   function setBatch(data) {
     S.batch = (data && data.batch) || {};
-    S.units = (data && data.units) || [];
-    if (data && data.reasons && data.reasons.length) {
-      var r = data.reasons.slice();
-      if (r.indexOf('other') < 0) r.push('other');
-      S.reasons = r;
-    }
+    S.kind = (data && (data.kind || (data.batch && data.batch.kind))) === 'rows' ? 'rows' : 'units';
+    S.units = (S.kind === 'rows' ? (data && data.rows) : (data && data.units)) || [];
+    var base = S.kind === 'rows' ? ROW_REASONS : DEFAULT_REASONS;
+    var r = (data && data.reasons && data.reasons.length) ? data.reasons.slice() : base.slice();
+    if (r.indexOf('other') < 0) r.push('other');
+    S.reasons = r;
+    document.body.classList.toggle('kind-rows', S.kind === 'rows');
     renderReasons();
     $('batch-notes').innerHTML = present(S.batch.notes) ? esc(S.batch.notes) : '';
     var nbs = {};
@@ -430,10 +461,10 @@
   // jump to one evidence_id, dropping the filters if they hide it
   function focusUnit(id) {
     if (!id) return false;
-    var ids = function () { return S.filtered.map(function (u) { return u.evidence_id; }); };
+    var ids = function () { return S.filtered.map(function (u) { return idOf(u); }); };
     var idx = ids().indexOf(id);
     if (idx < 0) {
-      if (!S.units.filter(function (u) { return u.evidence_id === id; }).length) return false;
+      if (!S.units.filter(function (u) { return idOf(u) === id; }).length) return false;
       if ($('f-nbs')) $('f-nbs').value = '';
       if ($('f-state')) $('f-state').value = 'all';
       if ($('f-search')) $('f-search').value = '';
@@ -455,9 +486,9 @@
 
   function renderReasons() {
     // common reasons (with gloss) first, then the remaining codes from the batch
-    var common = DEFAULT_REASONS.filter(function (r) { return S.reasons.indexOf(r) >= 0; });
+    var common = (S.kind === 'rows' ? ROW_REASONS : DEFAULT_REASONS).filter(function (r) { return S.reasons.indexOf(r) >= 0; });
     var rest = S.reasons.filter(function (r) { return common.indexOf(r) < 0; });
-    var opt = function (r) { return '<option value="' + esc(r) + '">' + esc(r) + (GLOSS[r] ? ' — ' + esc(GLOSS[r]) : '') + '</option>'; };
+    var opt = function (r) { return '<option value="' + esc(r) + '">' + esc(r) + (glossOf(r) ? ' — ' + esc(glossOf(r)) : '') + '</option>'; };
     $('reason').innerHTML = '<option value="">Reject reason (required)</option>' +
       '<optgroup label="Common">' + common.map(opt).join('') + '</optgroup>' +
       (rest.length ? '<optgroup label="Other codes">' + rest.map(opt).join('') + '</optgroup>' : '');
@@ -471,15 +502,16 @@
     var curId = S.filtered[S.pos] && S.filtered[S.pos].evidence_id;
     S.filtered = S.units.filter(function (u) {
       if (nbs && u.nbs_id !== nbs) return false;
-      if (st === 'others') { if (!othersFor(u.evidence_id).length) return false; }
-      else if (st && st !== 'all' && stateOf(u.evidence_id) !== st) return false;
+      if (st === 'others') { if (!othersFor(idOf(u)).length) return false; }
+      else if (st && st !== 'all' && stateOf(idOf(u)) !== st) return false;
       if (q) {
-        var hay = [u.citation, u.variable, u.question, u.evidence_id].join(' ').toLowerCase();
+        var hay = [u.citation, u.variable, u.question, idOf(u), u.target_label, u.table,
+          u.suitability_family_id, u.statement].join(' ').toLowerCase();
         if (hay.indexOf(q) < 0) return false;
       }
       return true;
     });
-    var i = curId ? S.filtered.map(function (u) { return u.evidence_id; }).indexOf(curId) : -1;
+    var i = curId ? S.filtered.map(function (u) { return idOf(u); }).indexOf(curId) : -1;
     S.pos = i >= 0 ? i : Math.min(S.pos, Math.max(0, S.filtered.length - 1));
     renderList();
     renderUnit(S.filtered[S.pos]);
@@ -488,7 +520,7 @@
   }
 
   function renderProgress() {
-    var n = S.units.length, d = S.units.filter(function (u) { return stateOf(u.evidence_id) !== 'undecided'; }).length;
+    var n = S.units.length, d = S.units.filter(function (u) { return stateOf(idOf(u)) !== 'undecided'; }).length;
     $('progress-text').textContent = d + ' / ' + n + ' decided';
     $('progress-bar').style.width = (n ? (100 * d / n) : 0) + '%';
   }
@@ -526,13 +558,15 @@
   }
 
   function renderList() {
-    $('list-count').textContent = 'Units (' + S.filtered.length + ' of ' + S.units.length + ')';
+    $('list-count').textContent = (S.kind === 'rows' ? 'Rows (' : 'Units (') + S.filtered.length + ' of ' + S.units.length + ')';
     $('unit-list').innerHTML = S.filtered.map(function (u, i) {
-    var st = stateOf(u.evidence_id);
-      var others = othersFor(u.evidence_id);
+    var st = stateOf(idOf(u));
+      var others = othersFor(idOf(u));
       return '<li data-i="' + i + '"' + (i === S.pos ? ' class="current"' : '') + '>' +
         '<span class="pill ' + st + '">' + (st === 'undecided' ? '·' : esc(st)) + '</span>' +
-        '<span class="lbl" title="' + esc(u.evidence_id) + '">' + esc(u.variable) + ' — ' + esc(u.source_id) + '</span>' +
+        '<span class="lbl" title="' + esc(idOf(u)) + '">' + (S.kind === 'rows'
+          ? esc(u.table) + ' ' + esc(u.target_label) + (present(u.suitability_family_id) ? ' — ' + esc(u.suitability_family_id) : ' — roll-up')
+          : esc(u.variable) + ' — ' + esc(u.source_id)) + '</span>' +
         (others.length ? '<span class="othermark" title="' + esc(others.length + ' other reviewer(s) decided this unit') + '">◆</span>' : '') +
         '</li>';
     }).join('');
@@ -541,7 +575,8 @@
   // ---------- unit view ----------
   function renderUnit(u) {
     var el = $('unit');
-    if (!u) { el.innerHTML = '<div class="empty">No units match the current filters.</div>'; syncDecision(null); return el.innerHTML; }
+    if (!u) { el.innerHTML = '<div class="empty">No ' + (S.kind === 'rows' ? 'rows' : 'units') + ' match the current filters.</div>'; syncDecision(null); return el.innerHTML; }
+    if (S.kind === 'rows') return renderRow(u);
     var r = u.relationship || {}, c = u.context || {};
     var mag;
     if (present(r.value_with) || present(r.value_without)) {
@@ -568,13 +603,13 @@
     var right;
     if (present(u.crop)) {
       right = '<a href="' + esc(u.crop) + '" target="_blank" rel="noopener" title="Open full size"><img src="' + esc(u.crop) +
-        '" alt="Source page region for ' + esc(u.evidence_id) + '" loading="lazy"></a>';
+        '" alt="Source page region for ' + esc(idOf(u)) + '" loading="lazy"></a>';
     } else {
       right = '<div class="noimg">No image for this unit.</div>';
     }
-    var st = stateOf(u.evidence_id);
+    var st = stateOf(idOf(u));
     el.innerHTML =
-      '<div class="unit-head"><span>' + (S.pos + 1) + ' / ' + S.filtered.length + '</span><code>' + esc(u.evidence_id) +
+      '<div class="unit-head"><span>' + (S.pos + 1) + ' / ' + S.filtered.length + '</span><code>' + esc(idOf(u)) +
       '</code><span class="pill ' + st + '">' + esc(st) + '</span></div>' +
       '<div class="cols">' +
         // LEFT: only what the decision needs — the question, the claim, the quote.
@@ -632,6 +667,73 @@
     return el.innerHTML;
   }
 
+  // ---------- generated-row view (batch kind "rows": T3/T6 rows from cell synthesis) ----------
+  function rowUnitHtml(e) {
+    if (e.missing) return '<li class="ev-unit"><code>' + esc(e.evidence_id) + '</code> <span class="warn">not in the register</span></li>';
+    return '<li class="ev-unit">' +
+      '<div class="ev-cite">' + esc(e.citation || e.source_id) + (present(e.page) ? ' <span class="sep">·</span> p. ' + esc(e.page) : '') + '</div>' +
+      '<div class="ev-meta">' + joinParts([e.variable, e.direction, e.strength, e.claim_basis, e.suitability_family_id]) +
+        (e.review_state && e.review_state !== 'active' ? ' <span class="pill hold">' + esc(e.review_state) + '</span>' : '') +
+        ' <code>' + esc(e.evidence_id) + '</code></div>' +
+      (present(e.quote) ? '<blockquote>' + esc(e.quote) + '</blockquote>' : '') +
+      '</li>';
+  }
+  function renderRow(u) {
+    var el = $('unit');
+    var st = stateOf(idOf(u));
+    var cls = u['class'] || {};
+    var flags = (u.data_deficient ? '<span class="pill reject" title="' + esc(u.data_deficient_reason) + '">data deficient</span>' : '') +
+      (u.conflicting ? '<span class="pill hold">conflicting</span>' : '');
+    var fv = u.family_vote, fvBody = '';
+    if (fv && fv.votes && fv.votes.length) {
+      fvBody = '<table class="vote-tbl"><tr><th>Family</th><th>Label</th><th>Sources</th><th>Weight</th></tr>' +
+        fv.votes.map(function (v) {
+          return '<tr><td>' + esc(v.family) + '</td><td>' + esc(v.label) + '</td><td>' + esc(v.n_sources) + '</td><td>' + esc(v.weight) + '</td></tr>';
+        }).join('') + '</table>' +
+        '<p class="muted">Pooled ' + esc(fv.pooled_label) + ' → outcome <b>' + esc(fv.outcome) + '</b>' +
+        (present(fv.dissent_share) ? ' <span class="sep">·</span> dissent ' + esc(fv.dissent_share) : '') +
+        (present(fv.coverage) ? ' <span class="sep">·</span> coverage ' + esc(fv.coverage) : '') + '</p>' +
+        (present(fv.rule) ? '<p class="muted">' + esc(fv.rule) + '</p>' : '');
+    }
+    var ev = u.evidence || [];
+    var evBody = ev.length ? '<ul class="ev-list">' + ev.map(rowUnitHtml).join('') + '</ul>' : '';
+    var held = u.held_out_of_class || [], nHeld = 0;
+    var heldBody = held.map(function (h) {
+      nHeld += (h.units || []).length;
+      return '<p class="held-reason">' + esc(h.reason) + '</p><ul class="ev-list">' + (h.units || []).map(rowUnitHtml).join('') + '</ul>';
+    }).join('');
+    var target = u.table === 'T6' ? 'priority: ' + esc(u.target && u.target.priority)
+      : 'hazard: ' + esc(u.target && u.target.hazard) + ' <span class="sep">·</span> farming system: ' + esc(u.target && u.target.farming_system) +
+        (u.target && present(u.target.risk_role) ? ' <span class="sep">·</span> ' + esc(u.target.risk_role) : '');
+    el.innerHTML =
+      '<div class="unit-head"><span>' + (S.pos + 1) + ' / ' + S.filtered.length + '</span><code>' + esc(idOf(u)) +
+      '</code><span class="pill ' + st + '">' + esc(st) + '</span></div>' +
+      '<div class="cols">' +
+        '<div class="card"><h2>' + esc(u.table) + ' row — ' + esc(u.nbs_id) + '</h2>' +
+          (present(u.question) ? '<div class="why"><b>Why this needs a look</b>' + esc(u.question) + '</div>' : '') +
+          '<p class="row-target">' + target + '<br>' +
+            (present(u.suitability_family_id) ? 'family: ' + esc(u.suitability_family_id) : 'NbS roll-up') +
+            (present(u.scope) ? ' <span class="sep">·</span> scope: ' + esc(u.scope) : '') + '</p>' +
+          '<div class="row-chips"><span class="chip-class" title="' + esc(cls.field) + '">' + esc(cls.value || 'no class') + '</span>' +
+            '<span class="chip-conf">confidence: <b>' + esc(u.confidence) + '</b></span>' +
+            '<span class="chip-conf">evidence ' + esc(u.evidence_level) + ' <span class="sep">·</span> agreement ' + esc(u.agreement_level) + '</span>' +
+            flags + '</div>' +
+          (u.data_deficient && present(u.data_deficient_reason) ? '<p class="muted">' + esc(u.data_deficient_reason) + '</p>' : '') +
+          '<div class="plain"><h3>Mechanism</h3><p>' + esc(u.mechanism) + '</p>' +
+            '<h3>Conditionality</h3><p>' + esc(u.conditionality) + '</p></div>' +
+          '<div class="why"><b>Statement</b>' + esc(u.statement) + '</div>' +
+          (present(u.pool_note) ? '<p class="muted">' + esc(u.pool_note) + '</p>' : '') +
+        '</div>' +
+        '<div class="card"><h2>What it rests on</h2>' +
+          (foldHtml('Family vote', fvBody, '', false) || '<p class="muted">No family vote on this row.</p>') +
+          foldHtml('Evidence (' + ev.length + ' unit' + (ev.length === 1 ? '' : 's') + ')', evBody, '', true) +
+          foldHtml('Held out of the class (' + nHeld + ')', heldBody, nHeld ? '<span class="badge">' + nHeld + ' held out</span>' : '', false) +
+        '</div>' +
+      '</div>';
+    syncDecision(u);
+    return el.innerHTML;
+  }
+
   var PICOS_LABEL = {
     P: 'Population — who / where does this hold for?',
     I: 'Intervention — which practice, and is it evidenced in the source?',
@@ -641,7 +743,7 @@
   };
   function picosFlags(id) { var d = S.decisions[id] || {}; return (d.picos || []).slice(); }
   function picosHtml(u) {
-    var p = u.picos, flags = picosFlags(u.evidence_id), gaps = p.gaps || [];
+    var p = u.picos, flags = picosFlags(idOf(u)), gaps = p.gaps || [];
     var rows = ['P', 'I', 'C', 'O', 'S'].map(function (k) {
       var on = flags.indexOf(k) >= 0, gap = gaps.indexOf(k) >= 0;
       var extra = (k === 'I' && p.I_note) ? '<div class="picos-note' + (p.I_named === false ? ' bad' : '') + '">' + esc(p.I_note) + '</div>' : '';
@@ -666,11 +768,11 @@
   function togglePicos(k) {
     var u = current(); if (!u) return false;
     if (!S.reviewer) { $('status').innerHTML = '<span class="warn">Enter your reviewer name first.</span>'; $('reviewer').focus(); return false; }
-    var d = S.decisions[u.evidence_id] || { decision: '', reason: '', note: '', date: '' };
+    var d = S.decisions[idOf(u)] || { decision: '', reason: '', note: '', date: '' };
     var f = (d.picos || []).slice(), i = f.indexOf(k);
     if (i >= 0) f.splice(i, 1); else f.push(k);
     d.picos = f; d.date = nowIso();
-    S.decisions[u.evidence_id] = d;
+    S.decisions[idOf(u)] = d;
     saveLocal();
     var host = $('unit').querySelector('.picos');
     if (host) host.outerHTML = picosHtml(u);
@@ -680,10 +782,10 @@
 
   function renderOthers(u) {
     var host = $('others');
-    var list = u ? othersFor(u.evidence_id) : [];
+    var list = u ? othersFor(idOf(u)) : [];
     if (!host) return '';
     if (!list.length) { host.innerHTML = ''; host.hidden = true; return ''; }
-    var mine = (u && S.decisions[u.evidence_id] && S.decisions[u.evidence_id].decision) || '';
+    var mine = (u && S.decisions[idOf(u)] && S.decisions[idOf(u)].decision) || '';
     var h = '<h3>Other reviewers</h3><ul class="others-list">';
     list.forEach(function (o) {
       var disagrees = !!mine && !!o.decision && o.decision !== mine;
@@ -703,7 +805,7 @@
   }
 
   function syncDecision(u) {
-    var d = u ? S.decisions[u.evidence_id] || {} : {};
+    var d = u ? S.decisions[idOf(u)] || {} : {};
     Array.prototype.forEach.call(document.querySelectorAll('.dec-btns button'), function (b) {
       b.classList.toggle('active', !!u && b.getAttribute('data-d') === d.decision);
       b.disabled = !u;
@@ -711,7 +813,7 @@
     S.pendingReject = false;
     $('reason-wrap').classList.toggle('show', d.decision === 'reject');
     $('reason').value = d.reason || '';
-    $('reason-gloss').textContent = GLOSS[d.reason] || '';
+    $('reason-gloss').textContent = glossOf(d.reason);
     $('note').value = d.note || '';
     $('status').textContent = d.date ? 'Saved ' + d.date.slice(0, 16).replace('T', ' ') : '';
     renderOthers(u);
@@ -722,7 +824,7 @@
 
   function decide(decision, opts) {
     opts = opts || {};
-    var u = opts.evidence_id ? S.units.filter(function (x) { return x.evidence_id === opts.evidence_id; })[0] : current();
+    var u = opts.evidence_id ? S.units.filter(function (x) { return idOf(x) === opts.evidence_id; })[0] : current();
     if (!u) return false;
     if (!S.reviewer) { $('status').innerHTML = '<span class="warn">Enter your reviewer name first.</span>'; $('reviewer').focus(); return false; }
     var reason = opts.reason !== undefined ? opts.reason : $('reason').value;
@@ -736,8 +838,8 @@
       $('reason').focus();
       return false;
     }
-    var prev = S.decisions[u.evidence_id] || {};
-    S.decisions[u.evidence_id] = { decision: decision, reason: decision === 'reject' ? reason : '', note: note, date: nowIso(), picos: (prev.picos || []).slice() };
+    var prev = S.decisions[idOf(u)] || {};
+    S.decisions[idOf(u)] = { decision: decision, reason: decision === 'reject' ? reason : '', note: note, date: nowIso(), picos: (prev.picos || []).slice() };
     saveLocal();
     var keepPos = S.pos;
     applyFilters();
@@ -752,7 +854,7 @@
 
   function saveNote() {
     var u = current(); if (!u) return;
-    var d = S.decisions[u.evidence_id];
+    var d = S.decisions[idOf(u)];
     if (!d) return; // note is saved with the next decision
     d.note = $('note').value; d.date = nowIso();
     saveLocal();
@@ -769,17 +871,32 @@
 
   // ---------- CSV ----------
   var HEADER = ['batch', 'evidence_id', 'decision', 'reason', 'note', 'reviewer', 'date', 'picos_flags'];
+  var ROW_HEADER = ['batch', 'record_id', 'nbs_id', 'table', 'decision', 'reason', 'note', 'reviewer', 'date'];
   function csvCell(v) {
     v = v === null || v === undefined ? '' : String(v);
     return /[",\r\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
   }
   function buildCsv() {
+    if (S.kind === 'rows') return buildRowCsv();
     var lines = [HEADER.join(',')];
-    var order = S.units.map(function (u) { return u.evidence_id; });
+    var order = S.units.map(function (u) { return idOf(u); });
     Object.keys(S.decisions).forEach(function (id) { if (order.indexOf(id) < 0) order.push(id); });
     order.forEach(function (id) {
       var d = S.decisions[id]; if (!d || (!d.decision && !(d.picos || []).length)) return;
       lines.push([S.batchId, id, d.decision || '', d.reason || '', d.note || '', S.reviewer, d.date || '', (d.picos || []).join(';')].map(csvCell).join(','));
+    });
+    return lines.join('\r\n') + '\r\n';
+  }
+  function buildRowCsv() {
+    var lines = [ROW_HEADER.join(',')], byId = {};
+    S.units.forEach(function (u) { byId[idOf(u)] = u; });
+    var order = S.units.map(idOf);
+    Object.keys(S.decisions).forEach(function (id) { if (order.indexOf(id) < 0) order.push(id); });
+    order.forEach(function (id) {
+      var d = S.decisions[id]; if (!d || !d.decision) return;
+      var u = byId[id] || {};
+      lines.push([S.batchId, id, u.nbs_id || '', u.table || '', d.decision, d.reason || '', d.note || '', S.reviewer, d.date || '']
+        .map(csvCell).join(','));
     });
     return lines.join('\r\n') + '\r\n';
   }
@@ -822,8 +939,9 @@
     var rows = parseCsv(text);
     if (!rows.length) return { added: 0, skipped: 0, error: 'empty file' };
     var h = rows[0].map(function (x) { return x.trim(); });
-    var col = {}; HEADER.forEach(function (k) { col[k] = h.indexOf(k); });
-    if (col.evidence_id < 0 || col.decision < 0) return { added: 0, skipped: 0, error: 'missing evidence_id/decision columns' };
+    var col = {}; HEADER.concat(['record_id']).forEach(function (k) { col[k] = h.indexOf(k); });
+    var idCol = S.kind === 'rows' ? 'record_id' : 'evidence_id';
+    if (col[idCol] < 0 || col.decision < 0) return { added: 0, skipped: 0, error: 'missing ' + idCol + '/decision columns' };
     var added = 0, skipped = 0, other = 0;
     rows.slice(1).forEach(function (r) {
       var get = function (k) { return col[k] >= 0 ? (r[col[k]] || '') : ''; };
@@ -831,7 +949,7 @@
       var dec = get('decision').trim();
       var pic = get('picos_flags').split(';').map(function (x) { return x.trim(); }).filter(Boolean);
       if (['approve', 'hold', 'reject'].indexOf(dec) < 0 && !pic.length) { skipped++; return; }
-      var id = get('evidence_id').trim(), date = get('date').trim();
+      var id = get(idCol).trim(), date = get('date').trim();
       var cur = S.decisions[id];
       if (cur && cur.date && date && cur.date >= date) { skipped++; return; }
       S.decisions[id] = { decision: dec, reason: get('reason'), note: get('note'), date: date || nowIso(), picos: pic };
@@ -881,9 +999,9 @@
       b.addEventListener('click', function () { decide(b.getAttribute('data-d')); });
     });
     $('reason').addEventListener('change', function () {
-      $('reason-gloss').textContent = GLOSS[this.value] || '';
+      $('reason-gloss').textContent = glossOf(this.value);
       var u = current(); if (!u || !this.value) return;
-      var d = S.decisions[u.evidence_id];
+      var d = S.decisions[idOf(u)];
       if (S.pendingReject || (d && d.decision === 'reject')) decide('reject', { stay: !S.pendingReject });
     });
     $('note').addEventListener('change', saveNote);
@@ -929,8 +1047,8 @@
 
   window.ReviewPage = {
     state: S, load: load, setBatch: setBatch, renderBatchList: renderBatchList, renderUnit: renderUnit,
-    renderList: renderList, decide: decide, saveLocal: saveLocal, loadLocal: loadLocal,
-    exportCsv: exportCsv, buildCsv: buildCsv, importCsv: importCsv, parseCsv: parseCsv,
+    renderList: renderList, renderRow: renderRow, decide: decide, saveLocal: saveLocal, loadLocal: loadLocal,
+    exportCsv: exportCsv, buildCsv: buildCsv, buildRowCsv: buildRowCsv, idOf: idOf, importCsv: importCsv, parseCsv: parseCsv,
     picosHtml: picosHtml, togglePicos: togglePicos,
     applyFilters: applyFilters, esc: esc, go: go,
     loadShared: loadShared, setShared: setShared, othersFor: othersFor,

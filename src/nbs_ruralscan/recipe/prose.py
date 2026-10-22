@@ -91,6 +91,17 @@ def _class_of(row: dict[str, Any]) -> str:
     return str(v or "")
 
 
+def _is_dd_or_conflict(row: dict[str, Any]) -> bool:
+    acc = row.get("justification")
+    if isinstance(acc, str):
+        try:
+            acc = json.loads(acc) if acc else {}
+        except json.JSONDecodeError:
+            acc = {}
+    acc = acc or {}
+    return bool(acc.get("data_deficient")) or _class_of(row) == "conflicting_evidence"
+
+
 def apply_prose(
     rows: list[dict[str, Any]], table: str, sidecar: dict[str, dict[str, Any]]
 ) -> tuple[int, int]:
@@ -107,6 +118,13 @@ def apply_prose(
         # its evidence_ids, and prose written for one class must not dress another; entries
         # predating the "class" key fall back to the ids-only rule
         if entry.get("class") is not None and entry["class"] != _class_of(r):
+            stale += 1
+            continue
+        # a LEGACY entry (no class stamp) predates the data-deficient and conflicting
+        # outcomes (2026-10-16/19): it cannot have been written for either, so on such a
+        # row it is stale, not applied (2026-10-22 evaluation: legacy prose was dressing
+        # data-deficient rows as positive findings)
+        if entry.get("class") is None and _is_dd_or_conflict(r):
             stale += 1
             continue
         acc = r.get("justification")
@@ -180,7 +198,10 @@ def check_prose(
         apply_prose(
             [trial],
             table,
-            {rid: {**entry, "evidence_ids": _ids(row)}},
+            # the trial entry is stamped with the row's own class, exactly as merge_prose
+            # will stamp it; an unstamped trial on a data-deficient / conflicting row was
+            # treated as legacy-stale, never applied, and so never checked (2026-10-22)
+            {rid: {**entry, "evidence_ids": _ids(row), "class": _class_of(row)}},
         )
         flags += check_account.check_row(trial, ev)
     return flags

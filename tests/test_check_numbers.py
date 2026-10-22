@@ -29,3 +29,12 @@ def test_nums_reads_fraction_words_ligatures_and_linebroken_thousands():
     assert "4.5" in _nums("four and one-half or more times")
     assert {"5", "7"} <= _nums("ﬁve to seven times higher")
     assert "25000" in _nums("BDT 20,000-25,\n000 per year")
+
+
+def test_half_rule_does_not_fire_on_alternation_keys():
+    """'twice' or 'double' alone must not yield 2.5 (ungrouped alternation bug, 2026-10-22)."""
+    from nbs_ruralscan.schema_tools.check_numbers import _nums
+
+    assert "2.5" not in _nums("yield about twice that of the controls")
+    assert "2.5" not in _nums("a double-basin masonry check dam")
+    assert "4.5" in _nums("four and one-half or more times")
