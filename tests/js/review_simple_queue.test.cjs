@@ -18,3 +18,9 @@ ctx.vfSimpleQueue('mine');assert.equal(window._vfAxStatus,'any');assert.equal(wi
 assert(!html.includes('Review queues — separate, non-overlapping counts'));
 assert(html.includes('More filters'));assert(html.includes('Submission details'));
 console.log('Simple queues: new, answered, pending, queried, dropped, maintenance and conflict cases passed');
+const repeated=row('repeat',{ev:{evidence_id:'repeat',_reviewQueue:'unresolved',_reviewConflict:true},me:true,meApplied:true,myDec:'drop',conflictReviewed:true});
+assert(!ctx.vfSimpleMatch(repeated,'todo'));
+assert(ctx.vfSimpleMatch(repeated,'mine'));
+assert(ctx.vfSimpleMatch(repeated,'advanced'));
+assert(ctx.vfSimpleMatch({...repeated,conflictReviewed:false},'todo'));
+answered.add('repeat');assert(ctx.vfSimpleMatch(repeated,'todo'));

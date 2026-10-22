@@ -614,6 +614,12 @@ class Handler(SimpleHTTPRequestHandler):
                     entry["taxon"] = str(payload.get("taxon")).strip()
                 if payload.get("claim_scope"):
                     entry["claim_scope"] = str(payload.get("claim_scope")).strip()
+                if payload.get("reviewed_conflict"):
+                    from datetime import datetime, timezone
+
+                    entry["reviewed_conflict_at"] = datetime.now(
+                        timezone.utc
+                    ).isoformat()
                 byrev[rev] = entry
             if not byrev:
                 store.pop(eid, None)
@@ -845,6 +851,12 @@ class Handler(SimpleHTTPRequestHandler):
                 "note": payload.get("note", ""),
                 "applied": False,
             }
+            if payload.get("reviewed_conflict"):
+                from datetime import datetime, timezone
+
+                byrev[rev]["reviewed_conflict_at"] = datetime.now(
+                    timezone.utc
+                ).isoformat()
             decs = {
                 r: v["decision"]
                 for r, v in byrev.items()
@@ -853,7 +865,7 @@ class Handler(SimpleHTTPRequestHandler):
             conflict = len(set(decs.values())) > 1
             _save(store)
             reopened = 0
-            if conflict:
+            if conflict and not payload.get("reviewed_conflict"):
                 from nbs_ruralscan.schema_tools.review import reopen_units
                 from nbs_ruralscan.schema_tools.generate import refresh_review_state
 

@@ -85,3 +85,40 @@ def test_query_can_reopen_even_without_approval_flag(tmp_path, monkeypatch):
     rows = list(csv.DictReader(log.open()))
     assert rows[0]["decision"] == "reopen"
     assert rows[0]["reviewer"] == "Pete"
+
+
+def test_repeat_conflict_review_saved_without_settling_conflict(tmp_path, monkeypatch):
+    from nbs_ruralscan.schema_tools import review, generate
+
+    store = tmp_path / "decisions.json"
+    monkeypatch.setattr(server, "STORE", store)
+    monkeypatch.setattr(server, "ROOT", tmp_path)
+    monkeypatch.setattr(review, "reopen_units", lambda *a: {"reopened": 0})
+    monkeypatch.setattr(generate, "refresh_review_state", lambda *a: None)
+    for route in ("/api/decision", "/api/challenge"):
+        store.write_text(
+            json.dumps(
+                {"one": {"Pete": {"decision": "drop"}, "Namita": {"decision": "ok"}}}
+            )
+        )
+        payload = json.dumps(
+            dict(
+                evidence_id="one",
+                reviewer="Pete",
+                decision="drop",
+                reason="off_scope",
+                reviewed_conflict=True,
+            )
+        ).encode()
+        h = server.Handler.__new__(server.Handler)
+        h.path = route
+        h.headers = {"Content-Length": str(len(payload))}
+        h.rfile = io.BytesIO(payload)
+        results = []
+        h._json = lambda status, data: results.append((status, data))
+        h.do_POST()
+        saved = json.loads(store.read_text())["one"]
+        assert results[0][0] == 200
+        assert saved["Pete"]["reviewed_conflict_at"]
+        assert saved["Pete"]["decision"] == "drop"
+        assert saved["Namita"] == {"decision": "ok"}
