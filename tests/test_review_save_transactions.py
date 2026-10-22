@@ -58,3 +58,30 @@ def test_reopen_clears_only_requesting_reviewers_saved_call(tmp_path, monkeypatc
     assert saved["two"] == {"Pete": {"decision": "ok"}}
     assert refreshed == [tmp_path / "schema"]
     assert results[0][0] == 200
+
+
+def test_query_can_reopen_even_without_approval_flag(tmp_path, monkeypatch):
+    import csv
+    from nbs_ruralscan.schema_tools import review
+
+    ev = tmp_path / "ev.csv"
+    fields = ["evidence_id", "source_id", "reviewer_ok", "review_state", "attribution"]
+    with ev.open("w") as f:
+        writer = csv.DictWriter(f, fieldnames=fields)
+        writer.writeheader()
+        writer.writerow(
+            dict(
+                evidence_id="one",
+                source_id="paper",
+                reviewer_ok="false",
+                review_state="",
+                attribution="query",
+            )
+        )
+    log = tmp_path / "review.csv"
+    monkeypatch.setattr(review, "EV", ev)
+    monkeypatch.setattr(review, "LOG", log)
+    assert review.reopen_units(["one"], "Pete")["reopened"] == 1
+    rows = list(csv.DictReader(log.open()))
+    assert rows[0]["decision"] == "reopen"
+    assert rows[0]["reviewer"] == "Pete"
