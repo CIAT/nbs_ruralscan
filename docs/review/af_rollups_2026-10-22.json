@@ -4,7 +4,7 @@
   "id": "af_rollups_2026-10-22",
   "title": "Agroforestry T3/T6 roll-up rows (22 Oct 2026)",
   "date": "2026-10-22",
-  "notes": "",
+  "notes": "Ordered least-certain first: priority combines leave-one-out fragility (pipeline/metrics/row_fragility_agroforestry.csv) with an independent AI second reading (pipeline/metrics/row_second_read_agroforestry.json). Triage only — it never changes a row.",
   "n": 46,
   "kind": "rows"
  },
@@ -729,6 +729,23 @@
      "weak class but high confidence",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 7.5,
+    "level": "medium",
+    "why": [
+     "Second reader: High confidence rests on 7/10 second-hand units; the only 'measured' unit (ev_drought_hazard_ieg20_4) is a bundled SLM stakeholder rating with attribution blank; 'measured HARM' is actually cited (ev_crop_yield_majaura25_3)."
+    ],
+    "fragility": {
+     "n_units": 10,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "High confidence rests on 7/10 second-hand units; the only 'measured' unit (ev_drought_hazard_ieg20_4) is a bundled SLM stakeholder rating with attribution blank; 'measured HARM' is actually cited (ev_crop_yield_majaura25_3)."
+    }
    }
   },
   {
@@ -1634,6 +1651,23 @@
     "red_flags": [
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 6.5,
+    "level": "medium",
+    "why": [
+     "Second reader: Statement says 'slightly reduces' but class is moderate (vote-lifted by regeneration very_high); 8 Quandt 2017 units tagged measured include literature citations and a table caption (quandt17_1, _2, _8); ev_crop_yield_mensah23_1 is artificial shade nets."
+    ],
+    "fragility": {
+     "n_units": 44,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Statement says 'slightly reduces' but class is moderate (vote-lifted by regeneration very_high); 8 Quandt 2017 units tagged measured include literature citations and a table caption (quandt17_1, _2, _8); ev_crop_yield_mensah23_1 is artificial shade nets."
+    }
    }
   },
   {
@@ -1983,6 +2017,29 @@
      "harm units present",
      "conflicting"
     ]
+   },
+   "priority": {
+    "score": 7.0,
+    "level": "medium",
+    "why": [
+     "Second reader: Conflicting_evidence class is defensible, but the statement still says 'moderately reduces' with 'very_high confidence', contradicting the row; pivotal ev_crop_yield_watts22_10 (Lott maize-Grevillea crop failure) is sound but cited.",
+     "Fragile: 1 of 14 units can each flip this row on its own. Check these first — Watts et al. 2022 (ev_crop_yield_watts22_10): the class becomes moderate."
+    ],
+    "fragility": {
+     "n_units": 14,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_crop_yield_watts22_10",
+       "flips_to": "moderate"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 1,
+     "why": "Conflicting_evidence class is defensible, but the statement still says 'moderately reduces' with 'very_high confidence', contradicting the row; pivotal ev_crop_yield_watts22_10 (Lott maize-Grevillea crop failure) is sound but cited."
+    }
    }
   },
   {
@@ -2397,6 +2454,23 @@
      "weak class but high confidence",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 7.0,
+    "level": "medium",
+    "why": [
+     "Second reader: Very_high confidence overstated: 8 of 11 'measured' units are one source (Quandt 2017), several are cited literature or captions (quandt17_1, _2, _8, _14); ev_drought_hazard_ieg20_4 is a bundled SLM rating credited in full."
+    ],
+    "fragility": {
+     "n_units": 18,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Very_high confidence overstated: 8 of 11 'measured' units are one source (Quandt 2017), several are cited literature or captions (quandt17_1, _2, _8, _14); ev_drought_hazard_ieg20_4 is a bundled SLM rating credited in full."
+    }
    }
   },
   {
@@ -2721,6 +2795,46 @@
      "mostly second-hand",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 16.0,
+    "level": "high",
+    "why": [
+     "Second reader: Moderate hangs on 5 single-flip units: faosen24_21, navas10_3, saucedo23_1 describe ordinary dry season not drought; cisneros24_1 and montagnini15_4 are likely the same El Hatico farm (non-independent). Prose says 'slightly'.",
+     "Fragile: 5 of 13 units can each flip this row on its own. Check these first — fao_2024_senegal_fr 2024 (ev_forage_productivity_faosen24_21): the class becomes low; Montagnini et al. 2015 (ev_livestock_productivity_montagnini15_4): the class becomes low; Navas Panadero 2010 (ev_livestock_productivity_navas10_3): the class becomes low.",
+     "Stated at high confidence, yet one unit can change it."
+    ],
+    "fragility": {
+     "n_units": 13,
+     "n_pivotal": 5,
+     "pivotal": [
+      {
+       "evidence_id": "ev_forage_productivity_faosen24_21",
+       "flips_to": "low"
+      },
+      {
+       "evidence_id": "ev_livestock_productivity_montagnini15_4",
+       "flips_to": "low"
+      },
+      {
+       "evidence_id": "ev_livestock_productivity_navas10_3",
+       "flips_to": "low"
+      },
+      {
+       "evidence_id": "ev_forage_productivity_cisneros24_1",
+       "flips_to": "low"
+      },
+      {
+       "evidence_id": "ev_forage_productivity_saucedo23_1",
+       "flips_to": "low"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 3,
+     "why": "Moderate hangs on 5 single-flip units: faosen24_21, navas10_3, saucedo23_1 describe ordinary dry season not drought; cisneros24_1 and montagnini15_4 are likely the same El Hatico farm (non-independent). Prose says 'slightly'."
+    }
    }
   },
   {
@@ -3100,6 +3214,42 @@
      "weak class but high confidence",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 13.0,
+    "level": "high",
+    "why": [
+     "Second reader: High confidence but four single units each flip it to conflicting; pivotal ev_crop_yield_mensah23_1 uses artificial shade NETS, not trees (PICOS fail); three measured nulls (gateau18_2, mensah23_2, morel24_2) sit against it.",
+     "Fragile: 4 of 17 units can each flip this row on its own. Check these first — Dobhal et al. 2024 (ev_drought_hazard_dobhal24_13): the class becomes conflicting evidence; Watts et al. 2022 (ev_soil_water_retention_watts22_9): the class becomes conflicting evidence; Mensah et al. 2023 (ev_crop_yield_mensah23_1): the class becomes conflicting evidence.",
+     "Stated at high confidence, yet one unit can change it."
+    ],
+    "fragility": {
+     "n_units": 17,
+     "n_pivotal": 4,
+     "pivotal": [
+      {
+       "evidence_id": "ev_drought_hazard_dobhal24_13",
+       "flips_to": "conflicting_evidence"
+      },
+      {
+       "evidence_id": "ev_soil_water_retention_watts22_9",
+       "flips_to": "conflicting_evidence"
+      },
+      {
+       "evidence_id": "ev_crop_yield_mensah23_1",
+       "flips_to": "conflicting_evidence"
+      },
+      {
+       "evidence_id": "ev_crop_yield_morel24_1",
+       "flips_to": "conflicting_evidence"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "High confidence but four single units each flip it to conflicting; pivotal ev_crop_yield_mensah23_1 uses artificial shade NETS, not trees (PICOS fail); three measured nulls (gateau18_2, mensah23_2, morel24_2) sit against it."
+    }
    }
   },
   {
@@ -3434,6 +3584,23 @@
      "HIC-dominated",
      "data deficient"
     ]
+   },
+   "priority": {
+    "score": 1.5,
+    "level": "low",
+    "why": [
+     "Second reader found it consistent: Data-deficient is right: Batcheler units are US managed-forest vs unmanaged comparisons (correctly held out) and the only remaining unit is a WOCAT compiler rating that tree cover raises fire risk."
+    ],
+    "fragility": {
+     "n_units": 7,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Data-deficient is right: Batcheler units are US managed-forest vs unmanaged comparisons (correctly held out) and the only remaining unit is a WOCAT compiler rating that tree cover raises fire risk."
+    }
    }
   },
   {
@@ -3768,6 +3935,23 @@
      "HIC-dominated",
      "data deficient"
     ]
+   },
+   "priority": {
+    "score": 1.5,
+    "level": "low",
+    "why": [
+     "Second reader found it consistent: Data-deficient is right: Batcheler fuel-load units are correctly held out (unmanaged-forest comparator) and the WOCAT FMNR fire-risk harm rating alone is below the evidence floor."
+    ],
+    "fragility": {
+     "n_units": 7,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Data-deficient is right: Batcheler fuel-load units are correctly held out (unmanaged-forest comparator) and the WOCAT FMNR fire-risk harm rating alone is below the evidence floor."
+    }
    }
   },
   {
@@ -4008,6 +4192,23 @@
      "single source carries >40%",
      "weak class but high confidence"
     ]
+   },
+   "priority": {
+    "score": 4.0,
+    "level": "low",
+    "why": [
+     "Second reader: Low class fits, but high confidence rests mainly on two Kenyan interview studies; ev_t3_flood_erosion_table_quandt17_13 is a table caption, not a finding, and quandt17_6 is about erosion, not flood impact."
+    ],
+    "fragility": {
+     "n_units": 8,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 1,
+     "why": "Low class fits, but high confidence rests mainly on two Kenyan interview studies; ev_t3_flood_erosion_table_quandt17_13 is a table caption, not a finding, and quandt17_6 is about erosion, not flood impact."
+    }
    }
   },
   {
@@ -4230,6 +4431,23 @@
      "single source carries >40%",
      "weak class but high confidence"
     ]
+   },
+   "priority": {
+    "score": 4.0,
+    "level": "low",
+    "why": [
+     "Second reader: Low class fits, but high confidence leans on Quandt 2017 (single source >40%) whose units include a table caption (quandt17_13) and a generic conclusion (quandt17_11), plus anecdotal Thorlakson quotes."
+    ],
+    "fragility": {
+     "n_units": 7,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 1,
+     "why": "Low class fits, but high confidence leans on Quandt 2017 (single source >40%) whose units include a table caption (quandt17_13) and a generic conclusion (quandt17_11), plus anecdotal Thorlakson quotes."
+    }
    }
   },
   {
@@ -4357,6 +4575,33 @@
      "single source carries >40%",
      "mostly second-hand"
     ]
+   },
+   "priority": {
+    "score": 10.0,
+    "level": "high",
+    "why": [
+     "Second reader: Medium confidence with zero measured units; ev_flood_hazard_dobhal24_12 (generic coffee 'preventing flood occurrences') alone keeps the row alive, and the WOCAT FMNR rating is from a farmland system, not tree crops.",
+     "Fragile: 2 of 3 units can each flip this row on its own. Check these first — Dobhal et al. 2024 (ev_flood_hazard_dobhal24_12): the row disappears; WOCAT 2019 (ev_flood_hazard_wocat_507_2019_flood_impacts): the row becomes data deficient."
+    ],
+    "fragility": {
+     "n_units": 3,
+     "n_pivotal": 2,
+     "pivotal": [
+      {
+       "evidence_id": "ev_flood_hazard_dobhal24_12",
+       "flips_to": "row gone"
+      },
+      {
+       "evidence_id": "ev_flood_hazard_wocat_507_2019_flood_impacts",
+       "flips_to": "data_deficient"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Medium confidence with zero measured units; ev_flood_hazard_dobhal24_12 (generic coffee 'preventing flood occurrences') alone keeps the row alive, and the WOCAT FMNR rating is from a farmland system, not tree crops."
+    }
    }
   },
   {
@@ -4485,6 +4730,23 @@
      "mostly second-hand",
      "no LIC/LMIC evidence"
     ]
+   },
+   "priority": {
+    "score": 4.5,
+    "level": "low",
+    "why": [
+     "Second reader: Low/medium is reasonable, but ev_microclimate_buffering_souza11_5 is tagged measured though the quote only says the canopy 'is expected to' reduce frost damage; no unit measures frost damage."
+    ],
+    "fragility": {
+     "n_units": 3,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 1,
+     "why": "Low/medium is reasonable, but ev_microclimate_buffering_souza11_5 is tagged measured though the quote only says the canopy 'is expected to' reduce frost damage; no unit measures frost damage."
+    }
    }
   },
   {
@@ -4719,6 +4981,23 @@
     "red_flags": [
      "mostly second-hand"
     ]
+   },
+   "priority": {
+    "score": 0.5,
+    "level": "low",
+    "why": [
+     "Second reader found it consistent: Low class with medium confidence matches nine second-hand microclimate/shade claims with no measured livelihood outcome; prose states strength is unquantified."
+    ],
+    "fragility": {
+     "n_units": 9,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Low class with medium confidence matches nine second-hand microclimate/shade claims with no measured livelihood outcome; prose states strength is unquantified."
+    }
    }
   },
   {
@@ -5445,6 +5724,23 @@
      "weak class but high confidence",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 4.0,
+    "level": "low",
+    "why": [
+     "Second reader: Low class fits mechanism-only evidence, but measured ev_microclimate_buffering_mensah23_1 is artificial shade nets, and ipccar6ch5_2 is coded positive though its quote says 'the opposite can also be true'."
+    ],
+    "fragility": {
+     "n_units": 34,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 1,
+     "why": "Low class fits mechanism-only evidence, but measured ev_microclimate_buffering_mensah23_1 is artificial shade nets, and ipccar6ch5_2 is coded positive though its quote says 'the opposite can also be true'."
+    }
    }
   },
   {
@@ -5770,6 +6066,23 @@
      "weak class but high confidence",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 7.5,
+    "level": "medium",
+    "why": [
+     "Second reader: Very_high confidence from mostly cited temperature-reduction claims; only two measured units (hao26_1, sida18_1), both air temperature not yield; Cuban cattle live-fence shade units (moran18_3, _8) do not belong in rainfed cropping."
+    ],
+    "fragility": {
+     "n_units": 13,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Very_high confidence from mostly cited temperature-reduction claims; only two measured units (hao26_1, sida18_1), both air temperature not yield; Cuban cattle live-fence shade units (moran18_3, _8) do not belong in rainfed cropping."
+    }
    }
   },
   {
@@ -5986,6 +6299,29 @@
     "red_flags": [
      "mostly second-hand"
     ]
+   },
+   "priority": {
+    "score": 9.0,
+    "level": "high",
+    "why": [
+     "Second reader: Moderate rests on one second-hand unit (ev_microclimate_buffering_santos25_10, Brazil eucalyptus-brachiaria thermal-area reduction); removing it gives low; zero measured units.",
+     "Fragile: 1 of 8 units can each flip this row on its own. Check these first — Santos et al. 2025 (ev_microclimate_buffering_santos25_10): the class becomes low."
+    ],
+    "fragility": {
+     "n_units": 8,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_microclimate_buffering_santos25_10",
+       "flips_to": "low"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Moderate rests on one second-hand unit (ev_microclimate_buffering_santos25_10, Brazil eucalyptus-brachiaria thermal-area reduction); removing it gives low; zero measured units."
+    }
    }
   },
   {
@@ -6364,6 +6700,23 @@
     "red_flags": [
      "mostly second-hand"
     ]
+   },
+   "priority": {
+    "score": 6.5,
+    "level": "medium",
+    "why": [
+     "Second reader: Moderate direction is well supported (navas10_1 29% milk, murg13_4 13-28%), but very_high confidence is generous: 14/17 units second-hand, LIC/LMIC share about 6%, measured evidence is two Brazilian thermal-index units."
+    ],
+    "fragility": {
+     "n_units": 17,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Moderate direction is well supported (navas10_1 29% milk, murg13_4 13-28%), but very_high confidence is generous: 14/17 units second-hand, LIC/LMIC share about 6%, measured evidence is two Brazilian thermal-index units."
+    }
    }
   },
   {
@@ -6634,6 +6987,23 @@
     "red_flags": [
      "weak class but high confidence"
     ]
+   },
+   "priority": {
+    "score": 6.5,
+    "level": "medium",
+    "why": [
+     "Second reader: Very_high confidence includes ev_microclimate_buffering_mensah23_1 (shade nets, not trees), ipccar6ch5_2 whose caveat 'the opposite can also be true' is dropped, and Cuban cattle live-fence units (moran18_3, _8) off-system."
+    ],
+    "fragility": {
+     "n_units": 11,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Very_high confidence includes ev_microclimate_buffering_mensah23_1 (shade nets, not trees), ipccar6ch5_2 whose caveat 'the opposite can also be true' is dropped, and Cuban cattle live-fence units (moran18_3, _8) off-system."
+    }
    }
   },
   {
@@ -6747,6 +7117,28 @@
      "mostly second-hand",
      "data deficient"
     ]
+   },
+   "priority": {
+    "score": 2.75,
+    "level": "low",
+    "why": [
+     "Rests on very little evidence: Dobhal et al. 2024 (ev_waterlogging_hazard_dobhal24_9): the row disappears."
+    ],
+    "fragility": {
+     "n_units": 1,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_waterlogging_hazard_dobhal24_9",
+       "flips_to": "row gone"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Data-deficient is correct: single cited unit (ev_waterlogging_hazard_dobhal24_9, Punjab evapotranspiration) below the evidence floor."
+    }
    }
   },
   {
@@ -6860,6 +7252,28 @@
      "mostly second-hand",
      "data deficient"
     ]
+   },
+   "priority": {
+    "score": 2.75,
+    "level": "low",
+    "why": [
+     "Rests on very little evidence: Dobhal et al. 2024 (ev_waterlogging_hazard_dobhal24_9): the row disappears."
+    ],
+    "fragility": {
+     "n_units": 1,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_waterlogging_hazard_dobhal24_9",
+       "flips_to": "row gone"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Data-deficient is correct: single cited unit (ev_waterlogging_hazard_dobhal24_9) below the evidence floor."
+    }
    }
   },
   {
@@ -7118,6 +7532,33 @@
      "harm units present",
      "conflicting"
     ]
+   },
+   "priority": {
+    "score": 10.0,
+    "level": "high",
+    "why": [
+     "Second reader: Conflicting class is fair (philpott08_6 hurricane null, taboada20_5 harm), but statement still says 'moderately reduces… very_high confidence'; boundary 'moderate' vote rests on chronic wind/erosion units, not storms.",
+     "Fragile: 2 of 9 units can each flip this row on its own. Check these first — Taboada et al. 2020 (ev_wind_cyclone_hazard_taboada20_5): the class becomes moderate; Lasco et al. 2014 (ev_windbreak_protection_lasco14_1): the class becomes moderate."
+    ],
+    "fragility": {
+     "n_units": 9,
+     "n_pivotal": 2,
+     "pivotal": [
+      {
+       "evidence_id": "ev_wind_cyclone_hazard_taboada20_5",
+       "flips_to": "moderate"
+      },
+      {
+       "evidence_id": "ev_windbreak_protection_lasco14_1",
+       "flips_to": "moderate"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Conflicting class is fair (philpott08_6 hurricane null, taboada20_5 harm), but statement still says 'moderately reduces… very_high confidence'; boundary 'moderate' vote rests on chronic wind/erosion units, not storms."
+    }
    }
   },
   {
@@ -7318,6 +7759,23 @@
      "mostly second-hand",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 7.5,
+    "level": "medium",
+    "why": [
+     "Second reader: Moderate rests on windbreak claims about wind speed, wind erosion and winter desiccation (dobhal24_7, dobhal24_15, faosen24_12, hao26_1), not cyclone or storm damage; no storm-impact evidence supports it."
+    ],
+    "fragility": {
+     "n_units": 7,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Moderate rests on windbreak claims about wind speed, wind erosion and winter desiccation (dobhal24_7, dobhal24_15, faosen24_12, hao26_1), not cyclone or storm damage; no storm-impact evidence supports it."
+    }
    }
   },
   {
@@ -7499,6 +7957,33 @@
      "mostly second-hand",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 13.0,
+    "level": "high",
+    "why": [
+     "Second reader: Moderate with zero measured units; pivotal dobhal24_7 is US wheat winter-desiccation, and quandt17_4 cites Philpott 2008 'buffer crops from storms' while Philpott's own measured unit (philpott08_6) found no harvest-loss effect.",
+     "Fragile: 2 of 6 units can each flip this row on its own. Check these first — Quandt et al. 2017 (ev_t3_wind_buffer_quandt17_4): the row disappears; Dobhal et al. 2024 (ev_crop_yield_dobhal24_7): the class becomes low."
+    ],
+    "fragility": {
+     "n_units": 6,
+     "n_pivotal": 2,
+     "pivotal": [
+      {
+       "evidence_id": "ev_t3_wind_buffer_quandt17_4",
+       "flips_to": "row gone"
+      },
+      {
+       "evidence_id": "ev_crop_yield_dobhal24_7",
+       "flips_to": "low"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 3,
+     "why": "Moderate with zero measured units; pivotal dobhal24_7 is US wheat winter-desiccation, and quandt17_4 cites Philpott 2008 'buffer crops from storms' while Philpott's own measured unit (philpott08_6) found no harvest-loss effect."
+    }
    }
   },
   {
@@ -7681,6 +8166,29 @@
      "mostly second-hand",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 10.0,
+    "level": "high",
+    "why": [
+     "Second reader: The only measured tree-crop unit (ev_crop_yield_philpott08_6) is a null; the 'low' benefit rests on cited windbreak claims about wheat/winter desiccation and live fences, not storms in tree-perennial systems.",
+     "Fragile: 1 of 6 units can each flip this row on its own. Check these first — Philpott et al. 2008 (ev_crop_yield_philpott08_6): the row disappears."
+    ],
+    "fragility": {
+     "n_units": 6,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_crop_yield_philpott08_6",
+       "flips_to": "row gone"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "The only measured tree-crop unit (ev_crop_yield_philpott08_6) is a null; the 'low' benefit rests on cited windbreak claims about wheat/winter desiccation and live fences, not storms in tree-perennial systems."
+    }
    }
   },
   {
@@ -7910,6 +8418,37 @@
     },
     "family_vote_line": "",
     "red_flags": []
+   },
+   "priority": {
+    "score": 5.5,
+    "level": "medium",
+    "why": [
+     "Fragile: 3 of 9 units can each flip this row on its own. Check these first — Watts et al. 2022 (ev_tree_canopy_cover_watts22_3): the class becomes moderate; World Bank 2020 (ev_drought_hazard_cmscr20_4): the class becomes moderate; Gateau-Rey et al. 2018 (ev_crop_yield_gateau18_1): the class becomes moderate.",
+     "Stated at high confidence, yet one unit can change it."
+    ],
+    "fragility": {
+     "n_units": 9,
+     "n_pivotal": 3,
+     "pivotal": [
+      {
+       "evidence_id": "ev_tree_canopy_cover_watts22_3",
+       "flips_to": "moderate"
+      },
+      {
+       "evidence_id": "ev_drought_hazard_cmscr20_4",
+       "flips_to": "moderate"
+      },
+      {
+       "evidence_id": "ev_crop_yield_gateau18_1",
+       "flips_to": "moderate"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 1,
+     "why": "Measured losses (cmscr20_4 45% iSPS area loss, gateau18_1 89% yield drop) support very_high; but damage is mostly young systems and ipccar6ch5_3 mislabels a cocoa study as coffee."
+    }
    }
   },
   {
@@ -8070,6 +8609,29 @@
      "single source carries >40%",
      "mostly second-hand"
     ]
+   },
+   "priority": {
+    "score": 6.5,
+    "level": "medium",
+    "why": [
+     "Second reader: No measured damage: class rests on WOCAT 'copes well/moderately' ratings (wocat_1358 pivotal) plus a forward-looking soil-erosion claim (watts22_13) that is not tree/asset damage; medium confidence is generous.",
+     "Fragile: 1 of 5 units can each flip this row on its own. Check these first — WOCAT 2017 (ev_asset_flood_wocat_1358_2017_general_river_flood): the class becomes moderate."
+    ],
+    "fragility": {
+     "n_units": 5,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_asset_flood_wocat_1358_2017_general_river_flood",
+       "flips_to": "moderate"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 1,
+     "why": "No measured damage: class rests on WOCAT 'copes well/moderately' ratings (wocat_1358 pivotal) plus a forward-looking soil-erosion claim (watts22_13) that is not tree/asset damage; medium confidence is generous."
+    }
    }
   },
   {
@@ -8184,6 +8746,28 @@
      "no LIC/LMIC evidence",
      "data deficient"
     ]
+   },
+   "priority": {
+    "score": 3.25,
+    "level": "low",
+    "why": [
+     "Rests on very little evidence: ipcc_ar6_wg2_ch5_2022 2023 (ev_crop_yield_ipccar6ch5_1): the row disappears."
+    ],
+    "fragility": {
+     "n_units": 1,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_crop_yield_ipccar6ch5_1",
+       "flips_to": "row gone"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Correctly data-deficient: single IPCC statement (ev_crop_yield_ipccar6ch5_1) bundling several climate pressures, no measured heat damage."
+    }
    }
   },
   {
@@ -8343,6 +8927,23 @@
     "red_flags": [
      "mostly second-hand"
     ]
+   },
+   "priority": {
+    "score": 6.5,
+    "level": "medium",
+    "why": [
+     "Second reader: 'Severely damaged' (high) rests on two 'copes not well' ratings from one WOCAT sheet plus a cited producer worry (diasf08_3) and a list of regeneration threats; nothing measured."
+    ],
+    "fragility": {
+     "n_units": 5,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "'Severely damaged' (high) rests on two 'copes not well' ratings from one WOCAT sheet plus a cited producer worry (diasf08_3) and a list of regeneration threats; nothing measured."
+    }
    }
   },
   {
@@ -8503,6 +9104,23 @@
      "single source carries >40%",
      "mostly second-hand"
     ]
+   },
+   "priority": {
+    "score": 4.0,
+    "level": "low",
+    "why": [
+     "Second reader: Class 'low' plausible, but damage unit philpott08_8 is about abandoned pastures/cacao and forests, not managed agroforestry (PICOS fail); only measured unit (philpott08_7) found minimal damage."
+    ],
+    "fragility": {
+     "n_units": 5,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 1,
+     "why": "Class 'low' plausible, but damage unit philpott08_8 is about abandoned pastures/cacao and forests, not managed agroforestry (PICOS fail); only measured unit (philpott08_7) found minimal damage."
+    }
    }
   },
   {
@@ -8616,6 +9234,28 @@
      "mostly practitioner ratings",
      "data deficient"
     ]
+   },
+   "priority": {
+    "score": 2.75,
+    "level": "low",
+    "why": [
+     "Rests on very little evidence: WOCAT 2017 (ev_asset_extreme_rainfall_wocat_1358_2017_local_rainstorm): the row disappears."
+    ],
+    "fragility": {
+     "n_units": 1,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_asset_extreme_rainfall_wocat_1358_2017_local_rainstorm",
+       "flips_to": "row gone"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Correctly data-deficient: one WOCAT 'copes well' rating (wocat_1358 local_rainstorm), no measured evidence."
+    }
    }
   },
   {
@@ -9087,6 +9727,23 @@
     "red_flags": [
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 0.5,
+    "level": "low",
+    "why": [
+     "Second reader found it consistent: Moderate gain well supported by the nguyen26 meta-analysis and niether20_1; but the flagged 'harm' (seghieri19_7) is a cocoa yield-vs-richness trade-off, not biodiversity loss."
+    ],
+    "fragility": {
+     "n_units": 21,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 1,
+     "why": "Moderate gain well supported by the nguyen26 meta-analysis and niether20_1; but the flagged 'harm' (seghieri19_7) is a cocoa yield-vs-richness trade-off, not biodiversity loss."
+    }
    }
   },
   {
@@ -10170,6 +10827,23 @@
     "red_flags": [
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 0.5,
+    "level": "low",
+    "why": [
+     "Second reader found it consistent: Moderate gain well supported (cardinael18_1, niether20_1, muchane20_1); minor: ev_soil_organic_carbon_muchane20_2 quote is about erosion, and Humbo (wvfmnr19_11/12) is forest restoration, not farm agroforestry."
+    ],
+    "fragility": {
+     "n_units": 54,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 1,
+     "why": "Moderate gain well supported (cardinael18_1, niether20_1, muchane20_1); minor: ev_soil_organic_carbon_muchane20_2 quote is about erosion, and Humbo (wvfmnr19_11/12) is forest restoration, not farm agroforestry."
+    }
    }
   },
   {
@@ -10278,6 +10952,33 @@
      "mostly second-hand",
      "no LIC/LMIC evidence"
     ]
+   },
+   "priority": {
+    "score": 10.5,
+    "level": "high",
+    "why": [
+     "Second reader: Both units are cited statements resting on the same Ilstedt study and concern groundwater recharge at optimal density, not catchment yield; medium confidence and a positive class overstate one primary.",
+     "Fragile: 2 of 2 units can each flip this row on its own. Check these first — van Noordwijk et al. 2021 (ev_groundwater_recharge_potential_vannoordwijk21_6): the row becomes data deficient; ipcc_ar6_wg3_ch7_2022 2023 (ev_groundwater_recharge_potential_ipccar6_1): the row becomes data deficient."
+    ],
+    "fragility": {
+     "n_units": 2,
+     "n_pivotal": 2,
+     "pivotal": [
+      {
+       "evidence_id": "ev_groundwater_recharge_potential_vannoordwijk21_6",
+       "flips_to": "data_deficient"
+      },
+      {
+       "evidence_id": "ev_groundwater_recharge_potential_ipccar6_1",
+       "flips_to": "data_deficient"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Both units are cited statements resting on the same Ilstedt study and concern groundwater recharge at optimal density, not catchment yield; medium confidence and a positive class overstate one primary."
+    }
    }
   },
   {
@@ -10381,6 +11082,23 @@
     "red_flags": [
      "rests on 1 source"
     ]
+   },
+   "priority": {
+    "score": 0.5,
+    "level": "low",
+    "why": [
+     "Second reader found it consistent: Single programme (crs23) giving $66 and $201 per household; very_low confidence and 'small' class are reasonable and the prose states the limits."
+    ],
+    "fragility": {
+     "n_units": 2,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Single programme (crs23) giving $66 and $201 per household; very_low confidence and 'small' class are reasonable and the prose states the limits."
+    }
    }
   },
   {
@@ -10484,6 +11202,23 @@
     "red_flags": [
      "rests on 1 source"
     ]
+   },
+   "priority": {
+    "score": 6.5,
+    "level": "medium",
+    "why": [
+     "Second reader: Class 'small' sits badly with crs23_4's $1,387/ha for Rwandan tree planting; two arms of one programme 24-fold apart should not pool to one cost class."
+    ],
+    "fragility": {
+     "n_units": 2,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Class 'small' sits badly with crs23_4's $1,387/ha for Rwandan tree planting; two arms of one programme 24-fold apart should not pool to one cost class."
+    }
    }
   },
   {
@@ -10596,6 +11331,28 @@
      "no LIC/LMIC evidence",
      "data deficient"
     ]
+   },
+   "priority": {
+    "score": 3.25,
+    "level": "low",
+    "why": [
+     "Rests on very little evidence: ipcc_srccl_ch6_2019 2022 (ev_project_cost_ipccsrccl6_4): the row disappears."
+    ],
+    "fragility": {
+     "n_units": 1,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_project_cost_ipccsrccl6_4",
+       "flips_to": "row gone"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Correctly data-deficient: one global IPCC upper-bound statement (ipccsrccl6_4) without context."
+    }
    }
   },
   {
@@ -10717,6 +11474,23 @@
     "red_flags": [
      "single source carries >40%"
     ]
+   },
+   "priority": {
+    "score": 6.5,
+    "level": "medium",
+    "why": [
+     "Second reader: No class but 'high' confidence/'robust' evidence from three units: a cited business case (cmscr20_7), a non-significant bundled meta-analysis (steward23wp_1) and a null (niether20_1); confidence looks inflated."
+    ],
+    "fragility": {
+     "n_units": 3,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "No class but 'high' confidence/'robust' evidence from three units: a cited business case (cmscr20_7), a non-significant bundled meta-analysis (steward23wp_1) and a null (niether20_1); confidence looks inflated."
+    }
    }
   },
   {
@@ -11098,6 +11872,23 @@
     "red_flags": [
      "weak class but high confidence"
     ]
+   },
+   "priority": {
+    "score": 6.5,
+    "level": "medium",
+    "why": [
+     "Second reader: Very_high confidence is inflated: quandt17_1/_2 are literature-review citations coded measured, other quandt units are perceptions/farmer quotes, ieg20_4 is a bundled SLM rating, and faosen24_17 reports no consensus."
+    ],
+    "fragility": {
+     "n_units": 16,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Very_high confidence is inflated: quandt17_1/_2 are literature-review citations coded measured, other quandt units are perceptions/farmer quotes, ieg20_4 is a bundled SLM rating, and faosen24_17 reports no consensus."
+    }
    }
   },
   {
@@ -11259,6 +12050,23 @@
      "single source carries >40%",
      "weak class but high confidence"
     ]
+   },
+   "priority": {
+    "score": 7.0,
+    "level": "medium",
+    "why": [
+     "Second reader: High confidence without any measured damage reduction: two cited review claims (dobhal24_11/12), a WOCAT rating, and quandt17 resilience conclusion plus a table header (quandt17_13)."
+    ],
+    "fragility": {
+     "n_units": 5,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "High confidence without any measured damage reduction: two cited review claims (dobhal24_11/12), a WOCAT rating, and quandt17 resilience conclusion plus a table header (quandt17_13)."
+    }
    }
   },
   {
@@ -11478,6 +12286,23 @@
      "mostly second-hand",
      "data deficient"
     ]
+   },
+   "priority": {
+    "score": 1.5,
+    "level": "low",
+    "why": [
+     "Second reader found it consistent: Correctly data-deficient: four units all from one narrative review (kiptot_2011), second-hand."
+    ],
+    "fragility": {
+     "n_units": 4,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Correctly data-deficient: four units all from one narrative review (kiptot_2011), second-hand."
+    }
    }
   },
   {
@@ -12167,6 +12992,23 @@
      "weak class but high confidence",
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 4.5,
+    "level": "low",
+    "why": [
+     "Second reader: Slight benefit is plausible but rests on proxy temperature evidence, mostly cited_secondary; very_high confidence is generous, and faosen24_16 (windbreaks warm plots) and ipccar6ch5_2 ('opposite true') are underplayed."
+    ],
+    "fragility": {
+     "n_units": 32,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 1,
+     "why": "Slight benefit is plausible but rests on proxy temperature evidence, mostly cited_secondary; very_high confidence is generous, and faosen24_16 (windbreaks warm plots) and ipccar6ch5_2 ('opposite true') are underplayed."
+    }
    }
   },
   {
@@ -15195,6 +16037,23 @@
      "harm units present",
      "conflicting"
     ]
+   },
+   "priority": {
+    "score": 7.0,
+    "level": "medium",
+    "why": [
+     "Second reader: Class is conflicting_evidence (medium confidence), but the statement opens 'agroforestry strongly reduces production_gap ... high confidence' — contradictory wording a reader will take at face value."
+    ],
+    "fragility": {
+     "n_units": 162,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Class is conflicting_evidence (medium confidence), but the statement opens 'agroforestry strongly reduces production_gap ... high confidence' — contradictory wording a reader will take at face value."
+    }
    }
   },
   {
@@ -17124,6 +17983,23 @@
     "red_flags": [
      "harm units present"
     ]
+   },
+   "priority": {
+    "score": 6.5,
+    "level": "medium",
+    "why": [
+     "Second reader: Very_high/moderate overstates: the best pooled estimate (castle21s_1 income SMD 0.12, non-significant) is near null, harm in 6 sources, and many positives are proxies, WOCAT ratings or self-evaluations."
+    ],
+    "fragility": {
+     "n_units": 101,
+     "n_pivotal": 0,
+     "pivotal": []
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Very_high/moderate overstates: the best pooled estimate (castle21s_1 income SMD 0.12, non-significant) is near null, harm in 6 sources, and many positives are proxies, WOCAT ratings or self-evaluations."
+    }
    }
   },
   {
@@ -17967,6 +18843,54 @@
     "red_flags": [
      "weak class but high confidence"
     ]
+   },
+   "priority": {
+    "score": 12.5,
+    "level": "high",
+    "why": [
+     "Second reader: Statement says 'strongly reduces' while class is slight; seven weak pivotal units (e.g. quandt17_6 farmer quote coded measured, patil25_6 generic citation) each flip it to moderate, despite strong kuyah19_1/muchane20_1 meta-analyses.",
+     "Fragile: 7 of 41 units can each flip this row on its own. Check these first — Quandt et al. 2017 (ev_t3_flood_erosion_quandt17_6): the class becomes moderate positive; Patil et al. 2025 (ev_erosion_hazard_patil25_6): the class becomes moderate positive; Villarreyna et al. 2020 (ev_erosion_hazard_villa20_11): the class becomes moderate positive.",
+     "Stated at very high confidence, yet one unit can change it."
+    ],
+    "fragility": {
+     "n_units": 41,
+     "n_pivotal": 7,
+     "pivotal": [
+      {
+       "evidence_id": "ev_t3_flood_erosion_quandt17_6",
+       "flips_to": "moderate_positive"
+      },
+      {
+       "evidence_id": "ev_erosion_hazard_patil25_6",
+       "flips_to": "moderate_positive"
+      },
+      {
+       "evidence_id": "ev_erosion_hazard_villa20_11",
+       "flips_to": "moderate_positive"
+      },
+      {
+       "evidence_id": "ev_erosion_hazard_cmscr20_2",
+       "flips_to": "moderate_positive"
+      },
+      {
+       "evidence_id": "ev_erosion_hazard_montagnini15_1",
+       "flips_to": "moderate_positive"
+      },
+      {
+       "evidence_id": "ev_runoff_reduction_montagnini15_1",
+       "flips_to": "moderate_positive"
+      },
+      {
+       "evidence_id": "ev_runoff_reduction_cisneros24_1",
+       "flips_to": "moderate_positive"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "concern",
+     "severity": 2,
+     "why": "Statement says 'strongly reduces' while class is slight; seven weak pivotal units (e.g. quandt17_6 farmer quote coded measured, patil25_6 generic citation) each flip it to moderate, despite strong kuyah19_1/muchane20_1 meta-analyses."
+    }
    }
   },
   {
@@ -18078,6 +19002,28 @@
      "mostly practitioner ratings",
      "data deficient"
     ]
+   },
+   "priority": {
+    "score": 2.75,
+    "level": "low",
+    "why": [
+     "Rests on very little evidence: WOCAT 2019 (ev_sediment_retention_wocat_507_2019_downstream_siltation): the row disappears."
+    ],
+    "fragility": {
+     "n_units": 1,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_sediment_retention_wocat_507_2019_downstream_siltation",
+       "flips_to": "row gone"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 0,
+     "why": "Correctly data-deficient: one WOCAT siltation rating (wocat_507 downstream_siltation), no measured water quality."
+    }
    }
   },
   {
@@ -18628,6 +19574,28 @@
      "harm units present",
      "conflicting"
     ]
+   },
+   "priority": {
+    "score": 3.5,
+    "level": "low",
+    "why": [
+     "Fragile: 1 of 25 units can each flip this row on its own. Check these first — Sida et al. 2018 (ev_soil_water_retention_sida18_1): the class becomes moderate positive."
+    ],
+    "fragility": {
+     "n_units": 25,
+     "n_pivotal": 1,
+     "pivotal": [
+      {
+       "evidence_id": "ev_soil_water_retention_sida18_1",
+       "flips_to": "moderate_positive"
+      }
+     ]
+    },
+    "second_read": {
+     "verdict": "consistent",
+     "severity": 1,
+     "why": "Conflict is real and well explained (kuyah19_1, chirwa07 vs niether20_1, sida18_1), but it hinges on sida18_1 alone; dropping it flips to moderate_positive."
+    }
    }
   }
  ]

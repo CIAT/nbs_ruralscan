@@ -20,6 +20,11 @@ with the headline (a family-vote re-class included); its T3 lead takes the TTL w
 risk role from ``schema/lookups/display_vocab.csv`` (the controlled display vocabulary, also
 copied into the batch as ``"vocab"`` so the page shows labels, definitions and provenance
 instead of raw codes).
+Optionally each card carries a ``priority`` block (``--fragility`` CSV from
+scripts/row-fragility.py, ``--second-read`` JSON verdicts from an independent reader): a
+score, a level (high / medium / low) and plain "why this needs you" lines, so a reviewer who
+can only glance at most rows reads the least certain ones properly. Priority is triage only;
+it never changes a row.
 Weights there are a REVIEW APPROXIMATION of the engine's (tier × claim basis × design ×
 grey discount, then one vote per source split across its units) — good for spotting a row
 that leans on one paper or on ratings, not a replay of cell_synthesis.
@@ -556,6 +561,120 @@ def card(
     }
 
 
+PRIORITY_HIGH = 9.0
+PRIORITY_MEDIUM = 5.0
+
+
+def load_fragility(path: Path | str | None) -> dict[str, dict]:
+    """record_id -> {n_units, n_pivotal, pivotal: [(evidence_id, flips_to)]}."""
+    if not path:
+        return {}
+    out: dict[str, dict] = {}
+    with open(path, newline="", encoding="utf-8") as f:
+        for r in csv.DictReader(f):
+            piv = []
+            for part in (r.get("pivotal_units") or "").split(";"):
+                if "->" in part:
+                    e, lab = part.split("->", 1)
+                    piv.append((e.strip(), lab.strip()))
+            out[r["record_id"]] = {
+                "n_units": int(r.get("n_units") or 0),
+                "n_pivotal": int(r.get("n_pivotal") or 0),
+                "pivotal": piv,
+            }
+    return out
+
+
+def load_second_read(paths: list[str] | None) -> dict[str, dict]:
+    """record_id -> {verdict, severity, why} from one or more reader JSON files."""
+    out: dict[str, dict] = {}
+    for p in paths or []:
+        for r in json.loads(Path(p).read_text(encoding="utf-8")):
+            out[r["record_id"]] = {
+                "verdict": r.get("verdict", ""),
+                "severity": int(r.get("severity") or 0),
+                "why": (r.get("why") or "").strip(),
+            }
+    return out
+
+
+def _flip_words(lab: str) -> str:
+    if lab == "row gone":
+        return "the row disappears"
+    if lab == "data_deficient":
+        return "the row becomes data deficient"
+    return f"the class becomes {_words(lab)}"
+
+
+def priority(c: dict, frag: dict | None, second: dict | None) -> dict | None:
+    """Review-priority score + plain reasons for one card (None without any input).
+
+    Points: second-reader severity ×3 · a class held up by single units (+2, +0.5 per
+    pivotal unit up to 4) — halved on data-deficient rows, where a flip changes little ·
+    high/very-high confidence on a row a single unit can flip (+2) · red flags +0.5 each.
+    """
+    if frag is None and second is None:
+        return None
+    score, why = 0.0, []
+    if second and second.get("verdict") == "concern":
+        score += 3 * second.get("severity", 0)
+        if second.get("why"):
+            why.append(f"Second reader: {second['why']}")
+    dd = c.get("data_deficient") or c["class"]["value"] == "data_deficient"
+    if frag and frag.get("n_pivotal"):
+        n, k = frag["n_units"], frag["n_pivotal"]
+        pts = 2 + 0.5 * min(k, 4)
+        score += pts / 2 if dd else pts
+        cite = {u["evidence_id"]: u for u in c.get("evidence", [])}
+        named = []
+        for e, lab in frag["pivotal"][:3]:
+            u = cite.get(e, {})
+            who = short_citation(u.get("citation", ""), u.get("source_id", "")) or e
+            named.append(f"{who} ({e}): {_flip_words(lab)}")
+        if not dd:
+            why.append(
+                f"Fragile: {k} of {n} unit{'s' if n != 1 else ''} can each flip this row "
+                f"on its own. Check these first — " + "; ".join(named) + "."
+            )
+        else:
+            why.append("Rests on very little evidence: " + "; ".join(named) + ".")
+        if (c.get("confidence") or "") in ("high", "very_high") and not dd:
+            score += 2
+            why.append(
+                f"Stated at {_words(c['confidence'])} confidence, yet one unit can change it."
+            )
+    flags = (c.get("at_a_glance") or {}).get("red_flags") or []
+    score += 0.5 * len(flags)
+    if second and second.get("verdict") == "consistent" and not why:
+        why.append(
+            f"Second reader found it consistent: {second.get('why', '')}".strip()
+        )
+    level = (
+        "high"
+        if score >= PRIORITY_HIGH
+        else "medium"
+        if score >= PRIORITY_MEDIUM
+        else "low"
+    )
+    return {
+        "score": round(score, 2),
+        "level": level,
+        "why": why,
+        "fragility": (
+            {
+                "n_units": frag["n_units"],
+                "n_pivotal": frag["n_pivotal"],
+                "pivotal": [
+                    {"evidence_id": e, "flips_to": lab} for e, lab in frag["pivotal"]
+                ],
+            }
+            if frag
+            else None
+        ),
+        "second_read": second,
+    }
+
+
 def build_cards(
     nbs_id: str,
     wanted: dict[str, str] | None = None,
@@ -563,6 +682,8 @@ def build_cards(
     recipes: Path = RECIPES,
     ev_path: Path = EV,
     src_path: Path = SRC,
+    fragility: dict[str, dict] | None = None,
+    second_read: dict[str, dict] | None = None,
 ) -> tuple[list[dict], list[str]]:
     """Cards for the wanted record_ids ({id: question}) and/or every roll-up row."""
     wanted = wanted or {}
@@ -575,7 +696,11 @@ def build_cards(
     for table, r in load_rows(nbs_id, recipes):
         rid = r.get("record_id", "")
         if rid in wanted or (all_rollups and is_rollup(r)):
-            cards.append(card(table, r, ev, src, wanted.get(rid, ""), label))
+            c = card(table, r, ev, src, wanted.get(rid, ""), label)
+            pr = priority(c, (fragility or {}).get(rid), (second_read or {}).get(rid))
+            if pr is not None:
+                c["priority"] = pr
+            cards.append(c)
             seen.add(rid)
     return cards, [k for k in wanted if k not in seen]
 
@@ -643,6 +768,13 @@ def main(argv: list[str] | None = None) -> int:
     g.add_argument("--rows", help="CSV with record_id[,question]")
     g.add_argument("--all-rollups", action="store_true")
     ap.add_argument("--notes", default="")
+    ap.add_argument("--fragility", help="CSV from scripts/row-fragility.py")
+    ap.add_argument(
+        "--second-read",
+        nargs="*",
+        default=[],
+        help="JSON verdict file(s): [{record_id, verdict, severity, why}]",
+    )
     a = ap.parse_args(argv)
     wanted: dict[str, str] = {}
     if a.rows:
@@ -652,7 +784,13 @@ def main(argv: list[str] | None = None) -> int:
                 for r in csv.DictReader(f)
                 if (r.get("record_id") or "").strip()
             }
-    cards, missing = build_cards(a.nbs, wanted, a.all_rollups)
+    cards, missing = build_cards(
+        a.nbs,
+        wanted,
+        a.all_rollups,
+        fragility=load_fragility(a.fragility),
+        second_read=load_second_read(a.second_read),
+    )
     write_batch(a.batch_id, a.title, cards, a.notes)
     print(
         f"{len(cards)} row card(s) → docs/review/{a.batch_id}.json; missing ids: {missing}"

@@ -263,6 +263,14 @@
   .seg-modelled, .key-modelled { background: var(--accent-sky); }
   .seg-expert, .key-expert { background: var(--text-muted); }
   .glance-meta { font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; overflow-wrap: anywhere; }
+  #unit-list li .prio { font-size: 11px; padding: 0 6px; border-radius: 9px; font-weight: 700; flex: 0 0 auto; border: 1px solid var(--border, #888); }
+  .prio-high { background: rgba(var(--accent-rose-rgb, 225,29,72), 0.18); }
+  .prio-medium { background: rgba(var(--accent-amber-rgb, 245,158,11), 0.18); }
+  .prio-low { opacity: 0.7; }
+  .prio-why { border-left: 4px solid var(--accent-amber); padding: 8px 12px; margin: 8px 0; border-radius: 4px; }
+  .prio-why.prio-high { border-left-color: var(--accent-rose, #e11d48); }
+  .prio-why.prio-low { border-left-color: var(--border, #888); opacity: 1; }
+  .prio-why ul { margin: 4px 0 0 18px; padding: 0; }
   #unit-list li .flagn { font-size: 11px; padding: 0 6px; border-radius: 9px; background: var(--accent-amber); color: #111; font-weight: 700; flex: 0 0 auto; }
   body.kind-rows #unit .muted { color: var(--text-muted); font-size: 12.5px; }
 </style>
@@ -287,7 +295,11 @@
       <option value="reject">rejected</option>
       <option value="others">decided by others</option>
     </select></label>
-    <label id="sort-wrap" hidden><input type="checkbox" id="f-flags"> flags first</label>
+    <label id="sort-wrap" hidden>Order <select id="f-order">
+      <option value="batch">batch order</option>
+      <option value="priority">least certain first</option>
+      <option value="flags">most red flags first</option>
+    </select></label>
     <input type="search" id="f-search" placeholder="Search citation, variable, question">
   </div>
   <div class="progress"><span id="progress-text">0 / 0 decided</span><div class="bar"><div id="progress-bar"></div></div></div>
@@ -296,7 +308,7 @@
 <div class="layout">
   <aside id="list-panel">
     <div class="list-head"><span id="list-count">Units</span><button type="button" id="list-toggle">Hide</button></div>
-    <div class="list-legend" id="list-legend" hidden>Your decision · flags</div>
+    <div class="list-legend" id="list-legend" hidden>Your decision · review priority (H / M / L) · red flags</div>
     <ul id="unit-list"></ul>
   </aside>
   <section id="main-col" style="flex:1;min-width:0">
@@ -369,6 +381,14 @@
   function glossOf(r) { return (S.kind === 'rows' ? ROW_GLOSS : GLOSS)[r] || ''; }
   // the decision key: evidence_id for a unit card, record_id for a generated-row card
   function idOf(u) { return u ? (u.evidence_id || u.record_id || '') : ''; }
+  var PRIO_RANK = { high: 0, medium: 1, low: 2 };
+  function prioScore(u) { return (u && u.priority) ? +u.priority.score || 0 : -1; }
+  function prioHtml(u) {
+    var p = u && u.priority; if (!p) return '';
+    return '<span class="prio prio-' + esc(p.level) + '" title="Review priority: ' + esc(p.level) +
+      ' (score ' + esc(p.score) + '). How much this row needs a careful read — triage only, it never changes the row.">' +
+      esc(p.level.charAt(0).toUpperCase()) + '</span>';
+  }
   function nFlags(u) { return (u && u.at_a_glance && u.at_a_glance.red_flags) ? u.at_a_glance.red_flags.length : 0; }
   var UNIT_KEYS = 'Keys: A approve · H hold · R reject · ← → move';
   var ROW_KEYS = 'Keys: A approve · H hold · R reject (pick reason) · N/→ next · P/← previous';
@@ -510,6 +530,7 @@
     S.reasons = r;
     document.body.classList.toggle('kind-rows', S.kind === 'rows');
     if ($('sort-wrap')) $('sort-wrap').hidden = S.kind !== 'rows';
+    if ($('f-order')) $('f-order').value = (S.kind === 'rows' && S.units.some(function (u) { return u.priority; })) ? 'priority' : 'batch';
     if ($('list-legend')) $('list-legend').hidden = S.kind !== 'rows';
     var keysEl = document.querySelector('.nav .keys');
     if (keysEl) keysEl.textContent = S.kind === 'rows' ? ROW_KEYS : UNIT_KEYS;
@@ -582,9 +603,11 @@
       }
       return true;
     });
-    if (S.kind === 'rows' && $('f-flags') && $('f-flags').checked) {
+    var order = S.kind === 'rows' && $('f-order') ? $('f-order').value : 'batch';
+    if (order === 'flags' || order === 'priority') {
       S.filtered = S.filtered.map(function (u, k) { return [u, k]; }).sort(function (a, b) {
-        return (nFlags(b[0]) - nFlags(a[0])) || (a[1] - b[1]); }).map(function (x) { return x[0]; });
+        var d = order === 'priority' ? prioScore(b[0]) - prioScore(a[0]) : nFlags(b[0]) - nFlags(a[0]);
+        return d || (a[1] - b[1]); }).map(function (x) { return x[0]; });
     }
     var i = curId ? S.filtered.map(function (u) { return idOf(u); }).indexOf(curId) : -1;
     S.pos = i >= 0 ? i : Math.min(S.pos, Math.max(0, S.filtered.length - 1));
@@ -644,11 +667,18 @@
         '<span class="lbl" title="' + esc(idOf(u)) + '">' + (S.kind === 'rows'
           ? esc(u.table) + ' ' + esc(u.target_label) + (present(u.suitability_family_id) ? ' — ' + esc(u.suitability_family_id) : ' — roll-up')
           : esc(u.variable) + ' — ' + esc(u.source_id)) + '</span>' +
+        (S.kind === 'rows' ? prioHtml(u) : '') +
         (S.kind === 'rows' && nFlags(u) ? '<span class="flagn" title="' + esc(nFlags(u) + ' red flag' + (nFlags(u) === 1 ? '' : 's') + ' on this row: ' +
           (u.at_a_glance.red_flags || []).join('; ')) + '">' + nFlags(u) + '</span>' : '') +
         (others.length ? '<span class="othermark" title="' + esc(others.length + ' other reviewer(s) decided this unit') + '">◆</span>' : '') +
         '</li>';
     }).join('');
+  }
+
+  function prioWhyHtml(u) {
+    var p = u.priority; if (!p || !(p.why || []).length) return '';
+    return '<div class="prio-why prio-' + esc(p.level) + '"><b>Why this needs you — ' + esc(p.level) + ' priority</b><ul>' +
+      p.why.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul></div>';
   }
 
   // ---------- unit view ----------
@@ -855,6 +885,7 @@
             (present(u.scope) ? ' <span class="sep">·</span> ' + esc(u.scope) : '') + '</span>' +
           '<span class="muted">evidence ' + (present(u.evidence_level) ? esc(vshort('evidence_level', u.evidence_level)) + vinfo('evidence_level', u.evidence_level) : '—') +
             ' · agreement ' + (present(u.agreement_level) ? esc(vshort('agreement_level', u.agreement_level)) + vinfo('agreement_level', u.agreement_level) : '—') + '</span></div>' +
+        prioWhyHtml(u) +
         '<p class="glance-stmt">' + esc(g.statement_short || u.statement) + '</p>' +
         (gFlags.length ? '<div class="flag-chips">' + gFlags.map(function (f) { return flagHtml(f, u); }).join('') + '</div>' : '') +
         basisBar +
@@ -1139,7 +1170,7 @@
       try { var u = new URL(location.href); u.searchParams.set('batch', id); history.replaceState(null, '', u); } catch (e) { /* ignore */ }
       S.filtered = []; load(id);
     });
-    $('f-flags').addEventListener('change', function () { S.pos = 0; applyFilters(); });
+    $('f-order').addEventListener('change', function () { S.pos = 0; applyFilters(); });
     ['f-nbs', 'f-state'].forEach(function (id) {
       $(id).addEventListener('change', function () { S.pos = 0; applyFilters(); if (id === 'f-nbs') syncUrl(); });
     });
