@@ -6,14 +6,14 @@ const source=html.slice(html.indexOf('function vfLoadClarifications'),html.index
 const issue={id:'shared',fingerprint:'v1',reviewer:'Pete',question:'Why <this>?',status:'answer_ready',records:[{evidence_id:'one',variable:'slope',page:'2'},{evidence_id:'two',variable:'slope',page:'3'}],answers:[{response:'Checked source',source_check:{pdf_pages:[2]}}],history:[]};
 const window={_vfClarifications:[issue],_vfReviewer:'peetmate',_reviewApi:true};
 let calls=[];
-const ctx=vm.createContext({window,Promise,document:{getElementById:()=>({value:'My reply'})},alert:m=>{throw Error(m);},renderVfWorklist:()=>{},vfReviewQueue:()=>{},vfEsc:s=>String(s??'').replaceAll('<','&lt;').replaceAll('>','&gt;'),fetch:async(url,opts)=>{calls.push([url,opts]);return {ok:true,json:async()=>opts?{event:{}}:{issues:[issue],pending:1}};}});
+const ctx=vm.createContext({window,Promise,document:{getElementById:()=>({value:'My reply'})},alert:m=>{throw Error(m);},renderVfWorklist:()=>{},vfNotice:()=>{},vfReviewQueue:()=>{},vfEsc:s=>String(s??'').replaceAll('<','&lt;').replaceAll('>','&gt;'),fetch:async(url,opts)=>{calls.push([url,opts]);return {ok:true,json:async()=>opts?{event:{}}:{issues:[issue],pending:1}};}});
 vm.runInContext(source,ctx);
 assert.equal(ctx.vfClarificationsFor('one').length,1);
 assert.equal(ctx.vfClarificationsFor('two').length,1);
 assert.equal(ctx.vfClarificationsFor('unknown').length,0);
 const card=ctx.vfClarificationHtml({evidence_id:'one'});
 assert(card.includes('Why &lt;this&gt;?'));assert(card.includes('2 affected record(s)'));
-assert(card.includes('Reply history'));assert(card.includes('Accept answer for listed records'));
+assert(card.includes('Reply history'));assert(card.includes('Accept answer → next'));assert(card.includes('Ask a follow-up'));
 assert(html.includes('+vfClarificationHtml(ev)'));
 ctx.vfClarificationQueue('answer_ready');assert.equal(window._vfClarificationFilter,'answer_ready');
 (async()=>{await ctx.vfClarificationRespond('shared','reply','field');const payload=JSON.parse(calls[0][1].body);assert.equal(payload.reviewer,'peetmate');assert.equal(payload.action,'reply');assert.equal(window._vfClarificationPending,1);assert(!calls.some(c=>c[0]==='/api/decision'));console.log('Inline clarification cards, shared issue, existing reviewer and pending submission passed.');})().catch(e=>{console.error(e);process.exitCode=1;});

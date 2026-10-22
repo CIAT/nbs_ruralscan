@@ -361,8 +361,8 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
     """Revert an ok-reviewed EV row back to flagged (clears reviewer_ok, restores the
     [VERIFY-FLAG verdict: reason] from the review_log) so it re-enters the worklist.
 
-    Only ok-reviewed units (still in EV) can be reopened; dropped units are gone and
-    must be re-extracted. Logs a 'reopen' action for audit.
+    Existing active, queried and dropped units can be reopened. Logs the reviewer's
+    reset even when reviewer_ok was already false, so an old query cannot hide it.
     """
     today = datetime.now(timezone.utc).date().isoformat()
     # latest logged verdict+reason per evidence_id (for restoring the flag text)
@@ -382,10 +382,6 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
     reopened, logrows = 0, []
     for r in rows:
         if r["evidence_id"] not in targets:
-            continue
-        was_ok = (r.get("reviewer_ok") or "").lower() == "true"
-        was_dropped = (r.get("review_state") or "") == "dropped"
-        if not (was_ok or was_dropped):
             continue
         verdict, reason = last.get(
             r["evidence_id"], ("mismatch", "re-opened for review")

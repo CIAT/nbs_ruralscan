@@ -2439,8 +2439,8 @@
     var all=window._vfAllReviews||{}; var byId={}; ((dashboardData.registers.EV_evidence_register)||[]).forEach(function(e){byId[e.evidence_id]=e;}); ((dashboardData._evDropped)||[]).forEach(function(e){byId[e.evidence_id]=e;});
     var nf=0,np=0; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true'){ var e=byId[eid]; if(e&&/\[VERIFY-FLAG/.test(e.attribution||''))nf++; else np++; } });
     var n=nf+np;
-    el.innerHTML=n>0?('<span style="color:var(--accent-amber);">&#9873; '+n+' decision'+(n>1?'s':'')+' pending</span> <span style="color:var(--text-muted); font-weight:400;">— '+nf+' AI-flagged + '+np+' AI-passed. Apply submits <b>all</b> of them (any queue).</span>'):'<span style="color:var(--text-muted); font-weight:400;">No decisions pending apply.</span>';
-    var nc=window._vfClarificationPending||0; if(nc)el.innerHTML+='<span style="color:var(--accent-amber)"> · '+nc+' clarification event(s) pending submission (all reviewers).</span>';
+    el.innerHTML=n>0?('<span style="color:var(--accent-amber);">&#9873; '+n+' saved decision'+(n>1?'s':'')+' awaiting Apply (not total approvals)</span> <span style="color:var(--text-muted); font-weight:400;">— '+nf+' AI-flagged + '+np+' AI-passed. Apply submits <b>all</b> of them (any queue).</span>'):'<span style="color:var(--text-muted); font-weight:400;">No decisions pending apply.</span>';
+    var nc=window._vfClarificationPending||0; if(nc)el.innerHTML+='<span style="color:var(--accent-amber)"> · '+nc+' answer acceptance(s) / follow-up(s) saved, awaiting submission (all reviewers).</span>';
     _vfStyleApply(n+nc); }
   function _vfRenderSubsetBanner(){ var el=document.getElementById('vf-subset-banner'); if(!el)return; var sc=window._vfScope||{}; var chips=[]; if(sc.sourceId)chips.push(['sourceId','📄 source: '+sc.sourceId, sc.sourceId]); if(sc.section)chips.push(['section','📍 page '+sc.section, sc.section]); if(!chips.length){ el.style.display='none'; el.innerHTML=''; return; } el.style.display='block'; el.innerHTML='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.3); border-radius:6px; padding:6px 10px; font-size:11px;"><span style="color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em;">Subset</span>'+chips.map(function(c){return '<span style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:2px 9px;">'+vfEsc(c[1])+' <a href="#" title="remove this subset" onclick="vfSetSubset(\''+c[0]+'\',\''+vfEsc(String(c[2]))+'\');return false;" style="color:var(--accent-rose); text-decoration:none; font-weight:700;">✕</a></span>';}).join('')+'<a href="#" onclick="window._vfScope.sourceId=\'\';window._vfScope.section=\'\';renderVfWorklist();return false;" style="color:var(--accent-sky); margin-left:auto;">clear all</a></div>'; }
   function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid);
@@ -2506,18 +2506,27 @@
     if(nl>=3 && nums>=4) return '\uD83D\uDCCA likely a table (cells flattened)';
     return '\u00B6 main text';
   }
-  function setVfDecision(id,d){ if(!window._vfDecisions)window._vfDecisions={}; var val=(window._vfDecisions[id]===d?'':d); window._vfDecisions[id]=val; localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));
-    { var me=(window._vfReviewer||'reviewer'); if(!window._vfAllReviews)window._vfAllReviews={}; window._vfAllReviews[id]=window._vfAllReviews[id]||{}; if(val){window._vfAllReviews[id][me]={decision:val,reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||'')};}else{delete window._vfAllReviews[id][me];} }
-    if(window._reviewApi){ fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||''),reviewer:(window._vfReviewer||'reviewer')})}).catch(function(){}); }
-    renderVfWorklist(); }
+  function setVfDecision(id,d){
+    window._vfSaveQueue=(window._vfSaveQueue||Promise.resolve()).then(async function(){
+      var me=window._vfReviewer||'reviewer';var val=d; // Repeated clicks are idempotent, not undo.
+      if(window._reviewApi){
+        vfNotice('Saving decision…');
+        var response=await fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||''),reviewer:me})});
+        var result=await response.json();if(!response.ok||result.error)throw Error(result.error||'Save failed');
+      }
+      window._vfDecisions=window._vfDecisions||{};window._vfDecisions[id]=val;
+      window._vfAllReviews=window._vfAllReviews||{};window._vfAllReviews[id]=window._vfAllReviews[id]||{};
+      window._vfAllReviews[id][me]={decision:val,applied:false};localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));renderVfWorklist();vfNotice('Decision saved locally. Apply & submit when finished.');
+    }).catch(function(e){vfNotice('Decision NOT saved: '+e.message+' — click again to retry.',true);});
+  }
   // A per-card DROP must carry a coded reason (mirrors the bulk-flag + query-note guards).
   // Before this, per-card drops could be reason-less — the source of the blank-reason drops
   // in the July QA batch (2026-07 sweep-retro #4). Toggling an existing drop OFF still works
-  // (the reason is already set, so the guard passes and setVfDecision un-sets it).
+  // Repeated decisions are idempotent; use Reset for pending changes.
   function vfTryDrop(id){
     var r=((window._vfReasons||{})[id]||''); var n=((window._vfNotes||{})[id]||'').trim();
-    if(!r){ alert('Pick a reason first — a drop needs a coded reason (use the Reason selector to the left).'); return; }
-    if(r==='other'&&!n){ alert('Reason "other" needs a note explaining it.'); return; }
+    if(!r){ vfNotice('Pick a reason first — a drop needs a coded reason (use the Reason selector to the left).'); return; }
+    if(r==='other'&&!n){ vfNotice('Reason "other" needs a note explaining it.'); return; }
     setVfDecision(id,'drop'); }
   // Reclassify species/crop-specific evidence (2026-07): KEEP + retag claim_scope + taxon —
   // never drop. On apply, review.apply_decisions retags the row; synthesis routes it out of the
@@ -2561,10 +2570,10 @@
       // Offline branch was previously silent — the hint stayed blank on GitHub Pages, so a
       // reviewer had no idea why Apply was missing. Say what to run to get it back.
       if(h)h.innerHTML='<b style="color:var(--accent-amber);">Read-only</b> — decisions stay in this browser. Run the local review server (<code style="font-size:9.5px;">uv run python3 -m nbs_ruralscan.schema_tools.review_server</code>) to enable <b>Apply</b>, or use <b>Download CSV</b>.'; } }
-  function applyVfDecisions(){ if(!window._reviewApi){ alert('No review server. Use Download decisions CSV + review.py apply.'); return; }
+  async function applyVfDecisions(){ await (window._vfSaveQueue||Promise.resolve()); if(!window._reviewApi){ vfNotice('No review server. Use Download decisions CSV + review.py apply.'); return; }
     var btn=document.getElementById('vf-apply-btn'); if(btn){btn.disabled=true; btn.textContent='Applying…';}
     fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer')})}).then(function(r){return r.json();}).then(function(res){
-      if(res.error){ alert('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} return; }
+      if(res.error){ vfNotice('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} return; }
       fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d));
         fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){
           // BEST-EFFORT refresh: a render throw here must NOT abort the flow — otherwise the
@@ -2578,11 +2587,11 @@
           var _today=new Date().toISOString().slice(0,10);
           fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer'),title:'qaqc: review '+_today})}).then(function(r){return r.json();}).then(function(sb){
             if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';}
-            if(sb.ok){ vfLoadClarifications(); alert(msg+'\n\n\u2705 Submitted for main \u2014 '+(sb.pr_url||'PR opened')+'\n(subject to checks and required approvals; clarification-history PRs require review).'); }
-            else { alert(msg+'\n\n\u26a0 Submit to main FAILED \u2014 decisions ARE saved locally; run scripts/submit-review.sh manually.\n\n'+((sb.error||sb.output)||'').slice(-600)); }
-          }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} alert(msg+'\n\nSubmit error: '+e); }); });
+            if(sb.ok){ vfLoadClarifications(); vfNotice(msg+'\n\n\u2705 Submitted for main \u2014 '+(sb.pr_url||'PR opened')+'\n(subject to checks and required approvals; clarification-history PRs require review).'); }
+            else { vfNotice(msg+'\n\n\u26a0 Submit to main FAILED \u2014 decisions ARE saved locally; run scripts/submit-review.sh manually.\n\n'+((sb.error||sb.output)||'').slice(-600)); }
+          }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} vfNotice(msg+'\n\nSubmit error: '+e); }); });
       });
-    }).catch(function(e){ alert('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} }); }
+    }).catch(function(e){ vfNotice('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} }); }
   function downloadVfDecisions(){
     var rows=window._vfFlagged||[]; var hdr=['evidence_id','source_id','variable','use_role','verdict','flag_reason','quote','relationship','decision','reason','reviewer','note'];
     function q(v){v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"';}
@@ -2640,9 +2649,36 @@
     hostEl.innerHTML=h;
   }
 
-  function reopenVf(eid){ if(!window._reviewApi){ alert('Re-open needs the live review server running.'); return; } if(!confirm('Re-open '+eid+' back into the AI-flagged worklist? (clears its reviewer_ok and restores the flag)'))return; var rev=(window._vfReviewer||'reviewer'); fetch('/api/reopen',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_ids:[eid],reviewer:rev})}).then(function(r){return r.json();}).then(function(res){ if(res&&res.error){ alert('Re-open failed: '+res.error); return; } fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ dashboardData=_segregateDropped(d); window._vfMode='review'; window._vfAxStatus='active'; window._vfAxOrigin='any'; window._vfAxMe='no'; window._vfAxOther='any'; window._vfMyCall='all'; window._vfVerdictFilter='all'; renderVfWorklist(); alert('Re-opened '+(res.reopened||0)+' unit(s) — now back under “To review”.'); }); }); }
-
-  function challengeVf(eid, dec){ if(!window._reviewApi){ alert('Challenging an applied decision needs the live review server.'); return; } var rev=(window._vfReviewer||'').trim(); if(!rev){ alert('Set your reviewer handle first.'); return; } var reason=prompt('Reason for "'+dec+'"? (optional)')||''; fetch('/api/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:eid,decision:dec,reason:reason,reviewer:rev})}).then(function(r){return r.json();}).then(function(res){ if(res&&res.error){ alert('Challenge failed: '+res.error); return; } fetch('/api/state').then(function(r){return r.json();}).then(function(st){ window._vfAllReviews=st.decisions||{}; fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(d){ dashboardData=_segregateDropped(d); if(res.conflict){ window._vfMode='flagged'; window._vfVerdictFilter='conflict'; } renderVfWorklist(); alert(res.conflict?('⚠ Conflict raised'+(res.reopened?' — re-opened into AI-flagged (Conflict filter) for consensus.':'.')):'Recorded — agrees with the existing decision.'); }); }); }); }
+  function vfNotice(message, error){
+    var el=document.getElementById('vf-action-status');
+    if(!el){el=document.createElement('div');el.id='vf-action-status';el.setAttribute('role','status');var anchor=document.getElementById('vf-pending-count');if(anchor)anchor.parentNode.insertBefore(el,anchor);}
+    el.style.cssText='padding:8px;margin:6px 0;white-space:pre-wrap;color:var('+(error?'--accent-rose':'--accent-sky')+')';el.textContent=message;
+  }
+  async function vfRefreshReview(){
+    var responses=await Promise.all([fetch('/api/state'),fetch('dashboard_data.json?t='+Date.now())]);
+    if(responses.some(function(r){return !r.ok;}))throw Error('Could not refresh review state');
+    var state=await responses[0].json();dashboardData=_segregateDropped(await responses[1].json());window._vfAllReviews=state.decisions||{};
+    var me=window._vfReviewer||'reviewer';window._vfDecisions={};
+    Object.keys(window._vfAllReviews).forEach(function(id){var entry=window._vfAllReviews[id][me];if(entry&&entry.decision)window._vfDecisions[id]=entry.decision;});
+    localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));renderVfWorklist();
+  }
+  async function reopenVf(eid){
+    if(!window._reviewApi){vfNotice('Reopen needs the live review server.',true);return;}
+    vfNotice('Reopening record and rebuilding review data…');
+    try{
+      var r=await fetch('/api/reopen',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_ids:[eid],reviewer:window._vfReviewer||'reviewer'})});var res=await r.json();if(!r.ok||res.error)throw Error(res.error||'Reopen failed');
+      window._vfMode='review';window._vfClarificationFilter='all';window._vfReconcile='all';
+      window._vfAxStatus='active'; window._vfAxOrigin='any'; window._vfAxMe='no'; window._vfAxOther='any'; window._vfMyCall='all'; window._vfVerdictFilter='all';window._vfTablesOnly=false;
+      await vfRefreshReview();vfNotice('Record reopened. Previous call cleared; ready for a new decision.');
+      var card=document.querySelector('details[data-vfeid="'+eid+'"]');if(card){card.open=true;card.scrollIntoView({block:'center'});}
+    }catch(e){vfNotice('Reopen failed: '+e.message,true);}
+  }
+  async function challengeVf(eid, dec){
+    var rev=(window._vfReviewer||'').trim();if(!rev){vfNotice('Select your reviewer handle first.',true);return;}
+    vfNotice('Saving revised decision…');
+    try{var r=await fetch('/api/challenge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:eid,decision:dec,reviewer:rev,reason:((window._vfReasons||{})[eid]||''),note:((window._vfNotes||{})[eid]||'')})});var res=await r.json();if(!r.ok||res.error)throw Error(res.error||'Save failed');await vfRefreshReview();vfNotice(res.conflict?'Decision saved; disagreement remains for resolution.':'Decision saved locally. Apply & submit when finished.');}
+    catch(e){vfNotice('Decision not saved: '+e.message,true);}
+  }
 
   // Units resolved by < 2 reviewers (need a 2nd opinion). If a reviewer handle is set,
   // exclude units that reviewer already reviewed (it's not THEIR 2nd opinion to give).
@@ -2675,26 +2711,31 @@
   function vfClarificationsFor(eid){return (window._vfClarifications||[]).filter(function(g){return g.records.some(function(r){return r.evidence_id===eid;});});}
   function vfClarificationHtml(ev){
     var labels={answer_ready:'Answer ready — confirm or reply',needs_judgement:'Needs your judgement',needs_investigation:'Team investigation',resolved:'Clarification resolved'};
-    return vfClarificationsFor(ev.evidence_id).map(function(g){
+    return vfClarificationsFor(ev.evidence_id).filter(function(g){return !window._vfClarificationFilter||window._vfClarificationFilter==='all'||(g.status===window._vfClarificationFilter&&!(window._vfRenderedClarifications||{})[g.id]);}).map(function(g){
+      if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'){window._vfRenderedClarifications=window._vfRenderedClarifications||{};window._vfRenderedClarifications[g.id]=true;}
       var field='clarification-'+g.id+'-'+ev.evidence_id;
       var button=function(action,label){return '<button class="pill-btn" onclick="vfClarificationRespond(\''+g.id+'\',\''+action+'\',\''+field+'\')">'+label+'</button>';};
       return '<section style="border:1px solid var(--accent-sky);border-radius:6px;padding:12px;margin:12px 0;font-size:12px"><b>'+vfEsc(labels[g.status])+'</b><p><b>Question — '+vfEsc(g.reviewer)+'</b><br>'+vfEsc(g.question)+'</p>'
-        +g.answers.map(function(a){return '<p><b>Existing answer</b><br>'+vfEsc(a.response)+'<br><small>Source pages '+vfEsc((a.source_check.pdf_pages||[]).join(', ')||'see record')+'</small></p>';}).join('')
+        +g.answers.map(function(a){return '<p><b>Answer</b><br>'+vfEsc(a.response)+'<br><small>Source pages '+vfEsc((a.source_check.pdf_pages||[]).join(', ')||'see record')+'</small></p>';}).join('')
         +(!g.answers.length?'<p>No verified answer yet. Team investigation; no repeated extraction review requested.</p>':'')
         +'<details><summary>Shared issue: '+g.records.length+' affected record(s) — acceptance covers this list</summary>'+g.records.map(function(r){return '<p><code>'+vfEsc(r.evidence_id)+'</code> · '+vfEsc(r.variable)+' · <a target="_blank" href="/api/crop?eid='+encodeURIComponent(r.evidence_id)+'&amp;full=1">source page '+vfEsc(r.page)+'</a></p>';}).join('')+'</details>'
         +'<details><summary>Reply history ('+g.history.length+')</summary>'+g.history.map(function(h){return '<p><b>'+vfEsc(h.reviewer)+' · '+vfEsc(h.action)+'</b> · '+vfEsc(h.date)+(h.fingerprint!==g.fingerprint?' (earlier version)':'')+'<br>'+vfEsc(h.note)+'</p>';}).join('')+'</details>'
-        +'<textarea id="'+field+'" placeholder="Reply / explain remaining issue" style="width:95%;margin:8px 0;background:var(--bg-primary);color:var(--text-primary)"></textarea><div>'
-        +(g.status==='answer_ready'?button('accept','Accept answer for listed records'):'')+button('reply','Save reply')+(g.status==='resolved'?button('reopen','Reopen clarification'):'')+'</div><small>Uses your dashboard reviewer handle. Apply &amp; submit includes these replies. Accepting an answer does not approve extraction.</small></section>';
+        +'<div style="margin-top:12px">'+(g.status==='answer_ready'?button('accept','Accept answer → next'):'')
+        +'<details style="display:inline-block;margin-left:10px"><summary style="cursor:pointer">Ask a follow-up</summary><textarea id="'+field+'" placeholder="What remains unclear?" style="width:95%;min-height:70px;margin:8px 0;background:var(--bg-primary);color:var(--text-primary)"></textarea>'+button('reply','Save follow-up → next')+'</details>'
+        +(g.status==='resolved'?button('reopen','Reopen clarification'):'')+'</div><small>Accepts this explanation for the listed records. Extraction approval stays unchanged. Save your batch with Apply &amp; submit.</small></section>';
     }).join('');
   }
   async function vfClarificationRespond(id,action,field){
     var g=(window._vfClarifications||[]).find(function(x){return x.id===id;});var reviewer=(window._vfReviewer||'').trim();
-    if(!reviewer){alert('Select your dashboard reviewer handle first.');return;}
-    var note=document.getElementById(field).value;
-    try{var r=await fetch('/api/clarifications',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({issue_id:id,fingerprint:g.fingerprint,action:action,reviewer:reviewer,note:note})});var result=await r.json();if(!r.ok)throw Error(result.error);await vfLoadClarifications();}
-    catch(e){alert('Reply not saved: '+e.message);}
+    if(!reviewer){vfNotice('Select your dashboard reviewer handle first.',true);return;}
+    if(window._vfClarificationBusy)return;
+    window._vfClarificationBusy=true;
+    var input=document.getElementById(field);var note=input?input.value:'';
+    vfNotice(action==='accept'?'Saving accepted answer…':'Saving follow-up…');
+    try{var r=await fetch('/api/clarifications',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({issue_id:id,fingerprint:g.fingerprint,action:action,reviewer:reviewer,note:note})});var result=await r.json();if(!r.ok)throw Error(result.error);await vfLoadClarifications();vfNotice(action==='accept'?'Answer accepted and saved. Next answer below. Extraction approval unchanged.':'Follow-up saved; moved to team investigation.');}
+    catch(e){vfNotice('Response NOT saved: '+e.message,true);}
+    finally{window._vfClarificationBusy=false;}
   }
-
   function _vfReviewBucket(ev, decisions){
     if(ev.review_state==='dropped')return 'dropped';
     var ds=Object.values(decisions||{}).filter(Boolean).map(function(d){d=String(d).toLowerCase(); return d==='keep'?'ok':d;});
@@ -3000,6 +3041,9 @@
     var _decChipS=_myDecC?('<span style="font-size:9px; font-weight:700; text-transform:uppercase; padding:1px 7px; border-radius:3px; color:#fff; background:'+(_myDecC==='ok'?'var(--accent-emerald)':(_myDecC==='drop'?'var(--accent-rose)':'var(--accent-amber)'))+';">you: '+vfEsc(_myDecC==='flag'?'query':_myDecC)+'</span>'):'';
     var _revChipS=_rk.length?('<span style="font-size:10px; color:var(--text-muted);">'+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv]);}).join(' · ')+'</span>'):'';
     var _summaryHtml='<summary style="cursor:pointer; display:flex; align-items:center; gap:9px; flex-wrap:wrap; padding:9px 14px; border-left:4px solid '+_aiCol+'; border-radius:8px; background:var(--bg-secondary);">'+_aiBadge+_dropBadgeD+'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code><span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+'</span>'+_decChipS+'<span style="margin-left:auto; display:inline-flex; gap:8px; align-items:center;">'+_revChipS+'</span></summary>';
+    if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'){
+      return '<article data-vfeid="'+vfEsc(ev.evidence_id)+'" style="padding:18px;margin:12px 0;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary)"><h3>'+vfEsc((ev.variable||'').replace(/_/g,' '))+' · '+vfEsc(ev.source_id)+'</h3>'+vfClarificationHtml(ev)+'<details><summary>Evidence and source context</summary>'+vfReviewMeaning(ev)+'<p>'+vfEsc(ev.quote||'')+'</p>'+vfRelHtml(ev)+cropImg+pdfLink+'</details></article>';
+    }
     var _card='<div data-vfeid="'+vfEsc(ev.evidence_id||'')+'" style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:4px solid '+_aiCol+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
       +(_collap?'':('<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
       +_aiBadge+_dropBadgeD
@@ -3238,7 +3282,10 @@
         cl+='<button class="pill-btn '+(window._vfClarificationFilter===q[0]?'active sky':'')+'" onclick="vfClarificationQueue(\''+q[0]+'\')">'+q[1]+' ('+groups.length+' issues)</button> ';
       });
       cl+='<small>Issue counts; shared issues appear on each linked card. Extraction review stays separate.</small></div>';
-      fd.innerHTML=summary+cl+_bar; }
+      if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'){
+        var remaining=(window._vfClarifications||[]).filter(function(g){return g.status===window._vfClarificationFilter&&g.records.some(function(r){return _uni.some(function(u){return u.ev.evidence_id===r.evidence_id;});});}).length;
+        fd.innerHTML='<h3>Answer review · '+remaining+' issue(s)</h3><p>Read the question and answer. Accept, or ask a follow-up. No reopening needed.</p><button class="pill-btn" onclick="vfReviewQueue(\'first\')">Go to first reviews</button><button class="pill-btn" onclick="vfClarificationQueue(\'resolved\')">Accepted answers / history</button><details style="margin-top:10px"><summary>Other review queues and filters</summary>'+summary+cl+_bar+'</details>';
+      }else{fd.innerHTML=summary+cl+_bar;} }
     // ---- apply the toggle filters to the universe (secondary filters via the shared _sec) ----
     var _list=_uni.filter(function(u){
       if(window._vfAxOrigin!=='any'&&u.origin!==window._vfAxOrigin)return false;
@@ -3263,7 +3310,8 @@
     // One collapsible card per unit. Furled (closed) when I've already applied a decision — the
     // summary row shows my call; expand for the full evidence + challenge / re-open. Unfurled (open)
     // for anything I still need to act on (to-review, 2nd opinion, or my pending unapplied decision).
-    _list.forEach(function(u){ host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed', {collapsible:true, open:!u.meApplied||(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'), settled:u.meApplied, myDec:u.myDec})); });
+    window._vfRenderedClarifications={};
+    _list.forEach(function(u){ if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'&&!vfClarificationsFor(u.ev.evidence_id).some(function(g){return g.status===window._vfClarificationFilter&&!window._vfRenderedClarifications[g.id];}))return; host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed', {collapsible:true, open:!u.meApplied||(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'), settled:u.meApplied, myDec:u.myDec})); });
     _vfSyncStickyBars();
   }
 
