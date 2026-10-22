@@ -51,3 +51,16 @@ def test_release_preserves_evidence_states_and_does_not_invent_aliases(tmp_path)
     }
     for row in release.read(tmp_path / "variables.csv"):
         assert row == ontology[row["canonical_variable_id"]]
+
+
+def test_rule_view_separates_hierarchy_and_exposes_weights_and_scope(tmp_path):
+    release.build(ROOT, tmp_path)
+    page = (tmp_path / "index.html").read_text(encoding="utf-8")
+    assert "<th>Theme</th><th>Variable group</th>" in page
+    assert "<th>Weighting</th>" in page
+    assert "Equal numeric default: 0.2" in page
+    assert "equal-hierarchy reference" in page
+    assert "plots/agroforestry__cross_family__slope.svg" in page
+    assert "planting versus natural retention/regeneration not established" in page
+    assert "Alley cropping" in page
+    assert (tmp_path / "practice_vocabulary.csv").exists()
