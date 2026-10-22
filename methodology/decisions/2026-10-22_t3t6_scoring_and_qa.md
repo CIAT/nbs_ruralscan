@@ -1,0 +1,190 @@
+# Before we move on: QA, how T3/T6 are generated, and how scores reach the dashboard
+
+**For:** Pete. **Date:** 2026-10-22. **What you asked:** finish the human QA/QC on the agroforestry
+evidence, evaluate how T6 and T3 are generated from it, and work out how variables nest into a
+hierarchy and how evidence combines into indicator scores the dashboard can show.
+
+**How to answer:** every decision at the bottom takes one letter. The full working is in
+`2026-10-22_evidence/` (the generation evaluation, the hierarchy and scoring study, and the list of
+high-leverage units).
+
+---
+
+## The short version
+
+1. **Almost none of the agroforestry effect evidence has had a human look.** Of 589 effect units,
+   9 are reviewer-approved (T4 is at 80%, because Codex has been reviewing it). Reviewing all 589 is
+   not realistic. A risk-based sample is: the evaluation found **167 units that, on their own,
+   change a class or delete a row**. That is where human eyes pay off.
+2. **The generator works, but three bugs make some AF rows wrong today.** All three are
+   implementation errors against rules you have already ratified, so none of them needs a new decision:
+   - **Ratified crop-scope rulings are ignored in T3/T6.** The script reads only NbS-wide rows of
+     `crop_scope_policy.csv`. Two of your rulings are family-level, so neither has ever applied:
+     agroforestry F5 shaded perennials (95 cocoa and coffee units never vote) and the wetland
+     paludiculture ruling of 16 October.
+   - **Data-deficient asset rows tell M2b "no damage".** Nine asset-threat rows with too little
+     evidence carry `asset_sensitivity = none` instead of blank. One of them has prose describing
+     35–40% seedling mortality.
+   - **Old prose still describes rows whose class has since changed.** Prose written before the
+     class stamp existed (254 of 293 entries) still renders on rows that have since become data
+     deficient, so some read as positive findings.
+3. **The AF results are fragile.** In 119 of 187 rows, removing a single unit flips the class or
+   deletes the row. production_gap goes back from conflicting to strong_positive if any one of 12
+   units is dropped. Second-hand review sentences carry more than half the weight in 18 of 31
+   classed roll-ups. This fragility is the case for the QA sample.
+4. **Nothing combines evidence above the T6/T3 row today.** There is no theme roll-up, no NbS
+   score, and no runtime scorecard: `runtime/outputs.py` and `schema_loader.py` are empty. **The
+   wireframe does not ask for a single score either.** It shows one Likert chip and one
+   confidence badge per outcome row. So the design question is how to fill the wireframe honestly,
+   not how to invent an index.
+
+## Part 1 — Human QA/QC for agroforestry
+
+**What exists:** the review page (one card at a time, approve / hold / reject, PICOS panel), the
+review log, and soft-drop. **What's missing:** coverage. The 167 high-leverage units are the
+ones that set or flip a class: sole voters, swing votes in a family vote, and strength-setters.
+99 of them touch an NbS-level row. Suggested order:
+
+1. The production_gap swing units, plus `watts22_10`. Each of these, on its own, flips the headline row.
+2. The 5 silvopastoral practitioner ratings that lift drought × pastoral rangeland from low to
+   moderate. That family row is 100% ratings.
+3. The asset-drought units (`gateau18_2`, `cmscr20_4/_5`, Watts 2022) behind the M2b rows.
+4. Rows that rest on a single unit.
+
+Plus **a random sample of about 40 of the rest**, so we can state an error rate for the
+evidence we did *not* review. That's the number a reviewer will ask for.
+
+**Sequencing matters.** If the crop-scope bug is fixed first, 95 cocoa/coffee units start
+voting and the high-leverage list changes. So: **fix the bugs, then recompute the list, then
+review.** Otherwise you review against rows that are about to move.
+
+## Part 2 — How T3/T6 are generated (the evaluation)
+
+The pipeline as it runs, per cell:
+
+1. **Units in.** Agroforestry pools 614 units. Crop- and species-specific units are excluded
+   (130, of which the 95 F5 units are the bug above), leaving 488 practice units from 74 sources.
+2. **Routing.** The crosswalk sends each unit to its T3 hazard or T6 priority; proxies count at 0.7.
+3. **Eligibility.** Comparators, gas, existing-use, envelope-misfit and the evidence floor decide
+   which units may vote.
+4. **Weighting and vote.** Units are weighted by source tier × design weight × bundle share. A
+   sign vote follows: if the minority sign holds at least 1/3 of the weight, the cell states
+   conflicting evidence.
+5. **Strength and confidence.** Strength is the median over the units that state a size.
+   Confidence comes from the IPCC two-axis matrix.
+6. **Family vote.** The family rows vote on the NbS class, weighted √n.
+
+Output: 187 rows, of which 39 are data-deficient and 16 conflicting.
+
+**Where the code has drifted from the method doc.** The doc (v0.1, 29 Sept) predates the
+evidence floor, the conflicting class, the family vote and the design weights. It needs a refresh
+so a reviewer can audit the engine against it. Three smaller code issues:
+- Family rows are gated on sources counted across the whole register, not per cell, so 13 classed
+  family rows rest on one source.
+- A meta-analysis can reach very_high confidence from two sources.
+- The code uses three different definitions of "measured".
+
+**What a TTL would trip on:**
+- 25 rows pair a weak class with high or very_high confidence. Readers take that as "strongly true"
+  when it means "confidently small".
+- 12 roll-ups get more than 40% of their weight from one source.
+- 43 of 74 sources have no income group.
+
+These are mostly display fixes, covered in Part 3.
+
+## Part 3 — The hierarchy, and how scores reach the dashboard
+
+**The hierarchy today:**
+
+```
+evidence unit
+  └─ EV variable (e.g. crop_yield, soil_moisture)
+       └─ crosswalk (direct / proxy 0.7 / component 0.7)
+            ├─ T3 cell: NbS × hazard × farming system   (livelihood mitigation; asset threat → M2b)
+            └─ T6 cell: NbS × T5 priority               (one row per priority, + family / scope rows)
+                 └─ T5 theme  (climate_hazard · nbs_response · people_production · equity_inclusion · context)
+                      └─ NbS     ← NOTHING aggregates at this level or the theme level today
+```
+
+**What the dashboard expects:**
+- **NbS Comparison** has one Likert chip (`++ + 0 − −−`) and a HIGH / MED / LOW / CAUTION badge
+  per outcome row, plus economics as $ ranges, archetype, time to first income and revenue streams.
+- **Priority Hotspots** is the M4 spatial map.
+
+**The gaps:**
+- Our scale (7 classes + conflicting + data deficient) doesn't fit the 5-glyph chip.
+- There's nowhere to show "studies disagree", "not enough evidence" or "not assessed".
+- Our 5 confidence levels don't fit 3 badges, and CAUTION, which is about direction, sits in the
+  confidence slot.
+- The wireframe's outcome rows don't match the T5 priority ids.
+- Three economics rows have no schema field.
+
+**The options:**
+- **A — No single score; a profile.** One chip and badge per priority, ordered by the TTL's
+  High/Medium/Low priority weights, plus a count strip per NbS: "6 positive · 1 conflicting ·
+  1 caution · 2 not assessed".
+- **B — Theme chips.** One chip per theme per NbS: the TTL-weighted median of that theme's cells,
+  using only cells at medium confidence or above. Harm and conflict are never averaged away (the
+  same 1/3 rule as the cells), and the chip shows how many priorities stand behind it.
+- **C — A numeric score.** Rank/3 × confidence × TTL weight. It bends the ordinal-first rule and
+  mixes "how big" with "how sure", so at most it would be a sort key in Technical mode.
+- **D — T6 and the hotspot map.**
+  - D1 multiplies the hotspot weights by the effect.
+  - D2 keeps only the priorities the NbS is evidenced to improve.
+  - D3 shows need and response side by side.
+
+**Recommendation: A + B, D3 by default with D2 as a toggle, and no headline NbS number.** This
+fits the wireframe's existing shape and carries the cell-level conflict rule up one level, so the
+logic is the same from evidence unit to theme. It also never pretends ordinal classes are
+equally spaced. A scoping tool shouldn't rank NbS on a false-precision number.
+
+## Proposed order of work
+
+1. Fix the three bugs (one PR), re-synthesise, and re-prose.
+2. Recompute the high-leverage list; you review the QA batch (high-leverage plus random sample).
+3. Refresh the method doc to match the engine.
+4. Build the scorecard layer you choose below, plus the wireframe and spec housekeeping.
+
+## Decisions (one letter each)
+
+**D1. Fix the three bugs now?** They implement rules you have already ratified, and classes will move.
+- (a) yes, before QA **← recommended**
+- (b) QA first on today's output
+
+**D2. QA sample.**
+- (a) all 167 high-leverage units plus a random 40 **← recommended**
+- (b) only the units that touch NbS-level rows (99) plus a random 40
+- (c) top 30 only
+
+**D3. Is there an NbS-level number?**
+- (a) profile only (A)
+- (b) theme chips, no NbS number (A+B) **← recommended**
+- (c) theme chips plus a Technical-mode sort score
+- (d) a headline score
+
+**D4. Theme-chip rule (if B).**
+- (a) TTL-weighted median of cells at medium confidence or above, with theme confidence set by the
+  weakest setting cell **← recommended**
+- (b) modal class
+- (c) best-supported cell
+
+**D5. Should T6 change the hotspot map?**
+- (a) side by side only
+- (b) filter only
+- (c) multiplier
+- (d) side by side by default, with the filter as a TTL toggle **← recommended**
+
+**D6. Chip scale.**
+- (a) widen the wireframe to our 7 classes and 5 confidence words
+- (b) keep 5 glyphs and 3 badges, add `±` (conflicting), `?` (data deficient) and `n/a`, and move
+  CAUTION to the chip colour **← recommended**
+
+**D7. Comparison rows.**
+- (a) generate them from T5 priorities grouped by theme, plus a T3 hazard block **← recommended**
+- (b) keep the wireframe's outcome rows and map them to T5/T3
+
+**D8. Economics rows the schema can't fill** (archetype, time to first income, revenue streams).
+- (a) add schema fields (a structure change)
+- (b) drop them for now and show only the cost and return denominators T6 carries, with
+  "insufficient evidence" where the gates fail **← recommended**
+- (c) hand-authored text
