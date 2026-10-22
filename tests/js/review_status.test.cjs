@@ -9,8 +9,8 @@ const units = [
   {ev:{evidence_id:'automatic-quarantine'},origin:'passed',me:false,other:false,dropped:true},
   {ev:{evidence_id:'human-drop'},origin:'flagged',me:true,other:true,myDec:'drop',dropped:true},
 ];
-const window = {_vfAxOrigin:'any',_vfAxMe:'any',_vfAxOther:'any',_vfMyCall:'all',_vfVerdictFilter:'all'};
-const ctx = vm.createContext({window,_uni:units,_store:{},_vfTabular:()=>true});
+const window = {_vfSimpleView:"advanced",_vfAxOrigin:'any',_vfAxMe:'any',_vfAxOther:'any',_vfMyCall:'all',_vfVerdictFilter:'all'};
+const ctx = vm.createContext({vfSimpleMatch:()=>true,window,_uni:units,_store:{},_vfTabular:()=>true});
 vm.runInContext(source,ctx);
 function ids(){vm.runInContext(list,ctx);return Array.from(ctx._list,u=>u.ev.evidence_id);}
 assert.deepEqual(ids(),['active']); // Missing status defaults to active, including no-human-review quarantine.

@@ -6,7 +6,7 @@ const source=html.slice(html.indexOf('function vfLoadClarifications'),html.index
 const issue={id:'shared',fingerprint:'v1',reviewer:'Pete',question:'Why <this>?',status:'answer_ready',records:[{evidence_id:'one',variable:'slope',page:'2'},{evidence_id:'two',variable:'slope',page:'3'}],answers:[{response:'Checked source',source_check:{pdf_pages:[2]}}],history:[]};
 const window={_vfClarifications:[issue],_vfReviewer:'peetmate',_reviewApi:true};
 let calls=[];
-const ctx=vm.createContext({window,Promise,document:{getElementById:()=>({value:'My reply'})},alert:m=>{throw Error(m);},renderVfWorklist:()=>{},vfNotice:()=>{},vfReviewQueue:()=>{},vfEsc:s=>String(s??'').replaceAll('<','&lt;').replaceAll('>','&gt;'),fetch:async(url,opts)=>{calls.push([url,opts]);return {ok:true,json:async()=>opts?{event:{}}:{issues:[issue],pending:1}};}});
+const ctx=vm.createContext({window,Promise,document:{getElementById:()=>({value:'My reply'})},alert:m=>{throw Error(m);},renderVfWorklist:()=>{},vfNotice:()=>{},vfReviewQueue:()=>{},vfSimpleQueue:()=>{},vfEsc:s=>String(s??'').replaceAll('<','&lt;').replaceAll('>','&gt;'),fetch:async(url,opts)=>{calls.push([url,opts]);return {ok:true,json:async()=>opts?{event:{}}:{issues:[issue],pending:1}};}});
 vm.runInContext(source,ctx);
 assert.equal(ctx.vfClarificationsFor('one').length,1);
 assert.equal(ctx.vfClarificationsFor('two').length,1);
