@@ -583,6 +583,32 @@ class Handler(SimpleHTTPRequestHandler):
                     "reason": payload.get("reason", ""),
                     "note": payload.get("note", ""),
                 }
+                if dec in {"flag", "query"} and payload.get("answered_issue_ids"):
+                    from .clarifications import build, record
+
+                    # A normal Query records its follow-up on this record only.
+                    # Publish through the existing review submission, without another UI action.
+                    issues = {g["id"]: g for g in build(ROOT)}
+                    try:
+                        for issue_id in set(payload["answered_issue_ids"]):
+                            issue = issues.get(issue_id)
+                            if not issue or not any(
+                                r["evidence_id"] == eid for r in issue["records"]
+                            ):
+                                continue
+                            record(
+                                ROOT,
+                                dict(
+                                    issue_id=issue_id,
+                                    fingerprint=issue["fingerprint"],
+                                    evidence_id=eid,
+                                    reviewer=rev,
+                                    action="reply",
+                                    note=payload.get("note", ""),
+                                ),
+                            )
+                    except ValueError as exc:
+                        return self._json(400, {"error": str(exc)})
                 # reclassify (species/crop) carries the target claim_scope + taxon
                 if payload.get("taxon"):
                     entry["taxon"] = str(payload.get("taxon")).strip()

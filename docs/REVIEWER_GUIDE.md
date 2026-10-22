@@ -116,3 +116,22 @@ when you need the surrounding context (e.g. a table's column headers).
   is logged in `pipeline/metrics/review_log.csv`.
 
 Questions → Pete, or the Teams `NbS Rural Scan Task Force` channel.
+
+### Reviewing an answered question
+
+Use **QA / QC Flags → To review**. This queue includes new evidence and records
+whose questions have received verified answers or corrections. Answered records
+appear first, with the question and answer beside the evidence and source.
+
+Use the usual **Keep / Drop / Query** controls, then **Apply & submit**. There is no
+separate answer-acceptance step. Keep or Drop settles your question on that record;
+Query records your remaining question for investigation. Shared answers appear on
+each affected record, but a decision on one record does not approve the others.
+Earlier answer acceptances remain in discussion history and do not approve evidence.
+
+The default controls are **To review**, **Waiting for answers**, and **My reviewed**.
+Practice, evidence type, and search narrow all three views. Saved decisions move to
+My reviewed; outstanding questions appear in Waiting for answers. Technical filters,
+dropped history, and team status reconciliation are under **More filters**. Use the
+bottom **Submit reviews** bar to submit saved decisions; discussion updates travel
+with them. Counts on the three tabs reflect the current scope and search.

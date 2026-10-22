@@ -87,7 +87,7 @@ def test_shared_answer_acceptance_does_not_change_evidence(tmp_path):
         ),
     )
     assert event["evidence_ids"] == ["one", "two"]
-    assert build(tmp_path)[0]["status"] == "resolved"
+    assert build(tmp_path)[0]["status"] == "answer_ready"
     assert ev.read_bytes() == before
     record(
         tmp_path,
@@ -205,7 +205,7 @@ def test_publish_merges_history_and_preserves_local_replies(tmp_path):
     assert publish(tmp_path) == 0
     assert local.read_bytes() == before
     assert len(all_events(tmp_path)) == 2
-    assert build(tmp_path)[0]["status"] == "resolved"
+    assert build(tmp_path)[0]["status"] == "needs_investigation"
 
 
 def test_submit_replays_clarifications_without_extraction_decisions(
@@ -241,3 +241,100 @@ def test_submit_replays_clarifications_without_extraction_decisions(
         )
         == 1
     )
+
+
+def test_record_decision_closes_only_its_answer_and_retains_history(tmp_path):
+    setup(tmp_path)
+    store = tmp_path / "pipeline/review/decisions.json"
+    store.write_text(json.dumps({"one": {"Pete": {"decision": "ok"}}}))
+    g = build(tmp_path)[0]
+    statuses = {r["evidence_id"]: r["review_status"] for r in g["records"]}
+    assert statuses == {"one": "resolved", "two": "answer_ready"}
+    assert len(g["answers"]) == 2
+    assert g["question"] == "Explain direction"
+    store.write_text(
+        json.dumps(
+            {"one": {"Pete": {"decision": "ok"}}, "two": {"Pete": {"decision": "drop"}}}
+        )
+    )
+    assert build(tmp_path)[0]["status"] == "resolved"
+
+
+def test_query_on_answer_goes_back_to_investigation(tmp_path):
+    setup(tmp_path)
+    g = build(tmp_path)[0]
+    record(
+        tmp_path,
+        dict(
+            issue_id=g["id"],
+            fingerprint=g["fingerprint"],
+            evidence_id="one",
+            reviewer="Pete",
+            action="reply",
+            note="Explain direction",
+        ),
+    )
+    (tmp_path / "pipeline/review/decisions.json").write_text(
+        json.dumps(
+            {
+                "one": {
+                    "Pete": {
+                        "decision": "flag",
+                        "note": "Explain direction",
+                        "reason": "unclear",
+                        "answered_issue_ids": [g["id"]],
+                    }
+                }
+            }
+        )
+    )
+    g = build(tmp_path)[0]
+    assert {r["evidence_id"]: r["review_status"] for r in g["records"]} == {
+        "one": "needs_investigation",
+        "two": "answer_ready",
+    }
+
+
+def test_different_reviewer_cannot_close_question(tmp_path):
+    setup(tmp_path)
+    (tmp_path / "pipeline/review/decisions.json").write_text(
+        json.dumps({"one": {"Other": {"decision": "ok"}}})
+    )
+    assert all(
+        r["review_status"] == "answer_ready" for r in build(tmp_path)[0]["records"]
+    )
+
+
+def test_normal_query_saves_followup_in_same_request(tmp_path, monkeypatch):
+    import io
+    from nbs_ruralscan.schema_tools import review_server as server
+
+    setup(tmp_path)
+    g = build(tmp_path)[0]
+    monkeypatch.setattr(server, "ROOT", tmp_path)
+    monkeypatch.setattr(server, "STORE", tmp_path / "pipeline/review/decisions.json")
+    payload = json.dumps(
+        dict(
+            evidence_id="one",
+            reviewer="Pete",
+            decision="flag",
+            reason="unclear",
+            note="Explain direction",
+            answered_issue_ids=[g["id"]],
+        )
+    ).encode()
+    h = server.Handler.__new__(server.Handler)
+    h.path = "/api/decision"
+    h.headers = {"Content-Length": str(len(payload))}
+    h.rfile = io.BytesIO(payload)
+    results = []
+    h._json = lambda status, data: results.append((status, data))
+    h.do_POST()
+    assert results[0][0] == 200
+    assert json.loads(server.STORE.read_text())["one"]["Pete"]["decision"] == "flag"
+    g = build(tmp_path)[0]
+    assert {r["evidence_id"]: r["review_status"] for r in g["records"]} == {
+        "one": "needs_investigation",
+        "two": "answer_ready",
+    }
+    assert g["history"][0]["evidence_ids"] == ["one"]

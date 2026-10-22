@@ -1486,7 +1486,7 @@
       <div class="card-container">
         <h2 class="card-title" style="display:flex; align-items:center; gap:12px;">
           <span>&#9872; QA / QC — VERIFY-FLAG review</span>
-          <span class="card-title-meta" style="flex:1;">Every EV row flagged by the relationship-verify pass — work through these before any threshold is trusted</span>
+          <span class="card-title-meta" style="flex:1;">Check the extraction against its source, then Keep, Drop or Query.</span>
           <button id="vf-gaps-btn" onclick="window._vfMode=(window._vfMode==='gaps'?'review':'gaps'); renderVfWorklist();" title="Missing evidence reported by reviewers — variables/figures expected but not extracted. Click to open, click again to return to review." style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber); cursor:pointer;">&#9888; Gaps</button>
           <button id="vf-stats-btn" onclick="toggleVfStats()" title="AI verify-flag performance metrics — click to open, click again to return to review" style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald); cursor:pointer;">📊 Stats</button>
         </h2>
@@ -1532,38 +1532,25 @@
           </details>
         </div>
         <div style="display:flex; gap:18px; align-items:flex-start; margin-top:6px;">
-          <div id="vf-sidebar" style="flex:0 0 230px; position:sticky; top:96px; align-self:flex-start; max-height:calc(100vh - 108px); overflow-y:auto; overflow-x:hidden; padding-right:6px; display:flex; flex-direction:column; gap:14px;">
-            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="How the review filters work">Filters</div>
-              <details><summary style="cursor:pointer; font-size:10px; color:var(--accent-sky); outline:none; list-style:none;">&#9432; how the filters work</summary>
-                <div style="font-size:10.5px; color:var(--text-secondary); line-height:1.55; margin-top:5px; border-left:2px solid var(--border-color); padding-left:8px;">
-                  <div>The <b>Filter bar</b> (right) has three orthogonal toggles, each with a live count — combine them for any permutation:</div>
-                  <div style="margin-top:2px;"><b>Origin</b> (Any / ⚑&nbsp;AI-flagged / ✓&nbsp;AI-passed) · <b>Reviewed by me</b> (Any / Not / Yes) · <b>Reviewed by others</b> (Any / Not / Yes).</div>
-                  <div style="margin-top:4px;">Common views: <b>To review</b> = me&nbsp;Not · <b>2nd opinion</b> = me&nbsp;Not + others&nbsp;Yes · your own calls = me&nbsp;Yes, then the <b>My call</b> sub-filter (✓&nbsp;Kept / ⚑&nbsp;Queried / 🗑&nbsp;Dropped).</div>
-                  <div style="margin-top:4px; color:var(--text-muted);">Everything also follows the <b>SCOPE</b> below (Practice · Sub-practice · Evidence type · channel · access) — change any and all counts update together.</div>
-                  <div style="margin-top:4px;"><b>⚠ Gaps</b> / <b>📊 Stats</b> — buttons top-right.</div>
-                </div></details></div>
-            <div><div style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; margin-bottom:6px;" title="narrow to a practice / table / sub-practice">Scope</div><div id="vf-scope" style="display:flex; gap:8px; flex-wrap:wrap;"></div></div>
-            <div id="vf-bulk" style="border-top:1px solid var(--border-color); padding-top:12px;"></div>
-            <span id="vf-mode-hint" style="font-size:10px; color:var(--text-muted); line-height:1.4; border-top:1px solid var(--border-color); padding-top:10px;"></span>
-          </div>
           <div id="vf-main" style="flex:1; min-width:0;">
+            <div id="vf-scope" style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px"></div>
+            <span id="vf-mode-hint" hidden></span>
             <div id="vf-filterbar" style="position:sticky; top:86px; z-index:20; background:var(--bg-primary); padding:6px 0 6px; border-bottom:1px solid var(--border-color); display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap;">
-              <span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; font-weight:700; padding-top:4px;" title="filter the current view by origin, review status, verdict, or tables-only">Filter</span>
               <div id="vf-verdict-filters" style="flex:1; min-width:0;"></div>
-            </div>
-            <div id="vf-actionbar" style="position:sticky; top:86px; z-index:19; background:var(--bg-primary); border-bottom:1px solid var(--border-color); padding:6px 0 7px; display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
-              <span id="vf-pending-count" style="font-size:11.5px; font-weight:700;" title="Your decisions saved locally but NOT yet applied + submitted to main. Applies EVERY pending decision (AI-flagged + AI-passed), not just the current queue. Click Apply & submit to main to ship them."></span>
-              <span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Applies your decisions to the registers AND submits them to main (opens a PR subject to checks and required approvals). One click." style="display:none; font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">&#10003; Apply &amp; submit to main</button>
-                <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
-                <span style="width:1px; height:17px; background:var(--border-color);"></span>
-                <button onclick="openGapModal()" title="Report a variable / figure / table that should exist but isn't in the register — e.g. after checking a figure's variables are all extracted" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">&#9888; Report missing evidence</button>
-                <button onclick="resetVfDecisions()" title="un-decides only YOUR pending (not-yet-applied) decisions — the same ones the pending counter shows; applied/committed decisions + other reviewers untouched" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button>
-              </span>
             </div>
             <div id="vf-decided-count" style="font-size:12px; color:var(--text-secondary); margin-top:12px;"></div>
             <div id="vf-subset-banner" style="display:none; margin-top:10px;"></div>
             <div id="vf-cards" style="margin-top:12px;"></div>
+            <div id="vf-actionbar" style="position:sticky; bottom:0; z-index:19; background:var(--bg-primary); border-bottom:1px solid var(--border-color); padding:6px 0 7px; display:flex; align-items:center; gap:9px; flex-wrap:wrap;">
+              <span id="vf-pending-count" style="font-size:11.5px; font-weight:700;" title="Your decisions saved locally but NOT yet applied + submitted to main. Applies EVERY pending decision (AI-flagged + AI-passed), not just the current queue. Click Apply & submit to main to ship them."></span>
+              <span style="margin-left:auto; display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <button id="vf-apply-btn" onclick="applyVfDecisions()" title="Applies your decisions to the registers AND submits them to main (opens a PR subject to checks and required approvals). One click." style="display:none; font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-emerald); color:#fff; border:none; cursor:pointer;">Submit reviews</button>
+                <button id="vf-download-btn" onclick="downloadVfDecisions()" style="font-size:11px; font-weight:600; padding:6px 14px; border-radius:4px; background:var(--accent-sky); color:#fff; border:none; cursor:pointer;">&#8595; Download CSV</button>
+                <details><summary style="cursor:pointer">More actions</summary>
+                <button onclick="openGapModal()" title="Report a variable / figure / table that should exist but isn't in the register — e.g. after checking a figure's variables are all extracted" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">&#9888; Report missing evidence</button>
+                <button onclick="resetVfDecisions()" title="un-decides only YOUR pending (not-yet-applied) decisions — the same ones the pending counter shows; applied/committed decisions + other reviewers untouched" style="font-size:10.5px; padding:5px 10px; border-radius:4px; background:transparent; color:var(--text-muted); border:1px solid var(--border-color); cursor:pointer;">Reset my decisions</button></details>
+              </span>
+            </div>
             <div id="vf-stats" style="display:none; margin-top:12px;"></div>
           </div>
         </div>
@@ -2439,8 +2426,9 @@
     var all=window._vfAllReviews||{}; var byId={}; ((dashboardData.registers.EV_evidence_register)||[]).forEach(function(e){byId[e.evidence_id]=e;}); ((dashboardData._evDropped)||[]).forEach(function(e){byId[e.evidence_id]=e;});
     var nf=0,np=0; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision&&m.applied!==true&&m.applied!=='true'){ var e=byId[eid]; if(e&&/\[VERIFY-FLAG/.test(e.attribution||''))nf++; else np++; } });
     var n=nf+np;
-    el.innerHTML=n>0?('<span style="color:var(--accent-amber);">&#9873; '+n+' saved decision'+(n>1?'s':'')+' awaiting Apply (not total approvals)</span> <span style="color:var(--text-muted); font-weight:400;">— '+nf+' AI-flagged + '+np+' AI-passed. Apply submits <b>all</b> of them (any queue).</span>'):'<span style="color:var(--text-muted); font-weight:400;">No decisions pending apply.</span>';
-    var nc=window._vfClarificationPending||0; if(nc)el.innerHTML+='<span style="color:var(--accent-amber)"> · '+nc+' answer acceptance(s) / follow-up(s) saved, awaiting submission (all reviewers).</span>';
+    var nc=window._vfClarificationPending||0;
+    el.innerHTML=n>0?n+' decision'+(n===1?'':'s')+' ready to submit':(nc?'Discussion updates ready to submit':'All decisions submitted');
+    if(n||nc)el.innerHTML+='<details style="font-weight:400;font-size:11px"><summary>Submission details</summary>Your '+n+' decisions across all queues'+(nc?', plus '+nc+' saved discussion updates (all reviewers)':'')+'.</details>';
     _vfStyleApply(n+nc); }
   function _vfRenderSubsetBanner(){ var el=document.getElementById('vf-subset-banner'); if(!el)return; var sc=window._vfScope||{}; var chips=[]; if(sc.sourceId)chips.push(['sourceId','📄 source: '+sc.sourceId, sc.sourceId]); if(sc.section)chips.push(['section','📍 page '+sc.section, sc.section]); if(!chips.length){ el.style.display='none'; el.innerHTML=''; return; } el.style.display='block'; el.innerHTML='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.3); border-radius:6px; padding:6px 10px; font-size:11px;"><span style="color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em;">Subset</span>'+chips.map(function(c){return '<span style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:2px 9px;">'+vfEsc(c[1])+' <a href="#" title="remove this subset" onclick="vfSetSubset(\''+c[0]+'\',\''+vfEsc(String(c[2]))+'\');return false;" style="color:var(--accent-rose); text-decoration:none; font-weight:700;">✕</a></span>';}).join('')+'<a href="#" onclick="window._vfScope.sourceId=\'\';window._vfScope.section=\'\';renderVfWorklist();return false;" style="color:var(--accent-sky); margin-left:auto;">clear all</a></div>'; }
   function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid);
@@ -2511,12 +2499,12 @@
       var me=window._vfReviewer||'reviewer';var val=d; // Repeated clicks are idempotent, not undo.
       if(window._reviewApi){
         vfNotice('Saving decision…');
-        var response=await fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||''),reviewer:me})});
+        var response=await fetch('/api/decision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_id:id,decision:val,answered_issue_ids:vfClarificationsFor(id).filter(function(g){return g.answers.length;}).map(function(g){return g.id;}),reason:((window._vfReasons||{})[id]||''),note:((window._vfNotes||{})[id]||''),reviewer:me})});
         var result=await response.json();if(!response.ok||result.error)throw Error(result.error||'Save failed');
       }
       window._vfDecisions=window._vfDecisions||{};window._vfDecisions[id]=val;
       window._vfAllReviews=window._vfAllReviews||{};window._vfAllReviews[id]=window._vfAllReviews[id]||{};
-      window._vfAllReviews[id][me]={decision:val,applied:false};localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));renderVfWorklist();vfNotice('Decision saved locally. Apply & submit when finished.');
+      window._vfAllReviews[id][me]={decision:val,applied:false};localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));if(window._reviewApi)await vfLoadClarifications();renderVfWorklist();vfNotice('Decision saved locally. Apply & submit when finished.');
     }).catch(function(e){vfNotice('Decision NOT saved: '+e.message+' — click again to retry.',true);});
   }
   // A per-card DROP must carry a coded reason (mirrors the bulk-flag + query-note guards).
@@ -2573,7 +2561,7 @@
   async function applyVfDecisions(){ await (window._vfSaveQueue||Promise.resolve()); if(!window._reviewApi){ vfNotice('No review server. Use Download decisions CSV + review.py apply.'); return; }
     var btn=document.getElementById('vf-apply-btn'); if(btn){btn.disabled=true; btn.textContent='Applying…';}
     fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer')})}).then(function(r){return r.json();}).then(function(res){
-      if(res.error){ vfNotice('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} return; }
+      if(res.error){ vfNotice('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='Submit reviews';} return; }
       fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d));
         fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){
           // BEST-EFFORT refresh: a render throw here must NOT abort the flow — otherwise the
@@ -2586,12 +2574,12 @@
           if(btn){btn.textContent='Submitting to main\u2026';}
           var _today=new Date().toISOString().slice(0,10);
           fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer'),title:'qaqc: review '+_today})}).then(function(r){return r.json();}).then(function(sb){
-            if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';}
+            if(btn){btn.disabled=false;btn.textContent='Submit reviews';}
             if(sb.ok){ vfLoadClarifications(); vfNotice(msg+'\n\n\u2705 Submitted for main \u2014 '+(sb.pr_url||'PR opened')+'\n(subject to checks and required approvals; clarification-history PRs require review).'); }
             else { vfNotice(msg+'\n\n\u26a0 Submit to main FAILED \u2014 decisions ARE saved locally; run scripts/submit-review.sh manually.\n\n'+((sb.error||sb.output)||'').slice(-600)); }
-          }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} vfNotice(msg+'\n\nSubmit error: '+e); }); });
+          }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='Submit reviews';} vfNotice(msg+'\n\nSubmit error: '+e); }); });
       });
-    }).catch(function(e){ vfNotice('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='\u2713 Apply & submit to main';} }); }
+    }).catch(function(e){ vfNotice('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='Submit reviews';} }); }
   function downloadVfDecisions(){
     var rows=window._vfFlagged||[]; var hdr=['evidence_id','source_id','variable','use_role','verdict','flag_reason','quote','relationship','decision','reason','reviewer','note'];
     function q(v){v=(v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"';}
@@ -2660,14 +2648,14 @@
     var state=await responses[0].json();dashboardData=_segregateDropped(await responses[1].json());window._vfAllReviews=state.decisions||{};
     var me=window._vfReviewer||'reviewer';window._vfDecisions={};
     Object.keys(window._vfAllReviews).forEach(function(id){var entry=window._vfAllReviews[id][me];if(entry&&entry.decision)window._vfDecisions[id]=entry.decision;});
-    localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));renderVfWorklist();
+    localStorage.setItem('vfDecisions',JSON.stringify(window._vfDecisions));if(window._reviewApi)await vfLoadClarifications();renderVfWorklist();
   }
   async function reopenVf(eid){
     if(!window._reviewApi){vfNotice('Reopen needs the live review server.',true);return;}
     vfNotice('Reopening record and rebuilding review data…');
     try{
       var r=await fetch('/api/reopen',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({evidence_ids:[eid],reviewer:window._vfReviewer||'reviewer'})});var res=await r.json();if(!r.ok||res.error)throw Error(res.error||'Reopen failed');
-      window._vfMode='review';window._vfClarificationFilter='all';window._vfReconcile='all';
+      window._vfSimpleView='advanced';window._vfMode='review';window._vfClarificationFilter='all';window._vfReconcile='all';
       window._vfAxStatus='active'; window._vfAxOrigin='any'; window._vfAxMe='no'; window._vfAxOther='any'; window._vfMyCall='all'; window._vfVerdictFilter='all';window._vfTablesOnly=false;
       await vfRefreshReview();vfNotice('Record reopened. Previous call cleared; ready for a new decision.');
       var card=document.querySelector('details[data-vfeid="'+eid+'"]');if(card){card.open=true;card.scrollIntoView({block:'center'});}
@@ -2706,24 +2694,30 @@
     }).catch(function(e){window._vfClarificationError=e.message;renderVfWorklist();});
   }
   function vfClarificationQueue(status){
-    vfReviewQueue('all');window._vfClarificationFilter=status;window._vfMode='review';renderVfWorklist();
+    vfSimpleQueue('todo'); // Legacy links now open normal record review.
   }
   function vfClarificationsFor(eid){return (window._vfClarifications||[]).filter(function(g){return g.records.some(function(r){return r.evidence_id===eid;});});}
   function vfClarificationHtml(ev){
-    var labels={answer_ready:'Answer ready — confirm or reply',needs_judgement:'Needs your judgement',needs_investigation:'Team investigation',resolved:'Clarification resolved'};
-    return vfClarificationsFor(ev.evidence_id).filter(function(g){return !window._vfClarificationFilter||window._vfClarificationFilter==='all'||(g.status===window._vfClarificationFilter&&!(window._vfRenderedClarifications||{})[g.id]);}).map(function(g){
-      if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'){window._vfRenderedClarifications=window._vfRenderedClarifications||{};window._vfRenderedClarifications[g.id]=true;}
-      var field='clarification-'+g.id+'-'+ev.evidence_id;
-      var button=function(action,label){return '<button class="pill-btn" onclick="vfClarificationRespond(\''+g.id+'\',\''+action+'\',\''+field+'\')">'+label+'</button>';};
-      return '<section style="border:1px solid var(--accent-sky);border-radius:6px;padding:12px;margin:12px 0;font-size:12px"><b>'+vfEsc(labels[g.status])+'</b><p><b>Question — '+vfEsc(g.reviewer)+'</b><br>'+vfEsc(g.question)+'</p>'
-        +g.answers.map(function(a){return '<p><b>Answer</b><br>'+vfEsc(a.response)+'<br><small>Source pages '+vfEsc((a.source_check.pdf_pages||[]).join(', ')||'see record')+'</small></p>';}).join('')
-        +(!g.answers.length?'<p>No verified answer yet. Team investigation; no repeated extraction review requested.</p>':'')
-        +'<details><summary>Shared issue: '+g.records.length+' affected record(s) — acceptance covers this list</summary>'+g.records.map(function(r){return '<p><code>'+vfEsc(r.evidence_id)+'</code> · '+vfEsc(r.variable)+' · <a target="_blank" href="/api/crop?eid='+encodeURIComponent(r.evidence_id)+'&amp;full=1">source page '+vfEsc(r.page)+'</a></p>';}).join('')+'</details>'
-        +'<details><summary>Reply history ('+g.history.length+')</summary>'+g.history.map(function(h){return '<p><b>'+vfEsc(h.reviewer)+' · '+vfEsc(h.action)+'</b> · '+vfEsc(h.date)+(h.fingerprint!==g.fingerprint?' (earlier version)':'')+'<br>'+vfEsc(h.note)+'</p>';}).join('')+'</details>'
-        +'<div style="margin-top:12px">'+(g.status==='answer_ready'?button('accept','Accept answer → next'):'')
-        +'<details style="display:inline-block;margin-left:10px"><summary style="cursor:pointer">Ask a follow-up</summary><textarea id="'+field+'" placeholder="What remains unclear?" style="width:95%;min-height:70px;margin:8px 0;background:var(--bg-primary);color:var(--text-primary)"></textarea>'+button('reply','Save follow-up → next')+'</details>'
-        +(g.status==='resolved'?button('reopen','Reopen clarification'):'')+'</div><small>Accepts this explanation for the listed records. Extraction approval stays unchanged. Save your batch with Apply &amp; submit.</small></section>';
+    return vfClarificationsFor(ev.evidence_id).map(function(g){
+      var record=g.records.find(function(r){return r.evidence_id===ev.evidence_id;});
+      var state=record.review_status||g.status;
+      var answer=g.answers.filter(function(a){return !a.evidence_id||a.evidence_id===ev.evidence_id;});
+      var body='<p><b>Your question — '+vfEsc(g.reviewer)+'</b><br>'+vfEsc(g.question)+'</p>'
+        +answer.map(function(a){return '<p><b>Answer / what changed</b><br>'+vfEsc(a.response)+'</p>';}).join('')
+        +(!answer.length?'<p>Answer still being investigated.</p>':'')
+        +'<details><summary>Discussion history and linked records</summary>'+g.records.map(function(r){return '<p>'+vfEsc(r.evidence_id)+' · '+vfEsc(r.variable)+'</p>';}).join('')
+        +g.history.map(function(h){return '<p>'+vfEsc(h.reviewer)+' · '+vfEsc(h.action)+' · '+vfEsc(h.date)+'<br>'+vfEsc(h.note)+'</p>';}).join('')+'</details>';
+      if(state==='resolved')return '<details style="margin:12px 0"><summary>Previous question and answer</summary>'+body+'</details>';
+      return '<section style="border-left:3px solid var(--accent-sky);padding:8px 12px;margin:12px 0;font-size:12px">'+body
+        +'<p><b>Review this record below:</b> Keep if correct, Drop if unsuitable, or write a remaining question and choose Query.</p></section>';
     }).join('');
+  }
+  function vfHasAnswerForReview(eid){
+    return vfClarificationsFor(eid).some(function(g){
+      var r=g.records.find(function(r){return r.evidence_id===eid;});
+      var status=r.review_status||g.status;
+      return status==='answer_ready'||status==='needs_judgement';
+    });
   }
   async function vfClarificationRespond(id,action,field){
     var g=(window._vfClarifications||[]).find(function(x){return x.id===id;});var reviewer=(window._vfReviewer||'').trim();
@@ -2745,10 +2739,31 @@
     return approved?'approval_only':'first';
   }
   function vfReviewQueue(key){
-    window._vfClarificationFilter='all'; window._vfReconcile=key; window._vfAxStatus=key==='dropped'?'dropped':'active';
+    window._vfSimpleView='advanced';window._vfClarificationFilter='all'; window._vfReconcile=key; window._vfAxStatus=key==='dropped'?'dropped':'active';
     window._vfAxOrigin='any'; window._vfAxMe='any'; window._vfAxOther='any';
     window._vfMyCall='all'; window._vfVerdictFilter='all'; window._vfTablesOnly=false;
     renderVfWorklist();
+  }
+  function vfSimpleQueue(view){
+    window._vfSimpleView=view;window._vfReconcile='all';window._vfClarificationFilter='all';
+    window._vfAxStatus=view==='mine'?'any':'active';window._vfAxOrigin='any';window._vfAxMe='any';window._vfAxOther='any';window._vfVerdictFilter='all';window._vfMyCall='all';window._vfTablesOnly=false;
+    renderVfWorklist();
+  }
+  function vfSearch(value){
+    window._vfSearch=value;var input=document.getElementById('vf-search');var position=input&&input.selectionStart;
+    renderVfWorklist();input=document.getElementById('vf-search');if(input){input.focus();if(position!==null&&position!==undefined)input.setSelectionRange(position,position);}
+  }
+  function vfSimpleMatch(u,view){
+    if(view==='advanced')return true;
+    if(view==='mine')return u.me;
+    if(u.dropped)return false;
+    var pending=u.me&&!u.meApplied;
+    var query=u.myDec==='flag'||u.myDec==='query';
+    var answered=vfHasAnswerForReview(u.ev.evidence_id);
+    var waiting=vfClarificationsFor(u.ev.evidence_id).some(function(g){var r=g.records.find(function(r){return r.evidence_id===u.ev.evidence_id;});return g.reviewer!=='Status reconciliation'&&(r.review_status||g.status)==='needs_investigation';});
+    if(view==='waiting')return (query||waiting)&&!answered&&!u.ev._reviewConflict;
+    if(pending)return false;
+    return answered||u.ev._reviewConflict||u.ev._reviewQueue==='first';
   }
   function _vfInScope(ev){ var sc=window._vfScope||{}; if(!sc.nbs)return true;
     if(sc.nbs!=='all'&&ev.nbs_id!==sc.nbs)return false;
@@ -3033,17 +3048,14 @@
       +'<a href="#" onclick="vfShowReasonHelp();return false;" title="reason-code definitions" style="font-size:11px; color:var(--accent-sky); text-decoration:underline dotted; cursor:pointer;">Reason ⌄</a>'+reasonSel+'<span style="font-size:11px; color:var(--text-muted); margin-left:auto; font-weight:700;">Your decision:</span>'
       +'<button title="keep this record in the evidence register" onclick="setVfDecision(\''+ev.evidence_id+'\',\'ok\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-emerald); background:'+(okA?'var(--accent-emerald)':'transparent')+'; color:'+(okA?'#fff':'var(--accent-emerald)')+';">✓ ok — keep</button>'
       +'<button title="remove this record from the evidence register (soft-delete / quarantine) — pick a reason first" onclick="vfTryDrop(\''+ev.evidence_id+'\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-rose); background:'+(dropA?'var(--accent-rose)':'transparent')+'; color:'+(dropA?'#fff':'var(--accent-rose)')+';">✕ drop — remove</button>'
-      +'<button title="tentatively keep, but raise an open question for further review — write the question in the note below" onclick="if(!((window._vfNotes||{})[\''+ev.evidence_id+'\']||\'\').trim()){alert(\'Write your question in the note box first — a query needs a note.\');return;} setVfDecision(\''+ev.evidence_id+'\',\'flag\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-amber); background:'+(queryA?'var(--accent-amber)':'transparent')+'; color:'+(queryA?'#fff':'var(--accent-amber)')+';">⚑ query</button>'
+      +'<button title="tentatively keep, but raise an open question for further review — write the question in the note below" onclick="if(!((window._vfNotes||{})[\''+ev.evidence_id+'\']||\'\').trim()){vfNotice(\'Write your question in the note box first — a query needs a note.\',true);return;} setVfDecision(\''+ev.evidence_id+'\',\'flag\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 16px; border-radius:4px; border:1px solid var(--accent-amber); background:'+(queryA?'var(--accent-amber)':'transparent')+'; color:'+(queryA?'#fff':'var(--accent-amber)')+';">⚑ query</button>'
       +'<button title="species/crop-specific evidence → reclassify + KEEP (banked for reuse, filtered from the practice MCDA) — do NOT drop it" onclick="vfReclassify(\''+ev.evidence_id+'\')" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 12px; border-radius:4px; border:1px solid var(--accent-sky); background:'+(reclassA?'var(--accent-sky)':'transparent')+'; color:'+(reclassA?'#fff':'var(--accent-sky)')+';">🧬 species/crop'+(reclassA&&(window._vfTaxa||{})[ev.evidence_id]?(' · '+vfEsc(window._vfTaxa[ev.evidence_id])):'')+'</button></div>'
       +'<div style="margin-top:8px;">'+noteInp+'</div>';
     var _footerSettled='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:12px; border-top:1px solid var(--border-color); padding-top:10px;"><span style="font-size:10.5px; color:var(--text-muted);">You applied this — <b>challenge</b> (a differing call raises a conflict) or <b>re-open</b> to redo:</span><span style="margin-left:auto; display:inline-flex; gap:8px; align-items:center;"><button onclick="challengeVf(\''+ev.evidence_id+'\',\'ok\')" title="record YOUR call = keep" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 14px; border-radius:4px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald);">✓ ok</button><button onclick="challengeVf(\''+ev.evidence_id+'\',\'drop\')" title="record YOUR call = drop" style="cursor:pointer; font-size:12px; font-weight:600; padding:5px 14px; border-radius:4px; border:1px solid var(--accent-rose); background:transparent; color:var(--accent-rose);">✕ drop</button><button onclick="reopenVf(\''+ev.evidence_id+'\')" title="clear the applied decision and send it back to the queue" style="cursor:pointer; font-size:11px; padding:5px 12px; border-radius:4px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber);">↩ re-open</button></span></div>';
-    var _footerHtml=_settledC?_footerSettled:_footerPending;
+    var _footerHtml=window._vfSimpleView==='waiting'?'<p>Waiting for an answer. Your question is saved; no repeat review needed.</p>':(_settledC&&!vfHasAnswerForReview(ev.evidence_id))?_footerSettled:_footerPending;
     var _decChipS=_myDecC?('<span style="font-size:9px; font-weight:700; text-transform:uppercase; padding:1px 7px; border-radius:3px; color:#fff; background:'+(_myDecC==='ok'?'var(--accent-emerald)':(_myDecC==='drop'?'var(--accent-rose)':'var(--accent-amber)'))+';">you: '+vfEsc(_myDecC==='flag'?'query':_myDecC)+'</span>'):'';
     var _revChipS=_rk.length?('<span style="font-size:10px; color:var(--text-muted);">'+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv]);}).join(' · ')+'</span>'):'';
     var _summaryHtml='<summary style="cursor:pointer; display:flex; align-items:center; gap:9px; flex-wrap:wrap; padding:9px 14px; border-left:4px solid '+_aiCol+'; border-radius:8px; background:var(--bg-secondary);">'+_aiBadge+_dropBadgeD+'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code><span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+'</span>'+_decChipS+'<span style="margin-left:auto; display:inline-flex; gap:8px; align-items:center;">'+_revChipS+'</span></summary>';
-    if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'){
-      return '<article data-vfeid="'+vfEsc(ev.evidence_id)+'" style="padding:18px;margin:12px 0;border:1px solid var(--border-color);border-radius:8px;background:var(--bg-secondary)"><h3>'+vfEsc((ev.variable||'').replace(/_/g,' '))+' · '+vfEsc(ev.source_id)+'</h3>'+vfClarificationHtml(ev)+'<details><summary>Evidence and source context</summary>'+vfReviewMeaning(ev)+'<p>'+vfEsc(ev.quote||'')+'</p>'+vfRelHtml(ev)+cropImg+pdfLink+'</details></article>';
-    }
     var _card='<div data-vfeid="'+vfEsc(ev.evidence_id||'')+'" style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:4px solid '+_aiCol+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
       +(_collap?'':('<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
       +_aiBadge+_dropBadgeD
@@ -3052,6 +3064,7 @@
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+(ev.page?('<a href="#" onclick="vfSetSubset(\'section\',\''+vfEsc(String(ev.page))+'\');return false;" title="subset the worklist to page '+vfEsc(String(ev.page))+' of this source" style="color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(page)+'</a>'):vfEsc(page))+' · '+vfEsc(vfLocHint(ev))+'</span>'
       +'</div>'))
       +_chipRow
+      +(ev._reviewConflict?'<p style="border-left:3px solid var(--accent-amber);padding:8px"><b>Reviewers disagree:</b> this record has both Keep and Drop decisions. Check the reviewer notes below and give your judgement.</p>':'')
       +vfClarificationHtml(ev)
       +vfReviewMeaning(ev)
       +(ev.relationship && JSON.stringify(ev.relationship)!=='{}' && ev.relationship!=='{}' ? '<div style="font-size:11.5px;margin:5px 0;"><b>Extracted rule / values:</b> '+vfRelHtml(ev)+'</div>' : '')
@@ -3107,10 +3120,11 @@
   // directly under it. The filter bar's height varies with the toggles on show, so the action
   // bar's offset is measured rather than hardcoded (falls back to the inline 86px).
   function _vfSyncStickyBars(){ var fb=document.getElementById('vf-filterbar'), ab=document.getElementById('vf-actionbar');
-    if(!fb||!ab)return; var h=fb.offsetHeight||0; ab.style.top=(86+h)+'px'; }
+    if(!fb||!ab)return; ab.style.top='auto'; ab.style.bottom='0'; }
 
   function renderVfWorklist() {
     if (!dashboardData) return;
+    if(!window._vfSimpleView){window._vfSimpleView='todo';window._vfAxMe='any';window._vfAxOther='any';window._vfAxOrigin='any';}
     if (!window._vfDecisions){ try{ window._vfDecisions=JSON.parse(localStorage.getItem('vfDecisions')||'{}'); }catch(e){ window._vfDecisions={}; } }
     if (!window._vfReasons){ try{ window._vfReasons=JSON.parse(localStorage.getItem('vfReasons')||'{}'); }catch(e){ window._vfReasons={}; } }
     if (!window._vfNotes){ try{ window._vfNotes=JSON.parse(localStorage.getItem('vfNotes')||'{}'); }catch(e){ window._vfNotes={}; } }
@@ -3138,7 +3152,7 @@
     if(window._vfScope.sourceId===undefined)window._vfScope.sourceId='';
     if(window._vfScope.section===undefined)window._vfScope.section='';
     // Practice is single-select (no "All"). Evidence type is fixed at T4 — T3/T6 are deferred.
-    window._vfScope.table='T4';
+    if(!window._vfScope.table)window._vfScope.table='T4';
     if(window._vfScope.nbs==='all'&&_nbsOpts.length)window._vfScope.nbs=_nbsOpts[0];
     _vfUpdatePending(); _vfRenderSubsetBanner();
     // Task 3: sourceId subsets to one paper/tool; section subsets to one page within it.
@@ -3165,14 +3179,15 @@
       var _csCount=function(v){ return evAll.filter(_inNbs).filter(function(e){ var c=_csOf(e); return v==='general'?c==='practice_technology':(v==='species'?c==='species_specific':(v==='crop'?c==='crop_specific':true)); }).length; };
       var _csFmt=function(o){ var m={general:'General (practice)',species:'🧬 Species',crop:'🌾 Crop'}; var lab=m[o]||o; var n=_csCount(o); return n?(lab+' ('+n+')'):lab; };
       var _csHint=(window._vfScope.claimScope&&window._vfScope.claimScope!=='general'&&window._vfScope.claimScope!=='all')?'<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">🧬 <b>Species / crop lane</b> — per-taxon evidence, <b>kept &amp; banked for reuse</b> but filtered out of the practice-level MCDA. Fix a mis-tagged row by re-classifying it (keep), not dropping it.</div>':'';
-      scEl.innerHTML=_mkPills('nbs','Practice',_nbsOpts,_capNbs,'sky',true,'The Nature-based Solution this evidence supports. Pick one.')
-        +_mkPills('family','Sub-practice',_famOpts,_capFam,'emerald',false,'Suitability family / sub-practice within the practice. All = every sub-practice.')
-        +_mkPills('table','Evidence type',['T4','T3/T6'],function(o){return o;},'rose',true,'T4 = suitability plus M2b operational feasibility evidence. T3/T6 = effect and asset-vulnerability evidence behind the generated hazard and scorecard rows.')
-        +_tblLegend
-        +_mkPills('claimScope','Scope',['general','species','crop'],_csFmt,'sky',false,'General = practice-level suitability (the everyday MCDA work). Species / Crop = per-taxon evidence, kept + banked for reuse but filtered from the practice MCDA. Default = General.')
-        +_csHint
-        +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber',false,'Which discovery channel the source came from. All = every channel.')
-        +_mkPills('access','Access',['oa','restricted'],function(o){return o==='oa'?'Open-access':'Restricted (copyright)';},'emerald',false,'Open-access vs copyrighted (restricted). All = both.'); }
+      var select=function(key,label,options){return '<label>'+label+' <select onchange="vfScopeSet(\''+key+'\',this.value)" style="padding:7px;background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:5px">'+options.map(function(o){return '<option value="'+vfEsc(o[0])+'"'+(window._vfScope[key]===o[0]?' selected':'')+'>'+vfEsc(o[1])+'</option>';}).join('')+'</select></label>';};
+      scEl.innerHTML=select('nbs','Practice',_nbsOpts.map(function(n){return [n,_capNbs(n)];}))
+        +select('table','Evidence type',[['T4','T4 + operational feasibility'],['T3/T6','T3/T6 effects']])
+        +'<label>Search <input id="vf-search" type="search" placeholder="Paper, variable or text" value="'+vfEsc(window._vfSearch||'')+'" oninput="vfSearch(this.value)" style="padding:7px;background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:5px"></label>';
+      window._vfAdvancedScopeHtml=_mkPills('family','Sub-practice',_famOpts,_capFam,'emerald',false)
+        +_mkPills('claimScope','Scope',['general','species','crop'],_csFmt,'sky',false)
+        +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber',false)
+        +_mkPills('access','Access',['oa','restricted'],function(o){return o==='oa'?'Open-access':'Restricted';},'emerald',false);
+    }
     var _vfPreScope=flaggedRows.map(function(r){return r.ev;}).concat(passedAll, (dashboardData._evDropped||[]).filter(function(e){return e.use_role!=='dataset';})); window._vfPreScope=_vfPreScope;
     flaggedRows=flaggedRows.filter(function(r){return _inScope(r.ev);}); window._vfFlagged=flaggedRows;
     passedAll=passedAll.filter(_inScope);
@@ -3213,6 +3228,8 @@
       if(_reopMe[id])delete decisions[_meH];
       if(_pend[id])decisions[_meH]=_pend[id];
       ev._reviewQueue=_vfReviewBucket(ev,decisions);
+      var calls=Object.values(decisions).map(function(d){return d==='keep'?'ok':d;});ev._reviewConflict=calls.indexOf('ok')>=0&&calls.indexOf('drop')>=0;
+      if(!isDrop&&vfHasAnswerForReview(id))ev._reviewQueue='first';
       _uni.push({ev:ev,origin:origin,verdict:verdict,reason:reason,me:_uMe(id),other:_uOther(id),myDec:_uMyDec(id),meApplied:_meApplied(id),dropped:isDrop}); };
     flaggedRows.forEach(function(r){ _pushU(r.ev,'flagged',r.verdict,r.reason); });
     passedAll.forEach(function(ev){ _pushU(ev,'passed','pass','AI accepted this extraction — spot-check: is the encoded value faithful to the quote?'); });
@@ -3222,7 +3239,10 @@
     // predicate as if a candidate axis value were applied. A non-'conflict' verdict is ignored when
     // origin=passed (its control is hidden there) so a stale verdict can't silently zero the list.
     var _sec=function(u,effOrigin,effMe,effStatus,effVerdict){
+      if(!vfSimpleMatch(u,window._vfSimpleView||'todo'))return false;
+      var search=(window._vfSearch||'').trim().toLowerCase();if(search&&[u.ev.source_id,u.ev.variable,u.ev.quote,u.ev.evidence_id].join(' ').toLowerCase().indexOf(search)<0)return false;
       if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'&&!vfClarificationsFor(u.ev.evidence_id).some(function(g){return g.status===window._vfClarificationFilter;}))return false;
+      if(window._vfSimpleView!=='advanced')return true;
       if(window._vfReconcile&&window._vfReconcile!=='all'&&u.ev._reviewQueue!==window._vfReconcile)return false;
       var status=effStatus||window._vfAxStatus||'active';
       if(status==='active'&&u.dropped)return false;
@@ -3249,11 +3269,11 @@
     if(mode==='stats'){ if(fd)fd.style.display='none'; if(host)host.style.display='none'; var dcs=document.getElementById('vf-decided-count'); if(dcs)dcs.innerHTML=''; if(statsHost){statsHost.style.display='block'; renderQaqcStats(statsHost);} _vfSyncStickyBars(); return; }
     if(mode==='gaps'){ if(fd)fd.style.display='none'; if(statsHost)statsHost.style.display='none'; if(host){host.style.display='block'; renderVfGaps(host);} _vfSyncStickyBars(); return; }
     if(statsHost)statsHost.style.display='none'; if(host)host.style.display='block';
-    var _tblPill='<button class="pill-btn '+(window._vfTablesOnly?'active sky':'')+'" onclick="window._vfTablesOnly=!window._vfTablesOnly; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;" title="only units whose quote is tabular (📷)">📷 tables</button>';
+    var _tblPill='<button class="pill-btn '+(window._vfTablesOnly?'active sky':'')+'" onclick="window._vfSimpleView=\'advanced\';window._vfTablesOnly=!window._vfTablesOnly; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;" title="only units whose quote is tabular (📷)">📷 tables</button>';
     // ---- filter bar: 3 orthogonal toggles (+ My-call when me=Yes) + verdict + tables ----
     if(fd){ fd.style.display='block'; fd.style.gap=''; fd.style.flexWrap=''; fd.style.alignItems='';
       // One row per axis: a fixed-width label column keeps the pill columns aligned down the bar.
-      var _seg=function(which,label,opts,sv,tip){ return '<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:1px 0;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">'+label+'</span>'+opts.map(function(o){ var active=(window[sv]===o[0])?'active sky':''; var cnt=which?(' ('+_axN(which,o[0])+')'):''; return '<button class="pill-btn '+active+'" onclick="window.'+sv+'=\''+o[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+o[1]+cnt+'</button>'; }).join('')+'</div>'; };
+      var _seg=function(which,label,opts,sv,tip){ return '<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:1px 0;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">'+label+'</span>'+opts.map(function(o){ var active=(window[sv]===o[0])?'active sky':''; var cnt=which?(' ('+_axN(which,o[0])+')'):''; return '<button class="pill-btn '+active+'" onclick="window._vfSimpleView=\'advanced\';window.'+sv+'=\''+o[0]+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+o[1]+cnt+'</button>'; }).join('')+'</div>'; };
       var _bar=_seg('status','Record status',[['active','Active'],['dropped','Dropped history'],['any','All']],'_vfAxStatus','Dropped records stay excluded from the normal review queue. Show history to inspect, challenge or reopen them.')
         +_seg('origin','Origin',[['any','Any'],['flagged','⚑ AI-flagged'],['passed','✓ AI-passed']],'_vfAxOrigin','Did the AI verify pass flag this extraction, or accept it?')
         +_seg('me','Reviewed by me',[['any','Any'],['no','No'],['yes','Yes']],'_vfAxMe','Have YOU already made a call on it? “No” is the to-review queue.')
@@ -3269,35 +3289,25 @@
       // verdict pills (only meaningful when flagged units can be in view) + tables toggle
       var _extra='';
       if(window._vfAxOrigin!=='passed'){ var verdicts=['all'].concat(Array.from(new Set(_uni.filter(function(u){return u.origin==='flagged';}).map(function(u){return u.verdict;})))).concat(['conflict']);
-        _extra=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; var n=(v==='all')?0:_axN('verdict',v); return '<button class="pill-btn '+active+'" onclick="window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All':(v+' ('+n+')'))+'</button>'; }).join('')+'<span style="width:1px; height:16px; background:var(--border-color); margin:0 5px;"></span>'; }
+        _extra=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; var n=(v==='all')?0:_axN('verdict',v); return '<button class="pill-btn '+active+'" onclick="window._vfSimpleView=\'advanced\';window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All':(v+' ('+n+')'))+'</button>'; }).join('')+'<span style="width:1px; height:16px; background:var(--border-color); margin:0 5px;"></span>'; }
       _bar+='<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:3px 0 0; padding-top:4px; border-top:1px solid var(--border-color);" title="The AI verify verdict on a flagged unit (mismatch / unsupported / conflict), plus a tabular-quotes-only toggle."><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">Verdict</span>'+_extra+_tblPill+'</div>';
-      var queues=[['first','First review'],['unresolved','Resolve decision / status'],['approval_only','Approval flag: history missing'],['recorded','Recorded approval'],['dropped','Dropped history']];
-      var summary='<div style="margin-bottom:12px"><b>Review queues — separate, non-overlapping counts</b><p>Counts cover the selected scope, before the filters below. Start with First review. Resolve decision / status includes queries, disagreements and decisions not reflected in the approval flag. History missing needs reconciliation, not automatic re-review. Recorded approval is not a new review request; reviewer history can include agent entries.</p>';
-      queues.forEach(function(q){var n=_uni.filter(function(u){return u.ev._reviewQueue===q[0];}).length; summary+='<button class="pill-btn '+(window._vfReconcile===q[0]?'active sky':'')+'" onclick="vfReviewQueue(\''+q[0]+'\')">'+q[1]+' ('+n+')</button> ';});
-      summary+='<button class="pill-btn" onclick="vfReviewQueue(\'all\')">Use filters only</button></div>';
-      var cl='<div style="margin:10px 0"><b>Clarifications on evidence cards</b> ';
-      if(window._vfClarificationError)cl+='<span>'+vfEsc(window._vfClarificationError)+'</span> ';
-      [['answer_ready','Answers ready'],['needs_judgement','Needs your judgement'],['needs_investigation','Team investigation'],['resolved','Resolved']].forEach(function(q){
-        var groups=(window._vfClarifications||[]).filter(function(g){return g.status===q[0]&&g.records.some(function(r){return _uni.some(function(u){return u.ev.evidence_id===r.evidence_id;});});});
-        cl+='<button class="pill-btn '+(window._vfClarificationFilter===q[0]?'active sky':'')+'" onclick="vfClarificationQueue(\''+q[0]+'\')">'+q[1]+' ('+groups.length+' issues)</button> ';
-      });
-      cl+='<small>Issue counts; shared issues appear on each linked card. Extraction review stays separate.</small></div>';
-      if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'){
-        var remaining=(window._vfClarifications||[]).filter(function(g){return g.status===window._vfClarificationFilter&&g.records.some(function(r){return _uni.some(function(u){return u.ev.evidence_id===r.evidence_id;});});}).length;
-        fd.innerHTML='<h3>Answer review · '+remaining+' issue(s)</h3><p>Read the question and answer. Accept, or ask a follow-up. No reopening needed.</p><button class="pill-btn" onclick="vfReviewQueue(\'first\')">Go to first reviews</button><button class="pill-btn" onclick="vfClarificationQueue(\'resolved\')">Accepted answers / history</button><details style="margin-top:10px"><summary>Other review queues and filters</summary>'+summary+cl+_bar+'</details>';
-      }else{fd.innerHTML=summary+cl+_bar;} }
+      var matches=function(u,view){var search=(window._vfSearch||'').trim().toLowerCase();return vfSimpleMatch(u,view)&&(!search||[u.ev.source_id,u.ev.variable,u.ev.quote,u.ev.evidence_id].join(' ').toLowerCase().indexOf(search)>=0);};
+      var summary='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+[['todo','To review'],['waiting','Waiting for answers'],['mine','My reviewed']].map(function(q){return '<button class="pill-btn '+(window._vfSimpleView===q[0]?'active sky':'')+'" onclick="vfSimpleQueue(\''+q[0]+'\')">'+q[1]+' ('+_uni.filter(function(u){return matches(u,q[0]);}).length+')</button>';}).join('')+'</div>';
+      var maintenance='<details><summary>Team maintenance</summary>'+[['unresolved','Decision / status checks'],['approval_only','Missing review history'],['dropped','Dropped history'],['all','All records']].map(function(q){return '<button class="pill-btn" onclick="vfReviewQueue(\''+q[0]+'\')">'+q[1]+'</button>';}).join('')+'</details>';
+      var cl=window._vfClarificationError?'<p>'+vfEsc(window._vfClarificationError)+'</p>':'';
+      fd.innerHTML=summary+cl+'<details '+(window._vfMoreFilters?'open':'')+' ontoggle="window._vfMoreFilters=this.open"><summary style="cursor:pointer">More filters'+(window._vfSimpleView==='advanced'?' — custom view active':'')+'</summary><button class="pill-btn" onclick="vfSimpleQueue(\'advanced\')">Use custom filters</button>'+(window._vfAdvancedScopeHtml||'')+_bar+maintenance+'<details><summary>Review a whole source</summary><div id="vf-bulk"></div></details></details>'; }
     // ---- apply the toggle filters to the universe (secondary filters via the shared _sec) ----
     var _list=_uni.filter(function(u){
+      if(window._vfSimpleView!=='advanced')return _sec(u,'any','any');
       if(window._vfAxOrigin!=='any'&&u.origin!==window._vfAxOrigin)return false;
       if(window._vfAxMe!=='any'&&u.me!==(window._vfAxMe==='yes'))return false;
       if(window._vfAxOther!=='any'&&u.other!==(window._vfAxOther==='yes'))return false;
       return _sec(u, window._vfAxOrigin, window._vfAxMe); });
     // stable seeded order (hash) so cards don't jump between renders.
     if(window._vfPassSeed===undefined)window._vfPassSeed=Math.floor(Math.random()*1e9); var _seed=window._vfPassSeed;
-    _list=_list.map(function(u){ var h=0,s=u.ev.evidence_id+'|'+_seed; for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;} return {u:u,h:h>>>0}; }).sort(function(a,b){return a.h-b.h;}).map(function(x){return x.u;});
+    _list=_list.map(function(u){ var h=0,s=u.ev.evidence_id+'|'+_seed; for(var i=0;i<s.length;i++){h=((h<<5)-h+s.charCodeAt(i))|0;} return {u:u,h:h>>>0}; }).sort(function(a,b){return Number(vfHasAnswerForReview(b.u.ev.evidence_id))-Number(vfHasAnswerForReview(a.u.ev.evidence_id))||a.h-b.h;}).map(function(x){return x.u;});
     // decided-count line — reflects the current toggle combo.
-    var dc=document.getElementById('vf-decided-count'); if(dc){ var _d=[window._vfAxStatus==='dropped'?'dropped history':(window._vfAxStatus==='any'?'active + dropped':'active records')]; if(window._vfAxOrigin!=='any')_d.push(window._vfAxOrigin==='flagged'?'AI-flagged':'AI-passed'); if(window._vfAxMe!=='any')_d.push(window._vfAxMe==='yes'?('reviewed by you'+(window._vfMyCall!=='all'?(' · '+({ok:'kept',query:'queried',drop:'dropped'}[window._vfMyCall]||'')):'')):'not reviewed by you'); if(window._vfAxOther!=='any')_d.push(window._vfAxOther==='yes'?'reviewed by others':'not reviewed by others');
-      dc.innerHTML='<b>'+_list.length+'</b> record(s)'+(_d.length?(' — '+vfEsc(_d.join(' · '))):' in scope')+' <span style="color:var(--text-muted);">of '+_uni.length+' in scope · ok = keep · drop = remove · query = keep + open question.</span>'; }
+    var dc=document.getElementById('vf-decided-count');if(dc)dc.textContent=_list.length+' records'+(window._vfSimpleView==='waiting'?' — no action needed until answers arrive.':window._vfSimpleView==='mine'?' — your saved and applied decisions.':' — Keep, Drop or Query; then Submit reviews.');
     _vfRenderBulk(evAll);
     if(!host)return; host.innerHTML='';
     if(!_list.length){
@@ -3306,12 +3316,11 @@
         host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-amber);">No tool-derived evidence extracted yet.</b><br>Tools / methods / codebases <b>are evidence-reviewable like any source</b> — their thresholds, weights and criteria become EV rows (provenance via <code>locator=file_line</code>+<code>commit_sha</code> for code, or section/anchor for docs) and are reviewed here under this channel. This is empty only because no tool has been extracted yet. <b>'+_nTool+'</b> tool(s) are catalogued in <code>TOOL_tool_registry</code> — browse them under <b>Stocktake &amp; Tools → Tools / methods</b>; extracting their criteria populates this channel.</div>';
         return;
       }
-      host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No evidence matches these filters (<b>'+_uni.length+'</b> in scope). Loosen the <b>Record status / Origin / Reviewed-by</b> toggles above, or broaden the <b>SCOPE</b> on the left.</div>'; _vfSyncStickyBars(); return; }
+      host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No records in this view. Change search or scope, or select another review tab.</div>'; _vfSyncStickyBars(); return; }
     // One collapsible card per unit. Furled (closed) when I've already applied a decision — the
     // summary row shows my call; expand for the full evidence + challenge / re-open. Unfurled (open)
     // for anything I still need to act on (to-review, 2nd opinion, or my pending unapplied decision).
-    window._vfRenderedClarifications={};
-    _list.forEach(function(u){ if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'&&!vfClarificationsFor(u.ev.evidence_id).some(function(g){return g.status===window._vfClarificationFilter&&!window._vfRenderedClarifications[g.id];}))return; host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed', {collapsible:true, open:!u.meApplied||(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'), settled:u.meApplied, myDec:u.myDec})); });
+    _list.forEach(function(u){host.insertAdjacentHTML('beforeend', vfDetailHtml({ev:u.ev, verdict:u.verdict, reason:u.reason}, u.origin==='passed', {collapsible:true, open:!u.meApplied||vfHasAnswerForReview(u.ev.evidence_id), settled:u.meApplied, myDec:u.myDec})); });
     _vfSyncStickyBars();
   }
 
