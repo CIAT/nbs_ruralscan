@@ -2964,6 +2964,18 @@
     if(r) return '<code style="font-size:10.5px;">'+vfEsc(typeof r==='string'?r:JSON.stringify(r))+'</code>';
     return '<span style="color:var(--text-muted);">(no encoded value — qualitative claim; judge the variable + quote)</span>';
   }
+  function vfRelatedTableHtml(ev){
+    function context(row){try{return typeof row.context==='object' ? row.context||{} : JSON.parse(row.context||'{}');}catch(e){return {};}}
+    var rows=(dashboardData.registers.EV_evidence_register)||[];
+    var rootId=context(ev).table_continuation_of||ev.evidence_id;
+    var root=rows.find(function(row){return row.evidence_id===rootId;});
+    function compatible(row){return row.review_state!=='dropped' && ['source_id','nbs_id','variable','suitability_family_id','claim_scope'].every(function(k){return (row[k]||'')===(ev[k]||'');});}
+    if(!root || !compatible(root))return '';
+    var linked=rows.filter(function(row){return compatible(row) && (row.evidence_id===rootId || context(row).table_continuation_of===rootId);});
+    if(linked.length<2 || !linked.some(function(row){return row.evidence_id===ev.evidence_id;}))return '';
+    linked.sort(function(a,b){return Number(a.page)-Number(b.page)||a.evidence_id.localeCompare(b.evidence_id);});
+    return '<div style="margin:10px 0;padding:12px;border:1px solid var(--border);border-radius:8px;"><b>Table continues across pages</b><p>All linked parts shown together. Your decision applies only to this record; linked parts keep their own review status.</p>'+linked.map(function(row){return '<div style="margin:8px 0;"><b>Page '+vfEsc(row.page)+' · '+(row.evidence_id===ev.evidence_id?'this record':'linked record')+'</b> · '+((row.reviewer_ok===true||row.reviewer_ok==='true')?'approved extraction':'awaiting review')+vfRelHtml(row)+'</div>';}).join('')+'</div>';
+  }
   // Review the extracted claim and its intended use, not only relationship fields.
   function vfReviewMeaning(ev){
     function obj(value){ if(value && typeof value==='object')return value; try{return JSON.parse(value||'{}')||{};}catch(e){return {};} }
@@ -3123,6 +3135,7 @@
       +vfClarificationHtml(ev)
       +vfReviewMeaning(ev)
       +(ev.relationship && JSON.stringify(ev.relationship)!=='{}' && ev.relationship!=='{}' ? '<div style="font-size:11.5px;margin:5px 0;"><b>Extracted rule / values:</b> '+vfRelHtml(ev)+'</div>' : '')
+      +vfRelatedTableHtml(ev)
       +(!passed?'<div style="font-size:11.5px;margin:5px 0;color:'+vc+';"><b>AI review flag:</b> '+vfEsc(reason)+'</div>':'')
       +'<div style="font-size:11.5px; margin:8px 0; color:var(--text-secondary); background:rgba(255,255,255,0.02); padding:9px 11px; border-radius:4px;"><b style="color:var(--text-muted);">Verbatim quote ('+vfEsc(page)+', '+vfEsc(vfLocHint(ev))+'):</b> '+vfEsc(ev.quote||'')+'</div>'
       +cropImg
