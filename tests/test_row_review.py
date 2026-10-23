@@ -120,7 +120,7 @@ def test_all_rollups_only_takes_rollups():
     cards, _ = builder.build_cards("agroforestry", all_rollups=True)
     assert cards
     assert all(not c["suitability_family_id"] and not c["scope"] for c in cards)
-    assert {c["table"] for c in cards} <= {"T3", "T6"}
+    assert {c["table"] for c in cards} <= {"T3", "T6", "T6E"}
 
 
 def _export(path: Path, rows: list[list[str]]) -> Path:

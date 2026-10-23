@@ -25,7 +25,7 @@ import fitz
 
 
 from nbs_ruralscan.recipe.cell_synthesis import load_bands
-from nbs_ruralscan.schema_tools import check_bands, check_context
+from nbs_ruralscan.schema_tools import check_bands, check_context, check_direction
 from nbs_ruralscan.schema_tools.check_numbers import _floats, _nums, _rel_nums
 from nbs_ruralscan.schema_tools.validate_sources import _native_part
 from nbs_ruralscan.schema_tools.migrate_effects import (
@@ -52,6 +52,8 @@ _RULESETS = {
     "v1.6.12",
     "v1.6.13",
     "v1.6.14",
+    # v1.6.15/16 are T4-only (Codex); v1.6.17 adds relationship.direction_cue
+    "v1.6.17",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -151,6 +153,18 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
         errs += [
             f"{eid}: bands {f['signal']} {f['detail']}"
             for f in check_bands.check_unit(row, bands)
+        ]
+        errs += [
+            f"{eid}: direction {f['signal']} {f['detail']}"
+            for f in check_direction.check_unit(
+                {
+                    **row,
+                    "variable": u.get("variable", ""),
+                    "use_role": u.get("use_role", ""),
+                    "source_id": sid,
+                    "relationship": json.dumps(rel),
+                }
+            )
         ]
         if u["variable"] not in vont:
             errs.append(f"{eid}: variable '{u['variable']}' has no VONT id")

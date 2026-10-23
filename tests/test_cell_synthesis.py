@@ -310,14 +310,18 @@ def _asset_row(h, sens):
 
 def test_asset_risk_weights_only_on_complete_hazard_set():
     rep = cs.CellReport()
-    six = [_asset_row(h, "moderate") for h in cs.T3_HAZARDS[:6]]
-    assert cs.asset_risk_weights(six, "riparian_buffer", rep) is None
+    five = [_asset_row(h, "moderate") for h in cs.T3_HAZARDS[:5]]
+    assert cs.asset_risk_weights(five, "riparian_buffer", rep) is None
     assert rep.weights_incomplete == ["riparian_buffer"]
-    seven = six + [_asset_row("frost", "none")]
-    w = cs.asset_risk_weights(seven, "riparian_buffer")
+    six = five + [_asset_row(cs.T3_HAZARDS[5], "none")]
+    w = cs.asset_risk_weights(six, "riparian_buffer")
     assert w is not None
     assert abs(sum(w.values()) - 1.0) < 1e-4
-    assert w["frost"] == 0.0
+    assert w[cs.T3_HAZARDS[5]] == 0.0
+
+
+def test_frost_is_out_of_t3():
+    assert "frost" not in cs.T3_HAZARDS and "frost" in cs.EXCLUDED_T3_HAZARDS
 
 
 def test_asset_vulnerability_cell_uses_hazard_key_and_damage_scale():
@@ -2935,3 +2939,80 @@ def test_data_deficient_asset_row_states_no_sensitivity():
     )
     assert rows and rows[0]["justification"]["data_deficient"]
     assert rows[0]["asset_sensitivity"] == ""
+
+
+def test_family_vote_rewrites_the_statement_lead():
+    # review 2026-10-22: the statement kept "strongly improves" after the vote set slight
+    lead = cs._effect_core(
+        "T6",
+        "agroforestry",
+        "soil_erosion_risk",
+        3,
+        {1: "slightly", 2: "moderately", 3: "strongly"},
+    )
+    top = _vote_top(
+        nbs_id="agroforestry",
+        variable_id="soil_erosion_risk",
+        justification={
+            "statement": lead
+            + " in KEN (robust evidence, high agreement → high confidence)."
+        },
+    )
+    pooled = {f"s{i}" for i in range(8)}
+    votes = [
+        _v("n__a", "slight_positive", 4, ["s0", "s1", "s2", "s3"]),
+        _v("n__b", "slight_positive", 4, ["s4", "s5", "s6", "s7"]),
+    ]
+    cs._family_vote(top, cs.CellReport(), votes, pooled)
+    st = top["justification"]["statement"]
+    assert top["effect_direction"] == "slight_positive"
+    assert (
+        st.startswith("agroforestry slightly ") and "strongly" not in st.split(".")[0]
+    )
+
+
+def test_family_vote_conflict_restates_lead_and_confidence():
+    lead = cs._effect_core(
+        "T6",
+        "agroforestry",
+        "production_gap",
+        3,
+        {1: "slightly", 2: "moderately", 3: "strongly"},
+    )
+    top = _vote_top(
+        nbs_id="agroforestry",
+        variable_id="production_gap",
+        justification={
+            "statement": lead
+            + " in KEN (robust evidence, high agreement → high confidence)."
+        },
+    )
+    pooled = {f"s{i}" for i in range(10)}
+    votes = [
+        _v("n__a", "strong_positive", 4, ["s0", "s1", "s2", "s3"]),
+        _v("n__b", "conflicting_evidence", 4, ["s4", "s5", "s6", "s7"]),
+        _v("n__c", "conflicting_evidence", 2, ["s8", "s9"]),
+    ]
+    cs._family_vote(top, cs.CellReport(), votes, pooled)
+    st = top["justification"]["statement"]
+    assert st.startswith("agroforestry production_gap: CONFLICTING EVIDENCE")
+    assert "→ medium confidence" in st and "→ high confidence" not in st
+    assert "_pooled_confidence" not in top
+
+
+def test_cost_rows_live_in_t6e_not_t6():
+    # Pete 2026-10-23 (row review D8): cost rows move to the economic profile; cost per
+    # tCO2e is feasibility-level and never generated
+    import csv as _csv
+    from pathlib import Path as _P
+
+    rec = _P(__file__).resolve().parents[1] / "schema" / "recipes"
+    for d in rec.iterdir():
+        t6, t6e = d / "T6_nbs_scorecard.csv", d / "T6E_economic_profile.csv"
+        if t6.exists():
+            rows = list(_csv.DictReader(t6.open(encoding="utf-8")))
+            assert not [r for r in rows if r["variable_type"] == "economic_indicator"]
+        if t6e.exists():
+            rows = list(_csv.DictReader(t6e.open(encoding="utf-8")))
+            assert all(r["variable_type"] == "economic_indicator" for r in rows)
+            assert not [r for r in rows if r["variable_id"] in cs.FEASIBILITY_ONLY_ECON]

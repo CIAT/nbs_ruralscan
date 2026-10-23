@@ -43,6 +43,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+from nbs_ruralscan.recipe.direction_sense import reads as direction_reads  # noqa: E402
 from nbs_ruralscan.recipe.synthesis import (  # noqa: E402
     _DEFAULT_GREY_DISCOUNT,
     BASIS_W,
@@ -56,7 +57,11 @@ EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 SRC = ROOT / "schema" / "registers" / "SRC_source_register.csv"
 OUT = ROOT / "docs" / "review"
 VOCAB = ROOT / "schema" / "lookups" / "display_vocab.csv"
-TABLES = {"T3": "T3_nbs_hazard_farming.csv", "T6": "T6_nbs_scorecard.csv"}
+TABLES = {
+    "T3": "T3_nbs_hazard_farming.csv",
+    "T6": "T6_nbs_scorecard.csv",
+    "T6E": "T6E_economic_profile.csv",
+}
 QUOTE_MAX = 400
 #: row reject codes (the page carries the same list + gloss)
 ROW_REASONS = [
@@ -154,8 +159,17 @@ def _unit(eid: str, ev: dict, src: dict) -> dict:
         "citation": s.get("citation", ""),
         "variable": r.get("variable", ""),
         "direction": rel.get("direction", ""),
+        "direction_reads": direction_reads(
+            r.get("variable", ""),
+            str(rel.get("direction") or ""),
+            r.get("use_role", ""),
+            str(rel.get("framing") or ""),
+        )["text"],
         "strength": rel.get("strength_class", ""),
         "claim_basis": r.get("claim_basis", ""),
+        "cited_original": (r.get("lineage_of") or "").strip()
+        if r.get("claim_basis") == "cited_secondary"
+        else "",
         "basis_bucket": _basis_bucket(
             r.get("claim_basis", ""), str(rel.get("design") or "")
         ),
@@ -303,7 +317,7 @@ def build_statement(
     role = target.get("risk_role") or "livelihood_mitigation"
     asset = table == "T3" and role == "asset_threat"
     hz = _words(target.get("hazard", ""))
-    if table == "T6":
+    if table in ("T6", "T6E"):
         lead = f"{nbs_label} → {_words(target.get('priority', ''))}"
     elif asset:
         lead = f"{nbs_label} — " + _lc_first(
@@ -494,7 +508,7 @@ def card(
     nbs_label: str = "",
 ) -> dict:
     j = _j(r.get("justification"), {}) or {}
-    if table == "T6":
+    if table in ("T6", "T6E"):
         target = {"priority": r.get("variable_id", "")}
         target_label = r.get("variable_id", "")
         cls_field = "effect_direction"

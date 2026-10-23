@@ -301,7 +301,7 @@
         Not T3: an ordinary dry season, general wind-speed reduction with no storm, or a benefit with no hazard in it.</span></div>
       <div><b>T6: scorecard rows.</b> Does this NbS move a TTL priority (poverty, production gap, biodiversity, carbon, water, gender, cost)?
         <br>Evidence must show: the practice → a measured change in <i>that</i> outcome versus a comparator, in normal conditions; no hazard needed.
-        <br><span class="muted">Cost rows are ordinal (big or small for the context), per hectare, beneficiary or tCO2e.</span></div>
+        <br><span class="muted">Cost rows now sit in a separate <b>T6E economic profile</b> (ordinal: big or small for the context, per hectare or beneficiary); they feed the economic profiles, not the scorecard.</span></div>
     </div>
     <p class="muted primer-both">Both: the practice is named in the source · a bundled programme counts only by its share · measured findings outweigh ratings and second-hand citations.</p>
   </details>
@@ -698,6 +698,8 @@
 
   function rowAsk(u) {
     var t = u.target || {}, nb = esc(u.nbs_id || 'this NbS').replace(/_/g, ' ');
+    if (u.table === 'T6E') return '<b>This row asks:</b> what does ' + nb + ' cost, as <b>' + esc(t.priority).replace(/_/g, ' ') +
+      '</b>? <span class="muted">Evidence should show a cost figure with its denominator and context; the class is big or small for that context (economic profile, not the scorecard).</span>';
     if (u.table === 'T6') return '<b>This row asks:</b> does ' + nb + ' change <b>' + esc(t.priority).replace(/_/g, ' ') +
       '</b>? <span class="muted">Evidence should show the practice → a measured change in this outcome versus a comparator.</span>';
     var hz = esc(t.hazard).replace(/_/g, ' '), fs = esc(t.farming_system).replace(/_/g, ' ');
@@ -726,7 +728,7 @@
       if (present(r.magnitude)) mag = esc(r.magnitude) + ' (' + mag + ')';
     } else mag = present(r.magnitude) ? esc(r.magnitude) : '';
     var metric = [present(r.metric) ? esc(r.metric) : '', mag, present(r.unit) ? esc(r.unit) : ''].filter(Boolean).join(' ');
-    var claim = joinParts([r.direction, r.strength_class]);
+    var claim = joinParts([(u.plain && u.plain.direction_reads) || r.direction, r.strength_class]);
     claim += '<br>' + (metric || '—');
     claim += '<br>design: ' + esc(r.design) + ' <span class="sep">·</span> significance: ' + esc(r.significance);
     if (present(r.outcome_raw)) claim += '<br><i>' + esc(r.outcome_raw) + '</i>';
@@ -793,7 +795,7 @@
           (u.plain.where ? '<p>' + esc(u.plain.where) + '</p>' : ''), '') : '') +
         '<details class="codes fold"><summary>Coded fields (for the record)</summary>' +
           '<dl class="rows">' +
-            '<dt>Source</dt><dd>' + esc(u.citation) + ' <span class="sep">·</span> tier: ' + esc(u.benchmark_tier) + '</dd>' +
+            '<dt>Source</dt><dd>' + citeHtml(u) + ' <span class="sep">·</span> tier: ' + esc(u.benchmark_tier) + '</dd>' +
             '<dt>Practice</dt><dd>' + joinParts([u.nbs_id, u.suitability_family_id, u.use_role]) + '</dd>' +
             '<dt>Variable</dt><dd>' + esc(u.variable) + '</dd>' +
             '<dt>Claim</dt><dd>' + claim + '</dd>' +
@@ -808,11 +810,20 @@
   }
 
   // ---------- generated-row view (batch kind "rows": T3/T6 rows from cell synthesis) ----------
+  // A second-hand unit is credited to the study it repeats, not the paper that repeats it.
+  function citeHtml(e) {
+    var host = esc(e.citation || e.source_id);
+    if (e.claim_basis !== 'cited_secondary' || e.cited_original === undefined) return host;
+    return (present(e.cited_original)
+      ? 'Original: <b>' + esc(e.cited_original) + '</b>'
+      : '<span class="warn" title="The unit does not record which study it repeats">Original not recorded</span>') +
+      ' <span class="muted">— reported second-hand in ' + host + '</span>';
+  }
   function rowUnitHtml(e) {
     if (e.missing) return '<li class="ev-unit"><code>' + esc(e.evidence_id) + '</code> <span class="warn">not in the register</span></li>';
     return '<li class="ev-unit">' +
-      '<div class="ev-cite">' + esc(e.citation || e.source_id) + (present(e.page) ? ' <span class="sep">·</span> p. ' + esc(e.page) : '') + '</div>' +
-      '<div class="ev-meta">' + joinParts([e.variable, e.direction, e.strength, e.suitability_family_id]) +
+      '<div class="ev-cite">' + citeHtml(e) + (present(e.page) ? ' <span class="sep">·</span> p. ' + esc(e.page) : '') + '</div>' +
+      '<div class="ev-meta">' + joinParts([e.variable, e.direction_reads || e.direction, e.strength, e.suitability_family_id]) +
         (present(e.basis_bucket) ? ' <span class="sep">·</span> <span title="claim_basis: ' + esc(e.claim_basis) + '">' + vterm('claim_basis_bucket', e.basis_bucket) + '</span>'
           : (present(e.claim_basis) ? ' <span class="sep">·</span> ' + esc(e.claim_basis) : '')) +
         (e.review_state && e.review_state !== 'active' ? ' <span class="pill hold">' + esc(e.review_state) + '</span>' : '') +
@@ -883,7 +894,7 @@
       nHeld += (h.units || []).length;
       return '<p class="held-reason">' + esc(h.reason) + '</p><ul class="ev-list">' + (h.units || []).map(rowUnitHtml).join('') + '</ul>';
     }).join('');
-    var target = u.table === 'T6' ? 'priority: ' + esc(u.target && u.target.priority)
+    var target = (u.table === 'T6' || u.table === 'T6E') ? (u.table === 'T6E' ? 'indicator: ' : 'priority: ') + esc(u.target && u.target.priority)
       : 'hazard: ' + esc(u.target && u.target.hazard) + ' <span class="sep">·</span> farming system: ' + esc(u.target && u.target.farming_system) +
         (u.target && present(u.target.risk_role) ? ' <span class="sep">·</span> ' + vterm('risk_role', u.target.risk_role) : '');
     var g = u.at_a_glance || {};

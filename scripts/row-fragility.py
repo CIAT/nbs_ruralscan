@@ -90,7 +90,7 @@ def main(argv: list[str] | None = None) -> int:
     run = _cell_runner(a.nbs_id, inp)
     units = inp["units"]
     out_rows: list[dict[str, Any]] = []
-    for stem in ("T3_nbs_hazard_farming", "T6_nbs_scorecard"):
+    for stem in ("T3_nbs_hazard_farming", "T6_nbs_scorecard", "T6E_economic_profile"):
         path = S.SCHEMA / "recipes" / a.nbs_id / f"{stem}.csv"
         with path.open(newline="", encoding="utf-8") as f:
             for r in csv.DictReader(f):
@@ -134,7 +134,7 @@ def main(argv: list[str] | None = None) -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     out_rows.sort(key=lambda x: (-x["n_pivotal"], x["record_id"]))
     with out.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=list(out_rows[0]))
+        w = csv.DictWriter(f, fieldnames=list(out_rows[0]), lineterminator="\n")
         w.writeheader()
         w.writerows(out_rows)
     print(f"{len(out_rows)} roll-up rows -> {out}")

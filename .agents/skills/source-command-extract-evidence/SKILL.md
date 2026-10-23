@@ -373,3 +373,28 @@ Enforcement: schema_tools.t4_coverage in CI; numeric compiler checks expected cl
 ## Complete directional evidence and review (v1.6.16)
 
 36. **Weight-only extraction is incomplete when the table also gives direction.** Read and apply [T4 extraction and adversarial review contract](../extraction_contracts/T4_review_contract.md) before extraction or verification. Assess variable use, suitability direction and numeric calibration independently; inventory every table row. Existing records do not justify skipping missing supported dimensions. Reviewers check omissions as well as invented values. Direction-only evidence remains non-executable until calibration is supported.
+
+
+## Direction on the variable as named (v1.6.17)
+
+37. **Direction is the movement of the variable as NAMED, with its verbatim cue** (2026-10-23, Pete: a
+    unit "reduced erosion … commonly documented" showed `erosion_hazard · negative`, which reads as
+    "bad"). The coding was right (erosion went down) but nothing made that checkable, and the habit of
+    thinking "benefit = positive" flips hazard, cost and deficit variables. Before coding, read the
+    variable's row in `schema/lookups/variable_direction_sense.csv`; state "<variable> went up / down
+    according to '<cue>'"; then emit `relationship.direction` AND `relationship.direction_cue` (the
+    shortest verbatim phrase carrying the movement, sliced from the quote). `check_direction.py` flags a
+    missing or non-verbatim cue and a cue that moves the other way; the build fails if an effect variable
+    has no sense row or a crosswalk polarity disagrees with it. Full rule:
+    `_versions/v1.6.17/contracts/DIRECTION_ADDENDUM.md`.
+
+38. **A season is not a hazard; a mimic is not the practice** (2026-10-23 AF fix round, Pete).
+    Three recurring T3 mis-tags, each pivotal in a roll-up: (a) an ordinary DRY SEASON ("saison
+    sèche", "época seca", "estío") is not a drought — leave `context.hazard_type` blank unless the
+    source names a drought / deficit year / El Niño event; the unit stays as T6 evidence. (b)
+    General shade or wind-speed benefit with no event (cattle shade, winter desiccation behind a
+    windbreak) is not heat-stress or storm mitigation — no `hazard_type`. (c) An experiment that
+    MIMICS the practice (artificial shade nets for shade trees) is not the practice: PICOS fails
+    on I, do not extract (or drop `wrong_practice`). Also: a bundled programme in which the NbS is
+    only "an option in some communities" is a marginal component — exclude, don't discount.
+

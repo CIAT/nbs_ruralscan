@@ -144,8 +144,11 @@ T3_HAZARDS = [
     "fire",
     "wind_cyclone",
     "waterlogging",
-    "frost",
 ]
+#: frost is out of T3 for every NbS (Pete 2026-10-23 row review: "frost is not a hazard we
+#: are concerned with"). Frost-tagged units stay in the register and feed T6 like any other
+#: unit; they just open no T3 livelihood or asset cell.
+EXCLUDED_T3_HAZARDS = ["frost"]
 #: hazards that exist ONLY as T3 asset_threat rows (Pete 2026-10-06): siltation of dams /
 #: tanks and storm damage to structures are threats to the INVESTMENT (M2b Stream A), not
 #: livelihood hazards — no T3 livelihood cell, no XW route, excluded from the 7-hazard
@@ -1239,6 +1242,53 @@ def _benefit_verbs(table: str, key: str) -> tuple[str, str]:
     return "increases", "decreases"
 
 
+def _effect_core(
+    table: str, nbs_id: str, key: str, rank: int, strength: dict[int, str]
+) -> str:
+    """Lead clause of an effect statement ("agroforestry slightly reduces X")."""
+    up, down = _benefit_verbs(table, key)
+    if rank == 0:
+        return f"{nbs_id} shows no effect on {key}"
+    if rank > 0:
+        return f"{nbs_id} {strength[rank]} {up} {key}".replace("  ", " ")
+    return f"{nbs_id} {strength[-rank]} {down} {key}".replace("  ", " ")
+
+
+def _restate_lead(
+    j: dict[str, Any], top: dict[str, Any], old_label: str, new_lead: str
+) -> None:
+    """Swap a statement's lead clause for the family-vote class, so the sentence never
+    describes the pooled class it replaced (review 2026-10-22: 'strongly reduces' on a
+    row the vote set to slight)."""
+    st = j.get("statement")
+    if not isinstance(st, str):
+        return
+    table = "T6" if "effect_direction" in top else "T3"
+    key = str(top.get("variable_id") or top.get("hazard_type") or "")
+    nbs = str(top.get("nbs_id") or "")
+    if table == "T3" and key:
+        key_txt = f"the impact of {key}" if "the impact of" in st else key
+    else:
+        key_txt = key
+    old_rank = _DIR_RANK.get(old_label)
+    for strength in (
+        {1: "slightly", 2: "moderately", 3: "strongly"},
+        {1: "", 2: "", 3: ""},
+    ):
+        if old_rank is None:
+            break
+        old_lead = _effect_core(table, nbs, key, old_rank, strength)
+        if st.startswith(old_lead):
+            j["statement"] = new_lead + st[len(old_lead) :]
+            return
+        if key_txt != key:
+            alt = old_lead.replace(f" {key}", f" {key_txt}", 1)
+            if st.startswith(alt):
+                j["statement"] = new_lead + st[len(alt) :]
+                return
+    j["statement"] = new_lead + ". " + st
+
+
 def _statement(
     table: str,
     nbs_id: str,
@@ -1300,13 +1350,7 @@ def _statement(
                 f"transfer: {envelope.get('transfer_class')}; value range only when the "
                 "contract gates pass)."
             )
-        up, down = _benefit_verbs(table, key)
-        if rank == 0:
-            core = f"{nbs_id} shows no effect on {key}"
-        elif rank > 0:
-            core = f"{nbs_id} {strength[rank]} {up} {key}".replace("  ", " ")
-        else:
-            core = f"{nbs_id} {strength[-rank]} {down} {key}".replace("  ", " ")
+        core = _effect_core(table, nbs_id, key, rank, strength)
         if strength_basis == "direction_only":
             core += " (strength not quantified in the evidence)"
         if intensity_limited:
@@ -1807,7 +1851,7 @@ def conflicting_statement(rec: dict[str, Any], key: str) -> str:
     transfer = env.get("transfer_class", "")
     return (
         f"{rec.get('nbs_id', '')} {key}: CONFLICTING EVIDENCE — material weight on both the "
-        "positive and the negative side, so no direction is stated. This is not a null "
+        "benefit and the harm side, so no direction is stated. This is not a null "
         "finding: studies found real effects, in opposite directions, and the agreement "
         "note lists both sides. Read the conditionality for what separates them"
         + (f" (transfer: {transfer})." if transfer else ".")
@@ -1940,8 +1984,10 @@ def traceable_account(
     w_neg = round(sum(c.weight for c in voting if c.sign < 0), 2)
     w_zero = round(sum(c.weight for c in voting if c.sign == 0), 2)
     agreement_note = (
-        f"{head}: positive {len(pos)} (weight {w_pos}) {pos}; "
-        f"negative {len(neg)} (weight {w_neg}) {neg}; null {len(zero)} (weight {w_zero}) {zero}."
+        # signs here are AFTER crosswalk polarity (benefit frame), not the units' coded
+        # `direction` — "benefit" / "harm" so the two can never be confused (v1.6.17)
+        f"{head}: benefit {len(pos)} (weight {w_pos}) {pos}; "
+        f"harm {len(neg)} (weight {w_neg}) {neg}; no effect {len(zero)} (weight {w_zero}) {zero}."
     )
     if rec.get("data_deficient"):
         statement = data_deficient_statement(dict(rec, nbs_id=nbs_id), key)
@@ -2789,6 +2835,9 @@ _ECON_KEYS = {
     "cost_per_tco2e_avoided",
     "cost_per_farmer_reached",
 }
+#: economic indicators that belong to feasibility, not scoping (Pete 2026-10-23): their
+#: cells are not published; the units stay in the register
+FEASIBILITY_ONLY_ECON = {"cost_per_tco2e_avoided"}
 _T5_LIKE: set[str] = (
     set()
 )  # reserved: callers may register T5 ids that collide with econ names
@@ -3063,12 +3112,24 @@ def _family_vote(
     sides = ", ".join(f"{v['family'].split('__')[-1]}={v['label']}" for v in classed)
     if new_label == "conflicting_evidence":
         j["conflicting"] = True
+        old_conf = str(top.get("confidence") or top.get("effect_confidence") or "")
         top["agreement_level"] = "low"
         new_conf = IPCC_MATRIX.get((str(top.get("evidence_level")), "low"), "low")
         for cf in ("confidence", "effect_confidence"):
             if cf in top:
                 top[cf] = new_conf
         if isinstance(j.get("statement"), str):
+            _restate_lead(
+                j,
+                top,
+                old_label,
+                f"{top.get('nbs_id', '')} {_key_of(top)}: CONFLICTING EVIDENCE across "
+                "sub-practices",
+            )
+            if old_conf:
+                j["statement"] = j["statement"].replace(
+                    f"→ {old_conf} confidence", f"→ {new_conf} confidence"
+                )
             j["statement"] += (
                 " CLASS SET BY SUB-PRACTICE VOTE: the family rows disagree "
                 f"({sides}), so the roll-up states conflicting evidence rather than the "
@@ -3077,6 +3138,19 @@ def _family_vote(
     else:
         j["conflicting"] = new_label == "conflicting_evidence"
         if isinstance(j.get("statement"), str):
+            table = "T6" if "effect_direction" in top else "T3"
+            _restate_lead(
+                j,
+                top,
+                old_label,
+                _effect_core(
+                    table,
+                    str(top.get("nbs_id") or ""),
+                    _key_of(top),
+                    int(rank or 0),
+                    {1: "slightly", 2: "moderately", 3: "strongly"},
+                ),
+            )
             j["statement"] += (
                 f" CLASS SET BY SUB-PRACTICE VOTE ({sides}): {new_label}, "
                 f"replacing the pooled {old_label}."
@@ -3084,6 +3158,10 @@ def _family_vote(
     rep.notes.append(
         f"roll-up class set by sub-practice vote: {old_label} -> {new_label} ({sides})"
     )
+
+
+def _key_of(top: dict[str, Any]) -> str:
+    return str(top.get("variable_id") or top.get("hazard_type") or "")
 
 
 def _wmedian(pairs: list[tuple[int, float]]) -> int:
