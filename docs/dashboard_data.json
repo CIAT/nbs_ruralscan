@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-23T09:06:18.885246+00:00",
-  "git_commit": "192fbb49513973046f191b80c16d8d6a6219b74c",
+  "timestamp": "2026-10-23T12:45:20.067479+00:00",
+  "git_commit": "7dec31b1b80aa70b0b9fb0b20f3d91ffda691864",
   "registers": {
     "SRC_source_register": [
       {
@@ -11638,6 +11638,24 @@
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__planted_silvoarable",
         "variable": "finance_credit_access",
+        "relationship": {
+          "type": "intervention_pathway",
+          "support_type": "indirect financial/programme support",
+          "credit_access_measured": false,
+          "direction": "not_isolated_from_other_intervention_components"
+        },
+        "context": {
+          "source_concept": "indirect financial support",
+          "credit_access_measured": false,
+          "claim_interpretation": "review_intervention_pathway",
+          "suitability_dimension": "operational_constraint",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              26
+            ],
+            "interpretation": "Indirect financial support is broader than access to credit. The ontology label already covers rural finance/credit/project support; retained that broad group and explicitly marked the source concept as indirect programme support, with credit access not measured. This passage describes a proposed intervention pathway, not an isolated causal estimate or a numeric finance suitability rule."
+          }
+        },
         "use_role": "operational_risk",
         "evidence_type": "scoping_candidate",
         "claim_basis": "primary_measured",
@@ -11646,7 +11664,7 @@
         "quote": "Under this pathway, three key elements, participant engagement, program exposure, and indirect financial support, lead to agroforestry adoption, which is then intended to lead to positive productivity, profitability, and human well-being outcomes through diversified production and income streams, improved soil fertility, and other changes.",
         "page": 26,
         "reviewer_ok": false,
-        "raw_name": "indirect financial support",
+        "raw_name": "Indirect financial/programme support",
         "attribution": "[query 2026-10-23 by peetmate; note:is indirect financial support the same thing as access to credit? is this what we mean by access to credit? is access to credit too specific a term in M2b?] [query 2026-09-18 by peetmate; reason:other; note:this about adoption and socio-economic factors that relate to uptake, this is not T4 structural suitability. You should not be making this mistake - the agents should have been updated to assign this to T3 and/or next steps. Also there shuold be a\"Reason\" that clearly correspond to this issue.] Pathway 1 synthesis in Castle et al. (2021) p.26; covers multiple Sub-Saharan Africa and Asia studies.",
         "locator_type": "page",
         "ruleset_version": "2026-06-18.section-scope"
@@ -12360,8 +12378,20 @@
         "suitability_family_id": "agroforestry__planted_silvoarable",
         "variable": "aridity_index",
         "relationship": {
-          "direction": "negative",
-          "note": "aridity is the primary bioclimatic driver of tree cover on agricultural land; humid (low aridity) = high cover; arid = low cover"
+          "type": "observed_presence",
+          "association": "Humid regions tend to have higher agricultural tree cover and biomass carbon.",
+          "numeric_index_direction": "not_established_by_this_quote"
+        },
+        "context": {
+          "claim_interpretation": "observed_distribution_association",
+          "duplicate_group": "zomer_treecover_aridity",
+          "source_publication_year": 2016,
+          "review_resolution_2026_10_23": {
+            "pages": [
+              3
+            ],
+            "interpretation": "The two passages repeat one source-level association: tree cover and biomass carbon tend to be higher in humid regions. Linked the second record to the first for deduplication; its existing dropped state is unchanged. This is observed distribution, not a calibrated suitability response. Removed the generic negative aridity-index direction because numerical sign depends on the chosen index definition. Source ID says 2014, but cached publication is Scientific Reports 2016, 6:29987; stable ID retained."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -12383,13 +12413,26 @@
         "suitability_family_id": "agroforestry__planted_silvoarable",
         "variable": "aridity_index",
         "relationship": {
-          "direction": "negative",
-          "note": "aridity negatively associated with tree cover on agricultural land; humid regions = higher biomass carbon"
+          "type": "observed_presence",
+          "association": "Humid regions tend to have higher agricultural tree cover and biomass carbon.",
+          "numeric_index_direction": "not_established_by_this_quote"
+        },
+        "context": {
+          "claim_interpretation": "observed_distribution_association",
+          "duplicate_group": "zomer_treecover_aridity",
+          "source_publication_year": 2016,
+          "review_resolution_2026_10_23": {
+            "pages": [
+              3
+            ],
+            "interpretation": "The two passages repeat one source-level association: tree cover and biomass carbon tend to be higher in humid regions. Linked the second record to the first for deduplication; its existing dropped state is unchanged. This is observed distribution, not a calibrated suitability response. Removed the generic negative aridity-index direction because numerical sign depends on the chosen index definition. Source ID says 2014, but cached publication is Scientific Reports 2016, 6:29987; stable ID retained."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
         "claim_basis": "primary_measured",
         "claim_scope": "practice_technology",
+        "lineage_of": "ev_aridity_index_zomer14_1",
         "extraction_confidence": "high",
         "quote": "In summary, both tree cover and consequently biomass carbon on agricultural land tend to be higher in humid regions.",
         "page": 3,
@@ -13180,7 +13223,26 @@
         "suitability_family_id": "agroforestry__silvopastoral",
         "variable": "land_cover",
         "relationship": {
-          "gating_condition": "pasture/grassland"
+          "type": "source_categorical_eligibility",
+          "source_classes": [
+            "pasture/grassland"
+          ],
+          "source_dataset": "USDA NASS Cropland Data Layer",
+          "required_host_use": "grazing animals",
+          "note": "Paper-defined agricultural extent; code details retained in linked code record."
+        },
+        "context": {
+          "related_evidence_ids": [
+            "ev_land_cover_saraheb3_cdl"
+          ],
+          "runtime_status": "held_target_dataset_crosswalk",
+          "source_scope_note": "US Midwest agricultural-extent mask",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              8
+            ],
+            "interpretation": "Table 2 explicitly gates silvopasture to pasture/grassland, with grazing animals in the practice definition. Added source dataset and class wording. The associated code selects CDL class 176 and removes ESA WorldCover tree class 10. This regional tool therefore targets introducing silvopasture on open pasture, not every existing wooded grazing system. A grassland label alone still does not confirm local grazing; no global crosswalk inferred."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -13225,10 +13287,37 @@
         "relationship": {
           "direction": "positive"
         },
+        "context": {
+          "claim_origin": "cited_secondary",
+          "cited_references": [
+            {
+              "number": 50,
+              "citation": "Mercer DE, Frey GE, Cubbage FW (2014). Economics of agroforestry. Handbook of Forest Resource Economics, pp204–225."
+            }
+          ],
+          "originals_status": "Reporting-source bibliography checked; original claims not independently extracted.",
+          "model_use": {
+            "verified": true,
+            "method": "county_social_acceptability_indicator",
+            "page": "6",
+            "scope": "practice_technology",
+            "weight_path_pct": [],
+            "note": "Verified model input, separate from numeric response calibration. Count reporting paper once per variable and scope."
+          },
+          "source_variable": "Hired/unpaid workers per operation",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              6,
+              17
+            ],
+            "interpretation": "Reference 50 is Mercer, Frey & Cubbage (2014), Economics of agroforestry, Handbook of Forest Resource Economics, pp204–225. Added that lineage. Castle then uses hired/unpaid workers per operation as its own county-level labour-availability indicator, with an expected positive effect on social acceptability. Distinguish the borrowed rationale from Castle’s model input; neither is a measured universal labour threshold."
+          }
+        },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
-        "claim_basis": "table",
+        "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
+        "lineage_of": "external:mercer_frey_cubbage_2014_economics_agroforestry",
         "extraction_confidence": "high",
         "quote": "Agroforestry practices with harvestable products are more labor intensive, so regions with existing labor markets are likely to be more suitable for these practices [50].",
         "page": 6,
@@ -13290,8 +13379,38 @@
         "suitability_family_id": "agroforestry__planted_silvoarable",
         "variable": "finance_credit_access",
         "relationship": {
-          "direction": "positive",
-          "condition": "appropriate policies and financial incentives"
+          "type": "conditional_profitability_statement",
+          "condition": "appropriate policies and financial incentives",
+          "interpretation": "Not a measured credit-access effect or general suitability function."
+        },
+        "context": {
+          "claim_origin": "cited_secondary",
+          "cited_references": [
+            {
+              "number": 16,
+              "citation": "Thiesmeier A and Zander P (2023). Can agroforestry compete? A scoping review of the economic performance of agroforestry practices in Europe and North America. Forest Policy and Economics 150:102939."
+            },
+            {
+              "number": 17,
+              "citation": "Lehmann LM et al. (2020). Productivity and economic evaluation of agroforestry systems for sustainable production of food and non-food products. Sustainability 12:5429."
+            },
+            {
+              "number": 18,
+              "citation": "Giannitsopoulos ML et al. (2020). Whole system valuation of arable, agroforestry and tree-only systems at three case study sites in Europe. Journal of Cleaner Production 269:122283."
+            },
+            {
+              "number": 19,
+              "citation": "Kay S et al. (2019). Agroforestry is paying off—economic evaluation of ecosystem services in European landscapes with and without agroforestry systems. Ecosystem Services 36:100896."
+            }
+          ],
+          "originals_status": "Reporting-source bibliography checked; original claims not independently extracted.",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              2,
+              16
+            ],
+            "interpretation": "Linked the statement to all four references: Thiesmeier & Zander (2023), Lehmann et al. (2020), Giannitsopoulos et al. (2020), and Kay et al. (2019). The statement concerns profitability under policies/incentives, not a credit threshold or a structural T4 condition. Retain as secondary operational/implementation guidance. The four originals are not automatically four independent votes and require claim-specific checking before direct extraction."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "scoping_candidate",
@@ -14476,7 +14595,7 @@
         "variable": "land_cover",
         "relationship": {
           "permutation_importance_pct": 61.3,
-          "direction": "land cover is primary predictor of silvopastoral suitability"
+          "interpretation": "Predictive importance, not directional suitability or class score"
         },
         "context": {
           "suitability_dimension": "system_constraint",
@@ -14489,9 +14608,29 @@
             "verified": true,
             "method": "MaxEnt_predictor",
             "page": "7",
-            "weight_path_pct": [],
             "scope": "practice_technology",
-            "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            "weight_path_pct": [],
+            "note": "Verified model input, separate from numeric response calibration. Count reporting paper once per variable and scope."
+          },
+          "related_evidence_ids": [
+            "ev_t4_lc_kizir_2"
+          ],
+          "importance_comparison": {
+            "metric": "permutation_importance_pct",
+            "reported_value": 61.3,
+            "predictor_count": 14,
+            "reference_total_pct": 100,
+            "relative_to_mean_input": 8.581999999999999,
+            "reference_total_basis": "Conventional normalized permutation importance; complete vector not printed in main text.",
+            "not_runtime_weight": true
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [
+              5,
+              7,
+              8
+            ],
+            "interpretation": "The 61.3% is MaxEnt permutation importance, not a class score or default MCDA weight. Linked to the separate 16-class CORINE eligibility record. Relative to equal importance among the source model’s 14 predictors, 61.3% is 8.58 times the mean if using the conventional 100%-total permutation scale. This comparison is diagnostic only; no importance was invented for the other predictors."
           }
         },
         "use_role": "structural_suitability",
@@ -14512,7 +14651,8 @@
         "suitability_family_id": "agroforestry__silvopastoral",
         "variable": "land_cover",
         "relationship": {
-          "suitable_classes": [
+          "type": "source_categorical_eligibility",
+          "eligible_classes": [
             "211",
             "221",
             "222",
@@ -14530,12 +14670,31 @@
             "324",
             "333"
           ],
+          "source_class_labels": {
+            "211": "Non-irrigated arable land",
+            "221": "Vineyards",
+            "222": "Fruit trees and berry plantations",
+            "223": "Olive groves",
+            "231": "Pastures",
+            "242": "Complex cultivation patterns",
+            "243": "Agriculture with significant natural vegetation",
+            "244": "Agroforestry",
+            "311": "Broad-leaved forest",
+            "312": "Coniferous forest",
+            "313": "Mixed forest",
+            "321": "Natural grasslands",
+            "322": "Moors and heathland",
+            "323": "Sclerophyllous vegetation",
+            "324": "Transitional woodland-shrub",
+            "333": "Sparsely vegetated areas"
+          },
           "dataset": "CORINE Land Cover 2018",
-          "context": "EU27 Mediterranean"
+          "outside_list": "excluded_from_source_baseline_only",
+          "transfer_to_other_classifications": "unknown"
         },
         "context": {
           "suitability_dimension": "system_constraint",
-          "note": "Hard exclusion classes.",
+          "note": "Regional baseline eligibility mask; subsequent MaxEnt suitability is separate.",
           "source_check": {
             "date": "2026-10-20",
             "reviewer": "Codex source verification",
@@ -14545,9 +14704,19 @@
             "verified": true,
             "method": "MaxEnt_predictor",
             "page": "7",
-            "weight_path_pct": [],
             "scope": "practice_technology",
-            "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            "weight_path_pct": [],
+            "note": "Verified model input, separate from numeric response calibration. Count reporting paper once per variable and scope."
+          },
+          "runtime_status": "held_regional_class_crosswalk",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              4,
+              5,
+              6,
+              7
+            ],
+            "interpretation": "Recovered labelled eligibility list: 16 CORINE 2018 classes covering pasture, grassland, selected crops, shrubland and forest. Section 2.1 excludes other classes from this EU Mediterranean analysis; this is a source eligibility mask, not 16 equally high suitability scores. MaxEnt later assigns suitability. Keep regional mask distinct from a global WorldCover crosswalk and from proof of grazing."
           }
         },
         "use_role": "structural_suitability",
@@ -14596,6 +14765,12 @@
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__silvopastoral",
         "variable": "mean_annual_temperature",
+        "relationship": {
+          "type": "model_input",
+          "source_variable": "Annual mean temperature (BIO1)",
+          "source_dataset": "WorldClim 2.1",
+          "direction": "not_reported"
+        },
         "context": {
           "suitability_dimension": "biophysical_constraint",
           "note": "Table 2 predictor.",
@@ -14608,9 +14783,17 @@
             "verified": true,
             "method": "MaxEnt_predictor",
             "page": "7",
-            "weight_path_pct": [],
             "scope": "practice_technology",
-            "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            "weight_path_pct": [],
+            "note": "Verified model input, separate from numeric response calibration. Count reporting paper once per variable and scope."
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [
+              6,
+              7,
+              8
+            ],
+            "interpretation": "Yes. Table 2 verifies annual mean temperature (WorldClim BIO1) as one of 14 MaxEnt predictors. It counts once as a model-used variable even without cutoffs. No monotonic direction, temperature optimum or weight is stated here; those remain unknown. Duplicate records from this paper cannot add another temperature vote."
           }
         },
         "use_role": "structural_suitability",
@@ -14787,12 +14970,43 @@
         "suitability_family_id": "agroforestry__silvopastoral",
         "variable": "extension_governance",
         "context": {
-          "suitability_dimension": "operational_constraint"
+          "suitability_dimension": "operational_constraint",
+          "claim_origin": "cited_secondary",
+          "cited_references": [
+            {
+              "number": 110,
+              "citation": "Zabala et al. (2025). Drivers to adopt agroforestry and sustainable land-use innovations: A review and framework for policy.",
+              "url": "https://bura.brunel.ac.uk/handle/2438/30799",
+              "checked": "Review/framework, not an independent new field experiment."
+            },
+            {
+              "number": 125,
+              "citation": "Alvarado Sandino et al. (2023). Examining factors for the adoption of silvopastoral agroforestry in the Colombian Amazon.",
+              "url": "https://www.nature.com/articles/s41598-023-39038-0",
+              "checked": "Original results explicitly report positive association between specialized SPS training and adoption."
+            },
+            {
+              "number": 126,
+              "citation": "Chamorro-Vargas et al. (2025). Enablers and barriers to adoption of sustainable silvopastoral practices for livestock production in Colombia.",
+              "url": "https://www.frontiersin.org/journals/sustainable-food-systems/articles/10.3389/fsufs.2025.1600091/full",
+              "checked": "Relevant adoption study; do not attribute every element of the bundled Kiziridis sentence to this paper."
+            }
+          ],
+          "originals_status": "Targeted primary-page check completed for ref 125; no new SRC/EV records registered.",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              26,
+              32,
+              33
+            ],
+            "interpretation": "References are useful. Ref 125 directly reports a positive association between specialized silvopastoral training and adoption in Colombia; ref 110 is a review/framework, and ref 126 studies Colombian adoption. Added exact references and links. Kiziridis is secondary evidence here, not its own training experiment. Retain operational guidance; originals need registered, claim-specific extraction before they become additional independent votes."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "scoping_candidate",
         "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
+        "lineage_of": "external:alvarado_sandino_2023_sps_training",
         "extraction_confidence": "low",
         "quote": "Recent quantitative studies consistently identify specific variables that are crucial for uptake, such as secure land tenure (a prerequisite for long-term investment), access to technical training, the influence of neighboring adopters, and farmers' perceptions of profitability and system complexity [110,125,126].",
         "page": 26,
@@ -16840,12 +17054,28 @@
           "direction": "positive",
           "note": "insecure tenure reduces long-term tree investment"
         },
+        "context": {
+          "suitability_dimension": "operational_constraint",
+          "claim_origin": "cited_secondary",
+          "cited_reference_numbers": [
+            8
+          ],
+          "routing_note": "Read use_role, not historical evidence_id prefix.",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              2,
+              16,
+              17
+            ],
+            "interpretation": "Already routed to operational_risk: the T4 text in the stable evidence ID is historical, not its analytical destination. IDs stay unchanged to preserve review links. This is M2b/implementation guidance, outside the core suitability score. The source passage is secondary (reference 8); no independent field finding or numeric rule is claimed."
+          }
+        },
         "use_role": "operational_risk",
         "evidence_type": "scoping_candidate",
         "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
         "extraction_confidence": "medium",
-        "quote": "Land tenure: Lack of land ownership \ndeeds in SSA disincentivizes smallholders \nfrom making long-term investments in \ntrees [8].",
+        "quote": "Land tenure: Lack of land ownership\ndeeds in SSA disincentivizes smallholders\nfrom making long-term investments in\ntrees [8].",
         "page": 2,
         "reviewer_ok": false,
         "raw_name": "land tenure security",
@@ -16862,12 +17092,32 @@
           "direction": "positive",
           "note": "weak market linkages constrain agroforestry adoption"
         },
+        "context": {
+          "claim_origin": "cited_secondary",
+          "cited_references": [
+            {
+              "number": 7,
+              "citation_as_printed": "Pham TT, Moeliono M, Brockhaus M, Le DN, Wong G, Le TM (2019). Factors influencing the adoption of agroforestry and evergreen agriculture in Vietnam uplands. Agroforestry Systems 93(6):2173–2187.",
+              "identity_status": "Printed DOI returned Crossref 404 on 2026-10-23; title identity not verified."
+            }
+          ],
+          "originals_status": "Reporting-source bibliography checked; original claims not independently extracted.",
+          "suitability_dimension": "operational_constraint",
+          "review_needed": "Original reference 7 identity unresolved; do not treat as verified primary evidence.",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              2,
+              16
+            ],
+            "interpretation": "Operational risk and next steps, not core T4. The source cites reference 7 as Pham et al. (2019), Factors influencing the adoption of agroforestry and evergreen agriculture in Vietnam uplands. Its printed DOI returned no Crossref record during this check. Citation is recorded as reported, not verified; original-source identity remains unresolved. Retain the attributed qualitative claim, with no independent original-paper vote or numeric calibration."
+          }
+        },
         "use_role": "operational_risk",
         "evidence_type": "scoping_candidate",
         "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
         "extraction_confidence": "medium",
-        "quote": "Markets: Weak linkages with input and \noutput markets hampers ability to procure \nmaterial as well as process and sell value-\nadded agroforestry products [7].",
+        "quote": "Markets: Weak linkages with input and\noutput markets hampers ability to procure\nmaterial as well as process and sell value-\nadded agroforestry products [7].",
         "page": 2,
         "reviewer_ok": true,
         "raw_name": "market access / value-chain linkages",
@@ -16884,12 +17134,28 @@
           "direction": "positive",
           "note": "inadequate extension reduces agroforestry skills and adoption"
         },
+        "context": {
+          "suitability_dimension": "operational_constraint",
+          "claim_origin": "cited_secondary",
+          "cited_reference_numbers": [
+            9
+          ],
+          "routing_note": "Read use_role, not historical evidence_id prefix.",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              2,
+              16,
+              17
+            ],
+            "interpretation": "Already routed to operational_risk: the T4 text in the stable evidence ID is historical, not its analytical destination. IDs stay unchanged to preserve review links. This is M2b/implementation guidance, outside the core suitability score. The source passage is secondary (reference 9); no independent field finding or numeric rule is claimed."
+          }
+        },
         "use_role": "operational_risk",
         "evidence_type": "scoping_candidate",
         "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
         "extraction_confidence": "medium",
-        "quote": "Technical skills: Inadequate knowledge \non good agroforestry practices related to \nspecies selection, design, management \netc. due to lack of extension restricts \nfarmer skills [9].",
+        "quote": "Technical skills: Inadequate knowledge\non good agroforestry practices related to\nspecies selection, design, management\netc. due to lack of extension restricts\nfarmer skills [9].",
         "page": 2,
         "reviewer_ok": false,
         "raw_name": "extension / technical knowledge access",
@@ -18345,12 +18611,35 @@
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__cross_family",
         "variable": "soil_bulk_density",
+        "relationship": {
+          "type": "model_input",
+          "source_variable": "Bulk Density",
+          "direction": "not_reported"
+        },
         "context": {
           "region": "Punjab, India",
           "dataset": "ISRIC soil grids 250m",
           "source_check": {
             "date": "2026-10-20",
             "resolution": "Source p6 names bulk density, not drainage class, as a model predictor. Correct variable; retain model-use evidence only, no invented breakpoints."
+          },
+          "model_use": {
+            "verified": true,
+            "method": "AHP_tree_species_model",
+            "page": "6",
+            "scope": "species_specific",
+            "weight_path_pct": [
+              6.4
+            ],
+            "note": "Verified model input, separate from numeric response calibration. Count reporting paper once per variable and scope."
+          },
+          "weight_note": "Published Table 1 weights sum to 0.989; 6.4% is printed weight, not a silently renormalized runtime value.",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              6,
+              7
+            ],
+            "interpretation": "Bulk density is now explicitly recorded as model use. Page 6 lists it as an input and Table 1 gives a published weight of 0.064 (6.4%). This model ranks tree-species groups, so the vote stays in the species-specific lane; it does not increase general agroforestry agreement. No monotonic response is supplied by this paragraph. Historical soildrain ID remains stable; variable is soil_bulk_density."
           }
         },
         "use_role": "structural_suitability",
@@ -21807,6 +22096,24 @@
           "source_check": {
             "date": "2026-10-20",
             "resolution": "Code lines 495-546 resolves denominator: initial weights 5+5+5+3+1; last two halved before normalization, total 17. Each 5/17=29.4118% of environmental-priority subscore, NOT structural suitability or final model weight. Soft-quarantine wrong-table T4 extraction."
+          },
+          "importance_comparison": {
+            "subscore": "environmental_priority",
+            "effective_weights": [
+              5,
+              5,
+              5,
+              1.5,
+              0.5
+            ],
+            "total": 17,
+            "input_count": 5,
+            "relative_to_mean_input": 1.4705882352941178,
+            "runtime_t4_weight": false
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [],
+            "interpretation": "Resolved from the full calculation: alley-cropping weights are 5, 5, 5, 3 and 1, then the last two are halved to 1.5 and 0.5. Total is 17. Each weight 5 therefore contributes 29.41% of the environmental-priority subscore, or 1.47 times the five-input average. This is an environmental-benefit priority, not structural suitability or the final model weight. Record remains quarantined from T4; no reapproval requested for the denominator arithmetic."
           }
         },
         "use_role": "structural_suitability",
@@ -21841,6 +22148,24 @@
           "source_check": {
             "date": "2026-10-20",
             "resolution": "Code lines 495-546 resolves denominator: initial weights 5+5+5+3+1; last two halved before normalization, total 17. Each 5/17=29.4118% of environmental-priority subscore, NOT structural suitability or final model weight. Soft-quarantine wrong-table T4 extraction."
+          },
+          "importance_comparison": {
+            "subscore": "environmental_priority",
+            "effective_weights": [
+              5,
+              5,
+              5,
+              1.5,
+              0.5
+            ],
+            "total": 17,
+            "input_count": 5,
+            "relative_to_mean_input": 1.4705882352941178,
+            "runtime_t4_weight": false
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [],
+            "interpretation": "Resolved from the full calculation: alley-cropping weights are 5, 5, 5, 3 and 1, then the last two are halved to 1.5 and 0.5. Total is 17. Each weight 5 therefore contributes 29.41% of the environmental-priority subscore, or 1.47 times the five-input average. This is an environmental-benefit priority, not structural suitability or the final model weight. Record remains quarantined from T4; no reapproval requested for the denominator arithmetic."
           }
         },
         "use_role": "structural_suitability",
@@ -21875,6 +22200,24 @@
           "source_check": {
             "date": "2026-10-20",
             "resolution": "Code lines 495-546 resolves denominator: initial weights 5+5+5+3+1; last two halved before normalization, total 17. Each 5/17=29.4118% of environmental-priority subscore, NOT structural suitability or final model weight. Soft-quarantine wrong-table T4 extraction."
+          },
+          "importance_comparison": {
+            "subscore": "environmental_priority",
+            "effective_weights": [
+              5,
+              5,
+              5,
+              1.5,
+              0.5
+            ],
+            "total": 17,
+            "input_count": 5,
+            "relative_to_mean_input": 1.4705882352941178,
+            "runtime_t4_weight": false
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [],
+            "interpretation": "Resolved from the full calculation: alley-cropping weights are 5, 5, 5, 3 and 1, then the last two are halved to 1.5 and 0.5. Total is 17. Each weight 5 therefore contributes 29.41% of the environmental-priority subscore, or 1.47 times the five-input average. This is an environmental-benefit priority, not structural suitability or the final model weight. Record remains quarantined from T4; no reapproval requested for the denominator arithmetic."
           }
         },
         "use_role": "structural_suitability",
@@ -22128,13 +22471,30 @@
           "source_crop_predicate": "var CDLcrops = cropLandcover.lte(61).or(cropLandcover.gte(205).and(cropLandcover.lte(209))).or((cropLandcover.gte(213)).and((cropLandcover.neq(215)).and(cropLandcover.neq(217)).and(cropLandcover.neq(218)).and(cropLandcover.neq(220)).and(cropLandcover.neq(223)))); //cultivated annual crops, not tree crops",
           "pasture_code": 176,
           "gate": "annual crops OR pasture, excluding ESA tree cover",
-          "source_dataset": "USDA/NASS/CDL"
+          "source_dataset": "USDA/NASS/CDL",
+          "source_dataset_year": 2022,
+          "worldcover_excluded_code": 10,
+          "scope": "alley cropping; silvopasture has separate pasture-only mask",
+          "unmapped_codes": "unknown; source predicate admits background and unlisted range values"
         },
         "context": {
           "source_check": {
             "date": "2026-10-20",
             "resolution": "Code lines 137-159 defines cultivated annual crops plus CDL pasture 176, with ESA forest excluded. Exact source predicate retained; US CDL-specific, not an inferred WorldCover class list."
-          }
+          },
+          "source_dataset_version": "USDA NASS CDL 2022; ESA WorldCover v200",
+          "review_needed": "Crop predicate accepts Background 0 and multiple perennial/idle classes; do not adopt blindly. Current catalog labels checked; 2022-specific dictionary and pixel-mask behavior still require validation.",
+          "source_practice_masks": {
+            "alley_cropping": "annual crop predicate OR CDL 176; exclude WorldCover 10",
+            "silvopastoral": "CDL 176; exclude WorldCover 10",
+            "riparian_buffer": "riparianarea geometry",
+            "linear_boundary": "fieldBuffers geometry"
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [],
+            "interpretation": "Code masks are now explicit by practice, and checked against the Earth Engine CDL dictionary. Alley cropping selects the crop predicate OR pasture 176, excluding WorldCover tree class 10; silvopasture selects pasture 176 alone with that exclusion. The crop comment is misleading: its predicate also accepts Background 0, hay, switchgrass, fallow/idle land and berry crops. Background may be masked in the input; no affected area was measured. Saved all selected named codes in the audit. Do not reuse this numeric predicate as a global mask; exact 2022 dictionary and pixel-mask behavior remain checks before adoption."
+          },
+          "code_dictionary_audit": "pipeline/t4_audit/agroforestry/cdl_code_predicate_audit_2026-10-23.json"
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -23180,21 +23540,29 @@
         "suitability_family_id": "agroforestry__regeneration_farmland",
         "variable": "tenure_security",
         "relationship": {
+          "type": "observed_presence",
           "metric": "land_plots_inherited_share",
+          "operator": ">",
           "pct_inherited": 85,
-          "direction": "tenure_not_constraining_when_inherited"
+          "limitation": "Tenure issues for women and their managed plots could not be assessed."
         },
         "context": {
           "country": "Sahel",
           "region": "West Africa",
-          "aez": "semi_arid"
+          "aez": "semi_arid",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              26
+            ],
+            "interpretation": "Agreed. Over 85% describes inherited plots in the study sample, not a tenure threshold or evidence that inheritance guarantees security. Restored the truncated sentence, including the warning that women’s plots could still face tenure issues which these data could not assess. Removed the inferred suitability direction; retained contextual implementation evidence."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
         "claim_basis": "primary_measured",
         "claim_scope": "practice_technology",
         "extraction_confidence": "medium",
-        "quote": "Land tenure would has been a constraining factor, but in the study area, over 85% of all land plots were inherited in each of the c",
+        "quote": "Land tenure would has been a constraining factor, but in the study area, over 85% of all land plots were inherited in each of the countries. This still may be an issue for women and the plots that they manage, but this could not be assessed with data at hand.",
         "page": 26,
         "reviewer_ok": false,
         "raw_name": "proportion of land plots inherited (tenure not a constraint)",
@@ -23288,19 +23656,27 @@
             800
           ],
           "occurs_below_400_mm": true,
-          "note": "Advice for rapid spread; lower-rainfall growth slower, not excluded. No upper suitability limit stated."
+          "note": "Advice for rapid spread; lower-rainfall growth slower, not excluded. No upper suitability limit stated.",
+          "variable": "annual_precipitation",
+          "unit": "mm/year"
         },
         "context": {
           "region": "Sahel",
           "aez": "semi_arid",
-          "study_context": "SSA"
+          "study_context": "SSA",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              58
+            ],
+            "interpretation": "Rainfall is already the canonical variable annual_precipitation. Added explicit name and units inside the displayed values too. The 400–800 mm/year interval describes greatest observed spread of regreening; the source explicitly allows regreening below 400 mm/year. Retained as observed spread/growth context, not a hard rainfall gate or an upper suitability limit."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "scoping_candidate",
         "claim_basis": "expert_assertion",
         "claim_scope": "practice_technology",
         "extraction_confidence": "medium",
-        "quote": "Rainfall in excess of 400 mm/year. \nExperience in the Sahel shows that regreening \nhas spread most in areas with 400–800 \nmillimeters of annual rainfall. This does not \nimply that regreening does not occur in regions \nwith less than 400 millimeters, but growth \nrates of the vegetation in areas with low rainfall \nis usually much slower than in areas of higher \nrainfall.\n▪▪",
+        "quote": "Rainfall in excess of 400 mm/year.\nExperience in the Sahel shows that regreening\nhas spread most in areas with 400–800\nmillimeters of annual rainfall. This does not\nimply that regreening does not occur in regions\nwith less than 400 millimeters, but growth\nrates of the vegetation in areas with low rainfall\nis usually much slower than in areas of higher\nrainfall.\n▪▪",
         "page": 58,
         "reviewer_ok": true,
         "raw_name": "Rainfall in excess of 400 mm/year",
@@ -136009,10 +136385,10 @@
         "variable": "extension_governance",
         "relationship": {
           "direction": "positive",
-          "metric": "narrative",
+          "metric": "association",
           "significance": "sig",
-          "design": "quasi_experimental",
-          "outcome_raw": "agroforestry training raises probability of adopting fertilizer trees (knowledge-intensive technology)"
+          "design": "observational_adoption_model",
+          "outcome_raw": "Agroforestry training positively associated with fertilizer-tree adoption."
         },
         "context": {
           "country": [
@@ -136021,7 +136397,24 @@
           "income_group": "low",
           "region": "Malawi maize-based mixed farming systems",
           "farming_system": "mixed_crop_livestock",
-          "note": "ICRAF working paper; endogenous switching regression, 338 households; ICRAF evaluating an ICRAF-promoted technology (COI)"
+          "note": "ICRAF working paper; endogenous switching regression, 338 households; ICRAF evaluating an ICRAF-promoted technology (COI)",
+          "claim_origin": "own_model_result",
+          "corroborating_citation": "Franzel et al. (2001), discussion only",
+          "model_use": {
+            "verified": true,
+            "method": "adoption_probit_predictor",
+            "page": "24",
+            "scope": "practice_technology",
+            "weight_path_pct": [],
+            "note": "Verified model input, separate from numeric response calibration. Count reporting paper once per variable and scope."
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [
+              22,
+              24
+            ],
+            "interpretation": "This finding is from Coulibaly’s own analysis: section 5.1 and Table 2 list agroforestry training as an adoption predictor. The following Franzel et al. (2001) citation is corroborating discussion, not the origin of the reported result. Retain Coulibaly as one source; describe a positive association, not experimentally proven causation."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
@@ -136041,13 +136434,13 @@
         "source_id": "coulibaly_2016_icraf_wp223",
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__planted_silvoarable",
-        "variable": "finance_credit_access",
+        "variable": "farm_asset_index",
         "relationship": {
           "direction": "positive",
-          "metric": "narrative",
+          "metric": "association",
           "significance": "sig",
-          "design": "quasi_experimental",
-          "outcome_raw": "farm asset ownership (wealth proxy) raises adoption of fertilizer trees"
+          "design": "observational_adoption_model",
+          "outcome_raw": "Farm asset index positively associated with fertilizer-tree adoption; not credit access or a causal effect."
         },
         "context": {
           "country": [
@@ -136056,7 +136449,23 @@
           "income_group": "low",
           "region": "Malawi maize-based mixed farming systems",
           "farming_system": "mixed_crop_livestock",
-          "note": "ICRAF working paper; endogenous switching regression, 338 households; ICRAF evaluating an ICRAF-promoted technology (COI)"
+          "note": "ICRAF working paper; endogenous switching regression, 338 households; ICRAF evaluating an ICRAF-promoted technology (COI)",
+          "review_needed": "Farm asset index definition and spatial proxy require review; do not substitute credit access.",
+          "model_use": {
+            "verified": true,
+            "method": "adoption_probit_predictor",
+            "page": "24",
+            "scope": "practice_technology",
+            "weight_path_pct": [],
+            "note": "Verified model input, separate from numeric response calibration. Count reporting paper once per variable and scope."
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [
+              22,
+              24
+            ],
+            "interpretation": "Corrected variable to farm asset ownership/index, not credit access. The paper’s own Table 2 reports a positive association with fertilizer-tree adoption. This is a wealth/equipment proxy, not evidence of borrowing access and not a causal credit effect. New ontology term remains pending with no spatial dataset binding."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
@@ -136066,7 +136475,7 @@
         "quote": "Ownership of farming related assets is positively and statistically significantly associated with adoption of fertilizer trees. Farm equipment can be considered as proxy of wealth and are necessary assets to foster adoption of technologies on farm.",
         "page": 22,
         "reviewer_ok": false,
-        "raw_name": "farm asset index (wealth proxy)",
+        "raw_name": "Farm asset index",
         "attribution": "[query 2026-10-22 by peetmate; reason:other; note:owning assets is not credit access]",
         "locator_type": "page",
         "ruleset_version": "v1.6.6"
@@ -195013,13 +195422,28 @@
           ],
           "income_group": "low",
           "practice_as_described": "agroforestry intercrops of trees or shrubs with cereals (general statement)",
-          "note": "cited second-hand (ref 22 general; ref 13 for Tephrosia)"
+          "note": "cited second-hand (ref 22 general; ref 13 for Tephrosia)",
+          "claim_origin": "cited_secondary",
+          "cited_references": [
+            {
+              "number": 22,
+              "citation": "Barrett CB, Place F, Aboud AA, eds. (2002). Natural Resources Management in African Agriculture. CAB International."
+            }
+          ],
+          "originals_status": "Reporting-source bibliography checked; original claims not independently extracted.",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              2,
+              6
+            ],
+            "interpretation": "Correct: the general labour-burden statement cites reference 22, Barrett, Place and Aboud (eds., 2002), Natural Resources Management in African Agriculture. Reference 13 supports the distinct Tephrosia comparison. Added explicit source lineage; this is secondary qualitative implementation evidence, not a measured labour coefficient from Snapp’s experiment."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
         "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
-        "lineage_of": "Snapp ref (22)",
+        "lineage_of": "external:barrett_place_aboud_2002_natural_resources_management",
         "extraction_confidence": "medium",
         "quote": "Labor requirements are often\nonerous, both to establish seedlings for transplanting and to\nminimize competition through frequent pruning of intercropped\ntrees or shrubs (22). The maize-Tephrosia vogelii intercrop is an\nexceptional form of agroforestry because it has relatively modest\nlabor requirements (13).",
         "page": 2,
@@ -195036,11 +195460,11 @@
         "suitability_family_id": "agroforestry__planted_silvoarable",
         "variable": "labour_availability",
         "relationship": {
-          "direction": "positive",
-          "metric": "narrative",
-          "significance": "not_reported",
-          "design": "review",
-          "outcome_raw": "maize-Tephrosia relay intercrop has relatively modest labour requirements compared with other agroforestry"
+          "type": "practice_comparison",
+          "metric": "qualitative_labour_requirement",
+          "focal_system": "maize–Tephrosia vogelii intercrop",
+          "comparison": "relatively modest labour requirements compared with other tree/shrub agroforestry intercrops",
+          "direction": "not_a_variable_response"
         },
         "context": {
           "country": [
@@ -195048,13 +195472,28 @@
           ],
           "income_group": "low",
           "practice_as_described": "maize-Tephrosia vogelii 'SP intercrop': Tephrosia planted as a relay intercrop under the maize canopy, growing into the dry season after maize harvest and producing N-rich leafy residues but no grain; maize fertilised (35 kg N/ha) as in the monoculture comparator",
-          "note": "cited second-hand (ref 13)"
+          "note": "cited second-hand (ref 13)",
+          "claim_origin": "cited_secondary",
+          "cited_references": [
+            {
+              "number": 13,
+              "citation": "Snapp SS, Kanyama-Phiri G, Kamanga B, Gilbert R, Wellard K (2002). Farmer and researcher partnerships in Malawi: Developing soil fertility technologies for the near-term and far-term. Experimental Agriculture 38:411–431."
+            }
+          ],
+          "originals_status": "Reporting-source bibliography checked; original claims not independently extracted.",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              2,
+              6
+            ],
+            "interpretation": "Agreed. The claim is that maize–Tephrosia has relatively modest labour requirements compared with other agroforestry systems. It does not establish a positive labour-availability response. Removed the positive direction and retained a qualitative practice comparison linked to Snapp et al. (2002), reference 13. No numeric labour reduction or general suitability curve inferred."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
         "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
-        "lineage_of": "Snapp ref (13)",
+        "lineage_of": "external:snapp_2002_farmer_researcher_partnerships",
         "extraction_confidence": "medium",
         "quote": "Labor requirements are often\nonerous, both to establish seedlings for transplanting and to\nminimize competition through frequent pruning of intercropped\ntrees or shrubs (22). The maize-Tephrosia vogelii intercrop is an\nexceptional form of agroforestry because it has relatively modest\nlabor requirements (13).",
         "page": 2,
@@ -200972,6 +201411,24 @@
         "raised_by": "t4_crs_priority_recovery",
         "raised_date": "2026-10-23",
         "comment": "Separate distance measure from distance to road and accessibility travel time. CRS 2025 Table 2 does not specify unit, route metric or district reference point; km is proposed ontology unit, not a source-unit assertion. No dataset binding or numeric rule authorized."
+      },
+      {
+        "canonical_variable_id": "farm_asset_index",
+        "label": "Farm assets / equipment index",
+        "aliases": [
+          "farm asset ownership"
+        ],
+        "canonical_unit": "index_or_native",
+        "unit_conversions": {},
+        "group_id": "socio_economic",
+        "candidate_dataset_ids": [],
+        "resolution_sensitivity": "medium",
+        "derive_then_aggregate": false,
+        "context_sensitivity": "high",
+        "review_status": "pending",
+        "raised_by": "t4_review_resolution",
+        "raised_date": "2026-10-23",
+        "comment": "Farm asset ownership/wealth proxy is distinct from credit access. Source index construction and spatial representation need review; no binding or runtime rule."
       }
     ],
     "BIND_dataset_binding": [
