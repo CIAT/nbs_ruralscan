@@ -388,3 +388,13 @@ Enforcement: schema_tools.t4_coverage in CI; numeric compiler checks expected cl
     has no sense row or a crosswalk polarity disagrees with it. Full rule:
     `_versions/v1.6.17/contracts/DIRECTION_ADDENDUM.md`.
 
+38. **A season is not a hazard; a mimic is not the practice** (2026-10-23 AF fix round, Pete).
+    Three recurring T3 mis-tags, each pivotal in a roll-up: (a) an ordinary DRY SEASON ("saison
+    sèche", "época seca", "estío") is not a drought — leave `context.hazard_type` blank unless the
+    source names a drought / deficit year / El Niño event; the unit stays as T6 evidence. (b)
+    General shade or wind-speed benefit with no event (cattle shade, winter desiccation behind a
+    windbreak) is not heat-stress or storm mitigation — no `hazard_type`. (c) An experiment that
+    MIMICS the practice (artificial shade nets for shade trees) is not the practice: PICOS fails
+    on I, do not extract (or drop `wrong_practice`). Also: a bundled programme in which the NbS is
+    only "an option in some communities" is a marginal component — exclude, don't discount.
+
