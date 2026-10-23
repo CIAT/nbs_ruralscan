@@ -62,7 +62,25 @@ high-leverage units).
 
 All decisions D1–D8 are now taken (see below).
 
-## Decided 23 October — scoring and dashboard (D3–D7)
+## Revised 23 October, evening — the dashboard shows the mockup's rows (supersedes D3/D4/D7 below)
+
+Checked against the mockup (Opportunity Space panels and NbS Comparison): it shows **one row per
+problem** — the problem's spatial distribution (T5 need layer, runtime) beside how strongly the
+NbS responds (the T6 evidence row) — and **no theme or group chips**. So:
+
+- **D3 → (a) profile only:** no theme chips, no NbS number; one response chip per problem row.
+- **D4:** no longer needed for themes; the same median / dissent rule is used only for a row
+  that pools several T6 rows.
+- **D7 → the mockup's rows** (`schema/lookups/scorecard_rows.csv`): *Risk to rural livelihoods
+  (climate)* — erosion, drought, flood, heat; *What the NbS can address* — biodiversity loss,
+  carbon, rural poverty, gender inequality (response chip here; still an unweighted flag in
+  Priority Hotspots), food insecurity, and **water-table depletion (recharge)**, which pools water
+  stress, catchment water yield and water quality.
+- **Fire is a project risk** (M2b), not an opportunity-space row.
+- **Production gap is an intermediate step** to rural poverty and food insecurity, not a row.
+- D5, D6 and D8 stand.
+
+## Decided 23 October — scoring and dashboard (D3–D7, first build; superseded above)
 
 - **D3 (b):** theme chips, no NbS-level number, plus a count strip.
 - **D4 (a):** a theme chip is the TTL-weighted median of its priority rows at medium confidence or

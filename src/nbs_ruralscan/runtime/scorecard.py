@@ -1,23 +1,24 @@
-"""NbS comparison scorecard: generated T3/T6 rows → dashboard chips (decisions D3–D7).
+"""NbS scorecard: generated T6 rows → the dashboard's problem/response chips (D3–D7).
 
-Pete, 2026-10-23 (`methodology/decisions/2026-10-22_t3t6_scoring_and_qa.md`):
+Pete, 2026-10-23 (`methodology/decisions/2026-10-22_t3t6_scoring_and_qa.md`): the dashboard
+shows, per NbS, **one row per problem** exactly as the mockup's Opportunity Space panels do —
+the problem's spatial distribution (T5 need layer, computed at runtime) beside **how strongly
+this NbS responds** (the T6 evidence row for that problem) — and the NbS Comparison tab shows
+the same rows across NbS. No theme or group chips, no NbS-level number (D3 = profile).
 
-* **D3** no NbS-level number: one chip per T5 theme, plus a count strip.
-* **D4** a theme chip is the TTL-weighted median of its priority rows at medium confidence
-  or better; harm or disagreement among them uses the cell rule (dissent ≥ 1/3 → ±); the
-  theme's confidence is that of its weakest setting row.
-* **D5** T6 never alters the hotspot map; `evidenced_priorities` is the optional filter.
-* **D6** five glyphs (++ + 0 − −−) and three badges (HIGH/MED/LOW), plus ± (studies
-  disagree), ? (not enough evidence) and n/a (not assessed); CAUTION is a chip colour, set
-  when the row lists measured harm for some adopters.
-* **D7 (revised 2026-10-23)** comparison rows are BENEFIT rows matching the mockup and the
-  TOR benefit streams (`schema/lookups/scorecard_rows.csv`), grouped into climate resilience
-  (T3 hazards) · land & water · nature & carbon · livelihoods, plus unscored context flags.
-  T5 themes are the NEED side (hotspot map) and are not used for grouping.
+* Rows come from `schema/lookups/scorecard_rows.csv` (mockup order and wording). A row can pool
+  several T6 rows (water-table depletion = water stress + catchment water yield + water
+  quality); its chip is the median of those rows at medium confidence or better, and any
+  dissent ≥ 1/3 shows ± — the cell rule, one level up.
+* Fire is a project risk (M2b), not an opportunity-space row; production gap is an
+  intermediate step to rural poverty and food insecurity, not a row of its own.
+* D6 scale: five glyphs (++ + 0 − −−) and HIGH/MED/LOW badges, plus ± (studies disagree),
+  ? (not enough evidence) and n/a (not assessed); CAUTION is the chip outline, set when the
+  row lists measured harm for some adopters. Scale and badges: `schema/lookups/scorecard_*.csv`.
+* D5: `evidenced_priorities` (T5 need layers the NbS is evidenced to improve) is the optional
+  hotspot-map filter; T6 never alters the hotspot weights.
 
-The scale, badges and TTL weights are read from `schema/lookups/scorecard_*.csv`; nothing
-analytical is hardcoded here. Only NbS-level, global rows are used (no family, no scope);
-AOI-scoped resolution is the runtime's job (`cell_synthesis.resolve_for_aoi`).
+Only NbS-level, global rows are used (no family, no scope).
 """
 
 from __future__ import annotations
@@ -56,11 +57,7 @@ def load_scale(schema_root: Path) -> dict[str, Any]:
     badges = {
         r["confidence"]: r["badge"] for r in _rd(lk / "scorecard_confidence_badge.csv")
     }
-    ttl = {
-        r["ttl_level"]: float(r["weight"])
-        for r in _rd(lk / "scorecard_ttl_weights.csv")
-    }
-    return {"scale": scale, "badges": badges, "ttl": ttl}
+    return {"scale": scale, "badges": badges}
 
 
 def _special(scale: dict, cls: str) -> dict[str, Any]:
@@ -201,10 +198,15 @@ def _global(rows: list[dict[str, str]]) -> list[dict[str, str]]:
 
 
 def load_rows(schema_root: Path) -> list[dict[str, str]]:
-    """The comparison view's benefit rows (Pete 2026-10-23: rows match the mockup and the
-    TOR benefit streams, not the T5 need themes)."""
     rows = _rd(schema_root / "lookups" / "scorecard_rows.csv")
     return sorted(rows, key=lambda r: int(r.get("order") or 0))
+
+
+def _source_chip(src: str, t6: dict, t3: dict, sc: dict) -> dict[str, Any]:
+    table, key = src.split(":", 1)
+    if table == "T3":
+        return chip(t3.get(key), "mitigation_potential", "confidence", sc)
+    return chip(t6.get(key), "effect_direction", "effect_confidence", sc)
 
 
 def build_nbs(
@@ -212,7 +214,6 @@ def build_nbs(
     nbs_id: str,
     sc: dict,
     t5: list[dict[str, str]],
-    ttl_levels: dict[str, str] | None = None,
     display_rows: list[dict[str, str]] | None = None,
 ) -> dict[str, Any]:
     rdir = schema_root / "recipes" / nbs_id
@@ -223,47 +224,40 @@ def build_nbs(
         if r.get("risk_role") != "asset_threat"
         and (r.get("farming_system") or "all") == "all"
     }
-    ttl_levels = ttl_levels or {}
     display_rows = display_rows if display_rows is not None else load_rows(schema_root)
-    rows_out, groups, labels = [], {}, {}
+    rows_out = []
     for d in display_rows:
-        if d["source_table"] == "T3":
-            c = chip(t3.get(d["source_key"]), "mitigation_potential", "confidence", sc)
+        srcs = [x for x in (d.get("sources") or "").split("|") if x]
+        parts = [(x, _source_chip(x, t6, t3, sc)) for x in srcs]
+        if len(parts) == 1:
+            c = parts[0][1]
         else:
-            c = chip(
-                t6.get(d["source_key"]), "effect_direction", "effect_confidence", sc
-            )
-        level = ttl_levels.get(d["row_id"], "medium")
-        scored = str(d.get("scored", "true")).lower() == "true"
+            c = theme_chip([p for _, p in parts], [1.0] * len(parts), sc)
+            c.setdefault("record_id", "")
         rows_out.append(
             {
                 **c,
-                "class_label": c["label"],
+                "class_label": c.get("label", ""),
                 "row_id": d["row_id"],
-                "group": d["group"],
+                "panel": d["panel"],
+                "panel_label": d["panel_label"],
                 "label": d["label"],
-                "source": f"{d['source_table']}:{d['source_key']}",
-                "scored": scored,
-                "ttl_level": level,
+                "sources": [
+                    {
+                        "source": x,
+                        "glyph": p["glyph"],
+                        "badge": p["badge"],
+                        "class": p["class"],
+                        "record_id": p["record_id"],
+                    }
+                    for x, p in parts
+                ],
             }
         )
-        labels[d["group"]] = d["group_label"]
-        if scored:
-            groups.setdefault(d["group"], []).append((c, sc["ttl"].get(level, 2.0)))
-    group_out = {
-        g: {
-            **theme_chip([c for c, _ in v], [w for _, w in v], sc),
-            "label": labels[g],
-            "n_rows": len(v),
-        }
-        for g, v in groups.items()
-    }
     counts: dict[str, int] = {}
     for r in rows_out:
-        if not r["scored"]:
-            continue
         k = (
-            r["class"]
+            r["class"] or "pooled"
             if r["rank"] is None
             else "benefit"
             if r["rank"] > 0
@@ -272,8 +266,6 @@ def build_nbs(
             else "no_effect"
         )
         counts[k] = counts.get(k, 0) + 1
-    # D5: the optional hotspot-map filter works on the T5 NEED layers, so it reads the
-    # T6 priority rows (all of them, hazard priorities included)
     pri = [
         r["variable_id"]
         for r in t5
@@ -284,12 +276,7 @@ def build_nbs(
         c = chip(t6.get(v), "effect_direction", "effect_confidence", sc)
         if (c["rank"] or 0) > 0 and c["badge"] in ("MED", "HIGH"):
             evidenced.append(v)
-    return {
-        "groups": group_out,
-        "rows": rows_out,
-        "counts": counts,
-        "evidenced_priorities": evidenced,
-    }
+    return {"rows": rows_out, "counts": counts, "evidenced_priorities": evidenced}
 
 
 def build(schema_root: str | Path) -> dict[str, Any]:
@@ -305,21 +292,19 @@ def build(schema_root: str | Path) -> dict[str, Any]:
             )
     return {
         "meta": {
-            "decisions": "methodology/decisions/2026-10-22_t3t6_scoring_and_qa.md (D3–D7)",
-            "rows": "schema/lookups/scorecard_rows.csv (benefit rows matching the mockup and the TOR benefit streams)",
+            "decisions": "methodology/decisions/2026-10-22_t3t6_scoring_and_qa.md",
+            "rows": "schema/lookups/scorecard_rows.csv (mockup rows: problem + NbS response)",
             "scale": [
                 {k: r[k] for k in ("field", "class", "glyph", "label")}
                 for r in sc["scale"].values()
             ],
             "badges": sc["badges"],
-            "ttl_weights": sc["ttl"],
-            "group_rule": (
-                f"TTL-weighted median of the group's benefit rows at {MIN_THEME_CONF} "
-                f"confidence or better; dissent ≥ {DISSENT_SHARE:.2f} → ±; group confidence "
-                "= weakest setting row; context flags are shown, never scored; no NbS-level number"
+            "pooled_row_rule": (
+                f"a row built from several T6 rows shows their median at {MIN_THEME_CONF} "
+                f"confidence or better; dissent ≥ {DISSENT_SHARE:.2f} → ±; confidence = "
+                "weakest setting row"
             ),
             "caution": "chip outline when the row lists measured harm for some adopters",
-            "default_ttl_level": "medium",
         },
         "nbs": nbs,
     }

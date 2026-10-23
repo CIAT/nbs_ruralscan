@@ -71,29 +71,28 @@ def test_theme_without_setting_rows():
     assert S.theme_chip([na], [2], SC)["glyph"] == "n/a"
 
 
-def test_live_build_uses_benefit_rows_and_never_scores_flags():
-    b = S.build(ROOT / "schema")
+def test_rows_are_the_mockup_rows():
     rows = S.load_rows(ROOT / "schema")
-    assert {r["group"] for r in rows} >= {
-        "climate_resilience",
-        "land_water",
-        "nature_carbon",
-        "livelihoods",
-    }
-    # food security and rural income are separate rows (Pete 2026-10-23)
-    keys = {r["source_key"] for r in rows}
-    assert {"food_insecurity", "rural_poverty"} <= keys
-    # T6 hazard priorities duplicate T3 and agricultural_dependency can never be evidenced
-    assert not keys & {
-        "drought_hazard",
-        "flood_hazard",
-        "heat_stress_hazard",
-        "agricultural_dependency",
-    }
+    labels = [r["label"] for r in rows]
+    assert labels[:4] == ["Erosion risk", "Drought", "Flood hazard", "Heat stress"]
+    assert {
+        "Biodiversity loss",
+        "Rural poverty",
+        "Gender inequality",
+        "Food insecurity",
+    } <= set(labels)
+    srcs = "|".join(r["sources"] for r in rows)
+    # fire is a project risk; production gap is an intermediate step (Pete 2026-10-23)
+    assert "fire" not in srcs and "production_gap" not in srcs
+
+
+def test_live_build_has_no_groups_and_pools_the_water_row():
+    b = S.build(ROOT / "schema")
     for v in b["nbs"].values():
-        assert "score" not in v  # D3: no NbS-level number
-        assert "context_flags" not in v["groups"]
-        assert sum(v["counts"].values()) == sum(1 for r in v["rows"] if r["scored"])
+        assert "groups" not in v and "score" not in v
+        water = next(r for r in v["rows"] if r["row_id"] == "water_table")
+        assert len(water["sources"]) == 3
+        assert sum(v["counts"].values()) == len(v["rows"])
 
 
 def test_food_security_routes_to_food_insecurity():
@@ -112,9 +111,9 @@ def test_food_security_routes_to_food_insecurity():
     assert t6 and all(x["target_key"] == "food_insecurity" for x in t6)
 
 
-def test_row_label_is_the_benefit_name_not_the_chip_label():
+def test_row_label_is_the_problem_name_not_the_chip_label():
     b = S.build(ROOT / "schema")
     v = next(iter(b["nbs"].values()))
     labels = {r["row_id"]: r["label"] for r in v["rows"]}
-    assert labels["gender_flag"] == "Gender inequity"
-    assert labels["food_security"] == "Food security"
+    assert labels["gender"] == "Gender inequality"
+    assert labels["food_insecurity"] == "Food insecurity"
