@@ -3750,5 +3750,95 @@
       "pdf_sha256": "b800444c537664a9f0320e14c2b4e1cf6aa513002a10c51360f7a73c54e3531c",
       "method": "Table 2 full-page image visually checked. Complete additive source tree consolidated using explicit node mapping; tests verify 100% total, 20% soil total, all 26 original paths and four pH occurrences."
     }
+  },
+  "e822e50b602fbb9b4aad03bd9d5a944c2d437fb09b1acee5063f5971724aa0d9": {
+    "evidence_id": "ev_T4_soc_haile2024_continuation",
+    "reviewer": "peetmate",
+    "note": "the table is split across 2 pages where are the rest of the suitability values?",
+    "status": "resolved",
+    "resolution": "Table 4 spans PDF pages 5 and 6. SOC starts at the bottom of p5: <0.5 = Low, 0.5–0.7 = Medium; first two rows of p6 continue SOC: 0.7–0.75 = High, >0.75 = Very high. Both evidence records already exist and the compiler links the continuation to ev_T4_soc_haile2024_1. Source-page selector now offers both pages with explicit labels. The source shares endpoint 0.7 between adjacent classes; this clarification does not change existing boundary handling. No additional independent source vote is created.",
+    "reason": "confirmed_pass",
+    "resolution_evidence_ids": [
+      "ev_T4_soc_haile2024_continuation"
+    ],
+    "resolution_checks": [
+      {
+        "evidence_id": "ev_T4_soc_haile2024_continuation",
+        "field": "variable",
+        "sha256": "22e82b1bc97297ff0ddd88e864584284d8f02b0b1fc75c129e9875c2bd54f536"
+      },
+      {
+        "evidence_id": "ev_T4_soc_haile2024_continuation",
+        "field": "relationship",
+        "sha256": "5200717fd6718564d1360157bc73415ead107ee676fbd8803111418f4b81b9d9"
+      },
+      {
+        "evidence_id": "ev_T4_soc_haile2024_continuation",
+        "field": "context",
+        "sha256": "4f02940839087815e0769597a73a47676b3cc0e2b5c36fe31f01183ac9f94312"
+      },
+      {
+        "evidence_id": "ev_T4_soc_haile2024_continuation",
+        "field": "quote",
+        "sha256": "8d2b615f4e5fbc7175687676b465cd463bacc31aa7c20b84aad75f7a2751ef30"
+      }
+    ],
+    "source_check": {
+      "source_id": "haile_2024",
+      "pdf_pages": [
+        5,
+        6
+      ],
+      "pdf_sha256": "f9aba0e5ce1dad8d21d9c3922dc81e15de6d92b6a6f352492cc67140abcb9eb0",
+      "checked_on": "2026-10-23",
+      "method": "Source table visually checked; code dictionary verified against provider distribution where applicable. Human review unchanged.",
+      "page_labels": {
+        "5": "Table 4 — SOC Low and Medium",
+        "6": "Table 4 continued — SOC High and Very high"
+      }
+    }
+  },
+  "8167dde201c0909161ad6c6f93cb6ac194619c12d6a746a6c8594438ca956183": {
+    "evidence_id": "ev_t4_soildra_nath21_01",
+    "reviewer": "peetmate",
+    "note": "the soil drainage codes are not interpretable as ordinal values, more information is needed as to what exactly the codes refer to if we are going to be able to use this practically.\n\nwe need an issue that refers to this type of probelm",
+    "status": "resolved",
+    "resolution": "Code meanings resolved against FAO HWSD v1.2 D_DRAINAGE dictionary. Nath Table 2 gives: code 4 = Moderately Well drained → Very good; codes 3 and 6 = Imperfectly and Somewhat Excessive → Good; code 2 = Poor → Moderate; code 1 = Very Poor → Marginal. These are category identifiers, not ordered suitability scores. Codes 5 (Well) and 7 (Excessive) have no assigned suitability in this table and remain unknown. Preserve this unusual source ranking; do not replace it with an assumed better-drainage gradient. Source dictionary and labels now accompany the evidence. Applying it to another dataset still requires an explicit version-specific crosswalk; no runtime curve is enabled. General codebook/crosswalk safeguards tracked in GitHub issue #427: https://github.com/CIAT/nbs_ruralscan/issues/427.",
+    "reason": "confirmed_pass",
+    "resolution_evidence_ids": [
+      "ev_t4_soildra_nath21_01"
+    ],
+    "resolution_checks": [
+      {
+        "evidence_id": "ev_t4_soildra_nath21_01",
+        "field": "variable",
+        "sha256": "fe2e5a635f76a2c804ca5e1d1e4f49a8bae9381fc85522be145e7130b1bb4d0d"
+      },
+      {
+        "evidence_id": "ev_t4_soildra_nath21_01",
+        "field": "relationship",
+        "sha256": "e0043971da66d1288704ea6d8365b3648ccaf3bf753bf1063b79671312cfa63c"
+      },
+      {
+        "evidence_id": "ev_t4_soildra_nath21_01",
+        "field": "context",
+        "sha256": "63aede0152919f5993003c99dc568d1f722d5dfb2a7739eed3b319dec7b3e664"
+      },
+      {
+        "evidence_id": "ev_t4_soildra_nath21_01",
+        "field": "quote",
+        "sha256": "f154c1387fdf1687b152c44c77e640bd62c443940d75fa2ecccc56d7d88dbbb3"
+      }
+    ],
+    "source_check": {
+      "source_id": "nath_2021",
+      "pdf_pages": [
+        7,
+        11
+      ],
+      "pdf_sha256": "b800444c537664a9f0320e14c2b4e1cf6aa513002a10c51360f7a73c54e3531c",
+      "checked_on": "2026-10-23",
+      "method": "Source table visually checked; code dictionary verified against provider distribution where applicable. Human review unchanged."
+    }
   }
 }
