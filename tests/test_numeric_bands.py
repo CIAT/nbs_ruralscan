@@ -25,10 +25,7 @@ def live(variable, family):
 
 def test_reviewed_ph_reaches_t4_and_unstated_ranges_stay_unknown():
     row = live("soil_ph", "planted_silvoarable")
-    assert set(json.loads(row["evidence_ids"])) == {
-        "ev_soil_ph_singh26",
-        "ev_t4_soilph_nath21_01",
-    }
+    assert set(json.loads(row["evidence_ids"])) == {"ev_soil_ph_singh26"}
     np.testing.assert_allclose(
         evaluate_numeric(
             row, [5, 6, 6.5, 7, 8, 9, np.nan], profile_id="ev_soil_ph_singh26"
@@ -189,8 +186,29 @@ def test_all_numeric_policy_rows_accounted_for_without_unhandled_encoding():
     assert len({row["mapping_id"] for row in rows}) == len(rows)
 
 
-def test_nath_recovered_ph_and_carbon_preserve_source_classes():
-    ph = live("soil_ph", "planted_silvoarable")
+def test_nath_recovered_classes_stay_in_draft_until_reviewed(tmp_path):
+    runner = runpy.run_path(str(ROOT / "scripts/synthesise-recipe.py"))
+    runner["write_recipe"](
+        "agroforestry",
+        runner["synthesise"]("agroforestry", approved_only=False),
+        runner["_rd"](runner["REG"] / "VONT_variable_ontology.csv"),
+        output_dir=tmp_path,
+    )
+    with (tmp_path / "T4_suitability_mappings.csv").open() as stream:
+        draft = {
+            r["variable"]: r
+            for r in csv.DictReader(stream)
+            if r["suitability_family_id"].endswith("planted_silvoarable")
+        }
+    for variable, eid in (
+        ("soil_ph", "ev_t4_soilph_nath21_01"),
+        ("soil_organic_carbon", "ev_t4_soilorg_nath21_01"),
+    ):
+        assert eid not in json.loads(
+            live(variable, "planted_silvoarable")["evidence_ids"]
+        )
+        assert eid in json.loads(draft[variable]["evidence_ids"])
+    ph = draft["soil_ph"]
     np.testing.assert_allclose(
         evaluate_numeric(
             ph, [4, 5, 6, 7.3, 7.5, 8], profile_id="ev_t4_soilph_nath21_01"
@@ -198,7 +216,7 @@ def test_nath_recovered_ph_and_carbon_preserve_source_classes():
         [np.nan, 0.75, 0.9, 0.75, 0.5, np.nan],
         equal_nan=True,
     )
-    carbon = live("soil_organic_carbon", "planted_silvoarable")
+    carbon = draft["soil_organic_carbon"]
     np.testing.assert_allclose(
         evaluate_numeric(carbon, [3, 8, 15, 25], profile_id="ev_t4_soilorg_nath21_01"),
         [0.25, 0.5, 0.75, 0.9],
@@ -224,7 +242,7 @@ def test_actual_compatible_pools_and_conflicts():
     ph = live("soil_ph", "planted_silvoarable")
     np.testing.assert_allclose(
         evaluate_numeric(ph, [6.7, 7.3], pool_id="india_planted_scoping__soil_ph"),
-        [0.9, np.nan],
+        [0.9, 0.9],
         equal_nan=True,
     )
     carbon = live("soil_organic_carbon", "planted_silvoarable")

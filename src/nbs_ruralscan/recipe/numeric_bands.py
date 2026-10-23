@@ -156,11 +156,13 @@ def compile_bands(
         by_source.setdefault(unit.source_id, []).append(unit)
     for u in units:
         policy = policies[u.evidence_id]
-        if u.evidence_type not in {"literature_relationship", "expert"}:
-            unresolved.append((u.evidence_id, "selection_only"))
-            continue
+        # Preserve the explicit audited hold reason, including duplicate responses.
+        # The evidence-type gate still prevents selection-only records compiling.
         if policy["action"] != "compile":
             unresolved.append((u.evidence_id, policy["reason"]))
+            continue
+        if u.evidence_type not in {"literature_relationship", "expert"}:
+            unresolved.append((u.evidence_id, "selection_only"))
             continue
         try:
             parsed = parse_profiles(u.relationship or {}, policy)
