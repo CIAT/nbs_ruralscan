@@ -601,6 +601,28 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             f"  BANDS NOTES ({len(_band_flags)} strength-class/magnitude disagreement(s) "
             "— run check_bands.py; classes come from BANDS, never adjectives)"
         )
+    from nbs_ruralscan.schema_tools.check_direction import check as _dir_check
+    from nbs_ruralscan.schema_tools.check_direction import (
+        check_structure as _dir_structure,
+    )
+
+    _dir_errs = _dir_structure(
+        _ev_csv,
+        schema_root / "registers" / "XW_target_crosswalk.csv",
+        schema_root / "lookups" / "variable_direction_sense.csv",
+    )
+    if _dir_errs:
+        raise ValueError(
+            "DIRECTION SENSE FAILED: every effect variable needs a row in "
+            "lookups/variable_direction_sense.csv and XW polarity must agree with it:\n"
+            + "\n".join(f"  - {e['signal']}: {e['detail']}" for e in _dir_errs)
+        )
+    _dir_flags = _dir_check(_ev_csv)
+    if _dir_flags:
+        print(
+            f"  DIRECTION NOTES ({len(_dir_flags)} cue problem(s) on active effect units "
+            "— run check_direction.py; direction is on the variable AS NAMED)"
+        )
     _xw_flags = _xw_check(
         _ev_csv,
         schema_root / "registers" / "VONT_variable_ontology.csv",

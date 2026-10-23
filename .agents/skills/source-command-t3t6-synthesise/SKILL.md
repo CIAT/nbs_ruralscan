@@ -7,7 +7,7 @@ Run T3/T6 cell synthesis for one NbS (methodology/T3_T6_generation_method.md sec
 engine contract `.agents/skills/_versions/v1.6.0/contracts/T3_T6_synthesis_contract.md`). Ask for
 the `nbs_id` if missing. Evidence must already be in the register (`use_role = nbs_effect` /
 `asset_vulnerability`, ruleset v1.6.0) — run the effect-claim extraction (contract
-`T3_T6_extraction_contract.md`) and the central gates first.
+`T3_T6_extraction_contract.md`, plus `_versions/v1.6.17/contracts/DIRECTION_ADDENDUM.md`: every direction carries a verbatim `direction_cue`) and the central gates first.
 
 Workflow:
 1. Gates on the pooled units BEFORE synthesising: `validate_sources` (verbatim), `check_numbers`,

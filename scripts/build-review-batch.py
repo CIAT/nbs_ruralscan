@@ -25,6 +25,8 @@ import fitz
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from nbs_ruralscan.recipe.cell_synthesis import load_bands  # noqa: E402
+from nbs_ruralscan.recipe.direction_sense import load_sense  # noqa: E402
+from nbs_ruralscan.recipe.direction_sense import reads as direction_reads  # noqa: E402
 from nbs_ruralscan.schema_tools import check_bands  # noqa: E402
 from nbs_ruralscan.schema_tools.review import REASON_CODES  # noqa: E402
 
@@ -629,6 +631,7 @@ def plain_words(
     practice = r["nbs_id"].replace("_", " ")
     d = str(rel.get("direction") or "")
     hazard_var = r["variable"].endswith("_hazard")
+    high_is_bad = (load_sense().get(r["variable"]) or {}).get("high_is") == "bad"
     if r["use_role"] == "asset_vulnerability":
         hz = (ctx.get("hazard_type") or "the hazard").replace("_", " ")
         verb = {
@@ -645,6 +648,13 @@ def plain_words(
                 "none": "has NO clear effect on",
             }[d]
             obj = var.replace(" hazard", "").replace(" risk", "")
+        elif high_is_bad:
+            verb = {
+                "negative": "REDUCES (a benefit)",
+                "positive": "INCREASES (a harm)",
+                "none": "has NO clear effect on",
+            }[d]
+            obj = var
         else:
             verb = {
                 "positive": "INCREASES",
@@ -652,7 +662,14 @@ def plain_words(
                 "none": "has NO clear effect on",
             }[d]
             obj = var
-        claim = f"{practice.capitalize()} {verb} {obj}"
+        if rel.get("framing") == "loss":
+            verb = verb.replace(" (a benefit)", "").replace(" (a harm)", "")
+            claim = (
+                f"LOSING {practice} {verb} {obj} "
+                "(so the practice's presence does the reverse)"
+            )
+        else:
+            claim = f"{practice.capitalize()} {verb} {obj}"
     else:
         claim = d or "(no direction coded)"
     bits = []
@@ -708,6 +725,9 @@ def plain_words(
     where_sentence = ("Context: " + "; ".join(where) + ".") if where else ""
     compared = str(rel.get("outcome_raw") or "").strip()
     return {
+        "direction_reads": direction_reads(
+            r["variable"], d, r["use_role"], str(rel.get("framing") or "")
+        )["text"],
         "practice": practice_line(r, fams or {}),
         "described": described_line(ctx, r["use_role"]),
         "band": check_bands.explain_unit(r, bands or []),
@@ -866,6 +886,9 @@ def main(argv: list[str] | None = None) -> int:
                 ),
                 "picos": picos(r, rel, ctx, labels, fams, s_rec),
                 "library_path": s_rec.get("library_path", ""),
+                "cited_original": (r.get("lineage_of") or "").strip()
+                if r.get("claim_basis") == "cited_secondary"
+                else "",
             }
         )
     OUT.mkdir(parents=True, exist_ok=True)

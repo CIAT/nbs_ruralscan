@@ -43,6 +43,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
+from nbs_ruralscan.recipe.direction_sense import reads as direction_reads  # noqa: E402
 from nbs_ruralscan.recipe.synthesis import (  # noqa: E402
     _DEFAULT_GREY_DISCOUNT,
     BASIS_W,
@@ -154,8 +155,17 @@ def _unit(eid: str, ev: dict, src: dict) -> dict:
         "citation": s.get("citation", ""),
         "variable": r.get("variable", ""),
         "direction": rel.get("direction", ""),
+        "direction_reads": direction_reads(
+            r.get("variable", ""),
+            str(rel.get("direction") or ""),
+            r.get("use_role", ""),
+            str(rel.get("framing") or ""),
+        )["text"],
         "strength": rel.get("strength_class", ""),
         "claim_basis": r.get("claim_basis", ""),
+        "cited_original": (r.get("lineage_of") or "").strip()
+        if r.get("claim_basis") == "cited_secondary"
+        else "",
         "basis_bucket": _basis_bucket(
             r.get("claim_basis", ""), str(rel.get("design") or "")
         ),

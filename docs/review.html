@@ -726,7 +726,7 @@
       if (present(r.magnitude)) mag = esc(r.magnitude) + ' (' + mag + ')';
     } else mag = present(r.magnitude) ? esc(r.magnitude) : '';
     var metric = [present(r.metric) ? esc(r.metric) : '', mag, present(r.unit) ? esc(r.unit) : ''].filter(Boolean).join(' ');
-    var claim = joinParts([r.direction, r.strength_class]);
+    var claim = joinParts([(u.plain && u.plain.direction_reads) || r.direction, r.strength_class]);
     claim += '<br>' + (metric || '—');
     claim += '<br>design: ' + esc(r.design) + ' <span class="sep">·</span> significance: ' + esc(r.significance);
     if (present(r.outcome_raw)) claim += '<br><i>' + esc(r.outcome_raw) + '</i>';
@@ -793,7 +793,7 @@
           (u.plain.where ? '<p>' + esc(u.plain.where) + '</p>' : ''), '') : '') +
         '<details class="codes fold"><summary>Coded fields (for the record)</summary>' +
           '<dl class="rows">' +
-            '<dt>Source</dt><dd>' + esc(u.citation) + ' <span class="sep">·</span> tier: ' + esc(u.benchmark_tier) + '</dd>' +
+            '<dt>Source</dt><dd>' + citeHtml(u) + ' <span class="sep">·</span> tier: ' + esc(u.benchmark_tier) + '</dd>' +
             '<dt>Practice</dt><dd>' + joinParts([u.nbs_id, u.suitability_family_id, u.use_role]) + '</dd>' +
             '<dt>Variable</dt><dd>' + esc(u.variable) + '</dd>' +
             '<dt>Claim</dt><dd>' + claim + '</dd>' +
@@ -808,11 +808,20 @@
   }
 
   // ---------- generated-row view (batch kind "rows": T3/T6 rows from cell synthesis) ----------
+  // A second-hand unit is credited to the study it repeats, not the paper that repeats it.
+  function citeHtml(e) {
+    var host = esc(e.citation || e.source_id);
+    if (e.claim_basis !== 'cited_secondary' || e.cited_original === undefined) return host;
+    return (present(e.cited_original)
+      ? 'Original: <b>' + esc(e.cited_original) + '</b>'
+      : '<span class="warn" title="The unit does not record which study it repeats">Original not recorded</span>') +
+      ' <span class="muted">— reported second-hand in ' + host + '</span>';
+  }
   function rowUnitHtml(e) {
     if (e.missing) return '<li class="ev-unit"><code>' + esc(e.evidence_id) + '</code> <span class="warn">not in the register</span></li>';
     return '<li class="ev-unit">' +
-      '<div class="ev-cite">' + esc(e.citation || e.source_id) + (present(e.page) ? ' <span class="sep">·</span> p. ' + esc(e.page) : '') + '</div>' +
-      '<div class="ev-meta">' + joinParts([e.variable, e.direction, e.strength, e.suitability_family_id]) +
+      '<div class="ev-cite">' + citeHtml(e) + (present(e.page) ? ' <span class="sep">·</span> p. ' + esc(e.page) : '') + '</div>' +
+      '<div class="ev-meta">' + joinParts([e.variable, e.direction_reads || e.direction, e.strength, e.suitability_family_id]) +
         (present(e.basis_bucket) ? ' <span class="sep">·</span> <span title="claim_basis: ' + esc(e.claim_basis) + '">' + vterm('claim_basis_bucket', e.basis_bucket) + '</span>'
           : (present(e.claim_basis) ? ' <span class="sep">·</span> ' + esc(e.claim_basis) : '')) +
         (e.review_state && e.review_state !== 'active' ? ' <span class="pill hold">' + esc(e.review_state) + '</span>' : '') +

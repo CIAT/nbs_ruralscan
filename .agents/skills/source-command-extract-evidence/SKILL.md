@@ -373,3 +373,18 @@ Enforcement: schema_tools.t4_coverage in CI; numeric compiler checks expected cl
 ## Complete directional evidence and review (v1.6.16)
 
 36. **Weight-only extraction is incomplete when the table also gives direction.** Read and apply [T4 extraction and adversarial review contract](../extraction_contracts/T4_review_contract.md) before extraction or verification. Assess variable use, suitability direction and numeric calibration independently; inventory every table row. Existing records do not justify skipping missing supported dimensions. Reviewers check omissions as well as invented values. Direction-only evidence remains non-executable until calibration is supported.
+
+
+## Direction on the variable as named (v1.6.17)
+
+37. **Direction is the movement of the variable as NAMED, with its verbatim cue** (2026-10-23, Pete: a
+    unit "reduced erosion … commonly documented" showed `erosion_hazard · negative`, which reads as
+    "bad"). The coding was right (erosion went down) but nothing made that checkable, and the habit of
+    thinking "benefit = positive" flips hazard, cost and deficit variables. Before coding, read the
+    variable's row in `schema/lookups/variable_direction_sense.csv`; state "<variable> went up / down
+    according to '<cue>'"; then emit `relationship.direction` AND `relationship.direction_cue` (the
+    shortest verbatim phrase carrying the movement, sliced from the quote). `check_direction.py` flags a
+    missing or non-verbatim cue and a cue that moves the other way; the build fails if an effect variable
+    has no sense row or a crosswalk polarity disagrees with it. Full rule:
+    `_versions/v1.6.17/contracts/DIRECTION_ADDENDUM.md`.
+

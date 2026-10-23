@@ -1807,7 +1807,7 @@ def conflicting_statement(rec: dict[str, Any], key: str) -> str:
     transfer = env.get("transfer_class", "")
     return (
         f"{rec.get('nbs_id', '')} {key}: CONFLICTING EVIDENCE — material weight on both the "
-        "positive and the negative side, so no direction is stated. This is not a null "
+        "benefit and the harm side, so no direction is stated. This is not a null "
         "finding: studies found real effects, in opposite directions, and the agreement "
         "note lists both sides. Read the conditionality for what separates them"
         + (f" (transfer: {transfer})." if transfer else ".")
@@ -1940,8 +1940,10 @@ def traceable_account(
     w_neg = round(sum(c.weight for c in voting if c.sign < 0), 2)
     w_zero = round(sum(c.weight for c in voting if c.sign == 0), 2)
     agreement_note = (
-        f"{head}: positive {len(pos)} (weight {w_pos}) {pos}; "
-        f"negative {len(neg)} (weight {w_neg}) {neg}; null {len(zero)} (weight {w_zero}) {zero}."
+        # signs here are AFTER crosswalk polarity (benefit frame), not the units' coded
+        # `direction` — "benefit" / "harm" so the two can never be confused (v1.6.17)
+        f"{head}: benefit {len(pos)} (weight {w_pos}) {pos}; "
+        f"harm {len(neg)} (weight {w_neg}) {neg}; no effect {len(zero)} (weight {w_zero}) {zero}."
     )
     if rec.get("data_deficient"):
         statement = data_deficient_statement(dict(rec, nbs_id=nbs_id), key)
