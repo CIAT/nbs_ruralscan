@@ -207,9 +207,7 @@ def test_reviewed_nath_classes_reach_live_with_source_limits(tmp_path):
         ("soil_ph", "ev_t4_soilph_nath21_01"),
         ("soil_organic_carbon", "ev_t4_soilorg_nath21_01"),
     ):
-        assert eid in json.loads(
-            live(variable, "planted_silvoarable")["evidence_ids"]
-        )
+        assert eid in json.loads(live(variable, "planted_silvoarable")["evidence_ids"])
         assert eid in json.loads(draft[variable]["evidence_ids"])
     ph = live("soil_ph", "planted_silvoarable")
     np.testing.assert_allclose(
