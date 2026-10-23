@@ -45,3 +45,9 @@ let box={dataset:{rot:'90'},querySelector:()=>img,querySelectorAll:s=>s==='a'?[l
 ctx.vfSelectSourcePage('record',8,{closest:()=>box});
 assert.equal(img.src,'/api/crop?eid=record&full=1&page=8');
 assert(link.href.endsWith('#page=8'));assert.equal(box.dataset.rot,'0');
+ctx.vfClarificationsFor=()=>[];
+ctx.window._vfClarifications=[{source:'chuma',answers:[{source_check:{pdf_pages:[5,6],page_labels:{5:'Table 2 — AHP variable weights',6:'Table 3 — suitability classes'}}}]}];
+const chuma=ctx.vfSourcePages({evidence_id:'other-card',source_id:'chuma',page:6,context:{}});
+assert.deepEqual(Array.from(chuma,p=>p.page),[5,6]);
+assert(chuma[0].label.includes('Table 2'));
+assert.equal(ctx.vfSourcePages({evidence_id:'unrelated',source_id:'elsewhere',page:2}).length,1);
