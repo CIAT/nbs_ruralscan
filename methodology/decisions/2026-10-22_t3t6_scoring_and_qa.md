@@ -60,7 +60,27 @@ high-leverage units).
   - Row review: `review.html?batch=af_rollups_2026-10-22`. The 46 agroforestry roll-up rows, each
     with its class, confidence, prose, family vote and evidence.
 
-D3–D7 (the scoring and dashboard decisions) are still open.
+All decisions D1–D8 are now taken (see below).
+
+## Decided 23 October — scoring and dashboard (D3–D7)
+
+- **D3 (b):** theme chips, no NbS-level number, plus a count strip.
+- **D4 (a):** a theme chip is the TTL-weighted median of its priority rows at medium confidence or
+  better; disagreement among them uses the cell rule (dissent ≥ 1/3 → ±); the theme's
+  confidence is that of its weakest setting row.
+- **D5 (d):** T6 and the hotspot map side by side by default; the TTL can switch on a filter that
+  keeps only the priorities the NbS is evidenced to improve.
+- **D6 (b):** five glyphs (++ + 0 − −−) and three badges (HIGH / MED / LOW), plus ± (studies
+  disagree), ? (not enough evidence) and n/a (not assessed); CAUTION is the chip colour, set
+  when a row lists measured harm for some adopters.
+- **D7 (a):** comparison rows are generated from the T5 priorities grouped by theme, plus a T3
+  hazard block.
+
+Built: `src/nbs_ruralscan/runtime/scorecard.py` → `docs/scorecard.json` (every schema build),
+viewable at `docs/scorecard.html`. The scale, badges and TTL weights live in
+`schema/lookups/scorecard_*.csv`. Glyph mapping: strong and moderate share ++ / −−, slight is
++ / −; T3 moderate and above is ++, low is +. Wiring the wireframe's NbS Comparison tab to this
+JSON is a separate PR.
 
 ## Decided 23 October (Pete's row review)
 
