@@ -24,3 +24,13 @@ assert(ctx.vfSimpleMatch(repeated,'mine'));
 assert(ctx.vfSimpleMatch(repeated,'advanced'));
 assert(ctx.vfSimpleMatch({...repeated,conflictReviewed:false},'todo'));
 answered.add('repeat');assert(ctx.vfSimpleMatch(repeated,'todo'));
+const history=[
+ {evidence_id:'c',reviewer:'Pete',decision:'drop'},
+ {evidence_id:'c',reviewer:'Namita',decision:'ok'},
+];
+assert(!ctx.vfRepeatedConflicts(history,'Pete').c);
+history.push({evidence_id:'c',reviewer:'Pete',decision:'drop'});
+assert(ctx.vfRepeatedConflicts(history,'Pete').c);
+assert(!ctx.vfRepeatedConflicts(history,'Namita').c);
+history.push({evidence_id:'c',reviewer:'Pete',decision:'reopen'});
+assert(!ctx.vfRepeatedConflicts(history,'Pete').c);
