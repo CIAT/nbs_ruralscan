@@ -491,12 +491,27 @@ class Handler(SimpleHTTPRequestHandler):
                     },
                 )
             pno = int(row["page"]) if (row.get("page") or "").isdigit() else None
+            requested_page = parse_qs(urlparse(self.path).query).get("page", [""])[0]
+            if requested_page:
+                if (
+                    not requested_page.isdigit()
+                    or not 1 <= int(requested_page) <= 10000
+                ):
+                    return self._json(400, {"error": "invalid PDF page"})
+                import fitz
+
+                with fitz.open(str(pdf)) as document:
+                    if int(requested_page) > len(document):
+                        return self._json(400, {"error": "PDF page out of range"})
+                pno = int(requested_page)
             _rq = parse_qs(urlparse(self.path).query).get("rot", [""])[0]
             rot = int(_rq) if _rq in ("0", "90", "180", "270") else 0
             try:
                 data = render_region_png(
                     pdf,
-                    row.get("quote") or "",
+                    ""
+                    if requested_page and str(pno) != row.get("page")
+                    else row.get("quote") or "",
                     pno,
                     rot,
                     full_page=parse_qs(urlparse(self.path).query).get("full", [""])[0]

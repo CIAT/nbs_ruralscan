@@ -2431,6 +2431,24 @@
     if(n||nc)el.innerHTML+='<details style="font-weight:400;font-size:11px"><summary>Submission details</summary>Your '+n+' decisions across all queues'+(nc?', plus '+nc+' saved discussion updates (all reviewers)':'')+'.</details>';
     _vfStyleApply(n+nc); }
   function _vfRenderSubsetBanner(){ var el=document.getElementById('vf-subset-banner'); if(!el)return; var sc=window._vfScope||{}; var chips=[]; if(sc.sourceId)chips.push(['sourceId','📄 source: '+sc.sourceId, sc.sourceId]); if(sc.section)chips.push(['section','📍 page '+sc.section, sc.section]); if(!chips.length){ el.style.display='none'; el.innerHTML=''; return; } el.style.display='block'; el.innerHTML='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.3); border-radius:6px; padding:6px 10px; font-size:11px;"><span style="color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em;">Subset</span>'+chips.map(function(c){return '<span style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:2px 9px;">'+vfEsc(c[1])+' <a href="#" title="remove this subset" onclick="vfSetSubset(\''+c[0]+'\',\''+vfEsc(String(c[2]))+'\');return false;" style="color:var(--accent-rose); text-decoration:none; font-weight:700;">✕</a></span>';}).join('')+'<a href="#" onclick="window._vfScope.sourceId=\'\';window._vfScope.section=\'\';renderVfWorklist();return false;" style="color:var(--accent-sky); margin-left:auto;">clear all</a></div>'; }
+  function vfSourcePages(ev){
+    var pages={},c=ev.context||{};
+    if(typeof c==='string'){try{c=JSON.parse(c);}catch(e){c={};}}
+    function add(value,label){String(value||'').split(',').forEach(function(v){v=v.trim();if(/^[1-9][0-9]*$/.test(v))pages[v]=label+' · PDF p'+v;});}
+    add(ev.page,'Quoted evidence');
+    add((c.model_use||{}).page,'Model / weights');
+    add((c.model_use_provenance||{}).page,'Weight evidence');
+    // Verified supporting pages belong to the source, not just the questioned card.
+    var sourceIssues=(window._vfClarifications||[]).filter(function(g){return ev.source_id&&g.source===ev.source_id;});
+    sourceIssues.concat(vfClarificationsFor(ev.evidence_id)).forEach(function(g){(g.answers||[]).forEach(function(a){var sc=a.source_check||{};(sc.pdf_pages||[]).forEach(function(n){if(!pages[n])add(n,'Supporting evidence');});Object.keys(sc.page_labels||{}).forEach(function(n){if(/^[1-9][0-9]*$/.test(n))pages[n]=sc.page_labels[n]+' · PDF p'+n;});});});
+    return Object.keys(pages).sort(function(a,b){return Number(a)-Number(b);}).map(function(n){return {page:Number(n),label:pages[n]};});
+  }
+  function vfSelectSourcePage(eid,page,button){
+    var box=button.closest('.vf-crop'),url='/api/crop?eid='+encodeURIComponent(eid)+'&full=1&page='+page;
+    var img=box.querySelector('img');img.src=url;img.removeAttribute('data-src0');img.style.transform='';img.onerror=function(){this.alt='Page unavailable; use Open original PDF.';};box.dataset.rot='0';
+    box.querySelectorAll('[data-source-page]').forEach(function(b){b.disabled=Number(b.dataset.sourcePage)===Number(page);});
+    box.querySelectorAll('a').forEach(function(a){if(a.getAttribute('href').indexOf('/api/crop?')===0)a.href=url;if(a.getAttribute('href').indexOf('/api/pdf?')===0)a.href=a.href.split('#')[0]+'#page='+page;});
+  }
   function vfToggleCrop(eid,btn){ var box=btn.nextElementSibling; if(!box)return; if(box.style.display==='none'){ if(!box.dataset.loaded){ box.dataset.rot='0'; var q=encodeURIComponent(eid);
       // CODE source (tool / GEE script): render the actual code lines from /api/code — NOT a PDF
       // crop. Needs the live server (it fetches + caches the file from GitHub at the pinned commit).
@@ -2470,6 +2488,10 @@
         pdfLink.target='_blank'; pdfLink.rel='noopener noreferrer';
         pdfLink.textContent='Open original PDF — adjacent pages and full table';
         box.prepend(pdfLink);
+      }
+      if(window._reviewApi){
+        var pages=vfSourcePages(_evC);
+        if(pages.length>1)box.innerHTML='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">'+pages.map(function(p){return '<button data-source-page="'+p.page+'" onclick="vfSelectSourcePage(\''+eid+'\','+p.page+',this)" style="padding:7px;cursor:pointer">'+vfEsc(p.label)+'</button>';}).join('')+'</div>'+box.innerHTML;
       }
       box.dataset.loaded='1'; } box.style.display='block'; btn.textContent='📷 hide source region'; } else { box.style.display='none'; btn.textContent='📷 show source region'; } }
   // Client-side rotate (canvas) — works for committed crops, live /api/crop, and on GitHub Pages
