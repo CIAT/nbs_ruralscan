@@ -41,3 +41,36 @@ def test_drainage_codes_remain_source_codes():
 def test_missing_class_encoding_is_explicit():
     rows = entries({"threshold": 46.42, "unit": "percent allocated area"})
     assert rows == [("", "No explicit category mapping encoded", "", "unresolved")]
+
+
+def test_nath_drainage_labels_keep_codes_and_unassigned_classes():
+    import csv
+    import json
+
+    root = Path(__file__).resolve().parents[1]
+    evidence = {
+        r["evidence_id"]: r
+        for r in csv.DictReader(
+            (root / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    row = evidence["ev_t4_soildra_nath21_01"]
+    context = json.loads(row["context"])
+    dictionary = json.loads(
+        (
+            root / "pipeline/t4_audit/agroforestry/hwsd_v12_drainage_codebook.json"
+        ).read_text()
+    )
+    assert context["source_codebook"] == dictionary
+    assert dictionary["version"] == "1.2"
+    assert dictionary["labels"]["4"] == "Moderately Well"
+    assert dictionary["labels"]["5"] == "Well"
+    rel = json.loads(row["relationship"])
+    assert rel["very_good_code"] == 4
+    assert rel["good_codes"] == "3,6"
+    interpreted = context["source_class_interpretation"]
+    assert interpreted["very_good"] == ["Moderately Well"]
+    assert interpreted["good"] == ["Imperfectly", "Somewhat Excessive"]
+    assert interpreted["unassigned_codes"] == ["5", "7"]
+    assert interpreted["runtime_status"] == "held_target_dataset_crosswalk_required"
+    assert context["model_use"]["weight_path_pct"] == [20, 20]

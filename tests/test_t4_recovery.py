@@ -470,3 +470,27 @@ def test_direction_inventory_and_source_image_required(coverage_tree, defect):
         image.write_bytes(b"changed")
     errors = check(coverage_tree)
     assert any("direction" in error for error in errors)
+
+
+def test_ahmad_slope_keeps_unit_conflict_and_soc_keeps_model_chain():
+    evidence = {
+        row["evidence_id"]: row
+        for row in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    slope = evidence["ev_t4_slope_ahmad17_1"]
+    rel = json.loads(slope["relationship"])
+    assert rel["unit"] == "unresolved_percent_vs_degrees"
+    assert [(r["label"], r["range"]) for r in rel["source_classes"]] == [
+        ("High", "<5"),
+        ("Medium", "5–15"),
+        ("Low", ">15"),
+    ]
+    assert slope["review_state"] == "dropped"
+    assert slope["reviewer_ok"] == "false"
+    soc = evidence["ev_T4_soc_ahmad2018_1"]
+    model_use = json.loads(soc["context"])["model_use"]
+    assert model_use["weight_path_pct"] == [45.8, 20]
+    assert model_use["nominal_whole_model_weight_pct"] == 9.16
+    assert "reclassified" in model_use["note"]

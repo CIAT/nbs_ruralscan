@@ -138,8 +138,8 @@ def test_real_source_inventories():
     )
     models = load_weight_models(path)
     results = {m["model_id"]: compare_importance(m) for m in models}
-    assert len(models) == 5
-    assert len({m["source_id"] for m in models}) == 3
+    assert len(models) == 6
+    assert len({m["source_id"] for m in models}) == 4
     for result in results.values():
         assert result["status"] == "calculated"
         assert sum(
@@ -148,6 +148,12 @@ def test_real_source_inventories():
         assert sum(
             v["equal_hierarchy_share"] for v in result["variables"]
         ) == pytest.approx(1)
+    ahmad = results["ahmad_2018_tables1_2"]
+    assert ahmad["leaf_count"] == 8
+    soc = variable(ahmad, "soil_organic_carbon")
+    assert soc["whole_model_share"] == pytest.approx(0.458 * 0.2)
+    assert soc["hierarchy_adjusted_ratio"] == pytest.approx(1.832)
+    assert soc["flat_variable_ratio"] == pytest.approx(0.7328)
     singh = results["singh_2026_relative_weights"]
     assert singh["source_sibling_sums"]["root"] == 99
     assert variable(singh, "soil_ph")["hierarchy_adjusted_ratio"] == pytest.approx(
