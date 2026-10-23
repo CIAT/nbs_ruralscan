@@ -128,94 +128,55 @@
     <div class="legend" id="legend"></div>
   </div>
   <div class="card scroll"><table id="matrix"></table></div>
-  <div class="card detail" id="detail"><p class="muted">Click an NbS to see its benefit rows, set TTL levels (High / Medium / Low) and watch the group chips respond.</p></div>
+  <div class="card detail" id="detail"><p class="muted">Click a chip to see the evidence rows behind it.</p></div>
 </div>
 <script>
 (function () {
   'use strict';
   var D = null, TTL = {}, OPEN = '';
-  var GROUPS = ['climate_resilience', 'land_water', 'nature_carbon', 'livelihoods'];
   var CONF = ['very_low', 'low', 'medium', 'high', 'very_high'];
-  var GLYPH = { '2': '++', '1': '+', '0': '0', '-1': '−', '-2': '−−' };
   function el(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function words(s) { return String(s || '').replace(/_/g, ' '); }
   function chipHtml(c, title) {
     var cls = c.rank > 0 ? 'pos' : c.rank < 0 ? 'neg' : c.glyph === '±' ? 'dis' : '';
-    var t = title || ((c.label || words(c['class'])) + (c.confidence ? ' · ' + words(c.confidence) + ' confidence' : '') + (c.caution ? ' · CAUTION: measured harm for some adopters' : ''));
+    var t = title || ((c.class_label || c.label || words(c['class'])) + (c.confidence ? ' · ' + words(c.confidence) + ' confidence' : '') + (c.caution ? ' · CAUTION: measured harm for some adopters' : ''));
     return '<span class="chip ' + cls + (c.caution ? ' caution' : '') + '" title="' + esc(t) + '">' + esc(c.glyph) + (c.badge ? ' <span class="b">' + esc(c.badge) + '</span>' : '') + '</span>';
   }
-  // D4 — mirrors runtime/scorecard.theme_chip (TTL-weighted median, >= medium, dissent >= 1/3 → ±)
-  function themeChip(pris) {
-    var w = D.meta.ttl_weights;
-    var assessed = pris.filter(function (p) { return p['class'] !== 'not_assessed'; });
-    var setting = assessed.filter(function (p) { return p['class'] !== 'data_deficient' && CONF.indexOf(p.confidence) >= CONF.indexOf('medium'); });
-    if (!assessed.length) return { glyph: 'n/a', rank: null, label: 'Not assessed' };
-    if (!setting.length) return { glyph: '?', rank: null, label: 'Rows exist but none reaches medium confidence' };
-    var pos = 0, neg = 0, cw = 0, pairs = [];
-    setting.forEach(function (p) {
-      var x = w[p.ttl_level] || 2;
-      if (p.glyph === '±') cw += x; else if (p.rank > 0) pos += x; else if (p.rank < 0) neg += x;
-      if (p.rank !== null && p.rank !== undefined) pairs.push([p.rank, x]);
-    });
-    var weakest = setting.map(function (p) { return p.confidence; }).sort(function (a, b) { return CONF.indexOf(a) - CONF.indexOf(b); })[0];
-    var out = { confidence: weakest, badge: D.meta.badges[weakest] || '', caution: setting.some(function (p) { return p.caution; }) };
-    var base = pos + neg + cw;
-    if (base && (cw + Math.min(pos, neg)) / base >= 1 / 3) { out.glyph = '±'; out.rank = null; out.label = 'Rows point in different directions'; return out; }
-    if (!pairs.length) { out.glyph = '0'; out.rank = 0; return out; }
-    pairs.sort(function (a, b) { return a[0] - b[0]; });
-    var half = pairs.reduce(function (s, q) { return s + q[1]; }, 0) / 2, run = 0, r = pairs[pairs.length - 1][0];
-    for (var i = 0; i < pairs.length; i++) { run += pairs[i][1]; if (run >= half) { r = pairs[i][0]; break; } }
-    out.rank = r; out.glyph = GLYPH[String(r)]; out.label = 'TTL-weighted median of ' + setting.length + ' row(s)';
-    return out;
-  }
-  function rowsFor(nbs) {
-    return D.nbs[nbs].rows.map(function (p) { var q = Object.assign({}, p); q.ttl_level = (TTL[nbs] || {})[p.row_id] || p.ttl_level; return q; });
-  }
-  function groupLabel(g) {
-    var n = Object.keys(D.nbs)[0]; var x = n && D.nbs[n].groups[g]; return x ? x.label : words(g);
-  }
   function render() {
-    var h = '<tr><th class="grp"></th><th class="grp" colspan="' + GROUPS.length + '">Benefit groups (one chip each · no NbS-level number)</th><th class="grp">Context flags (not scored)</th><th class="grp">Count strip</th></tr>';
-    h += '<tr><th></th>' + GROUPS.map(function (g) { return '<th>' + esc(groupLabel(g)) + '</th>'; }).join('') + '<th>gender · IPLC</th><th></th></tr>';
-    Object.keys(D.nbs).forEach(function (n) {
-      var v = D.nbs[n], rows = rowsFor(n);
-      h += '<tr><td class="nbs" data-nbs="' + esc(n) + '">' + esc(words(n)) + '</td>';
-      GROUPS.forEach(function (g) {
-        h += '<td>' + chipHtml(themeChip(rows.filter(function (p) { return p.scored && p.group === g; }))) + '</td>';
-      });
-      h += '<td>' + rows.filter(function (p) { return !p.scored; }).map(function (p) { return chipHtml(p, p.label + ': ' + (p.class_label || words(p['class']))); }).join(' ') + '</td>';
-      var c = v.counts, bits = [];
-      [['benefit', 'benefit'], ['harm', 'harm'], ['no_effect', 'no effect'], ['conflicting_evidence', 'disagree'], ['data_deficient', 'too thin'], ['not_assessed', 'not assessed']].forEach(function (k) { if (c[k[0]]) bits.push(c[k[0]] + ' ' + k[1]); });
-      h += '<td class="counts">' + esc(bits.join(' · ')) + '</td></tr>';
+    var nbs = Object.keys(D.nbs), first = D.nbs[nbs[0]].rows, h = '<tr><th></th>' + nbs.map(function (n) { return '<th>' + esc(words(n)) + '</th>'; }).join('') + '</tr>';
+    var panel = '';
+    first.forEach(function (r, i) {
+      if (r.panel !== panel) { panel = r.panel; h += '<tr><th class="grp" style="text-align:left" colspan="' + (nbs.length + 1) + '">' + esc(r.panel_label) + '</th></tr>'; }
+      h += '<tr><td class="nbs" style="cursor:default">' + esc(r.label) + '</td>' + nbs.map(function (n) {
+        return '<td><a href="#" class="cell" data-n="' + esc(n) + '" data-i="' + i + '" style="text-decoration:none">' + chipHtml(D.nbs[n].rows[i]) + '</a></td>';
+      }).join('') + '</tr>';
     });
+    h += '<tr><td class="counts">count strip</td>' + nbs.map(function (n) {
+      var c = D.nbs[n].counts, bits = [];
+      [['benefit', 'benefit'], ['harm', 'harm'], ['no_effect', 'no effect'], ['conflicting_evidence', 'disagree'], ['data_deficient', 'too thin'], ['not_assessed', 'n/a']].forEach(function (k) { if (c[k[0]]) bits.push(c[k[0]] + ' ' + k[1]); });
+      return '<td class="counts">' + esc(bits.join(' · ')) + '</td>';
+    }).join('') + '</tr>';
     el('matrix').innerHTML = h;
-    if (OPEN) renderDetail(OPEN);
   }
-  function renderDetail(n) {
-    OPEN = n;
-    var v = D.nbs[n], rows = rowsFor(n);
-    var body = rows.map(function (p) {
-      var opts = ['high', 'medium', 'low'].map(function (l) { return '<option value="' + l + '"' + (p.ttl_level === l ? ' selected' : '') + '>' + l + '</option>'; }).join('');
-      return '<tr><td>' + esc(p.label) + '</td><td>' + esc(groupLabel(p.group)) + '</td><td>' + chipHtml(p) + '</td><td>' +
-        esc(p.class_label || words(p['class'])) + '</td><td>' + (p.scored ? '<select data-p="' + esc(p.row_id) + '">' + opts + '</select>' : '<span class="muted">flag only</span>') +
-        '</td><td><code>' + esc(p.source) + '</code></td></tr>';
+  function renderDetail(n, i) {
+    var r = D.nbs[n].rows[i];
+    var src = (r.sources || []).map(function (x) {
+      return '<tr><td><code>' + esc(x.source) + '</code></td><td>' + chipHtml(x) + '</td><td>' + esc(words(x['class'])) + '</td><td><code>' + esc(x.record_id) + '</code></td></tr>';
     }).join('');
-    el('detail').innerHTML = '<h2>' + esc(words(n)) + '</h2><div class="scroll"><table><tr><th>Benefit row</th><th>Group</th><th>Chip</th><th>What it says</th><th>TTL level</th><th>Source</th></tr>' + body + '</table></div>' +
-      '<p class="evid"><b>Evidenced priorities</b> (the optional hotspot-map filter, D5: T5 need layers this NbS is evidenced to improve at medium confidence or better): ' + esc(v.evidenced_priorities.map(words).join(', ') || 'none') + '</p>';
-    Array.prototype.forEach.call(el('detail').querySelectorAll('select[data-p]'), function (s) {
-      s.addEventListener('change', function () { TTL[n] = TTL[n] || {}; TTL[n][s.getAttribute('data-p')] = s.value; render(); });
-    });
+    el('detail').innerHTML = '<h2>' + esc(words(n)) + ' · ' + esc(r.label) + '</h2><p>' + chipHtml(r) + ' ' + esc(r.class_label || words(r['class'])) + (r.why ? ' — ' + esc(r.why) : '') + '</p>' +
+      '<div class="scroll"><table><tr><th>Evidence row</th><th>Chip</th><th>Class</th><th>Record</th></tr>' + src + '</table></div>' +
+      '<p class="evid"><b>Evidenced priorities</b> (optional hotspot-map filter, D5): ' + esc(D.nbs[n].evidenced_priorities.map(words).join(', ') || 'none') + '</p>';
   }
   function legend() {
     var seen = {}, items = [];
     D.meta.scale.forEach(function (r) { if (!seen[r.glyph]) { seen[r.glyph] = 1; items.push('<span><b>' + esc(r.glyph) + '</b> ' + esc(r.label) + '</span>'); } });
     items.push('<span><b>HIGH / MED / LOW</b> confidence badge</span>', '<span><span class="chip caution">+</span> amber outline = CAUTION: measured harm for some adopters</span>');
     el('legend').innerHTML = items.join('');
-    el('rule').textContent = 'Group chip: ' + D.meta.group_rule + '. Decisions: ' + D.meta.decisions + '.';
+    el('rule').textContent = 'One response chip per problem row (mockup rows; no theme chips, no NbS number). Pooled rows: ' + D.meta.pooled_row_rule + '. Fire is a project risk and production gap an intermediate step, so neither has a row. Decisions: ' + D.meta.decisions + '.';
     el('stamp').textContent = 'data as of ' + String((D.build || {}).timestamp || '').slice(0, 10) + ' · ' + ((D.build || {}).git_commit || '');
   }
-  el('matrix').addEventListener('click', function (e) { var t = e.target.closest ? e.target.closest('td.nbs') : null; if (t) renderDetail(t.getAttribute('data-nbs')); });
+  el('matrix').addEventListener('click', function (e) { var t = e.target.closest ? e.target.closest('a.cell') : null; if (t) { e.preventDefault(); renderDetail(t.getAttribute('data-n'), +t.getAttribute('data-i')); } });
   el('theme-toggle').addEventListener('click', function () {
     var r = document.documentElement, cur = r.getAttribute('data-theme') || ((window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark');
     var next = cur === 'light' ? 'dark' : 'light'; r.setAttribute('data-theme', next);

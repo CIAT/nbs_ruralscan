@@ -1,11 +1,11 @@
 {
   "build": {
-    "timestamp": "2026-10-23T14:16:14.705034+00:00",
-    "git_commit": "acf62ed"
+    "timestamp": "2026-10-23T17:42:28.704820+00:00",
+    "git_commit": "fb85c63"
   },
   "meta": {
-    "decisions": "methodology/decisions/2026-10-22_t3t6_scoring_and_qa.md (D3–D7)",
-    "rows": "schema/lookups/scorecard_rows.csv (benefit rows matching the mockup and the TOR benefit streams)",
+    "decisions": "methodology/decisions/2026-10-22_t3t6_scoring_and_qa.md",
+    "rows": "schema/lookups/scorecard_rows.csv (mockup rows: problem + NbS response)",
     "scale": [
       {
         "field": "effect_direction",
@@ -117,248 +117,108 @@
       "low": "LOW",
       "very_low": "LOW"
     },
-    "ttl_weights": {
-      "high": 3.0,
-      "medium": 2.0,
-      "low": 1.0
-    },
-    "group_rule": "TTL-weighted median of the group's benefit rows at medium confidence or better; dissent ≥ 0.33 → ±; group confidence = weakest setting row; context flags are shown, never scored; no NbS-level number",
-    "caution": "chip outline when the row lists measured harm for some adopters",
-    "default_ttl_level": "medium"
+    "pooled_row_rule": "a row built from several T6 rows shows their median at medium confidence or better; dissent ≥ 0.33 → ±; confidence = weakest setting row",
+    "caution": "chip outline when the row lists measured harm for some adopters"
   },
   "nbs": {
     "agroforestry": {
-      "groups": {
-        "climate_resilience": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Climate resilience",
-          "class": "",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "setting_rows": [
-            "agroforestry__drought__all",
-            "agroforestry__flood__all",
-            "agroforestry__heat_stress__all",
-            "agroforestry__wind_cyclone__all"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 6
-        },
-        "land_water": {
-          "glyph": "±",
-          "rank": null,
-          "label": "Land & water",
-          "class": "conflicting_evidence",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "setting_rows": [
-            "agroforestry__soil_erosion_risk",
-            "agroforestry__catchment_water_yield",
-            "agroforestry__water_stress"
-          ],
-          "why": "rows in this theme point in different directions (dissent ≥ 1/3)",
-          "n_rows": 4
-        },
-        "nature_carbon": {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Nature & carbon",
-          "class": "",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "setting_rows": [
-            "agroforestry__biodiversity_priority",
-            "agroforestry__carbon_sequestration_potential"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 2
-        },
-        "livelihoods": {
-          "glyph": "±",
-          "rank": null,
-          "label": "Livelihoods",
-          "class": "conflicting_evidence",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "setting_rows": [
-            "agroforestry__rural_poverty",
-            "agroforestry__food_insecurity",
-            "agroforestry__production_gap"
-          ],
-          "why": "rows in this theme point in different directions (dissent ≥ 1/3)",
-          "n_rows": 3
-        }
-      },
       "rows": [
         {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Drought resilience",
-          "class": "moderate",
-          "confidence": "high",
-          "badge": "HIGH",
-          "caution": true,
-          "record_id": "agroforestry__drought__all",
-          "class_label": "Clear reduction of losses",
-          "row_id": "drought_resilience",
-          "group": "climate_resilience",
-          "source": "T3:drought",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
           "glyph": "+",
           "rank": 1,
-          "label": "Flood protection",
-          "class": "low",
-          "confidence": "high",
-          "badge": "HIGH",
-          "caution": false,
-          "record_id": "agroforestry__flood__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "flood_protection",
-          "group": "climate_resilience",
-          "source": "T3:flood",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Heat protection",
-          "class": "low",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "record_id": "agroforestry__heat_stress__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "heat_protection",
-          "group": "climate_resilience",
-          "source": "T3:heat_stress",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "?",
-          "rank": null,
-          "label": "Fire risk",
-          "class": "data_deficient",
-          "confidence": "very_low",
-          "badge": "",
-          "caution": false,
-          "record_id": "agroforestry__fire__all",
-          "class_label": "Not enough evidence",
-          "row_id": "fire_risk",
-          "group": "climate_resilience",
-          "source": "T3:fire",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "±",
-          "rank": null,
-          "label": "Storm protection",
-          "class": "conflicting_evidence",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "record_id": "agroforestry__wind_cyclone__all",
-          "class_label": "Studies disagree",
-          "row_id": "storm_protection",
-          "group": "climate_resilience",
-          "source": "T3:wind_cyclone",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "?",
-          "rank": null,
-          "label": "Waterlogging protection",
-          "class": "data_deficient",
-          "confidence": "very_low",
-          "badge": "",
-          "caution": false,
-          "record_id": "agroforestry__waterlogging__all",
-          "class_label": "Not enough evidence",
-          "row_id": "waterlogging_protection",
-          "group": "climate_resilience",
-          "source": "T3:waterlogging",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Erosion mitigation",
+          "label": "Erosion risk",
           "class": "slight_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": false,
           "record_id": "agroforestry__soil_erosion_risk",
           "class_label": "Small benefit",
-          "row_id": "erosion_mitigation",
-          "group": "land_water",
-          "source": "T6:soil_erosion_risk",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "?",
-          "rank": null,
-          "label": "Water quality",
-          "class": "data_deficient",
-          "confidence": "very_low",
-          "badge": "",
-          "caution": false,
-          "record_id": "agroforestry__water_quality_risk",
-          "class_label": "Not enough evidence",
-          "row_id": "water_quality",
-          "group": "land_water",
-          "source": "T6:water_quality_risk",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "erosion",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:soil_erosion_risk",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "agroforestry__soil_erosion_risk"
+            }
+          ]
         },
         {
           "glyph": "+",
           "rank": 1,
-          "label": "Water supply",
+          "label": "Drought",
           "class": "slight_positive",
-          "confidence": "medium",
-          "badge": "MED",
+          "confidence": "very_high",
+          "badge": "HIGH",
           "caution": false,
-          "record_id": "agroforestry__catchment_water_yield",
+          "record_id": "agroforestry__drought_hazard",
           "class_label": "Small benefit",
-          "row_id": "water_supply",
-          "group": "land_water",
-          "source": "T6:catchment_water_yield",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "drought",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:drought_hazard",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "agroforestry__drought_hazard"
+            }
+          ]
         },
         {
-          "glyph": "±",
-          "rank": null,
-          "label": "Water stress relief",
-          "class": "conflicting_evidence",
-          "confidence": "medium",
-          "badge": "MED",
+          "glyph": "+",
+          "rank": 1,
+          "label": "Flood hazard",
+          "class": "slight_positive",
+          "confidence": "high",
+          "badge": "HIGH",
+          "caution": false,
+          "record_id": "agroforestry__flood_hazard",
+          "class_label": "Small benefit",
+          "row_id": "flood",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:flood_hazard",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "agroforestry__flood_hazard"
+            }
+          ]
+        },
+        {
+          "glyph": "+",
+          "rank": 1,
+          "label": "Heat stress",
+          "class": "slight_positive",
+          "confidence": "very_high",
+          "badge": "HIGH",
           "caution": true,
-          "record_id": "agroforestry__water_stress",
-          "class_label": "Studies disagree",
-          "row_id": "water_stress_relief",
-          "group": "land_water",
-          "source": "T6:water_stress",
-          "scored": true,
-          "ttl_level": "medium"
+          "record_id": "agroforestry__heat_stress_hazard",
+          "class_label": "Small benefit",
+          "row_id": "heat",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:heat_stress_hazard",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "agroforestry__heat_stress_hazard"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Biodiversity",
+          "label": "Biodiversity loss",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
@@ -366,112 +226,157 @@
           "record_id": "agroforestry__biodiversity_priority",
           "class_label": "Clear benefit",
           "row_id": "biodiversity",
-          "group": "nature_carbon",
-          "source": "T6:biodiversity_priority",
-          "scored": true,
-          "ttl_level": "medium"
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:biodiversity_priority",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "agroforestry__biodiversity_priority"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Carbon mitigation",
+          "label": "Carbon (sequestration deficit)",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": true,
           "record_id": "agroforestry__carbon_sequestration_potential",
           "class_label": "Clear benefit",
-          "row_id": "carbon_mitigation",
-          "group": "nature_carbon",
-          "source": "T6:carbon_sequestration_potential",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "carbon",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:carbon_sequestration_potential",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "agroforestry__carbon_sequestration_potential"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Rural income",
+          "label": "Rural poverty",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": true,
           "record_id": "agroforestry__rural_poverty",
           "class_label": "Clear benefit",
-          "row_id": "rural_income",
-          "group": "livelihoods",
-          "source": "T6:rural_poverty",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Food security",
-          "class": "moderate_positive",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "record_id": "agroforestry__food_insecurity",
-          "class_label": "Clear benefit",
-          "row_id": "food_security",
-          "group": "livelihoods",
-          "source": "T6:food_insecurity",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "±",
-          "rank": null,
-          "label": "Farm productivity",
-          "class": "conflicting_evidence",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "record_id": "agroforestry__production_gap",
-          "class_label": "Studies disagree",
-          "row_id": "farm_productivity",
-          "group": "livelihoods",
-          "source": "T6:production_gap",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "rural_poverty",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:rural_poverty",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "agroforestry__rural_poverty"
+            }
+          ]
         },
         {
           "glyph": "?",
           "rank": null,
-          "label": "Gender inequity",
+          "label": "Gender inequality",
           "class": "data_deficient",
           "confidence": "very_low",
           "badge": "",
           "caution": false,
           "record_id": "agroforestry__gender_inequity",
           "class_label": "Not enough evidence",
-          "row_id": "gender_flag",
-          "group": "context_flags",
-          "source": "T6:gender_inequity",
-          "scored": false,
-          "ttl_level": "medium"
+          "row_id": "gender",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:gender_inequity",
+              "glyph": "?",
+              "badge": "",
+              "class": "data_deficient",
+              "record_id": "agroforestry__gender_inequity"
+            }
+          ]
         },
         {
-          "glyph": "n/a",
+          "glyph": "++",
+          "rank": 2,
+          "label": "Food insecurity",
+          "class": "moderate_positive",
+          "confidence": "very_high",
+          "badge": "HIGH",
+          "caution": true,
+          "record_id": "agroforestry__food_insecurity",
+          "class_label": "Clear benefit",
+          "row_id": "food_insecurity",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:food_insecurity",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "agroforestry__food_insecurity"
+            }
+          ]
+        },
+        {
+          "glyph": "±",
           "rank": null,
-          "label": "IPLC lands",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
+          "label": "Water-table depletion (recharge)",
+          "class": "conflicting_evidence",
+          "confidence": "medium",
+          "badge": "MED",
+          "caution": true,
+          "setting_rows": [
+            "agroforestry__water_stress",
+            "agroforestry__catchment_water_yield"
+          ],
+          "why": "rows in this theme point in different directions (dissent ≥ 1/3)",
           "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "iplc_flag",
-          "group": "context_flags",
-          "source": "T6:iplc_lands",
-          "scored": false,
-          "ttl_level": "medium"
+          "class_label": "Studies disagree",
+          "row_id": "water_table",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:water_stress",
+              "glyph": "±",
+              "badge": "MED",
+              "class": "conflicting_evidence",
+              "record_id": "agroforestry__water_stress"
+            },
+            {
+              "source": "T6:catchment_water_yield",
+              "glyph": "+",
+              "badge": "MED",
+              "class": "slight_positive",
+              "record_id": "agroforestry__catchment_water_yield"
+            },
+            {
+              "source": "T6:water_quality_risk",
+              "glyph": "?",
+              "badge": "",
+              "class": "data_deficient",
+              "record_id": "agroforestry__water_quality_risk"
+            }
+          ]
         }
       ],
       "counts": {
-        "benefit": 9,
-        "data_deficient": 3,
-        "conflicting_evidence": 3
+        "benefit": 8,
+        "data_deficient": 1,
+        "conflicting_evidence": 1
       },
       "evidenced_priorities": [
         "drought_hazard",
@@ -486,237 +391,103 @@
       ]
     },
     "forest_restoration": {
-      "groups": {
-        "climate_resilience": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Climate resilience",
-          "class": "",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "setting_rows": [
-            "forest_restoration__drought__all",
-            "forest_restoration__flood__all",
-            "forest_restoration__wind_cyclone__all"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 6
-        },
-        "land_water": {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Land & water",
-          "class": "",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "setting_rows": [
-            "forest_restoration__soil_erosion_risk",
-            "forest_restoration__water_quality_risk",
-            "forest_restoration__catchment_water_yield",
-            "forest_restoration__water_stress"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 4
-        },
-        "nature_carbon": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Nature & carbon",
-          "class": "",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "setting_rows": [
-            "forest_restoration__biodiversity_priority",
-            "forest_restoration__carbon_sequestration_potential"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 2
-        },
-        "livelihoods": {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Livelihoods",
-          "class": "",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "setting_rows": [
-            "forest_restoration__rural_poverty",
-            "forest_restoration__food_insecurity",
-            "forest_restoration__production_gap"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 3
-        }
-      },
       "rows": [
         {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Drought resilience",
-          "class": "low",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": false,
-          "record_id": "forest_restoration__drought__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "drought_resilience",
-          "group": "climate_resilience",
-          "source": "T3:drought",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
           "glyph": "++",
           "rank": 2,
-          "label": "Flood protection",
-          "class": "moderate",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": false,
-          "record_id": "forest_restoration__flood__all",
-          "class_label": "Clear reduction of losses",
-          "row_id": "flood_protection",
-          "group": "climate_resilience",
-          "source": "T3:flood",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Heat protection",
-          "class": "low",
-          "confidence": "very_low",
-          "badge": "LOW",
-          "caution": false,
-          "record_id": "forest_restoration__heat_stress__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "heat_protection",
-          "group": "climate_resilience",
-          "source": "T3:heat_stress",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "±",
-          "rank": null,
-          "label": "Fire risk",
-          "class": "conflicting_evidence",
-          "confidence": "low",
-          "badge": "LOW",
-          "caution": false,
-          "record_id": "forest_restoration__fire__all",
-          "class_label": "Studies disagree",
-          "row_id": "fire_risk",
-          "group": "climate_resilience",
-          "source": "T3:fire",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Storm protection",
-          "class": "low",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "record_id": "forest_restoration__wind_cyclone__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "storm_protection",
-          "group": "climate_resilience",
-          "source": "T3:wind_cyclone",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "±",
-          "rank": null,
-          "label": "Waterlogging protection",
-          "class": "conflicting_evidence",
-          "confidence": "low",
-          "badge": "LOW",
-          "caution": false,
-          "record_id": "forest_restoration__waterlogging__all",
-          "class_label": "Studies disagree",
-          "row_id": "waterlogging_protection",
-          "group": "climate_resilience",
-          "source": "T3:waterlogging",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Erosion mitigation",
+          "label": "Erosion risk",
           "class": "strong_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": false,
           "record_id": "forest_restoration__soil_erosion_risk",
           "class_label": "Clear benefit",
-          "row_id": "erosion_mitigation",
-          "group": "land_water",
-          "source": "T6:soil_erosion_risk",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "erosion",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:soil_erosion_risk",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "strong_positive",
+              "record_id": "forest_restoration__soil_erosion_risk"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Water quality",
+          "label": "Drought",
           "class": "moderate_positive",
-          "confidence": "medium",
-          "badge": "MED",
+          "confidence": "high",
+          "badge": "HIGH",
           "caution": false,
-          "record_id": "forest_restoration__water_quality_risk",
+          "record_id": "forest_restoration__drought_hazard",
           "class_label": "Clear benefit",
-          "row_id": "water_quality",
-          "group": "land_water",
-          "source": "T6:water_quality_risk",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "±",
-          "rank": null,
-          "label": "Water supply",
-          "class": "conflicting_evidence",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "record_id": "forest_restoration__catchment_water_yield",
-          "class_label": "Studies disagree",
-          "row_id": "water_supply",
-          "group": "land_water",
-          "source": "T6:catchment_water_yield",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "drought",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:drought_hazard",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "forest_restoration__drought_hazard"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Water stress relief",
-          "class": "moderate_positive",
-          "confidence": "medium",
-          "badge": "MED",
+          "label": "Flood hazard",
+          "class": "strong_positive",
+          "confidence": "very_high",
+          "badge": "HIGH",
           "caution": false,
-          "record_id": "forest_restoration__water_stress",
+          "record_id": "forest_restoration__flood_hazard",
           "class_label": "Clear benefit",
-          "row_id": "water_stress_relief",
-          "group": "land_water",
-          "source": "T6:water_stress",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "flood",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:flood_hazard",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "strong_positive",
+              "record_id": "forest_restoration__flood_hazard"
+            }
+          ]
+        },
+        {
+          "glyph": "+",
+          "rank": 1,
+          "label": "Heat stress",
+          "class": "slight_positive",
+          "confidence": "very_low",
+          "badge": "LOW",
+          "caution": false,
+          "record_id": "forest_restoration__heat_stress_hazard",
+          "class_label": "Small benefit",
+          "row_id": "heat",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:heat_stress_hazard",
+              "glyph": "+",
+              "badge": "LOW",
+              "class": "slight_positive",
+              "record_id": "forest_restoration__heat_stress_hazard"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Biodiversity",
+          "label": "Biodiversity loss",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
@@ -724,111 +495,158 @@
           "record_id": "forest_restoration__biodiversity_priority",
           "class_label": "Clear benefit",
           "row_id": "biodiversity",
-          "group": "nature_carbon",
-          "source": "T6:biodiversity_priority",
-          "scored": true,
-          "ttl_level": "medium"
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:biodiversity_priority",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "forest_restoration__biodiversity_priority"
+            }
+          ]
         },
         {
           "glyph": "+",
           "rank": 1,
-          "label": "Carbon mitigation",
+          "label": "Carbon (sequestration deficit)",
           "class": "slight_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": true,
           "record_id": "forest_restoration__carbon_sequestration_potential",
           "class_label": "Small benefit",
-          "row_id": "carbon_mitigation",
-          "group": "nature_carbon",
-          "source": "T6:carbon_sequestration_potential",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "carbon",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:carbon_sequestration_potential",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "forest_restoration__carbon_sequestration_potential"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Rural income",
+          "label": "Rural poverty",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": true,
           "record_id": "forest_restoration__rural_poverty",
           "class_label": "Clear benefit",
-          "row_id": "rural_income",
-          "group": "livelihoods",
-          "source": "T6:rural_poverty",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "rural_poverty",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:rural_poverty",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "forest_restoration__rural_poverty"
+            }
+          ]
+        },
+        {
+          "glyph": "n/a",
+          "rank": null,
+          "label": "Gender inequality",
+          "class": "not_assessed",
+          "confidence": "",
+          "badge": "",
+          "caution": false,
+          "record_id": "",
+          "class_label": "Not assessed",
+          "row_id": "gender",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:gender_inequity",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Food security",
+          "label": "Food insecurity",
           "class": "moderate_positive",
           "confidence": "medium",
           "badge": "MED",
           "caution": false,
           "record_id": "forest_restoration__food_insecurity",
           "class_label": "Clear benefit",
-          "row_id": "food_security",
-          "group": "livelihoods",
-          "source": "T6:food_insecurity",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "food_insecurity",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:food_insecurity",
+              "glyph": "++",
+              "badge": "MED",
+              "class": "moderate_positive",
+              "record_id": "forest_restoration__food_insecurity"
+            }
+          ]
         },
         {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Farm productivity",
-          "class": "moderate_positive",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": false,
-          "record_id": "forest_restoration__production_gap",
-          "class_label": "Clear benefit",
-          "row_id": "farm_productivity",
-          "group": "livelihoods",
-          "source": "T6:production_gap",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
+          "glyph": "±",
           "rank": null,
-          "label": "Gender inequity",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
+          "label": "Water-table depletion (recharge)",
+          "class": "conflicting_evidence",
+          "confidence": "medium",
+          "badge": "MED",
+          "caution": true,
+          "setting_rows": [
+            "forest_restoration__water_stress",
+            "forest_restoration__catchment_water_yield",
+            "forest_restoration__water_quality_risk"
+          ],
+          "why": "rows in this theme point in different directions (dissent ≥ 1/3)",
           "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "gender_flag",
-          "group": "context_flags",
-          "source": "T6:gender_inequity",
-          "scored": false,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "IPLC lands",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "iplc_flag",
-          "group": "context_flags",
-          "source": "T6:iplc_lands",
-          "scored": false,
-          "ttl_level": "medium"
+          "class_label": "Studies disagree",
+          "row_id": "water_table",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:water_stress",
+              "glyph": "++",
+              "badge": "MED",
+              "class": "moderate_positive",
+              "record_id": "forest_restoration__water_stress"
+            },
+            {
+              "source": "T6:catchment_water_yield",
+              "glyph": "±",
+              "badge": "MED",
+              "class": "conflicting_evidence",
+              "record_id": "forest_restoration__catchment_water_yield"
+            },
+            {
+              "source": "T6:water_quality_risk",
+              "glyph": "++",
+              "badge": "MED",
+              "class": "moderate_positive",
+              "record_id": "forest_restoration__water_quality_risk"
+            }
+          ]
         }
       ],
       "counts": {
-        "benefit": 12,
-        "conflicting_evidence": 3
+        "benefit": 8,
+        "not_assessed": 1,
+        "conflicting_evidence": 1
       },
       "evidenced_priorities": [
         "drought_hazard",
@@ -844,232 +662,103 @@
       ]
     },
     "mangrove_restoration": {
-      "groups": {
-        "climate_resilience": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Climate resilience",
-          "class": "",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "setting_rows": [
-            "mangrove_restoration__flood__all",
-            "mangrove_restoration__wind_cyclone__all"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 6
-        },
-        "land_water": {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Land & water",
-          "class": "",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "setting_rows": [
-            "mangrove_restoration__soil_erosion_risk"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 4
-        },
-        "nature_carbon": {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Nature & carbon",
-          "class": "",
-          "confidence": "high",
-          "badge": "HIGH",
-          "caution": false,
-          "setting_rows": [
-            "mangrove_restoration__biodiversity_priority",
-            "mangrove_restoration__carbon_sequestration_potential"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 2
-        },
-        "livelihoods": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Livelihoods",
-          "class": "",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "setting_rows": [
-            "mangrove_restoration__rural_poverty",
-            "mangrove_restoration__food_insecurity"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 3
-        }
-      },
       "rows": [
         {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Drought resilience",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "drought_resilience",
-          "group": "climate_resilience",
-          "source": "T3:drought",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Flood protection",
-          "class": "low",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "record_id": "mangrove_restoration__flood__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "flood_protection",
-          "group": "climate_resilience",
-          "source": "T3:flood",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Heat protection",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "heat_protection",
-          "group": "climate_resilience",
-          "source": "T3:heat_stress",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Fire risk",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "fire_risk",
-          "group": "climate_resilience",
-          "source": "T3:fire",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
           "glyph": "++",
           "rank": 2,
-          "label": "Storm protection",
-          "class": "very_high",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": false,
-          "record_id": "mangrove_restoration__wind_cyclone__all",
-          "class_label": "Clear reduction of losses",
-          "row_id": "storm_protection",
-          "group": "climate_resilience",
-          "source": "T3:wind_cyclone",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Waterlogging protection",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "waterlogging_protection",
-          "group": "climate_resilience",
-          "source": "T3:waterlogging",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Erosion mitigation",
+          "label": "Erosion risk",
           "class": "strong_positive",
           "confidence": "medium",
           "badge": "MED",
           "caution": false,
           "record_id": "mangrove_restoration__soil_erosion_risk",
           "class_label": "Clear benefit",
-          "row_id": "erosion_mitigation",
-          "group": "land_water",
-          "source": "T6:soil_erosion_risk",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "erosion",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:soil_erosion_risk",
+              "glyph": "++",
+              "badge": "MED",
+              "class": "strong_positive",
+              "record_id": "mangrove_restoration__soil_erosion_risk"
+            }
+          ]
         },
         {
           "glyph": "n/a",
           "rank": null,
-          "label": "Water quality",
+          "label": "Drought",
           "class": "not_assessed",
           "confidence": "",
           "badge": "",
           "caution": false,
           "record_id": "",
           "class_label": "Not assessed",
-          "row_id": "water_quality",
-          "group": "land_water",
-          "source": "T6:water_quality_risk",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "drought",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:drought_hazard",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
+        },
+        {
+          "glyph": "+",
+          "rank": 1,
+          "label": "Flood hazard",
+          "class": "slight_positive",
+          "confidence": "medium",
+          "badge": "MED",
+          "caution": false,
+          "record_id": "mangrove_restoration__flood_hazard",
+          "class_label": "Small benefit",
+          "row_id": "flood",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:flood_hazard",
+              "glyph": "+",
+              "badge": "MED",
+              "class": "slight_positive",
+              "record_id": "mangrove_restoration__flood_hazard"
+            }
+          ]
         },
         {
           "glyph": "n/a",
           "rank": null,
-          "label": "Water supply",
+          "label": "Heat stress",
           "class": "not_assessed",
           "confidence": "",
           "badge": "",
           "caution": false,
           "record_id": "",
           "class_label": "Not assessed",
-          "row_id": "water_supply",
-          "group": "land_water",
-          "source": "T6:catchment_water_yield",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Water stress relief",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "water_stress_relief",
-          "group": "land_water",
-          "source": "T6:water_stress",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "heat",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:heat_stress_hazard",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Biodiversity",
+          "label": "Biodiversity loss",
           "class": "strong_positive",
           "confidence": "high",
           "badge": "HIGH",
@@ -1077,112 +766,153 @@
           "record_id": "mangrove_restoration__biodiversity_priority",
           "class_label": "Clear benefit",
           "row_id": "biodiversity",
-          "group": "nature_carbon",
-          "source": "T6:biodiversity_priority",
-          "scored": true,
-          "ttl_level": "medium"
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:biodiversity_priority",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "strong_positive",
+              "record_id": "mangrove_restoration__biodiversity_priority"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Carbon mitigation",
+          "label": "Carbon (sequestration deficit)",
           "class": "strong_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": false,
           "record_id": "mangrove_restoration__carbon_sequestration_potential",
           "class_label": "Clear benefit",
-          "row_id": "carbon_mitigation",
-          "group": "nature_carbon",
-          "source": "T6:carbon_sequestration_potential",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "carbon",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:carbon_sequestration_potential",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "strong_positive",
+              "record_id": "mangrove_restoration__carbon_sequestration_potential"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Rural income",
+          "label": "Rural poverty",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": true,
           "record_id": "mangrove_restoration__rural_poverty",
           "class_label": "Clear benefit",
-          "row_id": "rural_income",
-          "group": "livelihoods",
-          "source": "T6:rural_poverty",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "rural_poverty",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:rural_poverty",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "mangrove_restoration__rural_poverty"
+            }
+          ]
+        },
+        {
+          "glyph": "n/a",
+          "rank": null,
+          "label": "Gender inequality",
+          "class": "not_assessed",
+          "confidence": "",
+          "badge": "",
+          "caution": false,
+          "record_id": "",
+          "class_label": "Not assessed",
+          "row_id": "gender",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:gender_inequity",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "+",
           "rank": 1,
-          "label": "Food security",
+          "label": "Food insecurity",
           "class": "slight_positive",
           "confidence": "medium",
           "badge": "MED",
           "caution": false,
           "record_id": "mangrove_restoration__food_insecurity",
           "class_label": "Small benefit",
-          "row_id": "food_security",
-          "group": "livelihoods",
-          "source": "T6:food_insecurity",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "?",
-          "rank": null,
-          "label": "Farm productivity",
-          "class": "data_deficient",
-          "confidence": "very_low",
-          "badge": "",
-          "caution": false,
-          "record_id": "mangrove_restoration__production_gap",
-          "class_label": "Not enough evidence",
-          "row_id": "farm_productivity",
-          "group": "livelihoods",
-          "source": "T6:production_gap",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "food_insecurity",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:food_insecurity",
+              "glyph": "+",
+              "badge": "MED",
+              "class": "slight_positive",
+              "record_id": "mangrove_restoration__food_insecurity"
+            }
+          ]
         },
         {
           "glyph": "n/a",
           "rank": null,
-          "label": "Gender inequity",
+          "label": "Water-table depletion (recharge)",
           "class": "not_assessed",
           "confidence": "",
           "badge": "",
           "caution": false,
+          "setting_rows": [],
+          "why": "no priority in this theme has an evidence row",
           "record_id": "",
           "class_label": "Not assessed",
-          "row_id": "gender_flag",
-          "group": "context_flags",
-          "source": "T6:gender_inequity",
-          "scored": false,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "IPLC lands",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "iplc_flag",
-          "group": "context_flags",
-          "source": "T6:iplc_lands",
-          "scored": false,
-          "ttl_level": "medium"
+          "row_id": "water_table",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:water_stress",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            },
+            {
+              "source": "T6:catchment_water_yield",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            },
+            {
+              "source": "T6:water_quality_risk",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         }
       ],
       "counts": {
-        "not_assessed": 7,
-        "benefit": 7,
-        "data_deficient": 1
+        "benefit": 6,
+        "not_assessed": 4
       },
       "evidenced_priorities": [
         "flood_hazard",
@@ -1194,229 +924,103 @@
       ]
     },
     "riparian_buffer": {
-      "groups": {
-        "climate_resilience": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Climate resilience",
-          "class": "",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "setting_rows": [
-            "riparian_buffer__flood__all"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 6
-        },
-        "land_water": {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Land & water",
-          "class": "",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "setting_rows": [
-            "riparian_buffer__soil_erosion_risk",
-            "riparian_buffer__water_quality_risk"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 4
-        },
-        "nature_carbon": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Nature & carbon",
-          "class": "",
-          "confidence": "high",
-          "badge": "HIGH",
-          "caution": true,
-          "setting_rows": [
-            "riparian_buffer__biodiversity_priority",
-            "riparian_buffer__carbon_sequestration_potential"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 2
-        },
-        "livelihoods": {
-          "glyph": "?",
-          "rank": null,
-          "label": "Livelihoods",
-          "class": "data_deficient",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "setting_rows": [],
-          "why": "rows exist but none reaches medium confidence",
-          "n_rows": 3
-        }
-      },
       "rows": [
         {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Drought resilience",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "drought_resilience",
-          "group": "climate_resilience",
-          "source": "T3:drought",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Flood protection",
-          "class": "low",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "record_id": "riparian_buffer__flood__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "flood_protection",
-          "group": "climate_resilience",
-          "source": "T3:flood",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Heat protection",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "heat_protection",
-          "group": "climate_resilience",
-          "source": "T3:heat_stress",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Fire risk",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "fire_risk",
-          "group": "climate_resilience",
-          "source": "T3:fire",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Storm protection",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "storm_protection",
-          "group": "climate_resilience",
-          "source": "T3:wind_cyclone",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Waterlogging protection",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "waterlogging_protection",
-          "group": "climate_resilience",
-          "source": "T3:waterlogging",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
           "glyph": "++",
           "rank": 2,
-          "label": "Erosion mitigation",
+          "label": "Erosion risk",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": false,
           "record_id": "riparian_buffer__soil_erosion_risk",
           "class_label": "Clear benefit",
-          "row_id": "erosion_mitigation",
-          "group": "land_water",
-          "source": "T6:soil_erosion_risk",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Water quality",
-          "class": "strong_positive",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "record_id": "riparian_buffer__water_quality_risk",
-          "class_label": "Clear benefit",
-          "row_id": "water_quality",
-          "group": "land_water",
-          "source": "T6:water_quality_risk",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "erosion",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:soil_erosion_risk",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "riparian_buffer__soil_erosion_risk"
+            }
+          ]
         },
         {
           "glyph": "n/a",
           "rank": null,
-          "label": "Water supply",
+          "label": "Drought",
           "class": "not_assessed",
           "confidence": "",
           "badge": "",
           "caution": false,
           "record_id": "",
           "class_label": "Not assessed",
-          "row_id": "water_supply",
-          "group": "land_water",
-          "source": "T6:catchment_water_yield",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Water stress relief",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "water_stress_relief",
-          "group": "land_water",
-          "source": "T6:water_stress",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "drought",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:drought_hazard",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "+",
           "rank": 1,
-          "label": "Biodiversity",
+          "label": "Flood hazard",
+          "class": "slight_positive",
+          "confidence": "medium",
+          "badge": "MED",
+          "caution": false,
+          "record_id": "riparian_buffer__flood_hazard",
+          "class_label": "Small benefit",
+          "row_id": "flood",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:flood_hazard",
+              "glyph": "+",
+              "badge": "MED",
+              "class": "slight_positive",
+              "record_id": "riparian_buffer__flood_hazard"
+            }
+          ]
+        },
+        {
+          "glyph": "n/a",
+          "rank": null,
+          "label": "Heat stress",
+          "class": "not_assessed",
+          "confidence": "",
+          "badge": "",
+          "caution": false,
+          "record_id": "",
+          "class_label": "Not assessed",
+          "row_id": "heat",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:heat_stress_hazard",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
+        },
+        {
+          "glyph": "+",
+          "rank": 1,
+          "label": "Biodiversity loss",
           "class": "slight_positive",
           "confidence": "very_high",
           "badge": "HIGH",
@@ -1424,112 +1028,155 @@
           "record_id": "riparian_buffer__biodiversity_priority",
           "class_label": "Small benefit",
           "row_id": "biodiversity",
-          "group": "nature_carbon",
-          "source": "T6:biodiversity_priority",
-          "scored": true,
-          "ttl_level": "medium"
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:biodiversity_priority",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "riparian_buffer__biodiversity_priority"
+            }
+          ]
         },
         {
           "glyph": "+",
           "rank": 1,
-          "label": "Carbon mitigation",
+          "label": "Carbon (sequestration deficit)",
           "class": "slight_positive",
           "confidence": "high",
           "badge": "HIGH",
           "caution": false,
           "record_id": "riparian_buffer__carbon_sequestration_potential",
           "class_label": "Small benefit",
-          "row_id": "carbon_mitigation",
-          "group": "nature_carbon",
-          "source": "T6:carbon_sequestration_potential",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "carbon",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:carbon_sequestration_potential",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "riparian_buffer__carbon_sequestration_potential"
+            }
+          ]
         },
         {
           "glyph": "n/a",
           "rank": null,
-          "label": "Rural income",
+          "label": "Rural poverty",
           "class": "not_assessed",
           "confidence": "",
           "badge": "",
           "caution": false,
           "record_id": "",
           "class_label": "Not assessed",
-          "row_id": "rural_income",
-          "group": "livelihoods",
-          "source": "T6:rural_poverty",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "rural_poverty",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:rural_poverty",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "n/a",
           "rank": null,
-          "label": "Food security",
+          "label": "Gender inequality",
           "class": "not_assessed",
           "confidence": "",
           "badge": "",
           "caution": false,
           "record_id": "",
           "class_label": "Not assessed",
-          "row_id": "food_security",
-          "group": "livelihoods",
-          "source": "T6:food_insecurity",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "?",
-          "rank": null,
-          "label": "Farm productivity",
-          "class": "data_deficient",
-          "confidence": "very_low",
-          "badge": "",
-          "caution": false,
-          "record_id": "riparian_buffer__production_gap",
-          "class_label": "Not enough evidence",
-          "row_id": "farm_productivity",
-          "group": "livelihoods",
-          "source": "T6:production_gap",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "gender",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:gender_inequity",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "n/a",
           "rank": null,
-          "label": "Gender inequity",
+          "label": "Food insecurity",
           "class": "not_assessed",
           "confidence": "",
           "badge": "",
           "caution": false,
           "record_id": "",
           "class_label": "Not assessed",
-          "row_id": "gender_flag",
-          "group": "context_flags",
-          "source": "T6:gender_inequity",
-          "scored": false,
-          "ttl_level": "medium"
+          "row_id": "food_insecurity",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:food_insecurity",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "IPLC lands",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
+          "glyph": "++",
+          "rank": 2,
+          "label": "Water-table depletion (recharge)",
+          "class": "",
+          "confidence": "very_high",
+          "badge": "HIGH",
+          "caution": true,
+          "setting_rows": [
+            "riparian_buffer__water_quality_risk"
+          ],
+          "why": "TTL-weighted median of the setting rows",
           "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "iplc_flag",
-          "group": "context_flags",
-          "source": "T6:iplc_lands",
-          "scored": false,
-          "ttl_level": "medium"
+          "class_label": "",
+          "row_id": "water_table",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:water_stress",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            },
+            {
+              "source": "T6:catchment_water_yield",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            },
+            {
+              "source": "T6:water_quality_risk",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "strong_positive",
+              "record_id": "riparian_buffer__water_quality_risk"
+            }
+          ]
         }
       ],
       "counts": {
-        "not_assessed": 9,
         "benefit": 5,
-        "data_deficient": 1
+        "not_assessed": 5
       },
       "evidenced_priorities": [
         "flood_hazard",
@@ -1540,240 +1187,103 @@
       ]
     },
     "water_harvesting_conservation": {
-      "groups": {
-        "climate_resilience": {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Climate resilience",
-          "class": "",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "setting_rows": [
-            "water_harvesting_conservation__drought__all",
-            "water_harvesting_conservation__flood__all",
-            "water_harvesting_conservation__heat_stress__all",
-            "water_harvesting_conservation__fire__all",
-            "water_harvesting_conservation__wind_cyclone__all",
-            "water_harvesting_conservation__waterlogging__all"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 6
-        },
-        "land_water": {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Land & water",
-          "class": "",
-          "confidence": "high",
-          "badge": "HIGH",
-          "caution": true,
-          "setting_rows": [
-            "water_harvesting_conservation__soil_erosion_risk",
-            "water_harvesting_conservation__water_quality_risk",
-            "water_harvesting_conservation__catchment_water_yield",
-            "water_harvesting_conservation__water_stress"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 4
-        },
-        "nature_carbon": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Nature & carbon",
-          "class": "",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "setting_rows": [
-            "water_harvesting_conservation__biodiversity_priority",
-            "water_harvesting_conservation__carbon_sequestration_potential"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 2
-        },
-        "livelihoods": {
-          "glyph": "±",
-          "rank": null,
-          "label": "Livelihoods",
-          "class": "conflicting_evidence",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "setting_rows": [
-            "water_harvesting_conservation__rural_poverty",
-            "water_harvesting_conservation__food_insecurity",
-            "water_harvesting_conservation__production_gap"
-          ],
-          "why": "rows in this theme point in different directions (dissent ≥ 1/3)",
-          "n_rows": 3
-        }
-      },
       "rows": [
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Drought resilience",
-          "class": "moderate",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "record_id": "water_harvesting_conservation__drought__all",
-          "class_label": "Clear reduction of losses",
-          "row_id": "drought_resilience",
-          "group": "climate_resilience",
-          "source": "T3:drought",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Flood protection",
-          "class": "moderate",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "record_id": "water_harvesting_conservation__flood__all",
-          "class_label": "Clear reduction of losses",
-          "row_id": "flood_protection",
-          "group": "climate_resilience",
-          "source": "T3:flood",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Heat protection",
-          "class": "low",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "record_id": "water_harvesting_conservation__heat_stress__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "heat_protection",
-          "group": "climate_resilience",
-          "source": "T3:heat_stress",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Fire risk",
-          "class": "moderate",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "record_id": "water_harvesting_conservation__fire__all",
-          "class_label": "Clear reduction of losses",
-          "row_id": "fire_risk",
-          "group": "climate_resilience",
-          "source": "T3:fire",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Storm protection",
-          "class": "low",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "record_id": "water_harvesting_conservation__wind_cyclone__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "storm_protection",
-          "group": "climate_resilience",
-          "source": "T3:wind_cyclone",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "±",
-          "rank": null,
-          "label": "Waterlogging protection",
-          "class": "conflicting_evidence",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": false,
-          "record_id": "water_harvesting_conservation__waterlogging__all",
-          "class_label": "Studies disagree",
-          "row_id": "waterlogging_protection",
-          "group": "climate_resilience",
-          "source": "T3:waterlogging",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Erosion mitigation",
+          "label": "Erosion risk",
           "class": "strong_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": true,
           "record_id": "water_harvesting_conservation__soil_erosion_risk",
           "class_label": "Clear benefit",
-          "row_id": "erosion_mitigation",
-          "group": "land_water",
-          "source": "T6:soil_erosion_risk",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "erosion",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:soil_erosion_risk",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "strong_positive",
+              "record_id": "water_harvesting_conservation__soil_erosion_risk"
+            }
+          ]
+        },
+        {
+          "glyph": "+",
+          "rank": 1,
+          "label": "Drought",
+          "class": "slight_positive",
+          "confidence": "very_high",
+          "badge": "HIGH",
+          "caution": false,
+          "record_id": "water_harvesting_conservation__drought_hazard",
+          "class_label": "Small benefit",
+          "row_id": "drought",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:drought_hazard",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "water_harvesting_conservation__drought_hazard"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Water quality",
+          "label": "Flood hazard",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
-          "caution": false,
-          "record_id": "water_harvesting_conservation__water_quality_risk",
-          "class_label": "Clear benefit",
-          "row_id": "water_quality",
-          "group": "land_water",
-          "source": "T6:water_quality_risk",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Water supply",
-          "class": "slight_positive",
-          "confidence": "high",
-          "badge": "HIGH",
           "caution": true,
-          "record_id": "water_harvesting_conservation__catchment_water_yield",
-          "class_label": "Small benefit",
-          "row_id": "water_supply",
-          "group": "land_water",
-          "source": "T6:catchment_water_yield",
-          "scored": true,
-          "ttl_level": "medium"
+          "record_id": "water_harvesting_conservation__flood_hazard",
+          "class_label": "Clear benefit",
+          "row_id": "flood",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:flood_hazard",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "water_harvesting_conservation__flood_hazard"
+            }
+          ]
         },
         {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Water stress relief",
-          "class": "strong_positive",
-          "confidence": "very_high",
-          "badge": "HIGH",
+          "glyph": "n/a",
+          "rank": null,
+          "label": "Heat stress",
+          "class": "not_assessed",
+          "confidence": "",
+          "badge": "",
           "caution": false,
-          "record_id": "water_harvesting_conservation__water_stress",
-          "class_label": "Clear benefit",
-          "row_id": "water_stress_relief",
-          "group": "land_water",
-          "source": "T6:water_stress",
-          "scored": true,
-          "ttl_level": "medium"
+          "record_id": "",
+          "class_label": "Not assessed",
+          "row_id": "heat",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:heat_stress_hazard",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "+",
           "rank": 1,
-          "label": "Biodiversity",
+          "label": "Biodiversity loss",
           "class": "slight_positive",
           "confidence": "very_high",
           "badge": "HIGH",
@@ -1781,111 +1291,158 @@
           "record_id": "water_harvesting_conservation__biodiversity_priority",
           "class_label": "Small benefit",
           "row_id": "biodiversity",
-          "group": "nature_carbon",
-          "source": "T6:biodiversity_priority",
-          "scored": true,
-          "ttl_level": "medium"
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:biodiversity_priority",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "water_harvesting_conservation__biodiversity_priority"
+            }
+          ]
         },
         {
           "glyph": "+",
           "rank": 1,
-          "label": "Carbon mitigation",
+          "label": "Carbon (sequestration deficit)",
           "class": "slight_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": true,
           "record_id": "water_harvesting_conservation__carbon_sequestration_potential",
           "class_label": "Small benefit",
-          "row_id": "carbon_mitigation",
-          "group": "nature_carbon",
-          "source": "T6:carbon_sequestration_potential",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "carbon",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:carbon_sequestration_potential",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "water_harvesting_conservation__carbon_sequestration_potential"
+            }
+          ]
         },
         {
           "glyph": "±",
           "rank": null,
-          "label": "Rural income",
+          "label": "Rural poverty",
           "class": "conflicting_evidence",
           "confidence": "medium",
           "badge": "MED",
           "caution": true,
           "record_id": "water_harvesting_conservation__rural_poverty",
           "class_label": "Studies disagree",
-          "row_id": "rural_income",
-          "group": "livelihoods",
-          "source": "T6:rural_poverty",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "rural_poverty",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:rural_poverty",
+              "glyph": "±",
+              "badge": "MED",
+              "class": "conflicting_evidence",
+              "record_id": "water_harvesting_conservation__rural_poverty"
+            }
+          ]
+        },
+        {
+          "glyph": "n/a",
+          "rank": null,
+          "label": "Gender inequality",
+          "class": "not_assessed",
+          "confidence": "",
+          "badge": "",
+          "caution": false,
+          "record_id": "",
+          "class_label": "Not assessed",
+          "row_id": "gender",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:gender_inequity",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Food security",
+          "label": "Food insecurity",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
           "caution": true,
           "record_id": "water_harvesting_conservation__food_insecurity",
           "class_label": "Clear benefit",
-          "row_id": "food_security",
-          "group": "livelihoods",
-          "source": "T6:food_insecurity",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "food_insecurity",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:food_insecurity",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "water_harvesting_conservation__food_insecurity"
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Farm productivity",
-          "class": "strong_positive",
-          "confidence": "very_high",
+          "label": "Water-table depletion (recharge)",
+          "class": "",
+          "confidence": "high",
           "badge": "HIGH",
           "caution": true,
-          "record_id": "water_harvesting_conservation__production_gap",
-          "class_label": "Clear benefit",
-          "row_id": "farm_productivity",
-          "group": "livelihoods",
-          "source": "T6:production_gap",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Gender inequity",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
+          "setting_rows": [
+            "water_harvesting_conservation__water_stress",
+            "water_harvesting_conservation__catchment_water_yield",
+            "water_harvesting_conservation__water_quality_risk"
+          ],
+          "why": "TTL-weighted median of the setting rows",
           "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "gender_flag",
-          "group": "context_flags",
-          "source": "T6:gender_inequity",
-          "scored": false,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "IPLC lands",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "iplc_flag",
-          "group": "context_flags",
-          "source": "T6:iplc_lands",
-          "scored": false,
-          "ttl_level": "medium"
+          "class_label": "",
+          "row_id": "water_table",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:water_stress",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "strong_positive",
+              "record_id": "water_harvesting_conservation__water_stress"
+            },
+            {
+              "source": "T6:catchment_water_yield",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "water_harvesting_conservation__catchment_water_yield"
+            },
+            {
+              "source": "T6:water_quality_risk",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "water_harvesting_conservation__water_quality_risk"
+            }
+          ]
         }
       ],
       "counts": {
-        "benefit": 13,
-        "conflicting_evidence": 2
+        "benefit": 7,
+        "not_assessed": 2,
+        "conflicting_evidence": 1
       },
       "evidenced_priorities": [
         "drought_hazard",
@@ -1901,234 +1458,103 @@
       ]
     },
     "wetland_management": {
-      "groups": {
-        "climate_resilience": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Climate resilience",
-          "class": "",
-          "confidence": "high",
-          "badge": "HIGH",
-          "caution": true,
-          "setting_rows": [
-            "wetland_management__flood__all",
-            "wetland_management__fire__all"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 6
-        },
-        "land_water": {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Land & water",
-          "class": "",
-          "confidence": "high",
-          "badge": "HIGH",
-          "caution": true,
-          "setting_rows": [
-            "wetland_management__soil_erosion_risk",
-            "wetland_management__water_quality_risk",
-            "wetland_management__water_stress"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 4
-        },
-        "nature_carbon": {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Nature & carbon",
-          "class": "",
-          "confidence": "high",
-          "badge": "HIGH",
-          "caution": true,
-          "setting_rows": [
-            "wetland_management__biodiversity_priority",
-            "wetland_management__carbon_sequestration_potential"
-          ],
-          "why": "TTL-weighted median of the setting rows",
-          "n_rows": 2
-        },
-        "livelihoods": {
-          "glyph": "±",
-          "rank": null,
-          "label": "Livelihoods",
-          "class": "conflicting_evidence",
-          "confidence": "medium",
-          "badge": "MED",
-          "caution": true,
-          "setting_rows": [
-            "wetland_management__rural_poverty",
-            "wetland_management__production_gap"
-          ],
-          "why": "rows in this theme point in different directions (dissent ≥ 1/3)",
-          "n_rows": 3
-        }
-      },
       "rows": [
         {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Drought resilience",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "drought_resilience",
-          "group": "climate_resilience",
-          "source": "T3:drought",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
           "glyph": "++",
           "rank": 2,
-          "label": "Flood protection",
-          "class": "moderate",
-          "confidence": "high",
-          "badge": "HIGH",
-          "caution": true,
-          "record_id": "wetland_management__flood__all",
-          "class_label": "Clear reduction of losses",
-          "row_id": "flood_protection",
-          "group": "climate_resilience",
-          "source": "T3:flood",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Heat protection",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "heat_protection",
-          "group": "climate_resilience",
-          "source": "T3:heat_stress",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Fire risk",
-          "class": "low",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": true,
-          "record_id": "wetland_management__fire__all",
-          "class_label": "Small reduction of losses",
-          "row_id": "fire_risk",
-          "group": "climate_resilience",
-          "source": "T3:fire",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "?",
-          "rank": null,
-          "label": "Storm protection",
-          "class": "data_deficient",
-          "confidence": "very_low",
-          "badge": "",
-          "caution": false,
-          "record_id": "wetland_management__wind_cyclone__all",
-          "class_label": "Not enough evidence",
-          "row_id": "storm_protection",
-          "group": "climate_resilience",
-          "source": "T3:wind_cyclone",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "?",
-          "rank": null,
-          "label": "Waterlogging protection",
-          "class": "data_deficient",
-          "confidence": "very_low",
-          "badge": "",
-          "caution": false,
-          "record_id": "wetland_management__waterlogging__all",
-          "class_label": "Not enough evidence",
-          "row_id": "waterlogging_protection",
-          "group": "climate_resilience",
-          "source": "T3:waterlogging",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Erosion mitigation",
+          "label": "Erosion risk",
           "class": "strong_positive",
           "confidence": "high",
           "badge": "HIGH",
           "caution": false,
           "record_id": "wetland_management__soil_erosion_risk",
           "class_label": "Clear benefit",
-          "row_id": "erosion_mitigation",
-          "group": "land_water",
-          "source": "T6:soil_erosion_risk",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "erosion",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:soil_erosion_risk",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "strong_positive",
+              "record_id": "wetland_management__soil_erosion_risk"
+            }
+          ]
+        },
+        {
+          "glyph": "n/a",
+          "rank": null,
+          "label": "Drought",
+          "class": "not_assessed",
+          "confidence": "",
+          "badge": "",
+          "caution": false,
+          "record_id": "",
+          "class_label": "Not assessed",
+          "row_id": "drought",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:drought_hazard",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Water quality",
-          "class": "strong_positive",
-          "confidence": "very_high",
+          "label": "Flood hazard",
+          "class": "moderate_positive",
+          "confidence": "high",
           "badge": "HIGH",
           "caution": true,
-          "record_id": "wetland_management__water_quality_risk",
+          "record_id": "wetland_management__flood_hazard",
           "class_label": "Clear benefit",
-          "row_id": "water_quality",
-          "group": "land_water",
-          "source": "T6:water_quality_risk",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "flood",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:flood_hazard",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "wetland_management__flood_hazard"
+            }
+          ]
         },
         {
-          "glyph": "+",
-          "rank": 1,
-          "label": "Water supply",
-          "class": "slight_positive",
-          "confidence": "very_low",
-          "badge": "LOW",
+          "glyph": "n/a",
+          "rank": null,
+          "label": "Heat stress",
+          "class": "not_assessed",
+          "confidence": "",
+          "badge": "",
           "caution": false,
-          "record_id": "wetland_management__catchment_water_yield",
-          "class_label": "Small benefit",
-          "row_id": "water_supply",
-          "group": "land_water",
-          "source": "T6:catchment_water_yield",
-          "scored": true,
-          "ttl_level": "medium"
+          "record_id": "",
+          "class_label": "Not assessed",
+          "row_id": "heat",
+          "panel": "climate_livelihoods",
+          "panel_label": "Risk to rural livelihoods (climate)",
+          "sources": [
+            {
+              "source": "T6:heat_stress_hazard",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "++",
           "rank": 2,
-          "label": "Water stress relief",
-          "class": "moderate_positive",
-          "confidence": "very_high",
-          "badge": "HIGH",
-          "caution": false,
-          "record_id": "wetland_management__water_stress",
-          "class_label": "Clear benefit",
-          "row_id": "water_stress_relief",
-          "group": "land_water",
-          "source": "T6:water_stress",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "++",
-          "rank": 2,
-          "label": "Biodiversity",
+          "label": "Biodiversity loss",
           "class": "moderate_positive",
           "confidence": "very_high",
           "badge": "HIGH",
@@ -2136,115 +1562,158 @@
           "record_id": "wetland_management__biodiversity_priority",
           "class_label": "Clear benefit",
           "row_id": "biodiversity",
-          "group": "nature_carbon",
-          "source": "T6:biodiversity_priority",
-          "scored": true,
-          "ttl_level": "medium"
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:biodiversity_priority",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "wetland_management__biodiversity_priority"
+            }
+          ]
         },
         {
           "glyph": "+",
           "rank": 1,
-          "label": "Carbon mitigation",
+          "label": "Carbon (sequestration deficit)",
           "class": "slight_positive",
           "confidence": "high",
           "badge": "HIGH",
           "caution": true,
           "record_id": "wetland_management__carbon_sequestration_potential",
           "class_label": "Small benefit",
-          "row_id": "carbon_mitigation",
-          "group": "nature_carbon",
-          "source": "T6:carbon_sequestration_potential",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "carbon",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:carbon_sequestration_potential",
+              "glyph": "+",
+              "badge": "HIGH",
+              "class": "slight_positive",
+              "record_id": "wetland_management__carbon_sequestration_potential"
+            }
+          ]
         },
         {
           "glyph": "±",
           "rank": null,
-          "label": "Rural income",
+          "label": "Rural poverty",
           "class": "conflicting_evidence",
           "confidence": "medium",
           "badge": "MED",
           "caution": true,
           "record_id": "wetland_management__rural_poverty",
           "class_label": "Studies disagree",
-          "row_id": "rural_income",
-          "group": "livelihoods",
-          "source": "T6:rural_poverty",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "rural_poverty",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:rural_poverty",
+              "glyph": "±",
+              "badge": "MED",
+              "class": "conflicting_evidence",
+              "record_id": "wetland_management__rural_poverty"
+            }
+          ]
+        },
+        {
+          "glyph": "n/a",
+          "rank": null,
+          "label": "Gender inequality",
+          "class": "not_assessed",
+          "confidence": "",
+          "badge": "",
+          "caution": false,
+          "record_id": "",
+          "class_label": "Not assessed",
+          "row_id": "gender",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:gender_inequity",
+              "glyph": "n/a",
+              "badge": "",
+              "class": "not_assessed",
+              "record_id": ""
+            }
+          ]
         },
         {
           "glyph": "0",
           "rank": 0,
-          "label": "Food security",
+          "label": "Food insecurity",
           "class": "no_relationship",
           "confidence": "very_low",
           "badge": "LOW",
           "caution": false,
           "record_id": "wetland_management__food_insecurity",
           "class_label": "No clear effect",
-          "row_id": "food_security",
-          "group": "livelihoods",
-          "source": "T6:food_insecurity",
-          "scored": true,
-          "ttl_level": "medium"
+          "row_id": "food_insecurity",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:food_insecurity",
+              "glyph": "0",
+              "badge": "LOW",
+              "class": "no_relationship",
+              "record_id": "wetland_management__food_insecurity"
+            }
+          ]
         },
         {
-          "glyph": "−",
-          "rank": -1,
-          "label": "Farm productivity",
-          "class": "slight_negative",
-          "confidence": "high",
+          "glyph": "++",
+          "rank": 2,
+          "label": "Water-table depletion (recharge)",
+          "class": "",
+          "confidence": "very_high",
           "badge": "HIGH",
-          "caution": false,
-          "record_id": "wetland_management__production_gap",
-          "class_label": "Small harm",
-          "row_id": "farm_productivity",
-          "group": "livelihoods",
-          "source": "T6:production_gap",
-          "scored": true,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "Gender inequity",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
+          "caution": true,
+          "setting_rows": [
+            "wetland_management__water_stress",
+            "wetland_management__water_quality_risk"
+          ],
+          "why": "TTL-weighted median of the setting rows",
           "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "gender_flag",
-          "group": "context_flags",
-          "source": "T6:gender_inequity",
-          "scored": false,
-          "ttl_level": "medium"
-        },
-        {
-          "glyph": "n/a",
-          "rank": null,
-          "label": "IPLC lands",
-          "class": "not_assessed",
-          "confidence": "",
-          "badge": "",
-          "caution": false,
-          "record_id": "",
-          "class_label": "Not assessed",
-          "row_id": "iplc_flag",
-          "group": "context_flags",
-          "source": "T6:iplc_lands",
-          "scored": false,
-          "ttl_level": "medium"
+          "class_label": "",
+          "row_id": "water_table",
+          "panel": "can_address",
+          "panel_label": "What the NbS can address",
+          "sources": [
+            {
+              "source": "T6:water_stress",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "moderate_positive",
+              "record_id": "wetland_management__water_stress"
+            },
+            {
+              "source": "T6:catchment_water_yield",
+              "glyph": "+",
+              "badge": "LOW",
+              "class": "slight_positive",
+              "record_id": "wetland_management__catchment_water_yield"
+            },
+            {
+              "source": "T6:water_quality_risk",
+              "glyph": "++",
+              "badge": "HIGH",
+              "class": "strong_positive",
+              "record_id": "wetland_management__water_quality_risk"
+            }
+          ]
         }
       ],
       "counts": {
-        "not_assessed": 2,
-        "benefit": 8,
-        "data_deficient": 2,
+        "benefit": 5,
+        "not_assessed": 3,
         "conflicting_evidence": 1,
-        "no_effect": 1,
-        "harm": 1
+        "no_effect": 1
       },
       "evidenced_priorities": [
         "flood_hazard",
