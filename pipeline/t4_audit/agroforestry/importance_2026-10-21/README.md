@@ -42,3 +42,9 @@ Current inventory has 60 family-variable cells across six represented system col
 `nath_concept_mapping.csv` explicitly maps every source path to a theme and variable. `report-t4-importance.py` produces `nath_consolidated.json` and the two-level table in the existing importance report. The complete source tree remains unchanged. Repeated nutrient/rooting and topsoil/subsoil contributions are summed, not averaged. This yields 19 model variables, including seven soil variables whose weights total 20%. pH totals 4%; SOC totals 2%. Their ratios to the mean consolidated variable weight (1/19) are 0.76 and 0.38. Original hierarchy-adjusted ratios retain the original tree benchmark.
 
 This diagnostic does not merge depth-specific suitability functions, select a cross-paper runtime weight, or add source votes. Eight Nath clarification records now explain the result directly in the normal review queue. Drainage-code interpretation and incompatible source class boundaries remain separate unresolved issues.
+
+## Ahmad 2018 recovered model-use chain (2026-10-23)
+
+Tables 1/2 and Figures 2/8 (PDF pp4/8) explicitly connect SOC to agroforestry suitability through soil fertility. Five soil inputs each receive 20% of soil fertility; soil fertility receives 45.8% of the final overlay. Slope 17.2%, wetness 22.6%, NDVI 14.4% complete the model. The eight-input tree is now inventoried: SOC nominal allocation 9.16%, hierarchy benchmark ratio 1.832, flat eight-input ratio 0.7328.
+
+These products describe nominal allocations through weighted stages. Soil fertility is reclassified before final overlay, so they are not output sensitivities or equivalent single-stage runtime weights. No automatic pooling with the existing three-paper candidate panel. Six variants now represent four papers; inherited lineage still prevents counting Singh's two representations twice.

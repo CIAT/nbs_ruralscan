@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-23T08:18:14.442364+00:00",
-  "git_commit": "ffc7bd9c4a44dcab8776ad2bafba75e31ca834ef",
+  "timestamp": "2026-10-23T08:30:36.775939+00:00",
+  "git_commit": "5d2557d51ee050e4f9ad596436233d60925b2ec3",
   "registers": {
     "SRC_source_register": [
       {
@@ -12392,15 +12392,39 @@
         "suitability_family_id": "agroforestry__cross_family",
         "variable": "slope",
         "relationship": {
-          "opt_high": 5,
-          "sub_low": 5,
-          "sub_high": 15,
-          "unit": "degrees (inferred)",
-          "direction": "lower_is_better"
+          "source_classes": [
+            {
+              "label": "High",
+              "range": "<5",
+              "rank": 3
+            },
+            {
+              "label": "Medium",
+              "range": "5–15",
+              "rank": 2
+            },
+            {
+              "label": "Low",
+              "range": ">15",
+              "rank": 1
+            }
+          ],
+          "unit": "unresolved_percent_vs_degrees",
+          "direction": "lower_is_better",
+          "note": "Table 5 has no unit. Section 2.4.3 heading and Figure 5 legend say percent; prose uses degree symbols. No inferred lower bound or unsuitable cutoff."
         },
         "context": {
           "country": "India",
-          "district": "Palamu, Jharkhand"
+          "district": "Palamu, Jharkhand",
+          "source_check": {
+            "date": "2026-10-23",
+            "pages": [
+              5,
+              7,
+              10
+            ],
+            "resolution": "Full High/Medium/Low classes recovered; conflicting unit signals preserved. Percent is supported by section heading and map legend, while prose prints degree symbols. Dropped state retained pending re-review."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -12639,6 +12663,26 @@
             "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
             "status": "conditional_scoping_transfer",
             "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
+          },
+          "model_use": {
+            "verified": true,
+            "method": "nested weighted overlay with composite reclassification",
+            "page": "4,8",
+            "weight_path_pct": [
+              45.8,
+              20
+            ],
+            "scope": "practice_technology",
+            "nominal_whole_model_weight_pct": 9.16,
+            "note": "Table 1 SOC is 20% of soil fertility; Table 2 soil fertility is 45.8% of agroforestry model. Product is nominal path allocation, not sensitivity of final map: intermediate soil fertility is reclassified before final overlay."
+          },
+          "source_check": {
+            "date": "2026-10-23",
+            "pages": [
+              4,
+              8
+            ],
+            "resolution": "Table 1 and Figure 2 feed soil fertility; Table 2 and Figure 8 explicitly feed that composite to agroforestry suitability."
           }
         },
         "use_role": "structural_suitability",
