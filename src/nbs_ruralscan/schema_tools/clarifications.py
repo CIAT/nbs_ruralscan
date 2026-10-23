@@ -86,8 +86,22 @@ def build(root):
         }:
             continue
         reviews = list(latest.get(eid, {}).values())
-        concerns = [r for r in reviews if r["decision"].lower() not in {"ok", "keep"}]
-        if not concerns and reviews and ev["reviewer_ok"].lower() != "true":
+        # A completed scope correction is not an unanswered clarification.
+        # Keep incomplete reclassifications visible until the register reflects them.
+        concerns = [
+            r
+            for r in reviews
+            if r["decision"].lower() not in {"ok", "keep"}
+            and not (
+                r["decision"].lower() == "reclassify"
+                and ev["claim_scope"] in {"species_specific", "crop_specific"}
+            )
+        ]
+        if (
+            not concerns
+            and any(r["decision"].lower() in {"ok", "keep"} for r in reviews)
+            and ev["reviewer_ok"].lower() != "true"
+        ):
             concerns = [
                 dict(
                     reviewer="Status reconciliation",

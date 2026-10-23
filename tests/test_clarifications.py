@@ -338,3 +338,45 @@ def test_normal_query_saves_followup_in_same_request(tmp_path, monkeypatch):
         "two": "answer_ready",
     }
     assert g["history"][0]["evidence_ids"] == ["one"]
+
+
+def test_applied_scope_reclassification_is_not_an_unanswered_question(tmp_path):
+    setup(tmp_path)
+    log_path = tmp_path / "pipeline/metrics/review_log.csv"
+    rows = list(csv.DictReader(log_path.open()))
+    for r in rows:
+        r.update(
+            decision="reclassify",
+            reason="species_envelope",
+            note="Keep in species/crop lane",
+        )
+    with log_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    ev_path = tmp_path / "schema/registers/EV_evidence_register.csv"
+    evidence = list(csv.DictReader(ev_path.open()))
+    evidence[0].update(claim_scope="crop_specific", reviewer_ok="false")
+    # The other record still has the old scope: this failure must remain visible.
+    with ev_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(evidence[0]))
+        writer.writeheader()
+        writer.writerows(evidence)
+    issues = build(tmp_path)
+    assert {r["evidence_id"] for i in issues for r in i["records"]} == {"two"}
+    assert issues[0]["status"] == "needs_investigation"
+    assert list(csv.DictReader(log_path.open())) == rows
+
+
+def test_new_query_after_reclassification_still_needs_review(tmp_path):
+    setup(tmp_path)
+    ev_path = tmp_path / "schema/registers/EV_evidence_register.csv"
+    rows = list(csv.DictReader(ev_path.open()))
+    for r in rows:
+        r["claim_scope"] = "species_specific"
+    with ev_path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+    assert len(build(tmp_path)) == 1
+    assert {r["evidence_id"] for r in build(tmp_path)[0]["records"]} == {"one", "two"}

@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-23T13:03:15.060269+00:00",
-  "git_commit": "f705614b6642b2f84cfeb9fa9a1db20bda3bc210",
+  "timestamp": "2026-10-23T13:19:34.170266+00:00",
+  "git_commit": "c31dd5d0042366569977a0ce2e2896158bc447a7",
   "registers": {
     "SRC_source_register": [
       {
@@ -13523,10 +13523,33 @@
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__cross_family",
         "variable": "land_cover",
-        "relationship": {},
+        "relationship": {
+          "type": "model_input",
+          "source_variable": "Land use and land cover",
+          "direction": "not_reported",
+          "class_scores": "not_extracted"
+        },
         "context": {
           "study_location": "eastern DR Congo",
-          "study_income_group": "low_income"
+          "study_income_group": "low_income",
+          "model_use": {
+            "verified": true,
+            "method": "land_suitability_model_input",
+            "page": "3",
+            "scope": "practice_technology",
+            "weight_path_pct": [],
+            "note": "Methods explicitly list land use/land cover; no validated class response in this record."
+          },
+          "related_evidence_ids": [
+            "ev_T4_rereview_chuma_2021_land_cover_3"
+          ],
+          "runtime_status": "model_use_only",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              3
+            ],
+            "interpretation": "This is the only active land-cover model-use record from Chuma. The richer-looking Table 3 extraction is already dropped. Dropping this record would lose the evidence that land use/cover entered the model. Retained it as model-use only, with no invented class scores or weight. Source-level counting still counts Chuma once; table values require separate verified extraction."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "scoping_candidate",
@@ -14403,31 +14426,49 @@
         "source_id": "jawarneh_2025",
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__silvopastoral",
-        "variable": "distance_to_road",
+        "variable": "distance_to_waterbody",
         "relationship": {
-          "suitability_class": {
+          "type": "source_context_only",
+          "source_variable": "Water accessibility",
+          "source_unit_as_printed": "M",
+          "unit_interpretation": "unresolved",
+          "source_classes": {
             "S1": "<1",
             "S2": "1–3",
             "S3": "3–5",
             "N1": ">5"
           },
-          "unit": "M (units ambiguous — likely km)",
-          "note": "variable should be distance_to_water or water_accessibility, not distance_to_road"
+          "agroforestry_numeric_rule": false
         },
         "context": {
           "livestock": "sheep and goats",
           "system": "rangeland grazing",
-          "location": "Jordan steppe"
+          "location": "Jordan steppe",
+          "runtime_status": "held_non_agroforestry_grazing_scope_and_ambiguous_unit",
+          "source_target": "Sheep and goat grazing suitability; not silvopastoral establishment",
+          "model_use": {
+            "verified": false,
+            "note": "Not a verified agroforestry model input."
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [
+              1,
+              4,
+              10,
+              18
+            ],
+            "interpretation": "Confirmed: this paper models sheep/goat grazing in a Jordan steppe reserve, not silvopasture establishment. Corrected the variable from roads to distance to waterbody: methods derive Euclidean distance to DEM-derived streams. The table prints unit M with cutoffs <1, 1–3, 3–5 and >5; no kilometre conversion inferred. Parked as contextual candidate, outside executable agroforestry rules. Your GLW4 host-mask proposal is a separate design choice, not evidence supplied by this paper."
+          }
         },
         "use_role": "operational_risk",
-        "evidence_type": "literature_relationship",
+        "evidence_type": "scoping_candidate",
         "claim_basis": "table",
         "claim_scope": "practice_technology",
         "extraction_confidence": "low",
         "quote": "Wateraccessibility(M) | <1 1–3 3–5 >5",
         "page": 10,
         "reviewer_ok": false,
-        "raw_name": "Water accessibility (M)",
+        "raw_name": "Water accessibility: distance to streams",
         "attribution": "[query 2026-10-22 by peetmate; reason:species_envelope; note:about suitability for livestock not silvopasture -> silvopasture, livestock mask GLW4 is sufficient.] [VERIFY-FLAG mismatch: Quote measures 'Water accessibility (M)' — proximity to water, not roads. Variable encoded as 'distance_to_road' and unit as 'km from water source' is self-contradictory. The variable is entirely mislabeled.] Water accessibility distance — used as proxy for access constraint; not road distance",
         "locator_type": "page"
       },
@@ -15384,11 +15425,12 @@
         "source_id": "mucida_2023",
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__silvopastoral",
-        "variable": "land_cover",
+        "variable": "potential_conservation_use_index",
         "relationship": {
-          "threshold_min": 3,
-          "direction": "positive",
-          "note": "PCU >=3 = agrosilvopastoral aptitude; PCU <3 = biodiversity conservation/exclusion"
+          "type": "source_composite_index",
+          "source_name": "Potential for Conservation Use",
+          "source_partition": "PCU >=3: agrosilvopastoral aptitude; PCU <3: biodiversity conservation",
+          "independent_variable_response": false
         },
         "context": {
           "study_region": "Minas Gerais, Brazil",
@@ -15397,6 +15439,19 @@
           "source_check": {
             "date": "2026-10-20",
             "resolution": "PCU means Potential for Conservation Use, composite terrain/soil/lithology index; not land cover. Soft-quarantine mislabelled T4 rule; full p8 retained. No PCU-to-land-cover crosswalk is valid."
+          },
+          "runtime_status": "quarantined_composite_index",
+          "source_components_pct": {
+            "slope": 50,
+            "soil_class": 39,
+            "lithology": 11
+          },
+          "review_resolution_2026_10_23": {
+            "pages": [
+              4,
+              8
+            ],
+            "interpretation": "PCU means Potential for Conservation Use: a composite of slope (50%), soil class (39%) and lithology (11%), defined on PDF p4. Its cutoff of 3 partitions regional agrosilvopastoral aptitude versus conservation priority; it is not a land-cover category or an independent soil/slope threshold. Corrected variable identity and removed generic threshold encoding. Record remains dropped; retained the source method for audit without counting the composite alongside its inputs."
           }
         },
         "use_role": "structural_suitability",
@@ -15404,10 +15459,10 @@
         "claim_basis": "primary_measured",
         "claim_scope": "practice_technology",
         "extraction_confidence": "low",
-        "quote": "Sustainable Horizons 5 (2023) 100045\n8\ndistricts. Eight watersheds showed PCU>99%, especially those with \nlarge territories: Low Grande tributaries (36), Low Paranaíba (40), and \nMucuri (38) (Fig. 6, Table 5 - supplementary material). \n3.6. Municipalities \nThe analyses of municipal divisions amplified the inequalities \n(Fig. 6), showing an even more significant variation in PCU values be­\ntween units. Many municipalities had an average PCU score between 3 \nand 4 (Fig. 6), and some from the west and north regions concentrated \non high PCU scores (4 to 5). A high concentration of 2 to 3 PCU score \nmunicipalities is related to the ranges (Espinhaço, Iron Quadrangle, \nMantiqueira) in a North-South trend. Cedro do Abaet´e had the lowest \npercentage of area suitable for agriculture (31%) and an average PCU of \n2.25 (standard deviation of 0.40) (Fig. 7 and Table 6 - supplementary \nmaterial). \n4. Discussion \nGlobal land use has increased considerably in recent decades and \nBrazil is one of the countries with the largest change from native to the \nanthropic area (Winkler et al., 2021). Methodologies aimed at the \nagrosilvopastoral aptitude are necessary for establishing public policies \nthat enable sustainable land use (Briassoulis, 2019; Chasek et al., 2019) \nas well as conservation use areas (Ghoddousi et al., 2022; Jiang et al., \n2022). The EZ must be combined with several other components, such as \nlegislation, endangered species, tourism interest, etc. Even if a region \nhas a high potential for agricultural use, it is essential to have a portion \nof conserved areas for storing reservoirs of native species and for \nproviding ecological services like pollination, pest control, water pro­\nduction, etc. \nConcerning the PUC environmental factors, Minas Gerais lithology \nshows a predominance of low scores considering PCU, represented by \ngneisses, metapelites, granites (eastern and southwest), quartzite (cen­\ntral) slate, siltite (central/ northwestern), and arenite (west) portions. \nThe (meta) limestones conditioned the highest weight scores for po­\ntential use in the state territory (Costa et al., 2017). The Red Yellow \nOxisols, Red Oxisols, and Ultisols, widely present in the Minas Gerais, \nconditioned the medium to high PCU due to the advanced weathering \nstage, deep, good drainage conditions, and low cation exchange capacity \n(Bünemann et al., 2018). Entisols, with a low score for potential use, are \nassociated with resistant rocks (Taveira et al., 2021), such as quartzites \nand itabirites. The vegetation formed in these shallow and lithic soils has \nhigh endemism (Schaefer et al., 2016) and must be preserved (Silveira \net al., 2016; Colli-Silva et al., 2019). The ecological features claim \nprotection creating double enforcement for conservation and promoting \necosystem services as indicated by the Brazilian law (Brazil, 2021). \nAlthough Minas Gerais state lithologies present low PCU scores, the \nsoil and the slope provide an ideal PCU for developing agrosilvopastoral \nactivities in a significant portion of the area. However, low PCU regions \nhighlight the importance of studies to understand the ecosystem’s fra­\ngilities. They must also be combined with other surface characteristics \nrelated to the biota or other uses that may lead to other than agricultural \nland destinations. This affirmation aims to enhance the responsible use \nof natural resources, following Brazil’s national and international \ncommitments, such as the 2030 Agenda (UN, 2015). Methods aiming at \nagricultural zoning (Minas Gerais, 2021), environmental fragility map­\nping (Ross, 2012; França et al., 2022a), and the potential use evaluation \n(Costa et al., 2017) tend to encourage and promote appropriate agri­\ncultural practices in areas with high aptitude. On the other hand, those \nmethods should also promote natural vegetation recovery in low po­\ntential regions and discourage low potential land for agrosilvopastoral \nuse (BPBES, 2019; Brazil, 2021). \nThe terrain slope is the main layer, with a high weight (50%) and the \nhighest resolution and detail layer in the PCU spatial distribution. The \nslope determines the intensity of processes such as erosion and redis­\ntribution of sediments, local drainage capacity, and the amount and \npower of solar radiation (Abate and Kibret, 2016). At regional scales, \ntopographic heterogeneity contributes to soil moisture’s spatial het­\nerogeneity (Chadwick and Asner, 2016) which can also shape species \ndistribution and habitat diversity (Engelbrecht et al., 2007; Comita \net al., 2009; Jucker et al., 2018). Water availability in tropical soils \nseverely limited vegetation growth and productivity (Silva et al., 2013). \nFor these reasons, the slope layer defines the transitions and details of \nthe PCU. Although the soil type and lithology maps have lower spatial \nresolution than the slope, the PCU calculation can be continuously \nupdated and improved as more refined scale maps become available. \nCosta et al. (2019) divided the PCU into five classes regarding the \npotential for conservation use. This work adopted the most straightfor­\nward division for analysing the fitness for use: PCU ≥3 indicated apti­\ntude for agrosilvopastoral activities and PCU<3 for biodiversity \nconservation (Table 2). The methodology allows rapid reprocessing \nallowing different divisions readily. Although, we do not ignore the need \nfor conservation initiatives inside the productive landscape to ensure \nadequate supplies of pollinators, seed dispersers, herbivores, natural \nenemies, and so on (Nelson and Burchfield, 2021). Moreover, it is also \nnecessary to consider conserving the streamflow margins and other \nareas demanded by law (Brazil, 2021). \nWe emphasize that other factors such as climate (Gomes et al., 2020), \nthe capital and technology applied to land use (Taveira et al., 2021), \nlogistic network (Lupinetti-Cunha et al., 2022), and distance to markets \ncan also affect the land use potential and were not considered in this \nstudy. It is essential to have regional studies to develop policies for \nconservation. Levels of agricultural management must be analysed \nconsidering the land use capability from the different applications of \ncapital and technology (Taveira et al., 2021) or even considering the \nroadless and railroad-less opportunity for conservation (Tisler et al., \n2022). Besides restoring degraded areas and mitigating forest degrada­\ntion, measures to contain deforestation are necessary to avoid drastic \nloss of biomass and biodiversity (Lima et al., 2020). The challenge to \nland use planning must be the improvement of land use efficiency and \nthe reduction of new areas opening. The ecosystem services approach in \nlandscape design and accountability may be a great driver to face this \nchallenge, especially at the government level (IBGE, 2020b; Agra et al., \n2021). \n4.1. Potential conservation use by administrative, watershed, and \nmunicipalities divisions \nThe administrative divisions have a better balance in terms of agri­\ncultural aptitude than the watershed districts and municipal divisions. \nThese results highlight the necessity to improve generic programs of \nland use designed for larger scales before implementation in munici­\npalities or watershed districts. Despite this apparent balance between \ndivisions, a most in-depth analysis becomes recommended since each \nregion has climate and logistical differences beyond the methodology \nanalysed here. For example, the North and part of Jequitinhonha region \nof the Minas Gerais state, which scored with high PCU, is partly in areas \nsusceptible to desertification, classified as semiarid (IBGE, 2018; França \net al., 2022a). The contrast of the suitable regions and land use for the \nagrosilvopastoral use at the North, Northwest, Mucuri, and Jequitinhonha \nvalleys can be conditioned to climate conditions and lower populational \ndensity from the state (0–25 0–25 inhabitant/km2) compared with the \nBelo Horizonte region (> 500 inhabitant /km2) (IBGE, 2010). \nTable 3 \nCurrent land-use area and percentage over low Potential for Conservation Use.  \nLand use \nArea (ha) \nLow PCU (%) \nLivestock \n29,724,881 \n17.89 \nSilviculture \n2381,596 \n8.61 \nAgriculture \n4188,472 \n3.91  \nD.P. Mucida et al.                                                                                                                                                                                                                              \n",
+        "quote": "Costa et al. (2019) divided the PCU into five classes regarding the \npotential for conservation use. This work adopted the most straightfor­\nward division for analysing the fitness for use: PCU ≥3 indicated apti­\ntude for agrosilvopastoral activities and PCU<3 for biodiversity \nconservation (Table 2). The methodology allows rapid reprocessing \nallowing different divisions readily. Although, we do not ignore the need \nfor conservation initiatives inside the productive landscape to ensure \nadequate supplies of pollinators, seed dispersers, herbivores, natural \nenemies, and so on (Nelson and Burchfield, 2021). Moreover, it is also \nnecessary to consider conserving the streamflow margins and other \nareas demanded by law (Brazil, 2021).",
         "page": 8,
         "reviewer_ok": false,
-        "raw_name": "PCU aptitude threshold for agrosilvopastoral",
+        "raw_name": "Potential for Conservation Use (PCU)",
         "attribution": "[dropped 2026-10-20 by Codex source verification; reason:unusable_value; note:PCU means Potential for Conservation Use, composite terrain/soil/lithology index; not land cover. Soft-quarantine mislabelled T4 rule; full p8 retained. No PCU-to-land-cover crosswalk is valid.] [query 2026-09-18 by peetmate; reason:insufficient_context; note:I do not understand what PCU is, needs a definition if to be useful.]",
         "locator_type": "page",
         "review_state": "dropped"
@@ -15783,8 +15838,14 @@
         "suitability_family_id": "agroforestry__shaded_perennial",
         "variable": "mean_annual_temperature",
         "relationship": {
-          "direction": "warm climate described as favourable",
-          "note": "Secondary general assertion in a mulberry study; no universal numeric response adopted"
+          "type": "attributed_regional_climate_statement",
+          "reported_temperature_range_c": [
+            20,
+            30
+          ],
+          "reported_precipitation_statement": ">1200 mm mean annual precipitation",
+          "direction": "not_a_universal_response",
+          "numeric_rule_admissible": false
         },
         "context": {
           "model_use": {
@@ -15800,13 +15861,25 @@
           "source_check": {
             "date": "2026-10-20",
             "resolution": "p17 secondary assertion describes agroforestry-friendly climates in mulberry study; not a demonstrated universal envelope. Retain as qualitative regional context without invented absolute limits."
+          },
+          "claim_origin": "cited_secondary",
+          "cited_reference": "Ahmad F, Uddin MM, Goparaju L (2019). Agroforestry suitability mapping of India geospatial approach based on FAO guidelines. Agroforestry Systems 93(4):1319–1336.",
+          "runtime_status": "held_secondary_regional_assertion_not_universal_envelope",
+          "original_status": "Reporting-source bibliography checked; original claim not independently verified.",
+          "temperature_metrics": "Quoted assertion uses mean annual temperature; following mulberry classes use growing-season temperature.",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              17,
+              19
+            ],
+            "interpretation": "The quoted 20–30°C and >1200 mm assertion cites Ahmad, Uddin & Goparaju (2019), Agroforestry suitability mapping of India geospatial approach based on FAO guidelines (PDF bibliography p19). It occurs inside a mulberry study; the next sentence gives separate growing-season mulberry temperature classes. Retain the attributed regional statement, with mean annual and growing-season temperature kept distinct. Neither this quote nor the species-specific model weight establishes a universal agroforestry envelope. Original Ahmad claim remains unverified."
           }
         },
         "use_role": "structural_suitability",
         "evidence_type": "scoping_candidate",
         "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
-        "lineage_of": "Ahmad et al. (2019). Agroforestry suitability mapping of India. Agroforestry Systems 93(4):1319–1336.",
+        "lineage_of": "external:ahmad_2019_india_agroforestry_suitability",
         "extraction_confidence": "medium",
         "quote": "4.6  \u0007Climate\nTemperature and precipitation are the primary factors influencing mulberry agroforestry\ncultivation. Climate variables such as temperature and rainfall have a significant impact on\nplant growth and crop yield (Chen, 2016; Hijmans et al., 2015). Agroforestry-friendly cli-\nmates are characterized by mean annual precipitation exceeding 1200 mm and mean annual\ntemperatures ranging from 20 to 30 °C (Ahmad et al., 2019).",
         "page": 17,
@@ -16721,23 +16794,35 @@
         "source_id": "palma_2007",
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__planted_silvoarable",
-        "variable": "market_value_chain",
+        "variable": "economic_return",
         "relationship": {
-          "direction": "high-value timber species improves SAF financial performance"
+          "type": "modelled_scenario_explanation",
+          "source_finding": "Valuable walnut or rapid-return poplar contributed to favourable financial performance",
+          "direction": "not_a_market_access_response",
+          "transferable_numeric_return": "not_reported"
         },
         "context": {
           "region": "France",
-          "taxa_examples": "Juglans hybr., Populus sp."
+          "taxa_examples": "Juglans hybr., Populus sp.",
+          "source_concept": "Financial returns conditional on selected trees and regional scenarios",
+          "cited_reference": "Graves et al. (in press), as cited by Palma",
+          "market_access_measured": false,
+          "review_resolution_2026_10_23": {
+            "pages": [
+              6
+            ],
+            "interpretation": "This is a modelled financial-return explanation for French silvoarable scenarios using walnut/poplar, not a market-access measurement. Corrected variable to economic return and retained it in operational/implementation guidance. The full sentence cites Graves et al. (in press); no price, distance, market-depth threshold or transferable return is established by this passage. It supports considering species economics in next steps."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
         "claim_basis": "modelled",
         "claim_scope": "practice_technology",
         "extraction_confidence": "high",
-        "quote": "This was in part due to relatively high financial returns from the timber produced in the SAF systems, since the trees selected were valuable (walnut, Juglans hybr.) or produced rapid returns (poplar, Populus sp.)",
+        "quote": "This was in part due to relatively high\nfinancial returns from the timber produced in the SAF\nsystems, since the trees selected were valuable (walnut, Ju-\nglans hybr.) or produced rapid returns (poplar, Populus sp.)\n(Graves et al., in press).",
         "page": 6,
         "reviewer_ok": true,
-        "raw_name": "financial returns from timber",
+        "raw_name": "Timber financial returns in French silvoarable scenarios",
         "attribution": "[query 2026-09-18 by peetmate; reason:other; note:This is an interesting finding, perhaps relevant to the next steps module of the toolkit, but the variable itself might need some more scrutiny. Market_value_chain does suggest there is some way of selling timber from agroforestry so that is a start] [reviewed 2026-06-22 by peetmate; reason:other; note:This is an interesting finding, perhaps relevant to the next steps module of the toolkit, but the variable itself might need some more scrutiny. Market_value_chain does suggest there is some way of selling timber from agroforestry so that is a start]",
         "locator_type": "page"
       },
@@ -19488,13 +19573,28 @@
             "moderate": "Mod well"
           },
           "direction": "better_drained_more_suitable",
-          "note": "the study criteria table categorical membership"
+          "note": "the study criteria table categorical membership",
+          "source_low_class": "-",
+          "missing_class_interpretation": "unknown_not_unsuitable",
+          "class_definitions": "not_provided_in_main_text",
+          "runtime_numeric_rule": false
         },
         "context": {
           "study_country": "India",
           "study_region": "Odisha",
           "study_income_group": "LMIC",
-          "class_scheme": "Very well=VH; Well=H; Mod well=Moderate"
+          "class_scheme": "Very well=VH; Well=H; Mod well=Moderate",
+          "source_dataset": "NBSS-LUP regional soil resource database",
+          "source_methods": "Ground surveys and Land Resource Inventory; Supplementary Figure S1 referenced",
+          "runtime_status": "held_dataset_legend_and_class_crosswalk",
+          "missing_definition": "Drainage class definitions and dataset edition",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              4,
+              5
+            ],
+            "interpretation": "Methods identify NBSS-LUP regional soil resource data derived from ground surveys/Land Resource Inventory (PDF p4), and reuse the Singh 2022 model (p5). Table 1 gives Very well / Well / Mod well but no water-table, saturation-duration or hydraulic thresholds. Low class is a dash, not proven unsuitable. Retained source labels and ordinal preference; exact dataset edition/legend and target crosswalk remain required before execution. No invented numerical boundaries."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -19505,7 +19605,7 @@
         "page": 4,
         "reviewer_ok": false,
         "raw_name": "soil drainage class",
-        "observed_dataset": "NBSS-LUP soil survey database",
+        "observed_dataset": "NBSS-LUP regional soil resource database; edition/legend unspecified in main text",
         "attribution": "[query 2026-10-23 by peetmate; note:is there more detail on the variable it seems vague and ill defined (technically) - so hard to repeat.] [query 2026-09-18 by peetmate; reason:other; note:there is some information on drainage, but agree is it is too qualitative to use. But you missed the directionality of the relationship which is a BIG miss. Add issue for this type of error - directionality/relationship missed.] [reviewed 2026-08-06 by Namita-J; reason:confirmed_pass] Singh et al. 2026, Table 1",
         "locator_type": "page",
         "ruleset_version": "2026-06-23.relationship-reextract"
@@ -19523,7 +19623,11 @@
             "moderate": "Course"
           },
           "direction": "finer_more_suitable",
-          "note": "the study criteria table categorical membership"
+          "note": "the study criteria table categorical membership",
+          "source_low_class": "-",
+          "missing_class_interpretation": "unknown_not_unsuitable",
+          "class_definitions": "not_provided_in_main_text",
+          "runtime_numeric_rule": false
         },
         "context": {
           "study_country": "India",
@@ -19562,7 +19666,18 @@
               "note": "Align model-use lineage with existing source_weight_trees.csv: Singh 2026 reuses Singh 2022 model (PDF p5). Model weights and response lineage remain separate; no new human approval.",
               "human_review_state_changed": false
             }
-          ]
+          ],
+          "source_dataset": "NBSS-LUP regional soil resource database",
+          "source_methods": "Ground surveys and Land Resource Inventory; Supplementary Figure S1 referenced",
+          "runtime_status": "held_dataset_legend_and_class_crosswalk",
+          "missing_definition": "Texture particle-size definitions and dataset edition",
+          "review_resolution_2026_10_23": {
+            "pages": [
+              4,
+              5
+            ],
+            "interpretation": "Methods identify NBSS-LUP regional soil resource data derived from ground surveys/Land Resource Inventory (PDF p4), and reuse the Singh 2022 model (p5). Table 1 gives Fine / Fine to course / Course but no particle-size percentages or class codebook. Low class is a dash, not proven unsuitable. Retained source labels and ordinal preference; exact dataset edition/legend and target crosswalk remain required before execution. No invented numerical boundaries."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -19573,7 +19688,7 @@
         "page": 4,
         "reviewer_ok": false,
         "raw_name": "soil texture class",
-        "observed_dataset": "NBSS-LUP soil survey database",
+        "observed_dataset": "NBSS-LUP regional soil resource database; edition/legend unspecified in main text",
         "attribution": "[query 2026-10-23 by peetmate; note:is there any more techincal detail in the methods on this variable, it is fill definined.] [reviewed 2026-10-20 by Codex source verification; reason:accepted_correction; note:Table 1 p4 texture is Fine / Fine to course / Course, distinct from soil-type classes. Corrected variable from hydrologic soil group to soil_texture; dataset-specific semantic crosswalk still required.] [query 2026-09-18 by peetmate; reason:other; note:very high = fine texture, high = fine to couse, moderate - source -> missed] Singh et al. 2026, Table 1",
         "locator_type": "page",
         "ruleset_version": "2026-06-23.relationship-reextract"
@@ -59899,14 +60014,12 @@
         "source_id": "diasfilho_2008_pt",
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__silvopastoral",
-        "variable": "finance_credit_access",
+        "variable": "economic_return",
         "relationship": {
-          "direction": "negative",
-          "strength_class": "unspecified",
-          "metric": "narrative",
-          "significance": "not_reported",
-          "design": "expert",
-          "outcome_raw": "World Bank study: low initial profitability is a main barrier to silvopastoral adoption because establishment needs more time and money"
+          "type": "investment_return_timing",
+          "source_concept": "High initial investment and delayed returns may hinder adoption",
+          "direction": "not_a_credit_access_response",
+          "numeric_general_rule": false
         },
         "context": {
           "country": [
@@ -59914,18 +60027,30 @@
           ],
           "climate_zone": "tropical",
           "farming_system": "pastoral_rangeland",
-          "income_group": "upper_middle"
+          "income_group": "upper_middle",
+          "claim_origin": "cited_secondary",
+          "cited_reference": "Pagiola et al. (2004). Paying for biodiversity conservation services. World Bank, Environmental and Economic Series 96.",
+          "original_status": "Bibliography checked; original claim not independently verified.",
+          "credit_access_effect_estimated": false,
+          "review_resolution_2026_10_23": {
+            "pages": [
+              15,
+              16,
+              24
+            ],
+            "interpretation": "Confirmed secondary attribution. Dias-Filho cites Pagiola et al. (2004), Paying for biodiversity conservation services, World Bank Environment Department Papers, Environmental and Economic Series 96 (bibliography PDF p24). Pages 15–16 discuss initial investment and delayed returns, not a measured credit-access coefficient. Retain the citation chain and economic-return timing; no additional independent original-paper vote until original extraction is verified."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
         "claim_basis": "cited_secondary",
         "claim_scope": "practice_technology",
-        "lineage_of": "Pagiola et al. 2004 (World Bank)",
+        "lineage_of": "external:pagiola_2004_paying_biodiversity_conservation",
         "extraction_confidence": "medium",
         "quote": "Estudo do Banco Mundial (PAGIOLA et al., 2004) mostra que uma das principais barreiras para a adoção de SSPs seria a sua baixa lucratividade inicial. A razão para isso seria que a implantação desses sistemas exige maiores investimentos de tempo e dinheiro, os quais diminuiriam a velocidade de obtenção dos lucros. (English: A World Bank study (PAGIOLA et al., 2004) shows that one of the main barriers to the adoption of silvopastoral systems would be their low initial profitability. The reason for this would be that establishing these systems demands greater investments of time and money, which would slow the speed at which profits are obtained.)",
         "page": 15,
         "reviewer_ok": false,
-        "raw_name": "baixa lucratividade inicial / investimento de implantação",
+        "raw_name": "Initial investment and delayed silvopastoral returns",
         "attribution": "[query 2026-10-22 by peetmate; note:the evidence does not come from this publication if comes Pagiola et al 2004] Pagiola et al. 2004 (World Bank)",
         "locator_type": "page",
         "ruleset_version": "v1.6.0"
@@ -60046,21 +60171,36 @@
         "source_id": "ribeiro_2022_pt",
         "nbs_id": "agroforestry",
         "suitability_family_id": "agroforestry__cross_family",
-        "variable": "tenure_security",
+        "variable": "land_access",
         "relationship": {
-          "direction": "negative",
-          "strength_class": "unspecified",
-          "metric": "narrative",
-          "significance": "not_reported",
-          "design": "meta_analysis",
-          "outcome_raw": "adoption challenges: public policy, qualified technical assistance, land access, cooperative membership, education, product commercialisation, participatory methods, credit and subsidies"
+          "type": "qualitative_review_synthesis",
+          "source_concept": "Access to land among adoption challenges",
+          "design": "systematic_review_qualitative_component",
+          "direction": "not_isolated_from_other_barriers",
+          "effect_size": "not_reported"
         },
         "context": {
           "country": [
             "BRA"
           ],
           "climate_zone": "tropical",
-          "income_group": "upper_middle"
+          "income_group": "upper_middle",
+          "claim_origin": "qualitative_systematic_review_synthesis",
+          "cited_references": [
+            "Cechin, Araújo and Amand (2021)",
+            "Vosti et al. (1997)",
+            "Bezerra et al. (2018)"
+          ],
+          "original_status": "Reporting-source synthesis checked; individual original claims not independently verified.",
+          "tenure_security_equivalence": false,
+          "review_resolution_2026_10_23": {
+            "pages": [
+              8,
+              27,
+              30
+            ],
+            "interpretation": "This is a systematic-review finding, not merely opinion. But the land-access statement comes from the qualitative synthesis, not the meta-analysis effect estimate (which concerns information access). PDF pp27 and 30 explain the split and list land-access evidence from Cechin et al. (2021), Vosti et al. (1997), and Bezerra et al. (2018). Corrected variable to land access, distinct from tenure security; removed the unsupported negative coefficient interpretation. Retain secondary implementation guidance with no isolated effect size."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
@@ -60070,7 +60210,7 @@
         "quote": "Além disso, existem vários desafios para adoção e aceitação do SAF no Brasil, incluindo políticas públicas, assistência técnica qualificada, acesso à terra, participação em cooperativas e associações, uso do SAF para recuperação de áreas degradadas, educação, comercialização do produto SAF, aplicação de metodologias participativas, acesso a crédito e subsídios. (English: In addition, there are several challenges to the adoption and acceptance of agroforestry systems in Brazil, including public policies, qualified technical assistance, land access, participation in cooperatives and associations, use of agroforestry for the recovery of degraded areas, education, commercialisation of agroforestry products, application of participatory methodologies, and access to credit and subsidies.)",
         "page": 8,
         "reviewer_ok": false,
-        "raw_name": "desafios para adoção e aceitação do SAF",
+        "raw_name": "Access to land for agroforestry adoption",
         "attribution": "[query 2026-10-22 by peetmate; note:looks like expert opinion.]",
         "locator_type": "page",
         "ruleset_version": "v1.6.0"
@@ -137852,18 +137992,28 @@
         "suitability_family_id": "agroforestry__planted_silvoarable",
         "variable": "extension_governance",
         "relationship": {
-          "direction": "positive",
-          "metric": "narrative",
-          "significance": "not_reported",
+          "type": "qualitative_case_study_interpretation",
+          "source_concept": "Information and demonstrations support farmers’ use of fertilizer trees",
           "design": "case_study",
-          "outcome_raw": "information dissemination and on-farm demonstration plots improved farmers' use of fertilizer trees"
+          "direction": "positive",
+          "effect_size": "not_reported"
         },
         "context": {
           "note": "ICRAF working paper with two case studies (Zambia fertilizer trees; Honduras Quesungual slash-and-mulch system)",
           "country": [
             "ZMB"
           ],
-          "income_group": "lower_middle"
+          "income_group": "lower_middle",
+          "claim_interpretation": "qualitative_interpretation_of_empirical_case_study",
+          "study_component": "Eastern Zambia; do not attribute Honduras interview sample to this claim",
+          "causal_effect_estimated": false,
+          "review_resolution_2026_10_23": {
+            "pages": [
+              13,
+              18
+            ],
+            "interpretation": "The paper has an empirical case-study basis: methods on PDF p13 describe Zambia surveys of 182 households (2002) and 197 households (2005), plus a separate Honduras case. The specific p18 extension statement is the authors’ qualitative interpretation of the Zambia case, without an isolated extension coefficient or experimental comparison. Retain case-study guidance, not a quantified causal finding or default weight."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
@@ -201621,6 +201771,38 @@
         "raised_by": "t4_review_resolution",
         "raised_date": "2026-10-23",
         "comment": "Study-level participation comparison; distinct from national gender index. No inferred common effect scale or spatial binding."
+      },
+      {
+        "canonical_variable_id": "potential_conservation_use_index",
+        "label": "Potential for Conservation Use (PCU)",
+        "aliases": [],
+        "canonical_unit": "native_or_qualitative",
+        "unit_conversions": {},
+        "group_id": "land_use",
+        "candidate_dataset_ids": [],
+        "resolution_sensitivity": "medium",
+        "derive_then_aggregate": false,
+        "context_sensitivity": "high",
+        "review_status": "pending",
+        "raised_by": "t4_review_resolution",
+        "raised_date": "2026-10-23",
+        "comment": "Source composite of slope, soil class and lithology. Quarantined mapping; not land-cover classes or an independent MCDA input."
+      },
+      {
+        "canonical_variable_id": "land_access",
+        "label": "Access to land",
+        "aliases": [],
+        "canonical_unit": "native_or_qualitative",
+        "unit_conversions": {},
+        "group_id": "socio_economic",
+        "candidate_dataset_ids": [],
+        "resolution_sensitivity": "medium",
+        "derive_then_aggregate": false,
+        "context_sensitivity": "high",
+        "review_status": "pending",
+        "raised_by": "t4_review_resolution",
+        "raised_date": "2026-10-23",
+        "comment": "Ability to access land for adoption, distinct from tenure security. Qualitative source evidence; no spatial dataset binding."
       }
     ],
     "BIND_dataset_binding": [

@@ -4,13 +4,13 @@
     "schema/registers/XW_target_crosswalk.csv": "e18088b856989b2f804bf5e606e53e12658729e840f904ceecc565651561d340",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
     "schema/registers/SRC_source_register.csv": "ff6126ea59c5c9b1e40a19660982b2cf0e1485368184f3cb3be73301166d76ec",
-    "schema/registers/EV_evidence_register.csv": "0dba8330d0fd48ef2ac0c0ecc2f27bca6935111376de6a78b9d7e7d774ec7b7b",
+    "schema/registers/EV_evidence_register.csv": "75c4512f67696170e5b47441bf14a94c79770086cfce862d7a2d26c74f640faf",
     "schema/registers/SRCH_search_register.csv": "5b1b1b1b37137a98c7f3b499fb35b92556d495162bf7975c67571f882baf4e76",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
     "schema/registers/CV_lit_review_agroforestry.csv": "f5f2cf246c2ed624cc45fad741c39523b69daf6471a746272431ee80b132b7c5",
     "schema/registers/BIND_dataset_binding.csv": "6aeb5481a121cca768efd69ebe277b95a85e2c7f1ef9941e9cc74536c9bcfa35",
-    "schema/registers/VONT_variable_ontology.csv": "58649fac0f2a2b5536082d8f1c3fbf1c3117b3fb775d8ef40b3cc45072fc070f",
+    "schema/registers/VONT_variable_ontology.csv": "077931150bc3c8b806080c25a82d2103268a8155e609b7dc51b286984bf9d1be",
     "schema/registers/BANDS_magnitude_bands.csv": "5da05fc9bb4664ab0b2482806bcf25a6edc7461a00be42ea5be6d481310998c5",
     "schema/lookups/crop_scope_policy.csv": "62f6bf68b618116e63d4bee57d7b01c6710b4a2ba62b4405bf7daf1662f9a5b4",
     "schema/lookups/t4_numeric_compilation_policy.csv": "dd134c7c8a0fc9d224683742b1b5c211e8734a051fe67eb1c6b2309ef8246f02"
@@ -1525,7 +1525,12 @@
           "reviewer_ok": false,
           "use_role": "structural_suitability",
           "status": "selection_only",
-          "relationship": {}
+          "relationship": {
+            "type": "model_input",
+            "source_variable": "Land use and land cover",
+            "direction": "not_reported",
+            "class_scores": "not_extracted"
+          }
         },
         "ev_T4_distance_to_road_chuma21_1": {
           "source_id": "chuma_2021",
@@ -4157,17 +4162,16 @@
         },
         "ev_tenure_security_ribeiro22_4": {
           "source_id": "ribeiro_2022_pt",
-          "variable": "tenure_security",
+          "variable": "land_access",
           "reviewer_ok": false,
           "use_role": "operational_risk",
-          "status": "class_or_gate_requires_mapping",
+          "status": "qualitative_relationship",
           "relationship": {
-            "direction": "negative",
-            "strength_class": "unspecified",
-            "metric": "narrative",
-            "significance": "not_reported",
-            "design": "meta_analysis",
-            "outcome_raw": "adoption challenges: public policy, qualified technical assistance, land access, cooperative membership, education, product commercialisation, participatory methods, credit and subsidies"
+            "type": "qualitative_review_synthesis",
+            "source_concept": "Access to land among adoption challenges",
+            "design": "systematic_review_qualitative_component",
+            "direction": "not_isolated_from_other_barriers",
+            "effect_size": "not_reported"
           }
         },
         "ev_finance_credit_access_ferraz24_10": {
@@ -5825,10 +5829,6 @@
               "qualitative_relationship"
             ],
             [
-              "ev_tenure_security_ribeiro22_4",
-              "class_or_gate_requires_mapping"
-            ],
-            [
               "ev_tenure_security_lasco14_1",
               "qualitative_relationship"
             ],
@@ -6095,6 +6095,21 @@
             [
               "ev_extension_governance_ribeiro22_3",
               "class_or_gate_requires_mapping"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "land_access": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_tenure_security_ribeiro22_4",
+              "qualitative_relationship"
             ]
           ],
           "parameter_evidence": {}
@@ -10555,12 +10570,15 @@
         },
         "ev_t4_market_palma2007_01": {
           "source_id": "palma_2007",
-          "variable": "market_value_chain",
+          "variable": "economic_return",
           "reviewer_ok": true,
           "use_role": "operational_risk",
           "status": "qualitative_relationship",
           "relationship": {
-            "direction": "high-value timber species improves SAF financial performance"
+            "type": "modelled_scenario_explanation",
+            "source_finding": "Valuable walnut or rapid-return poplar contributed to favourable financial performance",
+            "direction": "not_a_market_access_response",
+            "transferable_numeric_return": "not_reported"
           }
         },
         "ev_t4_finance_palma2007_01": {
@@ -11314,7 +11332,11 @@
               "moderate": "Mod well"
             },
             "direction": "better_drained_more_suitable",
-            "note": "the study criteria table categorical membership"
+            "note": "the study criteria table categorical membership",
+            "source_low_class": "-",
+            "missing_class_interpretation": "unknown_not_unsuitable",
+            "class_definitions": "not_provided_in_main_text",
+            "runtime_numeric_rule": false
           }
         },
         "ev_soil_texture_singh26": {
@@ -11330,7 +11352,11 @@
               "moderate": "Course"
             },
             "direction": "finer_more_suitable",
-            "note": "the study criteria table categorical membership"
+            "note": "the study criteria table categorical membership",
+            "source_low_class": "-",
+            "missing_class_interpretation": "unknown_not_unsuitable",
+            "class_definitions": "not_provided_in_main_text",
+            "runtime_numeric_rule": false
           }
         },
         "ev_slope_singh26": {
@@ -14119,11 +14145,11 @@
           "use_role": "operational_risk",
           "status": "qualitative_relationship",
           "relationship": {
-            "direction": "positive",
-            "metric": "narrative",
-            "significance": "not_reported",
+            "type": "qualitative_case_study_interpretation",
+            "source_concept": "Information and demonstrations support farmers’ use of fertilizer trees",
             "design": "case_study",
-            "outcome_raw": "information dissemination and on-farm demonstration plots improved farmers' use of fertilizer trees"
+            "direction": "positive",
+            "effect_size": "not_reported"
           }
         },
         "ev_crop_yield_baker25h2_6": {
@@ -14681,10 +14707,6 @@
               "qualitative_relationship"
             ],
             [
-              "ev_t4_market_palma2007_01",
-              "qualitative_relationship"
-            ],
-            [
               "ev_T4_market_singh24_1",
               "selection_only"
             ]
@@ -14930,6 +14952,21 @@
               "ev_soil_ph_singh26"
             ]
           }
+        },
+        "economic_return": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_t4_market_palma2007_01",
+              "qualitative_relationship"
+            ]
+          ],
+          "parameter_evidence": {}
         },
         "soil_texture": {
           "used": [],
@@ -18965,8 +19002,14 @@
           "use_role": "structural_suitability",
           "status": "selection_only",
           "relationship": {
-            "direction": "warm climate described as favourable",
-            "note": "Secondary general assertion in a mulberry study; no universal numeric response adopted"
+            "type": "attributed_regional_climate_statement",
+            "reported_temperature_range_c": [
+              20,
+              30
+            ],
+            "reported_precipitation_statement": ">1200 mm mean annual precipitation",
+            "direction": "not_a_universal_response",
+            "numeric_rule_admissible": false
           }
         },
         "ev_t4_mat_mushtaq2023_3": {
@@ -21605,19 +21648,22 @@
         },
         "ev_t4_road_jawarneh2025_1": {
           "source_id": "jawarneh_2025",
-          "variable": "distance_to_road",
+          "variable": "distance_to_waterbody",
           "reviewer_ok": false,
           "use_role": "operational_risk",
-          "status": "class_or_gate_requires_mapping",
+          "status": "selection_only",
           "relationship": {
-            "suitability_class": {
+            "type": "source_context_only",
+            "source_variable": "Water accessibility",
+            "source_unit_as_printed": "M",
+            "unit_interpretation": "unresolved",
+            "source_classes": {
               "S1": "<1",
               "S2": "1–3",
               "S3": "3–5",
               "N1": ">5"
             },
-            "unit": "M (units ambiguous — likely km)",
-            "note": "variable should be distance_to_water or water_accessibility, not distance_to_road"
+            "agroforestry_numeric_rule": false
           }
         },
         "ev_t4_slope_kizir_1": {
@@ -21924,14 +21970,15 @@
         },
         "ev_t4_lc_mucida23_1": {
           "source_id": "mucida_2023",
-          "variable": "land_cover",
+          "variable": "potential_conservation_use_index",
           "reviewer_ok": false,
           "use_role": "structural_suitability",
           "status": "qa_dropped",
           "relationship": {
-            "threshold_min": 3,
-            "direction": "positive",
-            "note": "PCU >=3 = agrosilvopastoral aptitude; PCU <3 = biodiversity conservation/exclusion"
+            "type": "source_composite_index",
+            "source_name": "Potential for Conservation Use",
+            "source_partition": "PCU >=3: agrosilvopastoral aptitude; PCU <3: biodiversity conservation",
+            "independent_variable_response": false
           }
         },
         "ev_t4_pa_mucida23_1": {
@@ -23052,17 +23099,15 @@
         },
         "ev_finance_credit_access_diasf08_5": {
           "source_id": "diasfilho_2008_pt",
-          "variable": "finance_credit_access",
+          "variable": "economic_return",
           "reviewer_ok": false,
           "use_role": "operational_risk",
-          "status": "class_or_gate_requires_mapping",
+          "status": "qualitative_relationship",
           "relationship": {
-            "direction": "negative",
-            "strength_class": "unspecified",
-            "metric": "narrative",
-            "significance": "not_reported",
-            "design": "expert",
-            "outcome_raw": "World Bank study: low initial profitability is a main barrier to silvopastoral adoption because establishment needs more time and money"
+            "type": "investment_return_timing",
+            "source_concept": "High initial investment and delayed returns may hinder adoption",
+            "direction": "not_a_credit_access_response",
+            "numeric_general_rule": false
           }
         },
         "ev_labour_availability_diasf08_6": {
@@ -23875,7 +23920,7 @@
           ],
           "parameter_evidence": {}
         },
-        "distance_to_road": {
+        "distance_to_waterbody": {
           "used": [],
           "dropped": [],
           "collapsed": [],
@@ -23885,7 +23930,7 @@
           "unresolved": [
             [
               "ev_t4_road_jawarneh2025_1",
-              "class_or_gate_requires_mapping"
+              "selection_only"
             ]
           ],
           "parameter_evidence": {}
@@ -24037,7 +24082,7 @@
           ],
           "parameter_evidence": {}
         },
-        "finance_credit_access": {
+        "economic_return": {
           "used": [],
           "dropped": [],
           "collapsed": [],
@@ -24047,7 +24092,7 @@
           "unresolved": [
             [
               "ev_finance_credit_access_diasf08_5",
-              "class_or_gate_requires_mapping"
+              "qualitative_relationship"
             ]
           ],
           "parameter_evidence": {}
