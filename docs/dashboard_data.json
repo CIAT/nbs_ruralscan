@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-23T08:40:07.441087+00:00",
-  "git_commit": "5285c48cadbfac866b24c260cb75de2e31ec1e37",
+  "timestamp": "2026-10-23T09:06:18.885246+00:00",
+  "git_commit": "192fbb49513973046f191b80c16d8d6a6219b74c",
   "registers": {
     "SRC_source_register": [
       {
@@ -11736,6 +11736,21 @@
           "direction": "positive",
           "note": "Secure land tenure is an enabling condition for tree planting. Directional claim only; no numeric suitability threshold. Area-reduction figures (195/116 Mha, 40%) not present in this quote — remove or source separately."
         },
+        "context": {
+          "source_practice": "reforestation",
+          "claim_origin": "secondary_citation",
+          "transfer_status": "indirect_reforestation_context",
+          "suitability_dimension": "operational_constraint",
+          "review_needed": "Operational guidance only; no direct agroforestry calibration or numeric threshold.",
+          "source_purpose_check": {
+            "checked_on": "2026-10-23",
+            "pages": [
+              1,
+              5
+            ],
+            "interpretation": "This belongs to operational/project risk (M2b Stream B), not core T4 structural suitability. The record already has operational_risk routing. Table 1 scenario 3 concerns reforestation and cites earlier work for the tenure claim; it is not an agroforestry-specific experiment or numeric tenure cutoff. Keep as qualitative enabling-environment guidance, with transfer to agroforestry explicit rather than counted as direct agroforestry calibration."
+          }
+        },
         "use_role": "operational_risk",
         "evidence_type": "literature_relationship",
         "claim_basis": "table",
@@ -14347,19 +14362,28 @@
         "suitability_family_id": "agroforestry__silvopastoral",
         "variable": "slope",
         "relationship": {
-          "threshold_degrees": 8,
-          "direction": "slope > 8° characterises high-potential silvopastoral areas"
+          "source_value": 8,
+          "source_unit": "degrees",
+          "source_operator": ">",
+          "interpretation": "Descriptor of modelled carbon sequestration gains, not a suitability threshold"
         },
         "context": {
           "suitability_dimension": "operational_constraint",
           "note": "General — applies cross-family for silvopastoral. EU27 Mediterranean.",
           "model_use": {
-            "verified": true,
-            "method": "MaxEnt_predictor",
-            "page": "7",
-            "weight_path_pct": [],
-            "scope": "practice_technology",
-            "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+            "verified": false,
+            "note": "This p23 claim is not evidence of MaxEnt predictor use; verify model-use claims separately against Table 2."
+          },
+          "claim_interpretation": {
+            "type": "carbon_outcome_descriptor",
+            "not_suitability_calibration": true
+          },
+          "source_purpose_check": {
+            "checked_on": "2026-10-23",
+            "pages": [
+              23
+            ],
+            "interpretation": "Agreed. Section 3.5 is explicitly Key Drivers of Carbon Sequestration Change. The >8° slope and <30% tree-cover values characterize modelled carbon gains, not establishment thresholds. Record remains quarantined and excluded from T4 synthesis. Removed the misleading suitability direction; source values remain as carbon-outcome descriptors. Any T6 use needs separate effect extraction with outcome, baseline and scenario context."
           }
         },
         "use_role": "structural_suitability",
@@ -14408,12 +14432,29 @@
         "suitability_family_id": "agroforestry__silvopastoral",
         "variable": "tree_canopy_cover",
         "relationship": {
-          "threshold_pct": 30,
-          "direction": "tree cover < 30% characterises high-potential silvopastoral areas"
+          "source_value": 30,
+          "source_unit": "percent",
+          "source_operator": "<",
+          "interpretation": "Descriptor of modelled carbon sequestration gains, not a suitability threshold"
         },
         "context": {
           "suitability_dimension": "system_constraint",
-          "note": "General — applies cross-family. EU27 Mediterranean."
+          "note": "General — applies cross-family. EU27 Mediterranean.",
+          "claim_interpretation": {
+            "type": "carbon_outcome_descriptor",
+            "not_suitability_calibration": true
+          },
+          "model_use": {
+            "verified": false,
+            "note": "This p23 claim is not evidence of MaxEnt predictor use; verify model-use claims separately against Table 2."
+          },
+          "source_purpose_check": {
+            "checked_on": "2026-10-23",
+            "pages": [
+              23
+            ],
+            "interpretation": "Agreed. Section 3.5 is explicitly Key Drivers of Carbon Sequestration Change. The >8° slope and <30% tree-cover values characterize modelled carbon gains, not establishment thresholds. Record remains quarantined and excluded from T4 synthesis. Removed the misleading suitability direction; source values remain as carbon-outcome descriptors. Any T6 use needs separate effect extraction with outcome, baseline and scenario context."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
@@ -18540,6 +18581,13 @@
           "source_check": {
             "date": "2026-10-20",
             "resolution": "Reviewer wrong-table objection upheld: cooling effect is not a tree-cover suitability response. Soft-quarantine T4 record, preserve for effect-lane follow-up."
+          },
+          "source_purpose_check": {
+            "checked_on": "2026-10-23",
+            "pages": [
+              8
+            ],
+            "interpretation": "Agreed: this describes a cooling benefit in coffee agroforestry, not a canopy-cover requirement for establishment. Record remains quarantined outside T4. Page 8 cites earlier studies for up to 4°C cooling and uses assumed shade scenarios; it does not establish a universal canopy threshold. T3/T6 reuse requires separate, crop-specific effect extraction and cited-source lineage checks."
           }
         },
         "use_role": "structural_suitability",
@@ -181690,12 +181738,25 @@
         "context": {
           "study_country": "United States",
           "extraction_run_id": "agroforestry_five_sources_2026-10-20",
-          "review_needed": "Review NLCD class crosswalk and F1/F3 applicability. Methods p6 and p9 include pine-pasture and row-crop agroforestry. No transfer to all systems.",
+          "review_needed": "System applicability resolved to F1 and F3. Target-dataset class crosswalk and geographic transfer remain unapproved.",
           "transfer_status": "source_context_only",
           "candidate_systems": [
             "agroforestry__planted_silvoarable",
             "agroforestry__silvopastoral"
-          ]
+          ],
+          "applicable_systems": [
+            "agroforestry__planted_silvoarable",
+            "agroforestry__silvopastoral"
+          ],
+          "source_purpose_check": {
+            "checked_on": "2026-10-23",
+            "pages": [
+              6,
+              8,
+              9
+            ],
+            "interpretation": "The source covers two systems: pine with pasture (Table 1, p6), and trees with row crops or livestock (p9). Its p8 mask includes cultivated crops as well as grassland/herbaceous and pasture/hay. This is shared evidence for planted silvoarable and silvopastoral systems, not every agroforestry system. Cross-family is the register container for this shared record; the two applicable systems are now explicit. Local NLCD eligibility still needs a target-dataset crosswalk; these classes do not prove grazing on every grassland pixel."
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "scoping_candidate",
@@ -181791,20 +181852,36 @@
         "suitability_family_id": "cross_family",
         "variable": "built_up_areas",
         "relationship": {
+          "criterion_kind": "project_exclusion_mask",
           "road_buffer_ft": 20,
           "structure_buffer_ft": 100,
           "excluded_parcel_uses": [
             "solar energy generation",
             "communication towers"
-          ]
+          ],
+          "excluded_parcel_area_less_than_acres": 4
         },
         "context": {
           "study_country": "United States",
           "extraction_run_id": "agroforestry_five_sources_2026-10-20",
-          "review_needed": "Project infrastructure-conflict assumptions; not statutory setbacks. Do not execute as global legal masks.",
-          "transfer_status": "source_context_only"
+          "review_needed": "Source-specific infrastructure mask. Local transfer and target dataset mapping required; not a statutory exclusion.",
+          "transfer_status": "source_context_only",
+          "suitability_dimension": "operational_constraint",
+          "runtime_status": "held_source_specific_mask",
+          "applicable_systems": [
+            "agroforestry__planted_silvoarable",
+            "agroforestry__silvopastoral"
+          ],
+          "source_purpose_check": {
+            "checked_on": "2026-10-23",
+            "pages": [
+              8,
+              9
+            ],
+            "interpretation": "Agreed: this is an exclusion mask in the source opportunity analysis, not a soft access or investment-risk score. Corrected role to structural suitability. The source excludes road buffers of 20 ft, structure buffers of 100 ft, solar/tower parcels and parcels under 4 acres as a rural-residential proxy. These are Robeson County project assumptions, not statutory setbacks or universal agroforestry rules. Kept as a pending scoping candidate; no global mask activated."
+          }
         },
-        "use_role": "operational_risk",
+        "use_role": "structural_suitability",
         "evidence_type": "scoping_candidate",
         "claim_basis": "modelled",
         "claim_scope": "practice_technology",
@@ -181812,7 +181889,7 @@
         "quote": "Existing Infrastructure: To minimize conﬂicts with existing infrastructure, areas within a\n20-foot buffer of existing roads [38], areas within a 100-foot buffer of existing structures [39],\nall parcels used for solar energy generation [40], and all parcels containing communication\ntowers [41] were excluded from further analysis (Appendix A). Additionally, areas with\nrural-residential land-use patterns were identiﬁed as posing a high potential for infrastruc-\nture conﬂicts. As a proxy for rural-residential land-use patterns, all parcels under four acres\n(1.6 ha) were excluded from further analysis.",
         "page": 8,
         "reviewer_ok": false,
-        "raw_name": "built_up_areas",
+        "raw_name": "Project infrastructure exclusion mask",
         "attribution": "[query 2026-10-22 by peetmate; note:this is T4 if anything]",
         "locator_type": "page",
         "ruleset_version": "v1.6.14"
@@ -181915,8 +181992,18 @@
         "context": {
           "study_country": "Portugal",
           "extraction_run_id": "agroforestry_five_sources_2026-10-20",
-          "review_needed": "Programme minimum area, not biological suitability.",
-          "transfer_status": "source_context_only"
+          "review_needed": "Programme eligibility only; do not interpret the >5 ha requirement as a biological patch-size threshold.",
+          "transfer_status": "source_context_only",
+          "source_programme": "PRODER 2013–2017; AEM_2",
+          "suitability_dimension": "operational_constraint",
+          "source_purpose_check": {
+            "checked_on": "2026-10-23",
+            "pages": [
+              4,
+              5
+            ],
+            "interpretation": "The >5 ha value is an eligibility requirement for the AEM_2 conservation-payment measure, not a tested minimum area for biological regeneration. Table 1 also gives payment rates and other programme requirements; p4 identifies these as Portuguese PRODER measures. Needing land on which to regenerate is valid, but this paper does not establish that regeneration fails below 5 ha. Retained as programme feasibility context, outside the biophysical suitability score."
+          }
         },
         "use_role": "operational_risk",
         "evidence_type": "scoping_candidate",
@@ -181926,7 +182013,7 @@
         "quote": "AEM_2\nCattle extensification and\nregeneration of the open\nMontado\nAreas of natural regeneration of cork and\nholm oaks by installing protectors or\nfences, allowing for the minimal tree\ndensity of 20 trees ha−1 for targeted tree\nspecies\n>5 ha, >10% occupied by\ntrees, 0.15–0.50 cattle\nheads ha−1\nBSPA, SCI, NPA\n15–51",
         "page": 5,
         "reviewer_ok": false,
-        "raw_name": "restorable_patch_area",
+        "raw_name": "AEM_2 programme minimum area",
         "attribution": "[query 2026-10-22 by peetmate; note:if natural regneration requires areas to be restored, i think this would slot into biophyiscal.]",
         "locator_type": "page",
         "ruleset_version": "v1.6.14"
