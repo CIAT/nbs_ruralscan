@@ -3016,3 +3016,7 @@ def test_cost_rows_live_in_t6e_not_t6():
             rows = list(_csv.DictReader(t6e.open(encoding="utf-8")))
             assert all(r["variable_type"] == "economic_indicator" for r in rows)
             assert not [r for r in rows if r["variable_id"] in cs.FEASIBILITY_ONLY_ECON]
+
+
+def test_food_insecurity_benefit_reads_reduces():
+    assert cs._benefit_verbs("T6", "food_insecurity") == ("reduces", "increases")
