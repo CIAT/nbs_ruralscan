@@ -2935,3 +2935,62 @@ def test_data_deficient_asset_row_states_no_sensitivity():
     )
     assert rows and rows[0]["justification"]["data_deficient"]
     assert rows[0]["asset_sensitivity"] == ""
+
+
+def test_family_vote_rewrites_the_statement_lead():
+    # review 2026-10-22: the statement kept "strongly improves" after the vote set slight
+    lead = cs._effect_core(
+        "T6",
+        "agroforestry",
+        "soil_erosion_risk",
+        3,
+        {1: "slightly", 2: "moderately", 3: "strongly"},
+    )
+    top = _vote_top(
+        nbs_id="agroforestry",
+        variable_id="soil_erosion_risk",
+        justification={
+            "statement": lead
+            + " in KEN (robust evidence, high agreement → high confidence)."
+        },
+    )
+    pooled = {f"s{i}" for i in range(8)}
+    votes = [
+        _v("n__a", "slight_positive", 4, ["s0", "s1", "s2", "s3"]),
+        _v("n__b", "slight_positive", 4, ["s4", "s5", "s6", "s7"]),
+    ]
+    cs._family_vote(top, cs.CellReport(), votes, pooled)
+    st = top["justification"]["statement"]
+    assert top["effect_direction"] == "slight_positive"
+    assert (
+        st.startswith("agroforestry slightly ") and "strongly" not in st.split(".")[0]
+    )
+
+
+def test_family_vote_conflict_restates_lead_and_confidence():
+    lead = cs._effect_core(
+        "T6",
+        "agroforestry",
+        "production_gap",
+        3,
+        {1: "slightly", 2: "moderately", 3: "strongly"},
+    )
+    top = _vote_top(
+        nbs_id="agroforestry",
+        variable_id="production_gap",
+        justification={
+            "statement": lead
+            + " in KEN (robust evidence, high agreement → high confidence)."
+        },
+    )
+    pooled = {f"s{i}" for i in range(10)}
+    votes = [
+        _v("n__a", "strong_positive", 4, ["s0", "s1", "s2", "s3"]),
+        _v("n__b", "conflicting_evidence", 4, ["s4", "s5", "s6", "s7"]),
+        _v("n__c", "conflicting_evidence", 2, ["s8", "s9"]),
+    ]
+    cs._family_vote(top, cs.CellReport(), votes, pooled)
+    st = top["justification"]["statement"]
+    assert st.startswith("agroforestry production_gap: CONFLICTING EVIDENCE")
+    assert "→ medium confidence" in st and "→ high confidence" not in st
+    assert "_pooled_confidence" not in top
