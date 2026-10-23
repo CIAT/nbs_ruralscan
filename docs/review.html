@@ -79,6 +79,12 @@
   .progress { margin-top: 10px; font-size: 13px; color: var(--text-secondary); }
   .bar { height: 4px; background: var(--bg-tertiary); border-radius: 2px; margin-top: 4px; overflow: hidden; }
   .bar > div { height: 100%; background: var(--accent-emerald); width: 0; transition: var(--transition); }
+  .primer { font-size: 13px; margin-top: 6px; border: 1px solid var(--border, #8884); border-radius: 6px; padding: 4px 10px; }
+  .primer summary { cursor: pointer; font-weight: 600; }
+  .primer-cols { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 6px; }
+  .primer-cols > div { flex: 1 1 320px; line-height: 1.45; }
+  .primer-both { margin: 6px 0 2px; }
+  .glance-ask { font-size: 13px; margin: 4px 0; }
   .batch-notes { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
 
   .layout { display: flex; gap: 16px; padding: 16px; align-items: flex-start; }
@@ -285,6 +291,20 @@
     <button id="theme-toggle" type="button" title="Toggle light/dark">Theme</button>
   </div>
   <div class="batch-notes" id="batch-notes"></div>
+  <details class="primer" id="primer" hidden open>
+    <summary>What T3 and T6 rows are, and what their evidence must show</summary>
+    <div class="primer-cols">
+      <div><b>T3: hazard rows.</b> Does this NbS cut losses <i>when a climate hazard hits</i>, for this farming system?
+        <br>Evidence must show: a real hazard event (drought, flood, heat, storm…) · the practice present · an outcome
+        (yield, income, livestock, damage) compared with and without the practice <i>during that event</i>.
+        <br><span class="muted">Asset-threat rows reverse the arrow: does the hazard damage the NbS itself (tree loss, seedling death)? They feed the project-risk screen.
+        Not T3: an ordinary dry season, general wind-speed reduction with no storm, or a benefit with no hazard in it.</span></div>
+      <div><b>T6: scorecard rows.</b> Does this NbS move a TTL priority (poverty, production gap, biodiversity, carbon, water, gender, cost)?
+        <br>Evidence must show: the practice → a measured change in <i>that</i> outcome versus a comparator, in normal conditions; no hazard needed.
+        <br><span class="muted">Cost rows are ordinal (big or small for the context), per hectare, beneficiary or tCO2e.</span></div>
+    </div>
+    <p class="muted primer-both">Both: the practice is named in the source · a bundled programme counts only by its share · measured findings outweigh ratings and second-hand citations.</p>
+  </details>
   <div class="top-row filters">
     <label>NbS <select id="f-nbs"><option value="">all</option></select></label>
     <label>State <select id="f-state">
@@ -530,6 +550,7 @@
     S.reasons = r;
     document.body.classList.toggle('kind-rows', S.kind === 'rows');
     if ($('sort-wrap')) $('sort-wrap').hidden = S.kind !== 'rows';
+    if ($('primer')) $('primer').hidden = S.kind !== 'rows';
     if ($('f-order')) $('f-order').value = (S.kind === 'rows' && S.units.some(function (u) { return u.priority; })) ? 'priority' : 'batch';
     if ($('list-legend')) $('list-legend').hidden = S.kind !== 'rows';
     var keysEl = document.querySelector('.nav .keys');
@@ -675,6 +696,16 @@
     }).join('');
   }
 
+  function rowAsk(u) {
+    var t = u.target || {}, nb = esc(u.nbs_id || 'this NbS').replace(/_/g, ' ');
+    if (u.table === 'T6') return '<b>This row asks:</b> does ' + nb + ' change <b>' + esc(t.priority).replace(/_/g, ' ') +
+      '</b>? <span class="muted">Evidence should show the practice → a measured change in this outcome versus a comparator.</span>';
+    var hz = esc(t.hazard).replace(/_/g, ' '), fs = esc(t.farming_system).replace(/_/g, ' ');
+    if (t.risk_role === 'asset_threat') return '<b>This row asks:</b> how badly does <b>' + hz + '</b> damage ' + nb +
+      ' itself? <span class="muted">Evidence should show the hazard event → tree or establishment loss.</span>';
+    return '<b>This row asks:</b> does ' + nb + ' cut losses from <b>' + hz + '</b> in <b>' + fs + '</b> systems? ' +
+      '<span class="muted">Evidence should show a real ' + hz + ' event and outcomes with versus without the practice during it.</span>';
+  }
   function prioWhyHtml(u) {
     var p = u.priority; if (!p || !(p.why || []).length) return '';
     return '<div class="prio-why prio-' + esc(p.level) + '"><b>Why this needs you — ' + esc(p.level) + ' priority</b><ul>' +
@@ -885,6 +916,7 @@
             (present(u.scope) ? ' <span class="sep">·</span> ' + esc(u.scope) : '') + '</span>' +
           '<span class="muted">evidence ' + (present(u.evidence_level) ? esc(vshort('evidence_level', u.evidence_level)) + vinfo('evidence_level', u.evidence_level) : '—') +
             ' · agreement ' + (present(u.agreement_level) ? esc(vshort('agreement_level', u.agreement_level)) + vinfo('agreement_level', u.agreement_level) : '—') + '</span></div>' +
+        '<p class="glance-ask">' + rowAsk(u) + '</p>' +
         prioWhyHtml(u) +
         '<p class="glance-stmt">' + esc(g.statement_short || u.statement) + '</p>' +
         (gFlags.length ? '<div class="flag-chips">' + gFlags.map(function (f) { return flagHtml(f, u); }).join('') + '</div>' : '') +
