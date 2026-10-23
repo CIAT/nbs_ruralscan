@@ -78,7 +78,11 @@ NbS responds (the T6 evidence row) — and **no theme or group chips**. So:
   stress, catchment water yield and water quality.
 - **Fire is a project risk** (M2b), not an opportunity-space row.
 - **Production gap is an intermediate step** to rural poverty and food insecurity, not a row.
-- D5, D6 and D8 stand.
+- **D6 revised (Pete: "moderate positive shows ++ HIGH?"):** the symbol now matches the evidence
+  class one-to-one — + slight · ++ moderate · +++ strong (− −− −−− for harm) — and confidence is
+  shown separately under the symbol (●●● high · ●●○ medium · ●○○ low), never inside the pill,
+  so size and certainty can't be read as one thing.
+- D5 and D8 stand.
 
 ## Decided 23 October — scoring and dashboard (D3–D7, first build; superseded above)
 

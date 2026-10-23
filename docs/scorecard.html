@@ -106,7 +106,8 @@
   .chip.neg { background: rgba(244, 63, 94, 0.16); color: var(--accent-rose); }
   .chip.dis { background: rgba(14, 165, 233, 0.14); color: var(--accent-sky); }
   .chip.caution { border-color: var(--accent-amber); }
-  .chip .b { font-size: 10px; font-weight: 600; opacity: 0.85; }
+  .cwrap { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+  .conf { font-size: 10.5px; color: var(--text-secondary); letter-spacing: 0.02em; white-space: nowrap; }
   .counts { font-size: 12px; color: var(--text-secondary); text-align: left; white-space: nowrap; }
   .detail h2 { font-family: var(--font-outfit); font-size: 17px; margin-bottom: 6px; }
   .detail td, .detail th { text-align: left; }
@@ -138,10 +139,12 @@
   function el(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function words(s) { return String(s || '').replace(/_/g, ' '); }
+  // symbol = effect size (1:1 with the evidence class); confidence sits UNDER the pill
   function chipHtml(c, title) {
     var cls = c.rank > 0 ? 'pos' : c.rank < 0 ? 'neg' : c.glyph === '±' ? 'dis' : '';
     var t = title || ((c.class_label || c.label || words(c['class'])) + (c.confidence ? ' · ' + words(c.confidence) + ' confidence' : '') + (c.caution ? ' · CAUTION: measured harm for some adopters' : ''));
-    return '<span class="chip ' + cls + (c.caution ? ' caution' : '') + '" title="' + esc(t) + '">' + esc(c.glyph) + (c.badge ? ' <span class="b">' + esc(c.badge) + '</span>' : '') + '</span>';
+    var conf = c.dots ? '<span class="conf" title="' + esc(words(c.confidence) + ' confidence') + '">' + esc(c.dots) + ' ' + esc(c.badge === 'MED' ? 'medium' : String(c.badge || '').toLowerCase()) + '</span>' : '<span class="conf">&nbsp;</span>';
+    return '<span class="cwrap"><span class="chip ' + cls + (c.caution ? ' caution' : '') + '" title="' + esc(t) + '">' + esc(c.glyph) + '</span>' + conf + '</span>';
   }
   function render() {
     var nbs = Object.keys(D.nbs), first = D.nbs[nbs[0]].rows, h = '<tr><th></th>' + nbs.map(function (n) { return '<th>' + esc(words(n)) + '</th>'; }).join('') + '</tr>';
@@ -171,7 +174,7 @@
   function legend() {
     var seen = {}, items = [];
     D.meta.scale.forEach(function (r) { if (!seen[r.glyph]) { seen[r.glyph] = 1; items.push('<span><b>' + esc(r.glyph) + '</b> ' + esc(r.label) + '</span>'); } });
-    items.push('<span><b>HIGH / MED / LOW</b> confidence badge</span>', '<span><span class="chip caution">+</span> amber outline = CAUTION: measured harm for some adopters</span>');
+    items.push('<span><b>●●● / ●●○ / ●○○</b> confidence (high / medium / low), shown under the symbol — it is how sure, not how big</span>', '<span><span class="chip caution">+</span> amber outline = CAUTION: measured harm for some adopters</span>');
     el('legend').innerHTML = items.join('');
     el('rule').textContent = 'One response chip per problem row (mockup rows; no theme chips, no NbS number). Pooled rows: ' + D.meta.pooled_row_rule + '. Fire is a project risk and production gap an intermediate step, so neither has a row. Decisions: ' + D.meta.decisions + '.';
     el('stamp').textContent = 'data as of ' + String((D.build || {}).timestamp || '').slice(0, 10) + ' · ' + ((D.build || {}).git_commit || '');

@@ -24,16 +24,22 @@ def _c(cls, conf="high", **j):
 
 
 def test_chip_scale_d6():
-    assert _c("strong_positive")["glyph"] == "++"
+    # symbols match the evidence class 1:1 (Pete 2026-10-23)
+    assert _c("strong_positive")["glyph"] == "+++"
+    assert _c("moderate_positive")["glyph"] == "++"
     assert _c("slight_positive")["glyph"] == "+"
     assert _c("no_relationship")["glyph"] == "0"
     assert _c("moderate_negative")["glyph"] == "−−"
+    assert _c("strong_negative")["glyph"] == "−−−"
     assert _c("conflicting_evidence")["glyph"] == "±"
     assert _c("", data_deficient=True)["glyph"] == "?"
     assert S.chip(None, "effect_direction", "effect_confidence", SC)["glyph"] == "n/a"
     assert _c("slight_positive", "very_high")["badge"] == "HIGH"
     assert _c("slight_positive", "medium")["badge"] == "MED"
     assert _c("slight_positive", "very_low")["badge"] == "LOW"
+    # confidence travels separately from the symbol
+    assert _c("moderate_positive", "medium")["dots"] == "●●○"
+    assert "HIGH" not in _c("moderate_positive", "high")["glyph"]
 
 
 def test_caution_is_measured_harm():
@@ -62,7 +68,7 @@ def test_theme_dissent_states_disagreement():
 def test_ttl_weights_move_the_median():
     chips = [_c("strong_positive"), _c("slight_positive"), _c("slight_positive")]
     assert S.theme_chip(chips, [2, 2, 2], SC)["glyph"] == "+"
-    assert S.theme_chip(chips, [3, 1, 1], SC)["glyph"] == "++"
+    assert S.theme_chip(chips, [3, 1, 1], SC)["glyph"] == "+++"
 
 
 def test_theme_without_setting_rows():
