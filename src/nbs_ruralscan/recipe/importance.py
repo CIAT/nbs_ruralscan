@@ -217,3 +217,49 @@ def candidate_weights(models, variables):
         row["candidate_weight"] = row["median_ratio"] / total
         row["equal_weight"] = 1 / len(rows)
     return rows
+
+
+def consolidate_importance(result, mappings):
+    """Summarise complete additive paths as theme → concept, retaining provenance.
+
+    Mapping is explicit data keyed by source node, never guessed from variable
+    names. This diagnostic changes neither source response functions nor runtime
+    weights. The equal-variable comparison uses all consolidated model concepts.
+    """
+    if result["status"] != "calculated":
+        raise ValueError("Cannot consolidate a held model")
+    by_node = {r["node_id"]: r for r in mappings}
+    if len(by_node) != len(mappings) or set(by_node) != {
+        p["node_id"] for p in result["paths"]
+    }:
+        raise ValueError("Mapping must cover every source path exactly once")
+    groups = defaultdict(list)
+    for path in result["paths"]:
+        mapping = by_node[path["node_id"]]
+        if not mapping.get("theme") or not mapping.get("concept"):
+            raise ValueError("Missing theme or concept")
+        groups[(mapping["theme"], mapping["concept"], path["scope"])].append(path)
+    rows = []
+    for (theme, concept, scope), paths in sorted(groups.items()):
+        share = sum(p["whole_model_share"] for p in paths)
+        benchmark = sum(p["equal_hierarchy_share"] for p in paths)
+        rows.append(
+            dict(
+                theme=theme,
+                variable=concept,
+                scope=scope,
+                whole_model_share=share,
+                equal_hierarchy_share=benchmark,
+                hierarchy_adjusted_ratio=share / benchmark,
+                flat_variable_ratio=share * len(groups),
+                source_paths=paths,
+            )
+        )
+    for row in rows:
+        theme_total = sum(
+            r["whole_model_share"] for r in rows if r["theme"] == row["theme"]
+        )
+        row["theme_share"] = (
+            row["whole_model_share"] / theme_total if theme_total else None
+        )
+    return rows
