@@ -494,3 +494,41 @@ def test_ahmad_slope_keeps_unit_conflict_and_soc_keeps_model_chain():
     assert model_use["weight_path_pct"] == [45.8, 20]
     assert model_use["nominal_whole_model_weight_pct"] == 9.16
     assert "reclassified" in model_use["note"]
+
+
+def test_crs_priorities_are_complete_and_market_distance_is_not_roads():
+    evidence = {
+        row["evidence_id"]: row
+        for row in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    ranks = {"005": 4, "008": 1, "009": 2, "010": 5, "013": 9, "015": 13, "017": 8}
+    for suffix, rank in ranks.items():
+        row = evidence["EV_crs_fmnr_niger_2025_" + suffix]
+        rel = json.loads(row["relationship"])
+        assert rel["priority_rank"] == rank
+        assert rel["priority_count"] == 14
+        assert rel["source_priority_total"] == 99.9
+        assert "threshold" not in rel
+    market = evidence["EV_crs_fmnr_niger_2025_015"]
+    assert market["variable"] == "distance_to_market"
+    assert market["use_role"] == "operational_risk"
+    assert (
+        json.loads(market["context"])["importance_comparison"][
+            "denominator_input_count"
+        ]
+        == 14
+    )
+    assert (
+        evidence["EV_crs_fmnr_niger_2025_002"]["lineage_of"]
+        == "EV_crs_fmnr_niger_2025_001"
+    )
+    ontology = {
+        r["canonical_variable_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/VONT_variable_ontology.csv").open()
+        )
+    }
+    assert ontology["distance_to_market"]["review_status"] == "pending"
+    assert json.loads(ontology["distance_to_market"]["candidate_dataset_ids"]) == []
