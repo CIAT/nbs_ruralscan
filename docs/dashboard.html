@@ -2756,6 +2756,19 @@
     window._vfSearch=value;var input=document.getElementById('vf-search');var position=input&&input.selectionStart;
     renderVfWorklist();input=document.getElementById('vf-search');if(input){input.focus();if(position!==null&&position!==undefined)input.setSelectionRange(position,position);}
   }
+  function vfRepeatedConflicts(log,reviewer){
+    var calls={},done={};
+    log.forEach(function(r){
+      var id=r.evidence_id,who=r.reviewer,d=(r.decision||'').toLowerCase();
+      if(d==='keep')d='ok';
+      var prev=calls[id]||(calls[id]={});
+      if(d==='reopen'){delete prev[who];if(who===reviewer)delete done[id];return;}
+      if(who===reviewer&&(d==='ok'||d==='drop')&&(prev[who]==='ok'||prev[who]==='drop')
+        &&Object.keys(prev).some(function(other){return other!==who&&((prev[other]==='ok'&&prev[who]==='drop')||(prev[other]==='drop'&&prev[who]==='ok'));}))done[id]=true;
+      if(d)prev[who]=d;
+    });
+    return done;
+  }
   function vfSimpleMatch(u,view){
     if(view==='advanced')return true;
     if(view==='mine')return u.me;
@@ -3227,6 +3240,7 @@
     // reviewed-by predicates: pending (this session) + persistent store (all reviewers) + committed log.
     var _store=(window._vfAllReviews||{}), _pend=(window._vfDecisions||{});
     var _meH=(window._vfReviewer||'').trim();
+    var _repeatConflicts=vfRepeatedConflicts(rlAll,_meH);
     // committed decisions per (id,reviewer). A 'reopen' row CLEARS that reviewer's prior decision —
     // the unit is back in play awaiting a fresh call, so it must NOT count as reviewed-by-them, and
     // (for me) it overrides any now-stale store decision so the unit resurfaces in To review / AI-flagged.
@@ -3252,7 +3266,7 @@
       ev._reviewQueue=_vfReviewBucket(ev,decisions);
       var calls=Object.values(decisions).map(function(d){return d==='keep'?'ok':d;});ev._reviewConflict=calls.indexOf('ok')>=0&&calls.indexOf('drop')>=0;
       if(!isDrop&&vfHasAnswerForReview(id))ev._reviewQueue='first';
-      _uni.push({ev:ev,origin:origin,verdict:verdict,reason:reason,me:_uMe(id),other:_uOther(id),myDec:_uMyDec(id),conflictReviewed:!!((_store[id]||{})[_meH]||{}).reviewed_conflict_at,meApplied:_meApplied(id),dropped:isDrop}); };
+      _uni.push({ev:ev,origin:origin,verdict:verdict,reason:reason,me:_uMe(id),other:_uOther(id),myDec:_uMyDec(id),conflictReviewed:!!_repeatConflicts[id]||!!((_store[id]||{})[_meH]||{}).reviewed_conflict_at,meApplied:_meApplied(id),dropped:isDrop}); };
     flaggedRows.forEach(function(r){ _pushU(r.ev,'flagged',r.verdict,r.reason); });
     passedAll.forEach(function(ev){ _pushU(ev,'passed','pass','AI accepted this extraction — spot-check: is the encoded value faithful to the quote?'); });
     ((dashboardData._evDropped)||[]).forEach(function(ev){ if(ev.use_role==='dataset')return; if(!_vfInScope(ev))return; var o=/\[VERIFY-FLAG/.test(ev.attribution||'')?'flagged':'passed'; _pushU(ev,o,o==='flagged'?'flagged':'pass',''); });
