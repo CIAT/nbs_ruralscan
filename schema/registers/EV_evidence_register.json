@@ -2658,9 +2658,10 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "slope",
     "relationship": {
-      "land_capability_class": "VII",
-      "limitation": "very steep slopes",
-      "note": "General land capability, not an agroforestry threshold"
+      "type": "source_land_capability_context",
+      "source_class": "VII",
+      "source_description": "Slopes above 45%; severe limitations on agricultural cultivation; grazing or forest uses discussed",
+      "agroforestry_numeric_rule": false
     },
     "context": {
       "location": "Indonesia, Tanralili District, Maros Regency",
@@ -2668,6 +2669,14 @@
       "source_check": {
         "date": "2026-10-20",
         "resolution": "p5 class VII is land capability, allowing grazing/forest but not agricultural cultivation. Not an agroforestry slope exclusion; retain qualitative capability context."
+      },
+      "runtime_status": "context_only_not_agroforestry_response",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          5,
+          6
+        ],
+        "interpretation": "Class VII is a general land-capability category, not an agroforestry suitability score. The text associates it with slopes above 45% and severe cultivation limitations, allowing grazing/forest uses. The paper’s agroforestry conclusion instead names classes III and IV. Retained the class definition as context; no universal 45% agroforestry cutoff inferred."
       }
     },
     "use_role": "structural_suitability",
@@ -2719,12 +2728,30 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "annual_precipitation",
     "relationship": {
-      "limiting_factor": "water availability / annual rainfall",
-      "suitability_class": "S2 (moderately suitable)"
+      "type": "model_input",
+      "source_variable": "Water availability related to annual rainfall",
+      "direction": "not_reported",
+      "source_class": "S2 (moderately suitable)",
+      "species": "Sengon"
     },
     "context": {
       "location": "Indonesia, Tanralili District, Maros Regency",
-      "note": "Water availability linked to annual rainfall is a limiting factor for sengon at S2 class sites; no specific threshold quantified"
+      "note": "Water availability linked to annual rainfall is a limiting factor for sengon at S2 class sites; no specific threshold quantified",
+      "model_use": {
+        "verified": true,
+        "method": "species_land_suitability_assessment",
+        "page": "5–6",
+        "scope": "species_specific",
+        "weight_path_pct": [],
+        "note": "Water availability explicitly linked to annual rainfall; no numeric rainfall response recovered."
+      },
+      "review_resolution_2026_10_23": {
+        "pages": [
+          5,
+          6
+        ],
+        "interpretation": "Confirmed rainfall is used in the Sengon assessment: Table 3 identifies water availability as a limiting factor, and page 6 links it to annual rainfall. Count model use in the species-specific lane. No rainfall cutoff or monotonic direction is supplied; land-unit identifiers are local study labels, not ontology variables."
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "scoping_candidate",
@@ -5314,20 +5341,49 @@
     "suitability_family_id": "agroforestry__planted_silvoarable",
     "variable": "slope",
     "relationship": {
-      "abs_min": 8,
-      "abs_max": 72,
-      "unit": "%"
+      "type": "observed_presence",
+      "source_table": "Table 5: Summary of land unit parameters",
+      "unit": "percent",
+      "land_unit_ranges": {
+        "LU1": [
+          8,
+          12
+        ],
+        "LU2": [
+          12,
+          20
+        ],
+        "LU3": [
+          20,
+          28
+        ],
+        "LU4": [
+          28,
+          38
+        ],
+        "LU5": [
+          38,
+          72
+        ]
+      }
     },
     "context": {
       "location": "Uluguru Mountain, Morogoro, Tanzania",
-      "note": "Five land mapping units; agroforestry most suitable LU2-LU4 (12-38%)"
+      "note": "Five land mapping units; agroforestry most suitable LU2-LU4 (12-38%)",
+      "runtime_status": "context_only_not_suitability_bounds",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          11
+        ],
+        "interpretation": "Confirmed Table 5 is a summary of land-mapping units used to describe the study landscape. Its 8–72% slope span is not an agroforestry establishment envelope. Removed the encoded absolute minimum/maximum and retained the five observed bands. Existing dropped status stays unchanged."
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "literature_relationship",
     "claim_basis": "table",
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
-    "quote": "Slope \n8% - 12% \n12% - 20% \n20% - 28% \n28% - 38% \n38% - 72%",
+    "quote": "Slope\n8% - 12%\n12% - 20%\n20% - 28%\n28% - 38%\n38% - 72%",
     "page": 11,
     "reviewer_ok": true,
     "raw_name": "Slope",
@@ -11468,11 +11524,21 @@
         100,
         950
       ],
-      "note": "Evidence distribution in reviewed studies; suitability outside studied contexts remains unknown."
+      "note": "Evidence distribution in reviewed studies; suitability outside studied contexts remains unknown.",
+      "interpretation": "Observed study contexts; suitability outside them is unknown."
     },
     "context": {
       "region": "sub-Saharan Africa",
-      "aez": "arid_to_sub_humid"
+      "aez": "arid_to_sub_humid",
+      "claim_interpretation": "review_synthesis_of_observed_contexts",
+      "source_author_label": "Chomba et al. (2020)",
+      "runtime_status": "context_only",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          11
+        ],
+        "interpretation": "Page 11 is the review authors’ synthesis of contexts where FMNR has been studied: 100–950 mm/year and low-fertility soils. It explicitly says suitability outside these contexts needs research. The following Bayala citation supports the separate soil-carbon statement. Retained as observed context, not preferred rainfall/soil limits; no direction or threshold vote. This source is Chomba et al. (2020); Lohbeck is a coauthor and the stable source ID is retained."
+      }
     },
     "use_role": "structural_suitability",
     "evidence_type": "scoping_candidate",
@@ -11528,7 +11594,8 @@
     "variable": "soil_fertility",
     "relationship": {
       "type": "observed_presence",
-      "soil_context": "low fertility soils"
+      "soil_context": "low fertility soils",
+      "interpretation": "Observed study contexts; suitability outside them is unknown."
     },
     "context": {
       "region": "sub-Saharan Africa",
@@ -11537,6 +11604,15 @@
         "date": "2026-10-20",
         "reviewer": "Codex source verification",
         "resolution": "Review discussion p11 describes observed adoption contexts on low-fertility soils, not a fertility requirement. Citation is Chomba et al. despite historical source_id lohbeck_2020."
+      },
+      "claim_interpretation": "review_synthesis_of_observed_contexts",
+      "source_author_label": "Chomba et al. (2020)",
+      "runtime_status": "context_only",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          11
+        ],
+        "interpretation": "Page 11 is the review authors’ synthesis of contexts where FMNR has been studied: 100–950 mm/year and low-fertility soils. It explicitly says suitability outside these contexts needs research. The following Bayala citation supports the separate soil-carbon statement. Retained as observed context, not preferred rainfall/soil limits; no direction or threshold vote. This source is Chomba et al. (2020); Lohbeck is a coauthor and the stable source ID is retained."
       }
     },
     "use_role": "structural_suitability",
@@ -11620,14 +11696,26 @@
       "mechanism": "no_incentive_for_long_term_investment_if_tenure_insecure"
     },
     "context": {
-      "region": "Africa"
+      "region": "Africa",
+      "claim_origin": "cited_secondary",
+      "cited_references": [
+        "Chomba et al. (2016)",
+        "Binam et al. (2017)"
+      ],
+      "originals_status": "Reporting source checked; original claims not independently verified.",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          11
+        ],
+        "interpretation": "Restored the complete sentence and citations. The review attributes tenure constraints to Chomba et al. (2016) and Binam et al. (2017). Retain secondary operational guidance, not a new independent field study or numeric tenure rule; originals still require claim-specific verification."
+      }
     },
     "use_role": "operational_risk",
     "evidence_type": "literature_relationship",
-    "claim_basis": "expert_assertion",
+    "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "Insecure land and tree tenure remain key bottlenecks for adoption of FMNR. Complexities in tree and land tenure security can be traced back to the colonial era which set forest codes and management regimes characterized by asymmetr",
+    "quote": "Insecure land and tree tenure remain key bottlenecks for\nadoption of FMNR. Complexities in tree and land tenure security\ncan be traced back to the colonial era which set forest codes\nand management regimes characterized by asymmetrical power\nvested in the hands of forest oﬃcials that persist to date in many\nAfrican countries (Chomba et al., 2016; Binam et al., 2017).",
     "page": 11,
     "reviewer_ok": false,
     "raw_name": "Insecure land and tree tenure remain key bottlenecks for adoption of FMNR",
@@ -11654,14 +11742,26 @@
     },
     "context": {
       "region": "Africa",
-      "country": "Niger"
+      "country": "Niger",
+      "claim_origin": "cited_secondary",
+      "cited_references": [
+        "Binam et al. (2017)"
+      ],
+      "originals_status": "Reporting source checked; original claims not independently verified.",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          11
+        ],
+        "interpretation": "Restored the complete governance claim and Binam et al. (2017) citation. The passage bundles farmer choices, tenure, policy, grazing by-laws and conflict management. Keep attributed qualitative operational guidance; it does not isolate a governance coefficient or justify multiple independent source votes."
+      }
     },
     "use_role": "operational_risk",
     "evidence_type": "literature_relationship",
-    "claim_basis": "expert_assertion",
+    "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
+    "lineage_of": "binam_2017",
     "extraction_confidence": "high",
-    "quote": "Widespread adoption of FMNR is heavily inﬂuenced by the social context, especially governance factors commonly known to play a role in adoption and scaling up of technologies. These include farmer’s choices and their decisions about tree selection and management, land and tree tenure, policy and institutions such as by-laws relating to grazing and conﬂict management, especially between crop farmers and pastor",
+    "quote": "Widespread adoption of FMNR is heavily inﬂuenced by the\nsocial context, especially governance factors commonly known\nto play a role in adoption and scaling up of technologies.\nThese include farmer’s choices and their decisions about tree\nselection and management, land and tree tenure, policy and\ninstitutions such as by-laws relating to grazing and conﬂict\nmanagement, especially between crop farmers and pastoralists\n(Binam et al., 2017).",
     "page": 11,
     "reviewer_ok": false,
     "raw_name": "governance factors ... by-laws relating to grazing and conﬂict management",
@@ -48804,12 +48904,9 @@
     "suitability_family_id": "agroforestry__silvopastoral",
     "variable": "extension_governance",
     "relationship": {
-      "direction": "negative",
-      "strength_class": "unspecified",
-      "metric": "narrative",
-      "significance": "not_reported",
-      "design": "expert",
-      "outcome_raw": "cultural barrier: unfounded belief that shading livestock reduces meat or milk output by cutting grazing time"
+      "type": "expert_interpretation",
+      "source_concept": "Information gaps and producer perceptions may hinder silvopastoral adoption",
+      "causal_effect_estimated": false
     },
     "context": {
       "country": [
@@ -48817,11 +48914,18 @@
       ],
       "climate_zone": "tropical",
       "farming_system": "pastoral_rangeland",
-      "income_group": "upper_middle"
+      "income_group": "upper_middle",
+      "claim_interpretation": "author_narrative_interpretation",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          19
+        ],
+        "interpretation": "This passage is the author’s qualitative interpretation of information barriers and producer beliefs, not a measured cause-and-effect result. It reports a belief about shade and grazing which the author calls scientifically unfounded. Retain as expert operational context; no causal coefficient or numeric suitability rule."
+      }
     },
     "use_role": "operational_risk",
     "evidence_type": "literature_relationship",
-    "claim_basis": "cited_secondary",
+    "claim_basis": "expert_assertion",
     "claim_scope": "practice_technology",
     "extraction_confidence": "medium",
     "quote": "Ademais, em função do desconhecimento e da falta de informações confiáveis, certas dúvidas e mitos ainda persistem no meio rural com relação aos SSPs, levando a certa aversão ao uso desses sistemas. Por exemplo, existe a crença, cientificamente infundada, por parte de alguns produtores, de que o provimento de sombra aos animais na pastagem poderia diminuir a produção de carne ou leite. A justificativa para isso seria que o acesso voluntário à sombra reduziria o tempo de pastejo (i.e., aumentaria o tempo dedicado ao ócio) e, conseqüentemente, o consumo de forragem. (English: Moreover, because of a lack of knowledge and of reliable information, certain doubts and myths still persist in rural areas regarding silvopastoral systems, leading to a certain aversion to using these systems. For example, there is a scientifically unfounded belief among some producers that providing shade to animals in the pasture could reduce meat or milk production. The justification for this would be that voluntary access to shade would reduce grazing time (i.e. increase idle time) and consequently forage intake.)",
@@ -49085,12 +49189,14 @@
     "suitability_family_id": "agroforestry__linear_boundary",
     "variable": "labour_availability",
     "relationship": {
-      "direction": "negative",
-      "strength_class": "unspecified",
-      "metric": "narrative",
-      "significance": "not_reported",
-      "design": "observational",
-      "outcome_raw": "live-fence adopters motivated by wind erosion and livestock control; non-adopters cite lack of labour, cultivable area, planting material or time"
+      "type": "reported_adoption_barriers",
+      "barriers": [
+        "labour shortage",
+        "limited land",
+        "planting material shortage",
+        "lack of time"
+      ],
+      "direction": "not_isolated_from_other_barriers"
     },
     "context": {
       "country": [
@@ -49099,15 +49205,26 @@
       "climate_zone": "dryland",
       "farming_system": "cropping_rainfed",
       "region": "sud du bassin arachidier",
-      "income_group": "lower_middle"
+      "income_group": "lower_middle",
+      "claim_origin": "cited_secondary",
+      "cited_references": [
+        "Sanogo et al. (2000), cited in Yossi et al. (2006)"
+      ],
+      "originals_status": "Reporting source checked; original claims not independently verified.",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          48
+        ],
+        "interpretation": "Restored citation chain: FAO reports Sanogo et al. (2000), cited through Yossi et al. (2006). Non-adopters report shortages of labour, land, planting material or time. This is secondary evidence of reported adoption barriers, not an isolated causal labour effect. The intermediary and original do not become extra independent votes."
+      }
     },
     "use_role": "operational_risk",
     "evidence_type": "literature_relationship",
     "claim_basis": "cited_secondary",
     "claim_scope": "practice_technology",
-    "lineage_of": "Sanogo et al. 2000 cited in Yossi et al. 2006",
+    "lineage_of": "external:sanogo_2000_via_yossi_2006",
     "extraction_confidence": "medium",
-    "quote": "Selon une étude effectuée dans le sud du bassin arachidier, les principales raisons ayant motivé les adoptants de cette pratique étaient la lutte contre l’érosion éolienne et la divagation du bétail, de même que la possibilité d’établir plus clairement les limites des champs. Les non-adoptants mettaient pour leur part de l’avant des contraintes liées à un manque de main-d’œuvre, de superficie à cultiver, de matériel végétal ou de temps (English: According to a study carried out in the south of the groundnut basin, the main reasons that motivated adopters of this practice were the fight against wind erosion and livestock straying, as well as the possibility of more clearly establishing field boundaries. Non-adopters for their part put forward constraints linked to a lack of labour, of area to cultivate, of planting material or of time)",
+    "quote": "Les non-adoptants mettaient pour leur part de l’avant des contraintes liées à un manque de main-d’œuvre, de superficie à cultiver, de matériel végétal ou de temps (Sanogo et al., 2000, cité dans Yossi et al., 2006).",
     "page": 48,
     "reviewer_ok": false,
     "raw_name": "freins à l'adoption des haies vives",
@@ -49120,14 +49237,12 @@
     "source_id": "fao_2024_senegal_fr",
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__linear_boundary",
-    "variable": "market_value_chain",
+    "variable": "planting_material_availability",
     "relationship": {
-      "direction": "negative",
-      "strength_class": "unspecified",
-      "metric": "narrative",
-      "significance": "not_reported",
-      "design": "observational",
-      "outcome_raw": "planting-material supply is a notable constraint for larger-scale hedge schemes; one project had to curtail activities and natural Euphorbia balsamifera stands were over-harvested"
+      "type": "reported_operational_constraint",
+      "direction": "positive",
+      "source_concept": "Availability of sufficient seed and cuttings enables live-fence establishment",
+      "numeric_threshold": "not_reported"
     },
     "context": {
       "country": [
@@ -49136,7 +49251,19 @@
       "climate_zone": "dryland",
       "farming_system": "cropping_rainfed",
       "note": "supply-chain constraint plus an environmental side-effect of cutting propagation material",
-      "income_group": "lower_middle"
+      "income_group": "lower_middle",
+      "claim_origin": "cited_secondary",
+      "cited_references": [
+        "Satin (1998)",
+        "FIDA (1995)"
+      ],
+      "originals_status": "Reporting source checked; original claims not independently verified.",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          48
+        ],
+        "interpretation": "Corrected to planting-material availability. Page 48 concerns seed/cutting supply for live fences, not product markets. FAO attributes the supply constraint to Satin (1998) and FIDA (1995), including PAGF restrictions and pressure on natural Euphorbia stands. Retain as secondary operational evidence; new variable has no spatial binding or numeric curve."
+      }
     },
     "use_role": "operational_risk",
     "evidence_type": "literature_relationship",
@@ -49146,7 +49273,7 @@
     "quote": "L’approvisionnement en matériel végétal semble aussi être une contrainte notable pour les aménagements de haies à plus grande échelle (Satin, 1998; FIDA, 1995). Faute de semences et de boutures en quantité suffisante, le PAGF a notamment dû restreindre fortement l’ampleur de ses activités. Le projet rapporte également que les peuplements naturels d’E. balsamifera ont subi des pressions excessives à la suite du prélèvement de boutures par les populations pour l’établissement de leurs haies (FIDA, 1995). (English: The supply of planting material also seems to be a notable constraint for hedge schemes at a larger scale (Satin, 1998; IFAD, 1995). For lack of sufficient quantities of seed and cuttings, the PAGF project had to strongly restrict the scale of its activities. The project also reports that natural stands of E. balsamifera suffered excessive pressure following the collection of cuttings by local people for the establishment of their hedges (IFAD, 1995).)",
     "page": 48,
     "reviewer_ok": false,
-    "raw_name": "approvisionnement en semences et boutures",
+    "raw_name": "Availability of seed and cuttings for live fences",
     "attribution": "[query 2026-10-22 by peetmate; note:not convinced about the vocabulary being used \"market_value_chain\" and how this would map to a high level project implementation risk.]",
     "locator_type": "page",
     "ruleset_version": "v1.6.0"
@@ -49324,12 +49451,14 @@
     "source_id": "wv_fmnr_evidence_of_impact_2019",
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__regeneration_farmland",
-    "variable": "adoption_rate",
+    "variable": "gender_participation_gap",
     "relationship": {
-      "direction": "negative",
-      "metric": "narrative",
-      "strength_class": "unspecified",
-      "outcome_raw": "EQUITY CONSTRAINT: female-headed households were less likely to have participated in the project (eight percent) or to practise FMNR (five percent), unchanged when households with no land ownership were omitted"
+      "type": "reported_group_comparison",
+      "comparison": "Female-headed versus male-headed households",
+      "project_participation_as_printed": "less likely (eight percent)",
+      "fmnr_practice_as_printed": "less likely (five percent)",
+      "effect_scale": "unresolved",
+      "direction": "not_a_spatial_variable_response"
     },
     "context": {
       "country": [
@@ -49341,17 +49470,25 @@
         "UGA",
         "TLS"
       ],
-      "income_group": "lic_lmic"
+      "income_group": "lic_lmic",
+      "review_needed": "Eight/five percent denominator and effect scale unclear; do not convert into percentage-point or relative-risk estimates.",
+      "source_sensitivity_check": "Land-ownership exclusion uses FMNR East Africa data only.",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          7
+        ],
+        "interpretation": "Corrected variable to gender differences in participation/adoption. Page 7 reports female-headed households less likely to participate or practise FMNR, with eight/five percent in parentheses. Their denominator and percent-versus-percentage-point meaning are not defined in this passage, so retained verbatim without computing an effect. Footnote 6 limits the land-ownership sensitivity check to FMNR East Africa. This informs inclusion/implementation, not a national gender index or core T4 score."
+      }
     },
     "use_role": "operational_risk",
     "evidence_type": "literature_relationship",
     "claim_basis": "primary_measured",
     "claim_scope": "practice_technology",
     "extraction_confidence": "high",
-    "quote": "Female respondents were just as likely as male respondents to have heard of FMNR, but female-headed households were \nless likely to have participated in the project (eight percent) or practise FMNR (five percent). This result did not differ when \nhouseholds with no land ownership were omitted.",
+    "quote": "Female respondents were just as likely as male respondents to have heard of FMNR, but female-headed households were\nless likely to have participated in the project (eight percent) or practise FMNR (five percent). This result did not differ when\nhouseholds with no land ownership were omitted.",
     "page": 7,
     "reviewer_ok": false,
-    "raw_name": "FMNR uptake by female-headed households",
+    "raw_name": "Gender differences in FMNR participation and adoption",
     "attribution": "[query 2026-10-22 by peetmate; note:adoptoin rate not the right variable. However GESI issue is important to capture]",
     "locator_type": "page",
     "ruleset_version": "v1.6.0"
@@ -122415,12 +122552,25 @@
     "nbs_id": "agroforestry",
     "suitability_family_id": "agroforestry__cross_family",
     "variable": "market_value_chain",
-    "relationship": {},
+    "relationship": {
+      "type": "qualitative_market_access_association",
+      "outcome": "Income-generating opportunities from agroforestry",
+      "direction": "positive",
+      "numeric_threshold": "not_reported"
+    },
     "context": {
       "country": [
         "KEN"
       ],
-      "income_group": "lower_middle"
+      "income_group": "lower_middle",
+      "source_concept": "Market accessibility for sale of fuelwood, timber, fruit and seedlings",
+      "spatial_proxy_status": "No distance or travel-time calibration in this passage",
+      "review_resolution_2026_10_23": {
+        "pages": [
+          11
+        ],
+        "interpretation": "The source concerns access to markets for selling tree products. Retained in the broad market/value-chain group with a clear source label. The authors contrast two sublocations and recommend infrastructure/cooperatives; this passage gives no measured distance or travel-time response. It cannot calibrate those spatial proxies."
+      }
     },
     "use_role": "operational_risk",
     "evidence_type": "scoping_candidate",
@@ -122430,7 +122580,7 @@
     "quote": "In comparing the benefits derived from agroforestry involvement across the two subloca- tions, market access played a key role in improving household incomes due to agroforestry projects.",
     "page": 11,
     "reviewer_ok": false,
-    "raw_name": "market access governs income benefits of agroforestry",
+    "raw_name": "Access to markets for agroforestry products",
     "attribution": "[query 2026-10-22 by peetmate; note:variable name is off?]",
     "locator_type": "page",
     "ruleset_version": "v1.6.2"
@@ -125112,15 +125262,25 @@
     "suitability_family_id": "agroforestry__cross_family",
     "variable": "tenure_security",
     "relationship": {
-      "direction": "positive",
-      "metric": "narrative",
-      "significance": "not_reported",
-      "design": "expert",
-      "outcome_raw": "land tenure security conditions agroforestry adoption in southern Africa"
+      "type": "unresolved_source_claim",
+      "direction": "not_established",
+      "source_problem": "Wording says secure tenure is a barrier; numbered reference concerns carbon outcomes, not the stated tenure claim."
     },
     "context": {
       "region": "southern Africa",
-      "note": "narrative review (Current Opinion in Environmental Sustainability); findings cited by reference number"
+      "note": "narrative review (Current Opinion in Environmental Sustainability); findings cited by reference number",
+      "runtime_status": "held_source_wording_and_citation_conflict",
+      "claim_origin": "cited_secondary",
+      "cited_reference_numbers": [
+        35
+      ],
+      "review_resolution_2026_10_23": {
+        "pages": [
+          3,
+          5
+        ],
+        "interpretation": "Source error remains unresolved: page 3 literally calls secure tenure a barrier, while reference 35 on page 5 concerns carbon outcomes of land-cover transitions in Southeast Asia. Removed the previously inferred positive direction. Neither reversing the sentence nor treating the reference as tenure evidence is justified. Retain the source wording for audit; no tenure-direction vote or executable rule."
+      }
     },
     "use_role": "operational_risk",
     "evidence_type": "literature_relationship",

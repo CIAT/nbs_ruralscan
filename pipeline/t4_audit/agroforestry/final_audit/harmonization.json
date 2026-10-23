@@ -1,8 +1,8 @@
 {
-  "profiles": 15,
+  "profiles": 13,
   "publications": 6,
-  "bands": 54,
-  "changed_bands": 26,
+  "bands": 46,
+  "changed_bands": 24,
   "unresolved_score_bands": 1,
   "approved_pools": 3,
   "records": [
@@ -661,6 +661,26 @@
           "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
           "status": "conditional_scoping_transfer",
           "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
+        },
+        "model_use": {
+          "verified": true,
+          "method": "nested weighted overlay with composite reclassification",
+          "page": "4,8",
+          "weight_path_pct": [
+            45.8,
+            20
+          ],
+          "scope": "practice_technology",
+          "nominal_whole_model_weight_pct": 9.16,
+          "note": "Table 1 SOC is 20% of soil fertility; Table 2 soil fertility is 45.8% of agroforestry model. Product is nominal path allocation, not sensitivity of final map: intermediate soil fertility is reclassified before final overlay."
+        },
+        "source_check": {
+          "date": "2026-10-23",
+          "pages": [
+            4,
+            8
+          ],
+          "resolution": "Table 1 and Figure 2 feed soil fertility; Table 2 and Figure 8 explicitly feed that composite to agroforestry suitability."
         }
       },
       "pool_status": "reviewed_conditional_scoping_transfer",
@@ -675,90 +695,6 @@
         "decision": "Use slope and SOC as conditional planted-tree/crop scoping priors. Paper also discusses silvopastoral systems; no automatic F3 response or FMNR transfer.",
         "status": "conditional_scoping_transfer",
         "quote": "The various agroforestry systems such as Agri-horti-silviculture, Agri-silviculture, silvi-pastoral and agro-silvi-pastoral can be significantly applied seeing the site condition of land."
-      }
-    },
-    {
-      "variable": "soil_organic_carbon",
-      "system": "agroforestry__planted_silvoarable",
-      "profile_id": "ev_t4_soilorg_nath21_01",
-      "source_group": "default",
-      "source_id": "nath_2021",
-      "citation": "Nath, Arun Jyoti; Kumar, Rakesh; Devi, N. Bijayalaxmi; Pebam, Rocky; Giri, Krishna; Sahoo, Uttam Kumar; Bajpai, Raj Kumar; Sahu, Netrananda; Pandey, Rajiv (2021). Agroforestry land suitability analysis in the Eastern Indian Himalayan region. Environmental Challenges.",
-      "unit": "g/kg",
-      "scores": [
-        {
-          "range": "(\u2212\u221e, 6)",
-          "label": "marginal",
-          "old_score": 0.25,
-          "new_score": 0.25
-        },
-        {
-          "range": "[6, 10]",
-          "label": "moderate",
-          "old_score": 0.5,
-          "new_score": 0.5
-        },
-        {
-          "range": "[10, 20]",
-          "label": "good",
-          "old_score": 0.75,
-          "new_score": 0.75
-        },
-        {
-          "range": "[20, 37.1]",
-          "label": "very_good",
-          "old_score": 1.0,
-          "new_score": 0.9
-        }
-      ],
-      "context": {
-        "study_country": "India",
-        "country": "India",
-        "region": "Eastern Indian Himalayan Region",
-        "transfer_note": "Regional model only; explicit source profile required.",
-        "source_check": {
-          "date": "2026-10-20",
-          "reviewer": "Codex source verification",
-          "resolution": "Full Table 2 p11: <0.6 is MARGINAL, not unsuitable. Variable weight 25% within topsoil nutrient group, 20% within soil, soil 20% of final model: effective 1%."
-        },
-        "model_use": {
-          "verified": true,
-          "method": "direct_expert_weight",
-          "page": "11",
-          "weight_path_pct": [
-            25,
-            20,
-            20
-          ],
-          "scope": "practice_technology",
-          "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
-        },
-        "system_applicability_review": {
-          "reviewer": "Codex source review",
-          "date": "2026-10-20",
-          "pages": [
-            11,
-            19,
-            20
-          ],
-          "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
-          "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
-          "status": "conditional_scoping_transfer",
-          "quote": "without targeting any specific species or agroforestry model"
-        }
-      },
-      "pool_status": "reviewed_conditional_scoping_transfer",
-      "source_weight": 0.54,
-      "applicability_review": {
-        "pages": [
-          11,
-          19,
-          20
-        ],
-        "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
-        "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
-        "status": "conditional_scoping_transfer",
-        "quote": "without targeting any specific species or agroforestry model"
       }
     },
     {
@@ -918,90 +854,6 @@
         }
       },
       "pool_status": "conditional_scoping_transfer",
-      "source_weight": 0.54,
-      "applicability_review": {
-        "pages": [
-          11,
-          19,
-          20
-        ],
-        "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
-        "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
-        "status": "conditional_scoping_transfer",
-        "quote": "without targeting any specific species or agroforestry model"
-      }
-    },
-    {
-      "variable": "soil_ph",
-      "system": "agroforestry__planted_silvoarable",
-      "profile_id": "ev_t4_soilph_nath21_01",
-      "source_group": "default",
-      "source_id": "nath_2021",
-      "citation": "Nath, Arun Jyoti; Kumar, Rakesh; Devi, N. Bijayalaxmi; Pebam, Rocky; Giri, Krishna; Sahoo, Uttam Kumar; Bajpai, Raj Kumar; Sahu, Netrananda; Pandey, Rajiv (2021). Agroforestry land suitability analysis in the Eastern Indian Himalayan region. Environmental Challenges.",
-      "unit": "pH_units",
-      "scores": [
-        {
-          "range": "[4.6, 5.5]",
-          "label": "good",
-          "old_score": 0.75,
-          "new_score": 0.75
-        },
-        {
-          "range": "[5.5, 7.2]",
-          "label": "very_good",
-          "old_score": 1.0,
-          "new_score": 0.9
-        },
-        {
-          "range": "[7.2, 7.4]",
-          "label": "good",
-          "old_score": 0.75,
-          "new_score": 0.75
-        },
-        {
-          "range": "[7.4, 7.6]",
-          "label": "moderate",
-          "old_score": 0.5,
-          "new_score": 0.5
-        }
-      ],
-      "context": {
-        "study_country": "India",
-        "country": "India",
-        "region": "Eastern Indian Himalayan Region",
-        "transfer_note": "Regional model only; explicit source profile required.",
-        "source_check": {
-          "date": "2026-10-20",
-          "reviewer": "Codex source verification",
-          "resolution": "Full Table 2 p11 visually checked: good class has two disjoint ranges. All four ranges printed explicitly. No extrapolation outside source bands."
-        },
-        "model_use": {
-          "verified": true,
-          "method": "direct_expert_weight",
-          "page": "11",
-          "weight_path_pct": [
-            25,
-            20,
-            20
-          ],
-          "scope": "practice_technology",
-          "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
-        },
-        "system_applicability_review": {
-          "reviewer": "Codex source review",
-          "date": "2026-10-20",
-          "pages": [
-            11,
-            19,
-            20
-          ],
-          "source_scope": "Broad regional agroforestry land suitability, explicitly not targeted to any species or agroforestry model.",
-          "decision": "Use slope, SOC and pH as conditional planted-tree/crop scoping priors. Retain rainfall and temperature only as Eastern Indian Himalayan regional profiles. Do not apply generic climate exclusions to FMNR, or treat tea examples as a crop-specific F5 envelope.",
-          "status": "conditional_scoping_transfer",
-          "quote": "without targeting any specific species or agroforestry model"
-        }
-      },
-      "pool_status": "reviewed_conditional_scoping_transfer",
       "source_weight": 0.54,
       "applicability_review": {
         "pages": [
@@ -1184,6 +1036,10 @@
     {
       "evidence_id": "ev_t4_aridity_nath21_03",
       "reason": "P_over_PET_identified_scaled_integer_conversion_unverified"
+    },
+    {
+      "evidence_id": "ev_T4_rereview_singh_2026_soil_ph_3",
+      "reason": "duplicate_response_already_compiled"
     }
   ],
   "combined_responses": [
@@ -1563,8 +1419,7 @@
       "system_id": "agroforestry__planted_silvoarable",
       "context_id": "india_regional_models_scoping_transfer",
       "profile_ids": [
-        "ev_T4_soc_ahmad2018_1",
-        "ev_t4_soilorg_nath21_01"
+        "ev_T4_soc_ahmad2018_1"
       ],
       "cells": [
         {
@@ -1577,78 +1432,38 @@
           "score": 0.25,
           "source_min": 0.25,
           "source_max": 0.25,
-          "n_sources": 2,
-          "eligible_sources": 2,
+          "n_sources": 1,
+          "eligible_sources": 1,
           "weight_coverage": 1.0,
           "origins": [
-            "ahmad_2018",
-            "nath_2021"
+            "ahmad_2018"
           ],
-          "flags": []
+          "flags": [
+            "single_source"
+          ]
         },
         {
           "lower": 5.0,
           "upper": 5.0,
           "lower_inclusive": true,
           "upper_inclusive": true,
-          "median_lower": 0.25,
-          "median_upper": 0.25,
-          "score": 0.25,
-          "source_min": 0.25,
+          "median_lower": 0.5,
+          "median_upper": 0.5,
+          "score": 0.5,
+          "source_min": 0.5,
           "source_max": 0.5,
-          "n_sources": 2,
-          "eligible_sources": 2,
+          "n_sources": 1,
+          "eligible_sources": 1,
           "weight_coverage": 1.0,
           "origins": [
-            "ahmad_2018",
-            "nath_2021"
+            "ahmad_2018"
           ],
           "flags": [
-            "source_disagreement"
+            "single_source"
           ]
         },
         {
           "lower": 5.0,
-          "upper": 6.0,
-          "lower_inclusive": false,
-          "upper_inclusive": false,
-          "median_lower": 0.25,
-          "median_upper": 0.25,
-          "score": 0.25,
-          "source_min": 0.25,
-          "source_max": 0.5,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "ahmad_2018",
-            "nath_2021"
-          ],
-          "flags": [
-            "source_disagreement"
-          ]
-        },
-        {
-          "lower": 6.0,
-          "upper": 6.0,
-          "lower_inclusive": true,
-          "upper_inclusive": true,
-          "median_lower": 0.5,
-          "median_upper": 0.5,
-          "score": 0.5,
-          "source_min": 0.5,
-          "source_max": 0.5,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "ahmad_2018",
-            "nath_2021"
-          ],
-          "flags": []
-        },
-        {
-          "lower": 6.0,
           "upper": 7.5,
           "lower_inclusive": false,
           "upper_inclusive": false,
@@ -1657,14 +1472,15 @@
           "score": 0.5,
           "source_min": 0.5,
           "source_max": 0.5,
-          "n_sources": 2,
-          "eligible_sources": 2,
+          "n_sources": 1,
+          "eligible_sources": 1,
           "weight_coverage": 1.0,
           "origins": [
-            "ahmad_2018",
-            "nath_2021"
+            "ahmad_2018"
           ],
-          "flags": []
+          "flags": [
+            "single_source"
+          ]
         },
         {
           "lower": 7.5,
@@ -1676,141 +1492,18 @@
           "score": 0.5,
           "source_min": 0.5,
           "source_max": 0.5,
-          "n_sources": 2,
-          "eligible_sources": 2,
+          "n_sources": 1,
+          "eligible_sources": 1,
           "weight_coverage": 1.0,
           "origins": [
-            "ahmad_2018",
-            "nath_2021"
+            "ahmad_2018"
           ],
-          "flags": []
+          "flags": [
+            "single_source"
+          ]
         },
         {
           "lower": 7.5,
-          "upper": 10.0,
-          "lower_inclusive": false,
-          "upper_inclusive": false,
-          "median_lower": 0.5,
-          "median_upper": 0.5,
-          "score": 0.5,
-          "source_min": 0.5,
-          "source_max": 0.75,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "ahmad_2018",
-            "nath_2021"
-          ],
-          "flags": [
-            "source_disagreement"
-          ]
-        },
-        {
-          "lower": 10.0,
-          "upper": 10.0,
-          "lower_inclusive": true,
-          "upper_inclusive": true,
-          "median_lower": 0.75,
-          "median_upper": 0.75,
-          "score": 0.75,
-          "source_min": 0.75,
-          "source_max": 0.75,
-          "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.368421052631579,
-          "origins": [
-            "ahmad_2018"
-          ],
-          "flags": [
-            "partial_coverage",
-            "single_source"
-          ]
-        },
-        {
-          "lower": 10.0,
-          "upper": 20.0,
-          "lower_inclusive": false,
-          "upper_inclusive": false,
-          "median_lower": 0.75,
-          "median_upper": 0.75,
-          "score": 0.75,
-          "source_min": 0.75,
-          "source_max": 0.75,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "ahmad_2018",
-            "nath_2021"
-          ],
-          "flags": []
-        },
-        {
-          "lower": 20.0,
-          "upper": 20.0,
-          "lower_inclusive": true,
-          "upper_inclusive": true,
-          "median_lower": 0.75,
-          "median_upper": 0.75,
-          "score": 0.75,
-          "source_min": 0.75,
-          "source_max": 0.75,
-          "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.368421052631579,
-          "origins": [
-            "ahmad_2018"
-          ],
-          "flags": [
-            "partial_coverage",
-            "single_source"
-          ]
-        },
-        {
-          "lower": 20.0,
-          "upper": 37.1,
-          "lower_inclusive": false,
-          "upper_inclusive": false,
-          "median_lower": 0.9,
-          "median_upper": 0.9,
-          "score": 0.9,
-          "source_min": 0.75,
-          "source_max": 0.9,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "ahmad_2018",
-            "nath_2021"
-          ],
-          "flags": [
-            "source_disagreement"
-          ]
-        },
-        {
-          "lower": 37.1,
-          "upper": 37.1,
-          "lower_inclusive": true,
-          "upper_inclusive": true,
-          "median_lower": 0.9,
-          "median_upper": 0.9,
-          "score": 0.9,
-          "source_min": 0.75,
-          "source_max": 0.9,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "ahmad_2018",
-            "nath_2021"
-          ],
-          "flags": [
-            "source_disagreement"
-          ]
-        },
-        {
-          "lower": 37.1,
           "upper": null,
           "lower_inclusive": false,
           "upper_inclusive": false,
@@ -1820,13 +1513,12 @@
           "source_min": 0.75,
           "source_max": 0.75,
           "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.368421052631579,
+          "eligible_sources": 1,
+          "weight_coverage": 1.0,
           "origins": [
             "ahmad_2018"
           ],
           "flags": [
-            "partial_coverage",
             "single_source"
           ]
         }
@@ -1840,13 +1532,12 @@
       "system_id": "agroforestry__planted_silvoarable",
       "context_id": "india_regional_models_scoping_transfer",
       "profile_ids": [
-        "ev_soil_ph_singh26",
-        "ev_t4_soilph_nath21_01"
+        "ev_soil_ph_singh26"
       ],
       "cells": [
         {
           "lower": null,
-          "upper": 4.6,
+          "upper": 5.5,
           "lower_inclusive": false,
           "upper_inclusive": false,
           "median_lower": null,
@@ -1855,7 +1546,7 @@
           "source_min": null,
           "source_max": null,
           "n_sources": 0,
-          "eligible_sources": 2,
+          "eligible_sources": 1,
           "weight_coverage": 0.0,
           "origins": [],
           "flags": [
@@ -1864,48 +1555,6 @@
           ]
         },
         {
-          "lower": 4.6,
-          "upper": 4.6,
-          "lower_inclusive": true,
-          "upper_inclusive": true,
-          "median_lower": 0.75,
-          "median_upper": 0.75,
-          "score": 0.75,
-          "source_min": 0.75,
-          "source_max": 0.75,
-          "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.5,
-          "origins": [
-            "nath_2021"
-          ],
-          "flags": [
-            "partial_coverage",
-            "single_source"
-          ]
-        },
-        {
-          "lower": 4.6,
-          "upper": 5.5,
-          "lower_inclusive": false,
-          "upper_inclusive": false,
-          "median_lower": 0.75,
-          "median_upper": 0.75,
-          "score": 0.75,
-          "source_min": 0.75,
-          "source_max": 0.75,
-          "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.5,
-          "origins": [
-            "nath_2021"
-          ],
-          "flags": [
-            "partial_coverage",
-            "single_source"
-          ]
-        },
-        {
           "lower": 5.5,
           "upper": 5.5,
           "lower_inclusive": true,
@@ -1916,13 +1565,12 @@
           "source_min": 0.75,
           "source_max": 0.75,
           "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.5,
+          "eligible_sources": 1,
+          "weight_coverage": 1.0,
           "origins": [
             "singh_2026"
           ],
           "flags": [
-            "partial_coverage",
             "single_source"
           ]
         },
@@ -1932,20 +1580,18 @@
           "lower_inclusive": false,
           "upper_inclusive": false,
           "median_lower": 0.75,
-          "median_upper": 0.9,
-          "score": null,
+          "median_upper": 0.75,
+          "score": 0.75,
           "source_min": 0.75,
-          "source_max": 0.9,
-          "n_sources": 2,
-          "eligible_sources": 2,
+          "source_max": 0.75,
+          "n_sources": 1,
+          "eligible_sources": 1,
           "weight_coverage": 1.0,
           "origins": [
-            "nath_2021",
             "singh_2026"
           ],
           "flags": [
-            "median_tie",
-            "source_disagreement"
+            "single_source"
           ]
         },
         {
@@ -1953,125 +1599,38 @@
           "upper": 6.5,
           "lower_inclusive": true,
           "upper_inclusive": true,
-          "median_lower": 0.9,
-          "median_upper": 0.9,
-          "score": 0.9,
-          "source_min": 0.9,
-          "source_max": 0.9,
-          "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.5,
-          "origins": [
-            "nath_2021"
-          ],
+          "median_lower": null,
+          "median_upper": null,
+          "score": null,
+          "source_min": null,
+          "source_max": null,
+          "n_sources": 0,
+          "eligible_sources": 1,
+          "weight_coverage": 0.0,
+          "origins": [],
           "flags": [
-            "partial_coverage",
-            "single_source"
+            "no_evidence_at_value",
+            "partial_coverage"
           ]
         },
         {
           "lower": 6.5,
-          "upper": 7.2,
-          "lower_inclusive": false,
-          "upper_inclusive": false,
-          "median_lower": 0.9,
-          "median_upper": 0.9,
-          "score": 0.9,
-          "source_min": 0.9,
-          "source_max": 0.9,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "nath_2021",
-            "singh_2026"
-          ],
-          "flags": []
-        },
-        {
-          "lower": 7.2,
-          "upper": 7.2,
-          "lower_inclusive": true,
-          "upper_inclusive": true,
-          "median_lower": 0.9,
-          "median_upper": 0.9,
-          "score": 0.9,
-          "source_min": 0.9,
-          "source_max": 0.9,
-          "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.5,
-          "origins": [
-            "singh_2026"
-          ],
-          "flags": [
-            "partial_coverage",
-            "single_source"
-          ]
-        },
-        {
-          "lower": 7.2,
-          "upper": 7.4,
-          "lower_inclusive": false,
-          "upper_inclusive": false,
-          "median_lower": 0.75,
-          "median_upper": 0.9,
-          "score": null,
-          "source_min": 0.75,
-          "source_max": 0.9,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "nath_2021",
-            "singh_2026"
-          ],
-          "flags": [
-            "median_tie",
-            "source_disagreement"
-          ]
-        },
-        {
-          "lower": 7.4,
-          "upper": 7.4,
-          "lower_inclusive": true,
-          "upper_inclusive": true,
-          "median_lower": 0.9,
-          "median_upper": 0.9,
-          "score": 0.9,
-          "source_min": 0.9,
-          "source_max": 0.9,
-          "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.5,
-          "origins": [
-            "singh_2026"
-          ],
-          "flags": [
-            "partial_coverage",
-            "single_source"
-          ]
-        },
-        {
-          "lower": 7.4,
           "upper": 7.5,
           "lower_inclusive": false,
           "upper_inclusive": false,
-          "median_lower": 0.5,
+          "median_lower": 0.9,
           "median_upper": 0.9,
-          "score": null,
-          "source_min": 0.5,
+          "score": 0.9,
+          "source_min": 0.9,
           "source_max": 0.9,
-          "n_sources": 2,
-          "eligible_sources": 2,
+          "n_sources": 1,
+          "eligible_sources": 1,
           "weight_coverage": 1.0,
           "origins": [
-            "nath_2021",
             "singh_2026"
           ],
           "flags": [
-            "median_tie",
-            "source_disagreement"
+            "single_source"
           ]
         },
         {
@@ -2079,62 +1638,22 @@
           "upper": 7.5,
           "lower_inclusive": true,
           "upper_inclusive": true,
-          "median_lower": 0.5,
-          "median_upper": 0.5,
-          "score": 0.5,
-          "source_min": 0.5,
-          "source_max": 0.5,
-          "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.5,
-          "origins": [
-            "nath_2021"
-          ],
+          "median_lower": null,
+          "median_upper": null,
+          "score": null,
+          "source_min": null,
+          "source_max": null,
+          "n_sources": 0,
+          "eligible_sources": 1,
+          "weight_coverage": 0.0,
+          "origins": [],
           "flags": [
-            "partial_coverage",
-            "single_source"
+            "no_evidence_at_value",
+            "partial_coverage"
           ]
         },
         {
           "lower": 7.5,
-          "upper": 7.6,
-          "lower_inclusive": false,
-          "upper_inclusive": false,
-          "median_lower": 0.5,
-          "median_upper": 0.5,
-          "score": 0.5,
-          "source_min": 0.5,
-          "source_max": 0.5,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "nath_2021",
-            "singh_2026"
-          ],
-          "flags": []
-        },
-        {
-          "lower": 7.6,
-          "upper": 7.6,
-          "lower_inclusive": true,
-          "upper_inclusive": true,
-          "median_lower": 0.5,
-          "median_upper": 0.5,
-          "score": 0.5,
-          "source_min": 0.5,
-          "source_max": 0.5,
-          "n_sources": 2,
-          "eligible_sources": 2,
-          "weight_coverage": 1.0,
-          "origins": [
-            "nath_2021",
-            "singh_2026"
-          ],
-          "flags": []
-        },
-        {
-          "lower": 7.6,
           "upper": 8.5,
           "lower_inclusive": false,
           "upper_inclusive": false,
@@ -2144,13 +1663,12 @@
           "source_min": 0.5,
           "source_max": 0.5,
           "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.5,
+          "eligible_sources": 1,
+          "weight_coverage": 1.0,
           "origins": [
             "singh_2026"
           ],
           "flags": [
-            "partial_coverage",
             "single_source"
           ]
         },
@@ -2165,13 +1683,12 @@
           "source_min": 0.5,
           "source_max": 0.5,
           "n_sources": 1,
-          "eligible_sources": 2,
-          "weight_coverage": 0.5,
+          "eligible_sources": 1,
+          "weight_coverage": 1.0,
           "origins": [
             "singh_2026"
           ],
           "flags": [
-            "partial_coverage",
             "single_source"
           ]
         },
@@ -2186,7 +1703,7 @@
           "source_min": null,
           "source_max": null,
           "n_sources": 0,
-          "eligible_sources": 2,
+          "eligible_sources": 1,
           "weight_coverage": 0.0,
           "origins": [],
           "flags": [
