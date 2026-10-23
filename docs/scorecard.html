@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NbS Comparison Scorecard</title>
+<meta name="description" content="Dashboard chips generated from the T3/T6 evidence: one chip per T5 theme, a hazard block and a count strip per NbS, with TTL priority weights (decisions D3–D7).">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0b0f19;
+    --bg-secondary: #131c2e;
+    --bg-tertiary: #1e293b;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-emerald: #10b981;
+    --accent-sky: #0ea5e9;
+    --accent-amber: #f59e0b;
+    --accent-rose: #f43f5e;
+    --pill-done-bg: rgba(16, 185, 129, 0.18);
+    --pill-done-fg: #34d399;
+    --pill-prog-bg: rgba(245, 158, 11, 0.18);
+    --pill-prog-fg: #fbbf24;
+    --pill-none-bg: rgba(148, 163, 184, 0.12);
+    --pill-none-fg: #94a3b8;
+    --t3-bg: #4a3010;
+    --t3-fg: #fbe3bd;
+    --t6-bg: #4a1a2c;
+    --t6-fg: #f8d3e0;
+    --font-outfit: 'Outfit', sans-serif;
+    --font-inter: 'Inter', sans-serif;
+    --radius-md: 8px;
+    --radius-sm: 4px;
+  }
+  /* Light theme: explicit toggle, or OS preference when no explicit choice */
+  :root[data-theme="light"] {
+    --bg-primary: #f8fcfb;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #f1f5f9;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --accent-emerald: #059669;
+    --accent-sky: #0284c7;
+    --accent-amber: #d97706;
+    --accent-rose: #e11d48;
+    --pill-done-bg: #e1f5ee;
+    --pill-done-fg: #085041;
+    --pill-prog-bg: #fdf0d5;
+    --pill-prog-fg: #8a4b06;
+    --pill-none-bg: #eef1f4;
+    --pill-none-fg: #64748b;
+    --t3-bg: #faeeda;
+    --t3-fg: #633806;
+    --t6-bg: #fbeaf0;
+    --t6-fg: #72243e;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg-primary: #f8fcfb;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --border-color: rgba(0, 0, 0, 0.08);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent-emerald: #059669;
+      --accent-sky: #0284c7;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --pill-done-bg: #e1f5ee;
+      --pill-done-fg: #085041;
+      --pill-prog-bg: #fdf0d5;
+      --pill-prog-fg: #8a4b06;
+      --pill-none-bg: #eef1f4;
+      --pill-none-fg: #64748b;
+      --t3-bg: #faeeda;
+      --t3-fg: #633806;
+      --t6-bg: #fbeaf0;
+      --t6-fg: #72243e;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background-color: var(--bg-primary); color: var(--text-primary); font-family: var(--font-inter); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+  a { color: var(--accent-sky); }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 0 16px 48px; }
+  header { padding: 18px 0 8px; display: flex; flex-wrap: wrap; gap: 12px; align-items: baseline; }
+  h1 { font-family: var(--font-outfit); font-size: 22px; }
+  .muted { color: var(--text-secondary); font-size: 12px; }
+  .btn { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 4px 10px; cursor: pointer; font: inherit; }
+  .card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 12px 14px; margin: 10px 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--text-secondary); }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; min-width: 760px; }
+  th, td { border-bottom: 1px solid var(--border-color); padding: 6px 8px; text-align: center; vertical-align: middle; }
+  th { font-size: 12px; color: var(--text-secondary); font-weight: 600; }
+  th.grp { border-bottom: 2px solid var(--border-color); }
+  td.nbs { text-align: left; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  td.nbs:hover { color: var(--accent-sky); }
+  .chip { display: inline-flex; align-items: center; gap: 4px; min-width: 44px; justify-content: center; padding: 2px 8px; border-radius: 12px; font-weight: 700; background: var(--pill-none-bg); color: var(--text-primary); border: 1px solid transparent; white-space: nowrap; }
+  .chip.pos { background: var(--pill-done-bg); color: var(--pill-done-fg); }
+  .chip.neg { background: rgba(244, 63, 94, 0.16); color: var(--accent-rose); }
+  .chip.dis { background: rgba(14, 165, 233, 0.14); color: var(--accent-sky); }
+  .chip.caution { border-color: var(--accent-amber); }
+  .chip .b { font-size: 10px; font-weight: 600; opacity: 0.85; }
+  .counts { font-size: 12px; color: var(--text-secondary); text-align: left; white-space: nowrap; }
+  .detail h2 { font-family: var(--font-outfit); font-size: 17px; margin-bottom: 6px; }
+  .detail td, .detail th { text-align: left; }
+  select { background: var(--bg-tertiary); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font: inherit; padding: 1px 4px; }
+  .evid { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+  code { font-size: 11px; color: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>NbS comparison scorecard</h1>
+    <span class="muted" id="stamp"></span>
+    <a href="index.html" class="muted">← site home</a>
+    <button class="btn" id="theme-toggle" type="button">◐ Theme</button>
+  </header>
+  <div class="card">
+    <p class="muted" id="rule"></p>
+    <div class="legend" id="legend"></div>
+  </div>
+  <div class="card scroll"><table id="matrix"></table></div>
+  <div class="card detail" id="detail"><p class="muted">Click an NbS to see its priorities, set TTL priority levels (High / Medium / Low) and watch the theme chips respond.</p></div>
+</div>
+<script>
+(function () {
+  'use strict';
+  var D = null, TTL = {}, OPEN = '';
+  var THEMES = ['climate_hazard', 'nbs_response', 'people_production', 'equity_inclusion'];
+  var THEME_LBL = { climate_hazard: 'Climate hazard', nbs_response: 'NbS response', people_production: 'People & production', equity_inclusion: 'Equity & inclusion' };
+  var CONF = ['very_low', 'low', 'medium', 'high', 'very_high'];
+  var GLYPH = { '2': '++', '1': '+', '0': '0', '-1': '−', '-2': '−−' };
+  function el(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function words(s) { return String(s || '').replace(/_/g, ' '); }
+  function chipHtml(c, title) {
+    var cls = c.rank > 0 ? 'pos' : c.rank < 0 ? 'neg' : c.glyph === '±' ? 'dis' : '';
+    var t = title || ((c.label || words(c['class'])) + (c.confidence ? ' · ' + words(c.confidence) + ' confidence' : '') + (c.caution ? ' · CAUTION: measured harm for some adopters' : ''));
+    return '<span class="chip ' + cls + (c.caution ? ' caution' : '') + '" title="' + esc(t) + '">' + esc(c.glyph) + (c.badge ? ' <span class="b">' + esc(c.badge) + '</span>' : '') + '</span>';
+  }
+  // D4 — mirrors runtime/scorecard.theme_chip (TTL-weighted median, >= medium, dissent >= 1/3 → ±)
+  function themeChip(pris) {
+    var w = D.meta.ttl_weights;
+    var assessed = pris.filter(function (p) { return p['class'] !== 'not_assessed'; });
+    var setting = assessed.filter(function (p) { return p['class'] !== 'data_deficient' && CONF.indexOf(p.confidence) >= CONF.indexOf('medium'); });
+    if (!assessed.length) return { glyph: 'n/a', rank: null, label: 'Not assessed' };
+    if (!setting.length) return { glyph: '?', rank: null, label: 'Rows exist but none reaches medium confidence' };
+    var pos = 0, neg = 0, cw = 0, pairs = [];
+    setting.forEach(function (p) {
+      var x = w[p.ttl_level] || 2;
+      if (p.glyph === '±') cw += x; else if (p.rank > 0) pos += x; else if (p.rank < 0) neg += x;
+      if (p.rank !== null && p.rank !== undefined) pairs.push([p.rank, x]);
+    });
+    var weakest = setting.map(function (p) { return p.confidence; }).sort(function (a, b) { return CONF.indexOf(a) - CONF.indexOf(b); })[0];
+    var out = { confidence: weakest, badge: D.meta.badges[weakest] || '', caution: setting.some(function (p) { return p.caution; }) };
+    var base = pos + neg + cw;
+    if (base && (cw + Math.min(pos, neg)) / base >= 1 / 3) { out.glyph = '±'; out.rank = null; out.label = 'Rows point in different directions'; return out; }
+    if (!pairs.length) { out.glyph = '0'; out.rank = 0; return out; }
+    pairs.sort(function (a, b) { return a[0] - b[0]; });
+    var half = pairs.reduce(function (s, q) { return s + q[1]; }, 0) / 2, run = 0, r = pairs[pairs.length - 1][0];
+    for (var i = 0; i < pairs.length; i++) { run += pairs[i][1]; if (run >= half) { r = pairs[i][0]; break; } }
+    out.rank = r; out.glyph = GLYPH[String(r)]; out.label = 'TTL-weighted median of ' + setting.length + ' row(s)';
+    return out;
+  }
+  function prisFor(nbs) {
+    return D.nbs[nbs].priorities.map(function (p) { var q = Object.assign({}, p); q.ttl_level = (TTL[nbs] || {})[p.priority] || p.ttl_level; return q; });
+  }
+  function render() {
+    var hz = (D.nbs[Object.keys(D.nbs)[0]] || { hazards: [] }).hazards.map(function (h) { return h.hazard; });
+    var h = '<tr><th class="grp"></th><th class="grp" colspan="' + THEMES.length + '">T6 themes (one chip each, no NbS number)</th><th class="grp" colspan="' + hz.length + '">T3 hazards (losses when the hazard hits)</th><th class="grp">Count strip</th></tr>';
+    h += '<tr><th></th>' + THEMES.map(function (t) { return '<th>' + esc(THEME_LBL[t]) + '</th>'; }).join('') + hz.map(function (x) { return '<th>' + esc(words(x)) + '</th>'; }).join('') + '<th></th></tr>';
+    Object.keys(D.nbs).forEach(function (n) {
+      var v = D.nbs[n], pris = prisFor(n);
+      h += '<tr><td class="nbs" data-nbs="' + esc(n) + '">' + esc(words(n)) + '</td>';
+      THEMES.forEach(function (t) {
+        h += '<td>' + chipHtml(themeChip(pris.filter(function (p) { return p.theme === t; }))) + '</td>';
+      });
+      v.hazards.forEach(function (c) { h += '<td>' + chipHtml(c) + '</td>'; });
+      var c = v.counts, bits = [];
+      [['benefit', 'benefit'], ['harm', 'harm'], ['no_effect', 'no effect'], ['conflicting_evidence', 'disagree'], ['data_deficient', 'too thin'], ['not_assessed', 'not assessed']].forEach(function (k) { if (c[k[0]]) bits.push(c[k[0]] + ' ' + k[1]); });
+      h += '<td class="counts">' + esc(bits.join(' · ')) + '</td></tr>';
+    });
+    el('matrix').innerHTML = h;
+    if (OPEN) renderDetail(OPEN);
+  }
+  function renderDetail(n) {
+    OPEN = n;
+    var v = D.nbs[n], pris = prisFor(n);
+    var rows = pris.map(function (p) {
+      var opts = ['high', 'medium', 'low'].map(function (l) { return '<option value="' + l + '"' + (p.ttl_level === l ? ' selected' : '') + '>' + l + '</option>'; }).join('');
+      return '<tr><td>' + esc(p.label || words(p.priority)) + '</td><td>' + esc(THEME_LBL[p.theme] || words(p.theme)) + '</td><td>' + chipHtml(p) + '</td><td>' +
+        esc(p.label && p['class'] ? words(p['class']) : '') + '</td><td><select data-p="' + esc(p.priority) + '">' + opts + '</select></td><td><code>' + esc(p.record_id) + '</code></td></tr>';
+    }).join('');
+    el('detail').innerHTML = '<h2>' + esc(words(n)) + '</h2><div class="scroll"><table><tr><th>Priority</th><th>Theme</th><th>Chip</th><th>Class</th><th>TTL level</th><th>Row</th></tr>' + rows + '</table></div>' +
+      '<p class="evid"><b>Evidenced priorities</b> (the optional hotspot-map filter, D5: a benefit at medium confidence or better): ' + esc(v.evidenced_priorities.map(words).join(', ') || 'none') + '</p>';
+    Array.prototype.forEach.call(el('detail').querySelectorAll('select[data-p]'), function (s) {
+      s.addEventListener('change', function () { TTL[n] = TTL[n] || {}; TTL[n][s.getAttribute('data-p')] = s.value; render(); });
+    });
+  }
+  function legend() {
+    var seen = {}, items = [];
+    D.meta.scale.forEach(function (r) { if (!seen[r.glyph]) { seen[r.glyph] = 1; items.push('<span><b>' + esc(r.glyph) + '</b> ' + esc(r.label) + '</span>'); } });
+    items.push('<span><b>HIGH / MED / LOW</b> confidence badge</span>', '<span><span class="chip caution">+</span> amber outline = CAUTION: measured harm for some adopters</span>');
+    el('legend').innerHTML = items.join('');
+    el('rule').textContent = 'Theme chip: ' + D.meta.theme_rule + '. Decisions: ' + D.meta.decisions + '.';
+    el('stamp').textContent = 'data as of ' + String((D.build || {}).timestamp || '').slice(0, 10) + ' · ' + ((D.build || {}).git_commit || '');
+  }
+  el('matrix').addEventListener('click', function (e) { var t = e.target.closest ? e.target.closest('td.nbs') : null; if (t) renderDetail(t.getAttribute('data-nbs')); });
+  el('theme-toggle').addEventListener('click', function () {
+    var r = document.documentElement, cur = r.getAttribute('data-theme') || ((window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark');
+    var next = cur === 'light' ? 'dark' : 'light'; r.setAttribute('data-theme', next);
+    try { localStorage.setItem('scorecardTheme', next); } catch (x) { /* ignore */ }
+  });
+  try { var sv = localStorage.getItem('scorecardTheme'); if (sv) document.documentElement.setAttribute('data-theme', sv); } catch (x) { /* ignore */ }
+  fetch('scorecard.json', { cache: 'no-cache' }).then(function (r) { return r.json(); }).then(function (d) { D = d; legend(); render(); })
+    .catch(function (e) { el('matrix').innerHTML = '<tr><td>Could not load scorecard.json: ' + esc(e.message) + '</td></tr>'; });
+})();
+</script>
+</body>
+</html>

@@ -688,6 +688,10 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     changed.extend(review_exports.write_decisions(check=check))
 
     changed.extend(table_progress.write(schema_root, check=check))
+    # NbS comparison scorecard (decisions D3–D7) → docs/scorecard.json
+    from nbs_ruralscan.runtime import scorecard
+
+    changed.extend(scorecard.write(schema_root, check=check))
     return changed
 
 
