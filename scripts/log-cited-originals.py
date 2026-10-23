@@ -281,7 +281,9 @@ def main(argv: list[str] | None = None) -> int:
     ]
     out = Path(a.out)
     with out.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols, extrasaction="ignore")
+        w = csv.DictWriter(
+            f, fieldnames=cols, extrasaction="ignore", lineterminator="\n"
+        )
         w.writeheader()
         w.writerows(rows)
     by: dict[str, int] = defaultdict(int)

@@ -134,7 +134,7 @@ def main(argv: list[str] | None = None) -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     out_rows.sort(key=lambda x: (-x["n_pivotal"], x["record_id"]))
     with out.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=list(out_rows[0]))
+        w = csv.DictWriter(f, fieldnames=list(out_rows[0]), lineterminator="\n")
         w.writeheader()
         w.writerows(out_rows)
     print(f"{len(out_rows)} roll-up rows -> {out}")
