@@ -73,8 +73,14 @@ All decisions D1–D8 are now taken (see below).
 - **D6 (b):** five glyphs (++ + 0 − −−) and three badges (HIGH / MED / LOW), plus ± (studies
   disagree), ? (not enough evidence) and n/a (not assessed); CAUTION is the chip colour, set
   when a row lists measured harm for some adopters.
-- **D7 (a):** comparison rows are generated from the T5 priorities grouped by theme, plus a T3
-  hazard block.
+- **D7 — revised the same day (Pete):** the first build grouped the comparison chips by the T5
+  themes. T5 is the *need* side (the hotspot layers), so the view drifted from the mockup and the
+  TOR. Comparison rows are now **benefit rows** matching the mockup and the TOR benefit streams
+  (`schema/lookups/scorecard_rows.csv`), in four groups: climate resilience (T3 hazards only, so
+  nothing is counted twice) · land & water · nature & carbon · livelihoods; gender and IPLC lands
+  are shown as context flags, never scored; agricultural dependency and the T6 hazard rows are
+  not shown. **Food security is split from rural income**: a new T5 priority `food_insecurity`
+  takes the food-security evidence that used to feed `rural_poverty`.
 
 Built: `src/nbs_ruralscan/runtime/scorecard.py` → `docs/scorecard.json` (every schema build),
 viewable at `docs/scorecard.html`. The scale, badges and TTL weights live in

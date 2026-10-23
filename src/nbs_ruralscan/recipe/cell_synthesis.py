@@ -1227,7 +1227,7 @@ def _source_mix(contribs: list[_Contrib]) -> dict[str, Any]:
 # REDUCES it; for a stock / potential target a benefit INCREASES it. Caught by the riparian
 # prose review (2026-10-01): "buffer increases soil_erosion_risk" meant the opposite.
 _CONCERN_TARGET = re.compile(
-    r"(_hazard|_risk|_gap|_stress|_poverty|_inequity|_dependency|_exposure)$"
+    r"(_hazard|_risk|_gap|_stress|_poverty|_inequity|_insecurity|_dependency|_exposure)$"
 )
 
 

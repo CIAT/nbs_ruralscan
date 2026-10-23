@@ -28,7 +28,7 @@ Five themes, ordered by what they answer:
 |---|---|---|
 | **`climate_hazard`** | Where is the climate exposure highest? | drought · flood · heat-stress |
 | **`nbs_response`** | Where would the NbS *do* the most? | soil erosion risk · carbon sequestration potential · biodiversity priority |
-| **`people_production`** | Where are the people and the productive systems? | water stress · rural poverty · production gap · agricultural dependency |
+| **`people_production`** | Where are the people and the productive systems? | water stress · rural poverty · food insecurity · production gap · agricultural dependency |
 | **`equity_inclusion`** | Whose disadvantage are we addressing? | gender inequity (national flag) — IPLC/marginalisation layers requires_upload |
 | **`context`** | What's the descriptive backdrop (not in MCDA)? | rural population · market access · farm size · ag-production value |
 
@@ -71,6 +71,7 @@ apply to descriptors.
 | `water_quality_risk` | nbs_response | higher → more concern | **added 2026-10-01 (Pete)** — the riparian T3/T6 pilot left 31 effect units (`nutrient_removal`, `stream_temperature`) with no T5 target; water quality is the core riparian/wetland service. No scoping-grade global layer: BIND `requires_upload` or a nutrient/sediment-export proxy. XW routes: `nutrient_removal` direct, `stream_temperature` + `sediment_retention` component (0.7). `nbs_response` default weights rebalanced to 0.25 × 4 |
 | `water_stress` | people_production | higher → more concern | composite (Aqueduct or ET-deficit) |
 | `rural_poverty` | people_production | higher → more concern | WB PIP subnational |
+| `food_insecurity` | people_production | higher → more concern | **added 2026-10-23 (Pete)** — split from `rural_poverty`: food security is its own benefit stream (TOR, mockup), not a poverty proxy. XW: `food_security` direct. Layer choice deferred (IPC phase / FIES; BIND `requires_upload`). `people_production` default weights rebalanced to 0.2 × 5 |
 | `production_gap` | people_production | higher → more concern | per-farming-system metric via BIND (yield gap / NPP gap / mixed) |
 | `agricultural_dependency` | people_production | higher → more concern | share of livelihoods in ag |
 | `gender_inequity` | equity_inclusion | higher → more concern | national flag; subnational requires_upload |
