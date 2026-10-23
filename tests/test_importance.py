@@ -257,3 +257,51 @@ def test_real_candidate_alternatives_and_stability():
     )
     assert results["Haile alternative"][0]["candidate_weight"] == pytest.approx(30 / 42)
     assert results["Without Singh"][0]["candidate_weight"] < 0.51
+
+
+def test_nath_two_level_consolidation_preserves_weights_and_paths():
+    import csv
+    from pathlib import Path
+    from nbs_ruralscan.recipe.importance import (
+        load_weight_models,
+        consolidate_importance,
+    )
+
+    audit = (
+        Path(__file__).resolve().parents[1]
+        / "pipeline/t4_audit/agroforestry/importance_2026-10-21"
+    )
+    models = load_weight_models(audit / "source_weight_trees.csv")
+    result = compare_importance(
+        next(m for m in models if m["source_id"] == "nath_2021")
+    )
+    original = copy.deepcopy(result)
+    mappings = list(csv.DictReader((audit / "nath_concept_mapping.csv").open()))
+    rows = consolidate_importance(result, mappings)
+    assert result == original
+    assert len(rows) == 19
+    assert sum(r["whole_model_share"] for r in rows) == pytest.approx(1)
+    soil = [r for r in rows if r["theme"] == "soil"]
+    assert len(soil) == 7
+    assert sum(r["whole_model_share"] for r in soil) == pytest.approx(0.2)
+    ph = next(r for r in soil if r["variable"] == "soil_ph")
+    assert ph["whole_model_share"] == pytest.approx(0.04)
+    assert ph["theme_share"] == pytest.approx(0.2)
+    assert ph["flat_variable_ratio"] == pytest.approx(0.76)
+    assert len(ph["source_paths"]) == 4
+    assert {p["variable"] for p in ph["source_paths"]} == {"soil_ph", "soil_ph_subsoil"}
+    assert sum(len(r["source_paths"]) for r in rows) == 26
+    for bad in (mappings[:-1], mappings + [mappings[0]]):
+        with pytest.raises(ValueError, match="exactly once"):
+            consolidate_importance(result, bad)
+
+
+def test_consolidation_preserves_distinct_scopes():
+    from nbs_ruralscan.recipe.importance import consolidate_importance
+
+    result = compare_importance(model([leaf("a", 1, "wet"), leaf("b", 1, "dry")]))
+    rows = consolidate_importance(
+        result, [dict(node_id=n, theme="soil", concept="ph") for n in ("a", "b")]
+    )
+    assert len(rows) == 2
+    assert {r["scope"] for r in rows} == {"wet", "dry"}
