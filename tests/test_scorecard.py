@@ -71,14 +71,50 @@ def test_theme_without_setting_rows():
     assert S.theme_chip([na], [2], SC)["glyph"] == "n/a"
 
 
-def test_live_build_has_no_nbs_number_and_covers_all_priorities():
+def test_live_build_uses_benefit_rows_and_never_scores_flags():
     b = S.build(ROOT / "schema")
-    assert b["nbs"]
+    rows = S.load_rows(ROOT / "schema")
+    assert {r["group"] for r in rows} >= {
+        "climate_resilience",
+        "land_water",
+        "nature_carbon",
+        "livelihoods",
+    }
+    # food security and rural income are separate rows (Pete 2026-10-23)
+    keys = {r["source_key"] for r in rows}
+    assert {"food_insecurity", "rural_poverty"} <= keys
+    # T6 hazard priorities duplicate T3 and agricultural_dependency can never be evidenced
+    assert not keys & {
+        "drought_hazard",
+        "flood_hazard",
+        "heat_stress_hazard",
+        "agricultural_dependency",
+    }
     for v in b["nbs"].values():
         assert "score" not in v  # D3: no NbS-level number
-        assert v["themes"] and v["hazards"]
-        assert sum(v["counts"].values()) == len(v["priorities"])
-        assert all(
-            p in [q["priority"] for q in v["priorities"]]
-            for p in v["evidenced_priorities"]
+        assert "context_flags" not in v["groups"]
+        assert sum(v["counts"].values()) == sum(1 for r in v["rows"] if r["scored"])
+
+
+def test_food_security_routes_to_food_insecurity():
+    import csv
+
+    xw = list(
+        csv.DictReader(
+            (ROOT / "schema/registers/XW_target_crosswalk.csv").open(encoding="utf-8")
         )
+    )
+    t6 = [
+        x
+        for x in xw
+        if x["ev_variable"] == "food_security" and x["target_table"] == "T6"
+    ]
+    assert t6 and all(x["target_key"] == "food_insecurity" for x in t6)
+
+
+def test_row_label_is_the_benefit_name_not_the_chip_label():
+    b = S.build(ROOT / "schema")
+    v = next(iter(b["nbs"].values()))
+    labels = {r["row_id"]: r["label"] for r in v["rows"]}
+    assert labels["gender_flag"] == "Gender inequity"
+    assert labels["food_security"] == "Food security"

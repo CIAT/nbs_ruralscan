@@ -128,14 +128,13 @@
     <div class="legend" id="legend"></div>
   </div>
   <div class="card scroll"><table id="matrix"></table></div>
-  <div class="card detail" id="detail"><p class="muted">Click an NbS to see its priorities, set TTL priority levels (High / Medium / Low) and watch the theme chips respond.</p></div>
+  <div class="card detail" id="detail"><p class="muted">Click an NbS to see its benefit rows, set TTL levels (High / Medium / Low) and watch the group chips respond.</p></div>
 </div>
 <script>
 (function () {
   'use strict';
   var D = null, TTL = {}, OPEN = '';
-  var THEMES = ['climate_hazard', 'nbs_response', 'people_production', 'equity_inclusion'];
-  var THEME_LBL = { climate_hazard: 'Climate hazard', nbs_response: 'NbS response', people_production: 'People & production', equity_inclusion: 'Equity & inclusion' };
+  var GROUPS = ['climate_resilience', 'land_water', 'nature_carbon', 'livelihoods'];
   var CONF = ['very_low', 'low', 'medium', 'high', 'very_high'];
   var GLYPH = { '2': '++', '1': '+', '0': '0', '-1': '−', '-2': '−−' };
   function el(id) { return document.getElementById(id); }
@@ -170,20 +169,22 @@
     out.rank = r; out.glyph = GLYPH[String(r)]; out.label = 'TTL-weighted median of ' + setting.length + ' row(s)';
     return out;
   }
-  function prisFor(nbs) {
-    return D.nbs[nbs].priorities.map(function (p) { var q = Object.assign({}, p); q.ttl_level = (TTL[nbs] || {})[p.priority] || p.ttl_level; return q; });
+  function rowsFor(nbs) {
+    return D.nbs[nbs].rows.map(function (p) { var q = Object.assign({}, p); q.ttl_level = (TTL[nbs] || {})[p.row_id] || p.ttl_level; return q; });
+  }
+  function groupLabel(g) {
+    var n = Object.keys(D.nbs)[0]; var x = n && D.nbs[n].groups[g]; return x ? x.label : words(g);
   }
   function render() {
-    var hz = (D.nbs[Object.keys(D.nbs)[0]] || { hazards: [] }).hazards.map(function (h) { return h.hazard; });
-    var h = '<tr><th class="grp"></th><th class="grp" colspan="' + THEMES.length + '">T6 themes (one chip each, no NbS number)</th><th class="grp" colspan="' + hz.length + '">T3 hazards (losses when the hazard hits)</th><th class="grp">Count strip</th></tr>';
-    h += '<tr><th></th>' + THEMES.map(function (t) { return '<th>' + esc(THEME_LBL[t]) + '</th>'; }).join('') + hz.map(function (x) { return '<th>' + esc(words(x)) + '</th>'; }).join('') + '<th></th></tr>';
+    var h = '<tr><th class="grp"></th><th class="grp" colspan="' + GROUPS.length + '">Benefit groups (one chip each · no NbS-level number)</th><th class="grp">Context flags (not scored)</th><th class="grp">Count strip</th></tr>';
+    h += '<tr><th></th>' + GROUPS.map(function (g) { return '<th>' + esc(groupLabel(g)) + '</th>'; }).join('') + '<th>gender · IPLC</th><th></th></tr>';
     Object.keys(D.nbs).forEach(function (n) {
-      var v = D.nbs[n], pris = prisFor(n);
+      var v = D.nbs[n], rows = rowsFor(n);
       h += '<tr><td class="nbs" data-nbs="' + esc(n) + '">' + esc(words(n)) + '</td>';
-      THEMES.forEach(function (t) {
-        h += '<td>' + chipHtml(themeChip(pris.filter(function (p) { return p.theme === t; }))) + '</td>';
+      GROUPS.forEach(function (g) {
+        h += '<td>' + chipHtml(themeChip(rows.filter(function (p) { return p.scored && p.group === g; }))) + '</td>';
       });
-      v.hazards.forEach(function (c) { h += '<td>' + chipHtml(c) + '</td>'; });
+      h += '<td>' + rows.filter(function (p) { return !p.scored; }).map(function (p) { return chipHtml(p, p.label + ': ' + (p.class_label || words(p['class']))); }).join(' ') + '</td>';
       var c = v.counts, bits = [];
       [['benefit', 'benefit'], ['harm', 'harm'], ['no_effect', 'no effect'], ['conflicting_evidence', 'disagree'], ['data_deficient', 'too thin'], ['not_assessed', 'not assessed']].forEach(function (k) { if (c[k[0]]) bits.push(c[k[0]] + ' ' + k[1]); });
       h += '<td class="counts">' + esc(bits.join(' · ')) + '</td></tr>';
@@ -193,14 +194,15 @@
   }
   function renderDetail(n) {
     OPEN = n;
-    var v = D.nbs[n], pris = prisFor(n);
-    var rows = pris.map(function (p) {
+    var v = D.nbs[n], rows = rowsFor(n);
+    var body = rows.map(function (p) {
       var opts = ['high', 'medium', 'low'].map(function (l) { return '<option value="' + l + '"' + (p.ttl_level === l ? ' selected' : '') + '>' + l + '</option>'; }).join('');
-      return '<tr><td>' + esc(p.label || words(p.priority)) + '</td><td>' + esc(THEME_LBL[p.theme] || words(p.theme)) + '</td><td>' + chipHtml(p) + '</td><td>' +
-        esc(p.label && p['class'] ? words(p['class']) : '') + '</td><td><select data-p="' + esc(p.priority) + '">' + opts + '</select></td><td><code>' + esc(p.record_id) + '</code></td></tr>';
+      return '<tr><td>' + esc(p.label) + '</td><td>' + esc(groupLabel(p.group)) + '</td><td>' + chipHtml(p) + '</td><td>' +
+        esc(p.class_label || words(p['class'])) + '</td><td>' + (p.scored ? '<select data-p="' + esc(p.row_id) + '">' + opts + '</select>' : '<span class="muted">flag only</span>') +
+        '</td><td><code>' + esc(p.source) + '</code></td></tr>';
     }).join('');
-    el('detail').innerHTML = '<h2>' + esc(words(n)) + '</h2><div class="scroll"><table><tr><th>Priority</th><th>Theme</th><th>Chip</th><th>Class</th><th>TTL level</th><th>Row</th></tr>' + rows + '</table></div>' +
-      '<p class="evid"><b>Evidenced priorities</b> (the optional hotspot-map filter, D5: a benefit at medium confidence or better): ' + esc(v.evidenced_priorities.map(words).join(', ') || 'none') + '</p>';
+    el('detail').innerHTML = '<h2>' + esc(words(n)) + '</h2><div class="scroll"><table><tr><th>Benefit row</th><th>Group</th><th>Chip</th><th>What it says</th><th>TTL level</th><th>Source</th></tr>' + body + '</table></div>' +
+      '<p class="evid"><b>Evidenced priorities</b> (the optional hotspot-map filter, D5: T5 need layers this NbS is evidenced to improve at medium confidence or better): ' + esc(v.evidenced_priorities.map(words).join(', ') || 'none') + '</p>';
     Array.prototype.forEach.call(el('detail').querySelectorAll('select[data-p]'), function (s) {
       s.addEventListener('change', function () { TTL[n] = TTL[n] || {}; TTL[n][s.getAttribute('data-p')] = s.value; render(); });
     });
@@ -210,7 +212,7 @@
     D.meta.scale.forEach(function (r) { if (!seen[r.glyph]) { seen[r.glyph] = 1; items.push('<span><b>' + esc(r.glyph) + '</b> ' + esc(r.label) + '</span>'); } });
     items.push('<span><b>HIGH / MED / LOW</b> confidence badge</span>', '<span><span class="chip caution">+</span> amber outline = CAUTION: measured harm for some adopters</span>');
     el('legend').innerHTML = items.join('');
-    el('rule').textContent = 'Theme chip: ' + D.meta.theme_rule + '. Decisions: ' + D.meta.decisions + '.';
+    el('rule').textContent = 'Group chip: ' + D.meta.group_rule + '. Decisions: ' + D.meta.decisions + '.';
     el('stamp').textContent = 'data as of ' + String((D.build || {}).timestamp || '').slice(0, 10) + ' · ' + ((D.build || {}).git_commit || '');
   }
   el('matrix').addEventListener('click', function (e) { var t = e.target.closest ? e.target.closest('td.nbs') : null; if (t) renderDetail(t.getAttribute('data-nbs')); });
