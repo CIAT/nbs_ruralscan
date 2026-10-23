@@ -47,7 +47,11 @@ def _placements() -> Counter:
     """How many generated rows each evidence_id sits in (its reach)."""
     c: Counter = Counter()
     for d in sorted(RECIPES.glob("*")):
-        for stem in ("T3_nbs_hazard_farming", "T6_nbs_scorecard"):
+        for stem in (
+            "T3_nbs_hazard_farming",
+            "T6_nbs_scorecard",
+            "T6E_economic_profile",
+        ):
             f = d / f"{stem}.csv"
             if not f.exists():
                 continue

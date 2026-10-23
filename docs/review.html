@@ -301,7 +301,7 @@
         Not T3: an ordinary dry season, general wind-speed reduction with no storm, or a benefit with no hazard in it.</span></div>
       <div><b>T6: scorecard rows.</b> Does this NbS move a TTL priority (poverty, production gap, biodiversity, carbon, water, gender, cost)?
         <br>Evidence must show: the practice → a measured change in <i>that</i> outcome versus a comparator, in normal conditions; no hazard needed.
-        <br><span class="muted">Cost rows are ordinal (big or small for the context), per hectare, beneficiary or tCO2e.</span></div>
+        <br><span class="muted">Cost rows now sit in a separate <b>T6E economic profile</b> (ordinal: big or small for the context, per hectare or beneficiary); they feed the economic profiles, not the scorecard.</span></div>
     </div>
     <p class="muted primer-both">Both: the practice is named in the source · a bundled programme counts only by its share · measured findings outweigh ratings and second-hand citations.</p>
   </details>
@@ -698,6 +698,8 @@
 
   function rowAsk(u) {
     var t = u.target || {}, nb = esc(u.nbs_id || 'this NbS').replace(/_/g, ' ');
+    if (u.table === 'T6E') return '<b>This row asks:</b> what does ' + nb + ' cost, as <b>' + esc(t.priority).replace(/_/g, ' ') +
+      '</b>? <span class="muted">Evidence should show a cost figure with its denominator and context; the class is big or small for that context (economic profile, not the scorecard).</span>';
     if (u.table === 'T6') return '<b>This row asks:</b> does ' + nb + ' change <b>' + esc(t.priority).replace(/_/g, ' ') +
       '</b>? <span class="muted">Evidence should show the practice → a measured change in this outcome versus a comparator.</span>';
     var hz = esc(t.hazard).replace(/_/g, ' '), fs = esc(t.farming_system).replace(/_/g, ' ');
@@ -892,7 +894,7 @@
       nHeld += (h.units || []).length;
       return '<p class="held-reason">' + esc(h.reason) + '</p><ul class="ev-list">' + (h.units || []).map(rowUnitHtml).join('') + '</ul>';
     }).join('');
-    var target = u.table === 'T6' ? 'priority: ' + esc(u.target && u.target.priority)
+    var target = (u.table === 'T6' || u.table === 'T6E') ? (u.table === 'T6E' ? 'indicator: ' : 'priority: ') + esc(u.target && u.target.priority)
       : 'hazard: ' + esc(u.target && u.target.hazard) + ' <span class="sep">·</span> farming system: ' + esc(u.target && u.target.farming_system) +
         (u.target && present(u.target.risk_role) ? ' <span class="sep">·</span> ' + vterm('risk_role', u.target.risk_role) : '');
     var g = u.at_a_glance || {};

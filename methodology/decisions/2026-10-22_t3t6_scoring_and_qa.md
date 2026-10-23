@@ -60,7 +60,19 @@ high-leverage units).
   - Row review: `review.html?batch=af_rollups_2026-10-22`. The 46 agroforestry roll-up rows, each
     with its class, confidence, prose, family vote and evidence.
 
-D3–D8 (the scoring and dashboard decisions) are still open.
+D3–D7 (the scoring and dashboard decisions) are still open.
+
+## Decided 23 October (Pete's row review)
+
+- **D8 — economics rows:** cost rows leave the T6 scorecard for a separate **T6E economic
+  profile** (same columns), which feeds the economic / econometric profiles. Cost per tCO2e is
+  feasibility-level and is no longer generated. Cost reduction is used only as a farm-level
+  production-cost saving (the route to profit and so to poverty).
+- **Frost is out of T3 for every NbS.** Frost-tagged units stay in the register and feed T6.
+- **Asset threat × drought** now says it is an establishment-phase risk first (the phase a
+  project funds), while noting that mature cocoa and shade trees also died in the El Niño drought.
+- **Catchment water yield** now says its evidence is from drylands only.
+- **Asset threat × heat stress** is data-deficient: the evidence is too thin to say.
 
 ## Part 1 — Human QA/QC for agroforestry
 

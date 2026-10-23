@@ -32,7 +32,12 @@ from nbs_ruralscan.schema_tools.generate import _csv_to_rows
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = ROOT / "schema"
 REG = SCHEMA / "registers"
-TABLES = (("T3", "T3_nbs_hazard_farming"), ("T6", "T6_nbs_scorecard"))
+TABLES = (
+    ("T3", "T3_nbs_hazard_farming"),
+    ("T6", "T6_nbs_scorecard"),
+    # cost rows: same columns as T6, so they take the T6 prose fields
+    ("T6", "T6E_economic_profile"),
+)
 _JSON_COLS = {
     "justification",
     "applicability",

@@ -8,7 +8,10 @@ evidence to, and writes:
 
 * `schema/recipes/<nbs_id>/T3_nbs_hazard_farming.csv` — mitigation rows (per hazard ×
   farming_system) + asset-threat rows (per hazard), each as global + scope + family rows
-* `schema/recipes/<nbs_id>/T6_nbs_scorecard.csv` — effect rows (per T5 priority) + economic rows
+* `schema/recipes/<nbs_id>/T6_nbs_scorecard.csv` — effect rows (per T5 priority)
+* `schema/recipes/<nbs_id>/T6E_economic_profile.csv` — the cost / economic-indicator rows
+  (same columns as T6; Pete 2026-10-23: cost data feeds the economic profile, not the
+  scorecard; cost per tCO2e is feasibility-level and not generated)
 * `schema/recipes/<nbs_id>/T3T6_synthesis_report.json` — the run report (used units, dropped,
   collapsed echoes, unmapped variables, excluded economics, incomplete asset weights)
 
@@ -329,9 +332,23 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
             ):
                 r["asset_risk_weight"] = weights[r["hazard_type"]]
 
+    # Pete 2026-10-23 (row review D8): cost rows are not scorecard effects — they move to the
+    # NbS economic profile (T6E, feeds the econometric / economic-archetype profiles), and
+    # cost per tCO2e is a feasibility-level figure, not generated at scoping grade
+    econ = [r for r in t6_rows if r.get("variable_type") == "economic_indicator"]
+    report["dropped_economics"] = sorted(
+        {
+            r["record_id"]
+            for r in econ
+            if r.get("variable_id") in cs.FEASIBILITY_ONLY_ECON
+        }
+    )
+    t6e_rows = [r for r in econ if r.get("variable_id") not in cs.FEASIBILITY_ONLY_ECON]
+    t6_rows = [r for r in t6_rows if r.get("variable_type") != "economic_indicator"]
     report["t3_rows"] = len(t3_rows)
     report["t6_rows"] = len(t6_rows)
-    return {"T3": t3_rows, "T6": t6_rows, "report": report}
+    report["t6e_rows"] = len(t6e_rows)
+    return {"T3": t3_rows, "T6": t6_rows, "T6E": t6e_rows, "report": report}
 
 
 def write_recipe(nbs_id: str, out: dict[str, Any], *, dry_run: bool) -> list[Path]:
@@ -343,10 +360,14 @@ def write_recipe(nbs_id: str, out: dict[str, Any], *, dry_run: bool) -> list[Pat
     for table, fields, fname in (
         ("T3", T3_FIELDS, "T3_nbs_hazard_farming.csv"),
         ("T6", T6_FIELDS, "T6_nbs_scorecard.csv"),
+        ("T6E", T6_FIELDS, "T6E_economic_profile.csv"),
     ):
         rows = out[table]
         if sidecar:
-            applied, stale = P.apply_prose(rows, table, sidecar)
+            # T6E rows carry the T6 columns, so prose lands on the T6 field names
+            applied, stale = P.apply_prose(
+                rows, "T6" if table == "T6E" else table, sidecar
+            )
             print(
                 f"{table}: prose applied to {applied} row(s); {stale} stale (evidence changed → pending)"
             )
@@ -378,7 +399,7 @@ def _summary(out: dict[str, Any]) -> str:
         "| table | record_id | class | evidence×agreement→confidence | n | transfer | strength |",
         "|---|---|---|---|---|---|---|",
     ]
-    for table in ("T3", "T6"):
+    for table in ("T3", "T6", "T6E"):
         for r in out[table]:
             cls = (
                 r.get("effect_direction")

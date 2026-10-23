@@ -144,8 +144,11 @@ T3_HAZARDS = [
     "fire",
     "wind_cyclone",
     "waterlogging",
-    "frost",
 ]
+#: frost is out of T3 for every NbS (Pete 2026-10-23 row review: "frost is not a hazard we
+#: are concerned with"). Frost-tagged units stay in the register and feed T6 like any other
+#: unit; they just open no T3 livelihood or asset cell.
+EXCLUDED_T3_HAZARDS = ["frost"]
 #: hazards that exist ONLY as T3 asset_threat rows (Pete 2026-10-06): siltation of dams /
 #: tanks and storm damage to structures are threats to the INVESTMENT (M2b Stream A), not
 #: livelihood hazards — no T3 livelihood cell, no XW route, excluded from the 7-hazard
@@ -2832,6 +2835,9 @@ _ECON_KEYS = {
     "cost_per_tco2e_avoided",
     "cost_per_farmer_reached",
 }
+#: economic indicators that belong to feasibility, not scoping (Pete 2026-10-23): their
+#: cells are not published; the units stay in the register
+FEASIBILITY_ONLY_ECON = {"cost_per_tco2e_avoided"}
 _T5_LIKE: set[str] = (
     set()
 )  # reserved: callers may register T5 ids that collide with econ names

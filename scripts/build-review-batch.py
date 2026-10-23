@@ -382,6 +382,7 @@ COMPARATOR_POLICY = ROOT / "schema" / "lookups" / "comparator_policy.csv"
 _T_FILE_LABEL = {
     "T3_nbs_hazard_farming": "T3 — hazard table",
     "T6_nbs_scorecard": "T6 — NbS scorecard",
+    "T6E_economic_profile": "T6E — NbS economic profile",
 }
 
 

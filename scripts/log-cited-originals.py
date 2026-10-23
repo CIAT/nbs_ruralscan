@@ -53,7 +53,7 @@ RECIPES = ROOT / "schema" / "recipes"
 
 def rows_fed_by_unit() -> dict[str, int]:
     c: dict[str, int] = defaultdict(int)
-    for f in sorted(RECIPES.glob("*/T[36]_*.csv")):
+    for f in sorted(RECIPES.glob("*/T[36]*_*.csv")):
         with f.open(newline="", encoding="utf-8") as fh:
             for r in csv.DictReader(fh):
                 try:
