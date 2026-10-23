@@ -48,3 +48,9 @@ This diagnostic does not merge depth-specific suitability functions, select a cr
 Tables 1/2 and Figures 2/8 (PDF pp4/8) explicitly connect SOC to agroforestry suitability through soil fertility. Five soil inputs each receive 20% of soil fertility; soil fertility receives 45.8% of the final overlay. Slope 17.2%, wetness 22.6%, NDVI 14.4% complete the model. The eight-input tree is now inventoried: SOC nominal allocation 9.16%, hierarchy benchmark ratio 1.832, flat eight-input ratio 0.7328.
 
 These products describe nominal allocations through weighted stages. Soil fertility is reclassified before final overlay, so they are not output sensitivities or equivalent single-stage runtime weights. No automatic pooling with the existing three-paper candidate panel. Six variants now represent four papers; inherited lineage still prevents counting Singh's two representations twice.
+
+## CRS/SaZa FMNR priorities (2026-10-23)
+
+Table 2 p15 and methods p14 provide 14 AHP priorities, totalling 99.9. All source slots are retained for a defensible denominator; policy/legal/dialogue/extension are distinct inputs, even where broad ontology groups overlap. Extension rank 5: 10.1/99.9 = 10.11%, 1.42× average. Market distance rank 13: 2.2/99.9 = 2.20%, 0.31× average. Texture rank 8: 5.1/99.9 = 5.11%, 0.71× average.
+
+Seven existing table records now retain ranks and priorities, without adding response functions or independent paper votes. Correct market-distance record to pending distance_to_market rather than roads or travel time. Table lacks distance metric/units and texture class preferences. Rootstock descriptions on pp4/9 explicitly share duplicate lineage. Model mixes biophysical, socioeconomic and governance inputs; do not apply its weights to a filtered core T4 subset or silently add it to the existing candidate-weight panel.

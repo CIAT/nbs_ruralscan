@@ -494,3 +494,66 @@ def test_ahmad_slope_keeps_unit_conflict_and_soc_keeps_model_chain():
     assert model_use["weight_path_pct"] == [45.8, 20]
     assert model_use["nominal_whole_model_weight_pct"] == 9.16
     assert "reclassified" in model_use["note"]
+
+
+def test_crs_priorities_are_complete_and_market_distance_is_not_roads():
+    evidence = {
+        row["evidence_id"]: row
+        for row in csv.DictReader(
+            (ROOT / "schema/registers/EV_evidence_register.csv").open()
+        )
+    }
+    ranks = {"005": 4, "008": 1, "009": 2, "010": 5, "013": 9, "015": 13, "017": 8}
+    for suffix, rank in ranks.items():
+        row = evidence["EV_crs_fmnr_niger_2025_" + suffix]
+        rel = json.loads(row["relationship"])
+        assert rel["priority_rank"] == rank
+        assert rel["priority_count"] == 14
+        assert rel["source_priority_total"] == 99.9
+        assert "threshold" not in rel
+    market = evidence["EV_crs_fmnr_niger_2025_015"]
+    assert market["variable"] == "distance_to_market"
+    assert market["use_role"] == "operational_risk"
+    assert (
+        json.loads(market["context"])["importance_comparison"][
+            "denominator_input_count"
+        ]
+        == 14
+    )
+    assert (
+        evidence["EV_crs_fmnr_niger_2025_002"]["lineage_of"]
+        == "EV_crs_fmnr_niger_2025_001"
+    )
+    ontology = {
+        r["canonical_variable_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/registers/VONT_variable_ontology.csv").open()
+        )
+    }
+    assert ontology["distance_to_market"]["review_status"] == "pending"
+    assert json.loads(ontology["distance_to_market"]["candidate_dataset_ids"]) == []
+
+
+def test_source_purpose_corrections_keep_non_calibration_out_of_live_t4():
+    evidence = {
+        r['evidence_id']: r for r in csv.DictReader(
+            (ROOT / 'schema/registers/EV_evidence_register.csv').open()
+        )
+    }
+    mask = evidence['ev_operational_risk_built_up_areas_baldwin_2022_full']
+    assert mask['use_role'] == 'structural_suitability'
+    assert mask['evidence_type'] == 'scoping_candidate'
+    assert json.loads(mask['context'])['runtime_status'] == 'held_source_specific_mask'
+    assert json.loads(mask['relationship'])['excluded_parcel_area_less_than_acres'] == 4
+    live = profiles(ROOT / 'schema/recipes/agroforestry/T4_suitability_mappings.csv')
+    for eid in ('ev_t4_slope_kizir_3', 'ev_t4_tcc_kizir_2',
+                'ev_tree_canopy_cover_abigaba24_temp_reduction'):
+        assert evidence[eid]['review_state'] == 'dropped'
+        assert eid not in live
+    for eid in ('ev_t4_slope_kizir_3', 'ev_t4_tcc_kizir_2'):
+        context = json.loads(evidence[eid]['context'])
+        assert context['model_use']['verified'] is False
+        assert 'direction' not in json.loads(evidence[eid]['relationship'])
+    programme = evidence['ev_operational_risk_restorable_patch_area_pinto_2019_full']
+    assert programme['use_role'] == 'operational_risk'
+    assert json.loads(programme['relationship'])['criterion_kind'] == 'programme_eligibility'

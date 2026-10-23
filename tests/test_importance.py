@@ -138,8 +138,8 @@ def test_real_source_inventories():
     )
     models = load_weight_models(path)
     results = {m["model_id"]: compare_importance(m) for m in models}
-    assert len(models) == 6
-    assert len({m["source_id"] for m in models}) == 4
+    assert len(models) == 7
+    assert len({m["source_id"] for m in models}) == 5
     for result in results.values():
         assert result["status"] == "calculated"
         assert sum(
@@ -148,6 +148,24 @@ def test_real_source_inventories():
         assert sum(
             v["equal_hierarchy_share"] for v in result["variables"]
         ) == pytest.approx(1)
+    crs = results["crs_2025_saza_ahp"]
+    assert crs["leaf_count"] == 14
+    assert crs["source_sibling_sums"]["root"] == pytest.approx(99.9)
+    market = variable(crs, "distance_to_market")
+    assert market["source_importance_rank"] == 13
+    assert market["flat_variable_ratio"] == pytest.approx(2.2 / 99.9 * 14)
+    assert variable(crs, "extension_governance")["source_importance_rank"] == 5
+    assert (
+        len(
+            [
+                v
+                for v in crs["variables"]
+                if v["variable"]
+                in {"policy_framework", "legal_framework", "extension_governance"}
+            ]
+        )
+        == 3
+    )
     ahmad = results["ahmad_2018_tables1_2"]
     assert ahmad["leaf_count"] == 8
     soc = variable(ahmad, "soil_organic_carbon")
