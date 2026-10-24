@@ -167,11 +167,9 @@ def test_cost_units_are_emitted_from_the_transcript():
     assert (
         cost["relationship"]["strength_class"] == "moderate"
     )  # KEN lic_lmic: 1 000–10 000
-    cb = by["ev_economic_return_wocat_998_2020_costbenefit_establishment_long"]
-    assert (
-        cb["relationship"]["direction"] == "negative"
-        and cb["relationship"]["strength_class"] == "moderate"
-    )
+    # cost-benefit ratings carry no stated mechanism: rendered in the transcript, never a unit
+    # (catalogue #39, Pete 2026-10-24)
+    assert not [u for u in units if "costbenefit" in u["evidence_id"]]
 
 
 def test_live_map_skips_bare_ratings():
