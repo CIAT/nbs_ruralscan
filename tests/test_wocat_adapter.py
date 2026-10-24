@@ -30,10 +30,13 @@ PAYLOAD = {
     },
 }
 IMAP = wocat._load_csv(wocat.LOOKUPS / "wocat_impact_map.csv")
+#: the sign-mapping tests use bare ratings, so they run with the comment rule switched off;
+#: the live map requires a comment on every field (catalogue #39, Pete 2026-10-24)
+IMAP_NO_COMMENT_RULE = [dict(r, requires_comment="false") for r in IMAP]
 HMAP = wocat._load_csv(wocat.LOOKUPS / "wocat_hazard_map.csv")
 
 
-def _units():
+def _units(imap=None):
     md = wocat.render(PAYLOAD, "wocat_999_2020")
     return md, wocat.emit_units(
         "wocat_999_2020",
@@ -41,7 +44,7 @@ def _units():
         md,
         "water_harvesting_conservation",
         "water_harvesting__in_situ",
-        IMAP,
+        imap if imap is not None else IMAP_NO_COMMENT_RULE,
         HMAP,
         _default_bands(),
     )
@@ -169,3 +172,16 @@ def test_cost_units_are_emitted_from_the_transcript():
         cb["relationship"]["direction"] == "negative"
         and cb["relationship"]["strength_class"] == "moderate"
     )
+
+
+def test_live_map_skips_bare_ratings():
+    # no mechanism, no unit (catalogue #39): only the commented rating survives
+    _, units = _units(IMAP)
+    impact = [
+        u
+        for u in units
+        if u["use_role"] == "nbs_effect" and u["variable"] != "project_cost"
+    ]
+    assert [u["locator"] for u in impact] == [
+        "impacts_socio_economic_production/crop_production"
+    ]
