@@ -107,6 +107,8 @@
   .chip.dis { background: rgba(14, 165, 233, 0.14); color: var(--accent-sky); }
   .chip.caution { border-color: var(--accent-amber); }
   .cwrap { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+  .tags { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
+  .tags .ind { color: var(--accent-amber); font-weight: 600; }
   .conf { font-size: 10.5px; color: var(--text-secondary); letter-spacing: 0.02em; white-space: nowrap; }
   .counts { font-size: 12px; color: var(--text-secondary); text-align: left; white-space: nowrap; }
   .detail h2 { font-family: var(--font-outfit); font-size: 17px; margin-bottom: 6px; }
@@ -144,7 +146,11 @@
     var cls = c.rank > 0 ? 'pos' : c.rank < 0 ? 'neg' : c.glyph === '±' ? 'dis' : '';
     var t = title || ((c.class_label || c.label || words(c['class'])) + (c.confidence ? ' · ' + words(c.confidence) + ' confidence' : '') + (c.caution ? ' · CAUTION: measured harm for some adopters' : ''));
     var conf = c.dots ? '<span class="conf" title="' + esc(words(c.confidence) + ' confidence') + '">' + esc(c.dots) + ' ' + esc(c.badge === 'MED' ? 'medium' : String(c.badge || '').toLowerCase()) + '</span>' : '<span class="conf">&nbsp;</span>';
-    return '<span class="cwrap"><span class="chip ' + cls + (c.caution ? ' caution' : '') + '" title="' + esc(t) + '">' + esc(c.glyph) + '</span>' + conf + '</span>';
+    var tags = [];
+    if (c.locus_label) tags.push('<span title="' + esc('Where the effect lands. ' + (c.locus_basis || '')) + '">' + esc(c.locus_label) + '</span>');
+    if (c.directness) tags.push('<span class="' + (c.directness === 'indirect' ? 'ind' : '') + '" title="' + esc(c.direct_units + ' of ' + c.n_units + ' units measured the outcome itself; the rest are a stand-in or a mechanism') + '">' + esc(c.directness) + '</span>');
+    var tagHtml = tags.length ? '<span class="tags">' + tags.join(' · ') + '</span>' : '';
+    return '<span class="cwrap"><span class="chip ' + cls + (c.caution ? ' caution' : '') + '" title="' + esc(t) + '">' + esc(c.glyph) + '</span>' + conf + tagHtml + '</span>';
   }
   function render() {
     var nbs = Object.keys(D.nbs), first = D.nbs[nbs[0]].rows, h = '<tr><th></th>' + nbs.map(function (n) { return '<th>' + esc(words(n)) + '</th>'; }).join('') + '</tr>';
@@ -168,13 +174,15 @@
       return '<tr><td><code>' + esc(x.source) + '</code></td><td>' + chipHtml(x) + '</td><td>' + esc(words(x['class'])) + '</td><td><code>' + esc(x.record_id) + '</code></td></tr>';
     }).join('');
     el('detail').innerHTML = '<h2>' + esc(words(n)) + ' · ' + esc(r.label) + '</h2><p>' + chipHtml(r) + ' ' + esc(r.class_label || words(r['class'])) + (r.why ? ' — ' + esc(r.why) : '') + '</p>' +
+      (r.locus_label ? '<p class="evid"><b>Where it lands:</b> ' + esc(r.locus_label) + ' — ' + esc(r.locus_basis) + '</p>' : '') +
+      (r.directness ? '<p class="evid"><b>How direct:</b> ' + esc(r.direct_units + ' of ' + r.n_units) + ' units measured the outcome itself (' + esc(r.directness) + '); the rest reach it through a stand-in or a mechanism.</p>' : '') +
       '<div class="scroll"><table><tr><th>Evidence row</th><th>Chip</th><th>Class</th><th>Record</th></tr>' + src + '</table></div>' +
       '<p class="evid"><b>Evidenced priorities</b> (optional hotspot-map filter, D5): ' + esc(D.nbs[n].evidenced_priorities.map(words).join(', ') || 'none') + '</p>';
   }
   function legend() {
     var seen = {}, items = [];
     D.meta.scale.forEach(function (r) { if (!seen[r.glyph]) { seen[r.glyph] = 1; items.push('<span><b>' + esc(r.glyph) + '</b> ' + esc(r.label) + '</span>'); } });
-    items.push('<span><b>●●● / ●●○ / ●○○</b> confidence (high / medium / low), shown under the symbol — it is how sure, not how big</span>', '<span><span class="chip caution">+</span> amber outline = CAUTION: measured harm for some adopters</span>');
+    items.push('<span><b>●●● / ●●○ / ●○○</b> confidence (high / medium / low), shown under the symbol — it is how sure, not how big</span>', '<span><b>on-farm · landscape / downstream · both · public good</b> = where the effect lands</span>', '<span><b>direct</b> = most units measured the outcome itself · <b style="color:var(--accent-amber)">indirect</b> = mostly a stand-in or mechanism (income for poverty, canopy cooling for heat)</span>', '<span><span class="chip caution">+</span> amber outline = CAUTION: measured harm for some adopters</span>');
     el('legend').innerHTML = items.join('');
     el('rule').textContent = 'One response chip per problem row (mockup rows; no theme chips, no NbS number). Pooled rows: ' + D.meta.pooled_row_rule + '. Fire is a project risk and production gap an intermediate step, so neither has a row. Decisions: ' + D.meta.decisions + '.';
     el('stamp').textContent = 'data as of ' + String((D.build || {}).timestamp || '').slice(0, 10) + ' · ' + ((D.build || {}).git_commit || '');

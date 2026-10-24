@@ -210,6 +210,86 @@ def _global(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     ]
 
 
+LOCUS_LABEL = {
+    "on_farm": "on-farm",
+    "landscape": "landscape / downstream",
+    "both": "on-farm + landscape",
+    "public_good": "public good",
+}
+_LOCUS_FROM_EFFECT = {"on_farm": "on_farm", "off_site": "landscape", "mixed": "both"}
+
+
+def load_locus(schema_root: Path) -> dict[str, Any]:
+    """Where the effect lands, per NbS × row (Pete 2026-10-24): default from the engine's
+    `effect_locus.csv` (NbS level, else its cross-family row), overridden per problem by
+    `scorecard_locus.csv` (an NbS-specific row beats a `*` row)."""
+    lk = schema_root / "lookups"
+    default: dict[str, str] = {}
+    for r in _rd(lk / "effect_locus.csv"):
+        fam = r.get("suitability_family_id") or ""
+        loc = _LOCUS_FROM_EFFECT.get(r.get("effect_locus", ""), "")
+        if not fam:
+            default[r["nbs_id"]] = loc
+        elif fam.endswith("__cross_family"):
+            default.setdefault(r["nbs_id"], loc)
+    over = {(r["nbs_id"], r["row_id"]): r for r in _rd(lk / "scorecard_locus.csv")}
+    return {"default": default, "override": over}
+
+
+def locus_for(nbs_id: str, row_id: str, lc: dict) -> dict[str, str]:
+    o = lc["override"].get((nbs_id, row_id)) or lc["override"].get(("*", row_id))
+    if o:
+        return {
+            "locus": o["locus"],
+            "locus_label": LOCUS_LABEL.get(o["locus"], o["locus"]),
+            "locus_basis": f"{o['rationale']} [{o['ratified_by']}]",
+        }
+    loc = lc["default"].get(nbs_id, "")
+    return {
+        "locus": loc,
+        "locus_label": LOCUS_LABEL.get(loc, ""),
+        "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)"
+        if loc
+        else "",
+    }
+
+
+def load_routes(schema_root: Path) -> dict[str, Any]:
+    ev = {
+        r["evidence_id"]: r.get("variable", "")
+        for r in _rd(schema_root / "registers" / "EV_evidence_register.csv")
+    }
+    xw = {
+        (x["ev_variable"], x["target_table"], x["target_key"]): x.get("proximity", "")
+        for x in _rd(schema_root / "registers" / "XW_target_crosswalk.csv")
+    }
+    return {"ev": ev, "xw": xw}
+
+
+def directness(rows: list[tuple[str, dict | None]], rt: dict) -> dict[str, Any]:
+    """Share of a row's units whose crosswalk route is `direct` (the outcome itself was
+    measured) vs proxy / component (a stand-in or a mechanism: income for poverty, canopy
+    cooling for heat, runoff for flood)."""
+    n = d = 0
+    for src, row in rows:
+        if not row:
+            continue
+        table, key = src.split(":", 1)
+        for e in _j(row.get("evidence_ids"), []) or []:
+            var = rt["ev"].get(e)
+            if var is None:
+                continue
+            n += 1
+            d += rt["xw"].get((var, table, key)) == "direct"
+    if not n:
+        return {"directness": "", "direct_units": 0, "n_units": 0}
+    return {
+        "directness": "direct" if d * 2 >= n else "indirect",
+        "direct_units": d,
+        "n_units": n,
+    }
+
+
 def load_rows(schema_root: Path) -> list[dict[str, str]]:
     rows = _rd(schema_root / "lookups" / "scorecard_rows.csv")
     return sorted(rows, key=lambda r: int(r.get("order") or 0))
@@ -228,8 +308,12 @@ def build_nbs(
     sc: dict,
     t5: list[dict[str, str]],
     display_rows: list[dict[str, str]] | None = None,
+    lc: dict | None = None,
+    rt: dict | None = None,
 ) -> dict[str, Any]:
     rdir = schema_root / "recipes" / nbs_id
+    lc = lc or load_locus(schema_root)
+    rt = rt or load_routes(schema_root)
     t6 = {r["variable_id"]: r for r in _global(_rd(rdir / "T6_nbs_scorecard.csv"))}
     t3 = {
         r["hazard_type"]: r
@@ -242,6 +326,10 @@ def build_nbs(
     for d in display_rows:
         srcs = [x for x in (d.get("sources") or "").split("|") if x]
         parts = [(x, _source_chip(x, t6, t3, sc)) for x in srcs]
+        src_rows = [
+            (x, (t3 if x.startswith("T3:") else t6).get(x.split(":", 1)[1]))
+            for x in srcs
+        ]
         if len(parts) == 1:
             c = parts[0][1]
         else:
@@ -255,6 +343,16 @@ def build_nbs(
                 "panel": d["panel"],
                 "panel_label": d["panel_label"],
                 "label": d["label"],
+                **(
+                    locus_for(nbs_id, d["row_id"], lc)
+                    if c["class"] != "not_assessed"
+                    else {"locus": "", "locus_label": "", "locus_basis": ""}
+                ),
+                **(
+                    directness(src_rows, rt)
+                    if c["class"] != "not_assessed"
+                    else {"directness": "", "direct_units": 0, "n_units": 0}
+                ),
                 "sources": [
                     {
                         "source": x,
@@ -297,11 +395,12 @@ def build(schema_root: str | Path) -> dict[str, Any]:
     sc = load_scale(schema_root)
     t5 = _rd(next(iter(sorted(schema_root.glob("T5_*.csv"))), schema_root / "T5.csv"))
     display_rows = load_rows(schema_root)
+    lc, rt = load_locus(schema_root), load_routes(schema_root)
     nbs = {}
     for d in sorted((schema_root / "recipes").iterdir()):
         if (d / "T6_nbs_scorecard.csv").exists():
             nbs[d.name] = build_nbs(
-                schema_root, d.name, sc, t5, display_rows=display_rows
+                schema_root, d.name, sc, t5, display_rows=display_rows, lc=lc, rt=rt
             )
     return {
         "meta": {
@@ -318,6 +417,11 @@ def build(schema_root: str | Path) -> dict[str, Any]:
                 "weakest setting row"
             ),
             "caution": "chip outline when the row lists measured harm for some adopters",
+            "locus": "where the effect lands: on-farm · landscape / downstream · both · public good "
+            "(schema/lookups/effect_locus.csv + scorecard_locus.csv)",
+            "directness": "direct = at least half the row's units measured the outcome itself; "
+            "indirect = mostly a stand-in or a mechanism (income for poverty, canopy cooling for "
+            "heat, runoff for flood)",
         },
         "nbs": nbs,
     }
