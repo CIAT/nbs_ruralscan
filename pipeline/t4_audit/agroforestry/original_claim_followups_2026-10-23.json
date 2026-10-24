@@ -1,26 +1,63 @@
 {
-  "scope": "Bounded follow-ups from submitted review notes; discovery and acquisition have not been performed. Not a separate human-review queue.",
+  "scope": "Bounded original-source checks for three submitted review notes; not a new discovery sweep or human-review queue. Findings do not register new sources, approve evidence or change runtime rules.",
   "items": [
     {
       "reporting_evidence_id": "ev_t4_mat_mushtaq2023_2",
       "origin": "Ahmad, Uddin & Goparaju (2019), Agroforestry suitability mapping of India geospatial approach based on FAO guidelines",
-      "status": "original_claim_unverified",
-      "next_action": "Acquire and verify the original climate assertion; reconcile external lineage with registered identity before pooling.",
-      "runtime_effect": "No executable temperature rule from this secondary assertion."
+      "status": "original_text_disagrees_with_secondary_summary",
+      "next_action": "Acquire a stable original PDF and visually check Table 2 before extracting source classes; reconcile external lineage before pooling.",
+      "runtime_effect": "No executable temperature rule from this secondary assertion.",
+      "findings": "Author-posted full text, printed pp1327-1328, describes high-suitability areas as mean annual temperature >24 C and annual rainfall >1300 mm; moderate areas 20-24 C and 900-1300 mm. This does not verify Mushtaq's 20-30 C / >1200 mm assertion. These are descriptions of mapped suitability classes, not automatically transferable single-variable response curves.",
+      "original_url": "https://link.springer.com/article/10.1007/s10457-018-0233-7",
+      "inspected_text_url": "https://www.researchgate.net/publication/325004765_Agroforestry_suitability_mapping_of_India_geospatial_approach_based_on_FAO_guidelines",
+      "metadata_check": "Crossref title and authors match; source is not registered and project DOI-verification stamp has not been issued.",
+      "correction_url": "https://link.springer.com/article/10.1007/s10457-018-0266-y",
+      "acquisition_status": "Publisher preview and author-posted text inspected. SharedIt failed; ResearchGate PDF link returned 404. Unpaywall returned no OA location. Author upload remains a recovery lead, not verified-no-OA/paywalled."
     },
     {
       "reporting_evidence_id": "ev_labour_availability_faosen24_18",
       "origin": "Sanogo et al. (2000), via Yossi et al. (2006)",
-      "status": "original_and_intermediary_unverified",
-      "next_action": "Locate the intermediary and original; verify the barrier claim and whether labour is separately evaluated.",
-      "runtime_effect": "Reported barriers only; no causal effect, cutoff or extra independent source votes."
+      "status": "intermediary_verified_original_identity_ambiguous",
+      "next_action": "Retrieve Sanogo thesis and chapter, verify original denominator and whether both reports concern the same respondents; then register and extract through normal provenance checks.",
+      "runtime_effect": "Reported barriers only; no causal effect, cutoff or extra independent source votes.",
+      "findings": "Yossi printed p42 (PDF p48), section 8.7, separately reports labour shortage 31.1%, absent/distant fields 24.6%, planting material 16.8%, time 12%. Denominator and response design are not established there. This supports labour as a reported barrier, not an isolated causal effect, model importance weight or suitability threshold. Yossi attributes this paragraph to Sanogo (2000), while its bibliography lists both a single-author thesis and a four-author chapter; FAO cites Sanogo et al. (2000). Do not assume these identities are interchangeable.",
+      "intermediary_url": "https://www.cifor-icraf.org/publications/downloads/Publications/PDFS/op14457.pdf",
+      "intermediary_pdf_pages": [
+        48,
+        56
+      ],
+      "intermediary_printed_pages": [
+        42,
+        50
+      ],
+      "intermediary_pdf_sha256": "c9f4922c25d8e3fbfb12fb14a0ebe7c095164132876d3d144a30b35a556cbe0a",
+      "staged_library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/1_Agroforestry/yossi_2006_haies_vives_sahel.pdf",
+      "acquisition_status": "Intermediary saved to shared-library sync folder; cloud upload not independently confirmed. No SRC/EV registration added. Original chapter URL found at IRD but live download redirects to maintenance; rejected the maintenance response as a source.",
+      "original_candidates": [
+        {
+          "title": "La haie vive dans le Sud du Bassin arachidier du Sénégal : adoption et conséquences agro-écologiques",
+          "citation": "Sanogo D. (2000), doctoral thesis, Université Cheikh Anta Diop de Dakar, 128 pp."
+        },
+        {
+          "title": "Adoption de la haie vive dans le bassin arachidier du Sénégal",
+          "citation": "Sanogo D., Dia Y.K., Ayuk E., Pontanier R. (2000), La jachère en Afrique Tropicale, vol.1, pp733-740.",
+          "url": "https://horizon.documentation.ird.fr/exl-doc/pleins_textes/divers15-11/010024607.pdf"
+        }
+      ]
     },
     {
       "reporting_evidence_id": "ev_tenure_security_lasco14_1",
       "origin": "Lasco 2014 reference 35 (citation mismatch)",
       "status": "citation_identity_unresolved",
-      "next_action": "Investigate the intended tenure citation; do not substitute reference 35 carbon findings or invert the quoted wording.",
-      "runtime_effect": "No source-supported tenure-direction vote."
+      "next_action": "Keep claim unresolved unless an author correction or verified intended source is recovered; do not spend reviewer time re-approving the same faulty citation.",
+      "runtime_effect": "No source-supported tenure-direction vote.",
+      "checked_on": "2026-10-24",
+      "findings": "Visual check of Lasco PDF p3 confirms secure land tenure is called a barrier and reference [35] is printed. PDF p5 identifies [35] as Ziegler et al. (2012), Carbon outcomes of major land-cover transitions in SE Asia. No verified intended tenure citation found. Nearby relevant-looking references do not authorize substitution.",
+      "pdf_pages": [
+        3,
+        5
+      ]
     }
-  ]
+  ],
+  "checked_on": "2026-10-24"
 }
