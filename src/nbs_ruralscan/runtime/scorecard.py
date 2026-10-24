@@ -12,9 +12,11 @@ the same rows across NbS. No theme or group chips, no NbS-level number (D3 = pro
   dissent ≥ 1/3 shows ± — the cell rule, one level up.
 * Fire is a project risk (M2b), not an opportunity-space row; production gap is an
   intermediate step to rural poverty and food insecurity, not a row of its own.
-* D6 scale: five glyphs (++ + 0 − −−) and HIGH/MED/LOW badges, plus ± (studies disagree),
-  ? (not enough evidence) and n/a (not assessed); CAUTION is the chip outline, set when the
-  row lists measured harm for some adopters. Scale and badges: `schema/lookups/scorecard_*.csv`.
+* D6 (revised 2026-10-23, Pete: "moderate positive shows ++ HIGH?"): the symbol matches the
+  evidence class 1:1 (+ slight · ++ moderate · +++ strong; − −− −−− for harm), and confidence
+  is shown SEPARATELY from the symbol (●●● high · ●●○ medium · ●○○ low), never inside the
+  pill; plus ± (studies disagree), ? (too little evidence) and n/a (not assessed); CAUTION is
+  the chip outline (measured harm for some adopters). Scale/badges: `schema/lookups/scorecard_*.csv`.
 * D5: `evidenced_priorities` (T5 need layers the NbS is evidenced to improve) is the optional
   hotspot-map filter; T6 never alters the hotspot weights.
 
@@ -34,7 +36,7 @@ ROOT = Path(__file__).resolve().parents[3]
 CONF_ORDER = ["very_low", "low", "medium", "high", "very_high"]
 MIN_THEME_CONF = "medium"
 DISSENT_SHARE = 1 / 3
-GLYPH_OF_RANK = {2: "++", 1: "+", 0: "0", -1: "−", -2: "−−"}
+GLYPH_OF_RANK = {3: "+++", 2: "++", 1: "+", 0: "0", -1: "−", -2: "−−", -3: "−−−"}
 
 
 def _rd(p: Path) -> list[dict[str, str]]:
@@ -57,12 +59,21 @@ def load_scale(schema_root: Path) -> dict[str, Any]:
     badges = {
         r["confidence"]: r["badge"] for r in _rd(lk / "scorecard_confidence_badge.csv")
     }
-    return {"scale": scale, "badges": badges}
+    dots = {
+        r["confidence"]: r.get("dots", "")
+        for r in _rd(lk / "scorecard_confidence_badge.csv")
+    }
+    return {"scale": scale, "badges": badges, "dots": dots}
 
 
 def _special(scale: dict, cls: str) -> dict[str, Any]:
     r = scale.get(("any", cls), {})
-    return {"glyph": r.get("glyph", "?"), "rank": None, "label": r.get("label", cls)}
+    return {
+        "glyph": r.get("glyph", "?"),
+        "rank": None,
+        "label": r.get("label", cls),
+        "dots": "",
+    }
 
 
 def chip(
@@ -105,6 +116,7 @@ def chip(
         "class": cls,
         "confidence": conf,
         "badge": "" if cls == "data_deficient" else badges.get(conf, ""),
+        "dots": "" if cls == "data_deficient" else sc.get("dots", {}).get(conf, ""),
         "caution": caution,
         "record_id": row.get("record_id", ""),
     }
@@ -164,6 +176,7 @@ def theme_chip(
     common = {
         "confidence": weakest,
         "badge": sc["badges"].get(weakest, ""),
+        "dots": sc.get("dots", {}).get(weakest, ""),
         "caution": any(c["caution"] for c, _ in setting),
         "setting_rows": [c["record_id"] for c, _ in setting],
     }
