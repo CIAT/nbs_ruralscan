@@ -123,3 +123,35 @@ def test_row_label_is_the_problem_name_not_the_chip_label():
     labels = {r["row_id"]: r["label"] for r in v["rows"]}
     assert labels["gender"] == "Gender inequality"
     assert labels["food_insecurity"] == "Food insecurity"
+
+
+def test_locus_override_beats_nbs_default():
+    lc = S.load_locus(ROOT / "schema")
+    assert (
+        S.locus_for("agroforestry", "drought", lc)["locus"] == "on_farm"
+    )  # NbS default
+    assert S.locus_for("forest_restoration", "drought", lc)["locus"] == "landscape"
+    assert (
+        S.locus_for("water_harvesting_conservation", "flood", lc)["locus"]
+        == "landscape"
+    )
+    assert S.locus_for("agroforestry", "carbon", lc)["locus"] == "public_good"  # * row
+
+
+def test_directness_counts_direct_routes():
+    rt = {
+        "ev": {"e1": "crop_yield", "e2": "microclimate_buffering"},
+        "xw": {
+            ("crop_yield", "T6", "k"): "direct",
+            ("microclimate_buffering", "T6", "k"): "component",
+        },
+    }
+    row = {"evidence_ids": '["e1", "e2", "e2"]'}
+    d = S.directness([("T6:k", row)], rt)
+    assert (d["direct_units"], d["n_units"], d["directness"]) == (1, 3, "indirect")
+
+
+def test_af_heat_is_flagged_indirect():
+    b = S.build(ROOT / "schema")
+    heat = next(r for r in b["nbs"]["agroforestry"]["rows"] if r["row_id"] == "heat")
+    assert heat["directness"] == "indirect"

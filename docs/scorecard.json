@@ -1,7 +1,7 @@
 {
   "build": {
-    "timestamp": "2026-10-23T20:40:44.491444+00:00",
-    "git_commit": "6ea782c"
+    "timestamp": "2026-10-24T05:26:37.640431+00:00",
+    "git_commit": "7214c1a"
   },
   "meta": {
     "decisions": "methodology/decisions/2026-10-22_t3t6_scoring_and_qa.md",
@@ -118,7 +118,9 @@
       "very_low": "LOW"
     },
     "pooled_row_rule": "a row built from several T6 rows shows their median at medium confidence or better; dissent ≥ 0.33 → ±; confidence = weakest setting row",
-    "caution": "chip outline when the row lists measured harm for some adopters"
+    "caution": "chip outline when the row lists measured harm for some adopters",
+    "locus": "where the effect lands: on-farm · landscape / downstream · both · public good (schema/lookups/effect_locus.csv + scorecard_locus.csv)",
+    "directness": "direct = at least half the row's units measured the outcome itself; indirect = mostly a stand-in or a mechanism (income for poverty, canopy cooling for heat, runoff for flood)"
   },
   "nbs": {
     "agroforestry": {
@@ -137,6 +139,12 @@
           "row_id": "erosion",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 32,
+          "n_units": 41,
           "sources": [
             {
               "source": "T6:soil_erosion_risk",
@@ -161,6 +169,12 @@
           "row_id": "drought",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 15,
+          "n_units": 15,
           "sources": [
             {
               "source": "T6:drought_hazard",
@@ -185,6 +199,12 @@
           "row_id": "flood",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 4,
+          "n_units": 4,
           "sources": [
             {
               "source": "T6:flood_hazard",
@@ -209,6 +229,12 @@
           "row_id": "heat",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "indirect",
+          "direct_units": 0,
+          "n_units": 31,
           "sources": [
             {
               "source": "T6:heat_stress_hazard",
@@ -233,6 +259,12 @@
           "row_id": "biodiversity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Biodiversity gains accrue at landscape scale (habitat and connectivity) beyond the plot. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 20,
+          "n_units": 21,
           "sources": [
             {
               "source": "T6:biodiversity_priority",
@@ -257,6 +289,12 @@
           "row_id": "carbon",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "public_good",
+          "locus_label": "public good",
+          "locus_basis": "Carbon removal is a global public good: no farm-level beneficiary. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 34,
+          "n_units": 54,
           "sources": [
             {
               "source": "T6:carbon_sequestration_potential",
@@ -281,6 +319,12 @@
           "row_id": "rural_poverty",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "indirect",
+          "direct_units": 3,
+          "n_units": 78,
           "sources": [
             {
               "source": "T6:rural_poverty",
@@ -305,6 +349,12 @@
           "row_id": "gender",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 4,
+          "n_units": 4,
           "sources": [
             {
               "source": "T6:gender_inequity",
@@ -329,6 +379,12 @@
           "row_id": "food_insecurity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 25,
+          "n_units": 25,
           "sources": [
             {
               "source": "T6:food_insecurity",
@@ -358,6 +414,12 @@
           "row_id": "water_table",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Recharge and water-table level are shared across a catchment or aquifer: the benefit is not confined to the adopting farm. [draft (Pete to approve)]",
+          "directness": "indirect",
+          "direct_units": 2,
+          "n_units": 28,
           "sources": [
             {
               "source": "T6:water_stress",
@@ -416,6 +478,12 @@
           "row_id": "erosion",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 30,
+          "n_units": 56,
           "sources": [
             {
               "source": "T6:soil_erosion_risk",
@@ -440,6 +508,12 @@
           "row_id": "drought",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 4,
+          "n_units": 4,
           "sources": [
             {
               "source": "T6:drought_hazard",
@@ -464,6 +538,12 @@
           "row_id": "flood",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 27,
+          "n_units": 27,
           "sources": [
             {
               "source": "T6:flood_hazard",
@@ -488,6 +568,12 @@
           "row_id": "heat",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "indirect",
+          "direct_units": 0,
+          "n_units": 4,
           "sources": [
             {
               "source": "T6:heat_stress_hazard",
@@ -512,6 +598,12 @@
           "row_id": "biodiversity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Biodiversity gains accrue at landscape scale (habitat and connectivity) beyond the plot. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 23,
+          "n_units": 38,
           "sources": [
             {
               "source": "T6:biodiversity_priority",
@@ -536,6 +628,12 @@
           "row_id": "carbon",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "public_good",
+          "locus_label": "public good",
+          "locus_basis": "Carbon removal is a global public good: no farm-level beneficiary. [draft (Pete to approve)]",
+          "directness": "indirect",
+          "direct_units": 18,
+          "n_units": 43,
           "sources": [
             {
               "source": "T6:carbon_sequestration_potential",
@@ -560,6 +658,12 @@
           "row_id": "rural_poverty",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "indirect",
+          "direct_units": 5,
+          "n_units": 86,
           "sources": [
             {
               "source": "T6:rural_poverty",
@@ -584,6 +688,12 @@
           "row_id": "gender",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:gender_inequity",
@@ -608,6 +718,12 @@
           "row_id": "food_insecurity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 9,
+          "n_units": 9,
           "sources": [
             {
               "source": "T6:food_insecurity",
@@ -638,6 +754,12 @@
           "row_id": "water_table",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Recharge and water-table level are shared across a catchment or aquifer: the benefit is not confined to the adopting farm. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 34,
+          "n_units": 47,
           "sources": [
             {
               "source": "T6:water_stress",
@@ -697,6 +819,12 @@
           "row_id": "erosion",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "both",
+          "locus_label": "on-farm + landscape",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 3,
+          "n_units": 4,
           "sources": [
             {
               "source": "T6:soil_erosion_risk",
@@ -721,6 +849,12 @@
           "row_id": "drought",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:drought_hazard",
@@ -745,6 +879,12 @@
           "row_id": "flood",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Storm-surge and flood protection lands on the coast behind the stand. [draft (Pete to approve)]",
+          "directness": "indirect",
+          "direct_units": 2,
+          "n_units": 5,
           "sources": [
             {
               "source": "T6:flood_hazard",
@@ -769,6 +909,12 @@
           "row_id": "heat",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:heat_stress_hazard",
@@ -793,6 +939,12 @@
           "row_id": "biodiversity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Biodiversity gains accrue at landscape scale (habitat and connectivity) beyond the plot. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 5,
+          "n_units": 6,
           "sources": [
             {
               "source": "T6:biodiversity_priority",
@@ -817,6 +969,12 @@
           "row_id": "carbon",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "public_good",
+          "locus_label": "public good",
+          "locus_basis": "Carbon removal is a global public good: no farm-level beneficiary. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 4,
+          "n_units": 6,
           "sources": [
             {
               "source": "T6:carbon_sequestration_potential",
@@ -841,6 +999,12 @@
           "row_id": "rural_poverty",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "both",
+          "locus_label": "on-farm + landscape",
+          "locus_basis": "Fishery and aquaculture income can accrue to households working the stand; protection value lands behind it. [draft (Pete to approve)]",
+          "directness": "indirect",
+          "direct_units": 0,
+          "n_units": 20,
           "sources": [
             {
               "source": "T6:rural_poverty",
@@ -865,6 +1029,12 @@
           "row_id": "gender",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:gender_inequity",
@@ -889,6 +1059,12 @@
           "row_id": "food_insecurity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "both",
+          "locus_label": "on-farm + landscape",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 2,
+          "n_units": 2,
           "sources": [
             {
               "source": "T6:food_insecurity",
@@ -915,6 +1091,12 @@
           "row_id": "water_table",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:water_stress",
@@ -969,6 +1151,12 @@
           "row_id": "erosion",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "both",
+          "locus_label": "on-farm + landscape",
+          "locus_basis": "The buffer holds the field edge (on-farm) and traps sediment that would reach the stream (downstream). [draft (Pete to approve)]",
+          "directness": "indirect",
+          "direct_units": 0,
+          "n_units": 39,
           "sources": [
             {
               "source": "T6:soil_erosion_risk",
@@ -993,6 +1181,12 @@
           "row_id": "drought",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:drought_hazard",
@@ -1017,6 +1211,12 @@
           "row_id": "flood",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Buffers attenuate flood peaks and bank erosion downstream along the channel. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 3,
+          "n_units": 3,
           "sources": [
             {
               "source": "T6:flood_hazard",
@@ -1041,6 +1241,12 @@
           "row_id": "heat",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:heat_stress_hazard",
@@ -1065,6 +1271,12 @@
           "row_id": "biodiversity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Biodiversity gains accrue at landscape scale (habitat and connectivity) beyond the plot. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 28,
+          "n_units": 28,
           "sources": [
             {
               "source": "T6:biodiversity_priority",
@@ -1089,6 +1301,12 @@
           "row_id": "carbon",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "public_good",
+          "locus_label": "public good",
+          "locus_basis": "Carbon removal is a global public good: no farm-level beneficiary. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 4,
+          "n_units": 4,
           "sources": [
             {
               "source": "T6:carbon_sequestration_potential",
@@ -1113,6 +1331,12 @@
           "row_id": "rural_poverty",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:rural_poverty",
@@ -1137,6 +1361,12 @@
           "row_id": "gender",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:gender_inequity",
@@ -1161,6 +1391,12 @@
           "row_id": "food_insecurity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:food_insecurity",
@@ -1189,6 +1425,12 @@
           "row_id": "water_table",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Recharge and water-table level are shared across a catchment or aquifer: the benefit is not confined to the adopting farm. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 71,
+          "n_units": 104,
           "sources": [
             {
               "source": "T6:water_stress",
@@ -1242,6 +1484,12 @@
           "row_id": "erosion",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "In-field and terrace practices hold soil on the adopter's own plot. [draft (Pete to approve)]",
+          "directness": "indirect",
+          "direct_units": 86,
+          "n_units": 205,
           "sources": [
             {
               "source": "T6:soil_erosion_risk",
@@ -1266,6 +1514,12 @@
           "row_id": "drought",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "Harvested water and soil moisture serve the adopter's own crops. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 25,
+          "n_units": 25,
           "sources": [
             {
               "source": "T6:drought_hazard",
@@ -1290,6 +1544,12 @@
           "row_id": "flood",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Bunds; terraces; dams and spate works cut runoff peaks downstream of the works; the flood-damage evidence is downstream. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 59,
+          "n_units": 59,
           "sources": [
             {
               "source": "T6:flood_hazard",
@@ -1314,6 +1574,12 @@
           "row_id": "heat",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:heat_stress_hazard",
@@ -1338,6 +1604,12 @@
           "row_id": "biodiversity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Biodiversity gains accrue at landscape scale (habitat and connectivity) beyond the plot. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 17,
+          "n_units": 17,
           "sources": [
             {
               "source": "T6:biodiversity_priority",
@@ -1362,6 +1634,12 @@
           "row_id": "carbon",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "public_good",
+          "locus_label": "public good",
+          "locus_basis": "Carbon removal is a global public good: no farm-level beneficiary. [draft (Pete to approve)]",
+          "directness": "indirect",
+          "direct_units": 9,
+          "n_units": 45,
           "sources": [
             {
               "source": "T6:carbon_sequestration_potential",
@@ -1386,6 +1664,12 @@
           "row_id": "rural_poverty",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "Income and returns are measured in the adopting households. [draft (Pete to approve)]",
+          "directness": "indirect",
+          "direct_units": 0,
+          "n_units": 200,
           "sources": [
             {
               "source": "T6:rural_poverty",
@@ -1410,6 +1694,12 @@
           "row_id": "gender",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:gender_inequity",
@@ -1434,6 +1724,12 @@
           "row_id": "food_insecurity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "on_farm",
+          "locus_label": "on-farm",
+          "locus_basis": "Food-security gains are measured in the adopting households. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 66,
+          "n_units": 66,
           "sources": [
             {
               "source": "T6:food_insecurity",
@@ -1464,6 +1760,12 @@
           "row_id": "water_table",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Recharge and water-table level are shared across a catchment or aquifer: the benefit is not confined to the adopting farm. [draft (Pete to approve)]",
+          "directness": "indirect",
+          "direct_units": 71,
+          "n_units": 186,
           "sources": [
             {
               "source": "T6:water_stress",
@@ -1523,6 +1825,12 @@
           "row_id": "erosion",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 2,
+          "n_units": 3,
           "sources": [
             {
               "source": "T6:soil_erosion_risk",
@@ -1547,6 +1855,12 @@
           "row_id": "drought",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:drought_hazard",
@@ -1571,6 +1885,12 @@
           "row_id": "flood",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 61,
+          "n_units": 63,
           "sources": [
             {
               "source": "T6:flood_hazard",
@@ -1595,6 +1915,12 @@
           "row_id": "heat",
           "panel": "climate_livelihoods",
           "panel_label": "Risk to rural livelihoods (climate)",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:heat_stress_hazard",
@@ -1619,6 +1945,12 @@
           "row_id": "biodiversity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Biodiversity gains accrue at landscape scale (habitat and connectivity) beyond the plot. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 25,
+          "n_units": 25,
           "sources": [
             {
               "source": "T6:biodiversity_priority",
@@ -1643,6 +1975,12 @@
           "row_id": "carbon",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "public_good",
+          "locus_label": "public good",
+          "locus_basis": "Carbon removal is a global public good: no farm-level beneficiary. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 102,
+          "n_units": 114,
           "sources": [
             {
               "source": "T6:carbon_sequestration_potential",
@@ -1667,6 +2005,12 @@
           "row_id": "rural_poverty",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "indirect",
+          "direct_units": 1,
+          "n_units": 48,
           "sources": [
             {
               "source": "T6:rural_poverty",
@@ -1691,6 +2035,12 @@
           "row_id": "gender",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "",
+          "locus_label": "",
+          "locus_basis": "",
+          "directness": "",
+          "direct_units": 0,
+          "n_units": 0,
           "sources": [
             {
               "source": "T6:gender_inequity",
@@ -1715,6 +2065,12 @@
           "row_id": "food_insecurity",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "NbS-level effect locus (schema/lookups/effect_locus.csv)",
+          "directness": "direct",
+          "direct_units": 1,
+          "n_units": 1,
           "sources": [
             {
               "source": "T6:food_insecurity",
@@ -1744,6 +2100,12 @@
           "row_id": "water_table",
           "panel": "can_address",
           "panel_label": "What the NbS can address",
+          "locus": "landscape",
+          "locus_label": "landscape / downstream",
+          "locus_basis": "Recharge and water-table level are shared across a catchment or aquifer: the benefit is not confined to the adopting farm. [draft (Pete to approve)]",
+          "directness": "direct",
+          "direct_units": 33,
+          "n_units": 48,
           "sources": [
             {
               "source": "T6:water_stress",

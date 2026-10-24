@@ -82,6 +82,15 @@ NbS responds (the T6 evidence row) — and **no theme or group chips**. So:
   class one-to-one — + slight · ++ moderate · +++ strong (− −− −−− for harm) — and confidence is
   shown separately under the symbol (●●● high · ●●○ medium · ●○○ low), never inside the pill,
   so size and certainty can't be read as one thing.
+- **Where and how (Pete 2026-10-24: "note if it is in-situ and direct or ex-situ indirect"):**
+  every chip carries two small tags. *Where it lands* — on-farm · landscape / downstream ·
+  both · public good — from the engine's `effect_locus.csv` (per NbS) with per-problem
+  overrides in `schema/lookups/scorecard_locus.csv` (drafted for Pete's approval: water-table
+  recharge and biodiversity = landscape, carbon = public good, water-harvesting flood =
+  landscape, riparian erosion = both, mangrove flood = landscape …). *How direct* — direct
+  when at least half the row's units measured the outcome itself, indirect when mostly a
+  stand-in or mechanism (income for poverty, canopy cooling for heat, runoff for flood),
+  counted from the units' crosswalk routes.
 - D5 and D8 stand.
 
 ## Decided 23 October — scoring and dashboard (D3–D7, first build; superseded above)
