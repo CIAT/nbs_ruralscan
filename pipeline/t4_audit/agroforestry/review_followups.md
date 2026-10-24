@@ -34,7 +34,7 @@ Record: `ev_labour_availability_faosen24_18`. Reviewer: peetmate. Reason: Free-t
 
 Feedback: you've propoerly noted this is secondary and original source needs followup?
 
-Disposition: Yes: the record explicitly attributes this to Sanogo et al. (2000), through Yossi et al. (2006), reported by FAO. It is coded cited_secondary with lineage external:sanogo_2000_via_yossi_2006. The original-claim follow-up is now explicitly listed in the bounded follow-up register. Original and intermediary remain unverified; neither is an additional independent vote. Retained information is a bundle of reported adoption barriers, not an isolated causal labour effect or suitability threshold.
+Disposition: Follow-up 24 Oct: Yossi section 8.7, printed p42/PDF p48, separately reports labour shortage (31.1%), absent/distant fields (24.6%), planting material (16.8%) and time (12%). These are reported reasons, not weights or causal effects; denominator remains unverified. Bibliography lists both a Sanogo 2000 thesis and a four-author chapter. Original chapter located at IRD, currently under maintenance; exact original remains unresolved. Existing secondary lineage and human decisions remain unchanged.
 
 ### mushtaq_2023 · mean_annual_temperature
 
@@ -42,7 +42,7 @@ Record: `ev_t4_mat_mushtaq2023_2`. Reviewer: peetmate. Reason: Free-text request
 
 Feedback: ok but are we not already using that Ahmad study as evidence so it would be double counting?
 
-Disposition: This sentence cites Ahmad, Uddin & Goparaju (2019), Agroforestry suitability mapping of India geospatial approach based on FAO guidelines. The registered Ahmad studies are 2017 (Palamu), 2018 (Samastipur), and 2020 (South Asia); these titles are distinct. The Mushtaq assertion is already tagged cited_secondary with lineage external:ahmad_2019_india_agroforestry_suitability and numeric_rule_admissible=false. It therefore supplies no executable temperature rule. Original-claim verification remains open; when that original is acquired, its identity must be linked to this lineage before any pooled count. Shared authors alone do not establish either independence or duplication.
+Disposition: Follow-up 24 Oct: Ahmad's author-posted original text describes high-suitability areas as >24 C and >1300 mm, with moderate areas 20-24 C and 900-1300 mm (printed pp1327-1328). This does not verify Mushtaq's 20-30 C / >1200 mm summary. Stable PDF/Table 2 verification remains pending; no replacement curve or independent source vote added. Existing secondary lineage and human decisions remain unchanged.
 
 ### lasco_2014 · tenure_security
 
@@ -522,7 +522,7 @@ Record: `ev_labour_availability_faosen24_18`. Reviewer: peetmate. Reason: confir
 
 Feedback: evidence citation is dffirent to fao_2024
 
-Disposition: Restored citation chain: FAO reports Sanogo et al. (2000), cited through Yossi et al. (2006). Non-adopters report shortages of labour, land, planting material or time. This is secondary evidence of reported adoption barriers, not an isolated causal labour effect. The intermediary and original do not become extra independent votes.
+Disposition: Follow-up 24 Oct: Yossi section 8.7, printed p42/PDF p48, separately reports labour shortage (31.1%), absent/distant fields (24.6%), planting material (16.8%) and time (12%). These are reported reasons, not weights or causal effects; denominator remains unverified. Bibliography lists both a Sanogo 2000 thesis and a four-author chapter. Original chapter located at IRD, currently under maintenance; exact original remains unresolved. Existing secondary lineage and human decisions remain unchanged.
 
 ### snapp_2010_econ · labour_availability
 
@@ -797,7 +797,7 @@ Record: `ev_t4_mat_mushtaq2023_2`. Reviewer: peetmate. Reason: confirmed_pass.
 
 Feedback: the paper is about mulberry, ensure this reference is general not crop specific. The insight should not be generalized beyond it's context, clearly agroforestry in different contexts is perfectly viable in areas with rainfall <1200mm, the same is probably true of temperature (but I am not so sure on this).
 
-Disposition: The quoted 20–30°C and >1200 mm assertion cites Ahmad, Uddin & Goparaju (2019), Agroforestry suitability mapping of India geospatial approach based on FAO guidelines (PDF bibliography p19). It occurs inside a mulberry study; the next sentence gives separate growing-season mulberry temperature classes. Retain the attributed regional statement, with mean annual and growing-season temperature kept distinct. Neither this quote nor the species-specific model weight establishes a universal agroforestry envelope. Original Ahmad claim remains unverified.
+Disposition: Follow-up 24 Oct: Ahmad's author-posted original text describes high-suitability areas as >24 C and >1300 mm, with moderate areas 20-24 C and 900-1300 mm (printed pp1327-1328). This does not verify Mushtaq's 20-30 C / >1200 mm summary. Stable PDF/Table 2 verification remains pending; no replacement curve or independent source vote added. Existing secondary lineage and human decisions remain unchanged.
 
 ### jawarneh_2025 · distance_to_waterbody
 
