@@ -398,3 +398,14 @@ Enforcement: schema_tools.t4_coverage in CI; numeric compiler checks expected cl
     on I, do not extract (or drop `wrong_practice`). Also: a bundled programme in which the NbS is
     only "an option in some communities" is a marginal component — exclude, don't discount.
 
+39. **No mechanism, no unit** (Pete 2026-10-24). An effect unit must state HOW the practice changes
+    the outcome — a physical or economic pathway through THIS practice (bunds hold runoff → soil
+    moisture; regenerated trees → fodder; less ploughing → labour saved; sediment trapped behind
+    the structure). A bare rating, a restated rating ("improved", "increased"), an observation
+    with no cause, credit to another practice (tree nurseries enabled by sand dams) or an invalid
+    pathway (harvested annual-crop CO2 uptake counted as storage) is not evidence of an effect.
+    The WOCAT adapter now skips every impact rating without a compiler comment
+    (`wocat_impact_map.csv requires_comment = true`), and a commented rating still needs the
+    mechanism check before it is registered. Applied retroactively: 438 bare WOCAT ratings and
+    the commented ones that failed the check were soft-dropped (reviewer `ai_mechanism_rule`).
+

@@ -619,39 +619,9 @@ def emit_units(
             continue
         m = _CB_LINE.match(line)
         if m:
-            key, label = m.group(1), m.group(2)
-            direction = next(d for lab, d in _COSTBENEFIT.values() if lab == label)
-            parts = key.split("_")
-            units.append(
-                _mk(
-                    f"ev_economic_return_{source_id}_{key}",
-                    "economic_return",
-                    "nbs_effect",
-                    line,
-                    f"costs/{key}",
-                    {
-                        "direction": direction,
-                        "metric": "ordinal_rating",
-                        "source_scale_value": label,
-                        "unit": "wocat_costbenefit",
-                        "strength_class": classify_magnitude(
-                            "ordinal_rating",
-                            None,
-                            bands,
-                            source_scale_value=label,
-                            unit="wocat_costbenefit",
-                        ),
-                        "design": "practitioner_rating",
-                        "significance": "not_reported",
-                        "outcome_raw": (
-                            f"WOCAT QT 4.7 benefits compared with {parts[1]} costs, "
-                            f"{parts[2]}-term returns: {label}"
-                        ),
-                        "note": "compiler rating on the very negative … very positive scale",
-                    },
-                    dict(base_ctx),
-                )
-            )
+            # QT 4.7 cost-benefit ratings ("positive", "very positive") carry no comment and
+            # so no stated mechanism: not evidence of an effect (catalogue #39, Pete 2026-10-24)
+            continue
     return units
 
 

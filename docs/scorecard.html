@@ -109,6 +109,7 @@
   .cwrap { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
   .tags { font-size: 10px; color: var(--text-muted); white-space: nowrap; }
   .tags .ind { color: var(--accent-amber); font-weight: 600; }
+  .tags .rtag { color: var(--accent-sky); font-weight: 600; }
   .conf { font-size: 10.5px; color: var(--text-secondary); letter-spacing: 0.02em; white-space: nowrap; }
   .counts { font-size: 12px; color: var(--text-secondary); text-align: left; white-space: nowrap; }
   .detail h2 { font-family: var(--font-outfit); font-size: 17px; margin-bottom: 6px; }
@@ -147,6 +148,7 @@
     var t = title || ((c.class_label || c.label || words(c['class'])) + (c.confidence ? ' · ' + words(c.confidence) + ' confidence' : '') + (c.caution ? ' · CAUTION: measured harm for some adopters' : ''));
     var conf = c.dots ? '<span class="conf" title="' + esc(words(c.confidence) + ' confidence') + '">' + esc(c.dots) + ' ' + esc(c.badge === 'MED' ? 'medium' : String(c.badge || '').toLowerCase()) + '</span>' : '<span class="conf">&nbsp;</span>';
     var tags = [];
+    if (c.row_tag) tags.push('<span class="rtag" title="' + esc(c.row_tag_basis || '') + '">' + esc(c.row_tag) + '</span>');
     if (c.locus_label) tags.push('<span title="' + esc('Where the effect lands. ' + (c.locus_basis || '')) + '">' + esc(c.locus_label) + '</span>');
     if (c.directness) tags.push('<span class="' + (c.directness === 'indirect' ? 'ind' : '') + '" title="' + esc(c.direct_units + ' of ' + c.n_units + ' units measured the outcome itself; the rest are a stand-in or a mechanism') + '">' + esc(c.directness) + '</span>');
     var tagHtml = tags.length ? '<span class="tags">' + tags.join(' · ') + '</span>' : '';

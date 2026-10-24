@@ -233,7 +233,18 @@ def load_locus(schema_root: Path) -> dict[str, Any]:
         elif fam.endswith("__cross_family"):
             default.setdefault(r["nbs_id"], loc)
     over = {(r["nbs_id"], r["row_id"]): r for r in _rd(lk / "scorecard_locus.csv")}
-    return {"default": default, "override": over}
+    tags = {(r["nbs_id"], r["row_id"]): r for r in _rd(lk / "scorecard_row_tags.csv")}
+    return {"default": default, "override": over, "tags": tags}
+
+
+def row_tag(nbs_id: str, row_id: str, lc: dict) -> dict[str, str]:
+    """A per-NbS qualifier on a row (e.g. wetland carbon = avoided emissions, not removals)."""
+    t = lc.get("tags", {}).get((nbs_id, row_id))
+    return (
+        {"row_tag": t["tag"], "row_tag_basis": t["rationale"]}
+        if t
+        else {"row_tag": "", "row_tag_basis": ""}
+    )
 
 
 def locus_for(nbs_id: str, row_id: str, lc: dict) -> dict[str, str]:
@@ -348,6 +359,7 @@ def build_nbs(
                     if c["class"] != "not_assessed"
                     else {"locus": "", "locus_label": "", "locus_basis": ""}
                 ),
+                **row_tag(nbs_id, d["row_id"], lc),
                 **(
                     directness(src_rows, rt)
                     if c["class"] != "not_assessed"
