@@ -1,5 +1,7 @@
 # Agroforestry T4 — first-pass release
 
+**Developer integration:** start with [developer-v0.1.0](developer-v0.1.0/index.html), the generated function/dataset contract, and [implementation notes](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md). This package is generated from a verified corpus recompile; the earlier evidence-review releases remain below for provenance.
+
 **Current release: [v0.1.5](v0.1.5/README.md), 26 October 2026.** Built for inspection ahead of the November World Bank meeting. Pilot testing remains Diego's work.
 
 Start with the [single-table browser view](v0.1.5/index.html) or [readable CSV](v0.1.5/T4_review.csv). The versioned [T4 snapshot](v0.1.5/T4_suitability_mappings.csv) contains **26 rows: 10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
