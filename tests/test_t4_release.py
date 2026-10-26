@@ -93,3 +93,27 @@ def test_operational_module_visible_and_evidence_only_rows_not_executable(tmp_pa
     page = (tmp_path / "index.html").read_text(encoding="utf-8")
     assert '<option value="all">All modules</option>' in page
     assert "<th>Module</th>" in page
+
+
+def test_release_retains_original_source_holds_and_fingerprints(tmp_path):
+    import hashlib
+
+    manifest = release.build(ROOT, tmp_path)
+    source = "pipeline/t4_audit/agroforestry/original_claim_followups_2026-10-23.json"
+    expected = json.loads((ROOT / source).read_text())["items"]
+    rows = release.read(tmp_path / "source_followups.csv")
+    assert {r["reporting_evidence_id"] for r in rows} == {
+        r["reporting_evidence_id"] for r in expected
+    }
+    for row, item in zip(rows, expected):
+        assert row["status"] == item["status"]
+        assert row["runtime_effect"] == item["runtime_effect"]
+        assert row["next_action"] == item["next_action"]
+    assert (
+        manifest["input_sha256"][source]
+        == hashlib.sha256((ROOT / source).read_bytes()).hexdigest()
+    )
+    assert (
+        manifest["output_sha256"]["source_followups.csv"]
+        == hashlib.sha256((tmp_path / "source_followups.csv").read_bytes()).hexdigest()
+    )
