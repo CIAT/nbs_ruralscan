@@ -150,7 +150,7 @@ def _options(row, evidence, sources, countries):
         for p in params.get("profiles", [])
         if country_match(p.get("context", {}), countries)
     ]
-    options = []
+    options: list[dict] = []
     for p in profiles:
         options.append(
             {
@@ -290,6 +290,29 @@ def _options(row, evidence, sources, countries):
                     "applicability_note": "Alternative to graded source profiles; never selected implicitly",
                 }
             )
+    for option in options:
+        linked = set(option["evidence_ids"])
+        missing = []
+        for unit in evidence.values():
+            parent = obj(unit.get("context"), {}).get("table_continuation_of")
+            if parent in linked and unit["evidence_id"] not in linked:
+                missing.append(
+                    {
+                        "evidence_id": unit["evidence_id"],
+                        "page": unit.get("page"),
+                        "relationship": obj(unit.get("relationship"), {}),
+                        "review_state": unit.get("review_state")
+                        or (
+                            "approved"
+                            if str(unit.get("reviewer_ok")).lower() == "true"
+                            else "awaiting_review"
+                        ),
+                    }
+                )
+        option["completeness"] = {
+            "status": "partial" if missing else "no_known_missing_continuation",
+            "missing_continuations": sorted(missing, key=lambda u: u["evidence_id"]),
+        }
     return sorted(options, key=lambda o: o["function_id"])
 
 
@@ -514,6 +537,10 @@ def build_contract(
                 raise ValueError(
                     f"Missing or stale function selection for {rule_id}; regenerate template"
                 )
+            if selected["completeness"]["status"] == "partial":
+                raise ValueError(
+                    f"Incomplete source function: resolve table continuation for {rule_id}"
+                )
             if (
                 not pick.get("decision_reference")
                 or not pick.get("applicability_note")
@@ -552,6 +579,10 @@ def build_contract(
         else:
             blockers.append(
                 "Legal category threshold requires explicit category adapter and system coverage decision"
+            )
+        if any(o["completeness"]["status"] == "partial" for o in options):
+            notes.append(
+                "An incomplete source option is shown for inspection only; resolve its table continuation before selection"
             )
         if "cross_family" in system and not pick:
             blockers.append(

@@ -153,7 +153,7 @@ def _interval_plot(option: dict) -> str:
     parts = [
         '<svg viewBox="0 0 300 140" role="img" aria-label="Reported suitability intervals; gaps remain unknown">',
         '<path d="M34 12V108H280" fill="none" stroke="#9baeb0"/>',
-        '<text x="5" y="18">1</text><text x="5" y="111">0</text>',
+        '<text x="5" y="18">1</text><text x="5" y="64">0.5</text><text x="5" y="111">0</text>',
     ]
     for row in intervals:
         score = _bound(row.get("score"))
@@ -204,8 +204,24 @@ def _function(option: dict, selected: bool) -> str:
         + "</p>"
     )
     if intervals:
+        missing = option.get("completeness", {}).get("missing_continuations", [])
+        if missing:
+            body += '<p class="badge"><strong>Incomplete curve — table continuation unresolved.</strong> Only compiled classes are plotted; higher suitability may be on another page. Not selectable for execution.</p>'
+            for unit in missing:
+                body += (
+                    "<p>Uncompiled continuation, page "
+                    + _text(unit.get("page"))
+                    + ": "
+                    + _text(
+                        unit.get("relationship", {}).get("classes", "See source record")
+                    )
+                    + " (source units). Status: "
+                    + _text(unit.get("review_state"))
+                    + ".</p>"
+                )
+        body += '<p class="muted">Y: standardized suitability (0–1); not importance or probability.</p>'
         body += _interval_plot(option)
-        body += '<details><summary>Exact intervals and source context</summary><table class="intervals"><thead><tr><th>Input range</th><th>Suitability</th></tr></thead><tbody>'
+        body += '<details><summary>Exact intervals and source context</summary><table class="intervals"><thead><tr><th>Input range</th><th>Source class</th><th>Suitability</th></tr></thead><tbody>'
         for row in intervals:
             a, b = row.get("lower"), row.get("upper")
             start = "[" if row.get("lower_inclusive") and _bound(a) is not None else "("
@@ -214,6 +230,10 @@ def _function(option: dict, selected: bool) -> str:
             body += (
                 "<tr><td>"
                 + _text(range_text)
+                + "</td><td>"
+                + _text(
+                    _label(row["label"]) if row.get("label") else "Combined / numeric"
+                )
                 + "</td><td>"
                 + _text(row.get("score") if row.get("score") is not None else "Unknown")
                 + "</td></tr>"

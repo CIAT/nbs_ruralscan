@@ -1,5 +1,9 @@
 # Agroforestry T4 — first-pass release
 
+## Inspect T4 in the existing dashboard
+
+Use [Evidence Query → T4 analysis](../../docs/dashboard.html#t4/global): **Evidence trail · Suitability & weights · Global synthesis · Rules & method**. One read-only inspection surface; evidence decisions remain in QA/QC. Developer packages below are versioned downloads, not additional live dashboards.
+
 **Developer integration:** start with [developer-v0.1.0](developer-v0.1.0/index.html), the generated function/dataset contract, and [implementation notes](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md). This package is generated from a verified corpus recompile; the earlier evidence-review releases remain below for provenance.
 
 **Current release: [v0.1.5](v0.1.5/README.md), 26 October 2026.** Built for inspection ahead of the November World Bank meeting. Pilot testing remains Diego's work.

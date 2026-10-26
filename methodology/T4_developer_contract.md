@@ -125,3 +125,18 @@ Run `PYTHONPATH=src python3 scripts/build-t4-developer.py --verify PATH` against
 Hash verification establishes consistency with the recorded manifest, not authenticity of the underlying research or a new human approval. Evidence review, source verification and geographic-transfer decisions retain their separate recorded status. This release adds no new data extraction. It is a developer-ready interface and reproducible configuration package, **not an execution-complete spatial run**.
 
 `conformance_examples.json` includes numeric response examples and present/absent/unknown input arrays for all seven host gates. These make response semantics testable without acquiring pilot rasters; passing them does not establish full data-adapter compatibility, legal-mask completion or real-world transfer validity.
+
+## One dashboard for inspection
+
+Use the existing Evidence Query tab in `docs/dashboard.html`, under T4 analysis:
+
+- **Evidence trail** lists every retained or dropped record and its actual compiled destination or hold; linked references and numeric function contributors are distinguished.
+- **Suitability & weights** compares source responses side by side, with raw claims, weighting methods, source weights and relative-importance diagnostics.
+- **Global synthesis** shows the full-corpus compatible pools, authored gates, operational references, inclusion denominators and dataset requirements. Global describes the evidence selection, not worldwide transfer approval.
+- **Rules & method** explains scoring, source weighting, compatibility, deduplication, missing values and spatial aggregation, with links to authoritative policies and code.
+
+These are read-only subtabs, not a parallel review system. QA/QC remains the review destination. Historical HTML reports and pinned developer packages are retained as snapshots; do not add new dashboards for subsequent analysis.
+
+Build the panels with `PYTHONPATH=src python3 scripts/build-t4-dashboard.py`; `--check` compares them against a fresh corpus/compiler build. The generated `docs/t4_analysis.json` records input hashes. The dashboard compares its evidence state with the current review register and marks a changed snapshot explicitly. Rebuild after upstream reconciliation, rather than treating a saved analysis as live review status.
+
+A known uncompiled table continuation marks its parent function as **partial**. Both compiled and uncompiled classes are shown together, with separate review status and original page locators. Partial functions cannot be selected for execution; the compiler does not grant approval or silently fill missing bands. Resolving the authoritative continuation and rebuilding is required. This guard detects known linked continuations; it is not proof that every source table has been fully extracted.
