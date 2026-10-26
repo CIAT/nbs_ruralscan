@@ -13,7 +13,7 @@ from nbs_ruralscan.runtime.binding import Binding, resolve_binding
 from nbs_ruralscan.schema_tools.t4_review_view import interval_text
 
 ROOT = Path(__file__).resolve().parents[1]
-VERSION = "0.1.4"
+VERSION = "0.1.5"
 DEST = ROOT / "handoff/agroforestry-t4" / ("v" + VERSION)
 AUDIT = "pipeline/t4_audit/agroforestry/final_audit/"
 
@@ -101,24 +101,22 @@ def build(root, destination, version=VERSION):
     }
 
     def inclusion_text(level, group, variable, module="M1"):
-        parts = []
-        for lane, label in (
-            ("reviewed", "Reviewed"),
-            ("all_recorded", "Including pending"),
-        ):
-            r = inclusion_index.get((module, level, group, variable, lane))
-            parts.append(
-                label
-                + ": "
-                + (
-                    f"{r['n']}/{r['N']} ({r['percent']}%)"
-                    if r and r["N"]
-                    else "No reviewed cohort"
-                    if r
-                    else "No verified model-use record"
-                )
-            )
-        return "; ".join(parts)
+        r = inclusion_index.get((module, level, group, variable, "all_recorded"))
+        if not r or not r["N"]:
+            return "No verified model-use record"
+        return f"{r['n']}/{r['N']} studies ({r['percent']}%)"
+
+    def review_text(group, variable, module):
+        key = (module, "variable", group, variable)
+        recorded = inclusion_index.get((*key, "all_recorded"), {})
+        reviewed = inclusion_index.get((*key, "reviewed"), {})
+        total = recorded.get("n", 0)
+        approved = reviewed.get("n", 0)
+        if not total:
+            return "No model-use evidence recorded; review completion not assessed"
+        if approved == total:
+            return f"All {total} have reviewed evidence of variable use"
+        return f"{approved} of {total} have reviewed evidence of variable use; {total - approved} lack reviewed evidence"
 
     rules = []
     selected_datasets = set()
@@ -304,7 +302,30 @@ def build(root, destination, version=VERSION):
             source_citations=" | ".join(src[sid]["citation"] for sid in sids),
         )
         rules.append(record)
+    numeric_sources = {
+        row["mapping_id"]: sorted(
+            {
+                p["source_id"]
+                for p in json.loads(row["relationship_params"] or "{}").get(
+                    "profiles", []
+                )
+            }
+        )
+        for row in t4
+    }
     for record in rules:
+        record["review_status"] = review_text(
+            record["variable_group"],
+            record["variable"],
+            "M2b" if record["module"].startswith("M2b") else "M1",
+        )
+        source_ids = numeric_sources.get(record["mapping_id"], [])
+        count = len({_paper_key(sid, src) for sid in source_ids})
+        record["numeric_rule_studies"] = (
+            f"{count} {'study' if count == 1 else 'studies'}: " + "; ".join(source_ids)
+            if count
+            else "No numeric source profile in this row"
+        )
         related = (
             [u for u in operational_units if u["variable"] == record["variable"]]
             if record["module"].startswith("M2b")
@@ -444,11 +465,11 @@ def build(root, destination, version=VERSION):
 <p><b>{kinds.get("Numeric response", 0)} numeric rows · {kinds.get("Categorical host gate", 0)} host gates · {kinds.get("Hard exclusion", 0)} hard exclusion.</b> {kinds.get("Operational scenario", 0)} operational scenarios plus evidence-only operational variables shown as M2b; excluded from core suitability scoring. Configuration ready for inspection; field applicability and pilot execution remain to validate.</p>
 <p>Hierarchy: suitability theme → variable group → canonical measurement → dataset. Aliases stay in variables.csv. Related proxies remain separate until context-specific selection; dataset resolution alone does not establish quality. Source importance stays separate from runtime weights.</p>
 <details><summary>Remaining limitations and required inputs</summary><p>Numeric rows retain regional source profiles; they are not universal pooled curves. FMNR rainfall remains contextual evidence, without an executable rainfall cutoff. Soil pH/source boundary conflicts remain held. Local inputs: {esc(", ".join(gaps))}. Recipe/BIND differences: {esc(", ".join(conflicts))}. Read dataset notes before execution. No pilot run performed.</p></details>
-<details><summary>What inclusion estimates mean</summary><p>Group inclusion = papers using at least one variable in the group / eligible contributing model papers. Variable inclusion = papers using this variable / the same denominator. A paper counts once even when several group members are used. DOI aliases are deduplicated.</p><p>The displayed cohort is general-practice agroforestry models across systems with at least one active, explicitly verified structural or operational input. Both modules use the same paper denominator; group numerators are module-specific. Reviewed n/N uses only human-reviewed records; including pending uses all active verified records. Missing extractions are not recorded use, not confirmed non-use. These are bounded observed-inclusion estimates, not systematic-review prevalence, independent agreement, or weights. Full table extraction is incomplete. Shared model origins can still appear in multiple reporting papers. No family transfer is implied.</p><a href="inclusion_estimates.csv">Counts, denominator papers, evidence IDs, system/scope breakdowns and variable-within-group estimates</a></details>
+<details><summary>What inclusion estimates mean</summary><p>Group inclusion = papers using at least one variable in the group / eligible contributing model papers. Variable inclusion = papers using this variable / the same denominator. A paper counts once even when several group members are used. DOI aliases are deduplicated.</p><p>The displayed cohort is general-practice agroforestry models across systems with at least one active, explicitly verified structural or operational input. Both modules use the same paper denominator; group numerators are module-specific. Displayed study-use fractions include all active verified model-use records. Review status separately counts those studies with at least one approved record of using this variable; it does not claim every extract from those studies is reviewed. Numeric-rule studies count papers supplying profiles in this specific row, not all papers using the variable. Detailed reviewed-only estimates remain in the downloadable counts. Missing extractions are not recorded use, not confirmed non-use. These are bounded observed-inclusion estimates, not systematic-review prevalence, independent agreement, or weights. Full table extraction is incomplete. Shared model origins can still appear in multiple reporting papers. No family transfer is implied.</p><a href="inclusion_estimates.csv">Counts, denominator papers, evidence IDs, system/scope breakdowns and variable-within-group estimates</a></details>
 <details><summary>How to read curves, weights and practice names</summary><p>Plots show retained source bands on the common suitability scale, not automatic runtime curves. Open circles exclude endpoints; filled circles include them. Arrows mark unbounded reported tails clipped to the plotting window. Empty regions have no plotted score; overlapping segments remain unresolved. No interpolation is added. A row with a separate default threshold retains that default until a source response is selected.</p><p>Numeric defaults are equal (0.2 in current T4). Masks are gates, not weighted votes. Relative importance ratios compare each variable with its study's equal-importance reference; 1 means equal, 2 means twice that reference. Full study denominators and alternative models remain separate. These ratios are not adopted runtime weights.</p><p>Standard vocabulary: Agroforestry (NbS) → suitability system → practice. Practice membership shown here is registry membership, not proof every source applies to every listed practice. Unassigned evidence is not automatically planted silvoarable. Haile parklands may be planted or regenerated; Chuma is regional; Ahmad NDVI describes mixed systems. Any planted-system assumption must be a separate sensitivity scenario, preserving original classification.</p><a href="practice_vocabulary.csv">Full practice vocabulary</a></details>
 <p><a href="T4_review.csv">Readable table CSV</a> · <a href="T4_suitability_mappings.csv">Authoritative T4 snapshot</a> · <a href="evidence_accounting.csv">Every evidence record</a> · <a href="source_relative_importance.csv">Relative importance within studies</a> · <a href="host_inputs.csv">Host dataset requirements</a> · <a href="source_followups.csv">Unresolved original-source checks</a> · <a href="manifest.json">Version and hashes</a></p>
 <input id="search" placeholder="Filter variable, system, theme or dataset" aria-label="Search release"><label>Module <select id="module"><option value="all">All modules</option><option value="M1">M1 — Core suitability</option><option value="M2b">M2b — Operational feasibility</option></select></label>
-<div class="scroll"><table><thead><tr><th>Module</th><th>Theme</th><th>Variable group</th><th>Group inclusion</th><th>System / practices</th><th>Variable</th><th>Variable inclusion</th><th>Rule and evidence</th><th>Dataset</th><th>Weighting</th><th>Use status</th></tr></thead><tbody>"""
+<div class="scroll"><table><thead><tr><th>Module</th><th>Theme</th><th>Variable group</th><th>Studies using variable group</th><th>System / practices</th><th>Variable</th><th>Studies using variable</th><th>Review status</th><th>Studies supplying numeric rules</th><th>Rule and evidence</th><th>Dataset</th><th>Weighting</th><th>Use status</th></tr></thead><tbody>"""
     for r in rules:
         comparison_variable = {
             "annual_precipitation": "precipitation",
@@ -494,6 +515,10 @@ def build(root, destination, version=VERSION):
             + esc(r["label"])
             + "</td><td>"
             + esc(r["variable_inclusion"])
+            + "</td><td>"
+            + esc(r["review_status"])
+            + "</td><td>"
+            + esc(r["numeric_rule_studies"])
             + (
                 "<p>Retained evidence: "
                 + str(r["related_operational_papers"])

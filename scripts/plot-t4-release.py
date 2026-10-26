@@ -14,7 +14,7 @@ matplotlib.rcParams["svg.hashsalt"] = "t4-source-bands"
 import matplotlib.pyplot as plt  # noqa: E402 — select noninteractive backend first
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "handoff/agroforestry-t4/v0.1.4/plots"
+OUT = ROOT / "handoff/agroforestry-t4/v0.1.5/plots"
 
 
 def plot(row, out):
