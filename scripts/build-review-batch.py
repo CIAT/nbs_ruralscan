@@ -3,7 +3,9 @@
 
     python3 scripts/build-review-batch.py <batch_id> --title "..." --items items.csv [--notes "..."]
 
-`items.csv` columns: evidence_id, question (why this unit needs a human look). Writes
+`items.csv` columns: evidence_id, question (why this unit needs a human look), and optionally
+ai_decision / ai_reason (what the AI proposed; a reviewer who agrees with an AI reject can
+press Reject without picking the reason again). Writes
 `docs/review/<batch_id>.json` (the units with their fields + the quote), renders a page crop
 per unit to `docs/review/img/<evidence_id>.png` (quote highlighted; whole page at low DPI
 when the quote cannot be located), and updates `docs/review/index.json`. Reads only the
@@ -789,9 +791,17 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--items", required=True)
     ap.add_argument("--notes", default="")
     a = ap.parse_args(argv)
-    items = {
-        r["evidence_id"]: (r.get("question") or "")
-        for r in csv.DictReader(open(a.items, encoding="utf-8"))
+    item_rows = list(csv.DictReader(open(a.items, encoding="utf-8")))
+    items = {r["evidence_id"]: (r.get("question") or "") for r in item_rows}
+    # optional ai_decision / ai_reason columns: what the AI proposed, so a reviewer who
+    # agrees can reject without re-picking the reason (Pete 2026-10-26)
+    ai_of = {
+        r["evidence_id"]: {
+            "decision": (r.get("ai_decision") or "").strip(),
+            "reason": (r.get("ai_reason") or "").strip(),
+        }
+        for r in item_rows
+        if (r.get("ai_decision") or "").strip()
     }
     src = {r["source_id"]: r for r in csv.DictReader(SRC.open(encoding="utf-8"))}
     units = []
@@ -870,6 +880,7 @@ def main(argv: list[str] | None = None) -> int:
                     if ctx.get(k) not in (None, "")
                 },
                 "question": question,
+                "ai": ai_of.get(eid),
                 "crop": crop,
                 "crop_note": crop_note,
                 "pdf_url": sharepoint_url(s_rec.get("library_path", ""), page or None),

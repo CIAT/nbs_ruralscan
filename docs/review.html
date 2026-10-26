@@ -139,6 +139,8 @@
   button.big.active.hold { background: var(--accent-amber); color: #111; }
   button.big.active.reject { background: var(--accent-rose); color: #fff; }
   .dec-extra { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; align-items: flex-start; }
+  .ai-hint { font-size: 12.5px; color: var(--text-secondary); margin-top: 6px; }
+  .ai-hint b { color: var(--text-primary); }
   #reason-wrap { display: none; flex: 1 1 100%; }
   #reason-wrap.show { display: block; }
   #reason { width: 100%; }
@@ -340,6 +342,7 @@
         <button type="button" class="big hold" data-d="hold">Hold</button>
         <button type="button" class="big reject" data-d="reject">Reject</button>
       </div>
+      <div id="ai-hint" class="ai-hint" hidden></div>
       <div class="dec-extra">
         <div id="reason-wrap">
           <select id="reason"><option value="">Reject reason (required)</option></select>
@@ -1032,7 +1035,26 @@
     return h;
   }
 
+  // What the AI proposed for this card: a structured `ai` block from the batch builder, or
+  // (older batches) a leading "[reason_code]" in the question. Pete 2026-10-26: a reviewer
+  // who agrees with the AI's reject does not have to pick the reason again.
+  function aiSuggestion(u) {
+    if (!u) return null;
+    if (u.ai && u.ai.decision) return { decision: u.ai.decision, reason: u.ai.reason || '' };
+    var m = /^\s*\[([a-z_]+)\]/.exec(u.question || '');
+    if (m && S.reasons.indexOf(m[1]) >= 0) return { decision: 'reject', reason: m[1] };
+    return null;
+  }
+  function renderAiHint(u) {
+    var el = $('ai-hint'); if (!el) return;
+    var a = aiSuggestion(u);
+    if (!a) { el.hidden = true; el.innerHTML = ''; return; }
+    el.hidden = false;
+    el.innerHTML = 'AI suggests: <b>' + esc(a.decision) + '</b>' + (a.reason ? ' — ' + esc(String(a.reason).replace(/_/g, ' ')) : '') +
+      (a.decision === 'reject' ? ' <span class="muted">· agree? press Reject; no reason needed</span>' : '');
+  }
   function syncDecision(u) {
+    renderAiHint(u);
     var d = u ? S.decisions[idOf(u)] || {} : {};
     Array.prototype.forEach.call(document.querySelectorAll('.dec-btns button'), function (b) {
       b.classList.toggle('active', !!u && b.getAttribute('data-d') === d.decision);
@@ -1057,6 +1079,11 @@
     if (!S.reviewer) { $('status').innerHTML = '<span class="warn">Enter your reviewer name first.</span>'; $('reviewer').focus(); return false; }
     var reason = opts.reason !== undefined ? opts.reason : $('reason').value;
     var note = opts.note !== undefined ? opts.note : $('note').value;
+    var ai = aiSuggestion(u);
+    if (decision === 'reject' && !reason && ai && ai.decision === 'reject') {
+      reason = ai.reason || 'other';
+      if (String(note || '').indexOf('agrees with AI') < 0) note = (note ? note + ' | ' : '') + 'agrees with AI';
+    }
     if (decision === 'reject' && !reason) {
       S.pendingReject = true;
       $('reason-wrap').classList.add('show');
