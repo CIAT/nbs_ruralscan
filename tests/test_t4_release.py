@@ -57,8 +57,8 @@ def test_rule_view_separates_hierarchy_and_exposes_weights_and_scope(tmp_path):
     release.build(ROOT, tmp_path)
     page = (tmp_path / "index.html").read_text(encoding="utf-8")
     assert "<th>Theme</th><th>Variable group</th>" in page
-    assert "<th>Group inclusion</th>" in page
-    assert "<th>Variable inclusion</th>" in page
+    assert "<th>Studies using variable group</th>" in page
+    assert "<th>Studies using variable</th>" in page
     assert (tmp_path / "inclusion_estimates.csv").exists()
     assert "<th>Weighting</th>" in page
     assert "Equal numeric default: 0.2" in page
@@ -117,3 +117,17 @@ def test_release_retains_original_source_holds_and_fingerprints(tmp_path):
         manifest["output_sha256"]["source_followups.csv"]
         == hashlib.sha256((tmp_path / "source_followups.csv").read_bytes()).hexdigest()
     )
+
+
+def test_ndvi_study_use_review_and_numeric_support_are_distinct(tmp_path):
+    release.build(ROOT, tmp_path)
+    row = next(
+        r for r in release.read(tmp_path / "T4_review.csv") if r["variable"] == "ndvi"
+    )
+    assert row["variable_inclusion"] == "3/10 studies (30.0%)"
+    assert row["review_status"] == "All 3 have reviewed evidence of variable use"
+    assert row["numeric_rule_studies"] == "1 study: ahmad_2018"
+    page = (tmp_path / "index.html").read_text()
+    assert "<th>Review status</th>" in page
+    assert "<th>Studies supplying numeric rules</th>" in page
+    assert "Reviewed: 3/10" not in page
