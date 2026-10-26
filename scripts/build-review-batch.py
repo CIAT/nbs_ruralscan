@@ -606,6 +606,48 @@ def described_line(ctx: dict, role: str) -> str:
     return ""
 
 
+def identity(
+    r: dict,
+    ctx: dict,
+    labels: dict[str, str],
+    fams: dict[str, str],
+    routes: dict[str, list[dict]],
+    t5: dict[str, str],
+) -> dict:
+    """What a reviewer must see first (Pete 2026-10-26): the practice, the outcome variable and
+    the table(s) the unit feeds — each a short label."""
+    nbs = r["nbs_id"].replace("_", " ")
+    fam = r.get("suitability_family_id") or ""
+    fam_lbl = fam.split("__")[-1].replace("_", " ")
+    practice = nbs + (
+        f" → {fam_lbl}" if fam and not fam.endswith("cross_family") else ""
+    )
+    var = labels.get(r["variable"], r["variable"].replace("_", " "))
+    role = r.get("use_role", "")
+    hz = str(ctx.get("hazard_type") or "")
+    tables: list[str] = []
+    if role == "structural_suitability":
+        tables = ["T4 suitability"]
+    elif role == "operational_risk":
+        tables = ["M2b project risk"]
+    elif role == "asset_vulnerability":
+        tables = [f"T3 asset threat · {hz.replace('_', ' ') or 'hazard'}"]
+    else:
+        for x in routes.get(r["variable"], []):
+            tag = "" if x.get("proximity") == "direct" else " (proxy)"
+            if x.get("target_table") == "T6":
+                tables.append(
+                    f"T6 · {t5.get(x['target_key'], x['target_key'].replace('_', ' '))}{tag}"
+                )
+            elif x.get("target_table") == "T3" and x.get("target_key") == hz:
+                tables.append(f"T3 · {hz.replace('_', ' ')}{tag}")
+    return {
+        "practice": practice,
+        "variable": var,
+        "tables": list(dict.fromkeys(tables)),
+    }
+
+
 def practice_line(r: dict, fams: dict[str, str]) -> str:
     nbs = r["nbs_id"].replace("_", " ")
     fid = r.get("suitability_family_id") or ""
@@ -897,6 +939,7 @@ def main(argv: list[str] | None = None) -> int:
                     bands,
                 ),
                 "picos": picos(r, rel, ctx, labels, fams, s_rec),
+                "identity": identity(r, ctx, labels, fams, routes, t5),
                 "library_path": s_rec.get("library_path", ""),
                 "cited_original": (r.get("lineage_of") or "").strip()
                 if r.get("claim_basis") == "cited_secondary"
