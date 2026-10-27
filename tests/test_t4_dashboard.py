@@ -18,16 +18,34 @@ def result():
     return dc.build_contract(ROOT)
 
 
-def test_known_uncompiled_continuation_is_visible_and_not_selectable(result):
+def test_completed_source_preserves_human_status(result):
     row = next(r for r in result["contract"]["rows"] if r["rule_id"] == SOC)
     option = row["function_options"][0]
-    assert len(option["intervals"]) == 2
-    assert option["completeness"]["status"] == "partial"
-    assert (
-        option["completeness"]["missing_continuations"][0]["evidence_id"]
-        == "ev_T4_soc_haile2024_continuation"
+    assert len(option["intervals"]) == 4
+    assert not option["completeness"]["missing_continuations"]
+    assert option["source_completions"][0]["kind"] == "verified_table_continuation"
+    assert "Source table completed" in render_developer_view(result["contract"])
+    record = next(
+        u
+        for u in result["evidence"]
+        if u["evidence_id"] == "ev_T4_soc_haile2024_continuation"
     )
-    assert "Incomplete curve" in render_developer_view(result["contract"])
+    assert record["reviewer_ok"] == "false"
+
+
+def test_unresolved_partial_option_cannot_be_selected(result, monkeypatch):
+    original = dc._options
+
+    def partial(*args, **kwargs):
+        options = original(*args, **kwargs)
+        for option in options:
+            option["completeness"]["status"] = "partial"
+        return options
+
+    monkeypatch.setattr(dc, "_options", partial)
+    result = dc.build_contract(ROOT)
+    row = next(r for r in result["contract"]["rows"] if r["rule_id"] == SOC)
+    option = row["function_options"][0]
     pick = {
         "contract_version": dc.VERSION,
         "selections": {
@@ -58,7 +76,7 @@ def test_evidence_accounting_keeps_linked_uncompiled_and_dropped_distinct(result
 def test_study_and_global_panels_do_not_promote_partial_or_unpooled_curves(result):
     studies = view._studies(result)
     combined = view._global(result)
-    assert "Incomplete curve" in studies
+    assert "Source table completed" in studies
     assert "high:0.7-0.75" in studies
     assert "Whole-model share" in studies
     assert "Versus hierarchy equal share" in studies

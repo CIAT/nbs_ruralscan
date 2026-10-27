@@ -153,7 +153,9 @@ def rebuild(root: Path, nbs: str) -> dict:
             }
         )
     report = {
-        "review_mode": "approved_only",
+        "review_mode": "approved_with_authorized_source_completions"
+        if any(d.get("admission_basis") for d in dispositions.values())
+        else "approved_only",
         "audited_recipe_matches": True,
         "input_sha256": before,
         "families": {family: asdict(result) for family, result in results.items()},

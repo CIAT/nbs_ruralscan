@@ -6,6 +6,7 @@ Never extrapolate a low class, interpolate ranks, or infer family applicability.
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 from dataclasses import replace
 
@@ -13,6 +14,76 @@ from .synthesis import SynthesisReport, _harmonise, _weight, _resolve_root_origi
 from .harmonization import harmonize, standardize
 
 NUMBER = r"-?(?:\d+(?:\.\d*)?|\.\d+)"
+
+
+def completion_fingerprint(unit):
+    """Pin source content without equating a correction with human approval."""
+    fields = (
+        "evidence_id",
+        "source_id",
+        "nbs_id",
+        "suitability_family_id",
+        "variable",
+        "relationship",
+        "page",
+        "quote",
+        "claim_scope",
+        "use_role",
+        "evidence_type",
+    )
+    content = {key: getattr(unit, key) for key in fields}
+    return hashlib.sha256(
+        json.dumps(content, sort_keys=True, ensure_ascii=False).encode()
+    ).hexdigest()
+
+
+def source_completion(unit, units, policies):
+    """Admit only explicitly authorized, content-pinned table continuations.
+
+    This is a compiler correction, never a change to reviewer_ok. Ordinary
+    unreviewed claims, dropped records and unapproved parents remain excluded.
+    """
+    policy = policies.get(unit.evidence_id, {})
+    hp = policy.get("harmonization") or {}
+    hp = json.loads(hp) if isinstance(hp, str) else hp
+    correction = hp.get("source_completion") or {}
+    if not correction:
+        return None
+    parent = units.get(hp.get("continuation_of"))
+    if (
+        correction.get("kind") != "verified_table_continuation"
+        or not correction.get("authorization")
+        or not correction.get("verified_by")
+        or not correction.get("source_pdf_sha256")
+        or policy.get("action") != "compile"
+        or unit.claim_scope != "practice_technology"
+        or unit.use_role != "structural_suitability"
+        or unit.evidence_type != "literature_relationship"
+        or unit.review_state == "dropped"
+        or parent is None
+        or not parent.reviewer_ok
+        or parent.review_state == "dropped"
+        or (unit.context or {}).get("table_continuation_of") != parent.evidence_id
+        or any(
+            getattr(unit, k) != getattr(parent, k)
+            for k in (
+                "source_id",
+                "nbs_id",
+                "suitability_family_id",
+                "variable",
+                "claim_scope",
+                "use_role",
+                "evidence_type",
+            )
+        )
+        or correction.get("evidence_fingerprint") != completion_fingerprint(unit)
+        or correction.get("parent_fingerprint") != completion_fingerprint(parent)
+        or correction.get("input_unit") != policy.get("input_unit")
+        or policy.get("input_unit")
+        != policies.get(parent.evidence_id, {}).get("input_unit")
+    ):
+        raise ValueError(f"Invalid or stale source completion: {unit.evidence_id}")
+    return {**correction, "evidence_id": unit.evidence_id, "page": unit.page}
 
 
 def bounds(raw, reverse=False):
@@ -67,25 +138,20 @@ def parse_profiles(rel, policy):
             items = [
                 dict(zip(("label", "range"), p.split(":", 1))) for p in items.split(",")
             ]
-        profiles["default"] = [
-            _interval(
-                *bounds(x["range"], policy.get("range_order") == "descending_allowed")[
-                    :2
-                ],
-                x["label"],
-                scale,
-                *bounds(x["range"], policy.get("range_order") == "descending_allowed")[
-                    2:
-                ],
+        bands = []
+        for item in items:
+            low, high, il, ih = bounds(
+                item["range"], policy.get("range_order") == "descending_allowed"
             )
-            for x in items
-        ]
+            bands.append(_interval(low, high, item["label"], scale, il, ih))
+        profiles["default"] = bands
     elif encoding == "field_ranges":
         mapping = json.loads(policy["field"])
-        profiles["default"] = [
-            _interval(*bounds(rel[field])[:2], label, scale, *bounds(rel[field])[2:])
-            for label, field in mapping.items()
-        ]
+        bands = []
+        for label, field in mapping.items():
+            low, high, il, ih = bounds(rel[field])
+            bands.append(_interval(low, high, label, scale, il, ih))
+        profiles["default"] = bands
     elif encoding == "favourable_above":
         profiles["default"] = [
             _interval(rel["favorable_above"], None, "favourable", scale, False, False)
@@ -169,6 +235,7 @@ def compile_bands(
             hp = policy.get("harmonization") or {}
             if isinstance(hp, str):
                 hp = json.loads(hp)
+            completion = source_completion(u, by_id, policies)
             origin = _resolve_root_origin(u, by_id, by_source)
             origin_units = [x for x in units if x.source_id == origin]
             if origin_units:
@@ -217,6 +284,7 @@ def compile_bands(
                             band[key] = value["abs_max"]
                 converted_profiles.append(
                     {
+                        **({"source_completions": [completion]} if completion else {}),
                         "profile_id": u.evidence_id
                         + ("" if group == "default" else "__" + group),
                         "source_id": u.source_id,
@@ -314,4 +382,8 @@ def join_continuations(profiles):
             set(parent["evidence_ids"] + part["evidence_ids"])
         )
         parent["page_locators"].update(part["page_locators"])
+        if part.get("source_completions"):
+            parent.setdefault("source_completions", []).extend(
+                part["source_completions"]
+            )
     return list(bases.values()), rejected

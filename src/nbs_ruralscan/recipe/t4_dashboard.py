@@ -514,6 +514,9 @@ def _rules(root, result):
         "<h4>Variable importance and spatial MCDA</h4><p>Source weights are normalized within each complete sibling group, then multiplied along the source hierarchy to obtain whole-model shares. Additive repeat branches are consolidated by variable and scope. Flat ratio = whole-model share × number of distinct variable/scope inputs. Hierarchy-adjusted ratio = whole-model share ÷ equal-share contribution through the same tree. Missing or conflicting models retain holds; these diagnostics do not set runtime weights.</p><p>Choose one representative per thematic/correlation group before final weights. Current numerical baseline is weighted linear combination with separate gates. Final selected weights sum to one; missing inputs remain unknown, without per-pixel renormalization. Aggregation choice remains explicit because the original minimum-factor design differs.</p>"
     )
     out.append(
+        "<h4>Repairing incomplete curves</h4><p>Verified continuations of reviewed source tables can be restored under an explicit, content-pinned correction policy. Source pages and agent verification remain visible; human approval flags and reviewed-study counts do not change. This does not create an independent study vote. A highest reported class below 1 is not automatically a missing class: high maps to 0.75 and very high to 0.9 under the common convention. Unknown thresholds and contradictory classes remain explicit.</p>"
+    )
+    out.append(
         "<h4>Country and version rules</h4><p>Target country selects dataset bindings. An optional exact study-country filter narrows evidence and recomputes compatible pools; neither approves transfer. This view uses the full corpus. Published developer bundles are pinned snapshots; this dashboard is the single inspection surface. Review decisions stay in QA/QC.</p>"
     )
     base = "https://github.com/CIAT/nbs_ruralscan/blob/main/"

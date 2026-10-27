@@ -20,6 +20,8 @@ from pathlib import Path
 from .developer_corpus import rebuild
 from .harmonization import harmonize
 from .importance import compare_importance, load_weight_models
+from .evidence import EvidenceUnit
+from .numeric_bands import source_completion
 from .inclusion import inclusion_estimates
 from ..runtime.binding import Binding, resolve_binding
 from ..runtime.categorical import evaluate_categorical
@@ -154,6 +156,11 @@ def _options(row, evidence, sources, countries):
     for p in profiles:
         options.append(
             {
+                **(
+                    {"source_completions": p["source_completions"]}
+                    if p.get("source_completions")
+                    else {}
+                ),
                 "function_id": "profile:" + p["profile_id"],
                 "kind": "source_profile",
                 "label": p["source_id"],
@@ -428,6 +435,22 @@ def build_contract(
         )
     corpus = rebuild(root, nbs)
     evidence = {r["evidence_id"]: r for r in corpus["evidence"]}
+    completion_policies = {
+        r["evidence_id"]: r
+        for r in read_csv(root / "schema/lookups/t4_numeric_compilation_policy.csv")
+    }
+    completion_units = {}
+    for eid, raw_unit in evidence.items():
+        if eid not in completion_policies:
+            continue
+        typed = {
+            k: v for k, v in raw_unit.items() if k in EvidenceUnit.__dataclass_fields__
+        }
+        for key in ("relationship", "context"):
+            typed[key] = obj(typed.get(key), {})
+        typed["reviewer_ok"] = str(typed.get("reviewer_ok")).lower() == "true"
+        typed["page"] = int(typed["page"]) if typed.get("page") else None
+        completion_units[eid] = EvidenceUnit(**typed)
     sources = {r["source_id"]: r for r in corpus["sources"]}
     inputs = list(corpus["inputs"])
 
@@ -639,7 +662,15 @@ def build_contract(
             if (
                 not u
                 or u["review_state"] == "dropped"
-                or u["reviewer_ok"].lower() != "true"
+                or (
+                    u["reviewer_ok"].lower() != "true"
+                    and not (
+                        eid in completion_units
+                        and source_completion(
+                            completion_units[eid], completion_units, completion_policies
+                        )
+                    )
+                )
             ):
                 raise ValueError(
                     f"Recipe links unapproved, dropped or missing evidence: {eid}"

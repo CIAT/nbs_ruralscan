@@ -12,7 +12,9 @@ from pathlib import Path
 import re
 import unicodedata
 
-from nbs_ruralscan.recipe.numeric_bands import parse_profiles
+from nbs_ruralscan.recipe.numeric_bands import parse_profiles, source_completion
+from nbs_ruralscan.recipe.evidence import EvidenceUnit
+from nbs_ruralscan.schema_tools.generate import _csv_to_rows
 
 
 def read(root, path):
@@ -197,6 +199,28 @@ def check(root):
         row["evidence_id"]: row
         for row in read(root, "schema/lookups/t4_numeric_compilation_policy.csv")
     }
+    units = {
+        row["evidence_id"]: EvidenceUnit(
+            **{k: v for k, v in row.items() if k in EvidenceUnit.__dataclass_fields__}
+        )
+        for row in _csv_to_rows(root / "schema/registers/EV_evidence_register.csv")
+        if row["evidence_id"] in policies
+    }
+    completions = set()
+    for eid, unit in units.items():
+        try:
+            correction = source_completion(unit, units, policies)
+            if correction:
+                completions.add(eid)
+                pdf = root / ".cache/corpus" / (unit.source_id + ".pdf")
+                if (
+                    pdf.exists()
+                    and hashlib.sha256(pdf.read_bytes()).hexdigest()
+                    != correction["source_pdf_sha256"]
+                ):
+                    errors.append("Source completion PDF changed: " + eid)
+        except ValueError as exc:
+            errors.append(str(exc))
     live_ids = set()
     for row in read(root, "schema/recipes/agroforestry/T4_suitability_mappings.csv"):
         live_ids.update(json.loads(row["evidence_ids"] or "[]"))
@@ -209,7 +233,11 @@ def check(root):
                 errors.append("Incomplete inventoried table: " + eid)
             if row["reviewer_ok"].lower() == "true" and eid not in live_ids:
                 errors.append("Approved numeric evidence absent from live T4: " + eid)
-            if row["reviewer_ok"].lower() != "true" and eid in live_ids:
+            if (
+                row["reviewer_ok"].lower() != "true"
+                and eid in live_ids
+                and eid not in completions
+            ):
                 errors.append("Unapproved recovery entered live T4: " + eid)
         except (KeyError, ValueError, TypeError) as exc:
             errors.append(f"Uncompilable inventoried table: {eid}: {exc}")

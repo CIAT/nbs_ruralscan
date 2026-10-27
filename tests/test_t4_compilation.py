@@ -412,7 +412,18 @@ def test_final_reconciliation_covers_live_links_and_parks_ambiguous_classes():
     ).open() as handle:
         live = list(csv.DictReader(handle))
     linked = {eid for r in live for eid in json.loads(r["evidence_ids"] or "[]")}
-    assert linked == {r["evidence_id"] for r in rows if r["live_mapping_ids"]}
+    # The October 20 audit remains an immutable snapshot. Explicit later source
+    # completions are separately validated by the live compiler/coverage tests.
+    completions = {
+        c["evidence_id"]
+        for r in live
+        for p in json.loads(r["relationship_params"] or "{}").get("profiles", [])
+        for c in p.get("source_completions", [])
+    }
+    assert (
+        linked
+        == {r["evidence_id"] for r in rows if r["live_mapping_ids"]} | completions
+    )
     with (root / "parked_mappings.csv").open() as handle:
         parked = {r["evidence_id"] for r in csv.DictReader(handle)}
     assert parked.isdisjoint(linked)

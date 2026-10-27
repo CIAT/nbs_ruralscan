@@ -221,6 +221,12 @@ def _function(option: dict, selected: bool) -> str:
                 )
         body += '<p class="muted">Y: standardized suitability (0–1); not importance or probability.</p>'
         body += _interval_plot(option)
+        for completion in option.get("source_completions", []):
+            body += (
+                "<details><summary>Source table completed — correction details</summary><p>"
+                + _text(completion.get("note"))
+                + " Human review history unchanged.</p></details>"
+            )
         body += '<details><summary>Exact intervals and source context</summary><table class="intervals"><thead><tr><th>Input range</th><th>Source class</th><th>Suitability</th></tr></thead><tbody>'
         for row in intervals:
             a, b = row.get("lower"), row.get("upper")
