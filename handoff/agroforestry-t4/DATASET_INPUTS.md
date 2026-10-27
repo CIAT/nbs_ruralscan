@@ -1,6 +1,6 @@
 # First-pass dataset inputs — Diego and Brayden
 
-27 October 2026. Applies to the approved planted-silvoarable terrain-and-soil policy. Provider documentation is checked; authenticated access and raster processing are not tested. Developer-v0.1.4 includes these details under each dataset's `documented_input`; v0.1.2 remains immutable.
+27 October 2026. Applies to the approved planted-silvoarable terrain-and-soil policy. Provider documentation is checked; authenticated access and raster processing are not tested. Developer-v0.1.5 includes these details under each dataset's `documented_input`; v0.1.2 remains immutable.
 
 ## Input table
 

@@ -402,6 +402,16 @@ def _approved_policy(result):
             "<p>Planted silvoarable only. Weighted average baseline; minimum-factor sensitivity. Land-use eligibility and legal exclusions stay separate, with no score weight. Eligible fraction is retained separately. Missing required scores remain unknown. Regional transfer and dataset checks still required.</p>"
         )
         out.append(
+            "<p>First-pass implementation scope (criteria plus gates): "
+            + _text(
+                " · ".join(
+                    f"{key}: {value}"
+                    for key, value in policy["implementation_readiness"].items()
+                )
+            )
+            + ". No spatial run validated.</p>"
+        )
+        out.append(
             _table(
                 ["Criterion", "Group", "Approved weight", "Function status"],
                 [
@@ -458,7 +468,17 @@ def _global(result):
         pools = [o for o in row["function_options"] if o["kind"] == "harmonized_pool"]
         typed = [o for o in row["function_options"] if o["kind"] == "numeric_threshold"]
         gates = [o for o in row["function_options"] if o["kind"] == "categorical_gate"]
-        function = "".join(_function(o, False) for o in pools + typed)
+        function = "".join(
+            _function(
+                o,
+                row.get("function_id") == o["function_id"],
+                selection_label="Approved policy response — target applicability pending"
+                if row["readiness"]["function_basis"] == "approved_policy"
+                and row["readiness"]["effective_function_id"] == o["function_id"]
+                else None,
+            )
+            for o in pools + typed
+        )
         if gates:
             params = gates[0]["parameters"]
             classes = params.get("class_map", {})
@@ -597,10 +617,19 @@ def _global(result):
                         else ""
                     ),
                     '<span class="badge">'
-                    + _text(_label(row["status"]))
+                    + _text(row["readiness"]["label"])
                     + "</span>"
-                    + _list(row["blockers"])
-                    + _list(row["notes"]),
+                    + "<p>"
+                    + _text(row["readiness"]["reason"])
+                    + "</p>"
+                    + "<details><summary>Next actions and owners</summary>"
+                    + _list(
+                        [
+                            a["owner"] + ": " + a["action"]
+                            for a in row["readiness"]["next_actions"]
+                        ]
+                    )
+                    + "</details>",
                 ],
                 row["system"],
                 variable=row["variable"],
@@ -610,6 +639,16 @@ def _global(result):
     return (
         "<p><strong>Full-corpus synthesis — work in progress.</strong> “Global” means no study-country filter. It does not mean every regional response applies worldwide. Only explicitly compatible studies are combined; source options are never silently averaged. Operational feasibility stays separate from M1 suitability.</p><p>Common score: 0–1 relative suitability, not probability. Gaps, unresolved boundaries and absent inputs remain unknown.</p>"
         + _approved_policy(result)
+        + "<p><strong>Implementation readiness across all displayed rows:</strong> "
+        + _text(
+            " · ".join(
+                f"{key.replace('_', ' ')}: {value}"
+                for key, value in result["contract"]["summary"][
+                    "implementation_readiness"
+                ].items()
+            )
+        )
+        + ". Defined means logic can be implemented; it does not mean inputs or a spatial run are validated. Evidence-reference rows are counted separately.</p>"
         + _table(
             [
                 "System",
