@@ -18,7 +18,7 @@ Evidence inspection stays in the existing dashboard: **Evidence Query → T4 ana
 | 8 operational scenarios | Existing normalized endpoints are placeholders | Route to operational feasibility; do not execute placeholders as calibrated raw-input responses |
 | 12 operational evidence references | Variable use, direction or importance without configured response | Retain for scenario design and implementation guidance |
 
-These are 38 developer rows representing 26 configured mappings plus 12 references. The 19 blocked / 7 conditional / 12 reference-only statuses describe configuration readiness, not human-review completion.
+These are 38 developer rows representing 26 configured mappings plus 12 references. Use the reconciled `readiness` field: 9 defined, 2 provisional, 15 decision-needed and 12 reference-only. The legacy `status` counts (19 blocked / 7 conditional / 12 reference-only) remain for compatibility; they are not the current implementation assessment or human-review completion. The first-pass scope is only five rows: three defined and two provisional.
 
 ## Implementation sequence
 
@@ -34,11 +34,11 @@ These are 38 developer rows representing 26 configured mappings plus 12 referenc
 
 | Item | Proposed lead | Required result |
 |---|---|---|
-| Ten numeric response selections; five mappings have unresolved system applicability | Pete / domain review | Function and target-system/context decision; no automatic planted-silvoarable assignment |
+| Seven numeric mappings outside the approved first-pass policy | Pete / domain review, when expanding scope | Select compatible responses and resolve system applicability before adding them. These do not block implementation of the five-row first pass. |
 | Approved partial-index policy; target applicability still open | Pete with Diego | Read `run_contract.approved_policies`: WLC baseline, minimum sensitivity, terrain/soil 50/50; validate target transfer and inputs before use |
 | Climate binding differences and native asset metadata | Brayden with Diego | Validated band/unit/time/depth transformations and acquisition adapters |
 | Field boundaries, farmland context, grazing confirmation and ungrazed forage management | Runtime team / local data providers | Inputs for the relevant host branches; unknowns retained where absent |
-| Legal category mask and family coverage | Pete with runtime team | Explicit exclusion specification and adapter |
+| Assessed legal exclusion mask for planted silvoarable | Pete with runtime team / relevant authority | Apply documented target rules and coverage to the existing true/false/unknown interface. IUCN categories alone do not establish permission or exclusion. |
 | Operational scenarios | Brayden with Pete | Raw-variable domains, direction and filter/flag rules; no automatic core-suitability weights |
 
 Source importance is available, including whole-model shares and relative-to-equal-share diagnostics. These describe the papers' models and do not automatically set run weights. Inclusion counts likewise describe variable use, not weighting or review completion.
@@ -47,9 +47,11 @@ Source importance is available, including whole-model shares and relative-to-equ
 
 Use `run_contract.approved_policies` and per-row `approved_policy` for the agreed baseline. It is not a full biophysical model. Regional transfer remains required; a changed or missing function fingerprint holds the policy. Keep source-importance diagnostics separate from these design weights. Legal/host masks carry no weight; retain eligible fraction separately. Country-specific selections remain unset until applicability is recorded.
 
-## Change from previous developer package
+## Package history
 
-Haile SOC now includes the printed high and very-high continuation bands, with scores 0.75 and 0.9 above the earlier low/medium bands. Original extraction review status remains unchanged; correction provenance records source pages and fingerprints. Assumed percent units, the overlapping 0.7 boundary, system applicability and source-weight disagreement remain explicit. The package adds no new extraction approvals or geographic-transfer decisions.
+Version 0.1.5 adds reconciled readiness and effective policy responses. Version 0.1.4 defined the planted host and legal interfaces; version 0.1.3 added the unactivated soil-input proposal. No new response selection or evidence approval follows from these readiness labels.
+
+An earlier package correction restored Haile SOC: it includes the printed high and very-high continuation bands, with scores 0.75 and 0.9 above the earlier low/medium bands. Original extraction review status remains unchanged; correction provenance records source pages and fingerprints. Assumed percent units, the overlapping 0.7 boundary, system applicability and source-weight disagreement remain explicit. The package adds no new extraction approvals or geographic-transfer decisions.
 
 Package version is 0.1.5; machine contract/selection format is 0.2.0. Six additional `policy_conformance.json` cases check aggregation, gates, host fractions and unknown propagation. Earlier packages remain immutable. See [implementation guide](IMPLEMENTATION.md) for build/verification commands and [method](../../methodology/T4_developer_contract.md) for the full corpus → compiler → developer-table chain.
 
@@ -60,3 +62,12 @@ Read [dataset input assumptions](DATASET_INPUTS.md). The policy criteria carry a
 ## Start with the five-row policy scope
 
 The policy's `implementation_readiness` counts its three numeric criteria and two gates. Slope and gate interfaces are defined; SOC and pH are provisional because input depth/measurement assumptions remain. Use row `readiness.next_actions` to separate methodology decisions, target-team assessments and implementation checks. The wider 38-row catalogue includes unselected alternatives and operational references; it is not the minimum criterion set for this first pass. Every `readiness.execution_ready` remains false until a separately documented spatial implementation is validated.
+
+## Immediate next actions
+
+1. **Diego and Brayden: begin integration from developer-v0.1.5.** Implement contract loading and role dispatch, then run the 40 response cases and six policy cases. These checks need no country selection or raster data. Report results against the pinned package and keep analytical tables read-only.
+2. **Pete with the implementation team: record target-run choices.** Haiti was named earlier as the pilot AOI; record its exact boundary and source when defining the run. That choice alone does not approve transferring regional responses. Record target applicability and adoption or replacement of the provisional soil-input proposal.
+3. **Implementation team: resolve inputs and masks.** Verify provider units, bands and depth transformations; supply host-branch inputs and an assessed legal mask. Record missing coverage as unknown.
+4. **Diego: perform spatial validation.** Preserve diagnostics, eligible fractions and unknown coverage; compare WLC with the minimum sensitivity result. Do not describe the partial terrain-and-soil index as full agroforestry suitability.
+
+Remaining numeric alternatives and operational scenarios are later extensions. Their unresolved decisions do not require a new blanket review of the approved first-pass evidence. The immutable versioned package is unchanged by updates to this working brief.
