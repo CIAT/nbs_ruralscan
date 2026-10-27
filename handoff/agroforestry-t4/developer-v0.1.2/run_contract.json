@@ -1,0 +1,65 @@
+{
+  "aggregation_selection": "Approved policies below fix analytical choices; target applicability and input readiness remain separate",
+  "approved_policies": [
+    {
+      "aggregation": "weighted_linear_combination",
+      "applicability": "target_transfer_required",
+      "criteria": [
+        {
+          "function_fingerprint": "e10f7c5257e34fbf9d5089e9745db4d54c94465def40111faa7ba340491372d1",
+          "function_id": "pool:india_planted_scoping__slope",
+          "function_verified": true,
+          "rule_id": "agroforestry__planted_silvoarable__slope",
+          "variable_group": "topographic",
+          "weight": 0.5
+        },
+        {
+          "function_fingerprint": "ff284d17ea1cb10847208c53fa1d36d8b8ec21a1de38e0d98427296563b5776b",
+          "function_id": "pool:india_planted_scoping__soil_organic_carbon",
+          "function_verified": true,
+          "rule_id": "agroforestry__planted_silvoarable__soil_organic_carbon",
+          "variable_group": "edaphic",
+          "weight": 0.25
+        },
+        {
+          "function_fingerprint": "86e7e5181c2e293075ac78f180e53a2976deb42da1c4042143500aa926412b08",
+          "function_id": "pool:india_planted_scoping__soil_ph",
+          "function_verified": true,
+          "rule_id": "agroforestry__planted_silvoarable__soil_ph",
+          "variable_group": "edaphic",
+          "weight": 0.25
+        }
+      ],
+      "decision_reference": "Pete approval 2026-10-27; GitHub issue #455",
+      "execution_ready": false,
+      "gate_policy": "separate_host_and_legal_masks",
+      "group_budgets": {
+        "edaphic": 0.5,
+        "topographic": 0.5
+      },
+      "holds": [
+        "Target applicability, dataset contracts, host inputs and legal mask must be resolved before a spatial run"
+      ],
+      "missing_values": "propagate_unknown",
+      "nbs_id": "agroforestry",
+      "output_label": "Partial terrain-and-soil index",
+      "policy_id": "planted_terrain_soil_v1",
+      "sensitivity_aggregation": "minimum",
+      "status": "approved_pending_target_and_inputs",
+      "system": "agroforestry__planted_silvoarable"
+    }
+  ],
+  "baseline": "Current CIAT implementation: weighted linear combination plus separate gates; original minimum-factor design differs",
+  "criteria": "Select one function per system and canonical criterion; resolve correlated groups before assigning weights",
+  "execution_ready": false,
+  "host_combination": "AND within a configured host branch; permitted perennial host crops OR; preserve fractions and driver; no area double-counting",
+  "missing_values": "Fixed criterion set; propagate unknown; no per-pixel renormalization",
+  "required_developer_checks": [
+    "Dataset access/band/native-unit/scale/time contracts",
+    "Explicit system and contextual transfer decisions",
+    "Selected function fingerprints",
+    "Full criterion set, aggregation and weights",
+    "Known excluded, unknown and scored outputs kept distinct"
+  ],
+  "weight_validation": "Final selected nonnegative M1 score weights sum to one; masks and operational factors excluded"
+}
