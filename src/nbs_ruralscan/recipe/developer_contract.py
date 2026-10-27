@@ -28,6 +28,7 @@ from ..runtime.categorical import evaluate_categorical
 from ..runtime.numeric import evaluate_numeric
 
 VERSION = "0.1.0"
+PACKAGE_VERSION = "0.1.1"
 
 
 def read_csv(path):
@@ -962,6 +963,7 @@ def _package_inputs(root, nbs):
         f"schema/recipes/{nbs}/T4_suitability_mappings.csv",
         "methodology/T4_developer_contract.md",
         "handoff/agroforestry-t4/IMPLEMENTATION.md",
+        "handoff/agroforestry-t4/START_HERE.md",
         "scripts/synthesise-recipe.py",
         "scripts/build-t4-developer.py",
         "src/nbs_ruralscan/schema_tools/generate.py",
@@ -1097,7 +1099,8 @@ def _write_package(root, output, **kwargs):
     )
     (output / "README.md").write_text(
         "# T4 developer contract\n\n"
-        "Start with [the table and function plots](index.html), [implementation notes](IMPLEMENTATION.md) and [method](METHOD.md).\n\n"
+        "Start with [the implementation task brief](START_HERE.md), [developer table](developer_table.csv), [implementation notes](IMPLEMENTATION.md) and [method](METHOD.md). "
+        "Use the existing Evidence Query dashboard for ongoing inspection; [offline table and plots](index.html) are a pinned package snapshot.\n\n"
         f"This package contains {contract['summary']['configured_rows']} configured mappings and {contract['summary']['display_rows'] - contract['summary']['configured_rows']} operational evidence-only rows. "
         "It is an implementation handoff, not a completed spatial run. Select response functions and record applicability before execution. "
         "Blocked means an analytical or binding choice remains; conditional means the function is configured but input/adapter checks remain.\n\n"
@@ -1115,6 +1118,7 @@ def _write_package(root, output, **kwargs):
     docs = {
         "METHOD.md": "methodology/T4_developer_contract.md",
         "IMPLEMENTATION.md": "handoff/agroforestry-t4/IMPLEMENTATION.md",
+        "START_HERE.md": "handoff/agroforestry-t4/START_HERE.md",
     }
     for dest, source in docs.items():
         # Source files remain report-ready Markdown; bundle links work when relocated.
@@ -1128,6 +1132,18 @@ def _write_package(root, output, **kwargs):
                 relative = resolved.relative_to(root.resolve()).as_posix()
             except ValueError:
                 return match.group(0)
+            local = next(
+                (dest for dest, path in docs.items() if path == relative), None
+            )
+            package_prefix = (
+                f"handoff/{contract['nbs']}-t4/developer-v{PACKAGE_VERSION}/"
+            )
+            if relative.startswith(package_prefix):
+                candidate = relative.removeprefix(package_prefix)
+                if (output / candidate).is_file() or candidate == "manifest.json":
+                    local = candidate
+            if local:
+                return f"[{label}]({local}" + ("#" + fragment if fragment else "") + ")"
             return (
                 f"[{label}](https://github.com/CIAT/nbs_ruralscan/blob/RELEASE_REVISION/{relative}"
                 + ("#" + fragment if fragment else "")
@@ -1168,6 +1184,7 @@ def _write_package(root, output, **kwargs):
         )
     manifest = {
         "contract_version": VERSION,
+        "package_version": PACKAGE_VERSION,
         "source_commit": revision,
         "filters": {
             "country": contract["target_country"],
@@ -1188,7 +1205,7 @@ def _write_package(root, output, **kwargs):
     }
     (output / "manifest.json").write_text(stable_json(manifest), encoding="utf-8")
     (output / "VERSION").write_text(
-        f"developer-v{VERSION}\nsource_commit={revision}\ninput_manifest=manifest.json\n",
+        f"developer-v{PACKAGE_VERSION}\ncontract_version={VERSION}\nsource_commit={revision}\ninput_manifest=manifest.json\n",
         encoding="utf-8",
     )
     # VERSION is part of the hashed payload too.

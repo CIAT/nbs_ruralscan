@@ -281,6 +281,7 @@ def test_input_mutation_during_package_build_rejected(tmp_path, baseline, monkey
     files = set(baseline["inputs"]) | {
         "methodology/T4_developer_contract.md",
         "handoff/agroforestry-t4/IMPLEMENTATION.md",
+        "handoff/agroforestry-t4/START_HERE.md",
         "scripts/build-t4-developer.py",
         "pyproject.toml",
         "uv.lock",
@@ -363,6 +364,18 @@ def test_package_verifier_detects_payload_and_pinned_input_tampering(tmp_path):
     output = tmp_path / "package"
     manifest = dc.write_package(ROOT, output, country="HTI")
     assert dc.verify_package(ROOT, output) == manifest
+    assert manifest["package_version"] == dc.PACKAGE_VERSION
+    assert manifest["contract_version"] == dc.VERSION
+    assert f"developer-v{dc.PACKAGE_VERSION}" in (output / "VERSION").read_text()
+    assert f"contract_version={dc.VERSION}" in (output / "VERSION").read_text()
+    assert (
+        "[developer_contract.json](developer_contract.json)"
+        in (output / "START_HERE.md").read_text()
+    )
+    assert (
+        "[the implementation task brief](START_HERE.md)"
+        in (output / "IMPLEMENTATION.md").read_text()
+    )
     payload = output / "function_intervals.csv"
     original = payload.read_bytes()
     payload.write_bytes(original + b"tampered\n")

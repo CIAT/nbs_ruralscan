@@ -1,12 +1,12 @@
 # Agroforestry developer package: integration guide
 
-Prepared 26 October 2026. Package version: `developer-v0.1.0`.
+Updated 27 October 2026. Package version: `developer-v0.1.1`; contract/selection format: `0.1.0`.
 
 ## Integration boundary
 
 This package supplies a repeatable corpus-to-configuration handoff. It does **not** replace Diego and Brayden's runtime, define their repository layout, or require a new pipeline. Authoritative analytical configuration remains in CIAT registers and schema CSVs. The developer table, function options/intervals and decision manifest are generated views for selecting and checking the configuration a runtime will consume.
 
-Read [the methodology contract](../../methodology/T4_developer_contract.md) for evidence eligibility, context transfer, functions, weighting and unknown handling. The [v0.1.5 catalogue](v0.1.5/index.html) remains useful for reviewing the broader evidence; it is not a ready-to-run selection of all criteria.
+Start with [the implementation task brief](START_HERE.md). Read [the methodology contract](../../methodology/T4_developer_contract.md) for evidence eligibility, context transfer, functions, weighting and unknown handling. Inspect evidence in the existing dashboard's **Evidence Query → T4 analysis** subtabs. Versioned HTML files are offline snapshots, not additional live review queues.
 
 ## Current implementation context and verification limits
 
@@ -48,7 +48,7 @@ Inspect `index.html`, `function_options.csv` and `selection_template.json`. Fill
 ```bash
 PYTHONPATH=src python3 scripts/build-t4-developer.py \
   --nbs agroforestry \
-  --output handoff/agroforestry-t4/developer-v0.1.0 \
+  --output /tmp/t4-developer-selected \
   --country HTI \
   --selection path/to/selection.json
 ```
@@ -78,7 +78,7 @@ Verify a delivered package against its source checkout without rebuilding:
 
 ```bash
 PYTHONPATH=src python3 scripts/build-t4-developer.py \
-  --verify handoff/agroforestry-t4/developer-v0.1.0
+  --verify handoff/agroforestry-t4/developer-v0.1.1
 ```
 
 `--verify PATH` checks manifest inputs against the current checkout and package-output hashes. Use `--root` to identify the matching source checkout when necessary. A changed checkout may correctly fail verification. Verification establishes manifest consistency, not research authenticity, evidence approval, transfer approval or a successful spatial run. The immutable code commit and hashes support reproducibility; they do not replace scientific review.
@@ -86,6 +86,8 @@ PYTHONPATH=src python3 scripts/build-t4-developer.py \
 This is a developer-ready contract, not an execution-complete spatial analysis. No new data extraction is included. The conformance examples check response semantics without acquiring pilot rasters; dataset adapters and actual pilot execution remain developer work.
 
 Commit the package through GitHub with its source revision and selection manifest. Preserve prior versions. Do not distribute a second editable table that can diverge from the schema.
+
+The published v0.1.1 package leaves target country unset and includes the full evidence inventory. Rebuild with the intended country and explicit selections when preparing a run. Compared with v0.1.0, it restores Haile's printed SOC continuation bands and records their separate correction provenance. It does not supply new human approvals, transfer decisions or runtime weights. Package version and contract format version are recorded separately in the manifest and `VERSION` file.
 
 ## Proposed responsibilities
 

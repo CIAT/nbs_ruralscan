@@ -1,6 +1,6 @@
 # T4 developer contract: evidence to executable configuration
 
-Version: developer-v0.1.0. Prepared 26 October 2026 for agroforestry.
+Package: developer-v0.1.1. Updated 27 October 2026 for agroforestry. Machine contract and selection format remain version 0.1.0; package revisions do not invalidate unchanged function selections. Function fingerprints still detect analytical changes.
 
 ## Purpose and status
 
