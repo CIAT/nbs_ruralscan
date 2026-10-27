@@ -1184,6 +1184,52 @@
       "fk": {
         "evidence_id": "EV.evidence_id"
       }
+    },
+    "T4_RUN": {
+      "name": "T4 approved run policy",
+      "location": "recipes/<nbs_id>/T4_run_policy.{csv,json}",
+      "per_nbs": true,
+      "primary_key": "policy_row_id",
+      "required": [
+        "policy_row_id",
+        "policy_id",
+        "nbs_id",
+        "system",
+        "output_label",
+        "variable_group",
+        "rule_id",
+        "function_id",
+        "function_fingerprint",
+        "group_weight",
+        "criterion_weight",
+        "aggregation",
+        "sensitivity_aggregation",
+        "missing_values",
+        "gate_policy",
+        "applicability",
+        "decision_reference"
+      ],
+      "optional": [],
+      "conditional": [],
+      "derived": [],
+      "fk": {},
+      "enum_values": {
+        "aggregation": [
+          "weighted_linear_combination"
+        ],
+        "sensitivity_aggregation": [
+          "minimum"
+        ],
+        "missing_values": [
+          "propagate_unknown"
+        ],
+        "gate_policy": [
+          "separate_host_and_legal_masks"
+        ],
+        "applicability": [
+          "target_transfer_required"
+        ]
+      }
     }
   }
 }

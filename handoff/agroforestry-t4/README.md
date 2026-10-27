@@ -4,9 +4,9 @@
 
 Use [Evidence Query → T4 analysis](../../docs/dashboard.html#t4/global): **Evidence trail · Suitability & weights · Global synthesis · Rules & method**. One read-only inspection surface; evidence decisions remain in QA/QC. Developer packages below are versioned downloads, not additional live dashboards.
 
-**Current developer package: [developer-v0.1.1](developer-v0.1.1/README.md), 27 October 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.1/developer_table.csv), [machine contract](developer-v0.1.1/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
+**Current developer package: [developer-v0.1.2](developer-v0.1.2/README.md), 27 October 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.2/developer_table.csv), [machine contract](developer-v0.1.2/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
 
-This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country and numeric function selections remain unset. Package version 0.1.1 retains machine contract/selection format 0.1.0. Pilot testing remains Diego's work.
+This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country-specific selections remain unset; the approved partial terrain-and-soil policy pins three functions and weights without granting regional transfer. Package version 0.1.2 uses contract/selection format 0.2.0. Pilot testing remains Diego's work.
 
 The configured rows are **10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
 
@@ -16,7 +16,7 @@ The editable source remains `schema/recipes/agroforestry/T4_suitability_mappings
 
 ## Configuration decisions
 
-[First-pass decision table](FIRST_PASS_DECISIONS.md) proposes response choices, aggregation and weights, with worked examples. These are pending policy decisions; the published package remains unchanged.
+[First-pass decision table](FIRST_PASS_DECISIONS.md) records approved response choices, aggregation and weights, with worked examples. The new package includes the policy and six aggregation/gate conformance cases. Target transfer and input validation remain open.
 
 ## What the first pass establishes
 

@@ -1,6 +1,6 @@
 # T4 developer contract: evidence to executable configuration
 
-Package: developer-v0.1.1. Updated 27 October 2026 for agroforestry. Machine contract and selection format remain version 0.1.0; package revisions do not invalidate unchanged function selections. Function fingerprints still detect analytical changes.
+Package: developer-v0.1.2. Updated 27 October 2026. Machine contract/selection version 0.2.0 adds schema-authored approved policies and scalar policy conformance cases. Recreate selection documents against this version; function fingerprints continue to detect analytical changes.
 
 ## Purpose and status
 
@@ -150,3 +150,12 @@ The compiler accepts only a linked continuation from the same source, variable, 
 First application: Haile 2024 Table 4 spans PDF pages 5–6. Its printed SOC classes are `<0.5`, `0.5–0.7`, `0.7–0.75`, `>0.75`; the continuation supplies the missing high and very-high bands. They score 0.25, 0.5, 0.75 and 0.9 under the agreed convention. Percent units inherit the previously reviewed interpretation (the table does not print a SOC unit); the 0.7 shared boundary, parkland establishment pathway and model-weight conflict remain explicit. This correction does not authorize pooling or geographic transfer.
 
 Do not manufacture a score-1 band simply because a curve stops below 1. A three-class source ending at “high” is complete at 0.75 under this convention. Missing tails, unknown cutoffs and contradictory source classes require a separately documented analytical assumption; they cannot be silently filled by this continuation mechanism.
+
+
+## Approved first-pass policy
+
+Pete approved `planted_terrain_soil_v1` on 27 October 2026: compatible Indian planted-silvoarable slope/SOC/pH pools; terrain 50%, soil 50% split equally between SOC and pH; WLC baseline and minimum-factor sensitivity. The authoritative configuration is `schema/recipes/agroforestry/T4_run_policy.csv`, validated against the manifest and compiled into `run_contract.approved_policies`. Each developer row identifies its approved policy weight separately from a target-specific runtime selection.
+
+This is a partial terrain-and-soil index, not full biophysical suitability or universal transfer. Target country remains unset. Host eligibility and legal exclusions are separate gates; true exclusion or false host eligibility produces an excluded state. Unknown required gate or criterion produces unknown. Valid partial host fraction is retained separately, never multiplied into the suitability score. Soft operational factors remain outside this sum. `policy_conformance.json` supplies small scalar examples for consumer adapters; it is not a pilot run.
+
+Source-model importance remains diagnostic and supplies sensitivity alternatives, not these design weights. Before any spatial run, confirm target applicability, input units/depth, selected representatives, host data and legal rules. A change in criterion set or group membership requires a newly documented policy; never renormalize by available pixels. A changed function fingerprint or evidence filter holds the approved policy until revalidated.
