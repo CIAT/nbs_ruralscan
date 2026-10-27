@@ -115,3 +115,20 @@ Never commit a PDF. `.cache/corpus/` stays gitignored.
 - `docs/REVIEWER_GUIDE.md` — the review-side setup (SRC hydration + the review server)
 - `PLAYBOOK.md` → *Acquisition queue* and *Review flagged evidence*
 - `methodology/search_protocol.md` → §OA-recovery
+
+## Filing papers someone downloaded by hand (ResearchGate, institutional access)
+
+Save each PDF in `~/Downloads` as `<source_id>.pdf` (the ID from `pipeline/acquisition_queue.csv`), then run:
+
+```
+uv run python3 scripts/intake-downloads.py --dry-run   # check what would be filed
+uv run python3 scripts/intake-downloads.py             # file them
+uv run python3 src/nbs_ruralscan/schema_tools/verify_metadata.py verify   # stamp DOI rows
+```
+
+Each file must show the citation's title on its opening pages (or on a body page for a chapter
+inside a book); a mismatch is refused and left in Downloads. Accepted files are copied to
+`.cache/corpus/` and to the SharePoint library folder (via the OneDrive mirror), the queue row is
+marked `acquired`, and the download moves to `~/Downloads/nbs_ingested/`. Nothing is downloaded
+by the script: ResearchGate and publisher downloads stay human clicks (their terms forbid
+automated downloading).
