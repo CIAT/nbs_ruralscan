@@ -16,7 +16,40 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+from nbs_ruralscan.recipe.evidence import EvidenceUnit
+from nbs_ruralscan.recipe.numeric_bands import source_completion
+from nbs_ruralscan.schema_tools.generate import _csv_to_rows
+
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def validated_completions(root: Path) -> dict:
+    """Revalidate exceptions from source CSVs, never from report assertions."""
+    with (root / "schema/lookups/t4_numeric_compilation_policy.csv").open(
+        encoding="utf-8"
+    ) as handle:
+        policies = {row["evidence_id"]: row for row in csv.DictReader(handle)}
+    units = {
+        row["evidence_id"]: EvidenceUnit(
+            **{k: v for k, v in row.items() if k in EvidenceUnit.__dataclass_fields__}
+        )
+        for row in _csv_to_rows(root / "schema/registers/EV_evidence_register.csv")
+        if row["evidence_id"] in policies
+    }
+    completions = {}
+    for eid, unit in units.items():
+        correction = source_completion(unit, units, policies)
+        if not correction:
+            continue
+        pdf = root / ".cache/corpus" / (unit.source_id + ".pdf")
+        if (
+            pdf.exists()
+            and hashlib.sha256(pdf.read_bytes()).hexdigest()
+            != correction["source_pdf_sha256"]
+        ):
+            raise ValueError(f"Source completion PDF changed: {eid}")
+        completions[eid] = correction
+    return completions
 
 
 def payload_kind(rel: dict) -> str:
@@ -58,8 +91,14 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("nbs")
     ap.add_argument("directory", type=Path)
+    ap.add_argument(
+        "--data-only",
+        action="store_true",
+        help="Write reconciliation data only; preserve historical HTML reports",
+    )
     args = ap.parse_args()
     out = args.directory
+    completions = validated_completions(ROOT)
     reports = {
         mode: json.loads((out / mode / "report.json").read_text())
         for mode in ("draft", "approved")
@@ -117,7 +156,8 @@ def main() -> None:
                 raise ValueError(f"Missing disposition: {eid}")
         mappings = live_links.get(eid, [])
         if mappings and (
-            u["review_state"] == "dropped" or u["reviewer_ok"].lower() != "true"
+            u["review_state"] == "dropped"
+            or (u["reviewer_ok"].lower() != "true" and eid not in completions)
         ):
             raise ValueError(f"Live T4 references unapproved/dropped evidence: {eid}")
         if mappings and eid in parked:
@@ -144,7 +184,9 @@ def main() -> None:
             payload_kind=payload_kind(rel),
             live_mapping_ids="|".join(r["mapping_id"] for r in mappings),
             final_disposition=(
-                "live_categorical_host_reference"
+                "live_verified_source_completion"
+                if mappings and eid in completions
+                else "live_categorical_host_reference"
                 if mappings
                 and all(r["relationship_type"] == "ranked_classes" for r in mappings)
                 else "live_numeric_contributor"
@@ -159,6 +201,9 @@ def main() -> None:
             disposition_reason=(
                 parked[eid]["reason"]
                 if eid in parked
+                else "Authorized source-table completion; human review status unchanged. "
+                + completions[eid].get("note", "")
+                if mappings and eid in completions
                 else "Evidence-linked categorical host identity; not numeric suitability or effect magnitude."
                 if mappings
                 and all(r["relationship_type"] == "ranked_classes" for r in mappings)
@@ -251,6 +296,7 @@ def main() -> None:
             r["relationship_type"] == "ranked_classes" for r in live
         ),
         "unique_live_evidence_references": len(live_links),
+        "authorized_source_completions": sorted(set(live_links) & completions.keys()),
         "parked_mapping_records": len(parked),
         "support_percentages_present": sum(bool(r["paper_support_pct"]) for r in live),
         "live_t4_sha256": hashlib.sha256(
@@ -260,6 +306,9 @@ def main() -> None:
         ).hexdigest(),
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    if args.data_only:
+        print(json.dumps(summary, indent=2))
+        return
     heads = [
         "evidence_id",
         "source_id",

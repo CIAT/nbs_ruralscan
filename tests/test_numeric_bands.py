@@ -56,13 +56,15 @@ def test_organic_carbon_percent_is_converted_to_grams_per_kg():
     row = live("soil_organic_carbon", "planted_silvoarable")
     values = evaluate_numeric(row, [4, 6, 8], profile_id="ev_T4_soc_ahmad2018_1")
     np.testing.assert_allclose(values, [0.25, 0.5, 0.75])
-    assert np.isnan(
+    np.testing.assert_allclose(
         evaluate_numeric(
             live("soil_organic_carbon", "cross_family"),
-            [8],
+            [4, 6, 7, 7.2, 7.5, 8],
             profile_id="ev_T4_soc_haile2024_1",
-        )
-    ).all()
+        ),
+        [0.25, 0.5, np.nan, 0.75, 0.75, 0.9],
+        equal_nan=True,
+    )
 
 
 def test_species_clusters_are_retained_but_not_used_for_practice_temperature():
@@ -177,7 +179,11 @@ def test_all_numeric_policy_rows_accounted_for_without_unhandled_encoding():
     }
     for p in policies:
         if not reviewed[p["evidence_id"]]:
-            assert dispositions[p["evidence_id"]]["status"] == "unresolved_review"
+            assert dispositions[p["evidence_id"]]["status"] == (
+                "source_verified_continuation"
+                if json.loads(p.get("harmonization") or "{}").get("source_completion")
+                else "unresolved_review"
+            )
             continue
         assert dispositions[p["evidence_id"]]["status"] == (
             "species_scope"

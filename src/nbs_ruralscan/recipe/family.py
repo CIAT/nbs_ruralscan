@@ -101,8 +101,12 @@ def synthesise_family(
     dispositions = {}
     active = []
     crop_units = defaultdict(list)
+    from .numeric_bands import source_completion
+
+    by_id = {u.evidence_id: u for u in units}
     for u in units:
         reason = ""
+        completion = None
         if u.review_state == "dropped":
             reason = "qa_dropped"
         elif is_observed_presence(u):
@@ -114,13 +118,20 @@ def synthesise_family(
         elif u.claim_scope == "crop_specific" and not allow_crop_scope:
             reason = "crop_scope"
         elif approved_only and not u.reviewer_ok:
-            reason = "unresolved_review"
+            completion = source_completion(u, by_id, numeric_policies)
+            if not completion:
+                reason = "unresolved_review"
         elif u.claim_scope == "crop_specific" and not u.taxon:
             reason = "missing_crop_taxon"
         elif u.claim_scope == "crop_specific" and crop is None:
             reason = "crop_lane"
             crop_units[u.taxon].append(u)
         dispositions[u.evidence_id] = {
+            **(
+                {"admission_basis": "authorized_source_completion"}
+                if completion
+                else {}
+            ),
             "source_id": u.source_id,
             "variable": u.variable,
             "reviewer_ok": u.reviewer_ok,
@@ -153,7 +164,12 @@ def synthesise_family(
     }
 
     # support is measured over the structural-suitability candidates (what T4 considers)
-    t4_units = [u for u in units if u.use_role == "structural_suitability"]
+    t4_units = [
+        u
+        for u in units
+        if u.use_role == "structural_suitability"
+        and (not approved_only or u.reviewer_ok)
+    ]
     var_support = variable_support(t4_units, corpus_n, tiers=tiers)
     groups = group_support(t4_units, group_map, corpus_n, tiers=tiers)
     selection = selection_table(
@@ -223,6 +239,8 @@ def synthesise_family(
                 )
         for eid in rep.used:
             dispositions[eid]["status"] = "parameter_contributor"
+            if dispositions[eid].get("admission_basis"):
+                dispositions[eid]["status"] = "source_verified_continuation"
         for eid, reason in rep.dropped + rep.unresolved:
             dispositions[eid]["status"] = reason
         for eid, origin in rep.collapsed:

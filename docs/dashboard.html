@@ -1026,6 +1026,8 @@
     line-height: 1.4;
   }
 </style>
+<link rel="stylesheet" href="t4_analysis.css">
+<script src="t4_analysis.js"></script>
 </head>
 <body data-theme="dark">
 
@@ -1173,17 +1175,17 @@
           </div>
           
           <div class="control-group">
-            <label class="control-label" for="select-family">Suitability Family / Variant</label>
+            <label class="control-label" for="select-family">System / suitability family</label>
             <select class="select-input" id="select-family"></select>
           </div>
           
-          <div class="control-group">
+          <div class="control-group" id="interrogator-quote-control">
             <label class="control-label" for="search-input">Search Quote or Citation</label>
             <input type="text" class="text-input" id="search-input" placeholder="Type keyword...">
           </div>
 
           <div style="margin-top: 10px; border-top: 1px solid var(--border-color); padding-top: 14px; font-size: 11px; color: var(--text-muted);">
-            <p style="margin-bottom: 8px;">Consensus values and bounds are medians compiled from evidence rows containing that variable and family.</p>
+            <p style="margin-bottom: 8px;">Inspect evidence, source responses and compatible synthesis. Shared evidence is not automatically inherited by every system.</p>
             <p>Select another NbS or suitability family to automatically update mapping rules and evidence pools.</p>
           </div>
         </aside>
@@ -1218,12 +1220,30 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="4 14 10 14 14 6 20 6"></polyline>
                 </svg>
-                T4 Suitability Variable Mappings
+                T4 analysis · suitability + operational feasibility
               </h3>
               <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
             </div>
             
             <div id="wrapper-t4-mappings">
+              <p id="t4-analysis-load" role="status"></p>
+              <div id="t4-analysis" hidden>
+                <p id="t4-snapshot"></p>
+                <p id="t4-stale" hidden>Evidence changed since this analysis snapshot. QA/QC shows current reviews; these synthesis panels retain their recorded snapshot until rebuilt.</p>
+                <div class="t4-tabs" role="tablist" aria-label="T4 analysis">
+                  <button id="t4-tab-evidence" role="tab" data-t4-tab="evidence" aria-controls="t4-panel-evidence" aria-selected="false">Evidence trail</button>
+                  <button id="t4-tab-studies" role="tab" data-t4-tab="studies" aria-controls="t4-panel-studies" aria-selected="false">Suitability &amp; weights</button>
+                  <button id="t4-tab-global" role="tab" data-t4-tab="global" aria-controls="t4-panel-global" aria-selected="true">Global synthesis</button>
+                  <button id="t4-tab-rules" role="tab" data-t4-tab="rules" aria-controls="t4-panel-rules" aria-selected="false">Rules &amp; method</button>
+                </div>
+                <div class="t4-toolbar"><label>Find <input id="t4-find" type="search" placeholder="Variable, study or rule"></label><span id="t4-visible" aria-live="polite"></span></div>
+                <section id="t4-panel-evidence" role="tabpanel" aria-labelledby="t4-tab-evidence" hidden></section>
+                <section id="t4-panel-studies" role="tabpanel" aria-labelledby="t4-tab-studies" hidden></section>
+                <section id="t4-panel-global" role="tabpanel" aria-labelledby="t4-tab-global"></section>
+                <section id="t4-panel-rules" role="tabpanel" aria-labelledby="t4-tab-rules" hidden></section>
+              </div>
+              <div id="t4-legacy">
+
               <!-- Filter / Search toolbar -->
               <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
                 <div style="display:flex; gap:6px; align-items:center;">
@@ -1256,11 +1276,12 @@
                   <tbody id="body-t4-mappings"></tbody>
                 </table>
               </div>
+              </div>
             </div>
           </div>
 
           <!-- Joined Evidence Register Claims -->
-          <div style="margin-bottom: 24px;">
+          <div id="t4-verbatim-section" style="margin-bottom: 24px;">
             <div class="interrogator-header-row" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--text-secondary); padding-bottom: 8px;" onclick="toggleSection('wrapper-evidence-claims', 'chev-evidence')">
               <h3 class="interrogator-section-title" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
                 <span id="chev-evidence" style="display:inline-block; transition:transform 0.2s;">▼</span>
@@ -2191,6 +2212,7 @@
         document.getElementById('dashboard-content').style.display = 'block';
         
         initDashboard();
+        if (window.T4Analysis) window.T4Analysis.openFromHash();
       })
       .catch(err => {
         console.error(err);
@@ -5266,7 +5288,7 @@
 
   function populateFamilies(nbsId) {
     const familySelect = document.getElementById('select-family');
-    familySelect.innerHTML = '';
+    familySelect.innerHTML = nbsId === 'agroforestry' ? '<option value="all">All systems</option>' : '';
     
     const families = dashboardData.registers.FAM_family_registry || [];
     const nbsFamilies = families.filter(f => f.nbs_id === nbsId);
@@ -5380,6 +5402,7 @@
   }
 
   function renderT4Mappings(nbsId, familyId) {
+    if (window.T4Analysis) window.T4Analysis.update(nbsId, familyId, dashboardData);
     const mappingsBody = document.getElementById('body-t4-mappings');
     mappingsBody.innerHTML = '';
 
@@ -5389,7 +5412,7 @@
       return;
     }
 
-    let familyMappings = recipe.T4_suitability_mappings.filter(m => m.suitability_family_id === familyId);
+    let familyMappings = recipe.T4_suitability_mappings.filter(m => familyId === 'all' || m.suitability_family_id === familyId);
 
     // Filter by dimension pill
     const dimBtn = document.querySelector('#filter-t4-dimension .pill-btn.active');
@@ -5490,7 +5513,7 @@
     const claims = dashboardData.registers.EV_evidence_register || [];
     const sources = dashboardData.registers.SRC_source_register || [];
 
-    let familyClaims = claims.filter(c => c.nbs_id === nbsId && c.suitability_family_id === familyId);
+    let familyClaims = claims.filter(c => c.nbs_id === nbsId && (familyId === 'all' || c.suitability_family_id === familyId));
 
     // Flagged-only toggle (B3)
     if (window._evFlaggedOnly) {

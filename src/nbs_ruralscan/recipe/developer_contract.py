@@ -20,12 +20,15 @@ from pathlib import Path
 from .developer_corpus import rebuild
 from .harmonization import harmonize
 from .importance import compare_importance, load_weight_models
+from .evidence import EvidenceUnit
+from .numeric_bands import source_completion
 from .inclusion import inclusion_estimates
 from ..runtime.binding import Binding, resolve_binding
 from ..runtime.categorical import evaluate_categorical
 from ..runtime.numeric import evaluate_numeric
 
 VERSION = "0.1.0"
+PACKAGE_VERSION = "0.1.1"
 
 
 def read_csv(path):
@@ -150,10 +153,15 @@ def _options(row, evidence, sources, countries):
         for p in params.get("profiles", [])
         if country_match(p.get("context", {}), countries)
     ]
-    options = []
+    options: list[dict] = []
     for p in profiles:
         options.append(
             {
+                **(
+                    {"source_completions": p["source_completions"]}
+                    if p.get("source_completions")
+                    else {}
+                ),
                 "function_id": "profile:" + p["profile_id"],
                 "kind": "source_profile",
                 "label": p["source_id"],
@@ -290,6 +298,29 @@ def _options(row, evidence, sources, countries):
                     "applicability_note": "Alternative to graded source profiles; never selected implicitly",
                 }
             )
+    for option in options:
+        linked = set(option["evidence_ids"])
+        missing = []
+        for unit in evidence.values():
+            parent = obj(unit.get("context"), {}).get("table_continuation_of")
+            if parent in linked and unit["evidence_id"] not in linked:
+                missing.append(
+                    {
+                        "evidence_id": unit["evidence_id"],
+                        "page": unit.get("page"),
+                        "relationship": obj(unit.get("relationship"), {}),
+                        "review_state": unit.get("review_state")
+                        or (
+                            "approved"
+                            if str(unit.get("reviewer_ok")).lower() == "true"
+                            else "awaiting_review"
+                        ),
+                    }
+                )
+        option["completeness"] = {
+            "status": "partial" if missing else "no_known_missing_continuation",
+            "missing_continuations": sorted(missing, key=lambda u: u["evidence_id"]),
+        }
     return sorted(options, key=lambda o: o["function_id"])
 
 
@@ -405,6 +436,22 @@ def build_contract(
         )
     corpus = rebuild(root, nbs)
     evidence = {r["evidence_id"]: r for r in corpus["evidence"]}
+    completion_policies = {
+        r["evidence_id"]: r
+        for r in read_csv(root / "schema/lookups/t4_numeric_compilation_policy.csv")
+    }
+    completion_units = {}
+    for eid, raw_unit in evidence.items():
+        if eid not in completion_policies:
+            continue
+        typed = {
+            k: v for k, v in raw_unit.items() if k in EvidenceUnit.__dataclass_fields__
+        }
+        for key in ("relationship", "context"):
+            typed[key] = obj(typed.get(key), {})
+        typed["reviewer_ok"] = str(typed.get("reviewer_ok")).lower() == "true"
+        typed["page"] = int(typed["page"]) if typed.get("page") else None
+        completion_units[eid] = EvidenceUnit(**typed)
     sources = {r["source_id"]: r for r in corpus["sources"]}
     inputs = list(corpus["inputs"])
 
@@ -514,6 +561,10 @@ def build_contract(
                 raise ValueError(
                     f"Missing or stale function selection for {rule_id}; regenerate template"
                 )
+            if selected["completeness"]["status"] == "partial":
+                raise ValueError(
+                    f"Incomplete source function: resolve table continuation for {rule_id}"
+                )
             if (
                 not pick.get("decision_reference")
                 or not pick.get("applicability_note")
@@ -552,6 +603,10 @@ def build_contract(
         else:
             blockers.append(
                 "Legal category threshold requires explicit category adapter and system coverage decision"
+            )
+        if any(o["completeness"]["status"] == "partial" for o in options):
+            notes.append(
+                "An incomplete source option is shown for inspection only; resolve its table continuation before selection"
             )
         if "cross_family" in system and not pick:
             blockers.append(
@@ -608,7 +663,15 @@ def build_contract(
             if (
                 not u
                 or u["review_state"] == "dropped"
-                or u["reviewer_ok"].lower() != "true"
+                or (
+                    u["reviewer_ok"].lower() != "true"
+                    and not (
+                        eid in completion_units
+                        and source_completion(
+                            completion_units[eid], completion_units, completion_policies
+                        )
+                    )
+                )
             ):
                 raise ValueError(
                     f"Recipe links unapproved, dropped or missing evidence: {eid}"
@@ -900,6 +963,7 @@ def _package_inputs(root, nbs):
         f"schema/recipes/{nbs}/T4_suitability_mappings.csv",
         "methodology/T4_developer_contract.md",
         "handoff/agroforestry-t4/IMPLEMENTATION.md",
+        "handoff/agroforestry-t4/START_HERE.md",
         "scripts/synthesise-recipe.py",
         "scripts/build-t4-developer.py",
         "src/nbs_ruralscan/schema_tools/generate.py",
@@ -1035,7 +1099,8 @@ def _write_package(root, output, **kwargs):
     )
     (output / "README.md").write_text(
         "# T4 developer contract\n\n"
-        "Start with [the table and function plots](index.html), [implementation notes](IMPLEMENTATION.md) and [method](METHOD.md).\n\n"
+        "Start with [the implementation task brief](START_HERE.md), [developer table](developer_table.csv), [implementation notes](IMPLEMENTATION.md) and [method](METHOD.md). "
+        "Use the existing Evidence Query dashboard for ongoing inspection; [offline table and plots](index.html) are a pinned package snapshot.\n\n"
         f"This package contains {contract['summary']['configured_rows']} configured mappings and {contract['summary']['display_rows'] - contract['summary']['configured_rows']} operational evidence-only rows. "
         "It is an implementation handoff, not a completed spatial run. Select response functions and record applicability before execution. "
         "Blocked means an analytical or binding choice remains; conditional means the function is configured but input/adapter checks remain.\n\n"
@@ -1053,6 +1118,7 @@ def _write_package(root, output, **kwargs):
     docs = {
         "METHOD.md": "methodology/T4_developer_contract.md",
         "IMPLEMENTATION.md": "handoff/agroforestry-t4/IMPLEMENTATION.md",
+        "START_HERE.md": "handoff/agroforestry-t4/START_HERE.md",
     }
     for dest, source in docs.items():
         # Source files remain report-ready Markdown; bundle links work when relocated.
@@ -1066,6 +1132,18 @@ def _write_package(root, output, **kwargs):
                 relative = resolved.relative_to(root.resolve()).as_posix()
             except ValueError:
                 return match.group(0)
+            local = next(
+                (dest for dest, path in docs.items() if path == relative), None
+            )
+            package_prefix = (
+                f"handoff/{contract['nbs']}-t4/developer-v{PACKAGE_VERSION}/"
+            )
+            if relative.startswith(package_prefix):
+                candidate = relative.removeprefix(package_prefix)
+                if (output / candidate).is_file() or candidate == "manifest.json":
+                    local = candidate
+            if local:
+                return f"[{label}]({local}" + ("#" + fragment if fragment else "") + ")"
             return (
                 f"[{label}](https://github.com/CIAT/nbs_ruralscan/blob/RELEASE_REVISION/{relative}"
                 + ("#" + fragment if fragment else "")
@@ -1106,6 +1184,7 @@ def _write_package(root, output, **kwargs):
         )
     manifest = {
         "contract_version": VERSION,
+        "package_version": PACKAGE_VERSION,
         "source_commit": revision,
         "filters": {
             "country": contract["target_country"],
@@ -1126,7 +1205,7 @@ def _write_package(root, output, **kwargs):
     }
     (output / "manifest.json").write_text(stable_json(manifest), encoding="utf-8")
     (output / "VERSION").write_text(
-        f"developer-v{VERSION}\nsource_commit={revision}\ninput_manifest=manifest.json\n",
+        f"developer-v{PACKAGE_VERSION}\ncontract_version={VERSION}\nsource_commit={revision}\ninput_manifest=manifest.json\n",
         encoding="utf-8",
     )
     # VERSION is part of the hashed payload too.

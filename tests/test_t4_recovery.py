@@ -29,7 +29,11 @@ def test_recovered_evidence_preserves_approval_and_one_source_vote():
         / "pipeline/t4_audit/agroforestry/final_audit/draft/T4_suitability_mappings.csv"
     )
     assert len(live["ev_T4_slope_chuma21_1"]["intervals"]) == 3
-    assert len(live["ev_T4_soc_haile2024_1"]["intervals"]) == 2
+    assert len(live["ev_T4_soc_haile2024_1"]["intervals"]) == 4
+    assert (
+        live["ev_T4_soc_haile2024_1"]["source_completions"][0]["kind"]
+        == "verified_table_continuation"
+    )
     assert len(draft["ev_T4_soc_haile2024_1"]["intervals"]) == 4
     assert draft["ev_T4_soc_haile2024_1"]["page_locators"] == {
         "ev_T4_soc_haile2024_1": 5,
@@ -43,11 +47,70 @@ def test_recovered_evidence_preserves_approval_and_one_source_vote():
         )
     }
     elevation = evidence["ev_T4_elevation_chuma2021_recovery"]
+    assert evidence["ev_T4_soc_haile2024_continuation"]["reviewer_ok"] == "false"
     assert ("ev_T4_elevation_chuma2021_recovery" in live) == (
         elevation["reviewer_ok"].lower() == "true"
         and elevation["review_state"] != "dropped"
     )
     assert len(draft["ev_T4_elevation_chuma2021_recovery"]["intervals"]) == 5
+
+
+@pytest.mark.parametrize(
+    "defect",
+    [
+        "quote",
+        "relationship",
+        "source_id",
+        "claim_scope",
+        "review_state",
+        "parent_dropped",
+        "parent_unapproved",
+        "authorization",
+        "input_unit",
+        "missing_parent",
+    ],
+)
+def test_source_completion_cannot_admit_changed_or_unauthorized_claims(defect):
+    from nbs_ruralscan.recipe.evidence import load_units
+    from nbs_ruralscan.recipe.numeric_bands import source_completion
+
+    units = {
+        u.evidence_id: u
+        for u in load_units(ROOT / "schema/registers/EV_evidence_register.json")
+    }
+    policies = {
+        r["evidence_id"]: r
+        for r in csv.DictReader(
+            (ROOT / "schema/lookups/t4_numeric_compilation_policy.csv").open()
+        )
+    }
+    unit = units["ev_T4_soc_haile2024_continuation"]
+    parent = units["ev_T4_soc_haile2024_1"]
+    assert source_completion(unit, units, policies)
+    hp = json.loads(policies[unit.evidence_id]["harmonization"])
+    policies[unit.evidence_id]["harmonization"] = hp
+    if defect == "parent_dropped":
+        parent.review_state = "dropped"
+    elif defect == "parent_unapproved":
+        parent.reviewer_ok = False
+    elif defect == "missing_parent":
+        units.pop(parent.evidence_id)
+    elif defect == "authorization":
+        hp["source_completion"]["authorization"] = ""
+    elif defect == "input_unit":
+        policies[unit.evidence_id]["input_unit"] = "g/kg"
+    else:
+        setattr(
+            unit,
+            defect,
+            {
+                "relationship": {"classes": "high:0.7-1"},
+                "review_state": "dropped",
+                "claim_scope": "species_specific",
+            }.get(defect, "changed"),
+        )
+    with pytest.raises(ValueError, match="Invalid or stale source completion"):
+        source_completion(unit, units, policies)
 
 
 @pytest.mark.parametrize(

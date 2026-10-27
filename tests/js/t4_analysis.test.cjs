@@ -1,0 +1,15 @@
+const assert = require('node:assert/strict');
+const {stateOf,isStale,matches} = require('../../docs/t4_analysis.js');
+const unit={evidence_id:'e',nbs_id:'agroforestry',source_id:'s',use_role:'structural_suitability',relationship:{classes:'low:<5'},context:{a:1},reviewer_ok:true,page:5};
+const snapshot={nbs:'agroforestry',evidence_state:{e:stateOf(unit)}};
+assert.equal(isStale(snapshot,{registers:{EV_evidence_register:[unit]}}),false);
+assert.equal(isStale(snapshot,{registers:{EV_evidence_register:[{...unit,reviewer_ok:false}]}}),true);
+assert.equal(isStale(snapshot,{registers:{EV_evidence_register:[unit,{...unit,evidence_id:'new'}]}}),true);
+assert.equal(isStale(snapshot,{registers:{EV_evidence_register:[]},_evDropped:[{...unit,review_state:'dropped'}]}),true);
+assert.equal(stateOf({...unit,context:'{"a":1}',relationship:'{"classes":"low:<5"}',reviewer_ok:'true'}).reviewer_ok,true);
+assert.equal(matches({system:'shared',text:'Soil carbon'}, {system:'planted'}),false);
+assert.equal(matches({system:'shared',text:'Soil carbon'}, {system:'all',search:'CARBON'}),true);
+assert.equal(matches({lane:'dropped'}, {lane:'linked'}),false);
+assert.equal(matches({study:true,variable:'slope'}, {variable:'soil_ph'}),false);
+assert.equal(matches({importance:'true',variable:'source_soil_ph'}, {variable:'soil_ph'}),true);
+console.log('T4 dashboard filtering and stale-snapshot checks passed');

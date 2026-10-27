@@ -1,12 +1,16 @@
-# Agroforestry T4 — first-pass release
+# Agroforestry T4 — developer handoff
 
-**Developer integration:** start with [developer-v0.1.0](developer-v0.1.0/index.html), the generated function/dataset contract, and [implementation notes](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md). This package is generated from a verified corpus recompile; the earlier evidence-review releases remain below for provenance.
+## Inspect T4 in the existing dashboard
 
-**Current release: [v0.1.5](v0.1.5/README.md), 26 October 2026.** Built for inspection ahead of the November World Bank meeting. Pilot testing remains Diego's work.
+Use [Evidence Query → T4 analysis](../../docs/dashboard.html#t4/global): **Evidence trail · Suitability & weights · Global synthesis · Rules & method**. One read-only inspection surface; evidence decisions remain in QA/QC. Developer packages below are versioned downloads, not additional live dashboards.
 
-Start with the [single-table browser view](v0.1.5/index.html) or [readable CSV](v0.1.5/T4_review.csv). The versioned [T4 snapshot](v0.1.5/T4_suitability_mappings.csv) contains **26 rows: 10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
+**Current developer package: [developer-v0.1.1](developer-v0.1.1/README.md), 27 October 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.1/developer_table.csv), [machine contract](developer-v0.1.1/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
 
-This replaces the stale handoff that described only one numeric row. It packages existing reviewed work; it does not claim ten new rules were extracted during release preparation.
+This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country and numeric function selections remain unset. Package version 0.1.1 retains machine contract/selection format 0.1.0. Pilot testing remains Diego's work.
+
+The configured rows are **10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
+
+The [earlier developer package](developer-v0.1.0/README.md) and [v0.1.5 evidence catalogue](v0.1.5/README.md) remain immutable historical snapshots. Use the existing dashboard for ongoing inspection; do not start a new review in an archived HTML report.
 
 The editable source remains `schema/recipes/agroforestry/T4_suitability_mappings.csv`; its JSON is generated. Versioned handoff files are generated snapshots, not alternative editable schema tables. Do not substitute historical synthesis intermediates for the live recipe.
 
@@ -30,6 +34,6 @@ No raster run, complete M1 runner, or pilot validation is claimed. Missing input
 
 ## Reproduce and version
 
-`PYTHONPATH=src python3 scripts/release-t4-first-pass.py` builds v0.1.5 from current CSVs. The release manifest records source commit and input/output hashes. Preserve published versions; change the generator version before issuing a subsequent release. Use GitHub for delivery; no separate upload or message to Diego is required.
+`PYTHONPATH=src python3 scripts/build-t4-developer.py --output /tmp/t4-developer-options` builds a fresh full-corpus options package. Add `--country` only to resolve a target's datasets; it does not select or approve regional functions. Verify with `--verify /tmp/t4-developer-options` against the matching source checkout. The manifest records source commit and input/output hashes. Preserve published versions; advance the package version before publishing a new bundle. Use GitHub for delivery; no separate upload or message to Diego is required.
 
-Rule plots: `uv run --no-project --with matplotlib python scripts/plot-t4-release.py`, then rebuild the release table. v0.1.0 remains preserved.
+For data-only audit reconciliation, `scripts/audit-t4-compilation.py agroforestry OUTPUT --data-only` consumes fresh `draft/report.json` and `approved/report.json` under `OUTPUT`. It validates authorized source completions independently and preserves their separate human review status. Historical HTML reports remain untouched.
