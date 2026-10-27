@@ -392,6 +392,37 @@ def _inclusion(row):
     )
 
 
+def _approved_policy(result):
+    out = []
+    for policy in result["contract"]["run_contract"].get("approved_policies", []):
+        out.append(
+            "<h4>Approved first pass: " + _text(policy["output_label"]) + "</h4>"
+        )
+        out.append(
+            "<p>Planted silvoarable only. Weighted average baseline; minimum-factor sensitivity. Land-use eligibility and legal exclusions stay separate, with no score weight. Eligible fraction is retained separately. Missing required scores remain unknown. Regional transfer and dataset checks still required.</p>"
+        )
+        out.append(
+            _table(
+                ["Criterion", "Group", "Approved weight", "Function status"],
+                [
+                    _row(
+                        [
+                            _text(_label(c["rule_id"].split("__")[-1])),
+                            _text(_label(c["variable_group"])),
+                            f"{c['weight']:.0%}",
+                            "Verified"
+                            if c["function_verified"]
+                            else "Changed or unavailable — held",
+                        ]
+                    )
+                    for c in policy["criteria"]
+                ],
+            )
+        )
+        out.append(_list(policy["holds"]))
+    return "".join(out)
+
+
 def _global(result):
     rows = []
     for row in result["contract"]["rows"]:
@@ -442,7 +473,11 @@ def _global(result):
                     + _text(
                         weight.get("runtime_weight")
                         if weight.get("runtime_weight") is not None
-                        else "Not assigned"
+                        else (
+                            f"Approved first-pass weight: {row['approved_policy']['weight']:.0%}; target transfer pending"
+                            if row.get("approved_policy")
+                            else "Not assigned"
+                        )
                     )
                     + "<p>Configured default: "
                     + _text(weight.get("configured_default"))
@@ -463,6 +498,7 @@ def _global(result):
         )
     return (
         "<p><strong>Full-corpus synthesis — work in progress.</strong> “Global” means no study-country filter. It does not mean every regional response applies worldwide. Only explicitly compatible studies are combined; source options are never silently averaged. Operational feasibility stays separate from M1 suitability.</p><p>Common score: 0–1 relative suitability, not probability. Gaps, unresolved boundaries and absent inputs remain unknown.</p>"
+        + _approved_policy(result)
         + _table(
             [
                 "System",
@@ -538,7 +574,7 @@ def _rules(root, result):
             + label
             + "</a></p>"
         )
-    return "".join(out)
+    return _approved_policy(result) + "".join(out)
 
 
 def build_dashboard(root):

@@ -18,6 +18,7 @@ from collections import Counter
 from pathlib import Path
 
 from .developer_corpus import rebuild
+from .run_policy import compile_policies, reference_scores
 from .harmonization import harmonize
 from .importance import compare_importance, load_weight_models
 from .evidence import EvidenceUnit
@@ -27,8 +28,8 @@ from ..runtime.binding import Binding, resolve_binding
 from ..runtime.categorical import evaluate_categorical
 from ..runtime.numeric import evaluate_numeric
 
-VERSION = "0.1.0"
-PACKAGE_VERSION = "0.1.1"
+VERSION = "0.2.0"
+PACKAGE_VERSION = "0.1.2"
 
 
 def read_csv(path):
@@ -884,6 +885,54 @@ def build_contract(
                 "citation": sources[u["source_id"]]["citation"],
             }
         )
+    policy_path = f"schema/recipes/{nbs}/T4_run_policy.csv"
+    policies = (
+        compile_policies(load(policy_path), rows)
+        if (root / policy_path).exists()
+        else []
+    )
+    policy_fixtures = []
+    for policy in policies:
+        # Synthetic scores exercise the approved policy, not a geographic transfer.
+        values = [0.25] + [0.9] * (len(policy["criteria"]) - 1)
+        scores = dict(zip((c["rule_id"] for c in policy["criteria"]), values))
+        for host, excluded, fraction in [
+            (True, False, 0.3),
+            (False, False, None),
+            (None, False, None),
+            (True, True, None),
+            (True, None, None),
+        ]:
+            policy_fixtures.append(
+                {
+                    "policy_id": policy["policy_id"],
+                    "scores": scores,
+                    "host": host,
+                    "excluded": excluded,
+                    "eligible_fraction": fraction,
+                    "expected": reference_scores(
+                        policy,
+                        scores,
+                        host=host,
+                        excluded=excluded,
+                        eligible_fraction=fraction,
+                    ),
+                }
+            )
+        missing: dict[str, float | None] = dict(scores)
+        missing[next(iter(missing))] = None
+        policy_fixtures.append(
+            {
+                "policy_id": policy["policy_id"],
+                "scores": missing,
+                "host": True,
+                "excluded": False,
+                "eligible_fraction": None,
+                "expected": reference_scores(
+                    policy, missing, host=True, excluded=False
+                ),
+            }
+        )
     contract = {
         "version": VERSION,
         "nbs": nbs,
@@ -904,7 +953,8 @@ def build_contract(
         "run_contract": {
             "execution_ready": False,
             "baseline": "Current CIAT implementation: weighted linear combination plus separate gates; original minimum-factor design differs",
-            "aggregation_selection": "Required per run; this build does not ratify an aggregation policy",
+            "aggregation_selection": "Approved policies below fix analytical choices; target applicability and input readiness remain separate",
+            "approved_policies": policies,
             "criteria": "Select one function per system and canonical criterion; resolve correlated groups before assigning weights",
             "weight_validation": "Final selected nonnegative M1 score weights sum to one; masks and operational factors excluded",
             "missing_values": "Fixed criterion set; propagate unknown; no per-pixel renormalization",
@@ -922,6 +972,7 @@ def build_contract(
         "contract": contract,
         "decisions": decisions,
         "fixtures": fixtures,
+        "policy_fixtures": policy_fixtures,
         "inclusion": inclusion,
         "importance": importance,
         "evidence": accountability,
@@ -974,6 +1025,10 @@ def _package_inputs(root, nbs):
         inputs.add(
             "pipeline/t4_audit/agroforestry/importance_2026-10-21/source_weight_trees.csv"
         )
+    policy_path = f"schema/recipes/{nbs}/T4_run_policy.csv"
+    if (root / policy_path).exists():
+        inputs.add(policy_path)
+    inputs.add("schema/structure/columns.json")
     inputs |= {
         str(p.relative_to(root))
         for directory in ("src/nbs_ruralscan/recipe", "src/nbs_ruralscan/runtime")
@@ -1047,6 +1102,7 @@ def _write_package(root, output, **kwargs):
         "developer_contract.json": contract,
         "decisions.json": result["decisions"],
         "conformance_examples.json": result["fixtures"],
+        "policy_conformance.json": result["policy_fixtures"],
         "source_importance.json": result["importance"],
         "synthesis_report.json": result["synthesis_report"],
         "run_contract.json": contract["run_contract"],
@@ -1110,6 +1166,7 @@ def _write_package(root, output, **kwargs):
         "- `T4_suitability_mappings.csv`: unchanged full-corpus recipe snapshot; NEVER apply it as the filtered or resolved contract.\n"
         "- `inclusion.csv` and `source_importance.json`: evidence diagnostics, not runtime weights.\n"
         "- `conformance_examples.json`: expected numeric and host-gate responses for adapter tests; null means unknown.\n"
+        "- `run_contract.json` and `policy_conformance.json`: approved analytical policy and scalar aggregation/gate checks; target transfer remains required.\n"
         "- `manifest.json` and `VERSION`: source revision, exact inputs, filters, selections and output hashes.\n\n"
         "Developer implementation remains in Diego/Brayden's repository. This bundle does not fetch spatial data, alter review decisions, select a universal function, or run MCDA. "
         "CIAT source registers remain authoritative.\n",
@@ -1156,19 +1213,7 @@ def _write_package(root, output, **kwargs):
             (root / source).read_text(encoding="utf-8"),
         )
         (output / dest).write_text(text, encoding="utf-8")
-    inputs = set(result["inputs"]) | set(docs.values())
-    inputs |= {
-        str(p.relative_to(root))
-        for directory in ("src/nbs_ruralscan/recipe", "src/nbs_ruralscan/runtime")
-        for p in (root / directory).glob("*.py")
-    }
-    inputs |= {
-        "scripts/synthesise-recipe.py",
-        "scripts/build-t4-developer.py",
-        "src/nbs_ruralscan/schema_tools/generate.py",
-        "pyproject.toml",
-        "uv.lock",
-    }
+    inputs = set(result["inputs"]) | _package_inputs(root, contract["nbs"])
     revision = subprocess.run(
         ["git", "rev-parse", "HEAD"],
         cwd=root,

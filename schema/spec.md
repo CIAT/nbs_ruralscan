@@ -938,3 +938,12 @@ and `harmonization.review` (unresolved crosswalks/applicability). Each summary c
 retains median bounds, scalar score or null, source range, independent-source
 counts, weight coverage and flags. Null is unknown, never zero. Derived summaries
 are regenerated from CSV policy and evidence; no new T4 columns are introduced.
+
+
+## T4_RUN — approved analytical policy (27 October 2026)
+
+Schema extension tracked in GitHub issue #455. Per-recipe `T4_run_policy.csv` is the authoritative policy; typed JSON is generated. It does not replace T4 evidence mappings. Primary key `policy_row_id`; one row per policy and numeric criterion.
+
+Fields: `policy_id`, `nbs_id`, `system`, `output_label`; `variable_group`, `rule_id`, `function_id`, `function_fingerprint`; `group_weight`, `criterion_weight`; `aggregation`, `sensitivity_aggregation`, `missing_values`, `gate_policy`, `applicability`, `decision_reference`. All are required.
+
+Criterion weights are positive finite shares summing to their group's budget; distinct group budgets sum to one. Only numeric suitability mappings for the named system may carry weights. Function IDs and fingerprints pin approved responses. Missing or changed functions hold the policy rather than silently selecting replacements. Supported initial semantics are WLC, minimum-factor sensitivity, unknown propagation, separate host/legal masks and target transfer required. Evidence-filtered builds recheck fingerprints. Policy approval does not approve geographical transfer, source units/depth or dataset adapters.
