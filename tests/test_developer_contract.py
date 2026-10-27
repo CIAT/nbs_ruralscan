@@ -283,6 +283,7 @@ def test_input_mutation_during_package_build_rejected(tmp_path, baseline, monkey
         "methodology/T4_developer_contract.md",
         "handoff/agroforestry-t4/IMPLEMENTATION.md",
         "handoff/agroforestry-t4/START_HERE.md",
+        "handoff/agroforestry-t4/DATASET_INPUTS.md",
         "scripts/build-t4-developer.py",
         "pyproject.toml",
         "uv.lock",

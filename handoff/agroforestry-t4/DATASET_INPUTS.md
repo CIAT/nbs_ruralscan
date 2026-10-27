@@ -1,6 +1,6 @@
 # First-pass dataset inputs — Diego and Brayden
 
-27 October 2026. Applies to the approved planted-silvoarable terrain-and-soil policy. Provider documentation is checked; authenticated access and raster processing are not tested. Existing developer-v0.1.2 remains immutable. Current compiler exports these details under each dataset's `documented_input`; rebuild from this revision to include them.
+27 October 2026. Applies to the approved planted-silvoarable terrain-and-soil policy. Provider documentation is checked; authenticated access and raster processing are not tested. Developer-v0.1.3 includes these details under each dataset's `documented_input`; v0.1.2 remains immutable.
 
 ## Input table
 
@@ -29,6 +29,20 @@ HWSD definitions are documented in the [official v1.2 manual](https://files.isri
 This resolves Nath's input definition, not compatibility of every contributor. The approved SOC and pH pools remain conditional scoping combinations with unresolved measurement compatibility. Their numeric functions, weights and human approval states have not changed. A 0–30 cm input can match Nath's depth definition only with an explicitly specified aggregation method; it must not silently become the verified depth for Ahmad or Singh.
 
 Do not silently average all depths, combine topsoil and subsoil, treat pH as a concentration, substitute carbon stock for concentration, or assign current-year measurements to a static prediction. If a 0–30 cm summary is chosen for scoping, record it as an explicit input assumption, with its calculation and sensitivity to depth choice. Do not describe it as verified cross-paper equivalence.
+
+## Concrete first-pass proposal (not activated)
+
+For `planted_terrain_soil_v1`, proposal `planted_topsoil_0_30_v1` uses SoilGrids mean predictions over 0–30 cm. This is an agent-authored scoping design assumption, not a new finding or human evidence approval. It remains unselected until the implementation run explicitly records its identifier and decision reference. Neither a country argument nor an approved response function activates it.
+
+Use the 0–5, 5–15 and 15–30 cm layers. Convert each native value once, then calculate `(5 × x0_5 + 10 × x5_15 + 15 × x15_30) / 30`. Apply the selected suitability response to that result. Missing any required layer produces unknown; do not renormalize onto the remaining depths. Keep depth aggregation distinct from spatial aggregation.
+
+- **SOC:** this is a thickness-weighted concentration proxy in g/kg, not a soil-mass-weighted composite or carbon-stock estimate. A physical mass-weighted composite would require additional compatible inputs.
+- **pH:** this is an arithmetic summary of predicted pH values, not the pH of physically mixed soil. Do not reinterpret it as hydrogen-ion concentration or claim equivalence to a laboratory composite. Matching water-based pH is necessary but does not resolve the unknown methods of every paper.
+- **Sensitivity:** evaluate the same response separately at each of the three depths. Retain all three scores and unknown states; compare with the summary score. Report the range of known layer scores and missing layers, not a confidence interval. Do not choose whichever layer gives the highest suitability. This check can reveal threshold crossings but does not validate transfer to the target country.
+
+Worked arithmetic only: SOC layers 12, 9 and 6 g/kg give 8 g/kg; pH layers 5, 6 and 7 give 6.333333 pH units. Averaging layer suitability scores is a different operation and is not this proposal. Unit scaling, depth weighting and MCDA weighting each occur once at their own stage.
+
+The proposal lives in the existing T1 dataset metadata, scoped to its policy. The compiler checks contiguous coverage and documented intervals, derives weights from thickness and exports it under each policy criterion's `input_proposals`. No analytical rule is hardcoded in a dataset adapter. A local BIND override does not inherit this SoilGrids proposal. Numeric functions and MCDA weights remain unchanged.
 
 ## Adapter acceptance checks
 

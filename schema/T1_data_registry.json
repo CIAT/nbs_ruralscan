@@ -164,6 +164,45 @@
             "Choose depth interval(s) consistent with response evidence",
             "Record any depth aggregation as an explicit assumption",
             "Confirm source measurement compatibility; do not substitute stock for concentration"
+          ],
+          "scoping_proposals": [
+            {
+              "proposal_id": "planted_topsoil_0_30_v1",
+              "policy_id": "planted_terrain_soil_v1",
+              "status": "proposed_not_activated",
+              "authored_by": "Codex",
+              "date": "2026-10-27",
+              "depth_cm": [
+                0,
+                30
+              ],
+              "layers_cm": [
+                [
+                  0,
+                  5
+                ],
+                [
+                  5,
+                  15
+                ],
+                [
+                  15,
+                  30
+                ]
+              ],
+              "aggregation": "thickness_weighted_arithmetic_mean",
+              "order": "scale_each_layer_then_depth_summary_then_response",
+              "missing_layers": "propagate_unknown_without_renormalization",
+              "interpretation": "Depth-weighted concentration proxy; not a mass-weighted composite or carbon stock.",
+              "rationale": "Nath explicitly defines topsoil as 0–30 cm. Other pooled contributors do not establish matching sampling depth; this is a design assumption, not verified cross-paper equivalence.",
+              "sensitivity": "Evaluate the same response separately at each of the three depth layers; retain scores and unknowns, and report their range alongside the proposed summary score. Do not select the best layer or call this range a confidence interval.",
+              "activation_requires": [
+                "Explicit run-manifest choice of proposal_id and decision reference",
+                "Live band, mask, units and scaling validation",
+                "Target applicability decision for selected pooled response",
+                "Documented spatial aggregation and soil-method compatibility limitations"
+              ]
+            }
           ]
         },
         "soil_ph": {
@@ -215,6 +254,45 @@
             "Choose depth interval(s) consistent with response evidence",
             "Record any depth aggregation as an explicit assumption",
             "Confirm source pH measurement method is compatible with pH in water"
+          ],
+          "scoping_proposals": [
+            {
+              "proposal_id": "planted_topsoil_0_30_v1",
+              "policy_id": "planted_terrain_soil_v1",
+              "status": "proposed_not_activated",
+              "authored_by": "Codex",
+              "date": "2026-10-27",
+              "depth_cm": [
+                0,
+                30
+              ],
+              "layers_cm": [
+                [
+                  0,
+                  5
+                ],
+                [
+                  5,
+                  15
+                ],
+                [
+                  15,
+                  30
+                ]
+              ],
+              "aggregation": "thickness_weighted_arithmetic_mean",
+              "order": "scale_each_layer_then_depth_summary_then_response",
+              "missing_layers": "propagate_unknown_without_renormalization",
+              "interpretation": "Depth-weighted pH index for scoping; not a laboratory mixed-soil pH or hydrogen-ion concentration.",
+              "rationale": "Nath explicitly defines topsoil as 0–30 cm. Other pooled contributors do not establish matching sampling depth; this is a design assumption, not verified cross-paper equivalence.",
+              "sensitivity": "Evaluate the same response separately at each of the three depth layers; retain scores and unknowns, and report their range alongside the proposed summary score. Do not select the best layer or call this range a confidence interval.",
+              "activation_requires": [
+                "Explicit run-manifest choice of proposal_id and decision reference",
+                "Live band, mask, units and scaling validation",
+                "Target applicability decision for selected pooled response",
+                "Documented spatial aggregation and soil-method compatibility limitations"
+              ]
+            }
           ]
         }
       }

@@ -4,9 +4,9 @@
 
 Use [Evidence Query → T4 analysis](../../docs/dashboard.html#t4/global): **Evidence trail · Suitability & weights · Global synthesis · Rules & method**. One read-only inspection surface; evidence decisions remain in QA/QC. Developer packages below are versioned downloads, not additional live dashboards.
 
-**Current developer package: [developer-v0.1.2](developer-v0.1.2/README.md), 27 October 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.2/developer_table.csv), [machine contract](developer-v0.1.2/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
+**Current developer package: [developer-v0.1.3](developer-v0.1.3/README.md), 27 October 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.3/developer_table.csv), [machine contract](developer-v0.1.3/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
 
-This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country-specific selections remain unset; the approved partial terrain-and-soil policy pins three functions and weights without granting regional transfer. Package version 0.1.2 uses contract/selection format 0.2.0. Pilot testing remains Diego's work.
+This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country-specific selections remain unset; the approved partial terrain-and-soil policy pins three functions and weights without granting regional transfer. Package version 0.1.3 uses contract/selection format 0.2.0. Pilot testing remains Diego's work.
 
 The configured rows are **10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
 
@@ -14,7 +14,7 @@ The [earlier developer package](developer-v0.1.0/README.md) and [v0.1.5 evidence
 
 The editable source remains `schema/recipes/agroforestry/T4_suitability_mappings.csv`; its JSON is generated. Versioned handoff files are generated snapshots, not alternative editable schema tables. Do not substitute historical synthesis intermediates for the live recipe.
 
-Provider-checked assets, units and remaining soil-depth questions: [dataset input handoff](DATASET_INPUTS.md). Current compiler carries these metadata; the published v0.1.2 snapshot remains unchanged.
+Provider-checked assets, units and remaining soil-depth questions: [dataset input handoff](DATASET_INPUTS.md). The v0.1.3 bundle includes source compatibility findings and an explicit, unselected 0–30 cm soil-input proposal. Earlier versions remain unchanged.
 
 ## Configuration decisions
 

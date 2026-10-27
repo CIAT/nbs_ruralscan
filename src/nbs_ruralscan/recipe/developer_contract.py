@@ -29,7 +29,7 @@ from ..runtime.categorical import evaluate_categorical
 from ..runtime.numeric import evaluate_numeric
 
 VERSION = "0.2.0"
-PACKAGE_VERSION = "0.1.2"
+PACKAGE_VERSION = "0.1.3"
 
 
 def read_csv(path):
@@ -1028,6 +1028,7 @@ def _package_inputs(root, nbs):
         "methodology/T4_developer_contract.md",
         "handoff/agroforestry-t4/IMPLEMENTATION.md",
         "handoff/agroforestry-t4/START_HERE.md",
+        "handoff/agroforestry-t4/DATASET_INPUTS.md",
         "scripts/synthesise-recipe.py",
         "scripts/build-t4-developer.py",
         "src/nbs_ruralscan/schema_tools/generate.py",
@@ -1189,6 +1190,7 @@ def _write_package(root, output, **kwargs):
         "METHOD.md": "methodology/T4_developer_contract.md",
         "IMPLEMENTATION.md": "handoff/agroforestry-t4/IMPLEMENTATION.md",
         "START_HERE.md": "handoff/agroforestry-t4/START_HERE.md",
+        "DATASET_INPUTS.md": "handoff/agroforestry-t4/DATASET_INPUTS.md",
     }
     for dest, source in docs.items():
         # Source files remain report-ready Markdown; bundle links work when relocated.
