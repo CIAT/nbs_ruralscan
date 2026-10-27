@@ -14,6 +14,10 @@ The [earlier developer package](developer-v0.1.0/README.md) and [v0.1.5 evidence
 
 The editable source remains `schema/recipes/agroforestry/T4_suitability_mappings.csv`; its JSON is generated. Versioned handoff files are generated snapshots, not alternative editable schema tables. Do not substitute historical synthesis intermediates for the live recipe.
 
+## Configuration decisions
+
+[First-pass decision table](FIRST_PASS_DECISIONS.md) proposes response choices, aggregation and weights, with worked examples. These are pending policy decisions; the published package remains unchanged.
+
 ## What the first pass establishes
 
 - A traceable configuration: theme → variable group → canonical variable → dataset, with source profiles and evidence identifiers.
