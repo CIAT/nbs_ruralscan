@@ -121,3 +121,11 @@ def test_published_panels_use_existing_dashboard_and_no_review_controls():
         < html.index('id="t4-analysis"')
         < html.index('id="tab-variables"')
     )
+
+
+def test_soil_compatibility_shows_resolved_depth_and_remaining_limits(result):
+    html = view._global(result)
+    assert "Soil depth and measurement compatibility" in html
+    assert "0–30 cm" in html
+    assert "Not established" in html
+    assert "Still unresolved" in html

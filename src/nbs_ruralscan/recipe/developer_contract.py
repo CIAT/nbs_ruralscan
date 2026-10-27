@@ -845,6 +845,15 @@ def build_contract(
                     }
                 )
     for row in rows:
+        row["soil_input_reviews"] = [
+            {
+                "evidence_id": eid,
+                "source_id": evidence[eid]["source_id"],
+                **obj(evidence[eid].get("context"), {})["soil_input_review"],
+            }
+            for eid in row["evidence_ids"]
+            if obj(evidence[eid].get("context"), {}).get("soil_input_review")
+        ]
         row["study_use"] = [
             item
             for item in inclusion
