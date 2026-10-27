@@ -19,6 +19,7 @@ from pathlib import Path
 
 from .developer_corpus import rebuild
 from .run_policy import compile_policies, reference_scores
+from .readiness import assess
 from .harmonization import harmonize
 from .importance import compare_importance, load_weight_models
 from .evidence import EvidenceUnit
@@ -29,7 +30,7 @@ from ..runtime.categorical import evaluate_categorical
 from ..runtime.numeric import evaluate_numeric
 
 VERSION = "0.2.0"
-PACKAGE_VERSION = "0.1.4"
+PACKAGE_VERSION = "0.1.5"
 
 
 def read_csv(path):
@@ -908,6 +909,16 @@ def build_contract(
         if (root / policy_path).exists()
         else []
     )
+    for row, decision in zip(rows, decisions):
+        row["readiness"] = assess(row)
+        decision["readiness"] = row["readiness"]
+    for policy in policies:
+        scope = {c["rule_id"] for c in policy["criteria"]} | {
+            g["rule_id"] for g in policy["gate_requirements"]
+        }
+        policy["implementation_readiness"] = dict(
+            Counter(r["readiness"]["state"] for r in rows if r["rule_id"] in scope)
+        )
     policy_fixtures = []
     for policy in policies:
         # Synthetic scores exercise the approved policy, not a geographic transfer.
@@ -965,6 +976,10 @@ def build_contract(
             "display_rows": len(rows),
             "functions": sum(len(r["function_options"]) for r in rows),
             "statuses": dict(Counter(r["status"] for r in rows)),
+            "implementation_readiness": dict(
+                Counter(r["readiness"]["state"] for r in rows)
+            ),
+            "readiness_semantics": "Implementation states classify defined logic, provisional inputs, missing decisions and evidence references. None establishes spatial execution readiness. Legacy status/blocks describe response selection only; use readiness for handoff.",
             "raster_validation": "Not run; Diego and Brayden own implementation and pilot testing",
         },
         "run_contract": {
@@ -1177,7 +1192,7 @@ def _write_package(root, output, **kwargs):
         "Use the existing Evidence Query dashboard for ongoing inspection; [offline table and plots](index.html) are a pinned package snapshot.\n\n"
         f"This package contains {contract['summary']['configured_rows']} configured mappings and {contract['summary']['display_rows'] - contract['summary']['configured_rows']} operational evidence-only rows. "
         "It is an implementation handoff, not a completed spatial run. Select response functions and record applicability before execution. "
-        "Blocked means an analytical or binding choice remains; conditional means the function is configured but input/adapter checks remain.\n\n"
+        "Use row readiness for implementation state, reasons and next actions. Defined logic is not a validated spatial run. Legacy status/blockers describe response selection only.\n\n"
         "- `developer_contract.json`: mappings, explicit function options, dataset bindings, host dependencies and readiness.\n"
         "- `developer_table.csv`: same rows for inspection; nested fields are JSON, not free-text instructions.\n"
         "- `function_options.csv` and `function_intervals.csv`: join by `(rule_id, function_id)`.\n"

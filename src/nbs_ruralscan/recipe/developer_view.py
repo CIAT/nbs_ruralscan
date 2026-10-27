@@ -189,7 +189,9 @@ def _interval_plot(option: dict) -> str:
     return "".join(parts)
 
 
-def _function(option: dict, selected: bool) -> str:
+def _function(
+    option: dict, selected: bool, *, selection_label: str | None = None
+) -> str:
     intervals = option.get("intervals") or []
     body = (
         '<article class="option"><strong>'
@@ -198,7 +200,10 @@ def _function(option: dict, selected: bool) -> str:
     )
     body += (
         '<p class="muted">'
-        + ("Selected function" if selected else "Available option — not selected")
+        + _text(
+            selection_label
+            or ("Selected function" if selected else "Available option — not selected")
+        )
         + " · "
         + _text(_label(option.get("kind")))
         + "</p>"
@@ -282,7 +287,7 @@ def render_developer_view(contract: dict) -> str:
         + " · Target country: "
         + _text(contract.get("target_country") or "Not selected")
         + "</p>",
-        "<p>Choose system, response and dataset before execution. Blocked rows need the listed decisions; conditional rows still need consumer checks. Evidence review does not establish transfer to the target country.</p>",
+        "<p>Defined means logic can be implemented; provisional means an input assumption remains; decision needed means response or scenario choices remain. Evidence references are separate. No state establishes validated spatial execution or target-country transfer.</p>",
         '<p class="muted">Plots show exact scored intervals, not fitted curves. Open circles exclude boundaries; filled circles include them. Arrows show unbounded tails truncated for display. Gaps and unscored intervals remain unknown.</p>',
         '<div class="links"><a href="developer_table.csv">Developer CSV</a><a href="developer_contract.json">Full contract JSON</a><a href="inclusion.csv">Study inclusion</a><a href="source_importance.json">Within-study importance</a><a href="IMPLEMENTATION.md">Implementation guide</a></div>',
         "<details><summary>Package summary and evidence filter</summary>"
@@ -305,7 +310,9 @@ def render_developer_view(contract: dict) -> str:
             + '">'
             + _text(s.replace("_", " "))
             + "</option>"
-            for s in sorted({r.get("status", "") for r in rows})
+            for s in sorted(
+                {r.get("readiness", {}).get("label", r.get("status", "")) for r in rows}
+            )
         ),
         '</select></label><span id="count" aria-live="polite"></span></div><div class="scroll"><table id="rules"><thead><tr>',
         "".join(
@@ -341,6 +348,18 @@ def render_developer_view(contract: dict) -> str:
                     '<p class="muted">Preview only: first available option, not a recommendation.</p>'
                     + _function(alternatives[0], False)
                 )
+            readiness = row.get("readiness", {})
+            if readiness.get("function_basis") == "approved_policy":
+                approved = next(
+                    o
+                    for o in options
+                    if o["function_id"] == readiness["effective_function_id"]
+                )
+                response = _function(
+                    approved,
+                    False,
+                    selection_label="Approved policy response — target applicability pending",
+                )
         if len(alternatives) > (0 if selected else 1):
             response += (
                 "<details><summary>Compare all "
@@ -364,7 +383,7 @@ def render_developer_view(contract: dict) -> str:
             + _text(weight.get("basis"))
             + "</details>"
         )
-        status = row.get("status", "")
+        status = row.get("readiness", {}).get("label", row.get("status", ""))
         out.append(
             '<tr data-module="'
             + _text(row.get("module", ""))
@@ -389,9 +408,17 @@ def render_developer_view(contract: dict) -> str:
             data_summary,
             weight_summary,
             '<span class="badge">'
-            + _text(status.replace("_", " "))
+            + _text(row.get("readiness", {}).get("label", status.replace("_", " ")))
             + "</span>"
-            + _list(row.get("blockers", []))
+            + "<p>"
+            + _text(row.get("readiness", {}).get("reason", ""))
+            + "</p>"
+            + _list(
+                [
+                    a["owner"] + ": " + a["action"]
+                    for a in row.get("readiness", {}).get("next_actions", [])
+                ]
+            )
             + "<details><summary>Notes and provenance</summary>"
             + _list(row.get("notes", []))
             + _json(

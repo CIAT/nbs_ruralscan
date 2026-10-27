@@ -145,3 +145,14 @@ def test_gates_explain_classes_and_legal_unknowns(result):
     assert "Eligible host" in html
     assert "Mangroves" in html
     assert "No exclusion identified in assessed scope" in html
+
+
+def test_readiness_display_uses_policy_reference_without_target_selection(result):
+    page = view._global(result)
+    assert "First-pass implementation scope (criteria plus gates)" in page
+    assert "Defined for implementation" in page
+    assert "Provisional input assumption" in page
+    assert "Next actions and owners" in page
+    exported = render_developer_view(result["contract"])
+    assert "Approved policy response — target applicability pending" in exported
+    assert 'value="Defined for implementation"' in exported
