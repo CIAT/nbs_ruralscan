@@ -453,6 +453,31 @@ def _global(result):
             + _text(row["variable"])
             + '">Compare source studies</button>'
         )
+        reviews = row.get("soil_input_reviews", [])
+        if reviews:
+            function += (
+                "<details><summary>Soil depth and measurement compatibility</summary>"
+                + _table(
+                    ["Study", "Source input", "Depth", "Finding", "Still unresolved"],
+                    [
+                        _row(
+                            [
+                                _text(_label(r["source_id"])),
+                                _text(r["source_dataset"]),
+                                _text(
+                                    f"{r['depth_cm'][0]}–{r['depth_cm'][1]} cm"
+                                    if r["depth_cm"]
+                                    else "Not established"
+                                ),
+                                _text(r["finding"]),
+                                _text(r["remaining_limit"]),
+                            ]
+                        )
+                        for r in reviews
+                    ],
+                )
+                + "</details>"
+            )
         weight = row["weight"]
         rows.append(
             _row(

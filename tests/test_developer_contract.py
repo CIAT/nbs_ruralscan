@@ -442,3 +442,54 @@ def test_documented_inputs_follow_dataset_resolution(baseline):
     )
     assert result["dataset_id"] == "local_soil"
     assert result["documented_input"] is None
+
+
+def test_soil_measurement_reviews_preserve_unknowns_and_input_hold(baseline):
+    rows = indexed(baseline)
+    reviews = {
+        review["evidence_id"]: review
+        for row in rows.values()
+        for review in row["soil_input_reviews"]
+    }
+    for eid in ("ev_t4_soilorg_nath21_01", "ev_t4_soilph_nath21_01"):
+        assert reviews[eid]["depth_cm"] == [0, 30]
+        assert reviews[eid]["supporting_documentation"]
+        assert not reviews[eid]["human_review_state_changed"]
+    for eid in ("ev_T4_soc_ahmad2018_1", "ev_soil_ph_singh26"):
+        assert reviews[eid]["depth_cm"] is None
+        assert reviews[eid]["remaining_limit"]
+    for variable in ("soil_ph", "soil_organic_carbon"):
+        assert (
+            rows[f"agroforestry__planted_silvoarable__{variable}"]["dataset"][
+                "documented_input"
+            ]["band"]
+            is None
+        )
+
+
+def test_soil_context_review_preserves_published_numeric_contract(baseline):
+    package = ROOT / "handoff/agroforestry-t4/developer-v0.1.2"
+    assert baseline["fixtures"] == json.loads(
+        (package / "conformance_examples.json").read_text()
+    )
+    previous = json.loads((package / "developer_contract.json").read_text())
+    old = {o["function_id"]: o for r in previous["rows"] for o in r["function_options"]}
+    current = {
+        o["function_id"]: o
+        for r in baseline["contract"]["rows"]
+        for o in r["function_options"]
+    }
+    assert old.keys() == current.keys()
+    for key in old:
+        # Source context is fingerprinted: a metadata revision correctly invalidates
+        # old single-study selections. Approved pooled functions remain unchanged.
+        if key.startswith("pool:"):
+            assert old[key] == current[key]
+        else:
+            assert {
+                k: v for k, v in old[key].items() if k not in ("context", "fingerprint")
+            } == {
+                k: v
+                for k, v in current[key].items()
+                if k not in ("context", "fingerprint")
+            }
