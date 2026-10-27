@@ -947,3 +947,8 @@ Schema extension tracked in GitHub issue #455. Per-recipe `T4_run_policy.csv` is
 Fields: `policy_id`, `nbs_id`, `system`, `output_label`; `variable_group`, `rule_id`, `function_id`, `function_fingerprint`; `group_weight`, `criterion_weight`; `aggregation`, `sensitivity_aggregation`, `missing_values`, `gate_policy`, `applicability`, `decision_reference`. All are required.
 
 Criterion weights are positive finite shares summing to their group's budget; distinct group budgets sum to one. Only numeric suitability mappings for the named system may carry weights. Function IDs and fingerprints pin approved responses. Missing or changed functions hold the policy rather than silently selecting replacements. Supported initial semantics are WLC, minimum-factor sensitivity, unknown propagation, separate host/legal masks and target transfer required. Evidence-filtered builds recheck fingerprints. Policy approval does not approve geographical transfer, source units/depth or dataset adapters.
+
+
+### T1 access metadata: variable inputs (27 October 2026)
+
+The existing optional `access_params` object may contain `variable_inputs`, keyed by canonical variable. This records provider-documented asset/band, source units and scale/offset, transformation description, available depths, verification date/URLs and remaining checks. `source_scale` converts stored values to the stated converted unit; for derived variables, `derived_unit` and `operation` distinguish derivation from linear scaling. The developer compiler exports this under `dataset.documented_input` only for the resolved dataset. It does not override BIND, select a depth, assert live access, or infer source-method equivalence. Unknown metadata remains absent.

@@ -14,6 +14,8 @@ The [earlier developer package](developer-v0.1.0/README.md) and [v0.1.5 evidence
 
 The editable source remains `schema/recipes/agroforestry/T4_suitability_mappings.csv`; its JSON is generated. Versioned handoff files are generated snapshots, not alternative editable schema tables. Do not substitute historical synthesis intermediates for the live recipe.
 
+Provider-checked assets, units and remaining soil-depth questions: [dataset input handoff](DATASET_INPUTS.md). Current compiler carries these metadata; the published v0.1.2 snapshot remains unchanged.
+
 ## Configuration decisions
 
 [First-pass decision table](FIRST_PASS_DECISIONS.md) records approved response choices, aggregation and weights, with worked examples. The new package includes the policy and six aggregation/gate conformance cases. Target transfer and input validation remain open.
