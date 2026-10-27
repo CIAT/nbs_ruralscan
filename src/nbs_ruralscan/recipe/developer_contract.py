@@ -115,6 +115,9 @@ def _binding(variable, recipe_dataset, bindings, catalog, ontology, contexts):
         dataset_id = recipe_dataset or None
     ds = catalog.get(dataset_id, {})
     ont = ontology.get(variable, {})
+    documented = (
+        obj(ds.get("access_params"), {}).get("variable_inputs", {}).get(variable)
+    )
     return {
         "dataset_id": dataset_id,
         "recipe_dataset_id": recipe_dataset or None,
@@ -124,6 +127,7 @@ def _binding(variable, recipe_dataset, bindings, catalog, ontology, contexts):
         else None,
         "band": used.band or None if used else None,
         "asset": ds.get("gee_asset_id") or ds.get("download_url") or None,
+        "documented_input": documented,
         "access_type": ds.get("access_type"),
         "native_resolution_m": ds.get("spatial_resolution_m") or None,
         "time_period": ds.get("time_period") or None,

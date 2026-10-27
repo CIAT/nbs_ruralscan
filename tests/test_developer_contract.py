@@ -407,3 +407,38 @@ def test_package_verifier_detects_payload_and_pinned_input_tampering(tmp_path):
         ValueError, match="hash verification failed: function_intervals.csv"
     ):
         dc.verify_package(snapshot, output)
+
+
+def test_documented_inputs_follow_dataset_resolution(baseline):
+    rows = indexed(baseline)
+    slope = rows[SLOPE]["dataset"]["documented_input"]
+    assert slope["band"] == "elevation"
+    assert slope["derived_unit"] == "degrees"
+    soil = rows["agroforestry__planted_silvoarable__soil_ph"]["dataset"][
+        "documented_input"
+    ]
+    assert soil["source_scale"] == 0.1
+    assert soil["band"] is None  # No depth silently selected.
+    assert not soil["live_access_verified"]
+    override = Binding(
+        binding_id="local",
+        variable="soil_ph",
+        scope_type="country",
+        scope_id="HTI",
+        dataset_id="local_soil",
+        preference_rank=1,
+        status="catalogued",
+        fitness_note="test",
+        band="ph",
+    )
+    catalog = {
+        "isric_soilgrids250_v2": {
+            "access_params": {"variable_inputs": {"soil_ph": soil}}
+        },
+        "local_soil": {"gee_asset_id": "local/soil"},
+    }
+    result = dc._binding(
+        "soil_ph", "isric_soilgrids250_v2", [override], catalog, {}, ["HTI"]
+    )
+    assert result["dataset_id"] == "local_soil"
+    assert result["documented_input"] is None

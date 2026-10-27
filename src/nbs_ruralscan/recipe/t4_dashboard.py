@@ -484,7 +484,14 @@ def _global(result):
                     + "</p><details><summary>Weight basis</summary>"
                     + _text(weight.get("basis"))
                     + "</details>",
-                    _dataset(row["dataset"]),
+                    _dataset(row["dataset"])
+                    + (
+                        "<details><summary>Verified provider input details and remaining checks</summary>"
+                        + _value(row["dataset"]["documented_input"])
+                        + "</details>"
+                        if row["dataset"].get("documented_input")
+                        else ""
+                    ),
                     '<span class="badge">'
                     + _text(_label(row["status"]))
                     + "</span>"
