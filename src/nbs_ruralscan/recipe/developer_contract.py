@@ -29,7 +29,7 @@ from ..runtime.categorical import evaluate_categorical
 from ..runtime.numeric import evaluate_numeric
 
 VERSION = "0.2.0"
-PACKAGE_VERSION = "0.1.3"
+PACKAGE_VERSION = "0.1.4"
 
 
 def read_csv(path):
@@ -607,7 +607,9 @@ def build_contract(
             )
         else:
             blockers.append(
-                "Legal category threshold requires explicit category adapter and system coverage decision"
+                "Supply an assessed legal-exclusion mask with target rules, provenance and coverage; protected-area category alone is insufficient"
+                if params.get("legal_mask_contract")
+                else "Legal category threshold requires explicit category adapter and system coverage decision"
             )
         if any(o["completeness"]["status"] == "partial" for o in options):
             notes.append(
@@ -728,6 +730,8 @@ def build_contract(
                 "context_overrides": obj(raw.get("context_overrides"), []),
                 "dataset": dataset,
                 "host_inputs": dependencies,
+                "gate_input_contract": params.get("input_contract")
+                or params.get("legal_mask_contract"),
                 "weight": {
                     "configured_default": float(raw["weight_default"])
                     if raw.get("weight_default")

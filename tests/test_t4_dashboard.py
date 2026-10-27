@@ -136,3 +136,12 @@ def test_soil_proposal_is_visible_without_becoming_approved(result):
     assert "Proposed soil inputs — not activated" in html
     assert "Design assumptions, not findings from the papers" in html
     assert "Thickness weighted arithmetic mean" in html
+
+
+def test_gates_explain_classes_and_legal_unknowns(result):
+    html = view._global(result)
+    assert "Legal exclusion — local assessment required" in html
+    assert "Required legal-mask provenance" in html
+    assert "Eligible host" in html
+    assert "Mangroves" in html
+    assert "No exclusion identified in assessed scope" in html

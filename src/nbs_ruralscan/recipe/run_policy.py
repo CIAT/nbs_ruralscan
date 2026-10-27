@@ -142,11 +142,40 @@ def compile_policies(records, rows):
             raise ValueError(
                 "Criterion weights must match group budgets summing to one"
             )
+        gates = [
+            row
+            for row in rows
+            if row["system"] == first["system"]
+            and row["role"] in {"eligibility_gate", "hard_exclusion"}
+        ]
+        if {row["role"] for row in gates} != {"eligibility_gate", "hard_exclusion"}:
+            raise ValueError(
+                "Policy requires explicit host and legal gate mappings for its system"
+            )
+        if any(
+            row["role"] == "hard_exclusion"
+            and row.get("gate_input_contract")
+            and row["gate_input_contract"].get("scope") != first["system"]
+            for row in gates
+        ):
+            raise ValueError("Legal mask scope does not match policy system")
         policies.append(
             {
                 "policy_id": policy_id,
                 **{k: first[k] for k in shared},
                 "criteria": criteria,
+                "gate_requirements": [
+                    {
+                        "rule_id": row["rule_id"],
+                        "role": row["role"],
+                        "system": row["system"],
+                        "input_contract": row.get("gate_input_contract"),
+                        "dataset": row.get("dataset"),
+                        "missing_input": "unknown",
+                        "included_in_weighted_sum": False,
+                    }
+                    for row in gates
+                ],
                 "group_budgets": budgets,
                 "status": "blocked_function_changed"
                 if holds

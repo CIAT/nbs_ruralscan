@@ -159,3 +159,72 @@ def test_invalid_soil_input_proposals_rejected(built, mutation):
     assert input_proposals(row, "another_policy") == []
     row["dataset"]["documented_input"] = None
     assert input_proposals(row, "planted_terrain_soil_v1") == []
+
+
+def test_policy_names_scoped_host_and_legal_masks(built):
+    policy = built["contract"]["run_contract"]["approved_policies"][0]
+    gates = {g["rule_id"]: g for g in policy["gate_requirements"]}
+    assert set(gates) == {
+        "agro_planted_silvoarable_land_cover_gate",
+        "agro_protected_areas_exclusion",
+    }
+    assert all(
+        g["system"] == policy["system"] and not g["included_in_weighted_sum"]
+        for g in gates.values()
+    )
+    legal = gates["agro_protected_areas_exclusion"]["input_contract"]
+    assert legal["input_name"] == "excluded"
+    assert legal["decision_status"] == "target_rules_required"
+    row = next(
+        r
+        for r in built["contract"]["rows"]
+        if r["rule_id"] == "agro_protected_areas_exclusion"
+    )
+    assert not row["function_options"]  # No fake numeric/legal category response.
+    assert row["weight"]["configured_default"] == 0
+    assert "threshold" not in row["declared_relationship"]["params"]
+    assert not row["evidence_ids"]
+
+
+@pytest.mark.parametrize("host", [True, False, None])
+@pytest.mark.parametrize("excluded", [True, False, None])
+def test_gate_truth_table_preserves_unknown_and_exclusion(built, host, excluded):
+    policy = built["contract"]["run_contract"]["approved_policies"][0]
+    values = {c["rule_id"]: 0.75 for c in policy["criteria"]}
+    result = reference_scores(policy, values, host=host, excluded=excluded)
+    expected = (
+        "excluded"
+        if excluded is True or host is False
+        else "unknown"
+        if host is None or excluded is None
+        else "scored"
+    )
+    assert result["status"] == expected
+    assert result["score"] == (0.75 if expected == "scored" else None)
+
+
+@pytest.mark.parametrize("mutation", ["missing_legal", "wrong_scope"])
+def test_gate_contract_cannot_silently_disappear_or_change_system(built, mutation):
+    rows = deepcopy(built["contract"]["rows"])
+    if mutation == "missing_legal":
+        rows = [r for r in rows if r["role"] != "hard_exclusion"]
+    else:
+        next(r for r in rows if r["role"] == "hard_exclusion")["gate_input_contract"][
+            "scope"
+        ] = "another_system"
+    with pytest.raises(ValueError, match="gate mappings|scope"):
+        compile_policies(
+            read_csv(ROOT / "schema/recipes/agroforestry/T4_run_policy.csv"), rows
+        )
+
+
+@pytest.mark.parametrize("category", ["Ia", "II", "Not Reported", 1])
+def test_raw_protected_area_categories_are_not_legal_booleans(built, category):
+    policy = built["contract"]["run_contract"]["approved_policies"][0]
+    with pytest.raises(ValueError, match="Host and exclusion"):
+        reference_scores(
+            policy,
+            {c["rule_id"]: 0.75 for c in policy["criteria"]},
+            host=True,
+            excluded=category,
+        )
