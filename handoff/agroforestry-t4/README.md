@@ -4,9 +4,9 @@
 
 Use [Evidence Query → T4 analysis](../../docs/dashboard.html#t4/global): **Evidence trail · Suitability & weights · Global synthesis · Rules & method**. One read-only inspection surface; evidence decisions remain in QA/QC. Developer packages below are versioned downloads, not additional live dashboards.
 
-**Current developer package: [developer-v0.1.3](developer-v0.1.3/README.md), 27 October 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.3/developer_table.csv), [machine contract](developer-v0.1.3/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
+**Current developer package: [developer-v0.1.4](developer-v0.1.4/README.md), 27 October 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.4/developer_table.csv), [machine contract](developer-v0.1.4/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
 
-This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country-specific selections remain unset; the approved partial terrain-and-soil policy pins three functions and weights without granting regional transfer. Package version 0.1.3 uses contract/selection format 0.2.0. Pilot testing remains Diego's work.
+This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country-specific selections remain unset; the approved partial terrain-and-soil policy pins three functions and weights without granting regional transfer. Package version 0.1.4 uses contract/selection format 0.2.0. Pilot testing remains Diego's work.
 
 The configured rows are **10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
 
@@ -14,7 +14,7 @@ The [earlier developer package](developer-v0.1.0/README.md) and [v0.1.5 evidence
 
 The editable source remains `schema/recipes/agroforestry/T4_suitability_mappings.csv`; its JSON is generated. Versioned handoff files are generated snapshots, not alternative editable schema tables. Do not substitute historical synthesis intermediates for the live recipe.
 
-Provider-checked assets, units and remaining soil-depth questions: [dataset input handoff](DATASET_INPUTS.md). The v0.1.3 bundle includes source compatibility findings and an explicit, unselected 0–30 cm soil-input proposal. Earlier versions remain unchanged.
+Provider-checked assets, units and remaining soil-depth questions: [dataset input handoff](DATASET_INPUTS.md). The v0.1.4 bundle includes source compatibility findings, an explicit unselected 0–30 cm soil-input proposal, complete planted land-cover class documentation, and the assessed legal-mask contract. Earlier versions remain unchanged.
 
 ## Configuration decisions
 
@@ -34,7 +34,7 @@ Regional numeric profiles still need explicit source/context selection; shared a
 
 Climate BIND selects CHELSA while recipe rows still identify WorldClim. Runtime must reconcile the selected dataset, band and unit before execution. Other variables without a global BIND override retain the recipe dataset. Dataset choices are existing configured preferences, not a new quality benchmark. Finer pixels alone do not establish better data.
 
-The protected-area text threshold needs a legal-mask adapter and clarification of family coverage. Four local inputs remain: field-boundary zones, grazing confirmation, farmland context, and ungrazed forage management. These affect particular gate branches; they do not imply every branch is blocked. GPW + GLW4 does not replace local grazing confirmation. Boundary plantings are placement zones/line lengths, not planted pixel area.
+The planted-silvoarable legal gate requires an assessed exclusion mask with target rules and coverage; protected-area categories alone do not determine permission. See [gate inputs](DATASET_INPUTS.md#planted-silvoarable-host-and-legal-gates). Four local inputs remain: field-boundary zones, grazing confirmation, farmland context, and ungrazed forage management. These affect particular gate branches; they do not imply every branch is blocked. GPW + GLW4 does not replace local grazing confirmation. Boundary plantings are placement zones/line lengths, not planted pixel area.
 
 No raster run, complete M1 runner, or pilot validation is claimed. Missing inputs remain unknown. Eight soft operational scenarios belong to M2b/implementation guidance.
 

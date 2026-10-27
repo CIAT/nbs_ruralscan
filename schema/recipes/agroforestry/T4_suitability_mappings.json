@@ -3279,18 +3279,46 @@
     "suitability_dimension": "operational_constraint",
     "relationship_type": "threshold",
     "relationship_params": {
-      "threshold": "IUCN_Cat_I_II",
-      "above_is_suitable": false
+      "mapping_role": "hard_exclusion",
+      "input_kind": "assessed_boolean_mask",
+      "legal_mask_contract": {
+        "input_name": "excluded",
+        "scope": "agroforestry__planted_silvoarable",
+        "true": "Applicable legal or adopted project exclusion prohibits the proposed intervention at this location.",
+        "false": "Named rules and coverage have been assessed; no applicable exclusion was identified within that assessment. This is not general legal clearance.",
+        "unknown": "Missing assessment, incomplete coverage, unresolved permission or absent usable geometry.",
+        "candidate_dataset_role": "WDPA supplies protected-area locations and attributes for assessment; it does not itself determine agroforestry permission.",
+        "category_handling": "No IUCN category, designation name or missing category is automatically permission or prohibition. Raw WDPA attributes must not be passed as the boolean mask.",
+        "outside_polygons": "Absence from WDPA alone is not a false mask; record coverage and applicable national/site/project rules before assigning false.",
+        "overlap_handling": "Any confirmed applicable exclusion is true; otherwise any unresolved applicable assessment is unknown; false only when all relevant assessments are complete and non-excluding.",
+        "geometry_handling": "Unresolved point-only locations and boundaries remain unknown within their declared uncertainty/assessment extent; no invented universal buffer.",
+        "required_provenance": [
+          "country_or_jurisdiction",
+          "intervention",
+          "rules_and_decision_references",
+          "authority_or_project_policy_owner",
+          "assessment_date",
+          "dataset_version",
+          "coverage_extent",
+          "geometry_and_rasterization_method",
+          "unknown_coverage_definition"
+        ],
+        "decision_status": "target_rules_required",
+        "legacy_rule": "IUCN_Cat_I_II automatic exclusion retired: management category is not a universal intervention prohibition.",
+        "documentation_urls": [
+          "https://iucn.org/content/understanding-critical-issues-category-assignment",
+          "https://wdpa.s3.amazonaws.com/WDPA_Manual/English/WDPA_Manual_1_4_EN_FINAL.pdf"
+        ]
+      }
     },
-    "uncertainty_pct": 0.0,
     "is_scenario_candidate": false,
     "has_future_projection": false,
-    "weight_default": 1.0,
+    "weight_default": 0,
     "weight_adjustable": false,
-    "justification": "Strict nature reserves (IUCN I–II) prohibit agricultural intervention including agroforestry. Hard exclusion required regardless of biophysical suitability. Chuma et al. (2021) use the Itombwe Nature Reserve boundary as a hard exclusion layer in DR Congo agroforestry suitability mapping. Pinto et al. (2019) use protected area boundaries as planning zones in Montado conservation prioritisation.",
+    "justification": "Authored hard-exclusion interface for planted silvoarable. Apply confirmed jurisdiction/site or adopted project restrictions through an assessed true/false/unknown mask. WDPA is a screening input, not a universal permission codebook. Retires the unsupported IUCN I–II prohibition claim and unlinked three-source count; no country rule or human evidence approval is inferred. Other systems require their own explicit applicability contract.",
     "variable": "protected_area_status",
     "suitability_family_id": "agroforestry__planted_silvoarable",
-    "n_sources": 3
+    "n_sources": 0
   },
   {
     "mapping_id": "agro_accessibility_scenario",
@@ -3483,13 +3511,17 @@
         "80": 0
       },
       "class_labels": {
+        "10": "Tree cover",
         "20": "Shrubland",
         "30": "Grassland",
         "40": "Cropland",
         "50": "Built-up",
         "60": "Bare / sparse vegetation",
         "70": "Snow and ice",
-        "80": "Permanent water bodies"
+        "80": "Permanent water bodies",
+        "90": "Herbaceous wetland",
+        "95": "Mangroves",
+        "100": "Moss and lichen"
       },
       "mapping_role": "eligibility_gate",
       "class_requirements": {
@@ -3512,8 +3544,28 @@
             "grassland_class",
             "ruminant_density"
           ],
-          "note": "GPW grassland + GLW4 ruminants support scoping; livestock density alone does not prove grazing. Local management interpretation required."
+          "note": "Confirm managed forage without grazing from a documented local management source. Grassland classes or livestock density alone cannot establish this condition."
         }
+      },
+      "input_contract": {
+        "dataset_id": "esa_worldcover_2021",
+        "asset": "ESA/WorldCover/v200",
+        "band": "Map",
+        "reference_year": 2021,
+        "codebook_url": "https://developers.google.com/earth-engine/datasets/catalog/ESA_WorldCover_v200",
+        "scope": "Existing host-system screen for planted silvoarable; not conversion permission or biophysical suitability.",
+        "code_handling": "Exact categorical codes; no bilinear interpolation. Masked, unknown and unlisted codes remain unknown.",
+        "grassland_input": "managed_forage_without_grazing: 1 confirmed managed forage without grazing; 0 confirmed absent/incompatible; null not assessed or missing. Required only for class 30.",
+        "grassland_provenance": [
+          "management_source",
+          "assessment_date",
+          "assessor",
+          "coverage_extent",
+          "absence_vs_missing_definition"
+        ],
+        "spatial_handling": "Evaluate classes and conditions at source support before area summaries. Retain eligible, ineligible and unknown fractions separately; do not turn any eligible subpixel into full-pixel planting area.",
+        "non_conversion": "Tree cover, shrubland, bare ground, wetlands, mangroves and moss/lichen are unresolved for this gate; do not infer permission to convert native vegetation.",
+        "time_handling": "2021 classification is historical context; record any newer/local replacement and its explicit class crosswalk."
       }
     },
     "is_scenario_candidate": false,

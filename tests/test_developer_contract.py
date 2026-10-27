@@ -486,6 +486,12 @@ def test_soil_context_review_preserves_published_numeric_contract(baseline):
         # old single-study selections. Approved pooled functions remain unchanged.
         if key.startswith("pool:"):
             assert old[key] == current[key]
+        elif old[key]["kind"] == "categorical_gate":
+            # Input documentation may improve while approved class outcomes stay fixed.
+            for field in ("class_map", "class_requirements", "unmapped_policy"):
+                assert old[key]["parameters"].get(field) == current[key][
+                    "parameters"
+                ].get(field)
         else:
             assert {
                 k: v for k, v in old[key].items() if k not in ("context", "fingerprint")

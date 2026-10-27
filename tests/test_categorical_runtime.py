@@ -326,3 +326,48 @@ def test_gpw_unknown_codes_and_missing_dataset_stay_unknown():
     )
     assert np.isnan(result.values).all()
     assert result.status[0] == "missing_dataset"
+
+
+def test_planted_all_worldcover_classes_keep_unresolved_habitats_unknown():
+    import csv
+    import json
+
+    row = next(
+        r
+        for r in csv.DictReader(
+            (SCHEMA / "recipes/agroforestry/T4_suitability_mappings.csv").open()
+        )
+        if r["mapping_id"] == "agro_planted_silvoarable_land_cover_gate"
+    )
+    codes = [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 100, 0, np.nan]
+    ev = {eid: {"reviewer_ok": True} for eid in json.loads(row["evidence_ids"])}
+    result = evaluate_categorical(
+        row, codes, dataset_id="esa_worldcover_2021", evidence=ev
+    )
+    np.testing.assert_equal(
+        result.values,
+        [
+            np.nan,
+            np.nan,
+            np.nan,
+            1,
+            0,
+            np.nan,
+            0,
+            0,
+            np.nan,
+            np.nan,
+            np.nan,
+            np.nan,
+            np.nan,
+        ],
+    )
+    for flag in (0, 1, np.nan):
+        result = evaluate_categorical(
+            row,
+            [30, 40],
+            dataset_id="esa_worldcover_2021",
+            masks={"managed_forage_without_grazing": [flag, np.nan]},
+            evidence=ev,
+        )
+        np.testing.assert_equal(result.values, [flag, 1])

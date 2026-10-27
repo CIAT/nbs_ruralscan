@@ -460,11 +460,61 @@ def _global(result):
         gates = [o for o in row["function_options"] if o["kind"] == "categorical_gate"]
         function = "".join(_function(o, False) for o in pools + typed)
         if gates:
+            params = gates[0]["parameters"]
+            classes = params.get("class_map", {})
+            labels = params.get("class_labels", {})
             function = (
                 "<strong>Authored host eligibility rule</strong>"
                 + _host_inputs(row.get("host_inputs", {}))
                 + "<details><summary>Class rules</summary>"
-                + _value(gates[0]["parameters"].get("class_map", {}))
+                + _table(
+                    ["Code", "Land cover", "Host result", "Required confirmation"],
+                    [
+                        _row(
+                            [
+                                _text(code),
+                                _text(labels.get(code, code)),
+                                "Unknown"
+                                if code not in classes
+                                else "Ineligible"
+                                if classes[code] == 0
+                                else "Conditional"
+                                if params.get("class_requirements", {}).get(code)
+                                else "Eligible host",
+                                _text(
+                                    ", ".join(
+                                        _label(v)
+                                        for v in params.get(
+                                            "class_requirements", {}
+                                        ).get(code, [])
+                                    )
+                                ),
+                            ]
+                        )
+                        for code in dict.fromkeys([*labels, *classes])
+                    ],
+                )
+                + "</details>"
+            )
+        if row["role"] == "hard_exclusion" and row.get("gate_input_contract"):
+            legal = row["gate_input_contract"]
+            function = (
+                "<strong>Legal exclusion — local assessment required</strong><p>"
+                + _text(legal["category_handling"])
+                + "</p>"
+                + _table(
+                    ["Mask value", "Meaning"],
+                    [
+                        _row([_text(label), _text(legal[key])])
+                        for key, label in (
+                            ("true", "Excluded"),
+                            ("false", "No exclusion identified in assessed scope"),
+                            ("unknown", "Unknown"),
+                        )
+                    ],
+                )
+                + "<details><summary>Required legal-mask provenance</summary>"
+                + _list([_label(v) for v in legal["required_provenance"]])
                 + "</details>"
             )
         if not function:
