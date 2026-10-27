@@ -129,3 +129,10 @@ def test_soil_compatibility_shows_resolved_depth_and_remaining_limits(result):
     assert "0–30 cm" in html
     assert "Not established" in html
     assert "Still unresolved" in html
+
+
+def test_soil_proposal_is_visible_without_becoming_approved(result):
+    html = view._global(result)
+    assert "Proposed soil inputs — not activated" in html
+    assert "Design assumptions, not findings from the papers" in html
+    assert "Thickness weighted arithmetic mean" in html

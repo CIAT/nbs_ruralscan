@@ -1,6 +1,6 @@
 # Agroforestry developer package: integration guide
 
-Updated 27 October 2026. Package version: `developer-v0.1.2`; contract/selection format: `0.2.0`.
+Updated 27 October 2026. Package version: `developer-v0.1.3`; contract/selection format: `0.2.0`.
 
 ## Integration boundary
 
@@ -78,7 +78,7 @@ Verify a delivered package against its source checkout without rebuilding:
 
 ```bash
 PYTHONPATH=src python3 scripts/build-t4-developer.py \
-  --verify handoff/agroforestry-t4/developer-v0.1.2
+  --verify handoff/agroforestry-t4/developer-v0.1.3
 ```
 
 `--verify PATH` checks manifest inputs against the current checkout and package-output hashes. Use `--root` to identify the matching source checkout when necessary. A changed checkout may correctly fail verification. Verification establishes manifest consistency, not research authenticity, evidence approval, transfer approval or a successful spatial run. The immutable code commit and hashes support reproducibility; they do not replace scientific review.
@@ -87,7 +87,7 @@ This is a developer-ready contract, not an execution-complete spatial analysis. 
 
 Commit the package through GitHub with its source revision and selection manifest. Preserve prior versions. Do not distribute a second editable table that can diverge from the schema.
 
-The published v0.1.2 package leaves target country unset and includes the full evidence inventory. Rebuild with the intended country and explicit selections when preparing a run. Compared with v0.1.0, it restores Haile's printed SOC continuation bands and records their separate correction provenance. It records the approved conditional analytical policy and weights, without granting human extraction approvals or geographic transfer. Package version and contract format version are recorded separately in the manifest and `VERSION` file.
+The published v0.1.3 package leaves target country unset and includes the full evidence inventory. Rebuild with the intended country and explicit selections when preparing a run. Compared with v0.1.0, it restores Haile's printed SOC continuation bands and records their separate correction provenance. It records the approved conditional analytical policy and weights, without granting human extraction approvals or geographic transfer. Package version and contract format version are recorded separately in the manifest and `VERSION` file.
 
 ## Proposed responsibilities
 

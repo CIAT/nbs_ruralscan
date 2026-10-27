@@ -113,3 +113,49 @@ def test_country_filter_cannot_silently_reuse_approved_pool():
     policy = result["contract"]["run_contract"]["approved_policies"][0]
     assert policy["status"] == "blocked_function_changed"
     assert not any(c["function_verified"] for c in policy["criteria"])
+
+
+def test_soil_input_proposal_is_scoped_unselected_and_thickness_weighted(built):
+    policy = built["contract"]["run_contract"]["approved_policies"][0]
+    assert not policy["criteria"][0]["input_proposals"]
+    for criterion in policy["criteria"][1:]:
+        (proposal,) = criterion["input_proposals"]
+        assert proposal["layer_weights"] == pytest.approx([1 / 6, 1 / 3, 1 / 2])
+        assert proposal["depth_cm"] == [0, 30]
+        assert not proposal["selected"]
+    assert not policy["execution_ready"]
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ["gap", "overlap", "unsupported_depth", "nan", "activated", "renormalize"],
+)
+def test_invalid_soil_input_proposals_rejected(built, mutation):
+    from nbs_ruralscan.recipe.run_policy import input_proposals
+
+    row = deepcopy(
+        next(
+            r
+            for r in built["contract"]["rows"]
+            if r["variable"] == "soil_ph"
+            and r["system"] == "agroforestry__planted_silvoarable"
+        )
+    )
+    p = row["dataset"]["documented_input"]["scoping_proposals"][0]
+    if mutation == "gap":
+        p["layers_cm"][1][0] = 6
+    if mutation == "overlap":
+        p["layers_cm"][1][0] = 4
+    if mutation == "unsupported_depth":
+        p["layers_cm"] = [[0, 30]]
+    if mutation == "nan":
+        p["depth_cm"][1] = float("nan")
+    if mutation == "activated":
+        p["status"] = "approved"
+    if mutation == "renormalize":
+        p["missing_layers"] = "renormalize"
+    with pytest.raises(ValueError, match="Invalid soil input proposal"):
+        input_proposals(row, "planted_terrain_soil_v1")
+    assert input_proposals(row, "another_policy") == []
+    row["dataset"]["documented_input"] = None
+    assert input_proposals(row, "planted_terrain_soil_v1") == []

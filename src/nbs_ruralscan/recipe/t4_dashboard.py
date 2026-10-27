@@ -419,6 +419,35 @@ def _approved_policy(result):
                 ],
             )
         )
+        proposals = [
+            _row(
+                [
+                    _text(_label(c["rule_id"].split("__")[-1])),
+                    _text(f"{p['depth_cm'][0]}–{p['depth_cm'][1]} cm"),
+                    _text(_label(p["aggregation"])),
+                    _text(p["interpretation"]),
+                    _text(p["sensitivity"]),
+                ]
+            )
+            for c in policy["criteria"]
+            for p in c.get("input_proposals", [])
+        ]
+        if proposals:
+            out.append(
+                "<details><summary>Proposed soil inputs — not activated</summary>"
+                "<p>Design assumptions, not findings from the papers. Explicit run-manifest selection and input checks are required. Scale each layer, summarize depth, then apply the response. Missing layers remain unknown.</p>"
+                + _table(
+                    [
+                        "Criterion",
+                        "Depth",
+                        "Summary",
+                        "Meaning and limits",
+                        "Sensitivity check",
+                    ],
+                    proposals,
+                )
+                + "</details>"
+            )
         out.append(_list(policy["holds"]))
     return "".join(out)
 

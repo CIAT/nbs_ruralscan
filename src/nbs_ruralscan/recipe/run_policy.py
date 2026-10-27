@@ -4,6 +4,47 @@ import math
 from collections import defaultdict
 
 
+def input_proposals(row, policy_id):
+    """Validate dataset-authored proposals; never select or activate one."""
+    metadata = row.get("dataset", {}).get("documented_input") or {}
+    proposals = []
+    for proposal in metadata.get("scoping_proposals", []):
+        if proposal["policy_id"] != policy_id:
+            continue
+        depth, layers = proposal["depth_cm"], proposal["layers_cm"]
+        if (
+            proposal["status"] != "proposed_not_activated"
+            or proposal["aggregation"] != "thickness_weighted_arithmetic_mean"
+            or proposal["order"] != "scale_each_layer_then_depth_summary_then_response"
+            or proposal["missing_layers"] != "propagate_unknown_without_renormalization"
+            or not layers
+            or any(
+                len(pair) != 2
+                or any(
+                    type(v) not in (int, float) or not math.isfinite(v) for v in pair
+                )
+                or not 0 <= pair[0] < pair[1]
+                for pair in [depth, *layers]
+            )
+            or layers[0][0] != depth[0]
+            or layers[-1][1] != depth[1]
+            or any(a[1] != b[0] for a, b in zip(layers, layers[1:]))
+            or any(
+                layer not in metadata.get("available_depth_intervals_cm", [])
+                for layer in layers
+            )
+        ):
+            raise ValueError("Invalid soil input proposal: depth coverage or semantics")
+        proposals.append(
+            {
+                **proposal,
+                "layer_weights": [(b - a) / (depth[1] - depth[0]) for a, b in layers],
+                "selected": False,
+            }
+        )
+    return proposals
+
+
 def compile_policies(records, rows):
     indexed = {r["rule_id"]: r for r in rows}
     groups = defaultdict(list)
@@ -84,7 +125,11 @@ def compile_policies(records, rows):
                     "variable_group",
                 )
             }
-            criterion.update(weight=weight, function_verified=available)
+            criterion.update(
+                weight=weight,
+                function_verified=available,
+                input_proposals=input_proposals(row, policy_id),
+            )
             criteria.append(criterion)
             row["approved_policy"] = {
                 "policy_id": policy_id,
