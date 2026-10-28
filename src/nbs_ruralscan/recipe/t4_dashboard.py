@@ -141,6 +141,7 @@ def _evidence(result):
         for u in result["synthesis_report"]["evidence_dispositions"]
     }
     rows, counts = [], Counter()
+    no_core = result["contract"]["summary"]["configured_rows"] == 0
     for unit in result["evidence"]:
         dropped = unit.get("review_state") == "dropped"
         linked = bool(unit["linked_mapping_ids"])
@@ -185,9 +186,13 @@ def _evidence(result):
         )
     intro = "<p>Trace every record into a response, mapping or documented hold. Linked references are not necessarily numeric-rule contributors. Approval confirms an extraction; it does not approve geographic transfer.</p>"
     intro += (
-        '<label>Show <select data-t4-evidence-lane><option value="linked">Linked to T4 / operational output ('
+        '<label>Show <select data-t4-evidence-lane><option value="linked"'
+        + ("" if counts["linked"] else " disabled")
+        + ">Linked to T4 / operational output ("
         + str(counts["linked"])
-        + ')</option><option value="uncompiled">Not compiled ('
+        + ')</option><option value="uncompiled"'
+        + (" selected" if no_core else "")
+        + ">Not compiled ("
         + str(counts["uncompiled"])
         + ')</option><option value="dropped">Dropped history ('
         + str(counts["dropped"])
@@ -682,7 +687,10 @@ def _rules(root, result):
     ]
     out.append(
         "<h4>Common class scores loaded from compilation policy</h4>"
-        + "".join(_value(s) for s in scores.values())
+        + (
+            "".join(_value(s) for s in scores.values())
+            or "<p>No class-score policy approved for this recipe.</p>"
+        )
     )
     out.append(
         "<h4>Weights used to combine evidence</h4><p>Source-quality weight = tier × claim basis × applicable grey-literature discount. These weights reconcile evidence; they are distinct from a variable’s importance in its source model.</p>"
@@ -697,10 +705,10 @@ def _rules(root, result):
         )
     )
     out.append(
-        "<h4>Variable importance and spatial MCDA</h4><p>Source weights are normalized within each complete sibling group, then multiplied along the source hierarchy to obtain whole-model shares. Additive repeat branches are consolidated by variable and scope. Flat ratio = whole-model share × number of distinct variable/scope inputs. Hierarchy-adjusted ratio = whole-model share ÷ equal-share contribution through the same tree. Missing or conflicting models retain holds; these diagnostics do not set runtime weights.</p><p>Choose one representative per thematic/correlation group before final weights. Current numerical baseline is weighted linear combination with separate gates. Final selected weights sum to one; missing inputs remain unknown, without per-pixel renormalization. Aggregation choice remains explicit because the original minimum-factor design differs.</p>"
+        "<h4>Variable importance and spatial MCDA</h4><p>Source weights are normalized within each complete sibling group, then multiplied along the source hierarchy to obtain whole-model shares. Additive repeat branches are consolidated by variable and scope. Flat ratio = whole-model share × number of distinct variable/scope inputs. Hierarchy-adjusted ratio = whole-model share ÷ equal-share contribution through the same tree. Missing or conflicting models retain holds; these diagnostics do not set runtime weights.</p><p>Choose one representative per thematic/correlation group before final weights. Aggregation requires a recipe-specific recorded decision; no method or weight vector is selected by this diagnostic. When a weighted overlay is explicitly selected, weights must sum to one and missing inputs remain unknown, without per-pixel renormalization.</p>"
     )
     out.append(
-        "<h4>Repairing incomplete curves</h4><p>Verified continuations of reviewed source tables can be restored under an explicit, content-pinned correction policy. Source pages and agent verification remain visible; human approval flags and reviewed-study counts do not change. This does not create an independent study vote. A highest reported class below 1 is not automatically a missing class: high maps to 0.75 and very high to 0.9 under the common convention. Unknown thresholds and contradictory classes remain explicit.</p>"
+        "<h4>Repairing incomplete curves</h4><p>Verified continuations of reviewed source tables can be restored under an explicit, content-pinned correction policy. Source pages and agent verification remain visible; human approval flags and reviewed-study counts do not change. This does not create an independent study vote. A highest reported class need not reach 1. Only the recipe-specific class-score policies displayed above may supply scores. Unknown thresholds and contradictory classes remain explicit.</p>"
     )
     out.append(
         "<h4>Country and version rules</h4><p>Target country selects dataset bindings. An optional exact study-country filter narrows evidence and recomputes compatible pools; neither approves transfer. This view uses the full corpus. Published developer bundles are pinned snapshots; this dashboard is the single inspection surface. Review decisions stay in QA/QC.</p>"
@@ -714,7 +722,10 @@ def _rules(root, result):
             "schema/lookups/t4_numeric_compilation_policy.csv",
         ),
         ("Harmonization logic", "src/nbs_ruralscan/recipe/harmonization.py"),
-        ("Developer integration guide", "handoff/agroforestry-t4/IMPLEMENTATION.md"),
+        (
+            "Developer integration guide",
+            "methodology/templates/t4_handoff/IMPLEMENTATION.md",
+        ),
     ]:
         out.append(
             '<p><a target="_blank" rel="noopener" href="'
@@ -727,16 +738,16 @@ def _rules(root, result):
     return _approved_policy(result) + "".join(out)
 
 
-def build_dashboard(root):
+def build_dashboard(root, nbs="agroforestry"):
     root = Path(root)
-    result = build_contract(root)
-    inputs = _package_inputs(root, "agroforestry") | {"scripts/build-t4-dashboard.py"}
+    result = build_contract(root, nbs=nbs)
+    inputs = _package_inputs(root, nbs) | {"scripts/build-t4-dashboard.py"}
     hashes = {
         p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in sorted(inputs)
     }
     return {
         "version": "1",
-        "nbs": "agroforestry",
+        "nbs": nbs,
         "work_in_progress": True,
         "snapshot": hashlib.sha256(stable_json(hashes).encode()).hexdigest(),
         "input_hashes": hashes,

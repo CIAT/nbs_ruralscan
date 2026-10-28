@@ -380,3 +380,12 @@ def test_new_query_after_reclassification_still_needs_review(tmp_path):
         writer.writerows(rows)
     assert len(build(tmp_path)) == 1
     assert {r["evidence_id"] for r in build(tmp_path)[0]["records"]} == {"one", "two"}
+
+
+def test_other_recipes_use_same_evidence_reply_workflow(tmp_path):
+    setup(tmp_path)
+    path = tmp_path / "schema/registers/EV_evidence_register.csv"
+    path.write_text(path.read_text().replace("agroforestry", "mangrove_restoration"))
+    issues = build(tmp_path)
+    assert issues
+    assert {r["evidence_id"] for g in issues for r in g["records"]} == {"one", "two"}

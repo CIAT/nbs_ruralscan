@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-27T13:07:03.355184+00:00",
-  "git_commit": "06f9cf993f0282b4406d2d284ffbdf06ba93cdc7",
+  "timestamp": "2026-10-28T07:35:31.568062+00:00",
+  "git_commit": "f18ff3252f14d0b7c3594a6babe96a4039e2710e",
   "registers": {
     "SRC_source_register": [
       {
@@ -1400,7 +1400,7 @@
         "doi": "10.1016/j.agee.2008.01.014",
         "benchmark_tier": "high",
         "nbs_ids": "forest_restoration",
-        "vars_extracted": "aridity_index|elevation|land_cover|protected_area_status|tree_canopy_cover",
+        "vars_extracted": "aridity_index|elevation|land_cover|protected_area_status|tenure_security|tree_canopy_cover",
         "extraction_status": "swept",
         "extraction_date": "2026-09-29",
         "extraction_run_id": "fr_t4_sweep_2026-09",
@@ -1672,7 +1672,7 @@
         "doi": "10.1016/j.jenvman.2026.129374",
         "benchmark_tier": "medium",
         "nbs_ids": "forest_restoration",
-        "vars_extracted": "slope",
+        "vars_extracted": "land_cover|slope",
         "extraction_status": "swept",
         "extraction_date": "2026-09-29",
         "extraction_run_id": "deep_pass_2026-09",
@@ -1910,7 +1910,7 @@
         "benchmark_tier": "high",
         "method_type": "guidance",
         "nbs_ids": "mangrove_restoration",
-        "vars_extracted": "distance_to_forest|tidal_inundation_duration",
+        "vars_extracted": "distance_to_forest|elevation|extension_governance|land_cover|regeneration_potential|tidal_inundation_duration",
         "extraction_status": "swept",
         "extraction_date": "2026-09-30",
         "extraction_run_id": "round2_grey_wocat_2026-09",
@@ -6254,7 +6254,7 @@
         "region": "coastal Bangladesh",
         "method_type": "empirical",
         "nbs_ids": "mangrove_restoration",
-        "vars_extracted": "economic_return|erosion_hazard|flood_hazard|market_value_chain|project_cost|tenure_security",
+        "vars_extracted": "distance_to_forest|economic_return|erosion_hazard|flood_hazard|market_value_chain|project_cost|tenure_security",
         "extraction_status": "swept",
         "extraction_date": "2026-10-06",
         "extraction_run_id": "drought_year_round2_2026-10",
@@ -201857,6 +201857,303 @@
         "raw_name": "no undue water competition from pruned gliricidia",
         "locator_type": "page",
         "ruleset_version": "v1.6.14"
+      },
+      {
+        "evidence_id": "ev_fr_land_cover_zomer08_continuation_20261028",
+        "source_id": "fr_zomer_cdm_afforestation_suit_2008",
+        "nbs_id": "forest_restoration",
+        "suitability_family_id": "forest_restoration__active_planting",
+        "variable": "land_cover",
+        "relationship": {
+          "excluded_classes": [
+            "various types of tundra",
+            "irrigated or under other intensive agricultural production",
+            "currently forested areas",
+            "recently deforested areas"
+          ]
+        },
+        "context": {
+          "model_use": {
+            "used": true,
+            "method": "Boolean CDM-AR eligibility screen",
+            "source_specific_weight": null
+          },
+          "applicability_hold": "Historical 2007–2012 CDM-AR source profile only; source includes plantation, agroforestry and ANR alongside reforestation. Active-planting transfer and safeguard decision pending. Enrichment excluded by source, not entire project family.",
+          "continuation_of": "ev_fr_land_cover_zomer08_1",
+          "continuation_page": 2,
+          "numeric_calibration": "categorical source classes retained; no dataset class crosswalk or runtime mask approved",
+          "reported_values": "Intensive production exclusion is justified by high-value production/food security, not universal natural tree-establishment limitation.",
+          "practice_as_described": "afforestation or reforestation",
+          "source_check": "CDM first commitment period 2007–2012; p2 requires land not forested at beginning of 1990. p3 raster proxy uses 1991 GLCC. Source excludes enrichment planting; project active-planting family includes it. No transfer approved."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "! areas classiﬁed as various types of tundra;\n! areas classiﬁed as irrigated or under other intensive\nagricultural production, assuming that these areas are\nalready in high value production or their conversion may\nimpact on food security;\n! currently forested areas that are ineligible due to\nUNFCCC rules;\n! recently deforested areas that are ineligible due to\nUNFCCC rules.",
+        "page": 3,
+        "reviewer_ok": false,
+        "attribution": "[VERIFY-FLAG mismatch: re-opened for review] [AUTO-QUARANTINE off_scope:land_cover_no_classes]",
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_fr_land_cover_oliveira26_scope_20261028",
+        "source_id": "fr_semiarid_reforestation_spatial_planning_2026",
+        "nbs_id": "forest_restoration",
+        "suitability_family_id": "forest_restoration__active_planting",
+        "variable": "land_cover",
+        "relationship": {
+          "allowed_classes": [
+            "agricultural",
+            "non-vegetated"
+          ]
+        },
+        "context": {
+          "model_use": {
+            "used": true,
+            "method": "USPED erosion-reduction spatial optimization target domain",
+            "source_specific_weight": null
+          },
+          "applicability_hold": "Regional Caatinga allocation scope, not universal biological suitability. Non-vegetated does not authorize conversion of native non-forest ecosystems.",
+          "numeric_calibration": "source-category selection only; dataset class mapping and transfer unapproved",
+          "practice_as_described": "reforestation",
+          "source_check": {
+            "scope": "Serido River Basin, Brazil",
+            "constraints_not_modelled": [
+              "socio-economic",
+              "legal",
+              "logistical"
+            ]
+          }
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "The basin includes six LULC classes, but optimization was restricted \nto agricultural and non-vegetated areas. Socio-economic, legal, and \nlogistical constraints were not explicitly incorporated, due to data lim­\nitations and the objective of evaluating the core performance of the \nproposed spatial optimization framework under controlled and repro­\nducible conditions.",
+        "page": 4,
+        "reviewer_ok": false,
+        "attribution": "[VERIFY-FLAG mismatch: re-opened for review] [AUTO-QUARANTINE off_scope:land_cover_no_classes]",
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_fr_tenure_zomer08_20261028",
+        "source_id": "fr_zomer_cdm_afforestation_suit_2008",
+        "nbs_id": "forest_restoration",
+        "suitability_family_id": "forest_restoration__active_planting",
+        "variable": "tenure_security",
+        "context": {
+          "model_use": {
+            "used": false,
+            "method": "omitted enabling conditions discussed after biophysical/CDM screen",
+            "source_specific_weight": null
+          },
+          "intended_use": "M2b Stream B / Module 6; no T4 score",
+          "calibration_hold": "No numeric tenure threshold or weight reported; land and tree tenure named as viability condition.",
+          "practice_as_described": "afforestation or reforestation",
+          "source_check": "CDM first commitment period 2007–2012; p2 requires land not forested at beginning of 1990. p3 raster proxy uses 1991 GLCC. Source excludes enrichment planting; project active-planting family includes it. No transfer approved."
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Areas that might be available for CDM-AR, in reality,\ndepend upon a more complex set of parameters within a\nnational,\nlocal\nand\nsite-speciﬁc\nsocio-economic\nand\necological context. These conditions go beyond CDM-AR\nrules and tree growth characteristics, to include such factors\nas land opportunity costs, access to markets, land and tree\ntenure, or national level infrastructure and support.",
+        "page": 5,
+        "reviewer_ok": false,
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_mgt4_20261028_historic_habitat",
+        "source_id": "gma_mangrove_restoration_guidelines_2023",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "land_cover",
+        "relationship": {
+          "type": "qualitative",
+          "direction": "unclear"
+        },
+        "context": {
+          "practice_as_described": "Mangrove planting and ecological mangrove restoration; establishment method is a project choice, not a new family",
+          "calibration_hold": "No numeric response scores or transferable global cutoffs; human review pending",
+          "runtime_weight": null,
+          "source_weight": null,
+          "reported_values": {
+            "requirement": "Investigate prior natural mangrove occurrence, cause of loss, and failure of natural recovery"
+          },
+          "intended_use": "Categorical habitat-history prerequisite for site assessment; no automatic mask approved",
+          "remaining_decision": "Approve source reading and decide how site history is represented in opportunity-space safeguards"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "The most important question to ask when assessing the suitability of a restoration site is: Have mangroves \nnaturally grown here before? Follow up questions should also be asked: What happened to the mangroves  \nthat were here? Why have they not recovered naturally? And how can that be fixed? Addressing these  \nquestions is the foundation to planning successful mangrove restoration.",
+        "page": 25,
+        "reviewer_ok": false,
+        "raw_name": "Historical occurrence of naturally growing mangroves",
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_mgt4_20261028_tidal_elevation",
+        "source_id": "gma_mangrove_restoration_guidelines_2023",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "elevation",
+        "relationship": {
+          "type": "qualitative",
+          "direction": "optimum_range"
+        },
+        "context": {
+          "practice_as_described": "Mangrove planting and ecological mangrove restoration; establishment method is a project choice, not a new family",
+          "calibration_hold": "No numeric response scores or transferable global cutoffs; human review pending",
+          "runtime_weight": null,
+          "source_weight": null,
+          "vertical_reference": [
+            "mean sea level",
+            "highest astronomical tide"
+          ],
+          "spatial_support": "site-specific tidal planes; Figure 3 caption says tidal datums indicative and may vary across sites",
+          "reported_values": {
+            "lower_reference": "mean sea level",
+            "upper_reference": "highest astronomical tide",
+            "endpoint_meaning": "potential natural habitat envelope; sites that have always been below mean sea level or above high tide limit have little chance of success"
+          },
+          "intended_use": "Retain local-datum habitat envelope; do not convert to absolute metres or pool with terrestrial DEM elevation",
+          "remaining_decision": "Local tidal datum and hydroperiod binding required before any executable rule"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Mangrove distribution can potentially extend from mean sea level up to the level of the highest astronomical  \ntide (Figure 3, top panel), and therefore attempts to grow mangroves at sites that have always been below mean \nsea level, or above the high tide limit, fall outside the natural mangrove habitat envelope and have little chance  \nof success17,18 (Figure 3, bottom panel).",
+        "page": 25,
+        "reviewer_ok": false,
+        "raw_name": "Elevation relative to local tidal planes",
+        "attribution": "GMA guideline references 17 and 18; Figure 3 adapted from Primavera (2012), reference 20",
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_mgt4_20261028_propagule_method",
+        "source_id": "gma_mangrove_restoration_guidelines_2023",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "regeneration_potential",
+        "relationship": {
+          "type": "qualitative",
+          "direction": "unclear"
+        },
+        "context": {
+          "practice_as_described": "Direct replanting only after suitable conditions established where propagules insufficient",
+          "calibration_hold": "No numeric response scores or transferable global cutoffs; human review pending",
+          "runtime_weight": null,
+          "source_weight": null,
+          "model_use": {
+            "used": false,
+            "scope": "restoration-method guidance"
+          },
+          "intended_use": "Method selection: planting versus natural recruitment, not generic suitability weight",
+          "remaining_decision": "Keep method prerequisite separate from shared tidal-coastal envelope"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Direct intervention – Where damage to landscapes is high, once suitable conditions have been \nestablished, active interventions may also involve additional direct replanting of mangroves if there  \nis insufficient availability of mangrove propagules for natural recolonization.",
+        "page": 26,
+        "reviewer_ok": false,
+        "raw_name": "Insufficient mangrove propagules for natural recolonization",
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_mgt4_20261028_stakeholder_feasibility",
+        "source_id": "gma_mangrove_restoration_guidelines_2023",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "extension_governance",
+        "relationship": {
+          "type": "qualitative",
+          "direction": "unclear"
+        },
+        "context": {
+          "practice_as_described": "Mangrove restoration project planning",
+          "calibration_hold": "No numeric response scores or transferable global cutoffs; human review pending",
+          "runtime_weight": null,
+          "source_weight": null,
+          "intended_use": "M2b operational module / M6; no core suitability score",
+          "remaining_decision": "Local stakeholder and legal feasibility assessment; sentence gives no mapped legal exclusion classes"
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "The highest priority factors in determining feasibility will be whether there is likely to be stakeholder support  \nfor a restoration project, and no legal barrier to project implementation.",
+        "page": 26,
+        "reviewer_ok": false,
+        "raw_name": "Stakeholder support and legal feasibility",
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_mgt4_20261028_proximity_source_choice",
+        "source_id": "wb_2025_mangroves_coastal_resilience_bangladesh",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "distance_to_forest",
+        "relationship": {
+          "type": "qualitative",
+          "direction": "decreasing"
+        },
+        "context": {
+          "practice_as_described": "Bangladesh coastal mangrove afforestation for embankment protection",
+          "calibration_hold": "Source Boolean proximity screen preserved; no source scores, excluded tail or global ecological transfer approved",
+          "runtime_weight": null,
+          "source_weight": null,
+          "country": "BGD",
+          "income_group": "lower_middle",
+          "model_use": {
+            "used": true,
+            "scope": "benefit-oriented potential location screening",
+            "source_lineage": "Method follows Gijón Mancheño et al. 2021 and World Bank 2024 (same PDF page); independent lineage unresolved, not an extra vote",
+            "method": "10 km proximity screen; other joint criteria retained in source-row inventory",
+            "weight": null
+          },
+          "reported_values": {
+            "threshold": 10,
+            "unit": "km",
+            "operator": "within",
+            "meaning": "authors consider potentially suitable for colonization; not measured establishment boundary"
+          },
+          "observed_dataset": "Global Forest Watch mangrove patches",
+          "intended_use": "Regional source profile only; constrained-AOI design choice, no global cutoff",
+          "remaining_decision": "Whether this regional proximity design belongs in scenario screening; mangrove-specific mask required"
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Existing presence of mangroves on the foreshore. We consider sites within 10 km of existing \nmangroves as potentially suitable for colonization. Data from the Global Forest Watch1 are \nused to map out existing mangrove patches.",
+        "page": 6,
+        "reviewer_ok": false,
+        "raw_name": "Distance to existing mangroves on the foreshore",
+        "attribution": "Potential-location methodology follows Gijón Mancheño et al. (2021) and World Bank (2024), introduced on PDF page 6; do not count as independent of those sources",
+        "locator_type": "page",
+        "justification_quote": "The identiﬁcation of potential mangrove sites follows the methodology as laid out in (Gijón \nMancheño, et al., 2021; World Bank, 2024).",
+        "justification_page": 6,
+        "ruleset_version": "v1.8.0"
       }
     ],
     "FAM_family_registry": [
@@ -216636,283 +216933,10 @@
           ]
         }
       ],
-      "T4_suitability_mappings": [
-        {
-          "mapping_id": "forest_restoration__active_planting__elevation",
-          "nbs_id": "forest_restoration",
-          "dataset_id": "srtm_dem_90m",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_max": 3500.0
-          },
-          "uncertainty_pct": 20.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.1667,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 3500.0}; uncertainty ±20% from spread. ",
-          "variable": "elevation",
-          "suitability_family_id": "forest_restoration__active_planting",
-          "evidence_ids": [
-            "ev_fr_elevation_zomer08_1",
-            "ev_fr_elevation_busch19_1"
-          ],
-          "n_sources": 2,
-          "corpus_n": 18,
-          "paper_support_pct": 16.7
-        },
-        {
-          "mapping_id": "forest_restoration__active_planting__tree_canopy_cover",
-          "nbs_id": "forest_restoration",
-          "dataset_id": "hansen_treecover2000",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_max": 30.0
-          },
-          "uncertainty_pct": 20.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.1667,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 30.0}; uncertainty ±20% from spread. ",
-          "variable": "tree_canopy_cover",
-          "suitability_family_id": "forest_restoration__active_planting",
-          "evidence_ids": [
-            "ev_fr_tree_canopy_cover_zomer08_1",
-            "ev_fr_tree_canopy_cover_busch19_1"
-          ],
-          "n_sources": 2,
-          "corpus_n": 18,
-          "paper_support_pct": 16.7
-        },
-        {
-          "mapping_id": "forest_restoration__active_planting__slope",
-          "nbs_id": "forest_restoration",
-          "dataset_id": "srtm_dem_30m",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_max": 36.9
-          },
-          "uncertainty_pct": 20.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.1667,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 2 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 36.9}; uncertainty ±20% from spread. ",
-          "variable": "slope",
-          "suitability_family_id": "forest_restoration__active_planting",
-          "evidence_ids": [
-            "ev_fr_slope_busch19_1",
-            "ev_fr_slope_oliveira26_1"
-          ],
-          "n_sources": 2,
-          "corpus_n": 18,
-          "paper_support_pct": 13.3
-        },
-        {
-          "mapping_id": "forest_restoration__active_planting__population_density",
-          "nbs_id": "forest_restoration",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_max": 10.0
-          },
-          "uncertainty_pct": 30.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.1667,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 10.0}; uncertainty ±30% from spread. ",
-          "variable": "population_density",
-          "suitability_family_id": "forest_restoration__active_planting",
-          "evidence_ids": [
-            "ev_fr_population_density_chazdon16_2"
-          ],
-          "n_sources": 1,
-          "corpus_n": 18,
-          "paper_support_pct": 8.3
-        },
-        {
-          "mapping_id": "forest_restoration__active_planting__aridity_index",
-          "nbs_id": "forest_restoration",
-          "dataset_id": "global_aridity_index_v3",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_min": 0.65
-          },
-          "uncertainty_pct": 20.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.1667,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 0.65}; uncertainty ±20% from spread. ",
-          "variable": "aridity_index",
-          "suitability_family_id": "forest_restoration__active_planting",
-          "evidence_ids": [
-            "ev_fr_aridity_index_zomer08_1"
-          ],
-          "n_sources": 1,
-          "corpus_n": 18,
-          "paper_support_pct": 8.3
-        },
-        {
-          "mapping_id": "forest_restoration__active_planting__distance_to_plantation",
-          "nbs_id": "forest_restoration",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_max": 40.0
-          },
-          "uncertainty_pct": 20.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.1667,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 40.0}; uncertainty ±20% from spread. ",
-          "variable": "distance_to_plantation",
-          "suitability_family_id": "forest_restoration__active_planting",
-          "evidence_ids": [
-            "ev_fr_distance_to_plantation_bukoski24_1"
-          ]
-        },
-        {
-          "mapping_id": "forest_restoration__mangrove_coastal__tidal_inundation_duration",
-          "nbs_id": "forest_restoration",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_max": 50.0
-          },
-          "uncertainty_pct": 30.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 1.0,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 50.0}; uncertainty ±30% from spread. Collapsed 1 citation echo(es). ",
-          "variable": "tidal_inundation_duration",
-          "suitability_family_id": "forest_restoration__mangrove_coastal",
-          "evidence_ids": [
-            "ev_fr_inundation_gma23_1"
-          ],
-          "n_sources": 1,
-          "corpus_n": 4,
-          "paper_support_pct": 35.7
-        },
-        {
-          "mapping_id": "forest_restoration__passive_regeneration__distance_to_forest",
-          "nbs_id": "forest_restoration",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_max": 5.0
-          },
-          "uncertainty_pct": 60.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.25,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 6 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 5.0}; uncertainty ±60% from spread. ",
-          "variable": "distance_to_forest",
-          "suitability_family_id": "forest_restoration__passive_regeneration",
-          "evidence_ids": [
-            "ev_fr_distance_to_forest_barros22_1",
-            "ev_fr_distance_to_forest_bukoski24_1",
-            "ev_fr_distance_to_forest_cookpatton20_1",
-            "ev_fr_distance_to_forest_chazdonguariguata16_1",
-            "ev_fr_distance_to_forest_shive18_1",
-            "ev_fr_distance_to_forest_williams24_2"
-          ],
-          "n_sources": 6,
-          "corpus_n": 14,
-          "paper_support_pct": 50.0
-        },
-        {
-          "mapping_id": "forest_restoration__passive_regeneration__population_density",
-          "nbs_id": "forest_restoration",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_max": 10.0
-          },
-          "uncertainty_pct": 30.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.25,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 10.0}; uncertainty ±30% from spread. ",
-          "variable": "population_density",
-          "suitability_family_id": "forest_restoration__passive_regeneration",
-          "evidence_ids": [
-            "ev_fr_population_density_chazdon16_1"
-          ],
-          "n_sources": 1,
-          "corpus_n": 14,
-          "paper_support_pct": 9.6
-        },
-        {
-          "mapping_id": "forest_restoration__passive_regeneration__tree_canopy_cover",
-          "nbs_id": "forest_restoration",
-          "dataset_id": "hansen_treecover2000",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_max": 25.0
-          },
-          "uncertainty_pct": 20.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.25,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 25.0}; uncertainty ±20% from spread. ",
-          "variable": "tree_canopy_cover",
-          "suitability_family_id": "forest_restoration__passive_regeneration",
-          "evidence_ids": [
-            "ev_fr_tree_canopy_cover_cookpatton20_1"
-          ],
-          "n_sources": 1,
-          "corpus_n": 14,
-          "paper_support_pct": 9.6
-        },
-        {
-          "mapping_id": "forest_restoration__passive_regeneration__forest_fragment_size",
-          "nbs_id": "forest_restoration",
-          "dataset_id": "hansen_treecover2000",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "trapezoidal",
-          "relationship_params": {
-            "abs_min": 100.0
-          },
-          "uncertainty_pct": 20.0,
-          "context_overrides": [],
-          "is_scenario_candidate": false,
-          "has_future_projection": false,
-          "weight_default": 0.25,
-          "weight_adjustable": true,
-          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 100.0}; uncertainty ±20% from spread. ",
-          "variable": "forest_fragment_size",
-          "suitability_family_id": "forest_restoration__passive_regeneration",
-          "evidence_ids": [
-            "ev_fr_forest_fragment_size_barros22_1"
-          ],
-          "n_sources": 1,
-          "corpus_n": 14,
-          "paper_support_pct": 5.8
-        }
-      ]
+      "T4_suitability_mappings": []
+    },
+    "mangrove_restoration": {
+      "T4_suitability_mappings": []
     },
     "riparian_buffer": {
       "T0_nbs_registry": [
@@ -218961,10 +218985,10 @@
       "searched": "done",
       "screened": "done",
       "verified": "in_progress",
-      "last_run_id": "fr_t4_sweep_2026-09",
-      "updated": "2026-09-29",
-      "by": "Namita-J",
-      "note": "automated verify pass over the FR T4 sweep: 30 units from 12 of 32 extractable sources; quotes verified verbatim centrally; 1 unit auto-quarantined (study_site false positive, flagged for re-open); human QA and benchmark-tier sign-off outstanding"
+      "last_run_id": "forest_mangrove_t4_first_pass_20261028",
+      "updated": "2026-10-28",
+      "by": "Codex",
+      "note": "Bounded three-source re-read; three new claims passed central gates. Full source/supplement coverage and human review incomplete. No new discovery or approval claimed."
     },
     {
       "nbs_id": "forest_restoration",
@@ -220733,12 +220757,25 @@
       "updated": "2026-10-16",
       "by": "orchestrator",
       "note": "synthesis-first round 2026-10-16; see SRCH wet_grey_2026-10-16_* rows + discovery logs"
+    },
+    {
+      "nbs_id": "mangrove_restoration",
+      "table": "T4",
+      "category": "grey",
+      "family": "mangrove_restoration__tidal_coastal",
+      "searched": "not_started",
+      "screened": "not_started",
+      "verified": "in_progress",
+      "last_run_id": "forest_mangrove_t4_first_pass_20261028",
+      "updated": "2026-10-28",
+      "by": "Codex",
+      "note": "Bounded GMA and WB source re-read; five new claims passed central gates; inundation-frequency claim held for measurement mapping. Full source review incomplete; no approvals or new search claimed."
     }
   ],
   "qaqc_stats": {
-    "total_reviews": 2011,
+    "total_reviews": 2013,
     "queried": 194,
-    "n_reviewers": 13,
+    "n_reviewers": 14,
     "by_reviewer": {
       "ai_mechanism_rule": 727,
       "peetmate": 435,
@@ -220752,6 +220789,7 @@
       "Codex source-context review": 16,
       "ai_fix_round": 16,
       "Codex source recovery": 3,
+      "ai_scope_classifier_repair": 2,
       "Namita-J,peetmate": 1
     },
     "by_decision": {
@@ -220760,12 +220798,13 @@
       "flag": 194,
       "reclassify": 18,
       "retag": 4,
-      "keep": 90
+      "keep": 90,
+      "reopen": 2
     },
     "by_reason": {
       "insufficient_context": 694,
       "accepted_correction": 389,
-      "unspecified": 291,
+      "unspecified": 293,
       "other": 185,
       "wrong_practice": 88,
       "confirmed_pass": 76,
@@ -220786,7 +220825,7 @@
     "by_verdict": {
       "unsupported": 12,
       "pass": 1611,
-      "mismatch": 60,
+      "mismatch": 62,
       "scope": 53,
       "review": 26,
       "qa_sweep": 5,
@@ -248797,6 +248836,22 @@
       "reason": "wrong_variable",
       "note": "bare \"development issues addressed\" +/++ table: no mechanism and not water productivity (Pete 2026-10-24 rule)",
       "reviewer": "ai_mechanism_rule"
+    },
+    {
+      "date": "2026-10-28",
+      "evidence_id": "ev_fr_land_cover_zomer08_continuation_20261028",
+      "source_id": "fr_zomer_cdm_afforestation_suit_2008",
+      "verdict": "mismatch",
+      "decision": "reopen",
+      "reviewer": "ai_scope_classifier_repair"
+    },
+    {
+      "date": "2026-10-28",
+      "evidence_id": "ev_fr_land_cover_oliveira26_scope_20261028",
+      "source_id": "fr_semiarid_reforestation_spatial_planning_2026",
+      "verdict": "mismatch",
+      "decision": "reopen",
+      "reviewer": "ai_scope_classifier_repair"
     }
   ],
   "acquisition_funnel": {
@@ -248823,6 +248878,134 @@
     "mangrove_restoration": {
       "candidates": 4,
       "acquired": 4
+    }
+  },
+  "t4_review_notes": {
+    "ev_fr_population_density_chazdon16_2": {
+      "finding": "Source says wide-scale restoration typically occurs below 10 persons/km²; 10–100 identifies mosaic opportunities, including ecological restoration plantations. Existing abs_max=10 is not supported as a planting or regeneration limit.",
+      "intended_use": "Retain landscape approach classes and reported ranges as context, outside executable suitability cutoffs.",
+      "remaining_decision": "Correction required: remove unsupported cutoff from any executable proposal; retain quoted classification. No repeat approval needed to identify this extraction defect.",
+      "source_check": "Cached chazdon_guariguata_2016_natreg_flr.pdf, PDF p3 inspected, including following mosaic-restoration paragraph.",
+      "evidence_sha256": "0e2f623dc7b9a08a8ada9575d8cdde7b304afaca52a268944aaeae3fe4e62dce"
+    },
+    "ev_fr_population_density_chazdon16_1": {
+      "finding": "Source says wide-scale restoration typically occurs below 10 persons/km²; 10–100 identifies mosaic opportunities, including ecological restoration plantations. Existing abs_max=10 is not supported as a planting or regeneration limit.",
+      "intended_use": "Retain landscape approach classes and reported ranges as context, outside executable suitability cutoffs.",
+      "remaining_decision": "Correction required: remove unsupported cutoff from any executable proposal; retain quoted classification. No repeat approval needed to identify this extraction defect.",
+      "source_check": "Cached chazdon_guariguata_2016_natreg_flr.pdf, PDF p3 inspected, including following mosaic-restoration paragraph.",
+      "evidence_sha256": "f966595cd179082bcab6d69973d5f332561ceb629aa4fe8b9ab2bdaffb82da48"
+    },
+    "ev_fr_protected_area_status_zomer08_1": {
+      "finding": "Fig.2 excludes protected areas from this CDM-AR analysis; it does not establish a universal legal ban on restoration in protected areas.",
+      "intended_use": "Historical model exclusion; local legal applicability stays separate.",
+      "remaining_decision": "Any project-wide protected-area mask needs an explicit applicable-law/policy decision; do not promote this caption to universal law.",
+      "source_check": "Cached fr_zomer_cdm_afforestation_suit_2008.pdf, PDF p5 Fig.2 and discussion inspected.",
+      "evidence_sha256": "c4676136ea47c095b05e1a8256ae284f0363bd0e62357151b0f5be3a745e598e"
+    },
+    "ev_fr_tree_canopy_cover_zomer08_1": {
+      "finding": "Historical 2007–2012 CDM rules use a forest-cover definition, exclude recently forested land, and exclude enrichment planting. PDF p2 specifies nonforest at beginning of 1990. Low tree cover does not establish natural-ecosystem restoration suitability.",
+      "intended_use": "Retain source-specific Boolean eligibility and temporal conditions; no automatic global land-cover mask.",
+      "remaining_decision": "Resolve native-nonforest safeguards and any transfer to active planting explicitly; preserve 1990 baseline and original classes. New continuation quote is exact and must remain same source vote.",
+      "source_check": "Cached Zomer PDF pp2–3 and p5 inspected; new p3 continuation quote exact native-text match.",
+      "evidence_sha256": "a9269b0451430ede38cd30487fb64a0e5c7aa151ff38b8058ca390dfcb75d748"
+    },
+    "ev_fr_land_cover_zomer08_1": {
+      "finding": "Historical 2007–2012 CDM rules use a forest-cover definition, exclude recently forested land, and exclude enrichment planting. PDF p2 specifies nonforest at beginning of 1990. Low tree cover does not establish natural-ecosystem restoration suitability.",
+      "intended_use": "Retain source-specific Boolean eligibility and temporal conditions; no automatic global land-cover mask.",
+      "remaining_decision": "Resolve native-nonforest safeguards and any transfer to active planting explicitly; preserve 1990 baseline and original classes. New continuation quote is exact and must remain same source vote.",
+      "source_check": "Cached Zomer PDF pp2–3 and p5 inspected; new p3 continuation quote exact native-text match.",
+      "evidence_sha256": "f58b5f6fd93debfeb1d3463bbbd780962dc76a305ef9a111d9b885695d7b50af"
+    },
+    "ev_fr_land_cover_zomer08_continuation_20261028": {
+      "finding": "Historical 2007–2012 CDM rules use a forest-cover definition, exclude recently forested land, and exclude enrichment planting. PDF p2 specifies nonforest at beginning of 1990. Low tree cover does not establish natural-ecosystem restoration suitability.",
+      "intended_use": "Retain source-specific Boolean eligibility and temporal conditions; no automatic global land-cover mask.",
+      "remaining_decision": "Resolve native-nonforest safeguards and any transfer to active planting explicitly; preserve 1990 baseline and original classes. New continuation quote is exact and must remain same source vote.",
+      "source_check": "Cached Zomer PDF pp2–3 and p5 inspected; new p3 continuation quote exact native-text match.",
+      "evidence_sha256": "fa0d3c38906e356d93b1cbd030ab0181e5290298eba6ca497a83832e2e9967a0"
+    },
+    "ev_fr_aridity_index_zomer08_1": {
+      "finding": "Reported exclusions belong to historical CDM productivity/viability screening, not universal establishment limits. Elevation combines 3500 m with timberline; growing-season temperature is not mean annual temperature.",
+      "intended_use": "Historical source profile with scope and endpoint holds.",
+      "remaining_decision": "No automatic active-planting/global ecological transfer; review numeric boundary meanings and source contexts before executable calibration.",
+      "source_check": "Zomer PDF p2 exclusions inspected; forest agent separately inventories p3 detail and temperature mapping hold.",
+      "evidence_sha256": "33cfdd1b0682ccb1d0b1535d5fd8de30b0d294a18703d86fdb67d13fd2cd4664"
+    },
+    "ev_fr_elevation_zomer08_1": {
+      "finding": "Reported exclusions belong to historical CDM productivity/viability screening, not universal establishment limits. Elevation combines 3500 m with timberline; growing-season temperature is not mean annual temperature.",
+      "intended_use": "Historical source profile with scope and endpoint holds.",
+      "remaining_decision": "No automatic active-planting/global ecological transfer; review numeric boundary meanings and source contexts before executable calibration.",
+      "source_check": "Zomer PDF p2 exclusions inspected; forest agent separately inventories p3 detail and temperature mapping hold.",
+      "evidence_sha256": "88975d0ae7d2401729a9d24cf35544637ee6b3af12d9438c85d77c3491f22cb6"
+    },
+    "ev_fr_slope_oliveira26_1": {
+      "finding": "Quoted sentence calls >75% slopes generally unsuitable for planting, citing Santos 2018. Same paragraph explicitly includes such slopes in restoration strategy (5% of total). A hard ceiling is unsupported.",
+      "intended_use": "Retain cited establishment difficulty, original 75% value, and distinction from erosion-priority allocation.",
+      "remaining_decision": "Correction required: do not compile unconditional abs_max or extrapolated curve. Resolve planting method/primary source and missing supplement before calibration.",
+      "source_check": "Cached fr_semiarid_reforestation_spatial_planning_2026.pdf, PDF p8 full paragraph and Fig.8 discussion inspected.",
+      "evidence_sha256": "9b8cd2cd93865dc86cc6166a79c8f4e6326a741686a62e3a79de6d5e57434f69"
+    },
+    "ev_fr_land_cover_fahrudin24_1": {
+      "finding": "Source target delineation depends on historical nonforest duration and 2000–2023 observations; adjacent equal-weight models concern ecosystem services, not planting suitability.",
+      "intended_use": "Regional historical target classes and model-context inventory, not generic low-cover afforestation eligibility.",
+      "remaining_decision": "Preserve time window and distinct ES/priority models; any natural-nonforest safeguard or global transfer remains an explicit policy decision.",
+      "source_check": "Cached optimizing_afforestation_reforestation_degraded_2024.pdf, PDF p4 §2.3–2.5 and Table1 inspected.",
+      "evidence_sha256": "e9744bc5e4d01a51f7e25ac03a103d2448fd78d4190b97194cdf874c7fed7a53"
+    },
+    "ev_fr_land_cover_oliveira26_scope_20261028": {
+      "finding": "Exact native quotes verified. Oliveira agricultural/nonvegetated domain is erosion-optimization scope, not global establishment suitability; Zomer tenure is discussed as omitted viability condition, not used numeric criterion.",
+      "intended_use": "Retain explicit regional/source-scope categorical inventory; tenure stays M2b/M6.",
+      "remaining_decision": "No automatic mask or numeric weight; source-scoped extraction can be retained unreviewed with current holds.",
+      "source_check": "Oliveira PDF p4 and Zomer PDF p5 quote containment verified; Zomer full p5 inspected.",
+      "evidence_sha256": "3a492c0e9fbfcf48983a34e69b543f034e05e66d97c4a4510b82642a6a7dbc15"
+    },
+    "ev_fr_tenure_zomer08_20261028": {
+      "finding": "Exact native quotes verified. Oliveira agricultural/nonvegetated domain is erosion-optimization scope, not global establishment suitability; Zomer tenure is discussed as omitted viability condition, not used numeric criterion.",
+      "intended_use": "Retain explicit regional/source-scope categorical inventory; tenure stays M2b/M6.",
+      "remaining_decision": "No automatic mask or numeric weight; source-scoped extraction can be retained unreviewed with current holds.",
+      "source_check": "Oliveira PDF p4 and Zomer PDF p5 quote containment verified; Zomer full p5 inspected.",
+      "evidence_sha256": "ed65e9cc780e2a0766bfd7f088aa77fd9cc2c6295d7c9a1fa08e2e5f98a6e4b3"
+    },
+    "ev_fr_inundation_gma23_1": {
+      "finding": "Guideline says MOST SPECIES cannot establish with inundation >50% of time; it supplies neither universal community-independent cutoff nor temporal observation support. Current draft abs_max=50 must not be treated as ready function.",
+      "intended_use": "Retain establishment warning and reported percentage with species/community and hydroperiod qualification.",
+      "remaining_decision": "No global 50% cutoff without explicit applicability decision; retain frequency/duration distinction, period and local hydrology requirements.",
+      "source_check": "Cached gma_mangrove_restoration_guidelines_2023.pdf, PDF p39 (printed 75–76), full §3.4.4 inspected.",
+      "evidence_sha256": "001804da9e310d0d96284bfff53b5eee638ad8ed55822757c70b81cdd283757a"
+    },
+    "ev_mgt4_20261028_tidal_elevation": {
+      "finding": "Exact quote and Fig.3 support local-tidal-plane envelope, but describe sites that have ALWAYS been outside it; caption says datums indicative and vary by site.",
+      "intended_use": "Local tidal-reference and habitat-history guidance; never pool as terrestrial absolute DEM elevation.",
+      "remaining_decision": "Preserve temporal qualifier and secondary references 17/18/20; local datum/input and any executable envelope require explicit decision.",
+      "source_check": "GMA PDF p25 native paragraph and Fig.3 caption/text inspected.",
+      "evidence_sha256": "dab276a2a207ab0fb82537b73fa1549971bd295bfcc7addf34141c019bd5fd80"
+    },
+    "ev_mgt4_20261028_historic_habitat": {
+      "finding": "Native passages verified. Historical habitat inquiry is not proof all historically occupied sites remain suitable; propagule limitation selects method only after suitable conditions established; operational feasibility is not a core score.",
+      "intended_use": "Unreviewed source guidance with existing distinct intended-use lanes; no new mask, weight or family.",
+      "remaining_decision": "Retain source guidance; decide only proposed implementation or ecological policy, without implying quotation fidelity grants human approval.",
+      "source_check": "GMA PDF pp25–26 native passages and surrounding method continuum inspected.",
+      "evidence_sha256": "4f9c833dd2a9e1390675344806d519978131492731711d99dabd411b0341d413"
+    },
+    "ev_mgt4_20261028_propagule_method": {
+      "finding": "Native passages verified. Historical habitat inquiry is not proof all historically occupied sites remain suitable; propagule limitation selects method only after suitable conditions established; operational feasibility is not a core score.",
+      "intended_use": "Unreviewed source guidance with existing distinct intended-use lanes; no new mask, weight or family.",
+      "remaining_decision": "Retain source guidance; decide only proposed implementation or ecological policy, without implying quotation fidelity grants human approval.",
+      "source_check": "GMA PDF pp25–26 native passages and surrounding method continuum inspected.",
+      "evidence_sha256": "126ec85c95e1c4ffeffbd629b9b6c662f76d81afded667e0939faab3962ba943"
+    },
+    "ev_mgt4_20261028_stakeholder_feasibility": {
+      "finding": "Native passages verified. Historical habitat inquiry is not proof all historically occupied sites remain suitable; propagule limitation selects method only after suitable conditions established; operational feasibility is not a core score.",
+      "intended_use": "Unreviewed source guidance with existing distinct intended-use lanes; no new mask, weight or family.",
+      "remaining_decision": "Retain source guidance; decide only proposed implementation or ecological policy, without implying quotation fidelity grants human approval.",
+      "source_check": "GMA PDF pp25–26 native passages and surrounding method continuum inspected.",
+      "evidence_sha256": "00ba270819af768713583f4bd97c9cff0ffcc19631b6f02a64806346645e8bd6"
+    },
+    "ev_mgt4_20261028_proximity_source_choice": {
+      "finding": "10 km is an author-selected colonization screen in a Bangladesh embankment-benefit model, not a measured establishment boundary. Method explicitly follows Gijón Mancheño 2021 and World Bank 2024.",
+      "intended_use": "Regional source model profile; preserve joint criteria and provenance, no universal cutoff.",
+      "remaining_decision": "Capture secondary methodological attribution/lineage uncertainty before independent-source pooling. Inventory water-side embankment, intertidal/tidal-range, accretion/erosion and no-agriculture/aquaculture/settlement criteria; the last avoids land acquisition, not ecological exclusion.",
+      "source_check": "Cached wb_2025_mangroves_coastal_resilience_bangladesh.pdf pp6–7 inspected, all five screening bullets.",
+      "evidence_sha256": "ddc19df0ced4815196a7341e2a996a908793825ba630fa9974b2ac58d856144f"
     }
   },
   "gaps": [],

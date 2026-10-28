@@ -80,7 +80,7 @@ def build(root):
     )
     groups = {}
     for eid, ev in evidence.items():
-        if ev["nbs_id"] != "agroforestry" or ev["use_role"] not in {
+        if ev["use_role"] not in {
             "structural_suitability",
             "operational_risk",
         }:

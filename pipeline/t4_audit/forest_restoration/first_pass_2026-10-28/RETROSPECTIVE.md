@@ -1,0 +1,13 @@
+# Bounded first-pass retrospective, 28 October 2026
+
+Scope: three existing forest papers and two existing mangrove sources, plus reconciliation and bounded reading of original stocktake candidates. Eight admitted claims (six structural, two operational), all unapproved. Independent adversarial review caught inundation frequency incorrectly assigned to duration; the candidate was removed before ingestion and remains in the held inventory. This is an existing proxy/quantity defect, not a new ecological rule.
+
+Central staging validated verbatim native quotes, page and artifact identity, verified metadata, numbers, context, family, ontology, role and ruleset. Full local generation verified 3,869 quotes against 530 cached sources, with 1,334 exempt baseline-layer records. The eight new claims are included in this pass.
+
+Two new categorical claims were initially auto-quarantined because the scope classifier's word-boundary regex did not recognise agricultural/forested/tundra/non-vegetated classes. The lexical defect was fixed and regression-tested; both rows were restored through `review.reopen_units` under `ai_scope_classifier_repair`, preserving the audit trail and false approval flags. This is a deterministic false-positive repair, not a human decision. T4-specific context metadata also failed the effects-only whitelist; role-specific keys now preserve model use, reported values and calibration holds without admitting those keys for effect units.
+
+The global metrics row `forest_mangrove_t4_bounded_20261028` was appended using `sweep_metrics.py`. It describes the whole register, not this bounded lane; no improvement trend is claimed from incomparable denominators. Existing scope/quote/band/crosswalk advisories remain. The two classifier-reopen events also add historical feedback records; the global learning cursor is deliberately unchanged because the full feedback backlog was not inspected.
+
+Current rule coverage already prohibits proxy substitution, site-range thresholds and unsupported numeric calibration. No methodological rule or extraction contract changed, so new records retain ruleset v1.8.0 and no historical units were restamped. Technical enforcement tests cover role-specific metadata, land-class recognition, unknown weights, empty-core dashboard visibility and evidence-note semantic freshness. No full-source, discovery, human-review or spatial-runtime completion is claimed.
+
+Progress ledger: existing active-planting updated-literature and mangrove grey lanes remain `verified=in_progress` with this run's bounded note. Existing search stages were not advanced. Full source and supplement work remains visible in inventories.

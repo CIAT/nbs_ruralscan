@@ -317,6 +317,11 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     review_log_csv = schema_root.parent / "pipeline" / "metrics" / "review_log.csv"
     data["review_log"] = _csv_to_rows(review_log_csv) if review_log_csv.exists() else []
 
+    # Bounded source audits supplement the existing evidence cards, never decisions.
+    from nbs_ruralscan.schema_tools.review_notes import load_review_notes
+
+    data["t4_review_notes"] = load_review_notes(schema_root.parent)
+
     # Reported evidence gaps (missing variables / figures a reviewer flagged) — see /api/gap.
     gaps_csv = schema_root.parent / "pipeline" / "metrics" / "gaps.csv"
     data["gaps"] = _csv_to_rows(gaps_csv) if gaps_csv.exists() else []
@@ -403,7 +408,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         for item in sorted(recipes_dir.iterdir()):
             if item.is_dir():
                 t0_csv = item / "T0_nbs_registry.csv"
-                if t0_csv.exists():
+                if t0_csv.exists() or (item / "T4_suitability_mappings.csv").exists():
                     nbs_id = item.name
                     data["recipes"][nbs_id] = {}
                     # T3_nbs_hazard_farming / T6_nbs_scorecard stay on disk (frozen) but

@@ -1,0 +1,174 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 developer handoff</title><style>body{font:16px/1.45 system-ui,sans-serif;color:#183c36;background:#f5f8f7;margin:24px}h1{margin-bottom:4px}p{margin:8px 0}.muted{color:#586b67;font-size:13px}.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}input,select{padding:10px;border:1px solid #aabdb7;border-radius:5px;background:white;font:inherit}input{min-width:300px}.scroll{overflow:auto;background:white;border:1px solid #ccdad5}table{border-collapse:collapse;width:100%}dl{font-size:13px;margin:8px 0}dt{font-weight:650}dd{margin:0 0 7px;overflow-wrap:anywhere}.host{border-top:1px solid #ddd;padding:8px 0}th,td{padding:12px;text-align:left;vertical-align:top;border-bottom:1px solid #d9e3df}thead th{background:#e2eee8;position:sticky;top:0}th button{font:inherit;font-weight:700;border:0;background:transparent;color:inherit;cursor:pointer;padding:0;text-align:left}td{min-width:110px}.response{min-width:300px;max-width:650px}.options{display:flex;gap:12px;overflow:auto;max-width:650px}.option{min-width:280px;flex:1;border:1px solid #d8e3df;padding:10px;border-radius:5px}.option svg{width:280px;max-width:100%;font:11px system-ui}.option p{margin:4px 0}details{margin:8px 0}summary{cursor:pointer;color:#076c61}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace;max-width:450px}.intervals td,.intervals th{font-size:12px;padding:5px;min-width:0}.badge{display:inline-block;padding:3px 8px;background:#fff0d4;border-radius:4px;font-size:13px}.status{min-width:220px}ul{padding-left:19px;margin:6px 0}code{overflow-wrap:anywhere}.links a{margin-right:18px}footer{margin-top:18px}</style><h1>T4 developer handoff</h1><p>0.2.0 · Forest restoration · Target country: Not selected</p><p>Defined means logic can be implemented; provisional means an input assumption remains; decision needed means response or scenario choices remain. Evidence references are separate. No state establishes validated spatial execution or target-country transfer.</p><p class="muted">Plots show exact scored intervals, not fitted curves. Open circles exclude boundaries; filled circles include them. Arrows show unbounded tails truncated for display. Gaps and unscored intervals remain unknown.</p><div class="links"><a href="developer_table.csv">Developer CSV</a><a href="developer_contract.json">Full contract JSON</a><a href="inclusion.csv">Study inclusion</a><a href="source_importance.json">Within-study importance</a><a href="IMPLEMENTATION.md">Implementation guide</a></div><details><summary>Package summary and evidence filter</summary><pre>{
+  &quot;summary&quot;: {
+    &quot;configured_rows&quot;: 0,
+    &quot;display_rows&quot;: 13,
+    &quot;functions&quot;: 0,
+    &quot;statuses&quot;: {
+      &quot;reference_only&quot;: 13
+    },
+    &quot;implementation_readiness&quot;: {
+      &quot;reference_only&quot;: 13
+    },
+    &quot;readiness_semantics&quot;: &quot;Implementation states classify defined logic, provisional inputs, missing decisions and evidence references. None establishes spatial execution readiness. Legacy status/blocks describe response selection only; use readiness for handoff.&quot;,
+    &quot;raster_validation&quot;: &quot;Not run; Diego and Brayden own implementation and pilot testing&quot;
+  },
+  &quot;evidence_countries&quot;: []
+}</pre></details><div class="toolbar"><label>Find <input id="find" placeholder="Variable, system, dataset or blocker"></label><label>Module <select id="module"><option value="">All</option><option>M2b</option></select></label><label>Readiness <select id="status"><option value="">All</option><option value="Evidence reference only">Evidence reference only</option></select></label><span id="count" aria-live="polite"></span></div><div class="scroll"><table id="rules"><thead><tr><th><button type="button" data-column="0" title="Sort by System">System ↕</button></th><th><button type="button" data-column="1" title="Sort by Theme">Theme ↕</button></th><th><button type="button" data-column="2" title="Sort by Variable group">Variable group ↕</button></th><th><button type="button" data-column="3" title="Sort by Variable / role">Variable / role ↕</button></th><th><button type="button" data-column="4" title="Sort by Relationship function">Relationship function ↕</button></th><th><button type="button" data-column="5" title="Sort by Dataset">Dataset ↕</button></th><th><button type="button" data-column="6" title="Sort by MCDA weight">MCDA weight ↕</button></th><th><button type="button" data-column="7" title="Sort by Readiness">Readiness ↕</button></th></tr></thead><tbody><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Socio economic</td><td class=""><strong>Accessibility travel time</strong><p>minutes</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>nelson_accessibility_2015</strong><p class="muted">1000 m · Time period not specified</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>Oxford/MAP/accessibility_to_cities_2015_v1_0</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>minutes</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>accessibility_travel_time__global</dd></dl><ul><li>Travel time minutes; invert if framing as accessibility (1 / time) for the suitability surface.</li></ul><p>Weiss/Nelson 2015 baseline ~1 km global accessibility surface. Travel-time minutes.</p><p>Road network from OSM ~2016; coverage variable in remote regions; not updated for post-2016 infrastructure.</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__accessibility_travel_time&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_accessibility_travel_time_iufro20_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Socio economic</td><td class=""><strong>Adoption rate</strong><p>percent</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>No dataset selected</strong><p class="muted">Resolution not specified · Time period not specified</p><p class="badge">Local input required</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>Not specified</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>percent</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>Recipe fallback</dd></dl><p>Recipe fallback; no matching BIND row</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__adoption_rate&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_adoption_rate_chazdon16_1&quot;,
+    &quot;ev_adoption_rate_le12_1&quot;,
+    &quot;ev_adoption_rate_snilstveit19_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Socio economic</td><td class=""><strong>Conflict fragility index</strong><p>unitless</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>acled_conflict_events</strong><p class="muted">Resolution not specified · Time period not specified</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>https://acleddata.com/</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>unitless</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>conflict_fragility_index__global</dd></dl><ul><li>Aggregate events per km² over a rolling window (e.g. 5 years); pair with WB FCV admin0 list.</li></ul><p>ACLED rolling 5-year event-density grid; pair with WB FCV admin0 list for binary fragility flag.</p><p>Event detection bias (media-coverage-dependent); under-reporting in less-mediated conflicts.</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__conflict_fragility_index&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_conflict_fragility_index_ramamo12_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Infrastructure</td><td class=""><strong>Distance to plantation</strong><p>km</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>No dataset selected</strong><p class="muted">Resolution not specified · Time period not specified</p><p class="badge">Local input required</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>Not specified</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>km</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>Recipe fallback</dd></dl><p>Recipe fallback; no matching BIND row</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__distance_to_plantation&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_fr_distance_to_plantation_bukoski24_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Infrastructure</td><td class=""><strong>Distance to road</strong><p>km</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>No dataset selected</strong><p class="muted">Resolution not specified · Time period not specified</p><p class="badge">Local input required</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>Not specified</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>km</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>Recipe fallback</dd></dl><p>Recipe fallback; no matching BIND row</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__distance_to_road&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_fr_distance_to_road_cookpatton20_1&quot;,
+    &quot;ev_fr_distance_to_road_elliott16_1&quot;,
+    &quot;ev_fr_distance_to_road_williams24_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Socio economic</td><td class=""><strong>Distance to settlement</strong><p>km</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>No dataset selected</strong><p class="muted">Resolution not specified · Time period not specified</p><p class="badge">Local input required</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>Not specified</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>km</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>Recipe fallback</dd></dl><p>Recipe fallback; no matching BIND row</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__distance_to_settlement&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_distance_to_settlement_le12_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Agricultural system</td><td class=""><strong>Establishment survival</strong><p>percent</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>No dataset selected</strong><p class="muted">Resolution not specified · Time period not specified</p><p class="badge">Local input required</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>Not specified</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>percent</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>Recipe fallback</dd></dl><p>Recipe fallback; no matching BIND row</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__establishment_survival&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_establishment_survival_andivia21_1&quot;,
+    &quot;ev_establishment_survival_andivia21_2&quot;,
+    &quot;ev_establishment_survival_andivia21_3&quot;,
+    &quot;ev_establishment_survival_andivia21_5&quot;,
+    &quot;ev_establishment_survival_barajas13_1&quot;,
+    &quot;ev_establishment_survival_gross26_10&quot;,
+    &quot;ev_establishment_survival_gross26_11&quot;,
+    &quot;ev_establishment_survival_gross26_12&quot;,
+    &quot;ev_establishment_survival_gross26_13&quot;,
+    &quot;ev_establishment_survival_gross26_14&quot;,
+    &quot;ev_establishment_survival_gross26_15&quot;,
+    &quot;ev_establishment_survival_gross26_16&quot;,
+    &quot;ev_establishment_survival_gross26_17&quot;,
+    &quot;ev_establishment_survival_gross26_18&quot;,
+    &quot;ev_establishment_survival_gross26_19&quot;,
+    &quot;ev_establishment_survival_gross26_4&quot;,
+    &quot;ev_establishment_survival_gross26_5&quot;,
+    &quot;ev_establishment_survival_gross26_7&quot;,
+    &quot;ev_establishment_survival_gross26_8&quot;,
+    &quot;ev_establishment_survival_gross26_9&quot;,
+    &quot;ev_establishment_survival_hardwick97_3&quot;,
+    &quot;ev_establishment_survival_hardwick97_4&quot;,
+    &quot;ev_establishment_survival_hardwick97_5&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Socio economic</td><td class=""><strong>Extension governance</strong><p>unitless</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>wb_wgi_governance</strong><p class="muted">Resolution not specified · Time period not specified</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>https://www.worldbank.org/en/publication/worldwide-governance-indicators</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>unitless</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>extension_governance__global</dd></dl><ul><li>Use the &#x27;government effectiveness&#x27; indicator as the default extension/governance proxy; composite across all six if a broader index is needed.</li></ul><p>WB WGI &#x27;government effectiveness&#x27; (admin0). Per the T5 spatial-grain rule (admin0 → qualified flag, not hotspot driver). Subnational requires_upload.</p><p>Country-level only; no subnational variation — qualified-flag-only for in-country MCDA differentiation (per T5 spatial-grain rule).</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__extension_governance&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_extension_governance_ceballos21_1&quot;,
+    &quot;ev_extension_governance_chazdon16_1&quot;,
+    &quot;ev_extension_governance_iufro20_1&quot;,
+    &quot;ev_extension_governance_iufro20_2&quot;,
+    &quot;ev_extension_governance_le12_1&quot;,
+    &quot;ev_extension_governance_le12_2&quot;,
+    &quot;ev_extension_governance_le12_3&quot;,
+    &quot;ev_extension_governance_le12_4&quot;,
+    &quot;ev_extension_governance_padilla17_1&quot;,
+    &quot;ev_extension_governance_ramamo12_1&quot;,
+    &quot;ev_extension_governance_samii14_1&quot;,
+    &quot;ev_extension_governance_samii14_2&quot;,
+    &quot;ev_extension_governance_snilstveit19_1&quot;,
+    &quot;ev_extension_governance_williams24_1&quot;,
+    &quot;ev_fr_extension_governance_chazdonguariguata16_1&quot;,
+    &quot;ev_fr_extension_governance_le11_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Agricultural system</td><td class=""><strong>Farm size</strong><p>ha</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>lesiv_smallholder_farm_size</strong><p class="muted">1000 m · Time period not specified</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>https://pure.iiasa.ac.at/15526</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>ha</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>farm_size__global</dd></dl><ul><li>Use field-size class or smallholder fraction depending on T5 framing.</li></ul><p>Lesiv et al. 2019 crowdsourced field-size dataset, ~1 km.</p><p>Crowdsourced — sampling uneven; complements national agricultural censuses rather than replaces them.</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__farm_size&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_farm_size_iufro15_1&quot;,
+    &quot;ev_farm_size_snilstveit19_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Socio economic</td><td class=""><strong>Finance credit access</strong><p>unitless</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>wb_findex_access</strong><p class="muted">Resolution not specified · Time period not specified</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>https://www.worldbank.org/en/publication/globalfindex</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>unitless</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>finance_credit_access__global</dd></dl><ul><li>Use &#x27;account ownership&#x27; or &#x27;borrowed from formal financial institution&#x27; as the rural-finance proxy; subnational requires_upload via national surveys.</li></ul><p>WB Global Findex (admin0). Subnational requires_upload via LSMS-ISA / FinScope.</p><p>Survey-based, country-level only; subnational requires_upload.</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__finance_credit_access&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_finance_credit_access_chazdon16_1&quot;,
+    &quot;ev_finance_credit_access_chazdon16_2&quot;,
+    &quot;ev_finance_credit_access_ieg18_1&quot;,
+    &quot;ev_finance_credit_access_le12_1&quot;,
+    &quot;ev_finance_credit_access_le12_2&quot;,
+    &quot;ev_finance_credit_access_padilla17_1&quot;,
+    &quot;ev_finance_credit_access_samii14_1&quot;,
+    &quot;ev_finance_credit_access_seixas24_1&quot;,
+    &quot;ev_finance_credit_access_williams24_1&quot;,
+    &quot;ev_fr_finance_credit_access_chazdonguariguata16_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Socio economic</td><td class=""><strong>Labour availability</strong><p>unitless</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>ilo_labour_statistics</strong><p class="muted">Resolution not specified · Time period not specified</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>https://ilostat.ilo.org/</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>unitless</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>labour_availability__global</dd></dl><ul><li>Use &#x27;agricultural employment as % of total employment&#x27; as the rural-labour-availability framing; pair with LSMS-ISA for subnational where present.</li></ul><p>ILOSTAT agricultural employment share. Subnational requires LSMS-ISA or country uploads.</p><p>Country-level only; subnational variation requires LSMS-ISA or country uploads.</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__labour_availability&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_fr_labour_availability_elliott16_1&quot;,
+    &quot;ev_labour_availability_ceballos21_1&quot;,
+    &quot;ev_labour_availability_nunes20_1&quot;,
+    &quot;ev_labour_availability_padilla17_1&quot;,
+    &quot;ev_labour_availability_wocat_1048_2011_workload&quot;,
+    &quot;ev_labour_availability_wocat_1418_2011_workload&quot;,
+    &quot;ev_labour_availability_wocat_1577_2013_workload&quot;,
+    &quot;ev_labour_availability_wocat_1598_2014_workload&quot;,
+    &quot;ev_labour_availability_wocat_5243_2019_workload&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Socio economic</td><td class=""><strong>Market value chain</strong><p>unitless</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>faostat_country_indicators</strong><p class="muted">Resolution not specified · Time period not specified</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>https://www.fao.org/faostat/en/</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>unitless</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>market_value_chain__global</dd></dl><ul><li>Use producer prices + trade volumes as a market-depth proxy; subnational requires country-team uploads.</li></ul><p>FAOSTAT country indicators (producer prices + trade) as market-depth proxy. Subnational requires country uploads.</p><p>Admin0 granularity; subnational variation invisible.</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__market_value_chain&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_market_value_chain_ceballos21_1&quot;,
+    &quot;ev_market_value_chain_ieg13_1&quot;,
+    &quot;ev_market_value_chain_le12_1&quot;,
+    &quot;ev_market_value_chain_nunes20_1&quot;,
+    &quot;ev_market_value_chain_ramamo12_1&quot;,
+    &quot;ev_market_value_chain_williams24_1&quot;
+  ]
+}</pre></details></td></tr><tr data-module="M2b" data-status="Evidence reference only"><td class="">See evidence contexts</td><td class="">Operational</td><td class="">Socio economic</td><td class=""><strong>Tenure security</strong><p>unitless</p><p class="muted">M2b · Reference only</p></td><td class="response"><strong>No selected function</strong><p class="muted">Not calibrated</p></td><td class=""><strong>landmark_iplc_lands</strong><p class="muted">Resolution not specified · Time period not specified</p><details><summary>Dataset, units and preparation</summary><dl><dt>Asset / location</dt><dd>https://www.landmarkmap.org/</dd><dt>Band</dt><dd>Not specified</dd><dt>Source units</dt><dd>Not specified</dd><dt>Required function units</dt><dd>unitless</dd><dt>Scale / offset</dt><dd>Not specified</dd><dt>Time aggregation</dt><dd>Not specified</dd><dt>Binding</dt><dd>tenure_security__global</dd></dl><ul><li>Spatial join with AOI; flag overlap as FPIC_REQUIRED for M6 hand-off.</li></ul><p>LandMark IPLC vector layer. FPIC_REQUIRED flag triggers on overlap with the M1 opportunity-space mask. Coverage patchy — absence ≠ no IPLC presence.</p><p>Coverage is patchy — only countries where IPLC mapping is documented; absence ≠ no IPLC presence.</p><p>Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction</p></details></td><td class="">Runtime: Not assigned<p class="muted">Configured default: Not specified</p><details><summary>Weight basis</summary>Evidence only; no runtime weight</details></td><td class="status"><span class="badge">Evidence reference only</span><p>Retained operational evidence; no executable response is claimed.</p><details><summary>Notes and provenance</summary><pre>{
+  &quot;rule_id&quot;: &quot;reference__forest_restoration__tenure_security&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;ev_fr_tenure_security_chazdonguariguata16_1&quot;,
+    &quot;ev_fr_tenure_security_hajjar21_1&quot;,
+    &quot;ev_fr_tenure_security_hajjar21_2&quot;,
+    &quot;ev_fr_tenure_security_le11_1&quot;,
+    &quot;ev_fr_tenure_zomer08_20261028&quot;,
+    &quot;ev_tenure_security_ceballos21_1&quot;,
+    &quot;ev_tenure_security_chazdon16_1&quot;,
+    &quot;ev_tenure_security_ieg13_1&quot;,
+    &quot;ev_tenure_security_ieg13_2&quot;,
+    &quot;ev_tenure_security_ieg13_3&quot;,
+    &quot;ev_tenure_security_ieg18_1&quot;,
+    &quot;ev_tenure_security_ieg18_2&quot;,
+    &quot;ev_tenure_security_iufro15_1&quot;,
+    &quot;ev_tenure_security_iufro15_2&quot;,
+    &quot;ev_tenure_security_iufro20_1&quot;,
+    &quot;ev_tenure_security_iufro20_2&quot;,
+    &quot;ev_tenure_security_iufro20_3&quot;,
+    &quot;ev_tenure_security_le12_1&quot;,
+    &quot;ev_tenure_security_le12_2&quot;,
+    &quot;ev_tenure_security_nunes20_1&quot;,
+    &quot;ev_tenure_security_padilla17_1&quot;,
+    &quot;ev_tenure_security_ramamo12_1&quot;,
+    &quot;ev_tenure_security_robertson05_1&quot;,
+    &quot;ev_tenure_security_williams24_1&quot;,
+    &quot;ev_tenure_security_wri17_1&quot;
+  ]
+}</pre></details></td></tr></tbody></table></div><footer class="muted">Generated from the same developer contract as the machine-readable tables. Source registers remain authoritative. No review decisions are recorded here.</footer><script>
+const table=document.querySelector('#rules'), body=table.tBodies[0];
+function filter(){const q=document.querySelector('#find').value.toLowerCase(), m=document.querySelector('#module').value, s=document.querySelector('#status').value;let count=0;for(const row of body.rows){row.hidden=Boolean((m&&row.dataset.module!==m)||(s&&row.dataset.status!==s)||!row.textContent.toLowerCase().includes(q));if(!row.hidden)count++;}document.querySelector('#count').textContent=count+' of '+body.rows.length+' rows';}
+for(const id of ['find','module','status'])document.getElementById(id).addEventListener(id==='find'?'input':'change',filter);
+for(const button of table.querySelectorAll('th button'))button.addEventListener('click',()=>{const i=Number(button.dataset.column),ascending=button.dataset.direction!=='asc';for(const b of table.querySelectorAll('th button')){delete b.dataset.direction;b.parentElement.removeAttribute('aria-sort');}button.dataset.direction=ascending?'asc':'desc';button.parentElement.setAttribute('aria-sort',ascending?'ascending':'descending');[...body.rows].sort((a,b)=>a.cells[i].textContent.localeCompare(b.cells[i].textContent,undefined,{numeric:true})*(ascending?1:-1)).forEach(row=>body.appendChild(row));});filter();
+</script></html>

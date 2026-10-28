@@ -737,7 +737,11 @@ def build_contract(
                     "configured_default": float(raw["weight_default"])
                     if raw.get("weight_default")
                     else None,
-                    "basis": "Equal-weight synthesis placeholder; not evidence-derived"
+                    "basis": (
+                        "Recipe-configured; runtime weights require explicit selection"
+                        if raw.get("weight_default")
+                        else "Unspecified; runtime weighting decision required"
+                    )
                     if role == "suitability_score"
                     else "Excluded from core weighted overlay",
                     "runtime_weight": weight,
@@ -984,13 +988,17 @@ def build_contract(
         },
         "run_contract": {
             "execution_ready": False,
-            "baseline": "Current CIAT implementation: weighted linear combination plus separate gates; original minimum-factor design differs",
+            "baseline": (
+                "Current CIAT implementation: weighted linear combination plus separate gates; original minimum-factor design differs"
+                if policies
+                else "No aggregation selected for this recipe; explicit decision required"
+            ),
             "aggregation_selection": "Approved policies below fix analytical choices; target applicability and input readiness remain separate",
             "approved_policies": policies,
             "criteria": "Select one function per system and canonical criterion; resolve correlated groups before assigning weights",
             "weight_validation": "Final selected nonnegative M1 score weights sum to one; masks and operational factors excluded",
             "missing_values": "Fixed criterion set; propagate unknown; no per-pixel renormalization",
-            "host_combination": "AND within a configured host branch; permitted perennial host crops OR; preserve fractions and driver; no area double-counting",
+            "host_combination": "Use only explicitly configured host gates and their recorded combination rules; no default host or species combination",
             "required_developer_checks": [
                 "Dataset access/band/native-unit/scale/time contracts",
                 "Explicit system and contextual transfer decisions",

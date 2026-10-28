@@ -240,6 +240,10 @@ def write_recipe(
     recipe_dir = output_dir or source_dir
     recipe_dir.mkdir(parents=True, exist_ok=True)
     existing = _existing_rows(source_dir)
+    weights_by_var = {
+        (r["suitability_family_id"], r["variable"]): r.get("weight_default", "")
+        for r in existing
+    }
     design_by_var: dict[tuple[str, str], dict[str, str]] = {}
     for r in existing:
         if any((r.get(k) or "") not in ("", "false") for k in DESIGN_FIELDS):
@@ -276,7 +280,6 @@ def write_recipe(
     csv_rows: list[dict[str, object]] = []
     for family, res in results.items():
         save_family(res, recipe_dir / f"T4_{family}.json")
-        n_rows = len(res.rows) or 1
         for row in res.rows:
             if (family, row["variable"]) in gates:
                 continue
@@ -296,8 +299,8 @@ def write_recipe(
                     "has_future_projection": "false",
                     "baseline_dataset_id": "",
                     "future_dataset_ids": "",
-                    # equal split across the family's variables until the MCDA weighting pass runs
-                    "weight_default": round(1.0 / n_rows, 4),
+                    # Synthesis does not authorise a runtime weighting decision.
+                    "weight_default": weights_by_var.get((family, row["variable"]), ""),
                     "weight_adjustable": "true",
                     "justification": row.get("justification", ""),
                     "variable": row["variable"],

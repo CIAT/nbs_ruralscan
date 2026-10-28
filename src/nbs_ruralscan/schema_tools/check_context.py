@@ -74,6 +74,28 @@ ALLOWED_KEYS = {
     "cost_nature",
     "note",
 }
+T4_CONTEXT_KEYS = {
+    "model_use",
+    "model_use_provenance",
+    "reported_values",
+    "calibration_hold",
+    "numeric_calibration",
+    "applicability_hold",
+    "intended_use",
+    "remaining_decision",
+    "review_needed",
+    "recovery_review",
+    "source_check",
+    "continuation_of",
+    "continuation_page",
+    "vertical_reference",
+    "spatial_support",
+    "hydroperiod_measure",
+    "runtime_weight",
+    "source_weight",
+    "observed_dataset",
+}
+
 INCOME = {"low", "lower_middle", "upper_middle", "high", "lic_lmic"}
 CLIMATE = {"tropical", "dryland", "temperate", "boreal"}
 HAZARDS = {
@@ -175,8 +197,13 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
     def flag(sig: str, detail: str) -> None:
         flags.append({"signal": sig, "evidence_id": eid, "detail": detail})
 
+    allowed = ALLOWED_KEYS
+    if row.get("use_role") in {"structural_suitability", "operational_risk"}:
+        # T4 review contract preserves model use, source values and unresolved
+        # calibration separately. These are not aliases for effect-study context.
+        allowed = allowed | T4_CONTEXT_KEYS
     for k in ctx:
-        if k not in ALLOWED_KEYS:
+        if k not in allowed:
             flag("unknown_context_key", k)
     countries = ctx.get("country")
     if isinstance(countries, str):
