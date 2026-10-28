@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-28T09:55:23.119031+00:00",
-  "git_commit": "bd0bfdcce24cc3e720c04559f94512554c107434",
+  "timestamp": "2026-10-28T11:28:17.443903+00:00",
+  "git_commit": "d81285dd0c6631ba09c496ed044a164981a1f824",
   "registers": {
     "SRC_source_register": [
       {
@@ -11491,6 +11491,51 @@
         "source_category": "updated_lit",
         "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/1_Agroforestry/chirwa_2007_gliricidia_soil_water_malawi.pdf",
         "study_income_group": "low",
+        "venue_type": "peer_reviewed_journal"
+      },
+      {
+        "source_id": "wcs_native_trees_watersheds_fiji_2022",
+        "citation": "Thaman, B., et al. (2022). A guide to planting native trees for forest restoration in watersheds. Wildlife Conservation Society, Suva, Fiji.",
+        "benchmark_tier": "medium",
+        "study_country": "FJI",
+        "region": "Pacific Islands",
+        "method_type": "expert",
+        "nbs_ids": "forest_restoration",
+        "vars_extracted": "extension_governance",
+        "extraction_status": "in_progress",
+        "extraction_date": "2026-10-28",
+        "extraction_run_id": "restoration_source_review_20261028",
+        "extractor": "orchestrator",
+        "source_kind": "grey_lit",
+        "url": "https://fiji.wcs.org/Portals/82/WCS%20Forestry%20Restoration%20Doc_English%20Final.pdf",
+        "artifact_sha1": "ab77fe0d26562d92b2e25d942a2bdc921f6d2e22",
+        "retrieved_at": "2026-10-28",
+        "access_status": "unknown",
+        "source_category": "grey",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/2_ForestRestoration/wcs_native_trees_watersheds_fiji_2022.pdf",
+        "study_income_group": "upper_middle",
+        "venue_type": "institutional_report"
+      },
+      {
+        "source_id": "lewis_2005_ecological_mangrove_engineering",
+        "citation": "Lewis (2005). Ecological engineering for successful management and restoration of mangrove forests. Ecological Engineering.",
+        "doi": "10.1016/j.ecoleng.2004.10.003",
+        "benchmark_tier": "medium",
+        "region": "Global review with substantial Florida and Australia examples",
+        "method_type": "review",
+        "nbs_ids": "mangrove_restoration",
+        "vars_extracted": "regeneration_potential|tidal_inundation_duration",
+        "extraction_status": "in_progress",
+        "extraction_date": "2026-10-28",
+        "extraction_run_id": "restoration_source_review_20261028",
+        "extractor": "orchestrator",
+        "source_kind": "paper",
+        "url": "https://mangroveactionproject.org/wp-content/uploads/2023/09/Robin-Lewis_2005.pdf",
+        "artifact_sha1": "4ec692ba968d2b29e3f448df337a386b5273ec39",
+        "retrieved_at": "2026-10-28",
+        "access_status": "unknown",
+        "source_category": "updated_lit",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/6_MangroveRestoration/lewis_2005_ecological_mangrove_engineering.pdf",
         "venue_type": "peer_reviewed_journal"
       }
     ],
@@ -202154,6 +202199,105 @@
         "justification_quote": "The identiﬁcation of potential mangrove sites follows the methodology as laid out in (Gijón \nMancheño, et al., 2021; World Bank, 2024).",
         "justification_page": 6,
         "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_fr_governance_wcs22_20261028",
+        "source_id": "wcs_native_trees_watersheds_fiji_2022",
+        "nbs_id": "forest_restoration",
+        "suitability_family_id": "forest_restoration__active_planting",
+        "variable": "extension_governance",
+        "context": {
+          "practice_as_described": "replanting of native forest tree species",
+          "country": "FJI",
+          "income_group": "upper_middle",
+          "model_use": {
+            "used": false,
+            "method": "community restoration planning guidance"
+          },
+          "intended_use": "M2b Stream B / Module 6: participation, agreement and commitment; not legal tenure status or structural suitability",
+          "numeric_calibration": "No governance scale, cutoff or model weight supplied."
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Landowner participation and commitment is essential at all stages of any restoration \nprogramme. Wherever possible, reforestation plans should be integrated into \ncommunity development and resource management plans. Any changes to the plans \nmust be discussed and agreed by all the stakeholders, who should be made aware \nof the requirements needed for the project and expectations for contributions from all \ninvolved.",
+        "page": 8,
+        "reviewer_ok": false,
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_mr_hydroperiod_lewis05_20261028",
+        "source_id": "lewis_2005_ecological_mangrove_engineering",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "tidal_inundation_duration",
+        "context": {
+          "practice_as_described": "ecological restoration of mangrove forests",
+          "model_use": {
+            "used": false,
+            "method": "expert restoration-design recommendation; use local natural reference hydrology",
+            "source_specific_weight": null
+          },
+          "reported_values": {
+            "source_importance": "single most important factor applies to the combined depth-duration-frequency hydrology group, not a numeric weight on duration",
+            "abstract_page": 1,
+            "typical_year_claim_page": 9,
+            "typical_year_percent": 30,
+            "counterexamples_pages": [
+              9,
+              10
+            ],
+            "counterexamples_percent": [
+              35.3,
+              59.4
+            ]
+          },
+          "numeric_calibration": "No executable global hydroperiod function. The abstract generalisation and site curves are retained for review with counterexamples; duration and frequency are not interchangeable. Local tidal datum, drainage and reference-system transfer remain unresolved.",
+          "applicability_hold": "General reference-site method only; no Florida/Australia elevations or percentages transferred globally."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "The single most important factor in designing a suc-\ncessful mangrove restoration project is determining the\nnormal hydrology (depth, duration and frequency, and\nof tidal ﬂooding) of existing natural mangrove plant\ncommunities (a reference site) in the area in which you\nwish to do restoration.",
+        "page": 7,
+        "reviewer_ok": false,
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_mr_propagules_lewis05_20261028",
+        "source_id": "lewis_2005_ecological_mangrove_engineering",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "regeneration_potential",
+        "relationship": {
+          "direction": "increasing",
+          "direction_cue": "Secondary succession depends\nupon mangrove propagule availability"
+        },
+        "context": {
+          "practice_as_described": "ecological restoration of mangrove forests",
+          "model_use": {
+            "used": false,
+            "method": "conceptual prerequisite for natural recovery; propagule availability and hydrologic access"
+          },
+          "numeric_calibration": "No numeric propagule, distance or landscape-cover threshold supplied.",
+          "applicability_hold": "Natural recovery pathway only. Planting can address propagule limitation; not a hard exclusion for the whole tidal-coastal family."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Secondary succession depends\nupon mangrove propagule availability, and I suggest\na new term, “propagule limitation” to describe situa-\ntions in which mangrove propagules may be limited\nin natural availability due to removal of mangroves by\ndevelopment, or hydrologic restrictions or blockages\n(i.e. dikes) which prevent natural waterborne transport\nof mangrove propagules to a restoration site.",
+        "page": 2,
+        "reviewer_ok": false,
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
       }
     ],
     "FAM_family_registry": [
@@ -219201,10 +219345,10 @@
       "searched": "in_progress",
       "screened": "in_progress",
       "verified": "in_progress",
-      "last_run_id": "forest_restoration_t4_discovery_20261028",
+      "last_run_id": "restoration_source_review_20261028",
       "updated": "2026-10-28",
       "by": "orchestrator",
-      "note": "discovery round 2026-10-28; see SRCH forest_restoration_t4_discovery_20261028_* rows + discovery logs"
+      "note": "Bounded WCS/Lewis read: 3 new units centrally gated; 2 structural, 1 operational. Species/ontology/calibration holds remain; discovery corpus and human review incomplete. See methodology/audits/restoration_source_review_20261028."
     },
     {
       "nbs_id": "forest_restoration",
@@ -221046,11 +221190,11 @@
       "family": "mangrove_restoration__tidal_coastal",
       "searched": "in_progress",
       "screened": "in_progress",
-      "verified": "not_started",
-      "last_run_id": "mangrove_restoration_t4_discovery_20261028",
+      "verified": "in_progress",
+      "last_run_id": "restoration_source_review_20261028",
       "updated": "2026-10-28",
       "by": "orchestrator",
-      "note": "discovery round 2026-10-28; see SRCH mangrove_restoration_t4_discovery_20261028_* rows + discovery logs"
+      "note": "Bounded WCS/Lewis read: 3 new units centrally gated; 2 structural, 1 operational. Species/ontology/calibration holds remain; discovery corpus and human review incomplete. See methodology/audits/restoration_source_review_20261028."
     },
     {
       "nbs_id": "mangrove_restoration",
@@ -249155,7 +249299,7 @@
     },
     "forest_restoration": {
       "candidates": 55,
-      "acquired": 52
+      "acquired": 51
     },
     "water_harvesting_conservation": {
       "candidates": 71,
@@ -249171,7 +249315,7 @@
     },
     "mangrove_restoration": {
       "candidates": 20,
-      "acquired": 19
+      "acquired": 18
     }
   },
   "t4_review_notes": {
