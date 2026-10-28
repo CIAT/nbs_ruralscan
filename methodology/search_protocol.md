@@ -3,9 +3,9 @@
 *So that "what searches did we run?" has a clear, queryable answer for every sub-practice.*
 
 ## The rule
-For **each sub-practice (suitability family) × table (T4)**, run **each of the 4 discovery processes** and **log the protocol** in the `SRCH` register before claiming the search done.
+For **each authorised sub-practice (suitability family) × table**, run or explicitly account for **each of the 4 discovery processes** and log the protocol in `SRCH` before claiming the search done. Generic parent searches remain separate from targeted family searches. The reusable agent entrypoint is [source discovery](../.agents/skills/source-command-discover-sources/SKILL.md), discovery ruleset **v1.8.1**.
 
-> **T3/T6 deferred (2026-09, ruleset v1.5.0):** T3 and T6 are removed from the extraction exercise — no new T3/T6 searches are run or logged. Their completed search protocols are archived in `schema/registers/_deferred/SRCH_T3_T6_deferred_2026-09.csv`; restore path in `schema/registers/_deferred/README.md`.
+> **Current scope:** T3/T6 were reactivated on 2026-09-30 as generated cell-synthesis tables; the September deferral is historical. Run only the table/role authorised for the task. The 2026-10-12 T4 pause concerns effect lanes and does not override explicitly authorised T4 discovery. Archived September search records remain historical; do not silently restore or restamp them.
 
 ### The 4 discovery processes
 (= the ledger categories / dashboard audit-matrix columns)
@@ -28,7 +28,14 @@ For **each sub-practice (suitability family) × table (T4)**, run **each of the 
 - **`ruleset_version`** — which instruction set governed it ([RULESET_VERSIONS.md](RULESET_VERSIONS.md)).
 - **`discovery_log_ref`** — link to the narrative discovery log.
 
-Log via `schema_tools/search_log.py` (`log_search(...)` / CLI `log`).
+Log via `schema_tools/search_log.py` (`log_search(...)` / CLI `log`). For candidate batches,
+`register-discovery.py --family <id> --searched-by <identity> --protocols <lane=file.json>`
+preserves actual family, query, criteria, limits and counts. Explicit protocols are mandatory
+for targeted searches; null retrieved/screened counts remain blank. Zero-yield protocols are
+valid and do not imply extraction or search saturation. Candidate tags alone never prove a
+family-targeted search was run. Exact protocol shape is defined in the discovery skill.
+
+Canonical sources needed in a new scope remain explicit work: candidates carry `reuse_source_id` and `reuse_reason`, and `register-discovery.py --reuse-log <run>.json` writes pending scope-review tasks under `methodology/discovery_logs/`. This does not duplicate acquisition rows, modify source coverage, or imply extraction completion.
 
 ### Generic (parent) search vs sub-practice search — they are NOT the same (v1.1)
 `suitability_family_id=""` = the **generic / practice-wide parent search** — one broad query over the
@@ -165,4 +172,3 @@ Pete shared the ILRI "climate change × agri-food systems" umbrella-review proto
 ### OA-recovery pass, 2026-10-07 — what actually blocks fetching (and the workarounds)
 
 A full pass over the 192 `pending` rows (fresh Unpaywall by DOI → `acquire-queue.py --all-dates` → three web-search lanes) recovered **71** automatically and found free copies for 27 more that only a browser can fetch. Most "tool acquisition failed" / "paywalled (verified)" labels were **bot walls, not paywalls**: Cloudflare / Akamai on MDPI, PNAS, PubMed Central, Europe PMC, T&F, Wiley, ScienceDirect, CORE, SSRN, ramsar.org; HAL / BORIS / PMC show a bot-check page to browser-like agents but serve a plain `curl` agent (now the acquirer's fallback UA); DSpace 7 repositories (CGSpace, Utrecht, Pretoria) expose files only through `/server/api/.../bitstreams/.../content`; MDPI serves PDFs from `mdpi-res.com`; PMC OA articles are mirrored on AWS S3; dead publisher links often have Internet Archive captures; Embrapa's TLS chain is incomplete (`curl -k`). Lane output and the per-source trail live in `pipeline/staging/oa_recovery/` (gitignored) and in the queue `note`/`blocker` columns. **Never again build a human hand-off from blocker text** — run this pass first; the residue goes to the human bucketed as free-click · institutional · ResearchGate.
-

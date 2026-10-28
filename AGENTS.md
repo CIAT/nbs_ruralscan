@@ -57,6 +57,8 @@ It governs active T4 and effect lanes; the slash command delegates to it. Source
 `pending`, not `swept`. Run `python -m nbs_ruralscan.schema_tools.ingestion_audit` for read-only
 legacy reconciliation. See `methodology/audits/discovery_ingestion_2026-10-28.md` for tested
 fixes and remaining holds. Historical records, approvals and ruleset snapshots are preserved.
+Discovery entrypoint: `.agents/skills/source-command-discover-sources/SKILL.md` (**v1.8.1**).
+Agents stage candidates and actual per-family protocols; central registration preserves scope/counts.
 
 ## What is locked
 

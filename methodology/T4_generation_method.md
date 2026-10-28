@@ -353,7 +353,7 @@ obvious gaps. Categories to hit, in roughly this order of authority:
 above is genuinely thin for the variable. `external` tier is used for citation-cascade pointers
 (Mushtaq → Ahmad 2019), not for primary discovery.
 
-**Corpus differs per table — sequence T6/T3 after T4.** *(DEFERRED 2026-09, ruleset v1.5.0: T3/T6 are removed from the extraction exercise — this sequencing is parked; archive + restore in `schema/registers/_deferred/README.md`.)* The 220-paper stocktake was scoped to
+**Corpus differs per table.** T3/T6 were reactivated on 2026-09-30 as generated cell-synthesis tables; the earlier September deferral and T4-first sequence are historical. Each authorised table uses its own discovery scope. The 220-paper stocktake was scoped to
 **suitability (T4)** — *that* corpus is in hand. The other tables need their own bounded
 discovery passes against different literature:
 
@@ -365,7 +365,7 @@ discovery passes against different literature:
 - **T1** (data registry): GEE / STAC catalogues; data provider documentation. Not literature.
 - **T7** (AEZ + farming systems): GAEZ + Dixon farming-systems standards. Not literature.
 
-Sequence: **complete T4 first**; the T6/T3 passes are deferred (2026-09) — when restored they use the same paper-first machinery against their own bounded seed sets.
+Run the authorised T4 or T3/T6 passes against their own bounded seed sets. Existing T4 papers are not proof of effect-corpus coverage, or vice versa. Use the [discovery skill](../.agents/skills/source-command-discover-sources/SKILL.md) for staged, logged search work.
 
 ### Screening funnel (v0.2.7) — the repeatable SOP
 

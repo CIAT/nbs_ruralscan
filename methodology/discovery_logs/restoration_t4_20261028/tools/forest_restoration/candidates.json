@@ -1,0 +1,105 @@
+[
+  {
+    "candidate_id": "tool_forest_afforestation_tracker",
+    "citation": "Luk-kar/Afforestation-Tracker — repository and inspected implementation (commit fc46b21c2a53)",
+    "url": "https://github.com/Luk-kar/Afforestation-Tracker",
+    "process": "tool",
+    "tables": "T4",
+    "families": [
+      "forest_restoration__active_planting"
+    ],
+    "relevance_note": "Actual siting classifier: app/stages/data_categorization.py:36–44 config; 102–111 raster requires slope<15, precipitation>=200 AND moisture>=0.2; 128–133 point uses slope<=15 and rainfall OR moisture. Material inconsistent semantics; annual rainfall aggregation and native nonforest eligibility require audit. Source-design evidence only; no calibrated practice cutoff. Scope hold: grassland/barren-land eligibility may include native nonforest; inspect habitat safeguards before any extraction.",
+    "language": "en",
+    "benchmark_tier": "Low",
+    "tier_rationale": "Provisional screening only: transparent code but empirical validation/provenance incomplete or material contextual/implementation holds",
+    "commit": "fc46b21c2a5394c8a5da9179186f0bd729f9c9cb",
+    "parameter_locations": [
+      {
+        "path": "app/stages/data_categorization.py",
+        "url": "https://raw.githubusercontent.com/Luk-kar/Afforestation-Tracker/fc46b21c2a5394c8a5da9179186f0bd729f9c9cb/app/stages/data_categorization.py",
+        "local_screening_copy": "Luk-kar__Afforestation-Tracker__app__stages__data_categorization.py"
+      },
+      {
+        "path": "app/config.py",
+        "url": "https://raw.githubusercontent.com/Luk-kar/Afforestation-Tracker/fc46b21c2a5394c8a5da9179186f0bd729f9c9cb/app/config.py",
+        "local_screening_copy": "Luk-kar__Afforestation-Tracker__app__config.py"
+      }
+    ],
+    "reuse_source_id": null,
+    "reuse_reason": "No matching repository identity located in current SRC/queue/TOOL. Previously discovered lead tool_afforestation_tracker_gee; reuse lead identity; do not count as newly discovered independent source.",
+    "known_discovery_ids": [
+      "tool_afforestation_tracker_gee"
+    ],
+    "lineage_note": "Repository versions, documentation and companion paper are one model lineage, not independent votes. Code snapshots are screening aids only; proper GitHub ingestion adapter required before EV.",
+    "extraction_status": "not_extracted; no analytical values approved",
+    "proposed_benchmark_tier": "Low"
+  },
+  {
+    "candidate_id": "tool_forest_progreen_suitability",
+    "citation": "worldbank/progreen_suitability — repository and inspected implementation (commit ffed0c2b9079)",
+    "url": "https://github.com/worldbank/progreen_suitability",
+    "process": "tool",
+    "tables": "T4",
+    "families": [
+      "forest_restoration__active_planting"
+    ],
+    "relevance_note": "Actual generic classification engine src/pro_green.py:59–95 plus Suitability_Analysis.ipynb application configuration (rainfall, temperature, evapotranspiration, soil and slope). Include application-specific example only; generic engine is not an NbS practice. Confirm aggregation order, units, threshold rationale and validation before extraction; hosting organisation does not establish validation.",
+    "language": "en",
+    "benchmark_tier": "Low",
+    "tier_rationale": "Provisional screening only: transparent code but empirical validation/provenance incomplete or material contextual/implementation holds",
+    "commit": "ffed0c2b907934065cdd5a2c4bfeb894b76cb393",
+    "parameter_locations": [
+      {
+        "path": "src/pro_green.py",
+        "url": "https://raw.githubusercontent.com/worldbank/progreen_suitability/ffed0c2b907934065cdd5a2c4bfeb894b76cb393/src/pro_green.py",
+        "local_screening_copy": "worldbank__progreen_suitability__src__pro_green.py"
+      },
+      {
+        "path": "notebooks/Suitability_Analysis.ipynb",
+        "url": "https://raw.githubusercontent.com/worldbank/progreen_suitability/ffed0c2b907934065cdd5a2c4bfeb894b76cb393/notebooks/Suitability_Analysis.ipynb",
+        "local_screening_copy": "worldbank__progreen_suitability__notebooks__Suitability_Analysis.ipynb"
+      }
+    ],
+    "reuse_source_id": null,
+    "reuse_reason": "No matching repository identity located in current SRC/queue/TOOL. Central title/URL deduplication still required.",
+    "known_discovery_ids": [],
+    "lineage_note": "Repository versions, documentation and companion paper are one model lineage, not independent votes. Code snapshots are screening aids only; proper GitHub ingestion adapter required before EV.",
+    "extraction_status": "not_extracted; no analytical values approved",
+    "proposed_benchmark_tier": "Low"
+  },
+  {
+    "candidate_id": "tool_forest_project_scotland_reforestation",
+    "citation": "langoodall/Project-Scotland-Reforestation — repository and inspected implementation (commit 4d3b98e7a52b)",
+    "url": "https://github.com/langoodall/Project-Scotland-Reforestation",
+    "process": "tool",
+    "tables": "T4",
+    "families": [
+      "forest_restoration__active_planting"
+    ],
+    "relevance_note": "Actual Scotland Clean.Rmd:465–537 land-cover, national-park, elevation and land-capability scenario masks; 650–720 predictors and Scots pine/oak/birch woodland labels. scotland.py has RF/XGB training and importance. Species/woodland occurrence prediction is not establishment validation. Retain scenario method audit; species model thresholds cannot define general practice. Code elevation mask >650 differs from nearby comment <600; policies require contextual review.",
+    "language": "en",
+    "benchmark_tier": "Low",
+    "tier_rationale": "Provisional screening only: transparent code but empirical validation/provenance incomplete or material contextual/implementation holds",
+    "commit": "4d3b98e7a52baabfdcfe240302923cfdf92b32b6",
+    "parameter_locations": [
+      {
+        "path": "scotland.py",
+        "url": "https://raw.githubusercontent.com/langoodall/Project-Scotland-Reforestation/4d3b98e7a52baabfdcfe240302923cfdf92b32b6/scotland.py",
+        "local_screening_copy": "langoodall__Project-Scotland-Reforestation__scotland.py"
+      },
+      {
+        "path": "Scotland Clean.Rmd",
+        "url": "https://raw.githubusercontent.com/langoodall/Project-Scotland-Reforestation/4d3b98e7a52baabfdcfe240302923cfdf92b32b6/Scotland%20Clean.Rmd",
+        "local_screening_copy": "langoodall__Project-Scotland-Reforestation__Scotland Clean.Rmd"
+      }
+    ],
+    "reuse_source_id": null,
+    "reuse_reason": "No matching repository identity located in current SRC/queue/TOOL. Previously discovered lead tool_scotland_reforestation_ml; reuse lead identity; do not count as newly discovered independent source.",
+    "known_discovery_ids": [
+      "tool_scotland_reforestation_ml"
+    ],
+    "lineage_note": "Repository versions, documentation and companion paper are one model lineage, not independent votes. Code snapshots are screening aids only; proper GitHub ingestion adapter required before EV.",
+    "extraction_status": "not_extracted; no analytical values approved",
+    "proposed_benchmark_tier": "Low"
+  }
+]
