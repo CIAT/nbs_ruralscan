@@ -24,6 +24,7 @@ from pathlib import Path
 
 from nbs_ruralscan.ingest.integrity import (
     identity_error,
+    pdf_title_error,
     validate_body,
     validate_source_id,
 )
@@ -96,8 +97,19 @@ def _ids(paths: list[str]) -> list[str]:
     return sorted({o for o in out if o})
 
 
+def _scopes(row: dict, key: str) -> list[str]:
+    return list(
+        dict.fromkeys(x.strip() for x in (row.get(key) or "").split("|") if x.strip())
+    )
+
+
 def build_row(q: dict, meta: dict, cols: list[str], a) -> dict:
     validate_source_id(q["source_id"])
+    scopes = _scopes(q, "nbs_id")
+    if a.nbs not in scopes:
+        raise ValueError(
+            f"requested NbS {a.nbs!r} absent from queue-declared scopes {scopes}"
+        )
     problem = identity_error(q)
     if problem:
         raise ValueError(problem)
@@ -105,6 +117,9 @@ def build_row(q: dict, meta: dict, cols: list[str], a) -> dict:
         raise ValueError("team library path missing; share the source before promotion")
     pdf = CORPUS / f"{q['source_id']}.pdf"
     validate_body(pdf.read_bytes(), "pdf")
+    problem = pdf_title_error(pdf, q.get("citation") or "")
+    if problem:
+        raise ValueError(f"source document identity hold: {problem}")
     if not meta.get("benchmark_tier") or not meta.get("venue_type"):
         raise ValueError(
             "--meta must supply benchmark_tier and venue_type from credibility assessment"
@@ -131,7 +146,7 @@ def build_row(q: dict, meta: dict, cols: list[str], a) -> dict:
             "study_country": meta.get("study_country", "; ".join(iso)),
             "region": meta.get("region", "" if iso else "; ".join(scope)),
             "method_type": method,
-            "nbs_ids": a.nbs,
+            "nbs_ids": "|".join(scopes),
             "vars_extracted": "",
             "extraction_status": "pending",
             "extraction_date": "",
@@ -174,14 +189,26 @@ def main() -> int:
     with SRC.open(newline="", encoding="utf-8") as f:
         rd = csv.DictReader(f)
         cols = list(rd.fieldnames or [])
-        existing = {r["source_id"] for r in rd}
+        existing = {r["source_id"]: r for r in rd}
     new: list[dict] = []
     errors: list[str] = []
     for sid in ids:
-        if sid in existing:
-            print(f"  skip (in SRC): {sid}")
-            continue
         q = queue.get(sid)
+        scopes = _scopes(q or {}, "nbs_id")
+        if a.nbs not in scopes:
+            errors.append(
+                f"{sid}: requested NbS {a.nbs!r} absent from queue-declared scopes {scopes}"
+            )
+            continue
+        if sid in existing:
+            missing = set(scopes) - set(_scopes(existing[sid], "nbs_ids"))
+            if missing:
+                errors.append(
+                    f"{sid}: existing SRC lacks queue-declared scopes {sorted(missing)}; reconcile source reuse explicitly"
+                )
+            else:
+                print(f"  skip (in SRC, scopes preserved): {sid}")
+            continue
         if q is None or q["status"] != "acquired":
             errors.append(f"{sid}: not acquired in queue")
             continue

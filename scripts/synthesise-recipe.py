@@ -25,6 +25,7 @@ import csv
 import io
 import hashlib
 import json
+import re
 from dataclasses import asdict
 from pathlib import Path
 
@@ -87,6 +88,8 @@ def synthesise(
     approved_only: bool = True,
     screened_sources: dict[str, set[str]] | None = None,
 ) -> dict[str, FamilyResult]:
+    if not re.fullmatch(r"[a-z][a-z0-9_]*", nbs_id):
+        raise ValueError("Invalid NbS identifier")
     src, vont = (
         _rd(REG / n)
         for n in (
@@ -95,7 +98,9 @@ def synthesise(
         )
     )
     tiers = {
-        r["source_id"]: (r["benchmark_tier"] or "medium").strip().lower() for r in src
+        r["source_id"]: r["benchmark_tier"].strip().lower()
+        for r in src
+        if (r["benchmark_tier"] or "").strip()
     }
     categories = {r["source_id"]: r["source_category"] for r in src}
     group_map = {r["canonical_variable_id"]: r["group_id"] for r in vont}
@@ -317,7 +322,7 @@ def write_recipe(
         and (r.get("suitability_family_id", ""), r["variable"]) not in produced
     ]
     for row in kept:
-        preserved = {k: row.get(k, "") for k in T4_FIELDS}
+        preserved: dict[str, object] = {k: row.get(k, "") for k in T4_FIELDS}
         # Retained design/crosswalk rows have no verified screened-source calculation.
         # Do not perpetuate historical search-total percentages across regeneration.
         preserved["corpus_n"] = ""
@@ -365,15 +370,33 @@ def main(argv: list[str] | None = None) -> int:
     )
     ap.add_argument("--dry-run", action="store_true", help="report only; write nothing")
     args = ap.parse_args(argv)
+    if not re.fullmatch(r"[a-z][a-z0-9_]*", args.nbs_id):
+        ap.error("Invalid NbS identifier")
     if args.include_unreviewed:
-        live = (ROOT / "schema" / "recipes" / args.nbs_id).resolve()
-        isolated = args.output_dir is not None and args.output_dir.resolve() != live
+
+        def isolated_path(path):
+            resolved = path.resolve()
+            root = ROOT.resolve()
+            staging = (root / "pipeline/staging").resolve()
+            return (
+                root not in resolved.parents
+                and resolved != root
+                or (staging in resolved.parents)
+            )
+
+        isolated = args.output_dir is not None and isolated_path(args.output_dir)
         if not args.dry_run and not isolated:
             ap.error(
-                "--include-unreviewed cannot write the live recipe; use isolated --output-dir or --dry-run"
+                "--include-unreviewed cannot write authoritative inputs or published docs; use isolated --output-dir or --dry-run"
             )
-        if args.report is not None and args.report.resolve().is_relative_to(live):
-            ap.error("unreviewed diagnostic reports must stay outside the live recipe")
+        if args.report is not None and not isolated_path(args.report):
+            ap.error(
+                "unreviewed diagnostic reports must stay outside authoritative inputs and published docs"
+            )
+        if args.report is not None and args.report.exists() and not args.dry_run:
+            ap.error(
+                "unreviewed report already exists; choose a new diagnostic filename"
+            )
         args.approved_only = False
 
     screened_sources = {}
@@ -415,7 +438,7 @@ def main(argv: list[str] | None = None) -> int:
         report_path = (
             args.output_dir or ROOT / "schema" / "recipes" / args.nbs_id
         ) / "T4_synthesis_report.json"
-    if report_path:
+    if report_path and not args.dry_run:
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(
             json.dumps(

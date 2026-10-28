@@ -31,6 +31,7 @@ import subprocess
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import quote
 
 from .integrity import atomic_write, validate_source_id
 
@@ -85,9 +86,13 @@ def _slug(repo: str, path: str) -> str:
 
 
 def _resolve_commit(repo: str, ref: str) -> str:
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+        raise GithubIngestError(f"Expected owner/repository, got {repo!r}")
     if re.fullmatch(r"[0-9a-fA-F]{40}", ref):
         return ref.lower()
-    commit = json.loads(_gh([f"/repos/{repo}/commits/{ref}"])).get("sha", "")
+    commit = json.loads(_gh([f"/repos/{repo}/commits/{quote(ref, safe='')}"])).get(
+        "sha", ""
+    )
     if not re.fullmatch(r"[0-9a-fA-F]{40}", commit):
         raise GithubIngestError(f"Could not resolve immutable commit for {repo}@{ref}")
     return commit.lower()
@@ -98,7 +103,10 @@ def list_repo_files(
 ) -> list[str]:
     """List source-file paths under ``subdir`` of ``repo`` at ``commit`` (one level)."""
     ig = [re.compile(p) for p in (ignore if ignore is not None else DEFAULT_IGNORE)]
-    items = json.loads(_gh([f"/repos/{repo}/contents/{subdir}?ref={commit}"]))
+    commit = _resolve_commit(repo, commit)
+    items = json.loads(
+        _gh([f"/repos/{repo}/contents/{quote(subdir, safe='/')}?ref={commit}"])
+    )
     out = []
     for it in items if isinstance(items, list) else []:
         if it.get("type") != "file":
@@ -123,10 +131,26 @@ def acquire_file(
     sid = source_id or f"{_slug(repo, path)}_{pin}"
     validate_source_id(sid)
     content = base64.b64decode(
-        _gh([f"/repos/{repo}/contents/{path}?ref={commit}", "-q", ".content"])
+        _gh(
+            [
+                f"/repos/{repo}/contents/{quote(path, safe='/')}?ref={commit}",
+                "-q",
+                ".content",
+            ]
+        )
     )
     if not content:
         raise GithubIngestError(f"empty content for {repo}:{path}@{commit}")
+    try:
+        text = content.decode("utf-8")
+    except UnicodeDecodeError as exc:
+        raise GithubIngestError(
+            "Code adapter requires UTF-8 text; binary sources need a dedicated adapter"
+        ) from exc
+    if "\x00" in text:
+        raise GithubIngestError(
+            "Code adapter refuses binary content containing NUL bytes"
+        )
     corpus = Path(corpus_dir)
     corpus.mkdir(parents=True, exist_ok=True)
     dest = corpus / f"{sid}.txt"
@@ -142,11 +166,28 @@ def acquire_file(
         "fetched_at": datetime.now(tz=timezone.utc).isoformat(),
     }
     meta_path = corpus / f"{sid}.meta.json"
+    if meta_path.exists() and not dest.exists():
+        raise GithubIngestError(
+            f"Existing provenance without code artifact for {sid}; inspect missing artifact or conflicting source kind"
+        )
     if dest.exists():
         try:
             previous = json.loads(meta_path.read_text(encoding="utf-8"))
-            if dest.read_bytes() != content or any(
-                previous.get(k) != meta[k] for k in ("repo", "commit", "path", "sha1")
+            if (
+                not isinstance(previous, dict)
+                or dest.read_bytes() != content
+                or any(
+                    previous.get(k) != meta[k]
+                    for k in (
+                        "source_id",
+                        "kind",
+                        "repo",
+                        "commit",
+                        "path",
+                        "sha1",
+                        "url",
+                    )
+                )
             ):
                 raise ValueError("artifact or pin differs")
         except (OSError, ValueError) as exc:
@@ -162,7 +203,7 @@ def acquire_file(
         commit=commit,
         path=path,
         sha1=sha1,
-        n_lines=len(content.decode(errors="replace").splitlines()),
+        n_lines=len(text.splitlines()),
         cached=str(dest),
     )
 

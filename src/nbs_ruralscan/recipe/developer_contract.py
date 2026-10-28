@@ -1032,6 +1032,21 @@ def _write_csv(path, rows):
         )
 
 
+def _package_docs(root, nbs):
+    """Use this recipe's notes, or neutral templates; never another NbS's decisions."""
+    if not re.fullmatch(r"[a-z][a-z0-9_]*", nbs):
+        raise ValueError("Invalid NbS identifier")
+    docs = {"METHOD.md": "methodology/T4_developer_contract.md"}
+    for name in ("IMPLEMENTATION.md", "START_HERE.md", "DATASET_INPUTS.md"):
+        specific = f"handoff/{nbs}-t4/{name}"
+        docs[name] = (
+            specific
+            if (Path(root) / specific).is_file()
+            else f"methodology/templates/t4_handoff/{name}"
+        )
+    return docs
+
+
 def _package_inputs(root, nbs):
     inputs = {
         "schema/registers/EV_evidence_register.csv",
@@ -1044,16 +1059,13 @@ def _package_inputs(root, nbs):
         "schema/lookups/crop_scope_policy.csv",
         "schema/lookups/t4_numeric_compilation_policy.csv",
         f"schema/recipes/{nbs}/T4_suitability_mappings.csv",
-        "methodology/T4_developer_contract.md",
-        "handoff/agroforestry-t4/IMPLEMENTATION.md",
-        "handoff/agroforestry-t4/START_HERE.md",
-        "handoff/agroforestry-t4/DATASET_INPUTS.md",
         "scripts/synthesise-recipe.py",
         "scripts/build-t4-developer.py",
         "src/nbs_ruralscan/schema_tools/generate.py",
         "pyproject.toml",
         "uv.lock",
     }
+    inputs.update(_package_docs(root, nbs).values())
     if nbs == "agroforestry":
         inputs.add(
             "pipeline/t4_audit/agroforestry/importance_2026-10-21/source_weight_trees.csv"
@@ -1205,12 +1217,7 @@ def _write_package(root, output, **kwargs):
         "CIAT source registers remain authoritative.\n",
         encoding="utf-8",
     )
-    docs = {
-        "METHOD.md": "methodology/T4_developer_contract.md",
-        "IMPLEMENTATION.md": "handoff/agroforestry-t4/IMPLEMENTATION.md",
-        "START_HERE.md": "handoff/agroforestry-t4/START_HERE.md",
-        "DATASET_INPUTS.md": "handoff/agroforestry-t4/DATASET_INPUTS.md",
-    }
+    docs = _package_docs(root, contract["nbs"])
     for dest, source in docs.items():
         # Source files remain report-ready Markdown; bundle links work when relocated.
         def link(match):
@@ -1218,6 +1225,9 @@ def _write_package(root, output, **kwargs):
             if "://" in target or target.startswith("#"):
                 return match.group(0)
             path, _, fragment = target.partition("#")
+            packaged = (output / path).resolve()
+            if output.resolve() in packaged.parents and packaged.is_file():
+                return match.group(0)
             resolved = (root / source).parent.joinpath(path).resolve()
             try:
                 relative = resolved.relative_to(root.resolve()).as_posix()
@@ -1299,6 +1309,55 @@ def verify_package(root, output):
     """Verify pinned inputs and outputs independently of the current branch HEAD."""
     root, output = Path(root).resolve(), Path(output).resolve()
     manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    required_outputs = {
+        "developer_contract.json",
+        "developer_table.csv",
+        "decisions.json",
+        "function_options.csv",
+        "function_intervals.csv",
+        "evidence_accounting.csv",
+        "inclusion.csv",
+        "source_importance.json",
+        "synthesis_report.json",
+        "run_contract.json",
+        "conformance_examples.json",
+        "policy_conformance.json",
+        "selection_template.json",
+        "T4_suitability_mappings.csv",
+        "datasets.csv",
+        "dataset_bindings.csv",
+        "variables.csv",
+        "practice_vocabulary.csv",
+        "index.html",
+        "README.md",
+        "METHOD.md",
+        "IMPLEMENTATION.md",
+        "START_HERE.md",
+        "DATASET_INPUTS.md",
+        "VERSION",
+    }
+    required_inputs = {
+        "schema/registers/EV_evidence_register.csv",
+        "schema/registers/SRC_source_register.csv",
+        "schema/registers/FAM_family_registry.csv",
+        "schema/registers/VONT_variable_ontology.csv",
+        "schema/registers/BIND_dataset_binding.csv",
+        "scripts/synthesise-recipe.py",
+    }
+    if not isinstance(manifest, dict):
+        raise ValueError("Incomplete package manifest")
+    for key, required in (
+        ("input_sha256", required_inputs),
+        ("output_sha256", required_outputs),
+    ):
+        hashes = manifest.get(key)
+        if not isinstance(hashes, dict) or not required <= hashes.keys():
+            raise ValueError(f"Incomplete package manifest: {key}")
+        if any(
+            not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value)
+            for value in hashes.values()
+        ):
+            raise ValueError(f"Invalid package hashes: {key}")
     for directory, hashes in (
         (root, manifest["input_sha256"]),
         (output, manifest["output_sha256"]),
@@ -1311,4 +1370,20 @@ def verify_package(root, output):
                 or hashlib.sha256(path.read_bytes()).hexdigest() != expected
             ):
                 raise ValueError(f"Package hash verification failed: {name}")
+    unlisted = (
+        {p.relative_to(output).as_posix() for p in output.rglob("*") if p.is_file()}
+        - {"manifest.json"}
+        - set(manifest["output_sha256"])
+    )
+    if unlisted:
+        raise ValueError(f"Unverified package files: {sorted(unlisted)}")
+    contract = json.loads(
+        (output / "developer_contract.json").read_text(encoding="utf-8")
+    )
+    required = _package_inputs(root, contract["nbs"])
+    missing = required - manifest["input_sha256"].keys()
+    if missing:
+        raise ValueError(
+            f"Incomplete package manifest: analytical inputs {sorted(missing)}"
+        )
     return manifest

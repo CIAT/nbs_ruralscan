@@ -37,12 +37,14 @@ from __future__ import annotations
 
 import csv
 import json
+import io
 import re
 from collections import defaultdict
 from datetime import date
 from pathlib import Path
 from typing import Any
 
+from nbs_ruralscan.ingest.integrity import atomic_write
 from nbs_ruralscan.recipe.cell_synthesis import classify_magnitude, load_bands
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -513,7 +515,7 @@ def _cell(v: Any) -> str:
     if isinstance(v, bool):
         return "true" if v else "false"
     if isinstance(v, (dict, list)):
-        return json.dumps(v, ensure_ascii=False)
+        return json.dumps(v, ensure_ascii=False, allow_nan=False)
     return str(v)
 
 
@@ -523,7 +525,14 @@ def append_to_register(
     with open(ev_csv, encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
         cols = list(reader.fieldnames or [])
-        existing = {r["evidence_id"]: r for r in reader}
+        existing = {}
+        for row in reader:
+            eid = row["evidence_id"]
+            if not eid or eid in existing:
+                raise ValueError(
+                    f"existing register has blank/duplicate evidence_id: {eid!r}"
+                )
+            existing[eid] = row
     seen: set[str] = set()
     for row in rows:
         eid = row["evidence_id"]
@@ -546,14 +555,18 @@ def append_to_register(
                     f"{eid}: existing evidence differs in {key}; use an audited correction, not append"
                 )
     new = [r for r in rows if r["evidence_id"] not in existing]
-    if dry_run:
-        return len(new)
-    with open(ev_csv, "a", encoding="utf-8", newline="") as f:
-        w = csv.DictWriter(
-            f, fieldnames=cols, lineterminator="\n", extrasaction="ignore"
+    # Render the entire batch before touching disk. A malformed later row must not
+    # leave earlier rows silently appended, even on a dry run.
+    buffer = io.StringIO(newline="")
+    writer = csv.DictWriter(buffer, fieldnames=cols, lineterminator="\n")
+    for row in new:
+        writer.writerow({c: _cell(row.get(c)) for c in cols})
+    if not dry_run and new:
+        previous_bytes = ev_csv.read_bytes()
+        separator = b"" if previous_bytes.endswith(b"\n") else b"\n"
+        atomic_write(
+            ev_csv, previous_bytes + separator + buffer.getvalue().encode("utf-8")
         )
-        for r in new:
-            w.writerow({c: _cell(r.get(c)) for c in cols})
     return len(new)
 
 

@@ -23,7 +23,7 @@ from .support import (
     selection_table,
     variable_support,
 )
-from .synthesis import SynthesisReport, synthesise_t4_row
+from .synthesis import SynthesisReport, _validate_family_membership, synthesise_t4_row
 
 
 @dataclass
@@ -40,6 +40,9 @@ class FamilyResult:
     support_basis: str = "caller_supplied_corpus"
     support_sources: list[str] = field(default_factory=list)
     reports: dict[str, SynthesisReport] = field(default_factory=dict)  # per variable
+    variable_support: dict[str, Support] = field(
+        default_factory=dict
+    )  # report diagnostics
 
 
 def is_observed_presence(u: EvidenceUnit) -> bool:
@@ -72,6 +75,7 @@ def synthesise_family(
     `canonical_units`/`dataset_ids` map variable → its canonical unit / T1 dataset.
     `categories` maps source_id → source_category (e.g. "grey") for the grey-lit discount.
     """
+    _validate_family_membership(units, family)
     numeric_policies = numeric_policies or {}
     tiers = {sid: tier.strip().lower() for sid, tier in tiers.items()}
     canonical_units = canonical_units or {}
@@ -123,6 +127,8 @@ def synthesise_family(
                 reason = "unresolved_review"
         elif u.claim_scope == "crop_specific" and not u.taxon:
             reason = "missing_crop_taxon"
+        elif u.claim_scope == "crop_specific" and crop is not None and u.taxon != crop:
+            reason = "other_crop_taxon"
         elif u.claim_scope == "crop_specific" and crop is None:
             reason = "crop_lane"
             crop_units[u.taxon].append(u)
@@ -269,6 +275,7 @@ def synthesise_family(
         reports=reports,
         dispositions=dispositions,
         crop_results=crop_results,
+        variable_support=var_support,
     )
 
 

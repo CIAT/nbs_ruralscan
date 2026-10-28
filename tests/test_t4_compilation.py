@@ -17,7 +17,7 @@ def unit(eid, source="source", **kw):
         evidence_id=eid,
         source_id=source,
         nbs_id="agroforestry",
-        suitability_family_id="agroforestry__shaded_perennial",
+        suitability_family_id="F1",
         variable="slope",
         use_role="structural_suitability",
         evidence_type="literature_relationship",
@@ -300,7 +300,8 @@ def test_explicit_corpus_has_stable_denominator_across_approval_filters():
     )
     assert result.corpus_n == 2
     assert result.support_sources == ["high", "low"]
-    assert result.rows[0]["paper_support_pct"] == 74.1
+    assert result.rows[0]["paper_support_pct"] == 50.0
+    assert result.variable_support["slope"].quality_weighted_pct == 74.1
 
 
 def test_explicit_corpus_rejects_evidence_outside_membership():

@@ -1,12 +1,12 @@
 ---
 name: "source-command-extract-evidence"
 description: "Extract and verify source-provenanced evidence for an authorised T4 suitability, T3/T6 effect, or operational-risk lane."
-version: "v1.7.0"
+version: "v1.8.0"
 ---
 
 # Evidence extraction
 
-Current ruleset: **v1.7.0**. Stamp new units with the version actually used; never restamp
+Current ruleset: **v1.8.0**. Stamp new units with the version actually used; never restamp
 historical evidence. Version log: `methodology/RULESET_VERSIONS.md`. This skill is the
 canonical extraction instruction; `.claude/commands/extract-evidence.md` delegates here.
 
@@ -40,6 +40,8 @@ change in an outcome variable are different meanings; do not interchange their v
 2. Confirm the team's source is available: PDF library path and cache, or registered URL and
    snapshot/code adapter. Require verified DOI, or no DOI plus verified title. Check identity
    against the acquired artifact; a resolvable DOI alone cannot establish PDF identity.
+   New PDF intake/promotion/staging requires an opening-title match. Wrong documents,
+   scanned pages and chapter-only title matches remain identity holds, not paywall findings.
 3. Inventory relevant pages, tables, continuations, figures and supplements. Record each claim's
    disposition and EV IDs or explicit hold/exclusion. Check existing units for missing variable
    use, direction, values, classes and weights. `already_extracted()` returns record IDs, not a
@@ -60,7 +62,10 @@ change in an outcome variable are different meanings; do not interchange their v
 - Preserve cited-primary attribution and lineage. Count independent studies, not duplicate
   records, depth branches or repository copies. Keep source importance separate from runtime
   MCDA weights; record enough of the original criterion set to explain relative importance.
-- Validate `EvidenceUnit` objects with `validate_units`, then save staging only. New extraction
+- Validate `EvidenceUnit` objects with `validate_units`, then save staging only.
+  Native-language quote anchors must stand on their own before any English translation.
+  Supplementary rationale quotes must match their own cited pages. Reject duplicate JSON
+  keys, non-finite numeric values, Boolean-as-number values and ambiguous identifier types. New extraction
   never grants `reviewer_ok` or overwrites a reviewed record. A changed existing ID requires an
   audited correction. Retain ambiguities and source conflicts visibly; do not manufacture agreement.
 - Orchestrator runs `scripts/ingest-effects-staging.py ... --dry-run` for supported page/section
@@ -70,6 +75,10 @@ change in an outcome variable are different meanings; do not interchange their v
   and visibly unmapped; they must not be silently renamed to force a consumer.
 
 ## Close the work
+
+Known sources rediscovered for another NbS, table or family need explicit canonical-source
+reuse tracking. Do not silently discard their new work as duplicate discovery, duplicate the
+paper to increase support, or assign new practice applicability without source evidence.
 
 Run central provenance, number, context, scope, species, direction, coverage and schema checks.
 Adversarial review checks omissions as well as incorrect additions. Quote matching cannot prove

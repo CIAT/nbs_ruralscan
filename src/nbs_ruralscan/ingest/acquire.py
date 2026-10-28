@@ -144,6 +144,12 @@ def acquire(
     artifact_path = corpus_path / f"{source_id}{ext}"
     meta_path = corpus_path / f"{source_id}.meta.json"
 
+    if meta_path.exists() and not artifact_path.exists():
+        raise AcquireError(
+            f"Existing provenance without requested {kind} artifact for {source_id!r}; "
+            "inspect missing artifact or conflicting source kind before replacement"
+        )
+
     if artifact_path.exists() and not overwrite:
         # Reuse only when artifact and provenance agree. Never overwrite a suspect
         # cache automatically: retain it for identity review / explicit replacement.

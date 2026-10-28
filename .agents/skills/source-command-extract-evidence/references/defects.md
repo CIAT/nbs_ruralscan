@@ -362,3 +362,24 @@ Enforcement: schema_tools.t4_coverage in CI; numeric compiler checks expected cl
     Consolidation is an explicit synthesis decision; preserve raw distinctions for audit.
 
 Body-only title matches may be bibliography entries. Hold for explicit chapter identity review; never mark a whole PDF verified because it cites the wanted paper. Code sources must resolve to immutable commits and retain distinct artifact identities per repository/path/revision.
+
+
+## Adversarial pipeline checks — v1.8.0 (2026-10-28)
+
+45. **Metadata identity is not artifact identity.** A verified DOI cannot validate an unrelated
+PDF. Match the opening title before cache publication, source promotion and staged ingestion.
+Keep scans/chapters as explicit identity holds; never relabel the failure as paywalled.
+46. **Translation and supplementary text cannot manufacture provenance.** The native quote
+must be a substantive source anchor. Verify rationale/selection quotations on their own pages;
+an empty native substring or a translated-only claim cannot pass.
+47. **Portable typed evidence.** Reject duplicate JSON keys, NaN/infinity, Boolean numeric
+parameters and non-string IDs. Invalid later rows cannot partly append an earlier batch.
+48. **Duplicate identity is not duplicate work.** Rediscovery in a new NbS/table/family
+requires tracked reuse, not deletion as redundant. Preserve canonical source identity and
+independent-study counts. Existing pipe-delimited NbS scopes are exact tokens, not substrings.
+49. **Compilation cannot reassign scope.** Target family and crop must match admitted evidence;
+dropped records remain excluded even through lower-level APIs. Ambiguous/cyclic lineage is a
+hold. Unit conversion cannot merge distinct breakpoints or pool unlike native units.
+
+These checks harden existing evidence rules; they grant no new ecological transfer, human
+approval, class completion, aggregation policy or runtime weights. See the adversarial audit.

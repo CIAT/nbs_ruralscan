@@ -9,6 +9,8 @@ from __future__ import annotations
 import math
 from collections import defaultdict
 
+from .t4_relationships import numeric
+
 
 def standardize(bands, policy):
     """Preserve source scores; missing semantic crosswalks produce unknown scores."""
@@ -30,19 +32,15 @@ def standardize(bands, policy):
         if policy["score_kind"] == "comparable_cardinal":
             lo, hi = policy.get("source_min"), policy.get("source_max")
             if (
-                not policy.get("meaning_verified")
-                or not isinstance(lo, (int, float))
-                or not isinstance(hi, (int, float))
-                or not math.isfinite(lo)
-                or not math.isfinite(hi)
+                policy.get("meaning_verified") is not True
+                or not numeric(lo)
+                or not numeric(hi)
                 or hi <= lo
             ):
                 raise ValueError("cardinal_scale_definition_required")
             original = band["source_score"]
             if original is not None and (
-                not isinstance(original, (int, float))
-                or not math.isfinite(original)
-                or not lo <= original <= hi
+                not numeric(original) or not lo <= original <= hi
             ):
                 raise ValueError("source_score_outside_declared_scale")
             band["score"] = None if original is None else (original - lo) / (hi - lo)
@@ -78,7 +76,9 @@ def median_bounds(pairs):
         return None, None
     grouped = defaultdict(float)
     for score, weight in pairs:
-        if not math.isfinite(weight) or weight <= 0:
+        if not numeric(score) or not 0 <= score <= 1:
+            raise ValueError("invalid_suitability_score")
+        if not numeric(weight) or weight <= 0:
             raise ValueError("invalid_source_weight")
         grouped[score] += weight
     values = sorted(grouped)
@@ -106,7 +106,7 @@ def summarize_at(profiles, x):
         if len(weights) != 1:
             raise ValueError("origin_weight_conflict")
         weight = next(iter(weights))
-        if not math.isfinite(weight) or weight <= 0:
+        if not numeric(weight) or weight <= 0:
             raise ValueError("invalid_source_weight")
         eligible_weight += weight
         values = {value_at(p, x) for p in members}
@@ -161,10 +161,27 @@ def combine_profiles(profiles):
         values = {p.get(field) for p in profiles}
         if len(values) != 1 or not next(iter(values)):
             raise ValueError("incompatible_or_missing_" + field)
-    if any(not p.get("compatibility_approved") for p in profiles):
+    if any(p.get("compatibility_approved") is not True for p in profiles):
         raise ValueError("compatibility_not_approved")
     if any(not p.get("origin_id") for p in profiles):
         raise ValueError("independent_origin_required")
+    for profile in profiles:
+        if not profile.get("intervals"):
+            raise ValueError("empty_source_profile")
+        for band in profile["intervals"]:
+            lo, hi = band["lower"], band["upper"]
+            if any(v is not None and not numeric(v) for v in (lo, hi)):
+                raise ValueError("invalid_numeric_bound")
+            if lo is not None and hi is not None and lo > hi:
+                raise ValueError("reversed_source_interval")
+            if any(
+                type(band[k]) is not bool
+                for k in ("lower_inclusive", "upper_inclusive")
+            ):
+                raise ValueError("invalid_interval_inclusivity")
+            score = band["score"]
+            if score is not None and (not numeric(score) or not 0 <= score <= 1):
+                raise ValueError("invalid_suitability_score")
     breaks = sorted(
         {
             b[k]
@@ -226,7 +243,7 @@ def combine_profiles(profiles):
 def harmonize(profiles):
     pools, review = defaultdict(list), []
     for p in profiles:
-        if not p.get("pool_id") or not p.get("compatibility_approved"):
+        if not p.get("pool_id") or p.get("compatibility_approved") is not True:
             review.append(
                 dict(
                     profile_id=p["profile_id"],

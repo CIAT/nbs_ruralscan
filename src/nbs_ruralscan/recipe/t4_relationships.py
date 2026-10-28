@@ -64,6 +64,9 @@ def decode(rel: dict) -> tuple[str, dict, str]:
                 {"threshold": rel["threshold"], "above_is_suitable": above},
                 "",
             )
+    shape_keys = ("abs_min", "opt_low", "opt_high", "abs_max")
+    if any(k in rel and rel[k] is not None and not numeric(rel[k]) for k in shape_keys):
+        return "", {}, "invalid_numeric_bound"
     params = {
         k: rel[k]
         for k in ("abs_min", "opt_low", "opt_high", "abs_max")

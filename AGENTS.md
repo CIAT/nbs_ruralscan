@@ -52,7 +52,7 @@ Schema v0.2 adds an **evidence & configuration layer** upstream of T0–T7 — n
 
 ## Current pipeline maintenance
 
-Extraction entrypoint: `.agents/skills/source-command-extract-evidence/SKILL.md` (**v1.7.0**).
+Extraction entrypoint: `.agents/skills/source-command-extract-evidence/SKILL.md` (**v1.8.0**).
 It governs active T4 and effect lanes; the slash command delegates to it. Source promotion is
 `pending`, not `swept`. Run `python -m nbs_ruralscan.schema_tools.ingestion_audit` for read-only
 legacy reconciliation. See `methodology/audits/discovery_ingestion_2026-10-28.md` for tested

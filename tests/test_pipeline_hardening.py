@@ -146,7 +146,7 @@ def staging(tmp_path, monkeypatch):
     corpus.mkdir()
     quote = "Lower slopes favour agroforestry establishment."
     with fitz.open() as doc:
-        doc.new_page().insert_text((50, 50), quote)
+        doc.new_page().insert_text((50, 50), "Paper\n" + quote)
         doc.save(corpus / "paper.pdf")
     source = {
         "source_id": "paper",
@@ -267,9 +267,13 @@ def test_promotion_is_pending_preserves_access_and_refuses_unverified(
 ):
     module = script("promote-queue-to-src")
     monkeypatch.setattr(module, "CORPUS", tmp_path)
-    (tmp_path / "paper.pdf").write_bytes(b"%PDF-1.4 test")
+    fitz = pytest.importorskip("fitz")
+    with fitz.open() as doc:
+        doc.new_page().insert_text((50, 50), "Paper")
+        doc.save(tmp_path / "paper.pdf")
     q = dict(
         source_id="paper",
+        nbs_id="agroforestry",
         citation="Paper",
         doi="10.1234/paper",
         doi_verified="true",
@@ -401,6 +405,10 @@ def test_discovery_table_counts_use_exact_tags_even_for_known_sources(
                     if c == "source_id"
                     else "Known paper"
                     if c == "citation"
+                    else "agroforestry"
+                    if c == "nbs_id"
+                    else "T3"
+                    if c == "tables"
                     else ""
                 )
                 for c in columns
@@ -519,7 +527,7 @@ def test_acquisition_retry_keeps_existing_artifact_on_failure(tmp_path, monkeypa
 
 def test_active_rules_have_complete_matching_snapshot():
     active = ROOT / ".agents/skills/source-command-extract-evidence"
-    snapshot = ROOT / ".agents/skills/_versions/v1.7.0"
+    snapshot = ROOT / ".agents/skills/_versions/v1.8.0"
     for relative in ["SKILL.md", "references/defects.md"]:
         assert (active / relative).read_bytes() == (snapshot / relative).read_bytes()
     for name in [

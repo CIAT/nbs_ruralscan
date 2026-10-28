@@ -1,6 +1,16 @@
-# Forest Restoration — Suitability-Family Scheme (for review)
+# Forest Restoration — Suitability-Family Scheme
 
 *Signed off by Pete Steward 2026-10-19 (including the plantation family split) · domain review MFL (Sarah · Chris · Evert · Hannes) still welcome, non-blocking · coordination + QA Namita. (Benson left the project Aug 2026; QA/QC → Namita.)*
+
+**Current routing (reconciled 2026-10-28):** FAM is authoritative. Reforestation,
+afforestation and enrichment planting remain `forest_restoration__active_planting`;
+production plantations remain a separate family, excluded from the NbS roll-up under
+the recorded 19 October decision below. Mangrove restoration was promoted to its own
+NbS and `mangrove_restoration__tidal_coastal` family on 19 October; see
+[the signed mangrove scheme](mangrove.md). Do not use the historical forest F4 ID or
+its old discovery hold. The original scope questions below are retained as design history,
+not instructions to reverse these decisions. Species/community parameter proposals do
+not authorise species envelopes to enter practice-level T4 compilation.
 
 > **Why this document exists.** Suitability in the Rural NbS Scan is reasoned **per suitability family, not per
 > whole NbS** (a locked decision). T4 rows key to `suitability_family_id`. Before we populate T4 for forest
@@ -51,7 +61,7 @@ discipline as the agroforestry F1/F2 planted-vs-regenerated split.)
 | **F1** | Passive natural regeneration | passive/spontaneous regeneration, secondary succession | regeneration potential (seed-source proximity · residual cover · low disturbance · pressure removal) | `area_suitability` | Yes |
 | **F2** | Assisted natural regeneration (ANR) | ANR, liberation thinning, protect-and-manage wildlings | partial regeneration potential + intervention feasibility/access | `area_suitability` | Yes |
 | **F3** | Active tree planting | reforestation, afforestation, enrichment planting, active planting | planting envelope for target species/community + degradation too high for natural regen | `area_suitability` | Yes |
-| **F4** | Mangrove / coastal restoration | mangrove restoration, ecological mangrove restoration (EMR), mangrove afforestation | coastal hydrology — tidal hydroperiod, salinity, intertidal elevation, sediment | `area_suitability` | **Scope Q — coastal** |
+| **F4 (historical)** | Mangrove / coastal restoration | moved to separate `mangrove_restoration` NbS | coastal hydrology — tidal hydroperiod, salinity, intertidal elevation, sediment | `area_suitability` | Separate approved NbS; see mangrove scheme |
 | **F5** | Forest protection & CBFM | avoided degradation/deforestation, community-based forest management | existing standing forest × threat/pressure × governance feasibility | `applicability_zone` | **Scope Q — management** |
 
 ## 3. Family detail
@@ -89,15 +99,15 @@ discipline as the agroforestry F1/F2 planted-vs-regenerated split.)
   non-forest ecosystems) — flag, not a suitability rule.
 - **Footprint.** `area_suitability`.
 
-### F4 — Mangrove / coastal restoration · `forest_restoration__mangrove_coastal`  *(scope question)*
+### F4 — Historical mangrove proposal (superseded 2026-10-19)
 - **Definition.** Restoration of mangroves / coastal forested wetlands (planting or, better, ecological mangrove
   restoration = restore hydrology first, let mangroves return).
 - **Dominant limiting factor.** Coastal hydrology — tidal inundation/hydroperiod, salinity, intertidal elevation,
   sediment supply, wave energy. A **distinct biophysical set** from terrestrial restoration → its own family *if*
   in scope.
-- **SCOPE QUESTION.** The scan targets **rural agricultural/forestry landscapes**. Mangrove/coastal may be **out of
-  scope** (a coastal-NbS concern) — or in scope where coastal communities are part of the rural portfolio. **Parked
-  from discovery until sign-off.**
+- **Current decision.** In scope as the separate `mangrove_restoration` NbS, family
+  `mangrove_restoration__tidal_coastal`. The earlier `forest_restoration__mangrove_coastal`
+  identifier and discovery hold are superseded. Do not pool terrestrial and tidal envelopes.
 
 ### F5 — Forest protection & CBFM · `forest_restoration__protection_cbfm`  *(scope question)*
 - **Definition.** Protecting/maintaining existing forest under threat (avoided degradation/deforestation),
@@ -129,7 +139,11 @@ discipline as the agroforestry F1/F2 planted-vs-regenerated split.)
   targets, populated as evidence is extracted per family.
 - The grouping is a **first-pass hypothesis, revisable once evidence is in** — revisions recorded here.
 
-## 6. Open questions for sign-off
+## 6. Original questions retained for design history
+
+Read the signed decisions above and below before treating any item as unresolved.
+Mangrove promotion, the continuum scheme and the plantation roll-up decision have
+already been recorded; do not ask Pete to approve them again.
 
 1. **Continuum split (F1/F2/F3)** — agree passive vs assisted vs active planting are separate families (different
    limiting factors / variable sets), even though all end in "forest returns"?

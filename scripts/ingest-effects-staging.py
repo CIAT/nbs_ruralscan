@@ -30,6 +30,7 @@ import fitz
 
 from nbs_ruralscan.ingest.integrity import (
     identity_error,
+    pdf_title_error,
     source_identity_differs,
     validate_source_id,
 )
@@ -65,6 +66,7 @@ _RULESETS = {
     "v1.6.15",
     "v1.6.16",
     "v1.7.0",
+    "v1.8.0",
     # Historical stamps remain valid; --allow-structural controls T4 scope.
     "v1.6.17",
 }
@@ -80,6 +82,47 @@ def _col(path: Path, col: str) -> set[str]:
         return {r[col] for r in csv.DictReader(f) if r.get(col)}
 
 
+def _indexed_csv(path: Path, key: str) -> dict[str, dict]:
+    rows: dict[str, dict] = {}
+    with path.open(newline="", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            value = row.get(key) or ""
+            if not value or value in rows:
+                raise ValueError(f"{path.name}: blank/duplicate {key}: {value!r}")
+            rows[value] = row
+    return rows
+
+
+def _validate_payload_shape(u: dict) -> None:
+    """Reject JSON/type tricks before permissive dataclass construction or checks."""
+    # json.loads accepts NaN/Infinity by default. Neither is evidence or portable JSON.
+    json.dumps(u, allow_nan=False)
+    objects = {"relationship", "context"}
+    pages = {"page", "justification_page", "selection_justification_page"}
+    for key, value in u.items():
+        if key in objects:
+            if value is not None and not isinstance(value, dict):
+                raise ValueError(f"{key} must be an object or null")
+        elif key in pages:
+            if value is not None and not (key == "page" and value == ""):
+                if type(value) is not int or value < 1:
+                    raise ValueError(f"{key} requires an integer page >= 1")
+        elif key == "reviewer_ok":
+            if value is not None and type(value) is not bool:
+                raise ValueError("reviewer_ok must be a boolean or null")
+        elif value is not None and not isinstance(value, str):
+            raise ValueError(f"{key} must be a string or null")
+
+
+def _unique_object(pairs: list[tuple[str, object]]) -> dict:
+    out: dict = {}
+    for key, value in pairs:
+        if key in out:
+            raise ValueError(f"duplicate JSON key: {key}")
+        out[key] = value
+    return out
+
+
 def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
     if allowed_roles is None:
         allowed_roles = {"nbs_effect", "asset_vulnerability"}
@@ -88,10 +131,11 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
     vont = _col(REG / "VONT_variable_ontology.csv", "canonical_variable_id")
     fams = _col(REG / "FAM_family_registry.csv", "suitability_family_id")
     aez, fs = check_context._t7()
-    with (REG / "SRC_source_register.csv").open(newline="", encoding="utf-8") as f:
-        sources = {r["source_id"]: r for r in csv.DictReader(f)}
-    with QUEUE.open(newline="", encoding="utf-8") as f:
-        identities = {r["source_id"]: r for r in csv.DictReader(f)}
+    try:
+        sources = _indexed_csv(REG / "SRC_source_register.csv", "source_id")
+        identities = _indexed_csv(QUEUE, "source_id")
+    except ValueError as exc:
+        return [f"source identity register invalid: {exc}"]
     with (REG / "FAM_family_registry.csv").open(newline="", encoding="utf-8") as f:
         family_nbs = {
             (r["suitability_family_id"], r["nbs_id"]) for r in csv.DictReader(f)
@@ -114,8 +158,16 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
                 unknown = set(u) - ev_fields
                 if unknown:
                     raise ValueError(f"unknown evidence fields: {sorted(unknown)}")
+                _validate_payload_shape(u)
                 unit = EvidenceUnit(**{k: v for k, v in u.items() if k in unit_fields})
                 problems = validate(unit)
+                if (
+                    len("".join(c for c in _native_part(unit.quote) if c.isalnum()))
+                    < 12
+                ):
+                    problems.append(
+                        "native quote must contain at least 12 alphanumeric characters"
+                    )
                 validate_source_id(unit.source_id)
                 if u.get("reviewer_ok") not in (None, False):
                     problems.append("new extraction cannot grant reviewer approval")
@@ -163,6 +215,12 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
             if unit.locator_type == "page" and sid not in docs:
                 pdf = CORPUS / f"{sid}.pdf"
                 try:
+                    if pdf.exists() and source:
+                        problem = pdf_title_error(pdf, source.get("citation") or "")
+                        if problem:
+                            errs.append(
+                                f"{eid}: source document identity hold: {problem}"
+                            )
                     docs[sid] = (
                         stack.enter_context(fitz.open(pdf)) if pdf.exists() else None
                     )
@@ -219,6 +277,38 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
                         errs.append(f"{eid}: quote not verbatim on page {u['page']}")
                 except Exception as e:  # noqa: BLE001
                     errs.append(f"{eid}: page {u.get('page')} unreadable ({e})")
+            for quote_key, page_key in (
+                ("justification_quote", "justification_page"),
+                ("selection_justification", "selection_justification_page"),
+            ):
+                supplementary = u.get(quote_key)
+                supplementary_page = u.get(page_key)
+                if not supplementary and supplementary_page is None:
+                    continue
+                if not supplementary or supplementary_page is None:
+                    errs.append(
+                        f"{eid}: {quote_key} and {page_key} must be supplied together"
+                    )
+                    continue
+                native = " ".join(_native_part(supplementary).split())
+                if len("".join(c for c in native if c.isalnum())) < 12:
+                    errs.append(f"{eid}: {quote_key} lacks a substantive native quote")
+                    continue
+                if d is None:
+                    errs.append(
+                        f"{eid}: {quote_key} needs cached PDF for its page locator"
+                    )
+                    continue
+                try:
+                    supplementary_text = " ".join(
+                        d[supplementary_page - 1].get_text().split()
+                    )
+                    if native not in supplementary_text:
+                        errs.append(
+                            f"{eid}: {quote_key} not verbatim on page {supplementary_page}"
+                        )
+                except (IndexError, ValueError) as exc:
+                    errs.append(f"{eid}: {page_key} unreadable ({exc})")
             rel = u.get("relationship") or {}
             # the WHOLE relationship, exactly the surface `check_numbers.check` walks — not
             # only the numeric fields. The 2026-10-13 retrospective found the gate passing
@@ -320,32 +410,46 @@ def main(argv: list[str] | None = None) -> int:
         ap.error(
             "--fix-family requires --family-decision (decision reference/rationale)"
         )
-    fixes = dict(kv.split("=", 1) for kv in args.fix_family)
+    fixes: dict[str, str] = {}
+    for assignment in args.fix_family:
+        parts = assignment.split("=", 1)
+        if len(parts) != 2 or not all(parts) or parts[0] in fixes:
+            ap.error(
+                "--fix-family needs unique non-empty EVIDENCE_ID=FAMILY assignments"
+            )
+        fixes[parts[0]] = parts[1]
     units: list[dict] = []
     for f in args.files:
-        payload = json.loads(Path(f).read_text(encoding="utf-8"))
+        try:
+            payload = json.loads(
+                Path(f).read_text(encoding="utf-8"), object_pairs_hook=_unique_object
+            )
+        except (ValueError, OSError) as exc:
+            ap.error(f"{f}: invalid staging JSON: {exc}")
         if not isinstance(payload, list) or any(
             not isinstance(u, dict) for u in payload
         ):
             ap.error(f"{f}: expected a list of evidence objects")
         units += payload
     for u in units:
-        if u.get("evidence_id") in fixes:
+        if isinstance(u.get("evidence_id"), str) and u["evidence_id"] in fixes:
+            try:
+                _validate_payload_shape(u)
+            except (TypeError, ValueError) as exc:
+                ap.error(f"{u['evidence_id']}: invalid family-fix input: {exc}")
             u["suitability_family_id"] = fixes[u["evidence_id"]]
-            u.setdefault("context", {})
+            u["context"] = u.get("context") or {}
             u["context"]["note"] = (
                 u["context"].get("note", "")
                 + f"; family set to {fixes[u['evidence_id']]} at ingest: {args.family_decision}"
             ).strip("; ")
-    ids = Counter(u.get("evidence_id", "<missing>") for u in units)
-    dups = [k for k, n in ids.items() if n > 1]
     roles = {"nbs_effect", "asset_vulnerability"} | (
         ({"operational_risk"} if args.allow_operational else set())
         | ({"structural_suitability"} if args.allow_structural else set())
     )
-    errs = gate(units, roles) + [f"duplicate evidence_id in staging: {d}" for d in dups]
+    errs = gate(units, roles)
     print(
-        f"{len(units)} staged unit(s) from {len(args.files)} file(s); roles {dict(Counter(u.get('use_role', '<missing>') for u in units))}"
+        f"{len(units)} staged unit(s) from {len(args.files)} file(s); roles {dict(Counter(str(u.get('use_role', '<missing>')) for u in units))}"
     )
     if errs:
         print(f"GATE FAILED: {len(errs)} problem(s) — nothing written")

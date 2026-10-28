@@ -25,7 +25,7 @@ import argparse
 import csv
 import importlib.util
 import hashlib
-import shutil
+import io
 import sys
 from datetime import date
 from pathlib import Path
@@ -37,6 +37,7 @@ from nbs_ruralscan.schema_tools.verify_metadata import (  # noqa: E402
     _title_coverage,
     _title_of,
 )
+from nbs_ruralscan.ingest.integrity import atomic_write, copy_immutable  # noqa: E402
 
 QUEUE = ROOT / "pipeline" / "acquisition_queue.csv"
 CORPUS = ROOT / ".cache" / "corpus"
@@ -84,11 +85,16 @@ def main(argv: list[str] | None = None) -> int:
     lib = _H.library_root()
     today = date.today().isoformat()
     done, bad, no_lib = [], [], []
+    filed_downloads = []
     for pdf in sorted(src_dir.glob("*.pdf")):
         r = by_id.get(pdf.stem)
         if not r:
             continue
-        ok, where = title_check(pdf, r.get("citation", ""))
+        try:
+            ok, where = title_check(pdf, r.get("citation", ""))
+        except (OSError, RuntimeError, ValueError) as exc:
+            bad.append(f"{pdf.name}: unreadable PDF: {exc}")
+            continue
         if not ok:
             bad.append(f"{pdf.name}: {where}")
             continue
@@ -101,7 +107,10 @@ def main(argv: list[str] | None = None) -> int:
             bad.append(f"{pdf.name}: library path escapes library root")
             continue
         digest = hashlib.sha256(pdf.read_bytes()).digest()
+        archive = src_dir / "nbs_ingested" / pdf.name
         targets = [CORPUS / f"{r['source_id']}.pdf", dest]
+        if not a.keep:
+            targets.append(archive)
         if any(
             p.exists() and hashlib.sha256(p.read_bytes()).digest() != digest
             for p in targets
@@ -110,13 +119,16 @@ def main(argv: list[str] | None = None) -> int:
                 f"{pdf.name}: existing cache/library artifact differs; reconcile identity before replacement"
             )
             continue
-        done.append(f"{pdf.name}: title on {where}")
         if a.dry_run:
+            done.append(f"{pdf.name}: title on {where}")
             continue
-        CORPUS.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(pdf, CORPUS / f"{r['source_id']}.pdf")
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(pdf, dest)
+        try:
+            for target in targets:
+                copy_immutable(pdf, target)
+        except OSError as exc:
+            bad.append(f"{pdf.name}: filing held: {exc}")
+            continue
+        done.append(f"{pdf.name}: title on {where}")
         r["status"] = "acquired"
         r["title_verified"] = "true"
         r["blocker"] = ""
@@ -125,14 +137,16 @@ def main(argv: list[str] | None = None) -> int:
         )
         r["note"] = f"{r['note']} | {add}" if r.get("note") else add
         if not a.keep:
-            moved = src_dir / "nbs_ingested"
-            moved.mkdir(exist_ok=True)
-            shutil.move(str(pdf), moved / pdf.name)
+            filed_downloads.append(pdf)
     if done and not a.dry_run:
-        with QUEUE.open("w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
-            w.writeheader()
-            w.writerows(rows)
+        buffer = io.StringIO(newline="")
+        w = csv.DictWriter(buffer, fieldnames=cols, lineterminator="\n")
+        w.writeheader()
+        w.writerows(rows)
+        atomic_write(QUEUE, buffer.getvalue().encode("utf-8"))
+        # Keep downloads available for a retry until queue persistence succeeds.
+        for pdf in filed_downloads:
+            pdf.unlink()
     print(f"filed {len(done)}" + (" (dry run)" if a.dry_run else ""))
     for d in done:
         print("  ok  ", d)

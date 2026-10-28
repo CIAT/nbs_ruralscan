@@ -38,13 +38,15 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import io
 import re
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
 from nbs_ruralscan.schema_tools import ledger, search_log
-from nbs_ruralscan.ingest.integrity import validate_source_id
+from nbs_ruralscan.schema_tools.verify_metadata import _title_of
+from nbs_ruralscan.ingest.integrity import atomic_write, validate_source_id
 
 ROOT = Path(__file__).resolve().parents[1]
 QUEUE = ROOT / "pipeline" / "acquisition_queue.csv"
@@ -61,12 +63,13 @@ def _rd(p: Path) -> list[dict[str, str]]:
 
 
 def _wr(p: Path, rows: list[dict[str, Any]], cols: list[str]) -> None:
-    with p.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(
-            f, fieldnames=cols, lineterminator="\n", extrasaction="ignore"
-        )
-        w.writeheader()
-        w.writerows(rows)
+    buffer = io.StringIO(newline="")
+    w = csv.DictWriter(
+        buffer, fieldnames=cols, lineterminator="\n", extrasaction="ignore"
+    )
+    w.writeheader()
+    w.writerows(rows)
+    atomic_write(p, buffer.getvalue().encode("utf-8"))
 
 
 def _load_candidates(p: Path) -> list[dict[str, Any]]:
@@ -108,7 +111,16 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--assigned", default="Namita-J")
     ap.add_argument("--run-prefix", default="")
     args = ap.parse_args(argv)
-    kv = lambda items: dict(x.split("=", 1) for x in items)  # noqa: E731
+
+    def kv(items):
+        result = {}
+        for item in items:
+            key, separator, value = item.partition("=")
+            if not separator or not key or not value or key in result:
+                ap.error(f"invalid or duplicate keyed argument: {item!r}")
+            result[key] = value
+        return result
+
     cand_files, reports, log_names = (
         kv(args.candidates),
         kv(args.reports),
@@ -126,6 +138,10 @@ def main(argv: list[str] | None = None) -> int:
     report_text = {
         lane: Path(path).read_text(encoding="utf-8") for lane, path in reports.items()
     }
+    if set(reports) != set(cand_files) or set(log_names) != set(cand_files):
+        ap.error("candidates, reports and log-names must name exactly the same lanes")
+    if len(set(log_names.values())) != len(log_names):
+        ap.error("each lane needs a distinct tracked log filename")
     for lane, xs in candidates.items():
         if not xs:
             ap.error(
@@ -169,6 +185,8 @@ def main(argv: list[str] | None = None) -> int:
     if not set(ledger_status) <= searched_processes:
         ap.error("--ledger cannot claim a process absent from this batch")
     fam_rows = [r for r in _rd(FAM) if r["nbs_id"] == args.nbs_id]
+    if not fam_rows:
+        ap.error(f"unknown NbS {args.nbs_id!r}; no registered suitability families")
     fams = {r["suitability_family_id"] for r in fam_rows}
     sub2fam = {r["subpractice_id"]: r["suitability_family_id"] for r in fam_rows}
 
@@ -195,8 +213,101 @@ def main(argv: list[str] | None = None) -> int:
     from datetime import datetime
 
     datetime.strptime(args.date, "%Y-%m-%d")
+    tracked_reports = {}
+    for lane, txt in report_text.items():
+        first = txt.index("\n") if "\n" in txt else len(txt)
+        hdr = (
+            f"\n> **Provenance.** Tracked copy of the discovery agent's report (`pipeline/staging/discovery/`, gitignored). "
+            f"Run `{run_prefix}_{lane}`, ruleset **{args.ruleset}**, synthesis-first rule (Pete 2026-10-01). "
+            f"Registered by `scripts/register-discovery.py` on {args.date}: candidates → `pipeline/acquisition_queue.csv` (status `pending`), "
+            f"SRCH rows `{run_prefix}_{lane}`, ledger per `--ledger`.\n\n"
+        )
+        tracked_reports[lane] = txt[: first + 1] + hdr + txt[first + 1 :]
+        destination = LOGS / log_names[lane]
+        if (
+            destination.exists()
+            and destination.read_text(encoding="utf-8") != tracked_reports[lane]
+        ):
+            ap.error(
+                f"tracked discovery log differs: {destination}; use a new run/log name to preserve search history"
+            )
     q = _rd(QUEUE)
     qcols = list(q[0].keys())
+    sources = _rd(SRC)
+    # A known identity is not necessarily an already-covered NbS/table. Dropping
+    # cross-scope candidates would lose future extraction work while SRCH still
+    # records their inclusion. Reuse requires an explicit canonical-source route.
+    seen_sources = q + sources
+    for lane, xs in candidates.items():
+        for candidate in xs:
+            candidate_doi = (candidate.get("doi") or "").strip().casefold()
+            candidate_title = _norm_title(candidate["citation"])
+            matches = [
+                row
+                for row in seen_sources
+                if (
+                    candidate_doi
+                    and candidate_doi == (row.get("doi") or "").strip().casefold()
+                )
+                or candidate_title == _norm_title(row.get("citation", ""))
+            ]
+            if not matches:
+                family_ids, _ = famlist(candidate.get("families"))
+                seen_sources.append(
+                    {
+                        "source_id": candidate["candidate_id"],
+                        "citation": candidate["citation"],
+                        "doi": candidate_doi,
+                        "nbs_id": args.nbs_id,
+                        "tables": candidate.get("tables") or "T3|T6",
+                        "family": "|".join(family_ids),
+                    }
+                )
+                continue
+            if candidate_doi and any(
+                candidate_doi == (row.get("doi") or "").strip().casefold()
+                and _norm_title(_title_of(candidate["citation"]))
+                != _norm_title(_title_of(row.get("citation", "")))
+                for row in matches
+            ):
+                ap.error(
+                    f"{lane}: same DOI has different citation titles; verify identity before deduplication"
+                )
+            declared_scopes = {
+                nbs.strip()
+                for row in matches
+                for nbs in (row.get("nbs_ids") or row.get("nbs_id") or "").split("|")
+                if nbs
+            }
+            requested_tables = set((candidate.get("tables") or "T3|T6").split("|"))
+            existing_tables = {
+                table
+                for row in matches
+                if args.nbs_id
+                in {token.strip() for token in (row.get("nbs_id") or "").split("|")}
+                for table in (row.get("tables") or "").split("|")
+                if table
+            }
+            requested_families, _ = famlist(candidate.get("families"))
+            existing_families = {
+                family
+                for row in matches
+                if args.nbs_id
+                in {token.strip() for token in (row.get("nbs_id") or "").split("|")}
+                for family in (row.get("family") or "").split("|")
+                if family
+            }
+            if (
+                args.nbs_id not in declared_scopes
+                or not requested_tables <= existing_tables
+                or not set(requested_families) <= existing_families
+            ):
+                ids = sorted({row["source_id"] for row in matches})
+                ap.error(
+                    f"{lane}: known source {ids} needs new NbS/table reuse tracking for "
+                    f"{args.nbs_id} {sorted(requested_tables)} families={requested_families}; "
+                    "candidate retained, not discarded as duplicate"
+                )
     known_doi = {(r["doi"] or "").lower() for r in q} | {
         (r.get("doi") or "").lower() for r in _rd(SRC)
     }
@@ -389,21 +500,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  ledger: {ledger_status} on {table_list}")
     # tracked discovery logs
     LOGS.mkdir(exist_ok=True)
-    for lane, path in reports.items():
-        name = log_names.get(lane)
-        if not name:
-            continue
-        txt = Path(path).read_text(encoding="utf-8")
-        first = txt.index("\n") if "\n" in txt else len(txt)
-        hdr = (
-            f"\n> **Provenance.** Tracked copy of the discovery agent's report (`pipeline/staging/discovery/`, gitignored). "
-            f"Run `{run_prefix}_{lane}`, ruleset **{args.ruleset}**, synthesis-first rule (Pete 2026-10-01). "
-            f"Registered by `scripts/register-discovery.py` on {args.date}: candidates → `pipeline/acquisition_queue.csv` (status `pending`), "
-            f"SRCH rows `{run_prefix}_{lane}`, ledger per `--ledger`.\n\n"
-        )
-        (LOGS / name).write_text(
-            txt[: first + 1] + hdr + txt[first + 1 :], encoding="utf-8"
-        )
+    for lane, txt in tracked_reports.items():
+        name = log_names[lane]
+        atomic_write(LOGS / name, txt.encode("utf-8"))
         print(f"  log → methodology/discovery_logs/{name}")
     return 0
 
