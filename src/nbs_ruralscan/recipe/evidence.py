@@ -160,7 +160,7 @@ def validate(unit: EvidenceUnit) -> list[str]:
             errs.append(f"{fname}={v!r} not in {sorted(allowed)}")
     # locator rules — the quote must be anchored, and the anchor must match its type
     if unit.locator_type == "page":
-        if not isinstance(unit.page, int) or unit.page < 1:
+        if type(unit.page) is not int or unit.page < 1:
             errs.append("locator_type=page requires an integer page >= 1")
     elif unit.locator_type in LOCATOR_TYPE:
         if not (unit.locator or "").strip():

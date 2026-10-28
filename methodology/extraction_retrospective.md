@@ -24,7 +24,7 @@ relationship-faithfulness. We only improve if we (a) measure the flag rate every
 
 4. **Encode the learning** (this is the ratchet — do at least one each sweep if flags > 0):
    - New defect pattern → add it to the defect catalogue in
-     `.agents/skills/source-command-extract-evidence/SKILL.md` AND the active EXTRACT_SPEC.
+     `.agents/skills/source-command-extract-evidence/references/defects.md`, referenced by the canonical skill. Bump the ruleset and snapshot the skill, contracts and command together.
    - Deterministically detectable? → add/extend a check in `schema_tools/check_numbers.py`
      (or a sibling checker) so it's caught for free next time, not by an LLM pass.
    - Schema gap? → a `methodology/schema_changes/` record + issue.
@@ -78,3 +78,12 @@ Scope: 16 sources reached through live T4 evidence links plus recent recovery so
 53 pending companions were staged. One Chuma land-use record was automatically quarantined because it documents model use without classes; its model-use metadata remains available. No prior human approval was changed. Six Ahmad soil-property mappings and categorical exclusions remain source-inventory holds. Conflicting Haile table weights now suppress a settled effective weight. New regression checks cover current live-source coverage, approval preservation, image identity, lineage/context-separated directions and conflicting weights.
 
 Numeric provenance caught comma-separated categorical codes being parsed as decimals/thousands; source codes are now explicit lists. Whole-table Mushtaq quotes were narrowed to the relevant row with a separate native caption/header. Short native table-row quotes retain separate header provenance; advisory width flags are not treated as automatic evidence rejection. Global metrics are recorded but do not demonstrate a full-sweep improvement. Existing source/mapping defects remain explicit review items rather than silently rewriting approved evidence.
+
+## Feedback accounting (v1.7.0)
+
+`learnings.status` distinguishes the historical count estimate from content fingerprints.
+Changed decisions/reasons/notes on an existing evidence × reviewer pair count as new learning
+work; repeated applies with unchanged content do not. `learnings.record` records the complete
+current feedback snapshot: use it only after reading that complete set. A bounded maintenance
+pass reports its exact scope and leaves the global cursor unchanged. Flag-rate comparisons
+require comparable scope and denominators; a smaller/easier batch is not proof of improvement.

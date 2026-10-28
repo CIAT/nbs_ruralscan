@@ -37,6 +37,7 @@ import json
 import time
 import re
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -209,22 +210,15 @@ def verify_titles() -> int:
         body_page = None
         if not ok:
             body_page = _title_page_in_body(r["source_id"], title)
-            ok = body_page is not None
         r["title_verified"] = "true" if ok else "false"
         if ok:
             passed += 1
-            if body_page is not None:
-                note = (r.get("note") or "").strip()
-                flag = (
-                    f"title verified at PDF page {body_page} — the cited document is a "
-                    "chapter/section inside a larger cached artefact"
-                )
-                if flag not in note:
-                    r["note"] = (note + " | " if note else "") + flag
         else:
             failed += 1
             note = (r.get("note") or "").strip()
             flag = f"TITLE CHECK FAILED (coverage {cov:.2f}): cached file may be the wrong document."
+            if body_page is not None:
+                flag += f" Body-only match at PDF page {body_page} may be a reference; verify chapter identity manually."
             if flag not in note:
                 r["note"] = (note + " | " if note else "") + flag
     with QUEUE.open("w", newline="", encoding="utf-8") as f:

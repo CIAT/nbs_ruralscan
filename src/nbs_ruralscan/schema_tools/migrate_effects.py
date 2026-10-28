@@ -517,12 +517,37 @@ def _cell(v: Any) -> str:
     return str(v)
 
 
-def append_to_register(rows: list[dict[str, Any]], ev_csv: Path = EV_CSV) -> int:
+def append_to_register(
+    rows: list[dict[str, Any]], ev_csv: Path = EV_CSV, *, dry_run: bool = False
+) -> int:
     with open(ev_csv, encoding="utf-8", newline="") as f:
         reader = csv.DictReader(f)
         cols = list(reader.fieldnames or [])
-        existing = {r["evidence_id"] for r in reader}
+        existing = {r["evidence_id"]: r for r in reader}
+    seen: set[str] = set()
+    for row in rows:
+        eid = row["evidence_id"]
+        if eid in seen:
+            raise ValueError(f"duplicate evidence_id in batch: {eid}")
+        seen.add(eid)
+        previous = existing.get(eid)
+        if previous is None:
+            continue
+        for key, value in row.items():
+            # Review ownership stays with the review workflow, including on reruns.
+            if key in {"reviewer_ok", "review_state"} or key not in cols:
+                continue
+            old, new_value = previous.get(key) or "", _cell(value)
+            if key in {"context", "relationship"}:
+                old = json.loads(old) if old else None
+                new_value = json.loads(new_value) if new_value else None
+            if old != new_value:
+                raise ValueError(
+                    f"{eid}: existing evidence differs in {key}; use an audited correction, not append"
+                )
     new = [r for r in rows if r["evidence_id"] not in existing]
+    if dry_run:
+        return len(new)
     with open(ev_csv, "a", encoding="utf-8", newline="") as f:
         w = csv.DictWriter(
             f, fieldnames=cols, lineterminator="\n", extrasaction="ignore"

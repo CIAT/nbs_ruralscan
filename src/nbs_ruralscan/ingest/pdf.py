@@ -197,4 +197,5 @@ def build_index(
         tables=tables,
         captions=captions,
         needs_ocr_pages=needs_ocr,
+        tables_extracted=with_tables,
     )

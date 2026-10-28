@@ -44,6 +44,7 @@ from pathlib import Path
 from typing import Any
 
 from nbs_ruralscan.schema_tools import ledger, search_log
+from nbs_ruralscan.ingest.integrity import validate_source_id
 
 ROOT = Path(__file__).resolve().parents[1]
 QUEUE = ROOT / "pipeline" / "acquisition_queue.csv"
@@ -71,31 +72,35 @@ def _wr(p: Path, rows: list[dict[str, Any]], cols: list[str]) -> None:
 def _load_candidates(p: Path) -> list[dict[str, Any]]:
     d = json.loads(p.read_text(encoding="utf-8"))
     if isinstance(d, dict):
-        d = d.get("candidates") or d.get("items") or []
-    return list(d)
+        d = d.get("candidates", d.get("items"))
+    if not isinstance(d, list) or any(not isinstance(x, dict) for x in d):
+        raise ValueError(f"{p}: expected a candidate list, not an empty fallback")
+    return d
 
 
 def _norm_title(t: str) -> str:
-    return re.sub(r"[^a-z0-9]+", " ", (t or "").lower()).strip()[:70]
+    return re.sub(r"[^\w]+", " ", (t or "").casefold(), flags=re.UNICODE).strip()
 
 
-def _sections(
-    report: str, pattern: str, stop: str = r"^## |^### ", maxlen: int = 7000
-) -> str:
+def _sections(report: str, pattern: str, stop: str = r"^## |^### ") -> str:
     """Concatenate every report section whose heading matches ``pattern`` (verbatim queries)."""
     out: list[str] = []
     for m in re.finditer(pattern, report, flags=re.M | re.I):
         rest = report[m.end() :]
         n = re.search(stop, rest, flags=re.M)
-        out.append(re.sub(r"[ \t]+", " ", rest[: n.start()] if n else rest).strip())
-    return (" || ".join(out))[:maxlen]
+        out.append((rest[: n.start()] if n else rest).strip())
+    return "\n\n".join(out)
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     ap.add_argument("nbs_id")
     ap.add_argument("--date", required=True)
-    ap.add_argument("--ruleset", default="v1.6.0")
+    ap.add_argument(
+        "--ruleset",
+        required=True,
+        help="Actual ruleset used for this search; never inferred",
+    )
     ap.add_argument("--candidates", nargs="+", required=True, metavar="LANE=PATH")
     ap.add_argument("--reports", nargs="+", default=[], metavar="LANE=PATH")
     ap.add_argument("--log-names", nargs="+", default=[], metavar="LANE=NAME.md")
@@ -114,7 +119,56 @@ def main(argv: list[str] | None = None) -> int:
         args.run_prefix or f"{args.nbs_id.split('_')[0]}_synthesis_first_{args.date}"
     )
 
-    fam_rows = _rd(FAM)
+    # Validate the entire batch and read reports before the first write.
+    candidates = {
+        lane: _load_candidates(Path(path)) for lane, path in cand_files.items()
+    }
+    report_text = {
+        lane: Path(path).read_text(encoding="utf-8") for lane, path in reports.items()
+    }
+    for lane, xs in candidates.items():
+        if not xs:
+            ap.error(
+                f"{lane}: empty candidate lane; record the zero-yield search explicitly with search_log.log_search (table/process required)"
+            )
+        if lane not in report_text or lane not in log_names:
+            ap.error(
+                f"{lane}: --reports and --log-names required for reproducible searches"
+            )
+        if Path(log_names[lane]).name != log_names[lane] or not log_names[
+            lane
+        ].endswith(".md"):
+            ap.error(f"{lane}: log name must be a Markdown filename")
+        if not _sections(
+            report_text[lane], r"^#{2,3} .*(verbatim|queries|channel \d).*$"
+        ):
+            ap.error(f"{lane}: report needs a verbatim query section")
+        if len({x.get("candidate_id") for x in xs}) != len(xs):
+            ap.error(f"{lane}: duplicate candidate IDs within lane")
+        for x in xs:
+            validate_source_id(x.get("candidate_id", ""))
+            if not str(x.get("citation") or "").strip():
+                ap.error(f"{lane}: candidate citation missing")
+            if (
+                x.get("process") or ("grey" if lane == "grey" else "updated_lit")
+            ) not in search_log.CATEGORIES:
+                ap.error(f"{lane}: unknown discovery process")
+            if not set((x.get("tables") or "T3|T6").split("|")) <= set(
+                search_log.TABLES
+            ):
+                ap.error(f"{lane}: unsupported table tag")
+    if not set(ledger_status) <= set(search_log.CATEGORIES) or any(
+        v not in {"in_progress", "done"} for v in ledger_status.values()
+    ):
+        ap.error("--ledger requires known processes and in_progress/done status")
+    searched_processes = {
+        x.get("process") or ("grey" if lane == "grey" else "updated_lit")
+        for lane, xs in candidates.items()
+        for x in xs
+    }
+    if not set(ledger_status) <= searched_processes:
+        ap.error("--ledger cannot claim a process absent from this batch")
+    fam_rows = [r for r in _rd(FAM) if r["nbs_id"] == args.nbs_id]
     fams = {r["suitability_family_id"] for r in fam_rows}
     sub2fam = {r["subpractice_id"]: r["suitability_family_id"] for r in fam_rows}
 
@@ -128,6 +182,19 @@ def main(argv: list[str] | None = None) -> int:
                 bad.append(f)
         return out, bad
 
+    for lane, xs in candidates.items():
+        for x in xs:
+            if not isinstance(x.get("families", []), list):
+                ap.error(f"{lane}: families must be a list")
+            _, bad = famlist(x.get("families"))
+            if bad:
+                ap.error(
+                    f"{lane}: unknown/wrong-NbS family tags {bad}; resolve before registration"
+                )
+    # Search date must be valid before writing the queue.
+    from datetime import datetime
+
+    datetime.strptime(args.date, "%Y-%m-%d")
     q = _rd(QUEUE)
     qcols = list(q[0].keys())
     known_doi = {(r["doi"] or "").lower() for r in q} | {
@@ -143,7 +210,7 @@ def main(argv: list[str] | None = None) -> int:
     bad_fams: Counter = Counter()
     per_lane_proc: dict[str, Counter] = defaultdict(Counter)
     for lane, path in cand_files.items():
-        for x in _load_candidates(Path(path)):
+        for x in candidates[lane]:
             sid = x["candidate_id"]
             doi = (x.get("doi") or "").strip()
             if doi and doi.lower() in known_doi:
@@ -153,8 +220,9 @@ def main(argv: list[str] | None = None) -> int:
                 dropped.append((lane, sid, "duplicate title"))
                 continue
             if sid in ids:
-                dropped.append((lane, sid, "source_id collision"))
-                continue
+                ap.error(
+                    f"{lane}: source_id collision for {sid}; assign a distinct identity rather than discard the candidate"
+                )
             process = x.get("process") or ("grey" if lane == "grey" else "updated_lit")
             per_lane_proc[lane][process] += 1
             fam, bad = famlist(x.get("families"))
@@ -166,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
             if rg:
                 blocker = "OA (websearch:researchgate/unverified) — HUMAN CHECK"
             elif oa.startswith("paywalled"):
-                blocker = "paywalled (verified: Unpaywall + web search found no copy) → institutional"
+                blocker = "OA recovery needed — candidate labelled paywalled; verify Unpaywall AND web-search evidence before institutional referral"
             elif "archived" in oa:
                 blocker = (
                     "publisher link dead — archived copy; HUMAN: mirror to SharePoint"
@@ -211,9 +279,7 @@ def main(argv: list[str] | None = None) -> int:
                     citation=x["citation"],
                     doi=doi,
                     url=x.get("oa_url") or x.get("url") or "",
-                    access_status="oa"
-                    if not oa.startswith("paywalled")
-                    else "paywalled",
+                    access_status="oa" if oa in {"oa", "open_access"} else "unknown",
                     blocker=blocker,
                     access_route=("web (publisher domain)" if grey else ROUTE_OA),
                     target_library_path="",
@@ -239,19 +305,13 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  family tags not in FAM (dropped from `family`): {dict(bad_fams)}")
 
     # SRCH rows: one per (table × process) per lane, verbatim queries from the lane's report
-    added_ids = {s for _, s in added}
     tables: set[str] = set()
     for lane, path in cand_files.items():
-        for x in _load_candidates(Path(path)):
-            if x["candidate_id"] in added_ids:
-                tables |= set((x.get("tables") or "T3|T6").split("|"))
+        for x in candidates[lane]:
+            tables |= set((x.get("tables") or "T3|T6").split("|"))
     table_list = sorted(tables)
     for lane, path in cand_files.items():
-        cands = [
-            x
-            for x in _load_candidates(Path(path))
-            if any(s == x["candidate_id"] for ln, s in added if ln == lane)
-        ]
+        cands = candidates[lane]
         if not cands:
             continue
         report = (
@@ -275,12 +335,13 @@ def main(argv: list[str] | None = None) -> int:
                         or ("grey" if lane == "grey" else "updated_lit")
                     )
                     == process
-                    and table in (x.get("table_list") or "T3|T6")
+                    and table in (x.get("tables") or "T3|T6").split("|")
                 )
                 if n_tbl == 0:
                     continue
                 search_log.log_search(
                     nbs=args.nbs_id,
+                    search_date=args.date,
                     table=table,
                     category=process,
                     family="",
@@ -299,12 +360,20 @@ def main(argv: list[str] | None = None) -> int:
                     n_screened="see discovery log",
                     n_included=str(n_tbl),
                     discovery_log_ref=f"methodology/discovery_logs/{log_names.get(lane, lane + '.md')}",
-                    note=f"{len(cands)} candidates queued from the {lane} lane; per-table count counts candidates tagged for {table}.",
+                    note=f"{len(cands)} candidates included by the {lane} lane before queue deduplication; per-table count uses exact table tags. Registration date is distinct from search date.",
                 )
                 print(f"  SRCH {table} {process:12s} ({lane}) n_included={n_tbl}")
     # ledger
     for process, status in ledger_status.items():
-        for table in table_list:
+        process_tables = {
+            table
+            for lane, xs in candidates.items()
+            for x in xs
+            if (x.get("process") or ("grey" if lane == "grey" else "updated_lit"))
+            == process
+            for table in (x.get("tables") or "T3|T6").split("|")
+        }
+        for table in sorted(process_tables):
             for stage in ("searched", "screened"):
                 ledger.mark(
                     args.nbs_id,

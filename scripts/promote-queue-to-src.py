@@ -22,6 +22,12 @@ import re
 from datetime import date
 from pathlib import Path
 
+from nbs_ruralscan.ingest.integrity import (
+    identity_error,
+    validate_body,
+    validate_source_id,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 QUEUE = ROOT / "pipeline" / "acquisition_queue.csv"
 SRC = ROOT / "schema" / "registers" / "SRC_source_register.csv"
@@ -91,9 +97,26 @@ def _ids(paths: list[str]) -> list[str]:
 
 
 def build_row(q: dict, meta: dict, cols: list[str], a) -> dict:
+    validate_source_id(q["source_id"])
+    problem = identity_error(q)
+    if problem:
+        raise ValueError(problem)
+    if not q.get("target_library_path"):
+        raise ValueError("team library path missing; share the source before promotion")
+    pdf = CORPUS / f"{q['source_id']}.pdf"
+    validate_body(pdf.read_bytes(), "pdf")
+    if not meta.get("benchmark_tier") or not meta.get("venue_type"):
+        raise ValueError(
+            "--meta must supply benchmark_tier and venue_type from credibility assessment"
+        )
     note = q["note"]
     proc = _tag(note, "process") or "updated_lit"
     sub = _tag(note, "method_subtype")
+    method = meta.get("method_type") or _METHOD.get(sub)
+    if not method:
+        raise ValueError(
+            "method_type is unknown; supply assessed --meta rather than defaulting to empirical"
+        )
     scope = _list(_tag(note, "study_scope"))
     iso = [s for s in scope if _ISO3.match(s)]
     inc = _list(_tag(note, "income_groups_covered"))
@@ -103,33 +126,32 @@ def build_row(q: dict, meta: dict, cols: list[str], a) -> dict:
         {
             "source_id": q["source_id"],
             "citation": q["citation"],
-            "doi": q["doi"] if q.get("doi_verified") == "true" else "",
-            "benchmark_tier": meta.get("benchmark_tier", "medium"),
+            "doi": q.get("doi") or "",
+            "benchmark_tier": meta["benchmark_tier"],
             "study_country": meta.get("study_country", "; ".join(iso)),
             "region": meta.get("region", "" if iso else "; ".join(scope)),
-            "method_type": meta.get("method_type", _METHOD.get(sub, "empirical")),
+            "method_type": method,
             "nbs_ids": a.nbs,
             "vars_extracted": "",
-            "extraction_status": "swept",
-            "extraction_date": a.date,
-            "extraction_run_id": a.run_id,
-            "extractor": a.extractor,
+            "extraction_status": "pending",
+            "extraction_date": "",
+            "extraction_run_id": "",
+            "extractor": "",
             "source_kind": "paper" if proc == "updated_lit" else "grey_lit",
             "url": q["url"],
             "artifact_sha1": _sha1(pdf) if pdf.exists() else "",
             "retrieved_at": a.date,
-            "access_status": "open_access",
+            "access_status": {
+                "oa": "open_access",
+                "open_access": "open_access",
+                "paywalled": "paywalled",
+            }.get(q.get("access_status") or "", "unknown"),
             "source_category": proc,
             "library_path": q["target_library_path"],
             "study_income_group": meta.get(
                 "study_income_group", inc[0] if len(inc) == 1 else ""
             ),
-            "venue_type": meta.get(
-                "venue_type",
-                "peer_reviewed_journal"
-                if proc == "updated_lit"
-                else "institutional_report",
-            ),
+            "venue_type": meta["venue_type"],
         }
     )
     return row
@@ -154,15 +176,20 @@ def main() -> int:
         cols = list(rd.fieldnames or [])
         existing = {r["source_id"] for r in rd}
     new: list[dict] = []
+    errors: list[str] = []
     for sid in ids:
         if sid in existing:
             print(f"  skip (in SRC): {sid}")
             continue
         q = queue.get(sid)
         if q is None or q["status"] != "acquired":
-            print(f"  skip (not acquired in queue): {sid}")
+            errors.append(f"{sid}: not acquired in queue")
             continue
-        row = build_row(q, meta.get(sid, {}), cols, a)
+        try:
+            row = build_row(q, meta.get(sid, {}), cols, a)
+        except (ValueError, OSError) as exc:
+            errors.append(f"{sid}: {exc}")
+            continue
         if not row["artifact_sha1"]:
             print(f"  skip (no cached PDF): {sid}")
             continue
@@ -173,6 +200,9 @@ def main() -> int:
             f"{row['study_income_group']}"
         )
     print(f"{len(new)} row(s) to append")
+    if errors:
+        print("PROMOTION FAILED — nothing written:\n  " + "\n  ".join(errors))
+        return 1
     if a.dry_run or not new:
         return 0
     with SRC.open("a", newline="", encoding="utf-8") as f:

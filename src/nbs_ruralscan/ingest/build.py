@@ -13,7 +13,7 @@ import argparse
 from pathlib import Path
 
 from .cache import load_index, save_index
-from .pdf import build_index
+from .pdf import _sha1, build_index
 
 
 def build_cache(
@@ -28,13 +28,17 @@ def build_cache(
     for pdf in sorted(pdf_dir.glob("*.pdf")):
         sid = pdf.stem
         existing = load_index(sid, cache_dir)
+        if (
+            existing
+            and existing.sha1 == _sha1(pdf)
+            and (not with_tables or existing.tables_extracted is True)
+        ):
+            print(f"  cached {sid[:50]}")
+            continue
         try:
             idx = build_index(pdf, source_id=sid, with_tables=with_tables)
         except Exception as e:  # keep going across a corpus
             print(f"  SKIP {sid[:50]} — {type(e).__name__}: {e}")
-            continue
-        if existing and existing.sha1 == idx.sha1:
-            print(f"  cached {sid[:50]}")
             continue
         save_index(idx, cache_dir)
         flag = f" · needs-OCR pp.{idx.needs_ocr_pages}" if idx.needs_ocr_pages else ""

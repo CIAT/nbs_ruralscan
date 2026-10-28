@@ -6,8 +6,7 @@
 Looks for `<source_id>.pdf` files whose name matches an acquisition-queue row. For each:
 
 1. **Identity check** — the citation's title must appear on the PDF's opening pages (the same
-   token-coverage test as `verify_metadata.py verify-titles`; a chapter inside a larger PDF
-   is found by searching the body). A mismatch is left where it is and reported: a wrong
+   token-coverage test as `verify_metadata.py verify-titles`; a body-only match is held for manual chapter/reference disambiguation). A mismatch is left where it is and reported: a wrong
    file must never reach the corpus (catalogue: DOI ↔ citation, trust anchor = title).
 2. **Filing** — copies the PDF to `.cache/corpus/<source_id>.pdf` and to the SharePoint
    library through its OneDrive mirror at the row's `target_library_path` (library root
@@ -25,6 +24,7 @@ from __future__ import annotations
 import argparse
 import csv
 import importlib.util
+import hashlib
 import shutil
 import sys
 from datetime import date
@@ -49,7 +49,7 @@ _spec.loader.exec_module(_H)
 
 
 def title_check(pdf: Path, citation: str) -> tuple[bool, str]:
-    """(ok, where): the citation title on the opening pages, else anywhere in the body."""
+    """(ok, where): opening-page title match; body matches need identity review."""
     import fitz
 
     title = _title_of(citation)
@@ -61,7 +61,10 @@ def title_check(pdf: Path, citation: str) -> tuple[bool, str]:
         for i in range(min(len(doc), 500)):
             page = doc[i].get_text()
             if _title_coverage(title, prev + " " + page) >= TITLE_THRESH:
-                return True, f"page {i + 1}"
+                return (
+                    False,
+                    f"title only in body (page {i + 1}); could be a cited reference; verify chapter identity manually",
+                )
             prev = page
     return False, f"title not found: {title[:80]}"
 
@@ -89,18 +92,31 @@ def main(argv: list[str] | None = None) -> int:
         if not ok:
             bad.append(f"{pdf.name}: {where}")
             continue
+        tgt = (r.get("target_library_path") or "").strip()
+        if not lib or not tgt:
+            no_lib.append(r["source_id"])
+            continue
+        dest = lib / tgt
+        if not dest.resolve().is_relative_to(lib.resolve()):
+            bad.append(f"{pdf.name}: library path escapes library root")
+            continue
+        digest = hashlib.sha256(pdf.read_bytes()).digest()
+        targets = [CORPUS / f"{r['source_id']}.pdf", dest]
+        if any(
+            p.exists() and hashlib.sha256(p.read_bytes()).digest() != digest
+            for p in targets
+        ):
+            bad.append(
+                f"{pdf.name}: existing cache/library artifact differs; reconcile identity before replacement"
+            )
+            continue
         done.append(f"{pdf.name}: title on {where}")
         if a.dry_run:
             continue
         CORPUS.mkdir(parents=True, exist_ok=True)
         shutil.copy2(pdf, CORPUS / f"{r['source_id']}.pdf")
-        tgt = (r.get("target_library_path") or "").strip()
-        if lib and tgt:
-            dest = lib / tgt
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(pdf, dest)
-        else:
-            no_lib.append(r["source_id"])
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(pdf, dest)
         r["status"] = "acquired"
         r["title_verified"] = "true"
         r["blocker"] = ""
@@ -130,7 +146,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             "next: python3 src/nbs_ruralscan/schema_tools/verify_metadata.py verify  (DOI rows)"
         )
-    return 1 if bad else 0
+    return 1 if bad or no_lib else 0
 
 
 if __name__ == "__main__":

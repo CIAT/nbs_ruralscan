@@ -23,6 +23,8 @@ from pathlib import Path
 
 import requests
 
+from .integrity import atomic_write, validate_body, validate_source_id
+
 # Corpus cache root — parallel to the docindex cache (.cache/ingest)
 DEFAULT_CORPUS_DIR = ".cache/corpus"
 
@@ -134,6 +136,7 @@ def acquire(
     if kind not in _VALID_KINDS:
         raise ValueError(f"Unknown kind {kind!r}. Valid values: {sorted(_VALID_KINDS)}")
 
+    validate_source_id(source_id)
     corpus_path = Path(corpus_dir)
     corpus_path.mkdir(parents=True, exist_ok=True)
 
@@ -142,12 +145,28 @@ def acquire(
     meta_path = corpus_path / f"{source_id}.meta.json"
 
     if artifact_path.exists() and not overwrite:
-        # Already cached — load existing meta
-        meta = (
-            json.loads(meta_path.read_text(encoding="utf-8"))
-            if meta_path.exists()
-            else {}
-        )
+        # Reuse only when artifact and provenance agree. Never overwrite a suspect
+        # cache automatically: retain it for identity review / explicit replacement.
+        try:
+            body = artifact_path.read_bytes()
+            validate_body(body, kind)
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            expected = {
+                "source_id": source_id,
+                "url": url,
+                "kind": kind,
+                "sha1": _sha1_hex(body),
+                "bytes": len(body),
+                "commit_sha": commit_sha,
+            }
+            if not isinstance(meta, dict) or any(
+                meta.get(k) != v for k, v in expected.items()
+            ):
+                raise ValueError("cached artifact/provenance mismatch")
+        except (OSError, ValueError) as exc:
+            raise AcquireError(
+                f"Invalid cache for {source_id!r}: {exc}; inspect before explicit replacement"
+            ) from exc
         return AcquireResult(
             ok=True,
             source_id=source_id,
@@ -179,22 +198,12 @@ def acquire(
     _check_content_type(kind, content_type)
 
     body = response.content
-    if not body:
-        raise AcquireError(
-            f"Empty response body for {source_id!r} from {url!r}. "
-            "Refusing to write a 0-byte artifact."
-        )
-
-    # --- Write artifact (atomic-ish: write then rename) ------------------
-    tmp = artifact_path.with_suffix(".tmp")
     try:
-        tmp.write_bytes(body)
-        tmp.replace(
-            artifact_path
-        )  # replace(), not rename(): Windows errors if dest exists
-    except Exception:
-        tmp.unlink(missing_ok=True)
-        raise
+        validate_body(body, kind)
+    except ValueError as exc:
+        raise AcquireError(f"{source_id}: {exc}") from exc
+
+    atomic_write(artifact_path, body)
 
     # --- Write sidecar ---------------------------------------------------
     meta: dict = {
@@ -208,8 +217,8 @@ def acquire(
         "bytes": len(body),
         "commit_sha": commit_sha,
     }
-    meta_path.write_text(
-        json.dumps(meta, indent=2, ensure_ascii=False), encoding="utf-8"
+    atomic_write(
+        meta_path, json.dumps(meta, indent=2, ensure_ascii=False).encode("utf-8")
     )
 
     return AcquireResult(

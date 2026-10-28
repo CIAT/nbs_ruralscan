@@ -113,6 +113,27 @@ def check_review_followups(log, evidence, followups, root=None):
         for assertion in checks:
             ref, field = assertion.get("evidence_id"), assertion.get("field")
             value = evidence.get(ref, {}).get(field)
+            # Pin the context keys that supported this answer. Unrelated later
+            # annotations must not reopen an unchanged, already-reviewed answer.
+            if "json_keys" in assertion:
+                try:
+                    keys = assertion["json_keys"]
+                    parsed = json.loads(value or "")
+                    if (
+                        not isinstance(keys, list)
+                        or not keys
+                        or not all(isinstance(k, str) for k in keys)
+                    ):
+                        raise ValueError(
+                            "json_keys must be a non-empty list of strings"
+                        )
+                    value = json.dumps(
+                        {k: parsed[k] for k in keys},
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    )
+                except (ValueError, KeyError, TypeError):
+                    value = None
             if (
                 ref not in ids
                 or value is None
