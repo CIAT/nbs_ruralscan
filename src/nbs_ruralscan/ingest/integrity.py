@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import os
 import tempfile
 from pathlib import Path
 
@@ -41,6 +42,35 @@ def validate_body(body: bytes, kind: str) -> None:
         raise ValueError("PDF signature missing; response may be an HTML error page")
 
 
+def pdf_title_error(path: Path, citation: str) -> str | None:
+    """Conservative document-binding gate, separate from DOI metadata verification.
+
+    A resolved DOI verifies citation metadata, not arbitrary downloaded bytes.
+    Scans and chapters lacking an opening-title match remain identity holds;
+    callers must not mistake this for evidence of a paywall or source absence.
+    """
+    import fitz
+
+    from nbs_ruralscan.schema_tools.verify_metadata import (
+        TITLE_THRESH,
+        _title_coverage,
+        _title_of,
+    )
+
+    try:
+        title = _title_of(citation)
+        with fitz.open(path) as doc:
+            head = " ".join(doc[i].get_text() for i in range(min(3, len(doc))))
+        if _title_coverage(title, head) >= TITLE_THRESH:
+            return None
+    except (OSError, RuntimeError, ValueError) as exc:
+        return f"unreadable PDF: {exc}"
+    return (
+        "downloaded PDF does not match the citation title on its opening pages; "
+        "wrong documents, scans and chapters require document identity verification"
+    )
+
+
 def atomic_write(path: Path, data: bytes) -> None:
     with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as f:
         tmp = Path(f.name)
@@ -48,6 +78,31 @@ def atomic_write(path: Path, data: bytes) -> None:
             f.write(data)
             f.close()
             tmp.replace(path)
+        finally:
+            tmp.unlink(missing_ok=True)
+
+
+def copy_immutable(source: Path, destination: Path) -> None:
+    """Publish a complete copy, refusing to replace a different existing artifact.
+
+    A same-directory temporary file and exclusive hard-link creation avoid both
+    partial reads and the check-then-overwrite race between acquisition workers.
+    Existing identical content is an idempotent success.
+    """
+    data = source.read_bytes()
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=destination.parent, delete=False) as f:
+        tmp = Path(f.name)
+        try:
+            f.write(data)
+            f.close()
+            try:
+                os.link(tmp, destination)
+            except FileExistsError:
+                if destination.read_bytes() != data:
+                    raise FileExistsError(
+                        f"Existing artifact differs: {destination}; reconcile before replacement"
+                    ) from None
         finally:
             tmp.unlink(missing_ok=True)
 

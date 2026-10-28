@@ -21,14 +21,20 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import io
 import os
 import pathlib
 import re
-import shutil
 import time
 import tempfile
 
 from nbs_ruralscan.ingest.acquire import AcquireError, acquire
+from nbs_ruralscan.ingest.integrity import (
+    atomic_write,
+    copy_immutable,
+    pdf_title_error,
+    validate_source_id,
+)
 from urllib.parse import urljoin
 
 import requests
@@ -46,14 +52,28 @@ UA = {
 }
 
 
-def _acquire(sid: str, url: str, dest: pathlib.Path) -> bool:
+def _acquire(
+    sid: str,
+    url: str,
+    dest: pathlib.Path,
+    citation: str | None = None,
+    identity_holds: list[str] | None = None,
+) -> bool:
     # A failed retry must never destroy an existing source. Acquire into an isolated
     # directory and validate with the PDF parser before promoting the artifact.
     import fitz
 
+    def identity_matches(path: pathlib.Path) -> bool:
+        problem = pdf_title_error(path, citation) if citation is not None else None
+        if problem and identity_holds is not None:
+            identity_holds.append(f"{url}: {problem}")
+        return problem is None
+
     dest.parent.mkdir(parents=True, exist_ok=True)
     try:
         if dest.exists():
+            if not identity_matches(dest):
+                return False
             acquire(sid, url, kind="pdf", corpus_dir=dest.parent)
             with fitz.open(dest) as doc:
                 return doc.page_count > 0
@@ -64,6 +84,8 @@ def _acquire(sid: str, url: str, dest: pathlib.Path) -> bool:
             with fitz.open(result.artifact_path) as doc:
                 if doc.page_count == 0:
                     return False
+            if not identity_matches(result.artifact_path):
+                return False
             result.artifact_path.replace(dest)
             result.meta_path.replace(dest.with_suffix(".meta.json"))
         return True
@@ -133,8 +155,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     a = ap.parse_args(argv)
     wayback = json.loads(pathlib.Path(a.wayback).read_text()) if a.wayback else {}
-    mirror = LIB_ROOT / LIB_REL / a.library_subdir
-    assert mirror.is_dir(), f"library mirror missing: {mirror}"
+    library = (LIB_ROOT / LIB_REL).resolve()
+    mirror = library / a.library_subdir
+    if not mirror.resolve().is_relative_to(library):
+        ap.error("library subdirectory escapes the team library")
+    if not mirror.is_dir():
+        ap.error(f"library mirror missing: {mirror}")
     qp = ROOT / "pipeline" / "acquisition_queue.csv"
     rows = list(csv.DictReader(open(qp, newline="", encoding="utf-8")))
     cols = list(rows[0].keys())
@@ -145,10 +171,15 @@ def main(argv: list[str] | None = None) -> int:
         if (
             (r["date_added"] != a.date and not a.all_dates)
             or r["status"] != "pending"
-            or r["nbs_id"] != a.nbs
+            or a.nbs not in {token.strip() for token in r["nbs_id"].split("|")}
         ):
             continue
         sid = r["source_id"]
+        try:
+            validate_source_id(sid)
+        except ValueError as exc:
+            log.append((sid, "fail", str(exc)))
+            continue
         if "HUMAN CHECK" in (r["blocker"] or "") or "paywalled (verified" in (
             r["blocker"] or ""
         ):
@@ -157,18 +188,26 @@ def main(argv: list[str] | None = None) -> int:
         dest = CACHE / f"{sid}.pdf"
         url = (r["url"] or "").strip()
         got = None
+        identity_holds: list[str] = []
+        citation = r.get("citation", "")
         if url and not (
             url.startswith("https://doi.org/") and "researchgate" not in url
         ):
-            if _acquire(sid, url, dest):
+            if _acquire(sid, url, dest, citation, identity_holds):
                 got = url
         if not got:
             for cand in _candidates(r, wayback):
-                if _acquire(sid, cand, dest):
+                if _acquire(sid, cand, dest, citation, identity_holds):
                     got = cand
                     break
                 time.sleep(0.5)
         if not got:
+            if identity_holds:
+                r["blocker"] = "document identity hold — " + "; ".join(
+                    dict.fromkeys(identity_holds)
+                )
+                log.append((sid, "fail", r["blocker"]))
+                continue
             reason = (
                 "no URL/DOI route"
                 if not (url or r.get("doi"))
@@ -180,6 +219,11 @@ def main(argv: list[str] | None = None) -> int:
             )
             log.append((sid, "fail", reason))
             continue
+        identity_problem = pdf_title_error(dest, r.get("citation", ""))
+        if identity_problem:
+            r["blocker"] = f"document identity hold — {identity_problem}"
+            log.append((sid, "fail", r["blocker"]))
+            continue
         try:
             with fitz.open(dest) as d:
                 txt = "".join(d[i].get_text() for i in range(min(3, len(d))))
@@ -188,7 +232,12 @@ def main(argv: list[str] | None = None) -> int:
             log.append((sid, "fail", f"unreadable PDF: {e}"))
             continue
         ocr = len(txt.strip()) < 200
-        shutil.copy2(dest, mirror / f"{sid}.pdf")
+        try:
+            copy_immutable(dest, mirror / f"{sid}.pdf")
+        except OSError as exc:
+            r["blocker"] = f"library copy held — {exc}"
+            log.append((sid, "fail", r["blocker"]))
+            continue
         r["status"] = "acquired"
         r["target_library_path"] = f"{LIB_REL}/{a.library_subdir}/{sid}.pdf"
         r["url"] = got
@@ -200,10 +249,11 @@ def main(argv: list[str] | None = None) -> int:
         ).strip("; ")
         log.append((sid, "ok", f"{npages} pp{' OCR' if ocr else ''}"))
         time.sleep(1.0)
-    with open(qp, "w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
-        w.writeheader()
-        w.writerows(rows)
+    buffer = io.StringIO(newline="")
+    w = csv.DictWriter(buffer, fieldnames=cols, lineterminator="\n")
+    w.writeheader()
+    w.writerows(rows)
+    atomic_write(qp, buffer.getvalue().encode("utf-8"))
     from collections import Counter
 
     print(Counter(s for _, s, _ in log))

@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .evidence import EvidenceUnit
-from .t4_relationships import decode
+from .t4_relationships import decode, numeric
 
 # weighting tables (defensible defaults; tune per RFC)
 TIER_W = {"high": 1.0, "medium": 0.6, "low": 0.35}
@@ -110,9 +110,10 @@ def _apply_conversion(value: float, rule: str) -> float | None:
     if not m:
         return None
     factor = float(m.group(2))
-    if factor == 0:
+    if not math.isfinite(factor) or factor <= 0:
         return None
-    return value / factor if m.group(1) == "/" else value * factor
+    result = value / factor if m.group(1) == "/" else value * factor
+    return result if math.isfinite(result) else None
 
 
 # Common non-canonical relationship-key aliases → canonical shape keys. Extraction should
@@ -176,6 +177,10 @@ def _harmonise(
     as km, a 1000x error on the opportunity surface).
     """
     rel = normalize_shape_keys(unit.relationship or {})
+    if any(k in rel and rel[k] is not None and not numeric(rel[k]) for k in _PARAMS):
+        if rep is not None:
+            rep.dropped.append((unit.evidence_id, "invalid_numeric_bound"))
+        return {}
     src_unit = _normalise_unit(rel.get("unit", canonical_unit))
     canon = _normalise_unit(canonical_unit)
 
@@ -207,7 +212,7 @@ def _harmonise(
 
     out: dict[str, float] = {}
     for k in _PARAMS:
-        if k in rel and isinstance(rel[k], (int, float)):
+        if k in rel and numeric(rel[k]):
             val = float(rel[k])
             if conv_pct_to_deg:
                 out[k] = (
@@ -317,7 +322,7 @@ def _resolve_root_origin(
 
     while curr_lineage:
         if curr_lineage in visited:
-            return curr_lineage
+            raise ValueError(f"lineage_cycle: {unit.evidence_id}")
         visited.add(curr_lineage)
 
         # Is the lineage pointer an evidence ID?
@@ -328,8 +333,12 @@ def _resolve_root_origin(
             curr_lineage = parent.lineage_of
         # Is the lineage pointer a source ID that we have in the current synthesis?
         elif curr_lineage in units_by_source:
-            # Take the first one in the list as representative to trace lineage
-            parent = units_by_source[curr_lineage][0]
+            # A source-level pointer is ambiguous when that source contains claims
+            # copied from different origins. Never let input order pick its parent.
+            members = units_by_source[curr_lineage]
+            if len({p.lineage_of or "" for p in members}) > 1:
+                raise ValueError(f"ambiguous_source_lineage: {curr_lineage}")
+            parent = members[0]
             if not parent.lineage_of:
                 return parent.source_id
             curr_lineage = parent.lineage_of
@@ -434,6 +443,19 @@ def _t4_reconcile(contribs, categories, origins):
     return result
 
 
+def _validate_family_membership(units: list[EvidenceUnit], family: str) -> None:
+    """Reject implicit family reassignment at every public synthesis boundary."""
+    if not isinstance(family, str) or not family.strip():
+        raise ValueError("A nonempty target suitability family is required")
+    mismatched = sorted(
+        u.evidence_id for u in units if u.suitability_family_id != family
+    )
+    if mismatched:
+        raise ValueError(
+            f"Evidence family does not match target {family!r}: {', '.join(mismatched)}"
+        )
+
+
 def synthesise_t4_row(
     units: list[EvidenceUnit],
     tiers: dict[str, str],
@@ -450,6 +472,7 @@ def synthesise_t4_row(
     unit_conversions: dict[str, str] | None = None,
 ) -> tuple[dict[str, Any], SynthesisReport]:
     """Reconcile evidence units for one (family × variable) into a T4 row."""
+    _validate_family_membership(units, family)
     rep = SynthesisReport()
     categories = categories or {}
 
@@ -461,7 +484,11 @@ def synthesise_t4_row(
     _EMITTABLE_ROLES = {"structural_suitability", "operational_risk"}
     kept: list[EvidenceUnit] = []
     for u in units:
-        if u.use_role not in _EMITTABLE_ROLES:
+        if u.review_state == "dropped":
+            rep.dropped.append((u.evidence_id, "qa_dropped"))
+        elif u.variable != variable:
+            rep.dropped.append((u.evidence_id, "variable_mismatch"))
+        elif u.use_role not in _EMITTABLE_ROLES:
             rep.dropped.append((u.evidence_id, f"use_role={u.use_role} (not T4/M2b)"))
         elif u.claim_scope == "species_specific" or (
             u.claim_scope == "crop_specific" and not allow_crop_scope
@@ -488,6 +515,16 @@ def synthesise_t4_row(
         else:
             decoded[u.evidence_id] = (kind, params)
             usable.append(u)
+    if _is_wildcard_unit(_normalise_unit(canonical_unit)):
+        source_units = {
+            _normalise_unit((u.relationship or {}).get("unit", "")) for u in usable
+        }
+        if len(source_units) > 1:
+            rep.unresolved.extend(
+                (u.evidence_id, "mixed_source_units_require_canonical_unit")
+                for u in usable
+            )
+            usable = []
     kept, origins = _t4_claims(usable, tiers, rep, categories)
     kinds = {decoded[u.evidence_id][0] for u in kept}
     # Different shapes are not interchangeable. Keep the claims visible for a decision.
@@ -520,7 +557,13 @@ def synthesise_t4_row(
                         "unit": (u.relationship or {}).get("unit", canonical_unit),
                     },
                 )
-                value = _harmonise(probe, canonical_unit, unit_conversions, rep)
+                value = _harmonise(
+                    probe,
+                    canonical_unit,
+                    unit_conversions,
+                    rep,
+                    precise=kind == "piecewise",
+                )
                 if not value:
                     break
                 converted.append(value["abs_max"])

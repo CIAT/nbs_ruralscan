@@ -71,7 +71,7 @@ def test_variable_support_without_tiers():
 
 
 def test_variable_support_with_tiers():
-    """With tiers, prevalence is scaled by benchmark_tier (High=1.0, Med=0.6, Low=0.35)."""
+    """Headline prevalence is unweighted; quality diagnostic uses known cohort tiers."""
     units = [
         # high-tier source
         EvidenceUnit(
@@ -109,20 +109,17 @@ def test_variable_support_with_tiers():
     # If corpus_n is a set of the source ids:
     res = variable_support(units, corpus_n={"src_high", "src_low"}, tiers=tiers)
 
-    # Denominator = weight(src_high) + weight(src_low) = 1.0 + 0.35 = 1.35
-    # slope is in src_high (weight 1.0) -> 1.0 / 1.35 = ~74.1%
-    # rainfall is in src_low (weight 0.35) -> 0.35 / 1.35 = ~25.9%
-    assert res["slope"].pct == 74.1
-    assert res["rainfall"].pct == 25.9
+    assert res["slope"].pct == 50.0
+    assert res["rainfall"].pct == 50.0
+    assert res["slope"].quality_weighted_pct == 74.1
+    assert res["rainfall"].quality_weighted_pct == 25.9
 
-    # Test with integer corpus_n
-    # When corpus_n is an integer (say 3), the unseen paper is assumed to have default "medium" weight = 0.6
-    # Denominator = weight(src_high) + weight(src_low) + 1 * weight(unseen_medium) = 1.0 + 0.35 + 0.6 = 1.95
-    # slope in src_high -> 1.0 / 1.95 = ~51.3%
-    # rainfall in src_low -> 0.35 / 1.95 = ~17.9%
+    # Integer N supports the headline fraction, but unseen source tiers are unknown.
     res_int = variable_support(units, corpus_n=3, tiers=tiers)
-    assert res_int["slope"].pct == 51.3
-    assert res_int["rainfall"].pct == 17.9
+    assert res_int["slope"].pct == 33.3
+    assert res_int["rainfall"].pct == 33.3
+    assert res_int["slope"].quality_weighted_pct is None
+    assert res_int["rainfall"].quality_weighted_pct is None
 
 
 def test_group_support():

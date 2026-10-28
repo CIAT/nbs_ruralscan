@@ -76,12 +76,17 @@ def test_reviewed_wocat_site_soils_do_not_vote_in_t4():
     sites = [u for u in units if u.evidence_id in ids]
     assert len(sites) == 2
     assert all(is_observed_presence(u) for u in sites)
-    result = synthesise_family(
-        sites,
-        {},
-        family=sites[0].suitability_family_id,
-        corpus_n=0,
-        group_map={},
-    )
-    assert not result.rows
-    assert all(result.dispositions[eid]["status"] == "observed_presence" for eid in ids)
+    for family in {u.suitability_family_id for u in sites}:
+        family_sites = [u for u in sites if u.suitability_family_id == family]
+        result = synthesise_family(
+            family_sites,
+            {},
+            family=family,
+            corpus_n=0,
+            group_map={},
+        )
+        assert not result.rows
+        assert all(
+            result.dispositions[u.evidence_id]["status"] == "observed_presence"
+            for u in family_sites
+        )

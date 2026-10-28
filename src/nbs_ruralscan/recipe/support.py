@@ -8,7 +8,10 @@ importance. It is a **prevalence**, not a truth: a common variable may be conven
 **soft floor that flags for decision**, never a hard auto-filter (method §6).
 
 Roll-up is **set-union over members**, not a sum: a paper using both slope and elevation
-counts once toward "Topographic" prevalence.
+counts once toward "Topographic" prevalence. Headline counts are unweighted. A separate
+quality-weighted diagnostic requires explicit screened IDs and known tiers for all of them.
+Callers must reconcile duplicate source identities before supplying the screened cohort;
+this API counts source IDs and cannot establish bibliographic independence itself.
 """
 
 from __future__ import annotations
@@ -26,15 +29,65 @@ class Support:
     corpus_n: int | None  # denominator: sources screened for the family
     pct: float | None  # 100 * n_sources / corpus_n
     members: list[str] = field(default_factory=list)  # group members (group-level only)
+    quality_weighted_pct: float | None = (
+        None  # diagnostic only; never selection/runtime weight
+    )
 
 
 TIER_W = {"high": 1.0, "medium": 0.6, "low": 0.35}
 
 
-def _get_weight(source_id: str, tiers: dict[str, str] | None) -> float:
-    if not tiers:
-        return 1.0
-    return TIER_W.get(tiers.get(source_id, "medium").strip().lower(), 0.5)
+def _quality_weights(corpus_n, tiers):
+    """No cohort membership or unknown tier means no weighted diagnostic."""
+    if not isinstance(corpus_n, set) or not corpus_n or not tiers:
+        return None
+    weights = {}
+    for source_id in corpus_n:
+        tier = tiers.get(source_id)
+        if not isinstance(tier, str) or tier.strip().lower() not in TIER_W:
+            return None
+        weights[source_id] = TIER_W[tier.strip().lower()]
+    return weights
+
+
+def _summarize_support(srcs, corpus_n, tiers, members=None):
+    """Use one unweighted source vote; expose quality only as a named diagnostic."""
+    if isinstance(corpus_n, set):
+        missing = set().union(*srcs.values()) - corpus_n
+        if missing:
+            raise ValueError(
+                f"Evidence sources absent from screened corpus: {sorted(missing)}"
+            )
+    n_den = len(corpus_n) if isinstance(corpus_n, set) else corpus_n
+    weights = _quality_weights(corpus_n, tiers)
+    weight_total = sum(weights.values()) if weights else None
+    result = {}
+    for key, sources in sorted(srcs.items(), key=lambda item: (-len(item[1]), item[0])):
+        result[key] = Support(
+            key=key,
+            n_sources=len(sources),
+            corpus_n=n_den,
+            pct=round(100 * len(sources) / n_den, 1) if n_den else None,
+            members=sorted((members or {}).get(key, [])),
+            quality_weighted_pct=(
+                round(100 * sum(weights[sid] for sid in sources) / weight_total, 1)
+                if weights and weight_total
+                else None
+            ),
+        )
+    return result
+
+
+def _validate_corpus_count(units, corpus_n):
+    """A supplied denominator cannot be smaller than its observed membership."""
+    if corpus_n is None or isinstance(corpus_n, set):
+        return
+    if type(corpus_n) is not int or corpus_n < 0:
+        raise ValueError(
+            "Screened corpus count must be a nonnegative integer or source set"
+        )
+    if len({u.source_id for u in units}) > corpus_n:
+        raise ValueError("Evidence source count exceeds screened corpus count")
 
 
 def variable_support(
@@ -42,57 +95,12 @@ def variable_support(
     corpus_n: int | set[str] | None,
     tiers: dict[str, str] | None = None,
 ) -> dict[str, Support]:
-    """Distinct-source prevalence per canonical variable (weighted by paper authority if tiers provided)."""
+    """Unweighted source-ID prevalence per variable, with separate quality diagnostic."""
+    _validate_corpus_count(units, corpus_n)
     srcs: dict[str, set[str]] = defaultdict(set)
     for u in units:
         srcs[u.variable].add(u.source_id)
-
-    if corpus_n is None:
-        return {
-            key: Support(key, len(sources), None, None)
-            for key, sources in sorted(srcs.items())
-        }
-    if isinstance(corpus_n, set):
-        missing = set().union(*srcs.values()) - corpus_n
-        if missing:
-            raise ValueError(
-                f"Evidence sources absent from screened corpus: {sorted(missing)}"
-            )
-
-    # Resolve denominator count and weight
-    if isinstance(corpus_n, set):
-        corpus_sources = corpus_n
-        total_denom = sum(_get_weight(s, tiers) for s in corpus_sources)
-        n_den = len(corpus_sources)
-    else:
-        total_denom = float(corpus_n)
-        n_den = corpus_n
-
-    out: dict[str, Support] = {}
-    for v, s in sorted(srcs.items(), key=lambda kv: -len(kv[1])):
-        if tiers or isinstance(corpus_n, set):
-            # If we only have the integer corpus_n, we assume the unseen papers are of default/medium weight
-            if not isinstance(corpus_n, set):
-                # We can construct a proxy denom: sum of weights of seen papers + (corpus_n - seen) * default weight
-                seen_sources = set(
-                    src_id for src_list in srcs.values() for src_id in src_list
-                )
-                seen_weight = sum(_get_weight(sid, tiers) for sid in seen_sources)
-                unseen_count = max(0, corpus_n - len(seen_sources))
-                total_denom = seen_weight + unseen_count * TIER_W["medium"]
-
-            n_num = sum(_get_weight(src_id, tiers) for src_id in s)
-            pct = round(100.0 * n_num / total_denom, 1) if total_denom > 0 else 0.0
-        else:
-            pct = round(100.0 * len(s) / total_denom, 1) if total_denom > 0 else 0.0
-
-        out[v] = Support(
-            key=v,
-            n_sources=len(s),
-            corpus_n=n_den,
-            pct=pct,
-        )
-    return out
+    return _summarize_support(srcs, corpus_n, tiers)
 
 
 def group_support(
@@ -101,59 +109,15 @@ def group_support(
     corpus_n: int | set[str] | None,
     tiers: dict[str, str] | None = None,
 ) -> dict[str, Support]:
-    """Roll variable prevalence up to its group (set-union over members, weighted if tiers provided)."""
+    """Roll up source-ID sets, never add variable counts or source weights twice."""
+    _validate_corpus_count(units, corpus_n)
     srcs: dict[str, set[str]] = defaultdict(set)
     members: dict[str, set[str]] = defaultdict(set)
     for u in units:
-        g = group_map.get(u.variable, "ungrouped")
-        srcs[g].add(u.source_id)
-        members[g].add(u.variable)
-
-    if corpus_n is None:
-        return {
-            key: Support(key, len(sources), None, None, sorted(members[key]))
-            for key, sources in sorted(srcs.items())
-        }
-    if isinstance(corpus_n, set):
-        missing = set().union(*srcs.values()) - corpus_n
-        if missing:
-            raise ValueError(
-                f"Evidence sources absent from screened corpus: {sorted(missing)}"
-            )
-
-    # Resolve denominator count and weight
-    if isinstance(corpus_n, set):
-        corpus_sources = corpus_n
-        total_denom = sum(_get_weight(s, tiers) for s in corpus_sources)
-        n_den = len(corpus_sources)
-    else:
-        total_denom = float(corpus_n)
-        n_den = corpus_n
-
-    out: dict[str, Support] = {}
-    for g, s in sorted(srcs.items(), key=lambda kv: -len(kv[1])):
-        if tiers or isinstance(corpus_n, set):
-            if not isinstance(corpus_n, set):
-                seen_sources = set(
-                    src_id for src_list in srcs.values() for src_id in src_list
-                )
-                seen_weight = sum(_get_weight(sid, tiers) for sid in seen_sources)
-                unseen_count = max(0, corpus_n - len(seen_sources))
-                total_denom = seen_weight + unseen_count * TIER_W["medium"]
-
-            n_num = sum(_get_weight(src_id, tiers) for src_id in s)
-            pct = round(100.0 * n_num / total_denom, 1) if total_denom > 0 else 0.0
-        else:
-            pct = round(100.0 * len(s) / total_denom, 1) if total_denom > 0 else 0.0
-
-        out[g] = Support(
-            key=g,
-            n_sources=len(s),
-            corpus_n=n_den,
-            pct=pct,
-            members=sorted(members[g]),
-        )
-    return out
+        group = group_map.get(u.variable, "ungrouped")
+        srcs[group].add(u.source_id)
+        members[group].add(u.variable)
+    return _summarize_support(srcs, corpus_n, tiers, members)
 
 
 @dataclass

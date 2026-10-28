@@ -12,6 +12,7 @@ from dataclasses import replace
 
 from .synthesis import SynthesisReport, _harmonise, _weight, _resolve_root_origin
 from .harmonization import harmonize, standardize
+from .t4_relationships import numeric
 
 NUMBER = r"-?(?:\d+(?:\.\d*)?|\.\d+)"
 
@@ -109,6 +110,8 @@ def _interval(low, high, label, scale, includes_low=True, includes_high=True):
     key = label.strip().lower().replace(" ", "_")
     if key not in scale:
         raise ValueError("unknown_ordinal_label")
+    if any(value is not None and not numeric(value) for value in (low, high)):
+        raise ValueError("invalid_numeric_bound")
     if low is not None and high is not None and low >= high:
         raise ValueError("ambiguous_or_reversed_interval")
     return {
@@ -125,9 +128,10 @@ def _interval(low, high, label, scale, includes_low=True, includes_high=True):
 def parse_profiles(rel, policy):
     scale = json.loads(policy["ordinal_scale"])
     if (
-        not scale
+        not isinstance(scale, dict)
+        or not scale
+        or any(not numeric(v) or v < 0 for v in scale.values())
         or max(scale.values()) <= 0
-        or any(not isinstance(v, (int, float)) or v < 0 for v in scale.values())
     ):
         raise ValueError("invalid_ordinal_scale")
     encoding = policy["encoding"]
