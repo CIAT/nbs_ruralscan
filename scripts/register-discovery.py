@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Register the output of a synthesis-first discovery round (search_protocol.md).
+"""Register the output of a bounded discovery round (search_protocol.md).
 
 Takes the discovery agents' candidate files (staging, gitignored) and performs the
 orchestrator-owned registration steps so none of them is ever hand-claimed:
 
     * acquisition queue rows (``pipeline/acquisition_queue.csv``, status ``pending``) with the
-      discovery tags carried in ``note`` and the agroforestry/WH *family* ids validated against
-      ``FAM`` (sub-practice ids are mapped to their family; unknown tags are dropped + reported)
+      discovery tags carried in ``note`` and the *family* ids validated against
+      ``FAM`` (sub-practice ids are mapped to their family; unknown tags are rejected)
     * ``SRCH`` protocol rows per (table × process) with the VERBATIM query sections lifted from
       each agent's report, PRISMA counts and the discovery-log reference
     * progress-ledger stamps (``searched`` / ``screened``) at the status you pass per process
@@ -27,7 +27,7 @@ Usage::
 
 Candidate JSON may be a list or ``{"candidates": [...]}``. Each candidate needs at least
 ``candidate_id``, ``citation``; optional ``doi``, ``url``/``oa_url``, ``oa_status``,
-``process`` (updated_lit | grey | stock | tool), ``tables`` (``T3`` | ``T6`` | ``T3|T6``),
+``process`` (updated_lit | grey | stock | tool), ``tables`` (``T4`` | ``T3`` | ``T6`` | ``T3|T6``),
 ``families``, ``hazards``, ``t6_targets``, ``method_subtype``, ``proposed_benchmark_tier``,
 ``tier_rationale``, ``study_scope``, ``income_groups_covered``, ``language``, ``report_number_or_handle``,
 ``relevance_note``.
@@ -110,6 +110,21 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--ledger", nargs="+", default=[], metavar="PROCESS=STATUS")
     ap.add_argument("--assigned", default="Namita-J")
     ap.add_argument("--run-prefix", default="")
+    ap.add_argument(
+        "--family", default="", help="Actual targeted family; blank is generic"
+    )
+    ap.add_argument(
+        "--reuse-log",
+        help="New JSON filename under discovery_logs for explicit canonical-source reuse tasks",
+    )
+    ap.add_argument("--searched-by", default="discovery-agent / orchestrator")
+    ap.add_argument(
+        "--protocols",
+        nargs="+",
+        default=[],
+        metavar="LANE=PATH",
+        help="Actual per-table/process protocol JSON, required for targeted searches",
+    )
     args = ap.parse_args(argv)
 
     def kv(items):
@@ -127,6 +142,40 @@ def main(argv: list[str] | None = None) -> int:
         kv(args.log_names),
     )
     ledger_status = kv(args.ledger)
+    protocol_files = kv(args.protocols)
+    if args.family and not protocol_files:
+        ap.error("targeted family searches require --protocols")
+    if protocol_files and set(protocol_files) != set(cand_files):
+        ap.error("protocols must name exactly the candidate lanes")
+    protocols = {}
+    for lane, path in protocol_files.items():
+        items = json.loads(Path(path).read_text(encoding="utf-8"))
+        if not isinstance(items, list) or not items:
+            ap.error(f"{lane}: protocols must be a nonempty list")
+        for item in items:
+            if not isinstance(item, dict):
+                ap.error(f"{lane}: protocol must be an object")
+            key = (item.get("table"), item.get("category"))
+            if key[0] not in search_log.TABLES or key[1] not in search_log.CATEGORIES:
+                ap.error(f"{lane}: invalid protocol table/category")
+            if (lane, *key) in protocols:
+                ap.error(f"{lane}: duplicate protocol table/category")
+            for field in ("search_terms", "inclusion_criteria", "limits"):
+                if not isinstance(item.get(field), str) or not item[field].strip():
+                    ap.error(f"{lane}: protocol requires {field}")
+            for field in ("n_retrieved", "n_screened", "n_included"):
+                value = item.get(field)
+                if value is not None and (type(value) is not int or value < 0):
+                    ap.error(f"{lane}: {field} must be a nonnegative integer or null")
+            if item.get("n_included") is None:
+                ap.error(f"{lane}: n_included must be known")
+            counts = [item.get(k) for k in ("n_retrieved", "n_screened", "n_included")]
+            known = [n for n in counts if n is not None]
+            if known != sorted(known, reverse=True):
+                ap.error(
+                    f"{lane}: protocol counts must satisfy retrieved >= screened >= included"
+                )
+            protocols[(lane, *key)] = item
     run_prefix = (
         args.run_prefix or f"{args.nbs_id.split('_')[0]}_synthesis_first_{args.date}"
     )
@@ -143,7 +192,7 @@ def main(argv: list[str] | None = None) -> int:
     if len(set(log_names.values())) != len(log_names):
         ap.error("each lane needs a distinct tracked log filename")
     for lane, xs in candidates.items():
-        if not xs:
+        if not xs and not protocol_files:
             ap.error(
                 f"{lane}: empty candidate lane; record the zero-yield search explicitly with search_log.log_search (table/process required)"
             )
@@ -177,17 +226,36 @@ def main(argv: list[str] | None = None) -> int:
         v not in {"in_progress", "done"} for v in ledger_status.values()
     ):
         ap.error("--ledger requires known processes and in_progress/done status")
+    for lane, xs in candidates.items():
+        if not protocol_files:
+            continue
+        observed = Counter(
+            (table, x.get("process") or ("grey" if lane == "grey" else "updated_lit"))
+            for x in xs
+            for table in (x.get("tables") or "T3|T6").split("|")
+        )
+        for key, count in observed.items():
+            if (lane, *key) not in protocols:
+                ap.error(f"{lane}: missing protocol for {key}")
+        for (scope_lane, table, process), item in protocols.items():
+            if scope_lane == lane and item["n_included"] != observed[(table, process)]:
+                ap.error(
+                    f"{lane}: protocol included count differs from candidate membership"
+                )
     searched_processes = {
         x.get("process") or ("grey" if lane == "grey" else "updated_lit")
         for lane, xs in candidates.items()
         for x in xs
     }
+    searched_processes |= {process for _, _, process in protocols}
     if not set(ledger_status) <= searched_processes:
         ap.error("--ledger cannot claim a process absent from this batch")
     fam_rows = [r for r in _rd(FAM) if r["nbs_id"] == args.nbs_id]
     if not fam_rows:
         ap.error(f"unknown NbS {args.nbs_id!r}; no registered suitability families")
     fams = {r["suitability_family_id"] for r in fam_rows}
+    if args.family and args.family not in fams:
+        ap.error("--family is not registered for this NbS")
     sub2fam = {r["subpractice_id"]: r["suitability_family_id"] for r in fam_rows}
 
     def famlist(xs: Any) -> tuple[list[str], list[str]]:
@@ -204,7 +272,9 @@ def main(argv: list[str] | None = None) -> int:
         for x in xs:
             if not isinstance(x.get("families", []), list):
                 ap.error(f"{lane}: families must be a list")
-            _, bad = famlist(x.get("families"))
+            valid, bad = famlist(x.get("families"))
+            if args.family and args.family not in valid:
+                ap.error(f"{lane}: candidate does not declare targeted family")
             if bad:
                 ap.error(
                     f"{lane}: unknown/wrong-NbS family tags {bad}; resolve before registration"
@@ -218,7 +288,7 @@ def main(argv: list[str] | None = None) -> int:
         first = txt.index("\n") if "\n" in txt else len(txt)
         hdr = (
             f"\n> **Provenance.** Tracked copy of the discovery agent's report (`pipeline/staging/discovery/`, gitignored). "
-            f"Run `{run_prefix}_{lane}`, ruleset **{args.ruleset}**, synthesis-first rule (Pete 2026-10-01). "
+            f"Run `{run_prefix}_{lane}`, ruleset **{args.ruleset}**, actual family `{args.family or 'generic'}`. "
             f"Registered by `scripts/register-discovery.py` on {args.date}: candidates → `pipeline/acquisition_queue.csv` (status `pending`), "
             f"SRCH rows `{run_prefix}_{lane}`, ledger per `--ledger`.\n\n"
         )
@@ -231,17 +301,81 @@ def main(argv: list[str] | None = None) -> int:
             ap.error(
                 f"tracked discovery log differs: {destination}; use a new run/log name to preserve search history"
             )
+    # Explicit protocols retain measured counts and targeted scope. Legacy callers keep
+    # their report-based generic route; no family-targeted search may use that fallback.
+    if not protocol_files:
+        for lane, cands in candidates.items():
+            terms = _sections(
+                report_text[lane], r"^#{2,3} .*(verbatim|queries|channel \d).*$"
+            )
+            counts = Counter(
+                (
+                    table,
+                    x.get("process") or ("grey" if lane == "grey" else "updated_lit"),
+                )
+                for x in cands
+                for table in (x.get("tables") or "T3|T6").split("|")
+            )
+            for (table, process), count in counts.items():
+                protocols[(lane, table, process)] = dict(
+                    search_terms=terms,
+                    inclusion_criteria="See tracked discovery report; practice must be explicit (PICOS).",
+                    limits="See tracked discovery report",
+                    n_retrieved=None,
+                    n_screened=None,
+                    n_included=count,
+                )
+    existing_searches = search_log.rows()
+    for (lane, table, process), protocol in protocols.items():
+        identity = dict(
+            nbs_id=args.nbs_id,
+            suitability_family_id=args.family,
+            table=table,
+            category=process,
+            search_date=args.date,
+            run_id=f"{run_prefix}_{lane}",
+        )
+        expected = dict(
+            identity,
+            ruleset_version=args.ruleset,
+            searched_by=args.searched_by,
+            screening_steps=STEPS,
+            discovery_log_ref=f"methodology/discovery_logs/{log_names[lane]}",
+        )
+        for field in (
+            "search_terms",
+            "inclusion_criteria",
+            "limits",
+            "n_retrieved",
+            "n_screened",
+            "n_included",
+        ):
+            value = protocol[field]
+            expected[field] = "" if value is None else str(value)
+        for previous in existing_searches:
+            if all(
+                previous.get(k, "") == value for k, value in identity.items()
+            ) and any(previous.get(k, "") != value for k, value in expected.items()):
+                ap.error(
+                    "existing search protocol differs; use a new run ID to preserve history"
+                )
     q = _rd(QUEUE)
     qcols = list(q[0].keys())
     sources = _rd(SRC)
     # A known identity is not necessarily an already-covered NbS/table. Dropping
     # cross-scope candidates would lose future extraction work while SRCH still
     # records their inclusion. Reuse requires an explicit canonical-source route.
+    reuse_tasks = []
+    if args.reuse_log and (
+        Path(args.reuse_log).name != args.reuse_log
+        or not args.reuse_log.endswith(".json")
+    ):
+        ap.error("--reuse-log must be a JSON filename")
     seen_sources = q + sources
     for lane, xs in candidates.items():
         for candidate in xs:
             candidate_doi = (candidate.get("doi") or "").strip().casefold()
-            candidate_title = _norm_title(candidate["citation"])
+            candidate_title = _norm_title(_title_of(candidate["citation"]))
             matches = [
                 row
                 for row in seen_sources
@@ -249,8 +383,13 @@ def main(argv: list[str] | None = None) -> int:
                     candidate_doi
                     and candidate_doi == (row.get("doi") or "").strip().casefold()
                 )
-                or candidate_title == _norm_title(row.get("citation", ""))
+                or candidate_title == _norm_title(_title_of(row.get("citation", "")))
             ]
+            reuse_id = candidate.get("reuse_source_id")
+            if reuse_id and reuse_id not in {row["source_id"] for row in matches}:
+                ap.error(
+                    f"{lane}: reuse_source_id does not match verified candidate identity"
+                )
             if not matches:
                 family_ids, _ = famlist(candidate.get("families"))
                 seen_sources.append(
@@ -297,6 +436,29 @@ def main(argv: list[str] | None = None) -> int:
                 for family in (row.get("family") or "").split("|")
                 if family
             }
+            if reuse_id:
+                if (
+                    not args.reuse_log
+                    or not str(candidate.get("reuse_reason") or "").strip()
+                ):
+                    ap.error(
+                        f"{lane}: explicit reuse needs --reuse-log and reuse_reason"
+                    )
+                reuse_tasks.append(
+                    dict(
+                        source_id=reuse_id,
+                        candidate_id=candidate["candidate_id"],
+                        lane=lane,
+                        nbs_id=args.nbs_id,
+                        tables=sorted(requested_tables),
+                        families=requested_families,
+                        reason=candidate["reuse_reason"],
+                        status="pending_scope_review",
+                        run_id=f"{run_prefix}_{lane}",
+                        search_date=args.date,
+                    )
+                )
+                continue
             if (
                 args.nbs_id not in declared_scopes
                 or not requested_tables <= existing_tables
@@ -308,11 +470,16 @@ def main(argv: list[str] | None = None) -> int:
                     f"{args.nbs_id} {sorted(requested_tables)} families={requested_families}; "
                     "candidate retained, not discarded as duplicate"
                 )
+    reuse_text = json.dumps(reuse_tasks, indent=2, ensure_ascii=False) + "\n"
+    if args.reuse_log:
+        reuse_path = LOGS / args.reuse_log
+        if reuse_path.exists() and reuse_path.read_text(encoding="utf-8") != reuse_text:
+            ap.error("reuse log differs; use a new run/log name to preserve history")
     known_doi = {(r["doi"] or "").lower() for r in q} | {
         (r.get("doi") or "").lower() for r in _rd(SRC)
     }
-    known_title = {_norm_title(r["citation"]) for r in q} | {
-        _norm_title(r["citation"]) for r in _rd(SRC)
+    known_title = {_norm_title(_title_of(r["citation"])) for r in q} | {
+        _norm_title(_title_of(r["citation"])) for r in _rd(SRC)
     }
     ids = {r["source_id"] for r in q} | {r["source_id"] for r in _rd(SRC)}
 
@@ -327,7 +494,7 @@ def main(argv: list[str] | None = None) -> int:
             if doi and doi.lower() in known_doi:
                 dropped.append((lane, sid, "duplicate DOI"))
                 continue
-            if _norm_title(x.get("citation", "")) in known_title:
+            if _norm_title(_title_of(x.get("citation", ""))) in known_title:
                 dropped.append((lane, sid, "duplicate title"))
                 continue
             if sid in ids:
@@ -375,7 +542,7 @@ def main(argv: list[str] | None = None) -> int:
                 f"proposed_tier={x.get('proposed_benchmark_tier')} ({str(x.get('tier_rationale') or '')[:110]})"
             )
             note = (
-                f"{run_prefix} (ruleset {args.ruleset}, synthesis-first). process={process}; "
+                f"{run_prefix} (ruleset {args.ruleset}, discovery). process={process}; "
                 + "; ".join(tags)
                 + "; "
                 + str(x.get("relevance_note") or "")[:220]
@@ -406,83 +573,50 @@ def main(argv: list[str] | None = None) -> int:
             ids.add(sid)
             if doi:
                 known_doi.add(doi.lower())
-            known_title.add(_norm_title(x["citation"]))
+            known_title.add(_norm_title(_title_of(x["citation"])))
             added.append((lane, sid))
+    if args.reuse_log:
+        LOGS.mkdir(parents=True, exist_ok=True)
+        atomic_write(LOGS / args.reuse_log, reuse_text.encode("utf-8"))
     _wr(QUEUE, q, qcols)
     print(
-        f"queue +{len(added)} (dropped {len(dropped)}: {Counter(d for _, _, d in dropped)})"
+        f"queue +{len(added)}; explicit reuse tasks {len(reuse_tasks)} (deduplicated {len(dropped)}: {Counter(d for _, _, d in dropped)})"
     )
     if bad_fams:
         print(f"  family tags not in FAM (dropped from `family`): {dict(bad_fams)}")
 
-    # SRCH rows: one per (table × process) per lane, verbatim queries from the lane's report
-    tables: set[str] = set()
-    for lane, path in cand_files.items():
-        for x in candidates[lane]:
-            tables |= set((x.get("tables") or "T3|T6").split("|"))
-    table_list = sorted(tables)
-    for lane, path in cand_files.items():
-        cands = candidates[lane]
-        if not cands:
-            continue
-        report = (
-            Path(reports[lane]).read_text(encoding="utf-8") if lane in reports else ""
+    table_list = sorted({table for _, table, _ in protocols})
+    for (lane, table, process), protocol in protocols.items():
+        search_log.log_search(
+            nbs=args.nbs_id,
+            search_date=args.date,
+            table=table,
+            category=process,
+            family=args.family,
+            ruleset_version=args.ruleset,
+            run_id=f"{run_prefix}_{lane}",
+            searched_by=args.searched_by,
+            screening_steps=STEPS,
+            search_terms=protocol["search_terms"],
+            inclusion_criteria=protocol["inclusion_criteria"],
+            limits=protocol["limits"],
+            n_retrieved=""
+            if protocol["n_retrieved"] is None
+            else str(protocol["n_retrieved"]),
+            n_screened=""
+            if protocol["n_screened"] is None
+            else str(protocol["n_screened"]),
+            n_included=str(protocol["n_included"]),
+            discovery_log_ref=f"methodology/discovery_logs/{log_names[lane]}",
+            note="Counts describe the reported bounded search set before queue deduplication; unknown totals remain blank. See report for reuse, exclusions and unavailable channels.",
         )
-        terms = (
-            _sections(report, r"^#{2,3} .*(verbatim|queries|channel \d).*$")
-            or f"(see {log_names.get(lane, 'discovery log')})"
+        print(
+            f"  SRCH {table} {process:12s} ({lane}) n_included={protocol['n_included']}"
         )
-        procs = Counter(
-            x.get("process") or ("grey" if lane == "grey" else "updated_lit")
-            for x in cands
-        )
-        for process, n in procs.items():
-            for table in table_list:
-                n_tbl = sum(
-                    1
-                    for x in cands
-                    if (
-                        x.get("process")
-                        or ("grey" if lane == "grey" else "updated_lit")
-                    )
-                    == process
-                    and table in (x.get("tables") or "T3|T6").split("|")
-                )
-                if n_tbl == 0:
-                    continue
-                search_log.log_search(
-                    nbs=args.nbs_id,
-                    search_date=args.date,
-                    table=table,
-                    category=process,
-                    family="",
-                    ruleset_version=args.ruleset,
-                    run_id=f"{run_prefix}_{lane}",
-                    searched_by="discovery-agent (opus) / orchestrator",
-                    screening_steps=STEPS,
-                    search_terms=f"[{lane} lane, {process}] " + terms,
-                    inclusion_criteria=(
-                        "SYNTHESIS-FIRST (Pete 2026-10-01): meta-analyses / systematic reviews / maps / EGMs / reviews first, then MEL & impact-assessment grey literature; "
-                        "primaries only where a hazard / target / family has no synthesis; PADs excluded; datasets used as seed lists only. "
-                        f"NbS {args.nbs_id}, table {table}; practice must be explicit (PICOS)."
-                    ),
-                    limits="retrieve<=200/query; screen<=80; include<=30 per lane; saturation stop",
-                    n_retrieved="see discovery log",
-                    n_screened="see discovery log",
-                    n_included=str(n_tbl),
-                    discovery_log_ref=f"methodology/discovery_logs/{log_names.get(lane, lane + '.md')}",
-                    note=f"{len(cands)} candidates included by the {lane} lane before queue deduplication; per-table count uses exact table tags. Registration date is distinct from search date.",
-                )
-                print(f"  SRCH {table} {process:12s} ({lane}) n_included={n_tbl}")
     # ledger
     for process, status in ledger_status.items():
         process_tables = {
-            table
-            for lane, xs in candidates.items()
-            for x in xs
-            if (x.get("process") or ("grey" if lane == "grey" else "updated_lit"))
-            == process
-            for table in (x.get("tables") or "T3|T6").split("|")
+            table for _, table, category in protocols if category == process
         }
         for table in sorted(process_tables):
             for stage in ("searched", "screened"):
@@ -492,10 +626,10 @@ def main(argv: list[str] | None = None) -> int:
                     process,
                     stage,
                     status,
-                    family="",
+                    family=args.family,
                     run_id=run_prefix,
                     by="orchestrator",
-                    note=f"synthesis-first round {args.date}; see SRCH {run_prefix}_* rows + discovery logs",
+                    note=f"discovery round {args.date}; see SRCH {run_prefix}_* rows + discovery logs",
                 )
     print(f"  ledger: {ledger_status} on {table_list}")
     # tracked discovery logs

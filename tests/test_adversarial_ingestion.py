@@ -589,3 +589,168 @@ def test_existing_multinbs_table_and_family_scope_is_recognised(discovery, monke
     assert result[0]["nbs_id"] == rows[0]["nbs_id"]
     assert result[0]["family"] == family
     assert len(calls) == 1 and calls[0]["table"] == "T4"
+
+
+@pytest.mark.parametrize("empty", [False, True])
+def test_targeted_discovery_preserves_real_protocol_and_zero_yield(
+    discovery, tmp_path, monkeypatch, empty
+):
+    module, args, queue = discovery
+    family = "forest_restoration__active_planting"
+    candidate_path = Path(args[args.index("--candidates") + 1].split("=", 1)[1])
+    candidates = (
+        []
+        if empty
+        else [
+            dict(
+                candidate_id="new_source",
+                citation="Author (2026). Distinct forest planting method. Journal.",
+                tables="T4",
+                process="updated_lit",
+                families=[family],
+            )
+        ]
+    )
+    candidate_path.write_text(json.dumps(candidates))
+    protocol = tmp_path / "protocol.json"
+    protocol.write_text(
+        json.dumps(
+            [
+                dict(
+                    table="T4",
+                    category="updated_lit",
+                    search_terms="exact planting query",
+                    inclusion_criteria="Establishment, not priority",
+                    limits="bounded inspected records",
+                    n_retrieved=12,
+                    n_screened=8,
+                    n_included=len(candidates),
+                )
+            ]
+        )
+    )
+    calls, marks = [], []
+    monkeypatch.setattr(module.search_log, "log_search", lambda **kw: calls.append(kw))
+    monkeypatch.setattr(module.ledger, "mark", lambda *a, **kw: marks.append((a, kw)))
+    assert (
+        module.main(
+            args
+            + [
+                "--family",
+                family,
+                "--protocols",
+                f"lit={protocol}",
+                "--searched-by",
+                "literature-agent / orchestrator",
+                "--ledger",
+                "updated_lit=in_progress",
+            ]
+        )
+        == 0
+    )
+    assert len(calls) == 1
+    assert calls[0]["family"] == family
+    assert calls[0]["search_terms"] == "exact planting query"
+    assert calls[0]["inclusion_criteria"] == "Establishment, not priority"
+    assert (
+        calls[0]["n_retrieved"],
+        calls[0]["n_screened"],
+        calls[0]["n_included"],
+    ) == ("12", "8", str(len(candidates)))
+    assert all(kw["family"] == family for _, kw in marks)
+
+
+def test_discovery_rejects_inflated_protocol_before_any_write(discovery, tmp_path):
+    module, args, queue = discovery
+    before = queue.read_bytes()
+    protocol = tmp_path / "protocol.json"
+    protocol.write_text(
+        json.dumps(
+            [
+                dict(
+                    table="T4",
+                    category="updated_lit",
+                    search_terms="query",
+                    inclusion_criteria="criteria",
+                    limits="bounded",
+                    n_retrieved=1,
+                    n_screened=1,
+                    n_included=2,
+                )
+            ]
+        )
+    )
+    with pytest.raises(SystemExit):
+        module.main(args + ["--protocols", f"lit={protocol}"])
+    assert queue.read_bytes() == before
+
+
+@pytest.mark.parametrize("correct_identity", [True, False])
+def test_explicit_reuse_preserves_scope_without_duplicate_queue(
+    discovery, monkeypatch, correct_identity
+):
+    module, args, queue = discovery
+    path = Path(args[args.index("--candidates") + 1].split("=", 1)[1])
+    candidates = json.loads(path.read_text())
+    candidates[0].update(
+        reuse_source_id="known" if correct_identity else "unrelated",
+        reuse_reason="Inspect existing source for forest T4; prior scope agroforestry T3.",
+    )
+    path.write_text(json.dumps(candidates))
+    monkeypatch.setattr(module.search_log, "log_search", lambda **kw: None)
+    before = list(csv.DictReader(queue.open()))
+    if not correct_identity:
+        with pytest.raises(SystemExit):
+            module.main(args + ["--reuse-log", "reuse.json"])
+        assert not (module.LOGS / "reuse.json").exists()
+    else:
+        assert module.main(args + ["--reuse-log", "reuse.json"]) == 0
+        tasks = json.loads((module.LOGS / "reuse.json").read_text())
+        assert tasks[0]["source_id"] == "known"
+        assert tasks[0]["nbs_id"] == "forest_restoration"
+        assert tasks[0]["tables"] == ["T4"]
+        assert tasks[0]["status"] == "pending_scope_review"
+    assert list(csv.DictReader(queue.open())) == before
+
+
+def test_doi_less_citation_variant_requires_canonical_reuse(discovery, capsys):
+    module, args, queue = discovery
+    path = Path(args[args.index("--candidates") + 1].split("=", 1)[1])
+    candidates = json.loads(path.read_text())
+    candidates[0]["doi"] = ""
+    title = module._title_of(candidates[0]["citation"])
+    candidates[0]["citation"] = (
+        f"Alternate author format (2020). {title}. Different publisher format."
+    )
+    path.write_text(json.dumps(candidates))
+    before = queue.read_bytes()
+    with pytest.raises(SystemExit):
+        module.main(args)
+    assert "new NbS/table reuse tracking" in capsys.readouterr().err
+    assert queue.read_bytes() == before
+
+
+def test_changed_existing_search_protocol_rejected_before_queue_write(
+    discovery, monkeypatch, capsys
+):
+    module, args, queue = discovery
+    monkeypatch.setattr(
+        module.search_log,
+        "rows",
+        lambda: [
+            dict(
+                nbs_id="forest_restoration",
+                suitability_family_id="",
+                table="T4",
+                category="updated_lit",
+                search_date="2026-10-28",
+                run_id="forest_synthesis_first_2026-10-28_lit",
+                search_terms="an older protocol that must remain immutable",
+            )
+        ],
+    )
+    before = queue.read_bytes()
+    with pytest.raises(SystemExit, match="2"):
+        module.main(args)
+    assert "existing search protocol differs" in capsys.readouterr().err
+    assert queue.read_bytes() == before
