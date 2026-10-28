@@ -17,12 +17,12 @@ Scaffold the following:
 
 1. **Create** `methodology/recipes/<nbs_id>.md` using the structure of `methodology/recipes/water_harvesting.md` (or, if that doesn't exist, the Variable Card schema in AGENTS.md). Pre-fill the front-matter with the NbS ID; leave content sections marked `TODO`. The six-theme master variable table structure must be present even if empty.
 
-2. **Create** `schema/recipes/<nbs_id>/` folder with placeholder CSV files:
+2. **Create** `schema/recipes/<nbs_id>/` folder with CSV headers taken from `schema/structure/columns.json` and the current `schema/spec.md` (never infer columns from this checklist):
    - `T0_nbs_registry.csv` — one row for this NbS
-   - `T4_suitability_variables.csv` — empty with headers from AGENTS.md schema description
-   - `T6_scorecard.csv` — empty with headers *(frozen — T3/T6 extraction deferred 2026-09; scaffold only, do not populate)*
+   - `T4_suitability_mappings.csv` — empty with the manifest’s T4 headers
+   - `T6_nbs_scorecard.csv` — scaffold only; T3/T6/T6E content is generated from authorised effect evidence by cell synthesis, not authored as per-paper rows. The September 2026 deferral is obsolete.
 
-3. **Pre-populate `T0_nbs_registry.csv`** with one row including the NbS ID, default cluster (ask user if uncertain), economic archetype placeholder, evidence quality `emerging`, is_active `false` (set true after recipe review), created date, updated_by current user.
+3. **Pre-populate `T0_nbs_registry.csv`** with one draft row using only manifest-defined fields and valid enum values. Record missing content explicitly; do not invent legacy fields such as `is_active` or `evidence_quality` unless present in the current manifest.
 
 4. **Add an entry to the recipe index** in `methodology/recipes/README.md` (create the file if missing). Status should be `draft`.
 

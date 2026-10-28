@@ -32,6 +32,8 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
+from .integrity import atomic_write, validate_source_id
+
 DEFAULT_CORPUS_DIR = ".cache/corpus"
 
 # Files to skip by default: per-species envelope scripts are species-specific (claim_scope),
@@ -82,6 +84,15 @@ def _slug(repo: str, path: str) -> str:
     return f"{owner}_{stem}"
 
 
+def _resolve_commit(repo: str, ref: str) -> str:
+    if re.fullmatch(r"[0-9a-fA-F]{40}", ref):
+        return ref.lower()
+    commit = json.loads(_gh([f"/repos/{repo}/commits/{ref}"])).get("sha", "")
+    if not re.fullmatch(r"[0-9a-fA-F]{40}", commit):
+        raise GithubIngestError(f"Could not resolve immutable commit for {repo}@{ref}")
+    return commit.lower()
+
+
 def list_repo_files(
     repo: str, commit: str, subdir: str = "", ignore: list[str] | None = None
 ) -> list[str]:
@@ -107,7 +118,10 @@ def acquire_file(
     source_id: str | None = None,
 ) -> AcquiredFile:
     """Fetch one repo file at ``commit`` → cache as text + provenance sidecar."""
-    sid = source_id or _slug(repo, path)
+    commit = _resolve_commit(repo, commit)
+    pin = hashlib.sha256(f"{repo}:{path}@{commit}".encode()).hexdigest()[:12]
+    sid = source_id or f"{_slug(repo, path)}_{pin}"
+    validate_source_id(sid)
     content = base64.b64decode(
         _gh([f"/repos/{repo}/contents/{path}?ref={commit}", "-q", ".content"])
     )
@@ -116,7 +130,6 @@ def acquire_file(
     corpus = Path(corpus_dir)
     corpus.mkdir(parents=True, exist_ok=True)
     dest = corpus / f"{sid}.txt"
-    dest.write_bytes(content)
     sha1 = hashlib.sha1(content).hexdigest()
     meta = {
         "source_id": sid,
@@ -128,9 +141,21 @@ def acquire_file(
         "sha1": sha1,
         "fetched_at": datetime.now(tz=timezone.utc).isoformat(),
     }
-    (corpus / f"{sid}.meta.json").write_text(
-        json.dumps(meta, indent=2), encoding="utf-8"
-    )
+    meta_path = corpus / f"{sid}.meta.json"
+    if dest.exists():
+        try:
+            previous = json.loads(meta_path.read_text(encoding="utf-8"))
+            if dest.read_bytes() != content or any(
+                previous.get(k) != meta[k] for k in ("repo", "commit", "path", "sha1")
+            ):
+                raise ValueError("artifact or pin differs")
+        except (OSError, ValueError) as exc:
+            raise GithubIngestError(
+                f"Refusing to replace existing source {sid}: {exc}"
+            ) from exc
+    else:
+        atomic_write(dest, content)
+        atomic_write(meta_path, json.dumps(meta, indent=2).encode("utf-8"))
     return AcquiredFile(
         source_id=sid,
         repo=repo,
@@ -167,6 +192,7 @@ def interrogate(
     corpus_dir: str | Path = DEFAULT_CORPUS_DIR,
 ) -> dict:
     """Acquire every (non-ignored) file under ``subdir`` and scan each for candidates."""
+    commit = _resolve_commit(repo, commit)
     files = list_repo_files(repo, commit, subdir, ignore)
     acquired, candidates = [], []
     for path in files:

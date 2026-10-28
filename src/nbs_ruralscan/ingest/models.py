@@ -66,6 +66,7 @@ class DocIndex:
     tables: list[TableBlock] = field(default_factory=list)
     captions: list[Caption] = field(default_factory=list)
     needs_ocr_pages: list[int] = field(default_factory=list)
+    tables_extracted: bool | None = None  # None = legacy cache, capability unknown
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -82,4 +83,5 @@ class DocIndex:
             tables=[TableBlock(**t) for t in d.get("tables", [])],
             captions=[Caption(**c) for c in d.get("captions", [])],
             needs_ocr_pages=list(d.get("needs_ocr_pages", [])),
+            tables_extracted=d.get("tables_extracted"),
         )

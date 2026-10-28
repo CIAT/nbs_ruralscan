@@ -25,9 +25,10 @@ import os
 import pathlib
 import re
 import shutil
-import subprocess
-import sys
 import time
+import tempfile
+
+from nbs_ruralscan.ingest.acquire import AcquireError, acquire
 from urllib.parse import urljoin
 
 import requests
@@ -46,33 +47,35 @@ UA = {
 
 
 def _acquire(sid: str, url: str, dest: pathlib.Path) -> bool:
-    if dest.exists():
-        dest.unlink()
-    p = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "nbs_ruralscan.ingest.acquire",
-            sid,
-            url,
-            "--kind",
-            "pdf",
-        ],
-        capture_output=True,
-        text=True,
-        timeout=180,
-    )
-    ok = p.returncode == 0 and dest.exists() and dest.stat().st_size >= 20000
-    if not ok:
-        dest.unlink(missing_ok=True)
-    return ok
+    # A failed retry must never destroy an existing source. Acquire into an isolated
+    # directory and validate with the PDF parser before promoting the artifact.
+    import fitz
+
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        if dest.exists():
+            acquire(sid, url, kind="pdf", corpus_dir=dest.parent)
+            with fitz.open(dest) as doc:
+                return doc.page_count > 0
+        with tempfile.TemporaryDirectory(dir=dest.parent) as tmp:
+            result = acquire(sid, url, kind="pdf", corpus_dir=tmp)
+            if result.artifact_path is None or result.meta_path is None:
+                return False
+            with fitz.open(result.artifact_path) as doc:
+                if doc.page_count == 0:
+                    return False
+            result.artifact_path.replace(dest)
+            result.meta_path.replace(dest.with_suffix(".meta.json"))
+        return True
+    except (AcquireError, ValueError, RuntimeError, OSError):
+        return False
 
 
 def _candidates(r: dict, wayback: dict) -> list[str]:
     out: list[str] = []
     if r["source_id"] in wayback:
         out.append(wayback[r["source_id"]])
-    if r.get("doi"):
+    if r.get("doi") and r.get("doi_verified") == "true":
         try:
             u = requests.get(
                 f"https://api.unpaywall.org/v2/{r['doi']}?email=p.steward@cgiar.org",
@@ -178,11 +181,10 @@ def main(argv: list[str] | None = None) -> int:
             log.append((sid, "fail", reason))
             continue
         try:
-            d = fitz.open(dest)
-            txt = "".join(d[i].get_text() for i in range(min(3, len(d))))
-            npages = len(d)
+            with fitz.open(dest) as d:
+                txt = "".join(d[i].get_text() for i in range(min(3, len(d))))
+                npages = len(d)
         except Exception as e:  # noqa: BLE001
-            dest.unlink(missing_ok=True)
             log.append((sid, "fail", f"unreadable PDF: {e}"))
             continue
         ocr = len(txt.strip()) < 200

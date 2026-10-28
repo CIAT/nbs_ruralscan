@@ -132,7 +132,7 @@ def test_host_upload_requirements_and_parameters_are_readable():
 def test_untrusted_text_is_escaped_and_comparisons_start_collapsed():
     data = contract()
     row = data["rows"][0]
-    row["blockers"] = ['<script>alert("x")</script>']
+    row.setdefault("readiness", {})["reason"] = '<script>alert("x")</script>'
     second = deepcopy(row["function_options"][0])
     second.update(function_id="source2", label="<img onerror=bad>")
     row["function_options"].append(second)

@@ -22,6 +22,7 @@ CLI:
 from __future__ import annotations
 
 import csv
+import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -96,6 +97,7 @@ def log_search(
     discovery_log_ref: str = "",
     note: str = "",
     path: str | Path = SRCH,
+    search_date: str | None = None,
 ) -> dict:
     """Append a search-protocol row. Validates table/category + required fields."""
     if table not in TABLES:
@@ -106,9 +108,11 @@ def log_search(
         raise ValueError("search_terms is required (what was actually searched)")
     if not ruleset_version.strip():
         raise ValueError("ruleset_version is required (which instructions governed it)")
-    date = datetime.now(timezone.utc).date().isoformat()
+    date = search_date or datetime.now(timezone.utc).date().isoformat()
+    datetime.strptime(date, "%Y-%m-%d")  # refuse malformed dates before any write
     fam_tag = family or "all"
-    sid = f"{nbs}__{table}__{category}__{fam_tag}__{date}"
+    run_tag = f"__{hashlib.sha256(run_id.encode()).hexdigest()[:12]}" if run_id else ""
+    sid = f"{nbs}__{table}__{category}__{fam_tag}{run_tag}__{date}"
     row = {
         "search_id": sid,
         "nbs_id": nbs,
