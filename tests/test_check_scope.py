@@ -237,3 +237,15 @@ def test_span_bleed_is_advisory_not_auto_quarantined(tmp_path):
     from nbs_ruralscan.schema_tools.quarantine import _ADVISORY_ONLY
 
     assert "span_bleed" in _ADVISORY_ONLY
+
+
+def test_named_forest_land_classes_are_recognised():
+    from nbs_ruralscan.schema_tools.check_scope import _LC_CLASS
+
+    for quote in (
+        "areas classified as tundra",
+        "agricultural and non-vegetated areas",
+        "currently forested areas",
+    ):
+        assert _LC_CLASS.search(quote)
+    assert not _LC_CLASS.search("Land cover is an input criterion")

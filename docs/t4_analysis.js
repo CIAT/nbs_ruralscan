@@ -30,7 +30,9 @@
   }
   if (typeof module !== 'undefined' && module.exports) module.exports = {stateOf, isStale, matches};
   if (!root.document) return;
-  let payload, loading, family = 'all', current = 'global', attached = false, activeNbs, live;
+  const payloads = {}, pending = {};
+  let renderedNbs;
+  let payload, family = 'all', current = 'global', attached = false, activeNbs, live;
   const el = id => document.getElementById(id);
   function choose(name, hash = true) {
     if (!panels.includes(name)) name = 'global';
@@ -91,8 +93,9 @@
     if (!payload || activeNbs !== payload.nbs) return;
     el('t4-analysis').hidden = false; el('t4-legacy').hidden = true;
     el('t4-verbatim-section').hidden = true; el('interrogator-quote-control').hidden = true;
-    if (!el('t4-panel-global').children.length) {
+    if (renderedNbs !== payload.nbs) {
       for (const p of panels) el('t4-panel-' + p).innerHTML = payload.panels[p];
+      renderedNbs = payload.nbs;
     }
     el('t4-snapshot').textContent = 'Work in progress · compiler ' + payload.compiler_version + ' · snapshot ' + payload.snapshot.slice(0,12) + ' · ' + payload.summary.configured_rows + ' configured mappings';
     el('t4-stale').hidden = !isStale(payload, live);
@@ -105,13 +108,14 @@
       activeNbs = nbs; family = system; live = data;
       el('t4-analysis').hidden = true; el('t4-legacy').hidden = false;
       el('t4-verbatim-section').hidden = false; el('interrogator-quote-control').hidden = false;
-      if (nbs !== 'agroforestry') return;
-      if (payload) return display();
-      if (!loading) loading = fetch('t4_analysis.json', {cache:'no-cache'}).then(r => {if (!r.ok) throw Error('T4 analysis snapshot unavailable'); return r.json();}).then(data => {payload = data; display();}).catch(() => {el('t4-analysis-load').textContent = 'T4 analysis snapshot unavailable. Showing existing recipe table.'; loading = null;});
+      if (!['agroforestry','forest_restoration','mangrove_restoration'].includes(nbs)) return;
+      if (payloads[nbs]) { payload = payloads[nbs]; return display(); }
+      const file = nbs === 'agroforestry' ? 't4_analysis.json' : 't4_analysis_' + nbs + '.json';
+      if (!pending[nbs]) pending[nbs] = fetch(file, {cache:'no-cache'}).then(r => {if (!r.ok) throw Error('T4 analysis snapshot unavailable'); return r.json();}).then(data => {payloads[nbs] = data; if (activeNbs === nbs) {payload = data; display();}}).catch(() => {el('t4-analysis-load').textContent = 'T4 analysis snapshot unavailable. Showing existing recipe table.'; delete pending[nbs];});
     },
     openFromHash() {
       if (!location.hash.startsWith('#t4/')) return;
-      const nbs = el('select-nbs'); nbs.value = 'agroforestry'; nbs.dispatchEvent(new Event('change'));
+      const nbs = el('select-nbs'); if (!nbs.value) nbs.value = 'agroforestry'; nbs.dispatchEvent(new Event('change'));
       el('btn-interrogator').click();
     }
   };

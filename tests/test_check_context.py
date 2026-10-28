@@ -87,3 +87,25 @@ def test_version_parse_is_lenient():
     assert cc._ver("v1.6.10") > cc._ver("v1.6.9")
     assert cc._ver("") == (0,)
     assert cc._ver(None) == (0,)
+
+
+def test_t4_model_metadata_is_not_an_effect_context_alias():
+    from nbs_ruralscan.schema_tools.check_context import check_unit
+
+    row = {
+        "evidence_id": "t4",
+        "use_role": "structural_suitability",
+        "context": {
+            "model_use": {"used": True},
+            "reported_values": {"classes": ["high"]},
+            "vertical_reference": "mean sea level",
+            "calibration_hold": "No score",
+        },
+    }
+    assert check_unit(row, set(), set()) == []
+    effect = {**row, "use_role": "nbs_effect"}
+    assert any(
+        f["signal"] == "unknown_context_key" for f in check_unit(effect, set(), set())
+    )
+    row["context"]["country"] = "Bangladesh"
+    assert any(f["signal"] == "bad_vocab" for f in check_unit(row, set(), set()))

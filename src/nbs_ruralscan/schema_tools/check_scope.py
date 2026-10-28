@@ -123,10 +123,10 @@ _SIGNALS: dict[str, re.Pattern] = {
 # Flag a land_cover EV whose quote names none of the usual class terms.
 _LC_VARS = ("land_cover", "landcover", "lulc", "land_use")
 _LC_CLASS = re.compile(
-    r"\b(forest|woodland|cropland|crop ?land|agricultur|pasture|grass ?land|range ?land"
+    r"\b(forest(?:ed)?|woodland|cropland|crop ?land|agricultur(?:e|al)?|pasture|grass ?land|range ?land"
     r"|shrub|savanna|wetland|\bwater\b|urban|built[- ]?up|bare|barren|mangrove|plantation"
     r"|orchard|fallow|settlement|grazing|scrub|tree ?cover|canopy|paddy|arable"
-    r"|deciduous|evergreen|coniferous|meadow|bush)\b",
+    r"|deciduous|evergreen|coniferous|meadow|bush|tundra|non[- ]vegetated)\b",
     re.I,
 )
 

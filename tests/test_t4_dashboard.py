@@ -156,3 +156,36 @@ def test_readiness_display_uses_policy_reference_without_target_selection(result
     exported = render_developer_view(result["contract"])
     assert "Approved policy response — target applicability pending" in exported
     assert 'value="Defined for implementation"' in exported
+
+
+@pytest.mark.parametrize("nbs", ["forest_restoration", "mangrove_restoration"])
+def test_pending_recipe_is_inspectable_without_borrowing_agroforestry(nbs):
+    result = dc.build_contract(ROOT, nbs=nbs)
+    contract = result["contract"]
+    assert not contract["run_contract"]["approved_policies"]
+    assert "No aggregation selected" in contract["run_contract"]["baseline"]
+    assert not contract["run_contract"]["execution_ready"]
+    assert result["evidence"]
+    dashboard = view.build_dashboard(ROOT, nbs=nbs)
+    assert dashboard["nbs"] == nbs
+    assert "agroforestry-t4/IMPLEMENTATION" not in dashboard["panels"]["rules"]
+    assert "No class-score policy approved" in dashboard["panels"]["rules"]
+    assert all(not u["function_ids"] for u in result["evidence"])
+
+
+def test_empty_core_defaults_to_structural_holds_despite_operational_links():
+    result = dc.build_contract(ROOT, nbs="mangrove_restoration")
+    assert any(u["linked_mapping_ids"] for u in result["evidence"])
+    assert 'value="uncompiled" selected' in view._evidence(result)
+    rules = view._rules(ROOT, result)
+    assert "Current numerical baseline is weighted linear combination" not in rules
+    assert "high maps to 0.75" not in rules
+
+
+def test_standalone_mangrove_selectable_without_fabricating_t0():
+    import json
+
+    dashboard = json.loads((ROOT / "docs/dashboard_data.json").read_text())
+    assert "mangrove_restoration" in dashboard["recipes"]
+    assert "T4_suitability_mappings" in dashboard["recipes"]["mangrove_restoration"]
+    assert "T0_nbs_registry" not in dashboard["recipes"]["mangrove_restoration"]

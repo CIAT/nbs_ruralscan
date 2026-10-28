@@ -13,9 +13,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--nbs", default="agroforestry")
     args = parser.parse_args()
-    path = args.root / "docs/t4_analysis.json"
-    text = stable_json(build_dashboard(args.root))
+    name = (
+        "t4_analysis.json"
+        if args.nbs == "agroforestry"
+        else f"t4_analysis_{args.nbs}.json"
+    )
+    text = stable_json(build_dashboard(args.root, nbs=args.nbs))
+    path = args.root / "docs" / name
     if args.check:
         if not path.exists() or path.read_text(encoding="utf-8") != text:
             raise SystemExit(

@@ -454,3 +454,13 @@ def test_preserved_gate_cannot_bypass_evidence_review(runner, tmp_path, monkeypa
             output_dir=tmp_path,
         )
     assert not (tmp_path / "T4_suitability_mappings.csv").exists()
+
+
+def test_new_recipe_does_not_receive_invented_equal_weights(runner, tmp_path):
+    import csv
+
+    results = {"F1": family([unit("weight_test")])}
+    runner.write_recipe("new_recipe", results, [], output_dir=tmp_path)
+    rows = list(csv.DictReader((tmp_path / "T4_suitability_mappings.csv").open()))
+    assert len(rows) == 1
+    assert rows[0]["weight_default"] == ""
