@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-28T12:12:12.215053+00:00",
-  "git_commit": "ab815b8351a47d585d7753ff315c1505c3d4da14",
+  "timestamp": "2026-10-28T12:33:05.273672+00:00",
+  "git_commit": "4636419db4a1ffa747bb2ae495709fb962c9f42f",
   "registers": {
     "SRC_source_register": [
       {
@@ -11560,6 +11560,29 @@
         "source_category": "updated_lit",
         "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/6_MangroveRestoration/van_loon_2016_hydrological_classification.pdf",
         "venue_type": "peer_reviewed_journal"
+      },
+      {
+        "source_id": "clough_bac_lieu_site_assessment_2014",
+        "citation": "Clough, B. (2014). Site Assessment Guidelines for Mangrove Rehabilitation in Bac Lieu Province, Vietnam.",
+        "benchmark_tier": "medium",
+        "study_country": "VNM",
+        "region": "Mekong Delta",
+        "method_type": "expert",
+        "nbs_ids": "mangrove_restoration",
+        "vars_extracted": "elevation",
+        "extraction_status": "in_progress",
+        "extraction_date": "2026-10-28",
+        "extraction_run_id": "bac_lieu_review_20261028",
+        "extractor": "orchestrator",
+        "source_kind": "grey_lit",
+        "url": "https://www.international-climate-initiative.com/legacy/Dokumente/2019/20190503_Site_Assessment_Manual-Final-Complete.pdf",
+        "artifact_sha1": "18227663dd4e253c4dddc733c1b871384b98fa2b",
+        "retrieved_at": "2026-10-28",
+        "access_status": "unknown",
+        "source_category": "grey",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/6_MangroveRestoration/clough_bac_lieu_site_assessment_2014.pdf",
+        "study_income_group": "lower_middle",
+        "venue_type": "institutional_report"
       }
     ],
     "EV_evidence_register": [
@@ -202606,6 +202629,49 @@
         "justification_quote": "Table 2. Adapted hydrological classification including common southeast Asian mangrove species groups, from [40], based on [31] and [39]. Ele-\nvation (in italics) is included only as proxy for inundation characteristics for mangrove regions with regular tidal regime and regular elevation profile.\nclass\nelevation\nduration of inundation\nduration of inundation\nspecies\n-\n[cm + MSL]\n[min per day]\n[min per inundation]\n-",
         "justification_page": 4,
         "ruleset_version": "v1.8.0"
+      },
+      {
+        "evidence_id": "ev_mr_elevation_clough14_20261028",
+        "source_id": "clough_bac_lieu_site_assessment_2014",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "elevation",
+        "relationship": {
+          "direction": "non_monotonic"
+        },
+        "context": {
+          "country": "VNM",
+          "income_group": "lower_middle",
+          "region": "Bac Lieu Province, Mekong Delta",
+          "practice_as_described": "pre-rehabilitation assessment of degraded mangrove sites",
+          "vertical_reference": "local mean sea level; not an interchangeable global DEM datum",
+          "model_use": {
+            "used": true,
+            "method": "local graphical planting guidance based on tidal records",
+            "scope": "Bac Lieu mangrove rehabilitation",
+            "source_specific_weight": null
+          },
+          "reported_values": {
+            "above_200_cm_and_below_MSL": "may be unsuitable, not absolute exclusions",
+            "period": "Ganh Hao tidal records 2010–2013",
+            "frequency": "days flooded per month at lower end of elevation band",
+            "graph": "green optimum/red assessment warning; continuous colour transition does not specify exact optimum endpoints"
+          },
+          "numeric_calibration": "No response scores, hard endpoints, global elevation envelope or executable function. Retain original cm above local MSL. Tidal frequency is not percent time flooded.",
+          "applicability_hold": "Only degraded mangrove rehabilitation in Bac Lieu; no authorization to convert naturally unvegetated intertidal habitat. Source p41 warns river-mouth station tides differ from exposed coast and estimates lack independent verification. Site modification, rainfall, drainage and species choice qualify guidance.",
+          "review_needed": "Does the local directional guidance apply to this rehabilitation site and datum? Approval must not create global cutoffs.",
+          "note": "Graph visually checked with caption. Source guidance, not validated field response curve; no human approval."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Relationship between site elevation (cm above mean sea level) and flooding frequency (days per month) for each month of the year. Green colour coding shows elevations that are optimal for planting, and red indicates areas where careful site assessment is needed before deciding to plant. The brighter the red, the greater the need for site assessment. Elevations above 200 cm (2 m) and below mean sea level may be unsuitable for planting mangroves. Flooding frequency (days flooded per month) is based on tidal records from Ganh Hao tide station for the period 2010 to 2013. Note that the flooding frequency refers to the lower end (marked) of each elevation range, and the number of days flooded decreases with increasing elevation within each elevation band.",
+        "page": 12,
+        "reviewer_ok": false,
+        "locator_type": "page",
+        "ruleset_version": "v1.8.0"
       }
     ],
     "FAM_family_registry": [
@@ -221473,10 +221539,10 @@
       "searched": "in_progress",
       "screened": "in_progress",
       "verified": "in_progress",
-      "last_run_id": "mangrove_restoration_t4_discovery_20261028",
+      "last_run_id": "bac_lieu_review_20261028",
       "updated": "2026-10-28",
       "by": "orchestrator",
-      "note": "discovery round 2026-10-28; see SRCH mangrove_restoration_t4_discovery_20261028_* rows + discovery logs"
+      "note": "Clough 2014 main-paper review: one local directional unit verified, unapproved; source mapping and database holds remain. Corpus review incomplete. See bac_lieu_review_20261028 audit."
     },
     {
       "nbs_id": "mangrove_restoration",
@@ -249623,7 +249689,7 @@
     },
     "mangrove_restoration": {
       "candidates": 20,
-      "acquired": 17
+      "acquired": 16
     }
   },
   "t4_review_notes": {
