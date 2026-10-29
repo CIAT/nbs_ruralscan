@@ -7,10 +7,11 @@ PDF, number provenance (`check_numbers`), fixed context keys (`check_context`), 
 bands (`check_bands`), source identity, VONT id, family/NbS agreement. XW coverage remains advisory
 (`check_xw`): an unmapped outcome is retained, not silently dropped. Units
 already in the register are skipped (idempotent). Then `SRC.vars_extracted` is resynced for
-the touched sources. No ledger / SRCH changes here (those are stamped by the orchestrator).
+the touched sources and those still `pending` are marked `swept` with `--run-id` (promotion
+leaves them pending). No ledger / SRCH changes here (those are stamped by the orchestrator).
 
 Usage:
-    python3 scripts/ingest-effects-staging.py pipeline/staging/riparian_effects_A.json ... [--dry-run]
+    python3 scripts/ingest-effects-staging.py pipeline/staging/riparian_effects_A.json ... --run-id <id> [--dry-run]
         [--fix-family EVIDENCE_ID=FAMILY ...]   # recorded human family decisions applied on ingest
 """
 
@@ -22,6 +23,7 @@ import json
 import hashlib
 from contextlib import ExitStack
 from dataclasses import fields
+from datetime import date
 from collections import Counter
 from pathlib import Path
 
@@ -38,10 +40,12 @@ from nbs_ruralscan.recipe.evidence import EvidenceUnit, validate
 from nbs_ruralscan.recipe.cell_synthesis import load_bands
 from nbs_ruralscan.schema_tools import check_bands, check_context, check_direction
 from nbs_ruralscan.schema_tools.check_numbers import _floats, _nums, _rel_nums
+from nbs_ruralscan.schema_tools.check_scope import m2b_policy
 from nbs_ruralscan.schema_tools.validate_sources import _native_part
 from nbs_ruralscan.schema_tools.migrate_effects import (
     append_to_register,
     resync_vars_extracted,
+    stamp_extracted,
 )
 
 #: accepted extraction rulesets (methodology/RULESET_VERSIONS.md; v1.6.3–v1.6.6 are search /
@@ -71,6 +75,8 @@ _RULESETS = {
     "v1.6.17",
     # v1.6.18: catalogue #39, no mechanism no unit
     "v1.6.18",
+    # v1.9.0: catalogue #50, operational-risk evidence (Pete review 2026-10-22/23)
+    "v1.9.0",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -374,6 +380,13 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
                     f"{eid}: use_role '{u.get('use_role')}' is not allowed here "
                     f"(allowed: {sorted(allowed_roles)})"
                 )
+            pol = m2b_policy().get(u.get("variable") or "")
+            if u.get("use_role") == "operational_risk" and pol:
+                if pol["decision"] == "exclude":
+                    errs.append(
+                        f"{eid}: '{u['variable']}' may not be an operational_risk unit "
+                        f"(catalogue #50): {pol['reason']}"
+                    )
             if u.get("ruleset_version") not in _RULESETS:
                 errs.append(
                     f"{eid}: ruleset_version '{u.get('ruleset_version')}' not in {sorted(_RULESETS)}"
@@ -407,7 +420,14 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="also accept structural_suitability (T4) units — same gates (verbatim, numbers, VONT, FAM)",
     )
+    ap.add_argument(
+        "--run-id",
+        help="extraction run id stamped on the touched sources (required unless --dry-run)",
+    )
+    ap.add_argument("--extractor", default="claude (gated pipeline)")
     args = ap.parse_args(argv)
+    if not args.dry_run and not (args.run_id or "").strip():
+        ap.error("--run-id is required to write (it marks the touched sources swept)")
     if args.fix_family and not (args.family_decision or "").strip():
         ap.error(
             "--fix-family requires --family-decision (decision reference/rationale)"
@@ -471,8 +491,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     touched = {u["source_id"] for u in units}
     changed = resync_vars_extracted(touched)
+    stamped = stamp_extracted(
+        touched, args.run_id, args.extractor, date.today().isoformat()
+    )
     print(
-        f"appended {n} new unit(s) to EV; vars_extracted resynced for {len(changed)} source(s)"
+        f"appended {n} new unit(s) to EV; vars_extracted resynced for {len(changed)} "
+        f"source(s); {len(stamped)} source(s) marked swept ({args.run_id})"
     )
     return 0
 

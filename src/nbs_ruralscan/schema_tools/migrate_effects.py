@@ -570,6 +570,43 @@ def append_to_register(
     return len(new)
 
 
+def stamp_extracted(
+    source_ids: set[str],
+    run_id: str,
+    extractor: str,
+    day: str,
+    src_csv: Path = SRC_CSV,
+) -> list[str]:
+    """Mark sources whose units were just ingested as `swept` with this run's id.
+
+    Promotion leaves a source `pending` (2026-10-28 hardening); only a real ingest moves it.
+    A source already `swept` / `signed_off` keeps its status and first run id.
+    """
+    with open(src_csv, encoding="utf-8", newline="") as f:
+        reader = csv.DictReader(f)
+        cols = list(reader.fieldnames or [])
+        rows = list(reader)
+    stamped: list[str] = []
+    for r in rows:
+        if r["source_id"] in source_ids and (r.get("extraction_status") or "") in {
+            "",
+            "pending",
+        }:
+            r.update(
+                extraction_status="swept",
+                extraction_date=day,
+                extraction_run_id=run_id,
+                extractor=extractor,
+            )
+            stamped.append(r["source_id"])
+    if stamped:
+        with open(src_csv, "w", encoding="utf-8", newline="") as f:
+            w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
+            w.writeheader()
+            w.writerows([{c: r.get(c, "") for c in cols} for r in rows])
+    return sorted(stamped)
+
+
 def resync_vars_extracted(
     source_ids: set[str], src_csv: Path = SRC_CSV, ev_csv: Path = EV_CSV
 ) -> dict[str, str]:
