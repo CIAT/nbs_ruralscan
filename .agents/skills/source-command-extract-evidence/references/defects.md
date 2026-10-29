@@ -383,3 +383,21 @@ hold. Unit conversion cannot merge distinct breakpoints or pool unlike native un
 
 These checks harden existing evidence rules; they grant no new ecological transfer, human
 approval, class completion, aggregation policy or runtime weights. See the adversarial audit.
+
+## Operational-risk (M2b) evidence — Pete's review 2026-10-22/23
+
+50. **An operational-risk unit names a factor that limits or enables implementation, with
+cause and effect in the quote.** From Pete's review of the operational units (2026-10-22/23,
+41 drops):
+- `adoption_rate` is an outcome of the enabling environment, not an operational-risk factor.
+  Never emit it as `use_role=operational_risk` (`schema/lookups/m2b_variable_policy.csv`,
+  decision `exclude`; the ingest gate refuses it). Record what limits adoption instead
+  (tenure, labour, finance, extension), when the quote says so.
+- Quote the main text, not the abstract: the finding is restated with its conditions in the body.
+- Practice-specific implementation detail (rootstock, planting material, restorable patch
+  size, grazing regime) is feasibility, not scoping (`flag` in the lookup): leave a deferred
+  pointer for Module 6.
+- A policy document that mentions a factor, a figure that describes the study context
+  (e.g. "85% of farmers hold no title"), or a chain of inference is not evidence that the
+  factor limits the practice. The quote must say it does.
+- A second-hand claim keeps `claim_basis=cited_secondary` with the original in `lineage_of` (#32).

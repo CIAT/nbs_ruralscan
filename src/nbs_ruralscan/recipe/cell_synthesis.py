@@ -972,6 +972,30 @@ def magnitude_summary(
     return best
 
 
+def _no_cost_class_reason(
+    contribs: list[_Contrib], ms: dict[str, Any] | None, rec: dict[str, Any]
+) -> str:
+    """Why an economic row states no size class (a blank must never read as "small")."""
+    target = INCOME_BAND.get(
+        str(rec["applicability"]["target"].get("income_group") or ""), ""
+    )
+    figures = [
+        c
+        for c in contribs
+        if isinstance((c.unit.relationship or {}).get("magnitude"), (int, float))
+        and (c.unit.relationship or {}).get("metric") not in (None, "", "narrative")
+    ]
+    if not figures:
+        return "the evidence states no cost figure"
+    if ms and ms.get("unit"):
+        return f"no size band is set for {ms['unit']}"
+    bands = {INCOME_BAND.get(str(c.ctx.get("income_group") or ""), "") for c in figures}
+    if target and target not in bands:
+        found = ", ".join(sorted(b or "unknown" for b in bands))
+        return f"every cost figure comes from another income group ({found}) than this row's ({target})"
+    return "no two sources give a figure in the same unit"
+
+
 def economic_value_range(
     contribs: list[_Contrib],
     target_ctx: dict[str, Any],
@@ -1867,23 +1891,31 @@ def data_deficient_statement(rec: dict[str, Any], key: str) -> str:
     n_u, n_s = len(rec.get("evidence_ids") or []), rec.get("n_sources", 0)
     held = rec.get("held_out_of_class") or {}
     why = rec.get("data_deficient_reason") or "its evidence cannot set a class"
-    extra = ""
-    if any(k != "below_evidence_floor" for k in held):
-        kinds = {
-            "not_a_net_balance": "single-gas figures with no net CO2e balance",
-            "reference_shortfall": "shortfalls against an intact reference rather than against the pre-restoration state",
-            "unmanaged_state_comparator": "comparisons against the unmanaged state rather than the farming-system counterfactual the cell asks about",
-            "not_a_household_benefit": "value accruing to society rather than to the household",
-        }
-        extra = (
-            " The evidence here is "
-            + "; ".join(
-                kinds.get(k, k) for k in sorted(held) if k != "below_evidence_floor"
-            )
-            + "."
+    kinds = {
+        "not_a_net_balance": "single-gas figures with no net CO2e balance",
+        "reference_shortfall": "shortfalls against an intact reference rather than against the pre-restoration state",
+        "unmanaged_state_comparator": "comparisons against the unmanaged state rather than the farming-system counterfactual the cell asks about",
+        "not_a_household_benefit": "value accruing to society rather than to the household",
+    }
+    set_aside = sorted(k for k in held if k != "below_evidence_floor")
+    lead = why
+    if set_aside:
+        n_held = len({e for k in set_aside for e in held.get(k) or []})
+        # the floor reason describes only what is left once these units are set aside, so
+        # say that first: "one source, none measured" next to "10 units from 3 sources"
+        # otherwise reads as a contradiction (2026-10-29 retro)
+        rest = (
+            "nothing else reaches the cell"
+            if why == "no evidence reaches this cell"
+            else f"what remains is {why}"
+        )
+        lead = (
+            f"{n_held} of {n_u} unit(s) are "
+            + "; ".join(kinds.get(k, k) for k in set_aside)
+            + f", which cannot set this cell's class; {rest}"
         )
     return (
-        f"{rec.get('nbs_id', '')} {key}: DATA DEFICIENT — {why}.{extra} "
+        f"{rec.get('nbs_id', '')} {key}: DATA DEFICIENT — {lead}. "
         f"The row carries {n_u} evidence unit(s) from {n_s} source(s); they are listed and "
         "described, but none of them may set a class."
     )
@@ -2601,6 +2633,10 @@ def synthesise_cell(
                     }[ms["class"]]
                     r["justification"]["statement"] += (
                         f" Cost class: {size} ({ms['unit']}, {ms['class_context']} context)."
+                    )
+                elif not rec.get("data_deficient"):
+                    r["justification"]["statement"] += (
+                        f" No cost class: {_no_cost_class_reason(cs, ms, rec)}."
                     )
                 r["economic_indicator_type"] = target_key
                 r["economic_value_range"] = economic_value_range(

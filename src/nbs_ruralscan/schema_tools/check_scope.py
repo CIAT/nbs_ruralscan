@@ -181,10 +181,23 @@ def _is_site_context(quote: str, relationship: str) -> bool:
     return bool(_SITE_FRAME.search(quote) or _SITE_OCC_DIR.search(direction))
 
 
+M2B_POLICY = ROOT / "schema" / "lookups" / "m2b_variable_policy.csv"
+
+
+def m2b_policy(path: Path | None = None) -> dict[str, dict]:
+    """variable -> {decision, reason} for operational_risk units (catalogue #50)."""
+    p = path or M2B_POLICY
+    if not p.exists():
+        return {}
+    with p.open(newline="", encoding="utf-8") as f:
+        return {r["variable"]: r for r in csv.DictReader(f)}
+
+
 def check(ev_path: str | Path | None = None) -> list[dict]:
     """Return advisory off-scope flags: [{evidence_id, signal, snippet}]."""
     path = Path(ev_path) if ev_path else EV
     flags: list[dict] = []
+    policy = m2b_policy()
     if not path.exists():
         return flags
     with path.open(newline="", encoding="utf-8") as f:
@@ -192,6 +205,17 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
             if (r.get("review_state") or "") == "dropped":
                 continue
             if (r.get("reviewer_ok") or "").lower() == "true":
+                continue
+            if r.get("use_role") == "operational_risk":
+                pol = policy.get(r.get("variable") or "")
+                if pol:
+                    flags.append(
+                        {
+                            "evidence_id": r["evidence_id"],
+                            "signal": f"m2b_{pol['decision']}",
+                            "snippet": pol["reason"][:80],
+                        }
+                    )
                 continue
             # off-scope here means "not a SUITABILITY claim" -> only T4 structural rows.
             # carbon/biomass is legitimate for T6 (nbs_effect) and fuel/biomass for T3
