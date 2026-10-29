@@ -1,12 +1,12 @@
 ---
 name: "source-command-extract-evidence"
 description: "Extract and verify source-provenanced evidence for an authorised T4 suitability, T3/T6 effect, or operational-risk lane."
-version: "v1.9.1"
+version: "v1.9.2"
 ---
 
 # Evidence extraction
 
-Current ruleset: **v1.9.1**. Stamp new units with the version actually used; never restamp
+Current ruleset: **v1.9.2**. Stamp new units with the version actually used; never restamp
 historical evidence. Version log: `methodology/RULESET_VERSIONS.md`. This skill is the
 canonical extraction instruction; `.claude/commands/extract-evidence.md` delegates here.
 

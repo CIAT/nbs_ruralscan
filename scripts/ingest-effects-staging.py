@@ -79,6 +79,8 @@ _RULESETS = {
     "v1.9.0",
     # v1.9.1: catalogue #51, significance at the 5% convention
     "v1.9.1",
+    # v1.9.2: catalogue #52, capture structure required; no synthetic mulch
+    "v1.9.2",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
