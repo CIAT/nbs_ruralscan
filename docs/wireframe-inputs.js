@@ -112,7 +112,7 @@ window.WireframeInputs = (() => {
     ];
     return `<details class="card" open><summary>Variable card · six-part explanation</summary><div class="card-slots">${slots.map(([title,body])=>`<div><h3>${title}</h3><p>${body}</p></div>`).join('')}<div class="input-response-slot"><h3>Response preview</h3>${suit?slopePreview(profile):priorityPreview()}</div></div></details>`;
   }
-  return Object.freeze({render(surface, state, practice) {
+  return Object.freeze({reference: surface => surface==='suit'?link(dem,'Copernicus catalogue description'):link(poverty,'World Bank SPID catalogue description'), render(surface, state, practice) {
     return dataset(surface,state[surface==='suit'?'suitDataset':'priorityDataset'])+treatment(surface)+card(surface,state.responseExample,practice);
   }});
 })();
