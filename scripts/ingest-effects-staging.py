@@ -69,6 +69,8 @@ _RULESETS = {
     "v1.8.0",
     # Historical stamps remain valid; --allow-structural controls T4 scope.
     "v1.6.17",
+    # v1.6.18: catalogue #39, no mechanism no unit
+    "v1.6.18",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
