@@ -4,6 +4,7 @@ Run from repository root with the project Python environment. This executes only
 one inspected numerical function from the pinned artifact, with synthetic arrays;
 it does not import or run the upstream geospatial applications.
 """
+
 import ast
 import hashlib
 import json
@@ -25,29 +26,66 @@ for claim in claims:
     artifact = artifacts[claim["source_id"]]
     start, end = map(int, re.search(r":L(\d+)-L(\d+)$", claim["locator"]).groups())
     lines = Path(artifact["cached"]).read_text().splitlines()
-    assert claim["quote"] == "\n".join(lines[start - 1:end])
+    assert claim["quote"] == "\n".join(lines[start - 1 : end])
     assert claim["commit"] == artifact["commit"]
 
 source = Path(artifacts["tool_forest_progreen_suitability"]["cached"]).read_text()
-function = next(node for node in ast.parse(source).body
-                if isinstance(node, ast.FunctionDef) and node.name == "re_classify")
+function = next(
+    node
+    for node in ast.parse(source).body
+    if isinstance(node, ast.FunctionDef) and node.name == "re_classify"
+)
 namespace = {"np": np}
-exec(compile(ast.Module(body=[function], type_ignores=[]), "<pinned classifier>", "exec"), namespace)
+exec(
+    compile(
+        ast.Module(body=[function], type_ignores=[]), "<pinned classifier>", "exec"
+    ),
+    namespace,
+)
 classify = namespace["re_classify"]
 expected = json.loads((AUDIT / "behavior_probes.json").read_text())
-assert classify(np.array([224., 225., 314., 315., 359., 360.]), {
-    "min_val": None, "max_val": None, "ranges": [225, 315, 360],
-    "range_definition": [100, 0, 100], "classifier": "ranges"
-}, None).tolist() == expected["aspect_upper_edge"]
-assert classify(np.array([-10., 0., 60.]), {
-    "min_val": 0, "max_val": 60, "classifier": "linear-descending"
-}, None).tolist() == expected["zero_min_ignored"]
-assert classify(np.array([62., 63., 100., 125., 156., 187., 249., 250., 251.]), {
-    "min_val": None, "max_val": 250, "ranges": [63, 100, 125, 156, 187, 250],
-    "range_definition": [1, 5, 10, 50, 75, 100], "classifier": "ranges"
-}, None).tolist() == expected["degradation_upper_edge"]
+assert (
+    classify(
+        np.array([224.0, 225.0, 314.0, 315.0, 359.0, 360.0]),
+        {
+            "min_val": None,
+            "max_val": None,
+            "ranges": [225, 315, 360],
+            "range_definition": [100, 0, 100],
+            "classifier": "ranges",
+        },
+        None,
+    ).tolist()
+    == expected["aspect_upper_edge"]
+)
+assert (
+    classify(
+        np.array([-10.0, 0.0, 60.0]),
+        {"min_val": 0, "max_val": 60, "classifier": "linear-descending"},
+        None,
+    ).tolist()
+    == expected["zero_min_ignored"]
+)
+assert (
+    classify(
+        np.array([62.0, 63.0, 100.0, 125.0, 156.0, 187.0, 249.0, 250.0, 251.0]),
+        {
+            "min_val": None,
+            "max_val": 250,
+            "ranges": [63, 100, 125, 156, 187, 250],
+            "range_definition": [1, 5, 10, 50, 75, 100],
+            "classifier": "ranges",
+        },
+        None,
+    ).tolist()
+    == expected["degradation_upper_edge"]
+)
 for case in expected["tracker_counterexamples"]:
     slope, rain, moisture = case["slope"], case["precipitation"], case["moisture"]
-    assert (slope < 15 and rain >= 200 and moisture >= .2) == case["raster_expression"]
-    assert (slope <= 15 and (rain >= 200 or moisture >= .2)) == case["scalar_expression"]
-print(f"Verified {len(files)} artifact hashes, {len(claims)} exact quote locators and numerical probes.")
+    assert (slope < 15 and rain >= 200 and moisture >= 0.2) == case["raster_expression"]
+    assert (slope <= 15 and (rain >= 200 or moisture >= 0.2)) == case[
+        "scalar_expression"
+    ]
+print(
+    f"Verified {len(files)} artifact hashes, {len(claims)} exact quote locators and numerical probes."
+)
