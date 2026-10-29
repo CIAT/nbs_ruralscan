@@ -1,0 +1,379 @@
+{
+  "source_id": "chen_2021_three_gorges_flr_suitability",
+  "pages": [
+    4,
+    5,
+    7
+  ],
+  "disposition": "All held: FLR not isolated to active planting",
+  "class_order": [
+    "suitable",
+    "moderately suitable",
+    "unsuitable"
+  ],
+  "criteria": [
+    {
+      "name": "altitude",
+      "unit": "m",
+      "weight": 0.21,
+      "classes": [
+        [
+          175,
+          1800
+        ],
+        [
+          1800,
+          2030
+        ],
+        [
+          50,
+          175
+        ]
+      ],
+      "segment": [
+        50,
+        2030
+      ],
+      "direction": "intermediate optimum; high elevations moderate, reservoir low elevations unsuitable",
+      "hold": "175m local reservoir waterline, not transferable elevation datum/rule"
+    },
+    {
+      "name": "slope",
+      "unit": "degree",
+      "weight": 0.23,
+      "classes": [
+        [
+          0,
+          25
+        ],
+        [
+          25,
+          45
+        ],
+        [
+          45,
+          81
+        ]
+      ],
+      "segment": [
+        0,
+        81
+      ],
+      "direction": "decreasing",
+      "hold": "operations feasibility is explicit rationale; review structural vs operational role"
+    },
+    {
+      "name": "aspect",
+      "unit": "source score, bearings in degree",
+      "weight": 0.15,
+      "classes_equations": [
+        [
+          90,
+          100
+        ],
+        [
+          40,
+          90
+        ],
+        [
+          0,
+          40
+        ]
+      ],
+      "segment": [
+        0,
+        100
+      ],
+      "direction": "table ranks shaded highest; prose says more light better",
+      "rows": [
+        {
+          "label": "Flat",
+          "bearing": "-1",
+          "level": 3,
+          "score": 10
+        },
+        {
+          "label": "Sunny",
+          "bearing": "157.5–202.5",
+          "level": 3,
+          "score": 20
+        },
+        {
+          "label": "Partly sunny",
+          "bearing": "112.5–157.5; 202.5–292.5",
+          "level": 2,
+          "score": 40
+        },
+        {
+          "label": "Partly sunny",
+          "bearing": "67.5–112.5; 247.5–292.5",
+          "level": 2,
+          "score": 60
+        },
+        {
+          "label": "Partly shaded",
+          "bearing": "22.5–67.5; 292.5–337.5",
+          "level": 1,
+          "score": 80
+        },
+        {
+          "label": "Shaded",
+          "bearing": "0–22.5; 337.5–360",
+          "level": 1,
+          "score": 100
+        }
+      ],
+      "hold": "overlap247.5–292.5; level1 score80 conflicts equation suitable90–100; no silent correction"
+    },
+    {
+      "name": "soil depth",
+      "unit": "cm",
+      "weight": 0.16,
+      "classes": [
+        [
+          20,
+          100
+        ],
+        [
+          10,
+          20
+        ],
+        [
+          0,
+          10
+        ]
+      ],
+      "segment": [
+        0,
+        100
+      ],
+      "direction": "increasing within model segment"
+    },
+    {
+      "name": "soil type",
+      "unit": "source score",
+      "weight": 0.12,
+      "classes_equations": [
+        [
+          80,
+          100
+        ],
+        [
+          40,
+          80
+        ],
+        [
+          0,
+          40
+        ]
+      ],
+      "segment": [
+        0,
+        100
+      ],
+      "direction": "categorical",
+      "rows": [
+        {
+          "label": "Brunisolic",
+          "level": 1,
+          "score": 100
+        },
+        {
+          "label": "Dark yellow Brunisolic",
+          "level": 1,
+          "score": 90
+        },
+        {
+          "label": "Yellow brown",
+          "level": 1,
+          "score": 80
+        },
+        {
+          "label": "Yellow",
+          "level": 2,
+          "score": 70
+        },
+        {
+          "label": "Brown calcareous",
+          "level": 2,
+          "score": 60
+        },
+        {
+          "label": "Neutral purple",
+          "level": 2,
+          "score": 50
+        },
+        {
+          "label": "Paddy",
+          "level": 2,
+          "score": 40
+        },
+        {
+          "label": "Acid purple",
+          "level": 3,
+          "score": 30
+        },
+        {
+          "label": "Albino brown loam",
+          "level": 3,
+          "score": 20
+        },
+        {
+          "label": "Calcareous purple",
+          "level": 3,
+          "score": 10
+        },
+        {
+          "label": "Hydromorphic paddy",
+          "level": 3,
+          "score": 10
+        }
+      ],
+      "hold": "taxonomy not USDA texture/HSG; class endpoints overlap and closure unspecified"
+    },
+    {
+      "name": "soil organic matter",
+      "unit": "g/kg",
+      "weight": 0.13,
+      "classes": [
+        [
+          32.2,
+          57.69
+        ],
+        [
+          22.11,
+          32.2
+        ],
+        [
+          12.34,
+          22.11
+        ]
+      ],
+      "segment": [
+        12.34,
+        57.69
+      ],
+      "direction": "increasing within observed/model segment",
+      "hold": "SOM not SOC; endpoints are observed limits, no extrapolation"
+    }
+  ],
+  "class_endpoint_policy": "as printed; interval closure not specified, no executable function",
+  "model": "matter-element correlation, maximum class correlation; weights source-specific, no runtime defaults",
+  "land_cover": {
+    "page": 7,
+    "excluded": [
+      "water bodies/water conservancy facilities",
+      "residential areas",
+      "transportation networks"
+    ],
+    "eligible": [
+      "bare land",
+      "cultivated land slope >25 degrees",
+      "farmland",
+      "grassland",
+      "mining land",
+      "poor-quality forest",
+      "poor-quality garden land"
+    ],
+    "hold": "grassland conversion and low-quality forest require practice/ecosystem ruling"
+  },
+  "table4": {
+    "page": 7,
+    "columns": [
+      "0–15 degrees",
+      "15–25 degrees",
+      ">25 degrees",
+      "total"
+    ],
+    "rows": {
+      "suitable": [
+        9.52,
+        16.01,
+        34.18,
+        59.71
+      ],
+      "moderate": [
+        1.56,
+        5.81,
+        32.68,
+        40.04
+      ],
+      "unsuitable": [
+        0.02,
+        0.01,
+        0.21,
+        0.25
+      ]
+    },
+    "unit": "percent of total theoretical recoverable area, not within suitability class"
+  },
+  "table5": {
+    "page": 7,
+    "land_use_order": [
+      "mining",
+      "sloping cultivated",
+      "bare",
+      "other grassland",
+      "low-quality forest",
+      "low-quality garden"
+    ],
+    "suitable": {
+      "total_km2": 101.39,
+      "area_km2": [
+        1.37,
+        39.95,
+        1.48,
+        3.25,
+        41.19,
+        14.16
+      ],
+      "percent": [
+        1.35,
+        39.4,
+        1.46,
+        3.21,
+        40.63,
+        13.97
+      ]
+    },
+    "moderate": {
+      "total_km2": 67.98,
+      "area_km2": [
+        0.59,
+        29.38,
+        0.68,
+        2.16,
+        32.25,
+        2.82
+      ],
+      "percent": [
+        0.87,
+        43.22,
+        1,
+        3.18,
+        47.44,
+        4.15
+      ]
+    },
+    "unsuitable": {
+      "total_km2": 0.42,
+      "area_km2": [
+        0.03,
+        0.27,
+        0.01,
+        0.03,
+        0.08,
+        null
+      ],
+      "percent": [
+        7.14,
+        64.29,
+        2.38,
+        7.14,
+        19.05,
+        null
+      ]
+    },
+    "hold": "absent garden row remains null; reported sums/rounding retained"
+  }
+}
