@@ -36,6 +36,7 @@ import csv
 import os
 import re
 import shutil
+import urllib.parse
 import urllib.request
 from pathlib import Path
 
@@ -72,6 +73,8 @@ def _github_raw(url: str) -> str | None:
 
 def _fetch(url: str) -> bytes | None:
     """Fetch a URL (4 MB cap); None on any failure."""
+    # paths copied from a browser may carry raw spaces ("R shiny app … .R"); encode them
+    url = urllib.parse.quote(url, safe=":/?&=%#+@,;~")
     req = urllib.request.Request(url, headers={"User-Agent": "nbs-ruralscan-hydrate"})
     try:
         with urllib.request.urlopen(req, timeout=20) as resp:
@@ -113,6 +116,18 @@ def hydrate_queue(root: Path | None, nbs: str | None) -> None:
             already += 1
             continue
         lib_path = (r.get("target_library_path") or "").strip()
+        url = (r.get("url") or "").strip()
+        if not lib_path and url:
+            # a code / web source (e.g. a tool's commit-pinned GitHub file) has no
+            # library PDF: snapshot it as the SRC pass does — /blob/ -> raw .txt
+            raw = _github_raw(url)
+            data = _fetch(raw or url)
+            if data:
+                (CACHE / (sid + (".txt" if raw else ".html"))).write_bytes(data)
+                copied += 1
+            else:
+                missing.append(f"{sid} (fetch failed: {url})")
+            continue
         if root is None or not lib_path:
             missing.append(f"{sid} (set NBS_LIBRARY_ROOT)" if root is None else sid)
             continue
@@ -130,7 +145,7 @@ def hydrate_queue(root: Path | None, nbs: str | None) -> None:
     scope = nbs or "all NbS"
     print("")
     print(f"acquisition queue ({scope})")
-    print(f"queue PDF copied    : {copied}")
+    print(f"queue copied/fetched: {copied}")
     print(f"queue already cached: {already}")
     for sid, blocker in pending:
         print(f"SKIP {sid} - not acquired ({blocker})")
