@@ -1,5 +1,10 @@
 # Effects round 2026-10-29: five decisions for Pete
 
+**Answered 2026-10-29 (Pete):** 1: out by default, in only if a water-harvesting capture
+structure is included; 2: OUT ("how is plastic mulch going to be nature based?"); 3: ok;
+4: ok; 5: ok. Applied in catalogue #52 (ruleset v1.9.2): 26 no-till units and 9 plastic-mulch
+units soft-dropped, asset-index route and 12 scorecard labels ratified, labour bands added.
+
 Five questions are left from the effects round (#489). The others are already settled; see
 "Already settled" at the end. Each one takes a letter. Answer in one line, for example
 `1 B, 2 A, 3 yes, 4 yes, 5 A`.

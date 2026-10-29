@@ -527,7 +527,7 @@ def test_acquisition_retry_keeps_existing_artifact_on_failure(tmp_path, monkeypa
 
 def test_active_rules_have_complete_matching_snapshot():
     active = ROOT / ".agents/skills/source-command-extract-evidence"
-    snapshot = ROOT / ".agents/skills/_versions/v1.9.1"
+    snapshot = ROOT / ".agents/skills/_versions/v1.9.2"
     for relative in ["SKILL.md", "references/defects.md"]:
         assert (active / relative).read_bytes() == (snapshot / relative).read_bytes()
     for name in [

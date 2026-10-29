@@ -406,3 +406,13 @@ cause and effect in the quote.** From Pete's review of the operational units (20
 `significance=ns` even when the authors call it significant at their 10% level; keep its
 direction and record the authors' P value and wording in `context.note`. The ns weight
 discount applies. Example: Kidane 2019 basin net returns, KS test P = 0.08.
+
+52. **A water-harvesting unit needs a capture structure, and nothing synthetic is nature-based**
+(Pete 2026-10-29). Resolves ruling 2 (10-19) vs ruling A (#31, 10-21):
+- No-till / zero / minimum tillage / direct seeding / riplines with residue cover are **not**
+  water harvesting by default. An arm counts only when a capture structure is part of it
+  (basin, pit, zai, tied ridge, bund, half-moon, terrace, micro-catchment). Mulching on its
+  own, without the tillage package, stays (D5).
+- Plastic or other synthetic mulch (polyethylene film over ridges) is never an NbS
+  component: an arm that depends on it gives no unit. A meta-analysis that pools it among
+  many techniques stays. Pond and reservoir liners are structural, not mulch, and stay.
