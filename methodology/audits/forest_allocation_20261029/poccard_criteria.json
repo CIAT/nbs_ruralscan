@@ -1,0 +1,227 @@
+{
+  "source_id": "poccard_chapuis_2021_amazon_land_suitability",
+  "disposition": "agricultural allocation, ecosystem-service priority and secondary regeneration; no active planting calibration",
+  "table2": {
+    "pages": [
+      10,
+      11
+    ],
+    "class_order": [
+      "Valley slope",
+      "Plateau",
+      "Floodplain",
+      "Escarpment",
+      "Ravines"
+    ],
+    "agriculture": [
+      "high",
+      "very high",
+      "variable",
+      "very low",
+      "low"
+    ],
+    "forest_service_order": [
+      "water cycle",
+      "soil protection",
+      "habitat biodiversity"
+    ],
+    "forest_service_ranks": [
+      [
+        "low",
+        "medium",
+        "medium"
+      ],
+      [
+        "low",
+        "low",
+        "medium"
+      ],
+      [
+        "high",
+        "low",
+        "very high"
+      ],
+      [
+        "very high",
+        "very high",
+        "very high"
+      ],
+      [
+        "very high",
+        "very high",
+        "very high"
+      ]
+    ],
+    "exceptions": "Plateau border/ flexure erosion can be very high; floodplain wet-soil crops Euterpe oleracea and seasonal pasture; ravines cocoa/palms are crop pointers, not forest practice envelopes"
+  },
+  "table3": {
+    "page": 13,
+    "soil_texture": [
+      "Belterra Clay",
+      "Sand",
+      "Ferralitic crust",
+      "Mottled clay"
+    ],
+    "ravine_buffer_m": 10,
+    "slope_classes_percent": {
+      "Flat": [
+        0,
+        3
+      ],
+      "Slight slope": [
+        3,
+        8
+      ],
+      "Slope": [
+        8,
+        20
+      ],
+      "Steep slope": [
+        20,
+        45
+      ],
+      "Mountainous": [
+        45,
+        75
+      ]
+    },
+    "groundwater_influence": "under10m HAND; not measured groundwater depth or flood tolerance",
+    "flow_contributing_area": {
+      "pixels": 900,
+      "ha": 81
+    },
+    "hydrography_exclusion": "remove watercourses on Belterra clay",
+    "agriculture_rules": "mechanized cropping limited above8–10% slope; pasture allows8–20%; not T4 forest slope thresholds"
+  },
+  "table4": {
+    "page": 14,
+    "order": [
+      {
+        "class": "Floodplain",
+        "rule": "Groundwater YES AND soil not Belterra clay AND not Mottled Clay AND not Ferralitic Crust AND slope not Mountainous AND not High Slope"
+      },
+      {
+        "class": "Plateau",
+        "rule": "(Belterra Clay AND slope not Mountainous AND not High Slope) OR (Ferralitic Crust AND Flat)"
+      },
+      {
+        "class": "Ravine",
+        "rule": "Ravine YES"
+      },
+      {
+        "class": "Escarpment",
+        "rule": "(Mountainous OR High Slope) OR (Ferralitic Crust AND (slope OR Soft slope)) OR (Mottled Clay AND Slope)"
+      },
+      {
+        "class": "Valley slope",
+        "rule": "all remaining areas"
+      }
+    ],
+    "hold": "High Slope/Soft slope labels differ from Table3 Steep/Slight; ordering and overlaps require method implementation review, not executable here"
+  },
+  "context_only": {
+    "pages": [
+      3,
+      4
+    ],
+    "temperature_C": 26.6,
+    "rainfall_mm_year": 1805,
+    "dry_season_months": 6,
+    "dry_season_rainfall_share_percent": 14,
+    "plateau_relative_height_m": [
+      70,
+      150
+    ],
+    "kaolinite_percent": [
+      70,
+      80
+    ]
+  },
+  "limits": {
+    "pages": [
+      19,
+      20
+    ],
+    "canopy_bias_m": [
+      20,
+      30
+    ],
+    "original_DEM_m": 90,
+    "resampled_DEM_m": 30,
+    "conclusion": "source says insufficient for individual-farm monitoring; resampling not new detail"
+  },
+  "table9": {
+    "page": 18,
+    "native_distance_labels": [
+      "less than20km",
+      "between20and60km",
+      "up to60km"
+    ],
+    "years": [
+      2004,
+      2014
+    ],
+    "rows_ha": {
+      "Valley slope": [
+        397,
+        1077,
+        300,
+        161,
+        293,
+        582
+      ],
+      "Plateau": [
+        506,
+        32969,
+        34,
+        7914,
+        4,
+        407
+      ],
+      "Floodplain": [
+        84,
+        60,
+        96,
+        2,
+        119,
+        8
+      ],
+      "Escarpment": [
+        452,
+        3164,
+        0,
+        287,
+        6,
+        176
+      ],
+      "Ravines": [
+        172,
+        778,
+        99,
+        70,
+        64,
+        148
+      ],
+      "Total": [
+        6311,
+        38048,
+        529,
+        8434,
+        487,
+        1321
+      ]
+    },
+    "holds": [
+      "third distance label overlaps first two, not silently changed to beyond60",
+      "first-column component sum1611 differs printed6311; do not repair506 to5206",
+      "prose references primary-forest disappearance but table describes soybeans; no forest-effect attribution"
+    ]
+  },
+  "other_result_table_locators": {
+    "5": "p16 landform/deforestation areas; printed total before2008 is863,03; not threshold",
+    "6": "p16 tenure by deforestation period; descriptive not tenure-risk score",
+    "7": "p17 primary/secondary forest changes2003/2010/2017; regrowth not active planting",
+    "8": "p17 pasture changes1985/1995/2005/2015; some printed percentages use later-area denominator, not conventional baseline change"
+  },
+  "weights": "none assigned to suitability classes; do not invent MCDA weights"
+}
