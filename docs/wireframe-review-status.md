@@ -4,6 +4,29 @@
 
 Scores: 1 = barely addressed; 2 = partial explanation; 3 = usable illustration with material gaps; 4 = demonstrated with bounded limitations; 5 = requested demonstrator behaviour fully checked and reviewed. Scores assess the visual method illustration, not analytical readiness. No real schema tables or runtime outputs are connected.
 
+## Modular delivery queue
+
+Each module gets a bounded diff, browser checks and its own PR. Earlier modules remain usable without later modules. This queue does not authorise or claim live analytical integration.
+
+| Order | Module | Status | Completion boundary |
+|---|---|---|---|
+| 1 | Dataset inspection and response teaching examples | Implemented; awaiting review | Two dataset surfaces, local proposal comparison, six-slot cards, raw/response illustration, compatible save/load. Actual bindings remain deferred. |
+| 2 | Safety-critical evidence examples | Next | Sourced, applicable exclusion example and asset/establishment vulnerability; preserve evidence limits and avoid invented legal or risk verdicts. |
+| 3 | Practice-specific effects and resources | Pending | Matched response/confidence examples, hydrology and learning resources for each demonstrated practice; follow review state. |
+| 4 | Economic context and Bank indicators | Pending | Contextual cost evidence; remaining indicator definitions and denominators; qualified brief prose. |
+| 5 | Usability and consistency | Pending | Dense admin summaries, multi-practice overlaps, mobile/keyboard and remaining export/import edge cases. Pete/TTL comprehension review stays separate. |
+| 6 | Supporting AI examples | Pending | Concrete evidence-backed proposal diff; no live service commitment. |
+| Hold | Real table/runtime alignment | Deferred | T4–Diego contract settled and checked before any connection. |
+
+### Module 1: dataset inspection and response examples
+
+- Added a separate presentation module, `wireframe-inputs.js`, reached only through the existing optional technical workspace.
+- Published catalogue examples: Copernicus GLO-30 2024_1 for elevation/derived slope and World Bank SPID for poverty. Provider descriptions checked on 29 October 2026. Neither is claimed as the configured project binding; country/AOI access and fitness are unverified.
+- Fictional local alternatives expose year, units, coverage, grain, missing provenance, endorsement and compatibility checks. The before/after review table distinguishes a dataset/context proposal from analytical rules; no Apply control or live input change exists.
+- Four treatment types are separate: quantitative response, categorical host-system gate, confirmed legal mask and operational condition. Priority input, national context, correlation/weights and investment-risk choice are separately explained.
+- Six Variable Card slots retained. Slope raw/response tiles and step profiles reuse **hypothetical** scenarios 07–08 of the existing method example. No new analytical threshold is adopted. Missing cells remain Unknown; Low versus Unsuitable disagreement never creates a legal mask. Priority preview demonstrates why repeating a national value cannot rank districts.
+- Browser checks: both local candidate cards, source A/B response change, all six slots, unchanged opportunity total (2,967,500 nominal ha), priority context-only preview, new settings round-trip and old-result compatibility. No console errors. Syntax and whitespace checks pass. Actual family-specific curves, context bindings and evidence approval remain pending.
+
 ## Prioritised action table
 
 Multiple actions can remain on one row. “Demonstrated” means browser-checked at example grade; it does not mean an approved method, real dataset or stakeholder sign-off.
@@ -13,7 +36,7 @@ Multiple actions can remain on one row. “Demonstrated” means browser-checked
 | Background, project aims and tool purpose — P1 | 4 | Landing explains rural NbS, investment-scoping gap, intended users, project deliverables and the wireframe's purpose before objectives. | **P1:** Pete checks whether the explanation answers a first-time reader's questions. |
 | Explain each stage and simplify — P1 | 4 | Six original stages retained; each has a question, introduction and numbered/disclosed sections. Active stage and shared controls remain visible. | **P1:** First-time TTL walkthrough; tighten remaining long tables and repeated caveats based on actual confusion. |
 | Objectives before interventions — P1 | 4 | Two editable objective presets; selected objectives carry into hotspots and brief. Custom combinations explicitly have no illustrated ranking. | **P1:** Agree the intended objective-to-variable relationship; demonstrate contributions once agreed. |
-| Optional data-first configuration — P1 | 3 | Contextual returnable workspace under Setup, data inspection before analytical treatment, two variable surfaces and six card slots. | **P1:** Add concrete dataset-selection and local-override examples; show categorical gates separately from quantitative responses. **Dependency:** response curves/raw-transformed maps await agreed contract. |
+| Optional data-first configuration — P1 | 4 | Module 1 adds concrete catalogue/local candidate comparisons, proposal review differences, distinct treatment types and raw/response teaching previews within the two six-slot surfaces. | **P1:** Pete checks explanatory usefulness. **Dependency:** Actual family-specific response, local dataset validation and bindings await agreed contract; current curves are existing hypothetical method examples. |
 | Correct suitability and operational factors — P0 | 4 | Roads/access support do not alter opportunity; operational questions stay with Project Risk and hand-off. No universal slope threshold. | **P1:** Method owners verify the screen-to-method wording, including hard masks and context overrides. |
 | Shared selection and full labels — P1 | 4 | One state for viewed practice, suitability classes, climate and geographic view; hotspot classes remain separate. Three practices compared under common scope. | **P1:** Broader multi-practice selection/geography configuration remains outside this single-country example; avoid presenting three fixtures as full recipe support. |
 | Excluded, unknown and context areas — P0/P1 | 3 | Separate classes; context overlay; explanation rejects universal protected-area/wetland bans. | **P1:** Add one sourced, recipe-specific legal exclusion with an inspectable reason and local challenge route. Current spatial marks are synthetic. |
@@ -43,7 +66,7 @@ These retain the B01–B16 identifiers from the revision plan. No row is labelle
 |---|---|---|
 | B01 Objectives upfront | Visual behaviour demonstrated | Actual variable/weight mapping pending. |
 | B02 Active stages / overload | Main journey demonstrated | Full TTL usability check and dense admin-table simplification. |
-| B03 Meaning / calculation / source | Partial | Explanation patterns exist; real response previews and per-input coverage incomplete. |
+| B03 Meaning / calculation / source | Partial; Module 1 demonstration expanded | Concrete input metadata and hypothetical raw/response previews shown. Real family-specific profiles and per-input evidence coverage remain incomplete. |
 | B04 Climate / timing | Visual behaviour demonstrated | No avoided-loss or cost-of-delay inference. |
 | B05 Exclusions / adjacency | Partial | Overlay demonstrated; recipe-specific legal evidence pending. |
 | B06 Individual / overlapping hazards | Visual behaviour demonstrated | Synthetic flags, not severity/probability or overall risk. |

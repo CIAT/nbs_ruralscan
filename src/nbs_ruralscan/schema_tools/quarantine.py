@@ -83,7 +83,9 @@ def _tool_evidence_ids(root: Path) -> set[str]:
 # reviewer decides the residue from the advisory SCOPE-CHECK report.
 # `span_bleed` = a section signal fired but the quote still carries the criterion; the span
 # is the defect, not the claim, so it goes to the reviewer to RE-SLICE (retro 2026-09, FR).
-_ADVISORY_ONLY = {"site_context", "span_bleed"}
+# `m2b_flag` = feasibility-level detail in an operational unit (catalogue #50): the reviewer
+# decides; only the `m2b_exclude` variables are dropped (2026-10-29 retro).
+_ADVISORY_ONLY = {"site_context", "span_bleed", "m2b_flag"}
 
 
 def candidates(schema_root: str | Path = "schema") -> list[dict]:

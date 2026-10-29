@@ -401,3 +401,8 @@ cause and effect in the quote.** From Pete's review of the operational units (20
   (e.g. "85% of farmers hold no title"), or a chain of inference is not evidence that the
   factor limits the practice. The quote must say it does.
 - A second-hand claim keeps `claim_basis=cited_secondary` with the original in `lineage_of` (#32).
+
+51. **Significance uses the 5% convention** (Pete 2026-10-29). A result with 0.05 ≤ P < 0.10 is
+`significance=ns` even when the authors call it significant at their 10% level; keep its
+direction and record the authors' P value and wording in `context.note`. The ns weight
+discount applies. Example: Kidane 2019 basin net returns, KS test P = 0.08.
