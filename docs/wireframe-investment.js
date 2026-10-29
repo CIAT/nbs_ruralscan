@@ -68,11 +68,11 @@ window.WireframeInvestment = (() => {
   }
   const costs = {
     agro: {
-      name: 'Planted silvoarable agroforestry', value: 'No matched cost range verified in this module.',
-      context: 'The linked alley-cropping reading describes water and temperature effects, not a transferable project budget. FMNR or cocoa-system costs would not fill this planted-silvoarable gap.',
-      coverage: 'Obtain quantities and dated local quotes for tree establishment, protection, replacement, pruning and crop management; record tree density and cropped area separately.',
-      limits: 'Identify farmer labour, foregone crop income, time to tree income, survival, adoption and who pays. Calculator defaults remain invented assumptions.',
-      url: 'https://link.springer.com/article/10.1007/s10457-026-01436-4', source: 'Practice-context reading: Chalupecká et al. (2026)', locator: 'Not a cost source; no monetary range taken from this paper.'
+      name: 'Planted silvoarable agroforestry', value: 'AGFORWARD model case: €753.28/ha tree establishment; €51.40/ha/year average tree maintenance. One case, not a cost range.',
+      context: 'Bedfordshire, England: poplar with arable crops, 156 trees per system hectare; a 30-year model with cropping for 14 years. Report updated October 2017. Sterling costs were reported in euros at £1 = €1.389; no common price year for the tree costs is established here. This is not a Sierra Leone quotation.',
+      coverage: 'Table 11 covers the tree component; crop costs are separate in Table 10. Establishment includes itemised plants, protection, mulch, ground preparation and labour. The table also lists weeding, pruning, harvest and administration. Its maintenance figure is an annual average, not a year-by-year spending schedule.',
+      limits: 'The planted-tree/cropland arrangement matches this example; species, design, wages and context do not transfer automatically. Obtain dated local quantities, quotes and a maintenance schedule. Do not add itemised components to their totals or treat the annual average as a verified first-five-year budget. Calculator defaults stay invented; no currency conversion or source-to-budget transfer runs.',
+      url: 'https://agforward.eu/documents/Deliverable%206.18%20Modelling%20the%20economics%20of%20agroforestry%202.pdf#page=30', source: 'García de Jalón et al. (2017), AGFORWARD Deliverable 6.18', locator: '§§4.3.1–4.3.3, pp. 27–29: case, model and price basis; Table 11, p. 30, Silvoarable column. Model assumptions, not an approved T6E synthesis.'
     },
     forest: {
       name: 'Forest restoration · tree planting', value: 'FAO indicative range: US$1,000–3,000 per hectare for planting plus three years of maintenance and monitoring.',
