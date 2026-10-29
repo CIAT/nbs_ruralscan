@@ -1,0 +1,40 @@
+/* Presentation-only guidance. No analytical settings are changed here. */
+nav.tabs { position: sticky; top: 0; z-index: 30; background: var(--bg, #fff); }
+nav.tabs button[aria-selected="true"], .setup-subtabs .sst[aria-pressed="true"] {
+  background: #e1ece7; color: #193f32; box-shadow: inset 0 -3px #315e4b;
+}
+.journey-intro { display: flex; gap: 24px; padding: 24px 28px; border-bottom: 1px solid #d6dfd9; background: #f3f7f4; }
+.journey-copy { flex: 1; min-width: 0; max-width: 1000px; }
+.journey-eyebrow { color: #456352; font-size: 11px; font-weight: 700; letter-spacing: .04em; }
+.journey-intro h1 { font-size: 25px; line-height: 1.25; margin: 7px 0 10px; }
+.journey-intro p { font-size: 13px; line-height: 1.55; }
+.journey-intro .journey-limit { color: #52615a; margin-top: 6px; }
+.journey-objectives { margin-top: 12px; }
+.journey-example { display: block; color: #52615a; font-size: 11px; }
+.journey-actions { display: flex; flex-direction: column; gap: 10px; align-self: center; }
+.journey-actions [hidden] { display: none; }
+.objectives-card { padding: 20px; }
+.objectives-card fieldset { border: 0; min-width: 0; }
+.objectives-card legend { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.objectives-card p { font-size: 13px; line-height: 1.5; }
+.objective-options { display: flex; flex-wrap: wrap; gap: 10px; margin: 15px 0; }
+.objective-options label { display: flex; align-items: center; gap: 9px; padding: 12px 14px; border: 1px solid #b8c8be; border-radius: 6px; background: #fff; cursor: pointer; font-size: 13px; }
+.objective-options label:has(:checked) { background: #e1ece7; border-color: #315e4b; color: #193f32; }
+.objective-options label:has(:disabled) { opacity: .6; cursor: default; }
+.objective-options input { accent-color: #315e4b; width: 16px; height: 16px; }
+#objective-status { color: #52615a; margin-bottom: 12px; }
+.setup-disclosure > summary { padding: 18px 20px; cursor: pointer; font-size: 15px; font-weight: 700; }
+.setup-disclosure > summary span { display: block; padding-top: 5px; font-size: 12px; font-weight: 400; color: #52615a; }
+.setup-disclosure[open] > summary { border-bottom: 1px solid #d6dfd9; margin-bottom: 12px; }
+.technical-guide { flex: 0 0 100%; padding: 14px 18px; background: #f3f7f4; border-left: 3px solid #315e4b; font-size: 13px; line-height: 1.55; }
+.technical-guide p + p { margin-top: 6px; }
+.journey-intro button:focus-visible, .objective-options input:focus-visible, .setup-disclosure summary:focus-visible { outline: 3px solid #986324; outline-offset: 3px; }
+.journey-intro, .setup-disclosure { scroll-margin-top: 70px; }
+@media (max-width: 760px) {
+  .journey-intro { flex-direction: column; gap: 14px; padding: 18px; }
+  .journey-actions { align-self: flex-start; }
+  .journey-intro h1 { font-size: 22px; }
+  .objective-options { flex-direction: column; }
+  nav.tabs { overflow-x: auto; }
+}
+@media print { .journey-actions { display: none; } nav.tabs { position: static; } }
