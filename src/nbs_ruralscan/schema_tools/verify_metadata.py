@@ -185,10 +185,54 @@ def _title_page_in_body(source_id: str, title: str) -> int | None:
         for i in range(min(len(doc), 500)):
             page = doc[i].get_text()
             # a title may straddle a page turn; score the 2-page window
-            if _title_coverage(title, prev + " " + page) >= TITLE_THRESH:
+            # in the BODY the title must appear contiguously: scattered title words across
+            # two pages are not an identity (Donato 2012 cached for Bock 1978 scored 0.8)
+            window = prev + " " + page
+            key = _squash(title)[:40]
+            if (
+                len(key) >= 20
+                and key in _squash(window)
+                and not _cited_not_titled(title, window)
+            ):
                 return i + 1
             prev = page
     return None
+
+
+_REF_HEAD = None
+
+
+def _cited_not_titled(title: str, text: str) -> bool:
+    """True when the title appears only as a CITATION on the page: inside a reference list
+    (after a References / Literature cited / Bibliography heading) or as a reference entry
+    (a publication year just before it). Caught 2026-10-29: Donato et al. 2012 was cached
+    for Bock et al. 1978 and passed because Bock's title sits in Donato's reference list."""
+    import re
+
+    global _REF_HEAD
+    if _REF_HEAD is None:
+        _REF_HEAD = re.compile(
+            r"(references|literature cited|bibliography|références|referencias|"
+            r"bibliografía|referências)",
+        )
+    st, sx = _squash(title), _squash(text)
+    key = st[:40]
+    pos = sx.find(key) if len(key) >= 20 else -1
+    if pos < 0:
+        return False  # token-coverage match without a contiguous title: leave as is
+    head = _REF_HEAD.search(sx[:pos])
+    if head:
+        return True
+    before = sx[max(0, pos - 60) : pos]
+    return bool(
+        re.search(r"(19|20)\d{2}[a-z]?$", before[-12:])
+        or re.search(r"(19|20)\d{2}", before[-20:])
+    )
+
+
+#: note marker for an identity a person confirmed by eye (garbled cover text layer, a
+#: chapter in a book with an author-less citation); verify-titles never downgrades it
+HAND_CONFIRMED = "[title: confirmed by hand]"
 
 
 def verify_titles() -> int:
@@ -200,6 +244,16 @@ def verify_titles() -> int:
             "extracted",
         ):
             continue
+        if (r.get("url") or "").strip() and not (
+            r.get("target_library_path") or ""
+        ).strip():
+            continue  # code / web snapshot: pinned by URL + commit, no title page to check
+        if (
+            HAND_CONFIRMED in (r.get("note") or "")
+            and r.get("title_verified") == "true"
+        ):
+            passed += 1
+            continue  # a person confirmed identity where the text layer cannot show it
         text = _head_text(r["source_id"])
         if text is None:
             uncached += 1
