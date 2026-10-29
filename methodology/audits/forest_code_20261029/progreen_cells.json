@@ -1,0 +1,591 @@
+[
+  {
+    "raw_start_line": 4,
+    "raw_end_line": 33,
+    "cell_index_zero_based": 0,
+    "cell_type": "markdown",
+    "source": "# Suitability Analysis\n\nThe goal of this notebook is to walkthrough a process to generate a suitability map for reforestation projects. For now, we will be using the datasets in the table below, but the datasets and thresholds could be adjusted to account for other land suitability analysis.\n\nThe basic process is as follows:\n\n1. For each dataset define exclusion critera (values for which suitability is 0)\n2. For each dataset define suitability values (what values are better or worse for final ranking); scale all datasets 0-100 in suitability.\n3. Scale all datasets to the same spatial resolution and projection (best to choose one of the datasets to be the template)\n4. Apply exclusion and suitability classification to all the scaled datasets in #3.\n5. Combine all scaled datasets into final 0-100 classification\n\n| Category | Indicator Name | Time-Period | Endorsed by | Dataset Name | Link | Resolution | Descritpion | Exclusion Criteria |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| Geophysical | Slope | 2021   | CRIL/NBS | FABDEM V1-0 | [DEM](http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_DEM/) | 3 arc second | Yamazaki D., et al. | Exclude slope above 45 |\n| Geophysical | Elevation | 2021   | CRIL/NBS | FABDEM V1-0 | [DEM](http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_DEM/) | 3 arc second | Yamazaki D., et al. | Exclude areas above 2250m  |\n| Geophysical | Aspect | 2021   | CRIL/NBS | FABDEM V1-0 | [DEM](http://hydro.iis.u-tokyo.ac.jp/~yamadai/MERIT_DEM/) | 3 arc second | Yamazaki D., et al. | Exclude N facing  |\n| Climate | Precipitation | Past data | Initial list/ESRI | Precipitation | [TerraClimate](https://climate.northwestknowledge.net/TERRACLIMATE/index_directDownloads.php) | NA | NA  | rainfall > 400mm |\n| Climate | Potential Evapotranspiration | 2020 | NA | Potential Evapotranspiration | [TerraClimate](https://climate.northwestknowledge.net/TERRACLIMATE/index_directDownloads.php) | NA | TerraClim | PET > 5mm |\n| Climate | Maximum temperature | 2020 | NA | Maximum Temp | [TerraClimate](https://climate.northwestknowledge.net/TERRACLIMATE/index_directDownloads.php) | NA | TerraClim | Temp < 30 |\n| Life | Soil pH | 2017 | NBS team | Soil pH in H20 at 6 standard depths | [DL](https://zenodo.org/record/2525664#.ZGPk2-zMLc8) | 250m | Tomislav Hengl. (2018) | pH > 8.4 |\n| Life | Soil Organic Carbon | 2017 | NBS team | Soil organic carbon content | [Soil](https://zenodo.org/record/2525553#.ZGPf--zMLc8) | 250m | Tomislav Hengl. (2018) | < 60 tons/ha |\n| Life | Land cover | 2020   | NBS team | ESA WorldCover  | [ESA](https://registry.opendata.aws/esa-worldcover-vito/) | 10m   | (Zanaga et al., 2021)  | Exclude desert, urban, and forest  |\n| Life | Land degradation (NDVI anomaly) | 2001-2020 |  NASA |  GIMMS MODIS Terra & Aqua Global NDVI anomaly | [README](https://gimms.gsfc.nasa.gov/MODIS/README-global.txt) |  0.00225 deg | NASA | None |",
+    "raw_line_hints": [
+      7,
+      8,
+      9,
+      8,
+      11,
+      8,
+      13,
+      14,
+      15,
+      16,
+      17,
+      8,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30
+    ],
+    "disposition": "Ten documentation criteria retained verbatim; documented exclusions conflict with code. Distinct from README which substitutes Humans for temperature/NDVI."
+  },
+  {
+    "raw_start_line": 34,
+    "raw_end_line": 41,
+    "cell_index_zero_based": 1,
+    "cell_type": "markdown",
+    "source": "## Suitability questions\n- Which soil pH depth should we use? Using 200cm",
+    "raw_line_hints": [
+      37,
+      38
+    ],
+    "disposition": "pH depth choice 200cm; not surface soil."
+  },
+  {
+    "raw_start_line": 42,
+    "raw_end_line": 94,
+    "cell_index_zero_based": 2,
+    "cell_type": "code",
+    "source": "import sys, os, io, math, importlib, urllib.request, json\nimport rasterio, richdem\nimport boto3\n\nimport numpy as np\nimport pandas as pd\nimport geopandas as gpd\n\nfrom botocore import UNSIGNED\nfrom botocore.config import Config\n\nfrom osgeo import gdal \nfrom dem_stitcher import stitch_dem\n\nfrom pystac import Catalog, get_stac_version\nfrom pystac.extensions.eo import EOExtension\nfrom pystac.extensions.label import LabelExtension\nfrom pystac_client.client import Client\n\nsys.path.insert(0, \"/home/wb411133/Code/gostrocks/src\")\n\nimport GOSTRocks.rasterMisc as rMisc\nimport GOSTRocks.dataMisc as dataMisc\nimport GOSTRocks.mapMisc as mapMisc\n\nsys.path.insert(0, \"/home/wb411133/Code/DECAT_Space2Stats/src\")\n\nimport h3_helper as h3_helper\n\nsys.path.append(\"../src\")\nfrom pro_green import *\n\ns3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))\n\n%load_ext autoreload\n%autoreload 2",
+    "raw_line_hints": [
+      56,
+      57,
+      58,
+      8,
+      60,
+      61,
+      62,
+      8,
+      64,
+      65,
+      8,
+      67,
+      68,
+      8,
+      70,
+      71,
+      72,
+      73,
+      8,
+      75,
+      8,
+      77,
+      78,
+      79,
+      8,
+      81,
+      8,
+      83,
+      8,
+      85,
+      86,
+      8,
+      88,
+      8,
+      90,
+      91
+    ],
+    "disposition": "Imports, I/O, markdown organisation or display; no additional ecological criterion."
+  },
+  {
+    "raw_start_line": 95,
+    "raw_end_line": 140,
+    "cell_index_zero_based": 3,
+    "cell_type": "code",
+    "source": "# Define input data\niso3 = \"KGZ\"\noutput_folder = f\"/home/wb411133/projects/ProGreen_Suitability/Data/Output/{iso3}\"\nfigures_folder = \"../docs/images\"\nraw_data = os.path.join(output_folder, \"raw_data\")\nscaled_folder = os.path.join(output_folder, \"scaled_data\")\n\nlandcover_folder = os.path.join(output_folder, \"WorldCover\")\nlandcover_vrt = f'{landcover_folder}.vrt'\nelevation_file = os.path.join(output_folder, \"srtm_elevation.tif\")\nslope_file = os.path.join(output_folder, \"srtm_slope.tif\")\naspect_file = os.path.join(output_folder, \"srtm_aspect.tif\")\nsoil_file = os.path.join(output_folder, \"soil_ph.tif\")\n\n\nfor folder in [output_folder, landcover_folder, scaled_folder]:\n    if not os.path.exists(folder):\n        os.makedirs(folder)\n\nglobal_bounds = gpd.read_file(\"/home/public/Data/GLOBAL/ADMIN/Admin0_Polys.shp\")\ninB = global_bounds.loc[global_bounds['ISO3'] == iso3].to_crs(4326)\ninB.unary_union",
+    "raw_line_hints": [
+      116,
+      117,
+      118,
+      119,
+      120,
+      121,
+      8,
+      123,
+      124,
+      125,
+      126,
+      127,
+      128,
+      8,
+      8,
+      131,
+      132,
+      133,
+      8,
+      135,
+      136,
+      137
+    ],
+    "disposition": "Kyrgyzstan example, not a global forest prescription."
+  },
+  {
+    "raw_start_line": 141,
+    "raw_end_line": 157,
+    "cell_index_zero_based": 4,
+    "cell_type": "code",
+    "source": "# define source data location\n### Slope, aspect, and elevation will be dynamically grabbed from the elevation library\nterraclimate_precipitation = \"/home/public/Data/GLOBAL/CLIMATE/TERRACLIMATE/TerraClimate_ppt_2022.nc\"\nterraclimate_evapotraspiration = \"/home/public/Data/GLOBAL/CLIMATE/TERRACLIMATE/TerraClimate_pet_2022.nc\"\nterraclimate_temp = \"/home/public/Data/GLOBAL/CLIMATE/TERRACLIMATE/TerraClimate_tmax_2022.nc\"\nsoil_ph = '/home/public/Data/GLOBAL/LANDCOVER/SOIL/sol_ph.h2o_usda.4c1a2a_m_250m_b200..200cm_1950..2017_v0.2.tif'\nsoil_carbon = '/home/public/Data/GLOBAL/LANDCOVER/SOIL/sol_organic.carbon_usda.6a1c_m_250m_b200..200cm_1950..2017_v0.2.tif'\n# https://gimms.gsfc.nasa.gov/MODIS/README-global.txt\nsoil_degradation = \"https://gimms.gsfc.nasa.gov/MODIS/std/GMOD09Q1/cog/NDVI_anom_S2001-2021/2020/001/GMOD09Q1.A2020001.08d.latlon.global.061.NDVI_anom_S2001-2021.tif\"",
+    "raw_line_hints": [
+      146,
+      147,
+      148,
+      149,
+      150,
+      151,
+      152,
+      153,
+      154
+    ],
+    "disposition": "2022 climate files; soil pH and carbon 200cm files. Units/scaling require metadata."
+  },
+  {
+    "raw_start_line": 158,
+    "raw_end_line": 183,
+    "cell_index_zero_based": 5,
+    "cell_type": "code",
+    "source": "# Landcover data are available on an s3 bucket, details here https://registry.opendata.aws/esa-worldcover-vito/\nif not os.path.exists(landcover_vrt):\n    extent_obj = s3.get_object(Bucket=\"esa-worldcover\", Key='v200/2021/esa_worldcover_grid.geojson')\n    tile_extents = gpd.read_file(io.BytesIO(extent_obj['Body'].read()))\n    sel_tiles = tile_extents.loc[tile_extents.intersects(inB.unary_union)]\n    def get_tile(t_id):\n        out_file = os.path.join(landcover_folder, f'{t_id}.tif')\n        if not os.path.exists(out_file):\n            s3.download_file('esa-worldcover', \n                            f'v200/2021/map/ESA_WorldCover_10m_2021_v200_{t_id}_Map.tif', \n                            out_file)\n        return(out_file)\n\n    local_tiles = sel_tiles['ll_tile'].apply(get_tile)\n\n    vrt_options = gdal.BuildVRTOptions(resampleAlg='cubic', addAlpha=False)\n    my_vrt = gdal.BuildVRT(landcover_vrt, list(local_tiles.values), options=vrt_options)\n    my_vrt = None\n",
+    "raw_line_hints": [
+      163,
+      164,
+      165,
+      166,
+      167,
+      168,
+      169,
+      170,
+      171,
+      172,
+      173,
+      174,
+      8,
+      176,
+      8,
+      178,
+      179,
+      180
+    ],
+    "disposition": "Imports, I/O, markdown organisation or display; no additional ecological criterion."
+  },
+  {
+    "raw_start_line": 184,
+    "raw_end_line": 194,
+    "cell_index_zero_based": 6,
+    "cell_type": "markdown",
+    "source": "# Extract and process the local datasets\n\n1. Clip dataset to country extent\n2. Apply exclusion\n3. Apply suitability classification",
+    "raw_line_hints": [
+      187,
+      8,
+      189,
+      190,
+      191
+    ],
+    "disposition": "Imports, I/O, markdown organisation or display; no additional ecological criterion."
+  },
+  {
+    "raw_start_line": 195,
+    "raw_end_line": 208,
+    "cell_index_zero_based": 7,
+    "cell_type": "code",
+    "source": "degradation = {'max_val':250,\n          'min_val':None,   \n          'ranges':           [63, 100, 125, 156, 187, 250], #Define range breaks\n          'range_definition': [1 , 5  , 10  , 50 , 75 , 100],  #Assign values to ranges\n          'classifier': 'ranges'}\ndegradation, degradation_profile = clip_and_classify(soil_degradation, inB, degradation)",
+    "raw_line_hints": [
+      200,
+      201,
+      202,
+      203,
+      204,
+      205
+    ],
+    "disposition": "NDVI anomaly breaks 63,100,125,156,187,250; scores 1,5,10,50,75,100; max250. Raw encoded NDVI anomalies are not tree canopy or soil degradation measures without crosswalk."
+  },
+  {
+    "raw_start_line": 209,
+    "raw_end_line": 222,
+    "cell_index_zero_based": 8,
+    "cell_type": "code",
+    "source": "precip = {'min_val':50,\n          'max_val': None,\n          'classifier':'linear-ascending'}\nprecip_d, precip_profile = clip_and_classify(terraclimate_precipitation, inB, precip)\nprecip_d = np.sum(precip_d, axis=0) # get total precipitation across the months\nprecip_profile.update(count=1)",
+    "raw_line_hints": [
+      214,
+      215,
+      216,
+      217,
+      218,
+      219
+    ],
+    "disposition": "Precipitation min50, linear ascending; classification precedes monthly sum. Table says rainfall >400mm. Output is sum of scores, not raw annual rainfall."
+  },
+  {
+    "raw_start_line": 223,
+    "raw_end_line": 236,
+    "cell_index_zero_based": 9,
+    "cell_type": "code",
+    "source": "evapotranspiration = {'min_val':5,\n                      'max_val': None,\n                      'classifier':'linear-ascending'}\nevapo_d, evapo_profile = clip_and_classify(terraclimate_evapotraspiration, inB, evapotranspiration)\nevapo_d = np.sum(evapo_d, axis=0) # get total evapo-transpiration across the months\nevapo_profile.update(count=1)",
+    "raw_line_hints": [
+      228,
+      229,
+      230,
+      231,
+      232,
+      233
+    ],
+    "disposition": "PET min5, ascending; classification precedes sum. Table >5mm lacks period/scaling confirmation."
+  },
+  {
+    "raw_start_line": 237,
+    "raw_end_line": 261,
+    "cell_index_zero_based": 10,
+    "cell_type": "code",
+    "source": "max_temp = {\n    'classifier':'linear-ascending',\n    'min_val': None,\n    'max_val': None,\n}\ntemp_d, temp_profile = clip_and_classify(terraclimate_temp, inB, max_temp)\ntemp_d = np.max(temp_d, axis=0) # get total evapo-transpiration across the months\ntemp_profile.update(count=1)",
+    "raw_line_hints": [
+      251,
+      252,
+      253,
+      254,
+      255,
+      256,
+      257,
+      258
+    ],
+    "disposition": "Maximum temperature ascending with no bound; table Temp<30 not implemented. Not mean annual temperature."
+  },
+  {
+    "raw_start_line": 262,
+    "raw_end_line": 274,
+    "cell_index_zero_based": 11,
+    "cell_type": "code",
+    "source": "ph = {'min_val':8.3,\n      'max_val': None,\n      'classifier':'linear-ascending'}\nsoil_d, soil_profile = clip_and_classify(soil_ph, inB, ph)\nwrite_file(soil_d, soil_profile, soil_file)",
+    "raw_line_hints": [
+      267,
+      268,
+      269,
+      270,
+      271
+    ],
+    "disposition": "pH min8.3, ascending at 200cm; documentation >8.4. Do not resolve contradictory exclusion-header semantics or scaling by assumption."
+  },
+  {
+    "raw_start_line": 275,
+    "raw_end_line": 286,
+    "cell_index_zero_based": 12,
+    "cell_type": "code",
+    "source": "carbon = {'min_val':0,\n      'max_val': 60,\n      'classifier':'linear-descending'}\ncarbon_d, carbon_profile = clip_and_classify(soil_carbon, inB, carbon)",
+    "raw_line_hints": [
+      280,
+      281,
+      282,
+      283
+    ],
+    "disposition": "Carbon min0 max60 descending; zero min is ignored by helper. 200cm data versus table tons/ha: stock/concentration/depth unresolved."
+  },
+  {
+    "raw_start_line": 287,
+    "raw_end_line": 312,
+    "cell_index_zero_based": 13,
+    "cell_type": "code",
+    "source": "# Download and process elevation data\nif not os.path.exists(elevation_file):\n    elev_data, profile = stitch_dem(inB.total_bounds, dem_name='glo_90')\n    elev_copy = np.reshape(elev_data, (1,elev_data.shape[0],elev_data.shape[1]))\n    with rMisc.create_rasterio_inmemory(profile, elev_copy) as elevR:\n        rMisc.standardizeInputRasters(elevR, rasterio.open(soil_file), inR1_outFile=elevation_file)\n        \nif not os.path.exists(slope_file):\n    elev_scaled_r = rasterio.open(elevation_file)\n    elev_scaled_data = elev_scaled_r.read()[0,:,:]\n    elev_rd = richdem.rdarray(elev_scaled_data, no_data=profile['nodata'])\n    slope_d = richdem.TerrainAttribute(elev_rd, attrib='slope_riserun')\n    aspect_d = richdem.TerrainAttribute(elev_rd, attrib='aspect')\n    with rasterio.open(slope_file, 'w', **elev_scaled_r.profile) as out_raster:\n        out_raster.write_band(1, slope_d)\n        \n    with rasterio.open(aspect_file, 'w', **elev_scaled_r.profile) as out_raster:\n        out_raster.write_band(1, aspect_d)",
+    "raw_line_hints": [
+      292,
+      293,
+      294,
+      295,
+      296,
+      297,
+      298,
+      299,
+      300,
+      301,
+      302,
+      303,
+      304,
+      305,
+      306,
+      298,
+      308,
+      309
+    ],
+    "disposition": "DEM resampled to soil grid before slope_riserun derivation; slope45 is a rise/run threshold, not demonstrated 45 degrees. Contrary to project derive-then-aggregate rule."
+  },
+  {
+    "raw_start_line": 313,
+    "raw_end_line": 326,
+    "cell_index_zero_based": 14,
+    "cell_type": "code",
+    "source": "elev = {'min_val':None,\n      'max_val': 2250,\n      'classifier':'linear-ascending'}\n#elev_d, elev_profile = clip_and_classify(elevation_file, inB, elev)\ninput_elev = rasterio.open(elevation_file).read()\nelev_d = re_classify(input_elev, elev, None)",
+    "raw_line_hints": [
+      318,
+      319,
+      269,
+      321,
+      322,
+      323
+    ],
+    "disposition": "Elevation ascending up to2250; above excluded. Conditional direction within model, not global establishment limit."
+  },
+  {
+    "raw_start_line": 327,
+    "raw_end_line": 340,
+    "cell_index_zero_based": 15,
+    "cell_type": "code",
+    "source": "slope = {'min_val':None,\n      'max_val': 45,\n      'classifier':'binary'}\n#elev_d, elev_profile = clip_and_classify(elevation_file, inB, elev)\ninput_elev = rasterio.open(slope_file).read()\nslope_d = re_classify(input_elev, slope, None)",
+    "raw_line_hints": [
+      332,
+      333,
+      334,
+      321,
+      336,
+      337
+    ],
+    "disposition": "Slope binary max45 inclusive. No continuous penalty below bound; units conflict."
+  },
+  {
+    "raw_start_line": 341,
+    "raw_end_line": 356,
+    "cell_index_zero_based": 16,
+    "cell_type": "code",
+    "source": "aspect = {'min_val':None,\n          'max_val':None,\n          'ranges':           [(270-45), (270+45), 360], #Define range breaks\n          'range_definition': [100,      0,       100],  #Assign values to ranges\n          'classifier': 'ranges'}\n# North is 270 degrees, so bad values are North +- 45 degrees\ninput_aspect = rasterio.open(aspect_file).read()\naspect_d = re_classify(input_aspect, aspect, None)",
+    "raw_line_hints": [
+      346,
+      347,
+      348,
+      349,
+      204,
+      351,
+      352,
+      353
+    ],
+    "disposition": "Aspect range225,315,360 with scores100,0,100. Comment North=270; orientation convention needs checking. At360 np.digitize returns index3 not defined score."
+  },
+  {
+    "raw_start_line": 357,
+    "raw_end_line": 381,
+    "cell_index_zero_based": 17,
+    "cell_type": "code",
+    "source": "landcover = {'min_val':None,\n             'max_val':None,\n             'map_vals':{10:50,  # Trees\n                         20:100, # Shrubland\n                         30:100, # Grassland\n                         40:50,  # Crops\n                         50:0,   # Built-up\n                         60:100, # Bare\n                         70:0,   # Snow and ice\n                         80:0,   # Water\n                         90:100, # Herbaceous wetland\n                         95:100, # Mangroves\n                         100:50, # Moss\n                        },\n            'classifier': 'convert'}\n\nlc_d, lc_profile = clip_and_classify(landcover_vrt, inB, landcover)",
+    "raw_line_hints": [
+      362,
+      363,
+      364,
+      365,
+      366,
+      367,
+      368,
+      369,
+      370,
+      371,
+      372,
+      373,
+      374,
+      375,
+      376,
+      8,
+      378
+    ],
+    "disposition": "All11 WorldCover classes preserved: trees50,shrub100,grass100,crop50,built0,bare100,snow0,water0,herbaceouswetland100,mangrove100,moss50. Contradicts documented forest/desert exclusions. No natural-habitat conversion recommendation."
+  },
+  {
+    "raw_start_line": 382,
+    "raw_end_line": 394,
+    "cell_index_zero_based": 18,
+    "cell_type": "code",
+    "source": "# rasterize admin boundary to mask final result\noutput = rMisc.rasterizeDataFrame(inB, os.path.join(output_folder, \"admin_bound.tif\"), \n                                                 templateRaster=soil_file)\nadmin_d = output['vals']\nadmin_profile = output['meta']",
+    "raw_line_hints": [
+      387,
+      388,
+      389,
+      390,
+      391
+    ],
+    "disposition": "Imports, I/O, markdown organisation or display; no additional ecological criterion."
+  },
+  {
+    "raw_start_line": 395,
+    "raw_end_line": 401,
+    "cell_index_zero_based": 19,
+    "cell_type": "markdown",
+    "source": "# Scale all datasets to template dataset",
+    "raw_line_hints": [
+      398
+    ],
+    "disposition": "Imports, I/O, markdown organisation or display; no additional ecological criterion."
+  },
+  {
+    "raw_start_line": 402,
+    "raw_end_line": 425,
+    "cell_index_zero_based": 20,
+    "cell_type": "code",
+    "source": "templateR = rasterio.open(soil_file)\ninput_elev = rasterio.open(elevation_file)\n\ndefs = [ # numpy array of data, rasterio profile, output_file, weight\n    [degradation, degradation_profile, os.path.join(scaled_folder, \"land_degradation.tif\"),     2],    \n    [precip_d, precip_profile, os.path.join(scaled_folder, \"precipitation.tif\"),     2],\n    [evapo_d, evapo_profile, os.path.join(scaled_folder, \"evapo_transpiration.tif\"), 2],\n    [temp_d, temp_profile, os.path.join(scaled_folder, \"max_temperature.tif\"),       2],\n    [soil_d, soil_profile, os.path.join(scaled_folder, \"soil_ph.tif\"),               1],\n    [carbon_d, carbon_profile, os.path.join(scaled_folder, \"soil_carbon.tif\"),       1],\n    [elev_d, input_elev.profile, os.path.join(scaled_folder, \"elevation.tif\"),       1],\n    [slope_d, input_elev.profile, os.path.join(scaled_folder, \"slope.tif\"),          0.1],\n    [aspect_d, input_elev.profile, os.path.join(scaled_folder, \"aspect.tif\"),        0.1],\n    [lc_d, lc_profile, os.path.join(scaled_folder, \"worldcover.tif\"),                2],\n    [admin_d, admin_profile, os.path.join(scaled_folder, \"admin_bounds.tif\"),        0.1]\n]\n",
+    "raw_line_hints": [
+      407,
+      408,
+      8,
+      410,
+      411,
+      412,
+      413,
+      414,
+      415,
+      416,
+      417,
+      418,
+      419,
+      420,
+      421,
+      422
+    ],
+    "disposition": "All11 weights retained: NDVI2,precip2,PET2,tmax2,pH1,carbon1,elev1,slope0.1,aspect0.1,landcover2,admin0.1. Source weights only, not runtime weights."
+  },
+  {
+    "raw_start_line": 426,
+    "raw_end_line": 467,
+    "cell_index_zero_based": 21,
+    "cell_type": "code",
+    "source": "importlib.reload(rMisc)\n\nresult = {}\nfor cdef in defs:\n    label = os.path.basename(cdef[2])[:-4:]\n    if not os.path.exists(cdef[2]):\n        cData, cProfile = scale_write(cdef[0], cdef[1], templateR, cdef[2])\n    else:\n        cur_r = rasterio.open(cdef[2])\n        cData = cur_r.read()\n        cProfile = cur_r.profile.copy()\n    cData = cData * cdef[3]\n    result[label] = cData\n    print(label)",
+    "raw_line_hints": [
+      451,
+      8,
+      453,
+      454,
+      455,
+      456,
+      457,
+      458,
+      459,
+      460,
+      461,
+      462,
+      463,
+      464
+    ],
+    "disposition": "Weighted rasters may reuse cached files; runtime provenance would need cache audit."
+  },
+  {
+    "raw_start_line": 468,
+    "raw_end_line": 515,
+    "cell_index_zero_based": 22,
+    "cell_type": "code",
+    "source": "try:\n    del final\n    del final_good\nexcept:\n    pass\n\nfor key, value in result.items():\n    print(f'{key}: {value.shape[1]}, {value.shape[2]}')\n    good_mask = (value * 0) + 1\n    good_mask[value == 0] = 0    \n    try:        \n        final = final + value\n        final_good = final_good * good_mask\n    except:\n        final = value\n        final_good = good_mask\n        \nfinal = (final - np.min(final)) / (np.max(final) - np.min(final)) * 100\nfinal = final * final_good\nfinal = final.astype(int)",
+    "raw_line_hints": [
+      493,
+      494,
+      495,
+      496,
+      497,
+      8,
+      499,
+      500,
+      501,
+      502,
+      503,
+      504,
+      505,
+      506,
+      507,
+      508,
+      298,
+      510,
+      511,
+      512
+    ],
+    "disposition": "Sum weighted scores, normalize by observed extrema, multiply all nonzero masks. Zero can mean valid lowest suitability or exclusion; these are conflated."
+  },
+  {
+    "raw_start_line": 516,
+    "raw_end_line": 537,
+    "cell_index_zero_based": 23,
+    "cell_type": "code",
+    "source": "with rMisc.create_rasterio_inmemory(cProfile, final) as mapR:\n    mapMisc.static_map_raster(mapR, thresh=list(range(0,101,10)), figsize=(20,20), \n                              out_file=os.path.join(figures_folder, \"Suitability_beta.png\"))",
+    "raw_line_hints": [
+      532,
+      533,
+      534
+    ],
+    "disposition": "Imports, I/O, markdown organisation or display; no additional ecological criterion."
+  },
+  {
+    "raw_start_line": 538,
+    "raw_end_line": 547,
+    "cell_index_zero_based": 24,
+    "cell_type": "code",
+    "source": "with rasterio.open(os.path.join(output_folder, \"suitability.tif\"), 'w', **templateR.profile) as out_raster:\n    out_raster.write(final)",
+    "raw_line_hints": [
+      543,
+      544
+    ],
+    "disposition": "Imports, I/O, markdown organisation or display; no additional ecological criterion."
+  },
+  {
+    "raw_start_line": 548,
+    "raw_end_line": 554,
+    "cell_index_zero_based": 25,
+    "cell_type": "markdown",
+    "source": "# Aggregate datasets",
+    "raw_line_hints": [
+      551
+    ],
+    "disposition": "Imports, I/O, markdown organisation or display; no additional ecological criterion."
+  },
+  {
+    "raw_start_line": 555,
+    "raw_end_line": 569,
+    "cell_index_zero_based": 26,
+    "cell_type": "code",
+    "source": "# Aggregate to established admin2 boundaries, h3 grid cells, water basins\nadm_bounds = dataMisc.get_geoboundaries(iso3, \"ADM2\")\nadm_res = rMisc.zonalStats(adm_bounds, os.path.join(output_folder, \"suitability.tif\"), minVal=0)\nadm_res = pd.DataFrame(adm_res, columns=['SUM', 'MIN', 'MAX', 'MEAN'])\nadm_bounds['suit_MAX'] = adm_res['MAX']\nadm_bounds['suit_MEAN'] = adm_res['MEAN']\nadm_bounds.to_file(os.path.join(output_folder, \"geobounds_adm2_suitability.shp\"))",
+    "raw_line_hints": [
+      560,
+      561,
+      562,
+      563,
+      564,
+      565,
+      566
+    ],
+    "disposition": "Admin2 zonal summary, not independent validation."
+  },
+  {
+    "raw_start_line": 570,
+    "raw_end_line": 583,
+    "cell_index_zero_based": 27,
+    "cell_type": "code",
+    "source": "h3_cells = h3_helper.generate_h3_gdf(adm_bounds, 5)\nh3_res = rMisc.zonalStats(h3_cells, os.path.join(output_folder, \"suitability.tif\"), minVal=0)\nh3_res = pd.DataFrame(h3_res, columns=['SUM', 'MIN', 'MAX', 'MEAN'])\nh3_cells['suit_MAX'] = h3_res['MAX'].astype(float).values\nh3_cells['suit_MEAN'] = h3_res['MEAN'].astype(float).values\nh3_cells.to_file(os.path.join(output_folder, \"h3_suitability.shp\"))",
+    "raw_line_hints": [
+      575,
+      576,
+      577,
+      578,
+      579,
+      580
+    ],
+    "disposition": "H3 resolution5 aggregation, not a suitability threshold."
+  },
+  {
+    "raw_start_line": 584,
+    "raw_end_line": 615,
+    "cell_index_zero_based": 28,
+    "cell_type": "code",
+    "source": "level = '07'\nglobal_hydrobasins = f\"/home/public/Data/GLOBAL/HYDRO/HydroBasins/Asia/hybas_as_lev{level}_v1c.shp\"\nglobal_basins = gpd.read_file(global_hydrobasins)\nsel_basins = global_basins.loc[global_basins.intersects(adm_bounds.unary_union)]\nbasins_res = rMisc.zonalStats(sel_basins, os.path.join(output_folder, \"suitability.tif\"), minVal=0)\nbasins_res = pd.DataFrame(basins_res, columns=['SUM', 'MIN', 'MAX', 'MEAN'])\nsel_basins['suit_MAX'] = basins_res['MAX'].astype(float).values\nsel_basins['suit_MEAN'] = basins_res['MEAN'].astype(float).values\nsel_basins.to_file(os.path.join(output_folder, f\"hydro__basins_{level}_suitability.shp\"))",
+    "raw_line_hints": [
+      604,
+      605,
+      606,
+      607,
+      608,
+      609,
+      610,
+      611,
+      612
+    ],
+    "disposition": "HydroBASINS level07 aggregation, not an independent ecological response."
+  },
+  {
+    "raw_start_line": 616,
+    "raw_end_line": 644,
+    "cell_index_zero_based": 29,
+    "cell_type": "code",
+    "source": "",
+    "raw_line_hints": [],
+    "disposition": "Imports, I/O, markdown organisation or display; no additional ecological criterion."
+  }
+]
