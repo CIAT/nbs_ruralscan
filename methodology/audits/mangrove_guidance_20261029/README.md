@@ -1,5 +1,7 @@
 # Mangrove guidance review — 29 October 2026
 
+Follow-on review: [completion audit](../mangrove_guidance_completion_20261029/README.md) closes the remaining text-screening gaps and adds three operational records. This original batch report and its coverage snapshot remain historical; full extraction, mapping and human review are still incomplete.
+
 This bounded batch reads selected diagnostic and restoration sections of the UNEP Western Indian Ocean guide (2020) and FFEM guide (2024), under extraction ruleset v1.8.0. **Six unapproved qualitative units enter EV: four structural and two operational.** No numerical suitability function, runtime weight, human approval or recipe change is introduced.
 
 This is **not a full review of either book**. The PDFs contain 73 and 71 pages respectively; FFEM PDF pages are two-page spreads. `page_coverage.json` distinguishes 22 UNEP and 23 FFEM pages read from pages merely indexed. Both SRC records remain `in_progress`; queue `extracted` denotes partial extraction. All earlier human decisions remain unchanged. The prior 20/29 selected-artifact review count is not turned into 22 completed sources: two additional candidates are now partially reviewed, seven remain untouched, and separate ITTO reuse and earlier holds remain.
