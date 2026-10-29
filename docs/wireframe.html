@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Rural NbS Scan — TTL-facing decision-support tool for Nature-based Solutions investment. Wireframe v0.7 demonstrator. World Bank D591 / Alliance Bioversity & CIAT.">
-<title>Rural NbS Scan — TTL Tool Wireframe v0.7</title>
+<meta name="description" content="Rural NbS Scan — Interactive explanation of rural Nature-based Solutions scoping. Illustrative data; not a feasibility assessment or final tool design. World Bank D591 / Alliance Bioversity & CIAT.">
+<title>Rural NbS Scan — v1 draft</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -2947,6 +2947,8 @@
   .fp-note svg { width:14px; height:14px; color:var(--accent); flex-shrink:0; margin-top:1px; }
   /*__APPEND_HERE__*/
 </style>
+<link rel="stylesheet" href="wireframe-guide.css">
+<link rel="stylesheet" href="wireframe-versions.css">
 </head>
 <body>
 
@@ -2994,13 +2996,36 @@
 </svg>
 
 <div class="app">
+<div class="wireframe-version-bar" aria-label="Wireframe versions">
+  <label for="wireframe-version">View version</label>
+  <select id="wireframe-version" aria-describedby="wireframe-version-note"><option value="wireframe-v0.html">v0 · Original</option><option value="wireframe.html" selected>v1 · Draft</option></select>
+  <span id="wireframe-version-note">Draft revision · objectives-first walkthrough · switching versions resets example selections.</span>
+  <noscript><a href="wireframe-v0.html">v0 · Original</a> · <a href="wireframe.html">v1 · Draft</a></noscript>
+  <details class="wireframe-changes">
+    <summary>What changed? · v0 → v1 draft</summary>
+    <div class="wireframe-changes-body">
+      <h2>v1 draft · 29 October 2026</h2>
+      <p>v0 preserves the original published mock-up. v1 is the first presentation revision following project-team and Bank feedback.</p>
+      <ul>
+        <li><b>Objectives first:</b> opens in Setup instead of the map. Choose two or three project objectives; they stay visible through the walkthrough without changing example rankings.</li>
+        <li><b>Clearer purpose:</b> every section introduces its question and scope limits. The wireframe illustrates a scoping method; maps and figures are examples.</li>
+        <li><b>Simpler Setup:</b> scope and recipe details expand when needed. “Open example opportunity space” replaces “Run analysis”.</li>
+        <li><b>Optional technical detail:</b> clearer data-first guidance, links from the main journey and a return button. Suitability and hotspot settings remain separate.</li>
+        <li><b>Easier orientation:</b> stronger active-tab shading, navigation visible while scrolling, full suitability and hotspot class names, and example-context labels that do not imply one global NbS.</li>
+      </ul>
+      <p><b>Unchanged:</b> section order and analytical rules. The draft does not run analyses or connect real input tables and computed results.</p>
+      <p><b>Still pending:</b> deeper results-panel simplification, remaining Bank examples (including hydrology and economics), AI concepts, and front/back-end alignment. This draft does not close the full feedback list.</p>
+    </div>
+  </details>
+</div>
+
 
   <!-- ─────────────────────────── HEADER ─────────────────────────── -->
   <header class="top" role="banner">
     <div class="brand">
       <div class="mark" aria-hidden="true">NbS</div>
       <div class="name">Rural NbS Scan
-        <span class="sub">TTL-Facing Tool · v0.7 demonstrator</span>
+        <span class="sub">Scoping method · interactive demonstrator</span>
       </div>
     </div>
     <div class="meta" role="status" aria-label="Tool status">
@@ -3020,14 +3045,11 @@
   </header>
 
   <!-- ─────────────────────────── CONTEXT ─────────────────────────── -->
-  <div class="context" role="region" aria-label="Analysis scope">
-    <span class="cx"><span class="k">NbS</span><span class="v">Agroforestry</span></span>
-    <span class="cx"><span class="k">Country</span><span class="v">Sierra Leone</span></span>
-    <span class="cx"><span class="k">Admin</span><span class="v">ADM2</span></span>
-    <span class="cx"><span class="k">Res</span><span class="v">5 km</span></span>
-    <span class="cx"><span class="k">Climate</span><span class="v">Baseline + SSP2-4.5 / 2050</span></span>
-    <span class="cx"><span class="k">Risk</span><span class="v">Mode A · H×E</span></span>
-    <span class="cx"><span class="k">Recipe</span><span class="v">Agroforestry · Standard</span></span>
+  <div class="context" role="region" aria-label="Illustrative analysis context">
+    <span class="cx"><span class="k">Example country</span><span class="v">Sierra Leone</span></span>
+    <span class="cx"><span class="k">Example units</span><span class="v">ADM2</span></span>
+    <span class="cx"><span class="k">Example grid</span><span class="v">5 km</span></span>
+    <span class="cx"><span class="k">Example climate</span><span class="v">Baseline + SSP2-4.5 / 2050</span></span>
     <span class="spacer"></span>
     <label class="tech-toggle" title="Reveal expert-only controls: correlation matrix, cluster-representative promotion, response-curve editing, weights, and the Danger Zone.">
       <input type="checkbox" id="tech-mode-chk">
@@ -3042,12 +3064,12 @@
 
   <!-- ─────────────────────────── TABS ─────────────────────────── -->
   <nav class="tabs" role="tablist" aria-label="TTL tool sections">
-    <button role="tab" id="tab-setup"   aria-controls="panel-setup"   aria-selected="false" tabindex="-1" data-tab="setup">
+    <button role="tab" id="tab-setup"   aria-controls="panel-setup"   aria-selected="true" tabindex="0" data-tab="setup">
       <span class="step" aria-hidden="true">01</span>
       <svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg>
       Setup
     </button>
-    <button role="tab" id="tab-opp"     aria-controls="panel-opp"     aria-selected="true"  tabindex="0"  data-tab="opp">
+    <button role="tab" id="tab-opp"     aria-controls="panel-opp"     aria-selected="false" tabindex="-1"  data-tab="opp">
       <span class="step" aria-hidden="true">02</span>
       <svg class="ic" aria-hidden="true"><use href="#i-map"/></svg>
       Opportunity Space
@@ -3084,26 +3106,56 @@
     </button>
   </nav>
 
+  <div class="journey-intro" aria-labelledby="journey-title">
+    <div class="journey-copy">
+      <span class="journey-eyebrow">A visual guide to the method · illustrative data</span>
+      <h1 id="journey-title">What should this project improve?</h1>
+      <p id="journey-purpose">Start with the problem, then explore where rural nature-based solutions could fit. This wireframe explains scoping; it is not a final tool design or a feasibility assessment.</p>
+      <p class="journey-limit" id="journey-limit">Maps and figures are examples, not pilot results. Local partners must refine and validate any proposed intervention before implementation.</p>
+      <p class="journey-objectives"><b>Your objectives:</b> <span id="journey-objectives">Choose two or three below.</span> <span class="journey-example">Guidance only; does not recalculate example maps or rankings.</span></p>
+    </div>
+    <div class="journey-actions">
+      <button type="button" class="btn-secondary" id="journey-config">Optional technical configuration</button>
+      <button type="button" class="btn-secondary" id="journey-back" hidden>Back to previous section</button>
+    </div>
+  </div>
+
   <!-- ─────────────────────────── MAIN ─────────────────────────── -->
   <main>
 
     <!-- =====================================================================
          SETUP
          ===================================================================== -->
-<section role="tabpanel" id="panel-setup" aria-labelledby="tab-setup" tabindex="0" data-tab="setup">
+<section role="tabpanel" id="panel-setup" aria-labelledby="tab-setup" tabindex="0" data-tab="setup" data-active>
       <p class="vh">Setup tab — choose NbS, geographic scope, resolution and climate; learn how to use the tool.</p>
       <div class="setup-subtabs" role="tablist" aria-label="Setup sub-sections">
         <button type="button" class="sst" data-sub="scope" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg>Scope &amp; climate</button>
-        <button type="button" class="sst" data-sub="vars"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>Variable config</button>
+        <button type="button" class="sst" data-sub="vars"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>Technical configuration · optional</button>
+      </div>
+
+      <div class="setup-band objectives-card">
+        <fieldset aria-describedby="objective-help objective-status">
+          <legend>Choose your project objectives</legend>
+          <p id="objective-help">Select two or three priorities to frame your review. These choices stay visible as you explore the method; they do not set analytical weights.</p>
+          <div class="objective-options">
+            <label><input type="checkbox" name="project-objective" value="Climate resilience">Climate resilience</label>
+            <label><input type="checkbox" name="project-objective" value="Livelihoods and food security">Livelihoods and food security</label>
+            <label><input type="checkbox" name="project-objective" value="Biodiversity and ecosystems">Biodiversity and ecosystems</label>
+            <label><input type="checkbox" name="project-objective" value="Water security">Water security</label>
+            <label><input type="checkbox" name="project-objective" value="Equity and inclusion">Equity and inclusion</label>
+          </div>
+          <p id="objective-status" role="status">No objectives selected. Choose two or three.</p>
+        </fieldset>
+        <button type="button" class="btn-secondary" id="guide-to-scope">Next: choose practices and geography</button>
       </div>
 
       <!-- BAND 1 · Configure -->
-      <div class="setup-band" data-band="1">
-        <div class="band-head"><span class="band-n">Step 1</span><h3>Configure your scan</h3><span class="band-sub">choose what to map, where, at what detail, and the climate lens</span></div>
+      <details class="setup-band setup-disclosure" data-band="1" id="setup-scope-details">
+        <summary>1 · Choose practices, geography and climate <span>Open when you are ready to define the scan.</span></summary>
         <div class="band-grid-2">
           <div class="band-col"><div class="panel">
           <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-leaf"/></svg>1 · Nature-based solutions</h2><span class="right" id="nbs-count">3 selected</span></div>
-          <p class="muted" style="margin-bottom:10px;">Each selected NbS gets its own opportunity space. </p>
+          <p class="muted" style="margin-bottom:10px;">Choose practices worth exploring for your objectives. Each has its own opportunity space; the example results have their own viewing selectors. </p>
           <div class="nbs-hier" id="nbs-hier">
             <div class="nh-grp"><div class="nh-gt">Trees &amp; forests</div>
               <div class="nh-node" data-nbs="agro">
@@ -3151,7 +3203,7 @@
           </div>
         </div></div>
           <div class="band-col"><div class="panel">
-          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>2 · Geographic scope</h2></div>
+          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>2 · Geographic scope</h2></div><p class="muted">Define the landscape to investigate, then choose administrative units for summaries.</p>
           <div class="ctl">
             <label class="lbl" for="sel-country"><svg class="ic" aria-hidden="true"><use href="#i-globe"/></svg>Country / region</label>
             <select id="sel-country"><option>Sierra Leone</option></select>
@@ -3172,7 +3224,7 @@
             </select>
           </div>
         </div><div class="panel">
-          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg>3 · Analysis resolution</h2></div>
+          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg>3 · Analysis resolution</h2></div><p class="muted">Choose the detail of a landscape scan. Map cells do not identify eligible farms or individual holdings.</p>
           <div class="ctl">
             <label class="lbl" for="sel-res">Resolution</label>
             <select id="sel-res">
@@ -3186,7 +3238,7 @@
             <span>Start coarse at <b>5 km</b> to iterate cheaply, then refine to 1 km for the final run. The resolution audit flags any upsampled inputs (e.g. the 1 km poverty surface).</span>
           </div>
         </div><div class="panel">
-          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-thermometer"/></svg>4 · Climate</h2></div>
+          <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-thermometer"/></svg>4 · Climate</h2></div><p class="muted">Compare climate contexts for the scan. These controls illustrate settings; they do not run an analysis.</p>
           <div class="ctl">
             <span class="lbl"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Climate risk mode</span>
             <div class="radio-list" role="radiogroup" aria-label="Climate risk mode">
@@ -3206,15 +3258,15 @@
           </div>
         </div></div>
         </div>
-      </div>
+      </details>
 
       <!-- BAND 2 · Review recipe -->
-      <div class="setup-band" data-band="2">
-        <div class="band-head"><span class="band-n">Step 2</span><h3>Review your recipe</h3><span class="band-sub">the variables and rules derived from your choices above</span></div>
+      <details class="setup-band setup-disclosure" data-band="2">
+        <summary>2 · Inspect the example recipe <span>Optional: see where inputs and analytical settings belong.</span></summary>
         <div class="recipe-surface"><div class="panel">
           <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-database"/></svg>Variables &amp; recipe</h2><span class="right mono">Agroforestry · Standard</span></div>
-          <p>A <b>recipe</b> is the set of environmental, socio-economic and hazard variables — and the rules that turn them into a suitability score — used to map where this NbS can work. The <b>Standard</b> recipe is expert-curated; you can switch to your own saved settings in Variable Config.</p>
-          <p style="margin-top:8px;">This recipe pulls <b>23 variables</b>; after correlation clustering (collapsing variables that measure nearly the same thing, <code>|r| &gt; 0.7</code>) about <b>16 representatives</b> enter the analysis. Data readiness:</p>
+          <p>A <b>recipe</b> describes the inputs and rules used for a particular NbS. Inspect the example below if you need technical detail. Dataset selection and analytical tuning are separate tasks; this wireframe does not load your current recipe tables.</p>
+          <p style="margin-top:8px;">This fixed example shows <b>23 variables</b>; after correlation clustering (collapsing variables that measure nearly the same thing, <code>|r| &gt; 0.7</code>) about <b>16 representatives</b> enter the analysis. Data readiness:</p>
           <div class="row-flex" style="margin:10px 0;">
             <span class="pill green"><span class="dot"></span>19 · BUILT-IN</span>
             <span class="pill amber"><span class="dot"></span>1 · COMMUNITY</span>
@@ -3227,21 +3279,21 @@
             <svg class="ic" aria-hidden="true"><use href="#i-arrow-right"/></svg>
           </button>
         </div></div>
-      </div>
+      </details>
 
       <!-- BAND 3 · Run -->
       <div class="setup-band" data-band="3">
-        <div class="band-head"><span class="band-n">Step 3</span><h3>Run the analysis</h3><span class="band-sub">compute suitability across the opportunity space</span></div>
+        <div class="band-head"><span class="band-n">Step 3</span><h3>Explore the example</h3><span class="band-sub">See how the method presents its outputs.</span></div>
         <div class="run-bar"><div class="panel">
           <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-            <button class="btn-primary" type="button">
-              <svg class="ic" aria-hidden="true"><use href="#i-cpu"/></svg>
-              Run analysis
+            <button class="btn-primary" type="button" id="guide-open-example">
+              <svg class="ic" aria-hidden="true"><use href="#i-map"/></svg>
+              Open example opportunity space
               <svg class="ic" aria-hidden="true"><use href="#i-arrow-right"/></svg>
             </button>
-            <span class="muted">Runs in Python (xarray · xee on GEE data) · cached outputs reused where possible</span>
+            <span class="muted">Illustrative results only · no analysis is run</span>
           </div>
-          <p class="muted" style="margin-top:10px; font-size:10.5px; display:inline-flex; align-items:center; gap:6px;"><span class="sb-status" style="background:#f0d8d0; color:var(--benson-ink); display:inline-flex; align-items:center; gap:4px;"><svg class="ic-xs" aria-hidden="true"><use href="#i-lock"/></svg>Admin</span> Invalidating cached suitability surfaces is audit-logged and affects the whole team.</p>
+
         </div></div>
         <details class="help-strip"><summary>How to use this tool — guides, videos &amp; methodology</summary><div class="panel">
           <div class="ph"><h2><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg>How to use this tool</h2></div>
@@ -3273,9 +3325,9 @@
 </section>
 
     <!-- =====================================================================
-         OPPORTUNITY SPACE  (default)
+         OPPORTUNITY SPACE
          ===================================================================== -->
-    <section role="tabpanel" id="panel-opp" aria-labelledby="tab-opp" tabindex="0" data-tab="opp" data-active>
+    <section role="tabpanel" id="panel-opp" aria-labelledby="tab-opp" tabindex="0" data-tab="opp">
       <p class="vh">Opportunity Space tab — where the selected NbS can plausibly be implemented in Sierra Leone, with suitability classes, scorecard, and what-if constraint toggles.</p>
 
       <!-- NbS selector bar (full width, above the map) -->
@@ -3294,14 +3346,14 @@
             <svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>
             <span class="os-band-title">SUITABILITY SCOPE</span>
             <span class="os-band-sub">where this NbS can work</span>
-            <span class="os-band-area"><span class="os-scope-classes"><b>VH + H</b></span> · <span class="os-scope-area"><b>18,700 km²</b></span></span>
+            <span class="os-band-area"><span class="os-scope-classes"><b>Very high + High</b></span> · <span class="os-scope-area"><b>18,700 km²</b></span></span>
           </div>
           <div class="os-filter" role="group" aria-label="Suitability classes">
-            <button type="button" data-os="vh" aria-pressed="true"><span class="sw" style="background:var(--suit-vh)"></span>VH</button>
-            <button type="button" data-os="h" aria-pressed="true"><span class="sw" style="background:var(--suit-h)"></span>H</button>
-            <button type="button" data-os="m" aria-pressed="false"><span class="sw" style="background:var(--suit-m)"></span>M</button>
-            <button type="button" data-os="l" aria-pressed="false"><span class="sw" style="background:var(--suit-l)"></span>L</button>
-            <button type="button" data-os="x" aria-pressed="false"><span class="sw" style="background:var(--suit-x)"></span>X</button>
+            <button type="button" data-os="vh" aria-pressed="true"><span class="sw" style="background:var(--suit-vh)"></span>Very high</button>
+            <button type="button" data-os="h" aria-pressed="true"><span class="sw" style="background:var(--suit-h)"></span>High</button>
+            <button type="button" data-os="m" aria-pressed="false"><span class="sw" style="background:var(--suit-m)"></span>Moderate</button>
+            <button type="button" data-os="l" aria-pressed="false"><span class="sw" style="background:var(--suit-l)"></span>Low</button>
+            <button type="button" data-os="x" aria-pressed="false"><span class="sw" style="background:var(--suit-x)"></span>Excluded</button>
             <button type="button" class="reset">Reset</button>
           </div>
         </div>
@@ -3629,14 +3681,14 @@
             <div class="os-band-head">
               <svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>
               <span class="os-band-titlewrap"><span class="os-band-title">NBS SUITABILITY SCOPE</span><span class="os-band-sub">where each NbS can work</span></span>
-              <span class="os-band-area"><b>VH + H</b> · 18,700 km²</span>
+              <span class="os-band-area"><b>Very high + High</b> · 18,700 km²</span>
             </div>
             <div class="os-filter" role="group" aria-label="Suitability classes" data-band="cmp-suit">
-              <button type="button" data-os="vh" aria-pressed="true"><span class="sw" style="background:var(--suit-vh)"></span>VH</button>
-              <button type="button" data-os="h" aria-pressed="true"><span class="sw" style="background:var(--suit-h)"></span>H</button>
-              <button type="button" data-os="m" aria-pressed="false"><span class="sw" style="background:var(--suit-m)"></span>M</button>
-              <button type="button" data-os="l" aria-pressed="false"><span class="sw" style="background:var(--suit-l)"></span>L</button>
-              <button type="button" data-os="x" aria-pressed="false"><span class="sw" style="background:var(--suit-x)"></span>X</button>
+              <button type="button" data-os="vh" aria-pressed="true"><span class="sw" style="background:var(--suit-vh)"></span>Very high</button>
+              <button type="button" data-os="h" aria-pressed="true"><span class="sw" style="background:var(--suit-h)"></span>High</button>
+              <button type="button" data-os="m" aria-pressed="false"><span class="sw" style="background:var(--suit-m)"></span>Moderate</button>
+              <button type="button" data-os="l" aria-pressed="false"><span class="sw" style="background:var(--suit-l)"></span>Low</button>
+              <button type="button" data-os="x" aria-pressed="false"><span class="sw" style="background:var(--suit-x)"></span>Excluded</button>
               <button type="button" class="reset" data-reset="cmp-suit">Reset</button>
             </div>
           </div>
@@ -3644,14 +3696,14 @@
             <div class="os-band-head">
               <svg class="ic" aria-hidden="true"><use href="#i-flame"/></svg>
               <span class="os-band-titlewrap"><span class="os-band-title">PRIORITY SCOPE</span><span class="os-band-sub">where your priorities are most acute</span></span>
-              <span class="os-band-area"><b>VH + H</b> · 4,200 km²</span>
+              <span class="os-band-area"><b>Very high + High</b> · 4,200 km²</span>
             </div>
             <div class="os-filter" role="group" aria-label="Priority classes" data-band="cmp-pri">
-              <button type="button" data-hs="vh" aria-pressed="true"><span class="sw" style="background:var(--hot-vh)"></span>VH</button>
-              <button type="button" data-hs="h" aria-pressed="true"><span class="sw" style="background:var(--hot-h)"></span>H</button>
-              <button type="button" data-hs="m" aria-pressed="false"><span class="sw" style="background:var(--hot-m)"></span>M</button>
-              <button type="button" data-hs="l" aria-pressed="false"><span class="sw" style="background:var(--hot-l)"></span>L</button>
-              <button type="button" data-hs="x" aria-pressed="false"><span class="sw" style="background:var(--hot-x)"></span>X</button>
+              <button type="button" data-hs="vh" aria-pressed="true"><span class="sw" style="background:var(--hot-vh)"></span>Very high</button>
+              <button type="button" data-hs="h" aria-pressed="true"><span class="sw" style="background:var(--hot-h)"></span>High</button>
+              <button type="button" data-hs="m" aria-pressed="false"><span class="sw" style="background:var(--hot-m)"></span>Moderate</button>
+              <button type="button" data-hs="l" aria-pressed="false"><span class="sw" style="background:var(--hot-l)"></span>Low</button>
+              <button type="button" data-hs="x" aria-pressed="false"><span class="sw" style="background:var(--hot-x)"></span>Very low / nil</button>
               <button type="button" class="reset" data-reset="cmp-pri">Reset</button>
             </div>
           </div>
@@ -4027,14 +4079,14 @@
           <div class="os-band-head">
             <svg class="ic" aria-hidden="true"><use href="#i-target"/></svg>
             <span class="os-band-titlewrap"><span class="os-band-title">NBS SUITABILITY SCOPE</span><span class="os-band-sub">where this NbS can work</span></span>
-            <span class="os-band-area"><span class="os-scope-classes"><b>VH + H</b></span> · <span class="os-scope-area"><b>18,700 km²</b></span></span>
+            <span class="os-band-area"><span class="os-scope-classes"><b>Very high + High</b></span> · <span class="os-scope-area"><b>18,700 km²</b></span></span>
           </div>
           <div class="os-filter" role="group" aria-label="Suitability classes">
-            <button type="button" data-os="vh" aria-pressed="true"><span class="sw" style="background:var(--suit-vh)"></span>VH</button>
-            <button type="button" data-os="h" aria-pressed="true"><span class="sw" style="background:var(--suit-h)"></span>H</button>
-            <button type="button" data-os="m" aria-pressed="false"><span class="sw" style="background:var(--suit-m)"></span>M</button>
-            <button type="button" data-os="l" aria-pressed="false"><span class="sw" style="background:var(--suit-l)"></span>L</button>
-            <button type="button" data-os="x" aria-pressed="false"><span class="sw" style="background:var(--suit-x)"></span>X</button>
+            <button type="button" data-os="vh" aria-pressed="true"><span class="sw" style="background:var(--suit-vh)"></span>Very high</button>
+            <button type="button" data-os="h" aria-pressed="true"><span class="sw" style="background:var(--suit-h)"></span>High</button>
+            <button type="button" data-os="m" aria-pressed="false"><span class="sw" style="background:var(--suit-m)"></span>Moderate</button>
+            <button type="button" data-os="l" aria-pressed="false"><span class="sw" style="background:var(--suit-l)"></span>Low</button>
+            <button type="button" data-os="x" aria-pressed="false"><span class="sw" style="background:var(--suit-x)"></span>Excluded</button>
             <button type="button" class="reset">Reset</button>
           </div>
         </div>
@@ -4042,14 +4094,14 @@
           <div class="os-band-head">
             <svg class="ic" aria-hidden="true"><use href="#i-flame"/></svg>
             <span class="os-band-titlewrap"><span class="os-band-title">PRIORITY SCOPE</span><span class="os-band-sub">where your priorities are most acute</span></span>
-            <span class="os-band-area"><span class="hs-scope-classes"><b>VH + H</b></span> · <span class="hs-scope-area"><b>4,200 km²</b></span></span>
+            <span class="os-band-area"><span class="hs-scope-classes"><b>Very high + High</b></span> · <span class="hs-scope-area"><b>4,200 km²</b></span></span>
           </div>
           <div class="os-filter" role="group" aria-label="Hotspot classes" data-band="hot">
-            <button type="button" data-hs="vh" aria-pressed="true"><span class="sw" style="background:var(--hot-vh)"></span>VH</button>
-            <button type="button" data-hs="h" aria-pressed="true"><span class="sw" style="background:var(--hot-h)"></span>H</button>
-            <button type="button" data-hs="m" aria-pressed="false"><span class="sw" style="background:var(--hot-m)"></span>M</button>
-            <button type="button" data-hs="l" aria-pressed="false"><span class="sw" style="background:var(--hot-l)"></span>L</button>
-            <button type="button" data-hs="x" aria-pressed="false"><span class="sw" style="background:var(--hot-x)"></span>X</button>
+            <button type="button" data-hs="vh" aria-pressed="true"><span class="sw" style="background:var(--hot-vh)"></span>Very high</button>
+            <button type="button" data-hs="h" aria-pressed="true"><span class="sw" style="background:var(--hot-h)"></span>High</button>
+            <button type="button" data-hs="m" aria-pressed="false"><span class="sw" style="background:var(--hot-m)"></span>Moderate</button>
+            <button type="button" data-hs="l" aria-pressed="false"><span class="sw" style="background:var(--hot-l)"></span>Low</button>
+            <button type="button" data-hs="x" aria-pressed="false"><span class="sw" style="background:var(--hot-x)"></span>Very low / nil</button>
             <button type="button" class="reset" data-reset="hot">Reset</button>
           </div>
         </div>
@@ -4465,7 +4517,12 @@
       <p class="vh">Variable Config — sub-tab of Setup.</p>
       <div class="setup-subtabs" role="tablist" aria-label="Setup sub-sections">
         <button type="button" class="sst" data-sub="scope"><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg>Scope &amp; climate</button>
-        <button type="button" class="sst" data-sub="vars" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>Variable config</button>
+        <button type="button" class="sst" data-sub="vars" aria-pressed="true"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>Technical configuration · optional</button>
+      </div>
+
+      <div class="technical-guide">
+        <p><b>Start with data.</b> Inspect datasets, coverage and local-input needs before changing analytical settings. Use the variable cards to understand what each input represents.</p>
+        <p><b>Then review settings, if needed.</b> Suitability and hotspot priorities answer different questions. Select the relevant surface below; turn on Technical mode only to inspect expert controls. Separate project-risk configuration remains a planned refinement.</p>
       </div>
 
       <div class="col-center" style="flex:1; min-width:0; gap:14px;">
@@ -5492,6 +5549,7 @@
     }
     // Setup is a parent of two sub-panels; default to the scope sub when clicked from the main nav
     if (tab.id === 'tab-setup') showSetupSub(window.__setupSub || 'scope');
+    document.dispatchEvent(new Event('wireframe:viewchange'));
   }
 
   /* Setup sub-tabs: Scope & climate  <->  Variable config */
@@ -5499,8 +5557,10 @@
     window.__setupSub = sub;
     const setupP = document.getElementById('panel-setup');
     const varsP = document.getElementById('panel-vars');
+    panels.forEach(p => p.removeAttribute('data-active'));
     if (sub === 'vars') { setupP.removeAttribute('data-active'); varsP.setAttribute('data-active', ''); }
     else { varsP.removeAttribute('data-active'); setupP.setAttribute('data-active', ''); }
+    document.dispatchEvent(new Event('wireframe:viewchange'));
     // keep the Setup top-tab highlighted
     tabs.forEach(t => { const s = t.id === 'tab-setup'; t.setAttribute('aria-selected', s ? 'true' : 'false'); t.tabIndex = s ? 0 : -1; });
     document.querySelectorAll('.setup-subtabs .sst').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sub === sub)));
@@ -5797,7 +5857,7 @@
 
   /* ───────────────── SCOPE FILTER (Opp + Hot bands) ───────────────── */
   const osArea = { vh: 4900, h: 13800, m: 28000, l: 18000, x: 7600 };
-  const osNames = { vh: 'VH', h: 'H', m: 'M', l: 'L', x: 'X' };
+  const osNames = { vh: 'Very high', h: 'High', m: 'Moderate', l: 'Low', x: 'Excluded' };
   function readFilter() {
     // Read from ONE canonical band (opp-os-band first, else first hot suit band)
     const canonical = document.querySelector('.opp-os-band [data-os]')?.closest('.os-filter') || document.querySelector('.hot-scope-row [data-os]')?.closest('.os-filter');
@@ -5854,7 +5914,7 @@
 
   // Hot scope band (vh/h/m/l/x hotspot classes)
   const hsArea = { vh: 1800, h: 2400, m: 4500, l: 5200, x: 4800 };
-  const hsNames = { vh: 'VH', h: 'H', m: 'M', l: 'L', x: 'X' };
+  const hsNames = { vh: 'Very high', h: 'High', m: 'Moderate', l: 'Low', x: 'Very low / nil' };
   function applyHotFilter() {
     const on = [];
     document.querySelectorAll('#panel-hotspot .hot-class-band [data-hs]').forEach(b => {
@@ -6044,13 +6104,13 @@
       const on = [...suitWrap.querySelectorAll('[data-os][aria-pressed="true"]')].map(b => b.dataset.os);
       const area = on.reduce((a, k) => a + (cmpSuitArea[k] || 0), 0);
       const readout = suitWrap.closest('.os-band').querySelector('.os-band-area');
-      if (readout) readout.innerHTML = '<b>' + (on.map(k => k.toUpperCase()).join(' + ') || 'none') + '</b> · ' + area.toLocaleString() + ' km²';
+      if (readout) readout.innerHTML = '<b>' + (on.map(k => osNames[k]).join(' + ') || 'none') + '</b> · ' + area.toLocaleString() + ' km²';
     }
     if (priWrap) {
       const on = [...priWrap.querySelectorAll('[data-hs][aria-pressed="true"]')].map(b => b.dataset.hs);
       const area = on.reduce((a, k) => a + (cmpPriArea[k] || 0), 0);
       const readout = priWrap.closest('.os-band').querySelector('.os-band-area');
-      if (readout) readout.innerHTML = '<b>' + (on.map(k => k.toUpperCase()).join(' + ') || 'none') + '</b> · ' + area.toLocaleString() + ' km²';
+      if (readout) readout.innerHTML = '<b>' + (on.map(k => hsNames[k]).join(' + ') || 'none') + '</b> · ' + area.toLocaleString() + ' km²';
       // a narrowed priority scope (not all 5 classes) = priority-applied cue
       const narrowed = on.length > 0 && on.length < 5;
       if (cmpMatrix) cmpMatrix.classList.toggle('priority-applied', narrowed);
@@ -7227,5 +7287,7 @@
 </script>
 <script src="priority_detail.js"></script>
 <script src="project_risk.js"></script>
+<script src="wireframe-guide.js"></script>
+<script src="wireframe-versions.js"></script>
 </body>
 </html>
