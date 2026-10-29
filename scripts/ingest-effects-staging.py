@@ -77,6 +77,8 @@ _RULESETS = {
     "v1.6.18",
     # v1.9.0: catalogue #50, operational-risk evidence (Pete review 2026-10-22/23)
     "v1.9.0",
+    # v1.9.1: catalogue #51, significance at the 5% convention
+    "v1.9.1",
 }
 
 ROOT = Path(__file__).resolve().parents[1]

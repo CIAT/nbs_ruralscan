@@ -527,7 +527,7 @@ def test_acquisition_retry_keeps_existing_artifact_on_failure(tmp_path, monkeypa
 
 def test_active_rules_have_complete_matching_snapshot():
     active = ROOT / ".agents/skills/source-command-extract-evidence"
-    snapshot = ROOT / ".agents/skills/_versions/v1.9.0"
+    snapshot = ROOT / ".agents/skills/_versions/v1.9.1"
     for relative in ["SKILL.md", "references/defects.md"]:
         assert (active / relative).read_bytes() == (snapshot / relative).read_bytes()
     for name in [
@@ -805,3 +805,64 @@ def test_check_scope_flags_m2b_policy_variables(tmp_path):
     )
     got = {f["evidence_id"]: f["signal"] for f in check_scope.check(ev)}
     assert got == {"a": "m2b_exclude", "b": "m2b_flag"}
+
+
+def test_quarantine_drops_m2b_exclude_but_not_m2b_flag(tmp_path):
+    from nbs_ruralscan.schema_tools import quarantine
+
+    reg = tmp_path / "schema" / "registers"
+    reg.mkdir(parents=True)
+    cols = [
+        "evidence_id",
+        "source_id",
+        "use_role",
+        "variable",
+        "quote",
+        "relationship",
+        "review_state",
+        "reviewer_ok",
+        "attribution",
+    ]
+    write_csv(
+        reg / "EV_evidence_register.csv",
+        [
+            dict(
+                zip(
+                    cols,
+                    [
+                        "a",
+                        "s",
+                        "operational_risk",
+                        "adoption_rate",
+                        "q",
+                        "{}",
+                        "",
+                        "",
+                        "",
+                    ],
+                )
+            ),
+            dict(
+                zip(
+                    cols,
+                    [
+                        "b",
+                        "s",
+                        "operational_risk",
+                        "planting_material_availability",
+                        "q",
+                        "{}",
+                        "",
+                        "",
+                        "",
+                    ],
+                )
+            ),
+        ],
+        cols,
+    )
+    got = {
+        c["evidence_id"]: c["signal"]
+        for c in quarantine.candidates(tmp_path / "schema")
+    }
+    assert got == {"a": "m2b_exclude"}
