@@ -1,6 +1,6 @@
 # v1 feedback implementation record
 
-29 October 2026. This record covers the revised **v1 draft**, not the preserved v0. It records implementation, not stakeholder approval. Overall assessment: **3/5 towards the full feedback set**. The walkthrough and bounded examples are substantially stronger; practice-specific readings now illustrate response and transfer limits. Reviewed synthesis, locally matched costs, supporting AI examples and stakeholder usability review remain incomplete.
+29 October 2026. This record covers the revised **v1 draft**, not the preserved v0. It records implementation, not stakeholder approval. Overall assessment: **3/5 towards the full feedback set**. The walkthrough and bounded examples are substantially stronger; practice-specific readings now illustrate response and transfer limits. Reviewed synthesis, locally matched costs and stakeholder usability review remain incomplete. All six presentation modules now have bounded implementations; this does not close the full feedback set.
 
 Scores: 1 = barely addressed; 2 = partial explanation; 3 = usable illustration with material gaps; 4 = demonstrated with bounded limitations; 5 = requested demonstrator behaviour fully checked and reviewed. Scores assess the visual method illustration, not analytical readiness. No real schema tables or runtime outputs are connected.
 
@@ -14,8 +14,8 @@ Each module gets a bounded diff, browser checks and its own PR. Earlier modules 
 | 2 | Safety-critical evidence examples | Merged in PR #497 | Source-linked activity/permission example and establishment-risk guidance; applicability checks explicit, with no mapped legal determination or numerical vulnerability claim. |
 | 3 | Practice-specific effects and resources | Merged in PR #498 | Matched response/confidence examples, hydrology and learning resources for each demonstrated practice; follow review state. |
 | 4 | Economic context and Bank indicators | Merged in PR #499; matched agroforestry cost gap remains | Contextual cost evidence; remaining indicator definitions and denominators; qualified brief prose. |
-| 5 | Usability and consistency | Implemented; bounded browser checks passed | Dense admin summaries, multi-practice overlaps, mobile/keyboard and remaining export/import edge cases. Pete/TTL comprehension review stays separate. |
-| 6 | Supporting AI examples | Next | Concrete evidence-backed proposal diff; no live service commitment. |
+| 5 | Usability and consistency | Merged in PR #501 | Dense admin summaries, multi-practice overlaps, mobile/keyboard and remaining export/import edge cases. Pete/TTL comprehension review stays separate. |
+| 6 | Supporting AI examples | Implemented; bounded browser checks passed | Source-linked input-change review, report-claim correction and source-limited answers; no live service commitment. |
 | Hold | Real table/runtime alignment | Deferred | T4–Diego contract settled and checked before any connection. |
 
 ### Module 1: dataset inspection and response examples
@@ -63,6 +63,16 @@ Each module gets a bounded diff, browser checks and its own PR. Earlier modules 
 - Downloaded result reopened; archived markup displays literally, never as HTML. Invalid JSON, wrong fixture, missing brief, array settings and out-of-range maintenance years rejected; existing controls preserved. Invalid save rejected; legacy settings accepted. Mobile PNG exported and opened with scope, legend and provenance intact. Screenshots inspected; no console errors. Syntax, HTML IDs/assets and whitespace checked.
 - **Still open:** full accessibility/cross-browser matrix, concurrent-load stress testing and Pete/TTL comprehension. No real analytical correctness, practice compatibility or runtime archive is claimed.
 
+### Module 6: supporting AI examples
+
+- Added isolated `wireframe-ai.js`. Three scripted demonstrations show an input-change review, a report claim-check and a source-limited answer. No AI service, document reading, schema write or analytical run is connected.
+- Input proposals now follow the suitability or priority workspace: catalogue teaching candidate → hypothetical local terrain or rural-poverty source, geography/fallback rules, separate analytical decisions and named review roles. Existing published catalogue links support only the reference description; the local candidate remains invented and user notes unread/unverified.
+- Save/discard controls manage an unreviewed local proposal. Changing notes or file reference invalidates the saved flag. Saved settings retain proposal surface; older files without that field keep the earlier poverty-example interpretation. User text is escaped, never interpreted as HTML or instructions.
+- Report review contrasts unsupported beneficiary, water-supply and feasibility claims with scope-aware wording and reasons. Area/residents and source reading follow the selected practice, including the bund applicability-zone distinction. Existing brief/export content is unchanged; source and locator are reachable through the evidence dialog.
+- Practice answers retain source limitations and local study questions, expose supporting passages, and explicitly decline rankings or invented missing effects. No curated passage is relabelled as an approved EV/T3/T6 synthesis. Connection to reviewed evidence remains deferred with method/runtime alignment.
+- Validation: terrain/poverty proposal differences, save/edit/discard, saved surface restoration, older-file compatibility, escaped notes, current practice/area wording, all three source contexts, evidence dialog/Escape and 390 × 844 layout. Default opportunity remains 2,967,500 nominal ha; downloaded brief contains no rejected draft text. Syntax, local assets/HTML IDs and whitespace pass; no browser console errors.
+- **Next review:** Pete/TTL walkthrough, national gender-context source, matched planted-silvoarable cost evidence and method-owner checks remain open. No further implementation module is implied to close those dependencies automatically.
+
 ## Prioritised action table
 
 Multiple actions can remain on one row. “Demonstrated” means browser-checked at example grade; it does not mean an approved method, real dataset or stakeholder sign-off.
@@ -90,7 +100,7 @@ Multiple actions can remain on one row. “Demonstrated” means browser-checked
 | Downloadable map and prose — P1 | 4 | PNG with colour legend, scope, scenario and provenance; three-paragraph brief with Admin 2 locations, assumptions and limits; copy/download work. | Module 3 adds a sourced, qualified reading paragraph to the brief, checked in download. Module 5 checks mobile PNG export. Approved synthesis and broader cross-browser export checks remain. |
 | Local co-production and stopping point — P1 | 4 | Clear scoping end; partner validation, rights, adoption, feasibility and monitoring questions. | Module 3 adds practice-specific reading and local study prompts. **P1:** Local partners assess usefulness; no new feasibility deliverable. |
 | Learn about this NbS — P1 | 3 | Readings, locators, context limits and follow-up questions now track all three practices; unrelated cocoa/FMNR defaults removed. | Module 4 adds selected-practice economic context and local costing prompts. **P1:** Matched planted-silvoarable cost evidence. **Dependency:** Team review of transfer and formal evidence status. |
-| AI concepts — P2 | 3 | Scripted report/input/evidence interactions; proposals require review; file references stay local/unread; no live model. | **P2:** Improve examples using approved evidence and a concrete proposed change diff. Live service is not required or promised. |
+| AI concepts — P2 | 4 | Concrete terrain/poverty change review, report-claim correction and practice-specific source-limited answers; local proposal save/discard; no live model. | **P1:** Pete checks whether these examples explain useful AI roles. **Dependency:** Approved evidence connection remains deferred; curated readings are not approved synthesis. Live service is not required or promised. |
 | Save/load project and result — P2 | 4 | Versioned local JSON stores controls, assumptions, fixture identity/provenance and result snapshot; matching-version restoration demonstrated. Module 5 retains the original brief separately, rejects malformed/out-of-range imports and checks older settings compatibility. | **Dependency:** Actual run manifest/version/output contract. No pipeline execution or real analysis archive claimed. |
 | Front/back-end alignment — deferred | 2 | Dev Notes map each screen to modules, tables, intended outputs and missing contracts. | **Dependency:** Wait for T4–Diego work, review identifiers/units/product type/masks/transformations and provenance, then decide whether to connect read-only tables. |
 
@@ -130,4 +140,4 @@ Browser checks against local v1 on 29 October 2026:
 - Information dialog closes with Escape. Contextual technical workspace returns to originating stage. Version selector returns to preserved v0 and revised v1.
 - JavaScript syntax, local asset/link targets, duplicate HTML IDs and whitespace checks pass. No browser console errors during revised-v1 interaction checks.
 
-Not yet checked: exhaustive accessibility audit, broader mobile/cross-browser matrix, every AI/concurrent-import path, stakeholder comprehension, actual analytical correctness. No schema/backend changes were made. v0 body and pinned behaviour remain unchanged except shared release notes.
+Not yet checked: exhaustive accessibility audit, broader mobile/cross-browser matrix, exhaustive AI/concurrent-import edge cases, stakeholder comprehension, actual analytical correctness. No schema/backend changes were made. v0 body and pinned behaviour remain unchanged except shared release notes.
