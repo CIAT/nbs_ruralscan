@@ -132,3 +132,8 @@ inside a book); a mismatch is refused and left in Downloads. Accepted files are 
 marked `acquired`, and the download moves to `~/Downloads/nbs_ingested/`. Nothing is downloaded
 by the script: ResearchGate and publisher downloads stay human clicks (their terms forbid
 automated downloading).
+
+**Code / web sources in the queue.** `--queue` also snapshots acquired queue rows that have a `url`
+but no library PDF (e.g. a tool's commit-pinned GitHub file: `/blob/` → raw `.txt`, anything else →
+`.html`), the same way the SRC pass does. For a full tool interrogation across many repository
+files use `python -m nbs_ruralscan.ingest.github <owner/repo> <commit> --subdir …`.
