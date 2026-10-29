@@ -3,7 +3,7 @@
   'use strict';
   const byId = id => document.getElementById(id);
   const introductions = {
-    setup: ['What should this project improve?', 'Start with the problem, then explore where rural nature-based solutions could fit. This wireframe explains scoping; it is not a final tool design or a feasibility assessment.', 'Maps and figures are examples, not pilot results. Local partners must refine and validate any proposed intervention before implementation.'],
+    setup: ['Scoping nature-based solutions for rural investment', 'Nature-based solutions protect, restore or manage ecosystems to address challenges such as climate risk, degraded land and insecure livelihoods. Rural NbS Scan helps investment teams explore where these approaches could fit in agricultural, forestry and other rural landscapes.', 'For World Bank Task Team Leaders, country partners and technical teams preparing early investment concepts.'],
     vars: ['Which inputs and settings need closer inspection?', 'Technical configuration is optional. Inspect data coverage and local inputs first; review analytical rules and weights only when needed.', 'These are illustrative settings. Current recipe tables and runtime outputs are not connected; changing a control does not execute the method.'],
     opp: ['Where could these practices fit?', 'Explore the example footprint for each NbS, then inspect the livelihood needs and context within that opportunity space. Use the local selector to choose the practice being viewed.', 'Opportunity is a scoping result, not proof of site suitability, land availability or benefits. Example country, grid and climate labels describe the displayed illustration.'],
     prisk: ['What could damage the investment or obstruct delivery?', 'Inspect hazards affecting the intervention and conditions that could make implementation difficult. This is a different question from climate risk to rural livelihoods.', 'Read this as an illustrative screening concept, not an official World Bank risk rating or completed safeguards assessment. Local verification is still required.'],
@@ -22,7 +22,12 @@
     previousPanel = panel;
     const copy = introductions[panel] || introductions.setup;
     ['journey-title', 'journey-purpose', 'journey-limit'].forEach((id, i) => { byId(id).textContent = copy[i]; });
-    byId('journey-config').hidden = ['vars', 'todo', 'danger'].includes(panel);
+    const isSetup = panel === 'setup';
+    document.querySelector('.journey-intro').classList.toggle('is-overview', isSetup);
+    byId('project-overview').hidden = !isSetup;
+    byId('journey-start').hidden = !isSetup;
+    document.querySelector('.journey-objectives').hidden = isSetup;
+    byId('journey-config').hidden = ['setup', 'vars', 'todo', 'danger'].includes(panel);
     byId('journey-back').hidden = panel !== 'vars';
     byId('journey-config').textContent = ['opp', 'hotspot'].includes(panel) ? 'Technical configuration for this section' : 'Inspect optional technical configuration';
   }
@@ -38,6 +43,11 @@
     if (returnPanel === 'setup') window.__setupSub = 'scope';
     byId('tab-' + returnPanel).click();
     revealIntroduction();
+  });
+  byId('journey-start').addEventListener('click', () => {
+    const objectivesCard = byId('walkthrough-objectives');
+    objectivesCard.focus({ preventScroll: true });
+    objectivesCard.scrollIntoView({ block: 'start' });
   });
   const objectives = Array.from(document.querySelectorAll('input[name="project-objective"]'));
   function updateObjectives() {

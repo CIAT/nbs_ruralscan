@@ -2999,7 +2999,7 @@
 <div class="wireframe-version-bar" aria-label="Wireframe versions">
   <label for="wireframe-version">View version</label>
   <select id="wireframe-version" aria-describedby="wireframe-version-note"><option value="wireframe-v0.html">v0 · Original</option><option value="wireframe.html" selected>v1 · Draft</option></select>
-  <span id="wireframe-version-note">Draft revision · objectives-first walkthrough · switching versions resets example selections.</span>
+  <span id="wireframe-version-note">Draft revision · background and guided walkthrough · switching versions resets example selections.</span>
   <noscript><a href="wireframe-v0.html">v0 · Original</a> · <a href="wireframe.html">v1 · Draft</a></noscript>
   <details class="wireframe-changes">
     <summary>What changed? · v0 → v1 draft</summary>
@@ -3007,7 +3007,7 @@
       <h2>v1 draft · 29 October 2026</h2>
       <p>v0 preserves the original published mock-up. v1 is the first presentation revision following project-team and Bank feedback.</p>
       <ul>
-        <li><b>Objectives first:</b> opens in Setup instead of the map. Choose two or three project objectives; they stay visible through the walkthrough without changing example rankings.</li>
+        <li><b>Background before setup:</b> explains the project, intended users, scoping purpose and role of the wireframe before inviting you to choose objectives for an example investment.</li>
         <li><b>Clearer purpose:</b> every section introduces its question and scope limits. The wireframe illustrates a scoping method; maps and figures are examples.</li>
         <li><b>Simpler Setup:</b> scope and recipe details expand when needed. “Open example opportunity space” replaces “Run analysis”.</li>
         <li><b>Optional technical detail:</b> clearer data-first guidance, links from the main journey and a return button. Suitability and hotspot settings remain separate.</li>
@@ -3106,16 +3106,39 @@
     </button>
   </nav>
 
-  <div class="journey-intro" aria-labelledby="journey-title">
+  <div class="journey-intro is-overview" aria-labelledby="journey-title">
     <div class="journey-copy">
       <span class="journey-eyebrow">A visual guide to the method · illustrative data</span>
-      <h1 id="journey-title">What should this project improve?</h1>
-      <p id="journey-purpose">Start with the problem, then explore where rural nature-based solutions could fit. This wireframe explains scoping; it is not a final tool design or a feasibility assessment.</p>
-      <p class="journey-limit" id="journey-limit">Maps and figures are examples, not pilot results. Local partners must refine and validate any proposed intervention before implementation.</p>
+      <h1 id="journey-title">Scoping nature-based solutions for rural investment</h1>
+      <p id="journey-purpose">Nature-based solutions protect, restore or manage ecosystems to address challenges such as climate risk, degraded land and insecure livelihoods. Rural NbS Scan helps investment teams explore where these approaches could fit in agricultural, forestry and other rural landscapes.</p>
+      <p class="journey-limit" id="journey-limit">For World Bank Task Team Leaders, country partners and technical teams preparing early investment concepts.</p>
+      <div id="project-overview" class="project-overview">
+        <section aria-labelledby="overview-project">
+          <h2 id="overview-project">Why this project?</h2>
+          <p>Investment teams need to connect landscape conditions with development priorities before deciding which interventions and places deserve closer study.</p>
+          <p>This World Bank-funded project, led by the Alliance of Bioversity International and CIAT, is developing a shared methodology toolkit, pilot applications in two least developed countries, and reproducible analysis notebooks.</p>
+        </section>
+        <section aria-labelledby="overview-method">
+          <h2 id="overview-method">What is the scoping tool for?</h2>
+          <p>The method brings spatial data and evidence together to explore where different NbS could fit, which people, livelihoods and ecosystems occur in those areas, and how they relate to priorities such as poverty, biodiversity, climate resilience and gender equity.</p>
+          <p>Its intended output is a shortlist of practices and locations for further investigation, with risks, evidence gaps and local validation needs made explicit.</p>
+        </section>
+        <section aria-labelledby="overview-wireframe">
+          <h2 id="overview-wireframe">Why this wireframe?</h2>
+          <p>This interactive sketch makes the method visible so you can review its sequence, questions and proposed outputs. Use it to judge whether the information would help an investment team and what needs to change.</p>
+          <p>Maps and figures are illustrative. This is a draft for discussion; the project implements the method through reproducible analyses. A production dashboard is not a project deliverable.</p>
+        </section>
+        <div class="overview-route">
+          <h2>How to explore</h2>
+          <p>Set example investment objectives → explore opportunity areas → inspect project risks → identify priority hotspots → compare NbS → review next steps.</p>
+          <p><b>Where scoping ends:</b> local partners and specialists must validate candidate sites and identify the feasibility, hydrological, cost and design studies needed before implementation.</p>
+        </div>
+      </div>
       <p class="journey-objectives"><b>Your objectives:</b> <span id="journey-objectives">Choose two or three below.</span> <span class="journey-example">Guidance only; does not recalculate example maps or rankings.</span></p>
     </div>
     <div class="journey-actions">
-      <button type="button" class="btn-secondary" id="journey-config">Optional technical configuration</button>
+      <button type="button" class="btn-primary" id="journey-start">Start the walkthrough</button>
+      <button type="button" class="btn-secondary" id="journey-config" hidden>Optional technical configuration</button>
       <button type="button" class="btn-secondary" id="journey-back" hidden>Back to previous section</button>
     </div>
   </div>
@@ -3133,10 +3156,10 @@
         <button type="button" class="sst" data-sub="vars"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>Technical configuration · optional</button>
       </div>
 
-      <div class="setup-band objectives-card">
+      <div class="setup-band objectives-card" id="walkthrough-objectives" tabindex="-1">
         <fieldset aria-describedby="objective-help objective-status">
-          <legend>Choose your project objectives</legend>
-          <p id="objective-help">Select two or three priorities to frame your review. These choices stay visible as you explore the method; they do not set analytical weights.</p>
+          <legend>What should your example investment improve?</legend>
+          <p id="objective-help">Imagine an investment you are helping to prepare. Choose two or three intended outcomes, then explore candidate practices and geography. These walkthrough choices stay visible across sections; they do not set analytical weights.</p>
           <div class="objective-options">
             <label><input type="checkbox" name="project-objective" value="Climate resilience">Climate resilience</label>
             <label><input type="checkbox" name="project-objective" value="Livelihoods and food security">Livelihoods and food security</label>
@@ -5548,7 +5571,7 @@
       requestAnimationFrame(() => requestAnimationFrame(positionClusterBoxes));
     }
     // Setup is a parent of two sub-panels; default to the scope sub when clicked from the main nav
-    if (tab.id === 'tab-setup') showSetupSub(window.__setupSub || 'scope');
+    if (tab.id === 'tab-setup') showSetupSub('scope');
     document.dispatchEvent(new Event('wireframe:viewchange'));
   }
 

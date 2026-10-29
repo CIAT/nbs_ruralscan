@@ -13,6 +13,19 @@ nav.tabs button[aria-selected="true"], .setup-subtabs .sst[aria-pressed="true"] 
 .journey-example { display: block; color: #52615a; font-size: 11px; }
 .journey-actions { display: flex; flex-direction: column; gap: 10px; align-self: center; }
 .journey-actions [hidden] { display: none; }
+.journey-intro.is-overview { display: block; padding-top: 30px; padding-bottom: 30px; }
+.is-overview .journey-copy { max-width: 1200px; }
+.is-overview h1 { font-size: 30px; max-width: 900px; }
+.is-overview #journey-purpose { max-width: 950px; font-size: 15px; }
+.is-overview .journey-actions { flex-direction: row; margin-top: 18px; }
+.project-overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: 24px; }
+.project-overview[hidden] { display: none; }
+.project-overview section { border-top: 2px solid #a5bfb0; padding-top: 12px; }
+.project-overview h2 { font-size: 16px; line-height: 1.4; margin-bottom: 8px; }
+.project-overview p + p { margin-top: 10px; }
+.overview-route { grid-column: 1 / -1; padding: 16px 18px; border-radius: 6px; background: #e5eee8; }
+#walkthrough-objectives { scroll-margin-top: 80px; }
+#walkthrough-objectives:focus { outline: 2px solid #315e4b; outline-offset: 2px; }
 .objectives-card { padding: 20px; }
 .objectives-card fieldset { border: 0; min-width: 0; }
 .objectives-card legend { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
@@ -31,6 +44,7 @@ nav.tabs button[aria-selected="true"], .setup-subtabs .sst[aria-pressed="true"] 
 .journey-intro button:focus-visible, .objective-options input:focus-visible, .setup-disclosure summary:focus-visible { outline: 3px solid #986324; outline-offset: 3px; }
 .journey-intro, .setup-disclosure { scroll-margin-top: 70px; }
 @media (max-width: 760px) {
+  .project-overview { grid-template-columns: 1fr; gap: 18px; }
   .journey-intro { flex-direction: column; gap: 14px; padding: 18px; }
   .journey-actions { align-self: flex-start; }
   .journey-intro h1 { font-size: 22px; }
