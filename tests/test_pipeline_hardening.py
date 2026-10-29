@@ -527,7 +527,7 @@ def test_acquisition_retry_keeps_existing_artifact_on_failure(tmp_path, monkeypa
 
 def test_active_rules_have_complete_matching_snapshot():
     active = ROOT / ".agents/skills/source-command-extract-evidence"
-    snapshot = ROOT / ".agents/skills/_versions/v1.8.0"
+    snapshot = ROOT / ".agents/skills/_versions/v1.9.1"
     for relative in ["SKILL.md", "references/defects.md"]:
         assert (active / relative).read_bytes() == (snapshot / relative).read_bytes()
     for name in [
@@ -713,3 +713,156 @@ def test_append_dry_run_checks_collision_without_writing(tmp_path):
             [dict(evidence_id="one", quote="changed")], path, dry_run=True
         )
     assert path.read_bytes() == before
+
+
+def test_ingest_stamps_pending_sources_swept_once(tmp_path):
+    from nbs_ruralscan.schema_tools.migrate_effects import stamp_extracted
+
+    src = tmp_path / "SRC.csv"
+    cols = [
+        "source_id",
+        "extraction_status",
+        "extraction_date",
+        "extraction_run_id",
+        "extractor",
+    ]
+    write_csv(
+        src,
+        [
+            dict(zip(cols, ["a", "pending", "", "", ""])),
+            dict(zip(cols, ["b", "signed_off", "2026-01-01", "old", "x"])),
+            dict(zip(cols, ["c", "pending", "", "", ""])),
+        ],
+        cols,
+    )
+    assert stamp_extracted({"a", "b"}, "run1", "me", "2026-10-29", src) == ["a"]
+    rows = {r["source_id"]: r for r in csv.DictReader(src.open())}
+    assert rows["a"]["extraction_status"] == "swept"
+    assert rows["a"]["extraction_run_id"] == "run1"
+    assert rows["b"]["extraction_run_id"] == "old"
+    assert rows["c"]["extraction_status"] == "pending"
+    assert stamp_extracted({"a"}, "run2", "me", "2026-10-30", src) == []
+
+
+def test_staging_refuses_adoption_rate_as_operational_risk(staging):
+    module, unit, _ = staging
+    unit.update(variable="adoption_rate", use_role="operational_risk")
+    errs = module.gate([unit], {"operational_risk"})
+    assert any("catalogue #50" in e for e in errs)
+    unit["variable"] = "tenure_security"
+    assert not any(
+        "catalogue #50" in e for e in module.gate([unit], {"operational_risk"})
+    )
+
+
+def test_check_scope_flags_m2b_policy_variables(tmp_path):
+    from nbs_ruralscan.schema_tools import check_scope
+
+    ev = tmp_path / "EV.csv"
+    cols = [
+        "evidence_id",
+        "use_role",
+        "variable",
+        "quote",
+        "relationship",
+        "review_state",
+        "reviewer_ok",
+    ]
+    write_csv(
+        ev,
+        [
+            dict(
+                zip(cols, ["a", "operational_risk", "adoption_rate", "q", "{}", "", ""])
+            ),
+            dict(
+                zip(
+                    cols,
+                    ["b", "operational_risk", "rootstock_presence", "q", "{}", "", ""],
+                )
+            ),
+            dict(
+                zip(
+                    cols,
+                    ["c", "operational_risk", "tenure_security", "q", "{}", "", ""],
+                )
+            ),
+            dict(
+                zip(
+                    cols,
+                    [
+                        "d",
+                        "operational_risk",
+                        "adoption_rate",
+                        "q",
+                        "{}",
+                        "dropped",
+                        "",
+                    ],
+                )
+            ),
+        ],
+        cols,
+    )
+    got = {f["evidence_id"]: f["signal"] for f in check_scope.check(ev)}
+    assert got == {"a": "m2b_exclude", "b": "m2b_flag"}
+
+
+def test_quarantine_drops_m2b_exclude_but_not_m2b_flag(tmp_path):
+    from nbs_ruralscan.schema_tools import quarantine
+
+    reg = tmp_path / "schema" / "registers"
+    reg.mkdir(parents=True)
+    cols = [
+        "evidence_id",
+        "source_id",
+        "use_role",
+        "variable",
+        "quote",
+        "relationship",
+        "review_state",
+        "reviewer_ok",
+        "attribution",
+    ]
+    write_csv(
+        reg / "EV_evidence_register.csv",
+        [
+            dict(
+                zip(
+                    cols,
+                    [
+                        "a",
+                        "s",
+                        "operational_risk",
+                        "adoption_rate",
+                        "q",
+                        "{}",
+                        "",
+                        "",
+                        "",
+                    ],
+                )
+            ),
+            dict(
+                zip(
+                    cols,
+                    [
+                        "b",
+                        "s",
+                        "operational_risk",
+                        "planting_material_availability",
+                        "q",
+                        "{}",
+                        "",
+                        "",
+                        "",
+                    ],
+                )
+            ),
+        ],
+        cols,
+    )
+    got = {
+        c["evidence_id"]: c["signal"]
+        for c in quarantine.candidates(tmp_path / "schema")
+    }
+    assert got == {"a": "m2b_exclude"}
