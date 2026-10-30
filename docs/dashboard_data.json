@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-30T06:35:21.228379+00:00",
-  "git_commit": "19d0574eaecdce0448d42fff3b63b57179b31471",
+  "timestamp": "2026-10-30T07:02:32.896532+00:00",
+  "git_commit": "944434c29658ca107da4f6d89f3c1c0e113cf387",
   "registers": {
     "SRC_source_register": [
       {
@@ -13582,6 +13582,27 @@
         "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/3_Water_Harvesting/stavi_2020.pdf",
         "study_income_group": "mixed",
         "venue_type": "peer_reviewed_journal"
+      },
+      {
+        "source_id": "worthington_spalding_2018_restoration_potential",
+        "citation": "Worthington, T., and Spalding, M. (2018). Mangrove Restoration Potential: A global map highlighting a critical opportunity. The Nature Conservancy, IUCN and University of Cambridge.",
+        "benchmark_tier": "medium",
+        "region": "Global mangrove regions",
+        "method_type": "expert",
+        "nbs_ids": "mangrove_restoration",
+        "vars_extracted": "distance_to_forest|extension_governance|land_cover|tenure_security",
+        "extraction_status": "in_progress",
+        "extraction_date": "2026-10-30",
+        "extraction_run_id": "mangrove_models_20261030",
+        "extractor": "codex",
+        "source_kind": "grey_lit",
+        "url": "https://www.repository.cam.ac.uk/bitstream/handle/1810/292000/MANGROVE-TNC-REPORT-FINAL.31.10.LOWSINGLES.pdf",
+        "artifact_sha1": "527b29b0c84c4ffdd3c24796ecc2ee330f975ea2",
+        "retrieved_at": "2026-10-30",
+        "access_status": "open_access",
+        "source_category": "tool",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/6_MangroveRestoration/worthington_spalding_2018_restoration_potential.pdf",
+        "venue_type": "institutional_report"
       }
     ],
     "EV_evidence_register": [
@@ -226181,6 +226202,183 @@
         "reviewer_ok": false,
         "locator_type": "page",
         "ruleset_version": "v1.6.18"
+      },
+      {
+        "evidence_id": "ev_mg_subtidal_ws18_20261030",
+        "source_id": "worthington_spalding_2018_restoration_potential",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "land_cover",
+        "relationship": {
+          "direction": "unclear"
+        },
+        "context": {
+          "region": "Global mangrove regions; restoration within historical loss areas",
+          "practice_as_described": "Mangrove restoration and natural regeneration within recently lost mangrove areas",
+          "numeric_calibration": "No numeric membership function or runtime weight; source-category mapping and local feasibility need review.",
+          "review_needed": "Pending human scope/applicability review. Approval retains source evidence, not a globally executable rule.",
+          "note": "Source excludes permanently subtidal open water created by erosion within historical mangrove losses. Does not exclude seasonally inundated/intertidal habitat; no global EO-class mapping supplied.",
+          "intended_use": "T4 source-specific applicability/direction evidence; no automatic compilation",
+          "reported_values": {
+            "excluded_class": "permanent open water (subtidal)",
+            "reported_share_of_loss": "16% (descriptive share, not suitability threshold)"
+          },
+          "model_use": {
+            "method": "MRP Map historical-loss eligibility mask",
+            "scope": "mangrove losses since 1996",
+            "classes_excluded": [
+              "permanent open water (subtidal)"
+            ]
+          }
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "expert",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Areas that had been eroded to become permanent\nopen water (subtidal) (16% of all loss) were excluded as\nno longer restorable.",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "permanent open water (subtidal)",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.2"
+      },
+      {
+        "evidence_id": "ev_mg_urban_ws18_20261030",
+        "source_id": "worthington_spalding_2018_restoration_potential",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "land_cover",
+        "relationship": {
+          "direction": "unclear"
+        },
+        "context": {
+          "region": "Global mangrove regions; restoration within historical loss areas",
+          "practice_as_described": "Mangrove restoration and natural regeneration within recently lost mangrove areas",
+          "numeric_calibration": "No numeric membership function or runtime weight; source-category mapping and local feasibility need review.",
+          "review_needed": "Pending human scope/applicability review. Approval retains source evidence, not a globally executable rule.",
+          "note": "Urban exclusion explicitly applied in restoration-potential map; rationale continues onto PDF11. Historical-loss mask, not current legal rule or blanket exclusion of every urban-associated coastal habitat. Continuation PDF11: Sentence continues: high investment and intense modification. Exclusion clause and class are complete in native anchor.",
+          "intended_use": "T4 source-specific applicability/direction evidence; no automatic compilation",
+          "reported_values": {
+            "excluded_class": "urban areas",
+            "reported_share_of_loss": "0.2% (descriptive share, not suitability threshold)"
+          },
+          "model_use": {
+            "method": "MRP Map historical-loss eligibility mask",
+            "classes_excluded": [
+              "urban areas"
+            ]
+          }
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "expert",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "The work for the MRP Map focused on recent mangrove\nloss areas, using a map of all the areas that have been\nlost since 1996, taken from the Global Mangrove Watch\nmaps. It also looked at areas that had been degraded in\nthis same timeframe. Not all areas can be restored, of\ncourse. Areas that had been eroded to become permanent\nopen water (subtidal) (16% of all loss) were excluded as\nno longer restorable. Similarly, urban areas were excluded\n(0.2% of all loss)",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "urban areas",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.2"
+      },
+      {
+        "evidence_id": "ev_mg_proximity_ws18_20261030",
+        "source_id": "worthington_spalding_2018_restoration_potential",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "distance_to_forest",
+        "relationship": {
+          "direction": "decreasing"
+        },
+        "context": {
+          "region": "Global mangrove regions; restoration within historical loss areas",
+          "practice_as_described": "Mangrove restoration and natural regeneration within recently lost mangrove areas",
+          "numeric_calibration": "No numeric membership function or runtime weight; source-category mapping and local feasibility need review.",
+          "review_needed": "Pending human scope/applicability review. Approval retains source evidence, not a globally executable rule.",
+          "note": "Nearness to remaining mangroves facilitates natural regeneration, conditional on suitable local conditions and preventing recurrent loss. Distance direction is inverse of source proximity wording; applies to mangrove seed sources, not arbitrary forest. No distance cutoff or fitted curve.",
+          "intended_use": "T4 source-specific applicability/direction evidence; no automatic compilation",
+          "model_use": {
+            "method": "Delphi restoration-potential score",
+            "raw_property": "proximity of loss areas to remaining mangroves",
+            "scope": "historical mangrove loss areas; averaged by typological unit",
+            "source_weight": "not supplied",
+            "criterion_set": [
+              "tidal range",
+              "recent sea level rise",
+              "projected future sea level rise",
+              "recent change in sediments",
+              "time since loss",
+              "average size of loss patches",
+              "proximity of loss areas to remaining mangroves"
+            ]
+          }
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "expert",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "As a starting point for mangrove restoration, it is prudent\nto consider putting them in places where they have been\nrecently lost, provided the driver of loss can be prevented\nfrom recurring and the local conditions remain suitable.\nSuch areas are most likely to have local conditions of soil,\ntides and elevation appropriate for restoration, while their\nproximity to remaining mangroves can greatly facilitate\nnatural regeneration processes.",
+        "page": 10,
+        "reviewer_ok": false,
+        "raw_name": "proximity to remaining mangroves",
+        "locator_type": "page",
+        "justification_quote": "Within\nthe remaining recently lost mangrove areas, we sought\nto understand those factors most likely to influence\nrestoration success. These include: the tidal range; recent\nsea level rise; projected future sea level rise; recent change\nin sediments; time since loss; average size of loss patches;\nand the proximity of loss areas to remaining mangroves. An\nadvisory team was convened to review these variables and,\nusing Delphi methods, an averaged restoration potential\nscore (from 1 to 100) was calculated for each of the more\nthan 6000 mangrove units under assessment.",
+        "justification_page": 11,
+        "ruleset_version": "v1.9.2"
+      },
+      {
+        "evidence_id": "ev_mg_tenure_ws18_20261030",
+        "source_id": "worthington_spalding_2018_restoration_potential",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "tenure_security",
+        "context": {
+          "region": "Global mangrove regions; restoration within historical loss areas",
+          "practice_as_described": "Mangrove restoration and natural regeneration within recently lost mangrove areas",
+          "numeric_calibration": "No numeric membership function or runtime weight; source-category mapping and local feasibility need review.",
+          "review_needed": "Pending human scope/applicability review. Approval retains source evidence, not a globally executable rule.",
+          "note": "Explicit implementation barrier: failure to understand and respect local tenure. Does not infer formal title required, or provide legal exclusions.",
+          "intended_use": "M2b Stream B / M6 implementation guidance"
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "expert",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Mangrove restoration can be greatly hampered if local\nland tenure is not understood and respected.",
+        "page": 12,
+        "reviewer_ok": false,
+        "raw_name": "local land tenure",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.2"
+      },
+      {
+        "evidence_id": "ev_mg_community_ws18_20261030",
+        "source_id": "worthington_spalding_2018_restoration_potential",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "extension_governance",
+        "context": {
+          "region": "Global mangrove regions; restoration within historical loss areas",
+          "practice_as_described": "Mangrove restoration and natural regeneration within recently lost mangrove areas",
+          "numeric_calibration": "No numeric membership function or runtime weight; source-category mapping and local feasibility need review.",
+          "review_needed": "Pending human scope/applicability review. Approval retains source evidence, not a globally executable rule.",
+          "note": "Community engagement/support enables long-term project security. Governance component of canonical variable; not measured extension-service access, and no numeric effect size.",
+          "intended_use": "M2b Stream B / M6 implementation guidance"
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "expert",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "It remains critically important that decisions of where and\nhow to restore mangroves are also locally informed. This\nincludes local ecological and physical conditions, of course,\nbut equally local social, legal, and economic influences.\nMangrove restoration can be greatly hampered if local\nland tenure is not understood and respected. Community\nengagement and support can ensure long-term security for\nrestoration projects. Equitable benefit-sharing can prevent\nfurther degradation and provide an example which, in turn,\nleverages further restoration efforts.",
+        "page": 12,
+        "reviewer_ok": false,
+        "raw_name": "community engagement and support",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.2"
       }
     ],
     "FAM_family_registry": [
@@ -245121,11 +245319,11 @@
       "family": "mangrove_restoration__tidal_coastal",
       "searched": "in_progress",
       "screened": "in_progress",
-      "verified": "not_started",
-      "last_run_id": "mangrove_tool_followup_20261029",
-      "updated": "2026-10-29",
-      "by": "orchestrator",
-      "note": "discovery round 2026-10-29; see SRCH mangrove_tool_followup_20261029_* rows + discovery logs"
+      "verified": "in_progress",
+      "last_run_id": "mangrove_models_20261030",
+      "updated": "2026-10-30",
+      "by": "codex",
+      "note": "Bounded Worthington extraction: 3 structural and 2 operational units verified; no calibrated function. Rodriguez species-model/ontology holds. Human approval pending."
     }
   ],
   "qaqc_stats": {
@@ -275002,7 +275200,7 @@
     },
     "mangrove_restoration": {
       "candidates": 23,
-      "acquired": 13
+      "acquired": 12
     }
   },
   "t4_review_notes": {
