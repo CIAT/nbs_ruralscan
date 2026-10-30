@@ -122,10 +122,25 @@
   ];}
   function renderBrief(){const text=briefText();$('practice-resources').innerHTML=WireframeEvidence.resources(state.nbs)+'<details><summary>Economic context and missing costs</summary>'+WireframeInvestment.costContext(state.nbs)+'</details>';$('ai-answer').innerHTML=WireframeAI.answer(state.nbs);$('report-example').innerHTML=WireframeAI.report(state.nbs,names[state.nbs],fmt(area(scope())),fmt(people(scope())));$('safety-handoff').textContent=WireframeSafety.handoff(state.nbs);$('brief').innerHTML=text.map(p=>'<p>'+esc(p)+'</p>').join('');$('handoff-conditions').textContent='Delivery assumption: '+(state.delivery==='support'?'access support included in planning; cost and feasibility unverified.':'access support unassessed.')+' Gender context '+(state.gender?'visible':'hidden')+'; local equity and rights review remains required.';}
   function render(){renderOpportunity();renderRisk();renderHotspots();renderComparison();renderBrief();renderProposal();}
-  function switchTab(key){activeTab=key;document.querySelectorAll('[role=tab]').forEach(t=>{const on=t.dataset.tab===key;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;});document.querySelectorAll('[role=tabpanel]').forEach(p=>p.hidden=p.id!=='panel-'+key);$('shared-scope').hidden=['setup','todo','danger'].includes(key);if(key==='setup'){$('technical').hidden=true;$('setup-overview').hidden=false;}$('content').focus({preventScroll:true});$('content').style.scrollMarginTop=(document.querySelector('.navigation').offsetHeight+12)+'px';$('content').scrollIntoView({block:'start'});}
+  // Scroll targets below the sticky stage bar; narrow layouts use normal flow.
+  function focusTarget(target,scrollTarget=target){
+    const navigation=document.querySelector('.navigation');
+    const inset=getComputedStyle(navigation).position==='sticky'?navigation.offsetHeight:0;
+    scrollTarget.style.scrollMarginTop=(inset+12)+'px';
+    target.focus({preventScroll:true});
+    scrollTarget.scrollIntoView({block:'start'});
+  }
+  function setDisclosure(buttonId,open){
+    const button=$(buttonId);
+    $(button.getAttribute('aria-controls')).hidden=!open;
+    button.setAttribute('aria-expanded',String(open));
+  }
+  let techTrigger=null, infoTrigger=null;
+  function switchTab(key){activeTab=key;document.querySelectorAll('[role=tab]').forEach(t=>{const on=t.dataset.tab===key;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;});document.querySelectorAll('[role=tabpanel]').forEach(p=>p.hidden=p.id!=='panel-'+key);$('shared-scope').hidden=['setup','todo','danger'].includes(key);if(key==='setup'){$('technical').hidden=true;$('setup-overview').hidden=false;}focusTarget($('content'));}
+  document.querySelector('.skip').addEventListener('click',e=>{e.preventDefault();focusTarget($('content'));});
   const tabs=[...document.querySelectorAll('[role=tab]')];tabs.forEach((t,i)=>{t.addEventListener('click',()=>switchTab(t.dataset.tab));t.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[n].click();tabs[n].focus();}});});
   document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.go)));
-  $('start').addEventListener('click',()=>{$('objectives-card').focus();$('objectives-card').scrollIntoView({block:'start'});});
+  $('start').addEventListener('click',()=>focusTarget($('objectives-card')));
   function updateObjectiveControls(){const inputs=[...document.querySelectorAll('[name=objective]')];inputs.forEach(i=>{i.checked=state.objectives.includes(i.value);i.disabled=state.objectives.length>=3&&!i.checked;});$('objective-message').textContent=state.objectives.length<2?'Choose at least two objectives.':preset()?'An authored scenario is available for these two objectives.':'Objectives saved. No authored ranking for this combination; choose an example preset to inspect a shortlist.';}
   document.querySelectorAll('[name=objective]').forEach(i=>i.addEventListener('change',()=>{state.objectives=[...document.querySelectorAll('[name=objective]:checked')].map(x=>x.value);updateObjectiveControls();render();}));
   document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{state.objectives=b.dataset.preset==='resilience'?['climate','livelihoods']:['biodiversity','water'];updateObjectiveControls();render();}));
@@ -144,8 +159,8 @@
 
     economics:['Budget arithmetic and limits','<dl class="info-list"><dt>Establishment-only case</dt><dd>min(candidate hectares, budget / establishment cost per hectare).</dd><dt>Fuller case</dt><dd>min(candidate hectares, max(0, budget − fixed costs) / (establishment per hectare + maintenance years × annual maintenance per hectare)). If fixed costs exceed budget, no feasible package is shown.</dd><dt>Costs not automatically covered</dt><dd>Land, opportunity costs, transaction costs, safeguards, monitoring, financing and future price changes must be included in your assumptions where relevant. Road/electricity investments belong in explicit fixed/enabling costs.</dd><dt>Returns and beneficiaries</dt><dd>Optional simple return uses an explicitly supplied total benefit and the selected example’s cost. It is undiscounted and not a BCR, NPV or payback calculation. Unique people reached must be supplied; residents are not substituted.</dd><dt>Evidence status</dt><dd>Default costs are invented. Currency and price year are labels; no currency conversion or inflation adjustment occurs.</dd></dl>']
   };
-  function showInfo(key){const evidenceKey=key==='response'?state.nbs:key.startsWith('effect-')?key.slice(7):null;const item=key.startsWith('bank-')?WireframeInvestment.indicator(key.slice(5)):['agro','forest','water'].includes(evidenceKey)?['Response, evidence and transfer',WireframeEvidence.response(evidenceKey)]:key==='legal-example'?['Inspect an activity-specific restriction',WireframeSafety.exclusion(state.nbs,names[state.nbs])]:information[key];if(!item)return;$('info-title').textContent=item[0];$('info-body').innerHTML=item[1];$('info-dialog').showModal();}
-  document.addEventListener('click',e=>{const info=e.target.closest('[data-info]');if(info)showInfo(info.dataset.info);const tech=e.target.closest('[data-tech]');if(tech){$('info-dialog').close();openTech(tech.dataset.tech);}});
+  function showInfo(key,trigger){const evidenceKey=key==='response'?state.nbs:key.startsWith('effect-')?key.slice(7):null;const item=key.startsWith('bank-')?WireframeInvestment.indicator(key.slice(5)):['agro','forest','water'].includes(evidenceKey)?['Response, evidence and transfer',WireframeEvidence.response(evidenceKey)]:key==='legal-example'?['Inspect an activity-specific restriction',WireframeSafety.exclusion(state.nbs,names[state.nbs])]:information[key];if(!item)return;infoTrigger=trigger;$('info-title').textContent=item[0];$('info-body').innerHTML=item[1];$('info-dialog').showModal();}
+  document.addEventListener('click',e=>{const info=e.target.closest('[data-info]');if(info)showInfo(info.dataset.info,info);const tech=e.target.closest('[data-tech]');if(tech){const trigger=tech.closest('dialog')?infoTrigger:tech;$('info-dialog').close();openTech(tech.dataset.tech,trigger);}});
   $('close-info').addEventListener('click',()=>$('info-dialog').close());
   function renderTech(){
     document.querySelectorAll('[data-surface]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.surface===techSurface)));
@@ -157,18 +172,18 @@
     if(!allowed[key]?.includes(e.target.value))return;
     const id=e.target.id;state[key]=e.target.value;renderTech();$(id).focus();
   });
-  function openTech(surface){techReturn=activeTab;switchTab('setup');$('setup-overview').hidden=true;$('technical').hidden=false;techSurface=surface;renderTech();}
-  $('open-tech').addEventListener('click',()=>openTech(activeTab==='hotspot'?'priority':'suit'));
-  $('setup-tech').addEventListener('click',()=>openTech('suit'));
-  $('back-tech').addEventListener('click',()=>switchTab(techReturn));
+  function openTech(surface,trigger){if(activeTab!=='setup'||$('technical').hidden){techReturn=activeTab;techTrigger=trigger;}switchTab('setup');$('setup-overview').hidden=true;$('technical').hidden=false;techSurface=surface;renderTech();focusTarget($('technical-title'),$('technical'));}
+  $('open-tech').addEventListener('click',()=>openTech(activeTab==='hotspot'?'priority':'suit',$('open-tech')));
+  $('setup-tech').addEventListener('click',()=>openTech('suit',$('setup-tech')));
+  $('back-tech').addEventListener('click',()=>{switchTab(techReturn);if(techTrigger?.isConnected&&!techTrigger.closest('[hidden]'))focusTarget(techTrigger);});
   document.querySelectorAll('[data-surface]').forEach(b=>b.addEventListener('click',()=>{techSurface=b.dataset.surface;renderTech();}));
   $('local-file').addEventListener('change',()=>{if(state.proposal){state.proposal=false;$('proposal-status').textContent='File reference changed: review and save the revised draft again.';}state.supportingFile=$('local-file').files[0]?.name||'';$('local-file-note').textContent=state.supportingFile?'Reference recorded: '+state.supportingFile+'. File content stays unread and is not uploaded.':'';renderProposal();});
   function renderProposal(){$('proposal-review').innerHTML=WireframeAI.proposal(state.proposalSurface,state);}
-  $('suggest-input').addEventListener('click',()=>{state.proposal=false;state.proposalSurface=techSurface;renderProposal();$('input-proposal').hidden=false;$('proposal-status').textContent='Draft proposal shown; not yet saved.';});
-  $('discard-proposal').addEventListener('click',()=>{state.proposal=false;$('input-proposal').hidden=true;$('proposal-status').textContent='Proposal discarded. Context notes retained; example results unchanged.';});
+  $('suggest-input').addEventListener('click',()=>{state.proposal=false;state.proposalSurface=techSurface;renderProposal();setDisclosure('suggest-input',true);$('proposal-status').textContent='Draft proposal shown; not yet saved.';});
+  $('discard-proposal').addEventListener('click',()=>{state.proposal=false;setDisclosure('suggest-input',false);focusTarget($('suggest-input'));$('proposal-status').textContent='Proposal discarded. Context notes retained; example results unchanged.';});
   $('keep-proposal').addEventListener('click',()=>{state.proposal=true;$('proposal-status').textContent='Unreviewed proposal recorded in settings. No dataset, rule or map changed.';});
-  $('ai-report').addEventListener('click',()=>{$('report-example').hidden=!$('report-example').hidden;});
-  $('ask-ai').addEventListener('click',()=>{$('ai-answer').hidden=!$('ai-answer').hidden;});
+  $('ai-report').addEventListener('click',()=>{setDisclosure('ai-report',$('report-example').hidden);});
+  $('ask-ai').addEventListener('click',()=>{setDisclosure('ask-ai',$('ai-answer').hidden);});
   function download(name,content,type){const url=URL.createObjectURL(new Blob([content],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);}
   $('download-brief').addEventListener('click',()=>download('nbs-illustrative-scoping-brief.txt',briefText().join('\n\n'),'text/plain;charset=utf-8'));
   $('copy-brief').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(briefText().join('\n\n'));$('brief-status').textContent='Example brief copied, including provenance and limitations.';}catch{$('brief-status').textContent='Clipboard unavailable. Use Download brief or select the visible text.';}});
@@ -183,7 +198,7 @@
     for(const [k,def] of Object.entries(d)){if(!(k in v)){if(['suitDataset','priorityDataset','responseExample','proposalSurface'].includes(k))continue;throw Error('Incomplete settings: '+k);}if(Array.isArray(def)){const allowed=k==='objectives'?Object.keys(objectives):['vh','h','m','l'];if(!Array.isArray(v[k])||new Set(v[k]).size!==v[k].length||v[k].some(x=>!allowed.includes(x))||(k==='objectives'&&v[k].length>3))throw Error('Invalid selections.');d[k]=[...v[k]];}else if(numberKeys.includes(k)){if(v[k]!==null&&(!Number.isFinite(v[k])||v[k]<0||v[k]>1e9))throw Error('Invalid number: '+k);const inputId=Object.keys(controls).find(id=>controls[id]===k),input=$(inputId);if(v[k]!==null&&((input.min!==''&&v[k]<Number(input.min))||(input.max!==''&&v[k]>Number(input.max))))throw Error('Out-of-range '+k+'. Check the budget inputs.');d[k]=v[k];}else if(typeof def==='boolean'){if(typeof v[k]!=='boolean')throw Error('Invalid toggle.');d[k]=v[k];}else {if(typeof v[k]!=='string'||v[k].length>(k==='currency'?12:2000))throw Error('Invalid text.');d[k]=v[k];}}
     const enums={proposalSurface:['suit','priority'],nbs:['agro','forest','water'],view:['cells','adm2','adm3'],climate:['baseline','future','difference'],hazard:['fire','flood','both'],hotClass:['top','all'],riskChoice:['flag','filter'],delivery:['unknown','support'],suitDataset:['catalogue','local'],priorityDataset:['catalogue','local'],responseExample:['a','b']};for(const [k,options] of Object.entries(enums))if(!options.includes(d[k]))throw Error('Invalid '+k);return d;
   }
-  function syncControls(){if(!$('technical').hidden)renderTech();Object.entries(controls).forEach(([id,key])=>{if($(id).type==='checkbox')$(id).checked=state[key];else $(id).value=state[key]??'';});document.querySelectorAll('[name=suitability]').forEach(i=>i.checked=state.suitability.includes(i.value));updateObjectiveControls();$('local-file-note').textContent=state.supportingFile?'Saved reference: '+state.supportingFile+' (file content not included).':'';$('input-proposal').hidden=!state.proposal;$('proposal-status').textContent=state.proposal?'Saved unreviewed proposal; no analytical changes.':'';}
+  function syncControls(){if(!$('technical').hidden)renderTech();Object.entries(controls).forEach(([id,key])=>{if($(id).type==='checkbox')$(id).checked=state[key];else $(id).value=state[key]??'';});document.querySelectorAll('[name=suitability]').forEach(i=>i.checked=state.suitability.includes(i.value));updateObjectiveControls();$('local-file-note').textContent=state.supportingFile?'Saved reference: '+state.supportingFile+' (file content not included).':'';setDisclosure('suggest-input',state.proposal);$('proposal-status').textContent=state.proposal?'Saved unreviewed proposal; no analytical changes.':'';}
   $('load-project').addEventListener('change',async()=>{
     const f=$('load-project').files[0],sequence=++loadSequence;if(!f)return;
     try{

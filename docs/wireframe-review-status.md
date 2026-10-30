@@ -1,6 +1,6 @@
 # v1 feedback implementation record
 
-29 October 2026. This record covers the revised **v1 draft**, not the preserved v0. It records implementation, not stakeholder approval. Overall assessment: **3/5 towards the full feedback set**. The walkthrough and bounded examples are substantially stronger; practice-specific readings now illustrate response and transfer limits. Reviewed synthesis, locally matched costs and stakeholder usability review remain incomplete. All six presentation modules now have bounded implementations; this does not close the full feedback set.
+Updated 30 October 2026. This record covers the revised **v1 draft**, not the preserved v0. It records implementation, not stakeholder approval. Overall assessment: **3/5 towards the full feedback set**. The walkthrough and bounded examples are substantially stronger; practice-specific readings now illustrate response and transfer limits. Reviewed synthesis, locally matched costs and stakeholder usability review remain incomplete. All six presentation modules now have bounded implementations; this does not close the full feedback set.
 
 Scores: 1 = barely addressed; 2 = partial explanation; 3 = usable illustration with material gaps; 4 = demonstrated with bounded limitations; 5 = requested demonstrator behaviour fully checked and reviewed. Scores assess the visual method illustration, not analytical readiness. No real schema tables or runtime outputs are connected.
 
@@ -17,7 +17,8 @@ Each module gets a bounded diff, browser checks and its own PR. Earlier modules 
 | 5 | Usability and consistency | Merged in PR #501 | Dense admin summaries, multi-practice overlaps, mobile/keyboard and remaining export/import edge cases. Pete/TTL comprehension review stays separate. |
 | 6 | Supporting AI examples | Merged in PR #502 | Source-linked input-change review, report-claim correction and source-limited answers; no live service commitment. |
 | 7 | National gender-context source | Merged in PR #504 | Historical national reading, interpretation and local equity questions; no spatial input or ranking change. |
-| 8 | Matched agroforestry cost reading | Implemented; bounded browser checks passed | Historical silvoarable model assumptions; local prices and cost range remain unverified. |
+| 8 | Matched agroforestry cost reading | Merged in PR #505 | Historical silvoarable model assumptions; local prices and cost range remain unverified. |
+| 9 | Accessibility and journey review | Implemented; bounded checks passed | Keyboard focus, disclosure states and 320px input fit; stakeholder walkthrough and assistive-technology review remain. |
 | Hold | Real table/runtime alignment | Deferred | T4–Diego contract settled and checked before any connection. |
 
 ### Module 1: dataset inspection and response examples
@@ -92,7 +93,7 @@ Each module gets a bounded diff, browser checks and its own PR. Earlier modules 
 - Coverage: tree costs are separate from crop costs. Itemised components must not be added again to totals. Average maintenance is not a verified annual schedule or first-five-year package. Local tree density, materials, wages, survival/replacement, crop opportunity costs, adoption, benefit timing and financing still need dated quantities and quotations.
 - Reading propagates through Comparison, Next Steps and the brief without populating budget controls. No BCR, NPV, carbon-cost or local return claim was imported. No approved T6E value or evidence-register entry is created.
 - Validation: source/context display, preservation of euro source units when calculator currency/year changes, unchanged affordable-area outputs, Next Steps and downloaded brief retain the historical/model limitations. JavaScript syntax and whitespace pass; screenshot checked; no browser console errors.
-- **Next independent work:** bounded accessibility/journey review and a clear stakeholder sign-off checklist. Method-owner decisions and T4–Diego integration remain deferred; local cost validation requires local evidence.
+- **Follow-up 9 completed:** bounded accessibility/journey fixes and a stakeholder review checklist. Method-owner decisions and T4–Diego integration remain deferred; local cost validation requires local evidence.
 
 ## Prioritised action table
 
@@ -125,6 +126,29 @@ Multiple actions can remain on one row. “Demonstrated” means browser-checked
 | Save/load project and result — P2 | 4 | Versioned local JSON stores controls, assumptions, fixture identity/provenance and result snapshot; matching-version restoration demonstrated. Module 5 retains the original brief separately, rejects malformed/out-of-range imports and checks older settings compatibility. | **Dependency:** Actual run manifest/version/output contract. No pipeline execution or real analysis archive claimed. |
 | Front/back-end alignment — deferred | 2 | Dev Notes map each screen to modules, tables, intended outputs and missing contracts. | **Dependency:** Wait for T4–Diego work, review identifiers/units/product type/masks/transformations and provenance, then decide whether to connect read-only tables. |
 
+## Follow-up 9: accessibility and journey review
+
+- Technical configuration focuses its heading while keeping the return control visible. Return restores the originating control and stage, including entry through an information dialog and repeated visits from different stages.
+- Start and skip links share a focus/scroll helper that accounts for the desktop sticky navigation and narrow-screen normal flow.
+- Three AI example disclosures expose `aria-controls` and synchronised `aria-expanded`. Discarding an input proposal restores focus to its trigger; imported proposal state uses the same disclosure helper.
+- The supporting-file reference label now fits a 320px viewport; no file-upload or analysis behaviour changed.
+- Checked in the in-app browser on 30 October: desktop focus routes, dialog Escape, repeated stage returns, tab arrows/Home/End, start/skip links, proposal discard, report/answer show/hide, 320 × 640 portrait and 640 × 320 landscape. Inspected screenshots and focus positions. Default opportunity remains 2,967,500 nominal ha; no console errors. Syntax, HTML IDs/ARIA targets/assets and whitespace checks pass.
+- This is a bounded keyboard/layout review, not WCAG certification. Screen-reader, browser/OS combinations and stakeholder comprehension remain untested. No analytical rules, schema, backend connections, tab order or v0 changes.
+
+## Stakeholder walkthrough — remaining acceptance work
+
+Use the existing feedback channel; cite the row/check below, stage, observed problem and desired change. Record reviewer/date and Pass / Revise / Deferred here after review. All rows below are **Awaiting review**; implementation is not approval.
+
+| Priority / owner | Task | Acceptance question and action if unresolved |
+|---|---|---|
+| P1 · Pete + a TTL | Read Setup before touching controls; then follow the six stages. | Can the reader explain project deliverables, this visual method illustration and the scoping stopping point? If not, revise the specific introduction (B02/B13). |
+| P1 · Pete + a TTL | Try both objective presets, then a custom combination; inspect shortlist and risk trade-off. | Can the reader distinguish authored scenarios from actual objective-to-variable logic, and livelihood need from investment risk? Fix misleading labels; keep actual mapping deferred to method owners (B01/B16). |
+| P1 · Namita + Brayden + Pete | Inspect a variable card, exclusion example and individual/overlapping hazards. | Confirm wording, transfer limits, unknowns and two risk lenses against the agreed method. Record any rule dispute for method review, not a frontend workaround (B03/B05/B06). |
+| P1 · TTL + local partners | Inspect gender, hydrology, budget and Bank indicator examples. | Are historical context, denominators, local evidence gaps and costing questions useful and unmistakable? Request specific local sources/definitions; do not present the examples as validated local inputs (B07–B10/B15). |
+| P1 · Pete + a TTL | Read/download the brief, inspect AI examples and follow Next Steps. | Can readers separate observations, assumptions and proposed follow-up from benefits or investment claims? Revise confusing prose; identify which downstream studies are useful (B11–B13). |
+| P2 · Accessibility/browser reviewer | Complete the journey using preferred browser and assistive technology. | Can stages, scope, disclosures, tables and technical return be understood and operated? Log browser/OS, input method, exact control and failure; fix reproducible barriers. No formal conformance claim yet. |
+| Deferred · T4–Diego owners + Pete | Agree table/runtime contracts before connection. | Confirm identifiers, units, product types, masks, transformations and provenance. Only then scope a read-only integration task; no connection authorised by this checklist. |
+
 ## Bank acceptance checks
 
 These retain the B01–B16 identifiers from the revision plan. No row is labelled fully closed pending stakeholder review.
@@ -132,7 +156,7 @@ These retain the B01–B16 identifiers from the revision plan. No row is labelle
 | Check | Status in this draft | Remaining boundary |
 |---|---|---|
 | B01 Objectives upfront | Visual behaviour demonstrated | Actual variable/weight mapping pending. |
-| B02 Active stages / overload | Main journey demonstrated | Admin summaries compacted; full TTL usability check remains. |
+| B02 Active stages / overload | Main journey demonstrated | Admin summaries compacted; bounded keyboard/focus and narrow-screen checks passed in follow-up 9. Full TTL usability check remains. |
 | B03 Meaning / calculation / source | Partial; Module 1 demonstration expanded | Concrete input metadata and hypothetical raw/response previews shown. Real family-specific profiles and per-input evidence coverage remain incomplete. |
 | B04 Climate / timing | Visual behaviour demonstrated | No avoided-loss or cost-of-delay inference. |
 | B05 Exclusions / adjacency | Conditional legal example demonstrated | Activity, designation interval and permission are inspectable; current legal applicability and real boundary remain unverified. |
@@ -161,4 +185,4 @@ Browser checks against local v1 on 29 October 2026:
 - Information dialog closes with Escape. Contextual technical workspace returns to originating stage. Version selector returns to preserved v0 and revised v1.
 - JavaScript syntax, local asset/link targets, duplicate HTML IDs and whitespace checks pass. No browser console errors during revised-v1 interaction checks.
 
-Not yet checked: exhaustive accessibility audit, broader mobile/cross-browser matrix, exhaustive AI/concurrent-import edge cases, stakeholder comprehension, actual analytical correctness. No schema/backend changes were made. v0 body and pinned behaviour remain unchanged except shared release notes.
+Bounded keyboard and responsive checks added on 30 October (follow-up 9). Not yet checked: screen-reader use, exhaustive accessibility audit, broader mobile/cross-browser matrix, exhaustive AI/concurrent-import edge cases, stakeholder comprehension, actual analytical correctness. No schema/backend changes were made. v0 body and pinned behaviour remain unchanged except shared release notes.
