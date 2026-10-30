@@ -19,7 +19,8 @@ Each module gets a bounded diff, browser checks and its own PR. Earlier modules 
 | 7 | National gender-context source | Merged in PR #504 | Historical national reading, interpretation and local equity questions; no spatial input or ranking change. |
 | 8 | Matched agroforestry cost reading | Merged in PR #505 | Historical silvoarable model assumptions; local prices and cost range remain unverified. |
 | 9 | Accessibility and journey review | Merged in PR #507 | Keyboard focus, disclosure states and 320px input fit; stakeholder walkthrough and assistive-technology review remain. |
-| 10 | Guided feedback questions | Implemented; local walkthrough checked | Existing form now targets v1 and Bank checks; stakeholder responses and receiver confirmation remain pending. |
+| 10 | Guided feedback questions | Merged in PR #510 | Existing form now targets v1 and Bank checks; stakeholder responses and receiver confirmation remain pending. |
+| 11 | Map presentation | Implemented; browser and PNG checks passed | District summary default, real boundary fills, clear percentages and quieter cartography; raw fixture cells remain available. |
 | Hold | Real table/runtime alignment | Deferred | T4–Diego contract settled and checked before any connection. |
 
 ### Module 1: dataset inspection and response examples
@@ -102,6 +103,7 @@ Multiple actions can remain on one row. “Demonstrated” means browser-checked
 
 | Request / priority | Progress /5 | Actions implemented in v1 | Remaining actions, in priority order |
 |---|---:|---|---|
+| Map visual quality — P1 | 4 | District summaries use real Admin 2 boundary paths, labelled shares, clean background and separate fire/flood/overlap palettes. Cell detail remains available. | **P1:** Pete reviews revised map presentation. Synthetic cell pattern remains coarse; no new surface or analytical precision is claimed. |
 | Background, project aims and tool purpose — P1 | 4 | Landing explains rural NbS, investment-scoping gap, intended users, project deliverables and the wireframe's purpose before objectives. | **P1:** Pete checks whether the explanation answers a first-time reader's questions. |
 | Explain each stage and simplify — P1 | 4 | Six original stages retained; each has a question, introduction and numbered/disclosed sections. Active stage and shared controls remain visible. | Module 5 compacts admin tables and checks narrow-screen/keyboard behaviour. **P1:** First-time TTL walkthrough; tighten remaining content based on actual confusion. |
 | Objectives before interventions — P1 | 4 | Two editable objective presets; selected objectives carry into hotspots and brief. Custom combinations explicitly have no illustrated ranking. | **P1:** Agree the intended objective-to-variable relationship; demonstrate contributions once agreed. |
@@ -158,6 +160,16 @@ Use the [guided v1 feedback form](nbs_ruralscan_feedback.html); cite the row/che
 | P1 · Pete + a TTL | Read/download the brief, inspect AI examples and follow Next Steps. | Can readers separate observations, assumptions and proposed follow-up from benefits or investment claims? Revise confusing prose; identify which downstream studies are useful (B11–B13). |
 | P2 · Accessibility/browser reviewer | Complete the journey using preferred browser and assistive technology. | Can stages, scope, disclosures, tables and technical return be understood and operated? Log browser/OS, input method, exact control and failure; fix reproducible barriers. No formal conformance claim yet. |
 | Deferred · T4–Diego owners + Pete | Agree table/runtime contracts before connection. | Confirm identifiers, units, product types, masks, transformations and provenance. Only then scope a read-only integration task; no connection authorised by this checklist. |
+
+## Follow-up 11: map presentation (Pete, 30 October)
+
+- Addressed repeated block-pattern appearance, hatched background, crowded/duplicate labels and map furniture. Added a v1-only `wireframe-maps.js` presentation module; shared geometry engine and preserved v0 remain unchanged.
+- Default view is now **District summary · Admin 2**. Existing district shares fill actual district boundary paths rather than tiled cells; label percentages are rounded, with more precise hover values. Opportunity denominator is all district fixture cells; risk and retained shortlist denominators are selected opportunity cells in that district. This display does not locate sites inside a district.
+- Fire, flood and overlap use separate palettes on a consistent 0–100% legend. Empty denominators and unavailable custom-objective results stay grey with no percentage. No relative min/max stretch or new risk classes were introduced.
+- Removed sea hatching, graticule and duplicate city labels; retained smaller district labels, coastal callouts, a simple north cue and an unclipped scale. Zoom affects geography while reference furniture stays fixed, and scale labels change with zoom.
+- **Cell detail** retains the original fixture geometry and authored classifications. Climate difference uses cell detail; schematic Admin 3 remains clearly labelled. Cell-only exclusion/context controls are disabled in the district overview, which directs the reader to Cell detail for those overlays. Underlying exclusions, selected scope and counts do not change.
+- PNG export retains map styles, denominator/meaning, legend and synthetic-data notice; exports the full extent even after zoom. Saved settings specifying cell view remain compatible. No fixture, schema, analytical rule or backend changes.
+- Checks: desktop district rendering; fire/flood/overlap; cell and schematic views; difference fallback; exclusions/context; empty selection; zoom/recentre and changing scale labels; exported PNG visually inspected; 390px viewport without horizontal page overflow. Opportunity remains 2,967,500 nominal ha; shortlist 1,970,000 ha / 137,230 residents, or 1,022,500 ha / 81,890 after optional overlap deferral. Syntax, HTML asset/ID and whitespace checks pass; no console errors. Small-screen labels still require zoom or the accompanying unit table; no full cartographic or accessibility certification claimed.
 
 ## Bank acceptance checks
 
