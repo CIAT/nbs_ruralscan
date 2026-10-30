@@ -127,6 +127,7 @@
     display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:600;
     color:var(--forest); background:#fff; transition:.12s;
   }
+  .scale input:focus-visible + .circle{ outline:2px solid var(--forest); outline-offset:3px; }
   .scale input:checked + .circle{ background:var(--clay); border-color:var(--clay); color:#fff; }
   .scale-caption{ display:flex; justify-content:space-between; font-size:10px; color:var(--muted); margin-top:4px; padding:0 2px; }
   .scale-warning{ font-size:11px; color:#a83232; margin-top:6px; display:none; }
@@ -178,7 +179,7 @@
 
 <header class="topbar">
   <div class="title">
-    <strong>Rural NbS Scan — Wireframe Review (v0.7)</strong>
+    <strong>Rural NbS Scan — Wireframe Review · v1 draft</strong>
     <span>D591 · World Bank · Alliance Bioversity &amp; CIAT</span>
   </div>
   <div class="badge">Feedback prototype</div>
@@ -189,19 +190,19 @@
   <div class="viewer" id="viewerPanel">
     <div class="viewer-bar" id="viewerBar">
       <span class="dot"></span>
-      <span id="viewerBarText">Browse the live tool on this side.</span>
+      <span id="viewerBarText">Review the v1 method illustration on this side.</span>
     </div>
     <iframe id="wireframeFrame" src="wireframe.html" title="Rural NbS Scan wireframe" loading="eager"></iframe>
     <div class="viewer-cover" id="viewerCover">
       <div class="viewer-cover-inner">
         <div class="vc-eyebrow">D591 · World Bank · Alliance Bioversity &amp; CIAT</div>
         <h1>NbS Rural Scan</h1>
-        <p class="vc-sub">Visualization feedback</p>
+        <p class="vc-sub">Review the method illustration · v1 draft</p>
         <div class="vc-howto">
           <strong>How this works</strong>
           <ol>
             <li>Enter your name and email on the right.</li>
-            <li>Press <b>Start</b> — this tool will appear right here, open to the first tab.</li>
+            <li>Press <b>Start</b> — the v1 draft will appear right here, open to the first tab.</li>
             <li>Answer the questions on the right for the tab currently showing.</li>
             <li>Press <b>Next</b> to move on — the tab here switches automatically, no need to click anything on this side yourself.</li>
             <li>At the end, press <b>Submit</b> to send everything in one go.</li>
@@ -218,7 +219,7 @@
       <div class="screen active" id="screenStart">
         <div class="start-hero">
           <h2>Share your feedback</h2>
-          <p>Enter your details, then press Start — the guided steps appear on the left.</p>
+          <p>Review what the method explains, what remains unclear and what should change. This draft uses illustrative data; it does not run the analytical method. Enter your details, then press Start. Keep v1 selected for this review; note any v0 comparison in your comments. Text answers may be “No change” or “Not assessed”.</p>
         </div>
         <div class="identity">
           <div class="field">
@@ -252,7 +253,7 @@
         <div class="done-screen show">
           <div class="check">✓</div>
           <h3>Thank you for your feedback</h3>
-          <p>Your response has been recorded. This will return to the start screen for the next reviewer.</p>
+          <p>Submission sent. This page cannot confirm that the feedback service saved it. Start a new response only when you are ready.</p>
           <button class="start" onclick="resetFlow()" style="max-width:220px;margin:0 auto;">Start a new response</button>
         </div>
       </div>
@@ -288,67 +289,74 @@
   const STEPS = [
     {
       key:'setup', num:'01', tab:'01 Setup', tabId:'tab-setup',
+      task:"Read the background first. Try both objective presets, then inspect optional technical configuration. Checks B01–B03/B13.",
       questions:[
-        {type:'scale', name:'setup_rating', prompt:"It's clear what each choice (NbS, geographic scope, resolution, climate mode) will change in the analysis.", lo:'Strongly disagree', hi:'Strongly agree'},
-        {type:'text', name:'setup_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
-        {type:'text', name:'setup_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+        {type:'scale', name:'setup_rating', prompt:"The landing page explains the project aims, intended users and why this wireframe illustrates a scoping method.", lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'setup_likes', prompt:"In your own words, what does the project deliver, and what is this wireframe for?"},
+        {type:'text', name:'setup_improve', prompt:"What background is still missing? Can you distinguish the objective examples from actual analytical weights, and find the optional input configuration? Name the wording or control to change."}
       ]
     },
     {
       key:'opportunity', num:'02', tab:'02 Opportunity Space', tabId:'tab-opp',
+      task:"Inspect map classes and exclusion information; compare climate views and the small-boundary explanation in Setup. Checks B03–B05/B14.",
       questions:[
-        {type:'scale', name:'opportunity_rating', prompt:'The suitability map and the VH/H/M/L/X classes make it easy to see where an NbS could plausibly work.', lo:'Strongly disagree', hi:'Strongly agree'},
-        {type:'text', name:'opportunity_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
-        {type:'text', name:'opportunity_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+        {type:'scale', name:'opportunity_rating', prompt:"I can distinguish potential opportunity, excluded areas and missing information without treating example cells as verified sites.", lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'opportunity_likes', prompt:"Which map, class or evidence explanation helps you understand where a practice might fit?"},
+        {type:'text', name:'opportunity_improve', prompt:"What remains unclear about suitability, excluded versus unassessed areas, source evidence, climate comparison or the 100-ha/coarse-cell limit? Identify the example and proposed fix."}
       ]
     },
     {
       key:'risk', num:'03', tab:'03 Project Risk', tabId:'tab-prisk',
+      task:"Compare Fire, Flood and their overlap. Read the establishment example and operational conditions. Checks B06/B16.",
       questions:[
-        {type:'scale', name:'risk_rating', prompt:'The difference between "risk to the NbS asset" (this tab) and "risk to rural livelihoods" (Opportunity Space) is clear.', lo:'Strongly disagree', hi:'Strongly agree'},
-        {type:'text', name:'risk_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
-        {type:'text', name:'risk_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+        {type:'scale', name:'risk_rating', prompt:"I can distinguish risk to the investment from livelihood need, and understand why separate hazards are not an overall risk score.", lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'risk_likes', prompt:"Which individual-hazard or establishment-risk explanation helps frame a question for local review?"},
+        {type:'text', name:'risk_improve', prompt:"What remains unclear about fire, flood, their overlap, establishment vulnerability or operational conditions? Flag any wording that sounds like a verified damage estimate."}
       ]
     },
     {
       key:'hotspots', num:'04', tab:'04 Priority Hotspots', tabId:'tab-hotspot',
+      task:"Compare objective presets and risk choices; toggle gender context. Distinguish changing shortlist from unchanged opportunity. Checks B01/B07/B16.",
       questions:[
-        {type:'scale', name:'hotspots_rating', prompt:'The ranked district list and the priority weights would help you defend a site-selection decision to a task team.', lo:'Strongly disagree', hi:'Strongly agree'},
-        {type:'text', name:'hotspots_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
-        {type:'text', name:'hotspots_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+        {type:'scale', name:'hotspots_rating', prompt:"I can follow how the two authored objective scenarios and optional risk choice change the illustrative shortlist.", lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'hotspots_likes', prompt:"What changed between the objective examples or risk choices? Which change was useful?"},
+        {type:'text', name:'hotspots_improve', prompt:"Are authored scenarios, custom objectives, the risk trade-off and historical gender context clear? Flag any implication that gender data or custom weights drive the map."}
       ]
     },
     {
       key:'comparison', num:'05', tab:'05 NbS Comparison', tabId:'tab-compare',
+      task:"Inspect overlap, change a budget assumption, and open indicator/cost explanations. Checks B08–B10.",
       questions:[
-        {type:'scale', name:'comparison_rating', prompt:'The side-by-side comparison (spatial overlap, climate resilience, cost-effectiveness) makes it easier to choose between candidate NbS.', lo:'Strongly disagree', hi:'Strongly agree'},
-        {type:'text', name:'comparison_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
-        {type:'text', name:'comparison_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+        {type:'scale', name:'comparison_rating', prompt:"The comparison explains footprint overlap and budget assumptions without claiming verified benefits or identifying a best investment.", lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'comparison_likes', prompt:"Which overlap, cost or Bank-indicator explanation helps frame an investment discussion?"},
+        {type:'text', name:'comparison_improve', prompt:"What is unclear about duplicate footprints/residents, linear applicability zones, local costs, budget ceilings or the five Bank indicators? Which assumption or denominator needs changing?"}
       ]
     },
     {
       key:'nextsteps', num:'06', tab:'06 Next Steps', tabId:'tab-next',
+      task:"Read the brief, learning resources and hydrology questions; try scripted AI examples. Checks B11–B13/B15.",
       questions:[
-        {type:'scale', name:'nextsteps_rating', prompt:'The pathway from scoping to pre-feasibility and feasibility is clear and actionable.', lo:'Strongly disagree', hi:'Strongly agree'},
-        {type:'text', name:'nextsteps_likes', prompt:"What's working well in this tab — anything that's clear, useful, or well laid out?"},
-        {type:'text', name:'nextsteps_improve', prompt:"What's confusing, missing, or would you change in this tab, and why?"}
+        {type:'scale', name:'nextsteps_rating', prompt:"The brief and follow-up questions make clear where scoping ends and local validation and feasibility begin.", lo:'Strongly disagree', hi:'Strongly agree'},
+        {type:'text', name:'nextsteps_likes', prompt:"Which part of the brief or local follow-up would you reuse, and with what qualification?"},
+        {type:'text', name:'nextsteps_improve', prompt:"What is missing from the brief, hydrology/local-study questions, learning resources or AI examples? Flag unsupported claims or a follow-up that exceeds the scoping remit."}
       ]
     },
     {
       key:'general', num:'GN', tab:null,
       questions:[
-        {type:'scale', name:'general_usefulness', prompt:'Overall, how useful would this tool be for your work as a TTL?', lo:'Not useful at all', hi:'Very useful'},
-        {type:'text', name:'general_missing', prompt:"Is there any feature, data view, or functionality you expected to see that's missing? (e.g. exporting results, cross-country comparison, an API, methodology documentation)"},
+        {type:'scale', name:'general_usefulness', prompt:'How useful is this method illustration for early investment scoping?', lo:'Not useful at all', hi:'Very useful'},
+        {type:'text', name:'general_missing', prompt:"Which unresolved decision most limits this scoping method? Separate essential changes from optional improvements; a working dashboard is not required."},
         {type:'text', name:'general_favorite', prompt:'Of the six tabs, which is most valuable for your work — and which is least?'},
         {type:'text', name:'general_patterns_like', prompt:"Are there UI/UX patterns from other geospatial or decision-support platforms you'd like to see here? (e.g. World Bank Climate Change Knowledge Portal, WRI Aqueduct, Africa GeoPortal, Global Forest Watch — links/screenshots welcome)"},
         {type:'text', name:'general_patterns_avoid', prompt:"Anything from other platforms you think we should avoid?"},
-        {type:'text', name:'general_comment', prompt:'Any final comments?'}
+        {type:'text', name:'general_comment', prompt:'Your three highest-priority changes, if any? Name the stage and desired outcome. Note if you compared v0 with v1.'}
       ]
     }
   ];
 
   let currentIndex = -1;
   let responses = {};
+  const reviewedVersions = new Set();
 
   function showScreen(id){
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -391,7 +399,7 @@
     document.getElementById('stepNum').textContent = step.num;
     if(step.tab){
       document.getElementById('stepBannerTitle').textContent = step.tab;
-      document.getElementById('stepBannerHint').textContent = "This tab is now showing on the left — answer below.";
+      document.getElementById('stepBannerHint').textContent = step.task;
       goToTab(step.tabId);
     } else {
       document.getElementById('stepBannerTitle').textContent = "Overall impression";
@@ -406,6 +414,7 @@
       qDiv.dataset.name = q.name;
 
       const p = document.createElement('p');
+      p.id = q.name + '-prompt';
       p.innerHTML = q.prompt + ' <span class="req-star">*</span>';
       qDiv.appendChild(p);
 
@@ -413,6 +422,8 @@
         qDiv.dataset.required = "true";
         const scale = document.createElement('div');
         scale.className = 'scale';
+        scale.setAttribute('role','radiogroup');
+        scale.setAttribute('aria-labelledby',p.id);
         for(let v=1; v<=5; v++){
           const opt = document.createElement('div');
           opt.className = 'opt';
@@ -444,6 +455,7 @@
         qDiv.dataset.required = "true";
         const ta = document.createElement('textarea');
         ta.name = q.name;
+        ta.setAttribute('aria-labelledby',p.id);
         ta.placeholder = 'Your answer';
         ta.value = responses[q.name] || '';
         ta.addEventListener('input', () => qDiv.classList.remove('invalid'));
@@ -460,6 +472,10 @@
   }
 
   function saveStep(){
+    try{
+      const path = document.getElementById('wireframeFrame').contentWindow.location.pathname;
+      reviewedVersions.add(path.endsWith('/wireframe-v0.html') ? 'v0' : path.endsWith('/wireframe.html') ? 'v1 draft' : 'unknown');
+    }catch{ reviewedVersions.add('unknown'); }
     const step = STEPS[currentIndex];
     step.questions.forEach(q => {
       if(q.type === 'scale'){
@@ -535,7 +551,10 @@
       return;
     }
 
-    const body = new URLSearchParams(responses);
+    // Keep the existing receiver's field names; retain review context in its comment column.
+    const body = new URLSearchParams({...responses,
+      general_comment: '[Review questions: v1 / 2026-10-30; versions at saved steps: ' + [...reviewedVersions].join(', ') + ']\n' + (responses.general_comment || '')
+    });
     try{
       await fetch(GAS_ENDPOINT, { method: "POST", mode: "no-cors", body: body });
       showScreen('screenDone');
@@ -548,6 +567,7 @@
 
   function resetFlow(){
     responses = {};
+    reviewedVersions.clear();
     currentIndex = -1;
     document.getElementById('fName').value = '';
     document.getElementById('fEmail').value = '';

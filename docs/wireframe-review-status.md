@@ -18,7 +18,8 @@ Each module gets a bounded diff, browser checks and its own PR. Earlier modules 
 | 6 | Supporting AI examples | Merged in PR #502 | Source-linked input-change review, report-claim correction and source-limited answers; no live service commitment. |
 | 7 | National gender-context source | Merged in PR #504 | Historical national reading, interpretation and local equity questions; no spatial input or ranking change. |
 | 8 | Matched agroforestry cost reading | Merged in PR #505 | Historical silvoarable model assumptions; local prices and cost range remain unverified. |
-| 9 | Accessibility and journey review | Implemented; bounded checks passed | Keyboard focus, disclosure states and 320px input fit; stakeholder walkthrough and assistive-technology review remain. |
+| 9 | Accessibility and journey review | Merged in PR #507 | Keyboard focus, disclosure states and 320px input fit; stakeholder walkthrough and assistive-technology review remain. |
+| 10 | Guided feedback questions | Implemented; local walkthrough checked | Existing form now targets v1 and Bank checks; stakeholder responses and receiver confirmation remain pending. |
 | Hold | Real table/runtime alignment | Deferred | T4–Diego contract settled and checked before any connection. |
 
 ### Module 1: dataset inspection and response examples
@@ -135,9 +136,18 @@ Multiple actions can remain on one row. “Demonstrated” means browser-checked
 - Checked in the in-app browser on 30 October: desktop focus routes, dialog Escape, repeated stage returns, tab arrows/Home/End, start/skip links, proposal discard, report/answer show/hide, 320 × 640 portrait and 640 × 320 landscape. Inspected screenshots and focus positions. Default opportunity remains 2,967,500 nominal ha; no console errors. Syntax, HTML IDs/ARIA targets/assets and whitespace checks pass.
 - This is a bounded keyboard/layout review, not WCAG certification. Screen-reader, browser/OS combinations and stakeholder comprehension remain untested. No analytical rules, schema, backend connections, tab order or v0 changes.
 
+## Follow-up 10: align the existing guided feedback form
+
+- Updated `nbs_ruralscan_feedback.html` from v0.7 wording to v1 review. Setup now asks whether the background explains project aims, users and wireframe purpose before configuration.
+- Each stage has a concrete review task and Bank-check references. Questions distinguish authored objectives from weights, exclusions from unknowns, investment risk from livelihood need, national gender context from ranking inputs, and illustrative budgets from investment returns. Next Steps explicitly covers hydrology, source limits and scripted AI examples.
+- Overall questions request essential versus optional changes and three priorities, without suggesting an API or production tool as expected scope. Existing receiver field names and required-answer behaviour are preserved; “No change” / “Not assessed” is accepted. Ratings have changed meaning and must not be pooled unqualified with earlier responses.
+- Review-question revision and iframe versions observed when steps are saved are appended to the existing final-comment field. This is not a timestamped audit of every version viewed. Submission copy no longer claims confirmed storage: the existing `no-cors` request cannot inspect receiver success.
+- Local checks: required-answer validation; all six automatic stage switches plus overall questions; Back retains answers; question/radio-group accessible labels; compact desktop split-panel layout and screenshot. No test feedback was submitted. Response field-name comparison, JavaScript syntax and whitespace checks pass. A local stub verifies submitted comment context and unchanged receiver keys without sending a network request. One browser-console MutationObserver error was observed; no matching observer exists in the form or wireframe scripts, and navigation checks passed. Its origin was not established.
+- Actual receiver storage/retrieval, stakeholder comprehension and sign-off remain unverified. No method, schema, backend output or analytical control changed.
+
 ## Stakeholder walkthrough — remaining acceptance work
 
-Use the existing feedback channel; cite the row/check below, stage, observed problem and desired change. Record reviewer/date and Pass / Revise / Deferred here after review. All rows below are **Awaiting review**; implementation is not approval.
+Use the [guided v1 feedback form](nbs_ruralscan_feedback.html); cite the row/check below, stage, observed problem and desired change. Record reviewer/date and Pass / Revise / Deferred here after review. All rows below are **Awaiting review**; implementation is not approval.
 
 | Priority / owner | Task | Acceptance question and action if unresolved |
 |---|---|---|
