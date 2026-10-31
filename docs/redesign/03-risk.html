@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project Risk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1b.css">
+</head>
+<body>
+<div id="chrome"></div>
+
+<main class="wrap">
+  <section class="chapter">
+    <span class="eyebrow sc">Stage 03 · Project risk</span>
+    <h1 class="question">Which of these places would put the planting itself at risk?</h1>
+    <p class="lede">Screen the opportunity space for hazards to the investment during the years the trees take to establish. <b>You take away a flag on each place</b> — never a change to suitability or need.</p>
+  </section>
+
+  <div class="ctlrow">
+    <div class="seg" id="seg-hz" role="group" aria-label="Hazard">
+      <button type="button" data-v="fire" aria-pressed="true">Fire</button>
+      <button type="button" data-v="flood" aria-pressed="false">Flood</button>
+      <button type="button" data-v="both" aria-pressed="false">Both</button>
+    </div>
+  </div>
+
+  <figure class="plate" style="margin:0">
+    <svg class="map" id="map" role="img" aria-label="Map of hazard exposure within the opportunity space, example data"></svg>
+    <div class="pl-title">
+      <h2 id="t"></h2>
+      <p class="pl-sub" id="s"></p>
+      <p class="pl-scope">Opportunity space only · baseline 1995–2014 · establishment period 5 years</p>
+      <span class="pl-mark">Example data — authored surface, not a pilot result</span>
+    </div>
+    <div class="legend" id="lg"></div>
+  </figure>
+  <div class="under">
+    <div class="seg seg-sm" id="seg-view" role="group" aria-label="Map view">
+      <button type="button" data-v="cells" aria-pressed="true">5 km cells</button>
+      <button type="button" data-v="district" aria-pressed="false">District summary</button>
+    </div>
+    <p class="plate-src">Boundaries: geoBoundaries gbOpen v6 (CC-BY 4.0). Hazard cells: synthetic example surface (seed 20261031) — not a hazard model.</p>
+  </div>
+
+  <section class="tradeoff" aria-labelledby="to-h">
+    <div>
+      <h3 id="to-h">What should a flag do?</h3>
+      <p class="t-who">The task team’s call. It is recorded in the brief.</p>
+    </div>
+    <div>
+      <div class="seg" id="seg-flag" role="group" aria-label="What should a flag do?">
+        <button type="button" data-v="keep" aria-pressed="true">Keep flagged places and show the flag</button>
+        <button type="button" data-v="remove" aria-pressed="false">Remove High-flag places from the shortlist</button>
+      </div>
+      <p class="consequence" id="cons" aria-live="polite"></p>
+      <p>Either way, suitability and need are unchanged; only the shortlist carried into Stage 04 differs.</p>
+    </div>
+  </section>
+
+  <section class="reading">
+    <div>
+      <h3>How to read this</h3>
+      <ol class="notes">
+        <li><b>Risk to the investment, not to people.</b> This screen asks what could damage the planting. Risk to rural livelihoods is a need layer in Stage 04. The two are kept apart and never added together.</li>
+        <li><b>Young trees are the exposed asset.</b> Exposure is judged over the establishment period — five years here — when a fire or a flood can undo the planting.</li>
+        <li><b>A flag is exposure, not a loss rate.</b> It says the hazard is common here, not how much would be lost. There is no overall risk score.</li>
+        <li><b>Two separate questions.</b> What a practice can reduce for farmers and what can damage the practice itself are answered independently. A practice can ease flooding downstream and still be washed out as seedlings.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Key figures</h3>
+      <dl class="figs" id="figs"></dl>
+    </div>
+  </section>
+
+  <section class="deeper">
+    <h3>Go deeper</h3>
+    <details class="acc">
+      <summary><span class="a-t">Levers a project can change</span><span class="a-s">Not mapped and not scored here — each needs checking on the ground.</span></summary>
+      <div class="a-body">
+        <table>
+          <thead><tr><th>Lever</th><th>Why it matters</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>Road access</td><td>Seedling delivery and getting produce out</td><td><span class="status">Local verification required</span></td></tr>
+            <tr><td>Market access</td><td>Whether tree products earn an income</td><td><span class="status">Local verification required</span></td></tr>
+            <tr><td>Land tenure</td><td>Who can plant trees and keep their benefits</td><td><span class="status">Local verification required</span></td></tr>
+            <tr><td>Extension services</td><td>Advice through the establishment years</td><td><span class="status">Local verification required</span></td></tr>
+            <tr><td>Finance and credit</td><td>Covering costs before trees pay back</td><td><span class="status">Local verification required</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <details class="acc">
+      <summary><span class="a-t">What the establishment evidence says</span><span class="a-s">Where the hazard notes for each practice come from.</span></summary>
+      <div class="a-body">
+        <table>
+          <thead><tr><th>Practice</th><th>Source class</th></tr></thead>
+          <tbody>
+            <tr><td>Planted silvoarable agroforestry</td><td>Practitioner guidance on fire protection of young trees</td></tr>
+            <tr><td>Riparian buffers</td><td>Reviews of buffer establishment on flood-prone banks</td></tr>
+            <tr><td>Assisted natural regeneration</td><td>Practitioner guidance on fire and grazing control in fallows</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <details class="acc">
+      <summary><span class="a-t">Why there is no overall risk rating</span><span class="a-s">Fire and flood do different damage and call for different responses.</span></summary>
+      <div class="a-body">
+        <p>Adding fire and flood into one score would hide which hazard is driving a flag, and so which response fits — firebreaks and timing for fire, site and species choice for flood. Each hazard keeps its own flag, and the “Both” view shows where they coincide.</p>
+      </div>
+    </details>
+  </section>
+
+  <div class="nextstage">
+    <p><b>Next, find where the shortlist meets the project’s priorities.</b> The flags travel with each place.</p>
+    <a class="btn" href="04-hotspots.html">Open Stage 04</a>
+  </div>
+</main>
+
+<script src="../sle_geo.js"></script>
+<script src="v1b-map.js"></script>
+<script src="v1b-fixture.js"></script>
+<script>
+(function () {
+  'use strict';
+  V1BUI.chrome(3);
+  var M = V1BMap, F = FIXTURE, T = F.totals, HA = F.haPerCell;
+  var fmt = function (n) { return Math.round(n).toLocaleString('en-GB'); };
+  var pct = function (x) { return Math.round(x * 100) + ' %'; };
+  function sw(cls, label) { return '<span class="sw"><i class="' + cls + '"></i>' + label + '</span>'; }
+  function swk(k, label) { return '<span class="sw"><i style="background:var(' + k + ')"></i>' + label + '</span>'; }
+  var narrow = window.matchMedia('(max-width: 760px)');
+  var svg = M.plate(document.getElementById('map'), { uid: 'risk' });
+  function fitView() { svg.setAttribute('viewBox', narrow.matches ? '352 14 590 606' : '0 0 960 640'); }
+  fitView();
+
+  var st = { hz: 'fire', view: 'cells', flag: 'keep' };
+  var HZ = {
+    fire: { word: 'fire', hue: '--fire', share: 'shareFire', high: function (c) { return c.fireClass === 'high'; },
+      t: 'Fire exposure across the opportunity space', s: 'How often land near each cell burned, in three classes.',
+      key: function (c) { return c.fireClass === 'high' ? 'fire' : c.fireClass === 'moderate' ? 'fire2' : 'sel'; },
+      lg: function () { return swk('--fire', 'High') + swk('--fire-2', 'Moderate') + '<span class="sw"><i class="k-sel-sw"></i>Low</span>'; } },
+    flood: { word: 'flood', hue: '--flood', share: 'shareFlood', high: function (c) { return c.floodClass === 'high'; },
+      t: 'Flood exposure across the opportunity space', s: 'Modelled flood depth at a 1-in-100-year return period, in three classes.',
+      key: function (c) { return c.floodClass === 'high' ? 'flood' : c.floodClass === 'moderate' ? 'flood2' : 'sel'; },
+      lg: function () { return swk('--flood', 'High') + swk('--flood-2', 'Moderate') + '<span class="sw"><i class="k-sel-sw"></i>Low</span>'; } },
+    both: { word: 'fire or flood', hue: '--both', share: 'shareAny', high: function (c) { return c.fireClass === 'high' || c.floodClass === 'high'; },
+      t: 'Where fire and flood exposure coincide', s: 'High exposure only. Moderate and low are shown together as neither.',
+      key: function (c) { var f = c.fireClass === 'high', w = c.floodClass === 'high'; return f && w ? 'both' : f ? 'fire' : w ? 'flood' : 'sel'; },
+      lg: function () { return swk('--both', 'Both High') + swk('--fire', 'Fire High') + swk('--flood', 'Flood High') + '<span class="sw"><i class="k-sel-sw"></i>Neither</span>'; } }
+  };
+  var flaggedCells = { fire: T.fireHigh, flood: T.floodHigh, both: T.anyHigh };
+
+  function bins(key) {
+    var mx = 0; Object.keys(F.districts).forEach(function (k) { if (F.districts[k].selected >= 20) mx = Math.max(mx, F.districts[k][key]); });
+    var w = Math.max(5, Math.ceil(mx * 100 / 5 / 5) * 5); return { w: w / 100, edges: [0, 1, 2, 3, 4, 5].map(function (i) { return i * w; }) };
+  }
+
+  function render() {
+    var H = HZ[st.hz];
+    svg.style.setProperty('--hz', 'var(' + H.hue + ')');
+    svg.classList.toggle('no-city', st.view === 'district');
+    var lg;
+    if (st.view === 'cells') {
+      document.getElementById('t').textContent = H.t;
+      document.getElementById('s').textContent = H.s;
+      M.paintCells(svg, F.cells, function (c) {
+        if (!c.selected) return null;
+        if (st.flag === 'remove' && H.high(c)) return 'gone';
+        return H.key(c);
+      });
+      M.setLabels(svg, {});
+      lg = '<div class="lg-h">' + (st.hz === 'both' ? 'High exposure' : 'Exposure') + ', opportunity space only</div><div class="lg-row">' + (st.flag === 'remove' && st.hz !== 'both' ? H.lg().replace(/^<span class="sw">.*?<\/span>/, '') : H.lg()) + '</div>' +
+        '<div class="lg-row">' + sw('sw-out', 'Outside the opportunity space') + (st.flag === 'remove' ? '<span class="sw" style="--hz:var(' + H.hue + ')"><i class="sw-gone"></i>Set aside from the shortlist</span>' : '') + '</div>';
+    } else {
+      var b = bins(H.share);
+      var ranked = Object.keys(F.districts).map(function (k) { return F.districts[k]; })
+        .filter(function (d) { return d.selected >= 20; }).sort(function (a, z) { return z[H.share] - a[H.share]; }).slice(0, 3);
+      document.getElementById('t').textContent = 'Share of each district’s opportunity space flagged High for ' + H.word;
+      document.getElementById('s').textContent = 'Flagged cells as a share of the district’s Very high and High cells. The three largest shares are named with values.';
+      M.paintCells(svg, F.cells, function (c) { return c.selected ? 'sel' : null; });
+      M.paintDistricts(svg, function (n) {
+        var d = F.districts[n]; if (d.selected < 20) return 'out';
+        return 'b' + (Math.min(4, Math.floor(d[H.share] / b.w)) + 1);
+      });
+      var extra = {}, names = ranked.map(function (d) { extra[d.name] = pct(d[H.share]); return d.name; });
+      M.setLabels(svg, { extra: extra, emph: names });
+      lg = '<div class="lg-h">Share flagged High for ' + H.word + '</div><div class="ramp" style="--hz:var(' + H.hue + ')">' +
+        [1, 2, 3, 4, 5].map(function (i) { return '<i class="b' + i + '"></i>'; }).join('') +
+        '</div><div class="ramp-lbl">' + b.edges.map(function (e, i) { return '<span>' + e + (i === 5 ? ' %' : '') + '</span>'; }).join('') + '</div>' +
+        '<div class="lg-row">' + sw('sw-out', 'Too little opportunity space to summarise') + '</div>';
+    }
+    document.getElementById('lg').innerHTML = lg;
+    var opp = T.selected * HA, fl = flaggedCells[st.hz] * HA;
+    document.getElementById('cons').innerHTML = st.flag === 'keep'
+      ? 'Shortlist keeps <b>' + fmt(opp) + ' ha</b>; ' + fmt(fl) + ' ha carry a High ' + H.word + ' flag.'
+      : 'Shortlist drops to <b>' + fmt(opp - fl) + ' ha</b>; ' + fmt(fl) + ' ha with a High ' + H.word + ' flag are set aside.';
+  }
+
+  V1BUI.segmented(document.getElementById('seg-hz'), function (v) { st.hz = v; render(); });
+  V1BUI.segmented(document.getElementById('seg-view'), function (v) { st.view = v; render(); });
+  V1BUI.segmented(document.getElementById('seg-flag'), function (v) { st.flag = v; render(); });
+  render();
+  var q = new URLSearchParams(location.search);
+  function press(id, v) { var b = document.querySelector('#' + id + ' [data-v="' + v + '"]'); if (b) b.click(); }
+  if (q.get('hazard')) press('seg-hz', q.get('hazard'));
+  if (q.get('view')) press('seg-view', q.get('view'));
+  if (q.get('flag')) press('seg-flag', q.get('flag'));
+
+  document.getElementById('figs').innerHTML =
+    '<dt>Opportunity space screened</dt><dd><span class="fig-k">' + fmt(T.selected * HA) + '</span> ha</dd>' +
+    '<dt>High fire exposure</dt><dd>' + fmt(T.fireHigh * HA) + ' ha</dd>' +
+    '<dt>High flood exposure</dt><dd>' + fmt(T.floodHigh * HA) + ' ha</dd>' +
+    '<dt>High for both</dt><dd>' + fmt(T.both * HA) + ' ha</dd>' +
+    '<dt>Share of the opportunity space with any High flag</dt><dd>' + pct(T.anyHigh / T.selected) + '</dd>';
+  narrow.addEventListener && narrow.addEventListener('change', fitView);
+})();
+</script>
+</body>
+</html>

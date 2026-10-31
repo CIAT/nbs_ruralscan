@@ -251,6 +251,8 @@
           '<rect width="5" height="5" class="pat-paper"/><line x1="0" y1="0" x2="0" y2="5" class="pat-hatch"/></pattern>' +
         '<pattern id="dots-' + uid + '" width="4" height="4" patternUnits="userSpaceOnUse">' +
           '<rect width="4" height="4" class="pat-unknown"/><circle cx="2" cy="2" r=".62" class="pat-dot"/></pattern>' +
+        '<pattern id="rm-' + uid + '" width="4" height="4" patternUnits="userSpaceOnUse">' +
+          '<rect width="4" height="4" class="pat-paper"/><circle cx="2" cy="2" r=".75" class="pat-rm"/></pattern>' +
         '<clipPath id="clip-' + uid + '"><path d="' + ADM0_PATH + '"/></clipPath>' +
       '</defs>' +
       '<rect class="m-neigh" x="-400" y="-400" width="' + (VB_W + 800) + '" height="' + (VB_H + 800) + '"/>' +
@@ -315,7 +317,8 @@
     if (cityOpt) CITIES.forEach(function (c) {
       if (c.name === 'Freetown') return;
       var p = project(c.lon, c.lat);
-      out += '<text class="city" x="' + (p[0] + 5).toFixed(1) + '" y="' + (p[1] + 3.5).toFixed(1) + '">' + c.name + '</text>';
+      var left = c.name === 'Kenema';   // keeps clear of the Kailahun district label
+      out += '<text class="city" x="' + (p[0] + (left ? -5 : 5)).toFixed(1) + '" y="' + (p[1] + 3.5).toFixed(1) + '"' + (left ? ' text-anchor="end"' : '') + '>' + c.name + '</text>';
     });
     if (cityOpt) out += '<text class="city lead-only" x="' + (fr[0] - 6).toFixed(1) + '" y="' + (fr[1] + 9).toFixed(1) + '" text-anchor="end">Freetown</text>' +
       '<text class="city narrow-only" x="' + (fr[0] + 6).toFixed(1) + '" y="' + (fr[1] - 6).toFixed(1) + '">Freetown</text>';
@@ -336,6 +339,7 @@
       var fill = '';
       if (k === 'excluded') fill = ' fill="url(#hatch-' + uid + ')"';
       if (k === 'unknown') fill = ' fill="url(#dots-' + uid + ')"';
+      if (k === 'gone') fill = ' fill="url(#rm-' + uid + ')"';
       html += '<path class="k-' + k + '"' + fill + ' d="' + groups[k] + '"/>';
     });
     svg.querySelector('.m-cells').innerHTML = html;
@@ -364,10 +368,10 @@
   var STAGES = [
     { n: 1, name: 'Setup', href: '01-setup.html' },
     { n: 2, name: 'Opportunity space', href: '02-opportunity.html' },
-    { n: 3, name: 'Project risk', href: '02-opportunity.html#risk' },
-    { n: 4, name: 'Priority hotspots', href: null },
+    { n: 3, name: 'Project risk', href: '03-risk.html' },
+    { n: 4, name: 'Priority hotspots', href: '04-hotspots.html' },
     { n: 5, name: 'NbS comparison', href: '05-comparison.html' },
-    { n: 6, name: 'Next steps', href: null }
+    { n: 6, name: 'Next steps', href: '06-next.html' }
   ];
   var SCOPE = [
     { k: 'practice', label: 'Agroforestry (planted silvoarable)' },
@@ -403,6 +407,7 @@
       ['geo', 'Area of interest', '<p>Sierra Leone, whole country. Districts from geoBoundaries (open licence). Upload a project boundary to narrow the scan.</p>'],
       ['grain', 'Cell size', '<p>5 km cells. Coarser cells run faster but hide small features; slope-based rules are not meaningful above about 90 m and are derived first, then aggregated.</p>'],
       ['period', 'Climate period', '<p>Baseline 1995–2014. Future: SSP2-4.5, around 2050.</p>'],
+      ['priorities', 'Priorities', '<p>Priorities choose which need layers are shown in Stage 04. Two example presets:</p><ul class="presets"><li><b>Climate resilience + Livelihoods</b> (selected) — drought exposure, rural poverty, food insecurity</li><li><b>Biodiversity + Water security</b> — habitat intactness, water stress, downstream users</li></ul><p>A preset frames the layers; it does not re-weight them.</p>'],
       ['data', 'Datasets — choosing a source', '<p>Which dataset represents each variable (for example a national soil map instead of a global one). Changing a source does not change any rule.</p>'],
       ['rules', 'Rules — tuning a response', '<p>How a variable is turned into suitability (the response curve and its weight). Rules come from the evidence register; editing them is a separate, logged action.</p>']
     ];

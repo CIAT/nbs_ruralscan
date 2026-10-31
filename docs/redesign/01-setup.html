@@ -37,10 +37,10 @@
   <ol class="strip" id="strip">
     <li><a href="#walk"><span class="thumb"><svg id="th1" aria-hidden="true"></svg></span><span class="s-n">01</span><span class="s-l">Set the scope</span><span class="s-q">What problem, which practices, where?</span></a></li>
     <li><a href="02-opportunity.html"><span class="thumb"><svg id="th2" aria-hidden="true"></svg></span><span class="s-n">02</span><span class="s-l">Map the opportunity space</span><span class="s-q">Where could the practice establish?</span></a></li>
-    <li><a href="02-opportunity.html#risk"><span class="thumb"><svg id="th3" aria-hidden="true"></svg></span><span class="s-n">03</span><span class="s-l">Screen project risk</span><span class="s-q">Would hazards put the planting at risk?</span></a></li>
-    <li><span class="off" title="Not prototyped in this round"><span class="thumb"><svg id="th4" aria-hidden="true"></svg></span><span class="s-n">04</span><span class="s-l">Find priority hotspots</span><span class="s-q">Where does it meet the project’s priorities?</span></span></li>
+    <li><a href="03-risk.html"><span class="thumb"><svg id="th3" aria-hidden="true"></svg></span><span class="s-n">03</span><span class="s-l">Screen project risk</span><span class="s-q">Would hazards put the planting at risk?</span></a></li>
+    <li><a href="04-hotspots.html"><span class="thumb"><svg id="th4" aria-hidden="true"></svg></span><span class="s-n">04</span><span class="s-l">Find priority hotspots</span><span class="s-q">Where does it meet the project’s priorities?</span></a></li>
     <li><a href="05-comparison.html"><span class="thumb"><svg id="th5" viewBox="0 0 100 100" aria-hidden="true"></svg></span><span class="s-n">05</span><span class="s-l">Compare practices</span><span class="s-q">Which practices deserve a closer look?</span></a></li>
-    <li><span class="off" title="Not prototyped in this round"><span class="thumb"><svg id="th6" viewBox="0 0 100 100" aria-hidden="true"></svg></span><span class="s-n">06</span><span class="s-l">Plan next steps</span><span class="s-q">What must feasibility confirm?</span></span></li>
+    <li><a href="06-next.html"><span class="thumb"><svg id="th6" viewBox="0 0 100 100" aria-hidden="true"></svg></span><span class="s-n">06</span><span class="s-l">Plan next steps</span><span class="s-q">What must feasibility confirm?</span></a></li>
   </ol>
 
   <section class="isnot">
@@ -150,8 +150,8 @@
   thumb('th2', function (c) { return c.suitClass; });
   // 03 fire within the opportunity space
   thumb('th3', function (c) { return !c.selected ? null : c.fireClass === 'high' ? 'fire' : c.fireClass === 'moderate' ? 'fire2' : 'sel'; });
-  // 04 need within the opportunity space
-  thumb('th4', function (c) { if (!c.selected) return null; return c.needClass === 'vh' ? 'n4' : c.needClass === 'h' ? 'n3' : 'n1'; });
+  // 04 hotspots: opportunity x high need
+  thumb('th4', function (c) { return !c.selected ? null : c.hotspot ? 'hot' : 'opp'; });
   // 05 comparison glyph: three footprints
   document.getElementById('th5').innerHTML =
     '<g style="font:600 6.5px var(--f-body);fill:var(--ink-2)">' +
@@ -164,7 +164,8 @@
     '<g style="stroke:var(--rule);stroke-width:2.2">' +
     '<line x1="35" y1="30" x2="64" y2="30" style="stroke:var(--ink-2);stroke-width:2.6"/>' +
     '<line x1="35" y1="40" x2="65" y2="40"/><line x1="35" y1="47" x2="62" y2="47"/><line x1="35" y1="54" x2="65" y2="54"/>' +
-    '<line x1="35" y1="61" x2="56" y2="61"/></g>' +
+    '<line x1="35" y1="61" x2="47" y2="61"/></g>' +
+    '<rect x="52" y="58" width="13" height="13" style="fill:var(--n4);opacity:.85"/>' +
     '<path d="M35 69l3 3 6-6" style="fill:none;stroke:var(--accent);stroke-width:1.6"/>';
   // objective chips
   document.querySelectorAll('#chips .chip').forEach(function (b) {

@@ -131,7 +131,8 @@
   var districts = {};
   M.districts.forEach(function (d) {
     districts[d.name] = { name: d.name, cells: 0, vh: 0, h: 0, m: 0, l: 0, excluded: 0, unknown: 0,
-      selected: 0, selected2050: 0, needHigh: 0, overlap: 0, residents: RESIDENTS[d.name] || 0 };
+      selected: 0, selected2050: 0, needHigh: 0, overlap: 0, fireHigh: 0, floodHigh: 0, bothHigh: 0, anyHigh: 0,
+      residents: RESIDENTS[d.name] || 0, hotspotResidents: 0 };
   });
   cells.forEach(function (c) {
     var d = districts[c.adm2]; if (!d) return;
@@ -141,15 +142,31 @@
     var nh = c.needClass === 'vh' || c.needClass === 'h';
     if (nh) d.needHigh++;
     if (nh && c.selected) d.overlap++;
+    c.hotspot = !!(nh && c.selected);
+    if (c.selected) {
+      var fh = c.fireClass === 'high', wh = c.floodClass === 'high';
+      if (fh) d.fireHigh++; if (wh) d.floodHigh++; if (fh && wh) d.bothHigh++; if (fh || wh) d.anyHigh++;
+    }
+  });
+  // residents spread evenly over a district's cells (example only)
+  cells.forEach(function (c) {
+    var d = districts[c.adm2]; if (!d || !d.cells) return;
+    c.residents = d.residents / d.cells;
+    if (c.hotspot) d.hotspotResidents += c.residents;
   });
   Object.keys(districts).forEach(function (k) {
     var d = districts[k];
     d.shareVHH = d.cells ? (d.vh + d.h) / d.cells : 0;
     d.share2050 = d.cells ? d.selected2050 / d.cells : 0;
+    d.shareHotspot = d.selected ? d.overlap / d.selected : 0;
+    d.shareFire = d.selected ? d.fireHigh / d.selected : 0;
+    d.shareFlood = d.selected ? d.floodHigh / d.selected : 0;
+    d.shareBoth = d.selected ? d.bothHigh / d.selected : 0;
+    d.shareAny = d.selected ? d.anyHigh / d.selected : 0;
   });
 
   var T = { cells: cells.length, vh: 0, h: 0, m: 0, l: 0, excluded: 0, unknown: 0, urban: 0, wetland: 0, protected: 0,
-    selected: 0, gain: 0, loss: 0, stay: 0, overlap: 0, fireHigh: 0, floodHigh: 0, both: 0 };
+    selected: 0, gain: 0, loss: 0, stay: 0, overlap: 0, fireHigh: 0, floodHigh: 0, both: 0, anyHigh: 0, hotspotResidents: 0 };
   cells.forEach(function (c) {
     T[c.suitClass]++;
     if (c.excluded) T[c.excluded]++;
@@ -159,6 +176,8 @@
     if (c.selected && c.fireClass === 'high') T.fireHigh++;
     if (c.selected && c.floodClass === 'high') T.floodHigh++;
     if (c.selected && c.fireClass === 'high' && c.floodClass === 'high') T.both++;
+    if (c.selected && (c.fireClass === 'high' || c.floodClass === 'high')) T.anyHigh++;
+    if (c.hotspot) T.hotspotResidents += c.residents;
   });
 
   // example practices for the comparison screen (authored, scoping grade)

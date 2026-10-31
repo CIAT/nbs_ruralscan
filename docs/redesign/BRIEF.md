@@ -178,3 +178,109 @@ No new thresholds/weights presented as method. No live MCDA implication
 No emoji. No tiles-of-big-numbers grids. No colour-coded chips VH/H/M/L —
 use words. No disclaimer banners. Keep tab order. Don't edit any file
 outside `docs/redesign/` and don't run git.
+
+---
+# Round 2 — carry direction A through stages 03, 04, 06 (31 Oct 2026, Pete: proceed with A)
+
+Same tokens, anatomy, cartography and surface. Same don'ts. One plate per
+stage. Build:
+
+## `03-risk.html` — Project risk (move the #risk plate out of 02 into its own page; 02 keeps only the suitability plate and its "Open Stage 03" footer)
+- Question: "Which of these places would put the planting itself at risk?"
+  Do-line: screen the opportunity space for hazards to the investment during
+  the establishment period. Take-away: a flag on each place, never a change
+  to suitability or need.
+- Plate: segmented [Fire | Flood | Both] over SELECTED opportunity cells
+  only; outside-scope cells in paper. Second control under the plate:
+  "District summary" toggle (share of opportunity cells flagged, top 3
+  labelled). Three hazard classes (High · Moderate · Low) + "outside".
+- **Trade-off control (Bank asked where the TTL makes this call):** a
+  two-option segmented control titled "What should a flag do?" —
+  "Keep flagged places and show the flag" (default) · "Remove High-flag
+  places from the shortlist". A one-line consequence updates live:
+  "Shortlist keeps 2,742,500 ha; 410,000 ha carry a High fire flag" vs
+  "Shortlist drops to 2,332,500 ha". Numbers come from FIXTURE roll-ups.
+- Reading notes (4): risk to the investment (M2b) vs need (M2) — kept
+  separate, never summed; young trees are the exposed asset — the
+  establishment period is 5 years here; a flag is exposure, not a loss
+  rate, and there is no overall risk score; what an NbS mitigates and what
+  damages it are independent questions.
+- Key figures: opportunity ha · High fire ha · High flood ha · both ·
+  share of opportunity flagged.
+- Go deeper (3): "Levers a project can change" — road access, market
+  access, tenure, extension, finance, each with status "Local verification
+  required" (not spatial, not scored); "What the establishment evidence
+  says" — one source-class line per practice (practitioner guidance /
+  review), no quotes, no numbers; "Why there is no overall risk rating".
+- Footer → Open Stage 04.
+
+## `04-hotspots.html` — Priority hotspots
+- Question: "Where does the opportunity meet the project's priorities?"
+  Do-line: overlay the need layers chosen for the objectives on the
+  opportunity space. Take-away: a hotspot shortlist by cell and by district.
+- Top strip under the chapter head: "Selected priorities · Climate
+  resilience + Livelihoods (set in Stage 01)" with the three example need
+  layers they bring (drought exposure · rural poverty · food insecurity)
+  as plain words, and one sentence: these frame which layers are shown;
+  the example preset does not re-weight anything.
+- Plate: segmented [Need | Hotspots | District summary]. Need = plum ramp
+  (4 classes) over opportunity cells; Hotspots = two-colour: hotspot
+  (opportunity ∩ High/Very-high need) in deep plum, opportunity-not-hotspot
+  in the pale suitability green, outside in paper; District summary = share
+  of opportunity cells that are hotspots, 5 bins, top 3 labelled.
+- Side card inside the reading column, quiet, titled "National context":
+  "Gender inequality index 0.61 (example). One value for the whole country:
+  it describes the setting, it cannot rank districts." No map toggle.
+- Reading notes (4): a hotspot is an intersection, not a sum; need layers
+  are proxies at 5 km, one representative per correlated cluster; people
+  in hotspot cells live there — they are not beneficiaries; the district
+  view summarises, it does not locate sites.
+- Key figures: hotspot ha · share of opportunity · residents in hotspot
+  cells (fictional, labelled) · top 3 districts with share.
+- Go deeper (3): "How need layers are chosen" (thematic group → correlation
+  cluster → one representative; others kept visible); "Why national data
+  cannot rank districts"; "Change priorities" (opens the drawer, which for
+  now is a static list of two presets).
+- Footer → Open Stage 05.
+
+## `06-next.html` — Next steps
+- Question: "What must feasibility confirm before anyone invests?"
+  Do-line: take the shortlist into a scoping brief and a hand-off. Take-
+  away: a brief you can paste into a concept note, and the list of what
+  this scan could not check.
+- Plate = the **scoping brief**, rendered as a document page (A4 proportion
+  card on the paper background): title "Scoping brief — planted
+  silvoarable agroforestry, Sierra Leone (example)"; scope line; three
+  short prose paragraphs — opportunity area (ha, share, districts), hotspots
+  and project-risk flags (ha, top districts, flagged share), indicative cost
+  and affordable area at the Stage-05 budget — each paragraph ends with its
+  qualification in the same voice (nominal cells, example surface, costs
+  undiscounted from mixed sources); a small map thumbnail (hotspots) with
+  legend; "Assumptions" list (6 lines); "Questions for feasibility" list
+  (6 lines: local prices, tenure and FPIC, parcel-level exclusions,
+  hydrology, adoption, baseline design). Buttons: "Copy brief text" (works,
+  clipboard) · "Download example map (PNG)" (links to a static PNG you
+  render from the hotspot plate and save as docs/redesign/example-map.png).
+- Below the plate, "What happens next — outside this tool", three columns
+  with the same quiet definition-list treatment: Local co-production
+  (partners validate included AND excluded areas, rights and FPIC,
+  delivery arrangements, adoption); Feasibility studies (hydrology, site
+  design, costs, safeguards, cost–benefit); Monitoring baseline (indicators,
+  responsibilities, contribution vs attribution). Label each column
+  "Not a stage of this scan".
+- Reading column lead note (Evert's concern, keep its force): scoping gives
+  the shape of the problem and the opportunity; implementing without
+  bottom-up refinement with partners carries a high risk of poor return.
+  Then: what can be reused (maps, figures, assumptions) vs what must be
+  re-done locally.
+- Two ghost buttons, bottom of reading column, labelled "(concept)":
+  "Draft the brief with AI" · "Ask the evidence base". No live service.
+- Footer → "Back to Stage 01" and "Open the overview".
+
+## Housekeeping
+- 01-setup.html: method strip thumbnails for 03, 04, 06 become real
+  (fire plate, hotspot plate, brief glyph); stepper links go to the new
+  files; nothing else changes on 01, 02, 05 except removing the #risk
+  section from 02 and fixing its footer link.
+- index.html: list all six pages.
+- Render and eyeball desktop + mobile as before; fix what reads badly.

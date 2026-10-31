@@ -90,55 +90,9 @@
 
   <div class="nextstage">
     <p><b>Next, test these places against hazards to the investment.</b> Fire and flood can damage young trees before they pay back.</p>
-    <a class="btn" href="#risk">Open Stage 03</a>
+    <a class="btn" href="03-risk.html">Open Stage 03</a>
   </div>
 
-  <!-- ============================== STAGE 03 ============================ -->
-  <section class="chapter" id="risk">
-    <span class="eyebrow sc">Stage 03 · Project risk</span>
-    <h2 class="question">Which of these places would put the planting itself at risk?</h2>
-    <p class="lede">The same opportunity space, screened for fire and flood during the years the trees take to establish. <b>You take away a flag on each place</b> — a hazard to the investment is a filter, never added to suitability or need.</p>
-  </section>
-
-  <div class="ctlrow">
-    <div class="seg" id="seg-risk" role="group" aria-label="Hazard">
-      <button type="button" data-v="fire" aria-pressed="true">Fire</button>
-      <button type="button" data-v="flood" aria-pressed="false">Flood</button>
-      <button type="button" data-v="both" aria-pressed="false">Both</button>
-    </div>
-  </div>
-
-  <figure class="plate" id="plate-risk" style="margin:0">
-    <svg class="map" id="map-risk" role="img" aria-label="Map of fire and flood exposure within the opportunity space, example data"></svg>
-    <div class="pl-title">
-      <h2 id="risk-t"></h2>
-      <p class="pl-sub" id="risk-s"></p>
-      <p class="pl-scope">Opportunity space only · baseline 1995–2014 · establishment period of 5 years</p>
-      <span class="pl-mark">Example data — authored surface, not a pilot result</span>
-    </div>
-    <div class="legend" id="risk-lg"></div>
-  </figure>
-  <p class="plate-src">Boundaries: geoBoundaries gbOpen v6 (CC-BY 4.0). Hazard cells: synthetic example surface (seed 20261031) — not a hazard model.</p>
-
-  <section class="reading">
-    <div>
-      <h3>How to read this</h3>
-      <ol class="notes">
-        <li><b>Only the opportunity space is coloured.</b> Everything else is left as paper, because a hazard screen only matters where the practice could go.</li>
-        <li><b>This is risk to the planting, not to people.</b> Risk to rural livelihoods is a need layer and belongs with the hotspots in Stage 04.</li>
-        <li><b>A flag, not a subtraction.</b> High exposure does not lower suitability. It asks for design changes — firebreaks, species choice, timing — or a different site.</li>
-      </ol>
-    </div>
-    <div>
-      <h3>Key figures</h3>
-      <dl class="figs" id="figs-risk"></dl>
-    </div>
-  </section>
-
-  <div class="nextstage">
-    <p><b>Stage 04, priority hotspots, is not prototyped in this round.</b> Skip ahead to compare practices against a budget.</p>
-    <a class="btn" href="05-comparison.html">Open Stage 05</a>
-  </div>
 </main>
 
 <script src="../sle_geo.js"></script>
@@ -151,11 +105,7 @@
   var fmt = function (n) { return Math.round(n).toLocaleString('en-GB'); };
   var pct = function (x) { return Math.round(x * 100) + ' %'; };
 
-  /* ---- stage bar follows the reader between the two chapters ---- */
-  function stageNow() { var r = document.getElementById('risk').getBoundingClientRect(); return r.top < window.innerHeight * 0.45 ? 3 : 2; }
-  var cur = 0;
-  function syncStage() { var s = stageNow(); if (s !== cur) { cur = s; V1BUI.chrome(s); } }
-  syncStage(); window.addEventListener('scroll', syncStage, { passive: true });
+  V1BUI.chrome(2);
 
   /* ---- shared helpers ---- */
   function sw(cls, label) { return '<span class="sw"><i class="' + cls + '"></i>' + label + '</span>'; }
@@ -280,38 +230,7 @@
     '<dt class="sub">Mangrove and wetland</dt><dd class="sub">' + fmt(T.wetland * F.haPerCell) + ' ha</dd>' +
     '<dt class="sub">Protected areas</dt><dd class="sub">' + fmt(T.protected * F.haPerCell) + ' ha</dd>';
 
-  /* ================= Stage 03 plate ================= */
-  var rsvg = M.plate(document.getElementById('map-risk'), { uid: 'risk' });
-  fitView(rsvg);
-  var RV = {
-    fire: { t: 'Fire exposure across the opportunity space', s: 'Share of years with burned area near each cell, in three classes.',
-      key: function (c) { return !c.selected ? null : c.fireClass === 'high' ? 'fire' : c.fireClass === 'moderate' ? 'fire2' : 'sel'; },
-      lg: '<div class="lg-h">Fire exposure, opportunity space only</div><div class="lg-row">' + swk('--fire', 'High') + swk('--fire-2', 'Moderate') + '<span class="sw"><i style="background:#d5e0d9"></i>Low</span>' + sw('sw-out', 'Outside the opportunity space') + '</div>' },
-    flood: { t: 'Flood exposure across the opportunity space', s: 'Modelled flood depth at a 1-in-100-year return period, in three classes.',
-      key: function (c) { return !c.selected ? null : c.floodClass === 'high' ? 'flood' : c.floodClass === 'moderate' ? 'flood2' : 'sel'; },
-      lg: '<div class="lg-h">Flood exposure, opportunity space only</div><div class="lg-row">' + swk('--flood', 'High') + swk('--flood-2', 'Moderate') + '<span class="sw"><i style="background:#d5e0d9"></i>Low</span>' + sw('sw-out', 'Outside the opportunity space') + '</div>' },
-    both: { t: 'Where fire and flood exposure coincide', s: 'High-class exposure only. Moderate and low are shown together as neither.',
-      key: function (c) { if (!c.selected) return null; var f = c.fireClass === 'high', w = c.floodClass === 'high'; return f && w ? 'both' : f ? 'fire' : w ? 'flood' : 'sel'; },
-      lg: '<div class="lg-h">High exposure, opportunity space only</div><div class="lg-row">' + swk('--both', 'Both') + swk('--fire', 'Fire only') + swk('--flood', 'Flood only') + '<span class="sw"><i style="background:#d5e0d9"></i>Neither</span>' + sw('sw-out', 'Outside') + '</div>' }
-  };
-  function setRisk(v) {
-    var V = RV[v];
-    document.getElementById('risk-t').textContent = V.t;
-    document.getElementById('risk-s').textContent = V.s;
-    document.getElementById('risk-lg').innerHTML = V.lg;
-    M.paintCells(rsvg, F.cells, V.key);
-  }
-  V1BUI.segmented(document.getElementById('seg-risk'), setRisk);
-  setRisk('fire');
-  if (q.get('hazard')) press('seg-risk', q.get('hazard'));
-  document.getElementById('figs-risk').innerHTML =
-    '<dt>Opportunity space screened</dt><dd><span class="fig-k">' + fmt(T.selected * F.haPerCell) + '</span> ha</dd>' +
-    '<dt>High fire exposure</dt><dd>' + pct(T.fireHigh / T.selected) + '</dd>' +
-    '<dt>High flood exposure</dt><dd>' + pct(T.floodHigh / T.selected) + '</dd>' +
-    '<dt>High for both</dt><dd>' + pct(T.both / T.selected) + '</dd>';
-
-  narrow.addEventListener && narrow.addEventListener('change', function () { fitView(svg); fitView(rsvg); });
-  if (location.hash === '#risk') document.getElementById('risk').scrollIntoView();
+  narrow.addEventListener && narrow.addEventListener('change', function () { fitView(svg); });
 })();
 </script>
 </body>
