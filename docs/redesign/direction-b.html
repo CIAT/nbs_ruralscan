@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workbench Alternative</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1b.css">
+</head>
+<body>
+<div class="wb" style="position:relative">
+  <div class="wb-top"><b>Rural NbS Scan</b><span style="color:var(--ink-3)">Direction B · workbench (grey box)</span><span style="flex:1"></span><span class="gb" style="width:180px;height:28px">Project selector</span><span class="gb" style="width:28px;height:28px">?</span></div>
+  <nav class="wb-rail" aria-label="Stages">
+    <div class="r"><i>1</i><span>Setup</span></div>
+    <div class="r on"><i>2</i><span>Opportunity space</span></div>
+    <div class="r"><i>3</i><span>Project risk</span></div>
+    <div class="r"><i>4</i><span>Priority hotspots</span></div>
+    <div class="r"><i>5</i><span>NbS comparison</span></div>
+    <div class="r"><i>6</i><span>Next steps</span></div>
+    <div class="gb" style="margin-top:auto;height:70px">Saved runs</div>
+  </nav>
+  <div class="wb-map">
+    <svg id="wb-svg" aria-label="Map of suitability, example data"></svg>
+    <div class="tools"><span class="gb">L</span><span class="gb">M</span><span class="gb">S</span></div>
+    <div class="zoom"><span class="gb">+</span><span class="gb">−</span></div>
+    <div class="lg gb">Legend</div>
+    <span class="wb-ann" style="left:230px;top:56px">2</span>
+  </div>
+  <aside class="wb-insp">
+    <h4>Scope</h4><div class="gb" style="height:74px">Practice · classes · area · grain · period</div>
+    <h4>Layers</h4><div class="gb" style="height:120px">Layer list with toggles and opacity</div>
+    <h4>Configuration</h4><div class="gb" style="height:150px">Datasets · rules · weights</div>
+    <h4>Selection</h4><div class="gb" style="flex:1">Cell or district details on click</div>
+  </aside>
+  <div class="wb-read">
+    <div class="gb">Reading note</div><div class="gb">Key figure</div><div class="gb">Key figure</div><div class="gb">Export</div>
+  </div>
+  <span class="wb-ann" style="left:196px;top:62px">1</span>
+  <span class="wb-ann" style="right:14px;top:60px">3</span>
+  <span class="wb-ann" style="left:232px;bottom:104px">4</span>
+</div>
+<main class="wrap wb-why">
+  <h2>Why this reads as a product dashboard</h2>
+  <ol>
+    <li><b>The rail turns the method into a menu.</b> Six stages look like six equal destinations, so the order — and the hand-off from one to the next — disappears.</li>
+    <li><b>The map fills the screen but says nothing by itself.</b> There is no question, no title and no reading beside it; the user has to know what to look at.</li>
+    <li><b>The inspector puts configuration on every screen.</b> Datasets, rules and weights sit one click from a first-time reader, which invites tuning before understanding.</li>
+    <li><b>Reading is pushed to a strip.</b> Notes and figures become tiles at the bottom edge, competing with export buttons.</li>
+  </ol>
+  <p style="color:var(--ink-2);font-size:var(--t15)">It suits a returning analyst running many scans. For a task team leader seeing the method once, direction A’s chapter pages carry the argument. <a href="index.html">Back to the overview</a>.</p>
+</main>
+<script src="../sle_geo.js"></script>
+<script src="v1b-map.js"></script>
+<script src="v1b-fixture.js"></script>
+<script>
+(function () {
+  var s = V1BMap.plate(document.getElementById('wb-svg'), { uid: 'wb', viewBox: '250 10 710 620', context: false });
+  V1BMap.paintCells(s, FIXTURE.cells, function (c) { return c.suitClass; });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opportunity Space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1b.css">
+</head>
+<body>
+<div id="chrome"></div>
+
+<main class="wrap">
+  <section class="chapter" id="opp">
+    <span class="eyebrow sc">Stage 02 · Opportunity space</span>
+    <h1 class="question">Where could planted silvoarable agroforestry establish?</h1>
+    <p class="lede">Read the map of where the practice’s climate, terrain, soils and farming system fit, with legal exclusions removed. <b>You take away the opportunity space</b> — the Very high and High cells that every later stage works inside.</p>
+  </section>
+
+  <div class="ctlrow">
+    <div class="seg" id="seg-opp" role="group" aria-label="Map view">
+      <button type="button" data-v="cells" aria-pressed="true">5 km cells</button>
+      <button type="button" data-v="district" aria-pressed="false">District summary</button>
+      <button type="button" data-v="future" aria-pressed="false">Change to 2050</button>
+    </div>
+  </div>
+
+  <figure class="plate" id="plate-opp" style="margin:0">
+    <svg class="map" id="map-opp" role="img" aria-label="Map of suitability for planted silvoarable agroforestry in Sierra Leone, example data"></svg>
+    <div class="pl-title">
+      <h2 id="opp-t"></h2>
+      <p class="pl-sub" id="opp-s"></p>
+      <p class="pl-scope" id="opp-sc"></p>
+      <span class="pl-mark">Example data — authored surface, not a pilot result</span>
+    </div>
+    <figure class="inset" id="inset" style="margin:0">
+      <svg id="inset-svg" viewBox="0 0 160 172" role="img" aria-label="Inset: 20 by 20 km near Bo"></svg>
+      <figcaption><b>Inset · 20 × 20 km near Bo.</b> A 100 ha exclusion parcel (hatched) fills 4 % of one cell. The cell keeps its class; the parcel is reported as a separate shape.</figcaption>
+    </figure>
+    <div class="legend" id="opp-lg"></div>
+  </figure>
+  <p class="plate-src">Boundaries: geoBoundaries gbOpen v6 (CC-BY 4.0); neighbouring coastlines approximate. Cells: synthetic example surface (seed 20261031) — no thresholds, weights or evidence.</p>
+
+  <section class="reading">
+    <div>
+      <h3>How to read this</h3>
+      <ol class="notes" id="notes-opp">
+        <li><b>Four classes, one rule set.</b> Very high to Low ranks how well each cell fits the practice’s envelope. Only Very high and High go forward.</li>
+        <li><b>Hatched is excluded, dotted is unknown.</b> Hatched cells are removed by law or land cover (towns, mangrove and wetland, protected areas) — not low suitability. Dotted cells lack data (here, a cloud gap) and are not counted as either.</li>
+        <li><b>A cell is not a farm.</b> Each 5 km cell is 2,500 ha. A suitable cell says the envelope fits; it does not say every field in it will take trees.</li>
+        <li><b>2050 moves the envelope, not the farms.</b> The same rules on mid-century climate show where conditions drift in or out of fit. It is not a forecast of what farmers will plant.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Key figures</h3>
+      <dl class="figs" id="figs-opp"></dl>
+    </div>
+  </section>
+
+  <section class="deeper">
+    <h3>Go deeper</h3>
+    <details class="acc">
+      <summary><span class="a-t">Why is a cell excluded?</span><span class="a-s">Three reasons, each from a mapped boundary rather than a score.</span></summary>
+      <div class="a-body">
+        <table>
+          <thead><tr><th>Reason</th><th>What it removes</th><th>Source type</th></tr></thead>
+          <tbody>
+            <tr><td>Towns and cities</td><td>Built-up footprint around Freetown, Bo and Kenema</td><td>Global built-up layer</td></tr>
+            <tr><td>Mangrove and wetland</td><td>Tidal and coastal wetland along the south-west shore</td><td>Global mangrove and wetland maps</td></tr>
+            <tr><td>Protected areas</td><td>Legally designated parks and reserves</td><td>World Database on Protected Areas</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+    <details class="acc">
+      <summary><span class="a-t">Excluded, low and unknown are different</span><span class="a-s">Only one of them is a judgement about the land.</span></summary>
+      <div class="a-body">
+        <p><b>Excluded</b> means the practice may not go there whatever the conditions. <b>Low</b> means it could go there but the envelope fits poorly. <b>Unknown</b> means an input is missing, so the cell is neither counted in nor ruled out. Merging any two of these would misstate the area.</p>
+      </div>
+    </details>
+    <details class="acc">
+      <summary><span class="a-t">Roads, markets and tenure are not on this map</span><span class="a-s">They are levers a project can change, so they appear in Stage 03.</span></summary>
+      <div class="a-body">
+        <p>Distance to roads, market access, extension services and land tenure shape whether a practice is taken up, but investment can change them. Baking them into suitability would hide the places a project could open up. They are shown as a separate operational screen alongside project risk.</p>
+      </div>
+    </details>
+  </section>
+
+  <div class="nextstage">
+    <p><b>Next, test these places against hazards to the investment.</b> Fire and flood can damage young trees before they pay back.</p>
+    <a class="btn" href="#risk">Open Stage 03</a>
+  </div>
+
+  <!-- ============================== STAGE 03 ============================ -->
+  <section class="chapter" id="risk">
+    <span class="eyebrow sc">Stage 03 · Project risk</span>
+    <h2 class="question">Which of these places would put the planting itself at risk?</h2>
+    <p class="lede">The same opportunity space, screened for fire and flood during the years the trees take to establish. <b>You take away a flag on each place</b> — a hazard to the investment is a filter, never added to suitability or need.</p>
+  </section>
+
+  <div class="ctlrow">
+    <div class="seg" id="seg-risk" role="group" aria-label="Hazard">
+      <button type="button" data-v="fire" aria-pressed="true">Fire</button>
+      <button type="button" data-v="flood" aria-pressed="false">Flood</button>
+      <button type="button" data-v="both" aria-pressed="false">Both</button>
+    </div>
+  </div>
+
+  <figure class="plate" id="plate-risk" style="margin:0">
+    <svg class="map" id="map-risk" role="img" aria-label="Map of fire and flood exposure within the opportunity space, example data"></svg>
+    <div class="pl-title">
+      <h2 id="risk-t"></h2>
+      <p class="pl-sub" id="risk-s"></p>
+      <p class="pl-scope">Opportunity space only · baseline 1995–2014 · establishment period of 5 years</p>
+      <span class="pl-mark">Example data — authored surface, not a pilot result</span>
+    </div>
+    <div class="legend" id="risk-lg"></div>
+  </figure>
+  <p class="plate-src">Boundaries: geoBoundaries gbOpen v6 (CC-BY 4.0). Hazard cells: synthetic example surface (seed 20261031) — not a hazard model.</p>
+
+  <section class="reading">
+    <div>
+      <h3>How to read this</h3>
+      <ol class="notes">
+        <li><b>Only the opportunity space is coloured.</b> Everything else is left as paper, because a hazard screen only matters where the practice could go.</li>
+        <li><b>This is risk to the planting, not to people.</b> Risk to rural livelihoods is a need layer and belongs with the hotspots in Stage 04.</li>
+        <li><b>A flag, not a subtraction.</b> High exposure does not lower suitability. It asks for design changes — firebreaks, species choice, timing — or a different site.</li>
+      </ol>
+    </div>
+    <div>
+      <h3>Key figures</h3>
+      <dl class="figs" id="figs-risk"></dl>
+    </div>
+  </section>
+
+  <div class="nextstage">
+    <p><b>Stage 04, priority hotspots, is not prototyped in this round.</b> Skip ahead to compare practices against a budget.</p>
+    <a class="btn" href="05-comparison.html">Open Stage 05</a>
+  </div>
+</main>
+
+<script src="../sle_geo.js"></script>
+<script src="v1b-map.js"></script>
+<script src="v1b-fixture.js"></script>
+<script>
+(function () {
+  'use strict';
+  var M = V1BMap, F = FIXTURE, T = F.totals;
+  var fmt = function (n) { return Math.round(n).toLocaleString('en-GB'); };
+  var pct = function (x) { return Math.round(x * 100) + ' %'; };
+
+  /* ---- stage bar follows the reader between the two chapters ---- */
+  function stageNow() { var r = document.getElementById('risk').getBoundingClientRect(); return r.top < window.innerHeight * 0.45 ? 3 : 2; }
+  var cur = 0;
+  function syncStage() { var s = stageNow(); if (s !== cur) { cur = s; V1BUI.chrome(s); } }
+  syncStage(); window.addEventListener('scroll', syncStage, { passive: true });
+
+  /* ---- shared helpers ---- */
+  function sw(cls, label) { return '<span class="sw"><i class="' + cls + '"></i>' + label + '</span>'; }
+  function swk(k, label) { return '<span class="sw"><i style="background:var(' + k + ')"></i>' + label + '</span>'; }
+  var narrow = window.matchMedia('(max-width: 760px)');
+  function fitView(svg) { svg.setAttribute('viewBox', narrow.matches ? '352 14 590 606' : '0 0 960 640'); }
+
+  /* ================= Stage 02 plate ================= */
+  var svg = M.plate(document.getElementById('map-opp'), { uid: 'opp' });
+  fitView(svg);
+
+  // inset: the 4 x 4 cell block (20 km) within ~45 km of Bo with no excluded
+  // cells and the most class variety, preferring blocks that contain High.
+  var C = M.CELL_PX, byIJ = {};
+  F.cells.forEach(function (c) { byIJ[c.i + ',' + c.j] = c; });
+  var bo = M.project(-11.7383, 7.9647), best = null;
+  F.cells.forEach(function (a) {
+    if (Math.hypot(a.x - bo[0], a.y - bo[1]) > 45 * M.PX_PER_KM) return;
+    var blk = [], kinds = {}, ok = true;
+    for (var dj = 0; dj < 4 && ok; dj++) for (var di = 0; di < 4; di++) {
+      var c = byIJ[(a.i + di) + ',' + (a.j + dj)];
+      if (!c || c.excluded || c.unknown) { ok = false; break; }
+      blk.push(c); kinds[c.suitClass] = 1;
+    }
+    if (!ok) return;
+    var score = Object.keys(kinds).length + (kinds.h ? 1 : 0) + (kinds.vh ? 0.5 : 0);
+    if (!best || score > best.score) best = { score: score, a: a, blk: blk };
+  });
+  var anchor = best.a, block = best.blk;
+  var parcelCell = block.filter(function (c) { return c.suitClass === 'h'; })[0] || block[5];
+  var bins = (function () {
+    var mx = 0; Object.keys(F.districts).forEach(function (k) { mx = Math.max(mx, F.districts[k].shareVHH); });
+    var w = Math.ceil(mx * 100 / 5 / 5) * 5; return { w: w / 100, edges: [0, 1, 2, 3, 4, 5].map(function (i) { return i * w; }) };
+  })();
+  var ranked = Object.keys(F.districts).map(function (k) { return F.districts[k]; }).sort(function (a, b) { return b.shareVHH - a.shareVHH; });
+  var top3 = ranked.slice(0, 3).map(function (d) { return d.name; });
+
+  var VIEWS = {
+    cells: {
+      t: 'Suitability for planted silvoarable agroforestry',
+      s: 'Each 5 km cell classed by how well the practice’s envelope fits.',
+      sc: 'Sierra Leone · baseline climate 1995–2014',
+      paint: function () {
+        M.paintCells(svg, F.cells, function (c) { return c.suitClass; });
+        M.setLabels(svg, {});
+      },
+      lg: '<div class="lg-h">Suitability class</div><div class="lg-row">' +
+        swk('--s4', 'Very high') + swk('--s3', 'High') + swk('--s2', 'Moderate') + swk('--s-low', 'Low') + '</div>' +
+        '<div class="lg-row">' + sw('sw-excl', 'Excluded') + sw('sw-unk', 'Unknown data') + '</div>'
+    },
+    district: {
+      t: 'Share of each district in the opportunity space',
+      s: 'Very high and High cells as a share of all cells in the district. The three largest shares are named with values.',
+      sc: '14 districts · baseline climate 1995–2014',
+      paint: function () {
+        M.paintCells(svg, F.cells, function (c) { return c.suitClass; });
+        M.paintDistricts(svg, function (n) {
+          var b = Math.min(4, Math.floor(F.districts[n].shareVHH / bins.w)); return 'c' + (b + 1);
+        });
+        var extra = {}; top3.forEach(function (n) { extra[n] = pct(F.districts[n].shareVHH); });
+        M.setLabels(svg, { extra: extra, emph: top3 });
+      },
+      lg: null
+    },
+    future: {
+      t: 'How the envelope shifts by about 2050',
+      s: 'The same rules run on SSP2-4.5 climate around 2050. A shift of the envelope, not a forecast of land use.',
+      sc: 'Sierra Leone · baseline 1995–2014 compared with about 2050',
+      paint: function () {
+        M.paintCells(svg, F.cells, function (c) { return c.change; });
+        M.setLabels(svg, {});
+      },
+      lg: '<div class="lg-h">Very high and High, baseline to 2050</div><div class="lg-row">' +
+        swk('--s2', 'Stays in') + swk('--s4', 'Moves in') + swk('--loss', 'Drops out') + swk('--s-low', 'Below High in both') + '</div>' +
+        '<div class="lg-row">' + sw('sw-excl', 'Excluded') + sw('sw-unk', 'Unknown data') + '</div>'
+    }
+  };
+  VIEWS.district.lg = '<div class="lg-h">Share of district in Very high + High</div><div class="ramp">' +
+    ['--c1', '--c2', '--c3', '--c4', '--c5'].map(function (k) { return '<i style="background:var(' + k + ')"></i>'; }).join('') +
+    '</div><div class="ramp-lbl">' + bins.edges.map(function (e, i) { return '<span>' + e + (i === 5 ? ' %' : '') + '</span>'; }).join('') + '</div>';
+
+  function setView(v) {
+    var V = VIEWS[v];
+    document.getElementById('opp-t').textContent = V.t;
+    document.getElementById('opp-s').textContent = V.s;
+    document.getElementById('opp-sc').textContent = V.sc;
+    document.getElementById('opp-lg').innerHTML = V.lg;
+    V.paint();
+    svg.classList.toggle('no-city', v === 'district');
+    var b = block[0];
+    if (v === 'cells') M.overlay(svg, '<rect class="ibox" x="' + b.x.toFixed(1) + '" y="' + b.y.toFixed(1) + '" width="' + (4 * C).toFixed(1) + '" height="' + (4 * C).toFixed(1) + '"/>'); else M.overlay(svg, '');
+    document.getElementById('inset').style.display = v === 'cells' ? '' : 'none';
+  }
+  V1BUI.segmented(document.getElementById('seg-opp'), setView);
+  var q = new URLSearchParams(location.search);
+  function press(id, v) { var b = document.querySelector('#' + id + ' [data-v="' + v + '"]'); if (b) b.click(); }
+  setView('cells');
+  if (q.get('view')) press('seg-opp', q.get('view'));
+
+  /* ---- inset: 4 x 4 cells at zoom, with a 100 ha parcel ---- */
+  (function () {
+    var s = document.getElementById('inset-svg'), cs = 40, html = '';
+    html += '<defs><pattern id="ih" width="2.4" height="2.4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="2.4" height="2.4" class="pat-paper"/><line x1="0" y1="0" x2="0" y2="2.4" style="stroke:var(--ink);stroke-width:.9"/></pattern></defs>';
+    block.forEach(function (c) {
+      html += '<rect class="k-' + c.suitClass + '" x="' + (c.i - anchor.i) * cs + '" y="' + (c.j - anchor.j) * cs + '" width="' + cs + '" height="' + cs + '" style="stroke:var(--surface);stroke-width:1"/>';
+    });
+    // 100 ha = 1 km x 1 km = 8 px at 8 px/km
+    var px = (parcelCell.i - anchor.i) * cs + 17, py = (parcelCell.j - anchor.j) * cs + 14;
+    html += '<rect x="' + px + '" y="' + py + '" width="8" height="8" fill="url(#ih)" style="stroke:var(--ink);stroke-width:.8"/>';
+    html += '<g transform="translate(6,166)"><rect width="40" height="2.5" style="fill:var(--ink-2)"/><text x="46" y="3" style="font:400 8px var(--f-body);fill:var(--ink-2)">5 km</text></g>';
+    s.innerHTML = html;
+  })();
+
+  /* ---- key figures ---- */
+  var over50 = ranked.filter(function (d) { return d.shareVHH > 0.5; }).length;
+  document.getElementById('figs-opp').innerHTML =
+    '<dt>Very high + High area (nominal)</dt><dd><span class="fig-k">' + fmt(T.selected * F.haPerCell) + '</span> ha</dd>' +
+    '<dt>Share of the country</dt><dd>' + pct(T.selected / T.cells) + '</dd>' +
+    '<dt>Districts more than half in the opportunity space</dt><dd>' + over50 + ' of 14</dd>' +
+    '<dt>Excluded area</dt><dd>' + fmt(T.excluded * F.haPerCell) + ' ha</dd>' +
+    '<dt class="sub">Towns and cities</dt><dd class="sub">' + fmt(T.urban * F.haPerCell) + ' ha</dd>' +
+    '<dt class="sub">Mangrove and wetland</dt><dd class="sub">' + fmt(T.wetland * F.haPerCell) + ' ha</dd>' +
+    '<dt class="sub">Protected areas</dt><dd class="sub">' + fmt(T.protected * F.haPerCell) + ' ha</dd>';
+
+  /* ================= Stage 03 plate ================= */
+  var rsvg = M.plate(document.getElementById('map-risk'), { uid: 'risk' });
+  fitView(rsvg);
+  var RV = {
+    fire: { t: 'Fire exposure across the opportunity space', s: 'Share of years with burned area near each cell, in three classes.',
+      key: function (c) { return !c.selected ? null : c.fireClass === 'high' ? 'fire' : c.fireClass === 'moderate' ? 'fire2' : 'sel'; },
+      lg: '<div class="lg-h">Fire exposure, opportunity space only</div><div class="lg-row">' + swk('--fire', 'High') + swk('--fire-2', 'Moderate') + '<span class="sw"><i style="background:#d5e0d9"></i>Low</span>' + sw('sw-out', 'Outside the opportunity space') + '</div>' },
+    flood: { t: 'Flood exposure across the opportunity space', s: 'Modelled flood depth at a 1-in-100-year return period, in three classes.',
+      key: function (c) { return !c.selected ? null : c.floodClass === 'high' ? 'flood' : c.floodClass === 'moderate' ? 'flood2' : 'sel'; },
+      lg: '<div class="lg-h">Flood exposure, opportunity space only</div><div class="lg-row">' + swk('--flood', 'High') + swk('--flood-2', 'Moderate') + '<span class="sw"><i style="background:#d5e0d9"></i>Low</span>' + sw('sw-out', 'Outside the opportunity space') + '</div>' },
+    both: { t: 'Where fire and flood exposure coincide', s: 'High-class exposure only. Moderate and low are shown together as neither.',
+      key: function (c) { if (!c.selected) return null; var f = c.fireClass === 'high', w = c.floodClass === 'high'; return f && w ? 'both' : f ? 'fire' : w ? 'flood' : 'sel'; },
+      lg: '<div class="lg-h">High exposure, opportunity space only</div><div class="lg-row">' + swk('--both', 'Both') + swk('--fire', 'Fire only') + swk('--flood', 'Flood only') + '<span class="sw"><i style="background:#d5e0d9"></i>Neither</span>' + sw('sw-out', 'Outside') + '</div>' }
+  };
+  function setRisk(v) {
+    var V = RV[v];
+    document.getElementById('risk-t').textContent = V.t;
+    document.getElementById('risk-s').textContent = V.s;
+    document.getElementById('risk-lg').innerHTML = V.lg;
+    M.paintCells(rsvg, F.cells, V.key);
+  }
+  V1BUI.segmented(document.getElementById('seg-risk'), setRisk);
+  setRisk('fire');
+  if (q.get('hazard')) press('seg-risk', q.get('hazard'));
+  document.getElementById('figs-risk').innerHTML =
+    '<dt>Opportunity space screened</dt><dd><span class="fig-k">' + fmt(T.selected * F.haPerCell) + '</span> ha</dd>' +
+    '<dt>High fire exposure</dt><dd>' + pct(T.fireHigh / T.selected) + '</dd>' +
+    '<dt>High flood exposure</dt><dd>' + pct(T.floodHigh / T.selected) + '</dd>' +
+    '<dt>High for both</dt><dd>' + pct(T.both / T.selected) + '</dd>';
+
+  narrow.addEventListener && narrow.addEventListener('change', function () { fitView(svg); fitView(rsvg); });
+  if (location.hash === '#risk') document.getElementById('risk').scrollIntoView();
+})();
+</script>
+</body>
+</html>
