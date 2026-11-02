@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import os
 import re
 import shutil
@@ -208,6 +209,38 @@ def main(argv: list[str] | None = None) -> int:
             except Exception as e:  # noqa: BLE001
                 print(f"  ! failed to copy {sid}: {e}")
                 pdf_missing.append(sid)
+        elif re.fullmatch(r"wocat_[a-z0-9_]+_approach_\d+", sid):
+            # Approach narratives are not technology impact questionnaires. Generic
+            # HTML hydration loses the embedded narrative and cannot supply locators.
+            if (CACHE / f"{sid}.md").exists():
+                code_already += 1
+                continue
+            # Prefer the reviewed, tracked snapshot: a fresh clone should not depend
+            # on the publisher continuing to serve the same selected version.
+            expected = r.get("artifact_sha1", "")
+            archived = next(
+                (
+                    path
+                    for path in sorted(ROOT.glob(f"methodology/audits/*/{sid}.md"))
+                    if expected
+                    and hashlib.sha1(path.read_bytes()).hexdigest() == expected
+                ),
+                None,
+            )
+            if archived is not None:
+                shutil.copy2(archived, CACHE / f"{sid}.md")
+                code_fetched += 1
+                continue
+            from nbs_ruralscan.ingest import wocat_approach
+
+            try:
+                wocat_approach.acquire(
+                    sid, CACHE, expected_sha1=r.get("artifact_sha1", "")
+                )
+                code_fetched += 1
+            except Exception as exc:
+                print(f"  ! approach hydration failed {sid}: {exc}")
+                code_failed.append(sid)
         elif url and (
             cat == "tool" or kind in ("website", "github")
         ):  # code/web snapshot
