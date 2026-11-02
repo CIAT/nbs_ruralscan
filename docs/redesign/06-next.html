@@ -69,6 +69,7 @@
     </div>
 
     <aside class="reading-side">
+      <h3 class="side-h"><span class="sec-n">6.2</span>Before you use the brief</h3>
       <p class="lead-note">Scoping gives the shape of the problem and the opportunity. Implementing without bottom-up refinement with partners carries a high risk of poor return.</p>
       <div class="reuse">
         <div>
@@ -86,10 +87,11 @@
       </div>
     </aside>
   </div>
+  <p class="figcap"><b>Figure 6.1</b> · Scoping brief for planted silvoarable agroforestry, generated from the current selection</p>
   <p class="plate-src">Map: geoBoundaries gbOpen v6 (CC-BY 4.0) with a synthetic example surface (seed 20261031). Figures in the brief come from the same example surface.</p>
 
   <section class="outside">
-    <h2>What happens next — outside this tool</h2>
+    <h2><span class="sec-n">6.3</span>What happens next — outside this tool</h2>
     <div class="cols">
       <div>
         <span class="tag">Not a stage of this scan</span>
@@ -133,36 +135,40 @@
 </main>
 
 <script src="../sle_geo.js"></script>
+<script src="v1b-versions.js"></script>
 <script src="v1b-map.js"></script>
 <script src="v1b-fixture.js"></script>
 <script>
 (function () {
   'use strict';
   V1BUI.chrome(6);
-  var M = V1BMap, F = FIXTURE, T = F.totals, HA = F.haPerCell, P = F.practices[0];
+  var M = V1BMap, F = FIXTURE, HA = F.haPerCell, P = F.practices[0], paras = [];
   var fmt = function (n) { return Math.round(n).toLocaleString('en-GB'); };
   var pct = function (x) { return Math.round(x * 100) + ' %'; };
   function round2(n) { var p = Math.pow(10, Math.max(0, Math.floor(Math.log10(n)) - 1)); return Math.round(n / p) * p; }
-  function list(a) { return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
-  var D = Object.keys(F.districts).map(function (k) { return F.districts[k]; });
-  var over50 = D.filter(function (d) { return d.shareVHH > 0.5; }).sort(function (a, b) { return b.shareVHH - a.shareVHH; }).map(function (d) { return d.name; });
-  var hot = D.filter(function (d) { return d.selected >= 20; }).sort(function (a, b) { return b.shareHotspot - a.shareHotspot; }).slice(0, 3).map(function (d) { return d.name + ' (' + pct(d.shareHotspot) + ')'; });
-  var budget = 5000000, lo = round2(budget / P.cost.high), hi = round2(budget / P.cost.low);
-
-  var paras = [
-    ['Opportunity', 'Planted silvoarable agroforestry could establish on about ' + fmt(T.selected * HA) + ' ha, ' + pct(T.selected / T.cells) + ' of the country, classed Very high or High. More than half of ' + list(over50) + ' falls in this opportunity space.',
-      'Areas are nominal cell counts on an example surface, not mapped fields.'],
-    ['Hotspots and risk', 'Of that area, ' + fmt(T.overlap * HA) + ' ha (' + pct(T.overlap / T.selected) + ') meets High or Very high need for climate resilience and livelihoods; the largest shares are in ' + list(hot) + '. ' + pct(T.anyHigh / T.selected) + ' of the opportunity space carries a High fire or flood flag for young trees; flagged places are kept and shown.',
-      'Need and hazard are 5 km proxies; a flag marks exposure, not expected loss.'],
-    ['Cost and reach', 'Establishment costs USD ' + fmt(P.cost.low) + '–' + fmt(P.cost.high) + ' per ha. A USD 5,000,000 budget would establish roughly ' + fmt(lo) + '–' + fmt(hi) + ' ha, a pilot rather than a programme at this scale.',
-      'Costs are undiscounted ranges from mixed sources and exclude maintenance.']
-  ];
-  document.getElementById('paras').innerHTML = paras.map(function (p) {
-    return '<p><b>' + p[0] + '.</b> ' + p[1] + ' <em>' + p[2] + '</em></p>';
-  }).join('');
-
+  function list(a) { return !a.length ? 'no district' : a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1]; }
   var s = M.plate(document.getElementById('thumb'), { uid: 'th', labels: false, scale: false, cities: false, context: false, viewBox: '366 22 568 592' });
-  M.paintCells(s, F.cells, function (c) { return !c.selected ? null : c.hotspot ? 'hot' : 'opp'; });
+
+  function render(st) {
+    var R = F.rollup(st), T = R.totals, cw = V1BUI.classWords(st);
+    var D = Object.keys(R.districts).map(function (k) { return R.districts[k]; });
+    var over50 = D.filter(function (d) { return d.share > 0.5; }).sort(function (a, b) { return b.share - a.share; }).map(function (d) { return d.name; });
+    var hot = D.filter(function (d) { return d.selected >= 20; }).sort(function (a, b) { return b.shareHotspot - a.shareHotspot; }).slice(0, 3).map(function (d) { return d.name + ' (' + pct(d.shareHotspot) + ')'; });
+    var budget = 5000000, lo = round2(budget / P.cost.high), hi = round2(budget / P.cost.low), sel = Math.max(1, T.selected);
+    var needW = st.hot === 'vh' ? 'Very high' : 'High or Very high';
+    paras = [
+      ['Opportunity', 'Planted silvoarable agroforestry could establish on about ' + fmt(T.selected * HA) + ' ha, ' + pct(T.selected / T.cells) + ' of the country, classed ' + cw + (st.climate === 'ssp' ? ' on climate around 2050' : '') + '. More than half of ' + list(over50) + ' falls in this opportunity space.',
+        'Areas are nominal cell counts on an example surface, not mapped fields.'],
+      ['Hotspots and risk', 'Of that area, ' + fmt(T.overlap * HA) + ' ha (' + pct(T.overlap / sel) + ') meets ' + needW + ' need for climate resilience and livelihoods; the largest shares are in ' + list(hot) + '. ' + pct(T.anyHigh / sel) + ' of the opportunity space carries a High fire or flood flag for young trees; flagged places are kept and shown.',
+        'Need and hazard are 5 km proxies; a flag marks exposure, not expected loss.'],
+      ['Cost and reach', 'Establishment costs USD ' + fmt(P.cost.low) + '–' + fmt(P.cost.high) + ' per ha. A USD 5,000,000 budget would establish roughly ' + fmt(lo) + '–' + fmt(hi) + ' ha, a pilot rather than a programme at this scale.',
+        'Costs are undiscounted ranges from mixed sources and exclude maintenance.']
+    ];
+    document.getElementById('paras').innerHTML = paras.map(function (p) { return '<p><b>' + p[0] + '.</b> ' + p[1] + ' <em>' + p[2] + '</em></p>'; }).join('');
+    document.querySelector('.d-scope').textContent = V1BUI.scopeText(st) + ' · budget USD 5,000,000 (2026) · example data';
+    M.paintCells(s, F.cells, function (c) { return !R.sel(c) ? null : R.hot(c) ? 'hot' : 'opp'; });
+  }
+  V1BUI.onControls(render);
 
   function briefText() {
     var out = ['Scoping brief — planted silvoarable agroforestry, Sierra Leone (example)', document.querySelector('.d-scope').textContent, ''];

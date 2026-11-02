@@ -79,6 +79,11 @@
     var fire = 1.5 * (n3 - 0.5) + 0.38 * north + 0.22 * east - 0.2 * Math.exp(-dc / 20);
     var flood = 1.3 * (n4 - 0.5) + 0.42 * Math.exp(-dc / 16) + 0.40 * Math.exp(-Math.pow(lineDist(lon, lat, RIVER) / 11, 2));
     var slope = Math.max(0, 4 + 34 * (0.6 * se + 0.7 * ne) + 18 * (n5 - 0.5));
+    // livelihood hazards (exposure of people; Stage 02 sub-tab 2.3)
+    var n6 = fbm(X, Y, SEED + 31), n7 = fbm(X, Y, SEED + 37), n8 = fbm(X, Y, SEED + 41);
+    var drought = 1.4 * (n6 - 0.5) + 0.40 * north + 0.12 * east;
+    var heat = 1.2 * (n7 - 0.5) + 0.30 * north + 0.18 * c01(dc / 60);
+    var erosion = 1.2 * (n8 - 0.5) + 0.012 * slope;
 
     var excluded = null, i;
     for (i = 0; i < URBAN.length; i++) if (kmDist(lon, lat, URBAN[i].lon, URBAN[i].lat) < URBAN[i].r + 3 * (n5 - 0.5)) excluded = 'urban';
@@ -92,6 +97,8 @@
     }
     return { lon: lon, lat: lat, x: g.x, y: g.y, w: g.w, h: g.h, i: g.i, j: g.j, adm2: g.adm2,
       suit: suit, suit2050: suit + drift, need: need, fire: fire, flood: flood, slope: +slope.toFixed(1),
+      drought: drought, drought2050: drought + 0.10 + 0.10 * north, heat: heat, heat2050: heat + 0.16 + 0.06 * north,
+      erosion: erosion, erosion2050: erosion + 0.04, flood2050: flood + 0.06 + 0.06 * Math.exp(-dc / 16),
       excluded: excluded, unknown: unknown };
   });
 
@@ -110,6 +117,8 @@
     return [s[Math.floor(0.5 * s.length)], s[Math.floor(0.75 * s.length)]];
   }
   var fb = tercile('fire'), lb = tercile('flood');
+  var LH = { drought: tercile('drought'), flood: lb, erosion: tercile('erosion'), heat: tercile('heat') };
+  function hcls(v, b) { return v >= b[1] ? 'high' : v >= b[0] ? 'moderate' : 'low'; }
   cells.forEach(function (c) {
     var ok = !c.excluded && !c.unknown;
     c.suitClass = c.excluded ? 'excluded' : c.unknown ? 'unknown' : cls(c.suit, sb);
@@ -117,6 +126,8 @@
     c.needClass = cls(c.need, nb);
     c.fireClass = c.fire >= fb[1] ? 'high' : c.fire >= fb[0] ? 'moderate' : 'low';
     c.floodClass = c.flood >= lb[1] ? 'high' : c.flood >= lb[0] ? 'moderate' : 'low';
+    c.lh = {}; c.lh2050 = {};
+    Object.keys(LH).forEach(function (k) { c.lh[k] = hcls(c[k], LH[k]); c.lh2050[k] = hcls(c[k + '2050'], LH[k]); });
     var top = function (k) { return k === 'vh' || k === 'h'; };
     c.selected = ok && top(c.suitClass);
     c.change = !ok ? c.suitClass : top(c.suitClass) && top(c.suitClass2050) ? 'stay' :
@@ -208,8 +219,38 @@
       cost: { low: 90, high: 380, maint: 25, unit: 'ha', source: 'Practitioner records (WOCAT-type)' } }
   ];
 
+  /* Roll-ups for any control-bar state: classes {vh,h,m,l}, climate base|ssp,
+     hot 'high' (need High or Very high) | 'vh' (Very high only). Counts only. */
+  function rollup(st) {
+    st = st || {};
+    var cl = st.classes || { vh: 1, h: 1 }, ssp = st.climate === 'ssp', vhOnly = st.hot === 'vh';
+    function sel(c) { var k = ssp ? c.suitClass2050 : c.suitClass; return !!cl[k]; }
+    function hot(c) { return sel(c) && (vhOnly ? c.needClass === 'vh' : (c.needClass === 'vh' || c.needClass === 'h')); }
+    var R = { sel: sel, hot: hot, totals: { cells: cells.length, selected: 0, overlap: 0, fireHigh: 0, floodHigh: 0, both: 0, anyHigh: 0, residentsSel: 0, hotspotResidents: 0 }, districts: {} };
+    Object.keys(districts).forEach(function (k) { R.districts[k] = { name: k, cells: districts[k].cells, residents: districts[k].residents, selected: 0, overlap: 0, fireHigh: 0, floodHigh: 0, bothHigh: 0, anyHigh: 0, residentsSel: 0, hotspotResidents: 0 }; });
+    cells.forEach(function (c) {
+      if (!sel(c)) return;
+      var d = R.districts[c.adm2], t = R.totals, fh = c.fireClass === 'high', wh = c.floodClass === 'high', h = hot(c);
+      [t, d].forEach(function (o) {
+        if (!o) return;
+        o.selected++; o.residentsSel += c.residents;
+        if (h) { o.overlap++; o.hotspotResidents += c.residents; }
+        if (fh) o.fireHigh++; if (wh) o.floodHigh++;
+        if (fh && wh) { if (o === t) o.both++; else o.bothHigh++; }
+        if (fh || wh) o.anyHigh++;
+      });
+    });
+    Object.keys(R.districts).forEach(function (k) {
+      var d = R.districts[k], s = d.selected || 0;
+      d.share = d.cells ? s / d.cells : 0;
+      d.shareHotspot = s ? d.overlap / s : 0; d.shareFire = s ? d.fireHigh / s : 0; d.shareFlood = s ? d.floodHigh / s : 0;
+      d.shareBoth = s ? d.bothHigh / s : 0; d.shareAny = s ? d.anyHigh / s : 0;
+    });
+    return R;
+  }
+
   window.FIXTURE = Object.freeze({
     seed: SEED, haPerCell: HA_PER_CELL, cells: cells, districts: districts, totals: T,
-    practices: practices, inset: { lon: -11.86, lat: 7.86, km: 20 }
+    practices: practices, inset: { lon: -11.86, lat: 7.86, km: 20 }, rollup: rollup
   });
 })();

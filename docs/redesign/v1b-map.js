@@ -326,7 +326,8 @@
   }
 
   // paint cells: keyFn(cell) -> class key or null (paper); classes map key -> css class
-  function paintCells(svg, cells, keyFn) {
+  function paintCells(svg, cells, keyFn, opts) {
+    opts = opts || {};
     var groups = {}, order = [];
     cells.forEach(function (c) {
       var k = keyFn(c); if (k == null) return;
@@ -342,6 +343,21 @@
       if (k === 'gone') fill = ' fill="url(#rm-' + uid + ')"';
       html += '<path class="k-' + k + '"' + fill + ' d="' + groups[k] + '"/>';
     });
+    // thin dark outline around excluded areas (dissolved: only edges facing non-excluded cells)
+    function outline(test, cls) {
+      var ex = {}, d = '';
+      cells.forEach(function (c) { if (test(c)) ex[c.i + ',' + c.j] = c; });
+      Object.keys(ex).forEach(function (k) {
+        var c = ex[k], x0 = c.x.toFixed(2), y0 = c.y.toFixed(2), x1 = (c.x + c.w).toFixed(2), y1 = (c.y + c.h).toFixed(2);
+        if (!ex[c.i + ',' + (c.j - 1)]) d += 'M' + x0 + ' ' + y0 + 'H' + x1;
+        if (!ex[c.i + ',' + (c.j + 1)]) d += 'M' + x0 + ' ' + y1 + 'H' + x1;
+        if (!ex[(c.i - 1) + ',' + c.j]) d += 'M' + x0 + ' ' + y0 + 'V' + y1;
+        if (!ex[(c.i + 1) + ',' + c.j]) d += 'M' + x1 + ' ' + y0 + 'V' + y1;
+      });
+      return '<path class="' + cls + '" d="' + d + '"/>';
+    }
+    if (groups.excluded) html += outline(function (c) { return keyFn(c) === 'excluded'; }, 'k-outline');
+    if (opts.outline) html += outline(opts.outline, 'k-sel-outline');
     svg.querySelector('.m-cells').innerHTML = html;
     svg.querySelector('.m-dfill').innerHTML = '';
   }
@@ -373,14 +389,114 @@
     { n: 5, name: 'NbS comparison', href: '05-comparison.html' },
     { n: 6, name: 'Next steps', href: '06-next.html' }
   ];
-  var SCOPE = [
-    { k: 'practice', label: 'Agroforestry (planted silvoarable)' },
-    { k: 'classes', label: 'classes Very high + High' },
-    { k: 'geo', label: 'Sierra Leone' },
-    { k: 'grain', label: '5 km cells' },
-    { k: 'period', label: 'Baseline 1995–2014' },
-    { k: 'data', label: 'Example data' }
+  /* ---- control bar state (shared across pages, remembered per viewer) ---- */
+  var PRACTICES = [
+    { id: 'agro_f1', short: 'Planted silvoarable', name: 'planted silvoarable agroforestry' },
+    { id: 'riparian', short: 'Riparian buffers', name: 'riparian buffers' },
+    { id: 'anr', short: 'Natural regeneration', name: 'assisted natural regeneration' }
   ];
+  var CLASSES = [['vh', 'Very high'], ['h', 'High'], ['m', 'Moderate'], ['l', 'Low']];
+  var STATE = { practices: ['agro_f1'], classes: { vh: 1, h: 1, m: 0, l: 0 }, view: 'cells', climate: 'base', hot: 'high' };
+  try {
+    var saved = JSON.parse(window.localStorage.getItem('v1b-controls') || 'null');
+    if (saved && saved.classes && saved.practices && saved.practices.length) STATE = Object.assign(STATE, saved);
+  } catch (e) { /* storage unavailable: defaults */ }
+  if (/[?&]reset=1/.test(window.location.search)) STATE = { practices: ['agro_f1'], classes: { vh: 1, h: 1, m: 0, l: 0 }, view: 'cells', climate: 'base', hot: 'high' };
+  (function () {   // URL overrides for review links / screenshots (not saved)
+    var q = new URLSearchParams(window.location.search);
+    if (/^(cells|adm2|adm3)$/.test(q.get('view') || '')) STATE.view = q.get('view');
+    if (/^(base|ssp)$/.test(q.get('climate') || '')) STATE.climate = q.get('climate');
+    if (/^(high|vh)$/.test(q.get('hot') || '')) STATE.hot = q.get('hot');
+    if (q.get('classes')) { var c = { vh: 0, h: 0, m: 0, l: 0 }; q.get('classes').split(',').forEach(function (k) { if (k in c) c[k] = 1; }); STATE.classes = c; }
+  })();
+  var LISTENERS = [];
+  function save() { try { window.localStorage.setItem('v1b-controls', JSON.stringify(STATE)); } catch (e) { /* ignore */ } }
+  function emit() { save(); LISTENERS.forEach(function (fn) { fn(STATE); }); }
+  function onControls(fn) { LISTENERS.push(fn); fn(STATE); }
+
+  function classWords(st) {
+    var on = CLASSES.filter(function (c) { return st.classes[c[0]]; }).map(function (c) { return c[1]; });
+    return on.join(' + ');
+  }
+  function practiceWords(st) {
+    var names = st.practices.map(function (id) { return PRACTICES.filter(function (p) { return p.id === id; })[0].name; });
+    return names;
+  }
+  // one-line scope caption for plates and figure captions
+  function scopeText(st, o) {
+    st = st || STATE; o = o || {};
+    var parts = [];
+    var pw = practiceWords(st);
+    parts.push(pw[0].charAt(0).toUpperCase() + pw[0].slice(1) + (pw.length > 1 ? ' (map shows this practice; ' + (pw.length - 1) + ' more selected)' : ''));
+    if (!o.noClasses) parts.push(classWords(st));
+    parts.push('Sierra Leone');
+    parts.push(st.view === 'cells' ? '5 km cells' : st.view === 'adm2' ? 'districts (Admin 2)' : 'Admin 3 not in this example — districts shown');
+    parts.push(st.climate === 'ssp' ? 'SSP2-4.5, about 2050' : 'baseline 1995–2014');
+    return parts.join(' · ');
+  }
+
+  function controlBar(opts) {
+    opts = opts || {};
+    var st = STATE;
+    function seg(k, items, multi) {
+      return '<div class="seg cb-seg" data-k="' + k + '"' + (multi ? ' data-multi="1"' : '') + ' role="group">' + items.map(function (it) {
+        var on = multi ? !!st[k][it[0]] : st[k] === it[0];
+        return '<button type="button" data-v="' + it[0] + '" aria-pressed="' + on + '">' + it[1] + '</button>';
+      }).join('') + '</div>';
+    }
+    var chips = st.practices.map(function (id) {
+      var p = PRACTICES.filter(function (x) { return x.id === id; })[0];
+      return '<span class="cb-chip">' + p.short + (st.practices.length > 1 ? '<button type="button" class="cb-x" data-rm="' + id + '" aria-label="Remove ' + p.short + '">×</button>' : '') + '</span>';
+    }).join('');
+    var menu = PRACTICES.map(function (p) {
+      return '<label><input type="checkbox" data-p="' + p.id + '"' + (st.practices.indexOf(p.id) >= 0 ? ' checked' : '') + '> ' + p.short + '</label>';
+    }).join('');
+    return '<div class="cb-in">' +
+      '<div class="cb-g cb-prac"><span class="cb-l" id="cbl-p">Practice</span><div class="cb-chips" aria-labelledby="cbl-p">' + chips +
+        '<button type="button" class="cb-add" aria-expanded="false" aria-haspopup="true">+ Add</button>' +
+        '<div class="cb-menu" hidden>' + menu + '</div></div></div>' +
+      '<div class="cb-g"><span class="cb-l">Suitability classes</span>' + seg('classes', CLASSES, true) + '</div>' +
+      '<div class="cb-g"><span class="cb-l">View</span>' + seg('view', [['cells', '5 km cells'], ['adm2', 'Admin 2'], ['adm3', 'Admin 3']]) + '</div>' +
+      '<div class="cb-g"><span class="cb-l">Climate</span>' + seg('climate', [['base', 'Baseline 1995–2014'], ['ssp', 'SSP2-4.5 ~2050']]) + '</div>' +
+      (opts.hotspot ? '<div class="cb-g"><span class="cb-l">Hotspot score</span>' + seg('hot', [['high', 'High+'], ['vh', 'Very high']]) + '</div>' : '') +
+      '</div>';
+  }
+  var BAR_OPTS = {};
+  function renderBar() {
+    var el = document.getElementById('ctlbar');
+    if (el) el.innerHTML = controlBar(BAR_OPTS);
+  }
+  function wireBar() {
+    var el = document.getElementById('ctlbar');
+    if (!el) return;
+    el.addEventListener('click', function (e) {
+      var b = e.target.closest('.cb-seg button');
+      if (b) {
+        var g = b.parentNode, k = g.getAttribute('data-k'), v = b.getAttribute('data-v');
+        if (g.getAttribute('data-multi')) {
+          var next = Object.assign({}, STATE.classes); next[v] = next[v] ? 0 : 1;
+          if (!CLASSES.some(function (c) { return next[c[0]]; })) return;   // keep at least one class
+          STATE.classes = next;
+        } else STATE[k] = v;
+        renderBar(); emit(); return;
+      }
+      var rm = e.target.closest('[data-rm]');
+      if (rm) { STATE.practices = STATE.practices.filter(function (id) { return id !== rm.getAttribute('data-rm'); }); renderBar(); emit(); return; }
+      var add = e.target.closest('.cb-add');
+      if (add) { var m = el.querySelector('.cb-menu'); m.hidden = !m.hidden; add.setAttribute('aria-expanded', String(!m.hidden)); }
+    });
+    el.addEventListener('change', function (e) {
+      var cb = e.target.closest('[data-p]'); if (!cb) return;
+      var id = cb.getAttribute('data-p'), list = STATE.practices.filter(function (x) { return x !== id; });
+      if (cb.checked) list.push(id);
+      if (!list.length) { cb.checked = true; return; }
+      STATE.practices = PRACTICES.map(function (p) { return p.id; }).filter(function (x) { return list.indexOf(x) >= 0; });
+      renderBar(); emit();
+    });
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.cb-chips')) { var m = el.querySelector('.cb-menu'); if (m && !m.hidden) { m.hidden = true; } }
+    });
+  }
 
   function stageBar(current) {
     var steps = STAGES.map(function (s) {
@@ -395,9 +511,7 @@
       '<ol class="stepper" aria-label="Stages">' + steps + '</ol>' +
       '<button class="btn-ghost" type="button" data-drawer="practice">Technical configuration</button>' +
       '</div></header>' +
-      '<div class="scopeline"><div class="sl-in"><span class="sl-k">Showing</span>' +
-      SCOPE.map(function (s) { return '<button type="button" class="sl-item" data-drawer="' + s.k + '">' + s.label + '</button>'; }).join('<span class="sl-dot" aria-hidden="true">·</span>') +
-      '</div></div>';
+      '<div class="ctlbar" id="ctlbar" role="region" aria-label="Controls"></div>';
   }
 
   function drawer() {
@@ -431,11 +545,14 @@
   }
 
   var chromeReady = false;
-  function chrome(current) {
+  function chrome(current, opts) {
     var top = document.getElementById('chrome');
+    BAR_OPTS = opts || {};
     if (top) top.innerHTML = stageBar(current);
+    renderBar();
     if (chromeReady) return;
     chromeReady = true;
+    wireBar();
     document.body.insertAdjacentHTML('beforeend', drawer());
     document.addEventListener('click', function (e) {
       var t = e.target.closest('[data-drawer]');
@@ -456,5 +573,18 @@
     });
   }
 
-  window.V1BUI = { chrome: chrome, segmented: segmented, openDrawer: openDrawer };
+  // drawer panel with arbitrary content (e.g. evidence for a response row)
+  function openPanel(title, html) {
+    var sec = document.getElementById('dr-panel');
+    if (!sec) {
+      document.getElementById('drawer').querySelector('.dr-lede').insertAdjacentHTML('afterend', '<section class="dr-sec" id="dr-panel"></section>');
+      sec = document.getElementById('dr-panel');
+    }
+    sec.innerHTML = '<h3>' + title + '</h3>' + html;
+    openDrawer('panel');
+  }
+
+  window.V1BUI = { chrome: chrome, segmented: segmented, openDrawer: openDrawer, openPanel: openPanel,
+    onControls: onControls, scopeText: scopeText, classWords: classWords, practices: PRACTICES,
+    get state() { return STATE; } };
 })();

@@ -20,7 +20,7 @@
   </section>
 
   <div class="prio">
-    <span class="p-k">Selected priorities</span>
+    <span class="p-k"><span class="sec-n">4.1</span>Selected priorities</span>
     <div class="p-v"><b>Climate resilience + Livelihoods</b> <span>· set in Stage 01</span>
       <div class="p-layers"><span>Drought exposure</span><span>Rural poverty</span><span>Food insecurity</span></div>
     </div>
@@ -29,9 +29,8 @@
 
   <div class="ctlrow">
     <div class="seg" id="seg-v" role="group" aria-label="Map view">
-      <button type="button" data-v="need" aria-pressed="false">Need</button>
       <button type="button" data-v="hot" aria-pressed="true">Hotspots</button>
-      <button type="button" data-v="district" aria-pressed="false">District summary</button>
+      <button type="button" data-v="need" aria-pressed="false">Need</button>
     </div>
   </div>
 
@@ -45,11 +44,12 @@
     </div>
     <div class="legend" id="lg"></div>
   </figure>
+  <p class="figcap" id="cap"></p>
   <p class="plate-src">Boundaries: geoBoundaries gbOpen v6 (CC-BY 4.0). Need cells: synthetic example surface (seed 20261031) — not drought, poverty or food-security data.</p>
 
   <section class="reading">
     <div>
-      <h3>How to read this</h3>
+      <h3><span class="sec-n">4.2</span>How to read Figure 4.1</h3>
       <ol class="notes">
         <li><b>A hotspot is an intersection, not a sum.</b> A cell is a hotspot when it is in the opportunity space and its need is High or Very high. Nothing is added up or averaged.</li>
         <li><b>Need layers are proxies at 5 km.</b> Correlated layers are grouped and one represents each group, so the same signal is not counted twice. The others stay visible.</li>
@@ -58,10 +58,10 @@
       </ol>
     </div>
     <div>
-      <h3>Key figures</h3>
+      <h3><span class="sec-n">4.3</span>Key figures</h3>
       <dl class="figs" id="figs"></dl>
       <div class="context-card">
-        <h4>National context</h4>
+        <h4><span class="sec-n">4.4</span>National context</h4>
         <span class="cv">0.61</span> <span style="color:var(--ink-2);font-size:var(--t15)">Gender inequality index (example)</span>
         <p>One value for the whole country: it describes the setting, it cannot rank districts.</p>
       </div>
@@ -69,21 +69,21 @@
   </section>
 
   <section class="deeper">
-    <h3>Go deeper</h3>
+    <h3><span class="sec-n">4.5</span>Go deeper</h3>
     <details class="acc">
-      <summary><span class="a-t">How need layers are chosen</span><span class="a-s">Thematic group, then correlation cluster, then one representative.</span></summary>
+      <summary><span class="a-t"><span class="sec-n">4.5.1</span>How need layers are chosen</span><span class="a-s">Thematic group, then correlation cluster, then one representative.</span></summary>
       <div class="a-body">
         <p>Each objective brings a thematic group of candidate layers. Within the area of interest, layers that move together are clustered, and one layer represents each cluster on the map. The other members of the cluster stay listed beside it, so a reader can see what the representative stands for and swap it.</p>
       </div>
     </details>
     <details class="acc">
-      <summary><span class="a-t">Why national data cannot rank districts</span><span class="a-s">A single country value is the same everywhere on the map.</span></summary>
+      <summary><span class="a-t"><span class="sec-n">4.5.2</span>Why national data cannot rank districts</span><span class="a-s">A single country value is the same everywhere on the map.</span></summary>
       <div class="a-body">
         <p>Indicators reported once per country — such as a gender inequality index — describe the setting the project works in. Applied to the map they give every district the same value, so they cannot show where need is higher. They are reported as context, and a district-level source is flagged for feasibility.</p>
       </div>
     </details>
     <details class="acc">
-      <summary><span class="a-t">Change priorities</span><span class="a-s">Two example presets, held in the configuration drawer.</span></summary>
+      <summary><span class="a-t"><span class="sec-n">4.5.3</span>Change priorities</span><span class="a-s">Two example presets, held in the configuration drawer.</span></summary>
       <div class="a-body">
         <p>Choosing different priorities changes which need layers appear here. <button type="button" class="btn-ghost" data-drawer="priorities">Open priority presets</button></p>
       </div>
@@ -97,13 +97,14 @@
 </main>
 
 <script src="../sle_geo.js"></script>
+<script src="v1b-versions.js"></script>
 <script src="v1b-map.js"></script>
 <script src="v1b-fixture.js"></script>
 <script>
 (function () {
   'use strict';
-  V1BUI.chrome(4);
-  var M = V1BMap, F = FIXTURE, T = F.totals, HA = F.haPerCell;
+  V1BUI.chrome(4, { hotspot: true });
+  var M = V1BMap, F = FIXTURE, HA = F.haPerCell, ST = V1BUI.state, R = F.rollup(ST);
   var fmt = function (n) { return Math.round(n).toLocaleString('en-GB'); };
   var pct = function (x) { return Math.round(x * 100) + ' %'; };
   function sw(cls, label) { return '<span class="sw"><i class="' + cls + '"></i>' + label + '</span>'; }
@@ -113,66 +114,64 @@
   svg.style.setProperty('--hz', 'var(--n4)');
   function fitView() { svg.setAttribute('viewBox', narrow.matches ? '352 14 590 606' : '0 0 960 640'); }
   fitView();
+  var variant = 'hot';
 
-  var ranked = Object.keys(F.districts).map(function (k) { return F.districts[k]; })
-    .filter(function (d) { return d.selected >= 20; }).sort(function (a, b) { return b.shareHotspot - a.shareHotspot; });
-  var top3 = ranked.slice(0, 3);
-  var bins = (function () {
-    var mx = ranked.length ? ranked[0].shareHotspot : 1, w = Math.ceil(mx * 100 / 5 / 5) * 5;
-    return { w: w / 100, edges: [0, 1, 2, 3, 4, 5].map(function (i) { return i * w; }) };
-  })();
-
-  var V = {
-    need: { t: 'Need across the opportunity space', s: 'Drought exposure, rural poverty and food insecurity, shown as one need class per cell.',
-      sc: 'Opportunity space only · 5 km cells',
-      paint: function () {
-        M.paintCells(svg, F.cells, function (c) { return c.selected ? { vh: 'p4', h: 'p3', m: 'p2', l: 'p1' }[c.needClass] : null; });
-        M.setLabels(svg, {});
-      },
-      lg: '<div class="lg-h">Need class, opportunity space only</div><div class="lg-row">' + swk('--n4', 'Very high') + swk('--n3', 'High') + swk('--n2', 'Moderate') + swk('--n1', 'Low') + '</div><div class="lg-row">' + sw('sw-out', 'Outside the opportunity space') + '</div>' },
-    hot: { t: 'Priority hotspots for planted silvoarable agroforestry', s: 'Opportunity cells where need is High or Very high.',
-      sc: 'Opportunity space × selected priorities · 5 km cells',
-      paint: function () {
-        M.paintCells(svg, F.cells, function (c) { return !c.selected ? null : c.hotspot ? 'hot' : 'opp'; });
-        M.setLabels(svg, {});
-      },
-      lg: '<div class="lg-h">Hotspots</div><div class="lg-row">' + swk('--n4', 'Hotspot') + swk('--s1', 'Opportunity, need below High') + '</div><div class="lg-row">' + sw('sw-out', 'Outside the opportunity space') + '</div>' },
-    district: { t: 'Share of each district’s opportunity space that is a hotspot', s: 'Hotspot cells as a share of the district’s Very high and High cells. The three largest shares are named with values.',
-      sc: '14 districts · opportunity space × selected priorities',
-      paint: function () {
-        M.paintCells(svg, F.cells, function (c) { return c.selected ? 'opp' : null; });
-        M.paintDistricts(svg, function (n) {
-          var d = F.districts[n]; if (d.selected < 20) return 'out';
-          return 'b' + (Math.min(4, Math.floor(d.shareHotspot / bins.w)) + 1);
-        });
-        var extra = {}; top3.forEach(function (d) { extra[d.name] = pct(d.shareHotspot); });
-        M.setLabels(svg, { extra: extra, emph: top3.map(function (d) { return d.name; }) });
-      },
-      lg: '<div class="lg-h">Share of opportunity space that is a hotspot</div><div class="ramp" style="--hz:var(--n4)">' +
-        [1, 2, 3, 4, 5].map(function (i) { return '<i class="b' + i + '"></i>'; }).join('') + '</div><div class="ramp-lbl">' +
-        bins.edges.map(function (e, i) { return '<span>' + e + (i === 5 ? ' %' : '') + '</span>'; }).join('') + '</div>' +
-        '<div class="lg-row">' + sw('sw-out', 'Too little opportunity space to summarise') + '</div>' }
-  };
-  function setView(v) {
-    var X = V[v];
-    document.getElementById('t').textContent = X.t;
-    document.getElementById('s').textContent = X.s;
-    document.getElementById('sc').textContent = X.sc;
-    document.getElementById('lg').innerHTML = X.lg;
-    svg.classList.toggle('no-city', v === 'district');
-    X.paint();
+  function ranked() {
+    return Object.keys(R.districts).map(function (k) { return R.districts[k]; })
+      .filter(function (d) { return d.selected >= 20; }).sort(function (a, b) { return b.shareHotspot - a.shareHotspot; });
   }
-  V1BUI.segmented(document.getElementById('seg-v'), setView);
-  setView('hot');
-  var q = new URLSearchParams(location.search);
-  if (q.get('view')) { var b = document.querySelector('#seg-v [data-v="' + q.get('view') + '"]'); if (b) b.click(); }
+  function hotWords() { return ST.hot === 'vh' ? 'Very high' : 'High or Very high'; }
 
-  document.getElementById('figs').innerHTML =
-    '<dt>Hotspot area (nominal)</dt><dd><span class="fig-k">' + fmt(T.overlap * HA) + '</span> ha</dd>' +
-    '<dt>Share of the opportunity space</dt><dd>' + pct(T.overlap / T.selected) + '</dd>' +
-    '<dt>Residents in hotspot cells (fictional)</dt><dd>' + fmt(Math.round(T.hotspotResidents / 1000) * 1000) + '</dd>' +
-    '<dt>Highest hotspot shares</dt><dd></dd>' +
-    top3.map(function (d) { return '<dt class="sub">' + d.name + '</dt><dd class="sub">' + pct(d.shareHotspot) + '</dd>'; }).join('');
+  function render() {
+    var district = ST.view !== 'cells', cw = V1BUI.classWords(ST), t, s, cap, lg;
+    svg.classList.toggle('no-city', district);
+    if (district) {
+      var rk = ranked(), top3 = rk.slice(0, 3), mx = rk.length ? rk[0].shareHotspot : 1, w = Math.max(5, Math.ceil(mx * 100 / 5 / 5) * 5) / 100;
+      M.paintCells(svg, F.cells, function (c) { return R.sel(c) ? 'opp' : null; });
+      M.paintDistricts(svg, function (n) { var d = R.districts[n]; return d.selected < 20 ? 'out' : 'b' + (Math.min(4, Math.floor(d.shareHotspot / w)) + 1); });
+      var extra = {}; top3.forEach(function (d) { extra[d.name] = pct(d.shareHotspot); });
+      M.setLabels(svg, { extra: extra, emph: top3.map(function (d) { return d.name; }) });
+      t = 'Share of each district’s opportunity space that is a hotspot';
+      s = 'Hotspot cells (need ' + hotWords() + ') as a share of the district’s ' + cw + ' cells. The three largest shares are named with values.';
+      cap = 'Share of each district’s opportunity space that is a priority hotspot, ' + (ST.view === 'adm3' ? 'districts — Admin 3 is not in this example' : 'districts (Admin 2)');
+      lg = '<div class="lg-h">Share of opportunity space that is a hotspot</div><div class="ramp" style="--hz:var(--n4)">' +
+        [1, 2, 3, 4, 5].map(function (i) { return '<i class="b' + i + '"></i>'; }).join('') + '</div><div class="ramp-lbl">' +
+        [0, 1, 2, 3, 4, 5].map(function (i) { return '<span>' + Math.round(i * w * 100) + (i === 5 ? ' %' : '') + '</span>'; }).join('') + '</div>' +
+        '<div class="lg-row">' + sw('sw-out', 'Too little opportunity space to summarise') + '</div>';
+    } else if (variant === 'need') {
+      M.paintCells(svg, F.cells, function (c) { return R.sel(c) ? { vh: 'p4', h: 'p3', m: 'p2', l: 'p1' }[c.needClass] : null; });
+      M.setLabels(svg, {});
+      t = 'Need across the opportunity space';
+      s = 'Drought exposure, rural poverty and food insecurity, shown as one need class per cell.';
+      cap = 'Need class within the opportunity space, 5 km cells';
+      lg = '<div class="lg-h">Need class, opportunity space only</div><div class="lg-row">' + swk('--n4', 'Very high') + swk('--n3', 'High') + swk('--n2', 'Moderate') + swk('--n1', 'Low') + '</div><div class="lg-row">' + sw('sw-out', 'Outside the opportunity space') + '</div>';
+    } else {
+      M.paintCells(svg, F.cells, function (c) { return !R.sel(c) ? null : R.hot(c) ? 'hot' : 'opp'; });
+      M.setLabels(svg, {});
+      t = 'Priority hotspots for planted silvoarable agroforestry';
+      s = 'Opportunity cells where need is ' + hotWords() + '.';
+      cap = 'Priority hotspots for planted silvoarable agroforestry (need ' + hotWords() + '), 5 km cells';
+      lg = '<div class="lg-h">Hotspots</div><div class="lg-row">' + swk('--n4', 'Hotspot') + swk('--s1', 'Opportunity, need below ' + (ST.hot === 'vh' ? 'Very high' : 'High')) + '</div><div class="lg-row">' + sw('sw-out', 'Outside the opportunity space') + '</div>';
+    }
+    document.getElementById('t').textContent = t;
+    document.getElementById('s').textContent = s;
+    document.getElementById('sc').textContent = V1BUI.scopeText(ST) + ' · Climate resilience + Livelihoods';
+    document.getElementById('lg').innerHTML = lg;
+    document.getElementById('cap').innerHTML = '<b>Figure 4.1</b> · ' + cap + ', ' + cw + ', ' + (ST.climate === 'ssp' ? 'opportunity on SSP2-4.5 about 2050' : 'baseline 1995–2014');
+  }
+  function figs() {
+    var T = R.totals, top3 = ranked().slice(0, 3);
+    document.getElementById('figs').innerHTML =
+      '<dt>Hotspot area (nominal)</dt><dd><span class="fig-k">' + fmt(T.overlap * HA) + '</span> ha</dd>' +
+      '<dt>Share of the opportunity space</dt><dd>' + pct(T.overlap / Math.max(1, T.selected)) + '</dd>' +
+      '<dt>Residents in hotspot cells (fictional)</dt><dd>' + fmt(Math.round(T.hotspotResidents / 1000) * 1000) + '</dd>' +
+      '<dt>Highest hotspot shares</dt><dd></dd>' +
+      top3.map(function (d) { return '<dt class="sub">' + d.name + '</dt><dd class="sub">' + pct(d.shareHotspot) + '</dd>'; }).join('');
+  }
+  V1BUI.segmented(document.getElementById('seg-v'), function (v) { variant = v; render(); });
+  V1BUI.onControls(function (st) { ST = st; R = F.rollup(st); render(); figs(); });
+  var q = new URLSearchParams(location.search);
+  if (q.get('plate')) { var b = document.querySelector('#seg-v [data-v="' + q.get('plate') + '"]'); if (b) b.click(); }
   narrow.addEventListener && narrow.addEventListener('change', fitView);
 })();
 </script>
