@@ -697,6 +697,10 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     from nbs_ruralscan.runtime import scorecard
 
     changed.extend(scorecard.write(schema_root, check=check))
+    # flat, filterable view of every T3/T6/T6E row → docs/effect_rows_flat.csv
+    from nbs_ruralscan.runtime import effect_rows
+
+    changed.extend(effect_rows.write_flat(schema_root, check=check))
     return changed
 
 
