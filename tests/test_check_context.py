@@ -109,3 +109,26 @@ def test_t4_model_metadata_is_not_an_effect_context_alias():
     )
     row["context"]["country"] = "Bangladesh"
     assert any(f["signal"] == "bad_vocab" for f in check_unit(row, set(), set()))
+
+
+def test_t4_model_use_shape_cannot_crash_dashboard_inclusion():
+    for bad in (
+        "site-selection guidance",
+        [],
+        None,
+        {"verified": "false"},
+        {"verified": 1},
+    ):
+        row = {
+            "evidence_id": "t4",
+            "use_role": "structural_suitability",
+            "context": {"model_use": bad},
+        }
+        assert any(
+            f["signal"] == "bad_context_type" for f in cc.check_unit(row, set(), set())
+        )
+    row["context"]["model_use"] = {
+        "verified": False,
+        "note": "Guidance, not a fitted model",
+    }
+    assert cc.check_unit(row, set(), set()) == []

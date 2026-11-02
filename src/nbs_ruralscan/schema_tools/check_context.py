@@ -205,6 +205,15 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
     for k in ctx:
         if k not in allowed:
             flag("unknown_context_key", k)
+    if "model_use" in ctx:
+        model_use = ctx["model_use"]
+        if not isinstance(model_use, dict):
+            flag(
+                "bad_context_type",
+                "model_use must be an object, not a narrative string",
+            )
+        elif "verified" in model_use and type(model_use["verified"]) is not bool:
+            flag("bad_context_type", "model_use.verified must be a boolean")
     countries = ctx.get("country")
     if isinstance(countries, str):
         countries = [
