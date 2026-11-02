@@ -84,6 +84,9 @@
     var drought = 1.4 * (n6 - 0.5) + 0.40 * north + 0.12 * east;
     var heat = 1.2 * (n7 - 0.5) + 0.30 * north + 0.18 * c01(dc / 60);
     var erosion = 1.2 * (n8 - 0.5) + 0.012 * slope;
+    // raw inputs for the configuration page (synthetic, not observations)
+    var precip = Math.round(1900 + 1500 * Math.exp(-dc / 70) + 600 * c01((8.6 - lat) / 1.6) + 700 * (n6 - 0.5));
+    var lc = n8 > 0.6 ? 'tree' : n7 > 0.56 ? 'crop' : n6 > 0.48 ? 'mosaic' : 'grass';
 
     var excluded = null, i;
     for (i = 0; i < URBAN.length; i++) if (kmDist(lon, lat, URBAN[i].lon, URBAN[i].lat) < URBAN[i].r + 3 * (n5 - 0.5)) excluded = 'urban';
@@ -98,7 +101,7 @@
     return { lon: lon, lat: lat, x: g.x, y: g.y, w: g.w, h: g.h, i: g.i, j: g.j, adm2: g.adm2,
       suit: suit, suit2050: suit + drift, need: need, fire: fire, flood: flood, slope: +slope.toFixed(1),
       drought: drought, drought2050: drought + 0.10 + 0.10 * north, heat: heat, heat2050: heat + 0.16 + 0.06 * north,
-      erosion: erosion, erosion2050: erosion + 0.04, flood2050: flood + 0.06 + 0.06 * Math.exp(-dc / 16),
+      erosion: erosion, erosion2050: erosion + 0.04, precip: precip, lc: lc, flood2050: flood + 0.06 + 0.06 * Math.exp(-dc / 16),
       excluded: excluded, unknown: unknown };
   });
 

@@ -383,11 +383,12 @@
      ====================================================================== */
   var STAGES = [
     { n: 1, name: 'Setup', href: '01-setup.html' },
-    { n: 2, name: 'Opportunity space', href: '02-opportunity.html' },
-    { n: 3, name: 'Project risk', href: '03-risk.html' },
-    { n: 4, name: 'Priority hotspots', href: '04-hotspots.html' },
-    { n: 5, name: 'NbS comparison', href: '05-comparison.html' },
-    { n: 6, name: 'Next steps', href: '06-next.html' }
+    { n: 2, name: 'Explore the practices', href: '02-practices.html' },
+    { n: 3, name: 'Opportunity space', href: '03-opportunity.html' },
+    { n: 4, name: 'Project risk', href: '04-risk.html' },
+    { n: 5, name: 'Priority hotspots', href: '05-hotspots.html' },
+    { n: 6, name: 'NbS comparison', href: '06-comparison.html' },
+    { n: 7, name: 'Next steps', href: '07-next.html' }
   ];
   /* ---- control bar state (shared across pages, remembered per viewer) ---- */
   var PRACTICES = [
@@ -413,6 +414,7 @@
   function save() { try { window.localStorage.setItem('v1b-controls', JSON.stringify(STATE)); } catch (e) { /* ignore */ } }
   function emit() { save(); LISTENERS.forEach(function (fn) { fn(STATE); }); }
   function onControls(fn) { LISTENERS.push(fn); fn(STATE); }
+  function setState(part) { Object.assign(STATE, part); renderBar(); emit(); }
 
   function classWords(st) {
     var on = CLASSES.filter(function (c) { return st.classes[c[0]]; }).map(function (c) { return c[1]; });
@@ -509,11 +511,13 @@
     return '<header class="stagebar"><div class="sb-in">' +
       '<a class="sb-proj" href="index.html">Rural NbS Scan<span> · Sierra Leone example</span></a>' +
       '<ol class="stepper" aria-label="Stages">' + steps + '</ol>' +
-      '<button class="btn-ghost" type="button" data-drawer="practice">Technical configuration</button>' +
+      '<a class="btn-ghost tc-link" href="00-config.html">Technical configuration</a>' +
       '</div></header>' +
       '<div class="ctlbar" id="ctlbar" role="region" aria-label="Controls"></div>';
   }
 
+  var JUMP = { practice: '00-config.html#c3', classes: '00-config.html#c3', geo: '00-config.html#c2', grain: '00-config.html#c2',
+    period: '00-config.html#c6', priorities: '05-hotspots.html?tab=2', data: '00-config.html#c2', rules: '00-config.html#c3' };
   function drawer() {
     var sec = [
       ['practice', 'Practice and suitability family', '<p>Agroforestry, family F1 — planted silvoarable (trees in rows within annual cropland). Each family is mapped separately because each is limited by a different factor.</p><label class="fld"><span>Practice</span><select><option>Agroforestry · planted silvoarable</option><option>Agroforestry · regeneration-based</option><option>Riparian buffers</option></select></label>'],
@@ -526,9 +530,9 @@
       ['rules', 'Rules — tuning a response', '<p>How a variable is turned into suitability (the response curve and its weight). Rules come from the evidence register; editing them is a separate, logged action.</p>']
     ];
     return '<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Technical configuration">' +
-      '<div class="dr-head"><h2>Technical configuration</h2><button type="button" class="dr-close" aria-label="Close">Close</button></div>' +
-      '<p class="dr-lede">Two separate things live here: <b>choosing datasets</b> and <b>tuning rules</b>. The walkthrough never needs either.</p>' +
-      sec.map(function (s) { return '<section class="dr-sec" id="dr-' + s[0] + '"><h3>' + s[1] + '</h3>' + s[2] + '</section>'; }).join('') +
+      '<div class="dr-head"><h2>Quick settings</h2><button type="button" class="dr-close" aria-label="Close">Close</button></div>' +
+      '<p class="dr-lede">Quick jumps. The full settings live on the <a href="00-config.html">technical configuration page</a>: <b>choosing datasets</b> and <b>tuning rules</b> are two separate jobs.</p>' +
+      sec.map(function (s) { return '<section class="dr-sec" id="dr-' + s[0] + '"><h3>' + s[1] + '</h3>' + s[2] + (JUMP[s[0]] ? '<p><a href="' + JUMP[s[0]] + '">Open in technical configuration →</a></p>' : '') + '</section>'; }).join('') +
       '<p class="dr-foot">Prototype — controls are inert.</p></aside><div class="scrim" hidden></div>';
   }
 
@@ -553,6 +557,15 @@
     if (chromeReady) return;
     chromeReady = true;
     wireBar();
+    // sticky offsets: sub-tab strips dock under the stage bar + control bar
+    function measure() {
+      var h = top ? top.getBoundingClientRect().height : 0;
+      if (window.matchMedia('(max-width: 760px)').matches) h = 48;
+      document.documentElement.style.setProperty('--chrome-h', Math.round(h) + 'px');
+    }
+    measure();
+    if (window.ResizeObserver && top) new ResizeObserver(measure).observe(top);
+    window.addEventListener('resize', measure);
     document.body.insertAdjacentHTML('beforeend', drawer());
     document.addEventListener('click', function (e) {
       var t = e.target.closest('[data-drawer]');
@@ -584,7 +597,30 @@
     openDrawer('panel');
   }
 
-  window.V1BUI = { chrome: chrome, segmented: segmented, openDrawer: openDrawer, openPanel: openPanel,
+  // numbered sub-tabs: <div class="subtabs" role="tablist"> buttons aria-controls panels; ?tab=N opens N
+  function tabs(root, onOpen) {
+    var list = Array.prototype.slice.call(root.querySelectorAll('[role=tab]'));
+    function open(n) {
+      list.forEach(function (t, i) {
+        var on = i === n; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
+        var pnl = document.getElementById(t.getAttribute('aria-controls')); if (pnl) pnl.hidden = !on;
+      });
+      if (onOpen) onOpen(n);
+    }
+    list.forEach(function (t, i) {
+      if (t.tagName === 'A') return;
+      t.addEventListener('click', function () { open(i); });
+      t.addEventListener('keydown', function (e) {
+        var n = e.key === 'ArrowRight' ? (i + 1) % list.length : e.key === 'ArrowLeft' ? (i + list.length - 1) % list.length : -1;
+        if (n >= 0 && list[n].tagName !== 'A') { open(n); list[n].focus(); }
+      });
+    });
+    var q = +(new URLSearchParams(window.location.search).get('tab') || 0);
+    if (q >= 1 && q <= list.length && list[q - 1].tagName !== 'A') open(q - 1);
+    return open;
+  }
+
+  window.V1BUI = { chrome: chrome, setState: setState, tabs: tabs, segmented: segmented, openDrawer: openDrawer, openPanel: openPanel,
     onControls: onControls, scopeText: scopeText, classWords: classWords, practices: PRACTICES,
     get state() { return STATE; } };
 })();
