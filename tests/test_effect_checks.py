@@ -234,3 +234,23 @@ def test_account_check_ignores_identifier_digits(tmp_path):
         },
     }
     assert check_account.check_row(row, check_account._load_ev(ev)) == []
+
+
+def test_account_check_allows_held_out_counts(tmp_path):
+    # "7 of 8 unit(s) are single-gas figures" — the held-out count is engine arithmetic
+    ev = _write_ev(
+        tmp_path, [_row(eid=f"ev_{i}", quote="carbon rose") for i in range(8)]
+    )
+    row = {
+        "record_id": "r",
+        "evidence_ids": [f"ev_{i}" for i in range(8)],
+        "justification": {
+            "statement": "agroforestry carbon: DATA DEFICIENT — 7 of 8 unit(s) are single-gas figures",
+            "n_units": 8,
+            "held_out_of_class": {
+                "not_a_net_balance": [f"ev_{i}" for i in range(7)],
+                "below_evidence_floor": ["ev_7"],
+            },
+        },
+    }
+    assert check_account.check_row(row, check_account._load_ev(ev)) == []
