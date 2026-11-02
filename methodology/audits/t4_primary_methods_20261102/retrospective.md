@@ -1,0 +1,9 @@
+# Extraction retrospective
+
+One source admitted, one qualitative T4 unit, zero approvals, zero executable functions. Independent source reviewer and coordinating admission review covered family assignment, direction, calibration, lineage and source-table omissions. Central numbers, scope and quote checks produced no flags for the new unit; 41 relevant tests passed. Existing EV rows and decisions are byte-value unchanged after CSV parsing.
+
+Two unsupported context keys (`scope_hold`, `lineage_check`) were caught by the existing admission gate and their text preserved under the supported `note` key before ingestion. No schema extension was made. Known defects avoided: secondary evidence counted as an independent trial, passive-family defaulting, population/canopy planning classes treated as suitability, species treatment designs transferred to whole practices, and OCR `630%` substituted for image-verified ≤30%. Existing rules cover these cases; no new defect class or speculative code change was introduced.
+
+Metrics row `fr_T4_primary_methods_20261102` records the whole current corpus. Compared with the previous logged sweep it includes six other sources and 32 effect units from concurrent work, besides this batch's one source/one unit. Unchanged rounded corpus flag rates (number provenance 5.0%, verification 0.1%) do not demonstrate improvement or deterioration in this bounded extraction. Do not attribute that whole-corpus delta to T4. No global review-learning cursor advanced. Existing full-context, source-image, scope and proxy rules remain required for the next batch.
+
+The automatic ingestion helper stamps touched sources `swept`; coordinating closeout deliberately resets this source to `in_progress`, because mapping, primary-reference and transfer holds remain in the complete claim inventory. The passive-family ledger remains `verified=in_progress`; no search, review or whole-source completion was invented.
