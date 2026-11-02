@@ -604,6 +604,7 @@
       list.forEach(function (t, i) {
         var on = i === n; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1;
         var pnl = document.getElementById(t.getAttribute('aria-controls')); if (pnl) pnl.hidden = !on;
+        if (on && root.scrollWidth > root.clientWidth) root.scrollLeft = Math.max(0, t.offsetLeft - 16);
       });
       if (onOpen) onOpen(n);
     }
