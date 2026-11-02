@@ -110,6 +110,13 @@ def check_row(row: dict, ev: dict[str, dict]) -> list[dict]:
         str(spc.get("same_direction", "")),
         str(acc.get("n_units", "")),
     }
+    # data-deficient statements say "N of M unit(s) are <held-out reason>": N is the count of
+    # units the engine held out of the class vote (per reason, or in total) — engine
+    # arithmetic over the pool like the counts above, not an evidence claim
+    held = acc.get("held_out_of_class") or {}
+    if isinstance(held, dict):
+        whitelist |= {str(len(v)) for v in held.values() if isinstance(v, list)}
+        whitelist.add(str(sum(len(v) for v in held.values() if isinstance(v, list))))
     for fld in _PROSE_FIELDS:
         text = acc.get(fld)
         if not text:
