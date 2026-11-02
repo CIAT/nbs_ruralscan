@@ -1,4 +1,4 @@
-/* v1b-versions.js — slim version bar shared by every atlas (v2) page.
+/* v1b-versions.js — slim version bar shared by every v2 page.
    v0 = ../wireframe-v0.html (original) · v1 = ../wireframe.html (draft) · v2 = these pages. */
 (function () {
   'use strict';
@@ -8,9 +8,9 @@
       '<select id="v1b-version" aria-describedby="v1b-version-note">' +
         '<option value="../wireframe-v0.html">v0 · Original</option>' +
         '<option value="../wireframe.html">v1 · Draft</option>' +
-        '<option value="index.html" selected>v2 · Atlas</option>' +
+        '<option value="index.html" selected>v2 · Scoping tool</option>' +
       '</select>' +
-      '<span id="v1b-version-note">v2 · atlas redesign · example data</span>' +
+      '<span id="v1b-version-note">v2 · NbS spatial opportunity scoping tool · example data</span>' +
       '<button type="button" class="vb-theme" id="v1b-theme" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="ic-moon" d="M11.5 10.6A5 5 0 0 1 5.4 4.5a5 5 0 1 0 6.1 6.1z"/><g class="ic-sun"><circle cx="8" cy="8" r="2.8"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"/></g></svg><span>Dark theme</span></button>' +
       '<details class="vb-changes"><summary>What changed? · v1 → v2</summary><ul>' +
         '<li>One question and one dominant plate per stage.</li>' +

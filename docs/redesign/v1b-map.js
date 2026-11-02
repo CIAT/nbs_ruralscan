@@ -1,5 +1,5 @@
 /* ============================================================================
-   v1b-map.js — atlas-plate map engine for the v1b redesign prototypes.
+   v1b-map.js — plate map engine for the v1b redesign prototypes.
 
    Projection, grid, point-in-polygon and label code adapted from
    docs/sle_map.js (originals untouched). Boundaries: docs/sle_geo.js
