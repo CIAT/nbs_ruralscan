@@ -1,0 +1,73 @@
+{
+  "schema/registers/SRCH_search_register.csv": [
+    {
+      "search_id": "forest_restoration__T4__tool__forest_restoration__assisted_regeneration__2026-08-05",
+      "nbs_id": "forest_restoration",
+      "table": "T4",
+      "category": "tool",
+      "search_date": "2026-08-05",
+      "run_id": "forest_restoration_discovery_2026-08",
+      "note": "GitHub API: 0 / 1 / 2 repos, NONE relevant to ANR-restoration suitability. Named tools (RePlant Alfa GEE+R, WRI FLR Atlas/ROAM, USFS Regenmapper) have NO located public source repo -> code interrogation (commit sha + file:line of weights/thresholds) BLOCKED; screened in as tool candidates pending repo location."
+    },
+    {
+      "search_id": "forest_restoration__T4__tool__forest_restoration__active_planting__2026-08-05",
+      "nbs_id": "forest_restoration",
+      "table": "T4",
+      "category": "tool",
+      "search_date": "2026-08-05",
+      "run_id": "forest_restoration_discovery_2026-08",
+      "note": "3 candidate repos code-inspected. Afforestation-Tracker = strong INCLUDE (hardcoded afforestation-suitability thresholds confirmed in code, not README). GROA (R, natural-regen carbon) down-ranked to passive/ANR sibling family. Project-Scotland-Reforestation excluded: data-driven RF/XGB, learns criteria at runtime, hardcodes no extractable T4 threshold (same rule as spatMCDA.R)."
+    },
+    {
+      "search_id": "forest_restoration__T4__tool__forest_restoration__passive_regeneration__2026-08-05",
+      "nbs_id": "forest_restoration",
+      "table": "T4",
+      "category": "tool",
+      "search_date": "2026-08-05",
+      "run_id": "forest_restoration_discovery_2026-08",
+      "note": "WRI/IUCN Atlas of Forest Landscape Restoration Opportunity = tool with hardcoded classification thresholds (pop density <10/km2 wide-scale; 10-100 mosaic; <1 within 500km remote; former-closed-forest mask; 1km res) - genuine system_constraint/mask rules for T4. BUT no public code repo: provenance is doc-level, NOT file:line+commit. GitHub repository search returned 0 usable hits via WebFetch (SPA/render limitation). Williams 2024 & Strassburg PLANGEA analysis code likely on Zenodo - NOT located/"
+    },
+    {
+      "search_id": "forest_restoration__T4__tool__forest_restoration__active_planting__ef0291527742__2026-10-28",
+      "nbs_id": "forest_restoration",
+      "table": "T4",
+      "category": "tool",
+      "search_date": "2026-10-28",
+      "run_id": "forest_restoration_t4_discovery_20261028_tools",
+      "note": "Counts describe the reported bounded search set before queue deduplication; unknown totals remain blank. See report for reuse, exclusions and unavailable channels."
+    }
+  ],
+  "pipeline/progress_ledger.csv": [
+    {
+      "nbs_id": "forest_restoration",
+      "table": "T4",
+      "category": "tool",
+      "family": "forest_restoration__assisted_regeneration",
+      "searched": "done",
+      "screened": "done",
+      "verified": "in_progress",
+      "note": "automated verify pass over the FR T4 sweep: 30 units from 12 of 32 extractable sources; quotes verified verbatim centrally; 1 unit auto-quarantined (study_site false positive, flagged for re-open); human QA and benchmark-tier sign-off outstanding"
+    },
+    {
+      "nbs_id": "forest_restoration",
+      "table": "T4",
+      "category": "tool",
+      "family": "forest_restoration__active_planting",
+      "searched": "in_progress",
+      "screened": "in_progress",
+      "verified": "in_progress",
+      "note": "discovery round 2026-10-28; see SRCH forest_restoration_t4_discovery_20261028_* rows + discovery logs"
+    },
+    {
+      "nbs_id": "forest_restoration",
+      "table": "T4",
+      "category": "tool",
+      "family": "forest_restoration__passive_regeneration",
+      "searched": "done",
+      "screened": "done",
+      "verified": "in_progress",
+      "note": "automated verify pass over the FR T4 sweep: 30 units from 12 of 32 extractable sources; quotes verified verbatim centrally; 1 unit auto-quarantined (study_site false positive, flagged for re-open); human QA and benchmark-tier sign-off outstanding"
+    }
+  ],
+  "stocktake_inventory": "No stocktake text inventory available at reference/stocktake in this worktree; no new stock sweep or stock coverage claimed."
+}
