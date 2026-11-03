@@ -26,6 +26,21 @@ local server on your machine. It's ~3 commands. You need **write access to the r
 
 ## Each review session
 
+If a session already has saved decisions, finish **Apply & submit to main** before
+updating its checkout. Keep `pipeline/review/decisions.json`; do not clear it to remove
+a red version banner. After updating, hydrate the corpus, restart the review server,
+and hard-reload the browser.
+
+If port 8765 is occupied by another application, leave that application running and use
+an available port, for example:
+
+```bash
+uv run python3 -m nbs_ruralscan.schema_tools.review_server 8766
+```
+
+Then open `http://localhost:8766/dashboard.html`. Check that the page says **Live review
+server connected**; a static website on the same port cannot save review decisions.
+
 1. **Pull the latest** so you're not editing stale data:
    ```
    git pull
