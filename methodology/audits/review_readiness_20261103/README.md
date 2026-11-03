@@ -42,3 +42,26 @@ These 736 active structural-suitability records comprise 665 practice-level, 24 
 - **Cross-track tool referrals:** MapAWD (rice AWD) and Africa Agriculture Adaptation Atlas remain as documented in #540; neither was silently added as a new forest/mangrove task.
 
 No new source-search batch is opened. Proceed with today's review, using the scope and navigation notes above; keep separate T3/T6 work with its existing session.
+
+## Correction: original stocktake scope versus current schema coverage
+
+The six-group coverage table above describes the current schema, **not the complete original stocktake commitment**. Checked against the canonical revised Stocktake Review (scope section and Annex 1), plus `reference/stocktake/peer_reviewed_benchmarked.csv` (220 records). The report explicitly includes ten priority practice headings. The earlier inception longlist is broader still and explicitly says inclusion means screening, not endorsement or prioritisation.
+
+| Original stocktake heading | Stocktake paper rows | Current mapping |
+|---|---:|---|
+| Agroforestry | 23 | Agroforestry families |
+| Agrosilvopastoralism | 5 | Agroforestry silvopastoral family |
+| Forest conservation and restoration | 38 | Forest restoration/protection families |
+| Reforestation and afforestation | 19 | Forest restoration active planting |
+| Community based forest management | 5 | Forest restoration protection/CBFM |
+| Water harvesting and conservation | 85 | Water-harvesting families |
+| Wetland management | 20 | Wetland families |
+| Constructed Wetlands | 8 | Current constructed/treatment family is qualitative-only; original stocktake included it |
+| Riparian buffers | 11 | Riparian families |
+| Integrated fire management | 6 | No dedicated current FAM/recipe coverage in the six-group inventory; unresolved scope/implementation gap |
+
+Mangroves were split into a separate current group; they were not a separate top-level heading in this benchmark CSV. Fire-hazard screening elsewhere is not equivalent to covering integrated fire management as an intervention. Therefore the original stocktake cannot be described as fully implemented by the current six groups. The original stocktake did review fire-management papers; the gap is subsequent methodology/schema coverage, not absence from that review. Constructed wetlands also require the distinction between original review coverage and the later qualitative-only implementation decision.
+
+Canonical documents checked read-only in the team library on 3 November 2026:
+- `4_Outputs_&_Reporting/4_Reporting/2. Stocktake Review/Stocktake Review_with revisions.docx`
+- `4_Outputs_&_Reporting/4_Reporting/1. Inception Report/Inception Report_Dec2025.docx`, Table 2 and preceding longlist explanation.
