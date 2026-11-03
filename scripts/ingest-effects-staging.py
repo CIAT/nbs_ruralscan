@@ -195,6 +195,15 @@ def gate(units: list[dict], allowed_roles: set[str] | None = None) -> list[str]:
                     unit.relationship, dict
                 ):
                     problems.append("relationship must be an object or null")
+                # an effect claim IS its relationship: a null one would skip every
+                # relationship gate (numbers, bands, direction) and enter synthesis as a
+                # unit with no direction (caught 2026-11-02: a lane builder that never
+                # returned its relationship dict)
+                if u.get("use_role") in ("nbs_effect", "asset_vulnerability") and not (
+                    isinstance(unit.relationship, dict)
+                    and unit.relationship.get("direction")
+                ):
+                    problems.append("effect unit needs a relationship with a direction")
                 if unit.context is not None and not isinstance(unit.context, dict):
                     problems.append("context must be an object or null")
                 if problems:
