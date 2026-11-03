@@ -311,8 +311,8 @@ obvious gaps. Categories to hit, in roughly this order of authority:
 - **WB project evidence** — Project Appraisal Documents (PADs), Implementation Completion Reports
   (ICRs), Independent Evaluation Group (IEG) reviews. Operational reality + outcomes that
   literature alone misses.
-- **WB TORs-named tools** — **D4R** (Data for Resilience), **Africa Agriculture Adaptation Atlas
-  (AAAA)**, **MapAWD** (Mapping Agriculture's Water Demand). Pre-curated decision-support
+- **WB TORs-named tools** — **D4R** (Diversity for Restoration), **Africa Agriculture Adaptation Atlas
+  (AAAA)**, **MapAWD** (Mapping for Alternate Wetting and Drying). Pre-curated decision-support
   surfaces; mine them for variables, datasets, and operational thresholds.
 - **GEF / NBS Invest** materials (project portfolios, lessons-learnt)
 - **IPCC** (AR6 WGII, SRCCL chapters relevant to the NbS)
