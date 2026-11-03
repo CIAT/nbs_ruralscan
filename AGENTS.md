@@ -64,6 +64,7 @@ Agents stage candidates and actual per-family protocols; central registration pr
 
 These decisions are structural. If you want to change them, raise an issue and tag the team — don't just edit.
 
+- **Wireframe v2 (scoping-tool redesign, `docs/redesign/`, Pete sign-off 2026-11-02)** has SEVEN stages: Setup → Explore the practices → Opportunity space → Project risk → Priority hotspots → NbS comparison → Next steps, plus a Technical configuration page. v0/v1 keep the older set below. Feedback trail: `docs/redesign/FEEDBACK_LOG.md`.
 - **Wireframe** tabs (v0.7), in order: Setup → Opportunity Space → Project Risk → Priority Hotspots → NbS Comparison → Next Steps, plus Danger Zone and an internal Dev Notes tab. Variable Config lives as a sub-tab under Setup, with two surfaces (Suitability variables · Priority/hotspot variables). *(Tab-set ratification still pending — see backlog.)*
 - **Variable Card** has six slots: What / Why (NbS-specific) / How to read / What it represents (cluster) / Where it comes from / Response preview (membership curve + raw-vs-transformed maps).
 - **T0–T7 colour scheme** matches the ERD. Visual consistency across artefacts.
