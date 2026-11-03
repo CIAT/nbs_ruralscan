@@ -87,6 +87,17 @@
     // raw inputs for the configuration page (synthetic, not observations)
     var precip = Math.round(1900 + 1500 * Math.exp(-dc / 70) + 600 * c01((8.6 - lat) / 1.6) + 700 * (n6 - 0.5));
     var lc = n8 > 0.6 ? 'tree' : n7 > 0.56 ? 'crop' : n6 > 0.48 ? 'mosaic' : 'grass';
+    // problem indicators for Stage 03 Section 3.4 (higher = worse; synthetic)
+    var m1 = fbm(X, Y, SEED + 43), m2 = fbm(X, Y, SEED + 47), m3 = fbm(X, Y, SEED + 53), m4 = fbm(X, Y, SEED + 59), m5 = fbm(X, Y, SEED + 61), m6 = fbm(X, Y, SEED + 67);
+    var ind = {
+      drought: drought, flood: flood, erosion: erosion, heat: heat,
+      soil: 1.2 * (m1 - 0.5) + 0.25 * north - 0.15 * se,
+      poverty: 0.8 * (need) + 0.9 * (m2 - 0.5),
+      food: 0.6 * need + 1.0 * (m3 - 0.5) + 0.15 * north,
+      biod: 1.2 * (m4 - 0.5) + 0.25 * se + 0.15 * ne,
+      carbon: 1.2 * (m5 - 0.5) + 0.3 * se,
+      water: 1.2 * (m6 - 0.5) + 0.35 * north - 0.2 * Math.exp(-dc / 20)
+    };
 
     var excluded = null, i;
     for (i = 0; i < URBAN.length; i++) if (kmDist(lon, lat, URBAN[i].lon, URBAN[i].lat) < URBAN[i].r + 3 * (n5 - 0.5)) excluded = 'urban';
@@ -101,7 +112,7 @@
     return { lon: lon, lat: lat, x: g.x, y: g.y, w: g.w, h: g.h, i: g.i, j: g.j, adm2: g.adm2,
       suit: suit, suit2050: suit + drift, need: need, fire: fire, flood: flood, slope: +slope.toFixed(1),
       drought: drought, drought2050: drought + 0.10 + 0.10 * north, heat: heat, heat2050: heat + 0.16 + 0.06 * north,
-      erosion: erosion, erosion2050: erosion + 0.04, precip: precip, lc: lc, flood2050: flood + 0.06 + 0.06 * Math.exp(-dc / 16),
+      erosion: erosion, erosion2050: erosion + 0.04, precip: precip, lc: lc, ind: ind, flood2050: flood + 0.06 + 0.06 * Math.exp(-dc / 16),
       excluded: excluded, unknown: unknown };
   });
 
@@ -120,6 +131,11 @@
     return [s[Math.floor(0.5 * s.length)], s[Math.floor(0.75 * s.length)]];
   }
   var fb = tercile('fire'), lb = tercile('flood');
+  var IND_KEYS = ['drought', 'flood', 'erosion', 'heat', 'soil', 'poverty', 'food', 'biod', 'carbon', 'water'], IND_Q = {};
+  IND_KEYS.forEach(function (k) {
+    var v = cells.map(function (c) { return c.ind[k]; }).sort(function (a, b) { return a - b; });
+    IND_Q[k] = [0.2, 0.4, 0.6, 0.8].map(function (p) { return v[Math.floor(p * v.length)]; });
+  });
   var LH = { drought: tercile('drought'), flood: lb, erosion: tercile('erosion'), heat: tercile('heat') };
   function hcls(v, b) { return v >= b[1] ? 'high' : v >= b[0] ? 'moderate' : 'low'; }
   cells.forEach(function (c) {
@@ -129,6 +145,8 @@
     c.needClass = cls(c.need, nb);
     c.fireClass = c.fire >= fb[1] ? 'high' : c.fire >= fb[0] ? 'moderate' : 'low';
     c.floodClass = c.flood >= lb[1] ? 'high' : c.flood >= lb[0] ? 'moderate' : 'low';
+    c.indQ = {};   // national fifth, 0 (least affected) .. 4 (most affected)
+    IND_KEYS.forEach(function (k) { var q = IND_Q[k], v = c.ind[k]; c.indQ[k] = v >= q[3] ? 4 : v >= q[2] ? 3 : v >= q[1] ? 2 : v >= q[0] ? 1 : 0; });
     c.lh = {}; c.lh2050 = {};
     Object.keys(LH).forEach(function (k) { c.lh[k] = hcls(c[k], LH[k]); c.lh2050[k] = hcls(c[k + '2050'], LH[k]); });
     var top = function (k) { return k === 'vh' || k === 'h'; };

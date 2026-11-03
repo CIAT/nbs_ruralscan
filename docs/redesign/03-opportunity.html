@@ -49,8 +49,7 @@
     <button type="button" role="tab" id="tab-1" aria-controls="tp-1" aria-selected="true"><span class="sec-n">3.1</span>Map and footprint</button>
     <button type="button" role="tab" id="tab-2" aria-controls="tp-2" aria-selected="false" tabindex="-1"><span class="sec-n">3.2</span>Opportunity fingerprint</button>
     <button type="button" role="tab" id="tab-3" aria-controls="tp-3" aria-selected="false" tabindex="-1"><span class="sec-n">3.3</span>Risk to rural livelihoods</button>
-    <button type="button" role="tab" id="tab-4" aria-controls="tp-4" aria-selected="false" tabindex="-1"><span class="sec-n">3.4</span>Priority context</button>
-    <button type="button" role="tab" id="tab-5" aria-controls="tp-5" aria-selected="false" tabindex="-1"><span class="sec-n">3.5</span>What the practice can address</button>
+    <button type="button" role="tab" id="tab-4" aria-controls="tp-4" aria-selected="false" tabindex="-1"><span class="sec-n">3.4</span>Problems and what the practice can do</button>
   </div>
 
   <!-- 2.1 -->
@@ -112,8 +111,11 @@
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a><a href="#" onclick="return false" title="Prototype">Download CSV</a></div>
     </div>
     <div class="tp-grid">
-      <div class="tabwrap">
-        <table class="qt" id="t21"></table>
+      <div>
+        <div class="seg seg-sm" id="seg-fp" role="group" aria-label="Show as" style="margin-bottom:14px"><button type="button" data-v="table" aria-pressed="true">Table</button><button type="button" data-v="chart" aria-pressed="false">Chart</button></div>
+        <div class="tabwrap" id="fp-table"><table class="qt" id="t21"></table></div>
+        <figure class="fpchart" id="fp-chart" hidden style="margin:0"><div id="fp-bars"></div>
+          <figcaption class="figcap" id="cap-33"></figcaption></figure>
       </div>
       <div class="tabwrap">
         <table class="qt" id="t22"></table>
@@ -139,35 +141,11 @@
   <!-- 2.4 -->
   <section class="tabpanel" role="tabpanel" id="tp-4" aria-labelledby="tab-4" hidden>
     <div class="tp-head">
-      <div><h2><span class="sec-n">3.4</span>Priority context</h2><p>How the opportunity space scores on the project’s wider priorities, and which of those measures can tell districts apart.</p></div>
+      <div><h2><span class="sec-n">3.4</span>Problems in the opportunity space and what the practice can do about them</h2><p>How severe each problem is across the opportunity space compared with the rest of the country, beside what the evidence says planted silvoarable agroforestry does about it.</p></div>
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a><a href="#" onclick="return false" title="Prototype">Download CSV</a></div>
     </div>
-    <div class="tabwrap">
-      <table class="qt" id="t24">
-        <caption class="tabcap"><b>Table 3.4</b> · Priority indicators within the opportunity space<small>Example values, authored for this prototype.</small></caption>
-        <thead><tr><th>Indicator</th><th class="r">Value</th><th>Unit</th><th>Grain</th><th>Source class</th><th>Can it rank districts?</th></tr></thead>
-        <tbody>
-          <tr><td>Key biodiversity area overlap</td><td class="r">7</td><td>% of the space</td><td>Polygons</td><td>Global biodiversity area database</td><td><span class="yes">Yes</span></td></tr>
-          <tr><td>Biodiversity loss</td><td class="r">0.04</td><td>habitat intactness lost per decade (index 0–1)</td><td>1 km</td><td>Global model</td><td><span class="yes">Yes</span></td></tr>
-          <tr><td>Carbon stock loss</td><td class="r">1.8</td><td>t C per ha per year</td><td>30 m, summarised to 5 km</td><td>Satellite-derived</td><td><span class="yes">Yes</span></td></tr>
-          <tr><td>Rural poverty</td><td class="r">54</td><td>% of rural people below the poverty line</td><td>District (Admin 2)</td><td>Survey-based small-area estimate</td><td><span class="yes">Yes</span> <span class="sub">district level only</span></td></tr>
-          <tr><td>Food insecurity</td><td class="r">22</td><td>% of people in crisis phase or worse</td><td>District (Admin 2)</td><td>Food-security phase analysis</td><td><span class="yes">Yes</span> <span class="sub">district level only</span></td></tr>
-          <tr><td>Gender inequality</td><td class="r">0.61</td><td>index 0–1</td><td>National</td><td>UN agency index</td><td><span class="no">No — context only</span></td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- 2.5 -->
-  <section class="tabpanel" role="tabpanel" id="tp-5" aria-labelledby="tab-5" hidden>
-    <div class="tp-head">
-      <div><h2><span class="sec-n">3.5</span>What the practice can address</h2><p>What the pooled evidence says planted silvoarable agroforestry does for each problem, and how sure that is.</p></div>
-      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a><a href="#" onclick="return false" title="Prototype">Download CSV</a></div>
-    </div>
-    <div class="tabwrap">
-      <table class="qt" id="t25" style="max-width:900px"></table>
-    </div>
-    <p class="m2-note" style="border-left-color:var(--s3);max-width:900px"><b>Strength and confidence are separate.</b> Strength is how large the effect is; confidence is how much evidence there is and how well it agrees. Both are generated from pooled studies elsewhere, not measured in Sierra Leone.</p>
+    <div class="tabwrap"><table class="qt pb" id="t34"></table></div>
+    <p class="m2-note" style="max-width:1000px"><b>How to read Table 3.4.</b> The country is split into fifths for every problem, from least to most affected. If the opportunity space looked like the country, each fifth would hold 20 % of it (the dashed line). Bars above the line in the dark end mean the problem is more concentrated here. Select a map to show that problem on Figure 3.1. The practice columns are pooled evidence from elsewhere, not local measurement; the full table with sources is in <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>
   </section>
 
   <div class="nextstage">
@@ -252,6 +230,17 @@
       lg = '<div class="lg-h">Share of district in ' + cw + '</div><div class="ramp">' +
         ['--c1', '--c2', '--c3', '--c4', '--c5'].map(function (k) { return '<i style="background:var(' + k + ')"></i>'; }).join('') +
         '</div><div class="ramp-lbl">' + b.edges.map(function (e, i) { return '<span>' + e + (i === 5 ? ' %' : '') + '</span>'; }).join('') + '</div>';
+    } else if (variant === 'ind' && indView) {
+      svg.style.setProperty('--hz', 'var(' + indView.hue + ')');
+      M.paintCells(svg, F.cells, function (c) { return R.sel(c) ? 'lhq' + c.indQ[indView.k] : null; });
+      M.setLabels(svg, {});
+      t = indView.name + ' across the opportunity space';
+      s = 'Each opportunity cell by its national fifth for ' + indView.unit + ', from least to most affected.';
+      cap = indView.name + ' within the opportunity space, national fifths, 5 km cells';
+      lg = '<div class="lg-h">' + indView.name + ', national fifths</div><div class="ramp" style="--hz:var(' + indView.hue + ')">' +
+        [0, 1, 2, 3, 4].map(function (i) { return '<i style="background:color-mix(in srgb, var(' + indView.hue + ') ' + [18, 34, 52, 74, 100][i] + '%, var(--paper))"></i>'; }).join('') +
+        '</div><div class="ramp-lbl" style="width:178px"><span>least</span><span>most affected</span></div><div class="lg-row">' + sw('sw-out', 'Outside the opportunity space') + '</div>' +
+        '<div class="lg-row"><button type="button" class="rv-link-btn" id="back-suit">Back to suitability</button></div>';
     } else if (variant === 'change') {
       M.paintCells(svg, F.cells, function (c) { return c.change; });
       M.setLabels(svg, {});
@@ -275,8 +264,10 @@
     document.getElementById('opp-s').textContent = s;
     document.getElementById('opp-sc').textContent = V1BUI.scopeText(ST, { noClasses: variant === 'change' && !district });
     document.getElementById('opp-lg').innerHTML = lg;
+    var bk = document.getElementById('back-suit'); if (bk) bk.onclick = function () { document.querySelector('#seg-opp [data-v="class"]').click(); };
     document.getElementById('cap-21').innerHTML = '<b>Figure 3.1</b> · ' + cap;
     var showInset = !district && variant === 'class';
+    if (variant !== 'ind') svg.style.removeProperty('--hz');
     var b0 = block[0];
     M.overlay(svg, showInset ? '<rect class="ibox" x="' + b0.x.toFixed(1) + '" y="' + b0.y.toFixed(1) + '" width="' + (4 * C).toFixed(1) + '" height="' + (4 * C).toFixed(1) + '"/>' : '');
     document.getElementById('inset').style.display = showInset ? '' : 'none';
@@ -328,6 +319,23 @@
       '<thead><tr>' + th('name', 'District') + th('ha', 'Opportunity (ha)', 1) + th('share', 'Share of district', 1) + th('res', 'Residents in the space', 1) + '</tr></thead><tbody>' +
       rows.map(function (r) { return '<tr><td>' + r.name + '</td><td class="r">' + fmt(r.ha) + '</td><td class="r">' + pct(r.share) + '</td><td class="r">' + fmt(r3(r.res)) + '</td></tr>'; }).join('') + '</tbody>';
   }
+  /* Figure 3.3: opportunity fingerprint chart — country totals split by suitability class */
+  function fpchart() {
+    var cls = [['vh', 'Very high', '--s4'], ['h', 'High', '--s3'], ['m', 'Moderate', '--s2'], ['l', 'Low', '--s-low'], ['excluded', 'Excluded', '--s-excl'], ['unknown', 'No data', '--s-unk-dot']];
+    var ssp = ST.climate === 'ssp', rows = [['Area', function () { return 1; }, ' ha', HA], ['Rural population', function (c) { return c.residents; }, ' people', 1],
+      ['Smallholder farms', function (c) { return c.residents / 6; }, ' farms', 1], ['Crop production value', function (c) { return c.residents * (c.lc === 'crop' ? 1.4 : c.lc === 'mosaic' ? 1 : 0.5); }, '', 0]];
+    var html = '';
+    rows.forEach(function (r) {
+      var by = {}, tot = 0, inS = 0;
+      F.cells.forEach(function (c) { var k = ssp ? c.suitClass2050 : c.suitClass, v = r[1](c); by[k] = (by[k] || 0) + v; tot += v; if (R.sel(c)) inS += v; });
+      html += '<div class="fpr"><div class="fpr-h"><b>' + r[0] + '</b><span>' + pct(inS / tot) + ' in the opportunity space</span></div><div class="stackbar fpb">' +
+        cls.map(function (c) { var v = (by[c[0]] || 0) / tot; return v ? '<i style="width:' + (100 * v).toFixed(2) + '%;background:var(' + c[2] + ')" title="' + c[1] + ' ' + pct(v) + '">' + (v >= 0.09 ? '<span' + (c[0] === 'm' || c[0] === 'l' ? ' class="dk"' : '') + '>' + pct(v) + '</span>' : '') + '</i>' : ''; }).join('') + '</div></div>';
+    });
+    html += '<div class="stack-lg">' + cls.map(function (c) { return '<span style="--c:var(' + c[2] + ')">' + c[1] + '</span>'; }).join('') + '</div>';
+    document.getElementById('fp-bars').innerHTML = html;
+    document.getElementById('cap-33').innerHTML = '<b>Figure 3.3</b> · Opportunity fingerprint: country area, people, farms and production value split by suitability class (people, farms and value are fictional)';
+  }
+  V1BUI.segmented(document.getElementById('seg-fp'), function (v) { document.getElementById('fp-table').hidden = v !== 'table'; document.getElementById('fp-chart').hidden = v !== 'chart'; });
   document.getElementById('t22').addEventListener('click', function (e) {
     var b = e.target.closest('[data-sort]'); if (!b) return;
     var k = b.getAttribute('data-sort');
@@ -368,36 +376,60 @@
       '<thead><tr><th>Hazard</th><th class="r">Baseline 1995–2014</th><th class="r">SSP2-4.5, about 2050</th><th class="r">Change</th></tr></thead><tbody>' + rows + '</tbody>';
   }
 
-  /* ---- 2.5 response rows ---- */
-  var RESP = [
-    ['Drought', 2, 'moderate benefit', 'medium confidence', 9, 'yield loss in dry years'],
-    ['Soil erosion', 3, 'strong benefit', 'high confidence', 14, 'soil loss'],
-    ['Flooding', 1, 'weak benefit', 'low confidence', 4, 'surface runoff'],
-    ['Rural income', 2, 'moderate benefit', 'low confidence', 7, 'household income'],
-    ['Biodiversity loss', 2, 'moderate benefit', 'medium confidence', 6, 'on-farm species richness'],
-    ['Carbon', 3, 'strong benefit', 'medium confidence', 11, 'carbon stored in trees and soil'],
-    ['Food insecurity', 1, 'weak benefit', 'low confidence', 3, 'months of food shortage'],
-    ['Heat stress', 1, 'weak benefit', 'low confidence', 3, 'crop canopy temperature']
+  /* ---- 3.4 problems in the opportunity space + practice response ---- */
+  var PROB = [
+    { k: 'drought', name: 'Drought', unit: 'years with a severe rainfall deficit', nat: '22 %', hue: '--lh-drought', resp: [2, 'moderate benefit', 'medium confidence', 9, 'yield loss in dry years'] },
+    { k: 'flood', name: 'Flooding', unit: 'land flooded in a 1-in-100-year event', nat: '9 %', hue: '--flood', resp: [1, 'weak benefit', 'low confidence', 4, 'surface runoff'] },
+    { k: 'erosion', name: 'Soil erosion', unit: 'modelled soil loss', nat: '14 t per ha per year', hue: '--lh-erosion', resp: [3, 'strong benefit', 'high confidence', 14, 'soil loss'] },
+    { k: 'heat', name: 'Heat stress', unit: 'days above 35 °C', nat: '41 days a year', hue: '--lh-heat', resp: [1, 'weak benefit', 'low confidence', 3, 'crop canopy temperature'] },
+    { k: 'soil', name: 'Soil degradation', unit: 'soil organic carbon (lower is worse)', nat: '1.3 %', hue: '--lh-erosion', resp: [3, 'strong benefit', 'medium confidence', 10, 'soil organic carbon'] },
+    { k: 'poverty', name: 'Rural poverty', unit: 'rural poverty headcount', nat: '56 %', hue: '--n3', resp: [2, 'moderate benefit', 'low confidence', 7, 'household income'] },
+    { k: 'food', name: 'Food insecurity', unit: 'people in crisis phase or worse', nat: '22 %', hue: '--n3', resp: [1, 'weak benefit', 'low confidence', 3, 'months of food shortage'] },
+    { k: 'biod', name: 'Biodiversity loss', unit: 'habitat intactness lost since 2000', nat: '11 %', hue: '--s4', resp: [2, 'moderate benefit', 'medium confidence', 6, 'on-farm species richness'] },
+    { k: 'carbon', name: 'Carbon loss', unit: 'tree-cover carbon lost', nat: '0.9 t C per ha per year', hue: '--s4', resp: [3, 'strong benefit', 'medium confidence', 11, 'carbon stored in trees and soil'] },
+    { k: 'water', name: 'Water stress', unit: 'water demand over supply', nat: '0.42 (index)', hue: '--flood', resp: [0, 'no clear effect', 'low confidence', 4, 'dry-season stream flow'] }
   ];
   function g3(n) { var s = ''; for (var i = 0; i < 3; i++) s += '<i class="' + (i < n ? 'on' : '') + '"></i>'; return '<span class="g3" aria-hidden="true">' + s + '</span>'; }
-  document.getElementById('t25').innerHTML =
-    '<caption class="tabcap"><b>Table 3.5</b> · What planted silvoarable agroforestry can address<small>Example rows; source counts are fictional.</small></caption>' +
-    '<thead><tr><th>Problem</th><th>Strength</th><th>Confidence</th><th class="r">Sources</th><th>Evidence</th></tr></thead><tbody>' +
-    RESP.map(function (r, i) {
-      return '<tr><td><b>' + r[0] + '</b></td><td>' + g3(r[1]) + r[2] + '</td><td>' + r[3] + '</td><td class="r">' + r[4] + '</td><td><button type="button" class="ev-link" data-ev="' + i + '">View evidence</button></td></tr>';
-    }).join('') + '</tbody>';
-  document.getElementById('t25').addEventListener('click', function (e) {
+  var indThumbs = {}, indView = null;
+  function hist(h, hue) {
+    var W = 150, Hh = 44, bw = 26, gap = 4, mx = Math.max(0.4, Math.max.apply(null, h)), y20 = Hh - 4 - (Hh - 8) * 0.2 / mx, out = '';
+    h.forEach(function (v, i) {
+      var bh = (Hh - 8) * v / mx, x = i * (bw + gap);
+      out += '<rect x="' + x + '" y="' + (Hh - 4 - bh).toFixed(1) + '" width="' + bw + '" height="' + bh.toFixed(1) + '" style="fill:color-mix(in srgb, var(' + hue + ') ' + [18, 34, 52, 74, 100][i] + '%, var(--paper))"/>';
+    });
+    out += '<line x1="0" x2="' + (5 * (bw + gap) - gap) + '" y1="' + y20.toFixed(1) + '" y2="' + y20.toFixed(1) + '" class="h20"/><line x1="0" x2="' + (5 * (bw + gap) - gap) + '" y1="' + (Hh - 4) + '" y2="' + (Hh - 4) + '" class="hax"/>';
+    return '<svg class="hist" viewBox="0 0 ' + W + ' ' + Hh + '" role="img" aria-label="Distribution across five national fifths">' + out + '</svg><span class="hist-l"><span>least</span><span>most affected</span></span>';
+  }
+  function problems() {
+    var sel = F.cells.filter(function (c) { return R.sel(c); }), n = Math.max(1, sel.length);
+    var html = '<caption class="tabcap"><b>Table 3.4</b> · Problems in the opportunity space and what planted silvoarable agroforestry can do about them<small>Problem values are national fifths of the example surface; national references and the practice columns are example values; source counts are fictional.</small></caption>' +
+      '<thead><tr class="grp-h"><th colspan="4">Problem in the opportunity space</th><th colspan="3" class="pr-h">What the practice can do</th></tr>' +
+      '<tr><th>Problem</th><th>Distribution across the space</th><th class="r">In the two worst fifths</th><th>Reading</th><th class="pr-h">Strength</th><th>Confidence</th><th>Evidence</th></tr></thead><tbody>';
+    PROB.forEach(function (p, i) {
+      var h = [0, 0, 0, 0, 0]; sel.forEach(function (c) { h[c.indQ[p.k]]++; }); h = h.map(function (v) { return v / n; });
+      var worst = h[3] + h[4], verdict = worst >= 0.5 ? 'More concentrated here than in the country' : worst <= 0.3 ? 'Less acute here than in the country' : 'Similar to the country as a whole';
+      html += '<tr><td class="pb-name"><button type="button" class="pb-map" data-ind="' + i + '" title="Show ' + p.name.toLowerCase() + ' on Figure 3.1"><svg id="pbm-' + p.k + '" aria-hidden="true"></svg></button><b>' + p.name + '</b></td>' +
+        '<td>' + hist(h, p.hue) + '</td><td class="r pb-share">' + pct(worst) + '<span class="sub" style="display:block">country: 40 %</span></td>' +
+        '<td class="pb-read">' + verdict + '. <span class="sub">National: ' + p.unit + ' ' + p.nat + ' (example).</span></td>' +
+        '<td class="pr-h">' + g3(p.resp[0]) + p.resp[1] + '</td><td>' + p.resp[2] + '<span class="sub" style="display:block">' + p.resp[3] + ' sources</span></td>' +
+        '<td><button type="button" class="ev-link" data-ev="' + i + '">View evidence</button></td></tr>';
+    });
+    html += '<tr class="ctx-row"><td><b>Gender inequality</b> <span class="flag" style="color:var(--ink-2);border-color:var(--ink-3)">Context only</span></td><td colspan="3" class="sub">One national value (0.61, example): it describes the setting but cannot show where in the opportunity space the problem is worse.</td><td colspan="3" class="sub">Not scored; reported in the brief as context.</td></tr></tbody>';
+    document.getElementById('t34').innerHTML = html;
+    PROB.forEach(function (p) {
+      var s = M.plate(document.getElementById('pbm-' + p.k), { uid: 'pb' + p.k, labels: false, scale: false, cities: false, context: false, viewBox: '366 22 568 592' });
+      s.style.setProperty('--hz', 'var(' + p.hue + ')');
+      M.paintCells(s, F.cells, function (c) { return R.sel(c) ? 'lhq' + c.indQ[p.k] : null; });
+    });
+  }
+  document.getElementById('t34').addEventListener('click', function (e) {
+    var m = e.target.closest('[data-ind]');
+    if (m) { indView = PROB[+m.getAttribute('data-ind')]; variant = 'ind'; document.querySelectorAll('#seg-opp button').forEach(function (b) { b.setAttribute('aria-pressed', 'false'); }); paintPlate(); document.getElementById('plate-opp').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
     var b = e.target.closest('[data-ev]'); if (!b) return;
-    var r = RESP[+b.getAttribute('data-ev')];
-    var lines = [
-      'Example study A (2019) · meta-analysis · mixed income countries · transfer: direct',
-      'Example study B (2016) · field trial · lower-middle income · transfer: comparable',
-      'Example study C (2021) · practitioner survey · low income · transfer: indicative'
-    ];
-    V1BUI.openPanel('Evidence · ' + r[0], '<p>' + r[2].charAt(0).toUpperCase() + r[2].slice(1) + ', ' + r[3] + ', from ' + r[4] + ' sources (fictional). Three example source lines:</p>' +
-      '<ol class="ev-list">' + lines.map(function (l) { return '<li>' + l + '</li>'; }).join('') + '</ol>' +
-      '<div class="ev-rule"><b>Band rule (example).</b> The pooled change in ' + r[5] + ' falls in the band the evidence register sets for “' + r[2] + '”. Bands live in the register, not in this view.</div>' +
-      '<p style="margin-top:12px">Strength and confidence are set separately; neither is a local measurement.</p>');
+    var p = PROB[+b.getAttribute('data-ev')], r = p.resp;
+    V1BUI.openPanel('Evidence · ' + p.name, '<p>' + r[1].charAt(0).toUpperCase() + r[1].slice(1) + ', ' + r[2] + ', from ' + r[3] + ' sources (fictional). Three example source lines:</p>' +
+      '<ol class="ev-list"><li>Example study A (2019) · meta-analysis · mixed income countries · transfer: direct</li><li>Example study B (2016) · field trial · lower-middle income · transfer: comparable</li><li>Example study C (2021) · practitioner survey · low income · transfer: indicative</li></ol>' +
+      '<div class="ev-rule"><b>Band rule (example).</b> The pooled change in ' + r[4] + ' falls in the band the evidence register sets for “' + r[1] + '”.</div><p style="margin-top:12px">Full evidence table: <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>');
   });
 
   /* ---- tabs ---- */
@@ -418,10 +450,12 @@
 
   /* ---- wire plate variant + control bar ---- */
   V1BUI.segmented(document.getElementById('seg-opp'), function (v) { variant = v; paintPlate(); });
-  V1BUI.onControls(function (st) { ST = st; R = F.rollup(st); paintPlate(); figs(); fingerprint(); livelihoods(); });
+  V1BUI.onControls(function (st) { ST = st; R = F.rollup(st); paintPlate(); figs(); fingerprint(); fpchart(); livelihoods(); problems(); });
 
   var q = new URLSearchParams(location.search);
-  if (q.get('tab')) openTab(Math.max(0, Math.min(4, +q.get('tab') - 1)));
+  if (q.get('ind')) { var ib = null; setTimeout(function () { var bt = document.querySelector('[data-ind="' + q.get('ind') + '"]'); if (bt) bt.click(); }, 0); }
+  if (q.get('tab')) openTab(Math.max(0, Math.min(tabs.length - 1, +q.get('tab') - 1)));
+  if (q.get('fp') === 'chart') document.querySelector('#seg-fp [data-v="chart"]').click();
   if (q.get('variant') === 'change') document.querySelector('#seg-opp [data-v="change"]').click();
   narrow.addEventListener && narrow.addEventListener('change', function () { fitView(svg); });
 })();

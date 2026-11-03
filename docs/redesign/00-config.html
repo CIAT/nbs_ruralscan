@@ -19,31 +19,20 @@
     <span class="eyebrow sc">Stage 01 · Setup · 1.2 Technical configuration</span>
     <h1 class="question">What sits underneath the walkthrough?</h1>
     <p class="lede">The datasets, rules, masks and settings every map is built from. <b>The walkthrough never needs this page</b>; it is here so an analyst can check, propose a change, or save the set-up.</p>
-    <nav class="toc" aria-label="Sections on this page">
-      <a href="#c1"><span class="sec-n">C.1</span>Two different jobs</a><a href="#c2"><span class="sec-n">C.2</span>Input datasets</a><a href="#c3"><span class="sec-n">C.3</span>Suitability functions</a><a href="#c4"><span class="sec-n">C.4</span>Exclusions and masks</a><a href="#c5"><span class="sec-n">C.5</span>Correlation and clustering</a><a href="#c6"><span class="sec-n">C.6</span>Climate</a><a href="#c7"><span class="sec-n">C.7</span>Save and load</a>
-    </nav>
   </section>
+
+  <div class="subtabs" role="tablist" aria-label="Technical configuration sections">
+    <button type="button" role="tab" aria-controls="tp-1" aria-selected="true"><span class="sec-n">C.1</span>Datasets</button>
+    <button type="button" role="tab" aria-controls="tp-2" aria-selected="false" tabindex="-1"><span class="sec-n">C.2</span>Suitability functions</button>
+    <button type="button" role="tab" aria-controls="tp-3" aria-selected="false" tabindex="-1"><span class="sec-n">C.3</span>Exclusions</button>
+    <button type="button" role="tab" aria-controls="tp-4" aria-selected="false" tabindex="-1"><span class="sec-n">C.4</span>Clustering</button>
+    <button type="button" role="tab" aria-controls="tp-5" aria-selected="false" tabindex="-1"><span class="sec-n">C.5</span>Climate</button>
+    <button type="button" role="tab" aria-controls="tp-6" aria-selected="false" tabindex="-1"><span class="sec-n">C.6</span>Save and load</button>
+  </div>
 
   <!-- C.1 -->
-  <section class="cfg" id="c1">
-    <div class="tp-head"><div><h2><span class="sec-n">C.1</span>Two different jobs</h2><p class="need">Do you need this? Read it once: it explains what the rest of the page can and cannot change.</p></div></div>
-    <div class="jobs">
-      <div><h3>Choosing datasets</h3>
-        <dl><dt>What changes</dt><dd>Which source represents a variable — for example a national soil map in place of a global one.</dd>
-        <dt>What stays fixed</dt><dd>The rule that turns the variable into suitability.</dd>
-        <dt>Who usually does it</dt><dd>A country team with a better or endorsed local dataset.</dd>
-        <dt>How it is recorded</dt><dd>As a proposal first; applied only after a compatibility check (Section C.2).</dd></dl></div>
-      <div><h3>Tuning rules</h3>
-        <dl><dt>What changes</dt><dd>The response curve or threshold for a variable — how slope or rainfall becomes a suitability score.</dd>
-        <dt>What stays fixed</dt><dd>The dataset behind it.</dd>
-        <dt>Who usually does it</dt><dd>A methods reviewer, with evidence for the change.</dd>
-        <dt>How it is recorded</dt><dd>As an edit against the example recipe; downstream results stay the unchanged example (Section C.3).</dd></dl></div>
-    </div>
-  </section>
-
-  <!-- C.2 -->
-  <section class="cfg" id="c2">
-    <div class="tp-head"><div><h2><span class="sec-n">C.2</span>Input datasets</h2><p class="need">Do you need this? Only if a country dataset should replace a global default.</p></div>
+  <section class="cfg tabpanel" role="tabpanel" id="tp-1">
+    <div class="tp-head"><div><h2><span class="sec-n">C.1</span>Input datasets</h2><p class="need">Do you need this? Only if a country dataset should replace a global default.</p><p class="job-note"><b>Choosing datasets</b> changes which source represents a variable — for example a national soil map in place of a global one. The rule that turns the variable into suitability stays fixed. A change is recorded as a proposal first and applied only after a compatibility check.</p></div>
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
     <div class="tabwrap">
       <table class="qt ds" id="tC1">
@@ -54,18 +43,18 @@
     </div>
   </section>
 
-  <!-- C.3 -->
-  <section class="cfg" id="c3">
-    <div class="tp-head"><div><h2><span class="sec-n">C.3</span>Suitability functions</h2><p class="need">Do you need this? Only to check or question how a variable becomes suitability.</p></div>
+  <!-- C.2 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-2" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.2</span>Suitability functions</h2><p class="need">Do you need this? Only to check or question how a variable becomes suitability.</p><p class="job-note"><b>Tuning rules</b> changes the response curve or threshold for a variable — how slope or rainfall becomes a suitability score. The dataset behind it stays fixed. Edits are recorded against the example recipe and downstream results stay the unchanged example.</p></div>
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
     <div id="cards"></div>
     <p class="figcap"><b>Figure C.1</b> · Variable cards for slope, precipitation and land cover, each with its response preview: the membership curve and the raw and transformed maps</p>
     <p class="plate-src">Raw maps: synthetic example surface (seed 20261031). Curve shapes from the framework’s five membership functions.</p>
   </section>
 
-  <!-- C.4 -->
-  <section class="cfg" id="c4">
-    <div class="tp-head"><div><h2><span class="sec-n">C.4</span>Exclusions and masks</h2><p class="need">Do you need this? Only if an exclusion does not fit the country or the practice.</p></div>
+  <!-- C.3 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-3" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.3</span>Exclusions and masks</h2><p class="need">Do you need this? Only if an exclusion does not fit the country or the practice.</p></div>
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
     <div class="tp-grid">
       <div class="tabwrap">
@@ -88,9 +77,9 @@
     </div>
   </section>
 
-  <!-- C.5 -->
-  <section class="cfg" id="c5">
-    <div class="tp-head"><div><h2><span class="sec-n">C.5</span>Correlation and clustering</h2><p class="need">Do you need this? Only to see why some variables are not used directly.</p></div>
+  <!-- C.4 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-4" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.4</span>Correlation and clustering</h2><p class="need">Do you need this? Only to see why some variables are not used directly.</p></div>
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a></div></div>
     <div class="tp-grid">
       <div><svg id="dend" viewBox="0 0 520 370" role="img" aria-label="Example correlation matrix and clustering for six variables"></svg>
@@ -103,9 +92,9 @@
     </div>
   </section>
 
-  <!-- C.6 -->
-  <section class="cfg" id="c6">
-    <div class="tp-head"><div><h2><span class="sec-n">C.6</span>Climate</h2><p class="need">Do you need this? Only to change the climate scenario or the risk framing.</p></div></div>
+  <!-- C.5 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-5" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.5</span>Climate</h2><p class="need">Do you need this? Only to change the climate scenario or the risk framing.</p></div></div>
     <div class="clim">
       <div class="fld"><span>Risk framing</span>
         <div class="seg" id="seg-mode" role="group" aria-label="Risk framing">
@@ -122,9 +111,9 @@
     </div>
   </section>
 
-  <!-- C.7 -->
-  <section class="cfg" id="c7">
-    <div class="tp-head"><div><h2><span class="sec-n">C.7</span>Save and load</h2><p class="need">Do you need this? To hand the set-up to a colleague or reopen it later.</p></div></div>
+  <!-- C.6 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-6" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.6</span>Save and load</h2><p class="need">Do you need this? To hand the set-up to a colleague or reopen it later.</p></div></div>
     <div class="jobs">
       <div><h3>Save project (settings)</h3><p>The choices only: practice, classes, view, climate, dataset proposals and rule edits. Reopening it rebuilds every page from the same inputs.</p><button type="button" class="btn no-arrow" id="save-proj">Save project (JSON)</button></div>
       <div><h3>Save example result</h3><p>A snapshot of the figures shown now, labelled as example data. It cannot be reloaded as settings and is not a pilot result.</p><button type="button" class="btn btn-line no-arrow" id="save-res">Save example result (JSON)</button></div>
@@ -147,6 +136,12 @@
   'use strict';
   V1BUI.chrome(1);
   var M = V1BMap, F = FIXTURE;
+  var openCfg = V1BUI.tabs(document.querySelector('.subtabs'));
+  (function () {   // old anchors and card links open the right tab
+    var h = location.hash.slice(1), map = { c2: 0, c3: 1, c4: 2, c5: 3, c6: 4, c7: 5 };
+    if (/^card-/.test(h)) { openCfg(1); setTimeout(function () { var el = document.getElementById(h); if (el) el.scrollIntoView(); }, 300); }
+    else if (h in map) openCfg(map[h]);
+  })();
   var edits = {}, proposals = {};
 
   /* ---- C.2 datasets ---- */
@@ -204,7 +199,7 @@
       what: 'Mean annual rainfall, 1995–2014.',
       why: 'Trees and crops both need enough water; very high rainfall brings waterlogging and disease for many tree crops.',
       read: 'Best around the centre, falling away on both sides; the width sets the tolerance.',
-      cluster: 'Represents soil moisture and greenness (NDVI), which move closely with it here (Section C.5).',
+      cluster: 'Represents soil moisture and greenness (NDVI), which move closely with it here (Section C.4).',
       src: 'CHIRPS (example) · about 5 km · GEE catalog.' },
     { id: 'landcover', name: 'Land cover', unit: '', key: 'lc', cat: true, hue: '#5b8f5f',
       what: 'The dominant cover class in each cell.',
@@ -216,7 +211,7 @@
   ];
   var cards = document.getElementById('cards');
   cards.innerHTML = VARS.map(function (v, i) {
-    return '<article class="vcard" id="card-' + v.id + '"><header><span class="sec-n">C.3.' + (i + 1) + '</span><h3>' + v.name + '</h3><span class="ex-tag" id="st-' + v.id + '">Example recipe values</span></header>' +
+    return '<article class="vcard" id="card-' + v.id + '"><header><span class="sec-n">C.2.' + (i + 1) + '</span><h3>' + v.name + '</h3><span class="ex-tag" id="st-' + v.id + '">Example recipe values</span></header>' +
       '<div class="vc-grid"><dl class="slots">' +
       '<dt>What</dt><dd>' + v.what + '</dd><dt>Why, for this practice</dt><dd>' + v.why + '</dd><dt>How to read</dt><dd>' + v.read + '</dd>' +
       '<dt>What it represents</dt><dd>' + v.cluster + '</dd><dt>Where it comes from</dt><dd>' + v.src + '</dd></dl>' +

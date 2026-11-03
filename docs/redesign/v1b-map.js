@@ -516,8 +516,8 @@
       '<div class="ctlbar" id="ctlbar" role="region" aria-label="Controls"></div>';
   }
 
-  var JUMP = { practice: '00-config.html#c3', classes: '00-config.html#c3', geo: '00-config.html#c2', grain: '00-config.html#c2',
-    period: '00-config.html#c6', priorities: '05-hotspots.html?tab=2', data: '00-config.html#c2', rules: '00-config.html#c3' };
+  var JUMP = { practice: '00-config.html?tab=2', classes: '00-config.html?tab=2', geo: '00-config.html?tab=1', grain: '00-config.html?tab=1',
+    period: '00-config.html?tab=5', priorities: '05-hotspots.html?tab=2', data: '00-config.html?tab=1', rules: '00-config.html?tab=2' };
   function drawer() {
     var sec = [
       ['practice', 'Practice and suitability family', '<p>Agroforestry, family F1 — planted silvoarable (trees in rows within annual cropland). Each family is mapped separately because each is limited by a different factor.</p><label class="fld"><span>Practice</span><select><option>Agroforestry · planted silvoarable</option><option>Agroforestry · regeneration-based</option><option>Riparian buffers</option></select></label>'],

@@ -414,7 +414,9 @@
     micro('kr-1', prim.slice(0, 1), 'No practitioner primer in the register yet.');
     micro('kr-2', pk.s2.map(byId).filter(Boolean), 'No synthesis on establishment in the register yet.');
     micro('kr-3', pk.s3.map(byId).filter(Boolean), 'No synthesis on effects in the register yet.');
-    micro('kr-4', box.primers.filter(function (e) { return /^WOCAT/.test(e.citation); }).slice(0, 1), 'No cost source in the register for this practice.');
+    // agroforestry: the only WOCAT sheet is FMNR (regeneration family), not planted silvoarable — Pete 2026-11-03: show no source; it stays in 2.5 primers
+    micro('kr-4', open === 'agro_f1' ? [] : box.primers.filter(function (e) { return /^WOCAT/.test(e.citation); }).slice(0, 1),
+      open === 'agro_f1' ? 'No cost source in the register for the planted silvoarable family yet.' : 'No cost source in the register for this practice.');
   }
   var ORDER = ['agro_f1', 'riparian', 'anr'], open = V1BUI.state.practices[0] || 'agro_f1';
 

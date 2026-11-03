@@ -123,21 +123,27 @@
   </section>
 
   <section class="tabpanel" role="tabpanel" id="tp-4" hidden>
-    <div class="tp-head"><div><h2><span class="sec-n">4.4</span>Trade-off</h2><p>What a flag should do to the shortlist — the task team’s call, recorded in the brief.</p></div>
+    <div class="tp-head"><div><h2><span class="sec-n">4.4</span>Trade-off</h2><p>What happens to places that are needed but risky for the planting — the task team’s call, recorded in the brief.</p></div>
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
-    <section class="tradeoff" aria-labelledby="to-h" style="margin-top:0">
-      <div>
-        <h3 id="to-h">What should a flag do?</h3>
-        <p class="t-who">The task team’s call. It is recorded in the brief.</p>
+    <section class="tq" aria-labelledby="to-h">
+      <h3 id="to-h">A place can need the practice (Stage 05) and still be risky for the planting (this stage). What should happen to flagged places?</h3>
+      <div class="tq-opts" id="seg-flag" role="group" aria-label="What should happen to flagged places?">
+        <button type="button" class="tq-opt" data-v="keep" aria-pressed="true">
+          <span class="tq-svg"><svg id="tq-keep" aria-hidden="true"></svg></span>
+          <span class="tq-txt"><b>Keep them, and show the flag</b>
+          <span>Every place stays on the shortlist. Flagged places carry a note into the brief, so the design can plan for the hazard — firebreaks, timing, species, site choice.</span>
+          <span class="tq-ha" id="tq-ha-keep"></span></span>
+        </button>
+        <button type="button" class="tq-opt" data-v="remove" aria-pressed="false">
+          <span class="tq-svg"><svg id="tq-remove" aria-hidden="true"></svg></span>
+          <span class="tq-txt"><b>Take High-flag places off the shortlist</b>
+          <span>Places with High exposure are set aside before hotspots are found. The shortlist is smaller and safer, but some places with high need may drop out.</span>
+          <span class="tq-ha" id="tq-ha-remove"></span></span>
+        </button>
       </div>
-      <div>
-        <div class="seg" id="seg-flag" role="group" aria-label="What should a flag do?">
-          <button type="button" data-v="keep" aria-pressed="true">Keep flagged places and show the flag</button>
-          <button type="button" data-v="remove" aria-pressed="false">Remove High-flag places from the shortlist</button>
-        </div>
-        <p class="consequence" id="cons" aria-live="polite"></p>
-        <p>Either way, suitability and need are unchanged; only the shortlist carried into Stage 05 differs.</p>
-      </div>
+      <p class="consequence" id="cons" aria-live="polite"></p>
+      <p class="tq-why"><b>Why this is the task team’s call.</b> The scan can show where need and hazard overlap, but how much risk a project should accept depends on its budget, design options and the client’s appetite — so the choice is made here, by the task team leader, and recorded in the brief.</p>
+      <p class="tq-note">Either way, suitability and need are unchanged; only the shortlist carried into Stage 05 differs.</p>
     </section>
     <div class="tabwrap" style="margin-top:24px"><table class="qt" id="t45" style="max-width:900px"></table></div>
   </section>
@@ -278,7 +284,19 @@
       '<thead><tr><th>District</th><th class="r">Opportunity (ha)</th><th class="r">High-flag (ha)</th><th class="r">Shortlist if kept</th><th class="r">Shortlist if removed</th></tr></thead><tbody>' +
       rows.map(function (d) { return '<tr><td>' + d.name + '</td><td class="r">' + fmt(d.selected * HA) + '</td><td class="r">' + fmt(d[key] * HA) + '</td><td class="r">' + fmt(d.selected * HA) + '</td><td class="r">' + fmt((d.selected - d[key]) * HA) + '</td></tr>'; }).join('') + '</tbody>';
   }
-  var _render = render; render = function () { _render(); t45(); }; render();
+  /* ---- 4.4 before / after thumbnails ---- */
+  var tqK = M.plate(document.getElementById('tq-keep'), { uid: 'tqk', labels: false, scale: false, cities: false, context: false, viewBox: '366 22 568 592' });
+  var tqR = M.plate(document.getElementById('tq-remove'), { uid: 'tqr', labels: false, scale: false, cities: false, context: false, viewBox: '366 22 568 592' });
+  function tq() {
+    var H = HZ[st.hz], key = { fire: 'fireHigh', flood: 'floodHigh', both: 'anyHigh' }[st.hz];
+    [tqK, tqR].forEach(function (s) { s.style.setProperty('--hz', 'var(' + H.hue + ')'); });
+    M.paintCells(tqK, F.cells, function (c) { return !R.sel(c) ? null : H.high(c) ? 'b5' : 'opp'; });
+    M.paintCells(tqR, F.cells, function (c) { return !R.sel(c) || H.high(c) ? null : 'opp'; });
+    var opp = T.selected * HA, fl = T[key] * HA;
+    document.getElementById('tq-ha-keep').textContent = 'Shortlist ' + fmt(opp) + ' ha, of which ' + fmt(fl) + ' ha flagged High for ' + H.word;
+    document.getElementById('tq-ha-remove').textContent = 'Shortlist ' + fmt(opp - fl) + ' ha (' + fmt(fl) + ' ha set aside)';
+  }
+  var _render = render; render = function () { _render(); t45(); tq(); }; render();
   V1BUI.tabs(document.querySelector('.subtabs'));
   narrow.addEventListener && narrow.addEventListener('change', fitView);
 })();
