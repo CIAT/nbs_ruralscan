@@ -11,6 +11,8 @@ import re
 from collections import defaultdict
 from typing import Any
 
+from .ledger import tables_for
+
 
 def _list(value: Any) -> list[str]:
     if isinstance(value, (list, tuple, set)):
@@ -346,9 +348,76 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         }:
             record["contributions"]["M2b"].add(eid)
 
-    mappings: list[dict] = []
     unresolved_compiled = set()
     dropped_compiled = set()
+    table_specs = {
+        "T2a": ("Climate risk", "risk indicators"),
+        "T3": ("Hazard response", "hazard-response assessments"),
+        "T4": ("Suitability", "suitability rules"),
+        "T6": ("Benefits", "benefit assessments"),
+    }
+    output_rows: dict[str, dict[tuple, dict]] = {t: {} for t in table_specs}
+
+    def add_output(table: str, nbs: str, row: dict, index: int) -> None:
+        identity = str(
+            row.get("mapping_id")
+            or row.get("record_id")
+            or (row.get("variable_id") if table == "T2a" else "")
+            or f"unkeyed:{index}"
+        )
+        key = (nbs, identity)
+        cited = set(_list(row.get("evidence_ids")))
+        unresolved_compiled.update(cited - evidence.keys())
+        dropped_compiled.update(cited & (evidence.keys() - active.keys()))
+        label_parts = [
+            str(row.get("variable_id") or row.get("hazard_type") or identity).replace(
+                "_", " "
+            )
+        ]
+        fids = family_ids(row)
+        if fids:
+            label_parts.append(
+                ", ".join(f.split("__")[-1].replace("_", " ") for f in sorted(fids))
+            )
+        elif table in {"T3", "T6"}:
+            label_parts.append("practice roll-up")
+        if row.get("farming_system"):
+            label_parts.append(
+                "farming system: " + str(row["farming_system"]).replace("_", " ")
+            )
+        if row.get("scope_type") or row.get("scope_id"):
+            label_parts.append(
+                str(row.get("scope_type", "context")).replace("_", " ")
+                + ": "
+                + str(row.get("scope_id", "")).replace("_", " ")
+            )
+        if row.get("risk_role"):
+            label_parts.append(str(row["risk_role"]).replace("_", " "))
+        output = output_rows[table].setdefault(
+            key,
+            {
+                "id": identity,
+                "label": " · ".join(label_parts),
+                "farming_system": row.get("farming_system", ""),
+                "scope_type": row.get("scope_type", ""),
+                "scope_id": row.get("scope_id", ""),
+                "risk_role": row.get("risk_role", ""),
+                "nbs_id": nbs,
+                "family_ids": family_ids(row),
+                "evidence_ids": set(),
+                "cited_evidence_ids": set(),
+            },
+        )
+        output["evidence_ids"].update(cited & active.keys())
+        output["cited_evidence_ids"].update(cited & evidence.keys())
+        output["family_ids"].update(family_ids(row))
+
+    for index, row in enumerate(
+        data.get("global_tables", {}).get("T2_climate_risk", [])
+    ):
+        add_output("T2a", "", row, index)
+
+    mappings: list[dict] = []
     for nbs, recipe in data.get("recipes", {}).items():
         for table, filename in (
             ("T4", "T4_suitability_mappings"),
@@ -375,12 +444,89 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                             ),
                         }
                     )
+                operational = (
+                    table == "T4"
+                    and row.get("suitability_dimension") == "operational_constraint"
+                    and str(row.get("is_scenario_candidate", "")).lower() == "true"
+                )
+                if not operational:
+                    add_output(table, nbs, row, index)
                 for eid in retained:
                     key = canonical.get(active[eid].get("source_id"))
                     if key in records:
                         records[key]["contributions"][table].add(eid)
 
-    def metrics(nbs: str = "", fid: str = "") -> dict:
+    routes: dict[str, set[str]] = defaultdict(set)
+    priorities = {
+        r.get("variable_id")
+        for r in data.get("global_tables", {}).get("T5_opportunity_space", [])
+        if r.get("mcda_role") == "priority"
+    }
+    for row in registers.get("XW_target_crosswalk", []):
+        # The legacy XW also routes economic cells to T6; the compiler publishes
+        # those separately as T6E. Benefits use the schema's T5 priority targets.
+        if (
+            priorities
+            and row.get("target_table") == "T6"
+            and row.get("target_key") not in priorities
+        ):
+            continue
+        routes[row.get("ev_variable", "")].add(row.get("target_table", ""))
+    routed = bool(registers.get("XW_target_crosswalk"))
+    scope_ids = {
+        table: set().union(*(r["cited_evidence_ids"] for r in rows.values()))
+        for table, rows in output_rows.items()
+    }
+    for eid, row in evidence.items():
+        role = row.get("use_role", "")
+        targets = tables_for(role, row.get("variable", ""), routes)
+        if role == "climate_risk":
+            targets.add("T2a")
+        if not routed and role == "nbs_effect":
+            targets.update({"T3", "T6"})
+        for table in targets & scope_ids.keys():
+            scope_ids[table].add(eid)
+
+    def output_summary(table: str, nbs: str = "") -> dict:
+        rows = [r for r in output_rows[table].values() if not nbs or r["nbs_id"] == nbs]
+        ids = set().union(*(r["evidence_ids"] for r in rows))
+        source_keys = {canonical.get(active[eid].get("source_id")) for eid in ids}
+        source_keys.discard(None)
+        return {
+            "table_id": table,
+            "label": table_specs[table][0],
+            "unit": table_specs[table][1],
+            "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
+            "output_count": len(rows),
+            "evidence_backed_outputs": sum(bool(r["evidence_ids"]) for r in rows),
+            "contributing_excerpts": len(ids),
+            "contributing_sources": len(source_keys),
+            "evidence_ids": sorted(ids),
+            "source_keys": sorted(source_keys),
+            "rows": [
+                {
+                    "id": r["id"],
+                    "label": r["label"],
+                    "nbs_id": r["nbs_id"],
+                    "family_ids": sorted(r["family_ids"]),
+                    "farming_system": r["farming_system"],
+                    "scope_type": r["scope_type"],
+                    "scope_id": r["scope_id"],
+                    "risk_role": r["risk_role"],
+                    "evidence_ids": sorted(r["evidence_ids"]),
+                    "source_keys": sorted(
+                        {
+                            canonical[active[eid]["source_id"]]
+                            for eid in r["evidence_ids"]
+                            if active[eid].get("source_id") in canonical
+                        }
+                    ),
+                }
+                for r in rows
+            ],
+        }
+
+    def metrics(nbs: str = "", fid: str = "", table: str = "") -> dict:
         def family_matches(ids: set[str]) -> bool:
             if fid == "__unassigned":
                 return not any(
@@ -393,7 +539,23 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                 family_ids(row)
             )
 
-        selected_ev = {eid: row for eid, row in evidence.items() if in_scope(row)}
+        selected_outputs = [
+            r
+            for t, rows in output_rows.items()
+            if not table or t == table
+            for r in rows.values()
+            if not nbs or r["nbs_id"] == nbs
+        ]
+        cited_in_scope = set().union(
+            *(r["cited_evidence_ids"] for r in selected_outputs)
+        )
+        selected_ev = {
+            eid: row
+            for eid, row in evidence.items()
+            if (not table or eid in scope_ids[table])
+            and (in_scope(row) or (bool(table) and not fid and eid in cited_in_scope))
+        }
+
         selected = [
             r
             for r in records.values()
@@ -409,6 +571,11 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                 )
             )
         ]
+        if table:
+            source_keys = {
+                canonical.get(r.get("source_id")) for r in selected_ev.values()
+            }
+            selected = [r for r in records.values() if r["key"] in source_keys]
         live_ids = selected_ev.keys() & active.keys()
         approved_ids = {eid for eid in live_ids if _approved(active[eid])}
         reviewed_ids = selected_ev.keys() & assessed_ids
@@ -431,15 +598,38 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
             for r in mappings
             if (not nbs or r["nbs_id"] == nbs) and family_matches(r["family_ids"])
         ]
+        if table:
+            t4 = [r for r in t4 if table == "T4" and not r["operational"]]
+        contribution_ids = (
+            set().union(*(r["evidence_ids"] for r in selected_outputs)) & live_ids
+        )
+        contribution_sources = {
+            canonical.get(active[eid].get("source_id")) for eid in contribution_ids
+        }
+        contribution_sources.discard(None)
         t4_ids = set().union(*(r["evidence_ids"] for r in t4))
         t4_sources = {canonical.get(active[eid].get("source_id")) for eid in t4_ids}
         t4_sources.discard(None)
         scoped_searches = [
             e
-            for e in searches
+            for e in (
+                _searches(
+                    [
+                        r
+                        for r in registers.get("SRCH_search_register", [])
+                        if r.get("table")
+                        in ({"T2", "T2a"} if table == "T2a" else {table})
+                    ]
+                )
+                if table
+                else searches
+            )
             if (not nbs or e.get("nbs_id") == nbs) and family_matches(family_ids(e))
         ]
         return {
+            "evidence_ids": sorted(selected_ev),
+            "contributing_excerpts": len(contribution_ids),
+            "contributing_sources": len(contribution_sources),
             "known_sources": len(selected),
             "source_keys": sorted(r["key"] for r in selected),
             "extracted_sources": len(extracted),
@@ -506,13 +696,14 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                     "scope_definition": "Recorded evidence routing tag absent from the family registry.",
                 },
             )
-    practices = []
+    practices: list[dict] = []
     for nbs in sorted(nbs_ids - {""}):
         practice = {
             "nbs_id": nbs,
             "name": nbs.replace("_", " ").capitalize(),
             "metrics": metrics(nbs),
             "families": [],
+            "outputs": [output_summary(t, nbs) for t in table_specs if t != "T2a"],
         }
         for fid, family in sorted(family_lookup.items()):
             if family["nbs_id"] == nbs:
@@ -530,6 +721,50 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         )
         practices.append(practice)
 
+    table_views = {}
+    for table, (label, _unit) in table_specs.items():
+        note = {
+            "T2a": "Shared T2 climate-risk configuration, displayed as T2a; not M2b investment-risk screening. Evidence includes explicit climate-risk roles and configuration citations. Other upstream allocation is not recorded; zero tracked extracts does not mean no research was done.",
+            "T3": (
+                "Potential T3 inputs from the role/target crosswalk, plus explicit T3 citations. Routing does not mean synthesis gates passed. T3 and T6 can share extracts; totals must not be added."
+                if routed
+                else "Shared T3/T6 effect-evidence pool, plus T3 asset-vulnerability evidence and explicit T3 citations. Upstream allocation is unavailable; this is not a T3-only extraction count."
+            ),
+            "T4": "Structural-suitability evidence plus explicit citations in core T4 rules. Soft operational scenario rows are excluded; hard legal masks remain included.",
+            "T6": (
+                "Potential T6 inputs from the role/target crosswalk, plus explicit T6 citations. Routing does not mean synthesis gates passed. T3 and T6 can share extracts; totals must not be added. Output counts exclude economic profiles (T6E)."
+                if routed
+                else "Shared T3/T6 effect-evidence pool plus explicit T6 citations. Upstream allocation is unavailable; this is not a T6-only extraction count. Output counts exclude economic profiles (T6E)."
+            ),
+        }[table]
+        scoped_practices = []
+        if table != "T2a":
+            for practice in practices:
+                nbs = practice["nbs_id"]
+                scoped_practices.append(
+                    {
+                        **practice,
+                        "metrics": metrics(nbs, table=table),
+                        "families": [
+                            {**f, "metrics": metrics(nbs, f["family_id"], table)}
+                            for f in practice["families"]
+                        ],
+                        "outputs": [output_summary(table, nbs)],
+                    }
+                )
+        table_views[table] = {
+            "table_id": table,
+            "label": label,
+            "scope_note": note,
+            "project_level": table == "T2a",
+            "evidence_tracking": "role_and_citations"
+            if table == "T2a"
+            else ("routed" if routed or table == "T4" else "shared_effect_pool"),
+            "totals": metrics(table=table),
+            "practices": scoped_practices,
+            "outputs": [output_summary(table)],
+        }
+
     def serial(value: Any) -> Any:
         if isinstance(value, set):
             return sorted(value)
@@ -544,6 +779,8 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         "searches": searches,
         "totals": metrics(),
         "practices": practices,
+        "table_views": table_views,
+        "outputs": [output_summary(t) for t in table_specs],
         "diagnostics": {
             "compiled_missing_evidence_ids": sorted(unresolved_compiled),
             "compiled_dropped_evidence_ids": sorted(dropped_compiled),
@@ -570,6 +807,7 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
             "fully_reviewed_sources": "Sources with a nonempty retained excerpt set, all approved in the displayed scope.",
             "extraction_counts": "Mutually exclusive retained excerpt role buckets: T4 structural suitability; effects nbs_effect; M2b operational_risk/asset_vulnerability; other remaining roles. These do not claim compilation into T3/T6.",
             "t4_operational_relationships": "Soft operational rows marked operational_constraint and is_scenario_candidate=true. Hard operational masks remain core suitability relationships.",
+            "contributing_excerpts": "Distinct retained excerpts explicitly cited in displayed compiled/configured outputs, intersected with the displayed evidence scope; not inferred from extraction roles. T4 excludes soft operational scenario rows. T6 excludes T6E economics.",
             "contributions": "T4/T3/T6 cite retained excerpts in compiled rows. M2b counts role-based operational-risk or asset-vulnerability excerpts, not compiled outputs. Categories overlap. T6 excludes T6E economics.",
             "families": "Direct source/evidence family associations only. Generic evidence is not copied into every family; family sums need not equal grand totals.",
             "t4_relationships": "Distinct mapping records, not necessarily approved or evidence-backed. Evidence-backed records cite at least one retained excerpt.",

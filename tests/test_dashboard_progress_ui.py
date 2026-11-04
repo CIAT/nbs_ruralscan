@@ -374,7 +374,7 @@ assert(!html.includes('data-feedback-key="family:agroforestry__unmapped_subpract
 def test_stage_headers_keep_review_and_approval_denominators_distinct():
     run_js(r"""
 const t=setup(), m=t.fixture.progress_overview.totals;
-Object.assign(m,{known_sources:25,extracted_sources:7,all_excerpts:30,active_excerpts:23,reviewed_excerpts:20,approved_excerpts:5,dropped_excerpts:7,t4_structural_relationships:11});
+Object.assign(m,{known_sources:25,extracted_sources:7,all_excerpts:30,active_excerpts:23,reviewed_excerpts:20,approved_excerpts:5,dropped_excerpts:7,t4_structural_relationships:99,contributing_excerpts:11});
 t.api.refresh(t.fixture);
 const html=t.nodes.get('progress-app').innerHTML;
 const table=html.split('<table class="dp-table dp-summary-table">')[1].split('</table>')[0];
@@ -463,7 +463,7 @@ assert(html.includes('Approved: 5; Reviewed · unresolved: 8; Reviewed · exclud
 assert(html.includes('66.7% reviewed; 25% of reviewed extracts approved'));
 assert(html.includes('7 reviewed · excluded'));assert(!html.includes('9 reviewed · excluded'));
 assert(html.includes('All practice bars share one count scale: 0–30 recorded extracts'));
-assert(html.includes('Deduplicated project total'));
+assert(html.includes('Deduplicated total · All evidence'));
 const click=(action,value)=>{const target={dataset:{action,value},closest:()=>target};t.handlers.click({target});};
 click('chart-scale','percent');
 html=t.nodes.get('progress-app').innerHTML;
@@ -478,4 +478,42 @@ assert(!t.api.revealTarget('chart-practice:missing'));
 Object.assign(m,{all_excerpts:0,reviewed_excerpts:0,approved_excerpts:0,reviewed_unresolved_excerpts:0,reviewed_dropped_excerpts:0,unreviewed_excerpts:0});
 t.api.refresh(t.fixture);html=t.nodes.get('progress-app').innerHTML;
 assert(html.includes('No extracts recorded'));assert(!html.includes('width:NaN'));assert(!html.includes('Infinity'));
+""")
+
+
+def test_analytical_purpose_updates_metrics_and_exact_source_drilldown():
+    run_js(r"""
+const t=setup(), model=t.fixture.progress_overview;
+const base=model.practices[0];
+const metric={...base.metrics,known_sources:1,all_excerpts:10,reviewed_excerpts:4,approved_excerpts:2,reviewed_unresolved_excerpts:1,reviewed_dropped_excerpts:1,unreviewed_excerpts:6,contributing_excerpts:3,source_keys:['canonical']};
+const output={table_id:'T3',label:'Hazard response',unit:'assessments',output_count:2,evidence_backed_outputs:1,contributing_sources:1,contributing_excerpts:3,source_keys:['canonical'],rows:[{id:'one',label:'Drought <img>',evidence_ids:['ev1'],source_keys:['canonical']}]};
+model.outputs=[output];base.outputs=[output];
+model.table_views={T3:{totals:metric,scope_note:'Routed inputs can overlap.',practices:[{...base,metrics:metric,families:base.families.map(f=>({...f,metrics:metric}))}]},T2a:{totals:{...metric,all_excerpts:0,reviewed_excerpts:0,approved_excerpts:0,reviewed_unresolved_excerpts:0,reviewed_dropped_excerpts:0,unreviewed_excerpts:0},scope_note:'Shared configuration; zero tracked extracts does not mean no research.',project_level:true,practices:[]}};
+t.api.refresh(t.fixture);
+const choose=v=>{const n=t.nodes.get('dp-progress-table');n.value=v;n.trigger('change');};
+const click=(action,value)=>{const target={dataset:{action,value},closest:()=>target};t.handlers.click({target});};
+choose('T3');let html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('Evidence progress · T3 · Hazard response'));
+assert(html.includes('4 reviewed out of 10 recorded extracts'));assert(html.includes('(40%)'));assert(html.includes('(50%)'));
+assert(html.includes('3 extracts used in outputs'));assert(html.includes('Routed inputs can overlap.'));
+assert(html.includes('Drought &lt;img&gt;'));assert(!html.includes('Drought <img>'));
+model.sources[0].nbs_ids=['riparian_buffer'];
+click('bibliography','agroforestry');assert(t.nodes.get('bibliography-app').innerHTML.includes('1 matching records'));
+click('known','agroforestry');assert(t.nodes.get('bibliography-app').innerHTML.includes('1 matching records'));
+assert(!t.nodes.get('bibliography-app').innerHTML.includes('Legacy agroforestry'));
+click('bib-reset','');assert(t.nodes.get('bibliography-app').innerHTML.includes('Legacy agroforestry'));
+click('output-sources','T3');assert(t.nodes.get('bibliography-app').innerHTML.includes('1 matching records'));
+click('practice','agroforestry');html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('4 reviewed out of 10 recorded extracts'));
+choose('T2a');html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('Shared climate-risk configuration'));assert(html.includes('zero tracked extracts does not mean no research'));
+assert(!html.includes('id="dp-chart-practice-agroforestry"'));assert(!html.includes('width:NaN'));
+click('practice','agroforestry');html=t.nodes.get('progress-app').innerHTML;assert(html.includes('practice-level allocations are not recorded'));assert(!html.includes('Count definitions'));
+assert(t.api.revealTarget('progress:T3:chart-practice:agroforestry'));assert.equal(t.api.scope().table,'T3');
+assert(t.nodes.get('progress-app').innerHTML.includes('4 reviewed out of 10 recorded extracts'));
+assert(t.api.revealTarget('progress:T3:output:T3:all'));assert.equal(t.api.scope().table,'T3');
+assert(!t.api.revealTarget('progress:BAD:output:T3:all'));
+choose('');html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('Evidence progress · All evidence'));
+assert(html.includes('id="dp-chart-practice-agroforestry"'));
 """)

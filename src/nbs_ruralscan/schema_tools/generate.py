@@ -249,6 +249,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "BIND_dataset_binding",
         "TOOL_tool_registry",
         "SRCH_search_register",
+        "XW_target_crosswalk",
     ]
     global_tables = [
         "T1_data_registry",
