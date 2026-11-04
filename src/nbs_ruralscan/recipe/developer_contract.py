@@ -1220,7 +1220,7 @@ def _write_package(root, output, **kwargs):
     }.items():
         (output / name).write_bytes((root / relative).read_bytes())
     (output / "index.html").write_text(
-        render_developer_view(contract), encoding="utf-8"
+        render_developer_view(contract, aggregate_table), encoding="utf-8"
     )
     (output / "README.md").write_text(
         "# T4 developer contract\n\n"

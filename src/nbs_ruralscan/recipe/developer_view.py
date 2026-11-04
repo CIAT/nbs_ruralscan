@@ -274,12 +274,43 @@ def _list(values: list) -> str:
     )
 
 
-def render_developer_view(contract: dict) -> str:
+def _aggregate_summary(record: dict) -> str:
+    """Descriptive evidence only; never changes the executable contract."""
+    def frequency(key):
+        value = record.get(key)
+        return f'{value["n"]}/{value["N"]} ({value["percent"]}%)' if value else "Not documented"
+
+    out = ["<p>Group use: " + frequency("group_use") + "<br>Variable use: " + frequency("variable_use") + "</p>"]
+    for weight in record.get("weight_summary", []):
+        out.append("<p><strong>" + _text(_label(weight["scope"])) + "</strong><br>"
+                   + f'{weight["median_relative_to_equal"]:.2f}× equal-weight benchmark; '
+                   + f'{100 * weight["median_source_share"]:.1f}% median model share'
+                   + f'<br>{weight["reporting_sources"]} reporting sources; share range '
+                   + f'{100 * weight["source_share_range"][0]:.1f}–{100 * weight["source_share_range"][1]:.1f}%</p>')
+    if not record.get("weight_summary"):
+        out.append("<p>Weight model not documented</p>")
+    for support in record.get("function_support", []):
+        out.append("<p>" + _text(_label(support["family"])) + ": <strong>"
+                   + str(len(support["sources"])) + " source IDs</strong> supporting numeric options</p>")
+    out.append("<details><summary>Study weights, mapped group shares and provenance</summary>"
+               + _json({k: record.get(k) for k in ("study_weights", "mapped_group_weights", "group_use", "variable_use", "claim_sources", "evidence_ids")}) + "</details>")
+    return "".join(out)
+
+
+def _directions(record: dict) -> str:
+    return "".join("<p>" + _text(_label(d["family"])) + ": "
+                   + _text(_label(d["direction"])) + " — " + str(len(d["sources"]))
+                   + " source IDs</p>" for d in record.get("direction_by_family", []))
+
+
+def render_developer_view(contract: dict, aggregate_table: dict | None = None) -> str:
     """Render a self-contained HTML table without modifying the contract."""
     rows = contract.get("rows", [])
+    grouped = {}
+    aggregates = {r["variable"]: r for r in (aggregate_table or {}).get("rows", [])}
     out = [
         '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>T4 developer handoff</title><style>',
-        "body{font:16px/1.45 system-ui,sans-serif;color:#183c36;background:#f5f8f7;margin:24px}h1{margin-bottom:4px}p{margin:8px 0}.muted{color:#586b67;font-size:13px}.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}input,select{padding:10px;border:1px solid #aabdb7;border-radius:5px;background:white;font:inherit}input{min-width:300px}.scroll{overflow:auto;background:white;border:1px solid #ccdad5}table{border-collapse:collapse;width:100%}dl{font-size:13px;margin:8px 0}dt{font-weight:650}dd{margin:0 0 7px;overflow-wrap:anywhere}.host{border-top:1px solid #ddd;padding:8px 0}th,td{padding:12px;text-align:left;vertical-align:top;border-bottom:1px solid #d9e3df}thead th{background:#e2eee8;position:sticky;top:0}th button{font:inherit;font-weight:700;border:0;background:transparent;color:inherit;cursor:pointer;padding:0;text-align:left}td{min-width:110px}.response{min-width:300px;max-width:650px}.options{display:flex;gap:12px;overflow:auto;max-width:650px}.option{min-width:280px;flex:1;border:1px solid #d8e3df;padding:10px;border-radius:5px}.option svg{width:280px;max-width:100%;font:11px system-ui}.option p{margin:4px 0}details{margin:8px 0}summary{cursor:pointer;color:#076c61}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace;max-width:450px}.intervals td,.intervals th{font-size:12px;padding:5px;min-width:0}.badge{display:inline-block;padding:3px 8px;background:#fff0d4;border-radius:4px;font-size:13px}.status{min-width:220px}ul{padding-left:19px;margin:6px 0}code{overflow-wrap:anywhere}.links a{margin-right:18px}footer{margin-top:18px}</style>",
+        "body{font:16px/1.45 system-ui,sans-serif;color:#183c36;background:#f5f8f7;margin:24px}h1{margin-bottom:4px}p{margin:8px 0}.muted{color:#586b67;font-size:13px}.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:20px 0}input,select{padding:10px;border:1px solid #aabdb7;border-radius:5px;background:white;font:inherit}input{min-width:300px}.scroll{overflow:auto;background:white;border:1px solid #ccdad5}table{border-collapse:collapse;width:100%}dl{font-size:13px;margin:8px 0}dt{font-weight:650}dd{margin:0 0 7px;overflow-wrap:anywhere}.host{border-top:1px solid #ddd;padding:8px 0}th,td{padding:12px;text-align:left;vertical-align:top;border-bottom:1px solid #d9e3df}thead th{background:#e2eee8;position:sticky;top:0}th button{font:inherit;font-weight:700;border:0;background:transparent;color:inherit;cursor:pointer;padding:0;text-align:left}td{min-width:110px}.response{min-width:300px;max-width:650px}.options{display:flex;gap:12px;overflow:auto;max-width:650px}.option{min-width:280px;flex:1;border:1px solid #d8e3df;padding:10px;border-radius:5px}.option svg{width:280px;max-width:100%;font:11px system-ui}.option p{margin:4px 0}details{margin:8px 0}summary{cursor:pointer;color:#076c61}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 ui-monospace,monospace;max-width:450px}.intervals td,.intervals th{font-size:12px;padding:5px;min-width:0}.badge{display:inline-block;padding:3px 8px;background:#fff0d4;border-radius:4px;font-size:13px}.status{min-width:220px}ul{padding-left:19px;margin:6px 0}code{overflow-wrap:anywhere}.links a{margin-right:18px}.family-panel{border-top:1px solid #ccdad5;padding:10px 0}.evidence{min-width:260px;max-width:380px}footer{margin-top:18px}</style>",
         "<h1>T4 developer handoff</h1><p>"
         + _text(contract.get("version"))
         + " · "
@@ -314,7 +345,7 @@ def render_developer_view(contract: dict) -> str:
                 {r.get("readiness", {}).get("label", r.get("status", "")) for r in rows}
             )
         ),
-        '</select></label><span id="count" aria-live="polite"></span></div><div class="scroll"><table id="rules"><thead><tr>',
+        ('<option value="evidence_only">evidence only</option>' if aggregate_table is not None else '') + '</select></label><span id="count" aria-live="polite"></span></div><div class="scroll"><table id="rules"><thead><tr>',
         "".join(
             f'<th><button type="button" data-column="{i}" title="Sort by {label}">{label} ↕</button></th>'
             for i, label in enumerate(
@@ -323,15 +354,18 @@ def render_developer_view(contract: dict) -> str:
                     "Theme",
                     "Variable group",
                     "Variable / role",
+                ] + (["Evidence across sources"] if aggregate_table is not None else []) + [
                     "Relationship function",
                     "Dataset",
-                    "MCDA weight",
+                    "Runtime MCDA weight",
                     "Readiness",
                 ]
             )
         ),
         "</tr></thead><tbody>",
     ]
+    if aggregate_table is not None:
+        out.insert(4, '<p><strong>One row per variable.</strong> Family-specific plots and inputs stay separate. Study use counts the recorded model-use cohort, not the whole library. Missing weights mean unknown. Source summaries are descriptive, not runtime weights.</p><details><summary>Aggregation method</summary><p>' + _text(aggregate_table.get("method", "")) + '</p><p>Relative importance compares source-model weights with equal weighting (1×). Model scopes remain separate. Mapped group shares may be partial; they are not declared group weights. Direction counts cover explicit direction fields only. Source IDs are not necessarily independent studies. Evidence-only variables have no executable mapping.</p></details>')
     for row in rows:
         dataset, weight = row.get("dataset", {}), row.get("weight", {})
         options = row.get("function_options") or []
@@ -384,13 +418,6 @@ def render_developer_view(contract: dict) -> str:
             + "</details>"
         )
         status = row.get("readiness", {}).get("label", row.get("status", ""))
-        out.append(
-            '<tr data-module="'
-            + _text(row.get("module", ""))
-            + '" data-status="'
-            + _text(status)
-            + '">'
-        )
         cells = [
             _text(_label(row.get("system"))),
             _text(_label(row.get("theme"))),
@@ -429,13 +456,43 @@ def render_developer_view(contract: dict) -> str:
             )
             + "</details>",
         ]
-        for index, cell in enumerate(cells):
-            cls = "response" if index == 4 else "status" if index == 7 else ""
-            out.append('<td class="' + cls + '">' + cell + "</td>")
-        out.append("</tr>")
+        if aggregate_table is not None:
+            grouped.setdefault(row["variable"], []).append((row, cells, status))
+        else:
+            out.append('<tr data-module="' + _text(row.get("module", "")) + '" data-status="' + _text(status) + '">')
+            for index, cell in enumerate(cells):
+                cls = "response" if index == 4 else "status" if index == 7 else ""
+                out.append('<td class="' + cls + '">' + cell + "</td>")
+            out.append("</tr>")
+    if aggregate_table is not None:
+        for variable in sorted(set(grouped) | set(aggregates)):
+            entries = grouped.get(variable, [])
+            record = aggregates.get(variable, {})
+            modules = sorted({r.get("module", "") for r, _, _ in entries}) or ["M1"]
+            statuses = sorted({status for _, _, status in entries}) or ["evidence_only"]
+            out.append('<tr data-variable="' + _text(variable) + '" data-module="' + _text("|".join(modules)) + '" data-status="' + _text("|".join(statuses)) + '">')
+            if entries:
+                for index in range(8):
+                    if index == 4:
+                        out.append('<td class="evidence">' + (_aggregate_summary(record) if record else "Outside the general-practice M1 aggregate. See family provenance.") + "</td>")
+                    if index == 3:
+                        content = "<strong>" + _text(_label(variable)) + "</strong>" + "".join('<p class="muted">' + _text(_label(r.get("system"))) + ': ' + _text(r.get("unit")) + ' · ' + _text(r.get("module")) + ' · ' + _text(_label(r.get("role"))) + '</p>' for r, _, _ in entries)
+                    elif index < 3:
+                        content = "<br>".join(dict.fromkeys(cells[index] for _, cells, _ in entries))
+                    else:
+                        content = "".join('<section class="family-panel"><strong>' + _text(_label(r.get("system"))) + ' · ' + _text(r.get("module")) + '</strong>' + cells[index] + '</section>' for r, cells, _ in entries)
+                        if index == 4:
+                            content += '<details><summary>Direction across source evidence</summary>' + (_directions(record) or 'No aggregated explicit direction; see source evidence for classes and qualitative context.') + '</details>'
+                    cls = "response" if index == 4 else "status" if index == 7 else ""
+                    out.append('<td class="' + cls + '">' + content + '</td>')
+            else:
+                cells = ["Evidence only", "M1 evidence — not compiled", _text(_label(record.get("group"))), "<strong>" + _text(_label(variable)) + "</strong>", "<strong>No numeric function compiled</strong>" + (_directions(record) or "<p>Inspect source evidence for classes and qualitative context.</p>"), "No binding in this contract", "Not assigned", '<span class="badge">evidence only</span><p>No executable mapping. Scope and response need assessment.</p>']
+                cells.insert(4, _aggregate_summary(record))
+                out.extend('<td>' + cell + '</td>' for cell in cells)
+            out.append('</tr>')
     out.append("""</tbody></table></div><footer class="muted">Generated from the same developer contract as the machine-readable tables. Source registers remain authoritative. No review decisions are recorded here.</footer><script>
 const table=document.querySelector('#rules'), body=table.tBodies[0];
-function filter(){const q=document.querySelector('#find').value.toLowerCase(), m=document.querySelector('#module').value, s=document.querySelector('#status').value;let count=0;for(const row of body.rows){row.hidden=Boolean((m&&row.dataset.module!==m)||(s&&row.dataset.status!==s)||!row.textContent.toLowerCase().includes(q));if(!row.hidden)count++;}document.querySelector('#count').textContent=count+' of '+body.rows.length+' rows';}
+function filter(){const q=document.querySelector('#find').value.toLowerCase(), m=document.querySelector('#module').value, s=document.querySelector('#status').value;let count=0;for(const row of body.rows){row.hidden=Boolean((m&&!row.dataset.module.split("|").includes(m))||(s&&!row.dataset.status.split("|").includes(s))||!row.textContent.toLowerCase().includes(q));if(!row.hidden)count++;}document.querySelector('#count').textContent=count+' of '+body.rows.length+' rows';}
 for(const id of ['find','module','status'])document.getElementById(id).addEventListener(id==='find'?'input':'change',filter);
 for(const button of table.querySelectorAll('th button'))button.addEventListener('click',()=>{const i=Number(button.dataset.column),ascending=button.dataset.direction!=='asc';for(const b of table.querySelectorAll('th button')){delete b.dataset.direction;b.parentElement.removeAttribute('aria-sort');}button.dataset.direction=ascending?'asc':'desc';button.parentElement.setAttribute('aria-sort',ascending?'ascending':'descending');[...body.rows].sort((a,b)=>a.cells[i].textContent.localeCompare(b.cells[i].textContent,undefined,{numeric:true})*(ascending?1:-1)).forEach(row=>body.appendChild(row));});filter();
 </script></html>""")
