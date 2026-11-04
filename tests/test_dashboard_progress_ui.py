@@ -155,8 +155,9 @@ const t=setup();
 t.tabs['tab-methods'].click();
 assert.equal(t.api.revealTarget('family:agroforestry__f1'),true);
 assert.equal(t.activeTab,'tab-search');
-assert.equal(t.nodes.get('dp-families-0').hidden,false);
-assert.equal(t.api.scope().nbs,'all');
+assert(t.nodes.get('progress-app').innerHTML.includes('Planted systems'));
+assert.equal(t.api.scope().nbs,'agroforestry');
+assert.equal(t.api.scope().family,'agroforestry__f1');
 assert.equal(t.api.revealTarget('practice:cross'),true);
 assert.equal(t.api.revealTarget('family:not-a-family'),false);
 const query=t.nodes.get('dp-bib-query');query.value='no matching source';query.trigger('input');
@@ -164,4 +165,66 @@ assert.equal(t.api.revealTarget('source:canonical'),true);
 assert.equal(t.activeTab,'tab-stocktake');
 assert.equal(t.nodes.get('dp-source-drawer').dataset.feedbackKey,'source:canonical');
 assert.equal(t.nodes.get('dp-source-drawer').dataset.feedbackLabel,t.fixture.progress_overview.sources[0].citation);
+""")
+
+
+def test_progress_overview_separates_count_units_and_keeps_families_in_practice_views():
+    run_js(r"""
+const t=setup();
+let html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('Results found'));assert(html.includes('Results screened'));assert(html.includes('Passed screening'));
+assert(!html.includes('Planted systems'));assert(!html.includes('dp-family-group'));
+assert(!html.includes('searches fully counted'));assert(!html.includes('Search hits selected'));
+assert(html.includes('Type not recorded'));assert(!html.includes('Tools | ?'));
+assert(t.api.revealTarget('family:agroforestry__f1'));
+html=t.nodes.get('progress-app').innerHTML;
+assert(!html.includes('dp-flow'));assert(html.includes('100%'));assert(html.includes('dp-progress-family'));
+assert(html.includes('Evidence checks'));assert(!html.includes('<th>Extracted</th>'));
+""")
+
+
+def test_family_filters_hide_out_of_scope_without_losing_historical_totals():
+    run_js(r"""
+const t=setup(), p=t.fixture.progress_overview.practices[0];
+p.families.push({family_id:'agroforestry__out',name:'Out of scope family',metrics:p.metrics,subpractices:[]});
+p.families.push({family_id:'agroforestry__pending',name:'Needs review family',metrics:{...p.metrics,approved_excerpts:0},subpractices:[]});
+t.fixture.family_display_status={'agroforestry__out':{status:'out_of_scope'}};
+t.api.refresh(t.fixture);t.api.revealTarget('family:agroforestry__f1');
+let family=t.nodes.get('dp-progress-family');family.value='';family.trigger('change');
+let html=t.nodes.get('progress-app').innerHTML;
+assert(!html.includes('Out of scope family'));assert(html.includes('Needs review family'));
+assert.equal(t.api.revealTarget('family:agroforestry__out'),false);
+const filter=t.nodes.get('dp-progress-review');filter.value='pending';filter.trigger('change');
+html=t.nodes.get('progress-app').innerHTML;
+assert(!html.includes('data-feedback-label="Planted systems"'));
+assert(html.includes('data-feedback-label="Needs review family"'));
+assert.equal(t.fixture.progress_overview.totals.known_sources,1);
+""")
+
+
+def test_activity_log_filters_and_paginates_real_ledger_stages():
+    run_js(r"""
+const t=setup();
+t.fixture.progress_ledger=Array.from({length:45},(_,i)=>({nbs_id:'agroforestry',family:'agroforestry__f1',table:i<30?'T4':'T6',category:'stock',searched:'done',screened:'in_progress',verified:'done',updated:'2026-11-04'}));
+t.api.refresh(t.fixture);t.api.revealTarget('family:agroforestry__f1');
+let html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('45 records · 1–20 shown'));assert(html.includes('Page 1 / 3'));
+assert.equal((html.match(/<td>T4<\/td>/g)||[]).length,20);
+let select=t.nodes.get('dp-ledger-table');t.nodes.get('dp-ledger').open=true;select.value='T6';select.trigger('change');
+html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('15 records · 1–15 shown'));assert.equal(t.nodes.get('dp-ledger').open,true);
+assert(!html.includes('<td>T4</td>'));assert(html.includes('Evidence checks'));
+""")
+
+
+def test_overview_uses_matched_discovery_counts_only():
+    run_js(r"""
+const t=setup(), m=t.fixture.progress_overview.totals;
+m.search_metrics={...m.search_metrics,retrieved:41,screened:93,included:26,complete_counts:0,paired_retrieved:0,paired_screened:0,paired_included:0};
+t.api.refresh(t.fixture);
+let html=t.nodes.get('progress-app').innerHTML;
+assert(!html.includes('>41</td>'));assert(!html.includes('>93</td>'));assert(!html.includes('>26</td>'));
+m.search_metrics={...m.search_metrics,complete_counts:1,paired_retrieved:100,paired_screened:20,paired_included:10};
+t.api.refresh(t.fixture);html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('>100</td>'));assert(html.includes('>20</td>'));assert(html.includes('>10</td>'));
 """)

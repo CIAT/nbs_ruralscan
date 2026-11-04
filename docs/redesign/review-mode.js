@@ -331,11 +331,13 @@
   }
 
   /* ---------- notes drawer ---------- */
+  var shownIds = [];
   var filt = { page: page, type: '', sev: '' };
   function renderDrawer() {
     var pages = []; notes.forEach(function (n) { if (pages.indexOf(n.page) < 0) pages.push(n.page); });
     if (filt.page && filt.page !== '*' && pages.indexOf(filt.page) < 0) pages.push(filt.page);
     var list = notes.filter(function (n) { return (filt.page === '*' || n.page === filt.page) && (!filt.type || n.type === filt.type) && (!filt.sev || n.severity === filt.sev); });
+    shownIds = list.map(function (n) { return n.id; });
     ui.drawer.innerHTML =
       '<div class="rv-d-head"><div><span class="rv-c-k">Review notes</span><h2>' + notes.length + ' note' + (notes.length === 1 ? '' : 's') + ' across the v2 pages</h2></div><button type="button" class="rv-x" data-d="close" aria-label="Close">×</button></div>' +
       '<div class="rv-d-filt"><label>Page<select data-f="page"><option value="*">All pages</option>' + pages.map(function (p) { return '<option value="' + p + '"' + (filt.page === p ? ' selected' : '') + '>' + esc(pageTitle(p)) + '</option>'; }).join('') + '</select></label>' +
@@ -347,7 +349,7 @@
           (n.quote ? '<blockquote class="rv-q">' + esc(n.quote) + '</blockquote>' : '') + (n.text ? '<p class="rv-l-x">' + esc(n.text) + '</p>' : '') + (n.image ? '<img class="rv-img" alt="Screengrab" src="' + n.image + '">' : '') +
           '<div class="rv-l-act"><button type="button" data-a="jump">Jump to target</button><button type="button" data-a="edit">Edit</button><button type="button" data-a="del">Delete</button></div></li>';
       }).join('') : '<li class="rv-empty">No notes match these filters. Switch on Comment mode and click any figure, table or section.</li>') + '</ol>' +
-      '<div class="rv-d-foot"><button type="button" class="rv-b2" data-rv="json">JSON</button><button type="button" class="rv-b2" data-rv="report">Report (HTML)</button><button type="button" class="rv-b1" data-rv="issue">GitHub issue…</button></div>';
+      '<div class="rv-d-foot">' + (notes.length ? '<span class="rv-d-del">' + (list.length && list.length < notes.length ? '<button type="button" class="rv-b3" data-rv="delshown">Delete shown (' + list.length + ')</button>' : '') + '<button type="button" class="rv-b3" data-rv="delall">Delete all (' + notes.length + ')</button></span>' : '') + '<button type="button" class="rv-b2" data-rv="json">JSON</button><button type="button" class="rv-b2" data-rv="report">Report (HTML)</button><button type="button" class="rv-b1" data-rv="issue">GitHub issue…</button></div>';
   }
   function openDrawer() { ui.menu.hidden = true; renderDrawer(); ui.drawer.hidden = false; }
   document.addEventListener('change', function (e) {
@@ -369,6 +371,14 @@
     var k = r.getAttribute('data-rv');
     if (k === 'comment' || k === 'highlight' || k === 'grab') { setMode(mode === k ? null : k); if (!mode) ui.banner.hidden = true; return; }
     if (k === 'exit') { exitModes(); return; }
+    if (k === 'delall' || k === 'delshown') {
+      var ids = k === 'delall' ? notes.map(function (n) { return n.id; }) : shownIds.slice();
+      if (!ids.length) return;
+      if (window.confirm('Delete ' + ids.length + ' note' + (ids.length === 1 ? '' : 's') + (k === 'delshown' ? ' currently shown' : ' across all v2 pages') + '? This cannot be undone. Export first if you want to keep them.')) {
+        notes = notes.filter(function (x) { return ids.indexOf(x.id) < 0; }); save(); renderDrawer(); pins(); paintHighlights();
+      }
+      return;
+    }
     if (k === 'notes') { if (ui.drawer.hidden) openDrawer(); else ui.drawer.hidden = true; return; }
     if (k === 'export') { ui.menu.hidden = !ui.menu.hidden; return; }
     ui.menu.hidden = true;
