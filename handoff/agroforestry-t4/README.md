@@ -4,9 +4,9 @@
 
 Use [Evidence Query → T4 analysis](../../docs/dashboard.html#t4/global): **Evidence trail · Suitability & weights · Global synthesis · Rules & method**. One read-only inspection surface; evidence decisions remain in QA/QC. Developer packages below are versioned downloads, not additional live dashboards.
 
-**Current developer package: [developer-v0.1.5](developer-v0.1.5/README.md), 27 October 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.5/developer_table.csv), [machine contract](developer-v0.1.5/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
+**Current developer package: [developer-v0.1.6](developer-v0.1.6/README.md), 4 November 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.6/developer_table.csv), [machine contract](developer-v0.1.6/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
 
-This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country-specific selections remain unset; the approved partial terrain-and-soil policy pins three functions and weights without granting regional transfer. Package version 0.1.5 uses contract/selection format 0.2.0. Pilot testing remains Diego's work.
+This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country-specific selections remain unset; the approved partial terrain-and-soil policy pins three functions and weights without granting regional transfer. Package version 0.1.6 uses contract/selection format 0.2.0. Pilot testing remains Diego's work.
 
 The configured rows are **10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
 
@@ -51,3 +51,7 @@ No raster run, complete M1 runner, or pilot validation is claimed. Missing input
 `PYTHONPATH=src python3 scripts/build-t4-developer.py --output /tmp/t4-developer-options` builds a fresh full-corpus options package. Add `--country` only to resolve a target's datasets; it does not select or approve regional functions. Verify with `--verify /tmp/t4-developer-options` against the matching source checkout. The manifest records source commit and input/output hashes. Preserve published versions; advance the package version before publishing a new bundle. Use GitHub for delivery; no separate upload or message to Diego is required.
 
 For data-only audit reconciliation, `scripts/audit-t4-compilation.py agroforestry OUTPUT --data-only` consumes fresh `draft/report.json` and `approved/report.json` under `OUTPUT`. It validates authorized source completions independently and preserves their separate human review status. Historical HTML reports remain untouched.
+
+## Relationship visibility update — 4 November 2026
+
+The [source relationship catalogue](developer-v0.1.6/relationships.html) accounts for all non-dropped structural claims, including unlinked directions and classes. This is a visibility update, not new numeric calibration: 26 configured mappings and existing response choices remain unchanged. Source context and species/crop scope remain visible.

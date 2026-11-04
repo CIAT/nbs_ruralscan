@@ -434,3 +434,17 @@ discount applies. Example: Kidane 2019 basin net returns, KS test P = 0.08.
   `metric = narrative` only when the source gives no number for this effect.
 - **Name the table or figure** a value comes from, with its caption, in `context.note`
   (`"Table 5: Soil moisture by layer …"`), and say which rows or layers were left out and why.
+
+
+54. **Compiler status hides a source relationship** (Pete, 2026-11-04; agroforestry
+184 structural claims versus 26 mappings). A `scoping_candidate` is gated from numeric
+compilation before decoding; `selection_only` therefore does not prove absence of a
+relationship. Preserve source directions, shapes, ranked classes and categorical gates
+in a separate readable catalogue, even while compilation is held. Never promote all
+scoping candidates: site context, adoption effects, importance weights, accounting
+conventions and species/crop claims require their original routing and limits. Do not
+turn source class ranks into scores or plot an uncalibrated direction as a numeric curve.
+Use `recipe.relationship_catalogue` visibility flags and tests; inspect context and
+lineage before proposing correction. Counts of explicit mapping links do not measure
+independent support, review completion or total evidence use. A display fix grants no
+human approval and does not advance review-feedback learning cursors.
