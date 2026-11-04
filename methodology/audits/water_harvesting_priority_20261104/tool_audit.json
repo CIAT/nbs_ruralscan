@@ -1,0 +1,84 @@
+{
+  "repository": "https://github.com/sitasatu/AMERTA",
+  "commit": "7b0be43778dd7732601893b004778c4e5d576a65",
+  "disposition": "implementation referral; not approved T4 evidence",
+  "inspected_files": [
+    {
+      "path": "algorithms/analysis_algs/amerta_algorithm.py",
+      "sha256": "aa626c65118be5aa0754eb436289a0a81e8468b0adc31d67c5401fc56317ae29",
+      "url": "https://github.com/sitasatu/AMERTA/blob/7b0be43778dd7732601893b004778c4e5d576a65/algorithms/analysis_algs/amerta_algorithm.py"
+    },
+    {
+      "path": "algorithms/preanalysis_algs/griddingtwi_algorithm.py",
+      "sha256": "604246f0cb92287da09f7e603e33dfd368e342768e98af08da38f4b64e98057d",
+      "url": "https://github.com/sitasatu/AMERTA/blob/7b0be43778dd7732601893b004778c4e5d576a65/algorithms/preanalysis_algs/griddingtwi_algorithm.py"
+    },
+    {
+      "path": "README.md",
+      "sha256": "f8157a6b25c81dff510305ee74856dac87afc34bd7a85158236c6e55c84d53d5",
+      "url": "https://github.com/sitasatu/AMERTA/blob/7b0be43778dd7732601893b004778c4e5d576a65/README.md"
+    }
+  ],
+  "findings": [
+    "amerta_algorithm.py:213-239 hardcodes 0.30 rainfall + 0.30 TWI + 0.20 land cover + 0.20 soil; missing scores coalesced to zero; class cuts 2.5/3.5/4.5.",
+    "griddingtwi_algorithm.py:60-77 defines TWI classes at 0/5/10/15; code score_twi(0)=2 conflicts with help text saying zero default has score 1.",
+    "README states GPL-3.0+; source headers say GPL-2.0 or later. License reconciliation needed before reuse.",
+    "No validation or parameter provenance established in inspected files; do not adopt defaults, null treatment or scale choices."
+  ],
+  "other_targets": [
+    {
+      "url": "https://www.sciencedirect.com/science/article/abs/pii/S0378377419305505",
+      "result": "Existing Vema paper located; no full 27-rule code artifact verified by this search. This is not proof no code exists."
+    },
+    {
+      "url": "https://github.com/Sarguru-tech/hydro-harvest",
+      "result": "Search-result description explicitly rooftop-focused; excluded at scope screen; repository code not inspected."
+    }
+  ],
+  "parameter_claim_status": "Real design-choice claims identified, not empirical findings. Retain for expert_assertion extraction after retention-pond/NbS scope and file-level intake review; not rejected merely for being hardcoded.",
+  "scope_hold": "Repository states retention ponds/embung; nature-compatible intervention boundary and validation/provenance unresolved. No generic pond code is automatically a NbS recipe.",
+  "adapter": "nbs_ruralscan.ingest.github.interrogate; separate direct subdirectories; empty __init__.py and PNG assets ignored",
+  "adapter_acquired": [
+    {
+      "source_id": "sitasatu_amerta_algorithm_8ca1036d1e21",
+      "repo": "sitasatu/AMERTA",
+      "commit": "7b0be43778dd7732601893b004778c4e5d576a65",
+      "path": "algorithms/analysis_algs/amerta_algorithm.py",
+      "sha1": "5157335d0e5a8b1a4145f046689ac9e0679cf10f",
+      "n_lines": 298
+    },
+    {
+      "source_id": "sitasatu_griddingch_algorithm_87d76e74fbba",
+      "repo": "sitasatu/AMERTA",
+      "commit": "7b0be43778dd7732601893b004778c4e5d576a65",
+      "path": "algorithms/preanalysis_algs/griddingch_algorithm.py",
+      "sha1": "b54326f61020b3160d97fc2bd101d0e1d7b2fbe6",
+      "n_lines": 566
+    },
+    {
+      "source_id": "sitasatu_griddingjt_algorithm_c2c417bd531e",
+      "repo": "sitasatu/AMERTA",
+      "commit": "7b0be43778dd7732601893b004778c4e5d576a65",
+      "path": "algorithms/preanalysis_algs/griddingjt_algorithm.py",
+      "sha1": "d4ede4e614e7b8aa0ff1facc4bcadb8e550af7e4",
+      "n_lines": 455
+    },
+    {
+      "source_id": "sitasatu_griddingpl_algorithm_6978c777b5ca",
+      "repo": "sitasatu/AMERTA",
+      "commit": "7b0be43778dd7732601893b004778c4e5d576a65",
+      "path": "algorithms/preanalysis_algs/griddingpl_algorithm.py",
+      "sha1": "7aa59af10c2b079dc921e57e7028b1c411428167",
+      "n_lines": 501
+    },
+    {
+      "source_id": "sitasatu_griddingtwi_algorithm_46161e4aed39",
+      "repo": "sitasatu/AMERTA",
+      "commit": "7b0be43778dd7732601893b004778c4e5d576a65",
+      "path": "algorithms/preanalysis_algs/griddingtwi_algorithm.py",
+      "sha1": "49de51bb8854ea3749d82253812b427c862b4c90",
+      "n_lines": 471
+    }
+  ],
+  "adapter_parameter_candidates": []
+}
