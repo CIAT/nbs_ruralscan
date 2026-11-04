@@ -499,3 +499,348 @@ def test_complete_discovery_columns_share_one_cohort():
     assert counts["retrieved"] == 141
     assert counts["screened"] == 113
     assert counts["included"] == 36
+
+
+def test_review_work_is_distinct_from_current_approval_and_detector_flags():
+    data = fixture_data()
+    rows = data["registers"]["EV_evidence_register"]
+    for eid in ("queried", "flagged", "reopened", "unknown_drop", "retagged"):
+        rows.append(
+            {
+                "evidence_id": eid,
+                "source_id": "empty",
+                "nbs_id": "trees",
+                "reviewer_ok": False,
+                "review_state": "dropped" if eid == "unknown_drop" else "",
+            }
+        )
+    data["review_log"] = [
+        {"evidence_id": "b", "decision": "keep"},
+        {"evidence_id": "b", "decision": "keep"},  # repeated event is one claim
+        {"evidence_id": "queried", "decision": "query"},
+        {"evidence_id": "flagged", "decision": "flag"},
+        {"evidence_id": "reopened", "decision": "ok"},
+        {"evidence_id": "reopened", "decision": "reopen"},
+        {"evidence_id": "retagged", "decision": "retag"},
+        {"evidence_id": "not_in_register", "decision": "ok"},
+    ]
+    result = build_progress(data, [{"source_id": "alias", "duplicate_of": "paper"}])
+    m = result["totals"]
+    assert m["all_excerpts"] == 9
+    assert m["reviewed_excerpts"] == 7
+    assert m["reviewed_pct"] == 77.8
+    assert m["unreviewed_excerpts"] == 2  # detector flag + unexplained quarantine
+    assert m["approved_excerpts"] == 2
+    assert m["approved_pct"] == 28.6
+    assert m["reviewed_active_excerpts"] == 6
+    assert m["reviewed_dropped_excerpts"] == 1
+    assert m["dropped_excerpts"] == 2
+    assert m["reviewed_unresolved_excerpts"] == 4
+    assert m["sources_with_reviewed_excerpts"] == 2
+    assert m["sources_with_approved_excerpts"] == 1
+    empty = next(s for s in result["sources"] if s["source_id"] == "empty")
+    assert empty["reviewed_evidence_ids"] == ["queried", "reopened", "retagged"]
+    assert empty["approved_evidence_ids"] == []
+
+
+def test_review_counts_include_logged_drops_but_reopen_alone_is_not_assessment():
+    data = fixture_data()
+    for row in data["registers"]["EV_evidence_register"]:
+        row["reviewer_ok"] = False
+    data["review_log"] = [
+        {"evidence_id": "d", "decision": "drop"},
+        {"evidence_id": "b", "decision": "reopen"},
+    ]
+    totals = build_progress(data, [])["totals"]
+    assert totals["reviewed_excerpts"] == 1
+    assert totals["reviewed_pct"] == 25.0
+    assert totals["approved_excerpts"] == 0
+    assert totals["approved_pct"] == 0.0
+    assert totals["reviewed_dropped_excerpts"] == 1
+    assert totals["reviewed_unresolved_excerpts"] == 0
+    empty = build_progress({}, [])["totals"]
+    assert empty["reviewed_pct"] is None
+    assert empty["approved_pct"] is None
+
+
+def test_all_family_tag_is_explicit_scope_not_unassigned_or_inherited():
+    data = fixture_data()
+    data["registers"]["FAM_family_registry"].append(
+        {
+            "nbs_id": "trees",
+            "suitability_family_id": "trees__cross_family",
+            "subpractice_id": "cross_cutting_envelope",
+            "name": "Cross-cutting envelope",
+            "definition": "Applies across all families; not a subpractice.",
+        }
+    )
+    data["registers"]["EV_evidence_register"][1]["suitability_family_id"] = (
+        "trees__cross_family"
+    )
+    result = build_progress(data, [{"source_id": "alias", "duplicate_of": "paper"}])
+    tree = next(p for p in result["practices"] if p["nbs_id"] == "trees")
+    fams = {f["family_id"]: f for f in tree["families"]}
+    assert fams["trees__cross_family"]["scope_kind"] == "all_families"
+    assert fams["trees__cross_family"]["metrics"]["active_excerpts"] == 1
+    assert fams["trees__natural"]["metrics"]["active_excerpts"] == 0
+    assert fams["__unassigned"]["scope_kind"] == "unassigned"
+    assert fams["__unassigned"]["metrics"]["active_excerpts"] == 0
+
+
+def test_scope_source_keys_match_counts_for_mixed_named_and_unassigned_claims():
+    data = fixture_data()
+    result = build_progress(data, [{"source_id": "alias", "duplicate_of": "paper"}])
+    trees = next(p for p in result["practices"] if p["nbs_id"] == "trees")
+    families = {f["family_id"]: f for f in trees["families"]}
+    # One paper has both a planted-family claim and claims with no family tag.
+    # Source-level unioned family tags cannot recover this unassigned drilldown.
+    assert families["trees__planted"]["metrics"]["source_keys"] == ["paper"]
+    assert families["__unassigned"]["metrics"]["source_keys"] == ["empty", "paper"]
+    for metrics in [
+        result["totals"],
+        trees["metrics"],
+        *[f["metrics"] for f in trees["families"]],
+    ]:
+        assert metrics["known_sources"] == len(metrics["source_keys"])
+        assert "alias" not in metrics["source_keys"]
+
+
+def test_table_views_route_inputs_but_count_only_retained_output_citations():
+    data = fixture_data()
+    data["registers"]["XW_target_crosswalk"] = [
+        {"ev_variable": "shared", "target_table": "T3", "target_key": "drought"},
+        {"ev_variable": "shared", "target_table": "T6", "target_key": "yield"},
+        {"ev_variable": "yield", "target_table": "T6", "target_key": "yield"},
+        {"ev_variable": "cost", "target_table": "T6", "target_key": "cost_per_hectare"},
+    ]
+    data["global_tables"] = {
+        "T5_opportunity_space": [{"variable_id": "yield", "mcda_role": "priority"}]
+    }
+    rows = data["registers"]["EV_evidence_register"]
+    rows[2]["variable"] = "shared"
+    rows += [
+        {
+            "evidence_id": "uncited",
+            "source_id": "empty",
+            "nbs_id": "trees",
+            "use_role": "nbs_effect",
+            "variable": "yield",
+        },
+        {
+            "evidence_id": "asset",
+            "source_id": "empty",
+            "nbs_id": "trees",
+            "use_role": "asset_vulnerability",
+        },
+        {
+            "evidence_id": "economic",
+            "source_id": "empty",
+            "nbs_id": "trees",
+            "use_role": "nbs_effect",
+            "variable": "cost",
+        },
+        {
+            "evidence_id": "unmapped",
+            "source_id": "empty",
+            "nbs_id": "trees",
+            "use_role": "nbs_effect",
+            "variable": "unknown",
+        },
+    ]
+    data["recipes"]["trees"]["T3_nbs_hazard_farming"] = [
+        {"record_id": "cell", "evidence_ids": ["a", "c", "d", "missing"]},
+        {"record_id": "cell", "evidence_ids": ["a", "c"]},
+        {"record_id": "empty", "evidence_ids": []},
+    ]
+    result = build_progress(data, [{"source_id": "alias", "duplicate_of": "paper"}])
+    t3, t6 = (result["table_views"][t] for t in ("T3", "T6"))
+    assert t3["totals"]["evidence_ids"] == ["a", "asset", "c", "d"]
+    assert t6["totals"]["evidence_ids"] == ["c", "uncited"]
+    assert t3["totals"]["contributing_excerpts"] == 2
+    assert t6["totals"]["contributing_excerpts"] == 1
+    output = t3["outputs"][0]
+    assert output["output_count"] == 2
+    assert output["evidence_backed_outputs"] == 1
+    assert output["evidence_ids"] == ["a", "c"]
+    assert output["source_keys"] == ["paper"]
+    assert len(output["rows"]) == 2
+    assert result["totals"]["contributing_excerpts"] == 2  # cross-table union
+    assert result["totals"]["all_excerpts"] == 8
+    assert "Relevance does not establish suitability for use" in t3["scope_note"]
+    assert "unmapped" in result["totals"]["evidence_ids"]
+    for view in result["table_views"].values():
+        for metrics in [view["totals"], *[p["metrics"] for p in view["practices"]]]:
+            assert metrics["all_excerpts"] == sum(
+                metrics[k]
+                for k in (
+                    "approved_excerpts",
+                    "reviewed_unresolved_excerpts",
+                    "reviewed_dropped_excerpts",
+                    "unreviewed_excerpts",
+                )
+            )
+            assert metrics["known_sources"] == len(metrics["source_keys"])
+            assert metrics["contributing_excerpts"] <= metrics["active_excerpts"]
+
+
+def test_table_scope_fallback_keeps_uncited_effects_and_uses_table_search_cohort():
+    data = fixture_data()
+    data["registers"]["EV_evidence_register"].append(
+        {
+            "evidence_id": "uncited",
+            "source_id": "empty",
+            "nbs_id": "trees",
+            "use_role": "nbs_effect",
+        }
+    )
+    data["registers"]["SRCH_search_register"] = [
+        search("t3", table="T3", n_included="2"),
+        search("t6", table="T6", n_included="4"),
+    ]
+    result = build_progress(data, [])
+    assert result["totals"]["search_metrics"]["included"] is None
+    for table, included in (("T3", 2), ("T6", 4)):
+        view = result["table_views"][table]
+        assert view["evidence_tracking"] == "shared_effect_pool"
+        assert "uncited" in view["totals"]["evidence_ids"]
+        assert view["totals"]["search_metrics"]["included"] == included
+        assert "Shared T3/T6" in view["scope_note"]
+
+
+def test_shared_t2_configuration_has_project_scope_and_separate_citation_coverage():
+    data = fixture_data()
+    data["global_tables"] = {
+        "T2_climate_risk": [
+            {"variable_id": "drought", "evidence_ids": []},
+            {"variable_id": "flood", "evidence_ids": ["a", "d", "missing_t2"]},
+            {"variable_id": "flood", "evidence_ids": ["a"]},
+        ]
+    }
+    data["registers"]["EV_evidence_register"].append(
+        {"evidence_id": "climate", "source_id": "empty", "use_role": "climate_risk"}
+    )
+    result = build_progress(data, [{"source_id": "alias", "duplicate_of": "paper"}])
+    view = result["table_views"]["T2a"]
+    assert view["project_level"] is True
+    assert view["practices"] == []
+    assert view["totals"]["evidence_ids"] == ["a", "climate", "d"]
+    assert view["totals"]["contributing_excerpts"] == 1
+    assert view["outputs"][0]["output_count"] == 2
+    assert view["outputs"][0]["evidence_backed_outputs"] == 1
+    assert view["outputs"][0]["source_keys"] == ["paper"]
+    assert "missing_t2" in result["diagnostics"]["compiled_missing_evidence_ids"]
+    empty = build_progress(
+        {"global_tables": {"T2_climate_risk": [{"variable_id": "drought"}]}}, []
+    )["table_views"]["T2a"]
+    assert empty["totals"]["all_excerpts"] == 0
+    assert empty["totals"]["reviewed_pct"] is None
+    assert empty["outputs"][0]["output_count"] == 1
+    assert empty["outputs"][0]["evidence_backed_outputs"] == 0
+
+
+def test_t4_table_scope_excludes_soft_operational_outputs_preserves_legacy_counts():
+    data = fixture_data()
+    data["recipes"]["trees"]["T4_suitability_mappings"] += [
+        {
+            "mapping_id": "soft",
+            "suitability_dimension": "operational_constraint",
+            "is_scenario_candidate": True,
+            "evidence_ids": ["b"],
+        },
+        {
+            "mapping_id": "mask",
+            "suitability_dimension": "operational_constraint",
+            "is_scenario_candidate": False,
+            "evidence_ids": [],
+        },
+    ]
+    result = build_progress(data, [{"source_id": "alias", "duplicate_of": "paper"}])
+    assert result["totals"]["t4_relationships"] == 4
+    t4 = result["table_views"]["T4"]
+    assert t4["outputs"][0]["output_count"] == 3
+    assert t4["totals"]["t4_relationships"] == 3
+    assert t4["totals"]["evidence_ids"] == ["a", "d"]
+    assert t4["totals"]["source_keys"] == ["paper"]
+    trees = next(p for p in t4["practices"] if p["nbs_id"] == "trees")
+    families = {f["family_id"]: f["metrics"] for f in trees["families"]}
+    assert families["trees__planted"]["evidence_ids"] == ["a"]
+    assert families["trees__planted"]["contributing_excerpts"] == 1
+    assert families["__unassigned"]["evidence_ids"] == ["d"]
+    assert families["trees__natural"]["evidence_ids"] == []
+
+
+def test_output_details_distinguish_family_rollups_and_context_variants():
+    data = {
+        "recipes": {
+            "trees": {
+                "T3_nbs_hazard_farming": [
+                    {
+                        "record_id": "rollup",
+                        "hazard_type": "drought",
+                        "farming_system": "all",
+                    },
+                    {
+                        "record_id": "family",
+                        "hazard_type": "drought",
+                        "suitability_family_id": "trees__planted",
+                        "farming_system": "all",
+                    },
+                    {
+                        "record_id": "context",
+                        "hazard_type": "drought",
+                        "scope_type": "income_group",
+                        "scope_id": "low",
+                        "risk_role": "asset_threat",
+                    },
+                ]
+            }
+        }
+    }
+    output = build_progress(data, [])["table_views"]["T3"]["outputs"][0]
+    rows = output["rows"]
+    assert len({r["label"] for r in rows}) == 3
+    assert "practice roll-up" in rows[0]["label"]
+    assert "planted" in rows[1]["label"]
+    assert rows[1]["family_ids"] == ["trees__planted"]
+    assert "income group: low" in rows[2]["label"]
+    assert rows[2]["risk_role"] == "asset_threat"
+    assert "context variants" in output["count_definition"]
+
+
+def test_compiled_output_metric_deduplicates_records_and_respects_family_scope():
+    family_cell = {
+        "record_id": "same_id",
+        "suitability_family_id": "trees__planted",
+        "evidence_ids": [],
+    }
+    data = {
+        "registers": {
+            "FAM_family_registry": fixture_data()["registers"]["FAM_family_registry"]
+        },
+        "global_tables": {"T2_climate_risk": [{"variable_id": "drought"}]},
+        "recipes": {
+            "trees": {
+                "T3_nbs_hazard_farming": [
+                    family_cell,
+                    dict(family_cell),
+                    {"record_id": "rollup"},
+                ],
+                "T6_nbs_scorecard": [dict(family_cell)],
+            },
+            "water": {"T3_nbs_hazard_farming": [{"record_id": "same_id"}]},
+        },
+    }
+    result = build_progress(data, [])
+    assert result["totals"]["compiled_outputs"] == 5
+    assert result["totals"]["contributing_excerpts"] == 0
+    assert result["table_views"]["T2a"]["totals"]["compiled_outputs"] == 1
+    assert result["table_views"]["T3"]["totals"]["compiled_outputs"] == 3
+    for scope in (result, result["table_views"]["T3"]):
+        tree = next(p for p in scope["practices"] if p["nbs_id"] == "trees")
+        assert tree["metrics"]["compiled_outputs"] == (3 if scope is result else 2)
+        families = {f["family_id"]: f["metrics"] for f in tree["families"]}
+        assert families["trees__planted"]["compiled_outputs"] == (
+            2 if scope is result else 1
+        )
+        assert families["trees__natural"]["compiled_outputs"] == 0
+        assert families["__unassigned"]["compiled_outputs"] == 1

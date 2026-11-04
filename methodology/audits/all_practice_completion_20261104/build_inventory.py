@@ -48,7 +48,7 @@ def write(name, rows):
     if not rows:
         return
     with (OUT / name).open("w") as f:
-        w = csv.DictWriter(f, fieldnames=list(rows[0]))
+        w = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
         w.writeheader()
         w.writerows(rows)
 

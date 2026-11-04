@@ -4,15 +4,15 @@ Scope: every one of the 103 sources marked acquired/unregistered in the frozen b
 
 | Classification | Sources |
 |---|---:|
-| ready_unread | 46 |
+| ready_unread | 45 |
 | explicit_adapter_hold | 10 |
 | explicit_identity_hold | 5 |
 | explicit_scientific_hold | 8 |
 | alias_reuse | 5 |
-| already_read_zero_yield | 28 |
+| already_read_zero_yield | 29 |
 | unclear | 1 |
 
-There are 46 candidate bounded reads, including three existing parked homegarden sources; 43 remain on the active machine-work list. “ready_unread” means no completed extraction disposition was located for the requested lane, not proof nobody ever read the source. Opening-title/library/credibility preflight still required. Prior effect-zero sources with concrete T4 referrals are explicitly retained as T4 work, never reopened as duplicate effects reads.
+There are 45 candidate bounded reads, including three existing parked homegarden sources; 42 remain on the active machine-work list. “ready_unread” means no completed extraction disposition was located for the requested lane, not proof nobody ever read the source. Opening-title/library/credibility preflight still required. Prior effect-zero sources with concrete T4 referrals are explicitly retained as T4 work, never reopened as duplicate effects reads.
 
 No staged-ready source remains unregistered in this subset: three independently reviewed source handoffs were registered during this session. Losada and other held staging is not labelled ready merely because JSON exists.
 
@@ -26,7 +26,6 @@ Coastal wetlands remain parked by Pete; document existing gap. Homegardens remai
 
 - `bayala2014_trees_preferential_flow_parkland` — T4; Bounded source/claim inventory after opening-title and library identity preflight; queue identity flag and cache support reading, not automatic admission.
 - `bayala2015_parkland_processes_sahel` — T4; Bounded source/claim inventory after opening-title and library identity preflight; queue identity flag and cache support reading, not automatic admission.
-- `brandle2004_windbreaks_na_ag` — T4; Bounded source/claim inventory after opening-title and library identity preflight; queue identity flag and cache support reading, not automatic admission.
 - `cornelis2004_windbreak_design` — T4; Bounded source/claim inventory after opening-title and library identity preflight; queue identity flag and cache support reading, not automatic admission.
 - `india_fao_agroforestry_suitability_mapping_2017` — T4; Bounded source/claim inventory after opening-title and library identity preflight; queue identity flag and cache support reading, not automatic admission.
 - `kessler_1994` — T4; Bounded source/claim inventory after opening-title and library identity preflight; queue identity flag and cache support reading, not automatic admission.
@@ -82,3 +81,5 @@ Coastal wetlands remain parked by Pete; document existing gap. Homegardens remai
 source_triage.csv is exhaustive and grouped by NbS/priority. Every row retains source ID, original note/blocker, current identity flags, exact basis path or queue record selector, available native page/table locators and next action. The separate reference index preserves matching audit/staging file line numbers; matches are retrieval aids, not automatic proof of completed reading.
 
 Source-zero classifications concern the declared prior lane only. They preserve explicit scientific reasons and are neither evidence deletion nor an assertion that every role in that paper is exhausted. Scientific/identity/adapter holds are listed separately so human decisions and mechanical recovery are not mistaken for unread sources.
+
+Brandle was subsequently read in full in this batch; its zero-yield T4 disposition is recorded and removed from the active reading list.

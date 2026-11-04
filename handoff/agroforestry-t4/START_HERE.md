@@ -6,7 +6,7 @@
 
 Use [developer_contract.json](developer-v0.1.7/developer_contract.json) as the machine entry point and [developer_table.csv](developer-v0.1.7/developer_table.csv) for inspection. Pin the source commit in [manifest.json](developer-v0.1.7/manifest.json). The package contains the full evidence inventory, with no target country selected. The approved first-pass policy pins the slope/SOC/pH pools and 50/25/25 weights for a conditional partial terrain-and-soil index. It is ready for integration work, not a completed spatial analysis.
 
-Evidence inspection stays in the existing dashboard: **Evidence Query → T4 analysis → Evidence trail / Suitability & weights / Global synthesis / Rules & method**. Review decisions stay in QA/QC.
+Evidence inspection stays in [Evidence & rules → Relationships](../../docs/dashboard.html#relationships), the live source relationship catalogue. Its **Evidence explorer** subtab retains **Evidence trail / Suitability & weights / Global synthesis / Rules & method**. Review decisions stay in **Evidence review**.
 
 ## What the package contains
 
@@ -74,8 +74,8 @@ Remaining numeric alternatives and operational scenarios are later extensions. T
 
 ## Relationship visibility update — 4 November 2026
 
-The [source relationship catalogue](developer-v0.1.7/source_relationships.html) accounts for all non-dropped structural claims, including unlinked directions and classes. This is a visibility update, not new numeric calibration: 26 configured mappings and existing response choices remain unchanged. Source context and species/crop scope remain visible.
+The [live source relationship catalogue](../../docs/dashboard.html#relationships) accounts for all non-dropped structural claims, including unlinked directions and classes. This is a visibility update, not new numeric calibration: 26 configured mappings and existing response choices remain unchanged. Source context and species/crop scope remain visible. Use the live dashboard for ongoing inspection; versioned HTML packages remain unchanged as historical snapshots.
 
 ## Aggregated evidence table
 
-The original plotted table now includes the aggregate evidence alongside family-specific functions. Start with [developer table: one row per variable](developer-v0.1.7/index.html): group and variable use across the recorded study cohort, reconstructed source-weight summaries, source-relative importance, family-specific directions and function-support counts. [Source records](developer-v0.1.7/source_relationships.html) remain available underneath. Frequency is not importance; partial mapped-group weight sums are labelled and never renormalized. Regional and practitioner scopes remain separate.
+The original plotted table now includes the aggregate evidence alongside family-specific functions. Start with [live evidence table: one row per variable](../../docs/dashboard.html#relationships): group and variable use across the recorded study cohort, reconstructed source-weight summaries, source-relative importance, family-specific directions and function-support counts. [Source records](../../docs/dashboard.html#relationships) remain available underneath. Frequency is not importance; partial mapped-group weight sums are labelled and never renormalized. Regional and practitioner scopes remain separate.
