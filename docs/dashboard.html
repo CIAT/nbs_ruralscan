@@ -1737,8 +1737,11 @@
                 <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Status:</span>
                 <select id="filter-audit-status" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
                   <option value="all">All</option>
-                  <option value="active">Active (Has Ingested Mappings/Claims)</option>
-                  <option value="pending">Pending/Draft</option>
+                  <option value="target">Target practice families</option>
+                  <option value="out_of_scope">Out of project scope</option>
+                  <option value="separate_comparison">Separate comparison</option>
+                  <option value="routing">Cross-family evidence tags</option>
+                  <option value="qualitative">Qualitative / scope unresolved</option>
                 </select>
               </div>
               <span style="font-size:11px; color:var(--text-muted);">Practice &amp; sub-practice follow the <b>scope chips</b> above.</span>
@@ -1748,7 +1751,7 @@
             <details style="margin-top:10px; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.015);">
               <summary style="cursor:pointer; padding:9px 13px; font-weight:600; color:var(--text-primary); outline:none; font-size:12px; list-style:none;">&#8505;&#65039; What this matrix shows &amp; how to use it <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">— click to expand</span></summary>
               <div style="padding:2px 14px 14px;">
-                <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin:10px 0 6px;">One <b>group row</b> per NbS (with its register roll-ups), one <b>row</b> per suitability family. <b>Stock · Lit · Grey · Tools</b> are the four discovery channels feeding T4 suitability; <b>Claims</b> and <b>T4 rows</b> are what reached the registers; <b>Status</b> is the family's methodology state.</p>
+                <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin:10px 0 6px;">One <b>group row</b> per NbS (with its register roll-ups), one <b>row</b> per suitability family. <b>Stock · Lit · Grey · Tools</b> are the four discovery channels feeding T4 suitability; <b>Claims</b> and <b>T4 rows</b> are what reached the registers; <b>Status</b> distinguishes project scope from evidence availability. Counts show retained register records, not approval or readiness. Cross-family tags are evidence routing, not extra practices.</p>
                 <div style="font-size:11.5px; margin-top:8px; padding-top:10px; border-top: 1px solid var(--border-color); display:flex; flex-direction:column; gap:7px;">
                   <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
                     <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Count badge</span>
@@ -2587,6 +2590,16 @@
   // Red 'new version — pull' banner (#191): only for local reviewers (API present). Polls
   // /api/version; shows when the local clone is behind origin/main. Data/decisions are safe
   // across a pull (decisions.json is gitignored).
+  function checkReadiness(){
+    if(!window._reviewApi)return;
+    let el=document.getElementById('vf-readiness');
+    if(!el){el=document.createElement('div');el.id='vf-readiness';el.setAttribute('role','status');el.style.cssText='margin:10px 0;padding:10px;border:1px solid var(--border-color);font-size:12px;line-height:1.6';const anchor=document.getElementById('vf-mode-hint');if(anchor)anchor.parentNode.insertBefore(el,anchor);}
+    fetch('/api/readiness').then(r=>r.ok?r.json():null).then(v=>{
+      if(!v||!v.known){el.textContent='Source-cache readiness unavailable. Refresh after restarting the review server.';return;}
+      el.innerHTML='<b>Source cache: '+v.cached+' / '+v.total+' present.</b> '+(v.ready?'Presence check passed; Apply still verifies source provenance.':'Missing '+v.missing.length+' source(s). Run <code>uv run python scripts/hydrate-corpus.py</code> from the repository, then recheck. On Windows, set <code>NBS_LIBRARY_ROOT</code> to your synced library folder. Decisions remain saved.')+' <button type="button" onclick="checkReadiness()">Recheck</button>';
+      if(v.missing.length)el.innerHTML+='<details><summary>Missing source IDs</summary>'+v.missing.map(vfEsc).join(', ')+'</details>';
+    }).catch(()=>{el.textContent='Source-cache check failed. Check the local review server; decisions remain saved.';});
+  }
   function checkVersion(){
     if(!window._reviewApi)return;
     fetch('/api/version').then(function(r){return r.ok?r.json():null;}).then(function(v){
@@ -2599,7 +2612,7 @@
       } else if(el){ el.remove(); document.body.style.paddingTop=''; }
     }).catch(function(){});
   }
-  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ vfLoadClarifications(); checkVersion(); if(!window._vfVerPoll){window._vfVerPoll=setInterval(checkVersion,60000);} if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
+  function probeReviewApi(){ fetch('/api/health').then(function(r){return r.ok?r.json():null;}).then(function(j){ window._reviewApi=!!(j&&j.ok); updateVfMode(); _vfToggleBanner(); if(window._reviewApi){ vfLoadClarifications(); checkVersion(); checkReadiness(); if(!window._vfVerPoll){window._vfVerPoll=setInterval(checkVersion,60000);} if(window._vfReviewer===undefined){window._vfReviewer=localStorage.getItem('vfReviewer')||'';} fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var mine=all[eid][me]; if(mine&&mine.decision){ d[eid]=mine.decision; rs[eid]=mine.reason||''; ns[eid]=mine.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d)); renderVfWorklist(); }).catch(function(){}); } }).catch(function(){ window._reviewApi=false; updateVfMode(); _vfToggleBanner(); }); }
   function updateVfMode(){ var ab=document.getElementById('vf-apply-btn'), db=document.getElementById('vf-download-btn'), h=document.getElementById('vf-mode-hint');
     if(window._reviewApi){ if(ab)ab.style.display='inline-block'; if(db)db.style.display='none'; if(h)h.innerHTML='Live review server connected — click ok/drop, then <b>Apply &amp; submit to main</b>: writes to the register, re-gates, and opens a PR including clarification replies. Required checks and approvals still apply.'; }
     else { if(ab)ab.style.display='none'; if(db)db.style.display='inline-block';
@@ -2609,7 +2622,7 @@
   async function applyVfDecisions(){ await (window._vfSaveQueue||Promise.resolve()); if(!window._reviewApi){ vfNotice('No review server. Use Download decisions CSV + review.py apply.'); return; }
     var btn=document.getElementById('vf-apply-btn'); if(btn){btn.disabled=true; btn.textContent='Applying…';}
     fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer')})}).then(function(r){return r.json();}).then(function(res){
-      if(res.error){ vfNotice('Apply failed (gate?):\n'+res.error); if(btn){btn.disabled=false;btn.textContent='Submit reviews';} return; }
+      if(res.error){ vfNotice('Apply failed. If source files are missing, run uv run python scripts/hydrate-corpus.py (Windows: set NBS_LIBRARY_ROOT), then retry. Saved decisions remain local.\n'+res.error); if(btn){btn.disabled=false;btn.textContent='Submit reviews';} return; }
       fetch('/api/state').then(function(r){return r.json();}).then(function(st){ var all=st.decisions||{}; window._vfAllReviews=all; var me=(window._vfReviewer||'reviewer'); var d={},rs={},ns={}; Object.keys(all).forEach(function(eid){ var m=all[eid][me]; if(m&&m.decision){ d[eid]=m.decision; rs[eid]=m.reason||''; ns[eid]=m.note||''; } }); window._vfDecisions=d; window._vfReasons=rs; window._vfNotes=ns; localStorage.setItem('vfDecisions',JSON.stringify(d));
         fetch('dashboard_data.json?t='+Date.now()).then(function(r){return r.json();}).then(function(data){
           // BEST-EFFORT refresh: a render throw here must NOT abort the flow — otherwise the
@@ -2623,8 +2636,8 @@
           var _today=new Date().toISOString().slice(0,10);
           fetch('/api/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({reviewer:(window._vfReviewer||'reviewer'),title:'qaqc: review '+_today})}).then(function(r){return r.json();}).then(function(sb){
             if(btn){btn.disabled=false;btn.textContent='Submit reviews';}
-            if(sb.ok){ vfLoadClarifications(); vfNotice(msg+'\n\n\u2705 Submitted for main \u2014 '+(sb.pr_url||'PR opened')+'\n(subject to checks and required approvals; clarification-history PRs require review).'); }
-            else { vfNotice(msg+'\n\n\u26a0 Submit to main FAILED \u2014 decisions ARE saved locally; run scripts/submit-review.sh manually.\n\n'+((sb.error||sb.output)||'').slice(-600)); }
+            if(sb.ok){ vfLoadClarifications(); vfNotice(msg+(sb.pr_url?'\n\nSubmitted for main — '+sb.pr_url+'\nSubject to checks and required approvals; clarification-history PRs require review.':'\n\nNo new agreed changes to submit. Saved decisions remain available.')); }
+            else { vfNotice(msg+'\n\n\u26a0 Submit to main FAILED \u2014 decisions ARE saved locally; retry submission after resolving the error, or use the Python command in How to review.\n\n'+((sb.error||sb.output)||'').slice(-600)); }
           }).catch(function(e){ if(btn){btn.disabled=false;btn.textContent='Submit reviews';} vfNotice(msg+'\n\nSubmit error: '+e); }); });
       });
     }).catch(function(e){ vfNotice('Apply error: '+e); if(btn){btn.disabled=false;btn.textContent='Submit reviews';} }); }
@@ -3701,7 +3714,7 @@
         const list = [{ id: 'all', name: 'None — Parent Practice' }].concat(
           fams.slice().sort((a, b) => a.id.localeCompare(b.id)).map(f => ({
             id: f.id,
-            name: _titleCase(f.id.split('__').pop())
+            name: familyScopeLabel(f.id, _titleCase(f.id.split('__').pop()))
           }))
         );
 
@@ -4363,16 +4376,18 @@
     </td>`;
   }
 
-  // Status (methodology state) for a family — same rules as the old management-progress matrix.
-  function auditFamilyStatus(spatialProductType, t4Count, claimsCount) {
-    if (spatialProductType === 'qualitative_only') {
-      return claimsCount > 0
-        ? { text: 'Active (Qual)', cls: 'high' }
-        : { text: 'Draft (Qual)', cls: 'medium' };
-    }
-    if (t4Count > 0 && claimsCount > 0) return { text: 'Active', cls: 'high' };
-    if (t4Count > 0 || claimsCount > 0) return { text: 'Draft / In Progress', cls: 'medium' };
-    return { text: 'Pending', cls: 'low' };
+  function familyScopeLabel(familyId, label) {
+    const status = (dashboardData.family_display_status || {})[familyId];
+    if(status)return label + ' — ' + status.label;
+    if(familyId.endsWith('__cross_family'))return label + ' — evidence tag';
+    return label;
+  }
+  function auditFamilyStatus(familyId, spatialProductType) {
+    const explicit = (dashboardData.family_display_status || {})[familyId];
+    if (explicit) return { text: explicit.label, cls: 'medium', key: explicit.status, reason: explicit.reason };
+    if (familyId.endsWith('__cross_family')) return { text: 'Evidence routing tag', cls: 'low', key: 'routing', reason: 'Cross-family evidence; not a target practice.' };
+    if (spatialProductType === 'qualitative_only') return { text: 'Qualitative / scope unresolved', cls: 'medium', key: 'qualitative', reason: 'Qualitative-only does not establish project eligibility.' };
+    return { text: 'Target practice family', cls: 'low', key: 'target', reason: 'Evidence counts do not establish review approval or analytical readiness.' };
   }
 
   // Jump to the Evidence Query tab for an NbS (and optionally a family) — preserved from the
@@ -4444,8 +4459,7 @@
     if (variantFilter && variantFilter !== 'all') rows = rows.filter(r => r.familyId === variantFilter);
     if (statusFilter !== 'all') {
       rows = rows.filter(r => {
-        const hasEvidence = claims.some(c => c.suitability_family_id === r.familyId);
-        return statusFilter === 'active' ? hasEvidence : !hasEvidence;
+        return auditFamilyStatus(r.familyId, r.spatialProductType).key === statusFilter;
       });
     }
 
@@ -4458,7 +4472,7 @@
       r.t4Count = recipe.T4_suitability_mappings
         ? recipe.T4_suitability_mappings.filter(m => m.suitability_family_id === r.familyId).length
         : 0;
-      r.status = auditFamilyStatus(r.spatialProductType, r.t4Count, r.claimsCount);
+      r.status = auditFamilyStatus(r.familyId, r.spatialProductType);
     });
 
     const sortKey = (r) => {
@@ -4497,6 +4511,7 @@
         lastNbs = r.nbsId;
         const nbsSources = sources.filter(s => (s.nbs_ids || '').split(/[|;]/).map(x => x.trim()).includes(r.nbsId));
         const totalSourcesCount = nbsSources.length;
+        const targetFamilyCount = Object.values(familiesMap).filter(f => f.nbsId === r.nbsId && auditFamilyStatus(f.familyId, f.spatialProductType).key === 'target').length;
         const nbsClaimsCount = claims.filter(c => c.nbs_id === r.nbsId).length;
         const nbsT4Count = recipe.T4_suitability_mappings ? recipe.T4_suitability_mappings.length : 0;
         // Progress funnel: discovered (screened-in candidates, acquisition queue) →
@@ -4521,8 +4536,8 @@
               <span style="font-size:11px; color:var(--text-secondary);" title="${funnelTitle}"><b style="color:var(--text-primary);">${totalSourcesCount}/${discoveredCount}</b> sources extracted</span>
               <span class="badge ${extrClass}" style="font-size:10px;" title="${funnelTitle}">${extrPct}%</span>
               ${acquiredCount > totalSourcesCount ? `<span style="font-size:11px; color:var(--text-secondary);" title="acquired to the SharePoint library, awaiting extraction"><b style="color:var(--text-primary);">${acquiredCount - totalSourcesCount}</b> acquired, unextracted</span>` : ''}
-              <span style="font-size:11px; color:var(--text-secondary);"><b style="color:var(--text-primary);">${nbsClaimsCount}</b> claims</span>
-              <span style="font-size:11px; color:var(--text-secondary);"><b style="color:var(--text-primary);">${nbsT4Count}</b> T4 rows</span>
+              <span style="font-size:11px; color:var(--text-secondary);"><b style="color:var(--text-primary);">${nbsClaimsCount}</b> retained claims</span><span style="font-size:11px;">${targetFamilyCount} target practice families</span>
+              <span style="font-size:11px; color:var(--text-secondary);"><b style="color:var(--text-primary);">${nbsT4Count}</b> stored T4 rows</span>
               <span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">click → Evidence Query &#8594;</span>
             </div>
           </td>
@@ -4548,7 +4563,7 @@
         ${_AUDIT_CHANNELS.map(ch => renderAuditChannelCell(r.familyId, 't4', ch, r.facts[ch.key])).join('')}
         <td style="text-align:center; font-size:12.5px; border-left:1px solid var(--border-color);">${r.claimsCount}</td>
         <td style="text-align:center; font-size:12.5px;">${r.t4Count}</td>
-        <td style="text-align:center;"><span class="badge ${r.status.cls}" style="font-size:10px;">${r.status.text}</span></td>
+        <td style="text-align:center;"><span class="badge ${r.status.cls}" title="${vfEsc(r.status.reason)}" style="font-size:10px;">${r.status.text}</span></td>
       `;
       const famCell = tr.querySelector('.audit-family-cell');
       if (famCell) famCell.addEventListener('click', () => auditOpenInterrogator(r.nbsId, r.familyId));
@@ -5315,7 +5330,7 @@
       const displayName = fam.suitability_family_id.split('__')[1]
                           .replace(/_/g, ' ')
                           .replace(/\b\w/g, c => c.toUpperCase());
-      opt.textContent = `${displayName} (${fam.name})`;
+      opt.textContent = familyScopeLabel(fam.suitability_family_id, `${displayName} (${fam.name})`);
       familySelect.appendChild(opt);
     });
 
@@ -5398,7 +5413,7 @@
     const familyInfo = families.find(f => f.suitability_family_id === familyId);
 
     if (familyInfo) {
-      document.getElementById('family-hero-title').textContent = familyInfo.name;
+      document.getElementById('family-hero-title').textContent = familyScopeLabel(familyId, familyInfo.name);
       document.getElementById('family-hero-type').textContent = `Product: ${familyInfo.spatial_product_type.replace(/_/g, ' ')}`;
       document.getElementById('family-hero-desc').textContent = familyInfo.definition;
       document.getElementById('family-hero-limit').textContent = familyInfo.dominant_limiting_factor;

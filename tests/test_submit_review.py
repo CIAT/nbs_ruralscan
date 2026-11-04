@@ -1,5 +1,11 @@
 """Consensus reduction for the headless review-submit path (scripts/submit-review.sh)."""
 
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+from nbs_ruralscan.schema_tools import submit_review as submit
 from nbs_ruralscan.schema_tools.submit_review import consensus_decisions
 
 
@@ -35,3 +41,147 @@ def test_empty_decision_ignored():
     store = {"e1": {"alice": {"decision": ""}}, "e2": {"bob": {}}}
     decisions, conflicts = consensus_decisions(store)
     assert decisions == {} and conflicts == []
+
+
+@pytest.fixture
+def shipping_repo(tmp_path, monkeypatch):
+    """Real Git checkout and local bare origin; only replay and GitHub are simulated."""
+    root = tmp_path / "repo"
+    origin = tmp_path / "origin.git"
+    root.mkdir()
+
+    def git(*args, cwd=root):
+        return subprocess.run(
+            ["git", *args], cwd=cwd, check=True, capture_output=True, text=True
+        ).stdout.strip()
+
+    git("init", "--bare", str(origin))
+    git("init", "-b", "main")
+    git("config", "user.name", "Test Reviewer")
+    git("config", "user.email", "review@example.test")
+    (root / ".gitignore").write_text(".cache/\npipeline/review/\n")
+    ev = root / "schema/registers/EV_evidence_register.csv"
+    ev.parent.mkdir(parents=True)
+    ev.write_text("original\n")
+    (root / "application.py").write_text("original\n")
+    git("add", ".")
+    git("commit", "-m", "fixture")
+    git("remote", "add", "origin", str(origin))
+    git("push", "-u", "origin", "main")
+    (root / ".cache/corpus").mkdir(parents=True)
+    (root / ".cache/corpus/source.txt").write_text("source")
+    store = root / "pipeline/review/decisions.json"
+    store.parent.mkdir(parents=True)
+    store.write_text('{"saved":"untouched"}')
+    (root / "application.py").write_text("user edits\n")
+    calls = []
+    real_run = subprocess.run
+    mode = {"replay": "change", "fail_push": False}
+
+    def run(args, **kwargs):
+        cwd = Path(kwargs.get("cwd", root))
+        calls.append(args)
+        if args[0] == sys.executable:
+            assert (
+                cwd / "pipeline/review/decisions.json"
+            ).read_bytes() == store.read_bytes()
+            assert (cwd / ".cache/corpus/source.txt").read_text() == "source"
+            if mode["replay"] == "fail":
+                return subprocess.CompletedProcess(args, 1, "", "provenance failure")
+            if mode["replay"] == "change":
+                (cwd / "schema/registers/EV_evidence_register.csv").write_text(
+                    "reviewed\n"
+                )
+                (cwd / "application.py").write_text("must never ship\n")
+            return subprocess.CompletedProcess(args, 0, "replayed", "")
+        if args[0] == "gh":
+            output = (
+                "https://github.com/test/repo/pull/1"
+                if args[1:3] == ["pr", "create"]
+                else ""
+            )
+            return subprocess.CompletedProcess(args, 0, output, "")
+        return real_run(args, **kwargs)
+
+    monkeypatch.setattr(submit.subprocess, "run", run)
+    return root, git, calls, mode
+
+
+def test_ship_preserves_live_work_and_stages_only_allowlist(shipping_repo):
+    root, git, calls, mode = shipping_repo
+    assert submit.ship("alice", auto=True, root=root) == 0
+    assert git("branch", "--show-current") == "main"
+    assert (root / "application.py").read_text() == "user edits\n"
+    assert (
+        root / "schema/registers/EV_evidence_register.csv"
+    ).read_text() == "original\n"
+    assert (
+        root / "pipeline/review/decisions.json"
+    ).read_text() == '{"saved":"untouched"}'
+    branch = next(c[-1] for c in calls if c[:3] == ["git", "push", "-u"])
+    assert (
+        git("diff", "--name-only", "main", branch)
+        == "schema/registers/EV_evidence_register.csv"
+    )
+    assert any("--auto" in c for c in calls if c[:3] == ["gh", "pr", "merge"])
+    assert not (root / ".cache/review-submit.lock").exists()
+
+
+def test_ship_noop_does_not_push_or_open_pr(shipping_repo):
+    root, git, calls, mode = shipping_repo
+    mode["replay"] = "noop"
+    assert submit.ship("alice", root=root) == 0
+    assert not any(
+        c[:2] == ["git", "push"] or c[:3] == ["gh", "pr", "create"] for c in calls
+    )
+    assert len(git("worktree", "list").splitlines()) == 1
+
+
+def test_ship_failed_gate_preserves_recovery_checkout(shipping_repo):
+    root, git, calls, mode = shipping_repo
+    mode["replay"] = "fail"
+    with pytest.raises(RuntimeError, match="provenance failure"):
+        submit.ship("alice", root=root)
+    assert not any(c[:2] == ["git", "push"] for c in calls)
+    assert len(git("worktree", "list").splitlines()) == 2
+    assert (root / "pipeline/review/decisions.json").exists()
+    assert not (root / ".cache/review-submit.lock").exists()
+    # Test-owned failed checkout cleanup.
+    checkout = next(c[-2] for c in calls if c[:3] == ["git", "worktree", "add"])
+    git("worktree", "remove", "--force", checkout)
+
+
+def test_ship_refuses_concurrent_submission(shipping_repo):
+    root, git, calls, mode = shipping_repo
+    (root / ".cache/review-submit.lock").touch()
+    with pytest.raises(RuntimeError, match="Another submission"):
+        submit.ship("alice", root=root)
+    assert not any(c[:3] == ["git", "worktree", "add"] for c in calls)
+
+
+def test_ship_rejects_unsafe_handle_before_commands(tmp_path):
+    with pytest.raises(ValueError, match="GitHub handle"):
+        submit.ship("../bad", root=tmp_path)
+
+
+def test_ship_without_symlink_privilege(shipping_repo, monkeypatch):
+    root, git, calls, mode = shipping_repo
+
+    def denied(*args, **kwargs):
+        raise OSError("Windows symlink privilege unavailable")
+
+    monkeypatch.setattr(Path, "symlink_to", denied)
+    assert submit.ship("alice", root=root) == 0
+    assert (root / ".cache/corpus/source.txt").read_text() == "source"
+
+
+def test_cli_routes_ship_arguments(monkeypatch):
+    calls = []
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["submit_review", "--ship", "alice", "--title", "qaqc: batch", "--auto"],
+    )
+    monkeypatch.setattr(submit, "ship", lambda *args: calls.append(args) or 0)
+    assert submit.cli() == 0
+    assert calls == [("alice", "qaqc: batch", True)]

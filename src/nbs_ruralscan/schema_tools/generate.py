@@ -285,6 +285,25 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "review_log": [],
     }
 
+    # Presentation annotations only: never consumed by synthesis or used to change evidence.
+    status_csv = schema_root.parent / "docs" / "dashboard-family-status.csv"
+    data["family_display_status"] = {
+        row["suitability_family_id"]: row
+        for row in (_csv_to_rows(status_csv) if status_csv.exists() else [])
+    }
+    rollup_csv = schema_root / "lookups" / "family_rollup_policy.csv"
+    for row in _csv_to_rows(rollup_csv) if rollup_csv.exists() else []:
+        if str(row.get("rollup_included", "")).lower() == "false":
+            data["family_display_status"].setdefault(
+                row["suitability_family_id"],
+                {
+                    "status": "separate_comparison",
+                    "label": "Separate comparison",
+                    "reason": row["rationale"],
+                    "reference": "schema/lookups/family_rollup_policy.csv",
+                },
+            )
+
     ledger_csv = schema_root.parent / "pipeline" / "progress_ledger.csv"
     if ledger_csv.exists():
         data["progress_ledger"] = _csv_to_rows(ledger_csv)
