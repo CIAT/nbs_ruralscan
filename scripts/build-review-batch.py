@@ -18,6 +18,7 @@ import argparse
 import csv
 import json
 import re
+import unicodedata
 import sys
 from datetime import date
 from pathlib import Path
@@ -785,23 +786,56 @@ def plain_words(
     }
 
 
+def _norm_word(w: str) -> str:
+    # transliterate accents (très -> tres) before dropping non-alphanumerics, so native-language
+    # quotes keep their letters
+    w = unicodedata.normalize("NFKD", w).encode("ascii", "ignore").decode("ascii")
+    return re.sub(r"[^0-9a-z]", "", w.lower())
+
+
+def _quote_word_rects(page, quote: str) -> list:
+    """Rects of the page words that spell out the quote, in reading order; [] if not found."""
+    words = page.get_text("words")  # (x0, y0, x1, y1, word, block, line, word_no)
+    # match on the alphanumeric character stream: the words list and get_text() can split
+    # tokens differently ("intensity≤35%" vs "intensity ≤35%"), characters agree
+    stream, owner = [], []
+    for i, w in enumerate(words):
+        t = _norm_word(w[4])
+        stream.append(t)
+        owner.extend([i] * len(t))
+    text = "".join(stream)
+    target = _norm_word(quote)
+    if len(target) < 20:  # too short to bind to one place on the page
+        return []
+    # highlight every occurrence: a repeated run (header, table value) is shown, not guessed
+    hit: set[int] = set()
+    at = text.find(target)
+    while at >= 0:
+        hit.update(owner[at : at + len(target)])
+        at = text.find(target, at + 1)
+    return [fitz.Rect(words[i][:4]) for i in sorted(hit)]
+
+
 def render_crop(pdf: Path, page_no: int, quote: str, dest: Path) -> str:
     """Crop the cited page around the quote (highlighted); fall back to the whole page."""
     doc = fitz.open(pdf)
     if page_no < 1 or page_no > len(doc):
         return "page out of range"
     page = doc[page_no - 1]
-    # locate by the first and last ~50 chars of the quote (page text layers wrap lines)
     q = re.sub(r"\s+", " ", quote).strip()
-    rects = []
-    for probe in (q[:50], q[-50:], q[:30]):
-        if len(probe) < 12:
-            continue
-        hits = page.search_for(probe)
-        if hits:
-            rects += hits
-            if len(rects) >= 2 or probe == q[:30]:
-                break
+    # Quotes are sliced from page.get_text(), so their words are the page's words in order:
+    # highlight the whole matched word run. (The earlier probe search marked only the first
+    # and last ~50 characters and could hit a repeated phrase elsewhere — Pete, 2026-11-03.)
+    rects = _quote_word_rects(page, q)
+    if not rects:
+        for probe in (q[:50], q[-50:], q[:30]):
+            if len(probe) < 12:
+                continue
+            hits = page.search_for(probe)
+            if hits:
+                rects += hits
+                if len(rects) >= 2 or probe == q[:30]:
+                    break
     note = "quote highlighted"
     if rects:
         r = rects[0]
