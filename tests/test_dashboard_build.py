@@ -72,6 +72,42 @@ def read_build(schema):
     return json.loads((schema.parent / "docs" / "dashboard_data.json").read_text())
 
 
+def test_presentation_labels_are_generated_without_rewriting_registry(repo):
+    family = {
+        "nbs_id": "trees",
+        "suitability_family_id": "trees__planted",
+        "subpractice_id": "alley",
+        "name": "Alley cropping",
+    }
+    write_csv(repo / "registers" / "FAM_family_registry.csv", [family])
+    labels = repo.parent / "docs" / "dashboard-family-presentation.csv"
+    write_csv(
+        labels,
+        [
+            {
+                "suitability_family_id": "trees__planted",
+                "display_name": "Planted tree–crop systems",
+                "navigation_group": "practice",
+            }
+        ],
+    )
+    generate.generate_dashboard_data(repo)
+    data = read_build(repo)
+    assert data["registers"]["FAM_family_registry"] == [family]
+    assert data["family_presentation"]["trees__planted"]["display_name"] == (
+        "Planted tree–crop systems"
+    )
+    group = next(
+        f
+        for p in data["progress_overview"]["practices"]
+        for f in p["families"]
+        if f["family_id"] == "trees__planted"
+    )
+    assert group["name"] == "Planted tree–crop systems"
+    assert group["subpractices"][0]["name"] == "Alley cropping"
+    assert generate.generate_dashboard_data(repo, check=True) == []
+
+
 def test_repeat_build_is_byte_stable_and_retains_history(repo, monkeypatch):
     path = repo.parent / "docs" / "dashboard_data.json"
     assert generate.generate_dashboard_data(repo) == [path]
