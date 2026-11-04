@@ -51,5 +51,7 @@ def test_feedback_assets_and_stable_family_targets():
     html = (ROOT / "docs/dashboard.html").read_text()
     assert html.count('src="dashboard-feedback.js"') == 1
     assert html.count('href="dashboard-feedback.css"') == 1
-    assert "tr.dataset.feedbackKey = 'family:' + r.familyId" in html
-    assert "gtr.dataset.feedbackKey = 'practice:' + r.nbsId" in html
+    progress = (ROOT / "docs/dashboard-progress.js").read_text()
+    assert 'data-feedback-key="family:${esc(f.family_id)}"' in progress
+    assert 'data-feedback-key="practice:${esc(p.nbs_id)}"' in progress
+    assert 'data-feedback-key="source:${esc(s.key)}"' in progress

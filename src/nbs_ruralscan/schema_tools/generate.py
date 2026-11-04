@@ -24,6 +24,7 @@ from __future__ import annotations
 import csv
 from datetime import datetime, timezone
 import json
+import hashlib
 import re
 import sys
 from pathlib import Path
@@ -187,10 +188,6 @@ def _parse_discovery_logs(schema_root: Path) -> dict[str, dict]:
     for item in sorted(logs_dir.iterdir()):
         if item.is_file() and item.suffix == ".md" and item.name != "README.md":
             log_id = item.stem
-            # T3/T6 extraction deferred (2026-09, schema/registers/_deferred/README.md):
-            # their PRISMA logs stay on disk as the search record but leave the dashboard.
-            if "_T3" in log_id or "_T6" in log_id:
-                continue
             try:
                 content = item.read_text(encoding="utf-8")
                 lines = content.splitlines()
@@ -308,30 +305,15 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     if ledger_csv.exists():
         data["progress_ledger"] = _csv_to_rows(ledger_csv)
 
-    # Acquisition-funnel rollup per NbS — the coverage matrix's group header shows
-    # "extracted X / discovered Y" progress, and Y (screened-in candidates awaiting
-    # acquisition/extraction) lives only in the acquisition queue, not in SRC.
-    # T3/T6-only candidates are excluded (extraction deferred 2026-09).
+    # All authorised tables are live; source identity and search-event counts remain distinct.
     queue_csv = schema_root.parent / "pipeline" / "acquisition_queue.csv"
-    if queue_csv.exists():
-        from nbs_ruralscan.schema_tools.table_progress import iter_queue
-
-        funnel: dict[str, dict[str, int]] = {}
-        for row, _nbs_ids, tables in iter_queue(queue_csv):
-            if (row.get("status") or "").strip() == "duplicate":
-                continue
-            if tables and tables <= {"T3", "T6"}:
-                continue  # deferred-only candidate
-            nbs = (row.get("nbs_id") or "").strip()  # raw key (pipe-joined kept as-is)
-            slot = funnel.setdefault(nbs, {"candidates": 0, "acquired": 0})
-            slot["candidates"] += 1
-            if (row.get("status") or "").strip() == "acquired":
-                slot["acquired"] += 1
-        data["acquisition_funnel"] = funnel
+    queue = _csv_to_rows(queue_csv) if queue_csv.exists() else []
 
     from nbs_ruralscan.schema_tools import qaqc_stats as _qaqc
 
-    data["qaqc_stats"] = _qaqc.compute()
+    data["qaqc_stats"] = _qaqc.compute(
+        schema_root.parent / "pipeline" / "metrics" / "review_log.csv"
+    )
 
     review_log_csv = schema_root.parent / "pipeline" / "metrics" / "review_log.csv"
     data["review_log"] = _csv_to_rows(review_log_csv) if review_log_csv.exists() else []
@@ -426,19 +408,59 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     if recipes_dir.exists():
         for item in sorted(recipes_dir.iterdir()):
             if item.is_dir():
-                t0_csv = item / "T0_nbs_registry.csv"
-                if t0_csv.exists() or (item / "T4_suitability_mappings.csv").exists():
+                if any(
+                    (item / (table + ".csv")).exists()
+                    for table in (
+                        "T0_nbs_registry",
+                        "T4_suitability_mappings",
+                        "T3_nbs_hazard_farming",
+                        "T6_nbs_scorecard",
+                    )
+                ):
                     nbs_id = item.name
                     data["recipes"][nbs_id] = {}
-                    # T3_nbs_hazard_farming / T6_nbs_scorecard stay on disk (frozen) but
-                    # leave the dashboard payload — extraction deferred 2026-09.
                     for tbl in [
                         "T0_nbs_registry",
                         "T4_suitability_mappings",
+                        "T3_nbs_hazard_farming",
+                        "T6_nbs_scorecard",
                     ]:
                         csv_path = item / f"{tbl}.csv"
                         if csv_path.exists():
                             data["recipes"][nbs_id][tbl] = _csv_to_rows(csv_path)
+
+    from nbs_ruralscan.schema_tools.dashboard_progress import build_progress
+
+    data["progress_overview"] = build_progress(data, queue)
+    releases_path = schema_root.parent / "docs" / "dashboard-releases.csv"
+    releases = _csv_to_rows(releases_path) if releases_path.exists() else []
+    release = (
+        releases[-1]
+        if releases
+        else {"version": "unversioned", "count_definition_version": "1"}
+    )
+    data["dashboard_releases"] = releases
+    docs = schema_root.parent / "docs"
+    ui_files = (
+        "dashboard.html",
+        "t4_analysis.js",
+        "dashboard-progress.js",
+        "dashboard-progress.css",
+        "dashboard-feedback.js",
+        "dashboard-feedback.css",
+        "dashboard-releases.csv",
+    )
+    ui_hash = hashlib.sha256()
+    for name in ui_files:
+        path = docs / name
+        if path.exists():
+            ui_hash.update(name.encode() + b"\0" + path.read_bytes())
+    ui_id = ui_hash.hexdigest()[:12]
+    # Exclude volatile provenance fields: identical data produces the same snapshot identity.
+    content = {k: v for k, v in data.items() if k not in {"timestamp", "git_commit"}}
+    data_id = hashlib.sha256(
+        json.dumps(content, sort_keys=True, ensure_ascii=False).encode()
+    ).hexdigest()[:12]
 
     dest_path = schema_root.parent / "docs" / "dashboard_data.json"
     dest_path.parent.mkdir(parents=True, exist_ok=True)
@@ -446,40 +468,40 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     current_data = None
     if dest_path.exists():
         try:
-            current_data = json.loads(dest_path.read_text(encoding="utf-8"))
+            parsed = json.loads(dest_path.read_text(encoding="utf-8"))
+            current_data = parsed if isinstance(parsed, dict) else None
         except Exception:
             pass
 
+    previous_build = (current_data or {}).get("build", {})
+    if not isinstance(previous_build, dict):
+        previous_build = {}
+    unchanged_build = (
+        previous_build.get("ui_id") == ui_id
+        and previous_build.get("data_id") == data_id
+    )
+    if unchanged_build and current_data is not None:
+        data["timestamp"] = current_data.get("timestamp", data["timestamp"])
+        data["git_commit"] = current_data.get("git_commit", git_commit)
+    build_entry = {
+        "release": release["version"],
+        "ui_id": ui_id,
+        "data_id": data_id,
+        "count_definition_version": str(release.get("count_definition_version", "1")),
+        "built_at": data["timestamp"],
+        "source_commit": data["git_commit"],
+    }
+    history = list(previous_build.get("history", []))
+    if not unchanged_build:
+        history.append(build_entry.copy())
+    data["build"] = {**build_entry, "history": history[-50:]}
+    # Compare every generated section, not just five legacy sections. New progress,
+    # bibliography, scope annotations and build IDs must participate in stale detection.
     if check and current_data:
-        identical = True
-        for key in [
-            "registers",
-            "global_tables",
-            "recipes",
-            "discovery_logs",
-            "progress_ledger",
-        ]:
-            if current_data.get(key) != data.get(key):
-                identical = False
-                break
-        if identical:
-            return []
-
-    # Avoid updating timestamp if nothing has changed
-    if current_data and current_data.get("git_commit") == git_commit:
-        identical = True
-        for key in [
-            "registers",
-            "global_tables",
-            "recipes",
-            "discovery_logs",
-            "progress_ledger",
-        ]:
-            if current_data.get(key) != data.get(key):
-                identical = False
-                break
-        if identical:
-            data["timestamp"] = current_data["timestamp"]
+        # Stored IDs are claims, not proof: also compare the regenerated payload.
+        # Otherwise edited totals or recipes can pass --check with old hashes intact.
+        normalised = json.loads(json.dumps(data, ensure_ascii=False))
+        return [] if current_data == normalised else [dest_path]
 
     text = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
     current = dest_path.read_text(encoding="utf-8") if dest_path.exists() else None
