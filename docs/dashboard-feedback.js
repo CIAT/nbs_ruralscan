@@ -8,7 +8,7 @@
    ============================================================================ */
 (function () {
   'use strict';
-  var KEY = 'nbs_dashboard_feedback', KEY_ON = 'nbs_dashboard_feedback_on', KEY_NAME = 'nbs_dashboard_feedback_reviewer';
+  var KEY = 'nbs_dashboard_feedback', KEY_ON = 'nbs_dashboard_feedback_on', KEY_NAME = 'nbs_dashboard_feedback_reviewer', KEY_CLEAR_BACKUP = 'nbs_dashboard_feedback_clear_backup';
   var H2C = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
   var ISSUE_URL = 'https://github.com/CIAT/nbs_ruralscan/issues/new';
   var TYPES = ['Question', 'Suggestion', 'Error', 'Praise'], SEV = ['Low', 'Med', 'High'];
@@ -363,7 +363,34 @@
           (n.context ? '<p class="rv-l-meta">' + esc(contextLabel(n.context)) + '</p>' : '') + (n.quote ? '<blockquote class="rv-q">' + esc(n.quote) + '</blockquote>' : '') + (n.text ? '<p class="rv-l-x">' + esc(n.text) + '</p>' : '') + (n.image ? '<img class="rv-img" alt="Screengrab" src="' + n.image + '">' : '') +
           '<div class="rv-l-act"><button type="button" data-a="jump">Jump to target</button><button type="button" data-a="edit">Edit</button><button type="button" data-a="del">Delete</button></div></li>';
       }).join('') : '<li class="rv-empty">No notes match these filters. Switch on Comment mode and click any figure, table or section.</li>') + '</ol>' +
+      '<div class="rv-d-manage"><button type="button" class="rv-b2" data-rv="clear-all"' + (notes.length ? '' : ' disabled') + '>Clear all feedback…</button>' + (clearedNotes().length ? '<button type="button" class="rv-b2" data-rv="restore-cleared">Restore cleared notes</button>' : '') + '</div>' +
       '<div class="rv-d-foot"><button type="button" class="rv-b2" data-rv="json">JSON</button><button type="button" class="rv-b2" data-rv="report">Report (HTML)</button><button type="button" class="rv-b1" data-rv="issue">GitHub issue…</button></div>';
+  }
+  function clearedNotes() {
+    try { var saved = JSON.parse(localStorage.getItem(KEY_CLEAR_BACKUP) || '[]'); return Array.isArray(saved) ? saved.filter(validNote) : []; } catch (e) { return []; }
+  }
+  function clearAll() {
+    notes = load(); // Include notes saved by another dashboard tab.
+    if (!notes.length) return;
+    if (!window.confirm('Clear all ' + notes.length + ' feedback notes in this browser, including notes hidden by filters? You can restore this batch with Restore cleared notes. This replaces any previous clear-all backup. QA decisions and exported reports are unaffected.')) return;
+    try { localStorage.setItem(KEY_CLEAR_BACKUP, JSON.stringify(notes)); }
+    catch (e) { toast('Could not save a recovery backup. Nothing cleared. Export notes or free browser storage, then retry.'); return; }
+    notes = [];
+    if (!save()) { notes = load(); return; }
+    renderDrawer(); pins(); paintHighlights();
+    toast('Feedback cleared. Restore cleared notes is available in Notes.');
+  }
+  function restoreCleared() {
+    notes = load(); // Preserve newer notes saved by another dashboard tab.
+    var saved = clearedNotes();
+    if (!saved.length) return;
+    var current = new Set(notes.map(function (n) { return n.id; }));
+    notes = notes.concat(saved.filter(function (n) { return !current.has(n.id); }));
+    if (!save()) { notes = load(); return; }
+    try { localStorage.removeItem(KEY_CLEAR_BACKUP); } catch (e) { /* Restoring again is idempotent. */ }
+    filt = { page: page, type: '', sev: '' };
+    renderDrawer(); pins(); paintHighlights();
+    toast('Cleared feedback restored. Newer notes were kept.');
   }
   function openDrawer() { ui.menu.hidden = true; renderDrawer(); ui.drawer.hidden = false; }
   document.addEventListener('change', function (e) {
@@ -391,6 +418,8 @@
     if (k === 'json') download('nbs-dashboard-feedback-notes-' + today() + '.json', JSON.stringify({ kind: 'nbs_dashboard_feedback', exported: new Date().toISOString(), notes: notes }, null, 2), 'application/json');
     if (k === 'report') download('nbs-dashboard-feedback-report-' + today() + '.html', buildReport(), 'text/html');
     if (k === 'issue') issueDialog();
+    if (k === 'clear-all') clearAll();
+    if (k === 'restore-cleared') restoreCleared();
   });
   function jump(n) {
     var targetTab = noteTab(n);
@@ -512,7 +541,7 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 
   // small API (used by the review screenshots and handy from the console)
-  window.DashboardFeedback = { enable: enable, openNotes: openDrawer, buildReport: buildReport, issueBody: issueBody,
+  window.DashboardFeedback = { enable: enable, openNotes: openDrawer, clearAll: clearAll, restoreCleared: restoreCleared, buildReport: buildReport, issueBody: issueBody,
     openComposerFor: function (sel, opts) { var t = document.querySelector(sel); if (t) openComposer(Object.assign({ target: t }, opts || {})); },
     grab: grabRect, notes: function () { return notes; }, reload: function () { notes = load(); badge(); pins(); paintHighlights(); } };
 })();
