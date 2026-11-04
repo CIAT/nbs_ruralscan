@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-04T18:27:22.834851+00:00",
-  "git_commit": "cdc4e6442ffa1f9d632a4b8b5a464db49c682b8b",
+  "timestamp": "2026-11-04T18:48:14.385021+00:00",
+  "git_commit": "1275fa2a96027aeef276fa3cb1c5949a47aa4c9e",
   "registers": {
     "SRC_source_register": [
       {
@@ -377233,6 +377233,63 @@
       "reviewer": "ai_effects_round"
     }
   ],
+  "family_presentation": {
+    "agroforestry__planted_silvoarable": {
+      "suitability_family_id": "agroforestry__planted_silvoarable",
+      "display_name": "Planted tree–crop systems",
+      "description": "Planted trees integrated with annual cropland. Alley cropping, tree intercropping and planted cropland boundaries remain distinct implementation variants within this existing family.",
+      "navigation_group": "practice"
+    },
+    "agroforestry__regeneration_farmland": {
+      "suitability_family_id": "agroforestry__regeneration_farmland",
+      "display_name": "Regeneration on farmland",
+      "description": "Protect and manage natural regrowth on farmland. Farmer-managed natural regeneration, parkland tree retention and on-farm assisted regeneration remain recorded variants.",
+      "navigation_group": "practice"
+    },
+    "forest_restoration__passive_regeneration": {
+      "suitability_family_id": "forest_restoration__passive_regeneration",
+      "display_name": "Natural forest regeneration",
+      "description": "Forest recovery through spontaneous regeneration after degrading pressures are removed. Includes passive natural regeneration and secondary succession; assisted regeneration remains a separate family.",
+      "navigation_group": "practice"
+    },
+    "forest_restoration__active_planting": {
+      "suitability_family_id": "forest_restoration__active_planting",
+      "display_name": "Active forest planting",
+      "description": "Establish forest through planting. Reforestation, afforestation and enrichment remain explicit variants: retain prior land cover, existing canopy and safeguards against conversion of natural non-forest ecosystems. Production plantations remain separate.",
+      "navigation_group": "practice"
+    },
+    "wetland_management__creation": {
+      "suitability_family_id": "wetland_management__creation",
+      "display_name": "Wetland creation",
+      "description": "Create or reconstruct a wetland on land currently classified outside the wetland system. Retain source-specific site history and water requirements; restoration and rewetting remain separate families.",
+      "navigation_group": "practice"
+    },
+    "water_harvesting__runoff_catchment": {
+      "suitability_family_id": "water_harvesting__runoff_catchment",
+      "display_name": "Runoff-catchment water harvesting",
+      "description": "Collect runoff from a separate catchment. Storage, recharge and alluvial-storage purposes remain distinct within the existing family; this grouping does not pool their suitability rules. Macro-catchment water harvesting is the umbrella label, not an additional intervention.",
+      "navigation_group": "practice",
+      "umbrella_subpractice_id": "macrocatchment_wh"
+    },
+    "agroforestry__cross_family": {
+      "suitability_family_id": "agroforestry__cross_family",
+      "display_name": "Cross-family agroforestry evidence",
+      "description": "Evidence applying across agroforestry families, or not isolated to one family. This is an evidence grouping, not an intervention choice.",
+      "navigation_group": "evidence"
+    },
+    "forest_restoration__cross_family": {
+      "suitability_family_id": "forest_restoration__cross_family",
+      "display_name": "Cross-family forest-restoration evidence",
+      "description": "Evidence applying across forest-restoration families, or not isolated to one family. This is an evidence grouping, not an intervention choice.",
+      "navigation_group": "evidence"
+    },
+    "water_harvesting__cross_family": {
+      "suitability_family_id": "water_harvesting__cross_family",
+      "display_name": "Cross-family water-harvesting evidence",
+      "description": "Evidence applying across water-harvesting families, or not isolated to one family. This is an evidence grouping, not an intervention choice.",
+      "navigation_group": "evidence"
+    }
+  },
   "family_display_status": {
     "agroforestry__homegardens_proximity": {
       "suitability_family_id": "agroforestry__homegardens_proximity",
@@ -442912,11 +442969,13 @@
           {
             "family_id": "agroforestry__cross_family",
             "nbs_id": "agroforestry",
-            "name": "Cross family",
+            "name": "Cross-family agroforestry evidence",
+            "navigation_group": "evidence",
             "subpractices": [
               {
                 "subpractice_id": "cross_cutting_envelope",
-                "name": "Cross-cutting envelope (family-agnostic)"
+                "name": "Cross-cutting envelope (family-agnostic)",
+                "presentation_role": "evidence"
               }
             ],
             "metrics": {
@@ -442973,10 +443032,12 @@
             "family_id": "agroforestry__homegardens_proximity",
             "nbs_id": "agroforestry",
             "name": "Homegardens proximity",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "homegardens",
-                "name": "Multistrata homegardens"
+                "name": "Multistrata homegardens",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443033,14 +443094,17 @@
             "family_id": "agroforestry__linear_boundary",
             "nbs_id": "agroforestry",
             "name": "Linear boundary",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "windbreaks_shelterbelts",
-                "name": "Windbreaks & shelterbelts"
+                "name": "Windbreaks & shelterbelts",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "contour_vegetative_buffers",
-                "name": "Contour & vegetative buffers"
+                "name": "Contour & vegetative buffers",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443096,19 +443160,23 @@
           {
             "family_id": "agroforestry__planted_silvoarable",
             "nbs_id": "agroforestry",
-            "name": "Planted silvoarable",
+            "name": "Planted tree–crop systems",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "alley_cropping",
-                "name": "Alley cropping"
+                "name": "Alley cropping",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "tree_intercropping",
-                "name": "Tree intercropping"
+                "name": "Tree intercropping",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "planted_boundary_cropland",
-                "name": "Planted boundary / live fence on cropland"
+                "name": "Planted boundary / live fence on cropland",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443164,19 +443232,23 @@
           {
             "family_id": "agroforestry__regeneration_farmland",
             "nbs_id": "agroforestry",
-            "name": "Regeneration farmland",
+            "name": "Regeneration on farmland",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "fmnr",
-                "name": "Farmer-managed natural regeneration (FMNR)"
+                "name": "Farmer-managed natural regeneration (FMNR)",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "parkland_retention",
-                "name": "Parkland tree retention"
+                "name": "Parkland tree retention",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "anr_on_farm",
-                "name": "Assisted natural regeneration on farmland"
+                "name": "Assisted natural regeneration on farmland",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443233,10 +443305,12 @@
             "family_id": "agroforestry__shaded_perennial",
             "nbs_id": "agroforestry",
             "name": "Shaded perennial",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "shaded_perennial_crop",
-                "name": "Shaded perennial-crop system"
+                "name": "Shaded perennial-crop system",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443293,14 +443367,17 @@
             "family_id": "agroforestry__silvopastoral",
             "nbs_id": "agroforestry",
             "name": "Silvopastoral",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "planted_silvopasture",
-                "name": "Planted silvopasture"
+                "name": "Planted silvopasture",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "agrosilvopasture",
-                "name": "Agrosilvopasture"
+                "name": "Agrosilvopasture",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443357,6 +443434,7 @@
             "family_id": "__unassigned",
             "nbs_id": "agroforestry",
             "name": "Practice-wide / family not assigned",
+            "navigation_group": "evidence",
             "subpractices": [],
             "metrics": {
               "known_sources": 12,
@@ -443467,6 +443545,7 @@
             "family_id": "__unassigned",
             "nbs_id": "cross",
             "name": "Practice-wide / family not assigned",
+            "navigation_group": "evidence",
             "subpractices": [],
             "metrics": {
               "known_sources": 2,
@@ -443576,19 +443655,23 @@
           {
             "family_id": "forest_restoration__active_planting",
             "nbs_id": "forest_restoration",
-            "name": "Active planting",
+            "name": "Active forest planting",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "reforestation",
-                "name": "Reforestation"
+                "name": "Reforestation",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "afforestation",
-                "name": "Afforestation"
+                "name": "Afforestation",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "enrichment_planting",
-                "name": "Enrichment planting"
+                "name": "Enrichment planting",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443645,10 +443728,12 @@
             "family_id": "forest_restoration__assisted_regeneration",
             "nbs_id": "forest_restoration",
             "name": "Assisted regeneration",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "assisted_natural_regeneration",
-                "name": "Assisted natural regeneration (ANR)"
+                "name": "Assisted natural regeneration (ANR)",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443704,11 +443789,13 @@
           {
             "family_id": "forest_restoration__cross_family",
             "nbs_id": "forest_restoration",
-            "name": "Cross family",
+            "name": "Cross-family forest-restoration evidence",
+            "navigation_group": "evidence",
             "subpractices": [
               {
                 "subpractice_id": "cross_cutting_envelope_fr",
-                "name": "Cross-cutting envelope (family-agnostic)"
+                "name": "Cross-cutting envelope (family-agnostic)",
+                "presentation_role": "evidence"
               }
             ],
             "metrics": {
@@ -443764,15 +443851,18 @@
           {
             "family_id": "forest_restoration__passive_regeneration",
             "nbs_id": "forest_restoration",
-            "name": "Passive regeneration",
+            "name": "Natural forest regeneration",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "passive_natural_regeneration",
-                "name": "Passive natural regeneration"
+                "name": "Passive natural regeneration",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "secondary_succession",
-                "name": "Secondary succession"
+                "name": "Secondary succession",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443829,10 +443919,12 @@
             "family_id": "forest_restoration__plantation",
             "nbs_id": "forest_restoration",
             "name": "Plantation",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "plantation_forestry",
-                "name": "Plantation forestry (tree farming)"
+                "name": "Plantation forestry (tree farming)",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443889,14 +443981,17 @@
             "family_id": "forest_restoration__protection_cbfm",
             "nbs_id": "forest_restoration",
             "name": "Protection cbfm",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "forest_protection",
-                "name": "Forest protection / avoided degradation"
+                "name": "Forest protection / avoided degradation",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "community_based_forest_management",
-                "name": "Community-based forest management"
+                "name": "Community-based forest management",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -443953,6 +444048,7 @@
             "family_id": "__unassigned",
             "nbs_id": "forest_restoration",
             "name": "Practice-wide / family not assigned",
+            "navigation_group": "evidence",
             "subpractices": [],
             "metrics": {
               "known_sources": 8,
@@ -444063,14 +444159,17 @@
             "family_id": "mangrove_restoration__tidal_coastal",
             "nbs_id": "mangrove_restoration",
             "name": "Tidal coastal",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "mangrove_restoration",
-                "name": "Mangrove restoration"
+                "name": "Mangrove restoration",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "ecological_mangrove_restoration",
-                "name": "Ecological mangrove restoration (EMR)"
+                "name": "Ecological mangrove restoration (EMR)",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -444127,6 +444226,7 @@
             "family_id": "__unassigned",
             "nbs_id": "mangrove_restoration",
             "name": "Practice-wide / family not assigned",
+            "navigation_group": "evidence",
             "subpractices": [],
             "metrics": {
               "known_sources": 3,
@@ -444237,14 +444337,17 @@
             "family_id": "riparian_buffer__natural_restored",
             "nbs_id": "riparian_buffer",
             "name": "Natural restored",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "riparian_natural_regeneration",
-                "name": "Riparian natural regeneration"
+                "name": "Riparian natural regeneration",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "riparian_reforestation",
-                "name": "Riparian reforestation"
+                "name": "Riparian reforestation",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -444301,14 +444404,17 @@
             "family_id": "riparian_buffer__planted",
             "nbs_id": "riparian_buffer",
             "name": "Planted",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "planted_grass_filter_strip",
-                "name": "Planted grass/herbaceous filter strip"
+                "name": "Planted grass/herbaceous filter strip",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "planted_woody_buffer",
-                "name": "Planted woody/forested riparian buffer"
+                "name": "Planted woody/forested riparian buffer",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -444365,6 +444471,7 @@
             "family_id": "__unassigned",
             "nbs_id": "riparian_buffer",
             "name": "Practice-wide / family not assigned",
+            "navigation_group": "evidence",
             "subpractices": [],
             "metrics": {
               "known_sources": 4,
@@ -444474,11 +444581,13 @@
           {
             "family_id": "water_harvesting__cross_family",
             "nbs_id": "water_harvesting_conservation",
-            "name": "Cross family",
+            "name": "Cross-family water-harvesting evidence",
+            "navigation_group": "evidence",
             "subpractices": [
               {
                 "subpractice_id": "cross_cutting_envelope_wh",
-                "name": "Cross-cutting envelope (family-agnostic)"
+                "name": "Cross-cutting envelope (family-agnostic)",
+                "presentation_role": "evidence"
               }
             ],
             "metrics": {
@@ -444535,18 +444644,22 @@
             "family_id": "water_harvesting__in_situ",
             "nbs_id": "water_harvesting_conservation",
             "name": "In situ",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "contour_bunds_ridges",
-                "name": "Contour bunds / ridges"
+                "name": "Contour bunds / ridges",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "planting_pits_zai",
-                "name": "Planting pits / Zai"
+                "name": "Planting pits / Zai",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "conservation_tillage_mulch",
-                "name": "Conservation tillage / mulching"
+                "name": "Conservation tillage / mulching",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -444603,18 +444716,22 @@
             "family_id": "water_harvesting__micro_catchment",
             "nbs_id": "water_harvesting_conservation",
             "name": "Micro catchment",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "semicircular_bunds",
-                "name": "Semi-circular bunds"
+                "name": "Semi-circular bunds",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "eyebrow_terraces",
-                "name": "Eyebrow terraces"
+                "name": "Eyebrow terraces",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "runoff_strips",
-                "name": "Runoff strips"
+                "name": "Runoff strips",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -444671,10 +444788,12 @@
             "family_id": "water_harvesting__rooftop",
             "nbs_id": "water_harvesting_conservation",
             "name": "Rooftop",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "rooftop_harvesting",
-                "name": "Rooftop / domestic harvesting"
+                "name": "Rooftop / domestic harvesting",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -444730,35 +444849,43 @@
           {
             "family_id": "water_harvesting__runoff_catchment",
             "nbs_id": "water_harvesting_conservation",
-            "name": "Runoff catchment",
+            "name": "Runoff-catchment water harvesting",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "macrocatchment_wh",
-                "name": "Macro-catchment water harvesting"
+                "name": "Macro-catchment water harvesting",
+                "presentation_role": "umbrella"
               },
               {
                 "subpractice_id": "farm_ponds",
-                "name": "Farm ponds"
+                "name": "Farm ponds",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "check_dams",
-                "name": "Check dams"
+                "name": "Check dams",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "percolation_tanks",
-                "name": "Percolation tanks"
+                "name": "Percolation tanks",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "sand_dams",
-                "name": "Sand dams"
+                "name": "Sand dams",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "subsurface_dams",
-                "name": "Subsurface dams"
+                "name": "Subsurface dams",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "communal_tanks",
-                "name": "Small communal tanks / reservoirs"
+                "name": "Small communal tanks / reservoirs",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -444815,10 +444942,12 @@
             "family_id": "water_harvesting__spate",
             "nbs_id": "water_harvesting_conservation",
             "name": "Spate",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "spate_floodwater",
-                "name": "Spate / floodwater harvesting"
+                "name": "Spate / floodwater harvesting",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -444875,14 +445004,17 @@
             "family_id": "water_harvesting__terracing",
             "nbs_id": "water_harvesting_conservation",
             "name": "Terracing",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "bench_terraces",
-                "name": "Bench terraces"
+                "name": "Bench terraces",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "stone_bunds_fanya_juu",
-                "name": "Stone bunds / fanya juu"
+                "name": "Stone bunds / fanya juu",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -444939,6 +445071,7 @@
             "family_id": "__unassigned",
             "nbs_id": "water_harvesting_conservation",
             "name": "Practice-wide / family not assigned",
+            "navigation_group": "evidence",
             "subpractices": [],
             "metrics": {
               "known_sources": 9,
@@ -445049,10 +445182,12 @@
             "family_id": "wetland_management__coastal",
             "nbs_id": "wetland_management",
             "name": "Coastal",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "tidal_marsh_restoration",
-                "name": "Tidal marsh / coastal wetland restoration"
+                "name": "Tidal marsh / coastal wetland restoration",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -445109,10 +445244,12 @@
             "family_id": "wetland_management__constructed",
             "nbs_id": "wetland_management",
             "name": "Constructed",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "constructed_treatment_wetland",
-                "name": "Constructed / treatment wetland"
+                "name": "Constructed / treatment wetland",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -445168,15 +445305,18 @@
           {
             "family_id": "wetland_management__creation",
             "nbs_id": "wetland_management",
-            "name": "Creation",
+            "name": "Wetland creation",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "wetland_creation",
-                "name": "Wetland creation"
+                "name": "Wetland creation",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "wetland_reconstruction",
-                "name": "Wetland reconstruction"
+                "name": "Wetland reconstruction",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -445233,14 +445373,17 @@
             "family_id": "wetland_management__peatland",
             "nbs_id": "wetland_management",
             "name": "Peatland",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "peatland_rewetting",
-                "name": "Peatland rewetting"
+                "name": "Peatland rewetting",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "paludiculture",
-                "name": "Paludiculture"
+                "name": "Paludiculture",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -445297,18 +445440,22 @@
             "family_id": "wetland_management__restoration_rewetting",
             "nbs_id": "wetland_management",
             "name": "Restoration rewetting",
+            "navigation_group": "practice",
             "subpractices": [
               {
                 "subpractice_id": "wetland_restoration",
-                "name": "Wetland restoration / rewetting"
+                "name": "Wetland restoration / rewetting",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "drainage_blocking",
-                "name": "Drainage blocking / re-flooding"
+                "name": "Drainage blocking / re-flooding",
+                "presentation_role": "variant"
               },
               {
                 "subpractice_id": "floodplain_wetland_reconnection",
-                "name": "Floodplain wetland reconnection"
+                "name": "Floodplain wetland reconnection",
+                "presentation_role": "variant"
               }
             ],
             "metrics": {
@@ -445365,6 +445512,7 @@
             "family_id": "__unassigned",
             "nbs_id": "wetland_management",
             "name": "Practice-wide / family not assigned",
+            "navigation_group": "evidence",
             "subpractices": [],
             "metrics": {
               "known_sources": 5,
@@ -445474,15 +445622,21 @@
       "date": "2026-11-04",
       "count_definition_version": 2,
       "changes": "Plain-language column labels and visible definitions; catalogue/extraction/review/compilation stage groups; workflow displays approved extracts and distinguishes sources, claims and rules."
+    },
+    {
+      "version": "1.1.3",
+      "date": "2026-11-04",
+      "count_definition_version": 2,
+      "changes": "Consolidate family labels and show variants together; separate shared/unassigned evidence from intervention choices while preserving all counts and analytical identities."
     }
   ],
   "build": {
-    "release": "1.1.2",
-    "ui_id": "71d23e7f1f97",
-    "data_id": "f2c226f5a2dc",
+    "release": "1.1.3",
+    "ui_id": "6855d5a32189",
+    "data_id": "7581fad8b334",
     "count_definition_version": "2",
-    "built_at": "2026-11-04T18:27:22.834851+00:00",
-    "source_commit": "cdc4e6442ffa1f9d632a4b8b5a464db49c682b8b",
+    "built_at": "2026-11-04T18:48:14.385021+00:00",
+    "source_commit": "1275fa2a96027aeef276fa3cb1c5949a47aa4c9e",
     "history": [
       {
         "release": "1.0.0",
@@ -445691,6 +445845,22 @@
         "count_definition_version": "2",
         "built_at": "2026-11-04T18:27:22.834851+00:00",
         "source_commit": "cdc4e6442ffa1f9d632a4b8b5a464db49c682b8b"
+      },
+      {
+        "release": "1.1.3",
+        "ui_id": "535e46a86779",
+        "data_id": "7581fad8b334",
+        "count_definition_version": "2",
+        "built_at": "2026-11-04T18:47:39.346663+00:00",
+        "source_commit": "1275fa2a96027aeef276fa3cb1c5949a47aa4c9e"
+      },
+      {
+        "release": "1.1.3",
+        "ui_id": "6855d5a32189",
+        "data_id": "7581fad8b334",
+        "count_definition_version": "2",
+        "built_at": "2026-11-04T18:48:14.385021+00:00",
+        "source_commit": "1275fa2a96027aeef276fa3cb1c5949a47aa4c9e"
       }
     ]
   }
