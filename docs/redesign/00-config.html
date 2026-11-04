@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Technical Configuration</title>
+<script>(function(){var t="light";try{t=localStorage.getItem("v1b-theme")||"light"}catch(e){}document.documentElement.setAttribute("data-theme",t)})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1b.css">
+<link rel="stylesheet" href="review-mode.css">
+</head>
+<body>
+<div id="chrome"></div>
+
+<main class="wrap">
+  <section class="chapter">
+    <span class="eyebrow sc">Stage 01 · Setup · 1.2 Technical configuration</span>
+    <h1 class="question">What sits underneath the walkthrough?</h1>
+    <p class="lede">The datasets, rules, masks and settings every map is built from. <b>The walkthrough never needs this page</b>; it is here so an analyst can check, propose a change, or save the set-up.</p>
+  </section>
+
+  <div class="subtabs" role="tablist" aria-label="Technical configuration sections">
+    <button type="button" role="tab" aria-controls="tp-1" aria-selected="true"><span class="sec-n">C.1</span>Datasets</button>
+    <button type="button" role="tab" aria-controls="tp-2" aria-selected="false" tabindex="-1"><span class="sec-n">C.2</span>Suitability functions</button>
+    <button type="button" role="tab" aria-controls="tp-3" aria-selected="false" tabindex="-1"><span class="sec-n">C.3</span>Exclusions</button>
+    <button type="button" role="tab" aria-controls="tp-4" aria-selected="false" tabindex="-1"><span class="sec-n">C.4</span>Clustering</button>
+    <button type="button" role="tab" aria-controls="tp-5" aria-selected="false" tabindex="-1"><span class="sec-n">C.5</span>Climate</button>
+    <button type="button" role="tab" aria-controls="tp-6" aria-selected="false" tabindex="-1"><span class="sec-n">C.6</span>Save and load</button>
+  </div>
+
+  <!-- C.1 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-1">
+    <div class="tp-head"><div><h2><span class="sec-n">C.1</span>Input datasets</h2><p class="need">Do you need this? Only if a country dataset should replace a global default.</p><p class="job-note"><b>Choosing datasets</b> changes which source represents a variable — for example a national soil map in place of a global one. The rule that turns the variable into suitability stays fixed. A change is recorded as a proposal first and applied only after a compatibility check.</p></div>
+      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
+    <div class="tabwrap">
+      <table class="qt ds" id="tC1">
+        <caption class="tabcap"><b>Table C.1</b> · Input datasets for the example recipe (planted silvoarable agroforestry)<small>Dataset names are examples of the kind of source, not a binding choice. A proposal never changes a map until it is applied.</small></caption>
+        <thead><tr><th>Variable</th><th>Default dataset</th><th>Grain</th><th>Year</th><th>Tier</th><th>Context override</th><th>Sensitivity</th><th>Applied</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- C.2 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-2" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.2</span>Suitability functions</h2><p class="need">Do you need this? Only to check or question how a variable becomes suitability.</p><p class="job-note"><b>Tuning rules</b> changes the response curve or threshold for a variable — how slope or rainfall becomes a suitability score. The dataset behind it stays fixed. Edits are recorded against the example recipe and downstream results stay the unchanged example.</p></div>
+      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
+    <div id="cards"></div>
+    <p class="figcap"><b>Figure C.1</b> · Variable cards for slope, precipitation and land cover, each with its response preview: the membership curve and the raw and transformed maps</p>
+    <p class="plate-src">Raw maps: synthetic example surface (seed 20261031). Curve shapes from the framework’s five membership functions.</p>
+  </section>
+
+  <!-- C.3 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-3" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.3</span>Exclusions and masks</h2><p class="need">Do you need this? Only if an exclusion does not fit the country or the practice.</p></div>
+      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
+    <div class="tp-grid">
+      <div class="tabwrap">
+        <table class="qt">
+          <caption class="tabcap"><b>Table C.2</b> · Hard exclusions applied as masks<small>Masked cells are hatched on the maps and never scored.</small></caption>
+          <thead><tr><th>Mask</th><th>Source (example)</th><th>Activity-specific?</th></tr></thead>
+          <tbody>
+            <tr><td>Protected areas</td><td>World Database on Protected Areas</td><td>Yes — some categories allow agroforestry in buffer zones; check each category</td></tr>
+            <tr><td>Water bodies</td><td>JRC Global Surface Water</td><td>No</td></tr>
+            <tr><td>Built-up land</td><td>GHSL built-up surface</td><td>No</td></tr>
+            <tr><td>Slope above a threshold</td><td>Derived from the elevation model</td><td>Yes — the threshold depends on the practice and on terracing</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 class="side-h">Not masks: soft operational factors</h3>
+        <p style="font-size:var(--t15);color:var(--ink-2)">These shape uptake, but a project can change them, so they are never part of suitability. They appear as levers in <a href="04-risk.html?tab=3">Stage 04, Section 4.3</a>.</p>
+        <ul class="plain"><li>Road access</li><li>Market access</li><li>Land tenure, including IPLC lands</li><li>Extension services</li><li>Finance and credit</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- C.4 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-4" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.4</span>Correlation and clustering</h2><p class="need">Do you need this? Only to see why some variables are not used directly.</p></div>
+      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a></div></div>
+    <div class="tp-grid">
+      <div><svg id="dend" viewBox="0 0 520 370" role="img" aria-label="Example correlation matrix and clustering for six variables"></svg>
+        <p class="figcap"><b>Figure C.2</b> · Example correlation matrix and clusters for six variables in the area of interest; the representative of each cluster is underlined</p></div>
+      <div class="reading-text">
+        <p><b>Why one per cluster.</b> Variables that move together carry the same signal. Using all of them would count that signal several times and quietly raise its weight.</p>
+        <p><b>How it works.</b> Variables are first grouped by theme in the recipe, then clustered by correlation within the area of interest. One representative per cluster enters the score; the other members stay listed beside it.</p>
+        <p><b>In this example</b> precipitation represents soil moisture and greenness (NDVI); temperature represents elevation; slope stands alone. Correlations are example values.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- C.5 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-5" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.5</span>Climate</h2><p class="need">Do you need this? Only to change the climate scenario or the risk framing.</p></div></div>
+    <div class="clim">
+      <div class="fld"><span>Risk framing</span>
+        <div class="seg" id="seg-mode" role="group" aria-label="Risk framing">
+          <button type="button" data-v="a" aria-pressed="true">Mode A · Hazard × Exposure (default)</button>
+          <button type="button" data-v="b" aria-pressed="false">Mode B · full IPCC AR6 risk</button>
+        </div>
+      </div>
+      <p class="warn" id="modewarn" hidden><b>Double counting.</b> Mode B adds vulnerability. The same vulnerability variables (poverty, food insecurity) already appear in the hotspot priorities in Stage 05, so using both counts them twice. Keep Mode A unless the hotspot priorities drop them.</p>
+      <div class="geo" style="max-width:760px">
+        <label class="fld"><span>Reference period</span><select><option>1995–2014</option><option>1981–2010</option></select></label>
+        <label class="fld"><span>Scenario</span><select><option>SSP2-4.5</option><option>SSP3-7.0</option><option>SSP5-8.5</option></select></label>
+        <label class="fld"><span>Horizon</span><select><option>2041–2060 (about 2050)</option><option>2081–2100</option></select></label>
+      </div>
+    </div>
+  </section>
+
+  <!-- C.6 -->
+  <section class="cfg tabpanel" role="tabpanel" id="tp-6" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">C.6</span>Save and load</h2><p class="need">Do you need this? To hand the set-up to a colleague or reopen it later.</p></div></div>
+    <div class="jobs">
+      <div><h3>Save project (settings)</h3><p>The choices only: practice, classes, view, climate, dataset proposals and rule edits. Reopening it rebuilds every page from the same inputs.</p><button type="button" class="btn no-arrow" id="save-proj">Save project (JSON)</button></div>
+      <div><h3>Save example result</h3><p>A snapshot of the figures shown now, labelled as example data. It cannot be reloaded as settings and is not a pilot result.</p><button type="button" class="btn btn-line no-arrow" id="save-res">Save example result (JSON)</button></div>
+    </div>
+    <div class="loadrow"><label class="fld" style="max-width:420px"><span>Load a saved project</span><input type="file" id="load" accept="application/json,.json"></label><span class="copied" id="loadmsg" aria-live="polite"></span></div>
+  </section>
+
+  <div class="nextstage">
+    <p><b>Back to the walkthrough.</b> Nothing on this page needs changing to continue.</p>
+    <div class="foot2"><a class="btn btn-line" href="01-setup.html">Back to Setup</a><a class="btn" href="02-practices.html">Open Stage 02</a></div>
+  </div>
+</main>
+
+<script src="../sle_geo.js"></script>
+<script src="v1b-versions.js"></script>
+<script src="v1b-map.js"></script>
+<script src="v1b-fixture.js"></script>
+<script>
+(function () {
+  'use strict';
+  V1BUI.chrome(1);
+  var M = V1BMap, F = FIXTURE;
+  var openCfg = V1BUI.tabs(document.querySelector('.subtabs'));
+  (function () {   // old anchors and card links open the right tab
+    var h = location.hash.slice(1), map = { c2: 0, c3: 1, c4: 2, c5: 3, c6: 4, c7: 5 };
+    if (/^card-/.test(h)) { openCfg(1); setTimeout(function () { var el = document.getElementById(h); if (el) el.scrollIntoView(); }, 300); }
+    else if (h in map) openCfg(map[h]);
+  })();
+  var edits = {}, proposals = {};
+
+  /* ---- C.2 datasets ---- */
+  var DS = [
+    ['slope', 'Slope', 'Copernicus GLO-30 (derived)', '30 m', '2021', 'GEE catalog', 'National 12.5 m elevation model', 'low', ''],
+    ['elevation', 'Elevation', 'Copernicus GLO-30', '30 m', '2021', 'GEE catalog', '—', 'low', ''],
+    ['precip', 'Precipitation', 'CHIRPS', '~5 km', '1995–2014', 'GEE catalog', 'Station-blended national rainfall grid', 'low', ''],
+    ['temp', 'Temperature', 'ERA5-Land', '~9 km', '1995–2014', 'GEE catalog', '—', 'low', ''],
+    ['texture', 'Soil texture', 'SoilGrids', '250 m', '2020', 'Community', 'National soil survey', 'medium', ''],
+    ['drainage', 'Soil drainage', 'SoilGrids (derived)', '250 m', '2020', 'Community', '—', 'low', ''],
+    ['landcover', 'Land cover', 'ESA WorldCover', '10 m', '2021', 'GEE catalog', '—', 'low', ''],
+    ['farming', 'Farming system', 'MapSPAM with livestock density', '10 km', '2020', 'Community', 'National agricultural census map', 'high', ''],
+    ['protected', 'Protected areas', 'World Database on Protected Areas', 'Vector', '2026', 'GEE catalog', 'National gazette boundaries', 'high', ''],
+    ['water', 'Water bodies', 'JRC Global Surface Water', '30 m', '2021', 'GEE catalog', '—', 'low', ''],
+    ['built', 'Built-up', 'GHSL built-up surface', '10 m', '2023', 'GEE catalog', '—', 'low', ''],
+    ['road', 'Distance to road', 'OpenStreetMap roads', 'Vector', '2026', 'Community', 'National road network', 'medium', 'Operational factor — used in Stage 04, not in suitability']
+  ];
+  var tb = document.querySelector('#tC1 tbody');
+  function sens(v) { return '<span class="sens sens-' + v + '">' + (v === 'high' ? 'High — use a country-endorsed source' : v === 'medium' ? 'Medium' : 'Low') + '</span>'; }
+  tb.innerHTML = DS.map(function (d) {
+    return '<tr data-id="' + d[0] + '"' + (d[8] ? ' class="op"' : '') + '><td><b>' + d[1] + '</b>' + (d[8] ? '<span class="sub" style="display:block">' + d[8] + '</span>' : '') + '</td><td>' + d[2] + '</td><td>' + d[3] + '</td><td>' + d[4] + '</td><td>' + d[5] + '</td><td class="sub">' + d[6] + '</td><td>' + sens(d[7]) + '</td><td class="applied">Default</td>' +
+      '<td><button type="button" class="btn-ghost sm" data-rep="' + d[0] + '">Replace</button></td></tr>';
+  }).join('');
+  tb.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-rep]'); if (!b) return;
+    var id = b.getAttribute('data-rep'), tr = b.closest('tr'), nx = tr.nextElementSibling;
+    if (nx && nx.classList.contains('prop')) { nx.remove(); b.textContent = 'Replace'; return; }
+    b.textContent = 'Close proposal';
+    tr.insertAdjacentHTML('afterend', '<tr class="prop"><td colspan="9"><div class="prop-in">' +
+      '<div class="prop-h"><b>Proposal</b> — not applied. The map keeps the default until the compatibility check passes and the proposal is endorsed.</div>' +
+      '<div class="prop-grid">' +
+      ['Year', 'Units', 'Coverage', 'Grain', 'Provenance', 'Endorsement'].map(function (f) { return '<label class="fld"><span>' + f + '</span><input type="text" placeholder="' + ({ Year: 'e.g. 2024', Units: 'same as default', Coverage: 'whole country?', Grain: 'e.g. 30 m', Provenance: 'agency, method', Endorsement: 'who endorses it' })[f] + '"></label>'; }).join('') +
+      '</div><div class="prop-foot"><span class="status">Compatibility check · not run</span><button type="button" class="btn-ghost sm" disabled title="Prototype">Run check</button><button type="button" class="btn-ghost sm" disabled title="Prototype">Apply</button></div></div></td></tr>');
+    proposals[id] = true;
+  });
+
+  /* ---- C.3 variable cards ---- */
+  var FN = {
+    sigmoid: function (x, a, b) { return 1 / (1 + Math.exp(-4.4 / Math.max(1e-6, b) * (x - a))); },
+    inverted: function (x, a, b) { return 1 - 1 / (1 + Math.exp(-4.4 / Math.max(1e-6, b) * (x - a))); },
+    linear: function (x, a, b) { return b === a ? (x >= a ? 1 : 0) : Math.max(0, Math.min(1, (x - a) / (b - a))); },
+    gaussian: function (x, a, b) { return Math.exp(-Math.pow(x - a, 2) / (2 * b * b)); },
+    bell: function (x, a, b) { return 1 / (1 + Math.pow(Math.abs((x - a) / Math.max(1e-6, b)), 4)); }
+  };
+  var FNAMES = [['sigmoid', 'Sigmoid'], ['linear', 'Linear'], ['gaussian', 'Gaussian'], ['bell', 'Bell'], ['inverted', 'Inverted sigmoid']];
+  var PLAB = { sigmoid: ['Midpoint', 'Spread'], inverted: ['Midpoint', 'Spread'], linear: ['Lower', 'Upper'], gaussian: ['Centre', 'Width'], bell: ['Centre', 'Width'] };
+  var VARS = [
+    { id: 'slope', name: 'Slope', unit: '°', key: 'slope', min: 0, max: 40, fn: 'inverted', a: 12, b: 10, hue: '#8a6a4a',
+      what: 'How steep the land is, in degrees, derived from the elevation model before aggregating to 5 km.',
+      why: 'Rows of trees in cropland need land that can be ploughed and walked; steep plots erode and are hard to manage.',
+      read: 'Full suitability on flat land, falling through the midpoint; the spread sets how sharply.',
+      cluster: 'Stands alone in this area — no other variable tracks it closely.',
+      src: 'Copernicus GLO-30 elevation model (example) · 30 m · GEE catalog. Meaningful only at fine grain: derived first, then aggregated.' },
+    { id: 'precip', name: 'Precipitation', unit: ' mm', key: 'precip', min: 1000, max: 4500, fn: 'bell', a: 2400, b: 900, hue: '#3b78a6',
+      what: 'Mean annual rainfall, 1995–2014.',
+      why: 'Trees and crops both need enough water; very high rainfall brings waterlogging and disease for many tree crops.',
+      read: 'Best around the centre, falling away on both sides; the width sets the tolerance.',
+      cluster: 'Represents soil moisture and greenness (NDVI), which move closely with it here (Section C.4).',
+      src: 'CHIRPS (example) · about 5 km · GEE catalog.' },
+    { id: 'landcover', name: 'Land cover', unit: '', key: 'lc', cat: true, hue: '#5b8f5f',
+      what: 'The dominant cover class in each cell.',
+      why: 'Silvoarable agroforestry adds trees to existing cropland, so cropland and crop mosaics score highest.',
+      read: 'Each class gets a fixed score; there is no curve for a category.',
+      cluster: 'Kept separate: a category does not correlate like a number.',
+      src: 'ESA WorldCover (example) · 10 m · GEE catalog.',
+      classes: [['crop', 'Cropland', 1.0, '#d9c46e'], ['mosaic', 'Crop mosaic', 0.8, '#b9bf7a'], ['grass', 'Grassland', 0.5, '#a9c98f'], ['tree', 'Tree cover', 0.2, '#4f8a57']] }
+  ];
+  var cards = document.getElementById('cards');
+  cards.innerHTML = VARS.map(function (v, i) {
+    return '<article class="vcard" id="card-' + v.id + '"><header><span class="sec-n">C.2.' + (i + 1) + '</span><h3>' + v.name + '</h3><span class="ex-tag" id="st-' + v.id + '">Example recipe values</span></header>' +
+      '<div class="vc-grid"><dl class="slots">' +
+      '<dt>What</dt><dd>' + v.what + '</dd><dt>Why, for this practice</dt><dd>' + v.why + '</dd><dt>How to read</dt><dd>' + v.read + '</dd>' +
+      '<dt>What it represents</dt><dd>' + v.cluster + '</dd><dt>Where it comes from</dt><dd>' + v.src + '</dd></dl>' +
+      '<div class="preview"><div class="pv-h">Response preview</div>' +
+      (v.cat ? '<p class="sub">Categorical: one score per class.</p>' :
+        '<div class="seg seg-sm fnseg" data-v="' + v.id + '">' + FNAMES.map(function (f) { return '<button type="button" data-v="' + f[0] + '" aria-pressed="' + (f[0] === v.fn) + '">' + f[1] + '</button>'; }).join('') + '</div>' +
+        '<div class="pfields"><label class="fld"><span id="la-' + v.id + '">' + PLAB[v.fn][0] + '</span><input type="number" id="pa-' + v.id + '" value="' + v.a + '"></label><label class="fld"><span id="lb-' + v.id + '">' + PLAB[v.fn][1] + '</span><input type="number" id="pb-' + v.id + '" value="' + v.b + '"></label></div>') +
+      '<svg class="curve" id="cv-' + v.id + '" viewBox="0 0 320 150" role="img" aria-label="Membership curve for ' + v.name + '"></svg>' +
+      '<div class="thumbs"><figure><svg id="raw-' + v.id + '"></svg><figcaption>Raw ' + v.name.toLowerCase() + '</figcaption></figure><figure><svg id="tr-' + v.id + '"></svg><figcaption>Transformed (0–1)</figcaption></figure></div>' +
+      '</div></div></article>';
+  }).join('');
+
+  var thumbs = {};
+  VARS.forEach(function (v) {
+    thumbs[v.id] = {
+      raw: M.plate(document.getElementById('raw-' + v.id), { uid: 'r' + v.id, labels: false, scale: false, cities: false, context: false, viewBox: '366 22 568 592' }),
+      tr: M.plate(document.getElementById('tr-' + v.id), { uid: 't' + v.id, labels: false, scale: false, cities: false, context: false, viewBox: '366 22 568 592' })
+    };
+    thumbs[v.id].tr.style.setProperty('--hz', 'var(--s4)');
+    thumbs[v.id].raw.style.setProperty('--hz', v.hue);
+    if (v.cat) {
+      var sc = {}; v.classes.forEach(function (c) { sc[c[0]] = c; });
+      M.paintCells(thumbs[v.id].raw, F.cells, function (c) { return 'lc-' + c.lc; });
+      M.paintCells(thumbs[v.id].tr, F.cells, function (c) { return 'q' + Math.round(sc[c.lc][2] * 5); });
+      drawCat(v);
+    } else drawVar(v);
+  });
+  function q5(x) { return 'q' + Math.max(0, Math.min(5, Math.round(x * 5))); }
+  function drawVar(v) {
+    var a = parseFloat(document.getElementById('pa-' + v.id).value), b = parseFloat(document.getElementById('pb-' + v.id).value);
+    if (isNaN(a) || isNaN(b)) return;
+    var f = FN[v.fn], X0 = 36, X1 = 290, Y0 = 18, Y1 = 118, pts = [];
+    for (var k = 0; k <= 120; k++) { var x = v.min + (v.max - v.min) * k / 120; pts.push((X0 + (X1 - X0) * k / 120).toFixed(1) + ',' + (Y1 - (Y1 - Y0) * f(x, a, b)).toFixed(1)); }
+    var ticks = '', n = 4;
+    for (k = 0; k <= n; k++) { var tx = X0 + (X1 - X0) * k / n, val = v.min + (v.max - v.min) * k / n; ticks += '<line x1="' + tx + '" y1="' + Y1 + '" x2="' + tx + '" y2="' + (Y1 + 4) + '" class="ax"/><text x="' + tx + '" y="' + (Y1 + 16) + '" text-anchor="middle">' + Math.round(val) + v.unit + '</text>'; }
+    // raw value distribution as a quiet rug
+    var rug = '';
+    F.cells.forEach(function (c, i) { if (i % 9) return; var x = X0 + (X1 - X0) * (c[v.key] - v.min) / (v.max - v.min); if (x >= X0 && x <= X1) rug += 'M' + x.toFixed(1) + ' ' + (Y1 - 6) + 'v6'; });
+    document.getElementById('cv-' + v.id).innerHTML =
+      '<line x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 + '" class="ax"/><line x1="' + X0 + '" y1="' + Y0 + '" x2="' + X0 + '" y2="' + Y1 + '" class="ax"/>' +
+      '<text x="' + (X0 - 6) + '" y="' + (Y0 + 4) + '" text-anchor="end">1</text><text x="' + (X0 - 6) + '" y="' + (Y1 + 3) + '" text-anchor="end">0</text>' +
+      '<path d="' + rug + '" class="rug"/>' + ticks + '<polyline points="' + pts.join(' ') + '" class="crv"/>' +
+      '<text x="' + X1 + '" y="146" text-anchor="end" class="axl">' + v.name + '</text><text x="4" y="12" class="axl">suitability</text>';
+    var lo = v.min, hi = v.max;
+    M.paintCells(thumbs[v.id].raw, F.cells, function (c) { return q5((c[v.key] - lo) / (hi - lo)); });
+    M.paintCells(thumbs[v.id].tr, F.cells, function (c) { return q5(f(c[v.key], a, b)); });
+  }
+  function drawCat(v) {
+    var X0 = 36, Y0 = 18, Y1 = 118, w = 56, html = '<line x1="' + X0 + '" y1="' + Y1 + '" x2="308" y2="' + Y1 + '" class="ax"/><text x="' + (X0 - 6) + '" y="' + (Y0 + 4) + '" text-anchor="end">1</text><text x="' + (X0 - 6) + '" y="' + (Y1 + 3) + '" text-anchor="end">0</text>';
+    v.classes.forEach(function (c, i) {
+      var x = X0 + 14 + i * (w + 14), h = (Y1 - Y0) * c[2];
+      html += '<rect x="' + x + '" y="' + (Y1 - h) + '" width="' + w + '" height="' + h + '" style="fill:' + c[3] + '"/><text x="' + (x + w / 2) + '" y="' + (Y1 + 14) + '" text-anchor="middle">' + c[1] + '</text><text x="' + (x + w / 2) + '" y="' + (Y1 - h - 4) + '" text-anchor="middle">' + c[2].toFixed(1) + '</text>';
+    });
+    document.getElementById('cv-' + v.id).innerHTML = html;
+  }
+  function markEdited(v) {
+    var el = document.getElementById('st-' + v.id);
+    el.textContent = 'Edited — downstream results show the unchanged example'; el.classList.add('edited'); edits[v.id] = true;
+  }
+  cards.addEventListener('click', function (e) {
+    var b = e.target.closest('.fnseg button'); if (!b) return;
+    var g = b.parentNode, v = VARS.filter(function (x) { return x.id === g.getAttribute('data-v'); })[0];
+    g.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+    v.fn = b.getAttribute('data-v');
+    document.getElementById('la-' + v.id).textContent = PLAB[v.fn][0];
+    document.getElementById('lb-' + v.id).textContent = PLAB[v.fn][1];
+    markEdited(v); drawVar(v);
+  });
+  cards.addEventListener('input', function (e) {
+    var id = (e.target.id || '').slice(3); var v = VARS.filter(function (x) { return x.id === id; })[0];
+    if (v && !v.cat) { markEdited(v); drawVar(v); }
+  });
+
+  /* ---- C.5 matrix + dendrogram ---- */
+  (function () {
+    var N = ['Precipitation', 'Soil moisture', 'NDVI', 'Temperature', 'Elevation', 'Slope'];
+    var R = [[1, .82, .74, -.21, .18, .10], [.82, 1, .78, -.30, .22, .05], [.74, .78, 1, -.25, .20, .12], [-.21, -.30, -.25, 1, -.88, -.48], [.18, .22, .20, -.88, 1, .55], [.10, .05, .12, -.48, .55, 1]];
+    var rep = { 0: 1, 3: 1, 5: 1 };
+    var x0 = 210, y0 = 84, cs = 46, html = '';
+    N.forEach(function (n, i) {
+      html += '<text x="' + (x0 - 8) + '" y="' + (y0 + i * cs + cs / 2 + 4) + '" text-anchor="end" class="' + (rep[i] ? 'rep' : '') + '">' + n + '</text>';
+      html += '<text transform="translate(' + (x0 + i * cs + cs / 2) + ',' + (y0 - 8) + ') rotate(-40)" class="small">' + n + '</text>';
+      R[i].forEach(function (r, j) {
+        var col = r >= 0 ? 'color-mix(in srgb, var(--accent) ' + Math.round(Math.abs(r) * 85) + '%, var(--surface))' : 'color-mix(in srgb, var(--loss) ' + Math.round(Math.abs(r) * 95) + '%, var(--surface))';
+        html += '<rect x="' + (x0 + j * cs) + '" y="' + (y0 + i * cs) + '" width="' + (cs - 2) + '" height="' + (cs - 2) + '" style="fill:' + col + '"/>' +
+          '<text x="' + (x0 + j * cs + cs / 2 - 1) + '" y="' + (y0 + i * cs + cs / 2 + 4) + '" text-anchor="middle" class="small' + (Math.abs(r) > 0.6 ? ' inv' : '') + '">' + (i === j ? '' : r.toFixed(2).replace('0.', '.').replace('-.', '−.')) + '</text>';
+      });
+    });
+    // brackets (dendrogram) left of names
+    function br(a, b, x, lab) { var ya = y0 + a * cs + cs / 2, yb = y0 + b * cs + cs / 2; return '<path class="dg" d="M' + (x + 12) + ' ' + ya + 'H' + x + 'V' + yb + 'H' + (x + 12) + '"/><text x="' + (x - 6) + '" y="' + ((ya + yb) / 2 + 4) + '" text-anchor="end" class="small">' + lab + '</text>'; }
+    html += br(0, 2, 70, 'A') + br(3, 4, 70, 'B') + '<text x="64" y="' + (y0 + 5 * cs + cs / 2 + 4) + '" text-anchor="end" class="small">C</text>';
+    document.getElementById('dend').innerHTML = html;
+  })();
+
+  /* ---- C.6 ---- */
+  V1BUI.segmented(document.getElementById('seg-mode'), function (v) { document.getElementById('modewarn').hidden = v !== 'b'; });
+
+  /* ---- C.7 save / load ---- */
+  function download(name, obj) {
+    var blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 0);
+  }
+  document.getElementById('save-proj').addEventListener('click', function () {
+    download('rural-nbs-scan-project.json', { kind: 'project-settings', saved: new Date().toISOString(), controls: V1BUI.state,
+      datasetProposals: Object.keys(proposals), ruleEdits: VARS.filter(function (v) { return edits[v.id]; }).map(function (v) { return { variable: v.id, fn: v.fn }; }) });
+  });
+  document.getElementById('save-res').addEventListener('click', function () {
+    var R = F.rollup(V1BUI.state);
+    download('rural-nbs-scan-example-result.json', { kind: 'example-result', note: 'Example data — authored surface, not a pilot result', saved: new Date().toISOString(),
+      opportunityHa: R.totals.selected * F.haPerCell, hotspotHa: R.totals.overlap * F.haPerCell });
+  });
+  document.getElementById('load').addEventListener('change', function (e) {
+    var file = e.target.files[0], msg = document.getElementById('loadmsg'); if (!file) return;
+    var rd = new FileReader();
+    rd.onload = function () {
+      try {
+        var o = JSON.parse(rd.result);
+        if (o.kind !== 'project-settings' || !o.controls) { msg.textContent = 'That file is not a saved project (an example result cannot be loaded as settings).'; return; }
+        V1BUI.setState(o.controls); msg.textContent = 'Project loaded: the control bar now shows its settings.';
+      } catch (err) { msg.textContent = 'Could not read that file.'; }
+    };
+    rd.readAsText(file);
+  });
+})();
+</script>
+<script src="review-mode.js"></script>
+</body>
+</html>

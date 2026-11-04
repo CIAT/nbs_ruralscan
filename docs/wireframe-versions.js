@@ -4,7 +4,7 @@
   const selector = document.getElementById('wireframe-version');
   selector.addEventListener('change', () => {
     const destination = selector.value;
-    if (destination === 'wireframe.html' || destination === 'wireframe-v0.html') {
+    if (destination === 'wireframe.html' || destination === 'wireframe-v0.html' || destination === 'redesign/index.html') {
       window.location.assign(new URL(destination, window.location.href).href);
     }
   });

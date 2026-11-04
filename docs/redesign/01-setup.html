@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rural NbS Scan</title>
+<script>(function(){var t="light";try{t=localStorage.getItem("v1b-theme")||"light"}catch(e){}document.documentElement.setAttribute("data-theme",t)})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1b.css">
+<link rel="stylesheet" href="review-mode.css">
+</head>
+<body>
+<div id="chrome"></div>
+
+<main class="wrap">
+  <section class="chapter">
+    <span class="eyebrow sc">Stage 01 · Setup</span>
+    <h1 class="question">What should this project scope?</h1>
+    <p class="lede">This scan is for World Bank task teams and their country counterparts who are scoping rural nature-based solutions before any feasibility study. Set the challenge, a practice and the geography here; <b>you leave the walkthrough with an opportunity map, a hotspot shortlist, a practice comparison and a draft scoping brief</b> — all scoping grade.</p>
+    <p class="about-link">New to the prototype? <a href="history.html#about" target="_blank" rel="noopener">About this prototype and how it changed</a></p>
+  </section>
+
+  <nav class="subtabs" role="tablist" aria-label="Stage 01 sections" style="margin:0 0 8px">
+    <button type="button" role="tab" aria-selected="true"><span class="sec-n">1.1</span>Scope</button>
+    <a role="tab" aria-selected="false" href="00-config.html" class="tablink"><span class="sec-n">1.2</span>Technical configuration →</a>
+  </nav>
+
+
+
+  <section class="walk" id="walk">
+    <div class="walk-head">
+      <h2><span class="sec-n">1.1.1</span>Three choices set the scope</h2>
+      <p>An example is filled in; change anything you like.</p>
+    </div>
+    <div class="walk-grid">
+      <div>
+        <div class="step">
+          <span class="step-n">1</span>
+          <div>
+            <h3>The challenge and what the project should improve</h3>
+            <p class="hint">Objectives change the wording of later stages. They do not re-weight any map.</p>
+            <input class="txt" type="text" value="Smallholder cropland losing yield to erratic rainfall and soil loss" aria-label="Challenge">
+            <div class="chips" id="chips">
+              <button type="button" class="chip" aria-pressed="true">Climate resilience</button>
+              <button type="button" class="chip" aria-pressed="true">Livelihoods</button>
+              <button type="button" class="chip" aria-pressed="false">Biodiversity</button>
+              <button type="button" class="chip" aria-pressed="false">Water security</button>
+              <button type="button" class="chip" aria-pressed="false">Gender equity</button>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-n">2</span>
+          <div>
+            <h3>The practice to walk through</h3>
+            <p class="hint">Each practice has its own footprint type, so results are reported in its own units.</p>
+            <div class="cards">
+              <label class="card"><input type="radio" name="p" checked><b>Planted silvoarable agroforestry</b><span>Area — hectares of suitable cells</span></label>
+              <label class="card"><input type="radio" name="p"><b>Riparian buffers</b><span>Linear — kilometres of stream zone</span></label>
+              <label class="card"><input type="radio" name="p"><b>Assisted natural regeneration</b><span>Area — hectares of fallow land</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="step">
+          <span class="step-n">3</span>
+          <div>
+            <h3>Geography and climate</h3>
+            <p class="hint">A whole country at 5 km runs in minutes; finer cells suit a project area.</p>
+            <div class="geo">
+              <label class="fld"><span>Area of interest</span><select><option>Sierra Leone</option><option>Upload a project boundary…</option></select></label>
+              <label class="fld"><span>Cell size</span><select><option>1 km</option><option selected>5 km</option><option>10 km</option></select></label>
+              <label class="fld"><span>Climate</span><select><option>Baseline and SSP2-4.5, 2050</option><option>Baseline 1995–2014 only</option></select></label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside class="aside-note">
+        <h3><span class="sec-n">1.1.2</span>Technical configuration</h3>
+        <p>Two separate things, both optional, both kept out of the walkthrough:</p>
+        <dl>
+          <dt>Choosing datasets</dt><dd>Which source represents each variable — for example a national soil map instead of a global one. Rules stay the same.</dd>
+          <dt>Tuning rules</dt><dd>How a variable becomes suitability. Rules come from the evidence register, and any edit is logged.</dd>
+        </dl>
+        <a class="btn-ghost" href="00-config.html">Open technical configuration (1.2)</a>
+      </aside>
+    </div>
+  </section>
+
+  <div class="nextstage">
+    <p><b>Scope set.</b> Next, read what each practice is and does before mapping it.</p>
+    <a class="btn" href="02-practices.html">Open Stage 02</a>
+  </div>
+</main>
+
+<script src="../sle_geo.js"></script>
+<script src="v1b-versions.js"></script>
+<script src="v1b-map.js"></script>
+<script src="v1b-fixture.js"></script>
+<script>
+(function () {
+  'use strict';
+  V1BUI.chrome(1);
+  // objective chips
+  document.querySelectorAll('#chips .chip').forEach(function (b) {
+    b.addEventListener('click', function () { b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); });
+  });
+})();
+</script>
+<script src="review-mode.js"></script>
+</body>
+</html>
