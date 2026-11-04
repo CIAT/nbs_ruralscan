@@ -805,3 +805,42 @@ def test_output_details_distinguish_family_rollups_and_context_variants():
     assert "income group: low" in rows[2]["label"]
     assert rows[2]["risk_role"] == "asset_threat"
     assert "context variants" in output["count_definition"]
+
+
+def test_compiled_output_metric_deduplicates_records_and_respects_family_scope():
+    family_cell = {
+        "record_id": "same_id",
+        "suitability_family_id": "trees__planted",
+        "evidence_ids": [],
+    }
+    data = {
+        "registers": {
+            "FAM_family_registry": fixture_data()["registers"]["FAM_family_registry"]
+        },
+        "global_tables": {"T2_climate_risk": [{"variable_id": "drought"}]},
+        "recipes": {
+            "trees": {
+                "T3_nbs_hazard_farming": [
+                    family_cell,
+                    dict(family_cell),
+                    {"record_id": "rollup"},
+                ],
+                "T6_nbs_scorecard": [dict(family_cell)],
+            },
+            "water": {"T3_nbs_hazard_farming": [{"record_id": "same_id"}]},
+        },
+    }
+    result = build_progress(data, [])
+    assert result["totals"]["compiled_outputs"] == 5
+    assert result["totals"]["contributing_excerpts"] == 0
+    assert result["table_views"]["T2a"]["totals"]["compiled_outputs"] == 1
+    assert result["table_views"]["T3"]["totals"]["compiled_outputs"] == 3
+    for scope in (result, result["table_views"]["T3"]):
+        tree = next(p for p in scope["practices"] if p["nbs_id"] == "trees")
+        assert tree["metrics"]["compiled_outputs"] == (3 if scope is result else 2)
+        families = {f["family_id"]: f["metrics"] for f in tree["families"]}
+        assert families["trees__planted"]["compiled_outputs"] == (
+            2 if scope is result else 1
+        )
+        assert families["trees__natural"]["compiled_outputs"] == 0
+        assert families["__unassigned"]["compiled_outputs"] == 1

@@ -642,6 +642,9 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
             if (not nbs or e.get("nbs_id") == nbs) and family_matches(family_ids(e))
         ]
         return {
+            "compiled_outputs": sum(
+                family_matches(r["family_ids"]) for r in selected_outputs
+            ),
             "evidence_ids": sorted(selected_ev),
             "contributing_excerpts": len(contribution_ids),
             "contributing_sources": len(contribution_sources),
@@ -824,6 +827,7 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
             "fully_reviewed_sources": "Sources with a nonempty retained excerpt set, all approved in the displayed scope.",
             "extraction_counts": "Mutually exclusive retained excerpt role buckets: T4 structural suitability; effects nbs_effect; M2b operational_risk/asset_vulnerability; other remaining roles. These do not claim compilation into T3/T6.",
             "t4_operational_relationships": "Soft operational rows marked operational_constraint and is_scenario_candidate=true. Hard operational masks remain core suitability relationships.",
+            "compiled_outputs": "Distinct configured or compiled output records in the displayed table, practice and explicit family scope, keyed by table, practice and record ID. Includes records without retained citations and family/roll-up/context variants; not unique analytical dimensions or evidence-backed outputs. Shared T2a configuration is project-level; T4 soft operational rows and T6E economics are excluded.",
             "contributing_excerpts": "Distinct retained excerpts explicitly cited in displayed compiled/configured outputs, intersected with the displayed evidence scope; not inferred from extraction roles. T4 excludes soft operational scenario rows. T6 excludes T6E economics.",
             "contributions": "T4/T3/T6 cite retained excerpts in compiled rows. M2b counts role-based operational-risk or asset-vulnerability excerpts, not compiled outputs. Categories overlap. T6 excludes T6E economics.",
             "families": "Direct source/evidence family associations only. Generic evidence is not copied into every family; family sums need not equal grand totals.",
