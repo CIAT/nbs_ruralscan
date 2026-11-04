@@ -4,9 +4,9 @@
 
 Start with [Evidence & rules → Relationships](../../docs/dashboard.html#relationships) for the live source relationship catalogue. The **Evidence explorer** subtab retains **Evidence trail · Suitability & weights · Global synthesis · Rules & method**. Evidence decisions remain in **Evidence review**. Developer packages below are versioned downloads, not additional live dashboards.
 
-**Current developer package: [developer-v0.1.6](developer-v0.1.6/README.md), 4 November 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.6/developer_table.csv), [machine contract](developer-v0.1.6/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
+**Current developer package: [developer-v0.1.7](developer-v0.1.7/README.md), 4 November 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.7/developer_table.csv), [machine contract](developer-v0.1.7/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
 
-This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country-specific selections remain unset; the approved partial terrain-and-soil policy pins three functions and weights without granting regional transfer. Package version 0.1.6 uses contract/selection format 0.2.0. Pilot testing remains Diego's work.
+This package is generated from a verified corpus recompile, including Haile's restored SOC continuation bands. It contains 26 configured mappings plus 12 operational reference rows and 40 response conformance cases. Country-specific selections remain unset; the approved partial terrain-and-soil policy pins three functions and weights without granting regional transfer. Package version 0.1.7 uses contract/selection format 0.2.0. Pilot testing remains Diego's work.
 
 The configured rows are **10 numeric responses, 7 categorical host gates, 1 hard legal exclusion and 8 operational scenarios**. Numeric responses cover rainfall, temperature, slope, elevation, soil pH, soil organic carbon and NDVI.
 
@@ -55,3 +55,7 @@ For data-only audit reconciliation, `scripts/audit-t4-compilation.py agroforestr
 ## Relationship visibility update — 4 November 2026
 
 The [live source relationship catalogue](../../docs/dashboard.html#relationships) accounts for all non-dropped structural claims, including unlinked directions and classes. This is a visibility update, not new numeric calibration: 26 configured mappings and existing response choices remain unchanged. Source context and species/crop scope remain visible. Use the live dashboard for ongoing inspection; versioned HTML packages remain unchanged as historical snapshots.
+
+## Aggregated evidence table
+
+The original plotted table now includes the aggregate evidence alongside family-specific functions. Start with [live evidence table: one row per variable](../../docs/dashboard.html#relationships): group and variable use across the recorded study cohort, reconstructed source-weight summaries, source-relative importance, family-specific directions and function-support counts. [Source records](../../docs/dashboard.html#relationships) remain available underneath. Frequency is not importance; partial mapped-group weight sums are labelled and never renormalized. Regional and practitioner scopes remain separate.

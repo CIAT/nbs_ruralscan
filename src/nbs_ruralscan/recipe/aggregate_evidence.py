@@ -1,5 +1,6 @@
 """Descriptive cross-source table; no cross-source response/weight calibration."""
 
+import html
 import json
 from collections import defaultdict
 from statistics import median
@@ -175,3 +176,89 @@ def aggregate(catalogue, inclusion, models, mappings, ontology):
         ],
         "method": "Descriptive medians: one median per reporting source across its alternative models, then across sources within the same model scope. Not independent-study validation or a runtime weighting recommendation. Group shares sum only mapped variables, without renormalization.",
     }
+
+
+def render(data):
+    def esc(x):
+        return html.escape(str(x))
+
+    def nice(x):
+        return str(x).replace("agroforestry__", "").replace("_", " ")
+
+    def freq(r):
+        return f"{r['n']}/{r['N']} ({r['percent']}%)" if r else "Not documented"
+
+    out = [
+        '<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Agroforestry — aggregated T4 evidence</title>',
+        "<style>body{font:15px/1.5 system-ui;margin:28px;color:#183c36;background:#f5f8f7}table{border-collapse:collapse;width:100%;background:white}th,td{padding:12px;border:1px solid #d4dfd9;vertical-align:top;text-align:left;min-width:135px}th{background:#e4eee8}h1{font-size:28px}summary{cursor:pointer}pre{white-space:pre-wrap;max-width:600px}small{display:block;color:#52675e}input{font:inherit;padding:10px;width:320px}.scroll{overflow:auto}.warn{background:#fff1d2;padding:12px}</style>",
+        "<h1>Agroforestry: aggregated T4 evidence</h1><p>One row per variable. General-practice evidence only; family-specific responses remain separate within each row.</p>",
+        '<p><a href="index.html">Numeric functions and plots</a> · <a href="source_relationships.html">Source evidence</a> · <a href="aggregate_evidence.csv">Download aggregate table</a> · <a href="aggregate_evidence.json">Full aggregate data</a></p>',
+        '<p class="warn">Study use, relative importance and support for a calibrated function are different measures. Weight summaries cover reconstructed weight models, not every evidence source; other reported weights may remain uncompiled. Missing weights mean unknown, not zero. Regional and FMNR practitioner models are not pooled. No aggregate below becomes a runtime weight.</p>',
+        "<details><summary>How to read the aggregation</summary><p>Use counts come from explicitly verified model-use records, deduplicated by reporting paper. Denominator is the recorded model-use cohort, not all papers in the library; absence is unknown. All recorded includes unreviewed inputs. Group use counts a paper once across its variables.</p><p>Relative importance is the source hierarchy-adjusted ratio to equal weighting: 1× means equal-share benchmark, above 1× means higher source-model importance. Whole-model shares retain the original model denominator, including operational criteria. For each scope, alternative models are first summarized within source; medians/ranges then describe reporting sources, not independent replicates. Different regions and variable sets limit comparison.</p><p>Group weight cells show mapped-group sums per original model. Where some raw variables lack an unambiguous ontology mapping, these sums are partial and explicitly labelled; they are not the original declared group weights. No residual is redistributed.</p><p>Directional counts cover explicit increasing/decreasing/optimum/nonmonotonic fields only; qualitative prose and coded classes remain in source evidence. Function counts are distinct source IDs per existing mapping, not option counts or global validation.</p></details>",
+        '<p><input id="search" placeholder="Find variable or group" aria-label="Find variable or group"></p><div class="scroll"><table><thead><tr><th>Variable / group</th><th>Group use across studies</th><th>Variable use</th><th>Relative importance</th><th>Study weights</th><th>Relationship across sources</th><th>Function support</th></tr></thead><tbody>',
+    ]
+    for r in data["rows"]:
+        out.append(
+            f'<tr class="variable"><td><strong>{esc(nice(r["variable"]))}</strong><small>{esc(nice(r["group"]))}</small></td><td>{freq(r["group_use"])}'
+        )
+        out.append("<details><summary>Mapped group weights</summary>")
+        for g in r["mapped_group_weights"]:
+            partial = (
+                "partial" if g["unmapped_model_variables"] else "all variables mapped"
+            )
+            out.append(
+                f"<p>{esc(g['model_id'])}: {100 * g['share']:.1f}% ({partial})</p>"
+            )
+        if not r["mapped_group_weights"]:
+            out.append("Not documented")
+        out.append("</details></td><td>" + freq(r["variable_use"]))
+        if r["variable_use"]:
+            v = r["variable_use"]
+            out.append(
+                f"<small>Within group: {v['n']}/{v['within_group_N']} studies</small>"
+            )
+        out.append("</td><td>")
+        for w in r["weight_summary"]:
+            out.append(
+                f"<p>{esc(nice(w['scope']))}: <strong>{w['median_relative_to_equal']:.2f}×</strong><small>Range {w['relative_range'][0]:.2f}–{w['relative_range'][1]:.2f}×; {w['reporting_sources']} reporting sources</small></p>"
+            )
+        if not r["weight_summary"]:
+            out.append("No mapped weight model")
+        out.append("</td><td>")
+        for w in r["weight_summary"]:
+            out.append(
+                f"<p>{esc(nice(w['scope']))}: median {100 * w['median_source_share']:.1f}%<small>Source-median range {100 * w['source_share_range'][0]:.1f}–{100 * w['source_share_range'][1]:.1f}%</small></p>"
+            )
+        out.append("<details><summary>Original model shares and provenance</summary>")
+        for w in r["study_weights"]:
+            out.append(
+                f"<p>{esc(w['model_id'])}: {100 * w['share']:.2f}% whole-model share; {w['relative_to_equal']:.2f}×<small>Original weights (native scale, by path): {esc(w['native_weight_paths'])}</small><small>{esc(w['provenance'])}</small></p>"
+            )
+        out.append("</details></td><td>")
+        for d in r["direction_by_family"]:
+            out.append(
+                f"<p>{esc(nice(d['family']))}: {esc(nice(d['direction']))} — {len(d['sources'])} sources<small>{esc(', '.join(d['sources']))}</small></p>"
+            )
+        if not r["direction_by_family"]:
+            out.append(
+                "No aggregated explicit direction; inspect classes/qualitative context."
+            )
+        out.append("</td><td>")
+        for f in r["function_support"]:
+            out.append(
+                f"<p>{esc(nice(f['family']))}: <strong>{len(f['sources'])} studies</strong><small>{esc(', '.join(f['sources']))}</small></p>"
+            )
+        if not r["function_support"]:
+            out.append("No numeric function compiled")
+        out.append(
+            f"<details><summary>Traceability</summary><p>{esc(', '.join(r['claim_sources']))}</p><small>{esc(', '.join(r['evidence_ids']))}</small></details></td></tr>"
+        )
+    out.append(
+        "</tbody></table></div><details><summary>Weight concepts not yet mapped</summary><pre>"
+        + esc(json.dumps(data["unmapped_weight_variables"], indent=2))
+        + "</pre></details>"
+    )
+    out.append(
+        "<script>document.getElementById('search').addEventListener('input',function(){const q=this.value.toLowerCase();for(const r of document.querySelectorAll('.variable'))r.hidden=!r.textContent.toLowerCase().includes(q);});</script></html>"
+    )
+    return "\n".join(out)
