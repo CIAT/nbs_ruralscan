@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-04T08:39:29.563316+00:00",
-  "git_commit": "cba78e24c9b0b047b42004203c3137d97a0892a0",
+  "timestamp": "2026-11-04T08:50:38.114162+00:00",
+  "git_commit": "0a273c3fadf8eabcea8a572eb8fea5105d7ed9e4",
   "registers": {
     "SRC_source_register": [
       {
@@ -31681,26 +31681,74 @@
         "suitability_family_id": "water_harvesting__runoff_catchment",
         "variable": "slope",
         "relationship": {
-          "opt_low": 0,
-          "opt_high": 5,
-          "abs_max": 10,
+          "type": "source_fuzzy_input_classes",
           "unit": "percent",
-          "membership": "trapezoidal a=0 b=0 c=5 d=10 (LOW class)",
-          "direction": "check dams and farm ponds are highly suitable only in the LOW slope class — full membership 0-5%, falling to zero by 10%; medium (5-30%) and high (20-100%) slopes lower their suitability"
+          "parameter_order": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ],
+          "input_membership_function": "trapezoidal",
+          "classes": {
+            "low": [
+              0,
+              0,
+              5,
+              10
+            ],
+            "medium": [
+              5,
+              10,
+              20,
+              30
+            ],
+            "high": [
+              20,
+              30,
+              100,
+              100
+            ]
+          },
+          "direction": "decreasing",
+          "direction_scope": "surface-water storage structures only; qualitative preference, conditional on other inputs",
+          "note": "Parameters classify the input variable; they are not standalone structure-suitability thresholds. Suitability comes from the joint fuzzy rule base. Retain all input classes without abs_min/abs_max/opt_low/opt_high."
+        },
+        "context": {
+          "model_use": {
+            "method": "Mamdani fuzzy inference system",
+            "inputs": [
+              "slope",
+              "soil_permeability",
+              "runoff_potential_index"
+            ],
+            "importance": "Source states equal weightage in joint rules; no numeric MCDA weights inferred",
+            "source_page": 4
+          },
+          "calibration_hold": "Input-class calibration retained; standalone suitability function not established. Complete joint rule base not verified.",
+          "technology_scope": "Surface storage: check dams and farm ponds. Groundwater recharge: percolation tanks; do not pool their opposite preferences. NbS eligibility remains conditional.",
+          "geometry_hold": "Check-dam locations restricted to drainage lines (PDF p8); raster applicability is not intervention area.",
+          "rule_counterexample": "PDF p4 also gives high check-dam/farm-pond suitability with MEDIUM runoff, low permeability and low slope; high-CN class is not a necessary independent condition.",
+          "source_internal_ambiguity": "PDF p3 worked 8% slope example gives low/medium memberships 0.2/0.8, inconsistent with Table 2 trapezoids (0.4/0.6). Table values retained literally; no repair inferred.",
+          "correction": {
+            "date": "2026-11-04",
+            "ruleset": "v1.9.2",
+            "audit": "methodology/audits/vema_fuzzy_correction_20261104/corrections.json"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
         "claim_basis": "expert_assertion",
         "claim_scope": "practice_technology",
-        "extraction_confidence": "high",
+        "extraction_confidence": "medium",
         "quote": "Table 2\nFuzzy Membership Function Parameters.\nLow\nMedium\nHigh\na\nb\nc\nd\na\nb\nc\nd\na\nb\nc\nd\nSlope (%)\n0\n0\n5\n10\n5\n10\n20\n30\n20\n30\n100\n100\nSoil Permeability (cm/day)\n0\n0\n12\n48\n12\n48\n151\n305\n151\n305\n900\n1000\nRunoﬀPotential (CN)\n0\n35\n55\n60\n55\n60\n75\n80\n75\n80\n100\n100\n",
         "page": 4,
         "reviewer_ok": false,
-        "raw_name": "fuzzy membership parameters for the low slope class that makes check dams and farm ponds highly suitable",
-        "attribution": "rule base from Adham et al. 2016a; Kadam et al. 2012; Ramakrishnan et al. 2009; Rao and Bhaumik 2003, plus expert knowledge",
+        "raw_name": "Slope (%)",
+        "attribution": "[VERIFY-FLAG mismatch: Corrected input-class endpoints previously misread as absolute suitability limits. Review qualitative storage direction and joint-rule conditionality; no standalone calibrated curve.] rule base from Adham et al. 2016a; Kadam et al. 2012; Ramakrishnan et al. 2009; Rao and Bhaumik 2003, plus expert knowledge",
         "locator_type": "page",
-        "justification_quote": "IF soil permeability is low AND slope is low AND runoﬀpotential is high\nTHEN check dam suitability is high, farm pond is high, percolation tank is\nnot suitable",
-        "justification_page": 4,
+        "justification_quote": "Areas with high slope are not suitable for\nsurface storage structures, as it requires a large structure (in terms of\nheight) to store a signiﬁcant amount of water. Areas with medium or\nlow slope are more suitable sites, as storage capacity can be increased\neven with smaller structures.",
+        "justification_page": 3,
         "ruleset_version": "v1.5.1"
       },
       {
@@ -31710,25 +31758,74 @@
         "suitability_family_id": "water_harvesting__runoff_catchment",
         "variable": "soil_permeability",
         "relationship": {
-          "opt_high": 12,
-          "abs_max": 48,
+          "type": "source_fuzzy_input_classes",
           "unit": "cm/day",
-          "membership": "trapezoidal a=0 b=0 c=12 d=48 (LOW class)",
-          "direction": "storage structures (check dams, farm ponds) need LOW soil permeability — full membership below 12 cm/day, zero above 48 cm/day — whereas percolation tanks are not suitable on those same soils"
+          "parameter_order": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ],
+          "input_membership_function": "trapezoidal",
+          "classes": {
+            "low": [
+              0,
+              0,
+              12,
+              48
+            ],
+            "medium": [
+              12,
+              48,
+              151,
+              305
+            ],
+            "high": [
+              151,
+              305,
+              900,
+              1000
+            ]
+          },
+          "direction": "decreasing",
+          "direction_scope": "surface-water storage structures only; qualitative preference, conditional on other inputs",
+          "note": "Parameters classify the input variable; they are not standalone structure-suitability thresholds. Suitability comes from the joint fuzzy rule base. Retain all input classes without abs_min/abs_max/opt_low/opt_high."
+        },
+        "context": {
+          "model_use": {
+            "method": "Mamdani fuzzy inference system",
+            "inputs": [
+              "slope",
+              "soil_permeability",
+              "runoff_potential_index"
+            ],
+            "importance": "Source states equal weightage in joint rules; no numeric MCDA weights inferred",
+            "source_page": 4
+          },
+          "calibration_hold": "Input-class calibration retained; standalone suitability function not established. Complete joint rule base not verified.",
+          "technology_scope": "Surface storage: check dams and farm ponds. Groundwater recharge: percolation tanks; do not pool their opposite preferences. NbS eligibility remains conditional.",
+          "geometry_hold": "Check-dam locations restricted to drainage lines (PDF p8); raster applicability is not intervention area.",
+          "rule_counterexample": "PDF p4 also gives high check-dam/farm-pond suitability with MEDIUM runoff, low permeability and low slope; high-CN class is not a necessary independent condition.",
+          "source_internal_ambiguity": "PDF p3 worked 8% slope example gives low/medium memberships 0.2/0.8, inconsistent with Table 2 trapezoids (0.4/0.6). Table values retained literally; no repair inferred.",
+          "correction": {
+            "date": "2026-11-04",
+            "ruleset": "v1.9.2",
+            "audit": "methodology/audits/vema_fuzzy_correction_20261104/corrections.json"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
         "claim_basis": "expert_assertion",
         "claim_scope": "practice_technology",
-        "extraction_confidence": "high",
+        "extraction_confidence": "medium",
         "quote": "Table 2\nFuzzy Membership Function Parameters.\nLow\nMedium\nHigh\na\nb\nc\nd\na\nb\nc\nd\na\nb\nc\nd\nSlope (%)\n0\n0\n5\n10\n5\n10\n20\n30\n20\n30\n100\n100\nSoil Permeability (cm/day)\n0\n0\n12\n48\n12\n48\n151\n305\n151\n305\n900\n1000\nRunoﬀPotential (CN)\n0\n35\n55\n60\n55\n60\n75\n80\n75\n80\n100\n100\n",
         "page": 4,
         "reviewer_ok": false,
-        "raw_name": "fuzzy membership parameters for the low permeability class that makes storage structures suitable",
-        "attribution": "rule base from Adham et al. 2016a; Kadam et al. 2012; Ramakrishnan et al. 2009; Rao and Bhaumik 2003, plus expert knowledge",
+        "raw_name": "Soil Permeability (cm/day)",
+        "attribution": "[VERIFY-FLAG mismatch: Corrected input-class endpoints previously misread as absolute suitability limits. Review qualitative storage direction and joint-rule conditionality; no standalone calibrated curve.] rule base from Adham et al. 2016a; Kadam et al. 2012; Ramakrishnan et al. 2009; Rao and Bhaumik 2003, plus expert knowledge",
         "locator_type": "page",
-        "justification_quote": "IF soil permeability is low AND slope is low AND runoﬀpotential is high\nTHEN check dam suitability is high, farm pond is high, percolation tank is\nnot suitable",
-        "justification_page": 4,
+        "justification_quote": "The water harvesting structures for surface water\nstorage to aid rainfed agriculture are more suitable in areas with low\nvalues of soil permeability.",
+        "justification_page": 3,
         "ruleset_version": "v1.5.1"
       },
       {
@@ -31738,25 +31835,74 @@
         "suitability_family_id": "water_harvesting__runoff_catchment",
         "variable": "runoff_potential_index",
         "relationship": {
-          "abs_min": 75,
-          "opt_low": 80,
+          "type": "source_fuzzy_input_classes",
           "unit": "CN",
-          "membership": "trapezoidal a=75 b=80 c=100 d=100 (HIGH class)",
-          "direction": "check dams and farm ponds are highly suitable where runoff potential is HIGH — curve number fully in class from 80, entering from 75"
+          "parameter_order": [
+            "a",
+            "b",
+            "c",
+            "d"
+          ],
+          "input_membership_function": "trapezoidal",
+          "classes": {
+            "low": [
+              0,
+              35,
+              55,
+              60
+            ],
+            "medium": [
+              55,
+              60,
+              75,
+              80
+            ],
+            "high": [
+              75,
+              80,
+              100,
+              100
+            ]
+          },
+          "direction": "increasing",
+          "direction_scope": "surface-water storage structures only; qualitative preference, conditional on other inputs",
+          "note": "Parameters classify the input variable; they are not standalone structure-suitability thresholds. Suitability comes from the joint fuzzy rule base. Retain all input classes without abs_min/abs_max/opt_low/opt_high."
+        },
+        "context": {
+          "model_use": {
+            "method": "Mamdani fuzzy inference system",
+            "inputs": [
+              "slope",
+              "soil_permeability",
+              "runoff_potential_index"
+            ],
+            "importance": "Source states equal weightage in joint rules; no numeric MCDA weights inferred",
+            "source_page": 4
+          },
+          "calibration_hold": "Input-class calibration retained; standalone suitability function not established. Complete joint rule base not verified.",
+          "technology_scope": "Surface storage: check dams and farm ponds. Groundwater recharge: percolation tanks; do not pool their opposite preferences. NbS eligibility remains conditional.",
+          "geometry_hold": "Check-dam locations restricted to drainage lines (PDF p8); raster applicability is not intervention area.",
+          "rule_counterexample": "PDF p4 also gives high check-dam/farm-pond suitability with MEDIUM runoff, low permeability and low slope; high-CN class is not a necessary independent condition.",
+          "source_internal_ambiguity": "PDF p3 worked 8% slope example gives low/medium memberships 0.2/0.8, inconsistent with Table 2 trapezoids (0.4/0.6). Table values retained literally; no repair inferred.",
+          "correction": {
+            "date": "2026-11-04",
+            "ruleset": "v1.9.2",
+            "audit": "methodology/audits/vema_fuzzy_correction_20261104/corrections.json"
+          }
         },
         "use_role": "structural_suitability",
         "evidence_type": "literature_relationship",
         "claim_basis": "expert_assertion",
         "claim_scope": "practice_technology",
-        "extraction_confidence": "high",
+        "extraction_confidence": "medium",
         "quote": "Table 2\nFuzzy Membership Function Parameters.\nLow\nMedium\nHigh\na\nb\nc\nd\na\nb\nc\nd\na\nb\nc\nd\nSlope (%)\n0\n0\n5\n10\n5\n10\n20\n30\n20\n30\n100\n100\nSoil Permeability (cm/day)\n0\n0\n12\n48\n12\n48\n151\n305\n151\n305\n900\n1000\nRunoﬀPotential (CN)\n0\n35\n55\n60\n55\n60\n75\n80\n75\n80\n100\n100\n",
         "page": 4,
         "reviewer_ok": false,
-        "raw_name": "fuzzy membership parameters for the high runoff-potential class",
-        "attribution": "rule base from Adham et al. 2016a; Kadam et al. 2012; Ramakrishnan et al. 2009; Rao and Bhaumik 2003, plus expert knowledge",
+        "raw_name": "Runoff Potential (CN)",
+        "attribution": "[VERIFY-FLAG mismatch: Corrected input-class endpoints previously misread as absolute suitability limits. Review qualitative storage direction and joint-rule conditionality; no standalone calibrated curve.] rule base from Adham et al. 2016a; Kadam et al. 2012; Ramakrishnan et al. 2009; Rao and Bhaumik 2003, plus expert knowledge",
         "locator_type": "page",
-        "justification_quote": "IF soil permeability is low AND slope is low AND runoﬀpotential is high\nTHEN check dam suitability is high, farm pond is high, percolation tank is\nnot suitable",
-        "justification_page": 4,
+        "justification_quote": "Surface storage water harvesting structures favor high and\nmedium runoﬀpotential classes, while groundwater recharge structures\nfavor the low runoﬀpotential areas.",
+        "justification_page": 7,
         "ruleset_version": "v1.5.1"
       },
       {
