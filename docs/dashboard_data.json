@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-03T06:12:28.603172+00:00",
-  "git_commit": "2d70598509d1b114ea12a19fab81393d1e9e81e8",
+  "timestamp": "2026-11-04T06:53:10.120712+00:00",
+  "git_commit": "16e19629a8eaf91188559cce432162851f885aa5",
   "registers": {
     "SRC_source_register": [
       {
@@ -247048,6 +247048,44 @@
         "ruleset_version": "v1.8.1",
         "discovery_log_ref": "methodology/discovery_logs/forest_T4_primary_methods_tool_20261102.md",
         "note": "Counts describe the reported bounded search set before queue deduplication; unknown totals remain blank. See report for reuse, exclusions and unavailable channels."
+      },
+      {
+        "search_id": "riparian_buffer__T4__stock__all__0f38f95aeb2c__2026-11-04",
+        "nbs_id": "riparian_buffer",
+        "table": "T4",
+        "category": "stock",
+        "search_terms": "NbS_Practice == 'Riparian buffers' in reference/stocktake/peer_reviewed_benchmarked.csv",
+        "screening_steps": "frame · source_type · relevance · credibility_six_axis · saturation_stop",
+        "inclusion_criteria": "Existing-stocktake spatial buffer-placement methods with explicit land-cover, corridor or hydrological context; retain local calibration holds.",
+        "limits": "Fixed 11 papers; generic parent audit, not targeted family search or saturation. No fresh literature/grey search; no EV extraction.",
+        "n_retrieved": 11,
+        "n_screened": 11,
+        "n_included": 5,
+        "search_date": "2026-11-04",
+        "run_id": "riparian_stock_reconciliation_20261104_stock",
+        "searched_by": "Codex",
+        "ruleset_version": "v1.8.1",
+        "discovery_log_ref": "methodology/discovery_logs/riparian_T4_stock_reconciliation_20261104.md",
+        "note": "Counts describe the reported bounded search set before queue deduplication; unknown totals remain blank. See report for reuse, exclusions and unavailable channels."
+      },
+      {
+        "search_id": "riparian_buffer__T4__tool__all__14023273535a__2026-11-04",
+        "nbs_id": "riparian_buffer",
+        "table": "T4",
+        "category": "tool",
+        "search_terms": "CoMOLA GitHub Witing riparian reforestation 2022",
+        "screening_steps": "frame · source_type · relevance · credibility_six_axis · saturation_stop",
+        "inclusion_criteria": "Inspect paper-linked executable spatial planning method for transferable T4 rules; generic optimizer is M4/M6 referral.",
+        "limits": "One query; 16 returned links, two unique targets screened (CoMOLA, Zenodo companion). One repository inspected at pinned commit; no execution or dataset ingestion.",
+        "n_retrieved": 16,
+        "n_screened": 2,
+        "n_included": 0,
+        "search_date": "2026-11-04",
+        "run_id": "riparian_stock_reconciliation_20261104_tool",
+        "searched_by": "Codex",
+        "ruleset_version": "v1.8.1",
+        "discovery_log_ref": "methodology/discovery_logs/riparian_T4_comola_check_20261104.md",
+        "note": "Counts describe the reported bounded search set before queue deduplication; unknown totals remain blank. See report for reuse, exclusions and unavailable channels."
       }
     ]
   },
@@ -254742,6 +254780,31 @@
         "Primary links": "- FORMAN: https://revistas.unal.edu.co/index.php/cal/article/view/55360\n- Twilley/Rivera-Monroy: https://digitalcommons.fiu.edu/record/15154\n- Restoration method: https://oceanwealth.org/wp-content/uploads/2019/02/MANGROVE-TNC-REPORT-FINAL.31.10.LOWSINGLES.pdf\n- GMW validation/code linkage: https://www.mdpi.com/2072-4292/15/8/2050\n- Deltares: https://www.deltares.nl/en/expertise/projects/mangrove-coasts-under-threat\n- Successor-data lead: https://www.globalcoastalwetlands.com/data\n\nExact commits, selected file hashes and notebook-cell inspection are in repository_checks.json. This is discovery inspection, not registered code evidence."
       },
       "raw_markdown": "# Mangrove tool lead follow-up — 29 October 2026\n\n> **Provenance.** Tracked copy of the discovery agent's report (`pipeline/staging/discovery/`, gitignored). Run `mangrove_tool_followup_20261029_tool`, ruleset **v1.8.1**, actual family `mangrove_restoration__tidal_coastal`. Registered by `scripts/register-discovery.py` on 2026-10-29: candidates → `pipeline/acquisition_queue.csv` (status `pending`), SRCH rows `mangrove_tool_followup_20261029_tool`, ledger per `--ledger`.\n\n\nDiscovery ruleset v1.8.1; mangrove_restoration / mangrove_restoration__tidal_coastal / T4 / tool. Five guide references and two code companions screened. Three method sources included for acquisition review; four project/code records retained as referrals or holds. Search-engine totals unknown; no saturation claim. Stock, updated_lit and grey lanes were not rerun.\n\n## Verbatim queries\n- \"Global Mangrove Watch\" github code\n- \"Validation and application\" \"individual based restoration model\" mangrove\n- \"Mangrove restoration potential\" github Worthington Spalding\n- \"mangrove coasts under threat\" Deltares model\n- \"Developing performance measures\" \"mangrove\" Twilley 2005 model\n- \"Worthington\" \"2018\" \"restoration\" \"github\"\n- \"FORMAN\" mangrove model code GitHub\n- \"Validación y aplicación\" \"55360\"\n- \"Mangrove restoration potential\" \"2018\" Worthington Spalding map\n- \"FORMAN\" \"mangrove\" \"github.com\"\n- \"Validación y aplicación\" site:revistas.unal.edu.co 55360\n\n## Channels and limits\n\nWeb search in English and Spanish; primary publisher, institutional, project and GitHub pages. Public GitHub API used for commits, tree listings and selected files after connected repository search for globalmangrovewatch/gmw_planetary_computer_s2_alerts returned no match. No GitLab, French/Portuguese, OpenAlex, Lens or AGRIS searches. Incidental results were not counted as screened candidates. Seven selected records, not approximate engine hits, define the screening denominator.\n\n## Decisions\n\nFORMAN: publisher abstract describes species-specific calibration against monitoring; code availability remains unresolved. Twilley/Rivera-Monroy: institutional record identifies simulation/performance methods; direct access returned 403, not evidence of a paywall. Worthington/Spalding: primary report establishes an expert-derived restoration method; original scoring implementation remains unverified. Full acquisition, title/DOI checks and applicability review precede extraction.\n\nGMW alerts code is Apache-2.0 and tied to a public analysis paper. Inspected notebook loads Sentinel-2 via STAC, applies existing-extent masks and calculates NDVI. This verifies code availability and purpose, not reproduced validation or T4 thresholds. GMW Atlas is MIT-licensed (root and inspected data subdirectory); inspected notebooks read OVERALL_SRE and multiply for display. They do not establish the original score derivation. Software licences do not automatically licence upstream datasets. No notebook was executed and no credentials or upstream data were fetched.\n\nDeltares project page links Delft3D FM and coastal engineering publications. It does not establish a project-specific, reusable mangrove suitability codebase. Keep M6 referral. The later Global Coastal Wetlands Lab restoration entry is a successor lead; do not conflate it with the 2018 report. Incidental soil-carbon and conservation-priority repositories were outside this bounded inspection.\n\n## Credibility and lineage\n\nStrength: FORMAN reports calibration; transfer beyond its taxa/sites unverified. Other included methods require full validation review. Transparency: papers/report accessible or located, original model code unresolved. Authority: journal/institutional primary records. Context: Colombian mangroves, Florida modelling and global historical restoration potential differ. Recency: historical methods retained for lineage, not presumed current. Seminality: no citation-count claim. Independence: guide citations and companion platform code are not independent evidence votes; institutional advocacy warrants caution. Proposed tiers medium pending full review.\n\n## Stop and next actions\n\nStopped after resolving identities and code availability for the bounded seed set. Acquire three method sources with team access, verify identities, then inspect model variables, relationships and scope. Public code referrals require their own adapter and immutable locators before any EV admission. Dataset ingestion remains paused. No source is labelled paywalled, no author contacted, no suitability rule or human approval changed.\n\n## Primary links\n\n- FORMAN: https://revistas.unal.edu.co/index.php/cal/article/view/55360\n- Twilley/Rivera-Monroy: https://digitalcommons.fiu.edu/record/15154\n- Restoration method: https://oceanwealth.org/wp-content/uploads/2019/02/MANGROVE-TNC-REPORT-FINAL.31.10.LOWSINGLES.pdf\n- GMW validation/code linkage: https://www.mdpi.com/2072-4292/15/8/2050\n- Deltares: https://www.deltares.nl/en/expertise/projects/mangrove-coasts-under-threat\n- Successor-data lead: https://www.globalcoastalwetlands.com/data\n\nExact commits, selected file hashes and notebook-cell inspection are in repository_checks.json. This is discovery inspection, not registered code evidence.\n"
+    },
+    "riparian_T4_comola_check_20261104": {
+      "id": "riparian_T4_comola_check_20261104",
+      "title": "Riparian paper-linked tool check — 2026-11-04",
+      "date": "",
+      "authors": "",
+      "seed_rule": "",
+      "sections": {
+        "Verbatim queries": "`CoMOLA GitHub Witing riparian reforestation 2022`",
+        "Channels and counts": "One web query returned 16 displayed links. Two unique target records were screened: CoMOLA repository and the Witing Zenodo companion. Other result links were not full-text screened. One codebase cloned read-only and inspected at commit d359741821218477d5e6a5ca45b134a6853329ea. Zero T4-rule candidates: CoMOLA is retained as an M4/M6 allocation-method referral; the companion is a dataset/code intake hold. See tool_audit.json for files, locators and hashes.\n\nThis is an English paper-linked lookup, not a broad GitHub/GitLab or multilingual search. No code execution, package installation, dataset intake, historical-version validation or reproduction claim. Stop after the named optimizer and its companion; do not infer that no other riparian tools exist."
+      },
+      "raw_markdown": "# Riparian paper-linked tool check — 2026-11-04\n\n> **Provenance.** Tracked copy of the discovery agent's report (`pipeline/staging/discovery/`, gitignored). Run `riparian_stock_reconciliation_20261104_tool`, ruleset **v1.8.1**, actual family `generic`. Registered by `scripts/register-discovery.py` on 2026-11-04: candidates → `pipeline/acquisition_queue.csv` (status `pending`), SRCH rows `riparian_stock_reconciliation_20261104_tool`, ledger per `--ledger`.\n\n\n## Verbatim queries\n\n`CoMOLA GitHub Witing riparian reforestation 2022`\n\n## Channels and counts\n\nOne web query returned 16 displayed links. Two unique target records were screened: CoMOLA repository and the Witing Zenodo companion. Other result links were not full-text screened. One codebase cloned read-only and inspected at commit d359741821218477d5e6a5ca45b134a6853329ea. Zero T4-rule candidates: CoMOLA is retained as an M4/M6 allocation-method referral; the companion is a dataset/code intake hold. See tool_audit.json for files, locators and hashes.\n\nThis is an English paper-linked lookup, not a broad GitHub/GitLab or multilingual search. No code execution, package installation, dataset intake, historical-version validation or reproduction claim. Stop after the named optimizer and its companion; do not infer that no other riparian tools exist.\n"
+    },
+    "riparian_T4_stock_reconciliation_20261104": {
+      "id": "riparian_T4_stock_reconciliation_20261104",
+      "title": "Riparian T4 stock reconciliation — 2026-11-04",
+      "date": "",
+      "authors": "",
+      "seed_rule": "",
+      "sections": {
+        "Verbatim queries": "Stock inventory:\n`NbS_Practice == 'Riparian buffers' in reference/stocktake/peer_reviewed_benchmarked.csv`\n\nIdentity lookup for the DOI-less stock record (not a separate grey discovery lane):\n`site.fs.usda.gov \"Where should buffers go\" Bentrup Kellerman`",
+        "Channels and counts": "Stock: 11 returned, 11 screened, 5 included. Five referrals and one scope hold retained. Four DOI-bearing included records use Crossref canonical citations; Bentrup uses native title plus USDA record. Ten DOI-bearing identities across the entire fixed set checked; Li's matching English title is on p. 9. Dedupe against SRC and acquisition queue used exact DOI and title-token overlap >0.85; no matches, with manual cross-check of riparian SRC citations. Not an exhaustive alias/entity-resolution claim.\n\nUpdated literature: not run. Grey: not run; USDA lookup verifies an existing stock record, not an extra source. Tool companion audit has its own report and protocol; do not sum it into stock counts. No new multilingual search; English texts reviewed except Li, for which only the English abstract is assessed. Chinese methods and all supplements remain outside this pass.",
+        "Stop and next actions": "Fixed eleven-paper cap reached. Register five sources for later bounded source intake/placement review. Retain general planning, floodplain and project-proposal referrals without mis-tagging them as buffer suitability. No saturation, extraction, verification-completion or human-review-completion claim. Historical family ledger rows remain unchanged."
+      },
+      "raw_markdown": "# Riparian T4 stock reconciliation — 2026-11-04\n\n> **Provenance.** Tracked copy of the discovery agent's report (`pipeline/staging/discovery/`, gitignored). Run `riparian_stock_reconciliation_20261104_stock`, ruleset **v1.8.1**, actual family `generic`. Registered by `scripts/register-discovery.py` on 2026-11-04: candidates → `pipeline/acquisition_queue.csv` (status `pending`), SRCH rows `riparian_stock_reconciliation_20261104_stock`, ledger per `--ledger`.\n\n\nDiscovery skill v1.8.1. Generic parent practice `riparian_buffer`; fixed original stocktake set. All PDFs already team-accessible. Five candidates are for placement-context review, not universal thresholds. See README, screening, criteria and manifest for decisions, source pages and limitations.\n\n## Verbatim queries\n\nStock inventory:\n`NbS_Practice == 'Riparian buffers' in reference/stocktake/peer_reviewed_benchmarked.csv`\n\nIdentity lookup for the DOI-less stock record (not a separate grey discovery lane):\n`site.fs.usda.gov \"Where should buffers go\" Bentrup Kellerman`\n\n## Channels and counts\n\nStock: 11 returned, 11 screened, 5 included. Five referrals and one scope hold retained. Four DOI-bearing included records use Crossref canonical citations; Bentrup uses native title plus USDA record. Ten DOI-bearing identities across the entire fixed set checked; Li's matching English title is on p. 9. Dedupe against SRC and acquisition queue used exact DOI and title-token overlap >0.85; no matches, with manual cross-check of riparian SRC citations. Not an exhaustive alias/entity-resolution claim.\n\nUpdated literature: not run. Grey: not run; USDA lookup verifies an existing stock record, not an extra source. Tool companion audit has its own report and protocol; do not sum it into stock counts. No new multilingual search; English texts reviewed except Li, for which only the English abstract is assessed. Chinese methods and all supplements remain outside this pass.\n\n## Stop and next actions\n\nFixed eleven-paper cap reached. Register five sources for later bounded source intake/placement review. Retain general planning, floodplain and project-proposal referrals without mis-tagging them as buffer suitability. No saturation, extraction, verification-completion or human-review-completion claim. Historical family ledger rows remain unchanged.\n"
     },
     "riparian_buffer_natural_restored_T4_2026-08": {
       "id": "riparian_buffer_natural_restored_T4_2026-08",
@@ -287548,7 +287611,7 @@
       "acquired": 12
     },
     "riparian_buffer": {
-      "candidates": 10,
+      "candidates": 15,
       "acquired": 0
     },
     "wetland_management": {
