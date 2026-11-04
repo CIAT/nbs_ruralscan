@@ -2,12 +2,12 @@
 (function () {
   'use strict';
   let data, model, evidence = new Map(), bibliography = [], drawerReturn = null, drawerTab = '';
-  const state = { nbs: '', family: '', bibNbs: '', bibType: '', bibSet: '', bibTable: '', query: '', page: 0, methodNbs: '', methodTable: '' };
+  const state = { nbs: '', family: '', bibNbs: '', bibType: '', bibSet: '', bibTable: '', query: '', page: 0, methodNbs: '', methodTable: '', familyFilter: '', reviewFilter: '', ledgerTable: '', ledgerChannel: '', ledgerPage: 0 };
   const $ = id => document.getElementById(id);
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt = v => v == null ? 'Not recorded' : Number(v).toLocaleString('en-GB');
   const label = v => v === 'cross' ? 'Cross-practice resources' : String(v || '').replace(/_/g, ' ').replace(/^./, c => c.toUpperCase());
-  const names = { literature: 'Literature', grey: 'Grey literature', tools: 'Tools', unknown: 'Unclassified', stock: 'Stocktake', updated_lit: 'Literature search', tool: 'Tool search' };
+  const names = { literature: 'Literature', grey: 'Grey literature', tools: 'Tools', unknown: 'Type not recorded', stock: 'Stocktake', updated_lit: 'Literature search', tool: 'Tool search' };
   const list = v => Array.isArray(v) ? v : String(v || '').split(/[|;]/).map(s => s.trim()).filter(Boolean);
   const safeUrl = v => { try { const u = new URL(v); return ['https:', 'http:'].includes(u.protocol) ? u.href : ''; } catch (_) { return ''; } };
   const link = (url, text) => safeUrl(url) ? `<a href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>` : esc(text);
@@ -21,33 +21,57 @@
     const title = kinds.map(k => `${names[k]}: ${fmt(m.source_mix[k] || 0)}`).join(' · ');
     return `<div class="dp-mix" aria-label="${esc(title)}" title="${esc(title)}"><div class="dp-mix-bar">${kinds.map(k => `<span class="dp-${k}" style="width:${total ? 100 * (m.source_mix[k] || 0) / total : 0}%"></span>`).join('')}</div><span>${kinds.map(k => `<span class="dp-ink-${k}">${fmt(m.source_mix[k] || 0)}</span>`).join(' | ')}</span></div>`;
   }
-  function legend() { return '<span class="dp-legend"><span class="dp-ink-literature">Literature</span> | <span class="dp-ink-grey">Grey</span> | <span class="dp-ink-tools">Tools</span> | <span class="dp-ink-unknown">Unclassified</span></span>'; }
-  function step(n, title, note) { return `<li><strong>${fmt(n)}</strong><span>${title}</span><small>${note}</small></li>`; }
+  function legend() { return '<span class="dp-legend"><span class="dp-ink-literature">Literature</span> | <span class="dp-ink-grey">Grey</span> | <span class="dp-ink-tools">Tools</span> | <span class="dp-ink-unknown">Type not recorded</span></span>'; }
+  const percent = (part, total) => total ? `${Number((100 * part / total).toFixed(1))}%` : '—';
+  function step(n, title) { return `<li><strong>${fmt(n)}</strong><span>${title}</span></li>`; }
   function flow(m) {
-    const s = m.search_metrics;
-    const coverage = field => `${fmt(s.coverage[field].recorded)} of ${fmt(s.events)} searches report a usable count`;
-    return `<div class="dp-workflow"><section><div class="dp-eyebrow">1 · Discovery & screening</div><h3>Search broadly. Select relevant sources.</h3><ol class="dp-flow">${step(s.retrieved, 'Search hits', coverage('retrieved'))}${step(s.screened, 'Hits screened', coverage('screened'))}${step(s.included, 'Search hits selected', coverage('included'))}</ol><p class="dp-note">${fmt(s.events)} documented searches. Repeated protocols across tables combined; searches can find the same paper. ${s.screened_pct == null ? 'No comparable screening percentage available.' : `${s.screened_pct}% screened within ${fmt(s.complete_counts)} searches with complete numeric counts.`} These counts are search observations, not unique publications.</p></section><section><div class="dp-eyebrow">2 · Evidence & translation</div><h3>Read sources. Check excerpts. Build relationships.</h3><ol class="dp-flow">${step(m.known_sources, 'Known source records', 'Explicit duplicate aliases merged')}${step(m.extracted_sources, 'Sources with excerpts', `${fmt(m.reviewed_sources)} have an approved excerpt`)}${step(m.active_excerpts, 'Retained excerpts', `${fmt(m.approved_excerpts)} currently approved`)}${step(m.t4_structural_relationships, 'T4 suitability relationships', `${fmt(m.t4_contributing_sources)} sources contribute to backed records; ${fmt(m.t4_operational_relationships)} soft operational records tracked separately`)}</ol><p class="dp-note">${fmt(m.all_excerpts)} excerpts recorded over the project, including ${fmt(m.dropped_excerpts)} quarantined after checks. Counts show work recorded, not completion or readiness. Source-level screening coverage cannot yet be calculated.</p></section></div>`;
+    return `<section class="dp-workflow dp-totals" aria-label="Project evidence totals"><h3>Find sources → extract evidence → review claims → build relationships</h3><ol class="dp-flow">${step(m.known_sources, 'Known source records')}${step(m.extracted_sources, 'Sources with excerpts')}${step(m.active_excerpts, 'Retained excerpts')}${step(m.t4_structural_relationships, 'T4 suitability relationships')}</ol></section>`;
   }
-  function tableHead() { return '<thead><tr><th scope="col">Practice / suitability family</th><th scope="col">Known sources<br><small>Literature | Grey | Tools | ?</small></th><th scope="col">Search observations<br><small>Hits / screened / selected</small></th><th scope="col">Sources with<br>retained excerpts</th><th scope="col">Sources with<br>approved excerpts</th><th scope="col">Excerpts<br><small>Approved / retained</small></th><th scope="col">T4 records<br><small>Backed / all</small></th></tr></thead>'; }
-  function cells(m) {
-    const s = m.search_metrics;
-    return `<td><b>${fmt(m.known_sources)}</b>${mix(m)}</td><td class="dp-numbers">${[s.retrieved,s.screened,s.included].map(n => n == null ? '—' : fmt(n)).join(' / ')}<small>${fmt(s.complete_counts)} / ${fmt(s.events)} searches fully counted</small></td><td>${fmt(m.extracted_sources)}</td><td>${fmt(m.reviewed_sources)}<small>of ${fmt(m.extracted_sources)} with excerpts</small></td><td>${fmt(m.approved_excerpts)} / ${fmt(m.active_excerpts)}<small>${fmt(m.dropped_excerpts)} quarantined</small></td><td>${fmt(m.t4_evidence_backed_relationships)} / ${fmt(m.t4_relationships)}<small>${fmt(m.t4_structural_relationships)} suitability · ${fmt(m.t4_operational_relationships)} soft operational</small><small>${fmt(m.t4_contributing_sources)} sources behind backed records</small></td>`;
+  function tableHead(discovery = false) {
+    return `<thead><tr><th scope="col">${discovery ? 'Practice' : 'Suitability family'}</th><th scope="col" title="Source Register and acquisition queue, with explicit duplicate aliases merged">Known sources</th>${discovery ? '<th scope="col" title="Result appearances returned; the same paper can appear more than once">Results found</th><th scope="col" title="Result appearances assessed for relevance, including those later rejected">Results screened</th><th scope="col" title="Screened result appearances that met inclusion criteria">Passed screening</th>' : ''}<th scope="col">Sources with excerpts</th><th scope="col" title="Sources with at least one approved excerpt; not whole-paper reviews">Sources with approved excerpts</th><th scope="col">Retained excerpts</th><th scope="col" title="Human-approved retained excerpts; percentage of retained excerpts">Approved excerpts</th><th scope="col" title="Compiled structural suitability relationships; soft operational records excluded">T4 relationships</th></tr></thead>`;
   }
+  function cells(m, discovery = false) {
+    const s = m.search_metrics;
+    return `<td><b>${fmt(m.known_sources)}</b>${mix(m)}</td>${discovery ? ['retrieved','screened','included'].map(k=>`<td class="dp-numbers">${s.complete_counts ? fmt(s['paired_'+k]) : '—'}</td>`).join('') : ''}<td>${fmt(m.extracted_sources)}</td><td>${fmt(m.reviewed_sources)}</td><td>${fmt(m.active_excerpts)}</td><td title="${fmt(m.approved_excerpts)} of ${fmt(m.active_excerpts)} retained excerpts approved">${fmt(m.approved_excerpts)} <span class="dp-percent">(${percent(m.approved_excerpts,m.active_excerpts)})</span></td><td>${fmt(m.t4_structural_relationships)}</td>`;
+  }
+  function visibleFamilies(p) { return p.families.filter(f => ((data.family_display_status || {})[f.family_id] || {}).status !== 'out_of_scope'); }
+  function selectedFamilies(p) { return visibleFamilies(p).filter(f => (!state.familyFilter || f.family_id===state.familyFilter) && (!state.reviewFilter || (state.reviewFilter==='pending' ? f.metrics.active_excerpts>f.metrics.approved_excerpts : f.metrics.active_excerpts===0))); }
   function familyRow(f) {
     const scope = (data.family_display_status || {})[f.family_id];
-    return `<tr data-feedback-key="family:${esc(f.family_id)}" data-feedback-label="${esc(f.name)}"><th scope="row"><details class="dp-family"><summary>${esc(f.name)}</summary>${scope ? `<p>${esc(scope.label)}. ${esc(scope.reason)}</p>` : ''}<ul>${f.subpractices.map(s => `<li>${esc(s.name || label(s.subpractice_id))}</li>`).join('')}</ul><p class="dp-note">${f.subpractices.length ? 'Subpractices share family-level counts; no separate numeric attribution is recorded.' : 'Evidence grouping; no subpractice breakdown recorded.'}</p></details>${scope ? `<small>${esc(scope.label)}</small>` : ''}</th>${cells(f.metrics)}</tr>`;
+    return `<tr data-feedback-key="family:${esc(f.family_id)}" data-feedback-label="${esc(f.name)}"><th scope="row"><details class="dp-family"><summary>${esc(f.name)}</summary>${scope ? `<p>${esc(scope.label)}. ${esc(scope.reason)}</p>` : ''}<ul>${f.subpractices.map(s => `<li>${esc(s.name || label(s.subpractice_id))}</li>`).join('')}</ul><p class="dp-note">${f.subpractices.length ? 'Counts belong to this family; separate subpractice counts are not recorded.' : 'Evidence grouping; no subpractice breakdown recorded.'}</p></details>${scope ? `<small class="dp-scope-label">${esc(scope.label)}</small>` : ''}</th>${cells(f.metrics)}</tr>`;
   }
-  function familyTable(p) { return `<div class="dp-scroll"><table class="dp-table dp-family-table"><caption>${esc(practiceName(p))} · suitability families</caption>${tableHead()}<tbody>${p.families.map(familyRow).join('')}</tbody></table></div>`; }
+  function familyTable(p) { return `<div class="dp-scroll"><table class="dp-table dp-summary-table dp-family-table"><caption>${esc(practiceName(p))} · family progress</caption>${tableHead()}<tbody>${selectedFamilies(p).map(familyRow).join('') || '<tr><td colspan="7">No families match these filters.</td></tr>'}</tbody></table></div>`; }
   function overviewTable() {
-    return `<div class="dp-section-head"><h3>Effort across practices and suitability families</h3>${legend()}</div><p class="dp-note">Expand each practice for families and subpractices. A source may support several practices or families: grand totals count each record once, so rows must not be added.</p><div class="dp-scroll"><table class="dp-table"><caption class="dp-sr-only">Project effort by practice</caption>${tableHead()}<tbody>${model.practices.map((p,i) => `<tr class="dp-practice-row" data-feedback-key="practice:${esc(p.nbs_id)}" data-feedback-label="${esc(practiceName(p))}"><th scope="row"><button type="button" class="dp-expand" data-action="expand" data-value="${i}" aria-expanded="false" aria-controls="dp-families-${i}"><span aria-hidden="true">＋</span> ${esc(practiceName(p))}</button></th>${cells(p.metrics)}</tr><tr id="dp-families-${i}" class="dp-family-group" hidden><td colspan="7">${familyTable(p)}</td></tr>`).join('')}</tbody><tfoot><tr><th scope="row">Grand total · distinct records</th>${cells(model.totals)}</tr></tfoot></table></div><p class="dp-note">Search totals are summed observations, not distinct papers. “Backed” means a T4 record cites a retained excerpt; it does not imply approval. Existing historical / out-of-scope work stays visible. Publication-level duplicates without explicit aliases may remain.</p>`;
+    return `<div class="dp-section-head"><h3>Progress by practice</h3>${legend()}</div><p class="dp-note">Discovery columns use only records reporting all three stages: found, screened (assessed), and passed (met inclusion criteria). Results can repeat papers; known sources are catalogue records. Partial discovery records remain in Methods.</p><div class="dp-scroll"><table class="dp-table dp-summary-table"><caption class="dp-sr-only">Project effort by practice</caption>${tableHead(true)}<tbody>${model.practices.map(p => `<tr class="dp-practice-row" data-feedback-key="practice:${esc(p.nbs_id)}" data-feedback-label="${esc(practiceName(p))}"><th scope="row">${button('practice',practiceName(p),p.nbs_id,'dp-expand')}</th>${cells(p.metrics,true)}</tr>`).join('')}</tbody><tfoot><tr><th scope="row">Grand total</th>${cells(model.totals,true)}</tr></tfoot></table></div><p class="dp-note">Sources and excerpts can support several practices. Grand totals count each record once; do not add practice rows. “—” means no usable count recorded.</p>`;
+  }
+  function countNotes() {
+    const registeredIds=new Set((data.registers.SRC_source_register || []).map(r=>r.source_id));
+    const registered=model.sources.filter(r=>[r.source_id,...(r.aliases || [])].some(id=>registeredIds.has(id))).length;
+    return `<details class="dp-definitions"><summary>Where do the totals come from?</summary><dl><dt>Known source records</dt><dd>${fmt(model.totals.known_sources)} = ${fmt(registered)} registered sources + ${fmt(model.sources.length-registered)} queue-only source records, after merging explicit duplicate links. Stocktake entries without a source ID are not included. ${button('known','Inspect counted sources')}</dd><dt>Results versus sources</dt><dd>One paper can appear in several discovery results. Results found, screened and passed are reported observations, not unique papers. Screened includes rejected results; passed screening means selected as relevant. Selected results are not linked individually to catalogue records, so these columns cannot form one source-level funnel.</dd><dt>Missing counts</dt><dd>All three discovery columns use the same complete, ordered records. Incomplete and conflicting records are excluded from this summary, not treated as zero. Methods retains all reported counts and original protocols. The summary is therefore a subset of recorded discovery effort.</dd><dt>Source types</dt><dd>Literature, grey literature and tools use recorded metadata. “Type not recorded” covers missing or conflicting classifications. Stocktake is an origin, not a publication type.</dd><dt>Extraction and approval</dt><dd>Retained excerpts are extracted evidence still in use. Approved excerpts have human reviewer approval; the percentage uses retained excerpts as its denominator. A source with an approved excerpt is not necessarily fully reviewed.</dd><dt>Scope and history</dt><dd>Totals describe recorded research effort, including historical work. Out-of-scope families are hidden from practice monitoring; their evidence remains in the register. Dropped excerpts do not count as retained.</dd><dt>T4 relationships</dt><dd>Compiled structural suitability relationships, including hard masks. Soft operational records are tracked separately. Compilation does not mean every supporting excerpt has human approval.</dd></dl></details>`;
+  }
+  function ledgerRows(p) {
+    const hidden = new Set(p.families.filter(f=>!visibleFamilies(p).includes(f)).map(f=>f.family_id));
+    return (data.progress_ledger || []).filter(r => r.nbs_id===p.nbs_id && !hidden.has(r.family) && (!state.familyFilter || (state.familyFilter==='__unassigned' ? !r.family : r.family===state.familyFilter)) && (!state.ledgerTable || r.table===state.ledgerTable) && (!state.ledgerChannel || r.category===state.ledgerChannel));
   }
   function ledger(p) {
-    const rows = (data.progress_ledger || []).filter(r => r.nbs_id === p.nbs_id);
-    return `<div class="dp-section-head"><h3>Review-team monitoring</h3>${button('methods', 'View search protocols', p.nbs_id)}</div><p class="dp-note">Recorded pipeline stages, read directly from the progress ledger. Blank means not recorded; practice-wide stages are not inherited by families.</p><div class="dp-scroll"><table class="dp-table"><thead><tr>${['Family / scope','Table','Search channel','Searched','Screened','Extracted','Verified','Reviewed','Updated'].map(t=>`<th>${t}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr><td title="${esc(r.note)}">${esc(r.family ? label(r.family.split('__').pop()) : 'Practice-wide')}</td><td>${esc(r.table)}</td><td>${esc(names[r.category] || label(r.category))}</td>${['searched','screened','extracted','verified','reviewed'].map(k=>`<td><span class="dp-stage ${r[k] === 'done' ? 'dp-stage-done' : ''}">${esc(r[k] ? label(r[k]) : '—')}</span></td>`).join('')}<td>${esc(r.updated || '—')}</td></tr>`).join('') || '<tr><td colspan="9">No stage records for this practice.</td></tr>'}</tbody></table></div>`;
+    const rows=ledgerRows(p), size=20;
+    state.ledgerPage=Math.max(0,Math.min(state.ledgerPage,Math.ceil(rows.length/size)-1));
+    const stage = v => ({done:'Complete',in_progress:'In progress',not_started:'Not started',blocked:'Blocked',deferred:'Deferred'}[v] || (v ? label(v) : 'Not recorded'));
+    return `<details class="dp-stage-summary" id="dp-ledger"><summary>Pipeline activity log</summary><p class="dp-note">Search and screening record completed process steps. Evidence checks cover source and extraction verification; human approval is shown in the family table above. Blank ledger stages mean not recorded, not zero evidence.</p><div class="dp-filters"><label>Analytical table<select id="dp-ledger-table">${options(['T4','T3','T6'].map(t=>[t,t]),state.ledgerTable,'All tables')}</select></label><label>Discovery channel<select id="dp-ledger-channel">${options(['stock','updated_lit','grey','tool'].map(k=>[k,names[k]]),state.ledgerChannel,'All channels')}</select></label></div><p class="dp-results" aria-live="polite">${fmt(rows.length)} records · ${rows.length ? state.ledgerPage*size+1 : 0}–${Math.min(rows.length,(state.ledgerPage+1)*size)} shown</p><div class="dp-scroll"><table class="dp-table dp-monitor-table"><thead><tr>${['Family / scope','Table','Channel','Search run','Screening run','Evidence checks','Updated'].map(t=>`<th scope="col">${t}</th>`).join('')}</tr></thead><tbody>${rows.slice(state.ledgerPage*size,(state.ledgerPage+1)*size).map(r=>`<tr><td title="${esc(r.note)}">${esc(r.family ? label(r.family.split('__').pop()) : 'Practice-wide')}</td><td>${esc(r.table)}</td><td>${esc(names[r.category] || label(r.category))}</td>${['searched','screened','verified'].map(k=>`<td><span class="dp-stage ${r[k]==='done'?'dp-stage-done':''}">${esc(stage(r[k]))}</span></td>`).join('')}<td>${esc(r.updated || '—')}</td></tr>`).join('') || '<tr><td colspan="7">No activity records match these filters.</td></tr>'}</tbody></table></div><div class="dp-pagination">${button('ledger-page','Previous',-1)}<span>Page ${state.ledgerPage+1} / ${Math.max(1,Math.ceil(rows.length/size))}</span>${button('ledger-page','Next',1)}</div></details>`;
+  }
+  function practiceView(p) {
+    return `<div class="dp-section-head dp-monitor-head"><h3>Family progress</h3><div class="dp-filters"><label>Family<select id="dp-progress-family">${options(visibleFamilies(p).map(f=>[f.family_id,f.name]),state.familyFilter,'All families')}</select></label><label>Show<select id="dp-progress-review">${options([['pending','Awaiting human approval'],['empty','No retained evidence']],state.reviewFilter,'All progress')}</select></label></div></div><p class="dp-note">Approval is shown as a count and percentage of retained excerpts. Expand a family name for its subpractices.</p>${legend()}${familyTable(p)}${ledger(p)}`;
+  }
+  function bindProgressFilters() {
+    [['dp-progress-family','familyFilter'],['dp-progress-review','reviewFilter'],['dp-ledger-table','ledgerTable'],['dp-ledger-channel','ledgerChannel']].forEach(([id,key])=>{
+      const node=$(id);if(!node)return;
+      node.onchange=e=>{const open=$('dp-ledger') && $('dp-ledger').open;state[key]=e.target.value;state.ledgerPage=0;renderProgress();if(open && $('dp-ledger'))$('dp-ledger').open=true;$(id).focus();};
+    });
   }
   function renderProgress() {
-    const p = model.practices.find(p => p.nbs_id === state.nbs), m = p ? p.metrics : model.totals;
-    $('progress-app').innerHTML = `<div class="dp-shell"><nav class="dp-subtabs" aria-label="Progress views">${button('practice', 'Overview', '', !p ? 'is-active' : '')}${model.practices.map(p=>button('practice',practiceName(p),p.nbs_id,state.nbs===p.nbs_id?'is-active':'')).join('')}</nav><header class="dp-intro"><div class="dp-eyebrow">Rural NbS Scan · ${p ? (p.nbs_id === 'cross' ? 'Shared resources' : 'Practice progress') : 'Project progress'}</div><h2>${p ? esc(practiceName(p)) : 'Evidence behind the Rural NbS Scan'}</h2><p>From literature, agency guidance and tools to traceable evidence for landscape scoping. ${p ? (p.nbs_id === 'cross' ? 'Resources used across practices; this is not an additional target practice.' : 'Inspect this practice’s evidence, family coverage and recorded pipeline stages.') : 'The overview shows the research effort, what has been retained, and how evidence reaches the methodology.'}</p><div class="dp-actions">${button('bibliography','Explore bibliography',state.nbs)}${button('methods','Read methods',state.nbs)}</div></header>${flow(m)}${p ? (p.families.length ? familyTable(p) : '')+ledger(p) : overviewTable()}<details class="dp-definitions"><summary>How to read these numbers</summary><dl>${Object.entries(model.definitions).map(([k,v])=>`<dt>${esc(label(k))}</dt><dd>${esc(v)}</dd>`).join('')}</dl></details></div>`;
+    const p=model.practices.find(p=>p.nbs_id===state.nbs);
+    $('progress-app').innerHTML=`<div class="dp-shell"><nav class="dp-subtabs" aria-label="Progress views">${button('practice','Overview','',!p?'is-active':'')}${model.practices.map(p=>button('practice',practiceName(p),p.nbs_id,state.nbs===p.nbs_id?'is-active':'')).join('')}</nav><header class="dp-intro"><div class="dp-eyebrow">Rural NbS Scan · ${p?'Practice progress':'Project progress'}</div><h2>${p?esc(practiceName(p)):'Evidence behind the Rural NbS Scan'}</h2><p>${p?'Track evidence extraction and human approval by family.':'Research effort behind the landscape scoping methodology, from discovery to traceable evidence.'}</p><div class="dp-actions">${button('bibliography','Explore bibliography',state.nbs)}${button('methods','Read methods',state.nbs)}</div></header>${p?practiceView(p):flow(model.totals)+overviewTable()}${countNotes()}</div>`;
+    bindProgressFilters();
   }
   function legacyPractices(raw) {
     const normalize = value => String(value || '').trim().toLowerCase().replace(/_/g,' ').replace(/\s+/g,' ');
@@ -129,8 +153,9 @@
     const b=e.target.closest('[data-action]');if(!b||!b.closest('.dp-shell,.dp-drawer'))return;
     const v=b.dataset.value;
     switch(b.dataset.action){
-      case 'practice':state.nbs=v;state.family='';renderProgress();document.querySelector('.dp-subtabs .is-active').focus();break;
-      case 'expand':{const row=$('dp-families-'+v);row.hidden=!row.hidden;b.setAttribute('aria-expanded',String(!row.hidden));b.querySelector('span').textContent=row.hidden?'＋':'−';break;}
+      case 'practice':state.nbs=v;state.family='';state.familyFilter='';state.reviewFilter='';state.ledgerTable='';state.ledgerChannel='';state.ledgerPage=0;renderProgress();document.querySelector('.dp-subtabs .is-active').focus({preventScroll:true});const intro=document.querySelector('#progress-app .dp-intro');if(intro)intro.scrollIntoView({block:'start'});break;
+      case 'ledger-page':state.ledgerPage+=Number(v);renderProgress();$('dp-ledger').open=true;$('dp-ledger').scrollIntoView({block:'start'});break;
+      case 'known':state.bibNbs='';state.bibSet='known';state.bibTable='';state.bibType='';state.query='';state.page=0;renderBibliography();go('tab-stocktake');break;
       case 'bibliography':state.bibNbs=v;state.bibSet='';state.bibTable='';state.bibType='';state.query='';state.page=0;renderBibliography();go('tab-stocktake');break;
       case 'methods':openMethods(v);break;
       case 'source':openSource(v);break;
@@ -151,12 +176,9 @@
     const practice=key.startsWith('practice:') ? key.slice(9) : '';
     const index=model.practices.findIndex(p=>family ? p.families.some(f=>f.family_id===family) : practice && p.nbs_id===practice);
     if(index<0)return false;
-    state.nbs='';state.family='';renderProgress();go('tab-search');
-    if(family) {
-      const row=$('dp-families-'+index);if(row)row.hidden=false;
-      const toggle=document.querySelector('[aria-controls="dp-families-'+index+'"]');
-      if(toggle){toggle.setAttribute('aria-expanded','true');const icon=toggle.querySelector('span');if(icon)icon.textContent='−';}
-    }
+    const target=model.practices[index];
+    if(family && !visibleFamilies(target).some(f=>f.family_id===family))return false;
+    state.nbs=family?target.nbs_id:'';state.family=family;state.familyFilter=family;state.reviewFilter='';state.ledgerPage=0;renderProgress();go('tab-search');
     return true;
   }
   function openMethods(nbs) {state.methodNbs=nbs && nbs!=='all'?nbs:'';state.methodTable='';renderMethods();go('tab-methods');}
@@ -166,12 +188,11 @@
     const oldScroll={x:window.scrollX,y:window.scrollY}, oldHash=location.hash;
     const drawer=$('dp-source-drawer');if(drawer)drawer.remove();
     state.nbs='';renderProgress();go('tab-search');document.body.classList.add('dp-print');
-    $('progress-app').innerHTML += `<div class="dp-print-families">${model.practices.filter(p=>p.families.length && p.nbs_id !== 'cross').map(p=>`<section>${familyTable(p)}</section>`).join('')}</div>`;
-    document.querySelectorAll('.dp-family details,.dp-family').forEach(d=>d.open=true);
     let restored=false;
     const restore=()=>{
       if(restored)return;restored=true;
       document.body.classList.remove('dp-print');state.nbs=oldNbs;$('progress-app').innerHTML=oldMarkup;
+      bindProgressFilters();
       if(oldTab)go(oldTab);
       if(drawer)document.body.appendChild(drawer);
       history.replaceState(null,'',location.pathname+location.search+oldHash);
@@ -189,12 +210,18 @@
     openSource(id);
   }
   function refresh(next) {data=next;model=data.progress_overview;if(!model)return;evidence=new Map([...(data.registers.EV_evidence_register||[]),...(data._evDropped||[])].map(r=>[r.evidence_id,r]));makeBibliography();renderProgress();renderBibliography();renderMethods();renderBuild();}
+  function trackStickyOffsets() {
+    if(!window.ResizeObserver)return;
+    const header=document.querySelector('.app-header'), tabs=document.querySelector('.tab-nav');
+    const update=()=>{document.documentElement.style.setProperty('--dp-header-height',`${header?header.getBoundingClientRect().height:0}px`);document.documentElement.style.setProperty('--dp-main-tabs-height',`${tabs?tabs.getBoundingClientRect().height:0}px`);};
+    const observer=new window.ResizeObserver(update);if(header)observer.observe(header);if(tabs)observer.observe(tabs);update();
+  }
   let initialized=false;
   window.DashboardProgress={
-    init(next){refresh(next);if(!initialized){document.addEventListener('click',dispatch);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('dp-source-drawer'))closeDrawer();});window.addEventListener('hashchange',openHashSource);initialized=true;}openHashSource();},
+    init(next){refresh(next);if(!initialized){trackStickyOffsets();document.addEventListener('click',dispatch);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('dp-source-drawer'))closeDrawer();});window.addEventListener('hashchange',openHashSource);initialized=true;}openHashSource();},
     refresh,renderBibliography,openSource,openMethods,revealTarget,print:printOverview,
-    scope:()=>({nbs:state.nbs || 'all',family:state.family || 'all'}),
-    context:tab=>tab==='tab-stocktake'?{nbs:state.bibNbs||'all',source_type:state.bibType||'all',query:state.query}:tab==='tab-methods'?{nbs:state.methodNbs||'all',table:state.methodTable||'all'}:{nbs:state.nbs||'all',family:state.family||'all'},
+    scope:()=>({nbs:state.nbs || 'all',family:state.familyFilter || 'all'}),
+    context:tab=>tab==='tab-stocktake'?{nbs:state.bibNbs||'all',source_type:state.bibType||'all',query:state.query}:tab==='tab-methods'?{nbs:state.methodNbs||'all',table:state.methodTable||'all'}:{nbs:state.nbs||'all',family:state.familyFilter||'all'},
     onTab(tab){if($('dp-source-drawer') && tab!==drawerTab)closeDrawer();},
   };
 })();

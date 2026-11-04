@@ -14,7 +14,140 @@ body[data-theme="dark"] .dp-eyebrow,body[data-theme="dark"] .dp-flow strong,body
 .app-header{gap:16px;flex-wrap:wrap}.header-actions{flex-wrap:wrap;justify-content:flex-end;flex:1}.dashboard-build{min-width:220px}
 @media(max-width:800px){.header-actions{justify-content:flex-start}.dashboard-build{margin-left:0;max-width:none;width:100%}}
 
-/* Printed summary is complete before the family appendix; nested tables fragment poorly. */
+/* Print the project overview; family details remain in the practice views. */
 .dp-print-families{display:none}.app-header button.btn-back{background:var(--bg-secondary);color:var(--text-primary)}
 body[data-theme="dark"] .dp-intro>p{color:var(--text-secondary)}
-@media print{body.dp-print .dp-family-group,body.dp-print .dp-family-group[hidden]{display:none!important}body.dp-print .dp-print-families{display:block}body.dp-print .dp-print-families>section{break-before:page}body.dp-print .dp-table tfoot{display:table-row-group}body.dp-print .main-container{padding:4mm 8mm}body.dp-print .app-header{padding:4mm 8mm}body.dp-print .dp-print-families .dp-table{font-size:9px}body.dp-print .dp-print-families .dp-table small{font-size:8px}}
+@media print{body.dp-print .dp-family-group,body.dp-print .dp-family-group[hidden]{display:none!important}body.dp-print .dp-print-families{display:none!important}body.dp-print .dp-table tfoot{display:table-row-group}body.dp-print .main-container{padding:4mm 8mm}body.dp-print .app-header{padding:4mm 8mm}body.dp-print .dp-print-families .dp-table{font-size:9px}body.dp-print .dp-print-families .dp-table small{font-size:8px}}
+
+/* Keep navigation reachable without covering the responsive dashboard header. */
+@media screen {
+  .tab-nav {
+    position: sticky;
+    top: var(--dp-header-height, 160px);
+    z-index: 90;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    background: var(--bg-primary, #fff);
+    padding-top: 8px;
+    scrollbar-width: thin;
+  }
+  .tab-nav .tab-btn { flex: 0 0 auto; white-space: nowrap; }
+  .dp-subtabs {
+    position: sticky;
+    top: calc(var(--dp-header-height, 160px) + var(--dp-main-tabs-height, 62px));
+    z-index: 80;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 8px 0;
+    background: var(--bg-primary, #fff);
+    scrollbar-width: thin;
+  }
+  .dp-subtabs .dp-button { flex: 0 0 auto; white-space: nowrap; }
+  #progress-app [data-feedback-key] {
+    scroll-margin-top: calc(var(--dp-header-height, 160px) + var(--dp-main-tabs-height, 62px) + 68px);
+  }
+}
+
+/* Closed disclosures must also stay closed in exported feedback screenshots. */
+.dp-shell .dp-family {
+  position: static;
+  display: block;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  white-space: normal;
+}
+.dp-shell .dp-family > summary {
+  position: static;
+  display: list-item;
+  list-style-position: inside;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.dp-shell .dp-family:not([open]) > :not(summary) { display: none; }
+.dp-shell .dp-family[open] > p,
+.dp-shell .dp-family[open] > ul {
+  position: static;
+  display: block;
+  height: auto;
+  margin: 9px 0;
+  line-height: 1.5;
+  font-size: 11px;
+  font-weight: 400;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.dp-shell .dp-family li { position: static; display: list-item; margin: 4px 0; }
+
+/* One metric per column, with space reserved for readable family names. */
+.dp-summary-table { min-width: 1050px; table-layout: fixed; }
+.dp-summary-table th,
+.dp-summary-table td { padding: 9px 7px; }
+.dp-summary-table thead th { line-height: 1.4; overflow-wrap: normal; }
+.dp-summary-table th:first-child { width: 19%; min-width: 0; max-width: none; }
+.dp-summary-table th:nth-child(2) { width: 12%; }
+.dp-summary-table tbody th { min-width: 0; max-width: none; }
+.dp-summary-table .dp-mix { min-width: 0; max-width: 135px; }
+.dp-summary-table .dp-mix-bar { max-width: 115px; }
+.dp-summary-table .dp-numbers { font-variant-numeric: tabular-nums; }
+.dp-summary-table small { max-width: none; }
+
+/* Review controls sit alongside the section title and wrap on smaller screens. */
+.dp-monitor-head { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 24px; }
+.dp-monitor-head > h3,
+.dp-monitor-head > div:first-child { margin-right: auto; }
+.dp-monitor-head .dp-filters { padding: 0; gap: 10px; }
+.dp-monitor-head label { display: flex; flex-direction: column; gap: 5px; font-size: 11px; font-weight: 600; }
+.dp-monitor-head select,
+.dp-monitor-head input {
+  min-height: 36px;
+  max-width: 240px;
+  padding: 7px 10px;
+  border: 1px solid var(--border-color, #cbd8d5);
+  border-radius: 5px;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #172b36);
+  font: inherit;
+  font-size: 12px;
+}
+.dp-monitor-table { min-width: 880px; font-variant-numeric: tabular-nums; }
+.dp-monitor-table th,
+.dp-monitor-table td { padding: 9px 8px; }
+.dp-monitor-table tbody th { min-width: 160px; max-width: 240px; }
+.dp-stage-summary {
+  margin: 20px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color, #dbe4e1);
+  border-radius: 7px;
+}
+.dp-stage-summary > summary { cursor: pointer; font-weight: 600; }
+.dp-stage-summary:not([open]) > :not(summary) { display: none; }
+.dp-stage-summary > .dp-note { margin: 10px 0; }
+.dp-stage-summary .dp-pagination { margin-bottom: 0; flex-wrap: wrap; gap: 10px; }
+.dp-monitor-head select:focus-visible,
+.dp-monitor-head input:focus-visible { outline: 3px solid #c08422; outline-offset: 3px; }
+@media (max-width: 800px) {
+  .dp-monitor-head { align-items: start; }
+  .dp-monitor-head .dp-filters { width: 100%; }
+  .dp-monitor-head select,
+  .dp-monitor-head input { max-width: 100%; }
+}
+@media print {
+  body.dp-print .dp-summary-table { min-width: 0; font-size: 8px; }
+  body.dp-print .dp-summary-table th,
+  body.dp-print .dp-summary-table td { padding: 6px 4px; }
+  body.dp-print .dp-summary-table .dp-mix { min-width: 0; font-size: 8px; }
+  body.dp-print .dp-monitor-head,
+  body.dp-print .dp-stage-summary { display: none!important; }
+}
+
+/* Summary totals are different units, not a numerical funnel. */
+.dp-totals .dp-flow>li::after{content:none}.dp-percent{font-size:10px;color:var(--text-muted)}
+@media print{body.dp-print .dp-percent{color:#111!important}}
+
+.dp-family-table.dp-summary-table{min-width:800px}.dp-family-table.dp-summary-table th:first-child{width:25%}
+#dp-ledger{scroll-margin-top:calc(var(--dp-header-height,160px) + var(--dp-main-tabs-height,62px) + 65px)}
+@media print{body.dp-print .dp-family-table.dp-summary-table{min-width:0}}
+
+#progress-app .dp-intro{scroll-margin-top:calc(var(--dp-header-height,160px) + var(--dp-main-tabs-height,62px) + 65px)}
+body[data-theme="dark"] .dp-percent{color:var(--text-secondary)}
