@@ -232,7 +232,10 @@ def test_submit_replays_clarifications_without_extraction_decisions(
         "apply_decisions",
         lambda *a: pytest.fail("No extraction decisions to apply"),
     )
+    generated = []
+    monkeypatch.setattr(submit_review, "generate", lambda root: generated.append(root))
     assert submit_review.main() == 0
+    assert generated == [tmp_path / "schema"]
     assert (
         len(
             json.loads(

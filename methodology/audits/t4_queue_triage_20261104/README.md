@@ -17,3 +17,11 @@ Ten water-harvesting audit referrals from the preceding High-tier stocktake rema
 3. Review remaining 17 AI audit referrals against source and current corrected record before providing answers. Do not auto-close them because earlier audit prose says corrected.
 
 No fresh discovery, new source registration, human approval, family regrouping or T3/T6 work was performed. Rooftop, homegardens and plantation display issues belong to the separate dashboard handover; methodological eligibility remains governed by recorded decisions and issue #547.
+
+## CI correction
+
+The initial wetland follow-up used an ad hoc key and `needs_judgement`, which the coverage gate rejected. Re-keyed with the canonical evidence_id|reviewer|note digest and set follow-up status to `resolved` (the source question is answered). This is distinct from evidence approval: reviewer_ok remains false, Peter's query remains open, and the clarification service presents the answer for human review. No Keep/Drop decision is written.
+
+The clarification replay unit test now replaces the generator with a recording stub and asserts regeneration of the temporary schema was requested. Its minimal fixture tests event replay, not real-corpus generation; production validation remains unchanged.
+
+Coverage validation also now checks stored follow-up identities and field fingerprints against all EV records, because the existing answer store is shared across practices. The requirement to discover missing agroforestry follow-ups remains scoped to agroforestry; adding a wetland answer does not create a new full-corpus follow-up requirement. The 63 recovery/clarification tests pass after this fix.
