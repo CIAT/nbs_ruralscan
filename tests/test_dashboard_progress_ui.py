@@ -174,7 +174,13 @@ def test_progress_overview_separates_count_units_and_keeps_families_in_practice_
     run_js(r"""
 const t=setup();
 let html=t.nodes.get('progress-app').innerHTML;
-assert(html.includes('Results found'));assert(html.includes('Results screened'));assert(html.includes('Passed screening'));
+assert(!html.includes('Results found'));assert(!html.includes('Results screened'));
+assert(html.includes('Candidates screened'));assert(html.includes('Candidates selected'));
+assert(html.includes('Searches with counts'));assert(html.includes('Assessed for relevance'));
+assert(html.includes('3. Review evidence'));assert(html.includes('not a whole-source review'));
+assert(html.includes('Search hits are not a screening backlog.'));
+const sourceTable=html.split('<table class="dp-table dp-summary-table">')[1].split('</table>')[0];
+assert(!sourceTable.includes('Screening'));assert(sourceTable.includes('Sources catalogued'));
 assert(!html.includes('Planted systems'));assert(!html.includes('dp-family-group'));
 assert(!html.includes('searches fully counted'));assert(!html.includes('Search hits selected'));
 assert(html.includes('Type not recorded'));assert(!html.includes('Tools | ?'));
@@ -226,9 +232,16 @@ m.search_metrics={...m.search_metrics,retrieved:41,screened:93,included:26,compl
 t.api.refresh(t.fixture);
 let html=t.nodes.get('progress-app').innerHTML;
 assert(!html.includes('>41</td>'));assert(!html.includes('>93</td>'));assert(!html.includes('>26</td>'));
-m.search_metrics={...m.search_metrics,complete_counts:1,paired_retrieved:100,paired_screened:20,paired_included:10};
+m.search_metrics={...m.search_metrics,events:3,complete_counts:1,paired_retrieved:100,paired_screened:20,paired_included:10};
 t.api.refresh(t.fixture);html=t.nodes.get('progress-app').innerHTML;
-assert(html.includes('>100</td>'));assert(html.includes('>20</td>'));assert(html.includes('>10</td>'));
+assert(!html.includes('>100</td>'));assert(html.includes('>20</td>'));assert(html.includes('>10</td>'));
+assert(!html.includes('20%'));assert(html.includes('1 of 3'));
+t.api.openMethods('agroforestry');
+assert.equal(t.activeTab,'tab-methods');
+html=t.nodes.get('methods-app').innerHTML;
+assert(html.includes('Reported hits (context only): 2'));
+assert(html.includes('Screening assessments: 1'));
+assert(html.includes('not unique papers or a screening backlog'));
 """)
 
 
@@ -353,4 +366,21 @@ const family=t.nodes.get('dp-bib-family');family.value='unmapped_subpractice';fa
 html=t.nodes.get('bibliography-app').innerHTML;
 assert(html.includes('First publication'));assert(!html.includes('Legacy agroforestry'));
 assert(!html.includes('data-feedback-key="family:agroforestry__unmapped_subpractice"'));
+""")
+
+
+def test_stage_headers_keep_sources_claims_and_rules_in_matching_columns():
+    run_js(r"""
+const t=setup(), m=t.fixture.progress_overview.totals;
+Object.assign(m,{known_sources:25,extracted_sources:7,active_excerpts:23,approved_excerpts:5,reviewed_sources:3,t4_structural_relationships:11});
+t.api.refresh(t.fixture);
+const html=t.nodes.get('progress-app').innerHTML;
+const table=html.split('<table class="dp-table dp-summary-table">')[1].split('</table>')[0];
+assert(table.includes('</td><td>7</td><td>23</td><td title="5 of 23 retained extracts approved">5'));
+assert(table.includes('</td><td>3</td><td>11</td>'));
+assert(table.indexOf('Evidence extracted') < table.indexOf('Extracts approved'));
+assert(table.indexOf('Extracts approved') < table.indexOf('Sources with approved extracts'));
+assert(html.includes('retained extracts from 7 sources'));
+assert(html.includes('extracts approved by reviewers, across 3 sources'));
+assert(html.includes('Rules can be compiled before every supporting extract has human approval'));
 """)
