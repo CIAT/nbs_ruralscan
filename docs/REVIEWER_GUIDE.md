@@ -156,3 +156,28 @@ choose **Include** to bring them back or **Only observations** to review them la
 This hides observed-presence/site-description evidence, not every observational study:
 tested relationships and operational-barrier evidence remain visible. Evidence and
 saved decisions are retained; this filter does not alter approval or synthesis rules.
+
+### Dashboard feedback (comments, highlights and screengrabs)
+
+Use **Feedback** in the header to switch on the annotation toolbar. Choose **Comment**
+and click a practice row, evidence card or section; **Highlight** saves selected text;
+**Screengrab** lets you drag a rectangle and attach the captured region to a note.
+Add your name, comment, type and severity, then **Save note**. **Notes** lists saved
+feedback and provides edit, jump-to-target and delete controls. Escape closes the
+current mode or panel. Highlight and screengrab controls are desktop-only.
+
+Notes stay in this browser, on this dashboard address. They survive reloads but are
+not shared with colleagues, other browsers or another local port. Export before
+clearing browser data. The note records its target, dashboard tab, selected scope
+and data-build identifier; a target hidden by filters may need those filters restored.
+
+**Export → Download notes (JSON)** makes a transferable backup; **Import notes**
+merges that export by note ID. **Download report (HTML)** includes captured images.
+**GitHub issue** previews the notes before opening a draft; press Submit on GitHub
+to share it. Images are not embedded in the issue draft: attach them from the report.
+Screengrabs load the same html2canvas library used by the prototype; if it is
+unavailable, you can still save a text note.
+
+Feedback is separate from evidence review. Saving or exporting feedback never
+keeps, drops, queries, applies or submits an evidence decision. Continue using
+**QA / QC Flags** and **Submit reviews** for those actions.
