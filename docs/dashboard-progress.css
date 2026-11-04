@@ -13,3 +13,8 @@ body[data-theme="dark"] .dp-eyebrow,body[data-theme="dark"] .dp-flow strong,body
 /* Build identity must not push reviewer controls outside narrow windows. */
 .app-header{gap:16px;flex-wrap:wrap}.header-actions{flex-wrap:wrap;justify-content:flex-end;flex:1}.dashboard-build{min-width:220px}
 @media(max-width:800px){.header-actions{justify-content:flex-start}.dashboard-build{margin-left:0;max-width:none;width:100%}}
+
+/* Printed summary is complete before the family appendix; nested tables fragment poorly. */
+.dp-print-families{display:none}.app-header button.btn-back{background:var(--bg-secondary);color:var(--text-primary)}
+body[data-theme="dark"] .dp-intro>p{color:var(--text-secondary)}
+@media print{body.dp-print .dp-family-group,body.dp-print .dp-family-group[hidden]{display:none!important}body.dp-print .dp-print-families{display:block}body.dp-print .dp-print-families>section{break-before:page}body.dp-print .dp-table tfoot{display:table-row-group}body.dp-print .main-container{padding:4mm 8mm}body.dp-print .app-header{padding:4mm 8mm}body.dp-print .dp-print-families .dp-table{font-size:9px}body.dp-print .dp-print-families .dp-table small{font-size:8px}}

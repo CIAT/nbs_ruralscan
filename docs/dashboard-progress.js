@@ -166,7 +166,7 @@
     const oldScroll={x:window.scrollX,y:window.scrollY}, oldHash=location.hash;
     const drawer=$('dp-source-drawer');if(drawer)drawer.remove();
     state.nbs='';renderProgress();go('tab-search');document.body.classList.add('dp-print');
-    document.querySelectorAll('.dp-family-group').forEach(r=>r.hidden=false);
+    $('progress-app').innerHTML += `<div class="dp-print-families">${model.practices.filter(p=>p.families.length && p.nbs_id !== 'cross').map(p=>`<section>${familyTable(p)}</section>`).join('')}</div>`;
     document.querySelectorAll('.dp-family details,.dp-family').forEach(d=>d.open=true);
     let restored=false;
     const restore=()=>{
