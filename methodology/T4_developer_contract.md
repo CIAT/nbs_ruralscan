@@ -196,3 +196,17 @@ before decoding. The catalogue flags this mismatch but grants no compilation aut
 Source occurrence, adoption, priority and accounting claims still require routing review.
 The source relationship catalogue supplements the numerical plots; it never invents a
 curve for an uncalibrated direction. Historical packages remain immutable.
+
+
+## Aggregate evidence table
+
+The primary relationship page has one row per general-practice variable. It separately
+reports group/variable use (explicit model-use cohort, with denominators), reconstructed
+source-model weights, hierarchy-adjusted relative importance, family-specific direction
+records and distinct source support per compiled mapping. Alternative models are reduced
+to one median per reporting source before descriptive across-source medians/ranges,
+within the same model scope. These are descriptive summaries, not independent replication,
+transfer validation or runtime weights. Mapped-group shares retain the full source-model
+denominator and are explicitly partial where raw concepts remain unmapped; no residual
+weight is redistributed. Source-native weight paths and provenance stay accessible.
+Sparse compiled-function support must not be described as the total literature support.
