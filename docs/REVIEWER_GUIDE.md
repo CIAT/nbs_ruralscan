@@ -65,9 +65,38 @@ server connected**; a static website on the same port cannot save review decisio
      excluded from analysis, fully reversible — not deleted).
    - If two reviewers disagree on a unit, it becomes a **conflict** (stays pending until you agree).
    - Run it **once per session** (it batches all agreed decisions into one PR), not per flag.
-   - **Windows:** the submit shells out to Git-Bash (auto-located if Git for Windows is
-     installed). If it can't be found, run the headless equivalent from **Git Bash**:
-     `bash scripts/submit-review.sh <your-handle> --auto`.
+   - **Windows / macOS / Linux:** submission uses Python, Git and GitHub CLI; Bash is
+     not required. Headless equivalent:
+     `uv run python -m nbs_ruralscan.schema_tools.submit_review --ship <your-handle> --auto`.
+   - Submission snapshots saved decisions into an isolated checkout of latest main.
+     Your open checkout and pending decisions stay intact. New decisions saved during
+     submission belong to the next batch. A failed submission prints its recovery-checkout
+     path; do not submit again while a previous submission is still running.
+   - **Auto-merge is a request, not confirmation of merge.** Required checks and approvals
+     still apply. Review-only automation currently allowlists `Namita-J` and `peetmate`;
+     other reviewers need ordinary PR approval. Clarification-history changes also require
+     ordinary approval under the current automation policy.
+
+### Check readiness before submitting
+
+The local QA/QC panel shows **Source cache: N / M present**. Missing sources block
+provenance validation. Run `uv run python scripts/hydrate-corpus.py`, then **Recheck**.
+On Windows, set `NBS_LIBRARY_ROOT` to the synced SharePoint library root first.
+A presence check does not validate quotes: Apply still runs the full provenance guardrail.
+
+Choose your own GitHub handle through **Other…** if absent from the reviewer list.
+A reviewer label does not grant repository access or auto-approval. Charity's handle
+and repository access must be confirmed through her actual GitHub account.
+
+### Coverage status
+
+Coverage labels distinguish target families, out-of-scope history, separate comparisons
+and cross-family routing tags. Rooftop harvesting and homegardens remain visible as
+historical evidence, not target practices. Plantation remains a separate comparison,
+excluded from the forest-restoration roll-up. Stored claim/T4 counts are not approval
+or readiness. Display annotations live in `docs/dashboard-family-status.csv`; plantation
+status is derived from the existing roll-up policy. These labels do not alter synthesis.
+
 
 ## Seeing the source (📷 show source region)
 

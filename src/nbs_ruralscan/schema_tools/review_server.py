@@ -319,28 +319,34 @@ def _git_version() -> dict:
     }
 
 
-def _resolve_bash() -> str | None:
-    """Locate a bash interpreter for /api/submit. On Windows `bash` is usually not on PATH
-    even when Git for Windows (which bundles it) is installed, so `subprocess.run(["bash",...])`
-    fails with WinError 2 (the submit step Namita hit). Fall back to the standard Git install
-    locations. Returns the executable path, or None if none is found."""
-    found = shutil.which("bash")
-    if found:
-        return found
-    candidates: list[Path] = []
-    for base in (
-        os.environ.get("ProgramFiles"),
-        os.environ.get("ProgramFiles(x86)"),
-        os.environ.get("LOCALAPPDATA"),
-    ):
-        if base:
-            b = Path(base)
-            candidates += [
-                b / "Git" / "bin" / "bash.exe",
-                b / "Git" / "usr" / "bin" / "bash.exe",
-                b / "Programs" / "Git" / "bin" / "bash.exe",
-            ]
-    return next((str(c) for c in candidates if c.exists()), None)
+def _corpus_readiness() -> dict:
+    """Cache presence only: provenance validity is still checked when applying."""
+    ev = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
+    if not ev.exists():
+        return {"known": False, "error": "Evidence register unavailable"}
+    with ev.open(newline="", encoding="utf-8") as stream:
+        sources = sorted(
+            {
+                r["source_id"]
+                for r in _csv_mod.DictReader(stream)
+                if r.get("source_id") and r.get("use_role") != "dataset"
+            }
+        )
+    missing = [
+        sid
+        for sid in sources
+        if not any(
+            (CACHE / f"{sid}{ext}").is_file() and (CACHE / f"{sid}{ext}").stat().st_size
+            for ext in (".pdf", ".txt", ".html", ".md")
+        )
+    ]
+    return {
+        "known": True,
+        "total": len(sources),
+        "cached": len(sources) - len(missing),
+        "missing": missing,
+        "ready": not missing,
+    }
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -361,6 +367,8 @@ class Handler(SimpleHTTPRequestHandler):
             )
         if self.path == "/api/health":
             return self._json(200, {"ok": True})
+        if self.path == "/api/readiness":
+            return self._json(200, _corpus_readiness())
         if self.path == "/api/version":
             return self._json(200, _git_version())
         if self.path == "/api/state":
@@ -803,35 +811,33 @@ class Handler(SimpleHTTPRequestHandler):
                 "GH_NO_UPDATE_NOTIFIER": "1",
                 "GH_PROMPT_DISABLED": "1",
             }
-            bash = _resolve_bash()
-            if not bash:
-                return self._json(
-                    500,
-                    {
-                        "ok": False,
-                        "error": "Submit needs bash and none was found. Your decisions ARE "
-                        "applied + saved locally. On Windows, install Git for Windows (it "
-                        "bundles bash) then click Apply again, or run from Git Bash: "
-                        "`bash scripts/submit-review.sh <your-handle> --auto`. "
-                        "(A bash-free submit is the follow-up.)",
-                    },
-                )
+            import sys
+
             try:
                 proc = subprocess.run(
-                    [bash, "scripts/submit-review.sh", reviewer, title, "--auto"],
+                    [
+                        sys.executable,
+                        "-m",
+                        "nbs_ruralscan.schema_tools.submit_review",
+                        "--ship",
+                        reviewer,
+                        "--title",
+                        title,
+                        "--auto",
+                    ],
                     cwd=str(ROOT),
                     capture_output=True,
                     text=True,
                     env=_env,
                     stdin=subprocess.DEVNULL,
-                    timeout=180,
+                    timeout=900,
                 )
             except subprocess.TimeoutExpired:
                 return self._json(
                     500,
                     {
                         "ok": False,
-                        "error": "submit timed out (git/gh auth?). Decisions ARE applied locally. Check `gh auth status` and git push rights, then use scripts/submit-review.sh.",
+                        "error": "submit timed out (git/gh auth?). Decisions ARE applied locally. Check `gh auth status` and git push rights, then retry submission. Check .cache/review-submit.lock only after confirming no submission is still running.",
                     },
                 )
             except Exception as e:  # noqa: BLE001
