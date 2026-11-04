@@ -1,0 +1,139 @@
+{
+  "source_commit": "5f61cb18bed43aa9a88aa8a566d01cd0142e2784",
+  "input_sha256": {
+    "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
+    "schema/registers/EV_evidence_register.csv": "246a533335f99b6199607989ce17c3e5cfb0992d09cd71ee3a0b380a57e8d7e2",
+    "schema/recipes/water_harvesting_conservation/T4_suitability_mappings.csv": "d64c1e07ceb66e9bd81b10113d493170a187603ecd79836532304bca99ade080",
+    "methodology/audits/wh_five_extraction_20261104/criterion_inventory.json": "ab314b00ee8a528d79592707d5ffae336c0e0871a3756c8502699f47fa505b63"
+  },
+  "definitions": {
+    "non_dropped": "review_state != dropped; does not mean approved or project-in-scope",
+    "t4_ev": "use_role = structural_suitability; includes all claim scopes",
+    "existing_t4_mapping_rows": "CSV row count, not approved/executable functions or independent studies",
+    "subpractice_records": "Includes broad macrocatchment umbrella and cross-family metadata tag; not a target-practice count"
+  },
+  "families": [
+    {
+      "family": "water_harvesting__cross_family",
+      "subpractice_records": 1,
+      "all_ev": 193,
+      "dropped_ev": 10,
+      "non_dropped_ev": 183,
+      "non_dropped_roles": {
+        "asset_vulnerability": 2,
+        "nbs_effect": 146,
+        "operational_risk": 35
+      },
+      "non_dropped_t4_ev": 0,
+      "reviewer_ok_t4_ev": 0,
+      "existing_t4_mapping_rows": 0
+    },
+    {
+      "family": "water_harvesting__in_situ",
+      "subpractice_records": 3,
+      "all_ev": 592,
+      "dropped_ev": 252,
+      "non_dropped_ev": 340,
+      "non_dropped_roles": {
+        "asset_vulnerability": 10,
+        "nbs_effect": 251,
+        "operational_risk": 34,
+        "structural_suitability": 45
+      },
+      "non_dropped_t4_ev": 45,
+      "reviewer_ok_t4_ev": 0,
+      "existing_t4_mapping_rows": 5
+    },
+    {
+      "family": "water_harvesting__micro_catchment",
+      "subpractice_records": 3,
+      "all_ev": 182,
+      "dropped_ev": 90,
+      "non_dropped_ev": 92,
+      "non_dropped_roles": {
+        "asset_vulnerability": 13,
+        "nbs_effect": 31,
+        "operational_risk": 6,
+        "structural_suitability": 42
+      },
+      "non_dropped_t4_ev": 42,
+      "reviewer_ok_t4_ev": 0,
+      "existing_t4_mapping_rows": 3
+    },
+    {
+      "family": "water_harvesting__rooftop",
+      "subpractice_records": 1,
+      "all_ev": 58,
+      "dropped_ev": 26,
+      "non_dropped_ev": 32,
+      "non_dropped_roles": {
+        "asset_vulnerability": 6,
+        "nbs_effect": 12,
+        "operational_risk": 4,
+        "structural_suitability": 10
+      },
+      "non_dropped_t4_ev": 10,
+      "reviewer_ok_t4_ev": 0,
+      "existing_t4_mapping_rows": 1
+    },
+    {
+      "family": "water_harvesting__runoff_catchment",
+      "subpractice_records": 7,
+      "all_ev": 661,
+      "dropped_ev": 181,
+      "non_dropped_ev": 480,
+      "non_dropped_roles": {
+        "asset_vulnerability": 49,
+        "nbs_effect": 230,
+        "operational_risk": 42,
+        "structural_suitability": 159
+      },
+      "non_dropped_t4_ev": 159,
+      "reviewer_ok_t4_ev": 0,
+      "existing_t4_mapping_rows": 9
+    },
+    {
+      "family": "water_harvesting__spate",
+      "subpractice_records": 1,
+      "all_ev": 152,
+      "dropped_ev": 86,
+      "non_dropped_ev": 66,
+      "non_dropped_roles": {
+        "asset_vulnerability": 12,
+        "nbs_effect": 17,
+        "operational_risk": 5,
+        "structural_suitability": 32
+      },
+      "non_dropped_t4_ev": 32,
+      "reviewer_ok_t4_ev": 0,
+      "existing_t4_mapping_rows": 2
+    },
+    {
+      "family": "water_harvesting__terracing",
+      "subpractice_records": 2,
+      "all_ev": 605,
+      "dropped_ev": 249,
+      "non_dropped_ev": 356,
+      "non_dropped_roles": {
+        "asset_vulnerability": 42,
+        "nbs_effect": 207,
+        "operational_risk": 33,
+        "structural_suitability": 74
+      },
+      "non_dropped_t4_ev": 74,
+      "reviewer_ok_t4_ev": 0,
+      "existing_t4_mapping_rows": 5
+    }
+  ],
+  "five_source_batch": {
+    "units": 53,
+    "unapproved": 53,
+    "held_criterion_groups": 15
+  },
+  "checks": {
+    "all_fam_rows_covered_once": true,
+    "current_family_and_footprint_match": true,
+    "all_evidence_and_mapping_families_accounted_for": true,
+    "no_registers_modified": true
+  }
+}
