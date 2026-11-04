@@ -1,8 +1,8 @@
 /* Progress, bibliography and methods are read-only projections of generated data. */
 (function () {
   'use strict';
-  let data, model, evidence = new Map(), bibliography = [], drawerReturn = null, drawerTab = '';
-  const state = { nbs: '', family: '', bibNbs: '', bibType: '', bibSet: '', bibTable: '', query: '', page: 0, methodNbs: '', methodTable: '', familyFilter: '', reviewFilter: '', ledgerTable: '', ledgerChannel: '', ledgerPage: 0 };
+  let data, model, evidence = new Map(), bibliography = [], drawerReturn = null, drawerTab = '', drawerSource = '', registered = new Map();
+  const state = { nbs: '', family: '', bibNbs: '', bibType: '', bibSet: '', bibTable: '', bibFamily: '', bibOrigin: '', bibEvidence: '', query: '', page: 0, methodNbs: '', methodTable: '', familyFilter: '', reviewFilter: '', ledgerTable: '', ledgerChannel: '', ledgerPage: 0 };
   const $ = id => document.getElementById(id);
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt = v => v == null ? 'Not recorded' : Number(v).toLocaleString('en-GB');
@@ -83,6 +83,7 @@
     return mapped && model.practices.some(p=>p.nbs_id===mapped) ? [mapped] : [];
   }
   function makeBibliography() {
+    registered=new Map((data.registers.SRC_source_register||[]).map(r=>[r.source_id,r]));
     bibliography = model.sources.map(s => ({...s, legacy:false}));
     const keys = new Set(model.sources.flatMap(s => [s.source_id,...s.aliases]));
     Object.entries(data.stocktake || {}).forEach(([kind, rows]) => {
@@ -97,43 +98,151 @@
       bibliography.push({key:`tool:${r.tool_id}`,source_id:'',citation:r.name,type:'tools',url:r.url,origins:['tool'],nbs_ids:list(r.nbs_id || r.nbs_ids),family_ids:[],raw:r,legacy:true,evidence_ids:[],approved_evidence_ids:[],dropped_evidence_ids:[],contributions:{}});
     });
   }
+  const originNames = {stock:'Stocktake',updated_lit:'Literature search',grey:'Grey-literature search',tool:'Tool search'};
+  const tableNames = {T4:'T4 suitability',T3:'T3 hazard response',T6:'T6 benefits',M2b:'M2b risk roles'};
+  const roleNames = {structural_suitability:'Suitability',nbs_effect:'Effects',operational_risk:'Operational risk',asset_vulnerability:'Asset vulnerability',climate_risk:'Climate risk'};
+  function familyLabel(id) {
+    if (!id || id==='__unassigned') return 'Practice-wide / family not assigned';
+    const f=model.practices.flatMap(p=>p.families).find(f=>f.family_id===id);
+    return f ? f.name : 'Recorded scope: '+label(id.split('__').pop());
+  }
+  function evidenceFamilies(row) { return list(row.suitability_family_id).map(f=>f.includes('__')?f:(row.nbs_id?row.nbs_id+'__'+f:f)); }
+  function familyOptions(nbs='') {
+    const known=new Map(model.practices.filter(p=>!nbs||p.nbs_id===nbs).flatMap(p=>p.families.filter(f=>f.family_id!=='__unassigned').map(f=>[f.family_id,[f.family_id,(nbs?'':practiceName(p)+' · ')+f.name]])));
+    const registeredFamilies=new Set(model.practices.flatMap(p=>p.families.map(f=>f.family_id)));
+    bibliography.filter(s=>!nbs||s.nbs_ids.includes(nbs)).forEach(s=>s.family_ids.forEach(f=>{if(!registeredFamilies.has(f))known.set(f,[f,familyLabel(f)+' (unmapped)']);}));
+    return [...known.values()];
+  }
   function filteredBibliography() {
-    const q = state.query.toLowerCase();
-    return bibliography.filter(s => (!state.bibNbs || s.nbs_ids.includes(state.bibNbs)) && (!state.bibType || s.type===state.bibType) && (!state.bibSet || (state.bibSet==='legacy' ? s.legacy : !s.legacy)) && (!state.bibTable || (s.contributions[state.bibTable] || []).length) && (!q || [s.citation,s.source_id,s.doi,s.rawPractice,...s.nbs_ids,...s.origins].join(' ').toLowerCase().includes(q)));
+    const q=state.query.trim().toLowerCase();
+    return bibliography.filter(s=>(!state.bibNbs||s.nbs_ids.includes(state.bibNbs)) &&
+      (!state.bibFamily||s.family_ids.includes(state.bibFamily)) && (!state.bibType||s.type===state.bibType) &&
+      (!state.bibOrigin||s.origins.includes(state.bibOrigin)) &&
+      (!state.bibSet||(state.bibSet==='legacy'?s.legacy:!s.legacy)) &&
+      (!state.bibTable||(s.contributions[state.bibTable]||[]).length) &&
+      (!state.bibEvidence||(state.bibEvidence==='retained'?s.evidence_ids.length>0:state.bibEvidence==='pending'?s.evidence_ids.length>s.approved_evidence_ids.length:state.bibEvidence==='approved'?s.approved_evidence_ids.length>0:s.evidence_ids.length===0)) &&
+      (!q||[s.citation,s.source_id,s.doi,s.rawPractice,...(s.aliases||[]),...s.nbs_ids,...s.origins,...s.family_ids.map(familyLabel)].join(' ').toLowerCase().includes(q)));
   }
   function extractionSummary(source) {
-    const counts=source.extraction_counts;
-    if(!counts)return 'Extract categories not recorded';
-    return `Extracted: T4 ${fmt(counts.T4)} · Effects ${fmt(counts.effects)} · M2b ${fmt(counts.M2b)}`+(counts.other ? ` · Other ${fmt(counts.other)}` : '');
+    const c=source.extraction_counts;
+    return c ? `Extracted: T4 ${fmt(c.T4)} · Effects ${fmt(c.effects)} · M2b ${fmt(c.M2b)}`+(c.other?` · Other ${fmt(c.other)}`:'') : 'Extraction categories not linked';
+  }
+  function contributionButtons(source) {
+    if(source.legacy)return '<span class="dp-note">Not linked</span>';
+    return '<div class="dp-count-buttons">'+Object.entries(tableNames).map(([t,title])=>{
+      const n=(source.contributions[t]||[]).length;
+      return n ? button('source-evidence',`${title} · ${fmt(n)}`,JSON.stringify([source.key,t]),'dp-count-button') : `<span class="dp-count-zero">${esc(title)} · 0</span>`;
+    }).join('')+'</div>';
   }
   function renderBibliography() {
-    if (!model) return;
-    const rows = filteredBibliography(), size=40;
+    if(!model)return;
+    const rows=filteredBibliography(),size=30,moreOpen=$('dp-bib-more')&&$('dp-bib-more').open;
+    const extraFilters=[state.bibFamily,state.bibType,state.bibOrigin,state.bibEvidence,state.bibSet,state.bibTable].filter(Boolean).length;
     state.page=Math.max(0,Math.min(state.page,Math.ceil(rows.length/size)-1));
-    $('bibliography-app').innerHTML = `<div class="dp-shell"><header class="dp-intro"><div class="dp-eyebrow">One catalogue · sources & tools</div><h2>Bibliography</h2><p>Publication details, recorded origins and evidence contributions. Open a source to read its excerpts alongside the catalogue.</p></header><div class="dp-filters"><label>Search<input id="dp-bib-query" type="search" value="${esc(state.query)}" placeholder="Title, author, source ID…"></label><label>Practice<select id="dp-bib-nbs">${options(practices(),state.bibNbs,'All practices')}</select></label><label>Source type<select id="dp-bib-type">${options(Object.entries(names).filter(([k])=>['literature','grey','tools','unknown'].includes(k)),state.bibType,'All types')}</select></label><label>Records<select id="dp-bib-set">${options([['known','Known source records'],['legacy','Unreconciled legacy resources']],state.bibSet,'All records')}</select></label><label>Contribution<select id="dp-bib-table">${options(['T4','T3','M2b','T6'].map(t=>[t,t]),state.bibTable,'Any contribution')}</select></label></div><p class="dp-note">${fmt(model.sources.length)} known source records + ${fmt(bibliography.length-model.sources.length)} unreconciled legacy resources. Legacy entries may overlap and are excluded from progress totals. Screening decisions, exact discovery-search links and citation parents are not recorded per source. Extraction categories are separate: T4 suitability, effects, and M2b risk. Effects are not assigned to T3 versus T6 until synthesis. Compiled contributions count retained excerpts cited by T4/T3/T6; M2b counts risk-role excerpts. Table contributions overlap; approved excerpts are included in retained counts.</p><div class="dp-results" aria-live="polite">${fmt(rows.length)} matching records · ${rows.length ? state.page*size+1 : 0}–${Math.min(rows.length,(state.page+1)*size)} shown</div><div class="dp-scroll"><table class="dp-table dp-bibliography"><thead><tr><th>Publication / resource</th><th>Type / origin</th><th>Practices</th><th>Screening / extraction</th><th>Compiled contributions<br><small>T4 | T3 | M2b* | T6</small></th></tr></thead><tbody>${rows.slice(state.page*size,(state.page+1)*size).map(s => `<tr data-feedback-key="source:${esc(s.key)}" data-feedback-label="${esc(s.citation)}"><th scope="row">${button('source',s.citation,s.key,'dp-source-title')}<small>${esc(s.source_id || 'Legacy resource · identity not reconciled')}</small>${s.url ? link(s.url,'Open source ↗') : ''}${s.doi ? `<small>DOI: ${esc(s.doi)}</small>` : ''}</th><td>${esc(names[s.type])}<small>${s.origins.map(o=>esc(names[o] || label(o))).join(', ') || 'Origin not recorded'}</small></td><td>${esc(s.nbs_ids.map(label).join(', ') || s.rawPractice || 'Not assigned')}</td><td>Screening: not recorded<small>${s.legacy ? 'Extraction: not linked' : `${fmt(s.evidence_ids.length)} retained · ${fmt(s.approved_evidence_ids.length)} approved excerpts`}</small>${s.legacy ? '' : `<small>${esc(extractionSummary(s))}</small>`}</td><td class="dp-numbers">${['T4','T3','M2b','T6'].map(t=>s.legacy?'—':fmt((s.contributions[t]||[]).length)).join(' | ')}</td></tr>`).join('') || '<tr><td colspan="5">No matching records. Clear a filter to broaden the list.</td></tr>'}</tbody></table></div><div class="dp-pagination">${button('page','Previous',-1)}<span>Page ${state.page+1} / ${Math.max(1,Math.ceil(rows.length/size))}</span>${button('page','Next',1)}</div></div>`;
+    $('bibliography-app').innerHTML=`<div class="dp-shell"><header class="dp-intro dp-bib-intro"><div class="dp-eyebrow">Bibliography · sources & tools</div><h2>Find a source. Explore its evidence.</h2><p>Search publications and resources, then open their details and evidence beside this catalogue.</p></header>
+      <div class="dp-filters dp-bib-filters"><label>Search sources<input id="dp-bib-query" type="search" value="${esc(state.query)}" placeholder="Title, author, source ID or family…"></label>
+      <label>Practice<select id="dp-bib-nbs">${options(practices(),state.bibNbs,'All practices')}</select></label></div>
+      <details class="dp-bib-more" id="dp-bib-more"${moreOpen?' open':''}><summary>More filters${extraFilters?' · '+extraFilters+' active':''}</summary><div class="dp-filters dp-bib-filters dp-bib-more-filters">
+      <label>Family<select id="dp-bib-family">${options(familyOptions(state.bibNbs),state.bibFamily,'All families')}</select></label>
+      <label>Source type<select id="dp-bib-type">${options(Object.entries(names).filter(([k])=>['literature','grey','tools','unknown'].includes(k)),state.bibType,'All types')}</select></label>
+      <label>Discovery origin<select id="dp-bib-origin">${options(Object.entries(originNames),state.bibOrigin,'All origins')}</select></label>
+      <label>Evidence status<select id="dp-bib-evidence">${options([['retained','With retained excerpts'],['pending','Excerpts awaiting approval'],['approved','With approved excerpts'],['empty','No retained excerpts']],state.bibEvidence,'All evidence states')}</select></label>
+      <label>Records<select id="dp-bib-set">${options([['known','Known source records'],['legacy','Unreconciled legacy resources']],state.bibSet,'All records')}</select></label>
+      <label>Used in<select id="dp-bib-table">${options(Object.entries(tableNames),state.bibTable,'Any contribution')}</select></label></div></details>
+      <details class="dp-definitions dp-bib-notes"><summary>What this catalogue includes · ${fmt(model.sources.length)} known sources + ${fmt(bibliography.length-model.sources.length)} legacy resources</summary><p>Legacy resources may overlap with known sources and are excluded from progress totals. Family associations include recorded historical work. Unmapped scope tags are shown as recorded, without assigning them to a suitability family.</p><p>Source-level screening decisions, exact discovery-search links and citation-chasing parents are not recorded. Extraction does not establish a screening decision.</p><p>Compiled contributions count distinct retained excerpts cited by T4, T3 or T6. M2b counts operational-risk and asset-vulnerability excerpts, not compiled outputs. Categories overlap; never add the table counts. T6 economics contributions are not shown in this catalogue.</p><p>Approved excerpts are part of retained evidence, not a whole-paper approval. Extraction categories are distinct from compiled contributions.</p></details>
+      <div class="dp-bib-toolbar"><p class="dp-results" aria-live="polite">${fmt(rows.length)} matching records · ${rows.length?state.page*size+1:0}–${Math.min(rows.length,(state.page+1)*size)} shown</p>${button('bib-reset','Reset filters')}</div>
+      <div class="dp-scroll"><table class="dp-table dp-bibliography dp-bib-table"><caption class="dp-sr-only">Source catalogue and linked evidence</caption><thead><tr>${['Publication / resource','Type & discovery origin','Practice / recorded scope','Evidence excerpts','Used in · excerpt counts'].map(t=>`<th scope="col">${t}</th>`).join('')}</tr></thead><tbody>${rows.slice(state.page*size,(state.page+1)*size).map(s=>`<tr data-feedback-key="source:${esc(s.key)}" data-feedback-label="${esc(s.citation)}"${drawerSource===s.key?' class="dp-source-selected"':''}><th scope="row">${button('source',s.citation,s.key,'dp-source-title')}<small>${esc(s.source_id||'Legacy resource · identity not reconciled')}</small></th><td>${esc(names[s.type]||names.unknown)}<small>${esc(s.origins.map(o=>originNames[o]||label(o)).join(', ')||'Origin not recorded')}</small></td><td>${esc(s.nbs_ids.map(label).join(', ')||s.rawPractice||'Not assigned')}<small>${s.family_ids.length?esc(s.family_ids.map(familyLabel).join('; ')):'Family not assigned'}</small></td><td>${s.legacy?'Not linked':button('source-evidence',`${fmt(s.evidence_ids.length)} retained`,JSON.stringify([s.key,'']),'dp-count-button')}<small>${s.legacy?'':`${fmt(s.approved_evidence_ids.length)} approved · ${fmt(s.dropped_evidence_ids.length)} quarantined`}</small>${s.legacy?'':`<small>${esc(extractionSummary(s))}</small>`}</td><td>${contributionButtons(s)}</td></tr>`).join('')||'<tr><td colspan="5">No matching records. Reset filters or broaden the search.</td></tr>'}</tbody></table></div>
+      <div class="dp-pagination"><button type="button" class="dp-button" data-action="page" data-value="-1"${state.page===0?' disabled':''}>Previous</button><span>Page ${state.page+1} / ${Math.max(1,Math.ceil(rows.length/size))}</span><button type="button" class="dp-button" data-action="page" data-value="1"${(state.page+1)*size>=rows.length?' disabled':''}>Next</button></div></div>`;
     const query=$('dp-bib-query');
     query.addEventListener('input',()=>{state.query=query.value;state.page=0;const pos=query.selectionStart;renderBibliography();const next=$('dp-bib-query');next.focus();next.setSelectionRange(pos,pos);});
-    [['nbs','bibNbs'],['type','bibType'],['set','bibSet'],['table','bibTable']].forEach(([id,key])=>$('dp-bib-'+id).addEventListener('change',e=>{state[key]=e.target.value;state.page=0;renderBibliography();$('dp-bib-'+id).focus();}));
+    [['nbs','bibNbs'],['family','bibFamily'],['type','bibType'],['origin','bibOrigin'],['evidence','bibEvidence'],['set','bibSet'],['table','bibTable']].forEach(([id,key])=>$('dp-bib-'+id).addEventListener('change',e=>{state[key]=e.target.value;if(key==='bibNbs')state.bibFamily='';state.page=0;renderBibliography();$('dp-bib-'+id).focus();}));
   }
-  function closeDrawer() { const d=$('dp-source-drawer');if(d)d.remove();if(location.hash.startsWith('#source='))history.replaceState(null,'',location.pathname+location.search);if(drawerReturn && drawerReturn.isConnected)drawerReturn.focus(); }
-  function openSource(id) {
+  function sourceRecords(source) {
+    const ids=[source.source_id,...(source.aliases||[])];
+    return ids.map(id=>registered.get(id)).filter(Boolean);
+  }
+  function libraryUrl(row) { return row && row.library_path && typeof window.vfSharePointUrl==='function' ? safeUrl(window.vfSharePointUrl(row.library_path)) : ''; }
+  function sourceLinks(source) {
+    const rows=sourceRecords(source),seen=new Set(),links=[];
+    for(const r of rows){const url=libraryUrl(r);if(url&&!seen.has(url)){seen.add(url);links.push(link(url,'Team library'+(rows.length>1?' · '+r.source_id:'' )+' ↗'));}}
+    if(safeUrl(source.url)&&!seen.has(safeUrl(source.url)))links.push(link(source.url,'Publisher / website ↗'));
+    return links.length?links.join(' '):'<span class="dp-note">No source link recorded.</span>';
+  }
+  function passageLink(row,source) {
+    const raw=registered.get(row.source_id), url=libraryUrl(raw)||safeUrl((raw||{}).url)||safeUrl(source.url);
+    if(!url)return '';
+    const page=String(row.page||'');
+    if(/^\d+$/.test(page)&&Number(page)>0&&(!row.locator_type||row.locator_type==='page')&&/\.pdf(?:$|[?#])/i.test(url)){
+      const u=new URL(url);u.hash='page='+page;return link(u.href,`Open PDF · page ${page} ↗`);
+    }
+    // A file locator is a deep link only with a pinned commit and a complete path/range.
+    const loc=String(row.locator||'').match(/^(.+):L(\d+)(?:-L?(\d+))?$/);
+    const repo=new URL(url).pathname.split('/').filter(Boolean);
+    if(row.locator_type==='file_line'&&loc&&/^[a-f0-9]{7,40}$/i.test(row.commit_sha||'')&&new URL(url).hostname==='github.com'&&repo.length>=2&&!loc[1].split('/').includes('..')){
+      return link(`https://github.com/${repo.slice(0,2).join('/')}/blob/${row.commit_sha}/${loc[1].split('/').map(encodeURIComponent).join('/')}#L${loc[2]}${loc[3]?'-L'+loc[3]:''}`,'Open pinned code passage ↗');
+    }
+    return link(url,'Open source ↗');
+  }
+  function recordDetails(row) {
+    const fields=Object.entries(row).filter(([k,v])=>k!=='quote'&&v!==null&&v!==undefined&&v!=='');
+    return `<dl>${fields.map(([k,v])=>`<dt>${esc(label(k))}</dt><dd>${esc(typeof v==='object'?JSON.stringify(v,null,2):v)}</dd>`).join('')}</dl>`;
+  }
+  function sourceDetails(source) {
+    const rows=sourceRecords(source);
+    const fields=['citation','doi','url','source_kind','venue_type','method_type','benchmark_tier','study_country','region','study_income_group','farming_system','spatial_scale','access_status','license','retrieved_at','extraction_status','extraction_date','extraction_run_id','extractor'];
+    return `<section class="dp-source-meta"><h3>Publication & provenance</h3><dl><dt>Source ID</dt><dd>${esc(source.source_id||'Legacy resource; identity not reconciled')}</dd><dt>Recorded citation</dt><dd>${esc(source.citation)}</dd><dt>Publication DOI</dt><dd>${esc(source.doi||'Not recorded')}</dd><dt>Source type</dt><dd>${esc(names[source.type]||names.unknown)}</dd><dt>Discovery origin</dt><dd>${esc(source.origins.map(o=>originNames[o]||label(o)).join(', ')||'Not recorded')}</dd><dt>Exact search / citation-chasing parent</dt><dd>Not recorded at source level</dd><dt>Screening decision</dt><dd>Not recorded at source level; extraction is not a screening decision.</dd><dt>Practices</dt><dd>${esc(source.nbs_ids.map(label).join(', ')||source.rawPractice||'Not assigned')}</dd><dt>Families / recorded scope</dt><dd>${esc(source.family_ids.map(familyLabel).join('; ')||'Not assigned')}</dd><dt>Acquisition queue</dt><dd>${esc((source.queue_statuses||[]).map(label).join(', ')||'Not recorded')}</dd></dl>
+      ${rows.map((r,i)=>`<details${i===0?' open':''}><summary>${i===0&&r.source_id===source.source_id?'Registered source details':'Linked source record'} · ${esc(r.source_id)}</summary>${rows.length>1?'<p class="dp-note">Metadata belongs to this source ID; linked records may differ.</p>':''}<dl>${fields.filter(k=>r[k]!==undefined&&r[k]!==null&&r[k]!=='').map(k=>`<dt>${esc(label(k))}</dt><dd>${esc(Array.isArray(r[k])?r[k].join(', '):r[k])}</dd>`).join('')||'<dd>No additional metadata recorded.</dd>'}</dl></details>`).join('')}
+      ${source.raw?`<details><summary>Legacy resource details</summary>${recordDetails(source.raw)}</details>`:''}
+      ${(source.tools||[]).map(t=>`<details><summary>${esc(t.name||'Tool details')}</summary>${recordDetails(t)}</details>`).join('')}
+      <h3>Evidence contributions</h3>${contributionButtons(source)}<p class="dp-note">T4/T3/T6 count retained excerpts cited by compiled tables. M2b counts risk roles. These counts overlap. T6 economics contributions are not shown.</p></section>`;
+  }
+  function closeDrawer() {
+    const d=$('dp-source-drawer');if(d)d.remove();drawerSource='';
+    document.querySelectorAll('.dp-source-selected').forEach(r=>r.classList.remove('dp-source-selected'));
+    if(location.hash.startsWith('#source='))history.replaceState(null,'',location.pathname+location.search);
+    if(drawerReturn&&drawerReturn.isConnected)drawerReturn.focus();else if($('dp-bib-query'))$('dp-bib-query').focus();
+  }
+  function openSource(id,table='') {
     if(!model)return;
-    const source=bibliography.find(s=>s.key===id || s.source_id===id || (s.aliases||[]).includes(id));
+    const source=bibliography.find(s=>s.key===id||s.source_id===id||(s.aliases||[]).includes(id));
     if(!source)return;
     if(!$('dp-source-drawer'))drawerReturn=document.activeElement;
-    const activeTab=document.querySelector('.tab-btn.active');
-    drawerTab=activeTab ? activeTab.dataset.tab : '';
+    drawerSource=source.key;
+    const activeTab=document.querySelector('.tab-btn.active');drawerTab=activeTab?activeTab.dataset.tab:'';
+    document.querySelectorAll('#bibliography-app tr[data-feedback-key]').forEach(r=>{r.classList.remove('dp-source-selected');if(r.dataset.feedbackKey==='source:'+source.key)r.classList.add('dp-source-selected');});
     const old=$('dp-source-drawer');if(old)old.remove();
-    const d=document.createElement('aside');d.id='dp-source-drawer';d.className='dp-drawer';d.dataset.feedbackKey='source:'+source.key;d.dataset.feedbackLabel=source.citation;d.setAttribute('role','dialog');d.setAttribute('aria-label','Source details and evidence');d.setAttribute('aria-modal','false');d.tabIndex=-1;
-    const ids=[...source.evidence_ids,...source.dropped_evidence_ids];
-    d.innerHTML=`<div class="dp-drawer-head"><h2>Source & evidence</h2>${button('close','Close ×')}</div><h3>${esc(source.citation)}</h3><p>${link(source.url,'Open source ↗')}</p><dl><dt>Source ID</dt><dd>${esc(source.source_id || 'Legacy resource; identity not reconciled')}</dd><dt>Publication DOI</dt><dd>${esc(source.doi || 'Not recorded')}</dd><dt>Origin</dt><dd>${esc(source.origins.map(o=>names[o]||label(o)).join(', ') || 'Not recorded')}</dd><dt>Discovered by search / citation parent</dt><dd>Not recorded at source level</dd><dt>Screening decision</dt><dd>Not recorded at source level</dd><dt>Practices / families</dt><dd>${esc(source.nbs_ids.map(label).join(', ') || source.rawPractice || 'Not assigned')}<br>${esc(source.family_ids.map(f=>label(f.split('__').pop())).join(', '))}</dd><dt>Recorded extraction / queue status</dt><dd>${esc([...(source.extraction_status||[]),...(source.queue_statuses||[])].map(label).join(', ') || 'Not recorded')}</dd></dl>${source.raw ? `<details><summary>Legacy resource / tool details</summary><dl>${Object.entries(source.raw).filter(([,v])=>v).map(([k,v])=>`<dt>${esc(label(k))}</dt><dd>${esc(v)}</dd>`).join('')}</dl></details>`:''}${(source.tools||[]).map(t=>`<details><summary>${esc(t.name)}</summary><p>${esc(t.workflow_summary)}</p><p>${esc(t.spatial_method)} · ${esc(t.validation)}</p></details>`).join('')}<h3>Evidence excerpts</h3><p>${esc(extractionSummary(source))}</p><p class="dp-note">Extraction categories are mutually exclusive. Effects can later contribute to T3, T6, or both through synthesis.</p><p class="dp-note">${fmt(source.evidence_ids.length)} retained · ${fmt(source.approved_evidence_ids.length)} approved · ${fmt(source.dropped_evidence_ids.length)} quarantined. Approved excerpts are a subset of retained excerpts. Approval applies to excerpts, not the whole paper.</p><label class="dp-toggle"><input id="dp-show-dropped" type="checkbox"> Include quarantined excerpts</label><div id="dp-drawer-evidence"></div>`;
+    const d=document.createElement('aside');d.id='dp-source-drawer';d.className='dp-drawer dp-source-drawer';d.dataset.feedbackKey='source:'+source.key;d.dataset.feedbackLabel=source.citation;d.setAttribute('role','dialog');d.setAttribute('aria-label','Source details and evidence');d.setAttribute('aria-modal','false');d.tabIndex=-1;
+    const ids=[...new Set([...source.evidence_ids,...source.dropped_evidence_ids])];
+    const all=ids.map(id=>evidence.get(id)).filter(Boolean);
+    let view=all.length||table?'evidence':'details',limit=20;
+    const filter={query:'',family:'',role:'',table,review:'',dropped:false};
+    const familyIds=[...new Set(all.flatMap(evidenceFamilies))],roles=[...new Set(all.map(r=>r.use_role).filter(Boolean))];
+    d.innerHTML=`<div class="dp-drawer-head"><h2>Source & evidence</h2>${button('close','Close ×')}</div><div class="dp-source-summary"><h3>${esc(source.citation)}</h3><div class="dp-record-links">${sourceLinks(source)}</div></div><nav class="dp-source-nav" aria-label="Source views"><button type="button" class="dp-button" id="dp-view-evidence">Evidence (${fmt(source.evidence_ids.length)})</button><button type="button" class="dp-button" id="dp-view-details">Source details</button></nav>
+      <section id="dp-source-details" class="dp-source-panel">${sourceDetails(source)}</section>
+      <section id="dp-source-evidence" class="dp-source-panel"><div class="dp-evidence-summary"><h3>Evidence excerpts</h3><p>${fmt(source.evidence_ids.length)} retained · ${fmt(source.approved_evidence_ids.length)} approved · ${fmt(source.dropped_evidence_ids.length)} quarantined</p><p class="dp-note">${esc(extractionSummary(source))}. Approval applies to excerpts, not the whole paper.</p></div>
+      <div class="dp-filters dp-source-filters"><label>Search excerpts<input type="search" id="dp-excerpt-query" placeholder="Quote, variable or evidence ID…"></label><label>Excerpt family<select id="dp-excerpt-family">${options(familyIds.map(f=>[f,familyLabel(f)]),'','All families')}${all.some(r=>!evidenceFamilies(r).length)?'<option value="__unassigned">Practice-wide / not assigned</option>':''}</select></label><label>Evidence role<select id="dp-excerpt-role">${options(roles.map(r=>[r,roleNames[r]||label(r)]),'','All roles')}</select></label><label>Contribution<select id="dp-excerpt-table">${options(Object.entries(tableNames),table,'All contributions')}</select></label><label>Excerpt review<select id="dp-excerpt-review">${options([['approved','Approved'],['pending','Awaiting approval'],['dropped','Quarantined']],'','All review states')}</select></label></div>
+      <label class="dp-toggle"><input id="dp-show-dropped" type="checkbox"> Include quarantined excerpts</label><div class="dp-bib-toolbar"><p id="dp-excerpt-results" class="dp-results" aria-live="polite"></p><button type="button" class="dp-button" id="dp-excerpt-reset">Reset excerpt filters</button></div><div id="dp-drawer-evidence"></div></section>`;
     document.body.appendChild(d);
-    let limit=25;
-    const render=()=>{const show=$('dp-show-dropped').checked;const selected=ids.map(id=>evidence.get(id)).filter(r=>r&&(show||r.review_state!=='dropped'));
-      $('dp-drawer-evidence').innerHTML=selected.slice(0,limit).map(r=>`<article class="dp-excerpt" data-vfeid="${esc(r.evidence_id)}" data-feedback-key="evidence:${esc(r.evidence_id)}"><strong>${esc(label(r.variable || r.effect_indicator || r.use_role))}</strong><small>${esc(r.evidence_id)} · ${esc(r.review_state==='dropped'?'Quarantined':String(r.reviewer_ok)==='true'?'Approved':'Awaiting review')}</small><blockquote>${esc(r.quote || 'No quote recorded')}</blockquote><p>${esc(label(r.nbs_id))} · ${esc(label((r.suitability_family_id||'').split('__').pop()))}<br>${esc(label(r.use_role))} · ${esc(r.locator || (r.page ? 'Page '+r.page : 'Locator not recorded'))}</p></article>`).join('') || '<p>No linked excerpts in this view.</p>';
-      if(selected.length>limit){const b=document.createElement('button');b.type='button';b.className='dp-button';b.textContent=`Show more (${selected.length-limit} remaining)`;b.onclick=()=>{limit+=25;render();};$('dp-drawer-evidence').appendChild(b);}
-    };
-    $('dp-show-dropped').onchange=render;render();d.focus();history.replaceState(null,'','#source='+encodeURIComponent(source.key));
+    function setView(next){view=next;$('dp-source-details').hidden=view!=='details';$('dp-source-evidence').hidden=view!=='evidence';['details','evidence'].forEach(v=>{const b=$('dp-view-'+v);b.setAttribute('aria-pressed',String(view===v));b.className='dp-button'+(view===v?' is-active':'');});}
+    function render(){
+      const selected=all.filter(r=>{
+        const dropped=r.review_state==='dropped',approved=!dropped&&String(r.reviewer_ok)==='true';
+        return (!dropped||filter.dropped)&&(!filter.family||(filter.family==='__unassigned'?!evidenceFamilies(r).length:evidenceFamilies(r).includes(filter.family)))&&(!filter.role||r.use_role===filter.role)&&(!filter.table||(source.contributions[filter.table]||[]).includes(r.evidence_id))&&(!filter.review||(filter.review==='dropped'?dropped:filter.review==='approved'?approved:!dropped&&!approved))&&(!filter.query||[r.quote,r.variable,r.effect_indicator,r.evidence_id,r.raw_name,r.taxon].join(' ').toLowerCase().includes(filter.query.toLowerCase().trim()));
+      });
+      $('dp-excerpt-results').textContent=`${fmt(selected.length)} matching excerpts · ${fmt(Math.min(selected.length,limit))} shown`;
+      $('dp-drawer-evidence').innerHTML=selected.slice(0,limit).map(r=>{
+        const dropped=r.review_state==='dropped',status=dropped?'Quarantined':String(r.reviewer_ok)==='true'?'Approved':'Awaiting approval';
+        const used=Object.entries(tableNames).filter(([t])=>(source.contributions[t]||[]).includes(r.evidence_id)).map(([,n])=>n);
+        return `<article class="dp-excerpt" data-vfeid="${esc(r.evidence_id)}" data-feedback-key="evidence:${esc(r.evidence_id)}"><header><strong>${esc(label(r.variable||r.effect_indicator||r.use_role))}</strong><span class="dp-evidence-status">${status}</span></header><small>${esc(r.evidence_id)}</small><p>${esc(label(r.nbs_id))} · ${esc(evidenceFamilies(r).map(familyLabel).join('; ')||'Practice-wide / family not assigned')}<br>${esc(roleNames[r.use_role]||label(r.use_role))}${r.claim_scope?' · '+esc(label(r.claim_scope)):''}${r.taxon?' · '+esc(r.taxon):''}</p><blockquote>${esc(r.quote||'No quote recorded')}</blockquote><div class="dp-record-links"><span>${esc(r.locator||(r.page?'Page '+r.page:'Locator not recorded'))}</span>${passageLink(r,source)}</div><p class="dp-note">${dropped?'Quarantined; excluded from active contributions.':used.length?'Used in: '+esc(used.join(' · ')):'No compiled contribution or M2b risk role recorded.'}</p><details><summary>Full evidence record</summary>${recordDetails(r)}</details></article>`;
+      }).join('')||'<p class="dp-empty">No linked excerpts match these filters. Reset excerpt filters to broaden this view.</p>';
+      if(selected.length>limit){const b=document.createElement('button');b.type='button';b.className='dp-button';b.textContent=`Show more (${selected.length-limit} remaining)`;b.onclick=()=>{const firstNew=limit;limit+=20;render();const next=document.querySelectorAll('#dp-drawer-evidence .dp-excerpt')[firstNew];if(next){next.tabIndex=-1;next.focus();}};$('dp-drawer-evidence').appendChild(b);}
+    }
+    ['details','evidence'].forEach(v=>$('dp-view-'+v).onclick=()=>setView(v));
+    $('dp-excerpt-query').oninput=e=>{filter.query=e.target.value;limit=20;render();};
+    ['family','role','table','review'].forEach(k=>$('dp-excerpt-'+k).onchange=e=>{filter[k]=e.target.value;if(k==='review'&&filter.review==='dropped'){filter.dropped=true;$('dp-show-dropped').checked=true;}limit=20;render();});
+    $('dp-show-dropped').onchange=e=>{filter.dropped=e.target.checked;if(!filter.dropped&&filter.review==='dropped'){filter.review='';$('dp-excerpt-review').value='';}limit=20;render();};
+    $('dp-excerpt-reset').onclick=()=>{Object.assign(filter,{query:'',family:'',role:'',table:'',review:'',dropped:false});['query','family','role','table','review'].forEach(k=>$('dp-excerpt-'+k).value='');$('dp-show-dropped').checked=false;limit=20;render();};
+    setView(view);render();d.focus();history.replaceState(null,'','#source='+encodeURIComponent(source.key));
   }
   function originalProtocols(records) {
     const fieldNames = {search_id:'Search record', n_retrieved:'Search hits', n_screened:'Hits screened', n_included:'Hits selected', search_date:'Search date', nbs_id:'Practice', suitability_family_id:'Suitability family', run_id:'Search run', ruleset_version:'Method version'};
@@ -155,10 +264,12 @@
     switch(b.dataset.action){
       case 'practice':state.nbs=v;state.family='';state.familyFilter='';state.reviewFilter='';state.ledgerTable='';state.ledgerChannel='';state.ledgerPage=0;renderProgress();document.querySelector('.dp-subtabs .is-active').focus({preventScroll:true});const intro=document.querySelector('#progress-app .dp-intro');if(intro)intro.scrollIntoView({block:'start'});break;
       case 'ledger-page':state.ledgerPage+=Number(v);renderProgress();$('dp-ledger').open=true;$('dp-ledger').scrollIntoView({block:'start'});break;
-      case 'known':state.bibNbs='';state.bibSet='known';state.bibTable='';state.bibType='';state.query='';state.page=0;renderBibliography();go('tab-stocktake');break;
-      case 'bibliography':state.bibNbs=v;state.bibSet='';state.bibTable='';state.bibType='';state.query='';state.page=0;renderBibliography();go('tab-stocktake');break;
+      case 'known':state.bibFamily='';state.bibOrigin='';state.bibEvidence='';state.bibNbs='';state.bibSet='known';state.bibTable='';state.bibType='';state.query='';state.page=0;renderBibliography();go('tab-stocktake');break;
+      case 'bibliography':state.bibFamily='';state.bibOrigin='';state.bibEvidence='';state.bibNbs=v;state.bibSet='';state.bibTable='';state.bibType='';state.query='';state.page=0;renderBibliography();go('tab-stocktake');break;
       case 'methods':openMethods(v);break;
       case 'source':openSource(v);break;
+      case 'source-evidence':{const [id,table]=JSON.parse(v);openSource(id,table);break;}
+      case 'bib-reset':Object.assign(state,{bibNbs:'',bibFamily:'',bibType:'',bibOrigin:'',bibEvidence:'',bibSet:'',bibTable:'',query:'',page:0});renderBibliography();$('dp-bib-query').focus();break;
       case 'close':closeDrawer();break;
       case 'page':state.page+=Number(v);renderBibliography();$('bibliography-app').scrollIntoView({block:'start'});break;
     }
@@ -207,7 +318,7 @@
     if(!location.hash.startsWith('#source='))return;
     let id;
     try {id=decodeURIComponent(location.hash.slice(8));} catch(_) {return;}
-    openSource(id);
+    go('tab-stocktake');openSource(id);
   }
   function refresh(next) {data=next;model=data.progress_overview;if(!model)return;evidence=new Map([...(data.registers.EV_evidence_register||[]),...(data._evDropped||[])].map(r=>[r.evidence_id,r]));makeBibliography();renderProgress();renderBibliography();renderMethods();renderBuild();}
   function trackStickyOffsets() {
@@ -221,7 +332,7 @@
     init(next){refresh(next);if(!initialized){trackStickyOffsets();document.addEventListener('click',dispatch);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('dp-source-drawer'))closeDrawer();});window.addEventListener('hashchange',openHashSource);initialized=true;}openHashSource();},
     refresh,renderBibliography,openSource,openMethods,revealTarget,print:printOverview,
     scope:()=>({nbs:state.nbs || 'all',family:state.familyFilter || 'all'}),
-    context:tab=>tab==='tab-stocktake'?{nbs:state.bibNbs||'all',source_type:state.bibType||'all',query:state.query}:tab==='tab-methods'?{nbs:state.methodNbs||'all',table:state.methodTable||'all'}:{nbs:state.nbs||'all',family:state.familyFilter||'all'},
+    context:tab=>tab==='tab-stocktake'?{nbs:state.bibNbs||'all',family:state.bibFamily||'all',source_type:state.bibType||'all',table:state.bibTable||'all',source:drawerSource,query:state.query}:tab==='tab-methods'?{nbs:state.methodNbs||'all',table:state.methodTable||'all'}:{nbs:state.nbs||'all',family:state.familyFilter||'all'},
     onTab(tab){if($('dp-source-drawer') && tab!==drawerTab)closeDrawer();},
   };
 })();
