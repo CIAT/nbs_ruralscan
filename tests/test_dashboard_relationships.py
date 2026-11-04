@@ -217,7 +217,7 @@ class Node {
 const root=new Node('relationship-review-root');let opened=[];
 const window={DashboardProgress:{openSource:(...args)=>opened.push(args)}};
 const document={getElementById:id=>nodes.get(id)};
-vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),{window,document});
+vm.runInNewContext(fs.readFileSync(process.argv[1],'utf8'),{window,document,Event:class {constructor(type){this.type=type;}}});
 const base={source_id:'paper',variable:'slope',suitability_family_id:'F1',claim_scope:'practice_technology',source_direction:'decreasing',quote:'<img src=x onerror=bad()>',relationship:{direction:'decreasing'},linked_mapping_ids:[],compilation_disposition:'selection_only',has_stated_direction:true};
 const fixture={relationships:{practices:{agroforestry:{catalogue:{records:[
   {...base,evidence_id:'approved',reviewer_ok:true},
@@ -243,6 +243,22 @@ root.listeners.click({target:{closest:()=>button}});
 assert.deepEqual(opened,[['paper']]);
 root.listeners.click({target:{closest:()=>({id:'dr-reset',dataset:{}})}});
 assert(nodes.get('dr-count').textContent.includes('2 source claims match'));
+fixture.recipes={agroforestry:{T4_suitability_mappings:[{mapping_id:'rule',variable:'slope',suitability_family_id:'F1',relationship_type:'piecewise',relationship_params:{profiles:[{source_id:'paper',unit:'degrees',intervals:[{lower:0,upper:5,lower_inclusive:true,upper_inclusive:false,label:'high',score:0.75,score_basis:'schema_class_convention'}]}]}}]}};
+window.DashboardRelationships.refresh(fixture);
+root.listeners.click({target:{closest:()=>({dataset:{drRule:'rule'}})}});
+assert(nodes.get('dr-rule-detail').innerHTML.includes('Recorded intervals'));
+assert(nodes.get('dr-rule-detail').innerHTML.includes('Compare source plots'));
+assert(nodes.get('dr-rule-detail').innerHTML.includes('0.75'));
+const host=new Node('t4-analysis'), practice=new Node('select-nbs'), family=new Node('select-family'), variable=new Node('study-variable'), find=new Node('t4-find'), tab=new Node('t4-tab-studies');
+practice.dispatchEvent=()=>{};family.dispatchEvent=()=>{};variable.dispatchEvent=()=>{};
+family.options=[{value:'F1'}];variable.options=[{value:'slope'}];host.querySelector=()=>variable;host.hidden=false;
+let openedExplorer=false,updated;
+window.DashboardShell={showExplorer(){openedExplorer=true;}};
+window.T4Analysis={update(...args){updated=args;}};
+tab.click=()=>{tab.clicked=true;};
+root.listeners.click({target:{closest:()=>({dataset:{drPlots:'rule'}})}});
+assert(openedExplorer);assert.equal(practice.value,'agroforestry');assert.equal(family.value,'F1');
+assert.equal(variable.value,'slope');assert(tab.clicked);assert.equal(updated[0],'agroforestry');assert.equal(updated[1],'F1');
 """
     subprocess.run(
         ["node", "-e", harness, str(script)], check=True, capture_output=True, text=True

@@ -55,10 +55,43 @@
     root.innerHTML=`<div class="dr-shell"><h2>3.1 Relationships across sources</h2><p>See which variables studies use, what relationships sources report, and which evidence supports compiled suitability functions. Select a variable to inspect its source claims below.</p><div class="dr-filters">${select('dr-practice','Practice',list(Object.keys(payload.practices||{})),state.practice)}${select('dr-variable','Variable',list(records().map(r=>r.variable)),state.variable,'All variables')}<label>Find variable, source or claim<input type="search" id="dr-search" value="${esc(state.query)}" placeholder="Search relationships"></label><button type="button" id="dr-reset">Clear filters</button></div><details class="dr-method"><summary>3.1.1 How to read study use, weights and functions</summary><p>Study-use counts include only papers with explicitly verified model-use records. Their denominator is that recorded cohort, not every paper in the library. Missing use is unknown. A paper counts once within each group or variable.</p><p>Importance describes reconstructed source-model weights: 1× is the equal-share benchmark. Alternative models are first summarized within each reporting source, then across sources in the same scope. Regional models and FMNR practitioner models stay separate. Missing weights are unknown; partial mapped group shares are not renormalized.</p><p>Direction counts use explicit fields only. Source classes and qualitative wording remain visible below. Current approval reflects the register flag and may include automated approvals; it does not certify human assessment. Numeric function support, current approval and target applicability are separate: no table here grants runtime weights or transfer approval.</p><p>Latest aggregate presentation: ${esc(payload.presentation_version||'unavailable')}; current dashboard registers supply the evidence. Historical handoff packages remain archived snapshots.</p></details><div id="dr-aggregate"></div><div id="dr-rule-detail"></div><h3 id="dr-source-heading" tabindex="-1">3.2 Source claims and review status</h3><p class="dr-note">Approval reflects the current register flag, including automated approvals. It does not certify human assessment.</p><div class="dr-filters">${select('dr-family','Source family',list(records().map(r=>r.suitability_family_id)),state.family,'All recorded families')}${select('dr-scope','Claim scope',[['practice_technology','General practice'],['species_specific','Species-specific'],['crop_specific','Crop-specific']],state.scope,'All scopes')}${select('dr-review','Current approval',[['approved','Approval recorded'],['unapproved','Approval not recorded']],state.review,'All review states')}</div><p id="dr-count" class="dr-note" aria-live="polite"></p><div id="dr-claims"></div><button type="button" id="dr-more">Show 25 more claims</button></div>`;
     renderResults();
   }
+  function readableRule(rule) {
+    const params=obj(rule.relationship_params), profiles=params.profiles||[];
+    if(!profiles.length)return `<dl class="dr-rule-summary">${Object.entries(params).filter(([,v])=>v===null||typeof v!=='object').map(([key,value])=>`<dt>${esc(nice(key))}</dt><dd>${esc(value===null?'Unknown':value)}</dd>`).join('')}</dl>`;
+    return profiles.map((profile,index)=>`<section class="dr-profile"><h4>${source(profile.source_id)} · ${esc(profile.unit||'Unit not recorded')}</h4><p>${esc(profile.applicability_note||'Target applicability requires review.')}</p><div class="dr-table-scroll"><table class="dr-table dr-intervals"><caption>Table 3.2.${index+1}. Recorded intervals · ${esc(profile.source_id)}</caption><thead><tr><th>Input interval</th><th>Source class</th><th>Compiled score</th><th>Score basis</th></tr></thead><tbody>${(profile.intervals||[]).map(band=>`<tr><td>${esc(band.lower===null||band.lower===undefined?'Below':(band.lower_inclusive?'≥ ':'> ')+band.lower)} ${band.upper===null||band.upper===undefined?'— no upper boundary':esc((band.upper_inclusive?'≤ ':'< ')+band.upper)}</td><td>${esc(band.label||'Not labelled')}</td><td>${esc(band.score===null||band.score===undefined?'Unknown':band.score)}</td><td>${esc(nice(band.score_basis||'not_recorded'))}</td></tr>`).join('')}</tbody></table></div><p class="dr-note">Outside reported intervals and unresolved boundaries remain unknown. Scores are stored compilation conventions, not measured probabilities.</p></section>`).join('');
+  }
+  function openPlots(id) {
+    const rule=(data.recipes?.[state.practice]?.T4_suitability_mappings||[]).find(r=>r.mapping_id===id);
+    if(!rule||!window.T4Analysis||!window.DashboardShell)return;
+    const practice=state.practice, family=rule.suitability_family_id, host=$('t4-analysis');
+    if(!host)return;
+    let observer, timer;
+    const selectPlots=()=>{
+      if(host.hidden)return false;
+      const variable=host.querySelector('[data-t4-study-variable]');
+      if(!variable||![...variable.options].some(o=>o.value===rule.variable))return false;
+      observer?.disconnect();if(timer)window.clearTimeout(timer);
+      variable.value=rule.variable;
+      const find=$('t4-find');if(find)find.value='';
+      $('t4-tab-studies').click();
+      variable.dispatchEvent(new Event('change',{bubbles:true}));
+      host.scrollIntoView({block:'start'});variable.focus({preventScroll:true});
+      return true;
+    };
+    window.DashboardShell.showExplorer();
+    const practiceSelect=$('select-nbs');practiceSelect.value=practice;practiceSelect.dispatchEvent(new Event('change'));
+    const familySelect=$('select-family');
+    if([...familySelect.options].some(o=>o.value===family)){familySelect.value=family;familySelect.dispatchEvent(new Event('change'));}
+    window.T4Analysis.update(practice,family,data);
+    if(!selectPlots()&&window.MutationObserver){
+      observer=new window.MutationObserver(selectPlots);observer.observe(host,{childList:true,subtree:true,attributes:true});
+      timer=window.setTimeout(()=>observer.disconnect(),10000);
+    }
+  }
   function showRule(id) {
     const rule=(data.recipes?.[state.practice]?.T4_suitability_mappings||[]).find(r=>r.mapping_id===id);
     const target=$('dr-rule-detail');
-    target.innerHTML=rule?`<section class="dr-rule" tabindex="-1"><h3>3.3 Compiled rule: ${esc(nice(rule.variable))}</h3><p>${esc(nice(rule.suitability_family_id))} · ${esc(nice(rule.relationship_type))}</p><p>${esc(rule.justification||'Inspect source context and explicit function selection before applying this rule.')}</p><details open><summary>Function parameters and evidence links</summary><pre>${esc(JSON.stringify(obj(rule.relationship_params),null,2))}</pre><p>${esc(JSON.stringify(rule.evidence_ids||[]))}</p></details><p>Compiled does not mean approved for every location or family.</p></section>`:'<p>Rule is not present in the current recipe.</p>';
+    target.innerHTML=rule?`<section class="dr-rule" tabindex="-1"><h3>3.3 Compiled rule: ${esc(nice(rule.variable))}</h3><p>${esc(nice(rule.suitability_family_id))} · ${esc(nice(rule.relationship_type))}</p><p>${esc(rule.justification||'Inspect source context and explicit function selection before applying this rule.')}</p>${readableRule(rule)}${['agroforestry','forest_restoration','mangrove_restoration'].includes(state.practice)?`<button class="dr-plot-button" type="button" data-dr-plots="${esc(id)}">Compare source plots in Evidence explorer</button><p class="dr-note">Opens this variable and family using existing source plots. Check the snapshot warning before interpreting a curve.</p>`:''}<details><summary>Full function parameters and evidence links</summary><pre>${esc(JSON.stringify(obj(rule.relationship_params),null,2))}</pre><p>${esc(JSON.stringify(rule.evidence_ids||[]))}</p></details><p>Compiled does not mean approved for every location or family.</p></section>`:'<p>Rule is not present in the current recipe.</p>';
     target.scrollIntoView({block:'start'});target.querySelector('section')?.focus({preventScroll:true});
   }
   function change(event) {
@@ -71,6 +104,7 @@
     const button=event.target.closest('button');if(!button)return;
     if(button.dataset.drSource){window.DashboardProgress?.openSource(button.dataset.drSource);return;}
     if(button.dataset.drRule){showRule(button.dataset.drRule);return;}
+    if(button.dataset.drPlots){openPlots(button.dataset.drPlots);return;}
     if(button.dataset.drVariable){state.variable=button.dataset.drVariable;state.query='';state.scope='practice_technology';state.family='';state.review='';state.limit=25;render();$('dr-source-heading').scrollIntoView({block:'start'});$('dr-source-heading').focus({preventScroll:true});return;}
     if(button.id==='dr-reset'){Object.assign(state,{variable:'',query:'',family:'',scope:'practice_technology',review:'',limit:25});render();$('dr-search').focus();}
     if(button.id==='dr-more'){const next=selectedClaims()[state.limit];state.limit+=25;renderResults();if(next)$('dr-claim-'+next.evidence_id)?.focus();}
