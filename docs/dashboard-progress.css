@@ -80,7 +80,7 @@ body[data-theme="dark"] .dp-intro>p{color:var(--text-secondary)}
 .dp-shell .dp-family li { position: static; display: list-item; margin: 4px 0; }
 
 /* One metric per column, with space reserved for readable family names. */
-.dp-summary-table { min-width: 1050px; table-layout: fixed; }
+.dp-summary-table { min-width: 850px; table-layout: fixed; }
 .dp-summary-table th,
 .dp-summary-table td { padding: 9px 7px; }
 .dp-summary-table thead th { line-height: 1.4; overflow-wrap: normal; }
@@ -298,3 +298,12 @@ details.dp-source-meta:not([open]) > :not(summary),
 .dp-bib-more:not([open])>:not(summary){display:none}
 .dp-bib-more-filters label:first-child{flex:1 1 155px}
 .dp-bib-more>summary:focus-visible{outline:3px solid var(--accent-amber);outline-offset:3px}
+
+/* Search observations have their own units and must not look like a source funnel. */
+.dp-search-effort { margin-top: 28px; }
+.dp-search-table { min-width: 0; table-layout: fixed; }
+.dp-search-table th:first-child { width: 25%; min-width: 0; }
+.dp-search-table th, .dp-search-table td { overflow-wrap: anywhere; }
+@media (max-width: 640px) { .dp-search-table th, .dp-search-table td { padding: 10px 5px; } .dp-search-table .dp-button { padding: 5px; } }
+.dp-search-table .dp-numbers { font-variant-numeric: tabular-nums; }
+@media print { body.dp-print .dp-search-table { min-width: 0; } }
