@@ -4,6 +4,7 @@ import csv
 import hashlib
 import importlib.util
 import json
+import re
 from dataclasses import fields
 from pathlib import Path
 from types import SimpleNamespace
@@ -180,6 +181,16 @@ def staging(tmp_path, monkeypatch):
         ruleset_version="v1.7.0",
     )
     return module, unit, identity
+
+
+def test_staging_accepts_current_canonical_extraction_ruleset(staging):
+    module, unit, _ = staging
+    skill = ROOT / ".agents/skills/source-command-extract-evidence/SKILL.md"
+    frontmatter = skill.read_text(encoding="utf-8").split("---", 2)[1]
+    version = re.search(r'^version:\s*"(v\d+\.\d+\.\d+)"\s*$', frontmatter, re.M)
+    assert version, "Canonical extraction skill must declare its ruleset version"
+    unit["ruleset_version"] = version.group(1)
+    assert module.gate([unit], {"structural_suitability"}) == []
 
 
 def test_staging_valid_source_passes_and_historical_t4_stamp_allowed(staging):

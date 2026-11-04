@@ -1,0 +1,272 @@
+{
+  "source_id": "riparian_annagnps_elkadiri_2023",
+  "sha256": "c03fe8f1735442c3b64f2d7dd26202b401ca48a292f1db1de37291e1715136ee",
+  "claims": [
+    {
+      "id": "landcover",
+      "page": 9,
+      "quote": "Hence, the \ufb01rst\ntwo scenarios involve the implementation of riparian buffers (1) around all streams in\nthe watersheds, and (2) around all streams adjacent to agricultural \ufb01elds (Figure 5A).",
+      "disposition": "staged",
+      "evidence_ids": [
+        "ev_rip_t4_elkadiri23_landcover"
+      ],
+      "note": "Section 2.6.1: agricultural-field adjacency defines one local placement scenario; all streams form a theoretical comparison. Three additional hotspot scenarios use sediment yield, retained separately as M4 pointers. Table 4 p17 repeats the scenario set."
+    },
+    {
+      "id": "width",
+      "page": 10,
+      "quote": "The simulated riparian buffer has widths of 10 m, 30 m and 60 m. We selected these\nbuffer widths, given that the EPA de\ufb01nes narrow buffer width as 1\u201315 m and wide buffer\nwidth as broader than 50 m. State and federal guidelines range from seven to 200 m [63,64].\nMultiple studies investigated and reported an ef\ufb01cient and cost-effective buffer at widths\nranging between 10 and 30 m [65\u201367]. In addition to these two typical widths (10 and\n30 m), we simulated a wide buffer (i.e., 60 m) to quantify the impact of doubling the\nriparian width from the typical previously investigated scenarios, while still being within\nthe applicable limits [68].",
+      "disposition": "staged",
+      "evidence_ids": [
+        "ev_rip_t4_elkadiri23_width"
+      ],
+      "note": "Section 2.6.1/Figure 6a: source labels buffer widths, not ecological establishment bands. Retain native widths without converting to per-bank distance; side convention remains held. Table 4 p17 repeats all widths across placement classes. Source rationale cites guidelines and earlier studies; these citations are not separately verified here."
+    },
+    {
+      "id": "vegetation_flood_tolerance",
+      "page": 9,
+      "quote": "Riparian covers typically include vegetation like grasses, sedges, rushes, and ferns that are\ntolerant of intermittent \ufb02ooding or saturated soils. They are established and managed as\nthe dominant vegetation in the transitional zone between upland areas such as agricultural\n\ufb01elds and aquatic habitats such as streams [61,62].",
+      "disposition": "deferred",
+      "route": "M6/species/design",
+      "note": "Vegetation choice tolerating flooding/saturation; no general practice soil-drainage limit. Cited sources are deferred primaries, not independent new evidence.",
+      "evidence_ids": []
+    },
+    {
+      "id": "performance_predictors",
+      "page": 4,
+      "quote": "Using a user-provided GIS layer describing spatially the location of the buffer\nand the vegetation type, the software analyzes raster grid cells within the sub-catchment to\ncalculate the potential maximum sediment trapping ef\ufb01ciency based on slope, drainage\narea, and vegetation type [42].",
+      "disposition": "deferred",
+      "route": "service_model",
+      "note": "Slope, drainage area and vegetation type predict sediment trapping, not establishment suitability. AGBUF source code not audited in this batch.",
+      "evidence_ids": []
+    },
+    {
+      "id": "flow_paths",
+      "page": 11,
+      "quote": "These 16 riparian buffer GIS layers were further processed at a 3 m spatial reso-\nlution using the AGBUF GIS tool (Section 2.3) to evaluate all \ufb02ow paths through the\nriparian layer and allowing the determination of a potential sediment trapping ef\ufb01ciency\nfor each sub-catchment. The outcomes of this analysis are used as input databases de-\nscribing physical properties of riparian zones for each sub-catchment for 16 separate\nAnnAGNPS simulations.",
+      "disposition": "deferred",
+      "route": "service_model/M6",
+      "note": "Flow routing through vegetation governs sediment delivery and interception; no new canonical hydrological-connectivity variable or T4 calibration inferred.",
+      "evidence_ids": []
+    },
+    {
+      "id": "sediment_priority",
+      "page": 9,
+      "quote": "In\naddition, results from the baseline conditions simulation were used to calculate the mean\n(i.e., 8.94 Mg/ha/year) and the standard deviation (i.e., 5.24 Mg/ha/year) of sediment yield\nfrom all agricultural \ufb01elds in the study area. These values were used in de\ufb01ning a range of\nlocation scenarios within the watershed for potential implementation of riparian buffers:\n(3) around all streams adjacent to agricultural \ufb01elds that have a sediment yield higher than\nmean minus standard deviation (referred to as \u201c>medium\u201d) (Figure 5B), (4) around all\nstreams adjacent to agricultural \ufb01elds that have a sediment yield higher than mean plus\nstandard deviation (referred to as \u201c>high\u201d) (Figure 5C), and (5) around all streams adjacent\nto agricultural \ufb01elds that have a sediment yield higher than mean plus two standard\ndeviations (referred to as \u201c>very high\u201d) (Figure 5D).",
+      "disposition": "deferred",
+      "route": "M4",
+      "note": "Local sediment-yield priority groups, not establishment limits. p9 mean 8.94 and SD 5.24 conflict with reversed values on pp13\u201314 (5.25/8.94). Figure 5 and Table 4 show thresholds 3.7,14.2,19.4; preserve contradiction.",
+      "evidence_ids": []
+    },
+    {
+      "id": "existing_vegetation",
+      "page": 10,
+      "quote": "In addition, a\nsixteenth scenario was created to represent existing riparian buffer conditions. The existing\nriparian vegetation (mainly trees) was delineated using a custom script, consisting of a\npretrained machine learning canopy detection model based on LiDAR point cloud data [69].",
+      "disposition": "deferred",
+      "route": "observed_baseline",
+      "note": "Existing canopy delineation defines comparison condition, not a minimum canopy threshold for planting.",
+      "evidence_ids": []
+    },
+    {
+      "id": "topography_setup",
+      "page": 5,
+      "quote": "A critical\nsource area (CSA) value of \ufb01ve hectares and a maximum source channel length (MSCL)\nvalue of 250 m were selected, yielding a total of 12,573 sub-catchments and 5047 reaches\n(Table 1 and Figure 2).",
+      "disposition": "deferred",
+      "route": "runtime_method/M6",
+      "note": "Five-hectare CSA and 250-m channel segmentation are model discretization choices, not restoration-site suitability minima.",
+      "evidence_ids": []
+    },
+    {
+      "id": "sediment_basin_order",
+      "page": 11,
+      "quote": "The potential new sediment basin locations were selected based on three criteria:\n(1) channel stream order to ensure intermittence of \ufb02ow (i.e., stream order 1 or 2), (2) channel\nstream length above a statistical threshold (i.e., mean length) to eliminate noisy minuscule\nchannels, and (3) sub-catchment sediment yield categorized into four classes based on\nits statistical distribution in the targeted sub-catchments as well as on sediment yield in\nthe delineated existing sediment basins, to ensure replication of similar conditions and\nexpansion of impact.",
+      "disposition": "deferred",
+      "route": "other_practice",
+      "note": "Stream orders 1/2 and channel-length criteria apply to sediment basins, never riparian buffers. Figure 6b has corresponding numeric lengths; outside this practice.",
+      "evidence_ids": []
+    },
+    {
+      "id": "optimization_weights",
+      "page": 20,
+      "quote": "Three optimization evaluations were performed by varying the weights of both\nconsidered parameters: (a) sediment reduction and spatial footprint have equal weight\n(Figure 12a), (b) a weight of 5 to 1 prioritizing reduction in sediment yield (Figure 12b) and\n(c) a weight of 5 to 1 prioritizing reduction in spatial footprint (Figure 12c).",
+      "disposition": "deferred",
+      "route": "M4",
+      "note": "Equal and five-to-one weights compare sediment benefits with land footprint; not source credibility or T4 MCDA weights.",
+      "evidence_ids": []
+    },
+    {
+      "id": "validation",
+      "page": 16,
+      "quote": "The lack of stream\ufb02ow observations in most catchments around the world and the\nnation, especially in small catchments in rural areas has created a setback for hydrological\nand conservation investigations in these regions [67]. In this study, the uncertainties\ncaused by the lack of observed data (stream\ufb02ow and sediment gauges) were minimized\nby the following. First, the AnnAGNPS watershed pollution model was selected due\nto its suitable application to agricultural ungauged watersheds based on the detailed\nspatiotemporal information needed to characterize natural and anthropogenic processes\nin this type of watersheds [79\u201385]. Second, relative measurements were used instead of\nabsolute to evaluate conservation scenarios. This was achieved by comparing average\nsediment load at the outlet of the watershed for each scenario (33 different AnnAGNPS\nsimulations describing conservation practices) to baseline conditions. Absolute sediment\nload/yield was not used as the basis for any recommendation. Third, comparisons of annual\naverage stream\ufb02ow with the publicly available web-based Generalized Watershed Loading\nFunction Enhanced (GWLF-E) model [86] indicate that the two estimates are in agreement\n(i.e., 42.22 cm/year and 42.27 cm/year for AnnAGNPS and GWLF-E, respectively).",
+      "disposition": "deferred",
+      "route": "validation_context",
+      "note": "No observed streamflow/sediment gauges; comparative model agreement does not validate buffer establishment or global transfer.",
+      "evidence_ids": []
+    },
+    {
+      "id": "limitations",
+      "page": 22,
+      "quote": "It is important to recognize that, conservation efforts are often implemented at the\nwatershed scale as a combination of practices varying in type, location, and stakeholder\nin charge of implementation. In this study, each type of conservation practice was consid-\nered separately; this approach was chosen to quantitatively evaluate the effectiveness of\nindividual practices and to provide a platform to compare them. Furthermore, there is an\nin\ufb01nite number of possibilities when considering all potential combinations of types of\nconservation practice, their controlling parameters (width, area, vegetation type, etc.), and,\nmore importantly, their location at the watershed. Additionally, in this investigation, the\nmain quanti\ufb01ed sources of sediment are from inter-rill and rill processes, and therefore,\nchannel processes (streambank and streambed erosion) were outside the scope of the study\nand were kept constant between simulations.",
+      "disposition": "deferred",
+      "route": "effect_method_context",
+      "note": "Practices modeled separately; inter-rill/rill sources, streambank/streambed erosion held constant.",
+      "evidence_ids": []
+    },
+    {
+      "id": "effect_results",
+      "page": 18,
+      "quote": "Riparian buffers work by slowing surface \ufb02ow and promoting in\ufb01ltration and \ufb01ne\nsediment deposition. Our simulations results indicate that sediment reduction of this\npractice when compared to the baseline condition range between 6% and 81% based on\nlocation and buffer width (Table 4). Even though implementation of riparian buffers around\nevery stream in the watershed is not feasible, the value of 81% represents a theoretical\nmaximum potential reduction by this practice. The simulations also indicate that existing\nriparian buffers provide a reduction of 13% as opposed to a maximum potential of 81%,\ndemonstrating that the watershed is under-served in terms of riparian buffers.",
+      "disposition": "deferred",
+      "route": "T3_T6_deferred",
+      "note": "Effects retained as page pointer only; no effect extraction authorized. Table 4 p17 values preserved in inventory below.",
+      "evidence_ids": []
+    },
+    {
+      "id": "data_availability",
+      "page": 23,
+      "quote": "Data Availability Statement: Not applicable.",
+      "disposition": "deferred",
+      "route": "source_coverage",
+      "note": "No supplementary-material link or dataset identified in paper. Existing named model dependencies retained as referrals; no broad tool search.",
+      "evidence_ids": []
+    },
+    {
+      "id": "p21_result_comparability",
+      "page": 21,
+      "quote": "The\nalternative conservation scenario considering implementing 60 m constructed riparian\nbuffers at sub-catchments classi\ufb01ed as \u201cvery high\u201d sediment producing locations reduces\nthe overall sediment yield by 7% when compared with baseline conditions. Instead, an\nalternative scenario considering 10 m constructed riparian buffers implemented in sub-\ncatchments identi\ufb01ed as \u201chigh\u201d lead to an overall reduction of 27% when compared with\nbaseline conditions.",
+      "disposition": "deferred",
+      "route": "T3_T6_verification_hold",
+      "note": "Figure13 narrative gives overall sediment-yield reductions 7% and 27%, whereas Table4 outlet sediment-load rows for corresponding width/priority scenarios show 6% and 13%. Different metrics/aggregation may explain difference; do not conflate or silently repair. No effect extracted.",
+      "evidence_ids": []
+    },
+    {
+      "id": "table4_all_rows",
+      "page": 17,
+      "quote": "Table 4. Riparian buffer scenarios results.\nSimulation ID\nLocation Description\nRiparian Buffer\nWidth\nSediment Load\n(Mg/Year)\nSediment\nReduction (%)\nSpatial\nFootprint (Ha)\n1\nAll Streams\n10 m\n71,312.7\n65%\n506.6\n2\nAll Streams\n30 m\n44,970.2\n78%\n1458.3\n3\nAll Streams\n60 m\n39,745.7\n81%\n2728.2\n4\nAll streams adjacent to agricultural \ufb01elds.\n10 m\n113,389.3\n45%\n338.0\n5\nAll streams adjacent to agricultural \ufb01elds.\n30 m\n99,602.6\n52%\n1018.9\n6\nAll streams adjacent to agricultural \ufb01elds.\n60 m\n96,321.7\n53%\n2043.8\n7\nAll streams adjacent to agricultural \ufb01elds\nwith a sediment yield higher than\n3.7 Mg/ha/year\n10 m\n118,246.5\n43%\n228.6\n8\nAll streams adjacent to agricultural \ufb01elds\nwith a sediment yield higher than\n3.7 Mg/ha/year\n30 m\n105,205.8\n49%\n893.9\n9\nAll streams adjacent to agricultural \ufb01elds\nwith a sediment yield higher than\n3.7 Mg/ha/year\n60 m\n101,905.8\n51%\n1823.0\n10\nAll streams adjacent to agricultural \ufb01elds\nwith a sediment yield higher than\n14.2 Mg/ha/year\n10 m\n178,229.7\n13%\n60.9\n11\nAll streams adjacent to agricultural \ufb01elds\nwith a sediment yield higher than\n14.2 Mg/ha/year\n30 m\n175,074.4\n15%\n175.0\n12\nAll streams adjacent to agricultural \ufb01elds\nwith a sediment yield higher than\n14.2 Mg/ha/year\n60 m\n174,124.0\n15%\n357.9\n13\nAll streams adjacent to agricultural \ufb01elds\nwith a sediment yield higher than\n19.4 Mg/ha/year\n10 m\n195,271.1\n5%\n19.1\n14\nAll streams adjacent to agricultural \ufb01elds\nwith a sediment yield higher than\n19.4 Mg/ha/year\n30 m\n194,101.3\n6%\n52.7\n15\nAll streams adjacent to agricultural \ufb01elds\nwith a sediment yield higher than\n19.4 Mg/ha/year\n60 m\n193,756.4\n6%\n106.5\n16\nExisting riparian buffer\nVariable\n178,956.2\n13%\n4683.8\nBaseline\nConditions\nNo buffer is integrated into the model\n0 m\n205,880.2\n0%\n0",
+      "disposition": "accounted",
+      "route": "scenario_crosscheck_and_deferred_effects",
+      "evidence_ids": [
+        "ev_rip_t4_elkadiri23_landcover",
+        "ev_rip_t4_elkadiri23_width"
+      ],
+      "note": "All sixteen scenario rows and no-buffer baseline inspected. Geometry/land-use scenarios covered by two units; sediment outcome/footprint columns deferred to separate effect/M4 lanes. No row count used as independent support."
+    }
+  ],
+  "page_inventory": [
+    {
+      "page": 1,
+      "disposition": "Identity/abstract and introduction; no abstract-only extraction"
+    },
+    {
+      "page": 2,
+      "disposition": "Literature framing, objectives, study descriptors"
+    },
+    {
+      "page": 3,
+      "disposition": "Study descriptors, Figure 1, general model"
+    },
+    {
+      "page": 4,
+      "disposition": "Buffer service-model predictors deferred; sediment-basin model outside practice"
+    },
+    {
+      "page": 5,
+      "disposition": "DEM/discretization, Table 1 and Figure 2: input representation not establishment"
+    },
+    {
+      "page": 6,
+      "disposition": "Weather/soil inputs and Figure 3: generic watershed-model inputs"
+    },
+    {
+      "page": 7,
+      "disposition": "Soil/management inputs and Figure 4: baseline land-cover classification, no practice constraint"
+    },
+    {
+      "page": 8,
+      "disposition": "Table 2: crop schedules, outside buffer suitability"
+    },
+    {
+      "page": 9,
+      "disposition": "Buffer scenarios and Figure 5: land-cover unit, sediment-priority and vegetation pointers"
+    },
+    {
+      "page": 10,
+      "disposition": "Width unit, Figure 6a, existing canopy pointer; Figure 6b\u2013d other practices"
+    },
+    {
+      "page": 11,
+      "disposition": "Flow-path pointer; sediment-basin siting outside practice; Figure 7"
+    },
+    {
+      "page": 12,
+      "disposition": "Sediment-basin scenarios/Figure 8 outside practice"
+    },
+    {
+      "page": 13,
+      "disposition": "Crop-rotation method/Table 3 outside practice; conflicting sediment statistics"
+    },
+    {
+      "page": 14,
+      "disposition": "CRP and optimization, not T4; conflicting sediment statistics"
+    },
+    {
+      "page": 15,
+      "disposition": "Figures 9\u201310 baseline sediment/flow outputs, not establishment"
+    },
+    {
+      "page": 16,
+      "disposition": "Model comparison/validation limitations and results framing"
+    },
+    {
+      "page": 17,
+      "disposition": "Table 4 all rows accounted; Table 5 sediment basins outside practice"
+    },
+    {
+      "page": 18,
+      "disposition": "Tables 6\u20137 other practices; buffer effects deferred"
+    },
+    {
+      "page": 19,
+      "disposition": "Effects/discussion and priority comparisons deferred"
+    },
+    {
+      "page": 20,
+      "disposition": "Figure 11 effects, alternative practice and M4 weights deferred"
+    },
+    {
+      "page": 21,
+      "disposition": "Figure 12 M4 scores; explicit constructed-buffer scenario description anchors family"
+    },
+    {
+      "page": 22,
+      "disposition": "Figure 13 ranking, uncertainty and conclusion; no new establishment rule"
+    },
+    {
+      "page": 23,
+      "disposition": "Conclusion, funding/COI, data statement and references"
+    },
+    {
+      "page": 24,
+      "disposition": "References only"
+    },
+    {
+      "page": 25,
+      "disposition": "References only"
+    },
+    {
+      "page": 26,
+      "disposition": "References only"
+    },
+    {
+      "page": 27,
+      "disposition": "References only"
+    }
+  ],
+  "visually_checked_pages": [
+    9,
+    10,
+    17
+  ],
+  "tables_figures": "Tables 1\u20137 and Figures 1\u201313 accounted in page inventory; layout-dependent Figure 5, Figure 6, and Table 4 inspected rendered.",
+  "supplements": "No supplement link stated; data availability not applicable. Named code packages not independently audited."
+}
