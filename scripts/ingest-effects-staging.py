@@ -83,6 +83,8 @@ _RULESETS = {
     "v1.9.2",
     # v1.9.3: catalogue #53, reviewer-readable units (acronyms, baseline, absolute amounts)
     "v1.9.3",
+    # v1.9.4: see methodology/RULESET_VERSIONS.md (skill bumped in #561; ingest allow-list caught up here)
+    "v1.9.4",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
