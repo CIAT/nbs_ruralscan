@@ -144,6 +144,7 @@ def _search_metrics(events: list[dict]) -> dict:
         ),
         "paired_retrieved": paired_retrieved,
         "paired_screened": paired_screened,
+        "paired_included": sum(e["counts"]["included"] for e in complete),
         "coverage": {},
         "screening_variant_events": sum(e["screening_variants"] > 1 for e in events),
         "definition": "Search observations, not unique publications; shared retrievals counted once, table-specific screening variants not aggregated. Searches may overlap.",
