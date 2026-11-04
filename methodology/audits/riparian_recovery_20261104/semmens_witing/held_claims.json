@@ -1,0 +1,92 @@
+[
+  {
+    "claim_id": "semmens_fixed_and_variable_width",
+    "source_id": "riparian_monarch_semmens_2019",
+    "page": 3,
+    "variable": "distance_to_waterbody",
+    "quote": "We developed three scenarios representing the restoration of\nnatural vegetation along riparian corridors of diﬀerent widths\nalong perennial and intermittent streams. Our ﬁrst scenario used\n30-m buﬀers on each side of the waterways. The second scenario\nused 100-m buﬀers (200-m total). The third used a variable-width\nbuﬀer, which included an 80-m ﬁrst order stream buﬀer, a 100-m\nsecond order stream buﬀer, and a 120-m buﬀer for streams with\norders of three to ﬁve.",
+    "reported_values": {
+      "fixed_width_each_side_m": [
+        30,
+        100
+      ],
+      "fixed_100m_total_m": 200,
+      "variable_width_by_stream_order": {
+        "1": 80,
+        "2": 100,
+        "3_to_5": 120
+      },
+      "variable_width_side_convention": "unresolved"
+    },
+    "disposition": "hold",
+    "reason": "Source restores natural vegetation with management spanning planting and spot treatment; planted versus natural_restored FAM applicability is unresolved. No family is inferred from queue tags. Scenario widths are not ecological cutoffs; fixed widths are per side, variable-width convention is not explicit.",
+    "reviewer_ok": false
+  },
+  {
+    "claim_id": "semmens_stream_order",
+    "source_id": "riparian_monarch_semmens_2019",
+    "page": 3,
+    "variable": "stream_order",
+    "quote": "To create geospatial representations of the buﬀer zones for\neach scenario, we used the National Hydrography Dataset PLUS\nVersion 2, which excludes ephemeral streams (McKay et al.,\n2012). We subset the NHD to include only waterways with stream\norders ranging from 1 to 5. This subset of the NHD was selected\nafter an examination showed that when stream order got above 5\nthe river width tended to be >30 m, making our analysis with\nthe 30-m CDL diﬃcult to accomplish because NHD does not\ninclude a width attribute for streams. Once we had this subset\nof the NHD perennial and intermittent streams, we created\nbuﬀers by running the ArcGIS Buﬀer Tool for our three diﬀerent\nbuﬀer-width scenarios.",
+    "reported_values": {
+      "included_orders": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "excluded_stream_type": "ephemeral"
+    },
+    "disposition": "hold",
+    "reason": "Source restores natural vegetation with management spanning planting and spot treatment; planted versus natural_restored FAM applicability is unresolved. No family is inferred from queue tags. Stream-order ceiling stems from 30-m data limitations and missing channel-width attribute; no ecological order gate.",
+    "reviewer_ok": false
+  },
+  {
+    "claim_id": "semmens_landcover",
+    "source_id": "riparian_monarch_semmens_2019",
+    "page": 3,
+    "variable": "land_cover",
+    "quote": "Using the newly created riparian buﬀers, we extracted areas in\nthe CDL that were contained within the buﬀer areas under each\nof the three scenarios to determine the total hectares of diﬀerent\ncrop and land-cover types using ArcGIS. The CDL for this region\nconsists of 91 land-cover types where 22 of the classes correspond\nto aquaculture, open water, developed-open space, developed-\nlow intensity, developed-medium intensity, developed high-\nintensity, barren lands (e.g., gravel pits), deciduous forest,\nevergreen forest, mixed forest, shrubland, grassland/pasture,\nwoody wetlands, herbaceous wetlands, and long-lived orchard\ncrops (e.g., apples, cherries, peaches, grapes, pears, plums,\nChristmas trees, and other tree crops). These classes were\nexcluded from the buﬀer analysis since they were already natural\nareas, could not sustain a milkweed population, or were long-\nlived crops that would not be practical to retire. The remaining\n69 classes relate to a speciﬁc crop type, with 8 classes relating\nto a double crop of two diﬀerent crop types.",
+    "reported_values": {
+      "included": "69 specific agricultural crop classes (8 double-crop classes)",
+      "excluded": [
+        "aquaculture",
+        "open water",
+        "developed-open space",
+        "developed-low intensity",
+        "developed-medium intensity",
+        "developed high-intensity",
+        "barren lands",
+        "deciduous forest",
+        "evergreen forest",
+        "mixed forest",
+        "shrubland",
+        "grassland/pasture",
+        "woody wetlands",
+        "herbaceous wetlands",
+        "long-lived orchard crops (apples, cherries, peaches, grapes, pears, plums, Christmas trees, other tree crops)"
+      ]
+    },
+    "disposition": "hold",
+    "reason": "Source restores natural vegetation with management spanning planting and spot treatment; planted versus natural_restored FAM applicability is unresolved. No family is inferred from queue tags. Mixed reasons: existing natural habitat, milkweed suitability and retirement practicality; orchard exclusion is operational, not ecological. Do not promote combined mask to general practice exclusion.",
+    "reviewer_ok": false
+  },
+  {
+    "claim_id": "semmens_milkweed_soils",
+    "source_id": "riparian_monarch_semmens_2019",
+    "page": 4,
+    "variable": "soil_texture;soil_drainage",
+    "quote": "We did not formally take into account soil\ncomposition when estimating milkweed restoration potential\nbecause no quantitative relationships have been established.\nBowles et al. (2015) noted that well-drained sites on ﬁne-textured,\nWisconsinan-aged glacial soils found commonly throughout our\nstudy area would enhance the establishment and growth of\nmilkweed, but quantitative estimates of milkweed density across\nmultiple soil types were not available.",
+    "reported_values": {
+      "preferred_texture": "fine-textured",
+      "preferred_drainage": "well-drained",
+      "taxon_as_stated": "milkweed (Asclepias spp. in p1)",
+      "quantitative_calibration": "unavailable",
+      "attribution": "Bowles et al. (2015)"
+    },
+    "disposition": "hold",
+    "reason": "Source restores natural vegetation with management spanning planting and spot treatment; planted versus natural_restored FAM applicability is unresolved. No family is inferred from queue tags. Species-specific establishment claim retained, not a general buffer constraint. Citation bibliography p11 names Mead’s milkweed; genus-level wording must not become invented single-species scope. Primary attribution/transfer hold; variable use explicitly absent.",
+    "reviewer_ok": false
+  }
+]

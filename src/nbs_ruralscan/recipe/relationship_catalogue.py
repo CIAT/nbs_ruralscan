@@ -3,7 +3,6 @@
 This view reports stored evidence, not inferred directions or executable rules.
 """
 
-import html
 import json
 from collections import Counter, defaultdict
 
@@ -134,4 +133,5 @@ def build_catalogue(evidence, dispositions, mappings):
 
 def render_catalogue(catalogue):
     from .relationship_summary import render
+
     return render(catalogue)

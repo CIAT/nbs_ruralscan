@@ -164,22 +164,38 @@ def test_filter_sort_controls_and_downloads_exist():
 
 def test_aggregate_keeps_family_plots_in_one_variable_row_and_gaps_visible():
     data = contract()
-    other = deepcopy(data['rows'][0])
-    other.update(system='agroforestry__planted_silvoarable', rule_id='rule2')
-    data['rows'].append(other)
+    other = deepcopy(data["rows"][0])
+    other.update(system="agroforestry__planted_silvoarable", rule_id="rule2")
+    data["rows"].append(other)
     before = deepcopy(data)
-    aggregate = {'rows': [
-        {'variable': 'ndvi', 'group': 'vegetation', 'variable_use': {'n': 3, 'N': 10, 'percent': 30}},
-        {'variable': 'soil_depth', 'group': 'soil', 'direction_by_family': [
-            {'family': 'agroforestry__planted_silvoarable', 'direction': 'increasing', 'sources': ['one']}]}]}
+    aggregate = {
+        "rows": [
+            {
+                "variable": "ndvi",
+                "group": "vegetation",
+                "variable_use": {"n": 3, "N": 10, "percent": 30},
+            },
+            {
+                "variable": "soil_depth",
+                "group": "soil",
+                "direction_by_family": [
+                    {
+                        "family": "agroforestry__planted_silvoarable",
+                        "direction": "increasing",
+                        "sources": ["one"],
+                    }
+                ],
+            },
+        ]
+    }
     page = render_developer_view(data, aggregate)
     elements = Elements(page).elements
-    rows = [a for t, a in elements if t == 'tr' and 'data-variable' in a]
-    assert [r['data-variable'] for r in rows] == ['ndvi', 'soil_depth']
-    assert len([a for t, a in elements if t == 'svg']) == 2
-    assert '3/10 (30%)' in page
-    assert 'No numeric function compiled' in page
-    assert 'evidence_only' in page
-    assert '1 source IDs' in page
+    rows = [a for t, a in elements if t == "tr" and "data-variable" in a]
+    assert [r["data-variable"] for r in rows] == ["ndvi", "soil_depth"]
+    assert len([a for t, a in elements if t == "svg"]) == 2
+    assert "3/10 (30%)" in page
+    assert "No numeric function compiled" in page
+    assert "evidence_only" in page
+    assert "1 source IDs" in page
     assert data == before
-    assert len([a for t, a in elements if t == 'button' and 'data-column' in a]) == 9
+    assert len([a for t, a in elements if t == "button" and "data-column" in a]) == 9
