@@ -209,18 +209,29 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         fid = fam.get("suitability_family_id")
         if not fid:
             continue
+        presentation = data.get("family_presentation", {}).get(fid, {})
+        navigation_group = presentation.get("navigation_group") or (
+            "evidence" if fid.endswith("__cross_family") else "practice"
+        )
         group = family_lookup.setdefault(
             fid,
             {
                 "family_id": fid,
                 "nbs_id": fam.get("nbs_id", ""),
-                "name": fid.split("__")[-1].replace("_", " ").capitalize(),
+                "name": presentation.get("display_name")
+                or fid.split("__")[-1].replace("_", " ").capitalize(),
+                "navigation_group": navigation_group,
                 "subpractices": [],
             },
         )
         entry = {
             "subpractice_id": fam.get("subpractice_id", ""),
             "name": fam.get("name", ""),
+            "presentation_role": "evidence"
+            if navigation_group == "evidence"
+            else "umbrella"
+            if fam.get("subpractice_id") == presentation.get("umbrella_subpractice_id")
+            else "variant",
         }
         if entry not in group["subpractices"]:
             group["subpractices"].append(entry)
@@ -458,6 +469,7 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                     "family_id": fid,
                     "nbs_id": row.get("nbs_id", ""),
                     "name": fid.split("__")[-1].replace("_", " ").capitalize(),
+                    "navigation_group": "evidence",
                     "subpractices": [],
                 },
             )
@@ -477,6 +489,7 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                 "family_id": "__unassigned",
                 "nbs_id": nbs,
                 "name": "Practice-wide / family not assigned",
+                "navigation_group": "evidence",
                 "subpractices": [],
                 "metrics": metrics(nbs, "__unassigned"),
             }

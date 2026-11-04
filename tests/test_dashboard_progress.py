@@ -3,6 +3,75 @@
 from nbs_ruralscan.schema_tools.dashboard_progress import build_progress
 
 
+def test_family_presentation_preserves_variants_evidence_and_counts():
+    import copy
+
+    data = fixture_data()
+    original_registers = copy.deepcopy(data["registers"])
+    before = build_progress(data, [])
+    data["family_presentation"] = {
+        "trees__planted": {
+            "display_name": "Planted tree systems",
+            "navigation_group": "practice",
+            "umbrella_subpractice_id": "alley",
+        }
+    }
+    after = build_progress(data, [])
+    assert data["registers"] == original_registers
+    assert before["totals"] == after["totals"]
+    assert before["sources"] == after["sources"]
+    for old, new in zip(before["practices"], after["practices"], strict=True):
+        assert old["metrics"] == new["metrics"]
+        for old_family, new_family in zip(
+            old["families"], new["families"], strict=True
+        ):
+            assert old_family["family_id"] == new_family["family_id"]
+            assert old_family["metrics"] == new_family["metrics"]
+            assert [s["subpractice_id"] for s in old_family["subpractices"]] == [
+                s["subpractice_id"] for s in new_family["subpractices"]
+            ]
+    planted = next(
+        f
+        for p in after["practices"]
+        for f in p["families"]
+        if f["family_id"] == "trees__planted"
+    )
+    assert planted["name"] == "Planted tree systems"
+    assert [s["presentation_role"] for s in planted["subpractices"]] == [
+        "umbrella",
+        "variant",
+    ]
+
+
+def test_routing_tags_remain_counted_as_evidence_groups():
+    data = fixture_data()
+    data["registers"]["FAM_family_registry"].append(
+        {
+            "nbs_id": "trees",
+            "suitability_family_id": "trees__cross_family",
+            "subpractice_id": "cross_cutting",
+            "name": "Cross-family evidence",
+        }
+    )
+    data["registers"]["EV_evidence_register"][0]["suitability_family_id"] = (
+        "trees__cross_family"
+    )
+    result = build_progress(data, [])
+    families = next(p for p in result["practices"] if p["nbs_id"] == "trees")[
+        "families"
+    ]
+    cross = next(f for f in families if f["family_id"] == "trees__cross_family")
+    assert cross["navigation_group"] == "evidence"
+    assert cross["subpractices"][0]["presentation_role"] == "evidence"
+    assert cross["metrics"]["active_excerpts"] == 1
+    assert (
+        next(f for f in families if f["family_id"] == "__unassigned")[
+            "navigation_group"
+        ]
+        == "evidence"
+    )
+
+
 def fixture_data():
     return {
         "registers": {

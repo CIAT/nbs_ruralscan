@@ -384,3 +384,24 @@ assert(html.includes('retained extracts from 7 sources'));
 assert(html.includes('extracts approved by reviewers, across 3 sources'));
 assert(html.includes('Rules can be compiled before every supporting extract has human approval'));
 """)
+
+
+def test_evidence_groups_and_umbrella_labels_do_not_become_practice_options():
+    run_js(r"""
+const t=setup(), p=t.fixture.progress_overview.practices[0];
+p.families[0].subpractices=[{name:'Broad umbrella',presentation_role:'umbrella'},{name:'Specific <variant>',presentation_role:'variant'}];
+p.families.push({family_id:'agroforestry__cross_family',name:'Shared claims',navigation_group:'evidence',metrics:p.metrics,subpractices:[{name:'Routing tag',presentation_role:'evidence'}]});
+p.families.push({family_id:'__unassigned',name:'Unassigned claims',navigation_group:'evidence',metrics:p.metrics,subpractices:[]});
+t.api.refresh(t.fixture);t.api.revealTarget('family:agroforestry__f1');
+let select=t.nodes.get('dp-progress-family');select.value='';select.trigger('change');
+let html=t.nodes.get('progress-app').innerHTML;
+const table=html.match(/<table class="dp-table dp-summary-table dp-family-table">[\s\S]*?<\/table>/)[0];
+assert(table.includes('Planted systems'));assert(!table.includes('Shared claims'));assert(!table.includes('Unassigned claims'));
+assert(table.includes('Umbrella category: Broad umbrella'));assert(table.includes('Variant: Specific &lt;variant&gt;'));
+const evidence=html.match(/<table class="dp-table dp-summary-table dp-evidence-family-table">[\s\S]*?<\/table>/)[0];
+assert(evidence.includes('Shared claims'));assert(evidence.includes('Unassigned claims'));assert(!evidence.includes('Planted systems'));
+assert(t.api.revealTarget('family:agroforestry__cross_family'));
+assert.equal(t.api.scope().family,'agroforestry__cross_family');
+html=t.nodes.get('progress-app').innerHTML;assert(html.includes('data-feedback-key="family:agroforestry__cross_family"'));
+assert.equal(t.fixture.progress_overview.totals.known_sources,1);
+""")
