@@ -341,3 +341,16 @@ t.handlers.click({target});
 assert.equal(t.nodes.get('dp-source-evidence').hidden,false);
 assert(t.nodes.get('dp-drawer-evidence').innerHTML.includes('No linked excerpts'));
 """)
+
+
+def test_unmapped_recorded_scopes_remain_filterable_without_invented_family_links():
+    run_js(r"""
+const t=setup();t.fixture.progress_overview.sources[0].family_ids=['unmapped_subpractice'];
+t.api.refresh(t.fixture);
+let html=t.nodes.get('bibliography-app').innerHTML;
+assert(html.includes('Recorded scope: Unmapped subpractice (unmapped)'));
+const family=t.nodes.get('dp-bib-family');family.value='unmapped_subpractice';family.trigger('change');
+html=t.nodes.get('bibliography-app').innerHTML;
+assert(html.includes('First publication'));assert(!html.includes('Legacy agroforestry'));
+assert(!html.includes('data-feedback-key="family:agroforestry__unmapped_subpractice"'));
+""")

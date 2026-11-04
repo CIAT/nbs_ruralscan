@@ -29,3 +29,7 @@ No schema, analytical rules, evidence decisions, source records or discovery lin
 - Adversarial implementation review found and fixed a contradictory quarantine-toggle state. Show more focuses the first new excerpt, and source permalink reloads open Bibliography.
 - 1,031 tests passed; 27 targeted dashboard tests passed after final layout changes. Lint/format, type checks, schema structure and T4 coverage passed. Full dashboard DOM integration covered startup, every tab including QA, bibliography, source drawer and feedback targets.
 - Desktop app browser verified dark/light views, publication metadata, catalogue filtering, contribution subsets, approval filtering, quarantine toggle and reset. Narrow-pane spacing checked and adjusted. No user notes or review decisions changed.
+
+- Final data audit found queue scope tags absent from the family registry. These remain filterable as explicitly unmapped recorded scope; no family assignment is inferred. Latest main evidence update (#555) incorporated and generated data rebuilt.
+
+Final validation after incorporating #555: 1,032 tests passed, including generated-data synchronization; 28 targeted dashboard tests passed. Schema structure and T4 coverage passed with existing warnings.
