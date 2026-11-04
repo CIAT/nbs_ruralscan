@@ -289,7 +289,7 @@ def render_developer_view(contract: dict) -> str:
         + "</p>",
         "<p>Defined means logic can be implemented; provisional means an input assumption remains; decision needed means response or scenario choices remain. Evidence references are separate. No state establishes validated spatial execution or target-country transfer.</p>",
         '<p class="muted">Plots show exact scored intervals, not fitted curves. Open circles exclude boundaries; filled circles include them. Arrows show unbounded tails truncated for display. Gaps and unscored intervals remain unknown.</p>',
-        '<div class="links"><a href="relationships.html">Source relationships and integration gaps</a><a href="developer_table.csv">Developer CSV</a><a href="developer_contract.json">Full contract JSON</a><a href="inclusion.csv">Study inclusion</a><a href="source_importance.json">Within-study importance</a><a href="IMPLEMENTATION.md">Implementation guide</a></div>',
+        '<div class="links"><a href="relationships.html">Aggregated evidence and study weights</a><a href="developer_table.csv">Developer CSV</a><a href="developer_contract.json">Full contract JSON</a><a href="inclusion.csv">Study inclusion</a><a href="source_importance.json">Within-study importance</a><a href="IMPLEMENTATION.md">Implementation guide</a></div>',
         "<details><summary>Package summary and evidence filter</summary>"
         + _json(
             {

@@ -1199,7 +1199,13 @@ def _write_package(root, output, **kwargs):
         read_csv(root / f"schema/recipes/{contract['nbs']}/T4_suitability_mappings.csv"),
     )
     (output / "relationship_catalogue.json").write_text(stable_json(catalogue), encoding="utf-8")
-    (output / "relationships.html").write_text(render_catalogue(catalogue), encoding="utf-8")
+    (output / "source_relationships.html").write_text(render_catalogue(catalogue), encoding="utf-8")
+    from .aggregate_evidence import aggregate, render as render_aggregate
+    ontology = {r["canonical_variable_id"]: r for r in read_csv(root / "schema/registers/VONT_variable_ontology.csv")}
+    aggregate_table = aggregate(catalogue, result["inclusion"], result["importance"], contract["rows"], ontology)
+    (output / "aggregate_evidence.json").write_text(stable_json(aggregate_table), encoding="utf-8")
+    _write_csv(output / "aggregate_evidence.csv", aggregate_table["rows"])
+    (output / "relationships.html").write_text(render_aggregate(aggregate_table), encoding="utf-8")
 
     (output / "T4_suitability_mappings.csv").write_bytes(
         (
@@ -1357,6 +1363,8 @@ def verify_package(root, output):
     }
     if tuple(int(part) for part in manifest.get("package_version", "0.0.0").split(".")) >= (0, 1, 6):
         required_outputs.update({"relationship_catalogue.json", "relationships.html"})
+    if tuple(int(part) for part in manifest.get("package_version", "0.0.0").split(".")) >= (0, 1, 7):
+        required_outputs.update({"aggregate_evidence.json", "aggregate_evidence.csv", "source_relationships.html"})
     required_inputs = {
         "schema/registers/EV_evidence_register.csv",
         "schema/registers/SRC_source_register.csv",
