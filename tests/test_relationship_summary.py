@@ -20,6 +20,9 @@ def test_opposite_directions_remain_disagreement():
 def test_class_codes_context_and_enabling_factors_are_not_numeric_responses():
     assert reading(row("positive", "soil_quality_class"))[0] == "classes"
     assert reading(row("negative", "protected_area_status"))[0] == "classes"
-    assert reading(row("increasing", compilation_disposition="observed_presence"))[0] == "context"
+    assert (
+        reading(row("increasing", compilation_disposition="observed_presence"))[0]
+        == "context"
+    )
     assert reading(row("increasing", "rootstock_presence"))[0] == "enabling"
     assert reading(row("inverse", "production_gap"))[0] == "context"

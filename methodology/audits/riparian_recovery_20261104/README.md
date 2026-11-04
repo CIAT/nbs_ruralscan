@@ -52,3 +52,9 @@ Independent review corrected a misplaced selection-justification passage before 
 Automated table counts are not a coverage measure: Semmens has eleven numbered tables but only five detected table blocks; Witing has one numbered table but two detected blocks. Manual inventories account for the actual objects, following existing completeness rules.
 
 Global sweep metrics were logged. The number-provenance rate changed from 4.9% to 4.8% and verify rate remained 0.3%, across intervening unrelated work; this is not evidence that this six-unit batch improved corpus-wide quality. The global human-feedback learning cursor remains unchanged. Detailed validation and baseline limitations are recorded in `validation.json`.
+
+## Merge repair
+
+Integrated main commit `004c3a1` after the effect-backlog batch. The two CSV conflicts were concurrent appends: the merged register preserves all 6,142 branch evidence records and all 6,158 main records unchanged, yielding 6,164 distinct evidence IDs; the corresponding source union contains 703 records. `merge_preservation.json` records both-parent checks. Generated outputs were rebuilt from this union rather than text-merged.
+
+The existing main lint failures were cleared with mechanical formatting, equivalent lambda-to-function conversions and one unused import removal across eight files. Independent AST comparison confirmed unchanged expressions and control flow. This is CI repair, not a viewer feature change. Original validation snapshots above describe the pre-merge batch; merge validation is recorded separately.
