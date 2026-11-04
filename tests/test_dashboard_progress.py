@@ -430,3 +430,107 @@ def test_complete_discovery_columns_share_one_cohort():
     assert counts["retrieved"] == 141
     assert counts["screened"] == 113
     assert counts["included"] == 36
+
+
+def test_review_work_is_distinct_from_current_approval_and_detector_flags():
+    data = fixture_data()
+    rows = data["registers"]["EV_evidence_register"]
+    for eid in ("queried", "flagged", "reopened", "unknown_drop", "retagged"):
+        rows.append(
+            {
+                "evidence_id": eid,
+                "source_id": "empty",
+                "nbs_id": "trees",
+                "reviewer_ok": False,
+                "review_state": "dropped" if eid == "unknown_drop" else "",
+            }
+        )
+    data["review_log"] = [
+        {"evidence_id": "b", "decision": "keep"},
+        {"evidence_id": "b", "decision": "keep"},  # repeated event is one claim
+        {"evidence_id": "queried", "decision": "query"},
+        {"evidence_id": "flagged", "decision": "flag"},
+        {"evidence_id": "reopened", "decision": "ok"},
+        {"evidence_id": "reopened", "decision": "reopen"},
+        {"evidence_id": "retagged", "decision": "retag"},
+        {"evidence_id": "not_in_register", "decision": "ok"},
+    ]
+    result = build_progress(data, [{"source_id": "alias", "duplicate_of": "paper"}])
+    m = result["totals"]
+    assert m["all_excerpts"] == 9
+    assert m["reviewed_excerpts"] == 7
+    assert m["reviewed_pct"] == 77.8
+    assert m["unreviewed_excerpts"] == 2  # detector flag + unexplained quarantine
+    assert m["approved_excerpts"] == 2
+    assert m["approved_pct"] == 28.6
+    assert m["reviewed_active_excerpts"] == 6
+    assert m["reviewed_dropped_excerpts"] == 1
+    assert m["dropped_excerpts"] == 2
+    assert m["reviewed_unresolved_excerpts"] == 4
+    assert m["sources_with_reviewed_excerpts"] == 2
+    assert m["sources_with_approved_excerpts"] == 1
+    empty = next(s for s in result["sources"] if s["source_id"] == "empty")
+    assert empty["reviewed_evidence_ids"] == ["queried", "reopened", "retagged"]
+    assert empty["approved_evidence_ids"] == []
+
+
+def test_review_counts_include_logged_drops_but_reopen_alone_is_not_assessment():
+    data = fixture_data()
+    for row in data["registers"]["EV_evidence_register"]:
+        row["reviewer_ok"] = False
+    data["review_log"] = [
+        {"evidence_id": "d", "decision": "drop"},
+        {"evidence_id": "b", "decision": "reopen"},
+    ]
+    totals = build_progress(data, [])["totals"]
+    assert totals["reviewed_excerpts"] == 1
+    assert totals["reviewed_pct"] == 25.0
+    assert totals["approved_excerpts"] == 0
+    assert totals["approved_pct"] == 0.0
+    assert totals["reviewed_dropped_excerpts"] == 1
+    assert totals["reviewed_unresolved_excerpts"] == 0
+    empty = build_progress({}, [])["totals"]
+    assert empty["reviewed_pct"] is None
+    assert empty["approved_pct"] is None
+
+
+def test_all_family_tag_is_explicit_scope_not_unassigned_or_inherited():
+    data = fixture_data()
+    data["registers"]["FAM_family_registry"].append(
+        {
+            "nbs_id": "trees",
+            "suitability_family_id": "trees__cross_family",
+            "subpractice_id": "cross_cutting_envelope",
+            "name": "Cross-cutting envelope",
+            "definition": "Applies across all families; not a subpractice.",
+        }
+    )
+    data["registers"]["EV_evidence_register"][1]["suitability_family_id"] = (
+        "trees__cross_family"
+    )
+    result = build_progress(data, [{"source_id": "alias", "duplicate_of": "paper"}])
+    tree = next(p for p in result["practices"] if p["nbs_id"] == "trees")
+    fams = {f["family_id"]: f for f in tree["families"]}
+    assert fams["trees__cross_family"]["scope_kind"] == "all_families"
+    assert fams["trees__cross_family"]["metrics"]["active_excerpts"] == 1
+    assert fams["trees__natural"]["metrics"]["active_excerpts"] == 0
+    assert fams["__unassigned"]["scope_kind"] == "unassigned"
+    assert fams["__unassigned"]["metrics"]["active_excerpts"] == 0
+
+
+def test_scope_source_keys_match_counts_for_mixed_named_and_unassigned_claims():
+    data = fixture_data()
+    result = build_progress(data, [{"source_id": "alias", "duplicate_of": "paper"}])
+    trees = next(p for p in result["practices"] if p["nbs_id"] == "trees")
+    families = {f["family_id"]: f for f in trees["families"]}
+    # One paper has both a planted-family claim and claims with no family tag.
+    # Source-level unioned family tags cannot recover this unassigned drilldown.
+    assert families["trees__planted"]["metrics"]["source_keys"] == ["paper"]
+    assert families["__unassigned"]["metrics"]["source_keys"] == ["empty", "paper"]
+    for metrics in [
+        result["totals"],
+        trees["metrics"],
+        *[f["metrics"] for f in trees["families"]],
+    ]:
+        assert metrics["known_sources"] == len(metrics["source_keys"])
+        assert "alias" not in metrics["source_keys"]

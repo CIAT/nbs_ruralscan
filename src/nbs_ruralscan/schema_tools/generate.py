@@ -430,8 +430,10 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
                             data["recipes"][nbs_id][tbl] = _csv_to_rows(csv_path)
 
     from nbs_ruralscan.schema_tools.dashboard_progress import build_progress
+    from nbs_ruralscan.schema_tools.dashboard_relationships import build_relationships
 
     data["progress_overview"] = build_progress(data, queue)
+    data["relationships"] = build_relationships(data, schema_root.parent)
     releases_path = schema_root.parent / "docs" / "dashboard-releases.csv"
     releases = _csv_to_rows(releases_path) if releases_path.exists() else []
     release = (
@@ -446,6 +448,10 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "t4_analysis.js",
         "dashboard-progress.js",
         "dashboard-progress.css",
+        "dashboard-shell.js",
+        "dashboard-shell.css",
+        "dashboard-relationships.js",
+        "dashboard-relationships.css",
         "dashboard-feedback.js",
         "dashboard-feedback.css",
         "dashboard-releases.csv",

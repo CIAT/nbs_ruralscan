@@ -45,7 +45,7 @@ function setup() {
   for(const id of ['progress-app','bibliography-app','methods-app','dashboard-build'])new Node(id);
   for(const id of ['tab-search','tab-stocktake','tab-methods','tab-interrogator']){const n=new Node();n.dataset.tab=id;n.click=()=>{activeTab=id;window.DashboardProgress.onTab(id);};tabs[id]=n;}
   const search_metrics={events:0,retrieved:null,screened:null,included:null,complete_counts:0,screened_pct:null,coverage:Object.fromEntries(['retrieved','screened','included'].map(k=>[k,{recorded:0}]))};
-  const metrics={known_sources:1,source_mix:{literature:1},extracted_sources:1,reviewed_sources:1,active_excerpts:1,approved_excerpts:1,all_excerpts:2,dropped_excerpts:1,t4_structural_relationships:1,t4_operational_relationships:0,t4_evidence_backed_relationships:1,t4_relationships:1,t4_contributing_sources:1,search_metrics};
+  const metrics={known_sources:1,source_mix:{literature:1},extracted_sources:1,reviewed_sources:1,active_excerpts:1,approved_excerpts:1,all_excerpts:2,reviewed_excerpts:2,reviewed_unresolved_excerpts:0,dropped_excerpts:1,t4_structural_relationships:1,t4_operational_relationships:0,t4_evidence_backed_relationships:1,t4_relationships:1,t4_contributing_sources:1,search_metrics};
   const source={key:'canonical',source_id:'canonical',aliases:['alias'],citation:'First publication <img src=x onerror=alert(1)>',url:'javascript:alert(1)',doi:'',origins:['stock'],nbs_ids:['agroforestry'],family_ids:['agroforestry__f1'],evidence_ids:['ev1'],approved_evidence_ids:['ev1'],dropped_evidence_ids:['ev2'],contributions:{T4:['ev1']},extraction_counts:{T4:1,effects:0,M2b:0,other:0},type:'literature'};
   const fixture={timestamp:'2026-11-04',registers:{EV_evidence_register:[{evidence_id:'ev1',quote:'<script>alert(1)</script>',reviewer_ok:true,nbs_id:'agroforestry'}],TOOL_tool_registry:[]},_evDropped:[{evidence_id:'ev2',quote:'Quarantined claim',review_state:'dropped'}],stocktake:{peer_reviewed:[{oa_title:'Legacy agroforestry',NbS_Practice:'Agroforestry'},{oa_title:'Broad forest scope',NbS_Practice:'Forest conservation and restoration'}]},progress_ledger:[],progress_overview:{sources:[source],practices:[{nbs_id:'agroforestry',name:'Agroforestry',metrics,families:[{family_id:'agroforestry__f1',name:'Planted systems',metrics,subpractices:[]}]},{nbs_id:'cross',name:'Cross',metrics,families:[]}],totals:metrics,definitions:{counts:'Not additive'},searches:[{nbs_id:'agroforestry',category:'stock',tables:['T4'],search_ids:['s1'],counts:{retrieved:2,screened:1,included:1},raw_records:[{n_retrieved:'2',search_terms:'<img src=x onerror=alert(1)>'}]}]}};
   vm.runInNewContext(script,{window,document,location,history,URL,console,URIError});
@@ -70,7 +70,9 @@ def run_js(body):
 def test_bibliography_escapes_content_and_preserves_explicit_practice_filters():
     run_js(r"""
 const t=setup();
-assert(t.nodes.get('progress-app').innerHTML.includes('Cross-practice resources'));
+assert(!t.nodes.get('progress-app').innerHTML.includes('Cross-practice resources'));
+assert(!t.nodes.get('progress-app').innerHTML.includes('data-value="cross"'));
+assert(t.nodes.get('progress-app').innerHTML.includes('general reference sources'));
 assert(!t.nodes.get('bibliography-app').innerHTML.includes('<img'));
 assert(!t.nodes.get('bibliography-app').innerHTML.includes('href="javascript:'));
 assert(t.nodes.get('methods-app').innerHTML.includes('Original search record 1'));
@@ -160,7 +162,7 @@ assert.equal(t.activeTab,'tab-search');
 assert(t.nodes.get('progress-app').innerHTML.includes('Planted systems'));
 assert.equal(t.api.scope().nbs,'agroforestry');
 assert.equal(t.api.scope().family,'agroforestry__f1');
-assert.equal(t.api.revealTarget('practice:cross'),true);
+assert.equal(t.api.revealTarget('practice:cross'),false);
 assert.equal(t.api.revealTarget('family:not-a-family'),false);
 const query=t.nodes.get('dp-bib-query');query.value='no matching source';query.trigger('input');
 assert.equal(t.api.revealTarget('source:canonical'),true);
@@ -175,10 +177,10 @@ def test_progress_overview_separates_count_units_and_keeps_families_in_practice_
 const t=setup();
 let html=t.nodes.get('progress-app').innerHTML;
 assert(!html.includes('Results found'));assert(!html.includes('Results screened'));
-assert(html.includes('Candidates screened'));assert(html.includes('Candidates selected'));
-assert(html.includes('Searches with counts'));assert(html.includes('Assessed for relevance'));
-assert(html.includes('3. Review evidence'));assert(html.includes('not a whole-source review'));
-assert(html.includes('Search hits are not a screening backlog.'));
+assert(!html.includes('Candidates screened'));assert(!html.includes('Candidates selected'));
+assert(html.includes('Extracts reviewed'));assert(html.includes('Extracts approved'));
+assert(html.includes('View subpractices'));assert(!html.includes('dp-flow'));
+assert(t.nodes.get('methods-app').innerHTML.includes('Candidates screened'));
 const sourceTable=html.split('<table class="dp-table dp-summary-table">')[1].split('</table>')[0];
 assert(!sourceTable.includes('Screening'));assert(sourceTable.includes('Sources catalogued'));
 assert(!html.includes('Planted systems'));assert(!html.includes('dp-family-group'));
@@ -187,7 +189,7 @@ assert(html.includes('Type not recorded'));assert(!html.includes('Tools | ?'));
 assert(t.api.revealTarget('family:agroforestry__f1'));
 html=t.nodes.get('progress-app').innerHTML;
 assert(!html.includes('dp-flow'));assert(html.includes('100%'));assert(html.includes('dp-progress-family'));
-assert(html.includes('Evidence checks'));assert(!html.includes('<th>Extracted</th>'));
+assert(html.includes('Verification stage'));assert(!html.includes('<th>Extracted</th>'));
 """)
 
 
@@ -195,7 +197,7 @@ def test_family_filters_hide_out_of_scope_without_losing_historical_totals():
     run_js(r"""
 const t=setup(), p=t.fixture.progress_overview.practices[0];
 p.families.push({family_id:'agroforestry__out',name:'Out of scope family',metrics:p.metrics,subpractices:[]});
-p.families.push({family_id:'agroforestry__pending',name:'Needs review family',metrics:{...p.metrics,approved_excerpts:0},subpractices:[]});
+p.families.push({family_id:'agroforestry__pending',name:'Needs review family',metrics:{...p.metrics,approved_excerpts:0,reviewed_excerpts:0},subpractices:[]});
 t.fixture.family_display_status={'agroforestry__out':{status:'out_of_scope'}};
 t.api.refresh(t.fixture);t.api.revealTarget('family:agroforestry__f1');
 let family=t.nodes.get('dp-progress-family');family.value='';family.trigger('change');
@@ -221,19 +223,19 @@ assert.equal((html.match(/<td>T4<\/td>/g)||[]).length,20);
 let select=t.nodes.get('dp-ledger-table');t.nodes.get('dp-ledger').open=true;select.value='T6';select.trigger('change');
 html=t.nodes.get('progress-app').innerHTML;
 assert(html.includes('15 records · 1–15 shown'));assert.equal(t.nodes.get('dp-ledger').open,true);
-assert(!html.includes('<td>T4</td>'));assert(html.includes('Evidence checks'));
+assert(!html.includes('<td>T4</td>'));assert(html.includes('Verification stage'));
 """)
 
 
-def test_overview_uses_matched_discovery_counts_only():
+def test_methods_uses_matched_discovery_counts_only():
     run_js(r"""
 const t=setup(), m=t.fixture.progress_overview.totals;
 m.search_metrics={...m.search_metrics,retrieved:41,screened:93,included:26,complete_counts:0,paired_retrieved:0,paired_screened:0,paired_included:0};
 t.api.refresh(t.fixture);
-let html=t.nodes.get('progress-app').innerHTML;
+let html=t.nodes.get('methods-app').innerHTML;
 assert(!html.includes('>41</td>'));assert(!html.includes('>93</td>'));assert(!html.includes('>26</td>'));
 m.search_metrics={...m.search_metrics,events:3,complete_counts:1,paired_retrieved:100,paired_screened:20,paired_included:10};
-t.api.refresh(t.fixture);html=t.nodes.get('progress-app').innerHTML;
+t.api.refresh(t.fixture);html=t.nodes.get('methods-app').innerHTML;
 assert(!html.includes('>100</td>'));assert(html.includes('>20</td>'));assert(html.includes('>10</td>'));
 assert(!html.includes('20%'));assert(html.includes('1 of 3'));
 t.api.openMethods('agroforestry');
@@ -369,18 +371,65 @@ assert(!html.includes('data-feedback-key="family:agroforestry__unmapped_subpract
 """)
 
 
-def test_stage_headers_keep_sources_claims_and_rules_in_matching_columns():
+def test_stage_headers_keep_review_and_approval_denominators_distinct():
     run_js(r"""
 const t=setup(), m=t.fixture.progress_overview.totals;
-Object.assign(m,{known_sources:25,extracted_sources:7,active_excerpts:23,approved_excerpts:5,reviewed_sources:3,t4_structural_relationships:11});
+Object.assign(m,{known_sources:25,extracted_sources:7,all_excerpts:30,active_excerpts:23,reviewed_excerpts:20,approved_excerpts:5,dropped_excerpts:7,t4_structural_relationships:11});
 t.api.refresh(t.fixture);
 const html=t.nodes.get('progress-app').innerHTML;
 const table=html.split('<table class="dp-table dp-summary-table">')[1].split('</table>')[0];
-assert(table.includes('</td><td>7</td><td>23</td><td title="5 of 23 retained extracts approved">5'));
-assert(table.includes('</td><td>3</td><td>11</td>'));
-assert(table.indexOf('Evidence extracted') < table.indexOf('Extracts approved'));
-assert(table.indexOf('Extracts approved') < table.indexOf('Sources with approved extracts'));
-assert(html.includes('retained extracts from 7 sources'));
-assert(html.includes('extracts approved by reviewers, across 3 sources'));
-assert(html.includes('Rules can be compiled before every supporting extract has human approval'));
+assert(table.includes('</td><td>7</td><td>30</td><td title="20 reviewed out of 30 recorded extracts">20'));
+assert(table.includes('(66.7%)'));assert(table.includes('5 approved out of 20 reviewed extracts'));assert(table.includes('(25%)'));
+assert(table.includes('</td><td>7</td><td>11</td>'));
+assert(table.indexOf('Extracts reviewed') < table.indexOf('Extracts approved'));
+assert(html.includes('A source</strong> is a publication'));
+assert(!html.includes('Claims still in use'));assert(!html.includes('dp-flow'));
+""")
+
+
+def test_family_scope_notes_and_count_definitions_follow_selected_practice():
+    run_js(r"""
+const t=setup(),p=t.fixture.progress_overview.practices[0];
+p.metrics={...p.metrics,known_sources:1};
+t.fixture.progress_overview.totals={...p.metrics,known_sources:99};
+p.families.push({family_id:'agroforestry__cross_family',name:'Cross family',scope_kind:'all_families',scope_definition:'Tagged for all families; not a subpractice.',metrics:p.metrics,subpractices:[]});
+p.families.push({family_id:'__unassigned',name:'Family not recorded',scope_kind:'unassigned',metrics:{...p.metrics,all_excerpts:0},subpractices:[]});
+t.api.refresh(t.fixture);t.api.revealTarget('family:agroforestry__cross_family');
+const html=t.nodes.get('progress-app').innerHTML;
+assert(t.nodes.get('dp-scope-notes').open);
+assert(html.includes('Evidence tagged as applying across all families'));
+assert(html.includes('Sources without a recorded family'));
+assert(!html.includes('>Cross family<'));
+assert(html.includes('1 source records in this scope'));assert(!html.includes('99 source records in this scope'));
+assert(html.includes('dp-column-filter'));assert(html.includes('data-action="family-sort"'));
+assert(html.includes('percentage cannot be calculated'));
+""")
+
+
+def test_count_drilldowns_match_authoritative_scope_and_show_selected_family():
+    run_js(r"""
+const t=setup(),p=t.fixture.progress_overview.practices[0];
+p.families.push({family_id:'__unassigned',name:'Family not recorded',scope_kind:'unassigned',metrics:{...p.metrics,source_keys:['canonical']},subpractices:[]});
+t.api.refresh(t.fixture);
+let target={dataset:{action:'scope-bibliography',value:JSON.stringify(['agroforestry','__unassigned'])},closest:()=>target};
+t.handlers.click({target});
+let html=t.nodes.get('bibliography-app').innerHTML;
+assert(html.includes('value="__unassigned" selected>Family not recorded'));
+assert(html.includes('First publication'));assert(!html.includes('Legacy agroforestry'));
+target={dataset:{action:'known',value:'agroforestry'},closest:()=>target};t.handlers.click({target});
+html=t.nodes.get('bibliography-app').innerHTML;
+assert(html.includes('value="agroforestry" selected'));
+assert(html.includes('First publication'));assert(!html.includes('Legacy agroforestry'));assert(!html.includes('Broad forest scope'));
+""")
+
+
+def test_global_unassigned_filter_unions_each_practice_scope():
+    run_js(r"""
+const t=setup(),p=t.fixture.progress_overview.practices[0];
+p.families.push({family_id:'__unassigned',name:'Family not recorded',metrics:{...p.metrics,source_keys:['canonical']},subpractices:[]});
+t.api.refresh(t.fixture);
+const selector=t.nodes.get('dp-bib-family');selector.value='__unassigned';selector.trigger('change');
+const html=t.nodes.get('bibliography-app').innerHTML;
+assert(html.includes('value="__unassigned" selected>Family not recorded (any practice)'));
+assert(html.includes('First publication'));assert(!html.includes('Legacy agroforestry'));
 """)

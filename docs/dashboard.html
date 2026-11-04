@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Rural NbS Scan — Evidence &amp; Literature Interrogation Dashboard</title>
+<title>Rural NbS Scan — Evidence for rural nature-based solutions</title>
 <meta name="description" content="Explore and interrogate the systematic literature reviews, evidence claims, biophysical variables, thresholds, hazard matrices, and cost scorecard parameters supporting the Nature-based Solutions Rural Scan methodology.">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='0' y='0' width='24' height='24' rx='5' fill='%230b0f19'/%3E%3Cg fill='none' stroke='%2310b981' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' transform='translate(2.6 2.6) scale(0.78)'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/g%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1028,8 +1028,10 @@
 </style>
 <link rel="stylesheet" href="t4_analysis.css">
 <script src="t4_analysis.js"></script>
-<link rel="stylesheet" href="dashboard-progress.css?v=1.1.2">
+<link rel="stylesheet" href="dashboard-progress.css?v=1.2.0">
 <link rel="stylesheet" href="dashboard-feedback.css?v=1.0.2">
+<link rel="stylesheet" href="dashboard-shell.css?v=1.2.0">
+<link rel="stylesheet" href="dashboard-relationships.css?v=1.2.0">
 </head>
 <body data-theme="dark">
 
@@ -1042,25 +1044,12 @@
       </svg>
       Rural NbS Scan
     </h1>
-    <span class="brand-subtitle">Evidence &amp; Literature Interrogation Dashboard</span>
+    <span class="brand-subtitle">Evidence for rural nature-based solutions</span>
   </div>
   <div class="header-actions">
     <div id="dashboard-build" class="dashboard-build" aria-label="Dashboard and data build"></div>
     <button class="btn-back" type="button" onclick="if(window.DashboardProgress)window.DashboardProgress.print()">Print overview</button>
-    <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); margin-right:10px;" title="Your reviewer identity — every QA decision is attributed to this handle">&#128100; Reviewer
-      <select id="vf-reviewer" onchange="if(this.value==='__other__'){var h=prompt('Git handle:');setVfReviewer((h||'').trim());}else{setVfReviewer(this.value);}" style="font-size:12px; padding:4px 9px; border-radius:5px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); font-weight:600;"><option value="">— pick reviewer —</option><option value="peetmate">peetmate</option><option value="bensonkenduiywo">bensonkenduiywo</option><option value="bjyberg">bjyberg</option><option value="Namita-J">Namita-J</option><option value="Mlolita26">Mlolita26</option><option value="__other__">Other…</option></select>
-      <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer" title="How to review locally — clone, run the server, make decisions, push" style="font-size:11px; color:var(--accent-sky); text-decoration:none; white-space:nowrap;">&#9432; how to review</a>
-    </label>
-    <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); margin-right:10px;" title="Open a GitHub issue of the chosen type">&#128027; Report issue
-      <select onchange="if(this.value){window.open(this.value,'_blank','noopener');this.selectedIndex=0;}" style="font-size:12px; padding:4px 9px; border-radius:5px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color);">
-        <option value="">— type —</option>
-        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new?template=bug.md">🐛 Bug</option>
-        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new?template=ux.md">🎨 UI / UX improvement</option>
-        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new?template=feature.md">✨ Feature request</option>
-        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new?template=data-discovery.md">📄 Data / evidence issue</option>
-        <option value="https://github.com/CIAT/nbs_ruralscan/issues/new/choose">Other / choose…</option>
-      </select>
-    </label>
+
     <button class="btn-theme-toggle" id="theme-toggle" aria-label="Toggle Theme" title="Toggle Theme">
       <!-- Dark mode (Sun) icon -->
       <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
@@ -1090,55 +1079,20 @@
 </header>
 <div id="readonly-banner" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:9px 16px; background:rgba(245,158,11,0.12); border-bottom:1px solid rgba(245,158,11,0.35); color:var(--text-primary); font-size:12.5px;">
   <span style="font-size:15px;">&#9888;&#65039;</span>
-  <span><b>Read-only preview.</b> You're viewing the public dashboard on GitHub Pages — QA review decisions <b>won't save here</b>. To make edits, run it locally.</span>
-  <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer" style="margin-left:auto; font-weight:600; color:var(--accent-sky); text-decoration:none; white-space:nowrap;">&#9432; How to review locally &#8594;</a>
+  <span><b>Read-only preview.</b> No review server is connected. Evidence decisions cannot be submitted from this preview. Dashboard feedback notes stay in this browser until exported.</span>
+  <button class="shell-link" onclick="DashboardShell.openReviewHelp()">How to review</button>
 </div>
 
 <main class="main-container">
   
-  <nav class="tab-nav">
-    <button class="tab-btn active" data-tab="tab-search" id="btn-search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        <line x1="8" y1="11" x2="14" y2="11"></line>
-        <line x1="11" y1="8" x2="11" y2="14"></line>
-      </svg>
-      Progress
-    </button>
-    <button class="tab-btn" data-tab="tab-qaqc" id="btn-qaqc">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-      QA / QC Flags
-    </button>
-    <button class="tab-btn" data-tab="tab-interrogator" id="btn-interrogator">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      Evidence Query
-    </button>
-    <button class="tab-btn" data-tab="tab-variables" id="btn-variables">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-      </svg>
-      Ontology &amp; Datasets
-    </button>
-    <button class="tab-btn" data-tab="tab-network" id="btn-network">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="18" cy="18" r="3"></circle>
-        <circle cx="6" cy="6" r="3"></circle>
-        <circle cx="6" cy="18" r="3"></circle>
-        <path d="M20 4L4 20"></path>
-        <path d="M9 9l6 6"></path>
-        <path d="M6 9v6"></path>
-      </svg>
-      Evidence Network
-    </button>
-    <button class="tab-btn" data-tab="tab-stocktake" id="btn-stocktake">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="10" width="3" height="7"></rect><rect x="12" y="6" width="3" height="11"></rect><rect x="17" y="13" width="3" height="4"></rect></svg>
-      Bibliography
-    </button>
-    <button class="tab-btn" data-tab="tab-methods" id="btn-methods">Methods</button>
+  <nav class="tab-nav" aria-label="Dashboard sections">
+    <button class="tab-btn active" data-tab="tab-overview" id="btn-overview">1. Overview</button>
+    <button class="tab-btn" data-tab="tab-search" id="btn-search">2. Progress</button>
+    <button class="tab-btn" data-tab="tab-interrogator" id="btn-interrogator">3. Evidence &amp; rules</button>
+    <button class="tab-btn" data-tab="tab-stocktake" id="btn-stocktake">4. Sources &amp; datasets</button>
+    <button class="tab-btn" data-tab="tab-qaqc" id="btn-qaqc">5. Evidence review</button>
+    <button class="tab-btn" data-tab="tab-methods" id="btn-methods">6. Methods</button>
+    <button class="tab-btn" data-tab="tab-variables" id="btn-variables" hidden>Variables &amp; datasets</button>
   </nav>
 
   <!-- LOADING STATE -->
@@ -1167,9 +1121,33 @@
   </div>
 
   <div id="dashboard-content" style="display:none;">
+    <section id="tab-overview" class="tab-content active">
+      <header class="shell-intro"><h2>1. Evidence behind the Rural NbS Scan</h2>
+        <p>The Rural NbS Scan is a World Bank-funded project helping project teams scope where nature-based solutions could work in rural, agricultural and forestry landscapes, and which investment priorities they could support.</p>
+        <p>This dashboard shows the research behind that work: which sources were selected, what evidence was extracted, how it was checked, and how it supports the scan’s rules. It supports project oversight and technical review. It does not establish site-level feasibility or replace engineering studies.</p>
+      </header>
+      <section class="shell-overview-block"><h3>1.1 From research to a scoping decision</h3>
+        <ol class="shell-process"><li><b>Find and select sources</b><span>Search literature, guidance and tools using documented criteria.</span></li><li><b>Extract and check evidence</b><span>Capture claims with their source and location; reviewers check accuracy and relevance.</span></li><li><b>Build analytical rules</b><span>Translate suitable evidence into traceable rules for practices and their suitability families.</span></li><li><b>Support the rural scan</b><span>Use those rules with spatial data to scope opportunity, risk and project priorities.</span></li></ol>
+        <p class="shell-caption">Figure 1.1. How evidence supports the Rural NbS Scan. Sources, claims and rules are different units; one source can support several claims and rules.</p>
+      </section>
+      <section class="shell-overview-block"><h3>1.2 Choose your task</h3><div class="shell-task-grid">
+        <button data-shell-open="btn-search"><b>Understand progress</b><span>For funders and project leads: see research effort, completed outputs and remaining review work.</span></button>
+        <button data-shell-open="btn-interrogator"><b>Inspect evidence and rules</b><span>For technical reviewers: compare relationships and trace rules back to source evidence.</span></button>
+        <button data-shell-open="btn-stocktake"><b>Find a source or dataset</b><span>Check publication details, linked extracts, variable definitions and available spatial datasets.</span></button>
+        <button data-shell-open="btn-qaqc"><b>Review an extraction</b><span>For the review team: check a claim against its source, then Keep, Drop or Query.</span></button>
+        <button data-shell-open="btn-methods"><b>Understand the methods</b><span>Inspect search protocols, selection criteria and how reported counts were derived.</span></button>
+      </div></section>
+    </section>
+
     
     <!-- ================= TAB 2: INTERROGATOR ================= -->
     <div id="tab-interrogator" class="tab-content">
+      <header class="shell-intro"><h2>3. Evidence &amp; rules</h2><p>Inspect how published evidence supports the scan’s analytical rules. Start with Relationships to compare variables and recorded responses. Use Evidence explorer to read extracts and inspect the current compiled suitability analysis. Evidence quality, review approval and synthesis readiness are separate judgements.</p></header>
+      <nav class="shell-subnav" aria-label="Evidence and rules views"><button type="button" data-query-view="relationships" aria-pressed="true">Relationships</button><button type="button" data-query-view="explorer" aria-pressed="false">Evidence explorer</button></nav>
+      <section id="relationship-review-root"><p>Loading relationship catalogue…</p></section>
+      <section id="query-explorer-panel" hidden>
+      <p class="shell-explainer">Select a practice and suitability family to inspect its source extracts, compiled rules and source coverage. A family groups sub-practices with shared limiting factors; broad or unassigned evidence is not automatically applicable to every family.</p>
+
       <div class="interrogator-grid">
         
         <!-- Controls Panel -->
@@ -1199,20 +1177,20 @@
         <section class="details-panel">
           
           <!-- Family description card -->
-          <div class="family-hero-card" id="family-hero">
+          <div class="family-hero-card" id="family-hero" style="display:none">
             <div class="family-hero-header">
-              <h2 class="family-title" id="family-hero-title">Family Title</h2>
-              <span class="family-meta" id="family-hero-type">Product type</span>
+              <h2 class="family-title" id="family-hero-title">Selected suitability family</h2>
+              <span class="family-meta" id="family-hero-type"></span>
             </div>
-            <p class="family-desc" id="family-hero-desc">Family definition details.</p>
+            <p class="family-desc" id="family-hero-desc"></p>
             <div class="family-details-grid">
               <div>
                 <h3 class="info-block-title">Dominant Limiting Factor</h3>
-                <p class="info-block-value" id="family-hero-limit">Limiting factor description.</p>
+                <p class="info-block-value" id="family-hero-limit"></p>
               </div>
               <div>
                 <h3 class="info-block-title">Grouping Rationale</h3>
-                <p class="info-block-value" id="family-hero-rationale">Rationale text.</p>
+                <p class="info-block-value" id="family-hero-rationale"></p>
               </div>
             </div>
           </div>
@@ -1231,6 +1209,7 @@
             </div>
             
             <div id="wrapper-t4-mappings">
+              <p class="shell-explainer">These panels connect source extracts to suitability responses and compiled rules. Read the evidence trail before interpreting a synthesis: a recorded relationship may still need review, and operational risks are kept separate from structural suitability.</p>
               <p id="t4-analysis-load" role="status"></p>
               <div id="t4-analysis" hidden>
                 <p id="t4-snapshot"></p>
@@ -1305,6 +1284,7 @@
               </div>
             </div>
             <div id="wrapper-evidence-claims">
+              <p class="shell-explainer">Read the selected family’s extracted claims in their original wording. Each card identifies its source, location and recorded role. Use Evidence review to approve, reject or query an extraction; appearing here does not mean it is approved.</p>
               <div class="evidence-container" id="evidence-list"></div>
             </div>
           </div>
@@ -1346,6 +1326,7 @@
           <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to expand</span>
         </div>
         <div id="wrapper-register-analytics" style="display:none;">
+          <p class="shell-explainer">These charts describe sources actually cited by the selected compiled T4 rules. They help assess where that evidence comes from and which contexts it covers; they do not measure all discovery effort or review completion.</p>
           <div class="charts-section">
             <!-- SVG Sources by NbS Chart -->
             <div class="card-container" style="margin-bottom:0;">
@@ -1401,10 +1382,12 @@
           </div>
         </div>
       </div>
+      </section>
     </div>
 
     <!-- ================= TAB 3: VARIABLES ================= -->
     <div id="tab-variables" class="tab-content">
+<header class="shell-intro"><h2>4. Sources &amp; datasets</h2><p>Find the material behind the scan. Bibliography lists publications, guidance and tools and links to their extracted evidence. Variables &amp; datasets explains what the scan measures and which spatial data can represent it. A listed source or dataset is not, by itself, an approved analytical rule.</p></header><nav class="shell-subnav" aria-label="Sources and datasets views"><button type="button" data-shell-open="btn-stocktake">Bibliography</button><button type="button" data-shell-open="btn-variables">Variables &amp; datasets</button></nav>
       <div class="card-container">
         <div class="interrogator-header-row sky" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-sky); padding-bottom: 8px;" onclick="toggleSection('wrapper-vont', 'chev-vont')">
           <h3 class="interrogator-section-title sky" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
@@ -1419,6 +1402,7 @@
         </div>
 
         <div id="wrapper-vont">
+          <p class="shell-explainer">The variable dictionary gives each measure a consistent name, meaning and unit. Use it to distinguish similar concepts before selecting a dataset or interpreting a relationship.</p>
           <!-- Filter / Search toolbar -->
           <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
             <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
@@ -1465,6 +1449,7 @@
         </div>
 
         <div id="wrapper-t1">
+          <p class="shell-explainer">The dataset catalogue describes spatial inputs available to the scan. Check coverage, resolution and limitations before choosing data for a country or study area. Availability does not guarantee fitness for a particular decision.</p>
           <!-- Filter / Search toolbar -->
           <div style="display:flex; justify-content:space-between; align-items:center; gap:16px; margin-bottom:12px; flex-wrap:wrap; background:rgba(255,255,255,0.02); padding:8px 12px; border-radius:6px; border:1px solid var(--border-color);">
             <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
@@ -1498,7 +1483,7 @@
     </div>
 
     <!-- TAB 4: EVIDENCE NETWORK GRAPH -->
-    <div id="tab-network" class="tab-content">
+    <div id="tab-network" class="tab-content" hidden aria-hidden="true">
       <div class="card-container" style="margin-bottom: 16px;">
         <h2 class="card-title">
           <span>Evidence &amp; Methodology Network Diagram</span>
@@ -1599,9 +1584,21 @@
 
     <!-- TAB 5: SEARCH & DISCOVERY LOGS -->
     <div id="tab-qaqc" class="tab-content">
+<header class="shell-intro"><h2>5. Evidence review</h2><p>Help the team check whether each extracted claim faithfully represents its source and belongs in the intended practice and analytical table. Review the source context before deciding; an automated check is not human approval.</p></header>
+      <nav class="shell-subnav" aria-label="Evidence review views"><button type="button" data-review-view="queue" aria-pressed="true">Review queue</button><button type="button" data-review-view="help" aria-pressed="false">How to review</button></nav>
+      <section id="review-help-panel" hidden><h3>5.1 How to review</h3>
+        <ol class="shell-review-steps"><li><b>Choose your reviewer identity in Review queue.</b> Decisions are attributed to this handle. Choose a practice, family or table to focus your review.</li><li><b>Read the claim and open its source.</b> Check the page or table, units, context, practice and intended use. Use the full source when an excerpt lacks context.</li><li><b>Keep</b> when the extraction is faithful and relevant. <b>Drop</b> when it is unsuitable or incorrect: select a reason and explain it. Drop quarantines the record; it does not erase it. <b>Query</b> when you need clarification: state the question clearly. A query is not approval.</li><li><b>Revisit answers and conflicts.</b> Check the reply or other reviewer’s reasoning, then make a Keep, Drop or Query decision on the evidence card.</li><li><b>Submit reviews when ready.</b> With the local review server connected, submission applies saved decisions and opens a pull request subject to checks and approvals. Disagreements remain pending for resolution.</li></ol>
+        <p><b>Preview limitation:</b> without the review server, decisions cannot be submitted to the shared register. Dashboard Feedback records comments about this interface separately; it does not approve or reject evidence.</p>
+        <p><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer">Setup and detailed reviewer guide ↗</a></p>
+        <div id="review-reference-guide"></div>
+      </section>
+      <section id="review-queue-panel">
+    <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); margin-right:10px;" title="Your reviewer identity — every QA decision is attributed to this handle">&#128100; Reviewer
+      <select id="vf-reviewer" onchange="if(this.value==='__other__'){var h=prompt('Git handle:');setVfReviewer((h||'').trim());}else{setVfReviewer(this.value);}" style="font-size:12px; padding:4px 9px; border-radius:5px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); font-weight:600;"><option value="">— pick reviewer —</option><option value="peetmate">peetmate</option><option value="bensonkenduiywo">bensonkenduiywo</option><option value="bjyberg">bjyberg</option><option value="Namita-J">Namita-J</option><option value="Mlolita26">Mlolita26</option><option value="__other__">Other…</option></select>
+    </label>
       <div class="card-container">
         <h2 class="card-title" style="display:flex; align-items:center; gap:12px;">
-          <span>&#9872; QA / QC — VERIFY-FLAG review</span>
+          <span>5.2 Review queue</span>
           <span class="card-title-meta" style="flex:1;">Check the extraction against its source, then Keep, Drop or Query.</span>
           <button id="vf-gaps-btn" onclick="window._vfMode=(window._vfMode==='gaps'?'review':'gaps'); renderVfWorklist();" title="Missing evidence reported by reviewers — variables/figures expected but not extracted. Click to open, click again to return to review." style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber); cursor:pointer;">&#9888; Gaps</button>
           <button id="vf-stats-btn" onclick="toggleVfStats()" title="AI verify-flag performance metrics — click to open, click again to return to review" style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald); cursor:pointer;">📊 Stats</button>
@@ -1671,12 +1668,14 @@
           </div>
         </div>
       </div>
+      </section>
     </div>
 
     <div id="tab-stocktake" class="tab-content">
+<header class="shell-intro"><h2>4. Sources &amp; datasets</h2><p>Find the material behind the scan. Bibliography lists publications, guidance and tools and links to their extracted evidence. Variables &amp; datasets explains what the scan measures and which spatial data can represent it. A listed source or dataset is not, by itself, an approved analytical rule.</p></header><nav class="shell-subnav" aria-label="Sources and datasets views"><button type="button" data-shell-open="btn-stocktake">Bibliography</button><button type="button" data-shell-open="btn-variables">Variables &amp; datasets</button></nav>
       <div id="bibliography-app"></div>
     </div>
-    <div id="tab-search" class="tab-content active">
+    <div id="tab-search" class="tab-content">
       <div id="progress-app"></div>
     </div>
     <div id="tab-methods" class="tab-content">
@@ -1819,6 +1818,7 @@
         if (targetTab === 'tab-qaqc' && typeof renderVfWorklist === 'function') renderVfWorklist();
         if (window.DashboardProgress) window.DashboardProgress.onTab(targetTab);
         if (targetTab === 'tab-interrogator') refreshQueryProvenance();
+        if (window.DashboardShell) window.DashboardShell.onTab(targetTab);
       });
     });
 
@@ -1835,6 +1835,7 @@
         
         initDashboard();
         if (window.T4Analysis) window.T4Analysis.openFromHash();
+        if (window.DashboardShell) window.DashboardShell.openFromHash();
       })
       .catch(err => {
         console.error(err);
@@ -2022,7 +2023,7 @@
   function _vfStyleApply(n){ var b=document.getElementById('vf-apply-btn'); if(!b)return;
     b.style.opacity=(n>0?'1':'0.45'); b.style.cursor=(n>0?'pointer':'not-allowed'); }
   function _vfUpdatePending(){ var el=document.getElementById('vf-pending-count'); if(!el)return; var me=(window._vfReviewer||'').trim();
-    if(!me){ el.innerHTML='<span style="color:var(--text-muted); font-weight:400;">Pick your reviewer handle (top right) to start deciding.</span>'; _vfStyleApply(0); return; }
+    if(!me){ el.innerHTML='<span style="color:var(--text-muted); font-weight:400;">Pick your reviewer handle above the queue to start deciding.</span>'; _vfStyleApply(0); return; }
     // Apply ships EVERY pending decision, across all queues — so this total is scope- and mode-independent.
     // Break it into AI-flagged + AI-passed origin so the reviewer sees exactly what will be submitted.
     var all=window._vfAllReviews||{}; var byId={}; ((dashboardData.registers.EV_evidence_register)||[]).forEach(function(e){byId[e.evidence_id]=e;}); ((dashboardData._evDropped)||[]).forEach(function(e){byId[e.evidence_id]=e;});
@@ -3200,6 +3201,7 @@
 
     // Progress, Bibliography and Methods own their navigation and read-only views.
     if (window.DashboardProgress) window.DashboardProgress.init(dashboardData);
+    if (window.DashboardRelationships) window.DashboardRelationships.init(dashboardData);
     refreshQueryProvenance();
   }
 
@@ -3228,6 +3230,7 @@
   // Jump to the Evidence Query tab for an NbS (and optionally a family) — preserved from the
   // old comparison / progress row-click behaviour.
   function auditOpenInterrogator(nbsId, familyId) {
+    if (window.DashboardShell) window.DashboardShell.showExplorer();
     const tabBtn = document.querySelector('[data-tab="tab-interrogator"]');
     if (tabBtn) tabBtn.click();
     const nbsSelect = document.getElementById('select-nbs');
@@ -3251,6 +3254,7 @@
 
   function renderDiscoveryAudit() {
     if (window.DashboardProgress) window.DashboardProgress.refresh(dashboardData);
+    if (window.DashboardRelationships) window.DashboardRelationships.refresh(dashboardData);
   }
 
 
@@ -3804,7 +3808,8 @@
           e.stopPropagation();
           const targetNbs = s.nbs_ids ? s.nbs_ids.split(',')[0].trim() : 'agroforestry';
           
-          // Switch to interrogator tab
+          // Switch to the evidence explorer inside Evidence & rules.
+          if (window.DashboardShell) window.DashboardShell.showExplorer();
           const tabBtn = document.querySelector('[data-tab="tab-interrogator"]');
           if (tabBtn) tabBtn.click();
 
@@ -3904,28 +3909,28 @@
       // Honesty badges
       const _conf = (c.extraction_confidence || '').toLowerCase();
       const _confColor = _conf === 'high' ? 'var(--accent-emerald)' : _conf === 'medium' ? 'var(--accent-amber)' : 'var(--text-muted)';
-      const _confBadge = _conf ? `<span style=”font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:3px; color:${_confColor};”>${_conf}</span>` : '';
-      const _basisBadge = c.claim_basis ? `<span style=”font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:3px; color:var(--text-secondary);”>${c.claim_basis}</span>` : '';
-      const _scopeFlag = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style=”font-size:8px; padding:1px 4px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:3px; color:var(--accent-amber);”>species/crop-specific</span>` : '';
-      const _reviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style=”font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:3px; color:var(--text-muted);”>unreviewed</span>`;
+      const _confBadge = _conf ? `<span style="font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:3px; color:${_confColor};">${_conf}</span>` : '';
+      const _basisBadge = c.claim_basis ? `<span style="font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.06); border:1px solid var(--border-color); border-radius:3px; color:var(--text-secondary);">${c.claim_basis}</span>` : '';
+      const _scopeFlag = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style="font-size:8px; padding:1px 4px; background:rgba(245,158,11,0.12); border:1px solid rgba(245,158,11,0.3); border-radius:3px; color:var(--accent-amber);">species/crop-specific</span>` : '';
+      const _reviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style="font-size:8px; padding:1px 4px; background:rgba(255,255,255,0.04); border:1px solid var(--border-color); border-radius:3px; color:var(--text-muted);">unreviewed</span>`;
       const _attr = c.attribution || '';
       const _vfMatch = _attr.match(/\[VERIFY-FLAG([^\]]*)\]/);
-      const _vfBadge = _vfMatch ? `<span style=”font-size:8px; padding:1px 5px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.4); border-radius:3px; color:var(--accent-rose); font-weight:600; cursor:help;” title=”${(_vfMatch[1] || '').trim()}”>&#9872; VERIFY-FLAG</span>` : '';
+      const _vfBadge = _vfMatch ? `<span style="font-size:8px; padding:1px 5px; background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.4); border-radius:3px; color:var(--accent-rose); font-weight:600; cursor:help;" title="${(_vfMatch[1] || '').trim()}">&#9872; VERIFY-FLAG</span>` : '';
 
       html += `
-        <div style=”background-color:var(--bg-primary); border: 1px solid ${_vfMatch ? 'rgba(244,63,94,0.35)' : 'var(--border-color)'}; border-radius:var(--radius-sm); padding:8px 10px;”>
-          <div style=”display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; font-size:10px; flex-wrap:wrap; gap:3px;”>
-            <code style=”color:var(--accent-emerald); font-weight:600;”>${c.evidence_id}</code>
-            <div style=”display:flex; gap:3px; flex-wrap:wrap; align-items:center;”>
-              <span class=”badge ${tier}” style=”font-size:8px; padding:1px 4px;”>${tier}</span>
+        <div style="background-color:var(--bg-primary); border: 1px solid ${_vfMatch ? 'rgba(244,63,94,0.35)' : 'var(--border-color)'}; border-radius:var(--radius-sm); padding:8px 10px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px; font-size:10px; flex-wrap:wrap; gap:3px;">
+            <code style="color:var(--accent-emerald); font-weight:600;">${c.evidence_id}</code>
+            <div style="display:flex; gap:3px; flex-wrap:wrap; align-items:center;">
+              <span class="badge ${tier}" style="font-size:8px; padding:1px 4px;">${tier}</span>
               ${_confBadge}${_basisBadge}${_scopeFlag}${_reviewBadge}${_vfBadge}
             </div>
           </div>
-          <p style=”font-style:italic; line-height:1.4; color:var(--text-primary); margin-bottom:6px;”>”${c.quote}”</p>
-          <div style=”font-size:9.5px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:flex-end;”>
-            <span style=”max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;”>Ref: <strong>${citation}</strong></span>
-            <button class=”btn-flag” onclick=”openGitIssue('evidence', ${JSON.stringify(c).replace(/”/g, '&quot;')})” style=”font-size:9px; padding:2px 5px;”>
-              <svg width=”10” height=”10” viewBox=”0 0 24 24” fill=”none” stroke=”currentColor” stroke-width=”2.5”><path d=”M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z”></path><line x1=”4” y1=”22” x2=”4” y2=”15”></line></svg>
+          <p style="font-style:italic; line-height:1.4; color:var(--text-primary); margin-bottom:6px;">”${c.quote}”</p>
+          <div style="font-size:9.5px; color:var(--text-secondary); display:flex; justify-content:space-between; align-items:flex-end;">
+            <span style="max-width:80%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Ref: <strong>${citation}</strong></span>
+            <button class="btn-flag" onclick="openGitIssue('evidence', ${JSON.stringify(c).replace(/"/g, '&quot;')})” style="font-size:9px; padding:2px 5px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
               Flag
             </button>
           </div>
@@ -4145,33 +4150,33 @@
       // Honesty badges
       const _eConf = (c.extraction_confidence || '').toLowerCase();
       const _eConfColor = _eConf === 'high' ? 'var(--accent-emerald)' : _eConf === 'medium' ? 'var(--accent-amber)' : 'var(--text-muted)';
-      const _eConfBadge = _eConf ? `<span style=”font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.05); color:${_eConfColor};”>${_eConf} confidence</span>` : '';
-      const _eBasisBadge = c.claim_basis ? `<span style=”font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.05); color:var(--text-secondary);”>${c.claim_basis}</span>` : '';
-      const _eScopeBadge = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style=”font-size:9px; padding:1px 5px; border:1px solid rgba(245,158,11,0.3); border-radius:3px; background:rgba(245,158,11,0.1); color:var(--accent-amber);”>species/crop-specific</span>` : '';
-      const _eReviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style=”font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.04); color:var(--text-muted);”>unreviewed</span>`;
+      const _eConfBadge = _eConf ? `<span style="font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.05); color:${_eConfColor};">${_eConf} confidence</span>` : '';
+      const _eBasisBadge = c.claim_basis ? `<span style="font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.05); color:var(--text-secondary);">${c.claim_basis}</span>` : '';
+      const _eScopeBadge = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style="font-size:9px; padding:1px 5px; border:1px solid rgba(245,158,11,0.3); border-radius:3px; background:rgba(245,158,11,0.1); color:var(--accent-amber);">species/crop-specific</span>` : '';
+      const _eReviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style="font-size:9px; padding:1px 5px; border:1px solid var(--border-color); border-radius:3px; background:rgba(255,255,255,0.04); color:var(--text-muted);">unreviewed</span>`;
       const _eAttr = c.attribution || '';
       const _eVfMatch = _eAttr.match(/\[VERIFY-FLAG([^\]]*)\]/);
-      const _eVfBadge = _eVfMatch ? `<span style=”font-size:9px; padding:1px 6px; border:1px solid rgba(244,63,94,0.4); border-radius:3px; background:rgba(244,63,94,0.15); color:var(--accent-rose); font-weight:600; cursor:help;” title=”${(_eVfMatch[1] || '').trim()}”>&#9872; VERIFY-FLAG</span>` : '';
+      const _eVfBadge = _eVfMatch ? `<span style="font-size:9px; padding:1px 6px; border:1px solid rgba(244,63,94,0.4); border-radius:3px; background:rgba(244,63,94,0.15); color:var(--accent-rose); font-weight:600; cursor:help;" title="${(_eVfMatch[1] || '').trim()}">&#9872; VERIFY-FLAG</span>` : '';
 
       card.innerHTML = `
-        <div class=”evidence-card-header”>
-          <span class=”evidence-var-tag”>${c.variable}</span>
-          <div style=”display:flex; align-items:center; gap:6px; flex-wrap:wrap;”>
-            <span class=”badge ${tier}”>${tier} tier</span>
+        <div class="evidence-card-header">
+          <span class="evidence-var-tag">${c.variable}</span>
+          <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+            <span class="badge ${tier}">${tier} tier</span>
             ${_eConfBadge}${_eBasisBadge}${_eScopeBadge}${_eReviewBadge}${_eVfBadge}
-            <button class=”btn-flag” onclick=”openGitIssue('evidence', ${JSON.stringify(payload).replace(/”/g, '&quot;')})” style=”font-size:10px; padding:2px 6px;”>
-              <svg width=”10” height=”10” viewBox=”0 0 24 24” fill=”none” stroke=”currentColor” stroke-width=”2.5”><path d=”M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z”></path><line x1=”4” y1=”22” x2=”4” y2=”15”></line></svg>
+            <button class="btn-flag" onclick="openGitIssue('evidence', ${JSON.stringify(payload).replace(/"/g, '&quot;')})” style="font-size:10px; padding:2px 6px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
               Flag
             </button>
           </div>
         </div>
-        <blockquote class=”evidence-quote”>”${highlightedQuote}”</blockquote>
-        <div class=”evidence-citation”>
-          <span>Source: <strong>${highlightedFriendly}</strong> — <span style=”font-size: 11.5px; font-weight: normal; color: var(--text-secondary);”>${highlightedCitation}</span></span>
-          ${src && src.doi ? `<span style=”font-size:10px; color:var(--text-muted); margin-top:2px;”>DOI: <a href=”https://doi.org/${src.doi}” target=”_blank” rel=”noopener noreferrer” style=”color:inherit; text-decoration:underline;”>${src.doi}</a></span>` : ''}
+        <blockquote class="evidence-quote">”${highlightedQuote}”</blockquote>
+        <div class="evidence-citation">
+          <span>Source: <strong>${highlightedFriendly}</strong> — <span style="font-size: 11.5px; font-weight: normal; color: var(--text-secondary);">${highlightedCitation}</span></span>
+          ${src && src.doi ? `<span style="font-size:10px; color:var(--text-muted); margin-top:2px;">DOI: <a href="https://doi.org/${src.doi}" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:underline;">${src.doi}</a></span>` : ''}
         </div>
-        <div class=”evidence-meta-row”>
-          ${details.map(d => `<span class=”evidence-meta-item”>${d}</span>`).join(' • ')}
+        <div class="evidence-meta-row">
+          ${details.map(d => `<span class="evidence-meta-item">${d}</span>`).join(' • ')}
         </div>
       `;
       listContainer.appendChild(card);
@@ -5610,7 +5615,9 @@
 
 
 </script>
-<script src="dashboard-progress.js?v=1.1.2"></script>
+<script src="dashboard-progress.js?v=1.2.0"></script>
 <script src="dashboard-feedback.js?v=1.0.2"></script>
+<script src="dashboard-relationships.js?v=1.2.0"></script>
+<script src="dashboard-shell.js?v=1.2.0"></script>
 </body>
 </html>

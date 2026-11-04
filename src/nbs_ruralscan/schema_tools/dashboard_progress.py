@@ -169,6 +169,16 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
     )
     # A repeated payload row must not count twice (e.g. _evDropped plus full EV).
     evidence = {r["evidence_id"]: r for r in ev if r.get("evidence_id")}
+    # Count assessment work separately from current approval. Reopened or queried
+    # claims have been assessed, but are not necessarily resolved. A flag alone can
+    # be an automated detector output, so cannot establish a review took place.
+    assessment_actions = {"ok", "keep", "drop", "query", "reclassify", "retag"}
+    assessed_ids = {
+        r.get("evidence_id")
+        for r in data.get("review_log", [])
+        if str(r.get("decision", "")).strip().lower() in assessment_actions
+    } & evidence.keys()
+    assessed_ids.update(eid for eid, row in evidence.items() if _approved(row))
     families = registers.get("FAM_family_registry", [])
     tools = registers.get("TOOL_tool_registry", [])
     searches = _searches(registers.get("SRCH_search_register", []))
@@ -216,6 +226,10 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                 "nbs_id": fam.get("nbs_id", ""),
                 "name": fid.split("__")[-1].replace("_", " ").capitalize(),
                 "subpractices": [],
+                "scope_kind": (
+                    "all_families" if fid.endswith("__cross_family") else "family"
+                ),
+                "scope_definition": fam.get("definition", ""),
             },
         )
         entry = {
@@ -268,6 +282,7 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                 "evidence_ids": set(),
                 "dropped_evidence_ids": set(),
                 "approved_evidence_ids": set(),
+                "reviewed_evidence_ids": set(),
                 "extraction_counts": {k: 0 for k in ("T4", "effects", "M2b", "other")},
                 "contributions": {k: set() for k in ("T4", "T3", "T6", "M2b")},
             },
@@ -312,6 +327,8 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         record["family_ids"].update(family_ids(row))
         field = "evidence_ids" if eid in active else "dropped_evidence_ids"
         record[field].add(eid)
+        if eid in assessed_ids:
+            record["reviewed_evidence_ids"].add(eid)
         if eid in active:
             role = row.get("use_role")
             bucket = {
@@ -394,6 +411,12 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         ]
         live_ids = selected_ev.keys() & active.keys()
         approved_ids = {eid for eid in live_ids if _approved(active[eid])}
+        reviewed_ids = selected_ev.keys() & assessed_ids
+        dropped_ids = selected_ev.keys() - active.keys()
+        reviewed_dropped_ids = reviewed_ids & dropped_ids
+        sources_with_review = {
+            r["key"] for r in selected if r["reviewed_evidence_ids"] & reviewed_ids
+        }
         extracted, reviewed, fully_reviewed = set(), set(), set()
         for record in selected:
             ids = record["evidence_ids"] & live_ids
@@ -418,14 +441,34 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         ]
         return {
             "known_sources": len(selected),
+            "source_keys": sorted(r["key"] for r in selected),
             "extracted_sources": len(extracted),
             "reviewed_sources": len(reviewed),
             "fully_reviewed_sources": len(fully_reviewed),
+            "sources_with_reviewed_excerpts": len(sources_with_review),
+            "sources_with_approved_excerpts": len(reviewed),
             "active_excerpts": len(live_ids),
             "retained_excerpts": len(live_ids),
             "all_excerpts": len(selected_ev),
+            "reviewed_excerpts": len(reviewed_ids),
+            "unreviewed_excerpts": len(selected_ev.keys() - reviewed_ids),
+            "reviewed_pct": (
+                round(100 * len(reviewed_ids) / len(selected_ev), 1)
+                if selected_ev
+                else None
+            ),
             "approved_excerpts": len(approved_ids),
-            "dropped_excerpts": len(selected_ev.keys() - active.keys()),
+            "approved_pct": (
+                round(100 * len(approved_ids) / len(reviewed_ids), 1)
+                if reviewed_ids
+                else None
+            ),
+            "reviewed_active_excerpts": len(reviewed_ids & live_ids),
+            "reviewed_dropped_excerpts": len(reviewed_dropped_ids),
+            "reviewed_unresolved_excerpts": len(
+                reviewed_ids - approved_ids - dropped_ids
+            ),
+            "dropped_excerpts": len(dropped_ids),
             "t4_relationships": len({r["key"] for r in t4}),
             "t4_operational_relationships": len(
                 {r["key"] for r in t4 if r["operational"]}
@@ -459,6 +502,8 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                     "nbs_id": row.get("nbs_id", ""),
                     "name": fid.split("__")[-1].replace("_", " ").capitalize(),
                     "subpractices": [],
+                    "scope_kind": "unmapped",
+                    "scope_definition": "Recorded evidence routing tag absent from the family registry.",
                 },
             )
     practices = []
@@ -476,8 +521,10 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
             {
                 "family_id": "__unassigned",
                 "nbs_id": nbs,
-                "name": "Practice-wide / family not assigned",
+                "name": "Family not recorded",
                 "subpractices": [],
+                "scope_kind": "unassigned",
+                "scope_definition": "No matching family association is recorded for these source or evidence records; this does not mean applicable to all families.",
                 "metrics": metrics(nbs, "__unassigned"),
             }
         )
@@ -513,7 +560,13 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
             "searches": "Shared retrieval identity uses run, practice, family, category, date, query and limits. Shared retrievals counted once; table-specific screening variants not aggregated. Search observations overlap and are not unique publications. Conflicts exclude only the affected count field.",
             "screened_pct": "Screened / retrieved observations for matched complete, ordered numeric search records only; not unique-source screening coverage.",
             "screening": "Per-source screening decisions and discovery-parent links are not recorded; no source-level screening percentage is inferred.",
-            "reviewed_sources": "Sources with at least one retained excerpt currently approved; not whole-paper reviews.",
+            "reviewed_excerpts": "Distinct claims with a recorded Keep/OK, Drop, Query, Reclassify or Retag decision, or an explicit reviewer_ok approval. Includes human and automated decisions, quarantined claims and previously reviewed claims reopened for another decision. Mere flags and reopen events do not establish an assessment. This measures recorded review work, not completed review.",
+            "reviewed_pct": "Reviewed claims divided by all extracted claims, including quarantined claims. Missing review history is not inferred from a quarantine status.",
+            "approved_pct": "Currently approved retained claims divided by claims with a recorded review decision or explicit approval; not the percentage reviewed.",
+            "reviewed_unresolved_excerpts": "Previously assessed retained claims without current approval, including queries and reopened claims. They may still need a decision.",
+            "sources_with_reviewed_excerpts": "Sources with at least one claim with a recorded assessment or explicit approval in the displayed scope, including quarantined claims; not whole-paper reviews.",
+            "sources_with_approved_excerpts": "Sources with at least one retained excerpt currently approved; not whole-paper reviews.",
+            "reviewed_sources": "Legacy compatibility field: sources with at least one retained excerpt currently approved; use sources_with_reviewed_excerpts for recorded assessment work.",
             "fully_reviewed_sources": "Sources with a nonempty retained excerpt set, all approved in the displayed scope.",
             "extraction_counts": "Mutually exclusive retained excerpt role buckets: T4 structural suitability; effects nbs_effect; M2b operational_risk/asset_vulnerability; other remaining roles. These do not claim compilation into T3/T6.",
             "t4_operational_relationships": "Soft operational rows marked operational_constraint and is_scenario_candidate=true. Hard operational masks remain core suitability relationships.",
