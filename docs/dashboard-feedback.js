@@ -12,7 +12,7 @@
   var H2C = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
   var ISSUE_URL = 'https://github.com/CIAT/nbs_ruralscan/issues/new';
   var TYPES = ['Question', 'Suggestion', 'Error', 'Praise'], SEV = ['Low', 'Med', 'High'];
-  var TARGETS = '[data-vfeid], .evidence-card, #vf-cards > div, tbody tr, .card-container, .stat-card, .tab-content, .app-header';
+  var TARGETS = '[data-feedback-key], [data-vfeid], .evidence-card, #vf-cards > div, tbody tr, .card-container, .stat-card, .tab-content, .app-header';
   var page = (location.pathname.split('/').pop() || 'index.html');
   var mode = null, notes = load(), composer = null, h2cPromise = null;
 
@@ -36,9 +36,15 @@
   function clean(t) { return (t || '').replace(/\s+/g, ' ').trim(); }
   function context() {
     var tab = document.querySelector('.tab-btn.active');
-    var scope = tabParam() === 'tab-qaqc' ? Object.assign({}, window._vfScope || {}) :
-      { nbs: typeof activeNbsScope === 'function' ? activeNbsScope() : 'all',
-        family: typeof activeFamilyScope === 'function' ? activeFamilyScope() : 'all' };
+    var tabId = tabParam();
+    var scope;
+    if (tabId === 'tab-qaqc') scope = Object.assign({}, window._vfScope || {});
+    else if (tabId === 'tab-interrogator') scope = {
+      nbs: (document.getElementById('select-nbs') || {}).value || 'all',
+      family: (document.getElementById('select-family') || {}).value || 'all'
+    };
+    else if (window.DashboardProgress) scope = window.DashboardProgress.context(tabId);
+    else scope = { nbs: 'all', family: 'all' };
     return { tab: tab ? clean(tab.textContent) : '', scope: scope,
       build: typeof dashboardData !== 'undefined' && dashboardData ? dashboardData.git_commit : '' };
   }
@@ -71,8 +77,13 @@
     }).join(' · ').replace(/__/g, ' / ').replace(/_/g, ' ');
   }
   function anchorId(e) { var a = e; while (a && !a.id) a = a.parentElement; return a && a.id && !/^rv-/.test(a.id) ? a.id : ''; }
+  // Only migrate notes with an explicit stable source identity. Text matches are unsafe.
+  function noteTab(n) {
+    return n.targetKey && n.targetKey.indexOf('source:') === 0 ? 'tab-stocktake' : n.tab;
+  }
   function findTarget(n) {
-    if (n.page !== page || (n.tab && n.tab !== tabParam())) return null;
+    var targetTab = noteTab(n);
+    if (n.page !== page || (targetTab && targetTab !== tabParam())) return null;
     var cands = document.querySelectorAll(TARGETS);
     for (var i = 0; i < cands.length; i++) if ((n.targetKey ? targetKey(cands[i]) === n.targetKey : labelFor(cands[i]) === n.target) && !isUI(cands[i])) return cands[i];
     return null; // Never attach a stale note to an unrelated parent or another filtered row.
@@ -382,8 +393,12 @@
     if (k === 'issue') issueDialog();
   });
   function jump(n) {
-    if (n.page !== page) { location.href = n.page + (n.tab ? '?tab=' + n.tab : '') + '#rv=' + n.id; return; }
-    if (n.tab) { var tb = Array.from(document.querySelectorAll('.tab-btn')).find(function(b) { return b.dataset.tab === n.tab; }); if (tb && !tb.classList.contains('active')) tb.click(); }
+    var targetTab = noteTab(n);
+    if (n.page !== page) { location.href = n.page + (targetTab ? '?tab=' + targetTab : '') + '#rv=' + n.id; return; }
+    if (targetTab) { var tb = Array.from(document.querySelectorAll('.tab-btn')).find(function(b) { return b.dataset.tab === targetTab; }); if (tb && !tb.classList.contains('active')) tb.click(); }
+    if (n.targetKey && window.DashboardProgress && window.DashboardProgress.revealTarget) {
+      window.DashboardProgress.revealTarget(n.targetKey);
+    }
     setTimeout(function () {
       var t = findTarget(n); if (!t) { toast('Target is not visible. Restore the saved practice/filter context shown in the note.'); return; }
       t.scrollIntoView({ behavior: 'smooth', block: 'center' }); t.classList.add('rv-flash'); setTimeout(function () { t.classList.remove('rv-flash'); }, 1600); pins();
