@@ -1028,6 +1028,7 @@
 </style>
 <link rel="stylesheet" href="t4_analysis.css">
 <script src="t4_analysis.js"></script>
+<link rel="stylesheet" href="dashboard-feedback.css">
 </head>
 <body data-theme="dark">
 
@@ -4509,6 +4510,8 @@
         const funnelTitle = `${discoveredCount} screened-in candidate source(s) from discovery → ${acquiredCount} acquired to the library → ${totalSourcesCount} extracted into the registers`;
 
         const gtr = document.createElement('tr');
+        gtr.dataset.feedbackKey = 'practice:' + r.nbsId;
+        gtr.dataset.feedbackLabel = nbsName;
         gtr.style.cursor = 'pointer';
         gtr.title = `Click to explore ${nbsName} in detail`;
         gtr.innerHTML = `
@@ -4535,6 +4538,8 @@
       const subpracticesNames = r.subpractices.map(s => s.name).join(', ');
 
       const tr = document.createElement('tr');
+      tr.dataset.feedbackKey = 'family:' + r.familyId;
+      tr.dataset.feedbackLabel = nbsName + ' · ' + familyDisplayName;
       tr.innerHTML = `
         <td class="audit-family-cell" style="font-weight:500; padding:10px 14px; cursor:pointer;" title="Click to interrogate ${vfEsc(familyDisplayName)} in detail">
           <div style="color:var(--text-primary); font-size:12.5px;">${vfEsc(familyDisplayName)}</div>
@@ -7155,5 +7160,6 @@
     drilldownContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 </script>
+<script src="dashboard-feedback.js"></script>
 </body>
 </html>
