@@ -30,7 +30,7 @@ from ..runtime.categorical import evaluate_categorical
 from ..runtime.numeric import evaluate_numeric
 
 VERSION = "0.2.0"
-PACKAGE_VERSION = "0.1.5"
+PACKAGE_VERSION = "0.1.6"
 
 
 def read_csv(path):
@@ -1191,6 +1191,16 @@ def _write_package(root, output, **kwargs):
     )
     _write_csv(output / "inclusion.csv", result["inclusion"])
     _write_csv(output / "evidence_accounting.csv", result["evidence"])
+    from .relationship_catalogue import build_catalogue, render_catalogue
+
+    catalogue = build_catalogue(
+        result["evidence"],
+        result["synthesis_report"]["evidence_dispositions"],
+        read_csv(root / f"schema/recipes/{contract['nbs']}/T4_suitability_mappings.csv"),
+    )
+    (output / "relationship_catalogue.json").write_text(stable_json(catalogue), encoding="utf-8")
+    (output / "relationships.html").write_text(render_catalogue(catalogue), encoding="utf-8")
+
     (output / "T4_suitability_mappings.csv").write_bytes(
         (
             root / f"schema/recipes/{contract['nbs']}/T4_suitability_mappings.csv"
@@ -1210,6 +1220,7 @@ def _write_package(root, output, **kwargs):
         "# T4 developer contract\n\n"
         "Start with [the implementation task brief](START_HERE.md), [developer table](developer_table.csv), [implementation notes](IMPLEMENTATION.md) and [method](METHOD.md). "
         "Use the existing Evidence Query dashboard for ongoing inspection; [offline table and plots](index.html) are a pinned package snapshot.\n\n"
+        "[Source relationship catalogue](relationships.html) retains directions and classes independently of executable mappings.\n\n"
         f"This package contains {contract['summary']['configured_rows']} configured mappings and {contract['summary']['display_rows'] - contract['summary']['configured_rows']} operational evidence-only rows. "
         "It is an implementation handoff, not a completed spatial run. Select response functions and record applicability before execution. "
         "Use row readiness for implementation state, reasons and next actions. Defined logic is not a validated spatial run. Legacy status/blockers describe response selection only.\n\n"
@@ -1344,6 +1355,8 @@ def verify_package(root, output):
         "DATASET_INPUTS.md",
         "VERSION",
     }
+    if tuple(int(part) for part in manifest.get("package_version", "0.0.0").split(".")) >= (0, 1, 6):
+        required_outputs.update({"relationship_catalogue.json", "relationships.html"})
     required_inputs = {
         "schema/registers/EV_evidence_register.csv",
         "schema/registers/SRC_source_register.csv",

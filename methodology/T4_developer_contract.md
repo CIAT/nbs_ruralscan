@@ -183,3 +183,16 @@ Readiness is deterministically derived after policy compilation. An explicit res
 The four mutually exclusive implementation states are: `defined` (response or mask interface specified), `provisional` (specified response with unresolved soil-input assumptions), `blocked` (response, continuation or scenario decision needed), and `reference_only` (retained evidence without an executable response). Summaries cover all displayed rows and, separately, each approved policy's criteria plus gates. Missing required inputs and target checks remain listed even for defined logic. Every state retains `execution_ready=false`; no raster validation is inferred.
 
 Each row carries reasons, effective function identity/fingerprint, applicable source-input limits, proposal identifiers and next actions by owner role. Reference-only evidence does not create an artificial approval queue. Legacy row `status`/`blockers` remain for compatibility; dashboards and handoff consumers use the reconciled `readiness`. This is a presentation and accounting layer, not a change to analytical rules, evidence approvals or weights.
+
+
+## Relationship visibility (4 November 2026)
+
+Every new developer package includes `relationship_catalogue.json` and `relationships.html`.
+They account for non-dropped structural claims independently of executable mappings,
+including species/crop scope, source relationship wording/classes, compilation disposition,
+explicit mapping links, approval flags, context, quotes and lineage. `selection_only` is
+not a conclusion that no direction or classes exist: the compiler gates scoping candidates
+before decoding. The catalogue flags this mismatch but grants no compilation authority.
+Source occurrence, adoption, priority and accounting claims still require routing review.
+The source relationship catalogue supplements the numerical plots; it never invents a
+curve for an uncalibrated direction. Historical packages remain immutable.

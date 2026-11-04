@@ -1,12 +1,12 @@
 ---
 name: "source-command-extract-evidence"
 description: "Extract and verify source-provenanced evidence for an authorised T4 suitability, T3/T6 effect, or operational-risk lane."
-version: "v1.9.3"
+version: "v1.9.4"
 ---
 
 # Evidence extraction
 
-Current ruleset: **v1.9.3**. Stamp new units with the version actually used; never restamp
+Current ruleset: **v1.9.4**. Stamp new units with the version actually used; never restamp
 historical evidence. Version log: `methodology/RULESET_VERSIONS.md`. This skill is the
 canonical extraction instruction; `.claude/commands/extract-evidence.md` delegates here.
 
@@ -73,6 +73,16 @@ change in an outcome variable are different meanings; do not interchange their v
   use their dedicated adapter and central source verifier; unsupported formats stay blocked.
   Repeat without `--dry-run` only after all gates pass. XW-unmapped outcomes remain catalogued
   and visibly unmapped; they must not be silently renamed to force a consumer.
+
+## Relationship visibility check
+
+For T4, reconcile source relationships separately from executable mappings. A
+`scoping_candidate`/`selection_only` compiler status must not hide stored directions,
+shapes, ranked classes or categorical gates. Run the developer relationship catalogue
+and inspect its visibility flags. They require review, not automatic evidence-type
+promotion or numerical compilation. Retain context, scope, lineage and human approval.
+See defect #54. Report linked claims, unlinked relationships and calibration holds
+separately; claim counts and mapping counts are different denominators.
 
 ## Close the work
 
