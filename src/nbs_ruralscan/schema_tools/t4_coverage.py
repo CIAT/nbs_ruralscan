@@ -211,10 +211,12 @@ def check(root):
         record = covered.get(norm(paper["File"]))
         if not record or record["source_id"] not in sources or not record["finding"]:
             errors.append("Unaccounted stocktake source: " + paper["File"])
-    evidence = {
+    all_evidence = {
         row["evidence_id"]: row
         for row in read(root, "schema/registers/EV_evidence_register.csv")
-        if row["nbs_id"] == "agroforestry"
+    }
+    evidence = {
+        eid: row for eid, row in all_evidence.items() if row["nbs_id"] == "agroforestry"
     }
     policies = {
         row["evidence_id"]: row
@@ -288,7 +290,14 @@ def check(root):
     )
     errors.extend(
         check_review_followups(
-            read(root, "pipeline/metrics/review_log.csv"), evidence, followups, root
+            [
+                row
+                for row in read(root, "pipeline/metrics/review_log.csv")
+                if row["evidence_id"] in evidence
+            ],
+            all_evidence,
+            followups,
+            root,
         )
     )
     for row in evidence.values():
