@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Priority Hotspots</title>
+<script>(function(){var t="light";try{t=localStorage.getItem("v1b-theme")||"light"}catch(e){}document.documentElement.setAttribute("data-theme",t)})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="v1b.css">
+<link rel="stylesheet" href="review-mode.css">
+</head>
+<body>
+<div id="chrome"></div>
+
+<main class="wrap">
+  <section class="chapter">
+    <span class="eyebrow sc">Stage 05 · Priority hotspots</span>
+    <h1 class="question">Where does the opportunity meet the project’s priorities?</h1>
+    <p class="lede">Overlay the need layers chosen for the project’s objectives on the opportunity space. <b>You take away a hotspot shortlist</b>, by cell and by district. The default view is simple; the sections below show how it is built.</p>
+  </section>
+
+  <div class="ctlrow">
+    <div class="seg" id="seg-v" role="group" aria-label="Plate variant">
+      <button type="button" data-v="hot" aria-pressed="true">Hotspots</button>
+      <button type="button" data-v="need" aria-pressed="false">Need</button>
+      <button type="button" data-v="bv" aria-pressed="false">Suitability × need</button>
+      <button type="button" data-v="district" aria-pressed="false">District summary</button>
+    </div>
+  </div>
+
+  <figure class="plate" id="plate" style="margin:0">
+    <svg class="map" id="map" role="img" aria-label="Map of priority hotspots for planted silvoarable agroforestry, example data"></svg>
+    <div class="pl-title">
+      <h2 id="t"></h2>
+      <p class="pl-sub" id="s"></p>
+      <p class="pl-scope" id="sc"></p>
+      <span class="pl-mark">Example data — authored surface, not a pilot result</span>
+    </div>
+    <div class="legend" id="lg"></div>
+  </figure>
+  <p class="figcap" id="cap"></p>
+  <p class="plate-src">Boundaries: geoBoundaries gbOpen v6 (CC-BY 4.0). Need cells: synthetic example surface (seed 20261031) — not drought, poverty or food-security data.</p>
+
+  <div class="subtabs" role="tablist" aria-label="Stage 05 sections">
+    <button type="button" role="tab" aria-controls="tp-1" aria-selected="true"><span class="sec-n">5.1</span>Hotspot map</button>
+    <button type="button" role="tab" aria-controls="tp-2" aria-selected="false" tabindex="-1"><span class="sec-n">5.2</span>Priorities and weights</button>
+    <button type="button" role="tab" aria-controls="tp-3" aria-selected="false" tabindex="-1"><span class="sec-n">5.3</span>How the score is built</button>
+    <button type="button" role="tab" aria-controls="tp-4" aria-selected="false" tabindex="-1"><span class="sec-n">5.4</span>District ranking</button>
+    <button type="button" role="tab" aria-controls="tp-5" aria-selected="false" tabindex="-1"><span class="sec-n">5.5</span>Hotspot fingerprint</button>
+  </div>
+
+  <!-- 5.1 -->
+  <section class="tabpanel" role="tabpanel" id="tp-1">
+    <div class="tp-head"><div><h2><span class="sec-n">5.1</span>Hotspot map</h2><p>Where the opportunity space and high need coincide, with the priorities set in Stage 01.</p></div>
+      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
+    <div class="prio" style="margin-top:0">
+      <span class="p-k">Selected priorities</span>
+      <div class="p-v"><b>Climate resilience + Livelihoods</b> <span>· set in Stage 01 · <span id="preset-name">Balanced</span> preset</span>
+        <div class="p-layers"><span>Drought exposure</span><span>Rural poverty</span><span>Food insecurity</span></div>
+      </div>
+      <p class="p-note">Priorities decide which need layers are shown; the example preset does not re-weight the map (Section 5.2).</p>
+    </div>
+    <div class="reading" style="padding-top:8px">
+      <div>
+        <h3>How to read Figure 5.1</h3>
+        <ol class="notes">
+          <li><b>A hotspot is an intersection, not a sum.</b> A cell is a hotspot when it is in the opportunity space and its need is at or above the chosen hotspot score.</li>
+          <li><b>Need layers are proxies at 5 km.</b> Correlated layers are grouped and one represents each group, so the same signal is not counted twice (Section 5.2).</li>
+          <li><b>Residents are not beneficiaries.</b> People counted in hotspot cells live there. Who would take part or benefit is a question for feasibility.</li>
+          <li><b>The district view summarises.</b> It shows where hotspots concentrate; it does not locate sites.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>Key figures</h3>
+        <dl class="figs" id="figs"></dl>
+        <div class="context-card">
+          <h4>National context</h4>
+          <span class="cv">0.61</span> <span style="color:var(--ink-2);font-size:var(--t15)">Gender inequality index (example)</span>
+          <p>One value for the whole country: it describes the setting, it cannot rank districts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5.2 -->
+  <section class="tabpanel" role="tabpanel" id="tp-2" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">5.2</span>Priorities and weights</h2><p>Which need layers enter the hotspot score and how much each counts — an example preset to start from.</p></div>
+      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
+    <div class="wctl">
+      <div class="fld"><span>Objectives (tick two or three)</span>
+        <div class="chips" id="objs">
+          <button type="button" class="chip" aria-pressed="true">Climate resilience</button><button type="button" class="chip" aria-pressed="true">Livelihoods</button><button type="button" class="chip" aria-pressed="false">Biodiversity</button><button type="button" class="chip" aria-pressed="false">Water security</button><button type="button" class="chip" aria-pressed="false">Gender equity</button>
+        </div></div>
+      <div class="fld"><span>Weight preset</span>
+        <div class="seg" id="seg-preset" role="group" aria-label="Weight preset">
+          <button type="button" data-v="climate" aria-pressed="false">Climate adaptation</button><button type="button" data-v="livelihood" aria-pressed="false">Livelihood</button><button type="button" data-v="biodiversity" aria-pressed="false">Biodiversity</button><button type="button" data-v="balanced" aria-pressed="true">Balanced</button><button type="button" data-v="custom" aria-pressed="false">Custom</button>
+        </div></div>
+    </div>
+    <p class="wstat" id="wstat" aria-live="polite"></p>
+    <div class="tabwrap"><table class="qt wt" id="t51"></table></div>
+  </section>
+
+  <!-- 5.3 -->
+  <section class="tabpanel" role="tabpanel" id="tp-3" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">5.3</span>How the score is built</h2><p>Four steps from the opportunity space to hotspot classes.</p></div>
+      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a></div></div>
+    <svg id="flow" viewBox="0 0 1200 210" role="img" aria-label="Flow from suitability to hotspot classes"></svg>
+    <ol class="flow-notes">
+      <li><b>Opportunity space.</b> Only cells in the suitability classes chosen in the control bar take part; everything else stays out.</li>
+      <li><b>Need layers, one per cluster.</b> Each objective brings a group of layers; correlated layers are clustered and one represents each cluster.</li>
+      <li><b>Weighted combination.</b> The representatives are standardised and combined with weights — here the example preset from Section 5.2.</li>
+      <li><b>Hotspot classes.</b> The combined score is cut into classes; the hotspot score in the control bar decides which classes count.</li>
+    </ol>
+    <p class="figcap"><b>Figure 5.2</b> · How the hotspot score is built from the opportunity space and the need layers</p>
+    <p class="m2-note" style="max-width:900px">Weights shown on this page are an example preset. The method combines expert weights with data-driven ones — a hybrid of AHP, CRITIC and entropy weighting — so no single judgement sets the result. No scoring runs in this prototype.</p>
+  </section>
+
+  <!-- 5.4 -->
+  <section class="tabpanel" role="tabpanel" id="tp-4" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">5.4</span>District ranking</h2><p>Which districts hold the most hotspot area, and why. Select a row to read its narrative.</p></div>
+      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
+    <div class="rank-grid">
+      <div class="tabwrap"><table class="qt rk" id="t52"></table></div>
+      <aside class="why" id="why"></aside>
+    </div>
+  </section>
+
+  <!-- 5.5 -->
+  <section class="tabpanel" role="tabpanel" id="tp-5" hidden>
+    <div class="tp-head"><div><h2><span class="sec-n">5.5</span>Hotspot fingerprint</h2><p>What the hotspot cells are made of: area, suitability, farming systems, people and production.</p></div>
+      <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
+    <div class="fld" style="margin-bottom:14px"><span>Selected hotspot classes</span>
+      <div class="seg seg-sm" id="seg-hot5" role="group" aria-label="Selected hotspot classes"><button type="button" data-v="high" aria-pressed="true">High+</button><button type="button" data-v="vh" aria-pressed="false">Very high</button></div></div>
+    <div class="tabwrap" style="max-width:720px"><table class="qt" id="t53"></table></div>
+  </section>
+
+  <div class="nextstage">
+    <p><b>Next, compare practices for the shortlisted places.</b> Footprint, evidence and indicative cost, side by side.</p>
+    <a class="btn" href="06-comparison.html">Open Stage 06</a>
+  </div>
+</main>
+
+<script src="../sle_geo.js"></script>
+<script src="v1b-versions.js"></script>
+<script src="v1b-map.js"></script>
+<script src="v1b-fixture.js"></script>
+<script>
+(function () {
+  'use strict';
+  V1BUI.chrome(5, { hotspot: true });
+  var M = V1BMap, F = FIXTURE, HA = F.haPerCell, ST = V1BUI.state, R = F.rollup(ST);
+  var fmt = function (n) { return Math.round(n).toLocaleString('en-GB'); };
+  var pct = function (x) { return Math.round(x * 100) + ' %'; };
+  var r3 = function (n) { return Math.round(n / 1000) * 1000; };
+  function sw(cls, label) { return '<span class="sw"><i class="' + cls + '"></i>' + label + '</span>'; }
+  function swk(k, label) { return '<span class="sw"><i style="background:var(' + k + ')"></i>' + label + '</span>'; }
+  var narrow = window.matchMedia('(max-width: 760px)');
+  var svg = M.plate(document.getElementById('map'), { uid: 'hot' });
+  svg.style.setProperty('--hz', 'var(--n4)');
+  function fitView() { svg.setAttribute('viewBox', narrow.matches ? '352 14 590 606' : '0 0 960 640'); }
+  fitView();
+  var variant = 'hot', preset = 'balanced', custom = false;
+  function ranked() {
+    return Object.keys(R.districts).map(function (k) { return R.districts[k]; })
+      .filter(function (d) { return d.selected >= 20; }).sort(function (a, b) { return b.shareHotspot - a.shareHotspot; });
+  }
+  function hotWords() { return ST.hot === 'vh' ? 'Very high' : 'High or Very high'; }
+  function tier(k) { return k === 'vh' || k === 'h' ? 3 : k === 'm' ? 2 : 1; }
+
+  /* ---- Figure 5.1 ---- */
+  function render() {
+    var district = ST.view !== 'cells', cw = V1BUI.classWords(ST), t, s, cap, lg;
+    svg.classList.toggle('no-city', district);
+    document.querySelectorAll('#seg-v button').forEach(function (b) { b.setAttribute('aria-pressed', district ? b.getAttribute('data-v') === 'district' : b.getAttribute('data-v') === variant); });
+    if (district) {
+      var rk = ranked(), top3 = rk.slice(0, 3), mx = rk.length ? rk[0].shareHotspot : 1, w = Math.max(5, Math.ceil(mx * 100 / 5 / 5) * 5) / 100;
+      M.paintCells(svg, F.cells, function (c) { return R.sel(c) ? 'opp' : null; });
+      M.paintDistricts(svg, function (n) { var d = R.districts[n]; return d.selected < 20 ? 'out' : 'b' + (Math.min(4, Math.floor(d.shareHotspot / w)) + 1); });
+      var extra = {}; top3.forEach(function (d) { extra[d.name] = pct(d.shareHotspot); });
+      M.setLabels(svg, { extra: extra, emph: top3.map(function (d) { return d.name; }) });
+      t = 'Share of each district’s opportunity space that is a hotspot';
+      s = 'Hotspot cells (need ' + hotWords() + ') as a share of the district’s ' + cw + ' cells. The three largest shares are named with values.';
+      cap = 'Share of each district’s opportunity space that is a priority hotspot, ' + (ST.view === 'adm3' ? 'districts — Admin 3 is not in this example' : 'districts (Admin 2)');
+      lg = '<div class="lg-h">Share of opportunity space that is a hotspot</div><div class="ramp" style="--hz:var(--n4)">' +
+        [1, 2, 3, 4, 5].map(function (i) { return '<i class="b' + i + '"></i>'; }).join('') + '</div><div class="ramp-lbl">' +
+        [0, 1, 2, 3, 4, 5].map(function (i) { return '<span>' + Math.round(i * w * 100) + (i === 5 ? ' %' : '') + '</span>'; }).join('') + '</div>' +
+        '<div class="lg-row">' + sw('sw-out', 'Too little opportunity space to summarise') + '</div>';
+    } else if (variant === 'need') {
+      M.paintCells(svg, F.cells, function (c) { return R.sel(c) ? { vh: 'p4', h: 'p3', m: 'p2', l: 'p1' }[c.needClass] : null; });
+      M.setLabels(svg, {});
+      t = 'Need across the opportunity space'; s = 'Drought exposure, rural poverty and food insecurity, shown as one need class per cell.';
+      cap = 'Need class within the opportunity space, 5 km cells';
+      lg = '<div class="lg-h">Need class, opportunity space only</div><div class="lg-row">' + swk('--n4', 'Very high') + swk('--n3', 'High') + swk('--n2', 'Moderate') + swk('--n1', 'Low') + '</div><div class="lg-row">' + sw('sw-out', 'Outside the opportunity space') + '</div>';
+    } else if (variant === 'bv') {
+      var ssp = ST.climate === 'ssp';
+      M.paintCells(svg, F.cells, function (c) {
+        var k = ssp ? c.suitClass2050 : c.suitClass; if (k === 'excluded' || k === 'unknown') return k;
+        return 'bv' + tier(k) + tier(c.needClass);
+      });
+      M.setLabels(svg, {});
+      t = 'Suitability and need together'; s = 'Every cell, coloured by its suitability tier and its need tier. The darkest cells are high on both.';
+      cap = 'Suitability tier × need tier, all cells, 5 km cells';
+      var grid = '';
+      for (var n = 3; n >= 1; n--) for (var u = 1; u <= 3; u++) grid += '<i class="bvl k-bv' + u + n + '"></i>';
+      lg = '<div class="lg-h">Suitability × need</div><div class="bvleg"><div class="bvy">Need →</div><div class="bvg">' + grid + '</div><div class="bvx">Suitability →</div></div>' +
+        '<div class="lg-row">' + sw('sw-excl', 'Excluded by law or land cover') + sw('sw-unk', 'No data') + '</div>';
+    } else {
+      M.paintCells(svg, F.cells, function (c) { return !R.sel(c) ? null : R.hot(c) ? 'hot' : 'opp'; });
+      M.setLabels(svg, {});
+      t = 'Priority hotspots for planted silvoarable agroforestry'; s = 'Opportunity cells where need is ' + hotWords() + '.';
+      cap = 'Priority hotspots for planted silvoarable agroforestry (need ' + hotWords() + '), 5 km cells';
+      lg = '<div class="lg-h">Hotspots</div><div class="lg-row">' + swk('--n4', 'Hotspot') + swk('--s1', 'Opportunity, need below ' + (ST.hot === 'vh' ? 'Very high' : 'High')) + '</div><div class="lg-row">' + sw('sw-out', 'Outside the opportunity space') + '</div>';
+    }
+    document.getElementById('t').textContent = t;
+    document.getElementById('s').textContent = s;
+    document.getElementById('sc').textContent = V1BUI.scopeText(ST) + ' · Climate resilience + Livelihoods';
+    document.getElementById('lg').innerHTML = lg;
+    document.getElementById('cap').innerHTML = '<b>Figure 5.1</b> · ' + cap + ', ' + cw + ', ' + (ST.climate === 'ssp' ? 'opportunity on SSP2-4.5 about 2050' : 'baseline 1995–2014');
+  }
+  function figs() {
+    var T = R.totals, top3 = ranked().slice(0, 3);
+    document.getElementById('figs').innerHTML =
+      '<dt>Hotspot area (nominal)</dt><dd><span class="fig-k">' + fmt(T.overlap * HA) + '</span> ha</dd>' +
+      '<dt>Share of the opportunity space</dt><dd>' + pct(T.overlap / Math.max(1, T.selected)) + '</dd>' +
+      '<dt>Residents in hotspot cells (fictional)</dt><dd>' + fmt(r3(T.hotspotResidents)) + '</dd>' +
+      '<dt>Highest hotspot shares</dt><dd></dd>' +
+      top3.map(function (d) { return '<dt class="sub">' + d.name + '</dt><dd class="sub">' + pct(d.shareHotspot) + '</dd>'; }).join('');
+  }
+  document.getElementById('seg-v').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return; var v = b.getAttribute('data-v');
+    if (v === 'district') { V1BUI.setState({ view: 'adm2' }); return; }
+    variant = v;
+    if (ST.view !== 'cells') V1BUI.setState({ view: 'cells' }); else render();
+  });
+
+  /* ---- 5.2 priorities and weights ---- */
+  var GROUPS = [
+    ['Climate hazard', 'weighted', [['drought', 'Drought hazard', 'rainfall deficit index', 'soil moisture deficit, SPEI', 'low'], ['flood', 'Flood hazard', '1-in-100-year depth', '', 'low'], ['heat', 'Heat stress', 'heat index anomaly', 'night-time temperature', 'low'], ['water', 'Water stress', 'demand over supply', '', 'medium']]],
+    ['NbS response', 'weighted', [['erosion', 'Soil-erosion risk', 'modelled soil loss', 'slope length, rainfall erosivity', 'low'], ['carbon', 'Carbon sequestration potential', 'tonnes CO₂ per ha per year', '', 'low'], ['biod', 'Biodiversity priority', 'key areas and intactness', 'KBA overlap, habitat intactness', 'medium']]],
+    ['People and production', 'weighted', [['poverty', 'Rural poverty', 'headcount below the poverty line', '', 'high'], ['food', 'Food insecurity', 'share in crisis phase or worse', '', 'high'], ['gap', 'Production gap', 'shortfall against attainable yield', 'yield gap, NPP gap', 'high'], ['dep', 'Agricultural dependency', 'share of livelihoods from farming', '', 'medium']]],
+    ['Equity and inclusion', 'flag', [['gii', 'Gender inequality', 'national index', '', 'high'], ['iplc', 'Indigenous peoples’ and local communities’ lands', 'mapped community lands', '', 'high']]],
+    ['Context', 'descriptor', [['pop', 'Rural population density', 'people per km²', '', 'high'], ['mkt', 'Market access', 'travel time to market', '', 'low'], ['farm', 'Farm size', 'smallholder areas', '', 'medium'], ['prod', 'Production value', 'gross value of crops', '', 'high']]]
+  ];
+  var PRESETS = {
+    climate: { drought: 'H', flood: 'H', heat: 'H', water: 'M', erosion: 'M', carbon: 'L', biod: 'L', poverty: 'M', food: 'M', gap: 'L', dep: 'L' },
+    livelihood: { drought: 'M', flood: 'L', heat: 'L', water: 'L', erosion: 'M', carbon: 'L', biod: 'L', poverty: 'H', food: 'H', gap: 'H', dep: 'M' },
+    biodiversity: { drought: 'L', flood: 'L', heat: 'L', water: 'M', erosion: 'M', carbon: 'H', biod: 'H', poverty: 'M', food: 'L', gap: 'L', dep: 'L' },
+    balanced: { drought: 'M', flood: 'M', heat: 'M', water: 'M', erosion: 'M', carbon: 'M', biod: 'M', poverty: 'M', food: 'M', gap: 'M', dep: 'M' }
+  };
+  var W = Object.assign({}, PRESETS.balanced);
+  var PNAME = { climate: 'Climate adaptation', livelihood: 'Livelihood', biodiversity: 'Biodiversity', balanced: 'Balanced', custom: 'Custom' };
+  var CARD = { drought: 'precip', erosion: 'slope' };
+  function t51() {
+    var html = '<caption class="tabcap"><b>Table 5.1</b> · Need layers, weights and representatives<small>Weights are an example preset (L low · M medium · H high). Equity layers are flags and context layers are descriptors: neither enters the score.</small></caption>' +
+      '<thead><tr><th>Layer</th><th>Weight</th><th>Represents</th><th>Data sensitivity</th><th></th></tr></thead>';
+    GROUPS.forEach(function (g, gi) {
+      var note = g[1] === 'weighted' ? g[2].length + ' layers · weighted' : g[1] === 'flag' ? 'flag · shown, not weighted' : 'descriptor only · cannot rank';
+      html += '<tbody class="grp" data-g="' + gi + '"><tr class="gh"><th colspan="5"><button type="button" class="gtog" aria-expanded="true" data-g="' + gi + '"><span class="sec-n">5.2.' + (gi + 1) + '</span>' + g[0] + ' <span class="gnote">' + note + '</span></button></th></tr>';
+      g[2].forEach(function (v) {
+        var wcell = g[1] === 'weighted'
+          ? '<div class="seg seg-sm wseg" data-k="' + v[0] + '">' + ['—', 'L', 'M', 'H'].map(function (x) { return '<button type="button" data-v="' + x + '" aria-pressed="' + ((W[v[0]] || '—') === x) + '">' + x + '</button>'; }).join('') + '</div>'
+          : '<span class="sub">' + (g[1] === 'flag' ? 'Overlay only' : 'Filter only') + '</span>';
+        html += '<tr><td><b>' + v[1] + '</b><span class="sub" style="display:block">' + v[2] + '</span></td><td>' + wcell + '</td><td>' + (v[3] ? '<span class="rep-b">represents: ' + v[3] + '</span>' : '<span class="sub">—</span>') + '</td><td>' +
+          (v[4] === 'high' ? '<span class="sens sens-high">High — country-endorsed source recommended</span>' : v[4] === 'medium' ? '<span class="sens">Medium</span>' : '<span class="sens sub">Low</span>') + '</td><td><a class="ilink" href="00-config.html' + (CARD[v[0]] ? '#card-' + CARD[v[0]] : '#c3') + '" title="Open the variable card" aria-label="Variable card for ' + v[1] + '">i</a></td></tr>';
+      });
+      html += '</tbody>';
+    });
+    document.getElementById('t51').innerHTML = html;
+    document.getElementById('wstat').innerHTML = custom
+      ? '<b>Weights edited.</b> Results on this page show the unchanged example — no scoring runs in this prototype.'
+      : 'Preset: <b>' + PNAME[preset] + '</b>. Maps and tables show the example result for this preset.';
+    document.getElementById('preset-name').textContent = PNAME[preset] + (custom ? ' (edited)' : '');
+  }
+  document.getElementById('t51').addEventListener('click', function (e) {
+    var tog = e.target.closest('.gtog');
+    if (tog) { var tb = tog.closest('tbody'), ex = tog.getAttribute('aria-expanded') === 'true'; tog.setAttribute('aria-expanded', !ex); tb.classList.toggle('collapsed', ex); return; }
+    var b = e.target.closest('.wseg button'); if (!b) return;
+    W[b.parentNode.getAttribute('data-k')] = b.getAttribute('data-v') === '—' ? '' : b.getAttribute('data-v');
+    custom = true; preset = 'custom';
+    document.querySelectorAll('#seg-preset button').forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-v') === 'custom'); });
+    t51(); why();
+  });
+  V1BUI.segmented(document.getElementById('seg-preset'), function (v) {
+    preset = v; custom = v === 'custom'; if (PRESETS[v]) W = Object.assign({}, PRESETS[v]); t51(); why();
+  });
+  document.querySelectorAll('#objs .chip').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var on = document.querySelectorAll('#objs .chip[aria-pressed="true"]').length, cur = b.getAttribute('aria-pressed') === 'true';
+      if (!cur && on >= 3) return; if (cur && on <= 1) return;
+      b.setAttribute('aria-pressed', String(!cur));
+    });
+  });
+
+  /* ---- 5.3 flow ---- */
+  (function () {
+    var boxes = [['Opportunity space', 'selected suitability classes'], ['Need layers', 'one per correlation cluster'], ['Weighted combination', 'example preset weights'], ['Hotspot classes', 'cut by the hotspot score']];
+    var html = '<defs><marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0L10 5L0 10z" class="fl-arrow"/></marker></defs>', bw = 230, gap = 72, x = 20;
+    boxes.forEach(function (b, i) {
+      html += '<rect x="' + x + '" y="40" width="' + bw + '" height="110" rx="3" class="fl-box' + (i === 3 ? ' fl-end' : '') + '"/>' +
+        '<text x="' + (x + 18) + '" y="72" class="fl-n">' + (i + 1) + '</text><text x="' + (x + 18) + '" y="104" class="fl-t">' + b[0] + '</text><text x="' + (x + 18) + '" y="128" class="fl-s">' + b[1] + '</text>';
+      if (i < 3) html += '<line x1="' + (x + bw + 8) + '" y1="95" x2="' + (x + bw + gap - 8) + '" y2="95" class="fl-line" marker-end="url(#arw)"/>';
+      x += bw + gap;
+    });
+    document.getElementById('flow').innerHTML = html;
+  })();
+
+  /* ---- 5.4 district ranking ---- */
+  var DRIVERS = { 'Kailahun': ['Rural poverty', 'Drought hazard'], 'Koinadugu': ['Food insecurity', 'Drought hazard'], 'Kono': ['Rural poverty', 'Heat stress'], 'Kenema': ['Rural poverty', 'Production gap'],
+    'Tonkolili': ['Drought hazard', 'Food insecurity'], 'Bombali': ['Food insecurity', 'Heat stress'], 'Pujehun': ['Rural poverty', 'Flood hazard'], 'Bo': ['Production gap', 'Rural poverty'],
+    'Moyamba': ['Flood hazard', 'Rural poverty'], 'Port Loko': ['Production gap', 'Heat stress'], 'Kambia': ['Flood hazard', 'Food insecurity'], 'Bonthe': ['Flood hazard', 'Rural poverty'],
+    'Western Area Rural': ['—', '—'], 'Western Area Urban': ['—', '—'] };
+  var selD = null;
+  function t52() {
+    var rk = Object.keys(R.districts).map(function (k) { return R.districts[k]; }).filter(function (d) { return d.selected > 0; })
+      .sort(function (a, b) { return b.shareHotspot - a.shareHotspot; });
+    if (!selD || !R.districts[selD] || !R.districts[selD].selected) selD = rk.length ? rk[0].name : null;
+    document.getElementById('t52').innerHTML = '<caption class="tabcap"><b>Table 5.2</b> · Districts ranked by hotspot share<small>Residents fictional; flagged share from Stage 04 (High fire or flood).</small></caption>' +
+      '<thead><tr><th class="r">#</th><th>District</th><th class="r">Hotspot (ha)</th><th class="r">Share of opportunity</th><th class="r">Residents</th><th>Top need drivers</th><th class="r">Flagged</th></tr></thead><tbody>' +
+      rk.map(function (d, i) { return '<tr tabindex="0" data-d="' + d.name + '"' + (d.name === selD ? ' class="on"' : '') + '><td class="r">' + (i + 1) + '</td><td><b>' + d.name + '</b></td><td class="r">' + fmt(d.overlap * HA) + '</td><td class="r">' + pct(d.shareHotspot) + '</td><td class="r">' + fmt(r3(d.hotspotResidents)) + '</td><td class="sub">' + DRIVERS[d.name].join(' · ') + '</td><td class="r">' + pct(d.shareAny) + '</td></tr>'; }).join('') + '</tbody>';
+    why(rk);
+  }
+  function why(rk) {
+    rk = rk || Object.keys(R.districts).map(function (k) { return R.districts[k]; }).filter(function (d) { return d.selected > 0; }).sort(function (a, b) { return b.shareHotspot - a.shareHotspot; });
+    var d = R.districts[selD]; if (!d) { document.getElementById('why').innerHTML = ''; return; }
+    var rank = rk.map(function (x) { return x.name; }).indexOf(selD) + 1, top = rank === 1, dr = DRIVERS[selD];
+    var lines = top ? [
+      'Rural poverty is in the top fifth nationally (example value 54 %), and poverty is weighted ' + ({ H: 'high', M: 'medium', L: 'low', '': 'off' })[W.poverty || ''] + ' in the ' + PNAME[preset].toLowerCase() + ' preset.',
+      pct(d.share) + ' of the district is in the opportunity space, mostly at Very high suitability.',
+      'Drought hazard is moderate to high under baseline climate and rises by 2050 (Stage 03, Table 3.3).',
+      fmt(d.overlap * HA) + ' ha of hotspot cells, with about ' + fmt(r3(d.hotspotResidents)) + ' residents (fictional) — reach is meaningful.',
+      pct(d.shareAny) + ' of its opportunity space carries a High fire or flood flag (Stage 04); flagged places are kept and shown.'
+    ] : [
+      'Ranked ' + rank + ' of ' + rk.length + ' by hotspot share (' + pct(d.shareHotspot) + ').',
+      'Main need drivers: ' + dr.join(' and ').toLowerCase() + '.',
+      fmt(d.overlap * HA) + ' ha of hotspot cells; ' + pct(d.shareAny) + ' of its opportunity space is flagged in Stage 04.'
+    ];
+    document.getElementById('why').innerHTML = '<h3>Why ' + selD + (top ? ' is first' : '') + '</h3><p class="sub">' + (top ? 'Example narrative, written for the top district and tied to the ' + PNAME[preset].toLowerCase() + ' preset.' : 'Figures only — narratives are written for the top district in this prototype.') + '</p>' +
+      '<ol class="notes">' + lines.map(function (l) { return '<li>' + l + '</li>'; }).join('') + '</ol>' +
+      (top ? '<p class="sub">No variable is counted twice: hazards to the planting are used only in Stage 04, not in this score.</p>' : '');
+  }
+  document.getElementById('t52').addEventListener('click', function (e) { var tr = e.target.closest('tr[data-d]'); if (tr) { selD = tr.getAttribute('data-d'); t52(); } });
+  document.getElementById('t52').addEventListener('keydown', function (e) { var tr = e.target.closest('tr[data-d]'); if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selD = tr.getAttribute('data-d'); t52(); } });
+
+  /* ---- 5.5 fingerprint ---- */
+  function t53() {
+    var T = R.totals, cnt = { vh: 0, h: 0, m: 0, l: 0 }, ssp = ST.climate === 'ssp';
+    F.cells.forEach(function (c) { if (R.hot(c)) cnt[ssp ? c.suitClass2050 : c.suitClass]++; });
+    var hot = Math.max(1, T.overlap), hotHa = T.overlap * HA;
+    var cls = [['vh', 'Very high', '--s4'], ['h', 'High', '--s3'], ['m', 'Moderate', '--s2'], ['l', 'Low', '--s-low']].filter(function (c) { return cnt[c[0]]; });
+    var bar = '<div class="stackbar">' + cls.map(function (c) { return '<i style="width:' + (100 * cnt[c[0]] / hot).toFixed(2) + '%;background:var(' + c[2] + ')"></i>'; }).join('') + '</div>' +
+      '<div class="stack-lg">' + cls.map(function (c) { return '<span style="--c:var(' + c[2] + ')">' + c[1] + ' ' + pct(cnt[c[0]] / hot) + '</span>'; }).join('') + '</div>';
+    var fsys = [['Cropping, rainfed', 0.52], ['Mixed crop–livestock', 0.36], ['Tree perennial', 0.12]];
+    document.getElementById('t53').innerHTML = '<caption class="tabcap"><b>Table 5.3</b> · Hotspot fingerprint (need ' + hotWords() + ')<small>Areas nominal. Farming-system shares, people, farms and value are example figures.</small></caption><tbody>' +
+      '<tr><td>Opportunity space</td><td class="r">' + fmt(T.selected * HA) + ' ha</td></tr>' +
+      '<tr><td>Hotspot cells</td><td class="r"><b>' + fmt(hotHa) + ' ha</b></td></tr>' +
+      '<tr><td>Share of the opportunity space</td><td class="r">' + pct(T.overlap / Math.max(1, T.selected)) + '</td></tr>' +
+      '<tr><td colspan="2">Suitability class of hotspot cells' + bar + '</td></tr>' +
+      '<tr><td colspan="2" style="padding-bottom:4px">Farming systems in hotspot cells <span class="fict">(example shares)</span></td></tr>' +
+      fsys.map(function (f) { return '<tr><td class="sub" style="padding-left:14px">' + f[0] + '</td><td class="r sub">' + pct(f[1]) + ' · ' + fmt(Math.round(hotHa * f[1] / 2500) * 2500) + ' ha</td></tr>'; }).join('') +
+      '<tr><td>Rural population in hotspot cells <span class="fict">(fictional)</span></td><td class="r">' + fmt(r3(T.hotspotResidents)) + '</td></tr>' +
+      '<tr><td>Smallholder farms <span class="fict">(fictional, about 6 people per farm household)</span></td><td class="r">' + fmt(r3(T.hotspotResidents / 6)) + '</td></tr>' +
+      '<tr><td>Crop production value <span class="fict">(example)</span></td><td class="r" style="white-space:nowrap">USD ' + fmt(Math.round(hotHa * 0.55 * 310 / 1e6)) + ' million a year</td></tr></tbody>';
+    document.querySelectorAll('#seg-hot5 button').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-v') === ST.hot); });
+  }
+  document.getElementById('seg-hot5').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) V1BUI.setState({ hot: b.getAttribute('data-v') }); });
+
+  t51();
+  V1BUI.onControls(function (st) { ST = st; R = F.rollup(st); render(); figs(); t52(); t53(); });
+  V1BUI.tabs(document.querySelector('.subtabs'));
+  var q = new URLSearchParams(location.search);
+  if (q.get('plate') && q.get('plate') !== 'district') { variant = q.get('plate'); render(); }
+  narrow.addEventListener && narrow.addEventListener('change', fitView);
+})();
+</script>
+<script src="review-mode.js"></script>
+</body>
+</html>
