@@ -433,3 +433,19 @@ const html=t.nodes.get('bibliography-app').innerHTML;
 assert(html.includes('value="__unassigned" selected>Family not recorded (any practice)'));
 assert(html.includes('First publication'));assert(!html.includes('Legacy agroforestry'));
 """)
+
+
+def test_progress_subtabs_and_content_share_stable_section_numbers():
+    run_js(r"""
+const t=setup();
+let html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('class="dp-subtabs shell-subnav"'));
+assert(html.includes('2.1 Overview'));assert(html.includes('2.2 Agroforestry'));
+assert(html.includes('<h2>2.1 Progress overview</h2>'));
+const target={dataset:{action:'practice',value:'agroforestry'},closest:()=>target};
+t.handlers.click({target});
+html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('<h2>2.2 Agroforestry</h2>'));
+assert(html.includes('2.2.1 Evidence by suitability family'));
+assert(html.includes('Table 2.2.1. Agroforestry'));
+""")

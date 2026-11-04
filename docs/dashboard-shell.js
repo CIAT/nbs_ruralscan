@@ -8,7 +8,7 @@
     var panels = kind === 'review' ? { queue: 'review-queue-panel', help: 'review-help-panel' } : { relationships: 'relationship-review-root', explorer: 'query-explorer-panel' };
     Object.keys(panels).forEach(function (key) { byId(panels[key]).hidden = key !== view; });
     document.querySelectorAll(selector).forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset[kind + 'View'] === view)); });
-    measure();
+    syncSubtabs();
   }
   function openHash() {
     if (location.hash === '#relationships') { open('btn-interrogator'); setView('query', 'relationships'); }
@@ -21,17 +21,44 @@
       button.setAttribute('aria-pressed', String(button.dataset.shellOpen === (tab === 'tab-variables' ? 'btn-variables' : 'btn-stocktake')));
     });
     // Old deep links and direct calls still use the original tab IDs.
-    measure();
+    syncSubtabs();
     numberContent();
   }
   function measure() {
     var header = document.querySelector('.app-header');
     var active = document.querySelector('.tab-content.active');
-    var nav = active && active.querySelector('.shell-subnav');
+    var nav = active && active.querySelector('.shell-subnav:not(.shell-subnav-nested)');
+    var mainNav = document.querySelector('.tab-nav');
     var controls = document.querySelector('#query-explorer-panel .sidebar-panel');
-    document.documentElement.style.setProperty('--shell-header-height', (header ? header.getBoundingClientRect().height : 0) + 'px');
+    var headerHeight = header && getComputedStyle(header).position === 'sticky' ? header.getBoundingClientRect().height : 0;
+    document.documentElement.style.setProperty('--shell-header-height', headerHeight + 'px');
+    document.documentElement.style.setProperty('--dp-header-height', headerHeight + 'px');
+    document.documentElement.style.setProperty('--dp-main-tabs-height', (mainNav ? mainNav.getBoundingClientRect().height : 0) + 'px');
     document.documentElement.style.setProperty('--shell-subnav-height', (nav ? nav.getBoundingClientRect().height : 0) + 'px');
     document.documentElement.style.setProperty('--shell-controls-height', (controls ? controls.getBoundingClientRect().height : 0) + 'px');
+  }
+  function syncSubtabs() {
+    document.querySelectorAll('.shell-subnav').forEach(function (nav) {
+      nav.querySelectorAll('button').forEach(function (button) {
+        var selected = button.hasAttribute('data-action') ? button.classList.contains('is-active') : button.getAttribute('aria-selected') === 'true' || button.getAttribute('aria-pressed') === 'true';
+        if (!button.hasAttribute('role')) button.setAttribute('aria-pressed', String(selected));
+        button.tabIndex = selected ? 0 : -1;
+      });
+    });
+    measure();
+  }
+  function navigateSubtabs(event) {
+    var button = event.target.closest('.shell-subnav button');
+    if (!button || button.hasAttribute('data-t4-tab') || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    var nav = button.closest('.shell-subnav'), buttons = Array.from(nav.querySelectorAll('button'));
+    var index = buttons.indexOf(button);
+    var next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : buttons.length - 1)) % buttons.length;
+    event.preventDefault();
+    buttons[next].click();
+    // Progress re-renders its navigation; focus the replacement button.
+    var current = document.querySelector('.tab-content.active .shell-subnav');
+    var target = current && current.querySelectorAll('button')[next];
+    if (target) { target.focus({preventScroll: true}); target.scrollIntoView({block: 'nearest', inline: 'nearest'}); }
   }
   function textWithoutNumber(node) {
     var clone = node.cloneNode(true);
@@ -54,10 +81,11 @@
     // Progress owns its stage/table numbering. Other legacy and dynamic views share this convention.
     [['tab-interrogator', '3'], ['tab-stocktake', '4.1'], ['tab-variables', '4.2'], ['tab-qaqc', '5'], ['tab-methods', '6']].forEach(function (entry) {
       var root = byId(entry[0]); if (!root) return;
-      var h = entry[0] === 'tab-interrogator' ? 3 : 0;
+      var h = 0;
+      var prefix = entry[0] === 'tab-interrogator' ? '3.2' : entry[1];
       root.querySelectorAll('h2, h3').forEach(function (heading) {
         if (heading.closest('.shell-intro, #vf-cards, #vf-stats, #relationship-review-root') || heading.id === 'family-hero-title' || heading.classList.contains('info-block-title')) return;
-        setNumber(heading, entry[1] + '.' + (++h));
+        setNumber(heading, heading.closest('#review-queue-panel') ? '5.1' : prefix + '.' + (++h));
       });
       root.querySelectorAll('table').forEach(function (table, index) {
         if (table.closest('#relationship-review-root')) return;
@@ -94,16 +122,17 @@
       var oldHelp = controls.querySelector(':scope > div:last-child');
       if (oldHelp && !oldHelp.classList.contains('control-group')) oldHelp.remove();
     }
+    document.addEventListener('keydown', navigateSubtabs);
     var pending = false;
     var observer = new MutationObserver(function () {
       if (pending) return;
       pending = true;
-      requestAnimationFrame(function () { pending = false; observer.disconnect(); numberContent(); observer.observe(byId('dashboard-content'), { childList: true, subtree: true }); });
+      requestAnimationFrame(function () { pending = false; observer.disconnect(); numberContent(); syncSubtabs(); observer.observe(byId('dashboard-content'), { childList: true, subtree: true }); });
     });
     observer.observe(byId('dashboard-content'), { childList: true, subtree: true });
     if (window.ResizeObserver) {
       var resize = new ResizeObserver(measure);
-      [document.querySelector('.app-header'), controls].forEach(function (node) { if (node) resize.observe(node); });
+      [document.querySelector('.app-header'), document.querySelector('.tab-nav'), controls].forEach(function (node) { if (node) resize.observe(node); });
       document.querySelectorAll('.shell-subnav').forEach(function (node) { resize.observe(node); });
     }
     window.addEventListener('resize', measure);
@@ -111,6 +140,6 @@
     window.addEventListener('hashchange', openHash);
     openHash();
   }
-  window.DashboardShell = { onTab: onTab, openFromHash: openHash, showExplorer: function () { open('btn-interrogator'); setView('query', 'explorer'); }, openReviewHelp: function () { open('btn-qaqc'); setView('review', 'help'); }, numberContent: numberContent };
+  window.DashboardShell = { syncSubtabs: syncSubtabs, onTab: onTab, openFromHash: openHash, showExplorer: function () { open('btn-interrogator'); setView('query', 'explorer'); }, openReviewHelp: function () { open('btn-qaqc'); setView('review', 'help'); }, numberContent: numberContent };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();

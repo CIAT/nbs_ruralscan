@@ -1028,9 +1028,9 @@
 </style>
 <link rel="stylesheet" href="t4_analysis.css">
 <script src="t4_analysis.js"></script>
-<link rel="stylesheet" href="dashboard-progress.css?v=1.2.0">
+<link rel="stylesheet" href="dashboard-progress.css?v=1.2.1">
 <link rel="stylesheet" href="dashboard-feedback.css?v=1.0.2">
-<link rel="stylesheet" href="dashboard-shell.css?v=1.2.0">
+<link rel="stylesheet" href="dashboard-shell.css?v=1.2.1">
 <link rel="stylesheet" href="dashboard-relationships.css?v=1.2.0">
 </head>
 <body data-theme="dark">
@@ -1143,7 +1143,7 @@
     <!-- ================= TAB 2: INTERROGATOR ================= -->
     <div id="tab-interrogator" class="tab-content">
       <header class="shell-intro"><h2>3. Evidence &amp; rules</h2><p>Inspect how published evidence supports the scan’s analytical rules. Start with Relationships to compare variables and recorded responses. Use Evidence explorer to read extracts and inspect the current compiled suitability analysis. Evidence quality, review approval and synthesis readiness are separate judgements.</p></header>
-      <nav class="shell-subnav" aria-label="Evidence and rules views"><button type="button" data-query-view="relationships" aria-pressed="true">Relationships</button><button type="button" data-query-view="explorer" aria-pressed="false">Evidence explorer</button></nav>
+      <nav class="shell-subnav" aria-label="Evidence and rules views"><button type="button" data-query-view="relationships" aria-pressed="true">3.1 Relationships</button><button type="button" data-query-view="explorer" aria-pressed="false">3.2 Evidence explorer</button></nav>
       <section id="relationship-review-root"><p>Loading relationship catalogue…</p></section>
       <section id="query-explorer-panel" hidden>
       <p class="shell-explainer">Select a practice and suitability family to inspect its source extracts, compiled rules and source coverage. A family groups sub-practices with shared limiting factors; broad or unassigned evidence is not automatically applicable to every family.</p>
@@ -1214,11 +1214,11 @@
               <div id="t4-analysis" hidden>
                 <p id="t4-snapshot"></p>
                 <p id="t4-stale" hidden>Evidence changed since this analysis snapshot. QA/QC shows current reviews; these synthesis panels retain their recorded snapshot until rebuilt.</p>
-                <div class="t4-tabs" role="tablist" aria-label="T4 analysis">
-                  <button id="t4-tab-evidence" role="tab" data-t4-tab="evidence" aria-controls="t4-panel-evidence" aria-selected="false">Evidence trail</button>
-                  <button id="t4-tab-studies" role="tab" data-t4-tab="studies" aria-controls="t4-panel-studies" aria-selected="false">Suitability &amp; weights</button>
-                  <button id="t4-tab-global" role="tab" data-t4-tab="global" aria-controls="t4-panel-global" aria-selected="true">Global synthesis</button>
-                  <button id="t4-tab-rules" role="tab" data-t4-tab="rules" aria-controls="t4-panel-rules" aria-selected="false">Rules &amp; method</button>
+                <div class="t4-tabs shell-subnav shell-subnav-nested" role="tablist" aria-label="T4 analysis">
+                  <button id="t4-tab-evidence" role="tab" data-t4-tab="evidence" aria-controls="t4-panel-evidence" aria-selected="false">3.2.1.1 Evidence trail</button>
+                  <button id="t4-tab-studies" role="tab" data-t4-tab="studies" aria-controls="t4-panel-studies" aria-selected="false">3.2.1.2 Suitability &amp; weights</button>
+                  <button id="t4-tab-global" role="tab" data-t4-tab="global" aria-controls="t4-panel-global" aria-selected="true">3.2.1.3 Global synthesis</button>
+                  <button id="t4-tab-rules" role="tab" data-t4-tab="rules" aria-controls="t4-panel-rules" aria-selected="false">3.2.1.4 Rules &amp; method</button>
                 </div>
                 <div class="t4-toolbar"><label>Find <input id="t4-find" type="search" placeholder="Variable, study or rule"></label><span id="t4-visible" aria-live="polite"></span></div>
                 <section id="t4-panel-evidence" role="tabpanel" aria-labelledby="t4-tab-evidence" hidden></section>
@@ -1387,7 +1387,7 @@
 
     <!-- ================= TAB 3: VARIABLES ================= -->
     <div id="tab-variables" class="tab-content">
-<header class="shell-intro"><h2>4. Sources &amp; datasets</h2><p>Find the material behind the scan. Bibliography lists publications, guidance and tools and links to their extracted evidence. Variables &amp; datasets explains what the scan measures and which spatial data can represent it. A listed source or dataset is not, by itself, an approved analytical rule.</p></header><nav class="shell-subnav" aria-label="Sources and datasets views"><button type="button" data-shell-open="btn-stocktake">Bibliography</button><button type="button" data-shell-open="btn-variables">Variables &amp; datasets</button></nav>
+<header class="shell-intro"><h2>4. Sources &amp; datasets</h2><p>Find the material behind the scan. Bibliography lists publications, guidance and tools and links to their extracted evidence. Variables &amp; datasets explains what the scan measures and which spatial data can represent it. A listed source or dataset is not, by itself, an approved analytical rule.</p></header><nav class="shell-subnav" aria-label="Sources and datasets views"><button type="button" data-shell-open="btn-stocktake">4.1 Bibliography</button><button type="button" data-shell-open="btn-variables">4.2 Variables &amp; datasets</button></nav>
       <div class="card-container">
         <div class="interrogator-header-row sky" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-sky); padding-bottom: 8px;" onclick="toggleSection('wrapper-vont', 'chev-vont')">
           <h3 class="interrogator-section-title sky" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
@@ -1585,8 +1585,8 @@
     <!-- TAB 5: SEARCH & DISCOVERY LOGS -->
     <div id="tab-qaqc" class="tab-content">
 <header class="shell-intro"><h2>5. Evidence review</h2><p>Help the team check whether each extracted claim faithfully represents its source and belongs in the intended practice and analytical table. Review the source context before deciding; an automated check is not human approval.</p></header>
-      <nav class="shell-subnav" aria-label="Evidence review views"><button type="button" data-review-view="queue" aria-pressed="true">Review queue</button><button type="button" data-review-view="help" aria-pressed="false">How to review</button></nav>
-      <section id="review-help-panel" hidden><h3>5.1 How to review</h3>
+      <nav class="shell-subnav" aria-label="Evidence review views"><button type="button" data-review-view="queue" aria-pressed="true">5.1 Review queue</button><button type="button" data-review-view="help" aria-pressed="false">5.2 How to review</button></nav>
+      <section id="review-help-panel" hidden><h3>5.2 How to review</h3>
         <ol class="shell-review-steps"><li><b>Choose your reviewer identity in Review queue.</b> Decisions are attributed to this handle. Choose a practice, family or table to focus your review.</li><li><b>Read the claim and open its source.</b> Check the page or table, units, context, practice and intended use. Use the full source when an excerpt lacks context.</li><li><b>Keep</b> when the extraction is faithful and relevant. <b>Drop</b> when it is unsuitable or incorrect: select a reason and explain it. Drop quarantines the record; it does not erase it. <b>Query</b> when you need clarification: state the question clearly. A query is not approval.</li><li><b>Revisit answers and conflicts.</b> Check the reply or other reviewer’s reasoning, then make a Keep, Drop or Query decision on the evidence card.</li><li><b>Submit reviews when ready.</b> With the local review server connected, submission applies saved decisions and opens a pull request subject to checks and approvals. Disagreements remain pending for resolution.</li></ol>
         <p><b>Preview limitation:</b> without the review server, decisions cannot be submitted to the shared register. Dashboard Feedback records comments about this interface separately; it does not approve or reject evidence.</p>
         <p><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer">Setup and detailed reviewer guide ↗</a></p>
@@ -1598,7 +1598,7 @@
     </label>
       <div class="card-container">
         <h2 class="card-title" style="display:flex; align-items:center; gap:12px;">
-          <span>5.2 Review queue</span>
+          <span>5.1 Review queue</span>
           <span class="card-title-meta" style="flex:1;">Check the extraction against its source, then Keep, Drop or Query.</span>
           <button id="vf-gaps-btn" onclick="window._vfMode=(window._vfMode==='gaps'?'review':'gaps'); renderVfWorklist();" title="Missing evidence reported by reviewers — variables/figures expected but not extracted. Click to open, click again to return to review." style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-amber); background:transparent; color:var(--accent-amber); cursor:pointer;">&#9888; Gaps</button>
           <button id="vf-stats-btn" onclick="toggleVfStats()" title="AI verify-flag performance metrics — click to open, click again to return to review" style="flex:0 0 auto; font-size:11px; font-weight:600; padding:6px 14px; border-radius:6px; border:1px solid var(--accent-emerald); background:transparent; color:var(--accent-emerald); cursor:pointer;">📊 Stats</button>
@@ -1672,7 +1672,7 @@
     </div>
 
     <div id="tab-stocktake" class="tab-content">
-<header class="shell-intro"><h2>4. Sources &amp; datasets</h2><p>Find the material behind the scan. Bibliography lists publications, guidance and tools and links to their extracted evidence. Variables &amp; datasets explains what the scan measures and which spatial data can represent it. A listed source or dataset is not, by itself, an approved analytical rule.</p></header><nav class="shell-subnav" aria-label="Sources and datasets views"><button type="button" data-shell-open="btn-stocktake">Bibliography</button><button type="button" data-shell-open="btn-variables">Variables &amp; datasets</button></nav>
+<header class="shell-intro"><h2>4. Sources &amp; datasets</h2><p>Find the material behind the scan. Bibliography lists publications, guidance and tools and links to their extracted evidence. Variables &amp; datasets explains what the scan measures and which spatial data can represent it. A listed source or dataset is not, by itself, an approved analytical rule.</p></header><nav class="shell-subnav" aria-label="Sources and datasets views"><button type="button" data-shell-open="btn-stocktake">4.1 Bibliography</button><button type="button" data-shell-open="btn-variables">4.2 Variables &amp; datasets</button></nav>
       <div id="bibliography-app"></div>
     </div>
     <div id="tab-search" class="tab-content">
@@ -5615,9 +5615,9 @@
 
 
 </script>
-<script src="dashboard-progress.js?v=1.2.0"></script>
+<script src="dashboard-progress.js?v=1.2.1"></script>
 <script src="dashboard-feedback.js?v=1.0.2"></script>
-<script src="dashboard-relationships.js?v=1.2.0"></script>
-<script src="dashboard-shell.js?v=1.2.0"></script>
+<script src="dashboard-relationships.js?v=1.2.1"></script>
+<script src="dashboard-shell.js?v=1.2.1"></script>
 </body>
 </html>
