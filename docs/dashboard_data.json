@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-04T18:48:14.385021+00:00",
-  "git_commit": "1275fa2a96027aeef276fa3cb1c5949a47aa4c9e",
+  "timestamp": "2026-11-04T18:59:43.902662+00:00",
+  "git_commit": "e5dca0587b67e7c61f3dc3389ecd7b55d07403e4",
   "registers": {
     "SRC_source_register": [
       {
@@ -15285,6 +15285,49 @@
         "source_category": "grey",
         "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/2_ForestRestoration/fao_fp175_drylands_restoration_2015.pdf",
         "venue_type": "institutional_report"
+      },
+      {
+        "source_id": "hutchison_2014_mangroves_fisheries",
+        "citation": "Hutchison, J., Spalding, M., and zu Ermgassen, P. (2014). The Role of Mangroves in Fisheries Enhancement. The Nature Conservancy and Wetlands International.",
+        "benchmark_tier": "medium",
+        "region": "global",
+        "method_type": "review",
+        "nbs_ids": "mangrove_restoration",
+        "vars_extracted": "economic_return|sediment_retention",
+        "extraction_status": "swept",
+        "extraction_date": "2026-11-04",
+        "extraction_run_id": "e39_mangrove",
+        "extractor": "claude (gated pipeline)",
+        "source_kind": "grey_lit",
+        "url": "https://www.wetlands.org/download/4977/",
+        "artifact_sha1": "43a0c95766e8ed17ca876fa25646a8bb082a1550",
+        "retrieved_at": "2026-11-04",
+        "access_status": "open_access",
+        "source_category": "grey",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/6_MangroveRestoration/hutchison_2014_mangroves_fisheries.pdf",
+        "venue_type": "grey_literature"
+      },
+      {
+        "source_id": "sanderman_2018_mangrove_soil_carbon",
+        "citation": "Sanderman et al. (2018). A global map of mangrove forest soil carbon at 30 m spatial resolution. Environmental Research Letters.",
+        "doi": "10.1088/1748-9326/aabe1c",
+        "benchmark_tier": "medium",
+        "region": "global",
+        "method_type": "modelling",
+        "nbs_ids": "mangrove_restoration",
+        "vars_extracted": "carbon_sequestration|soil_organic_carbon",
+        "extraction_status": "swept",
+        "extraction_date": "2026-11-04",
+        "extraction_run_id": "e39_mangrove",
+        "extractor": "claude (gated pipeline)",
+        "source_kind": "paper",
+        "url": "https://blueventures.org/wp-content/uploads/2021/03/Sanderman_2018_Environ._Res._Lett._13_055002.pdf",
+        "artifact_sha1": "db9900c79514d3a35934f6e2aab06cb32b0f9f42",
+        "retrieved_at": "2026-11-04",
+        "access_status": "open_access",
+        "source_category": "updated_lit",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/6_MangroveRestoration/sanderman_2018_mangrove_soil_carbon.pdf",
+        "venue_type": "peer_reviewed_journal"
       }
     ],
     "EV_evidence_register": [
@@ -245643,6 +245686,248 @@
         "attribution": "Heidelberg et al. (2011), as cited by FAO (2015), printed page 50; primary source not independently reviewed in this chapter-only pass.",
         "locator_type": "page",
         "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_soil_organic_carbon_sanderman18_1",
+        "source_id": "sanderman_2018_mangrove_soil_carbon",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "soil_organic_carbon",
+        "relationship": {
+          "direction": "negative",
+          "metric": "absolute",
+          "framing": "loss",
+          "significance": "not_reported",
+          "design": "model",
+          "outcome_raw": "soil organic carbon committed to emission from the upper metre of mangrove soils cleared worldwide over 2000-2015, relative to the stock had the mangroves stayed (global total; expressed as carbon, with the carbon dioxide equivalent mass also given)",
+          "direction_cue": "was deforested resulting in the com-\nmitted emission",
+          "magnitude_low": 30.4,
+          "magnitude_high": 122,
+          "unit": "tg_c_global_total",
+          "strength_class": "unspecified"
+        },
+        "context": {
+          "climate_zone": "tropical",
+          "comparator": "existing_forest",
+          "gas": "co2",
+          "practice_as_described": "No intervention: EXISTING mangrove forest that was cleared (deforested) between 2000 and 2015, mapped from the Hansen et al. global forest-change data over the authors' 30 m soil-carbon map. Mangrove soils store organic carbon under waterlogged, saline conditions; clearing and conversion (mainly to aquaculture ponds and agriculture) expose it to decomposition and erosion. BASELINE (comparator): the same pixels still under mangrove (the year-2000 soil organic carbon stock in the upper metre). No restoration or planting is evaluated.",
+          "timescale_of_effect": "long_term_7yr_plus",
+          "note": "Section 3.3 'Soil carbon loss due to habitat loss', p6; Figure 3 (top-20 nation rankings for area lost and soil carbon loss). The low-high range is NOT a spread across sites: it comes from the authors' assumption that 25%-100% of the upper metre stock is lost on clearing (adopted from Pendleton et al. 2012, p5), so the magnitude is modelled from an assumed loss fraction, not measured. Annualised by the authors as 2.0-8.1 Tg C per year (p10) - same result, not extracted again. Gas: soil carbon mass (C, with CO2 mass equivalent), not a net CO2-equivalent balance. Global total with no per-hectare figure (the deforested area is in the quote), so strength is unspecified. Authors caution (p10) that nearly all data on loss after conversion come from organic-rich mangrove soils; mineral mangrove soils would lose less."
+        },
+        "use_role": "nbs_effect",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Utilizing the Hanson et al (2013) global deforesta-\ntion analysis (ﬁgure S8), we found that 278049 ha\n(1.67% of total) of area identiﬁed as mangrove habitat\nin the year 2000 was deforested resulting in the com-\nmitted emission of 30.4–122 Tg C (111–447 Tg CO2)\nfrom mangrove forest soils due to land use change\nbetween 2000 and 2015 (ﬁgure 3).",
+        "page": 6,
+        "reviewer_ok": false,
+        "raw_name": "soil organic carbon committed to emission from the upper metre of mangrove soils cleared worldwide over 2000-2015, relative to the stock had the mangroves stayed (global total; expressed as carbon, with the carbon dioxide equivalent mass also given)",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_soil_organic_carbon_sanderman18_2",
+        "source_id": "sanderman_2018_mangrove_soil_carbon",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "soil_organic_carbon",
+        "relationship": {
+          "direction": "negative",
+          "metric": "pct_change",
+          "framing": "loss",
+          "significance": "not_reported",
+          "design": "observational",
+          "outcome_raw": "soil carbon in the top 3 m after mangrove was converted to shrimp ponds, compared with intact mangrove in the same estuary (the absolute loss per hectare is given in the same sentence)",
+          "direction_cue": "resulted in the loss of 90%",
+          "magnitude": 90,
+          "unit": "percent",
+          "strength_class": "strong"
+        },
+        "context": {
+          "climate_zone": "tropical",
+          "comparator": "existing_forest",
+          "gas": "co2",
+          "practice_as_described": "No intervention: EXISTING mangrove forest converted to shrimp (aquaculture) ponds, compared with intact mangrove in the same estuary (the cited study measured carbon stocks in intact tall, medium and low-stature mangrove stands and in shrimp ponds built on former mangrove). BASELINE (comparator): intact mangrove. No restoration or planting is evaluated.",
+          "note": "Cited second-hand by Sanderman et al. (Introduction, p3) from Kauffman et al. 2014 ('these mangrove forests' refers to the preceding sentence: tall, medium and low-stature stands within the same estuary). The cited study's country is not named in the quote. Absolute loss in the same sentence: 612-1036 Mg C per hectare. Soil carbon mass, not a net CO2-equivalent balance. Primary to acquire."
+        },
+        "use_role": "nbs_effect",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "lineage_of": "Kauffman et al. 2014",
+        "extraction_confidence": "medium",
+        "quote": "Importantly, Kauffman et al (2014)\nfound that conversion of these mangrove forests to\nshrimp ponds resulted in the loss of 90% of this car-\nbon from the top 3 m of soil (612–1036 Mg C ha−1).",
+        "page": 3,
+        "reviewer_ok": false,
+        "raw_name": "soil carbon in the top 3 m after mangrove was converted to shrimp ponds, compared with intact mangrove in the same estuary (the absolute loss per hectare is given in the same sentence)",
+        "attribution": "Kauffman et al. (2014), cited in Sanderman et al. (2018)",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_soil_organic_carbon_sanderman18_3",
+        "source_id": "sanderman_2018_mangrove_soil_carbon",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "soil_organic_carbon",
+        "relationship": {
+          "direction": "negative",
+          "metric": "pct_change",
+          "framing": "loss",
+          "significance": "not_reported",
+          "design": "observational",
+          "outcome_raw": "belowground carbon (soil plus roots, to 3 m depth) after mangrove was converted to shrimp ponds and pastures, compared with intact mangrove (average across sites)",
+          "direction_cue": "was\nlost after conversion",
+          "magnitude": 54,
+          "unit": "percent",
+          "strength_class": "strong"
+        },
+        "context": {
+          "climate_zone": "tropical",
+          "comparator": "existing_forest",
+          "gas": "co2",
+          "practice_as_described": "No intervention: EXISTING mangrove forest converted to shrimp (aquaculture) ponds and to cattle pasture. BASELINE (comparator): intact mangrove. No restoration or planting is evaluated.",
+          "note": "Cited second-hand by Sanderman et al. (Methods 2.4, p5) from Kauffman et al. 2017. The measured pool is soil PLUS roots, so it is a component-level proxy for soil organic carbon. Countries of the cited sites not named in the quote. Soil and root carbon mass, not a net CO2-equivalent balance. Primary to acquire."
+        },
+        "use_role": "nbs_effect",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "lineage_of": "Kauffman et al. 2017",
+        "extraction_confidence": "medium",
+        "quote": "Expanding on ear-\nlier work, Kauffman et al (2017) found that on average\n54% of belowground carbon (soil + roots) to 3 m was\nlost after conversion to shrimp ponds and pastures.",
+        "page": 5,
+        "reviewer_ok": false,
+        "raw_name": "belowground carbon (soil plus roots, to 3 m depth) after mangrove was converted to shrimp ponds and pastures, compared with intact mangrove (average across sites)",
+        "attribution": "Kauffman et al. (2017), cited in Sanderman et al. (2018)",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_carbon_sequestration_sanderman18_4",
+        "source_id": "sanderman_2018_mangrove_soil_carbon",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "carbon_sequestration",
+        "relationship": {
+          "direction": "positive",
+          "metric": "absolute",
+          "framing": "presence",
+          "significance": "not_reported",
+          "design": "observational",
+          "outcome_raw": "ongoing carbon burial in mangrove soils that are accreting (building up) as sea level rises",
+          "direction_cue": "providing continual carbon sequestration",
+          "magnitude_low": 1.3,
+          "magnitude_high": 2.0,
+          "unit": "mg_c_per_ha_yr",
+          "strength_class": "unspecified"
+        },
+        "context": {
+          "climate_zone": "tropical",
+          "comparator": "existing_forest",
+          "gas": "co2",
+          "practice_as_described": "No intervention: EXISTING mangrove forests whose soils accrete as sea level rises, burying organic carbon. BASELINE: none stated in the quote (the rate is the carbon the standing mangrove soil adds each year; implicitly versus no mangrove soil accretion).",
+          "note": "Cited second-hand by Sanderman et al. (Introduction, p3) from Breithaupt et al. 2012 and Chmura et al. 2003 (accretion process from Krauss et al. 2014). JUDGEMENT CALL: a burial FLUX of existing mangrove, not a stock, but with no explicit with/without contrast (catalogue #28 borderline); human to confirm. Carbon mass, not a net CO2-equivalent balance (no methane term). The range is across the cited syntheses, not a direction change."
+        },
+        "use_role": "nbs_effect",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "lineage_of": "Breithaupt et al. 2012",
+        "extraction_confidence": "low",
+        "quote": "In addition to avoided emissions, many mangrove for-\nest soils are accreting as sea level rises (Krauss et al\n2014), providing continual carbon sequestration on\nthe order of 1.3–2.0 Mg C ha−1 yr−1 (Breithaupt et al\n2012, Chmura et al 2003).",
+        "page": 3,
+        "reviewer_ok": false,
+        "raw_name": "ongoing carbon burial in mangrove soils that are accreting (building up) as sea level rises",
+        "attribution": "Breithaupt et al. (2012); Chmura et al. (2003), cited in Sanderman et al. (2018)",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_economic_return_hutchfish14_1",
+        "source_id": "hutchison_2014_mangroves_fisheries",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "economic_return",
+        "relationship": {
+          "direction": "negative",
+          "metric": "absolute",
+          "framing": "loss",
+          "significance": "not_reported",
+          "design": "model",
+          "outcome_raw": "value of the fishery catch lost per hectare of mangrove lost each year (all mangrove-associated fisheries), from a production function relating mangrove area to catches",
+          "direction_cue": "linking mangrove \nloss to changes in catches",
+          "magnitude_low": 21,
+          "magnitude_high": 69,
+          "unit": "usd_per_ha_yr",
+          "strength_class": "slight"
+        },
+        "context": {
+          "country": [
+            "THA"
+          ],
+          "income_group": "upper_middle",
+          "region": "Gulf of Thailand",
+          "climate_zone": "tropical",
+          "comparator": "existing_forest",
+          "beneficiary": "community",
+          "practice_as_described": "No intervention: EXISTING mangrove forest whose loss reduces the catch of inshore and offshore fisheries that use it as nursery, food and shelter habitat. BASELINE (comparator): the fishery with less mangrove (the production function links mangrove loss to changes in catches). No restoration or planting is evaluated.",
+          "note": "Table 1 'Existing estimates of the value of mangroves to fisheries on global or local scales' (p20), columns Reference / Location / Fishery / Average value (US $/ha/yr) / Value range (US $/ha/yr) / Notes; this row: Sathirathai & Barbier (2001), Gulf of Thailand, All fisheries, range 21-69 US$/ha/yr. Cited second-hand; primary to acquire. The other Table 1 rows are gross fishery values of standing mangrove with no stated counterfactual (catalogue #28) or global averages, and are not extracted; the Aburto-Oropeza et al. (2008) row (Gulf of California, US$37,500/ha/yr for the 5-10 m seaward fringe) rests on a landings-vs-fringe regression in the primary, but the row does not state the contrast - primary to acquire. Price year not stated. Mechanism: mangroves provide food (detritus) and shelter for juvenile fish and crustaceans (pp6, 17)."
+        },
+        "use_role": "nbs_effect",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "lineage_of": "Sathirathai & Barbier 2001",
+        "extraction_confidence": "medium",
+        "quote": "Sathirathai & \nBarbier (2001) \nGulf of Thailand \nAll \n \n21-69 \nBased on a production \nfunction linking mangrove \nloss to changes in catches.",
+        "page": 20,
+        "reviewer_ok": false,
+        "raw_name": "value of the fishery catch lost per hectare of mangrove lost each year (all mangrove-associated fisheries), from a production function relating mangrove area to catches",
+        "attribution": "Sathirathai & Barbier (2001), cited in Hutchison, Spalding & zu Ermgassen (2014)",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_sediment_retention_hutchfish14_2",
+        "source_id": "hutchison_2014_mangroves_fisheries",
+        "nbs_id": "mangrove_restoration",
+        "suitability_family_id": "mangrove_restoration__tidal_coastal",
+        "variable": "sediment_retention",
+        "relationship": {
+          "direction": "positive",
+          "metric": "absolute",
+          "framing": "presence",
+          "significance": "not_reported",
+          "design": "observational",
+          "outcome_raw": "share of the river-borne sediment passing through mangroves that is trapped by them (roots and trunks slow the water so the sediment settles)",
+          "direction_cue": "sediment trapped by mangroves",
+          "magnitude_low": 15,
+          "magnitude_high": 40,
+          "unit": "percent_trapping_efficiency",
+          "strength_class": "unspecified"
+        },
+        "context": {
+          "climate_zone": "tropical",
+          "comparator": "existing_forest",
+          "beneficiary": "society",
+          "practice_as_described": "No intervention: EXISTING mangrove forest between river mouths and adjacent coral reefs and seagrass beds; its pneumatophores (breathing roots), aerial roots and trunks slow water flow so sediment settles in the mangrove. BASELINE: sediment entering the mangrove (trapping efficiency = share retained).",
+          "note": "Section 1.7.3 'Environmental modification' (p18). Cited second-hand from Golbuu et al. 2003 and Victor et al. 2006 (study sites not named in the quote; primaries to acquire). The range is across the two cited studies, not a direction change. Off-site benefit to reefs and seagrass (and the fisheries they support), hence beneficiary society."
+        },
+        "use_role": "nbs_effect",
+        "evidence_type": "literature_relationship",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "lineage_of": "Golbuu et al. 2003",
+        "extraction_confidence": "medium",
+        "quote": "Mangroves can act like a sieve for this sediment, \nwith the network of pneumatophores, aerial roots \nand trunks slowing water flow and causing the \ndeposition of much of this sediment, preventing it \nfrom reaching other habitats. Estimates for the \nproportion of sediment trapped by mangroves \nrange from 15-40% (Golbuu et al. 2003, Victor et \nal. 2006).",
+        "page": 18,
+        "reviewer_ok": false,
+        "raw_name": "share of the river-borne sediment passing through mangroves that is trapped by them (roots and trunks slow the water so the sediment settles)",
+        "attribution": "Golbuu et al. (2003); Victor et al. (2006), cited in Hutchison, Spalding & zu Ermgassen (2014)",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.4"
       }
     ],
     "FAM_family_registry": [
@@ -301933,7 +302218,8 @@
           "effect_direction": "strong_positive",
           "effect_confidence": "very_high",
           "effect_mechanism": "Planted mangroves take up carbon as they grow and store it in biomass and soils. A meta-analysis of forest and landscape restoration found mangrove tree restoration the second most efficient type at removing CO2, with removal rates up to 23.1 t CO2 per hectare a year in the first 20 years and 10.5 t over the following 40 years [ev_carbon_sequestration_bernal18_2, ev_carbon_sequestration_bernal18_4]. A global meta-analysis of mangrove restoration found carbon sequestration in restored mangroves significantly higher than on unvegetated tidal flats (log response ratio 0.64, 95% interval 0.35 to 0.94) [ev_carbon_sequestration_su21_1]. A coastal-defence manual explains the storage route: saline, waterlogged soils prevent the breakdown of organic material, so mangroves store carbon in soils where it can remain for millennia [ev_mg_carbon_sp14_20261030]. In Vietnam's southern Mekong Delta an independent evaluation reports forest cover in the project zones rising from around 50 percent in 2000 to 96 percent in 2007, and a Bangladesh coastal afforestation project states that its plantations were arranged to absorb carbon each year [ev_frmg_vnppar_3, ev_carbon_sequestration_ahammad13_3].",
-          "conditionality": "The engine class is strong, and it rests on the two meta-analyses. The counterfactual differs by source: unvegetated tidal flat in the mangrove meta-analysis, and the rate of carbon removal by the growing stand in the restoration synthesis [ev_carbon_sequestration_su21_1, ev_carbon_sequestration_bernal18_2]. The removal rates cover planted mangroves only, not hydrological restoration, and the source's text and table differ slightly for the later period [ev_carbon_sequestration_bernal18_2, ev_carbon_sequestration_bernal18_4]. The mangrove meta-analysis draws mostly on East and Southeast Asian studies of conventional planting and detected publication bias for carbon against tidal flats [ev_carbon_sequestration_su21_1]. The manual describes what existing mangroves do, not a measured restoration response [ev_mg_carbon_sp14_20261030]. The Vietnam figure is forest cover, not carbon, measured before and after with no counterfactual, and it includes casuarina windbreak planting and protection of existing forest; the evaluation says its indicators did not measure the quality of planting [ev_frmg_vnppar_3]. The Bangladesh statement is a project-total projection by implementing staff with no method, and its implied per-hectare rate looks implausible for young plantations, so it says nothing about size [ev_carbon_sequestration_ahammad13_3]. Net emissions from site disturbance, plantation survival and measured soil carbon under restoration in low-income settings are missing.",
+          "conditionality": "The engine class is strong, and it rests on the two meta-analyses. The counterfactual differs by source: unvegetated tidal flat in the mangrove meta-analysis, and the rate of carbon removal by the growing stand in the restoration synthesis [ev_carbon_sequestration_su21_1, ev_carbon_sequestration_bernal18_2]. The removal rates cover planted mangroves only, not hydrological restoration, and the source's text and table differ slightly for the later period [ev_carbon_sequestration_bernal18_2, ev_carbon_sequestration_bernal18_4]. The mangrove meta-analysis draws mostly on East and Southeast Asian studies of conventional planting and detected publication bias for carbon against tidal flats [ev_carbon_sequestration_su21_1]. The manual describes what existing mangroves do, not a measured restoration response [ev_mg_carbon_sp14_20261030]. The Vietnam figure is forest cover, not carbon, measured before and after with no counterfactual, and it includes casuarina windbreak planting and protection of existing forest; the evaluation says its indicators did not measure the quality of planting [ev_frmg_vnppar_3]. The Bangladesh statement is a project-total projection by implementing staff with no method, and its implied per-hectare rate looks implausible for young plantations, so it says nothing about size [ev_carbon_sequestration_ahammad13_3]. Net emissions from site disturbance, plantation survival and measured soil carbon under restoration in low-income settings are missing. Evidence on existing mangroves shows what clearing costs: conversion to shrimp ponds removed about 90% of the soil carbon [ev_soil_organic_carbon_sanderman18_2], and on average 54% of below-ground carbon (soil plus roots) was lost after conversion [ev_soil_organic_carbon_sanderman18_3]. These are losses from clearing standing forest, cited second-hand, not gains from planting new mangroves.",
+          "timescale_of_effect": "long_term_7yr_plus",
           "justification": {
             "statement": "mangrove_restoration strongly increases carbon_sequestration_potential in BGD, VNM (robust evidence, high agreement → very_high confidence; transfer: adjacent).",
             "strength_basis": "quantified",
@@ -301955,16 +302241,21 @@
               "su_2021_mangrove_restoration_meta · meta_analysis · positive/strong · ln_response_ratio=0.64 0.35 to 0.94 · [ev_carbon_sequestration_su21_1]",
               "bernal_2018_co2_removal_flr · meta_analysis · positive/unspecified · [ev_carbon_sequestration_bernal18_2]",
               "bernal_2018_co2_removal_flr · meta_analysis · positive/unspecified · absolute=10.5 t_co2_per_ha_yr · [ev_carbon_sequestration_bernal18_4]",
+              "sanderman_2018_mangrove_soil_carbon · model · negative/unspecified · [ev_soil_organic_carbon_sanderman18_1]",
+              "sanderman_2018_mangrove_soil_carbon · observational · positive/unspecified · [ev_carbon_sequestration_sanderman18_4]",
               "ahammad_2013_eba_coastal_bangladesh · case_study · positive/unspecified · (BGD; lower_middle) · [ev_carbon_sequestration_ahammad13_3]",
+              "sanderman_2018_mangrove_soil_carbon · observational · negative/strong · pct_change=90 percent · [ev_soil_organic_carbon_sanderman18_2]",
+              "sanderman_2018_mangrove_soil_carbon · observational · negative/strong · pct_change=54 percent · [ev_soil_organic_carbon_sanderman18_3]",
               "spalding_2014_mangroves_coastal_defence · expert · positive/unspecified · [ev_mg_carbon_sp14_20261030]",
               "wb_ieg_ppar_vietnam_coastal_wetlands_2009 · observational · positive/strong · (VNM; upper_middle) · [ev_frmg_vnppar_3]"
             ],
-            "agreement_note": "weighted sign agreement 1.0: benefit 6 (weight 2.35) ['ev_carbon_sequestration_bernal18_2', 'ev_carbon_sequestration_bernal18_4', 'ev_carbon_sequestration_su21_1', 'ev_frmg_vnppar_3', 'ev_carbon_sequestration_ahammad13_3', 'ev_mg_carbon_sp14_20261030']; harm 0 (weight 0) []; no effect 0 (weight 0) [].",
+            "agreement_note": "weighted sign agreement 1.0: benefit 10 (weight 2.96) ['ev_carbon_sequestration_bernal18_2', 'ev_carbon_sequestration_bernal18_4', 'ev_carbon_sequestration_su21_1', 'ev_frmg_vnppar_3', 'ev_carbon_sequestration_ahammad13_3', 'ev_mg_carbon_sp14_20261030', 'ev_soil_organic_carbon_sanderman18_1', 'ev_soil_organic_carbon_sanderman18_2', 'ev_soil_organic_carbon_sanderman18_3', 'ev_carbon_sequestration_sanderman18_4']; harm 0 (weight 0) []; no effect 0 (weight 0) [].",
             "proxies": [
-              "landscape_forest_cover→carbon_sequestration_potential (component)"
+              "landscape_forest_cover→carbon_sequestration_potential (component)",
+              "soil_organic_carbon→carbon_sequestration_potential (component)"
             ],
-            "pool_note": "This row draws on 6 evidence unit(s) from 5 source(s); the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
-            "n_units": 6,
+            "pool_note": "This row draws on 10 evidence unit(s) from 6 source(s); the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+            "n_units": 10,
             "held_out_of_class": {},
             "data_deficient": false,
             "conflicting": false,
@@ -301973,18 +302264,18 @@
               "ev_carbon_sequestration_su21_1",
               "ev_carbon_sequestration_bernal18_2",
               "ev_carbon_sequestration_bernal18_4",
-              "ev_carbon_sequestration_ahammad13_3",
-              "ev_mg_carbon_sp14_20261030"
+              "ev_soil_organic_carbon_sanderman18_1",
+              "ev_carbon_sequestration_sanderman18_4"
             ],
             "source_mix": {
-              "peer_reviewed": 5,
+              "peer_reviewed": 9,
               "grey": 0,
               "expert": 1
             },
             "prose_pending": false,
             "mechanism": "Planted mangroves take up carbon as they grow and store it in biomass and soils. A meta-analysis of forest and landscape restoration found mangrove tree restoration the second most efficient type at removing CO2, with removal rates up to 23.1 t CO2 per hectare a year in the first 20 years and 10.5 t over the following 40 years [ev_carbon_sequestration_bernal18_2, ev_carbon_sequestration_bernal18_4]. A global meta-analysis of mangrove restoration found carbon sequestration in restored mangroves significantly higher than on unvegetated tidal flats (log response ratio 0.64, 95% interval 0.35 to 0.94) [ev_carbon_sequestration_su21_1]. A coastal-defence manual explains the storage route: saline, waterlogged soils prevent the breakdown of organic material, so mangroves store carbon in soils where it can remain for millennia [ev_mg_carbon_sp14_20261030]. In Vietnam's southern Mekong Delta an independent evaluation reports forest cover in the project zones rising from around 50 percent in 2000 to 96 percent in 2007, and a Bangladesh coastal afforestation project states that its plantations were arranged to absorb carbon each year [ev_frmg_vnppar_3, ev_carbon_sequestration_ahammad13_3].",
-            "conditionality": "The engine class is strong, and it rests on the two meta-analyses. The counterfactual differs by source: unvegetated tidal flat in the mangrove meta-analysis, and the rate of carbon removal by the growing stand in the restoration synthesis [ev_carbon_sequestration_su21_1, ev_carbon_sequestration_bernal18_2]. The removal rates cover planted mangroves only, not hydrological restoration, and the source's text and table differ slightly for the later period [ev_carbon_sequestration_bernal18_2, ev_carbon_sequestration_bernal18_4]. The mangrove meta-analysis draws mostly on East and Southeast Asian studies of conventional planting and detected publication bias for carbon against tidal flats [ev_carbon_sequestration_su21_1]. The manual describes what existing mangroves do, not a measured restoration response [ev_mg_carbon_sp14_20261030]. The Vietnam figure is forest cover, not carbon, measured before and after with no counterfactual, and it includes casuarina windbreak planting and protection of existing forest; the evaluation says its indicators did not measure the quality of planting [ev_frmg_vnppar_3]. The Bangladesh statement is a project-total projection by implementing staff with no method, and its implied per-hectare rate looks implausible for young plantations, so it says nothing about size [ev_carbon_sequestration_ahammad13_3]. Net emissions from site disturbance, plantation survival and measured soil carbon under restoration in low-income settings are missing.",
-            "prose_written": "2026-10-31"
+            "conditionality": "The engine class is strong, and it rests on the two meta-analyses. The counterfactual differs by source: unvegetated tidal flat in the mangrove meta-analysis, and the rate of carbon removal by the growing stand in the restoration synthesis [ev_carbon_sequestration_su21_1, ev_carbon_sequestration_bernal18_2]. The removal rates cover planted mangroves only, not hydrological restoration, and the source's text and table differ slightly for the later period [ev_carbon_sequestration_bernal18_2, ev_carbon_sequestration_bernal18_4]. The mangrove meta-analysis draws mostly on East and Southeast Asian studies of conventional planting and detected publication bias for carbon against tidal flats [ev_carbon_sequestration_su21_1]. The manual describes what existing mangroves do, not a measured restoration response [ev_mg_carbon_sp14_20261030]. The Vietnam figure is forest cover, not carbon, measured before and after with no counterfactual, and it includes casuarina windbreak planting and protection of existing forest; the evaluation says its indicators did not measure the quality of planting [ev_frmg_vnppar_3]. The Bangladesh statement is a project-total projection by implementing staff with no method, and its implied per-hectare rate looks implausible for young plantations, so it says nothing about size [ev_carbon_sequestration_ahammad13_3]. Net emissions from site disturbance, plantation survival and measured soil carbon under restoration in low-income settings are missing. Evidence on existing mangroves shows what clearing costs: conversion to shrimp ponds removed about 90% of the soil carbon [ev_soil_organic_carbon_sanderman18_2], and on average 54% of below-ground carbon (soil plus roots) was lost after conversion [ev_soil_organic_carbon_sanderman18_3]. These are losses from clearing standing forest, cited second-hand, not gains from planting new mangroves.",
+            "prose_written": "2026-11-04"
           },
           "evidence_ids": [
             "ev_carbon_sequestration_bernal18_2",
@@ -301992,27 +302283,31 @@
             "ev_carbon_sequestration_su21_1",
             "ev_frmg_vnppar_3",
             "ev_carbon_sequestration_ahammad13_3",
-            "ev_mg_carbon_sp14_20261030"
+            "ev_mg_carbon_sp14_20261030",
+            "ev_soil_organic_carbon_sanderman18_1",
+            "ev_soil_organic_carbon_sanderman18_2",
+            "ev_soil_organic_carbon_sanderman18_3",
+            "ev_carbon_sequestration_sanderman18_4"
           ],
           "suitability_family_id": "mangrove_restoration__tidal_coastal",
           "applicability": {
             "income_groups": {
               "lower_middle": 1,
-              "unknown": 3,
+              "unknown": 4,
               "upper_middle": 1
             },
             "aezs": {
-              "unknown": 5
+              "unknown": 6
             },
             "farming_systems": {
-              "unknown": 5
+              "unknown": 6
             },
             "countries": [
               "BGD",
               "VNM"
             ],
-            "n_sources_in_scope": 5,
-            "weight_share_in_context": 0.048,
+            "n_sources_in_scope": 6,
+            "weight_share_in_context": 0.038,
             "target": {
               "income_group": "lic_lmic"
             },
@@ -302621,7 +302916,7 @@
           "effect_direction": "moderate_positive",
           "effect_confidence": "very_high",
           "effect_mechanism": "Mangrove planting supports coastal livelihoods mainly through aquatic products, and the returns on the planting itself are reported as benefit-cost appraisals. In northern Viet Nam a community mangrove plantation raised per-hectare yields of aquaculture products such as shells and oysters by 209-789 per cent, providing additional income for coastal communities [ev_household_income_ifrc11_1], and the project's cost-benefit analysis gives commune benefit-cost ratios of 3.06 to 68.92 excluding ecological benefits and 28.86 to 104.96 including them [ev_economic_return_ifrc11_1, ev_economic_return_ifrc11_2]. A global meta-analysis of mangrove restoration reports a benefit-cost ratio of 3.36 to 2.19 across discount rates when using the mean value of estimated total economic benefits [ev_economic_return_su21_1], and a cited study concludes that the benefits of mangrove reforestation projects outweigh their costs [ev_economic_return_hernmel17_1]. A World Bank study for coastal Bangladesh models livelihood benefits of mangrove restoration at 3,700 to 86,000 USD/ha, with regional means of 22,039 to 30,330 USD/ha [ev_economic_return_wbmang25_1]. Mangrove appraisals point the same way: a second-hand reading of an economic model for three coastal districts of northern Vietnam finds mangrove restoration desirable from an economic perspective based solely on the direct benefits of use by local communities [ev_frmg_erw09_1], and in Mexico's Gulf coast the mangrove reforestation investments at both pilot sites had positive net present values at all three discount rates considered [ev_frmg_mxicr_1]. An ex-ante appraisal for coastal Bangladesh projects that silvofishery systems combining mangrove or nypa planting with shrimp or crab culture, on land cleared for shrimp and salt farms, pay the landowner in the end: in the stable stage, all the silvofishery practices became profitable both financially and economically [ev_economic_return_rahman18_6].",
-          "conditionality": "Monetised avoided storm damage no longer sits in this row: it is hazard protection whose value accrues to society at large rather than income reaching the targeted households, and it is accounted under coastal flood hazard instead. What remains is thin on direct measurement of poverty. Nothing here observes household income or poverty against a counterfactual: the outcome is reached only through proxies - economic return and reported income gains - and the strongest cost-benefit numbers are project appraisals rather than measured welfare [ev_economic_return_su21_1, ev_economic_return_ifrc11_1, ev_household_income_ifrc11_1]. The Viet Nam figures come from an evaluation commissioned by the implementer, model costs and benefits forward, and the higher ratios include ecological benefits the source says had yet to materialise [ev_economic_return_ifrc11_1, ev_economic_return_ifrc11_2]; the meta-analysis pools unpaired benefit and cost samples and is dominated by East and Southeast Asian planting projects [ev_economic_return_su21_1]; the Bangladesh livelihood values are modelled present values transferred from a global valuation meta-regression, not observed income, and come from grey literature with the positive bias that carries [ev_economic_return_wbmang25_1]. The review finding is a conclusion cited from another study rather than a result of its own [ev_economic_return_hernmel17_1]. The Vietnam model is cited second-hand and described by the citing author as preliminary [ev_frmg_erw09_1]. The Mexico result is the project's own completion report, and its benefits are projected forward from planting on former cattle pasture rather than observed; coastal protection and carbon were not valued [ev_frmg_mxicr_1]. The breakwater cost comparisons are kept out of the direction because the saving goes to society rather than to households: mangrove restoration projects reported a median cost of US$0.1 per square metre (range 0.05–6.43) and an average replacement cost ratio of 5 (95% CI 3.1–6.9) against submerged breakwaters giving the same wave reduction, and depending on the water depth, mangrove projects in Vietnam can be three to five times cheaper than a breakwater [ev_frmg_nara16_3, ev_frmg_nara16_4]. That comparison assumed far lower breakwater construction costs in Vietnam than in Europe or the USA, rests on wave reduction measured under normal low-wave conditions, applies only to small waves, and the authors note such defences are not always cost effective. A Mexican figure is kept out of the direction because its value goes to society, not to households: the cost-benefit table for the Gulf-coast pilot sites attributes $50,866 pesos/ha/year of improved water quantity and quality to each hectare of reforested mangrove [ev_mgM_mxicr_1]. It is a model input, not a measurement at the sites: the completion report says the per-hectare values come from an earlier Mexican valuation study, updated, and the report is the lender's own self-evaluation. The same table shows how little the stand itself pays its neighbours: forest products are valued at $98 pesos/ha/year, against $20,031 pesos/ha/year for improved fisheries habitat, so any income case rests on the water and fishery services rather than on anything harvested from the trees. The Bangladesh silvofishery appraisal is a projection: nothing in it was implemented or measured, yields are borrowed from other countries' models, and its returns belong to the combined planting-and-aquaculture system, not to the trees alone, so the credit goes to the bundle rather than to mangrove planting as such [ev_economic_return_rahman18_6]. It also projects a loss for landowners first, a stated harm counted against the practice: when direct financial benefits and costs were in consideration, the BCR was slightly above 1.00 only in the crab system during the establishment phase, the other systems were losing concerns (BCR < 1.00) for the landowners in the initial phase, and the mangrove-shrimp and bio-filter systems still remained below 1.00. Its headline ratios, 2.33 for mangrove-shrimp, 1.80 for nypa-shrimp and 1.40 for the bio-filter on a 35-year horizon, are read as economic ratios that include environmental benefits to society, so they are held out of this household-poverty class [ev_economic_return_rahman18_1, ev_economic_return_rahman18_2, ev_economic_return_rahman18_3]. A review's statement, from the Global Commission on Adaptation, that the benefits of mangrove protection and restoration are up to 10 times greater than their costs is held out for the same reason, and because it pools protection of standing forest with restoration [ev_economic_return_seddon21_12]. The existing-forest results are also held out of the class, because they describe keeping standing mangrove rather than restoring it: in Orissa, India, a comparison of costs and benefits found protecting the remaining mangroves economically justified, and its own quote notes that the government's early warning evidently saved more lives than mangroves did [ev_economic_return_dasvincent09_1]; and the Bangladesh appraisal's crab system, the only one above break-even in all the restoration stages and both in financial and economic considerations, raises crabs in existing mature mangrove rather than in a planted stand [ev_economic_return_rahman18_7].",
+          "conditionality": "Monetised avoided storm damage no longer sits in this row: it is hazard protection whose value accrues to society at large rather than income reaching the targeted households, and it is accounted under coastal flood hazard instead. What remains is thin on direct measurement of poverty. Nothing here observes household income or poverty against a counterfactual: the outcome is reached only through proxies - economic return and reported income gains - and the strongest cost-benefit numbers are project appraisals rather than measured welfare [ev_economic_return_su21_1, ev_economic_return_ifrc11_1, ev_household_income_ifrc11_1]. The Viet Nam figures come from an evaluation commissioned by the implementer, model costs and benefits forward, and the higher ratios include ecological benefits the source says had yet to materialise [ev_economic_return_ifrc11_1, ev_economic_return_ifrc11_2]; the meta-analysis pools unpaired benefit and cost samples and is dominated by East and Southeast Asian planting projects [ev_economic_return_su21_1]; the Bangladesh livelihood values are modelled present values transferred from a global valuation meta-regression, not observed income, and come from grey literature with the positive bias that carries [ev_economic_return_wbmang25_1]. The review finding is a conclusion cited from another study rather than a result of its own [ev_economic_return_hernmel17_1]. The Vietnam model is cited second-hand and described by the citing author as preliminary [ev_frmg_erw09_1]. The Mexico result is the project's own completion report, and its benefits are projected forward from planting on former cattle pasture rather than observed; coastal protection and carbon were not valued [ev_frmg_mxicr_1]. The breakwater cost comparisons are kept out of the direction because the saving goes to society rather than to households: mangrove restoration projects reported a median cost of US$0.1 per square metre (range 0.05–6.43) and an average replacement cost ratio of 5 (95% CI 3.1–6.9) against submerged breakwaters giving the same wave reduction, and depending on the water depth, mangrove projects in Vietnam can be three to five times cheaper than a breakwater [ev_frmg_nara16_3, ev_frmg_nara16_4]. That comparison assumed far lower breakwater construction costs in Vietnam than in Europe or the USA, rests on wave reduction measured under normal low-wave conditions, applies only to small waves, and the authors note such defences are not always cost effective. A Mexican figure is kept out of the direction because its value goes to society, not to households: the cost-benefit table for the Gulf-coast pilot sites attributes $50,866 pesos/ha/year of improved water quantity and quality to each hectare of reforested mangrove [ev_mgM_mxicr_1]. It is a model input, not a measurement at the sites: the completion report says the per-hectare values come from an earlier Mexican valuation study, updated, and the report is the lender's own self-evaluation. The same table shows how little the stand itself pays its neighbours: forest products are valued at $98 pesos/ha/year, against $20,031 pesos/ha/year for improved fisheries habitat, so any income case rests on the water and fishery services rather than on anything harvested from the trees. The Bangladesh silvofishery appraisal is a projection: nothing in it was implemented or measured, yields are borrowed from other countries' models, and its returns belong to the combined planting-and-aquaculture system, not to the trees alone, so the credit goes to the bundle rather than to mangrove planting as such [ev_economic_return_rahman18_6]. It also projects a loss for landowners first, a stated harm counted against the practice: when direct financial benefits and costs were in consideration, the BCR was slightly above 1.00 only in the crab system during the establishment phase, the other systems were losing concerns (BCR < 1.00) for the landowners in the initial phase, and the mangrove-shrimp and bio-filter systems still remained below 1.00. Its headline ratios, 2.33 for mangrove-shrimp, 1.80 for nypa-shrimp and 1.40 for the bio-filter on a 35-year horizon, are read as economic ratios that include environmental benefits to society, so they are held out of this household-poverty class [ev_economic_return_rahman18_1, ev_economic_return_rahman18_2, ev_economic_return_rahman18_3]. A review's statement, from the Global Commission on Adaptation, that the benefits of mangrove protection and restoration are up to 10 times greater than their costs is held out for the same reason, and because it pools protection of standing forest with restoration [ev_economic_return_seddon21_12]. The existing-forest results are also held out of the class, because they describe keeping standing mangrove rather than restoring it: in Orissa, India, a comparison of costs and benefits found protecting the remaining mangroves economically justified, and its own quote notes that the government's early warning evidently saved more lives than mangroves did [ev_economic_return_dasvincent09_1]; and the Bangladesh appraisal's crab system, the only one above break-even in all the restoration stages and both in financial and economic considerations, raises crabs in existing mature mangrove rather than in a planted stand [ev_economic_return_rahman18_7]. A production-function study in the Gulf of Thailand, cited second-hand, links mangrove loss to lower fishery catch value of 21-69 per hectare per year [ev_economic_return_hutchfish14_1]; it describes the cost of losing existing mangroves, not the return from restoring them.",
           "timescale_of_effect": "short_term_1_3yr",
           "justification": {
             "statement": "mangrove_restoration moderately reduces rural_poverty in BGD, MEX, PHL, VNM; measured HARM (maladaptation) in 1 source — the practice worsened this outcome for some adopters (robust evidence, high agreement → very_high confidence; transfer: adjacent).",
@@ -302657,6 +302952,7 @@
               "wb_2025_mangroves_coastal_resilience_bangladesh · model · positive/strong · (BGD; lower_middle) · [ev_economic_return_wbmang25_1]",
               "erwin_2009_wetland_restoration_climate_change · model · positive/unspecified · (VNM; upper_middle) · [ev_frmg_erw09_1]",
               "wb_icr_mexico_coastal_wetlands_adaptation_2017 · model · positive/unspecified · (MEX; upper_middle) · [ev_frmg_mxicr_1]",
+              "hutchison_2014_mangroves_fisheries · model · negative/slight · (THA; upper_middle) · [ev_economic_return_hutchfish14_1]",
               "ifrc_2011_mangrove_vietnam_cba · case_study · positive/unspecified · (VNM; upper_middle) · [ev_economic_return_ifrc11_1]",
               "ifrc_2011_mangrove_vietnam_cba · case_study · positive/unspecified · (VNM; upper_middle) · [ev_economic_return_ifrc11_2]",
               "ifrc_2011_mangrove_vietnam_cba · case_study · positive/unspecified · (VNM; upper_middle) · [ev_household_income_ifrc11_1]",
@@ -302674,12 +302970,13 @@
               "economic_return→rural_poverty (proxy)",
               "household_income→rural_poverty (proxy)"
             ],
-            "pool_note": "This row draws on 20 evidence unit(s) from 10 source(s); the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
-            "n_units": 20,
+            "pool_note": "This row draws on 21 evidence unit(s) from 11 source(s); the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+            "n_units": 21,
             "held_out_of_class": {
               "existing_use_opportunity_cost": [
                 "ev_economic_return_rahman18_7",
-                "ev_economic_return_dasvincent09_1"
+                "ev_economic_return_dasvincent09_1",
+                "ev_economic_return_hutchfish14_1"
               ],
               "not_a_household_benefit": [
                 "ev_frmg_nara16_3",
@@ -302708,8 +303005,8 @@
             },
             "prose_pending": false,
             "mechanism": "Mangrove planting supports coastal livelihoods mainly through aquatic products, and the returns on the planting itself are reported as benefit-cost appraisals. In northern Viet Nam a community mangrove plantation raised per-hectare yields of aquaculture products such as shells and oysters by 209-789 per cent, providing additional income for coastal communities [ev_household_income_ifrc11_1], and the project's cost-benefit analysis gives commune benefit-cost ratios of 3.06 to 68.92 excluding ecological benefits and 28.86 to 104.96 including them [ev_economic_return_ifrc11_1, ev_economic_return_ifrc11_2]. A global meta-analysis of mangrove restoration reports a benefit-cost ratio of 3.36 to 2.19 across discount rates when using the mean value of estimated total economic benefits [ev_economic_return_su21_1], and a cited study concludes that the benefits of mangrove reforestation projects outweigh their costs [ev_economic_return_hernmel17_1]. A World Bank study for coastal Bangladesh models livelihood benefits of mangrove restoration at 3,700 to 86,000 USD/ha, with regional means of 22,039 to 30,330 USD/ha [ev_economic_return_wbmang25_1]. Mangrove appraisals point the same way: a second-hand reading of an economic model for three coastal districts of northern Vietnam finds mangrove restoration desirable from an economic perspective based solely on the direct benefits of use by local communities [ev_frmg_erw09_1], and in Mexico's Gulf coast the mangrove reforestation investments at both pilot sites had positive net present values at all three discount rates considered [ev_frmg_mxicr_1]. An ex-ante appraisal for coastal Bangladesh projects that silvofishery systems combining mangrove or nypa planting with shrimp or crab culture, on land cleared for shrimp and salt farms, pay the landowner in the end: in the stable stage, all the silvofishery practices became profitable both financially and economically [ev_economic_return_rahman18_6].",
-            "conditionality": "Monetised avoided storm damage no longer sits in this row: it is hazard protection whose value accrues to society at large rather than income reaching the targeted households, and it is accounted under coastal flood hazard instead. What remains is thin on direct measurement of poverty. Nothing here observes household income or poverty against a counterfactual: the outcome is reached only through proxies - economic return and reported income gains - and the strongest cost-benefit numbers are project appraisals rather than measured welfare [ev_economic_return_su21_1, ev_economic_return_ifrc11_1, ev_household_income_ifrc11_1]. The Viet Nam figures come from an evaluation commissioned by the implementer, model costs and benefits forward, and the higher ratios include ecological benefits the source says had yet to materialise [ev_economic_return_ifrc11_1, ev_economic_return_ifrc11_2]; the meta-analysis pools unpaired benefit and cost samples and is dominated by East and Southeast Asian planting projects [ev_economic_return_su21_1]; the Bangladesh livelihood values are modelled present values transferred from a global valuation meta-regression, not observed income, and come from grey literature with the positive bias that carries [ev_economic_return_wbmang25_1]. The review finding is a conclusion cited from another study rather than a result of its own [ev_economic_return_hernmel17_1]. The Vietnam model is cited second-hand and described by the citing author as preliminary [ev_frmg_erw09_1]. The Mexico result is the project's own completion report, and its benefits are projected forward from planting on former cattle pasture rather than observed; coastal protection and carbon were not valued [ev_frmg_mxicr_1]. The breakwater cost comparisons are kept out of the direction because the saving goes to society rather than to households: mangrove restoration projects reported a median cost of US$0.1 per square metre (range 0.05–6.43) and an average replacement cost ratio of 5 (95% CI 3.1–6.9) against submerged breakwaters giving the same wave reduction, and depending on the water depth, mangrove projects in Vietnam can be three to five times cheaper than a breakwater [ev_frmg_nara16_3, ev_frmg_nara16_4]. That comparison assumed far lower breakwater construction costs in Vietnam than in Europe or the USA, rests on wave reduction measured under normal low-wave conditions, applies only to small waves, and the authors note such defences are not always cost effective. A Mexican figure is kept out of the direction because its value goes to society, not to households: the cost-benefit table for the Gulf-coast pilot sites attributes $50,866 pesos/ha/year of improved water quantity and quality to each hectare of reforested mangrove [ev_mgM_mxicr_1]. It is a model input, not a measurement at the sites: the completion report says the per-hectare values come from an earlier Mexican valuation study, updated, and the report is the lender's own self-evaluation. The same table shows how little the stand itself pays its neighbours: forest products are valued at $98 pesos/ha/year, against $20,031 pesos/ha/year for improved fisheries habitat, so any income case rests on the water and fishery services rather than on anything harvested from the trees. The Bangladesh silvofishery appraisal is a projection: nothing in it was implemented or measured, yields are borrowed from other countries' models, and its returns belong to the combined planting-and-aquaculture system, not to the trees alone, so the credit goes to the bundle rather than to mangrove planting as such [ev_economic_return_rahman18_6]. It also projects a loss for landowners first, a stated harm counted against the practice: when direct financial benefits and costs were in consideration, the BCR was slightly above 1.00 only in the crab system during the establishment phase, the other systems were losing concerns (BCR < 1.00) for the landowners in the initial phase, and the mangrove-shrimp and bio-filter systems still remained below 1.00. Its headline ratios, 2.33 for mangrove-shrimp, 1.80 for nypa-shrimp and 1.40 for the bio-filter on a 35-year horizon, are read as economic ratios that include environmental benefits to society, so they are held out of this household-poverty class [ev_economic_return_rahman18_1, ev_economic_return_rahman18_2, ev_economic_return_rahman18_3]. A review's statement, from the Global Commission on Adaptation, that the benefits of mangrove protection and restoration are up to 10 times greater than their costs is held out for the same reason, and because it pools protection of standing forest with restoration [ev_economic_return_seddon21_12]. The existing-forest results are also held out of the class, because they describe keeping standing mangrove rather than restoring it: in Orissa, India, a comparison of costs and benefits found protecting the remaining mangroves economically justified, and its own quote notes that the government's early warning evidently saved more lives than mangroves did [ev_economic_return_dasvincent09_1]; and the Bangladesh appraisal's crab system, the only one above break-even in all the restoration stages and both in financial and economic considerations, raises crabs in existing mature mangrove rather than in a planted stand [ev_economic_return_rahman18_7].",
-            "prose_written": "2026-10-24"
+            "conditionality": "Monetised avoided storm damage no longer sits in this row: it is hazard protection whose value accrues to society at large rather than income reaching the targeted households, and it is accounted under coastal flood hazard instead. What remains is thin on direct measurement of poverty. Nothing here observes household income or poverty against a counterfactual: the outcome is reached only through proxies - economic return and reported income gains - and the strongest cost-benefit numbers are project appraisals rather than measured welfare [ev_economic_return_su21_1, ev_economic_return_ifrc11_1, ev_household_income_ifrc11_1]. The Viet Nam figures come from an evaluation commissioned by the implementer, model costs and benefits forward, and the higher ratios include ecological benefits the source says had yet to materialise [ev_economic_return_ifrc11_1, ev_economic_return_ifrc11_2]; the meta-analysis pools unpaired benefit and cost samples and is dominated by East and Southeast Asian planting projects [ev_economic_return_su21_1]; the Bangladesh livelihood values are modelled present values transferred from a global valuation meta-regression, not observed income, and come from grey literature with the positive bias that carries [ev_economic_return_wbmang25_1]. The review finding is a conclusion cited from another study rather than a result of its own [ev_economic_return_hernmel17_1]. The Vietnam model is cited second-hand and described by the citing author as preliminary [ev_frmg_erw09_1]. The Mexico result is the project's own completion report, and its benefits are projected forward from planting on former cattle pasture rather than observed; coastal protection and carbon were not valued [ev_frmg_mxicr_1]. The breakwater cost comparisons are kept out of the direction because the saving goes to society rather than to households: mangrove restoration projects reported a median cost of US$0.1 per square metre (range 0.05–6.43) and an average replacement cost ratio of 5 (95% CI 3.1–6.9) against submerged breakwaters giving the same wave reduction, and depending on the water depth, mangrove projects in Vietnam can be three to five times cheaper than a breakwater [ev_frmg_nara16_3, ev_frmg_nara16_4]. That comparison assumed far lower breakwater construction costs in Vietnam than in Europe or the USA, rests on wave reduction measured under normal low-wave conditions, applies only to small waves, and the authors note such defences are not always cost effective. A Mexican figure is kept out of the direction because its value goes to society, not to households: the cost-benefit table for the Gulf-coast pilot sites attributes $50,866 pesos/ha/year of improved water quantity and quality to each hectare of reforested mangrove [ev_mgM_mxicr_1]. It is a model input, not a measurement at the sites: the completion report says the per-hectare values come from an earlier Mexican valuation study, updated, and the report is the lender's own self-evaluation. The same table shows how little the stand itself pays its neighbours: forest products are valued at $98 pesos/ha/year, against $20,031 pesos/ha/year for improved fisheries habitat, so any income case rests on the water and fishery services rather than on anything harvested from the trees. The Bangladesh silvofishery appraisal is a projection: nothing in it was implemented or measured, yields are borrowed from other countries' models, and its returns belong to the combined planting-and-aquaculture system, not to the trees alone, so the credit goes to the bundle rather than to mangrove planting as such [ev_economic_return_rahman18_6]. It also projects a loss for landowners first, a stated harm counted against the practice: when direct financial benefits and costs were in consideration, the BCR was slightly above 1.00 only in the crab system during the establishment phase, the other systems were losing concerns (BCR < 1.00) for the landowners in the initial phase, and the mangrove-shrimp and bio-filter systems still remained below 1.00. Its headline ratios, 2.33 for mangrove-shrimp, 1.80 for nypa-shrimp and 1.40 for the bio-filter on a 35-year horizon, are read as economic ratios that include environmental benefits to society, so they are held out of this household-poverty class [ev_economic_return_rahman18_1, ev_economic_return_rahman18_2, ev_economic_return_rahman18_3]. A review's statement, from the Global Commission on Adaptation, that the benefits of mangrove protection and restoration are up to 10 times greater than their costs is held out for the same reason, and because it pools protection of standing forest with restoration [ev_economic_return_seddon21_12]. The existing-forest results are also held out of the class, because they describe keeping standing mangrove rather than restoring it: in Orissa, India, a comparison of costs and benefits found protecting the remaining mangroves economically justified, and its own quote notes that the government's early warning evidently saved more lives than mangroves did [ev_economic_return_dasvincent09_1]; and the Bangladesh appraisal's crab system, the only one above break-even in all the restoration stages and both in financial and economic considerations, raises crabs in existing mature mangrove rather than in a planted stand [ev_economic_return_rahman18_7]. A production-function study in the Gulf of Thailand, cited second-hand, links mangrove loss to lower fishery catch value of 21-69 per hectare per year [ev_economic_return_hutchfish14_1]; it describes the cost of losing existing mangroves, not the return from restoring them.",
+            "prose_written": "2026-11-04"
           },
           "evidence_ids": [
             "ev_economic_return_su21_1",
@@ -302731,7 +303028,8 @@
             "ev_economic_return_rahman18_6",
             "ev_economic_return_rahman18_7",
             "ev_economic_return_seddon21_12",
-            "ev_economic_return_dasvincent09_1"
+            "ev_economic_return_dasvincent09_1",
+            "ev_economic_return_hutchfish14_1"
           ],
           "suitability_family_id": "mangrove_restoration__tidal_coastal",
           "applicability": {
@@ -302954,10 +303252,10 @@
           "variable_type": "opportunity_space_variable",
           "effect_direction": "strong_positive",
           "effect_confidence": "high",
-          "effect_mechanism": "On the coast of Vietnam's southern Mekong Delta, project monitoring relayed by an independent evaluation reports that because of the replanted mangroves coastal erosion was reduced by 40 percent in Ca Mau and the length and area of coastline accreting increased by 20 percent, and the evaluation mission found that stabilising the beach with mangroves in Soc Trang has turned the coast into an accretion zone [ev_frmg_vnppar_1, ev_frmg_vnppar_2]. The Bangladesh WOCAT compiler reports that surface runoff decreased because of canopy cover and sediment accretion in the mangrove plantation, a component of erosion risk [ev_runoff_reduction_wocat_4300_2019_surface_runoff]. A World Bank modelling study for Bangladesh finds mangrove belts reduce shear stress at the toe of coastal embankments by 7%-16% where they average 60 m wide and by 45%-72% where they average 477 m, which also allows thinner revetments [ev_erosion_hazard_wbmang25_1, ev_erosion_hazard_wbmang25_2]. On the Bangladesh coast, project staff state that mangrove afforestation on more than 6,000 ha of newly accreted lands has improved continuous land stabilization capacity [ev_erosion_hazard_ahammad13_2]. A coastal-defence manual, citing McIvor and colleagues, explains the mechanism: mangrove vegetation reduces wave energy and slows the flow of water over the soil surface, reducing its capacity to dislodge and carry sediment, while the slower flow lets suspended sediment settle; mangrove aerial roots also trap sediment passing through [ev_mg_erosion_sp14_20261030, ev_mg_sediment_sp14_20261030].",
+          "effect_mechanism": "On the coast of Vietnam's southern Mekong Delta, project monitoring relayed by an independent evaluation reports that because of the replanted mangroves coastal erosion was reduced by 40 percent in Ca Mau and the length and area of coastline accreting increased by 20 percent, and the evaluation mission found that stabilising the beach with mangroves in Soc Trang has turned the coast into an accretion zone [ev_frmg_vnppar_1, ev_frmg_vnppar_2]. The Bangladesh WOCAT compiler reports that surface runoff decreased because of canopy cover and sediment accretion in the mangrove plantation, a component of erosion risk [ev_runoff_reduction_wocat_4300_2019_surface_runoff]. A World Bank modelling study for Bangladesh finds mangrove belts reduce shear stress at the toe of coastal embankments by 7%-16% where they average 60 m wide and by 45%-72% where they average 477 m, which also allows thinner revetments [ev_erosion_hazard_wbmang25_1, ev_erosion_hazard_wbmang25_2]. On the Bangladesh coast, project staff state that mangrove afforestation on more than 6,000 ha of newly accreted lands has improved continuous land stabilization capacity [ev_erosion_hazard_ahammad13_2]. A coastal-defence manual, citing McIvor and colleagues, explains the mechanism: mangrove vegetation reduces wave energy and slows the flow of water over the soil surface, reducing its capacity to dislodge and carry sediment, while the slower flow lets suspended sediment settle; mangrove aerial roots also trap sediment passing through [ev_mg_erosion_sp14_20261030, ev_mg_sediment_sp14_20261030]. Mangrove root networks and trunks also slow water flow and cause sediment to settle [ev_sediment_retention_hutchfish14_2].",
           "conditionality": "The engine class is strong. Apart from the Vietnam project's own uncontrolled monitoring, relayed by evaluators who could not visit Ca Mau, and the mission's visual observation in Soc Trang [ev_frmg_vnppar_1, ev_frmg_vnppar_2], the pool is a compiler rating of runoff used as a component proxy and modelled shear-stress reductions at embankments from grey literature, computed for existing mangrove belts rather than planted ones [ev_erosion_hazard_wbmang25_1, ev_erosion_hazard_wbmang25_2]; there is no controlled measurement of erosion under mangrove restoration. The Vietnam evidence also separates standing mangroves from planting: in the areas of Bac Lieu the mission visited, the replanted mangroves had largely been washed away and the coast was eroding rapidly, so accretion followed where the mangroves established and erosion continued where they did not [ev_frmg_vnppar_2]. The Bangladesh statement is an assertion by staff of the implementing project, with no erosion or accretion measurement reported [ev_erosion_hazard_ahammad13_2]. The manual's account is guidance on what existing mangroves do, passed on from a cited review rather than measured, and it notes that recovery depends on forest development and local coastal conditions [ev_mg_erosion_sp14_20261030, ev_mg_sediment_sp14_20261030].",
           "justification": {
-            "statement": "mangrove_restoration strongly reduces soil_erosion_risk in BGD, VNM (medium evidence, high agreement → high confidence; transfer: in_context).",
+            "statement": "mangrove_restoration strongly reduces soil_erosion_risk in BGD, VNM (medium evidence, high agreement → high confidence; transfer: adjacent).",
             "strength_basis": "quantified",
             "severity_coverage": null,
             "proxy_capped": false,
@@ -302979,17 +303277,18 @@
               "wb_2025_mangroves_coastal_resilience_bangladesh · model · negative/strong · (BGD; lower_middle) · [ev_erosion_hazard_wbmang25_2]",
               "wb_ieg_ppar_vietnam_coastal_wetlands_2009 · case_study · negative/unspecified · (VNM; upper_middle) · [ev_frmg_vnppar_2]",
               "wb_ieg_ppar_vietnam_coastal_wetlands_2009 · observational · negative/strong · pct_change=40 percent · (VNM; upper_middle) · [ev_frmg_vnppar_1]",
+              "hutchison_2014_mangroves_fisheries · observational · positive/unspecified · [ev_sediment_retention_hutchfish14_2]",
               "wocat_4300_2019 · practitioner_rating · positive/slight · (BGD; lower_middle) · [ev_runoff_reduction_wocat_4300_2019_surface_runoff]",
               "spalding_2014_mangroves_coastal_defence · expert · negative/unspecified · [ev_mg_erosion_sp14_20261030]",
               "spalding_2014_mangroves_coastal_defence · expert · positive/unspecified · [ev_mg_sediment_sp14_20261030]"
             ],
-            "agreement_note": "weighted sign agreement 1.0: benefit 8 (weight 0.59) ['ev_runoff_reduction_wocat_4300_2019_surface_runoff', 'ev_frmg_vnppar_1', 'ev_frmg_vnppar_2', 'ev_erosion_hazard_ahammad13_2', 'ev_erosion_hazard_wbmang25_1', 'ev_erosion_hazard_wbmang25_2', 'ev_mg_erosion_sp14_20261030', 'ev_mg_sediment_sp14_20261030']; harm 0 (weight 0) []; no effect 0 (weight 0) [].",
+            "agreement_note": "weighted sign agreement 1.0: benefit 9 (weight 0.63) ['ev_runoff_reduction_wocat_4300_2019_surface_runoff', 'ev_frmg_vnppar_1', 'ev_frmg_vnppar_2', 'ev_erosion_hazard_ahammad13_2', 'ev_erosion_hazard_wbmang25_1', 'ev_erosion_hazard_wbmang25_2', 'ev_mg_erosion_sp14_20261030', 'ev_mg_sediment_sp14_20261030', 'ev_sediment_retention_hutchfish14_2']; harm 0 (weight 0) []; no effect 0 (weight 0) [].",
             "proxies": [
               "runoff_reduction→soil_erosion_risk (component)",
               "sediment_retention→soil_erosion_risk (component)"
             ],
-            "pool_note": "This row draws on 8 evidence unit(s) from 5 source(s); the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
-            "n_units": 8,
+            "pool_note": "This row draws on 9 evidence unit(s) from 6 source(s); the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+            "n_units": 9,
             "held_out_of_class": {},
             "data_deficient": false,
             "conflicting": false,
@@ -303002,14 +303301,14 @@
               "ev_frmg_vnppar_1"
             ],
             "source_mix": {
-              "peer_reviewed": 6,
+              "peer_reviewed": 7,
               "grey": 1,
               "expert": 1
             },
             "prose_pending": false,
-            "mechanism": "On the coast of Vietnam's southern Mekong Delta, project monitoring relayed by an independent evaluation reports that because of the replanted mangroves coastal erosion was reduced by 40 percent in Ca Mau and the length and area of coastline accreting increased by 20 percent, and the evaluation mission found that stabilising the beach with mangroves in Soc Trang has turned the coast into an accretion zone [ev_frmg_vnppar_1, ev_frmg_vnppar_2]. The Bangladesh WOCAT compiler reports that surface runoff decreased because of canopy cover and sediment accretion in the mangrove plantation, a component of erosion risk [ev_runoff_reduction_wocat_4300_2019_surface_runoff]. A World Bank modelling study for Bangladesh finds mangrove belts reduce shear stress at the toe of coastal embankments by 7%-16% where they average 60 m wide and by 45%-72% where they average 477 m, which also allows thinner revetments [ev_erosion_hazard_wbmang25_1, ev_erosion_hazard_wbmang25_2]. On the Bangladesh coast, project staff state that mangrove afforestation on more than 6,000 ha of newly accreted lands has improved continuous land stabilization capacity [ev_erosion_hazard_ahammad13_2]. A coastal-defence manual, citing McIvor and colleagues, explains the mechanism: mangrove vegetation reduces wave energy and slows the flow of water over the soil surface, reducing its capacity to dislodge and carry sediment, while the slower flow lets suspended sediment settle; mangrove aerial roots also trap sediment passing through [ev_mg_erosion_sp14_20261030, ev_mg_sediment_sp14_20261030].",
+            "mechanism": "On the coast of Vietnam's southern Mekong Delta, project monitoring relayed by an independent evaluation reports that because of the replanted mangroves coastal erosion was reduced by 40 percent in Ca Mau and the length and area of coastline accreting increased by 20 percent, and the evaluation mission found that stabilising the beach with mangroves in Soc Trang has turned the coast into an accretion zone [ev_frmg_vnppar_1, ev_frmg_vnppar_2]. The Bangladesh WOCAT compiler reports that surface runoff decreased because of canopy cover and sediment accretion in the mangrove plantation, a component of erosion risk [ev_runoff_reduction_wocat_4300_2019_surface_runoff]. A World Bank modelling study for Bangladesh finds mangrove belts reduce shear stress at the toe of coastal embankments by 7%-16% where they average 60 m wide and by 45%-72% where they average 477 m, which also allows thinner revetments [ev_erosion_hazard_wbmang25_1, ev_erosion_hazard_wbmang25_2]. On the Bangladesh coast, project staff state that mangrove afforestation on more than 6,000 ha of newly accreted lands has improved continuous land stabilization capacity [ev_erosion_hazard_ahammad13_2]. A coastal-defence manual, citing McIvor and colleagues, explains the mechanism: mangrove vegetation reduces wave energy and slows the flow of water over the soil surface, reducing its capacity to dislodge and carry sediment, while the slower flow lets suspended sediment settle; mangrove aerial roots also trap sediment passing through [ev_mg_erosion_sp14_20261030, ev_mg_sediment_sp14_20261030]. Mangrove root networks and trunks also slow water flow and cause sediment to settle [ev_sediment_retention_hutchfish14_2].",
             "conditionality": "The engine class is strong. Apart from the Vietnam project's own uncontrolled monitoring, relayed by evaluators who could not visit Ca Mau, and the mission's visual observation in Soc Trang [ev_frmg_vnppar_1, ev_frmg_vnppar_2], the pool is a compiler rating of runoff used as a component proxy and modelled shear-stress reductions at embankments from grey literature, computed for existing mangrove belts rather than planted ones [ev_erosion_hazard_wbmang25_1, ev_erosion_hazard_wbmang25_2]; there is no controlled measurement of erosion under mangrove restoration. The Vietnam evidence also separates standing mangroves from planting: in the areas of Bac Lieu the mission visited, the replanted mangroves had largely been washed away and the coast was eroding rapidly, so accretion followed where the mangroves established and erosion continued where they did not [ev_frmg_vnppar_2]. The Bangladesh statement is an assertion by staff of the implementing project, with no erosion or accretion measurement reported [ev_erosion_hazard_ahammad13_2]. The manual's account is guidance on what existing mangroves do, passed on from a cited review rather than measured, and it notes that recovery depends on forest development and local coastal conditions [ev_mg_erosion_sp14_20261030, ev_mg_sediment_sp14_20261030].",
-            "prose_written": "2026-10-31"
+            "prose_written": "2026-11-04"
           },
           "evidence_ids": [
             "ev_runoff_reduction_wocat_4300_2019_surface_runoff",
@@ -303019,31 +303318,32 @@
             "ev_erosion_hazard_wbmang25_1",
             "ev_erosion_hazard_wbmang25_2",
             "ev_mg_erosion_sp14_20261030",
-            "ev_mg_sediment_sp14_20261030"
+            "ev_mg_sediment_sp14_20261030",
+            "ev_sediment_retention_hutchfish14_2"
           ],
           "suitability_family_id": "mangrove_restoration__tidal_coastal",
           "applicability": {
             "income_groups": {
               "lower_middle": 3,
-              "unknown": 1,
+              "unknown": 2,
               "upper_middle": 1
             },
             "aezs": {
-              "unknown": 5
+              "unknown": 6
             },
             "farming_systems": {
-              "unknown": 5
+              "unknown": 6
             },
             "countries": [
               "BGD",
               "VNM"
             ],
-            "n_sources_in_scope": 5,
-            "weight_share_in_context": 0.541,
+            "n_sources_in_scope": 6,
+            "weight_share_in_context": 0.492,
             "target": {
               "income_group": "lic_lmic"
             },
-            "transfer_class": "in_context"
+            "transfer_class": "adjacent"
           },
           "family_spread": false,
           "evidence_level": "medium",
@@ -303055,11 +303355,12 @@
           "nbs_id": "mangrove_restoration",
           "variable_id": "water_quality_risk",
           "variable_type": "opportunity_space_variable",
-          "effect_confidence": "very_low",
-          "effect_mechanism": "A mangrove coastal-defence manual states that mangroves and associated biota such as algae, bacteria and filter-feeding animals remove excess nutrients from the water, binding some into the soils and releasing some nitrogenous waste as inert nitrogen, and that their aerial roots help to trap sediment passing through [ev_mg_nutrients_sp14_20261030, ev_mg_sediment_sp14_20261030].",
-          "conditionality": "The row is data deficient and states no class: both units come from the same guidance source, neither is a measurement, and they describe existing mangroves rather than a restoration-versus-baseline response [ev_mg_nutrients_sp14_20261030, ev_mg_sediment_sp14_20261030]. The manual itself says these services are not limitless and excessive nutrients can remain and threaten marine life [ev_mg_nutrients_sp14_20261030]. A second independent source, or a measured finding on water quality under mangrove restoration, is missing.",
+          "effect_direction": "slight_positive",
+          "effect_confidence": "medium",
+          "effect_mechanism": "Mangroves, with the algae, bacteria and filter-feeding animals that live among them, remove excess nutrients from coastal water [ev_mg_nutrients_sp14_20261030], and their aerial roots, pneumatophores and trunks act like a sieve that slows water and traps sediment [ev_mg_sediment_sp14_20261030, ev_sediment_retention_hutchfish14_2].",
+          "conditionality": "The evidence describes what existing mangrove stands do; it does not measure water quality before and after planting, and the sources warn that these services have limits when nutrient or sediment loads are excessive. Treat it as a direction for restored stands once they reach a similar structure, not a measured gain from restoration.",
           "justification": {
-            "statement": "mangrove_restoration water_quality_risk: DATA DEFICIENT — one source, none of it measured (claim basis: expert_assertion) — a second independent source or one measured finding would let this cell state a class. The row carries 2 evidence unit(s) from 1 source(s); they are listed and described, but none of them may set a class.",
+            "statement": "mangrove_restoration reduces water_quality_risk (strength not quantified in the evidence) in the pooled evidence contexts (limited evidence, high agreement → medium confidence; transfer: adjacent).",
             "strength_basis": "direction_only",
             "severity_coverage": null,
             "proxy_capped": false,
@@ -303076,56 +303377,53 @@
             "intensity_discounted_from": null,
             "strength_from": "pool",
             "evidence_summary": [
+              "hutchison_2014_mangroves_fisheries · observational · positive/unspecified · [ev_sediment_retention_hutchfish14_2]",
               "spalding_2014_mangroves_coastal_defence · expert · positive/unspecified · [ev_mg_nutrients_sp14_20261030]",
               "spalding_2014_mangroves_coastal_defence · expert · positive/unspecified · [ev_mg_sediment_sp14_20261030]"
             ],
-            "agreement_note": "sign agreement undefined (single independent source): benefit 0 (weight 0) []; harm 0 (weight 0) []; no effect 0 (weight 0) [].",
+            "agreement_note": "weighted sign agreement 1.0: benefit 3 (weight 0.09) ['ev_mg_nutrients_sp14_20261030', 'ev_mg_sediment_sp14_20261030', 'ev_sediment_retention_hutchfish14_2']; harm 0 (weight 0) []; no effect 0 (weight 0) [].",
             "proxies": [
               "sediment_retention→water_quality_risk (component)"
             ],
-            "pool_note": "This row draws on 2 evidence unit(s) from 1 source(s); the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
-            "n_units": 2,
-            "held_out_of_class": {
-              "below_evidence_floor": [
-                "ev_mg_nutrients_sp14_20261030",
-                "ev_mg_sediment_sp14_20261030"
-              ]
-            },
-            "data_deficient": true,
+            "pool_note": "This row draws on 3 evidence unit(s) from 2 source(s); the weighting counts sources, not units, so several findings from one paper do not multiply its say.",
+            "n_units": 3,
+            "held_out_of_class": {},
+            "data_deficient": false,
             "conflicting": false,
-            "data_deficient_reason": "one source, none of it measured (claim basis: expert_assertion) — a second independent source or one measured finding would let this cell state a class",
+            "data_deficient_reason": "",
             "key_evidence_ids": [
+              "ev_sediment_retention_hutchfish14_2",
               "ev_mg_nutrients_sp14_20261030",
               "ev_mg_sediment_sp14_20261030"
             ],
             "source_mix": {
-              "peer_reviewed": 0,
+              "peer_reviewed": 1,
               "grey": 0,
-              "expert": 2,
-              "expert_only": true
+              "expert": 2
             },
             "prose_pending": false,
-            "mechanism": "A mangrove coastal-defence manual states that mangroves and associated biota such as algae, bacteria and filter-feeding animals remove excess nutrients from the water, binding some into the soils and releasing some nitrogenous waste as inert nitrogen, and that their aerial roots help to trap sediment passing through [ev_mg_nutrients_sp14_20261030, ev_mg_sediment_sp14_20261030].",
-            "conditionality": "The row is data deficient and states no class: both units come from the same guidance source, neither is a measurement, and they describe existing mangroves rather than a restoration-versus-baseline response [ev_mg_nutrients_sp14_20261030, ev_mg_sediment_sp14_20261030]. The manual itself says these services are not limitless and excessive nutrients can remain and threaten marine life [ev_mg_nutrients_sp14_20261030]. A second independent source, or a measured finding on water quality under mangrove restoration, is missing.",
-            "prose_written": "2026-10-31"
+            "mechanism": "Mangroves, with the algae, bacteria and filter-feeding animals that live among them, remove excess nutrients from coastal water [ev_mg_nutrients_sp14_20261030], and their aerial roots, pneumatophores and trunks act like a sieve that slows water and traps sediment [ev_mg_sediment_sp14_20261030, ev_sediment_retention_hutchfish14_2].",
+            "conditionality": "The evidence describes what existing mangrove stands do; it does not measure water quality before and after planting, and the sources warn that these services have limits when nutrient or sediment loads are excessive. Treat it as a direction for restored stands once they reach a similar structure, not a measured gain from restoration.",
+            "prose_written": "2026-11-04"
           },
           "evidence_ids": [
             "ev_mg_nutrients_sp14_20261030",
-            "ev_mg_sediment_sp14_20261030"
+            "ev_mg_sediment_sp14_20261030",
+            "ev_sediment_retention_hutchfish14_2"
           ],
           "suitability_family_id": "mangrove_restoration__tidal_coastal",
           "applicability": {
             "income_groups": {
-              "unknown": 1
+              "unknown": 2
             },
             "aezs": {
-              "unknown": 1
+              "unknown": 2
             },
             "farming_systems": {
-              "unknown": 1
+              "unknown": 2
             },
             "countries": [],
-            "n_sources_in_scope": 1,
+            "n_sources_in_scope": 2,
             "weight_share_in_context": 0.0,
             "target": {
               "income_group": "lic_lmic"
@@ -303134,7 +303432,7 @@
           },
           "family_spread": false,
           "evidence_level": "limited",
-          "agreement_level": "low",
+          "agreement_level": "high",
           "context_dependent": false
         }
       ]
@@ -396209,8 +396507,10 @@
         "citation": "Hutchison, J., Spalding, M., and zu Ermgassen, P. (2014). The Role of Mangroves in Fisheries Enhancement. The Nature Conservancy and Wetlands International.",
         "url": "https://www.wetlands.org/download/4977/",
         "doi": "",
-        "type": "unknown",
-        "origins": [],
+        "type": "grey",
+        "origins": [
+          "grey"
+        ],
         "nbs_ids": [
           "mangrove_restoration"
         ],
@@ -396219,23 +396519,31 @@
         ],
         "screening": "not_recorded",
         "search_ids": [],
-        "extraction_status": [],
-        "queue_statuses": [
-          "acquired"
+        "extraction_status": [
+          "swept"
         ],
-        "evidence_ids": [],
+        "queue_statuses": [
+          "extracted"
+        ],
+        "evidence_ids": [
+          "ev_economic_return_hutchfish14_1",
+          "ev_sediment_retention_hutchfish14_2"
+        ],
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
         "extraction_counts": {
           "T4": 0,
-          "effects": 0,
+          "effects": 2,
           "M2b": 0,
           "other": 0
         },
         "contributions": {
           "T4": [],
           "T3": [],
-          "T6": [],
+          "T6": [
+            "ev_economic_return_hutchfish14_1",
+            "ev_sediment_retention_hutchfish14_2"
+          ],
           "M2b": []
         }
       },
@@ -409794,8 +410102,10 @@
         "citation": "Sanderman et al. (2018). A global map of mangrove forest soil carbon at 30 m spatial resolution. Environmental Research Letters.",
         "url": "https://blueventures.org/wp-content/uploads/2021/03/Sanderman_2018_Environ._Res._Lett._13_055002.pdf",
         "doi": "10.1088/1748-9326/aabe1c",
-        "type": "unknown",
-        "origins": [],
+        "type": "literature",
+        "origins": [
+          "updated_lit"
+        ],
         "nbs_ids": [
           "mangrove_restoration"
         ],
@@ -409804,23 +410114,35 @@
         ],
         "screening": "not_recorded",
         "search_ids": [],
-        "extraction_status": [],
-        "queue_statuses": [
-          "acquired"
+        "extraction_status": [
+          "swept"
         ],
-        "evidence_ids": [],
+        "queue_statuses": [
+          "extracted"
+        ],
+        "evidence_ids": [
+          "ev_carbon_sequestration_sanderman18_4",
+          "ev_soil_organic_carbon_sanderman18_1",
+          "ev_soil_organic_carbon_sanderman18_2",
+          "ev_soil_organic_carbon_sanderman18_3"
+        ],
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
         "extraction_counts": {
           "T4": 0,
-          "effects": 0,
+          "effects": 4,
           "M2b": 0,
           "other": 0
         },
         "contributions": {
           "T4": [],
           "T3": [],
-          "T6": [],
+          "T6": [
+            "ev_carbon_sequestration_sanderman18_4",
+            "ev_soil_organic_carbon_sanderman18_1",
+            "ev_soil_organic_carbon_sanderman18_2",
+            "ev_soil_organic_carbon_sanderman18_3"
+          ],
           "M2b": []
         }
       },
@@ -442865,12 +443187,12 @@
     ],
     "totals": {
       "known_sources": 853,
-      "extracted_sources": 670,
+      "extracted_sources": 672,
       "reviewed_sources": 83,
       "fully_reviewed_sources": 45,
-      "active_excerpts": 4687,
-      "retained_excerpts": 4687,
-      "all_excerpts": 6165,
+      "active_excerpts": 4693,
+      "retained_excerpts": 4693,
+      "all_excerpts": 6171,
       "approved_excerpts": 282,
       "dropped_excerpts": 1478,
       "t4_relationships": 59,
@@ -442879,10 +443201,10 @@
       "t4_evidence_backed_relationships": 50,
       "t4_contributing_sources": 34,
       "source_mix": {
-        "literature": 544,
-        "grey": 155,
+        "literature": 545,
+        "grey": 156,
         "tools": 5,
-        "unknown": 149
+        "unknown": 147
       },
       "search_metrics": {
         "events": 205,
@@ -444107,12 +444429,12 @@
         "name": "Mangrove restoration",
         "metrics": {
           "known_sources": 57,
-          "extracted_sources": 40,
+          "extracted_sources": 42,
           "reviewed_sources": 4,
           "fully_reviewed_sources": 2,
-          "active_excerpts": 212,
-          "retained_excerpts": 212,
-          "all_excerpts": 229,
+          "active_excerpts": 218,
+          "retained_excerpts": 218,
+          "all_excerpts": 235,
           "approved_excerpts": 4,
           "dropped_excerpts": 17,
           "t4_relationships": 0,
@@ -444121,10 +444443,10 @@
           "t4_evidence_backed_relationships": 0,
           "t4_contributing_sources": 0,
           "source_mix": {
-            "literature": 24,
-            "grey": 17,
+            "literature": 25,
+            "grey": 18,
             "tools": 1,
-            "unknown": 15
+            "unknown": 13
           },
           "search_metrics": {
             "events": 8,
@@ -444174,12 +444496,12 @@
             ],
             "metrics": {
               "known_sources": 54,
-              "extracted_sources": 40,
+              "extracted_sources": 42,
               "reviewed_sources": 4,
               "fully_reviewed_sources": 2,
-              "active_excerpts": 212,
-              "retained_excerpts": 212,
-              "all_excerpts": 229,
+              "active_excerpts": 218,
+              "retained_excerpts": 218,
+              "all_excerpts": 235,
               "approved_excerpts": 4,
               "dropped_excerpts": 17,
               "t4_relationships": 0,
@@ -444188,10 +444510,10 @@
               "t4_evidence_backed_relationships": 0,
               "t4_contributing_sources": 0,
               "source_mix": {
-                "literature": 23,
-                "grey": 16,
+                "literature": 24,
+                "grey": 17,
                 "tools": 1,
-                "unknown": 14
+                "unknown": 12
               },
               "search_metrics": {
                 "events": 8,
@@ -445633,10 +445955,10 @@
   "build": {
     "release": "1.1.3",
     "ui_id": "6855d5a32189",
-    "data_id": "7581fad8b334",
+    "data_id": "ad3fde626bb1",
     "count_definition_version": "2",
-    "built_at": "2026-11-04T18:48:14.385021+00:00",
-    "source_commit": "1275fa2a96027aeef276fa3cb1c5949a47aa4c9e",
+    "built_at": "2026-11-04T18:59:43.902662+00:00",
+    "source_commit": "e5dca0587b67e7c61f3dc3389ecd7b55d07403e4",
     "history": [
       {
         "release": "1.0.0",
@@ -445687,180 +446009,140 @@
         "source_commit": "3a741f16aa0a282d910a26f14e7e98840b427ad1"
       },
       {
-        "release": "1.0.1",
-        "ui_id": "69bc55f52afd",
-        "data_id": "9eb97400f7d0",
+        "release": "1.0.0",
+        "ui_id": "0b08c7858c7c",
+        "data_id": "4bfc2d3d1556",
         "count_definition_version": "1",
-        "built_at": "2026-11-04T11:50:06.994029+00:00",
-        "source_commit": "065aed38ad8d738b50f5970a024656257a6ab2a5"
+        "built_at": "2026-11-04T11:51:16.677636+00:00",
+        "source_commit": "e78c7099fd8c7ee4394ecedca9eebf6fae938b8e"
       },
       {
-        "release": "1.0.1",
-        "ui_id": "f55c845c2ccb",
-        "data_id": "16d0eb1df05a",
-        "count_definition_version": "2",
-        "built_at": "2026-11-04T11:54:01.936727+00:00",
-        "source_commit": "065aed38ad8d738b50f5970a024656257a6ab2a5"
-      },
-      {
-        "release": "1.0.2",
-        "ui_id": "c4d151a87892",
-        "data_id": "01093361df28",
-        "count_definition_version": "2",
-        "built_at": "2026-11-04T12:04:06.863470+00:00",
-        "source_commit": "686a0f6d2038602d310353d40dc4196f8d1de847"
+        "release": "1.0.0",
+        "ui_id": "0b08c7858c7c",
+        "data_id": "491a8f3824f6",
+        "count_definition_version": "1",
+        "built_at": "2026-11-04T12:16:00.642323+00:00",
+        "source_commit": "a09dac23e4391eb1ccc686cfe6825c297f32b399"
       },
       {
         "release": "1.0.2",
         "ui_id": "f6aa9f72aee4",
-        "data_id": "01093361df28",
+        "data_id": "84960919fef9",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T12:05:27.787979+00:00",
-        "source_commit": "686a0f6d2038602d310353d40dc4196f8d1de847"
+        "built_at": "2026-11-04T12:29:15.906387+00:00",
+        "source_commit": "21a6c10a2ab48e7f77d30b536a2ca15740e2c640"
       },
       {
         "release": "1.0.2",
         "ui_id": "f6aa9f72aee4",
-        "data_id": "ab6b8c2dfa96",
+        "data_id": "57c1d8a64dce",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T12:14:22.239636+00:00",
-        "source_commit": "a6f421ec0240bf871ba3131604f6b8077cfeafbf"
+        "built_at": "2026-11-04T12:39:10.767717+00:00",
+        "source_commit": "a8f55a7aa54a0387f3fdb1e0f85a81809939ee80"
       },
       {
-        "release": "1.1.0",
-        "ui_id": "6b13b92ebaf3",
-        "data_id": "b73c0b0d1d5c",
+        "release": "1.0.2",
+        "ui_id": "f6aa9f72aee4",
+        "data_id": "9271487941c0",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T12:30:48.755764+00:00",
-        "source_commit": "59a89ea96e4fc8a3e6d8f88dd38a38dbbc7936dd"
+        "built_at": "2026-11-04T13:04:58.792500+00:00",
+        "source_commit": "5f61cb18bed43aa9a88aa8a566d01cd0142e2784"
       },
       {
-        "release": "1.1.0",
-        "ui_id": "ae41c41565da",
-        "data_id": "b73c0b0d1d5c",
+        "release": "1.0.2",
+        "ui_id": "f6aa9f72aee4",
+        "data_id": "13f76503b00b",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T12:33:04.831308+00:00",
-        "source_commit": "59a89ea96e4fc8a3e6d8f88dd38a38dbbc7936dd"
+        "built_at": "2026-11-04T13:06:32.499331+00:00",
+        "source_commit": "5f61cb18bed43aa9a88aa8a566d01cd0142e2784"
       },
       {
-        "release": "1.1.0",
-        "ui_id": "91dddacb83f9",
-        "data_id": "b73c0b0d1d5c",
+        "release": "1.0.2",
+        "ui_id": "f6aa9f72aee4",
+        "data_id": "3c05ff391ab3",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T12:34:23.161320+00:00",
-        "source_commit": "59a89ea96e4fc8a3e6d8f88dd38a38dbbc7936dd"
-      },
-      {
-        "release": "1.1.0",
-        "ui_id": "91dddacb83f9",
-        "data_id": "370688cb0fd3",
-        "count_definition_version": "2",
-        "built_at": "2026-11-04T12:38:38.434218+00:00",
-        "source_commit": "58b982bcb6aef5d0df884c9bd48db50dabb9db0e"
-      },
-      {
-        "release": "1.1.0",
-        "ui_id": "3f3d8ee73cfc",
-        "data_id": "370688cb0fd3",
-        "count_definition_version": "2",
-        "built_at": "2026-11-04T12:39:36.977054+00:00",
-        "source_commit": "58b982bcb6aef5d0df884c9bd48db50dabb9db0e"
+        "built_at": "2026-11-04T13:26:59.241383+00:00",
+        "source_commit": "5f61cb18bed43aa9a88aa8a566d01cd0142e2784"
       },
       {
         "release": "1.1.0",
         "ui_id": "bf351b27eb12",
-        "data_id": "370688cb0fd3",
+        "data_id": "d5408ab88b8a",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T12:40:12.329483+00:00",
-        "source_commit": "58b982bcb6aef5d0df884c9bd48db50dabb9db0e"
+        "built_at": "2026-11-04T13:35:49.746802+00:00",
+        "source_commit": "c26889feb7bc269d7ce65bc52c45510127b3ac8a"
       },
       {
         "release": "1.1.0",
         "ui_id": "bf351b27eb12",
-        "data_id": "d4fd749cb41c",
+        "data_id": "cbac50b5af79",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T12:52:41.454143+00:00",
-        "source_commit": "d7d95fd3bbc141425f2753ee1939adb7ee8fdf6f"
+        "built_at": "2026-11-04T14:58:46.133683+00:00",
+        "source_commit": "3556b0c90f55b3608ab5935b1a8d4f4951012a5b"
       },
       {
-        "release": "1.1.1",
-        "ui_id": "3d65346b0d65",
-        "data_id": "de9144c4c7e7",
+        "release": "1.1.0",
+        "ui_id": "bf351b27eb12",
+        "data_id": "db5b0bc356c9",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T14:14:48.963315+00:00",
-        "source_commit": "30d3f14a7cb570133895d75a34cab1ab2c904a1a"
+        "built_at": "2026-11-04T15:00:15.380959+00:00",
+        "source_commit": "3556b0c90f55b3608ab5935b1a8d4f4951012a5b"
       },
       {
-        "release": "1.1.1",
-        "ui_id": "260d67b532a7",
-        "data_id": "de9144c4c7e7",
+        "release": "1.1.0",
+        "ui_id": "bf351b27eb12",
+        "data_id": "0097451d2150",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T14:15:34.185165+00:00",
-        "source_commit": "30d3f14a7cb570133895d75a34cab1ab2c904a1a"
-      },
-      {
-        "release": "1.1.1",
-        "ui_id": "64dc8db91d46",
-        "data_id": "de9144c4c7e7",
-        "count_definition_version": "2",
-        "built_at": "2026-11-04T14:16:34.039421+00:00",
-        "source_commit": "30d3f14a7cb570133895d75a34cab1ab2c904a1a"
-      },
-      {
-        "release": "1.1.1",
-        "ui_id": "64dc8db91d46",
-        "data_id": "fb186d4fbf05",
-        "count_definition_version": "2",
-        "built_at": "2026-11-04T14:51:21.004721+00:00",
-        "source_commit": "33fada12f41f8dfed52a8393dbd3bc3498b5653e"
+        "built_at": "2026-11-04T15:07:51.818516+00:00",
+        "source_commit": "3556b0c90f55b3608ab5935b1a8d4f4951012a5b"
       },
       {
         "release": "1.1.2",
         "ui_id": "71d23e7f1f97",
-        "data_id": "1c7899af9892",
+        "data_id": "4f3dbb15d8d7",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T14:56:37.024637+00:00",
-        "source_commit": "9ca81acec0a38ab6aa0f6a6ed6e4914b975b56d8"
+        "built_at": "2026-11-04T17:56:57.973582+00:00",
+        "source_commit": "6cea094a8e5473e568c9690784c2a3728f2ad031"
       },
       {
         "release": "1.1.2",
         "ui_id": "71d23e7f1f97",
-        "data_id": "900857113868",
+        "data_id": "e133fea1d018",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T18:06:46.965901+00:00",
-        "source_commit": "e1e0c5d0af77f3569bac84a9e33e0107d0117cc2"
+        "built_at": "2026-11-04T18:23:51.721036+00:00",
+        "source_commit": "004c3a1651cffe8689f40d4f74c408b3ccc084b8"
       },
       {
         "release": "1.1.2",
         "ui_id": "71d23e7f1f97",
-        "data_id": "944401d5e2ac",
+        "data_id": "c428c7892130",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T18:21:45.444770+00:00",
-        "source_commit": "6b0d8825f8defa41e652050fd1bfcd4557458cfa"
+        "built_at": "2026-11-04T18:25:27.270510+00:00",
+        "source_commit": "004c3a1651cffe8689f40d4f74c408b3ccc084b8"
       },
       {
         "release": "1.1.2",
         "ui_id": "71d23e7f1f97",
-        "data_id": "f2c226f5a2dc",
+        "data_id": "ac3de26962e5",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T18:27:22.834851+00:00",
-        "source_commit": "cdc4e6442ffa1f9d632a4b8b5a464db49c682b8b"
+        "built_at": "2026-11-04T18:27:33.987527+00:00",
+        "source_commit": "004c3a1651cffe8689f40d4f74c408b3ccc084b8"
       },
       {
-        "release": "1.1.3",
-        "ui_id": "535e46a86779",
-        "data_id": "7581fad8b334",
+        "release": "1.1.2",
+        "ui_id": "71d23e7f1f97",
+        "data_id": "771dbe9b5514",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T18:47:39.346663+00:00",
-        "source_commit": "1275fa2a96027aeef276fa3cb1c5949a47aa4c9e"
+        "built_at": "2026-11-04T18:46:14.756480+00:00",
+        "source_commit": "fe65b37166e7f52a512aa69c503373f7cdd40129"
       },
       {
         "release": "1.1.3",
         "ui_id": "6855d5a32189",
-        "data_id": "7581fad8b334",
+        "data_id": "ad3fde626bb1",
         "count_definition_version": "2",
-        "built_at": "2026-11-04T18:48:14.385021+00:00",
-        "source_commit": "1275fa2a96027aeef276fa3cb1c5949a47aa4c9e"
+        "built_at": "2026-11-04T18:59:43.902662+00:00",
+        "source_commit": "e5dca0587b67e7c61f3dc3389ecd7b55d07403e4"
       }
     ]
   }
