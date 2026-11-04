@@ -449,3 +449,33 @@ assert(html.includes('<h2>2.2 Agroforestry</h2>'));
 assert(html.includes('2.2.1 Evidence by suitability family'));
 assert(html.includes('Table 2.2.1. Agroforestry'));
 """)
+
+
+def test_chart_outcomes_partition_recorded_extracts_and_keep_denominators_explicit():
+    run_js(r"""
+const t=setup(), m=t.fixture.progress_overview.practices[0].metrics;
+Object.assign(m,{all_excerpts:30,reviewed_excerpts:20,approved_excerpts:5,reviewed_unresolved_excerpts:8,reviewed_dropped_excerpts:7,unreviewed_excerpts:10,dropped_excerpts:9});
+t.api.refresh(t.fixture);
+let html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('id="dp-chart-view">'));
+assert(html.includes('id="dp-table-view" hidden'));
+assert(html.includes('Approved: 5; Reviewed · unresolved: 8; Reviewed · excluded: 7; No assessment recorded: 10'));
+assert(html.includes('66.7% reviewed; 25% of reviewed extracts approved'));
+assert(html.includes('7 reviewed · excluded'));assert(!html.includes('9 reviewed · excluded'));
+assert(html.includes('All practice bars share one count scale: 0–30 recorded extracts'));
+assert(html.includes('Deduplicated project total'));
+const click=(action,value)=>{const target={dataset:{action,value},closest:()=>target};t.handlers.click({target});};
+click('chart-scale','percent');
+html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('Every full bar = 100%'));
+assert.equal(t.document.activeElement.id,'dp-chart-scale-percent');
+click('overview-view','table');html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('id="dp-chart-view" hidden'));assert(html.includes('id="dp-table-view">'));
+assert.equal(t.document.activeElement.id,'dp-table-view-button');
+click('overview-view','chart');
+assert(t.api.revealTarget('chart-practice:agroforestry'));
+assert(!t.api.revealTarget('chart-practice:missing'));
+Object.assign(m,{all_excerpts:0,reviewed_excerpts:0,approved_excerpts:0,reviewed_unresolved_excerpts:0,reviewed_dropped_excerpts:0,unreviewed_excerpts:0});
+t.api.refresh(t.fixture);html=t.nodes.get('progress-app').innerHTML;
+assert(html.includes('No extracts recorded'));assert(!html.includes('width:NaN'));assert(!html.includes('Infinity'));
+""")

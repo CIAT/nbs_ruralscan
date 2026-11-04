@@ -334,3 +334,33 @@ details.dp-source-meta:not([open]) > :not(summary),
 .dp-scope-notes article { margin-top: 18px; padding-top: 10px; border-top: 1px solid var(--border-color); }
 .dp-scope-notes h4 { font-size: 14px; margin: 8px 0; }
 @media print { body.dp-print .dp-summary-table, body.dp-print .dp-family-table.dp-summary-table { min-width: 0; } body.dp-print .dp-column-filter { display: none; } body.dp-print .dp-orientation { padding: 8px; } body.dp-print .dp-orientation p { font-size: 10px; } }
+
+/* Figure and table share the same audited metrics; coloured segments never overlap. */
+.dp-view-switch { display: flex; flex-wrap: wrap; gap: 6px; }
+.dp-view-switch [aria-pressed="true"] { color: var(--accent-emerald); border-color: var(--accent-emerald); font-weight: 700; }
+.dp-review-chart { margin: 18px 0 24px; padding: 22px; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; }
+.dp-review-chart figcaption { font-size: 15px; }
+.dp-review-chart figcaption p { font-size: 13px; color: var(--text-secondary); max-width: 900px; }
+.dp-chart-tools { margin: 18px 0 12px; }
+.dp-chart-legend, .dp-chart-counts { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; }
+.dp-chart-legend span, .dp-chart-counts span { display: inline-flex; align-items: center; gap: 6px; }
+.dp-chart-key { display: inline-block; flex: 0 0 10px; width: 10px; height: 10px; border-radius: 2px; }
+.dp-chart-approved { background: #32a886; }
+.dp-chart-unresolved { background: #d6a142; }
+.dp-chart-excluded { background: #a27ac8; }
+.dp-chart-unreviewed { background: #61758d; }
+.dp-chart-axis { display: flex; justify-content: space-between; margin-top: 20px; color: var(--text-secondary); font-size: 11px; }
+.dp-chart-row { border-top: 1px solid var(--border-color); padding: 16px 0; break-inside: avoid; }
+.dp-chart-row-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.dp-chart-row-head .dp-expand { font-size: 15px; }
+.dp-chart-row-head > strong { font-size: 13px; }
+.dp-chart-context { font-size: 12px; color: var(--text-secondary); margin: 5px 0 10px; }
+.dp-chart-track { width: 100%; height: 24px; background: var(--bg-primary); border-radius: 4px; overflow: hidden; }
+.dp-chart-bar { display: flex; height: 100%; }
+.dp-chart-bar > span { height: 100%; }
+.dp-chart-counts { margin-top: 9px; color: var(--text-secondary); font-size: 11px; }
+.dp-chart-rates { font-size: 12px; margin: 7px 0 0; }
+.dp-chart-total { border-top: 2px solid var(--border-color); padding-top: 12px; margin-top: 8px; }
+.dp-chart-total h4 { margin: 0; font-size: 15px; }
+@media(max-width:600px) { .dp-review-chart { padding: 14px; } .dp-chart-counts { gap: 6px 12px; } }
+@media print { .dp-view-switch { display: none; } .dp-review-chart { padding: 10px; print-color-adjust: exact; -webkit-print-color-adjust: exact; } .dp-chart-row { padding: 8px 0; } }
