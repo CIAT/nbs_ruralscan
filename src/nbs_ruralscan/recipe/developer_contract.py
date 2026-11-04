@@ -30,7 +30,7 @@ from ..runtime.categorical import evaluate_categorical
 from ..runtime.numeric import evaluate_numeric
 
 VERSION = "0.2.0"
-PACKAGE_VERSION = "0.1.6"
+PACKAGE_VERSION = "0.1.7"
 
 
 def read_csv(path):

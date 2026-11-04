@@ -1,10 +1,10 @@
 # T4 implementation task brief — Diego and Brayden
 
-4 November 2026 · developer-v0.1.6 · work in progress
+4 November 2026 · developer-v0.1.7 · work in progress
 
 ## Start here
 
-Use [developer_contract.json](developer-v0.1.6/developer_contract.json) as the machine entry point and [developer_table.csv](developer-v0.1.6/developer_table.csv) for inspection. Pin the source commit in [manifest.json](developer-v0.1.6/manifest.json). The package contains the full evidence inventory, with no target country selected. The approved first-pass policy pins the slope/SOC/pH pools and 50/25/25 weights for a conditional partial terrain-and-soil index. It is ready for integration work, not a completed spatial analysis.
+Use [developer_contract.json](developer-v0.1.7/developer_contract.json) as the machine entry point and [developer_table.csv](developer-v0.1.7/developer_table.csv) for inspection. Pin the source commit in [manifest.json](developer-v0.1.7/manifest.json). The package contains the full evidence inventory, with no target country selected. The approved first-pass policy pins the slope/SOC/pH pools and 50/25/25 weights for a conditional partial terrain-and-soil index. It is ready for integration work, not a completed spatial analysis.
 
 Evidence inspection stays in the existing dashboard: **Evidence Query → T4 analysis → Evidence trail / Suitability & weights / Global synthesis / Rules & method**. Review decisions stay in QA/QC.
 
@@ -24,9 +24,9 @@ These are 38 developer rows representing 26 configured mappings plus 12 referenc
 
 1. **Load and pin.** Read the generated contract and retain its source commit, filters, function fingerprints and evidence identifiers. Join by mapping/system/function, not variable name alone. Treat CIAT schema as read-only.
 2. **Plan by role.** Dispatch numeric scores, host eligibility, legal exclusion and operational feasibility separately. Shared evidence is not inherited automatically by every system.
-3. **Check response semantics.** Run [40 conformance cases](developer-v0.1.6/conformance_examples.json): 19 numeric functions and 21 host-gate cases. Numeric tests include exact boundaries, adjacent values and unknowns; gate cases cover present/absent/unknown hosts. JSON null means unknown, never zero. These are small-array adapter checks, not pilot validation.
+3. **Check response semantics.** Run [40 conformance cases](developer-v0.1.7/conformance_examples.json): 19 numeric functions and 21 host-gate cases. Numeric tests include exact boundaries, adjacent values and unknowns; gate cases cover present/absent/unknown hosts. JSON null means unknown, never zero. These are small-array adapter checks, not pilot validation.
 4. **Resolve data access.** Use each row's binding and canonical input requirements alongside the developers' `dataset_access.csv`. Record actual asset/version, band, native units, scaling, temporal reducer, depth and resampling. Confirm the three climate bindings where CHELSA overrides recipe WorldClim. Check equivalence before using a response calibrated to a particular input.
-5. **Record analytical selections.** Use [selection_template.json](developer-v0.1.6/selection_template.json), selecting exact function IDs and fingerprints with target-system/context applicability and a decision reference. Rebuild into a new directory. A regional source response is an option, not a global default.
+5. **Record analytical selections.** Use [selection_template.json](developer-v0.1.7/selection_template.json), selecting exact function IDs and fingerprints with target-system/context applicability and a decision reference. Rebuild into a new directory. A regional source response is an option, not a global default.
 6. **Define the run.** Fix the criterion set, representative variables, aggregation method and final weights before evaluation. Keep host gates and legal masks outside the weighted sum, and operational scenarios outside M1. Propagate missing required scores; no pixel-by-pixel weight renormalization.
 7. **Pilot separately.** Diego's implementation owns raster acquisition, alignment and pilot testing. Report incompatible contract fields or failed conformance cases against the pinned package; do not silently repair analytical values in the runtime.
 
@@ -65,7 +65,7 @@ The policy's `implementation_readiness` counts its three numeric criteria and tw
 
 ## Immediate next actions
 
-1. **Diego and Brayden: begin integration from developer-v0.1.6.** Implement contract loading and role dispatch, then run the 40 response cases and six policy cases. These checks need no country selection or raster data. Report results against the pinned package and keep analytical tables read-only.
+1. **Diego and Brayden: begin integration from developer-v0.1.7.** Implement contract loading and role dispatch, then run the 40 response cases and six policy cases. These checks need no country selection or raster data. Report results against the pinned package and keep analytical tables read-only.
 2. **Pete with the implementation team: record target-run choices.** Haiti was named earlier as the pilot AOI; record its exact boundary and source when defining the run. That choice alone does not approve transferring regional responses. Record target applicability and adoption or replacement of the provisional soil-input proposal.
 3. **Implementation team: resolve inputs and masks.** Verify provider units, bands and depth transformations; supply host-branch inputs and an assessed legal mask. Record missing coverage as unknown.
 4. **Diego: perform spatial validation.** Preserve diagnostics, eligible fractions and unknown coverage; compare WLC with the minimum sensitivity result. Do not describe the partial terrain-and-soil index as full agroforestry suitability.
@@ -74,4 +74,4 @@ Remaining numeric alternatives and operational scenarios are later extensions. T
 
 ## Relationship visibility update — 4 November 2026
 
-The [source relationship catalogue](developer-v0.1.6/relationships.html) accounts for all non-dropped structural claims, including unlinked directions and classes. This is a visibility update, not new numeric calibration: 26 configured mappings and existing response choices remain unchanged. Source context and species/crop scope remain visible.
+The [source relationship catalogue](developer-v0.1.7/relationships.html) accounts for all non-dropped structural claims, including unlinked directions and classes. This is a visibility update, not new numeric calibration: 26 configured mappings and existing response choices remain unchanged. Source context and species/crop scope remain visible.
