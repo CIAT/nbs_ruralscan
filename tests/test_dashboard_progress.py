@@ -393,3 +393,40 @@ def test_truly_different_queries_or_retrieval_limits_stay_separate():
     assert len(result["searches"]) == 3
     assert result["totals"]["search_metrics"]["retrieved"] == 60
     assert result["totals"]["search_metrics"]["screened_pct"] == 50
+
+
+def test_complete_discovery_columns_share_one_cohort():
+    data = fixture_data()
+    data["registers"]["SRCH_search_register"] = [
+        {
+            "search_id": "partial_found",
+            "nbs_id": "trees",
+            "n_retrieved": "41",
+            "n_screened": "",
+            "n_included": "",
+        },
+        {
+            "search_id": "partial_screened",
+            "nbs_id": "trees",
+            "n_retrieved": "",
+            "n_screened": "93",
+            "n_included": "26",
+        },
+        {
+            "search_id": "complete",
+            "nbs_id": "trees",
+            "n_retrieved": "100",
+            "n_screened": "20",
+            "n_included": "10",
+        },
+    ]
+    counts = build_progress(data, [])["totals"]["search_metrics"]
+    assert [counts["paired_" + k] for k in ("retrieved", "screened", "included")] == [
+        100,
+        20,
+        10,
+    ]
+    assert counts["complete_counts"] == 1
+    assert counts["retrieved"] == 141
+    assert counts["screened"] == 113
+    assert counts["included"] == 36
