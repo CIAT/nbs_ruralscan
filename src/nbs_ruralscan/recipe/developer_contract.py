@@ -1196,10 +1196,16 @@ def _write_package(root, output, **kwargs):
     catalogue = build_catalogue(
         result["evidence"],
         result["synthesis_report"]["evidence_dispositions"],
-        read_csv(root / f"schema/recipes/{contract['nbs']}/T4_suitability_mappings.csv"),
+        read_csv(
+            root / f"schema/recipes/{contract['nbs']}/T4_suitability_mappings.csv"
+        ),
     )
-    (output / "relationship_catalogue.json").write_text(stable_json(catalogue), encoding="utf-8")
-    (output / "relationships.html").write_text(render_catalogue(catalogue), encoding="utf-8")
+    (output / "relationship_catalogue.json").write_text(
+        stable_json(catalogue), encoding="utf-8"
+    )
+    (output / "relationships.html").write_text(
+        render_catalogue(catalogue), encoding="utf-8"
+    )
 
     (output / "T4_suitability_mappings.csv").write_bytes(
         (
@@ -1328,6 +1334,8 @@ def verify_package(root, output):
     """Verify pinned inputs and outputs independently of the current branch HEAD."""
     root, output = Path(root).resolve(), Path(output).resolve()
     manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict):
+        raise ValueError("Incomplete package manifest")
     required_outputs = {
         "developer_contract.json",
         "developer_table.csv",
@@ -1355,7 +1363,9 @@ def verify_package(root, output):
         "DATASET_INPUTS.md",
         "VERSION",
     }
-    if tuple(int(part) for part in manifest.get("package_version", "0.0.0").split(".")) >= (0, 1, 6):
+    if tuple(
+        int(part) for part in manifest.get("package_version", "0.0.0").split(".")
+    ) >= (0, 1, 6):
         required_outputs.update({"relationship_catalogue.json", "relationships.html"})
     required_inputs = {
         "schema/registers/EV_evidence_register.csv",
@@ -1365,8 +1375,6 @@ def verify_package(root, output):
         "schema/registers/BIND_dataset_binding.csv",
         "scripts/synthesise-recipe.py",
     }
-    if not isinstance(manifest, dict):
-        raise ValueError("Incomplete package manifest")
     for key, required in (
         ("input_sha256", required_inputs),
         ("output_sha256", required_outputs),

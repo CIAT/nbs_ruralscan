@@ -1,4 +1,5 @@
 """Reproduce the bounded 83-claim inventory from the v0.1.6 package."""
+
 import csv
 import json
 from pathlib import Path
@@ -37,28 +38,48 @@ def main():
     assert catalogue["summary"]["explicitly_linked_claims"] == 21
     rows = []
     for r in selected:
-        peers = [x["evidence_id"] for x in records if x["evidence_id"] != r["evidence_id"]
-                 and x["source_id"] == r["source_id"] and x["variable"] == r["variable"]]
+        peers = [
+            x["evidence_id"]
+            for x in records
+            if x["evidence_id"] != r["evidence_id"]
+            and x["source_id"] == r["source_id"]
+            and x["variable"] == r["variable"]
+        ]
         caution = CAUTIONS.get(r["evidence_id"], "")
         if r["variable"] == "rootstock_presence":
             caution = "Preserve regeneration prerequisite; locked routing places rootstock enabling evidence outside core T4. Flag role for human review; no silent retag."
         if not caution:
-            caution = ("Retain stated relationship/classes; confirm units, source context, codebook and endpoint semantics before any compilation."
-                       if r["has_stated_direction"] or r["has_source_classes"] or r["source_shape"]
-                       else "Retain stored evidence; inspect quote/context for model use versus observed context. Missing encoded direction stays unknown.")
-        rows.append({"evidence_id": r["evidence_id"], "source_id": r["source_id"],
-                     "variable": r["variable"], "family": r["suitability_family_id"],
-                     "compiler_disposition": r["compilation_disposition"],
-                     "source_direction": r["source_direction"], "source_shape": r["source_shape"],
-                     "relationship": r["relationship"], "reviewer_ok": r["reviewer_ok"],
-                     "source_page": r["page"], "same_source_variable_records": json.dumps(peers),
-                     "review_caution": caution,
-                     "action_taken": "Visible in source relationship catalogue; no register/rule/approval change"})
+            caution = (
+                "Retain stated relationship/classes; confirm units, source context, codebook and endpoint semantics before any compilation."
+                if r["has_stated_direction"]
+                or r["has_source_classes"]
+                or r["source_shape"]
+                else "Retain stored evidence; inspect quote/context for model use versus observed context. Missing encoded direction stays unknown."
+            )
+        rows.append(
+            {
+                "evidence_id": r["evidence_id"],
+                "source_id": r["source_id"],
+                "variable": r["variable"],
+                "family": r["suitability_family_id"],
+                "compiler_disposition": r["compilation_disposition"],
+                "source_direction": r["source_direction"],
+                "source_shape": r["source_shape"],
+                "relationship": r["relationship"],
+                "reviewer_ok": r["reviewer_ok"],
+                "source_page": r["page"],
+                "same_source_variable_records": json.dumps(peers),
+                "review_caution": caution,
+                "action_taken": "Visible in source relationship catalogue; no register/rule/approval change",
+            }
+        )
     with (HERE / "83_claim_inventory.csv").open("w", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
-    (HERE / "summary.json").write_text(json.dumps(catalogue["summary"], indent=2) + "\n")
+    (HERE / "summary.json").write_text(
+        json.dumps(catalogue["summary"], indent=2) + "\n"
+    )
     print(catalogue["summary"])
 
 
