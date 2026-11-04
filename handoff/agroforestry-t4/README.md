@@ -2,7 +2,7 @@
 
 ## Inspect T4 in the existing dashboard
 
-Use [Evidence Query → T4 analysis](../../docs/dashboard.html#t4/global): **Evidence trail · Suitability & weights · Global synthesis · Rules & method**. One read-only inspection surface; evidence decisions remain in QA/QC. Developer packages below are versioned downloads, not additional live dashboards.
+Start with [Evidence & rules → Relationships](../../docs/dashboard.html#relationships) for the live source relationship catalogue. The **Evidence explorer** subtab retains **Evidence trail · Suitability & weights · Global synthesis · Rules & method**. Evidence decisions remain in **Evidence review**. Developer packages below are versioned downloads, not additional live dashboards.
 
 **Current developer package: [developer-v0.1.7](developer-v0.1.7/README.md), 4 November 2026.** Start with the [implementation task brief for Diego and Brayden](START_HERE.md), [developer table](developer-v0.1.7/developer_table.csv), [machine contract](developer-v0.1.7/developer_contract.json) and [implementation guide](IMPLEMENTATION.md). Rebuild and selection rules are documented in [the method](../../methodology/T4_developer_contract.md).
 
@@ -54,8 +54,8 @@ For data-only audit reconciliation, `scripts/audit-t4-compilation.py agroforestr
 
 ## Relationship visibility update — 4 November 2026
 
-The [source relationship catalogue](developer-v0.1.7/source_relationships.html) accounts for all non-dropped structural claims, including unlinked directions and classes. This is a visibility update, not new numeric calibration: 26 configured mappings and existing response choices remain unchanged. Source context and species/crop scope remain visible.
+The [live source relationship catalogue](../../docs/dashboard.html#relationships) accounts for all non-dropped structural claims, including unlinked directions and classes. This is a visibility update, not new numeric calibration: 26 configured mappings and existing response choices remain unchanged. Source context and species/crop scope remain visible. Use the live dashboard for ongoing inspection; versioned HTML packages remain unchanged as historical snapshots.
 
 ## Aggregated evidence table
 
-The original plotted table now includes the aggregate evidence alongside family-specific functions. Start with [developer table: one row per variable](developer-v0.1.7/index.html): group and variable use across the recorded study cohort, reconstructed source-weight summaries, source-relative importance, family-specific directions and function-support counts. [Source records](developer-v0.1.7/source_relationships.html) remain available underneath. Frequency is not importance; partial mapped-group weight sums are labelled and never renormalized. Regional and practitioner scopes remain separate.
+The original plotted table now includes the aggregate evidence alongside family-specific functions. Start with [live evidence table: one row per variable](../../docs/dashboard.html#relationships): group and variable use across the recorded study cohort, reconstructed source-weight summaries, source-relative importance, family-specific directions and function-support counts. [Source records](../../docs/dashboard.html#relationships) remain available underneath. Frequency is not importance; partial mapped-group weight sums are labelled and never renormalized. Regional and practitioner scopes remain separate.
