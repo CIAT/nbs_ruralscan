@@ -225,6 +225,19 @@ def test_submit_replays_clarifications_without_extraction_decisions(
             note="Please clarify",
         ),
     )
+    # This fixture models clarification replay, not a complete validated corpus.
+    # Assert the rebuild boundary instead of running the real global ledger checks
+    # against its two synthetic evidence rows.
+    rebuilds = []
+    evidence_path = tmp_path / "schema/registers/EV_evidence_register.csv"
+    evidence_before = evidence_path.read_bytes()
+
+    def rebuild(schema_root):
+        assert (tmp_path / "pipeline/metrics/clarification_log.json").exists()
+        rebuilds.append(schema_root)
+        return []
+
+    monkeypatch.setattr(submit_review, "generate", rebuild)
     monkeypatch.setattr(submit_review, "ROOT", tmp_path)
     monkeypatch.setattr(submit_review, "_load_store", lambda: {})
     monkeypatch.setattr(
@@ -232,10 +245,9 @@ def test_submit_replays_clarifications_without_extraction_decisions(
         "apply_decisions",
         lambda *a: pytest.fail("No extraction decisions to apply"),
     )
-    generated = []
-    monkeypatch.setattr(submit_review, "generate", lambda root: generated.append(root))
     assert submit_review.main() == 0
-    assert generated == [tmp_path / "schema"]
+    assert rebuilds == [tmp_path / "schema"]
+    assert evidence_path.read_bytes() == evidence_before
     assert (
         len(
             json.loads(

@@ -1028,6 +1028,7 @@
 </style>
 <link rel="stylesheet" href="t4_analysis.css">
 <script src="t4_analysis.js"></script>
+<link rel="stylesheet" href="dashboard-progress.css">
 <link rel="stylesheet" href="dashboard-feedback.css">
 </head>
 <body data-theme="dark">
@@ -1044,6 +1045,8 @@
     <span class="brand-subtitle">Evidence &amp; Literature Interrogation Dashboard</span>
   </div>
   <div class="header-actions">
+    <div id="dashboard-build" class="dashboard-build" aria-label="Dashboard and data build"></div>
+    <button class="btn-back" type="button" onclick="if(window.DashboardProgress)window.DashboardProgress.print()">Print overview</button>
     <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); margin-right:10px;" title="Your reviewer identity — every QA decision is attributed to this handle">&#128100; Reviewer
       <select id="vf-reviewer" onchange="if(this.value==='__other__'){var h=prompt('Git handle:');setVfReviewer((h||'').trim());}else{setVfReviewer(this.value);}" style="font-size:12px; padding:4px 9px; border-radius:5px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); font-weight:600;"><option value="">— pick reviewer —</option><option value="peetmate">peetmate</option><option value="bensonkenduiywo">bensonkenduiywo</option><option value="bjyberg">bjyberg</option><option value="Namita-J">Namita-J</option><option value="Mlolita26">Mlolita26</option><option value="__other__">Other…</option></select>
       <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer" title="How to review locally — clone, run the server, make decisions, push" style="font-size:11px; color:var(--accent-sky); text-decoration:none; white-space:nowrap;">&#9432; how to review</a>
@@ -1101,7 +1104,7 @@
         <line x1="8" y1="11" x2="14" y2="11"></line>
         <line x1="11" y1="8" x2="11" y2="14"></line>
       </svg>
-      Evidence &amp; Discovery
+      Progress
     </button>
     <button class="tab-btn" data-tab="tab-qaqc" id="btn-qaqc">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
@@ -1133,8 +1136,9 @@
     </button>
     <button class="tab-btn" data-tab="tab-stocktake" id="btn-stocktake">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="10" width="3" height="7"></rect><rect x="12" y="6" width="3" height="11"></rect><rect x="17" y="13" width="3" height="4"></rect></svg>
-      Stocktake &amp; Tools
+      Bibliography
     </button>
+    <button class="tab-btn" data-tab="tab-methods" id="btn-methods">Methods</button>
   </nav>
 
   <!-- LOADING STATE -->
@@ -1306,6 +1310,96 @@
           </div>
 
         </section>
+      </div>
+      <!-- ---------- 6. SANKEY FLOW (collapsible, default closed) ---------- -->
+      <div class="card-container" style="margin-top: 24px;">
+        <div class="interrogator-header-row sky" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-sky); padding-bottom: 8px;" onclick="toggleSection('wrapper-sankey-flow', 'chev-sankey-flow')">
+          <h3 class="interrogator-section-title sky" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+            <span id="chev-sankey-flow" style="display:inline-block; transition:transform 0.2s; transform:rotate(-90deg);">▼</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16"></path><path d="M4 8h6a4 4 0 0 1 4 4v4a4 4 0 0 0 4 4h2"></path><path d="M4 16h6a4 4 0 0 0 4-4V8a4 4 0 0 1 4-4h2"></path></svg>
+            Evidence Sourcing &amp; Translation Flow
+          </h3>
+          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to expand</span>
+        </div>
+        <div id="wrapper-sankey-flow" style="display:none;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; gap: 8px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap;">
+              <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; align-self: center; margin-right: 4px;">Current target:</span>
+              <span class="pill-btn active emerald" id="toggle-sankey-t4" data-target="t4_mappings" style="border-radius: 4px; padding: 4px 10px;">T4 Suitability</span>
+            </div>
+            <span style="font-size:11px; color:var(--text-muted);">Compiled T4 citations only. Hover a node to trace its lineage; source details and excerpts are in <b>Bibliography</b>.</span>
+          </div>
+          <div class="chart-wrapper" style="position: relative;">
+            <svg id="sankey-flow" viewBox="0 0 800 420" style="width:100%; height:auto; background:var(--bg-secondary); border-radius:var(--radius-md); border:1px solid var(--border-color);"></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 7. REGISTER ANALYTICS (collapsible, default closed) ---------- -->
+      <div class="card-container" style="margin-top: 24px;">
+        <div class="interrogator-header-row purple" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-purple); padding-bottom: 8px;" onclick="toggleSection('wrapper-register-analytics', 'chev-register-analytics')">
+          <h3 class="interrogator-section-title purple" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
+            <span id="chev-register-analytics" style="display:inline-block; transition:transform 0.2s; transform:rotate(-90deg);">▼</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="10" width="3" height="7"></rect><rect x="12" y="6" width="3" height="11"></rect><rect x="17" y="13" width="3" height="4"></rect></svg>
+            Evidence Sourcing Summary
+          </h3>
+          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to expand</span>
+        </div>
+        <div id="wrapper-register-analytics" style="display:none;">
+          <div class="charts-section">
+            <!-- SVG Sources by NbS Chart -->
+            <div class="card-container" style="margin-bottom:0;">
+              <h2 class="card-title">Sources cited by compiled T4</h2>
+              <div class="chart-wrapper">
+                <svg class="svg-chart-container" id="chart-sources-nbs" viewBox="0 0 600 280">
+                  <!-- Grid lines -->
+                  <line x1="60" y1="30" x2="560" y2="30" stroke="var(--border-color)" stroke-dasharray="4"></line>
+                  <line x1="60" y1="80" x2="560" y2="80" stroke="var(--border-color)" stroke-dasharray="4"></line>
+                  <line x1="60" y1="130" x2="560" y2="130" stroke="var(--border-color)" stroke-dasharray="4"></line>
+                  <line x1="60" y1="180" x2="560" y2="180" stroke="var(--border-color)" stroke-dasharray="4"></line>
+                  <line x1="60" y1="230" x2="560" y2="230" stroke="var(--border-color)" stroke-dasharray="4"></line>
+                </svg>
+              </div>
+              <div class="chart-legend">
+                <div class="legend-item"><span class="legend-color" style="background-color: var(--accent-emerald);"></span>Extraction marked complete</div>
+                <div class="legend-item"><span class="legend-color" style="background-color: var(--text-muted);"></span>Other recorded extraction status</div>
+              </div>
+            </div>
+
+            <!-- SVG Donut Chart: Evidence Tiers -->
+            <div class="card-container" style="margin-bottom:0;">
+              <h2 class="card-title">Evidence Benchmark Tiers</h2>
+              <div class="chart-wrapper">
+                <svg class="svg-chart-container" id="chart-evidence-tiers" viewBox="0 0 240 240">
+                  <circle cx="120" cy="120" r="80" fill="none" stroke="var(--bg-tertiary)" stroke-width="16"></circle>
+                </svg>
+                <div style="position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                  <span id="center-donut-value" style="font-family:var(--font-outfit); font-size:24px; font-weight:800;">100%</span>
+                  <span style="font-size:10px; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">High / medium tier</span>
+                </div>
+              </div>
+              <div class="chart-legend" id="donut-legend"></div>
+            </div>
+          </div>
+
+          <!-- Countries & Research Methods Grid -->
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-top: 24px;">
+            <div class="card-container" style="margin-bottom:0;">
+              <h2 class="card-title">Represented Study Countries / Contexts</h2>
+              <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="country-progress-list"></div>
+            </div>
+            <div class="card-container" style="margin-bottom:0; display:flex; flex-direction:column;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h2 class="card-title" style="margin-bottom:0;">Literature Sourcing Methods</h2>
+                <div style="display:flex; gap:4px; background:var(--bg-secondary); padding:2px; border-radius:4px; border:1px solid var(--border-color);" id="sourcing-group-toggle">
+                  <button class="toggle-btn active" data-mode="method" style="background:var(--bg-card); border:none; color:var(--accent-sky); padding:4px 8px; font-size:11px; border-radius:3px; cursor:pointer; font-weight:600; transition:all 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);">Sourcing Method</button>
+                  <button class="toggle-btn" data-mode="author" style="background:transparent; border:none; color:var(--text-muted); padding:4px 8px; font-size:11px; border-radius:3px; cursor:pointer; font-weight:500; transition:all 0.2s;">Author &amp; Date</button>
+                </div>
+              </div>
+              <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin; flex:1;" id="method-progress-list"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1580,490 +1674,13 @@
     </div>
 
     <div id="tab-stocktake" class="tab-content">
-      <div class="card-container">
-        <h2 class="card-title" style="display:flex; align-items:center; gap:10px;">
-          <span>&#128218; Stocktake &amp; Tools</span>
-          <span class="card-title-meta" style="flex:1;">Catalogues of what's out there: <b>Peer-reviewed</b> = 220 sources from the pre-repo OpenAlex search (C/I/D benchmark); <b>Tools / methods</b> = the in-repo <code>TOOL_tool_registry</code> (codebases · platforms · method frameworks). In-repo paper-first / grey sweeps live under <b>Discovery &amp; Search Log</b>.</span>
-        </h2>
-        <div id="stk-filters" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:12px 0;"></div>
-        <div id="stk-body"></div>
-      </div>
+      <div id="bibliography-app"></div>
     </div>
-
-    <!-- ================= TAB 1: EVIDENCE & DISCOVERY (merged Registers Overview + Discovery & Search Log) ================= -->
     <div id="tab-search" class="tab-content active">
-
-      <!-- ---------- 1. HEADER ---------- -->
-      <div class="card-container" style="margin-bottom: 16px;">
-        <h2 class="card-title" style="margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <span>Evidence &amp; Discovery</span>
-          <span class="card-title-meta" style="margin-left: 8px;">Register coverage, discovery progress, the registered sources behind it, and the PRISMA-lite search protocols that found them. Everything below follows the scope chips.</span>
-        </h2>
-      </div>
-
-      <!-- ---------- 1b. GLOBAL SCOPE PILLS (single source of truth for the whole tab) ---------- -->
-      <div class="card-container" style="position: sticky; top: 86px; z-index: 90; margin-bottom: 20px; padding: 16px 20px; background: var(--bg-secondary); border: 1px solid var(--border-color); box-shadow: var(--card-shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
-        <div style="display: flex; flex-direction: column; gap: 12px;">
-          <!-- Row 1: Practice Selector & Table Selector inline -->
-          <div style="display: flex; align-items: center; justify-content: flex-start; gap: 40px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Practice (NbS)</span>
-              <div id="search-pill-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <!-- Populated dynamically from FAM_family_registry -->
-              </div>
-            </div>
-
-            <!-- Table / Step: T4 is the only live recipe table (T3/T6 deferred), so the
-                 selector row is hidden; the single T4 pill stays in the DOM because the
-                 search-log key + category-filter handlers read it. -->
-            <div style="display: none; align-items: center; gap: 12px; flex-wrap: wrap;">
-              <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Table / Step</span>
-              <div id="search-pill-table" style="display: flex; gap: 8px; flex-wrap: wrap;">
-                <button class="pill-btn active purple" data-table="T4" style="border-radius: 6px; padding: 5px 12px; font-size: 11.5px;">T4 (Suitability)</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Row 2: Sub-NbS Selector (Suitability Family) -->
-          <div id="search-sub-nbs-row" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1px solid rgba(255, 255, 255, 0.05); padding-top: 10px;">
-            <span style="font-family: var(--font-outfit); font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; width: 100px;">Sub-Practice</span>
-            <div id="search-pill-sub-nbs" style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <!-- Populated dynamically from FAM_family_registry -->
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ---------- 2. STAT CARDS (scope-aware) ---------- -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon emerald">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-          </div>
-          <div class="stat-details">
-            <span class="stat-value" id="stat-total-sources">0</span>
-            <span class="stat-label">Total Sources Logged</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon sky">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 11 12 14 22 4"></polyline>
-              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-            </svg>
-          </div>
-          <div class="stat-details">
-            <span class="stat-value" id="stat-swept-sources">0</span>
-            <span class="stat-label">Swept / Ingested Sources</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon amber">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-          </div>
-          <div class="stat-details">
-            <span class="stat-value" id="stat-total-claims">0</span>
-            <span class="stat-label">Total Evidence Claims</span>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon purple">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-              <polyline points="2 17 12 22 22 17"></polyline>
-              <polyline points="2 12 12 17 22 12"></polyline>
-            </svg>
-          </div>
-          <div class="stat-details">
-            <span class="stat-value" id="stat-total-recipes">0</span>
-            <span class="stat-label">Compiled Recipes</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- ---------- 2b. EVIDENCE QUALITY SIGNAL ---------- -->
-      <div class="card-container" id="ev-quality-panel" style="margin-bottom:20px; cursor:pointer; user-select:none;" onclick="document.getElementById('btn-qaqc').click()" title="Open the QA / QC Flags tab">
-        <h2 class="card-title" style="margin-bottom:12px;">
-          <span>Evidence Quality Signal</span>
-          <span class="card-title-meta">Live counts from the Evidence Register — full review in the QA / QC Flags tab</span>
-          <span id="evq-worklist-toggle-hint" style="float:right; font-size:11px; font-weight:400; color:var(--accent-rose); margin-left:auto; padding-left:12px;">&#9654; Open QA / QC Flags tab</span>
-        </h2>
-        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; font-size:12.5px;" id="ev-quality-stats">
-          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">TOTAL EV UNITS</div><div class="stat-value" style="font-size:22px;" id="evq-total">—</div></div>
-          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px; color:var(--accent-rose);">VERIFY-FLAGS</div><div class="stat-value" style="font-size:22px; color:var(--accent-rose);" id="evq-vf">—</div></div>
-          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">UNREVIEWED</div><div class="stat-value" style="font-size:22px;" id="evq-unreviewed">—</div></div>
-          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">LOW CONFIDENCE</div><div class="stat-value" style="font-size:22px;" id="evq-low-conf">—</div></div>
-          <div class="stat-card" style="padding:14px 16px;"><div class="stat-label" style="font-size:10px;">BY USE ROLE</div><div style="font-size:11px; margin-top:6px; line-height:1.7;" id="evq-roles">—</div></div>
-        </div>
-      </div>
-
-      <!-- ---------- 3. UNIFIED COVERAGE MATRIX ---------- -->
-      <div class="card-container" style="margin-top: 24px;">
-        <div class="interrogator-header-row emerald" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-emerald); padding-bottom: 8px;" onclick="toggleSection('wrapper-discovery-audit', 'chev-discovery-audit')">
-          <h3 class="interrogator-section-title emerald" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
-            <span id="chev-discovery-audit" style="display:inline-block; transition:transform 0.2s;">▼</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            Coverage Matrix &mdash; Discovery, Evidence &amp; Methodology Progress
-          </h3>
-          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to collapse/expand</span>
-        </div>
-        <div id="wrapper-discovery-audit">
-          <!-- Filter / Search toolbar -->
-          <div style="margin-bottom:12px; background:rgba(255,255,255,0.02); padding:10px 12px; border-radius:6px; border:1px solid var(--border-color);">
-            <!-- Practice + Variant are driven by the global scope chips above
-                 (single source of truth for the whole tab). Only Status is matrix-local. -->
-            <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap;">
-              <div style="display:flex; align-items:center; gap:6px;">
-                <span style="font-size:11.5px; color:var(--text-muted); font-weight:500;">Status:</span>
-                <select id="filter-audit-status" class="select-input" style="font-size:11.5px; padding:4px 8px; width:auto; height:auto; border-radius:4px; cursor:pointer;">
-                  <option value="all">All</option>
-                  <option value="target">Target practice families</option>
-                  <option value="out_of_scope">Out of project scope</option>
-                  <option value="separate_comparison">Separate comparison</option>
-                  <option value="routing">Cross-family evidence tags</option>
-                  <option value="qualitative">Qualitative / scope unresolved</option>
-                </select>
-              </div>
-              <span style="font-size:11px; color:var(--text-muted);">Practice &amp; sub-practice follow the <b>scope chips</b> above.</span>
-            </div>
-
-            <!-- foldable "about / how to use" — collapsed by default to save vertical space -->
-            <details style="margin-top:10px; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.015);">
-              <summary style="cursor:pointer; padding:9px 13px; font-weight:600; color:var(--text-primary); outline:none; font-size:12px; list-style:none;">&#8505;&#65039; What this matrix shows &amp; how to use it <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">— click to expand</span></summary>
-              <div style="padding:2px 14px 14px;">
-                <p style="font-size:12px; color:var(--text-secondary); line-height:1.6; margin:10px 0 6px;">One <b>group row</b> per NbS (with its register roll-ups), one <b>row</b> per suitability family. <b>Stock · Lit · Grey · Tools</b> are the four discovery channels feeding T4 suitability; <b>Claims</b> and <b>T4 rows</b> are what reached the registers; <b>Status</b> distinguishes project scope from evidence availability. Counts show retained register records, not approval or readiness. Cross-family tags are evidence routing, not extra practices.</p>
-                <div style="font-size:11.5px; margin-top:8px; padding-top:10px; border-top: 1px solid var(--border-color); display:flex; flex-direction:column; gap:7px;">
-                  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                    <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Count badge</span>
-                    <span style="display:flex; align-items:center; gap:5px;"><span class="badge high audit-badge" style="font-weight:700; min-width:24px; height:18px; line-height:18px; display:inline-block; text-align:center; border-radius:9px; padding:0 6px;">12</span><span style="color:var(--text-secondary);"><b>found</b> — candidate sources <b>screened-in</b> (SRCH <i>n_included</i>) awaiting extraction. <b>Click</b> → that cell's evidence units.</span></span>
-                  </div>
-                  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                    <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Stage pip</span>
-                    <span style="color:var(--text-secondary);">furthest stage reached, in order <b>Searched → Extracted → Verified → Reviewed</b>. <span style="color:#10b981; font-weight:700;">Green</span> = <b>direct</b> (family-targeted search). <span style="background:#475569; color:#e2e8f0; padding:0 5px; border-radius:8px;">slate · gen</span> = reached only by the practice-wide <b>generic</b> parent search. <b>Click</b> → that cell's search protocol.</span>
-                  </div>
-                  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                    <span style="color:var(--text-muted); font-weight:600; width:118px; flex-shrink:0;">Progress bar</span>
-                    <span style="color:var(--text-secondary);">green fill = share of the cell's <b>found</b> sources already <b>extracted</b> into the register.</span>
-                    <span style="display:flex; align-items:center; gap:5px;"><span style="width:40px; height:5px; border-radius:3px; background:var(--bg-tertiary); overflow:hidden; display:inline-block;"><span style="display:block; height:100%; width:60%; background:#10b981;"></span></span><span style="color:var(--text-secondary);">extracted / found</span></span>
-                  </div>
-                </div>
-              </div>
-            </details>
-          </div>
-          <div class="table-wrapper" style="overflow:auto; max-height:calc(100vh - 140px);">
-            <table class="data-table" id="table-discovery-audit">
-              <thead>
-                <tr>
-                  <th id="audit-hdr-family" class="sortable-header" style="width:22%; vertical-align: middle; cursor: pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Click to sort alphabetically">Suitability Family ▲</th>
-                  <th id="audit-hdr-stock" class="sortable-header" style="width:11%; text-align:center; border-left: 1px solid var(--border-color); cursor:pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Benchmarked stocktake — click to sort by sources found">Stock</th>
-                  <th id="audit-hdr-lit" class="sortable-header" style="width:11%; text-align:center; cursor:pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Updated peer-reviewed literature — click to sort by sources found">Lit</th>
-                  <th id="audit-hdr-grey" class="sortable-header" style="width:11%; text-align:center; cursor:pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Grey literature / project docs — click to sort by sources found">Grey</th>
-                  <th id="audit-hdr-tools" class="sortable-header" style="width:11%; text-align:center; cursor:pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Tools / methods / code — click to sort by sources found">Tools</th>
-                  <th id="audit-hdr-claims" class="sortable-header" style="width:8%; text-align:center; border-left: 1px solid var(--border-color); cursor:pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="Active (non-dropped) evidence claims for this family — click to sort">Claims</th>
-                  <th id="audit-hdr-t4" class="sortable-header" style="width:8%; text-align:center; cursor:pointer; user-select:none; position:sticky; top:0; z-index:30; background:var(--bg-secondary);" title="T4 suitability-mapping rows for this family — click to sort">T4 rows</th>
-                  <th style="width:12%; text-align:center; position:sticky; top:0; z-index:30; background:var(--bg-secondary);">Status</th>
-                </tr>
-              </thead>
-              <tbody id="body-discovery-audit">
-                <!-- Dynamically Rendered -->
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- Search-protocol modal — opened by clicking a stage pip in the coverage matrix above -->
-      <div id="srch-modal" onclick="if(event.target===this)closeSrchModal()" style="display:none; position:fixed; inset:0; z-index:1000; background:rgba(0,0,0,0.62); padding:56px 20px; overflow:auto;">
-        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; max-width:780px; margin:0 auto; padding:20px 24px; box-shadow:0 12px 48px rgba(0,0,0,0.55);">
-          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px; border-bottom:1px solid var(--border-color); padding-bottom:10px;">
-            <h3 id="srch-modal-title" style="margin:0; font-size:15px; color:var(--text-primary);">Search protocol</h3>
-            <button onclick="closeSrchModal()" style="background:transparent; border:1px solid var(--border-color); color:var(--text-secondary); border-radius:4px; cursor:pointer; font-size:13px; padding:2px 9px;">&#10005;</button>
-          </div>
-          <div id="srch-modal-body"></div>
-        </div>
-      </div>
-
-      <!-- ---------- 4. UNIFIED SOURCES REGISTER ---------- -->
-      <div class="card-container" style="margin-top: 24px;">
-        <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
-          <span style="display: flex; align-items: center; gap: 8px;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-emerald);"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-            Registered Sources
-          </span>
-          <span id="sources-register-count" style="font-size: 11px; font-weight: 500; color: var(--accent-emerald); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); padding: 2px 8px; border-radius: 4px;"></span>
-        </h3>
-
-        <!-- Source category filter pills -->
-        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; background: rgba(255, 255, 255, 0.01); padding: 6px; border-radius: 6px; border: 1px solid var(--border-color);">
-          <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; margin-left: 6px;">Filter Category:</span>
-          <div id="search-inclusions-category-pills" style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button class="pill-btn active emerald" data-category="all" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">All Sources</button>
-            <button class="pill-btn emerald" data-category="stock" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Stock Papers</button>
-            <button class="pill-btn emerald" data-category="updated" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Updated Lit</button>
-            <button class="pill-btn emerald" data-category="grey" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Grey Lit</button>
-            <button class="pill-btn emerald" data-category="tools" style="border-radius: 4px; padding: 4px 10px; font-size: 11.5px;">Tools &amp; Manuals</button>
-          </div>
-        </div>
-
-        <div style="font-size: 11.5px; color: var(--text-secondary); background: rgba(255,255,255,0.015); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; line-height: 1.7;">
-          <b style="color:var(--text-muted);">Stage</b> &nbsp;<b style="color:#0ea5e9;">S</b> logged in a discovery log · <b style="color:#10b981;">E</b> registered in the source register · <b style="color:#818cf8;">X<i>n</i></b> n evidence claims extracted · <b style="color:#f43f5e;">⚑</b> claims flagged for review · <b style="color:#10b981;">R</b> human-reviewed. &nbsp;Filled = done, hollow = not yet.
-          <br><b style="color:var(--text-muted);">Tier</b> = source credibility (High / Medium / Low) from the screening rubric (evidence strength · transparency · venue · context · recency).
-          <br>Rows come from the <b>Source Register (SRC)</b> scoped by the chips above — not only from a parsed discovery log — so every practice's sources appear. <b>Click a row</b> for its evidence claims + raw register JSON.
-        </div>
-
-        <div style="overflow-x: auto;">
-          <table class="data-table" id="table-sources-register" style="width: 100%; border-collapse: collapse; text-align: left;">
-            <thead>
-              <tr>
-                <th style="width: 26%;">Source</th>
-                <th style="width: 70px; text-align: center;">Tier</th>
-                <th style="width: 110px;">Category</th>
-                <th style="width: 18%;">Geography / Context</th>
-                <th style="width: 150px; white-space: nowrap;" title="Pipeline stage: S=logged in discovery log, E=extracted/registered in SRC, X=EV rows extracted (n), ⚑=flagged rows, R=human-reviewed">Stages</th>
-                <th>Variables Extracted</th>
-              </tr>
-            </thead>
-            <tbody id="body-sources-register">
-              <!-- Populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Evidence Drill-down Panel (Side-by-Side Split View) -->
-        <div id="source-evidence-drilldown" style="margin-top: 24px; display: none;">
-          <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-            <!-- Left Column: Evidence Claims -->
-            <div style="flex: 3; min-width: 500px; padding: 20px; border: 1px solid var(--border-color); background: var(--bg-tertiary); border-radius: var(--radius-lg); display: flex; flex-direction: column;">
-              <h4 style="margin: 0 0 12px 0; font-size: 14px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px; color: var(--accent-sky);">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-                Evidence Claims for Source: <span id="selected-source-id-label" style="font-family: ui-monospace, monospace; color: var(--text-primary); font-size: 13px; margin-left: 4px;"></span>
-              </h4>
-              <div style="overflow-x: auto; flex: 1;">
-                <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left; font-size: 12px;">
-                  <thead>
-                    <tr>
-                      <th style="width: 130px;">Evidence ID</th>
-                      <th style="width: 120px;">Variable</th>
-                      <th style="width: 180px;">Relationship / Rules</th>
-                      <th style="width: 120px;">Context</th>
-                      <th>Verbatim Quote / Assertion</th>
-                      <th style="width: 60px; text-align: center;">Page</th>
-                      <th style="width: 100px;">Evidence Type</th>
-                    </tr>
-                  </thead>
-                  <tbody id="source-evidence-drilldown-body">
-                    <!-- Populated dynamically -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Right Column: Source JSON Metadata -->
-            <div style="flex: 2; min-width: 350px; padding: 20px; border: 1px solid var(--border-color); background: var(--bg-tertiary); border-radius: var(--radius-lg); display: flex; flex-direction: column;">
-              <h4 style="margin: 0 0 12px 0; font-size: 14px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px; color: var(--accent-emerald);">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                Source Metadata JSON
-              </h4>
-              <pre id="selected-source-json-pre" style="flex: 1; margin: 0; font-family: ui-monospace, monospace; font-size: 11px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 6px; overflow: auto; border: 1px solid var(--border-color); color: var(--text-primary); white-space: pre-wrap; word-break: break-all; max-height: 450px;"></pre>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ---------- 5. SEARCH PROTOCOL (PRISMA) ---------- -->
-      <div class="card-container" style="margin-top: 24px;">
-        <div class="interrogator-header-row purple" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-purple); padding-bottom: 8px;" onclick="toggleSection('wrapper-search-protocol', 'chev-search-protocol')">
-          <h3 class="interrogator-section-title purple" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
-            <span id="chev-search-protocol" style="display:inline-block; transition:transform 0.2s;">▼</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9v6l4 2v-8L22 3z"></path></svg>
-            Search Protocol (PRISMA-lite) &amp; Triage Decisions
-          </h3>
-          <div style="display: flex; gap: 12px; align-items: center;" onclick="event.stopPropagation();">
-            <div class="pill-toggle-container" style="display: flex; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; padding: 2px;">
-              <button class="pill-btn active sky" id="btn-search-view-structured" style="border-radius: 4px; padding: 6px 12px; font-size: 12px; border: none; cursor: pointer;">Structured View</button>
-              <button class="pill-btn" id="btn-search-view-raw" style="border-radius: 4px; padding: 6px 12px; font-size: 12px; border: none; cursor: pointer; background: transparent; color: var(--text-secondary);">Raw Markdown</button>
-            </div>
-          </div>
-        </div>
-        <div id="wrapper-search-protocol">
-          <!-- Scope hint shown when no single practice is selected -->
-          <div id="search-protocol-hint" style="display:none; text-align:center; padding:28px 20px; font-size:12.5px; color:var(--text-muted); background:rgba(255,255,255,0.015); border:1px dashed var(--border-color); border-radius:8px;">
-            Pick a <b style="color:var(--text-secondary);">practice</b> (and optionally a sub-practice) in the scope chips above to load its PRISMA-lite discovery funnel, search queries and triage decisions.
-          </div>
-
-          <!-- STRUCTURED PANEL -->
-          <div id="search-structured-panel" style="display: flex; flex-direction: column; gap: 20px;">
-            <!-- Funnel and Queries Row -->
-            <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: stretch;">
-              <!-- Left: PRISMA-lite Funnel Card -->
-              <div class="card-container" style="margin: 0; display: flex; flex-direction: column; min-width: 0;">
-                <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px;">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9v6l4 2v-8L22 3z"></path></svg>
-                  PRISMA-lite Discovery Funnel
-                </h3>
-                <div id="search-funnel-container" style="flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 12px; min-height: 320px; padding: 10px 0;">
-                  <!-- Populated dynamically -->
-                </div>
-              </div>
-
-              <!-- Right: Queries & Databases Card -->
-              <div class="card-container" style="margin: 0; display: flex; flex-direction: column; min-width: 0;">
-                <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; gap: 8px;">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
-                  Queries &amp; Databases Screened
-                </h3>
-                <div id="search-queries-container" style="flex: 1; overflow-y: auto; max-height: 550px; display: flex; flex-direction: column; gap: 12px; font-size: 12.5px;">
-                  <!-- Populated dynamically -->
-                </div>
-              </div>
-            </div>
-
-            <!-- Exclusions and Borderline Cases Section -->
-            <div class="card-container" style="margin: 0;">
-              <h3 style="margin: 0 0 16px 0; font-size: 15px; font-family: var(--font-outfit); display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
-                <span style="display: flex; align-items: center; gap: 8px;">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent-amber);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                  Borderline &amp; Triage Decisions (Human-in-the-Loop Review)
-                </span>
-                <span id="search-exclusions-filter-badge" style="font-size: 11px; font-weight: 500; color: var(--accent-amber); background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); padding: 2px 8px; border-radius: 4px; display: none;"></span>
-              </h3>
-              <div style="overflow-x: auto;">
-                <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
-                  <thead>
-                    <tr>
-                      <th style="width: 130px;">Decision</th>
-                      <th style="width: 200px;">Category / Source</th>
-                      <th style="width: 280px;">Ambiguity / Reasoning</th>
-                      <th>Proposal &amp; Context Boundary Alignment</th>
-                    </tr>
-                  </thead>
-                  <tbody id="search-exclusions-table-body">
-                    <!-- Populated dynamically -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <!-- RAW PANEL -->
-          <div id="search-raw-panel" style="display: none;">
-            <div class="card-container" style="margin: 0;">
-              <pre id="search-raw-markdown" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12.5px; line-height: 1.5; padding: 16px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; overflow-x: auto; white-space: pre-wrap; color: var(--text-primary); max-height: 800px; overflow-y: auto;"></pre>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ---------- 6. SANKEY FLOW (collapsible, default closed) ---------- -->
-      <div class="card-container" style="margin-top: 24px;">
-        <div class="interrogator-header-row sky" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-sky); padding-bottom: 8px;" onclick="toggleSection('wrapper-sankey-flow', 'chev-sankey-flow')">
-          <h3 class="interrogator-section-title sky" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
-            <span id="chev-sankey-flow" style="display:inline-block; transition:transform 0.2s; transform:rotate(-90deg);">▼</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16"></path><path d="M4 8h6a4 4 0 0 1 4 4v4a4 4 0 0 0 4 4h2"></path><path d="M4 16h6a4 4 0 0 0 4-4V8a4 4 0 0 1 4-4h2"></path></svg>
-            Evidence Sourcing &amp; Translation Flow
-          </h3>
-          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to expand</span>
-        </div>
-        <div id="wrapper-sankey-flow" style="display:none;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
-            <div style="display: flex; gap: 8px; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); flex-wrap: wrap;">
-              <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500; align-self: center; margin-right: 4px;">Filter Target Tables:</span>
-              <button class="pill-btn active emerald" id="toggle-sankey-t4" data-target="t4_mappings" style="border-radius: 4px; padding: 4px 10px;">T4 Suitability</button>
-            </div>
-            <span style="font-size:11px; color:var(--text-muted);">Hover a node to trace its lineage. The source-level grid now lives in <b>Registered Sources</b> above.</span>
-          </div>
-          <div class="chart-wrapper" style="position: relative;">
-            <svg id="sankey-flow" viewBox="0 0 800 420" style="width:100%; height:auto; background:var(--bg-secondary); border-radius:var(--radius-md); border:1px solid var(--border-color);"></svg>
-          </div>
-        </div>
-      </div>
-
-      <!-- ---------- 7. REGISTER ANALYTICS (collapsible, default closed) ---------- -->
-      <div class="card-container" style="margin-top: 24px;">
-        <div class="interrogator-header-row purple" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer; user-select:none; margin-bottom:12px; border-bottom: 2px solid var(--accent-purple); padding-bottom: 8px;" onclick="toggleSection('wrapper-register-analytics', 'chev-register-analytics')">
-          <h3 class="interrogator-section-title purple" style="margin:0; display:flex; align-items:center; gap:8px; border:none; padding:0;">
-            <span id="chev-register-analytics" style="display:inline-block; transition:transform 0.2s; transform:rotate(-90deg);">▼</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="10" width="3" height="7"></rect><rect x="12" y="6" width="3" height="11"></rect><rect x="17" y="13" width="3" height="4"></rect></svg>
-            Register Analytics
-          </h3>
-          <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">Click to expand</span>
-        </div>
-        <div id="wrapper-register-analytics" style="display:none;">
-          <div class="charts-section">
-            <!-- SVG Sources by NbS Chart -->
-            <div class="card-container" style="margin-bottom:0;">
-              <h2 class="card-title">Sources Extraction Status per NbS</h2>
-              <div class="chart-wrapper">
-                <svg class="svg-chart-container" id="chart-sources-nbs" viewBox="0 0 600 280">
-                  <!-- Grid lines -->
-                  <line x1="60" y1="30" x2="560" y2="30" stroke="var(--border-color)" stroke-dasharray="4"></line>
-                  <line x1="60" y1="80" x2="560" y2="80" stroke="var(--border-color)" stroke-dasharray="4"></line>
-                  <line x1="60" y1="130" x2="560" y2="130" stroke="var(--border-color)" stroke-dasharray="4"></line>
-                  <line x1="60" y1="180" x2="560" y2="180" stroke="var(--border-color)" stroke-dasharray="4"></line>
-                  <line x1="60" y1="230" x2="560" y2="230" stroke="var(--border-color)" stroke-dasharray="4"></line>
-                </svg>
-              </div>
-              <div class="chart-legend">
-                <div class="legend-item"><span class="legend-color" style="background-color: var(--accent-emerald);"></span>Swept / Extracted</div>
-                <div class="legend-item"><span class="legend-color" style="background-color: var(--text-muted);"></span>Pending / Sweeps remaining</div>
-              </div>
-            </div>
-
-            <!-- SVG Donut Chart: Evidence Tiers -->
-            <div class="card-container" style="margin-bottom:0;">
-              <h2 class="card-title">Evidence Benchmark Tiers</h2>
-              <div class="chart-wrapper">
-                <svg class="svg-chart-container" id="chart-evidence-tiers" viewBox="0 0 240 240">
-                  <circle cx="120" cy="120" r="80" fill="none" stroke="var(--bg-tertiary)" stroke-width="16"></circle>
-                </svg>
-                <div style="position:absolute; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                  <span id="center-donut-value" style="font-family:var(--font-outfit); font-size:24px; font-weight:800;">100%</span>
-                  <span style="font-size:10px; color:var(--text-secondary); text-transform:uppercase; font-weight:600;">Traceable</span>
-                </div>
-              </div>
-              <div class="chart-legend" id="donut-legend"></div>
-            </div>
-          </div>
-
-          <!-- Countries & Research Methods Grid -->
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-top: 24px;">
-            <div class="card-container" style="margin-bottom:0;">
-              <h2 class="card-title">Represented Study Countries / Contexts</h2>
-              <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin;" id="country-progress-list"></div>
-            </div>
-            <div class="card-container" style="margin-bottom:0; display:flex; flex-direction:column;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <h2 class="card-title" style="margin-bottom:0;">Literature Sourcing Methods</h2>
-                <div style="display:flex; gap:4px; background:var(--bg-secondary); padding:2px; border-radius:4px; border:1px solid var(--border-color);" id="sourcing-group-toggle">
-                  <button class="toggle-btn active" data-mode="method" style="background:var(--bg-card); border:none; color:var(--accent-sky); padding:4px 8px; font-size:11px; border-radius:3px; cursor:pointer; font-weight:600; transition:all 0.2s; box-shadow:0 1px 3px rgba(0,0,0,0.2);">Sourcing Method</button>
-                  <button class="toggle-btn" data-mode="author" style="background:transparent; border:none; color:var(--text-muted); padding:4px 8px; font-size:11px; border-radius:3px; cursor:pointer; font-weight:500; transition:all 0.2s;">Author &amp; Date</button>
-                </div>
-              </div>
-              <div style="max-height: 250px; overflow-y:auto; scrollbar-width:thin; flex:1;" id="method-progress-list"></div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div id="progress-app"></div>
+    </div>
+    <div id="tab-methods" class="tab-content">
+      <div id="methods-app"></div>
     </div>
 
   </div>
@@ -2183,7 +1800,7 @@
       }
       // Redraw sankey with updated node text colors if rendered
       if (dashboardData) {
-        renderSankeyFlow();
+        refreshQueryProvenance();
       }
     });
 
@@ -2200,7 +1817,8 @@
         const targetTab = btn.getAttribute('data-tab');
         document.getElementById(targetTab).classList.add('active');
         if (targetTab === 'tab-qaqc' && typeof renderVfWorklist === 'function') renderVfWorklist();
-        if (targetTab === 'tab-stocktake' && typeof renderStocktake === 'function') renderStocktake();
+        if (window.DashboardProgress) window.DashboardProgress.onTab(targetTab);
+        if (targetTab === 'tab-interrogator') refreshQueryProvenance();
       });
     });
 
@@ -2271,78 +1889,36 @@
     window.open(fullUrl, '_blank');
   }
 
-  function triggerOverviewFilter(value) {
-    const sources = dashboardData.registers.SRC_source_register || [];
-    const claims = dashboardData.registers.EV_evidence_register || [];
-    const recipes = Object.keys(dashboardData.recipes) || [];
-
-    let filteredSources = sources;
-    let filteredClaims = claims;
-    let filteredRecipes = recipes;
-
-    if (value === 'all') {
-      // Keep all
-    } else if (value.startsWith('nbs:')) {
-      const targetNbsId = value.substring(4);
-      filteredRecipes = [targetNbsId];
-      filteredClaims = claims.filter(c => c.nbs_id === targetNbsId);
-      filteredSources = sources.filter(s => s.nbs_ids && s.nbs_ids.split(';').map(x=>x.trim()).includes(targetNbsId));
-    } else if (value.startsWith('family:')) {
-      const targetFamilyId = value.substring(7);
-      filteredClaims = claims.filter(c => c.suitability_family_id === targetFamilyId);
-      const targetNbsId = filteredClaims.length > 0 ? filteredClaims[0].nbs_id : 'agroforestry';
-      filteredRecipes = [targetNbsId];
-      const sourceIds = new Set(filteredClaims.map(c => c.source_id));
-      filteredSources = sources.filter(s => sourceIds.has(s.source_id));
-    }
-
-    const sweptCount = filteredSources.filter(s => ['complete','swept','signed_off'].includes(s.extraction_status)).length;
-
-    document.getElementById('stat-total-sources').textContent = filteredSources.length;
-    document.getElementById('stat-swept-sources').textContent = sweptCount;
-    document.getElementById('stat-total-claims').textContent = filteredClaims.length;
-    document.getElementById('stat-total-recipes').textContent = filteredRecipes.length;
-
-    // Evidence quality panel (B2)
-    const _evAll = dashboardData.registers.EV_evidence_register || [];
-    const _evVf = _evAll.filter(c => (c.attribution || '').includes('[VERIFY-FLAG'));
-    const _evUnrev = _evAll.filter(c => c.reviewer_ok !== true && c.reviewer_ok !== 'true');
-    const _evLowConf = _evAll.filter(c => (c.extraction_confidence || '').toLowerCase() === 'low');
-    const _evRoles = {};
-    _evAll.forEach(c => { const r = c.use_role || 'unknown'; _evRoles[r] = (_evRoles[r] || 0) + 1; });
-    const _evqTotal = document.getElementById('evq-total');
-    if (_evqTotal) {
-      _evqTotal.textContent = _evAll.length;
-      document.getElementById('evq-vf').textContent = _evVf.length;
-      document.getElementById('evq-unreviewed').textContent = _evUnrev.length;
-      document.getElementById('evq-low-conf').textContent = _evLowConf.length;
-      document.getElementById('evq-roles').innerHTML = Object.entries(_evRoles).sort((a,b)=>b[1]-a[1]).map(([r,n])=>`<div><strong>${n}</strong> <span style="color:var(--text-muted);">${r.replace(/_/g,' ')}</span></div>`).join('');
-    }
-
-    renderOverviewCharts(filteredSources, filteredClaims, filteredRecipes);
-    renderSankeyFlow(filteredSources, filteredClaims);
-    if (typeof renderSourcesRegister === 'function') renderSourcesRegister();
+  // Query provenance follows the Evidence Query selectors, independently of Progress.
+  function refreshQueryProvenance() {
+    if (!dashboardData) return;
+    const nbs = (document.getElementById('select-nbs') || {}).value || 'all';
+    const family = (document.getElementById('select-family') || {}).value || 'all';
+    const claims = (dashboardData.registers.EV_evidence_register || []).filter(c =>
+      (nbs === 'all' || c.nbs_id === nbs) &&
+      (family === 'all' || c.suitability_family_id === family) &&
+      getDestTable(c) === 't4_mappings');
+    const ids = new Set(claims.map(c => c.source_id));
+    const sources = (dashboardData.registers.SRC_source_register || []).filter(s => ids.has(s.source_id));
+    const recipes = nbs === 'all' ? Object.keys(dashboardData.recipes || {}) : [nbs];
+    renderOverviewCharts(sources, claims, recipes);
+    renderSankeyFlow(sources, claims);
   }
-
-  // ---- Global scope chips (Practice / Sub-practice) are the single scope control for the
-  // merged Evidence & Discovery tab. These helpers read the chip state; `scopeValue()` returns
-  // the same 'all' | 'nbs:<id>' | 'family:<id>' vocabulary the old overview <select> used, so
-  // triggerOverviewFilter / the charts / the sankey are unchanged downstream.
+  function triggerOverviewFilter() {
+    refreshQueryProvenance();
+    if (window.DashboardProgress) window.DashboardProgress.refresh(dashboardData);
+  }
   function activeNbsScope() {
-    const b = document.querySelector('#search-pill-nbs .pill-btn.active');
-    return b ? (b.dataset.nbs || 'all') : 'all';
+    return window.DashboardProgress ? (window.DashboardProgress.scope().nbs || 'all') : 'all';
   }
   function activeFamilyScope() {
-    const b = document.querySelector('#search-pill-sub-nbs .pill-btn.active');
-    const v = b ? (b.dataset.subnbs || 'all') : 'all';
-    return v === 'all' ? 'all' : v;
+    return window.DashboardProgress ? (window.DashboardProgress.scope().family || 'all') : 'all';
   }
   function scopeValue() {
-    const fam = activeFamilyScope();
-    if (fam !== 'all') return `family:${fam}`;
+    const family = activeFamilyScope();
+    if (family !== 'all') return 'family:' + family;
     const nbs = activeNbsScope();
-    if (nbs !== 'all') return `nbs:${nbs}`;
-    return 'all';
+    return nbs === 'all' ? 'all' : 'nbs:' + nbs;
   }
 
   // VERIFY-FLAG worklist toggle & renderer
@@ -3426,7 +3002,7 @@
     if(!_list.length){
       if((window._vfScope||{}).source==='tool'&&!_uni.length){
         var _nTool=((dashboardData.registers||{}).TOOL_tool_registry||[]).length;
-        host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-amber);">No tool-derived evidence extracted yet.</b><br>Tools / methods / codebases <b>are evidence-reviewable like any source</b> — their thresholds, weights and criteria become EV rows (provenance via <code>locator=file_line</code>+<code>commit_sha</code> for code, or section/anchor for docs) and are reviewed here under this channel. This is empty only because no tool has been extracted yet. <b>'+_nTool+'</b> tool(s) are catalogued in <code>TOOL_tool_registry</code> — browse them under <b>Stocktake &amp; Tools → Tools / methods</b>; extracting their criteria populates this channel.</div>';
+        host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.5;"><b style="color:var(--accent-amber);">No tool-derived evidence extracted yet.</b><br>Tools / methods / codebases <b>are evidence-reviewable like any source</b> — their thresholds, weights and criteria become EV rows (provenance via <code>locator=file_line</code>+<code>commit_sha</code> for code, or section/anchor for docs) and are reviewed here under this channel. This is empty only because no tool has been extracted yet. <b>'+_nTool+'</b> tool(s) are catalogued in <code>TOOL_tool_registry</code> — browse them under <b>Bibliography</b>; extracting their criteria populates this channel.</div>';
         return;
       }
       host.innerHTML='<div style="color:var(--text-muted); padding:14px; line-height:1.6;">No records in this view. Change search or scope, or select another review tab.</div>'; _vfSyncStickyBars(); return; }
@@ -3545,10 +3121,6 @@
 
     const families = dashboardData.registers.FAM_family_registry || [];
 
-    // Setup initial statistics & overview visualisations (the scope chips are wired in 6c,
-    // which then re-drives this with the chip-derived scope value).
-    triggerOverviewFilter('all');
-
     // Hook up Sourcing Method / Author & Date toggle
     const toggleContainer = document.getElementById('sourcing-group-toggle');
     if (toggleContainer) {
@@ -3571,7 +3143,7 @@
           sourcingGroupMode = btn.getAttribute('data-mode');
 
           // Re-trigger current scope filter to re-render
-          triggerOverviewFilter(scopeValue());
+          refreshQueryProvenance();
         });
       });
     }
@@ -3626,754 +3198,17 @@
     // 5. Populate Ontology / Dataset lists
     renderOntologyAndDatasets();
 
-    // 6b. Coverage-matrix listeners (practice + sub-practice come from the global chips)
-    const auditStatusFilter = document.getElementById('filter-audit-status');
-    if (auditStatusFilter) {
-      auditStatusFilter.addEventListener('change', renderDiscoveryAudit);
-    }
-    setupAuditSortListeners();
-
-    // 6b2. Source-category filter pills → re-render the unified sources register
-    const catPills = document.querySelectorAll('#search-inclusions-category-pills .pill-btn');
-    catPills.forEach(btn => {
-      btn.addEventListener('click', () => {
-        catPills.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        activeSearchCategory = btn.dataset.category;
-        renderSourcesRegister();
-      });
-    });
-
-    // 6c. Setup Search & Discovery Logs Pills Selection
-    {
-      // Elements
-      const nbsContainer = document.getElementById('search-pill-nbs');
-      const tablePills = document.querySelectorAll('#search-pill-table .pill-btn');
-      const subNbsContainer = document.getElementById('search-pill-sub-nbs');
-      const subNbsRow = document.getElementById('search-sub-nbs-row');
-
-      // Practice + sub-practice pills are DERIVED from the FAM family registry (the single
-      // source of truth for which NbS / suitability families exist) — never hardcoded.
-      const _famRows = dashboardData.registers.FAM_family_registry || [];
-      const _nbsList = [];
-      const _famsByNbs = {};
-      _famRows.forEach(f => {
-        if (!f.nbs_id) return;
-        if (!_famsByNbs[f.nbs_id]) { _famsByNbs[f.nbs_id] = []; _nbsList.push(f.nbs_id); }
-        if (!f.suitability_family_id) return;
-        if (_famsByNbs[f.nbs_id].some(x => x.id === f.suitability_family_id)) return;
-        _famsByNbs[f.nbs_id].push({ id: f.suitability_family_id, name: f.name || '' });
-      });
-      _nbsList.sort();
-      const _titleCase = (s) => (s || '').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-
-      // Current active states
-      let activeNbs = 'all';
-      let activeTable = 'T4';
-      let activeSubNbs = 'all';
-
-      function renderNbsPills() {
-        if (!nbsContainer) return;
-        nbsContainer.innerHTML = '';
-        const mk = (id, label) => {
-          const btn = document.createElement('button');
-          btn.className = 'pill-btn sky' + (activeNbs === id ? ' active' : '');
-          btn.style.borderRadius = '6px';
-          btn.style.padding = '5px 12px';
-          btn.style.fontSize = '11.5px';
-          btn.textContent = label;
-          btn.dataset.nbs = id;
-          btn.addEventListener('click', () => {
-            if (activeNbs === id) return;
-            activeNbs = id;
-            activeSubNbs = 'all';
-            renderNbsPills();
-            renderSubNbsPills();
-            updateLogSelection();
-          });
-          nbsContainer.appendChild(btn);
-        };
-        mk('all', '\u{1F310} All practices');
-        _nbsList.forEach(n => mk(n, _titleCase(n)));
-      }
-
-      // Populate Sub-NbS Pills dynamically based on active NbS
-      function renderSubNbsPills() {
-        if (!subNbsContainer) return;
-        subNbsContainer.innerHTML = '';
-
-        const fams = activeNbs === 'all' ? [] : (_famsByNbs[activeNbs] || []);
-
-        if (!fams.length) {
-          subNbsRow.style.display = 'none';
-          activeSubNbs = 'all';
-          return;
-        }
-        subNbsRow.style.display = 'flex';
-
-        const list = [{ id: 'all', name: 'None — Parent Practice' }].concat(
-          fams.slice().sort((a, b) => a.id.localeCompare(b.id)).map(f => ({
-            id: f.id,
-            name: familyScopeLabel(f.id, _titleCase(f.id.split('__').pop()))
-          }))
-        );
-
-        list.forEach((sub) => {
-          const btn = document.createElement('button');
-          btn.className = 'pill-btn emerald' + (activeSubNbs === sub.id ? ' active' : '');
-          btn.style.borderRadius = '6px';
-          btn.style.padding = '5px 12px';
-          btn.style.fontSize = '11.5px';
-          btn.textContent = sub.name;
-          btn.dataset.subnbs = sub.id;
-
-          btn.addEventListener('click', () => {
-            document.querySelectorAll('#search-pill-sub-nbs .pill-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            activeSubNbs = sub.id;
-            updateLogSelection();
-          });
-
-          subNbsContainer.appendChild(btn);
-        });
-      }
-
-      // Resolve the discovery log backing the current scope. The table-level log
-      // (`<nbs>_<table>`) stays primary so existing practices render exactly as before; a
-      // sub-practice-specific log is only used as a FALLBACK where no table-level log exists.
-      // Returns { id, familySpecific } or null.
-      function resolveLogId() {
-        const logs = (dashboardData && dashboardData.discovery_logs) || {};
-        if (activeNbs === 'all') return null;
-        const direct = `${activeNbs}_${activeTable}`;
-        if (logs[direct]) return { id: direct, familySpecific: false };
-        if (activeSubNbs !== 'all') {
-          const base = activeSubNbs.replace('__', '_') + '_' + activeTable;
-          const hit = Object.keys(logs).find(k => k.indexOf(base) === 0);
-          if (hit) return { id: hit, familySpecific: true };
-        }
-        // No family chosen → offer the first sub-practice log for this practice, if any.
-        const fams = _famsByNbs[activeNbs] || [];
-        for (const f of fams) {
-          const base = f.id.replace('__', '_') + '_' + activeTable;
-          const hit = Object.keys(logs).find(k => k.indexOf(base) === 0);
-          if (hit) return { id: hit, familySpecific: true };
-        }
-        return null;
-      }
-
-      // Re-evaluate available logs and update selection
-      function updateLogSelection() {
-        // Reset category filter pills to "All" on practice / sub-practice / table change
-        activeSearchCategory = 'all';
-        const catPillsList = document.querySelectorAll('#search-inclusions-category-pills .pill-btn');
-        catPillsList.forEach(b => {
-          if (b.dataset.category === 'all') b.classList.add('active');
-          else b.classList.remove('active');
-        });
-
-        // T4 suitability is the only live recipe table (T3/T6 deferred) — keep it selected.
-        activeTable = 'T4';
-        tablePills.forEach(btn => {
-          btn.classList.remove('disabled');
-          btn.classList.toggle('active', btn.dataset.table === activeTable);
-        });
-
-        // Resolve which discovery log backs this scope
-        const resolved = resolveLogId();
-
-        // Structured Panel Container reference
-        const structPanel = document.getElementById('search-structured-panel');
-        const rawPanel = document.getElementById('search-raw-panel');
-        const hint = document.getElementById('search-protocol-hint');
-        const placeholder0 = document.getElementById('search-no-log-placeholder');
-
-        if (activeNbs === 'all') {
-          // No practice selected → the protocol section can't resolve a log. Show the hint.
-          if (hint) hint.style.display = 'block';
-          if (placeholder0) placeholder0.style.display = 'none';
-          structPanel.style.display = 'none';
-          rawPanel.style.display = 'none';
-        } else if (resolved) {
-          if (hint) hint.style.display = 'none';
-          if (placeholder0) placeholder0.style.display = 'none';
-
-          if (document.getElementById('btn-search-view-structured').classList.contains('active')) {
-            structPanel.style.display = 'flex';
-            rawPanel.style.display = 'none';
-          } else {
-            structPanel.style.display = 'none';
-            rawPanel.style.display = 'block';
-          }
-
-          // A family-specific log IS already scoped to that family — don't re-filter it.
-          renderSearchLog(resolved.id, resolved.familySpecific ? 'all' : activeSubNbs);
-        } else {
-          // Render placeholder warning that log doesn't exist
-          if (hint) hint.style.display = 'none';
-          structPanel.style.display = 'none';
-          rawPanel.style.display = 'none';
-
-          let placeholder = placeholder0;
-          if (!placeholder) {
-            placeholder = document.createElement('div');
-            placeholder.id = 'search-no-log-placeholder';
-            placeholder.className = 'card-container';
-            placeholder.style.textAlign = 'center';
-            placeholder.style.padding = '40px 20px';
-            placeholder.style.background = 'rgba(239, 68, 68, 0.05)';
-            placeholder.style.border = '1px dashed rgba(239, 68, 68, 0.2)';
-            placeholder.style.borderRadius = '8px';
-            placeholder.style.margin = '20px 0';
-            structPanel.parentNode.insertBefore(placeholder, structPanel);
-          }
-          placeholder.style.display = 'block';
-          placeholder.innerHTML = `
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent-rose)" stroke-width="1.5" style="margin-bottom: 16px; opacity: 0.8;">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="8" x2="12" y2="12"></line>
-              <line x1="12" y1="16" x2="12.01" y2="16"></line>
-            </svg>
-            <h3 style="margin: 0 0 8px 0; font-family: var(--font-outfit); font-size: 16px; color: var(--text-primary);">Search Log Not Found</h3>
-            <p style="margin: 0; font-size: 13px; color: var(--text-secondary); max-width: 500px; margin: 0 auto; line-height: 1.5;">
-              No Search &amp; Discovery Log exists for this selection combination (<strong>${_titleCase(activeNbs)}</strong> × <strong>${activeTable}</strong>).
-              Please try selecting a different sub-practice or practice.
-            </p>
-          `;
-        }
-        // The scope chips drive the whole tab → refresh the matrix, stats and source register.
-        if (typeof renderDiscoveryAudit === 'function') renderDiscoveryAudit();
-        triggerOverviewFilter(scopeValue());
-      }
-
-      // Setup Table Pills click listeners
-      tablePills.forEach(btn => {
-        btn.addEventListener('click', () => {
-          if (btn.classList.contains('disabled')) return;
-          tablePills.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeTable = btn.dataset.table;
-          updateLogSelection();
-        });
-      });
-
-      // Toggle views
-      const btnViewStruct = document.getElementById('btn-search-view-structured');
-      const btnViewRaw = document.getElementById('btn-search-view-raw');
-      const structPanel = document.getElementById('search-structured-panel');
-      const rawPanel = document.getElementById('search-raw-panel');
-
-      if (btnViewStruct && btnViewRaw && structPanel && rawPanel) {
-        btnViewStruct.addEventListener('click', () => {
-          btnViewStruct.classList.add('active', 'sky');
-          btnViewStruct.style.background = '';
-          btnViewStruct.style.color = '';
-          
-          btnViewRaw.classList.remove('active', 'sky');
-          btnViewRaw.style.background = 'transparent';
-          btnViewRaw.style.color = 'var(--text-muted)';
-          
-          if (resolveLogId()) {
-            structPanel.style.display = 'flex';
-          }
-          rawPanel.style.display = 'none';
-        });
-
-        btnViewRaw.addEventListener('click', () => {
-          btnViewRaw.classList.add('active', 'sky');
-          btnViewRaw.style.background = '';
-          btnViewRaw.style.color = '';
-          
-          btnViewStruct.classList.remove('active', 'sky');
-          btnViewStruct.style.background = 'transparent';
-          btnViewStruct.style.color = 'var(--text-muted)';
-          
-          structPanel.style.display = 'none';
-          if (resolveLogId()) {
-            rawPanel.style.display = 'block';
-          }
-        });
-      }
-
-      // Initial execution
-      renderNbsPills();
-      renderSubNbsPills();
-      updateLogSelection();
-    }
-
-    // 7. Initialize Sankey target table toggle click listeners
-    const sankeyToggles = ['toggle-sankey-t4'];
-    sankeyToggles.forEach(id => {
-      const btn = document.getElementById(id);
-      if (btn) {
-        btn.addEventListener('click', () => {
-          btn.classList.toggle('active');
-          triggerOverviewFilter(scopeValue());
-        });
-      }
-    });
+    // Progress, Bibliography and Methods own their navigation and read-only views.
+    if (window.DashboardProgress) window.DashboardProgress.init(dashboardData);
+    refreshQueryProvenance();
   }
 
-  // Categorize a source as Stock, Updated Lit, Grey Lit, or Tools
-  function getSourceCategory(sourceId, citation) {
-    const sid = (sourceId || '').toLowerCase();
-    const cit = (citation || '').toLowerCase();
-
-    // Explicit source_category in the register is authoritative (accurate, not guessed).
-    const srcReg = (dashboardData && dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
-    const srcMeta = srcReg.find(s => s.source_id === sourceId);
-    if (srcMeta && srcMeta.source_category) {
-      return { stock: 'stock', updated_lit: 'updated', grey: 'grey', tool: 'tools' }[srcMeta.source_category] || 'updated';
-    }
-    if (srcMeta && srcMeta.source_kind === 'grey_lit') return 'grey';
-
-    const toolsList = [
-      'invest_ecosystem_services', 'wanulcas_model', 'yieldsafe_model', 'fao_exact_carbon_tool',
-      'fao_ruralinvest_cba', 'afolu_carbon_calculator', 'redd_abacus_sp', 'fao_undp_nap_forestry_guidelines',
-      'gender_inclusion_toolbox', 'farmtree_platform', 'agroforestry_designer_toolkit',
-      'regenworks_agroforestry', 'agroforestryx_design_tool', 'agroforstrechner_tool', 'wocat_slm_database'
-    ];
-    if (toolsList.includes(sid)) return 'tools';
-
-    if (sid.startsWith('wri_') || sid.startsWith('wocat_') || sid.startsWith('wb_') || sid.startsWith('fao_') || sid.startsWith('tnc_') || sid.startsWith('gca_')) {
-      return 'grey';
-    }
-    if (cit.includes('wocat') || cit.includes('world bank') || cit.includes('fao') || cit.includes('wri') || cit.includes('project appraisal') || cit.includes('appraisal document')) {
-      return 'grey';
-    }
-
-    const stockList = [
-      'nath_2021', 'zomer_2014', 'haile_2024', 'yadav_2024', 'brandt_2015', 'chuma_2021',
-      'haris_2021', 'wotlolan_2021', 'seja_2022', 'ahmad_2017', 'ahmad_2018', 'ahmad_2020', 'mushtaq_2023'
-    ];
-    if (stockList.includes(sid)) return 'stock';
-
-    return 'updated';
-  }
-
-  // Count unique source resources mapped to a given family, table target, and category
-  function getClaimsCount(familyId, targetKey, typeKey) {
-    const claims = dashboardData.registers.EV_evidence_register || [];
-    const sources = dashboardData.registers.SRC_source_register || [];
-    
-    const matchingClaims = claims.filter(c => {
-      if (c.suitability_family_id !== familyId) return false;
-      
-      const dest = getDestTable(c);
-      // T4 is the only live target table; a null dest (non-T4 use_role) never matches.
-      if (targetKey !== 't4' || dest !== 't4_mappings') return false;
-      
-      const s = sources.find(src => src.source_id === c.source_id);
-      const cat = getSourceCategory(c.source_id, s ? s.citation : '');
-      return (cat === typeKey);
-    });
-    
-    const uniqueSourceIds = new Set(matchingClaims.map(c => c.source_id));
-    return uniqueSourceIds.size;
-  }
-
-  // run_id -> the suitability_family the search targeted ('' = generic/parent search).
-  function srchRunFamilyMap() {
-    const srch = (dashboardData.registers && dashboardData.registers.SRCH_search_register) || [];
-    const m = {};
-    srch.forEach(r => { if (r.run_id && !(r.run_id in m)) m[r.run_id] = (r.suitability_family_id || ''); });
-    return m;
-  }
-  // The cross-family / cross-cutting-envelope row IS the practice-wide (family-agnostic) bucket —
-  // the generic parent search is precisely ITS direct search. So for that row, generic == direct.
-  function _isParentFamily(familyId) { return /cross_family$/.test(familyId || ''); }
-  // Split a cell's sources into DIRECT (found by a family-targeted search) vs GENERIC (reached
-  // only via the practice-wide parent search). A source is direct iff its discovery/extraction
-  // run maps to a SRCH row whose suitability_family_id == this family. For the parent (cross-
-  // family) row, the parent search IS direct → all its evidence is direct.
-  function getClaimsSplit(familyId, targetKey, typeKey) {
-    const claims = dashboardData.registers.EV_evidence_register || [];
-    const sources = dashboardData.registers.SRC_source_register || [];
-    const runFam = srchRunFamilyMap();
-    const parent = _isParentFamily(familyId);
-    const direct = new Set(), generic = new Set();
-    claims.forEach(c => {
-      if (c.suitability_family_id !== familyId) return;
-      const dest = getDestTable(c);
-      // T4 is the only live target table; a null dest (non-T4 use_role) never matches.
-      if (targetKey !== 't4' || dest !== 't4_mappings') return;
-      const s = sources.find(src => src.source_id === c.source_id);
-      const cat = getSourceCategory(c.source_id, s ? s.citation : '');
-      if (cat !== typeKey) return;
-      const fam = runFam[s ? (s.extraction_run_id || '') : ''];
-      if (parent || (fam !== undefined && fam === familyId)) direct.add(c.source_id);
-      else generic.add(c.source_id);
-    });
-    direct.forEach(id => generic.delete(id));
-    return { direct: direct.size, generic: generic.size };
-  }
-
-  // "Found" (denominator for the done/found ratio) = candidates screened-IN for this
-  // cell, summed from the SRCH search-protocol register (n_included) across every logged
-  // search for this family × table × channel (direct + generic parent runs both count as
-  // sources we intend to extract). Numerator ("done") is the extracted source count.
-  function getFoundTotal(nbs, tblUpper, catKey, familyId) {
-    const srch = dashboardData.registers.SRCH_search_register || [];
-    let total = 0;
-    srch.forEach(r => {
-      if ((r.suitability_family_id || '') !== familyId) return;
-      if ((r.table || '').toUpperCase() !== tblUpper) return;
-      if ((r.category || '') !== catKey) return;
-      const n = parseInt(r.n_included, 10);
-      if (!isNaN(n)) total += n;
-    });
-    return total;
-  }
-  // DIRECT (family-specific) ledger status — NO fallback to the table-level row, EXCEPT the
-  // parent (cross-family) row, whose direct status IS the generic family='' row.
-  function ledgerStageDirect(nbsId, table, category, stage, family) {
-    const led = (dashboardData && dashboardData.progress_ledger) || [];
-    const wantFam = _isParentFamily(family) ? '' : family;
-    const fr = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && (r.family || '') === wantFam);
-    return fr ? (fr[stage] || 'not_started') : 'not_started';
-  }
-
-  // Resolve which target table a claim maps to, based on database evidence links & fallbacks.
-  // T4 suitability is the only live recipe table (T3/T6 are deferred from the evidence
-  // exercise) — everything else resolves to null and MUST be skipped by callers. Note the
-  // fallback matches `structural_suitability` EXACTLY: the old `role.includes('risk')` test
-  // silently swept `operational_risk` (M2b / next-steps routing) into the hazard bucket.
-  function getDestTable(c) {
-    const evId = c.evidence_id;
-    if (!window.t4EvidenceIds) {
-      window.t4EvidenceIds = new Set();
-      Object.keys(dashboardData.recipes || {}).forEach(nbsId => {
-        const recipe = dashboardData.recipes[nbsId] || {};
-        const parseIds = (val) => {
-          if (!val) return [];
-          if (Array.isArray(val)) return val;
-          try {
-            const parsed = JSON.parse(val);
-            if (Array.isArray(parsed)) return parsed;
-          } catch(e) {}
-          if (typeof val === 'string') {
-            return val.split(';').map(x => x.trim()).filter(Boolean);
-          }
-          return [];
-        };
-        if (recipe.T4_suitability_mappings) {
-          recipe.T4_suitability_mappings.forEach(r => parseIds(r.evidence_ids).forEach(id => window.t4EvidenceIds.add(id)));
-        }
-      });
-    }
-
-    if (window.t4EvidenceIds.has(evId)) return 't4_mappings';
-
-    // Fallback: use_role — exact match only.
-    if ((c.use_role || '').toLowerCase() === 'structural_suitability') return 't4_mappings';
-
-    return null;
-  }
-
-  // Coverage-matrix sort state. Columns: 'family' (alpha) | 'stock'/'updated'/'grey'/'tools'
-  // (sources found per discovery channel) | 'claims' | 't4' (T4 mapping rows).
-  let auditSortCol = 'family';
-  let auditSortDir = 'asc';
-
-  // Stage status PER (family × table). Honest definitions — no completeness claims:
-  //  S (searched): a discovery log exists for this NbS × table (the search/screening was run).
-  //  E (extracted): ≥1 EV row exists for this family × table (extraction produced output here;
-  //                 coverage is the count cells, NOT a "finished" claim).
-  //  V (verify-flagged): ≥1 of those rows was flagged by the relationship-verify pass. Hollow means
-  //                 either verified-clean OR not-yet-verified (we cannot distinguish per row).
-  //  R (reviewed): ≥1 of those rows has reviewer_ok=true (human sign-off).
-  function getCellStage(familyId, useRole) {
-    const ev = (dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
-    const rows = ev.filter(c => c.suitability_family_id === familyId && (c.use_role || '') === useRole);
-    return {
-      n: rows.length,
-      e: rows.length > 0,
-      v: rows.some(c => (c.attribution || '').includes('[VERIFY-FLAG')),
-      r: rows.some(c => c.reviewer_ok === true || c.reviewer_ok === 'true'),
-    };
-  }
-  // Read an authored stage status from the enforced progress ledger (NOT inferred).
-  // ledger is keyed (nbs_id, table); stages: searched/screened/extracted/verified/reviewed.
-  // Ledger is keyed (nbs_id, table[T4], category[stock/updated_lit/grey/tool]).
-  function ledgerStage(nbsId, table, category, stage) {
-    const led = (dashboardData && dashboardData.progress_ledger) || [];
-    // table-level matrix reads the family-agnostic rows (family==''); sub-practice-specific
-    // ledger rows are additive (per-family search status), not shown in this aggregate view.
-    const row = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && !(r.family));
-    return row ? (row[stage] || 'not_started') : 'not_started';
-  }
-  // Family-aware: prefer a sub-practice (family-specific) ledger row; fall back to the
-  // table-level (family='') row, flagging `inherited` so the dot can show the status is the
-  // agroforestry-WIDE sweep, not a family-targeted search (none logged yet → all inherit).
-  function ledgerStageFam(nbsId, table, category, stage, family) {
-    const led = (dashboardData && dashboardData.progress_ledger) || [];
-    if (family) {
-      const fr = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && r.family === family);
-      if (fr) return { status: fr[stage] || 'not_started', inherited: false };
-    }
-    const tr = led.find(r => r.nbs_id === nbsId && r.table === table && r.category === category && !(r.family));
-    return { status: tr ? (tr[stage] || 'not_started') : 'not_started', inherited: !!family };
-  }
-  // dashboard typeKey -> ledger category enum
-  const _catKey = { stock: 'stock', updated: 'updated_lit', grey: 'grey', tools: 'tool' };
-  // count reviewer_ok units in a (family, target, type) cell
-  function cellReviewed(familyId, targetKey, typeKey) {
-    const role = { t4: 'structural_suitability' }[targetKey];
-    const ev = (dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
-    return ev.some(c => c.suitability_family_id === familyId && (c.use_role || '') === role
-      && getSourceCategory(c.source_id, '') === typeKey
-      && (c.reviewer_ok === true || c.reviewer_ok === 'true'));
-  }
-
-  // Render a stage dot: filled (on) or hollow (off)
-  function renderStageDot(label, on, color, tipText) {
-    const style = on
-      ? `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:${color};color:#fff;font-size:9px;font-weight:700;margin:1px;cursor:default;`
-      : `display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:transparent;border:1.5px solid var(--border-color);color:var(--text-muted);font-size:9px;font-weight:700;margin:1px;cursor:default;`;
-    return `<span style="${style}" title="${tipText}">${label}</span>`;
-  }
-
-  function renderStocktake(){
-    if(!dashboardData)return;
-    if(window._stkClass===undefined)window._stkClass='peer';
-    if(window._stkNbs===undefined)window._stkNbs='all';
-    if(window._stkTier===undefined)window._stkTier='all';
-    var tcol={High:'var(--accent-emerald)',Medium:'var(--accent-amber)',Low:'var(--accent-rose)'};
-    var peer=((dashboardData.stocktake||{}).peer_reviewed)||[];
-    var tools=((dashboardData.registers||{}).TOOL_tool_registry)||[];
-    function pill(key,val,lbl,cls){ var on=(window['_stk'+key]===val); return '<button class="pill-btn '+(on?('active '+cls):'')+'" onclick="window._stk'+key+'=\''+val.replace(/'/g,"")+'\'; renderStocktake();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+vfEsc(lbl)+'</button>'; }
-    function cpill(val,lbl){ var on=window._stkClass===val; return '<button class="pill-btn '+(on?'active purple':'')+'" onclick="window._stkClass=\''+val+'\'; window._stkNbs=\'all\'; window._stkTier=\'all\'; renderStocktake();" style="font-size:11px; padding:4px 12px; border-radius:4px; font-weight:600;">'+vfEsc(lbl)+'</button>'; }
-    var SEP='<span style="width:1px; height:18px; background:var(--border-color); margin:0 4px;"></span>';
-    var LBL=function(t){return '<span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; font-weight:700;">'+t+'</span>';};
-    var clsBar='<div style="display:flex; gap:6px; align-items:center; width:100%; margin-bottom:6px;">'+LBL('Source class')+cpill('peer','Peer-reviewed ('+peer.length+')')+cpill('tools','Tools / methods ('+tools.length+')')+'</div>';
-    var fz=document.getElementById('stk-filters');
-    var body=document.getElementById('stk-body'); if(!body)return;
-    // ---- Tools / methods class: render the TOOL registry ----
-    if(window._stkClass==='tools'){
-      var types=Array.from(new Set(tools.map(function(r){return r.tool_type;}).filter(Boolean))).sort();
-      if(fz){ fz.innerHTML=clsBar+LBL('Type')+pill('Nbs','all','All ('+tools.length+')','sky')+types.map(function(t){return pill('Nbs',t,t.replace(/_/g,' ')+' ('+tools.filter(function(r){return r.tool_type===t;}).length+')','sky');}).join('')+SEP+LBL('Benchmark')+['all','High','Medium','Low'].map(function(t){return pill('Tier',t,t==='all'?'All':t,t==='High'?'emerald':t==='Low'?'rose':'amber');}).join(''); }
-      var tv=tools.filter(function(r){ if(window._stkNbs!=='all'&&r.tool_type!==window._stkNbs)return false; if(window._stkTier!=='all'&&r.benchmark_tier!==window._stkTier)return false; return true; });
-      var trh=tv.map(function(r){ var url=(r.url||'').trim(); var link=url?(' <a href="'+vfEsc(url)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">↗</a>'):''; var ev=(r.evidence_ids||'').trim(); var nev=ev?ev.split('|').filter(Boolean).length:0;
-        var meth=[r.spatial_method,r.weighting_scheme].filter(Boolean).join(' · ').replace(/_/g,' ');
-        return '<tr style="border-bottom:1px solid var(--border-color);">'
-          +'<td style="padding:8px 10px; font-size:11.5px; color:var(--text-primary); max-width:320px;">'+vfEsc(r.name||r.tool_id||'')+link+'<div style="font-size:10px; color:var(--text-muted);">'+vfEsc(r.organisation||'')+'</div></td>'
-          +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary); white-space:nowrap;">'+vfEsc((r.tool_type||'').replace(/_/g,' '))+'</td>'
-          +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary);">'+vfEsc(r.nbs_ids||'—')+'</td>'
-          +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted); max-width:220px;">'+vfEsc(meth||'')+'</td>'
-          +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted); white-space:nowrap;">'+vfEsc(r.validation||'')+'</td>'
-          +'<td style="padding:8px 10px; white-space:nowrap;"><span style="font-size:10px; font-weight:700; color:'+(tcol[r.benchmark_tier]||'var(--text-muted)')+';">'+vfEsc(r.benchmark_tier||'—')+'</span></td>'
-          +'<td style="padding:8px 10px; font-size:10.5px; color:'+(nev?'var(--accent-emerald)':'var(--text-muted)')+'; text-align:right;">'+(nev?(nev+' EV'):'—')+'</td></tr>'; }).join('');
-      body.innerHTML='<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Showing <b>'+tv.length+'</b> of '+tools.length+' tools / methods catalogued in <code>TOOL_tool_registry</code>. A tool is a source: where it states a reusable criterion, that claim is extracted to EV (the <b>EV</b> column) and QA-reviewed under the <b>Tool</b> source channel.</div><div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid var(--border-color); text-align:left;">'+['Tool / organisation','Type','NbS','Method / weighting','Validation','Tier','Evidence'].map(function(h){return '<th style="padding:6px 10px; font-size:9.5px; color:var(--text-muted); text-transform:uppercase;">'+h+'</th>';}).join('')+'</tr></thead><tbody>'+trh+'</tbody></table></div>';
-      return;
-    }
-    // ---- Peer-reviewed class (default) ----
-    var rows=peer;
-    var practices=Array.from(new Set(rows.map(function(r){return r.NbS_Practice;}).filter(Boolean))).sort();
-    if(fz){ fz.innerHTML=clsBar+LBL('Practice')+pill('Nbs','all','All ('+rows.length+')','sky')+practices.map(function(p){return pill('Nbs',p,p+' ('+rows.filter(function(r){return r.NbS_Practice===p;}).length+')','sky');}).join('')+SEP+LBL('Benchmark')+['all','High','Medium','Low'].map(function(t){return pill('Tier',t,t==='all'?'All':t,t==='High'?'emerald':t==='Low'?'rose':'amber');}).join(''); }
-    var vis=rows.filter(function(r){ if(window._stkNbs!=='all'&&r.NbS_Practice!==window._stkNbs)return false; if(window._stkTier!=='all'&&r.Final_Benchmark!==window._stkTier)return false; return true; });
-    var rowsHtml=vis.map(function(r){ var doi=(r.doi_extracted||'').trim(); var doiL=doi?(' <a href="'+(doi.indexOf('http')===0?doi:'https://doi.org/'+doi)+'" target="_blank" rel="noopener noreferrer" style="color:var(--accent-sky);">↗</a>'):'';
-      return '<tr style="border-bottom:1px solid var(--border-color);">'
-        +'<td style="padding:8px 10px; font-size:11.5px; color:var(--text-primary); max-width:360px;">'+vfEsc(r.oa_title||'(untitled)')+doiL+'<div style="font-size:10px; color:var(--text-muted);">'+vfEsc(r.journal_name||'')+'</div></td>'
-        +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary); white-space:nowrap;">'+vfEsc(r.NbS_Practice||'')+'</td>'
-        +'<td style="padding:8px 10px; white-space:nowrap;"><span style="font-size:10px; font-weight:700; color:'+(tcol[r.Final_Benchmark]||'var(--text-muted)')+';">'+vfEsc(r.Final_Benchmark||'')+'</span></td>'
-        +'<td style="padding:8px 10px; font-size:10.5px; color:var(--text-secondary); text-align:right;">'+vfEsc(String(r.cited_by_count||''))+'</td>'
-        +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted); max-width:240px;">'+vfEsc((r.Input_Variables||'').slice(0,110))+'</td>'
-        +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted);">'+vfEsc(r.Spatial_Method||'')+'</td>'
-        +'<td style="padding:8px 10px; font-size:10px; color:var(--text-muted);">'+vfEsc(r.Tool||'')+'</td></tr>'; }).join('');
-    body.innerHTML='<div style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Showing <b>'+vis.length+'</b> of '+rows.length+' peer-reviewed sources.</div><div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse;"><thead><tr style="border-bottom:2px solid var(--border-color); text-align:left;">'+['Title / journal','Practice','Tier','Cites','Input variables','Spatial method','Tool'].map(function(h){return '<th style="padding:6px 10px; font-size:9.5px; color:var(--text-muted); text-transform:uppercase;">'+h+'</th>';}).join('')+'</tr></thead><tbody>'+rowsHtml+'</tbody></table></div>';
-  }
-
-  // Open the search-protocol modal for one audit-matrix cell (NbS × table × process × family).
-  // Pulls the matching SRCH rows — the actual searches run — so the matrix IS the search-log view.
-  function showSearchProtocol(nbs, table, category, family) {
-    var modal = document.getElementById('srch-modal'); if (!modal) return;
-    var all = ((dashboardData || {}).registers || {})['SRCH_search_register'] || [];
-    var fam = (family || '').split('__').pop().replace(/_/g, ' ') || 'all families';
-    var procLbl = { stock: 'Stock', updated_lit: 'Lit (OpenAlex)', grey: 'Grey', tool: 'Tools' }[category] || category;
-    // a family-specific row OR a table-level (family='') row covers this cell
-    var rows = all.filter(function (r) {
-      return r.nbs_id === nbs && r.table === table && r.category === category
-        && ((r.suitability_family_id || '') === '' || (r.suitability_family_id || '') === family);
-    });
-    document.getElementById('srch-modal-title').innerHTML =
-      vfEsc(procLbl) + ' search &middot; ' + vfEsc(fam) + ' &middot; ' + vfEsc(table);
-    var body = document.getElementById('srch-modal-body');
-    if (!rows.length) {
-      body.innerHTML = '<div style="color:var(--text-muted); font-size:12.5px; line-height:1.6;">'
-        + '<b style="color:var(--accent-amber);">No search logged for this cell.</b><br>'
-        + 'The ' + vfEsc(procLbl) + ' discovery process has not been run + recorded for this sub-practice × ' + vfEsc(table)
-        + '. Run it and log the protocol (<code>search_log.py</code>) — the progress ledger will not accept <i>searched=done</i> without a record here.</div>';
-    } else {
-      var fld = function (lbl, val, mono) {
-        if (val === '' || val == null) return '';
-        return '<div style="margin-top:8px;"><span style="font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);">' + lbl + '</span><div style="font-size:12px; color:var(--text-primary); margin-top:2px;' + (mono ? 'font-family:monospace;' : '') + '">' + vfEsc(val) + '</div></div>';
-      };
-      body.innerHTML = rows.map(function (r) {
-        var counts = [['retrieved', r.n_retrieved], ['screened', r.n_screened], ['included', r.n_included]]
-          .map(function (c) { return c[0] + ' ' + ((c[1] === '' || c[1] == null) ? '–' : c[1]); }).join(' &middot; ');
-        return '<div style="border:1px solid var(--border-color); border-radius:8px; padding:12px 14px; margin-bottom:10px;">'
-          + (r.suitability_family_id ? '' : '<div style="font-size:10.5px; color:var(--accent-amber); margin-bottom:4px;">&#9432; table-level search (all families) — not yet sub-practice-targeted</div>')
-          + fld('Search terms', r.search_terms)
-          + fld('Inclusion criteria', r.inclusion_criteria)
-          + fld('Screening steps', r.screening_steps)
-          + fld('Limits', r.limits)
-          + '<div style="margin-top:8px;"><span style="font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted);">Counts</span><div style="font-size:12px; margin-top:2px;">' + vfEsc(counts) + '</div></div>'
-          + '<div style="display:flex; gap:18px; flex-wrap:wrap; margin-top:10px; font-size:10.5px; color:var(--text-muted); border-top:1px solid var(--border-color); padding-top:8px;">'
-          + '<span>Date: <b style="color:var(--text-secondary);">' + vfEsc(r.search_date || '–') + '</b></span>'
-          + '<span>Run: ' + vfEsc(r.run_id || '–') + '</span>'
-          + '<span>Ruleset: <code>' + vfEsc(r.ruleset_version || '–') + '</code></span>'
-          + (r.discovery_log_ref ? '<span>Log: ' + vfEsc(r.discovery_log_ref) + '</span>' : '')
-          + '</div>'
-          + (r.note ? '<div style="margin-top:8px; font-size:11px; color:var(--text-muted); font-style:italic;">' + vfEsc(r.note) + '</div>' : '')
-          + '</div>';
-      }).join('');
-    }
-    modal.style.display = 'block';
-  }
-  function closeSrchModal() { var m = document.getElementById('srch-modal'); if (m) m.style.display = 'none'; }
-
-  // E/V/R dots → the cell's evidence units (extract → verify → review lifecycle), reusing
-  // the same modal. Shows each EV unit's verify-flag + review state, so E/V/R are navigable.
-  function showCellEvidence(nbs, table, category, family) {
-    var modal = document.getElementById('srch-modal'); if (!modal) return;
-    var roleMap = { T4: 'structural_suitability' };
-    var role = roleMap[table];
-    var ev = ((dashboardData || {}).registers || {})['EV_evidence_register'] || [];
-    var src = ((dashboardData || {}).registers || {})['SRC_source_register'] || [];
-    var catOf = {}; src.forEach(function (s) { catOf[s.source_id] = s.source_category || 'stock'; });
-    var rows = ev.filter(function (r) {
-      return r.nbs_id === nbs && r.use_role === role
-        && (r.suitability_family_id || '') === family
-        && (catOf[r.source_id] || 'stock') === category
-        && (r.review_state || '') !== 'dropped';
-    });
-    var procLbl = { stock: 'Stock', updated_lit: 'Lit', grey: 'Grey', tool: 'Tools' }[category] || category;
-    var famLbl = (family || '').split('__').pop().replace(/_/g, ' ') || 'all families';
-    document.getElementById('srch-modal-title').innerHTML =
-      'Evidence &middot; ' + vfEsc(famLbl) + ' &middot; ' + vfEsc(table) + ' &middot; ' + vfEsc(procLbl) + ' (' + rows.length + ')';
-    var body = document.getElementById('srch-modal-body');
-    if (!rows.length) {
-      body.innerHTML = '<div style="color:var(--text-muted); font-size:12.5px;">No evidence units extracted for this cell yet.</div>';
-    } else {
-      body.innerHTML = rows.map(function (r) {
-        var flagged = /\[VERIFY-FLAG/.test(r.attribution || '');
-        var reviewed = r.reviewer_ok === true || r.reviewer_ok === 'true';
-        var badge = function (on, c, t) { return '<span style="font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:3px; margin-left:4px; ' + (on ? 'background:' + c + '; color:#fff;' : 'background:transparent; border:1px solid var(--border-color); color:var(--text-muted);') + '">' + t + '</span>'; };
-        return '<div style="border:1px solid var(--border-color); border-radius:7px; padding:10px 12px; margin-bottom:8px;">'
-          + '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">'
-          + '<code style="font-size:10.5px; color:var(--accent-sky);">' + vfEsc(r.evidence_id || '') + '</code>'
-          + '<span style="font-size:11px; color:var(--text-secondary);">' + vfEsc(r.variable || '') + '</span>'
-          + badge(true, '#10b981', 'E') + badge(flagged, '#f59e0b', flagged ? 'V⚑' : 'V') + badge(reviewed, '#10b981', 'R')
-          + '</div>'
-          + '<div style="font-size:11px; color:var(--text-muted); margin-top:5px; line-height:1.5;">' + vfEsc((r.quote || '').slice(0, 200)) + ((r.quote || '').length > 200 ? '…' : '') + '</div>'
-          + '</div>';
-      }).join('')
-        + '<div style="font-size:10.5px; color:var(--text-muted); margin-top:6px;">E = extracted · V⚑ = verify-flagged (needs QA) · R = human-reviewed. Full review in the QA / QC tab.</div>';
-    }
-    modal.style.display = 'block';
-  }
-
-  // ================= UNIFIED COVERAGE MATRIX =================
-  // Replaces three former surfaces: the discovery-audit matrix, the management-progress
-  // matrix and the global NbS comparison table. One group row per NbS (carrying that NbS's
-  // register roll-ups), one row per suitability family:
-  //   Family | Stock | Lit | Grey | Tools | Claims | T4 rows | Status
-  // Every number reuses the existing helpers (getFoundTotal · getClaimsSplit · ledgerStage*
-  // · cellReviewed · getSourceCategory) — only the cell TEMPLATE changed, not the arithmetic.
-
-  // Pure per-cell facts for one (family × table × channel). No DOM.
-  function auditCellFacts(statusKey, targetKey, typeKey, _reviewDepth) {
-    // Two coverage numbers: DIRECT (family-targeted search) vs GENERIC (via the parent search).
-    const split = getClaimsSplit(statusKey, targetKey, typeKey);
-    const directN = split.direct, genericN = split.generic;
-
-    const _nbs = statusKey.split('__')[0];
-    const _tbl = targetKey.toUpperCase();
-    const _cat = _catKey[typeKey];
-
-    // Sequential pipeline (Search → Extract → Verify → Review). One pip = furthest stage.
-    // DIRECT (family-targeted) wins. With no direct work, fall back to the GENERIC
-    // (parent-search) stage — flagged " · gen" so real parent-search progress is visible.
-    const _ss = ledgerStageDirect(_nbs, _tbl, _cat, 'searched', statusKey);
-    const _e = directN > 0;
-    const _v = ledgerStageDirect(_nbs, _tbl, _cat, 'verified', statusKey) === 'done' && _e;
-
-    // Review-coverage buckets for THIS cell's active evidence units, by review depth.
-    const _roleR = { t4: 'structural_suitability' }[targetKey];
-    const _cellRows = (dashboardData.registers.EV_evidence_register || []).filter(c => c.suitability_family_id === statusKey && (c.use_role || '') === _roleR && getSourceCategory(c.source_id, '') === typeKey);
-    let _b0 = 0, _b1 = 0, _b2 = 0;
-    _cellRows.forEach(c => { const dn = _reviewDepth[c.evidence_id] ? _reviewDepth[c.evidence_id].size : 0; if (dn === 0) _b0++; else if (dn === 1) _b1++; else _b2++; });
-    const _nRows = _cellRows.length;
-    // "Reviewed" means EVERY active unit has ≥1 review.
-    const _r = _e && _nRows > 0 && _b0 === 0;
-
-    // generic (parent-search) lifecycle — ledger family-level rows + generic evidence
-    const _gss = ledgerStageFam(_nbs, _tbl, _cat, 'searched', statusKey).status;
-    const _ge = genericN > 0;
-    const _gv = ledgerStageFam(_nbs, _tbl, _cat, 'verified', statusKey).status === 'done' && _ge;
-    const _gr = _ge && cellReviewed(statusKey, targetKey, typeKey);
-
-    let stage = 'Not started', stState = 'none';
-    if (_r) { stage = 'Reviewed'; stState = 'done'; }
-    else if (_v) { stage = 'Verified'; stState = 'done'; }
-    else if (_e) { stage = 'Extracted'; stState = 'done'; }
-    else if (_ss === 'done') { stage = 'Searched'; stState = 'done'; }
-    else if (_ss === 'in_progress') { stage = 'Searching'; stState = 'part'; }
-    else if (_gr) { stage = 'Reviewed · gen'; stState = 'gen'; }
-    else if (_gv) { stage = 'Verified · gen'; stState = 'gen'; }
-    else if (_ge) { stage = 'Extracted · gen'; stState = 'gen'; }
-    else if (_gss === 'done') { stage = 'Searched · gen'; stState = 'gen'; }
-    else if (_gss === 'in_progress') { stage = 'Searching · gen'; stState = 'genpart'; }
-
-    // FOUND-led: headline = candidate sources found (screened-in, SRCH n_included) — the
-    // discovery resource pool. The bar shows how many of those are extracted.
-    const _done = directN + genericN;                 // extracted sources
-    const _found = getFoundTotal(_nbs, _tbl, _cat, statusKey);
-    const _denom = Math.max(_found, _done);           // total candidate sources known
-
-    return {
-      nbs: _nbs, tbl: _tbl, cat: _cat,
-      directN, genericN, done: _done, denom: _denom,
-      stage, stState, nRows: _nRows, b0: _b0, b1: _b1, b2: _b2
-    };
-  }
-
-  const _AUDIT_CHANNELS = [
-    { key: 'stock', short: 'Stock', label: 'Stock Papers' },
-    { key: 'updated', short: 'Lit', label: 'Updated Lit' },
-    { key: 'grey', short: 'Grey', label: 'Grey Lit' },
-    { key: 'tools', short: 'Tools', label: 'Tools & Manuals' }
-  ];
-
-  // Compact channel cell: count badge + stage pip side by side, extraction bar underneath.
-  function renderAuditChannelCell(statusKey, targetKey, chan, f) {
-    const _GRN = '#10b981';
-    const _isGen = f.stState === 'gen' || f.stState === 'genpart';
-    const _evClick = `showCellEvidence('${f.nbs}','${f.tbl}','${f.cat}','${statusKey}')`;
-    const _srchClick = `showSearchProtocol('${f.nbs}','${f.tbl}','${f.cat}','${statusKey}')`;
-    const pipBg = f.stState === 'done' ? `background:${_GRN};color:#fff;`
-                : f.stState === 'part' ? 'background:#f59e0b;color:#fff;'
-                : f.stState === 'gen' ? 'background:#475569;color:#e2e8f0;'
-                : f.stState === 'genpart' ? 'background:transparent;border:1px dashed #f59e0b;color:#f59e0b;'
-                : 'background:transparent;border:1px solid var(--border-color);color:var(--text-muted);';
-    const _pipTip = _isGen
-      ? `Generic (parent-search) stage: ${f.stage.replace(' · gen', '')}. No family-targeted (direct) search yet. Click for the search protocol.`
-      : `Direct (family-targeted) stage: ${f.stage}. Sequential — Search → Extract → Verify → Review. Click for the search protocol.`;
-    const headClass = f.denom > 0 ? 'high' : 'low';   // green whenever resources exist
-    const _numTip = `${f.denom} found (candidates screened-in) · ${f.done} extracted (${f.directN} direct + ${f.genericN} generic)${f.nRows > 0 ? ` · ${f.b1 + f.b2}/${f.nRows} unit(s) reviewed` : ''}${f.denom ? ' — click for the evidence / candidates' : ''}`;
-    const _numAttrs = f.denom > 0 ? ` onclick="${_evClick}" style="cursor:pointer;` : ' style="';
-    const _extPct = f.denom > 0 ? Math.round(100 * Math.min(f.done, f.denom) / f.denom) : 0;
-    const _extBar = f.denom > 0
-      ? `<div title="${f.done} of ${f.denom} found source(s) extracted" style="width:100%; max-width:92px; height:5px; border-radius:3px; overflow:hidden; margin:5px auto 0; background:var(--bg-tertiary);"><span style="display:block; height:100%; width:${_extPct}%; background:#10b981;"></span></div>`
-      : '';
-    const cellTitle = `T4 Suitability - ${chan.label}: ${f.denom} candidate source(s) found (screened-in); ${f.done} extracted (${f.directN} direct + ${f.genericN} generic). Bar = extraction progress. Pip = furthest direct pipeline stage.`;
-    return `<td title="${cellTitle}" style="padding:8px 6px; vertical-align:middle; text-align:center; border-left:1px solid var(--border-color);">
-      <div style="display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:nowrap;">
-        <span class="badge ${headClass} audit-badge"${_numAttrs}font-weight:700; min-width:22px; height:22px; line-height:22px; font-size:12.5px; display:inline-block; text-align:center; border-radius:11px; padding:0 6px;" title="${_numTip}">${f.denom}</span>
-        <span onclick="${_srchClick}" title="${_pipTip}" style="cursor:pointer; font-size:9px; font-weight:700; letter-spacing:.02em; padding:2px 7px; border-radius:11px; white-space:nowrap; ${pipBg}">${f.stage}</span>
-      </div>
-      ${_extBar}
-    </td>`;
+  // The Query provenance flow shows excerpts actually cited by compiled T4 rows.
+  // Extraction role alone is not evidence of a compiled relationship.
+  function getDestTable(claim) {
+    const sources = dashboardData.progress_overview?.sources || [];
+    return sources.some(source => (source.contributions.T4 || []).includes(claim.evidence_id))
+      ? 't4_mappings' : null;
   }
 
   function familyScopeLabel(familyId, label) {
@@ -4415,322 +3250,18 @@
   }
 
   function renderDiscoveryAudit() {
-    const body = document.getElementById('body-discovery-audit');
-    if (!body) return;
-    body.innerHTML = '';
-
-    const families = dashboardData.registers.FAM_family_registry || [];
-    const claims = dashboardData.registers.EV_evidence_register || [];
-    const sources = dashboardData.registers.SRC_source_register || [];
-
-    // Review depth per evidence_id = distinct reviewers who logged a real (ok/drop) decision.
-    const _reviewDepth = {};
-    ((dashboardData.review_log) || []).forEach(r => {
-      const d = (r.decision || '').toLowerCase();
-      if (d === 'ok' || d === 'drop') {
-        (_reviewDepth[r.evidence_id] = _reviewDepth[r.evidence_id] || new Set()).add(r.reviewer || '?');
-      }
-    });
-
-    // Group subpractices by suitability_family_id
-    const familiesMap = {};
-    families.forEach(f => {
-      const familyId = f.suitability_family_id;
-      if (!familyId) return;
-      if (!familiesMap[familyId]) {
-        familiesMap[familyId] = {
-          familyId: familyId,
-          nbsId: f.nbs_id,
-          name: f.name,
-          subpractices: [],
-          spatialProductType: f.spatial_product_type
-        };
-      }
-      familiesMap[familyId].subpractices.push(f);
-    });
-
-    // Practice + sub-practice come from the GLOBAL scope chips; only Status is matrix-local.
-    const nbsFilter = activeNbsScope();
-    const variantFilter = activeFamilyScope();
-    const statusFilter = (document.getElementById('filter-audit-status') || {}).value || 'all';
-
-    let rows = Object.values(familiesMap);
-    if (nbsFilter && nbsFilter !== 'all') rows = rows.filter(r => r.nbsId === nbsFilter);
-    if (variantFilter && variantFilter !== 'all') rows = rows.filter(r => r.familyId === variantFilter);
-    if (statusFilter !== 'all') {
-      rows = rows.filter(r => {
-        return auditFamilyStatus(r.familyId, r.spatialProductType).key === statusFilter;
-      });
-    }
-
-    // Enrich once: channel facts + register counts + status (also the sort keys)
-    rows.forEach(r => {
-      const recipe = dashboardData.recipes[r.nbsId] || {};
-      r.facts = {};
-      _AUDIT_CHANNELS.forEach(ch => { r.facts[ch.key] = auditCellFacts(r.familyId, 't4', ch.key, _reviewDepth); });
-      r.claimsCount = claims.filter(c => c.suitability_family_id === r.familyId).length;
-      r.t4Count = recipe.T4_suitability_mappings
-        ? recipe.T4_suitability_mappings.filter(m => m.suitability_family_id === r.familyId).length
-        : 0;
-      r.status = auditFamilyStatus(r.familyId, r.spatialProductType);
-    });
-
-    const sortKey = (r) => {
-      if (r.facts[auditSortCol]) return r.facts[auditSortCol].denom;
-      if (auditSortCol === 'claims') return r.claimsCount;
-      if (auditSortCol === 't4') return r.t4Count;
-      return 0;
-    };
-
-    // Rows stay grouped by NbS; the chosen column sorts WITHIN each group.
-    rows.sort((a, b) => {
-      if (a.nbsId !== b.nbsId) return (a.nbsId || '').localeCompare(b.nbsId || '');
-      let comparison;
-      if (auditSortCol === 'family') {
-        comparison = a.familyId.toLowerCase().localeCompare(b.familyId.toLowerCase());
-      } else {
-        comparison = sortKey(a) - sortKey(b);
-      }
-      return auditSortDir === 'asc' ? comparison : -comparison;
-    });
-
-    if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:20px;">No suitability families match the active filters.</td></tr>';
-      return;
-    }
-
-    let lastNbs = null;
-    rows.forEach(r => {
-      const recipe = dashboardData.recipes[r.nbsId];
-      if (!recipe) return;
-      const T0 = recipe.T0_nbs_registry && recipe.T0_nbs_registry[0];
-      const nbsName = T0 ? T0.nbs_name : r.nbsId;
-
-      // ---- NbS group header, carrying the register roll-ups (was: global NbS comparison) ----
-      if (r.nbsId !== lastNbs) {
-        lastNbs = r.nbsId;
-        const nbsSources = sources.filter(s => (s.nbs_ids || '').split(/[|;]/).map(x => x.trim()).includes(r.nbsId));
-        const totalSourcesCount = nbsSources.length;
-        const targetFamilyCount = Object.values(familiesMap).filter(f => f.nbsId === r.nbsId && auditFamilyStatus(f.familyId, f.spatialProductType).key === 'target').length;
-        const nbsClaimsCount = claims.filter(c => c.nbs_id === r.nbsId).length;
-        const nbsT4Count = recipe.T4_suitability_mappings ? recipe.T4_suitability_mappings.length : 0;
-        // Progress funnel: discovered (screened-in candidates, acquisition queue) →
-        // acquired (PDF in the team library) → extracted (registered in SRC with EV rows).
-        // Older sources predate the queue, so the denominator is max(queue, registered).
-        const _fun = (dashboardData.acquisition_funnel || {})[r.nbsId] || { candidates: 0, acquired: 0 };
-        const discoveredCount = Math.max(_fun.candidates, totalSourcesCount);
-        const acquiredCount = Math.min(Math.max(_fun.acquired, totalSourcesCount), discoveredCount);
-        const extrPct = discoveredCount > 0 ? Math.round(totalSourcesCount / discoveredCount * 100) : 0;
-        const extrClass = extrPct === 100 ? 'high' : extrPct > 0 ? 'medium' : 'low';
-        const funnelTitle = `${discoveredCount} screened-in candidate source(s) from discovery → ${acquiredCount} acquired to the library → ${totalSourcesCount} extracted into the registers`;
-
-        const gtr = document.createElement('tr');
-        gtr.dataset.feedbackKey = 'practice:' + r.nbsId;
-        gtr.dataset.feedbackLabel = nbsName;
-        gtr.style.cursor = 'pointer';
-        gtr.title = `Click to explore ${nbsName} in detail`;
-        gtr.innerHTML = `
-          <td colspan="8" style="padding:10px 14px; background:rgba(14,165,233,0.06); border-top:2px solid var(--accent-sky);">
-            <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
-              <span style="font-family:var(--font-outfit); font-weight:700; font-size:13.5px; color:var(--accent-sky);">${vfEsc(nbsName)}</span>
-              <span style="font-size:11px; color:var(--text-secondary);" title="${funnelTitle}"><b style="color:var(--text-primary);">${totalSourcesCount}/${discoveredCount}</b> sources extracted</span>
-              <span class="badge ${extrClass}" style="font-size:10px;" title="${funnelTitle}">${extrPct}%</span>
-              ${acquiredCount > totalSourcesCount ? `<span style="font-size:11px; color:var(--text-secondary);" title="acquired to the SharePoint library, awaiting extraction"><b style="color:var(--text-primary);">${acquiredCount - totalSourcesCount}</b> acquired, unextracted</span>` : ''}
-              <span style="font-size:11px; color:var(--text-secondary);"><b style="color:var(--text-primary);">${nbsClaimsCount}</b> retained claims</span><span style="font-size:11px;">${targetFamilyCount} target practice families</span>
-              <span style="font-size:11px; color:var(--text-secondary);"><b style="color:var(--text-primary);">${nbsT4Count}</b> stored T4 rows</span>
-              <span style="margin-left:auto; font-size:10.5px; color:var(--text-muted);">click → Evidence Query &#8594;</span>
-            </div>
-          </td>
-        `;
-        gtr.addEventListener('click', () => auditOpenInterrogator(r.nbsId, null));
-        body.appendChild(gtr);
-      }
-
-      // ---- Family row ----
-      const familyDisplayName = r.familyId.split('__')[1]
-                            .replace(/_/g, ' ')
-                            .replace(/\b\w/g, c => c.toUpperCase());
-      const subpracticesNames = r.subpractices.map(s => s.name).join(', ');
-
-      const tr = document.createElement('tr');
-      tr.dataset.feedbackKey = 'family:' + r.familyId;
-      tr.dataset.feedbackLabel = nbsName + ' · ' + familyDisplayName;
-      tr.innerHTML = `
-        <td class="audit-family-cell" style="font-weight:500; padding:10px 14px; cursor:pointer;" title="Click to interrogate ${vfEsc(familyDisplayName)} in detail">
-          <div style="color:var(--text-primary); font-size:12.5px;">${vfEsc(familyDisplayName)}</div>
-          <div style="font-size:10px; color:var(--text-muted); margin-top:2px; line-height:1.4;">${vfEsc(subpracticesNames)}</div>
-        </td>
-        ${_AUDIT_CHANNELS.map(ch => renderAuditChannelCell(r.familyId, 't4', ch, r.facts[ch.key])).join('')}
-        <td style="text-align:center; font-size:12.5px; border-left:1px solid var(--border-color);">${r.claimsCount}</td>
-        <td style="text-align:center; font-size:12.5px;">${r.t4Count}</td>
-        <td style="text-align:center;"><span class="badge ${r.status.cls}" title="${vfEsc(r.status.reason)}" style="font-size:10px;">${r.status.text}</span></td>
-      `;
-      const famCell = tr.querySelector('.audit-family-cell');
-      if (famCell) famCell.addEventListener('click', () => auditOpenInterrogator(r.nbsId, r.familyId));
-      body.appendChild(tr);
-    });
+    if (window.DashboardProgress) window.DashboardProgress.refresh(dashboardData);
   }
 
-  function setupAuditSortListeners() {
-    const headers = [
-      { id: 'audit-hdr-family', col: 'family' },
-      { id: 'audit-hdr-stock', col: 'stock' },
-      { id: 'audit-hdr-lit', col: 'updated' },
-      { id: 'audit-hdr-grey', col: 'grey' },
-      { id: 'audit-hdr-tools', col: 'tools' },
-      { id: 'audit-hdr-claims', col: 'claims' },
-      { id: 'audit-hdr-t4', col: 't4' }
-    ];
-    headers.forEach(h => {
-      const el = document.getElementById(h.id);
-      if (!el) return;
-      el.addEventListener('click', () => {
-        if (auditSortCol === h.col) {
-          auditSortDir = auditSortDir === 'asc' ? 'desc' : 'asc';
-        } else {
-          auditSortCol = h.col;
-          auditSortDir = h.col === 'family' ? 'asc' : 'desc'; // numeric columns: highest first
-        }
-        // Reset indicators, then mark the active column
-        headers.forEach(x => {
-          const elX = document.getElementById(x.id);
-          if (elX) elX.textContent = elX.textContent.replace(' ▲', '').replace(' ▼', '');
-        });
-        el.textContent = el.textContent + (auditSortDir === 'asc' ? ' ▲' : ' ▼');
-        renderDiscoveryAudit();
-      });
-    });
-  }
 
   // ================= UNIFIED SOURCES REGISTER =================
   // Replaces the sankey "Reviewed Sources Grid" AND the per-discovery-log inclusions table.
   // Rows are SRC register rows scoped by the global chips, so every practice's sources show
   // up — not only those a parsed discovery log happened to list.
   function renderSourcesRegister() {
-    const body = document.getElementById('body-sources-register');
-    if (!body || !dashboardData) return;
-    body.innerHTML = '';
-
-    const sources = (dashboardData.registers && dashboardData.registers.SRC_source_register) || [];
-    const ev = (dashboardData.registers && dashboardData.registers.EV_evidence_register) || [];
-    const nbsScope = activeNbsScope();
-    const famScope = activeFamilyScope();
-
-    let rows = sources;
-    if (famScope !== 'all') {
-      const ids = new Set(ev.filter(c => c.suitability_family_id === famScope).map(c => c.source_id));
-      rows = sources.filter(s => ids.has(s.source_id));
-    } else if (nbsScope !== 'all') {
-      rows = sources.filter(s => (s.nbs_ids || '').split(';').map(x => x.trim()).includes(nbsScope));
-    }
-    if (activeSearchCategory !== 'all') {
-      rows = rows.filter(s => getSourceCategory(s.source_id, s.citation) === activeSearchCategory);
-    }
-    rows = rows.slice().sort((a, b) => (a.source_id || '').localeCompare(b.source_id || ''));
-
-    const countBadge = document.getElementById('sources-register-count');
-    if (countBadge) {
-      const scopeLbl = famScope !== 'all'
-        ? famScope.split('__').pop().replace(/_/g, ' ')
-        : (nbsScope !== 'all' ? nbsScope.replace(/_/g, ' ') : 'all practices');
-      countBadge.textContent = `${rows.length} source(s) · ${scopeLbl}${activeSearchCategory !== 'all' ? ' · ' + activeSearchCategory : ''}`;
-    }
-
-    // Reset the drill-down whenever the table is re-rendered
-    const drilldownContainer = document.getElementById('source-evidence-drilldown');
-    if (drilldownContainer) drilldownContainer.style.display = 'none';
-
-    if (!rows.length) {
-      body.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:16px;">No registered sources match this scope &amp; category filter.</td></tr>';
-      return;
-    }
-
-    const catLabel = { stock: 'Stock', updated: 'Updated Lit', grey: 'Grey Lit', tools: 'Tool / Manual' };
-    const logIdForDrill = `${nbsScope === 'all' ? 'all' : nbsScope}_T4`;
-
-    rows.forEach(s => {
-      const tr = document.createElement('tr');
-
-      // All EV rows for this source drive the stage chips (identical to the old inclusions table)
-      const allSourceEv = ev.filter(c => c.source_id === s.source_id);
-      const stageE = ['complete', 'swept', 'signed_off'].includes(s.extraction_status || '');
-      const stageFlagCount = allSourceEv.filter(c => (c.attribution || '').includes('[VERIFY-FLAG')).length;
-      const stageR = allSourceEv.some(c => c.reviewer_ok === true || c.reviewer_ok === 'true');
-      const stageChipStyle = (on, color) => on
-        ? `display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:700;background:${color};color:#fff;margin:1px;`
-        : `display:inline-block;padding:1px 5px;border-radius:3px;font-size:10px;font-weight:700;background:var(--bg-tertiary);color:var(--text-muted);margin:1px;border:1px solid var(--border-color);`;
-      const stageHtml = [
-        `<span style="${stageChipStyle(true, '#0ea5e9')}" title="S: logged in discovery log">S</span>`,
-        `<span style="${stageChipStyle(stageE, '#10b981')}" title="E: source registered &amp; extracted (SRC)">E</span>`,
-        `<span style="${stageChipStyle(allSourceEv.length > 0, '#818cf8')}" title="X: ${allSourceEv.length} EV row(s) extracted">X${allSourceEv.length > 0 ? allSourceEv.length : ''}</span>`,
-        stageFlagCount > 0
-          ? `<span style="${stageChipStyle(true, '#f43f5e')}" title="${stageFlagCount} VERIFY-FLAG(s) in EV rows">⚑ ${stageFlagCount}</span>`
-          : `<span style="${stageChipStyle(false, '')}" title="No VERIFY-FLAGs">⚑</span>`,
-        `<span style="${stageChipStyle(stageR, '#10b981')}" title="R: human reviewer_ok=true on at least one EV row">R</span>`
-      ].join('');
-
-      // Variables extracted — scoped to the selected family when one is active
-      const scopedEv = famScope !== 'all' ? allSourceEv.filter(c => c.suitability_family_id === famScope) : allSourceEv;
-      const vars = [...new Set(scopedEv.map(c => c.variable).filter(Boolean))];
-      const varsLabel = vars.length > 0
-        ? vars.map(v => `<span class="badge" style="background:rgba(255,255,255,0.05); color:var(--text-secondary); text-transform:none; margin:2px; font-weight:normal; border:1px solid var(--border-color);">${vfEsc(v.replace(/_/g, ' '))}</span>`).join(' ')
-        : '<span style="color:var(--text-muted); font-size:11px;">None extracted</span>';
-
-      const _bt = (s.benchmark_tier || '').toLowerCase();
-      const tierClass = _bt === 'high' ? 'high' : _bt === 'medium' ? 'medium' : 'low';
-      const geo = [s.study_country, s.region].filter(Boolean).join(', ') || 'Global';
-      const friendlyName = getFriendlySourceName(s.source_id, s.citation);
-      const cat = getSourceCategory(s.source_id, s.citation);
-
-      // DOI / URL / Scholar fallback link (kept from the old inclusions table)
-      let linkHtml = '';
-      if (s.doi) {
-        const cleanDoi = String(s.doi).trim();
-        if (cleanDoi.startsWith('http://') || cleanDoi.startsWith('https://')) {
-          let displayLabel = 'Link ↗';
-          try { displayLabel = new URL(cleanDoi).hostname.replace('www.', '') + ' ↗'; } catch (e) {}
-          linkHtml = `<a href="${vfEsc(cleanDoi)}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline; font-size: 10.5px;" onclick="event.stopPropagation();">${vfEsc(displayLabel)}</a>`;
-        } else {
-          linkHtml = `<a href="https://doi.org/${vfEsc(cleanDoi)}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline; font-family: ui-monospace, monospace; font-size: 10.5px;" onclick="event.stopPropagation();">${vfEsc(cleanDoi)} ↗</a>`;
-        }
-      } else if (s.url) {
-        let displayLabel = 'Link ↗';
-        try { displayLabel = new URL(s.url).hostname.replace('www.', '') + ' ↗'; } catch (e) {}
-        linkHtml = `<a href="${vfEsc(s.url)}" target="_blank" rel="noopener noreferrer" style="color: var(--accent-sky); text-decoration: underline; font-size: 10.5px;" onclick="event.stopPropagation();">${vfEsc(displayLabel)}</a>`;
-      } else {
-        const q = encodeURIComponent(s.citation || s.source_id || '');
-        linkHtml = `<a href="https://scholar.google.com/scholar?q=${q}" target="_blank" rel="noopener noreferrer" style="color: var(--text-muted); text-decoration: underline; font-size: 10.5px;" onclick="event.stopPropagation();">Scholar Search ↗</a>`;
-      }
-
-      tr.style.cursor = 'pointer';
-      tr.title = 'Click to inspect evidence claims from this source';
-      tr.addEventListener('click', () => {
-        body.querySelectorAll('tr').forEach(r => { r.style.background = ''; });
-        tr.style.background = 'rgba(14, 165, 233, 0.1)';
-        showSourceEvidence(s.source_id, logIdForDrill, famScope);
-      });
-
-      tr.innerHTML = `
-        <td style="padding:9px 12px;" title="${vfEsc(s.citation || '')}">
-          <div style="display:flex; align-items:baseline; gap:6px; flex-wrap:wrap;">
-            <span style="color:var(--text-primary); font-weight:600; font-size:12px;">${vfEsc(friendlyName)}</span>
-            ${linkHtml}
-          </div>
-          <code style="font-family: ui-monospace, monospace; font-size: 10px; color: var(--accent-sky);">${vfEsc(s.source_id || '')}</code>
-          <div style="font-size:10px; color:var(--text-muted); margin-top:2px; line-height:1.4; max-width:360px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${vfEsc(s.citation || '')}</div>
-        </td>
-        <td style="text-align:center; vertical-align:middle;"><span class="badge ${tierClass}" style="font-size:9px; padding:2px 5px;">${vfEsc(_bt || 'n/a')}</span></td>
-        <td style="font-size:11px; color:var(--text-secondary);">${vfEsc(catLabel[cat] || cat)}</td>
-        <td style="font-size:11.5px; color:var(--text-secondary);">
-          <div>${vfEsc(geo)}</div>
-          <div style="font-size:9.5px; color:var(--text-muted); margin-top:2px;">System: ${vfEsc((s.farming_system || '—').replace(/_/g, ' '))}</div>
-        </td>
-        <td style="white-space:nowrap; vertical-align:middle;">${stageHtml}</td>
-        <td style="padding:9px 12px;"><div style="display:flex; flex-wrap:wrap; max-width:280px;">${varsLabel}</div></td>
-      `;
-      body.appendChild(tr);
-    });
+    if (window.DashboardProgress) window.DashboardProgress.renderBibliography();
   }
+
 
   // Visualizes Source (Left) -> Variable (Middle) -> Target Tables (Right)
   function renderSankeyFlow(sources, claims) {
@@ -4995,7 +3526,7 @@
     sources.forEach(src => {
       const nbsList = (src.nbs_ids || '').split(';').map(n => n.trim()).filter(Boolean);
       const isSwept = ['complete','swept','signed_off'].includes(src.extraction_status);
-      nbsList.forEach(nbs => {
+      nbsList.filter(nbs => recipes.includes(nbs)).forEach(nbs => {
         if (!stats[nbs]) stats[nbs] = { swept: 0, pending: 0 };
         if (isSwept) stats[nbs].swept++;
         else stats[nbs].pending++;
@@ -5003,14 +3534,16 @@
     });
 
     const nbsKeys = Object.keys(stats).sort();
+    const scaleMax = Math.max(4, ...Object.values(stats).map(s => s.swept + s.pending));
+    const xStep = 480 / Math.max(1, nbsKeys.length);
     
     nbsKeys.forEach((nbs, index) => {
       const s = stats[nbs];
       const total = s.swept + s.pending;
-      const sweptHeight = total > 0 ? (s.swept / 40) * 180 : 0;
-      const pendingHeight = total > 0 ? (s.pending / 40) * 180 : 0;
+      const sweptHeight = total > 0 ? (s.swept / scaleMax) * 180 : 0;
+      const pendingHeight = total > 0 ? (s.pending / scaleMax) * 180 : 0;
       
-      const x = 90 + index * 120;
+      const x = 70 + index * xStep;
       
       if (s.swept > 0) {
         const rectSwept = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -5019,7 +3552,7 @@
         rectSwept.setAttribute('width', 32);
         rectSwept.setAttribute('height', sweptHeight);
         rectSwept.setAttribute('class', 'bar-rect');
-        rectSwept.setAttribute('title', `${nbs}: ${s.swept} swept`);
+        rectSwept.setAttribute('title', `${nbs}: ${s.swept} extraction marked complete`);
         nbsChart.appendChild(rectSwept);
       }
 
@@ -5047,7 +3580,8 @@
       nbsChart.appendChild(text);
     });
 
-    [0, 10, 20, 30, 40].forEach((ticks, idx) => {
+    [0, 1, 2, 3, 4].forEach((step, idx) => {
+      const ticks = Math.round(scaleMax * step / 4);
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', 45);
       text.setAttribute('y', 234 - idx * 45);
@@ -5108,7 +3642,7 @@
         document.getElementById('center-donut-value').textContent = `${Math.round(pct)}%`;
       });
       circle.addEventListener('mouseleave', () => {
-        const tracePct = Math.round(((tiers.high + tiers.medium) / totalClaims) * 100);
+        const tracePct = (totalClaims ? Math.round(((tiers.high + tiers.medium) / totalClaims) * 100) : 0);
         document.getElementById('center-donut-value').textContent = `${tracePct}%`;
       });
 
@@ -5121,7 +3655,7 @@
       donutLegend.appendChild(leg);
     });
 
-    const traceablePct = Math.round(((tiers.high + tiers.medium) / totalClaims) * 100);
+    const traceablePct = (totalClaims ? Math.round(((tiers.high + tiers.medium) / totalClaims) * 100) : 0);
     document.getElementById('center-donut-value').textContent = `${traceablePct}%`;
 
     // 4. Countries
@@ -5129,7 +3663,7 @@
     countryList.innerHTML = '';
     const countryMap = {};
     sources.forEach(s => {
-      const c = s.study_country || 'Global';
+      const c = s.study_country || 'Not recorded';
       if (!countryMap[c]) countryMap[c] = { total: 0, swept: 0 };
       countryMap[c].total++;
       if (['complete','swept','signed_off'].includes(s.extraction_status)) countryMap[c].swept++;
@@ -5145,7 +3679,7 @@
       const pct = Math.round((stat.swept / stat.total) * 100);
       cRow.innerHTML = `
         <span style="font-weight:500;">${country}</span>
-        <span style="color:var(--text-secondary);">${stat.swept} / ${stat.total} swept (${pct}%)</span>
+        <span style="color:var(--text-secondary);">${stat.total} sources · ${stat.swept} extraction marked complete (${pct}%)</span>
       `;
       countryList.appendChild(cRow);
     });
@@ -5425,6 +3959,7 @@
 
     renderT4Mappings(nbsId, familyId);
     renderVerbatimEvidence();
+    refreshQueryProvenance();
   }
 
   function renderT4Mappings(nbsId, familyId) {
@@ -7070,111 +5605,12 @@
   }
 
   function showSourceEvidence(sourceId, logId, subNbsFilter) {
-    const drilldownContainer = document.getElementById('source-evidence-drilldown');
-    const labelSpan = document.getElementById('selected-source-id-label');
-    const tbody = document.getElementById('source-evidence-drilldown-body');
-    
-    if (!drilldownContainer || !tbody) return;
-    
-    // Filter claims matching source and active filters
-    const activeNbs = logId.substring(0, logId.lastIndexOf('_'));
-    const activeTable = logId.split('_').pop();
-    
-    const sourceClaims = (dashboardData.registers.EV_evidence_register || []).filter(c => {
-      if (c.source_id !== sourceId) return false;
-      
-      // T4 suitability is the only live recipe table; null dest never matches.
-      if (activeTable === 'T4' && getDestTable(c) !== 't4_mappings') return false;
-
-
-      if (subNbsFilter && subNbsFilter !== 'all') {
-        if (c.suitability_family_id !== subNbsFilter) return false;
-      } else {
-        if (activeNbs === 'agroforestry') {
-          if (!c.suitability_family_id || !c.suitability_family_id.startsWith('agroforestry')) return false;
-        } else if (activeNbs === 'water_harvesting_conservation') {
-          if (!c.suitability_family_id || (!c.suitability_family_id.startsWith('water_harvesting') && !c.suitability_family_id.startsWith('water_conservation'))) return false;
-        }
-      }
-      return true;
-    });
-    
-    // Find and populate source JSON metadata
-    const sourceMeta = (dashboardData.registers.SRC_source_register || []).find(src => src.source_id === sourceId);
-    const jsonPre = document.getElementById('selected-source-json-pre');
-    if (jsonPre) {
-      if (sourceMeta) {
-        jsonPre.textContent = JSON.stringify(sourceMeta, null, 2);
-      } else {
-        jsonPre.textContent = '// Source metadata not found in register';
-      }
-    }
-
-    if (sourceClaims.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 12px;">No matching evidence claims found in register for this source under current filters.</td></tr>`;
-      labelSpan.textContent = sourceId;
-      drilldownContainer.style.display = 'block';
-      drilldownContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      return;
-    }
-    
-    labelSpan.textContent = sourceId;
-    tbody.innerHTML = '';
-    
-    sourceClaims.forEach(c => {
-      const tr = document.createElement('tr');
-      
-      // Format relationship nicely
-      let relStr = '';
-      if (c.relationship) {
-        relStr = Object.entries(c.relationship)
-          .map(([k, v]) => `<span style="font-family: ui-monospace; font-size:10px; color: var(--accent-sky);">${k}</span>: ${v}`)
-          .join(', ');
-      } else {
-        relStr = '<span style="color: var(--text-muted);">N/A</span>';
-      }
-      
-      // Format context nicely
-      let ctxStr = '';
-      if (c.context && Object.keys(c.context).length > 0) {
-        ctxStr = Object.entries(c.context)
-          .map(([k, v]) => `<strong>${k}</strong>: ${v}`)
-          .join(', ');
-      } else {
-        ctxStr = '<span style="color: var(--text-muted);">None</span>';
-      }
-      
-      const typeBadge = c.evidence_type === 'expert' ? 'badge low' : 'badge high';
-      
-      // Honesty badges for drilldown table
-      const _sConf = (c.extraction_confidence || '').toLowerCase();
-      const _sConfColor = _sConf === 'high' ? 'var(--accent-emerald)' : _sConf === 'medium' ? 'var(--accent-amber)' : 'var(--text-muted)';
-      const _sConfBadge = _sConf ? `<span style=”font-size:8px; padding:1px 4px; border:1px solid var(--border-color); border-radius:3px; color:${_sConfColor};”>${_sConf}</span>` : '';
-      const _sScopeBadge = (c.claim_scope === 'species_specific' || c.claim_scope === 'crop_specific') ? `<span style=”font-size:8px; padding:1px 4px; border:1px solid rgba(245,158,11,0.3); border-radius:3px; color:var(--accent-amber);”>sp/crop</span>` : '';
-      const _sReviewBadge = (c.reviewer_ok === true || c.reviewer_ok === 'true') ? '' : `<span style=”font-size:8px; padding:1px 4px; border:1px solid var(--border-color); border-radius:3px; color:var(--text-muted);”>unreviewed</span>`;
-      const _sAttr = c.attribution || '';
-      const _sVfMatch = _sAttr.match(/\[VERIFY-FLAG([^\]]*)\]/);
-      const _sVfBadge = _sVfMatch ? `<span style=”font-size:8px; padding:1px 5px; border:1px solid rgba(244,63,94,0.4); border-radius:3px; color:var(--accent-rose); font-weight:600; cursor:help;” title=”${(_sVfMatch[1] || '').trim()}”>&#9872; VERIFY-FLAG</span>` : '';
-
-      tr.innerHTML = `
-        <td><code style=”font-family: ui-monospace, monospace; font-size: 11px; color: var(--accent-sky);”>${c.evidence_id}</code></td>
-        <td style=”font-weight: 500;”>${c.variable || 'N/A'}</td>
-        <td style=”font-size: 11px;”>${relStr}</td>
-        <td style=”font-size: 11px; color: var(--text-secondary);”>${ctxStr}</td>
-        <td style=”font-style: italic; color: var(--text-primary); line-height: 1.45;”>”${c.quote || ''}”</td>
-        <td style=”text-align: center; font-size: 11px;”>${c.page || 'N/A'}</td>
-        <td>
-          <span class=”${typeBadge}” style=”font-size: 10px; padding: 1px 5px; text-transform: uppercase;”>${(c.evidence_type || 'literature').replace(/_/g, ' ')}</span>
-          <div style=”margin-top:3px; display:flex; flex-wrap:wrap; gap:2px;”>${_sConfBadge}${_sScopeBadge}${_sReviewBadge}${_sVfBadge}</div>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-    
-    drilldownContainer.style.display = 'block';
-    drilldownContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (window.DashboardProgress) window.DashboardProgress.openSource(sourceId);
   }
+
+
 </script>
+<script src="dashboard-progress.js"></script>
 <script src="dashboard-feedback.js"></script>
 </body>
 </html>
