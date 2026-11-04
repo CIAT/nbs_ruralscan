@@ -106,6 +106,7 @@ assert(!t.nodes.get('dp-source-drawer'));assert.equal(t.document.activeElement,p
 assert.equal(t.location.hash,'');
 t.location.hash='#source=alias';t.events.hashchange();
 assert(t.nodes.get('dp-source-drawer'));assert.equal(t.location.hash,'#source=canonical');
+assert.equal(t.activeTab,'tab-stocktake');
 t.tabs['tab-methods'].click();assert(!t.nodes.get('dp-source-drawer'));
 t.location.hash='#source=%E0%A4%A';assert.doesNotThrow(()=>t.events.hashchange());
 """)
@@ -143,7 +144,8 @@ t.api.refresh(t.fixture);
 const html=t.nodes.get('bibliography-app').innerHTML;
 assert(html.includes('Extracted: T4 0 · Effects 1 · M2b 0'));
 assert(html.includes('Compiled contributions'));
-assert(html.includes('0 | 0 | 0 | 0'));
+for(const title of ['T4 suitability','T3 hazard response','T6 benefits','M2b risk roles'])assert(html.includes(title+' · 0'));
+assert(!html.includes('data-action="source-evidence" data-value="[&quot;canonical&quot;,&quot;T4&quot;]'));
 t.api.openSource('canonical');
 assert(t.nodes.get('dp-source-drawer').innerHTML.includes('Extracted: T4 0 · Effects 1 · M2b 0'));
 """)
@@ -227,4 +229,128 @@ assert(!html.includes('>41</td>'));assert(!html.includes('>93</td>'));assert(!ht
 m.search_metrics={...m.search_metrics,complete_counts:1,paired_retrieved:100,paired_screened:20,paired_included:10};
 t.api.refresh(t.fixture);html=t.nodes.get('progress-app').innerHTML;
 assert(html.includes('>100</td>'));assert(html.includes('>20</td>'));assert(html.includes('>10</td>'));
+""")
+
+
+def test_source_metadata_aliases_access_and_missing_screening():
+    run_js(r"""
+const t=setup();
+t.window.vfSharePointUrl=p=>'https://library.example/'+p;
+t.fixture.registers.SRC_source_register=[
+  {source_id:'canonical',citation:'Canonical citation',library_path:'source.pdf',method_type:'review',study_country:'Niger',doi:'canonical-doi'},
+  {source_id:'alias',citation:'Alias citation',library_path:'alias.pdf',method_type:'modelling',doi:'alias-doi'}];
+t.api.refresh(t.fixture);t.api.openSource('alias');
+const html=t.nodes.get('dp-source-drawer').innerHTML;
+assert(html.includes('https://library.example/source.pdf'));
+assert(html.includes('https://library.example/alias.pdf'));
+assert(html.includes('Canonical citation'));assert(html.includes('Alias citation'));
+assert(html.includes('canonical-doi'));assert(html.includes('alias-doi'));
+assert(html.includes('Metadata belongs to this source ID'));
+assert(html.includes('Not recorded at source level; extraction is not a screening decision.'));
+assert(!html.includes('href="javascript:'));
+assert.equal(t.nodes.get('dp-source-details').hidden,true);
+t.nodes.get('dp-view-details').onclick();
+assert.equal(t.nodes.get('dp-source-details').hidden,false);
+assert.equal(t.nodes.get('dp-source-evidence').hidden,true);
+assert.equal(t.nodes.get('dp-view-details').attrs['aria-pressed'],'true');
+""")
+
+
+def test_evidence_filter_intersections_quarantine_and_reset():
+    run_js(r"""
+const t=setup(),s=t.fixture.progress_overview.sources[0];
+s.evidence_ids=['ev1','ev3','ev4'];s.approved_evidence_ids=['ev1'];
+s.contributions={T4:['ev1'],T3:['ev3'],T6:['ev3','ev4'],M2b:['ev4']};
+t.fixture.registers.EV_evidence_register=[
+ {evidence_id:'ev1',source_id:'canonical',variable:'slope',quote:'Suitability quote',use_role:'structural_suitability',reviewer_ok:true,nbs_id:'agroforestry',suitability_family_id:'f1'},
+ {evidence_id:'ev3',source_id:'canonical',variable:'yield',quote:'Yield benefit',use_role:'nbs_effect',reviewer_ok:false,nbs_id:'agroforestry',suitability_family_id:'agroforestry__f1'},
+ {evidence_id:'ev4',source_id:'canonical',variable:'tenure',quote:'Tenure risk',use_role:'operational_risk',reviewer_ok:false,nbs_id:'agroforestry',suitability_family_id:'agroforestry__f2'}];
+t.fixture._evDropped=[{evidence_id:'ev2',source_id:'canonical',quote:'Dropped despite old approval',review_state:'dropped',reviewer_ok:true}];
+t.api.refresh(t.fixture);t.api.openSource('canonical','T6');
+function select(k,value){const el=t.nodes.get('dp-excerpt-'+k);el.value=value;el.trigger('change');}
+function html(){return t.nodes.get('dp-drawer-evidence').innerHTML;}
+assert(html().includes('Yield benefit'));assert(html().includes('Tenure risk'));assert(!html().includes('Suitability quote'));
+select('family','agroforestry__f1');assert(html().includes('Yield benefit'));assert(!html().includes('Tenure risk'));
+select('role','structural_suitability');assert(html().includes('No linked excerpts'));
+t.nodes.get('dp-excerpt-reset').onclick();
+assert(html().includes('Suitability quote'));assert(!html().includes('Dropped despite'));
+select('review','approved');assert(html().includes('Suitability quote'));assert(!html().includes('Yield benefit'));
+select('review','dropped');assert(html().includes('Dropped despite'));assert(!html().includes('Suitability quote'));assert(!html().includes('dp-evidence-status">Approved'));
+assert.equal(t.nodes.get('dp-show-dropped').checked,true);
+const toggle=t.nodes.get('dp-show-dropped');toggle.checked=false;toggle.trigger('change');
+assert.equal(t.nodes.get('dp-excerpt-review').value,'');
+assert(html().includes('Suitability quote'));assert(!html().includes('Dropped despite'));
+t.nodes.get('dp-excerpt-reset').onclick();
+const query=t.nodes.get('dp-excerpt-query');query.value='ev3';query.trigger('input');
+assert(html().includes('Yield benefit'));assert(!html().includes('Tenure risk'));
+t.api.openSource('canonical');assert(html().includes('Tenure risk')); // New source opening resets filters.
+""")
+
+
+def test_bibliography_combines_filters_and_resets_family_on_practice_change():
+    run_js(r"""
+const t=setup();
+function select(k,value){const el=t.nodes.get('dp-bib-'+k);el.value=value;el.trigger('change');}
+function html(){return t.nodes.get('bibliography-app').innerHTML;}
+select('family','agroforestry__f1');assert(html().includes('First publication'));assert(!html().includes('Legacy agroforestry'));
+select('evidence','pending');assert(html().includes('No matching records'));
+select('evidence','approved');assert(html().includes('First publication'));
+select('origin','grey');assert(html().includes('No matching records'));
+select('origin','stock');assert(html().includes('First publication'));
+select('nbs','cross');assert(html().includes('No matching records'));
+select('nbs','agroforestry');select('evidence','');
+assert(html().includes('Legacy agroforestry')); // Practice change cleared family filter.
+const target={dataset:{action:'bib-reset'},closest:()=>target};
+t.handlers.click({target});
+assert(html().includes('Broad forest scope'));
+assert.equal(t.document.activeElement,t.nodes.get('dp-bib-query'));
+""")
+
+
+def test_passage_links_do_not_invent_section_anchors_or_unpinned_code():
+    run_js(r"""
+const t=setup(),s=t.fixture.progress_overview.sources[0];
+t.window.vfSharePointUrl=p=>'https://library.example/'+p;
+t.fixture.registers.SRC_source_register=[{source_id:'canonical',library_path:'source.pdf'}];
+const ev=t.fixture.registers.EV_evidence_register[0];
+Object.assign(ev,{source_id:'canonical',page:12,locator_type:'page',context:{note:'<img src=x onerror=alert(1)>'}});
+t.api.refresh(t.fixture);t.api.openSource('canonical');
+let html=t.nodes.get('dp-drawer-evidence').innerHTML;
+assert(html.includes('https://library.example/source.pdf#page=12'));
+assert(html.includes('Full evidence record'));assert(!html.includes('<img'));
+t.fixture.registers.SRC_source_register=[{source_id:'canonical',url:'https://example.org/report'}];
+Object.assign(ev,{page:12,locator_type:'section',locator:'Results'});
+t.api.refresh(t.fixture);t.api.openSource('canonical');html=t.nodes.get('dp-drawer-evidence').innerHTML;
+assert(html.includes('href="https://example.org/report"'));assert(!html.includes('#Results'));assert(!html.includes('#page=12'));
+t.fixture.registers.SRC_source_register=[{source_id:'canonical',url:'https://github.com/team/project'}];
+Object.assign(ev,{locator_type:'file_line',locator:'src/rules.py:L4-L8',commit_sha:'abcdef1234567'});
+t.api.refresh(t.fixture);t.api.openSource('canonical');html=t.nodes.get('dp-drawer-evidence').innerHTML;
+assert(html.includes('https://github.com/team/project/blob/abcdef1234567/src/rules.py#L4-L8'));
+ev.commit_sha='';t.api.refresh(t.fixture);t.api.openSource('canonical');html=t.nodes.get('dp-drawer-evidence').innerHTML;
+assert(!html.includes('/blob/'));assert(!html.includes('Open pinned code'));
+""")
+
+
+def test_empty_legacy_source_opens_details_and_contribution_buttons_use_exact_subset():
+    run_js(r"""
+const t=setup();t.api.openSource('legacy:peer_reviewed:0');
+assert.equal(t.nodes.get('dp-source-details').hidden,false);
+assert(t.nodes.get('dp-source-drawer').innerHTML.includes('No source link recorded.'));
+const target={dataset:{action:'source-evidence',value:JSON.stringify(['canonical','T3'])},closest:()=>target};
+t.handlers.click({target});
+assert.equal(t.nodes.get('dp-source-evidence').hidden,false);
+assert(t.nodes.get('dp-drawer-evidence').innerHTML.includes('No linked excerpts'));
+""")
+
+
+def test_unmapped_recorded_scopes_remain_filterable_without_invented_family_links():
+    run_js(r"""
+const t=setup();t.fixture.progress_overview.sources[0].family_ids=['unmapped_subpractice'];
+t.api.refresh(t.fixture);
+let html=t.nodes.get('bibliography-app').innerHTML;
+assert(html.includes('Recorded scope: Unmapped subpractice (unmapped)'));
+const family=t.nodes.get('dp-bib-family');family.value='unmapped_subpractice';family.trigger('change');
+html=t.nodes.get('bibliography-app').innerHTML;
+assert(html.includes('First publication'));assert(!html.includes('Legacy agroforestry'));
+assert(!html.includes('data-feedback-key="family:agroforestry__unmapped_subpractice"'));
 """)

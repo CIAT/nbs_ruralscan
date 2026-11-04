@@ -1,5 +1,7 @@
 # Water Harvesting & Conservation — Suitability-Family Scheme (for review)
 
+> **Status notice — 4 November 2026:** this August draft retains historical rationale, not current coverage or approved global thresholds. WH now has T4 mappings; rooftop harvesting is explicitly out of project scope. See the [current scope crosswalk and review handoff](../audits/wh_scope_review_20261104/README.md) for all 18 registry records, storage/recharge distinctions and pending sign-off. The “no WH T4 rows,” rooftop “Scope Q,” and illustrative numerical bands below are superseded as status/approval guidance. No structural regrouping has been applied.
+
 *Draft for sign-off · August 2026 · sign-off **Pete + MFL** (Sarah · Chris · Evert · Hannes) domain review · QA **Namita** · coordination Namita. Grounded in **Benson's** canonical water-harvesting recipe (inherited work — Benson left the project Aug 2026, so WH has **no dedicated hydrology domain reviewer**: open gap, flag at validation).*
 
 > **Why this document exists.** Suitability is reasoned **per suitability family, not per whole NbS**
