@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-04T18:21:45.444770+00:00",
-  "git_commit": "6b0d8825f8defa41e652050fd1bfcd4557458cfa",
+  "timestamp": "2026-11-04T18:27:22.834851+00:00",
+  "git_commit": "cdc4e6442ffa1f9d632a4b8b5a464db49c682b8b",
   "registers": {
     "SRC_source_register": [
       {
@@ -15264,6 +15264,26 @@
         "source_category": "grey",
         "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/2_ForestRestoration/gefieo_2022_sfm_evaluation.pdf",
         "study_income_group": "upper_middle",
+        "venue_type": "institutional_report"
+      },
+      {
+        "source_id": "fao_fp175_drylands_restoration_2015",
+        "citation": "Berrahmouni, N.; Regato, P.; Parfondry, M. (2015). Global guidelines for the restoration of degraded forests and landscapes in drylands: building resilience and benefiting livelihoods. FAO Forestry Paper 175, Rome.",
+        "benchmark_tier": "medium",
+        "region": "Global drylands",
+        "method_type": "expert",
+        "nbs_ids": "forest_restoration",
+        "vars_extracted": "regeneration_potential",
+        "extraction_status": "in_progress",
+        "extraction_date": "2026-11-04",
+        "extraction_run_id": "fao_drylands_ch4_20261104",
+        "extractor": "Codex (bounded chapter recovery)",
+        "source_kind": "grey_lit",
+        "url": "https://www.fao.org/3/i5036e/i5036e.pdf",
+        "artifact_sha1": "f1be51341510afc50f2db031fb0bad24780ed307",
+        "access_status": "open_access",
+        "source_category": "grey",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/2_ForestRestoration/fao_fp175_drylands_restoration_2015.pdf",
         "venue_type": "institutional_report"
       }
     ],
@@ -245579,6 +245599,50 @@
         "raw_name": "remittances / cash crops (finance) and adoption of zai and stone bunds",
         "locator_type": "page",
         "ruleset_version": "v1.9.3"
+      },
+      {
+        "evidence_id": "ev_forest_regeneration_potential_fao175_ch4_20261104",
+        "source_id": "fao_fp175_drylands_restoration_2015",
+        "nbs_id": "forest_restoration",
+        "suitability_family_id": "forest_restoration__assisted_regeneration",
+        "variable": "regeneration_potential",
+        "relationship": {
+          "type": "source_qualitative_condition",
+          "gate": "The source describes natural regeneration as usually cheaper and more efficient than planting provided mature and healthy seed trees are in or close to the restoration area; stump shoots can also support restoration.",
+          "note": "Conditional strategy guidance only; not proof that regeneration is impossible without nearby seed trees. No scored classes, monotonic curve, exclusion distance, or implemented mask is established."
+        },
+        "context": {
+          "region": "Global drylands",
+          "climate_zone": "dryland",
+          "practice_as_described": "Assisted natural regeneration: deliberate protection of degraded land from pressures to accelerate natural forest succession. The alternative described is planting seedlings or pursuing other revegetation strategies.",
+          "note": "Chapter 4 practitioner guidance, section 4.3, printed page 50 / PDF72. Retains conditional cost/efficiency guidance for assisted regeneration, not an absolute biological requirement: the source does not prove regeneration impossible without seed trees, and its next sentence says stump shoots can also support restoration. This is not farmer-managed natural regeneration on farmland (which starts on PDF73). The source-dependent distance describes individual healthy seed trees, not a calibrated distance to a forest edge. No primary study or field validation was independently reviewed.",
+          "reported_values": {
+            "seed_tree_distance_native": "50–100 m",
+            "qualifier": "Depending on the tree species",
+            "reference_point": "closest seed trees relative to restoration area",
+            "status": "retained source value only; proxy and ecological transfer unresolved"
+          },
+          "model_use": {
+            "used": false,
+            "scope": "practitioner_guidance",
+            "method": "Conditional recommendation for selecting assisted natural regeneration rather than planting; not an applied spatial suitability model"
+          },
+          "calibration_hold": "No seed availability classes or suitability scores. Native species-dependent 50–100 m cannot become distance_to_forest abs_max, global cutoff, or interpolation. Review confirms retained qualitative evidence only.",
+          "remaining_decision": "Human review of conditional seed-source guidance and any future seed-tree proxy/transfer; source scope beyond chapter4 remains unreviewed."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "cited_secondary",
+        "claim_scope": "practice_technology",
+        "lineage_of": "Heidelberg, A., Neuner, H., Osepashvili, I. & Schulzke, R. (2011). Forest restoration guidelines. WWF Caucasus Programme Office, WWF Germany.",
+        "extraction_confidence": "high",
+        "quote": "ANR involves the deliberate protection of degraded land from pressures to \nenhance and accelerate natural processes of forest succession with the aim of \nre-establishing healthy, resilient and productive ecosystems. It is usually cheaper \nand more efficient to promote natural regeneration rather than to plant seedlings \nor pursue other revegetation strategies – provided there are mature and healthy \nseed trees in or close to the restoration area. Depending on the tree species, the \nclosest seed trees should be no more than 50–100 m from the restoration area \n(Heidelberg et al., 2011). The protection and use of stump shoots, when available, \ncan also help support restoration activities.",
+        "page": 72,
+        "reviewer_ok": false,
+        "raw_name": "mature and healthy seed trees in or close to the restoration area",
+        "attribution": "Heidelberg et al. (2011), as cited by FAO (2015), printed page 50; primary source not independently reviewed in this chapter-only pass.",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.4"
       }
     ],
     "FAM_family_registry": [
@@ -344726,10 +344790,10 @@
       "searched": "done",
       "screened": "done",
       "verified": "in_progress",
-      "last_run_id": "fr_t4_denr_wri_20261102",
-      "updated": "2026-11-02",
-      "by": "Codex",
-      "note": "Bounded DENR/WRI review: 2 new unapproved T4 units, central provenance/semantic review completed; source remains in_progress for mapping/species/supplement holds. Historical searched/screened stamps retained; no new search completion or human approval."
+      "last_run_id": "fao_drylands_ch4_20261104",
+      "updated": "2026-11-04",
+      "by": "Codex (bounded chapter recovery)",
+      "note": "FAO175 Chapter4 PDF63–81 accounted: one unapproved qualitative assisted-regeneration strategy claim; central gates and independent source review complete. Native seed-tree distance held, no curve or human approval. Other chapters deferred; prior search stamps retained."
     },
     {
       "nbs_id": "forest_restoration",
@@ -391978,23 +392042,31 @@
         "citation": "Berrahmouni, N.; Regato, P.; Parfondry, M. (2015). Global guidelines for the restoration of degraded forests and landscapes in drylands: building resilience and benefiting livelihoods. FAO Forestry Paper 175, Rome.",
         "url": "https://www.fao.org/3/i5036e/i5036e.pdf",
         "doi": "",
-        "type": "unknown",
-        "origins": [],
+        "type": "grey",
+        "origins": [
+          "grey"
+        ],
         "nbs_ids": [
           "forest_restoration"
         ],
-        "family_ids": [],
+        "family_ids": [
+          "forest_restoration__assisted_regeneration"
+        ],
         "screening": "not_recorded",
         "search_ids": [],
-        "extraction_status": [],
-        "queue_statuses": [
-          "acquired"
+        "extraction_status": [
+          "in_progress"
         ],
-        "evidence_ids": [],
+        "queue_statuses": [
+          "extracted"
+        ],
+        "evidence_ids": [
+          "ev_forest_regeneration_potential_fao175_ch4_20261104"
+        ],
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
         "extraction_counts": {
-          "T4": 0,
+          "T4": 1,
           "effects": 0,
           "M2b": 0,
           "other": 0
@@ -442736,12 +442808,12 @@
     ],
     "totals": {
       "known_sources": 853,
-      "extracted_sources": 669,
+      "extracted_sources": 670,
       "reviewed_sources": 83,
       "fully_reviewed_sources": 45,
-      "active_excerpts": 4686,
-      "retained_excerpts": 4686,
-      "all_excerpts": 6164,
+      "active_excerpts": 4687,
+      "retained_excerpts": 4687,
+      "all_excerpts": 6165,
       "approved_excerpts": 282,
       "dropped_excerpts": 1478,
       "t4_relationships": 59,
@@ -442751,9 +442823,9 @@
       "t4_contributing_sources": 34,
       "source_mix": {
         "literature": 544,
-        "grey": 154,
+        "grey": 155,
         "tools": 5,
-        "unknown": 150
+        "unknown": 149
       },
       "search_metrics": {
         "events": 205,
@@ -443453,12 +443525,12 @@
         "name": "Forest restoration",
         "metrics": {
           "known_sources": 162,
-          "extracted_sources": 126,
+          "extracted_sources": 127,
           "reviewed_sources": 3,
           "fully_reviewed_sources": 2,
-          "active_excerpts": 759,
-          "retained_excerpts": 759,
-          "all_excerpts": 958,
+          "active_excerpts": 760,
+          "retained_excerpts": 760,
+          "all_excerpts": 959,
           "approved_excerpts": 4,
           "dropped_excerpts": 199,
           "t4_relationships": 0,
@@ -443468,9 +443540,9 @@
           "t4_contributing_sources": 0,
           "source_mix": {
             "literature": 90,
-            "grey": 36,
+            "grey": 37,
             "tools": 2,
-            "unknown": 34
+            "unknown": 33
           },
           "search_metrics": {
             "events": 30,
@@ -443580,13 +443652,13 @@
               }
             ],
             "metrics": {
-              "known_sources": 37,
-              "extracted_sources": 11,
+              "known_sources": 38,
+              "extracted_sources": 12,
               "reviewed_sources": 1,
               "fully_reviewed_sources": 1,
-              "active_excerpts": 46,
-              "retained_excerpts": 46,
-              "all_excerpts": 74,
+              "active_excerpts": 47,
+              "retained_excerpts": 47,
+              "all_excerpts": 75,
               "approved_excerpts": 2,
               "dropped_excerpts": 28,
               "t4_relationships": 0,
@@ -443596,7 +443668,7 @@
               "t4_contributing_sources": 0,
               "source_mix": {
                 "literature": 23,
-                "grey": 7,
+                "grey": 8,
                 "tools": 1,
                 "unknown": 6
               },
@@ -443883,7 +443955,7 @@
             "name": "Practice-wide / family not assigned",
             "subpractices": [],
             "metrics": {
-              "known_sources": 9,
+              "known_sources": 8,
               "extracted_sources": 0,
               "reviewed_sources": 0,
               "fully_reviewed_sources": 0,
@@ -443901,7 +443973,7 @@
                 "literature": 0,
                 "grey": 1,
                 "tools": 0,
-                "unknown": 8
+                "unknown": 7
               },
               "search_metrics": {
                 "events": 9,
@@ -445407,10 +445479,10 @@
   "build": {
     "release": "1.1.2",
     "ui_id": "71d23e7f1f97",
-    "data_id": "944401d5e2ac",
+    "data_id": "f2c226f5a2dc",
     "count_definition_version": "2",
-    "built_at": "2026-11-04T18:21:45.444770+00:00",
-    "source_commit": "6b0d8825f8defa41e652050fd1bfcd4557458cfa",
+    "built_at": "2026-11-04T18:27:22.834851+00:00",
+    "source_commit": "cdc4e6442ffa1f9d632a4b8b5a464db49c682b8b",
     "history": [
       {
         "release": "1.0.0",
@@ -445611,6 +445683,14 @@
         "count_definition_version": "2",
         "built_at": "2026-11-04T18:21:45.444770+00:00",
         "source_commit": "6b0d8825f8defa41e652050fd1bfcd4557458cfa"
+      },
+      {
+        "release": "1.1.2",
+        "ui_id": "71d23e7f1f97",
+        "data_id": "f2c226f5a2dc",
+        "count_definition_version": "2",
+        "built_at": "2026-11-04T18:27:22.834851+00:00",
+        "source_commit": "cdc4e6442ffa1f9d632a4b8b5a464db49c682b8b"
       }
     ]
   }
