@@ -666,7 +666,7 @@ def test_table_views_route_inputs_but_count_only_retained_output_citations():
     assert len(output["rows"]) == 2
     assert result["totals"]["contributing_excerpts"] == 2  # cross-table union
     assert result["totals"]["all_excerpts"] == 8
-    assert "Routing does not mean synthesis gates passed" in t3["scope_note"]
+    assert "Relevance does not establish suitability for use" in t3["scope_note"]
     assert "unmapped" in result["totals"]["evidence_ids"]
     for view in result["table_views"].values():
         for metrics in [view["totals"], *[p["metrics"] for p in view["practices"]]]:

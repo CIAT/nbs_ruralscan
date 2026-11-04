@@ -743,13 +743,13 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         note = {
             "T2a": "Shared T2 climate-risk configuration, displayed as T2a; not M2b investment-risk screening. Evidence includes explicit climate-risk roles and configuration citations. Other upstream allocation is not recorded; zero tracked extracts does not mean no research was done.",
             "T3": (
-                "Potential T3 inputs from the role/target crosswalk, plus explicit T3 citations. Routing does not mean synthesis gates passed. T3 and T6 can share extracts; totals must not be added."
+                "Evidence relevant to hazard response, plus claims already cited by T3 outputs. Relevance does not establish suitability for use. T3 and T6 can share extracts; totals must not be added."
                 if routed
                 else "Shared T3/T6 effect-evidence pool, plus T3 asset-vulnerability evidence and explicit T3 citations. Upstream allocation is unavailable; this is not a T3-only extraction count."
             ),
             "T4": "Structural-suitability evidence plus explicit citations in core T4 rules. Soft operational scenario rows are excluded; hard legal masks remain included.",
             "T6": (
-                "Potential T6 inputs from the role/target crosswalk, plus explicit T6 citations. Routing does not mean synthesis gates passed. T3 and T6 can share extracts; totals must not be added. Output counts exclude economic profiles (T6E)."
+                "Evidence relevant to benefits, plus claims already cited by T6 outputs. Relevance does not establish suitability for use. T3 and T6 can share extracts; totals must not be added. Output counts exclude economic profiles (T6E)."
                 if routed
                 else "Shared T3/T6 effect-evidence pool plus explicit T6 citations. Upstream allocation is unavailable; this is not a T6-only extraction count. Output counts exclude economic profiles (T6E)."
             ),
