@@ -284,6 +284,11 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     }
 
     # Presentation annotations only: never consumed by synthesis or used to change evidence.
+    presentation_csv = schema_root.parent / "docs" / "dashboard-family-presentation.csv"
+    data["family_presentation"] = {
+        row["suitability_family_id"]: row
+        for row in (_csv_to_rows(presentation_csv) if presentation_csv.exists() else [])
+    }
     status_csv = schema_root.parent / "docs" / "dashboard-family-status.csv"
     data["family_display_status"] = {
         row["suitability_family_id"]: row

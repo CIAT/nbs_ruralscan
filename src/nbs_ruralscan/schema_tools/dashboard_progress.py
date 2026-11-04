@@ -221,12 +221,18 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         fid = fam.get("suitability_family_id")
         if not fid:
             continue
+        presentation = data.get("family_presentation", {}).get(fid, {})
+        navigation_group = presentation.get("navigation_group") or (
+            "evidence" if fid.endswith("__cross_family") else "practice"
+        )
         group = family_lookup.setdefault(
             fid,
             {
                 "family_id": fid,
                 "nbs_id": fam.get("nbs_id", ""),
-                "name": fid.split("__")[-1].replace("_", " ").capitalize(),
+                "name": presentation.get("display_name")
+                or fid.split("__")[-1].replace("_", " ").capitalize(),
+                "navigation_group": navigation_group,
                 "subpractices": [],
                 "scope_kind": (
                     "all_families" if fid.endswith("__cross_family") else "family"
@@ -237,6 +243,11 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         entry = {
             "subpractice_id": fam.get("subpractice_id", ""),
             "name": fam.get("name", ""),
+            "presentation_role": "evidence"
+            if navigation_group == "evidence"
+            else "umbrella"
+            if fam.get("subpractice_id") == presentation.get("umbrella_subpractice_id")
+            else "variant",
         }
         if entry not in group["subpractices"]:
             group["subpractices"].append(entry)
@@ -377,7 +388,11 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
         fids = family_ids(row)
         if fids:
             label_parts.append(
-                ", ".join(f.split("__")[-1].replace("_", " ") for f in sorted(fids))
+                ", ".join(
+                    family_lookup.get(f, {}).get("name")
+                    or f.split("__")[-1].replace("_", " ")
+                    for f in sorted(fids)
+                )
             )
         elif table in {"T3", "T6"}:
             label_parts.append("practice roll-up")
@@ -691,6 +706,7 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                     "family_id": fid,
                     "nbs_id": row.get("nbs_id", ""),
                     "name": fid.split("__")[-1].replace("_", " ").capitalize(),
+                    "navigation_group": "evidence",
                     "subpractices": [],
                     "scope_kind": "unmapped",
                     "scope_definition": "Recorded evidence routing tag absent from the family registry.",
@@ -713,6 +729,7 @@ def build_progress(data: dict, queue: list[dict]) -> dict:
                 "family_id": "__unassigned",
                 "nbs_id": nbs,
                 "name": "Family not recorded",
+                "navigation_group": "evidence",
                 "subpractices": [],
                 "scope_kind": "unassigned",
                 "scope_definition": "No matching family association is recorded for these source or evidence records; this does not mean applicable to all families.",

@@ -1183,6 +1183,7 @@
               <span class="family-meta" id="family-hero-type"></span>
             </div>
             <p class="family-desc" id="family-hero-desc"></p>
+            <details id="family-hero-variants"><summary>Variants and scope</summary><div id="family-hero-variant-list"></div></details>
             <div class="family-details-grid">
               <div>
                 <h3 class="info-block-title">Dominant Limiting Factor</h3>
@@ -1982,7 +1983,7 @@
   function openGapModal(){ var m=document.getElementById('gap-modal'); if(!m)return;
     var dl=document.getElementById('gap-src-list'); if(dl){ var srcs=(((dashboardData||{}).registers||{}).SRC_source_register||[]).map(function(s){return s.source_id;}).filter(Boolean).sort(); dl.innerHTML=srcs.map(function(s){return '<option value="'+vfEsc(s)+'"></option>';}).join(''); }
     var sc=window._vfScope||{}; var ctx=document.getElementById('gap-scope-ctx');
-    if(ctx){ ctx.innerHTML='Filed against your current scope: <b>'+vfEsc(sc.nbs||'—')+'</b> · <b>'+vfEsc((sc.family&&sc.family!=='all')?sc.family.split('__').pop().replace(/_/g,' '):'all sub-practices')+'</b> · <b>'+vfEsc(sc.table||'—')+'</b>'; }
+    if(ctx){ ctx.innerHTML='Filed against your current scope: <b>'+vfEsc(sc.nbs||'—')+'</b> · <b>'+vfEsc((sc.family&&sc.family!=='all')?familyDisplayName(sc.family):'all families and evidence scopes')+'</b> · <b>'+vfEsc(sc.table||'—')+'</b>'; }
     var msg=document.getElementById('gap-msg'); if(msg)msg.textContent='';
     if(!window._reviewApi){ if(msg)msg.innerHTML='<span style="color:var(--accent-amber);">No live review server — reporting a gap needs it running locally. It writes to pipeline/metrics/gaps.csv.</span>'; }
     m.style.display='block'; }
@@ -2010,7 +2011,7 @@
       +(g.variable?('<span style="font-size:11.5px; color:var(--text-primary); font-weight:600;">'+vfEsc(g.variable)+'</span>'):'')
       +(g.location?('<span style="font-size:10.5px; color:var(--text-secondary);">📍 '+vfEsc(g.location)+'</span>'):'')
       +(g.source_id?('<span style="font-size:10.5px; color:var(--text-muted);">'+vfEsc(g.source_id)+'</span>'):'')
-      +'<span style="margin-left:auto; font-size:10px; color:var(--text-muted);">'+vfEsc(g.nbs_id||'')+(g.suitability_family_id?(' · '+vfEsc(g.suitability_family_id.split('__').pop())):'')+(g.table?(' · '+vfEsc(g.table)):'')+'</span></div>'
+      +'<span style="margin-left:auto; font-size:10px; color:var(--text-muted);">'+vfEsc(g.nbs_id||'')+(g.suitability_family_id?(' · '+vfEsc(familyDisplayName(g.suitability_family_id))):'')+(g.table?(' · '+vfEsc(g.table)):'')+'</span></div>'
       +(g.note?('<div style="font-size:11.5px; color:var(--text-secondary); margin-top:5px;">'+vfEsc(g.note)+'</div>'):'')
       +'<div style="font-size:10px; color:var(--text-muted); margin-top:6px;">'+vfEsc(g.reporter||'')+(g.date?(' · '+vfEsc(g.date)):'')+' · '+vfEsc(g.status||'open')+'</div>'
       +'</div>'); }); }
@@ -2697,7 +2698,7 @@
     // Task 4: show what this evidence contributes to (NbS · sub-practice) + its geography, so a
     // reviewer can sanity-check the tagging without opening the source.
     var _nbsShort=(ev.nbs_id||'—').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
-    var _famShort=ev.suitability_family_id?ev.suitability_family_id.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}):'—';
+    var _famShort=ev.suitability_family_id?familyDisplayName(ev.suitability_family_id):'—';
     var _geoParts=[src.study_country,src.region,src.aez].filter(Boolean);
     var _ctxNote=''; try{ var _cx=ev.context?(typeof ev.context==='string'?JSON.parse(ev.context):ev.context):null; if(_cx&&_cx.note)_ctxNote=_cx.note; }catch(_ge){}
     var _geo=_geoParts.length?_geoParts.join(', '):(_ctxNote||'—');
@@ -2705,7 +2706,7 @@
     // LEFT, source/access chips (OA · channel · source) pushed RIGHT — one line, all uniform pills.
     var _geoShort=(_geo&&_geo!=='—')?(_geo.length>44?_geo.slice(0,42)+'…':_geo):'';   // point 1: hide when empty
     var _nbsChip=_vfChip(vfEsc(_nbsShort),'var(--accent-sky)','Practice — click to filter the worklist to this NbS',"vfScopeSet('nbs','"+vfEsc(ev.nbs_id||'')+"')");
-    var _famChip=ev.suitability_family_id?_vfChip(vfEsc(_famShort),'var(--accent-emerald)','Sub-practice — click to filter the worklist to this family',"vfScopeSet('family','"+vfEsc(ev.suitability_family_id)+"')"):_vfChip(vfEsc(_famShort),'var(--text-muted)','No sub-practice family tagged',null);
+    var _famChip=ev.suitability_family_id?_vfChip(vfEsc(_famShort),'var(--accent-emerald)','Family / evidence scope — click to filter the worklist',"vfScopeSet('family','"+vfEsc(ev.suitability_family_id)+"')"):_vfChip(vfEsc(_famShort),'var(--text-muted)','No family / evidence scope tagged',null);
     // Taxon chip (2026-07): species/crop-specific evidence carries a taxon; the chip both
     // flags "this is banked-for-reuse, not practice suitability" and jumps to the Species lane.
     var _isSpeciesEv=(ev.claim_scope==='species_specific'||ev.claim_scope==='crop_specific');
@@ -2859,7 +2860,7 @@
       var _tblDesc={T4:'<b>T4 analysis · Suitability + operational feasibility</b> — review establishment conditions and M2b implementation evidence together. Operational evidence remains separate from the core suitability score.','T3/T6':'<b>T3/T6 · Effects</b> — what the NbS does to hazards and priorities (effect units) and what hazards do to the works (asset vulnerability). Generated rows; review = these units.'};
       var _tblLegend='<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">'+(_tblDesc[window._vfScope.table]||'')+'</div>';
       var _capNbs=function(o){return o.replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
-      var _capFam=function(o){return o.split('__').pop().replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});};
+      var _capFam=familyDisplayName;
       // claim_scope lane (2026-07): count rows per lane within the current Practice so the
       // pills show "🧬 Species (N awaiting)". General = practice-level (default); species/crop
       // are kept + banked for reuse but filtered from the practice MCDA.
@@ -2872,7 +2873,7 @@
         +select('table','Evidence type',[['T4','T4 + operational feasibility'],['T3/T6','T3/T6 effects']])
         +'<label>Search <input id="vf-search" type="search" placeholder="Paper, variable or text" value="'+vfEsc(window._vfSearch||'')+'" oninput="vfSearch(this.value)" style="padding:7px;background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:5px"></label>';
       window._vfAdvancedScopeHtml=_mkPills('observations','Site observations',['hide','show','only'],function(o){return {hide:'Hide (default)',show:'Include',only:'Only observations'}[o];},'sky',true,'Site descriptions and observed presence are deferred; tested relationships remain in review.')
-        +_mkPills('family','Sub-practice',_famOpts,_capFam,'emerald',false)
+        +_mkPills('family','Family / evidence scope',_famOpts,_capFam,'emerald',false)
         +_mkPills('claimScope','Scope',['general','species','crop'],_csFmt,'sky',false)
         +_mkPills('source','Source channel',_srcOpts,function(o){return _vfChanMeta(o).label;},'amber',false)
         +_mkPills('access','Access',['oa','restricted'],function(o){return o==='oa'?'Open-access':'Restricted';},'emerald',false);
@@ -3211,6 +3212,11 @@
     const sources = dashboardData.progress_overview?.sources || [];
     return sources.some(source => (source.contributions.T4 || []).includes(claim.evidence_id))
       ? 't4_mappings' : null;
+  }
+
+  function familyDisplayName(familyId) {
+    const presentation = ((dashboardData || {}).family_presentation || {})[familyId] || {};
+    return presentation.display_name || String(familyId || '').split('__').pop().replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
   }
 
   function familyScopeLabel(familyId, label) {
@@ -3859,19 +3865,26 @@
     const nbsFamilies = families.filter(f => f.nbs_id === nbsId);
 
     const addedFamilies = new Set();
-    
-    nbsFamilies.forEach(fam => {
-      if (addedFamilies.has(fam.suitability_family_id)) return;
-      addedFamilies.add(fam.suitability_family_id);
-
-      const opt = document.createElement('option');
-      opt.value = 	fam.suitability_family_id;
-      const displayName = fam.suitability_family_id.split('__')[1]
-                          .replace(/_/g, ' ')
-                          .replace(/\b\w/g, c => c.toUpperCase());
-      opt.textContent = familyScopeLabel(fam.suitability_family_id, `${displayName} (${fam.name})`);
-      familySelect.appendChild(opt);
+    const groups = new Map();
+    ['Practice families', 'Shared or unassigned evidence', 'Out-of-scope history'].forEach(name => {
+      const group = document.createElement('optgroup');
+      group.label = name;
+      groups.set(name, group);
     });
+    nbsFamilies.forEach(fam => {
+      const id = fam.suitability_family_id;
+      if (addedFamilies.has(id)) return;
+      addedFamilies.add(id);
+      const presentation = (dashboardData.family_presentation || {})[id] || {};
+      const status = (dashboardData.family_display_status || {})[id] || {};
+      const group = status.status === 'out_of_scope' ? 'Out-of-scope history'
+        : presentation.navigation_group === 'evidence' || id.endsWith('__cross_family') ? 'Shared or unassigned evidence' : 'Practice families';
+      const opt = document.createElement('option');
+      opt.value = id;
+      opt.textContent = familyScopeLabel(id, familyDisplayName(id));
+      groups.get(group).appendChild(opt);
+    });
+    groups.forEach(group => { if (group.children.length) familySelect.appendChild(group); });
 
     if (addedFamilies.size === 0) {
       const opt = document.createElement('option');
@@ -3949,14 +3962,31 @@
     if (!nbsId || !familyId) return;
 
     const families = dashboardData.registers.FAM_family_registry || [];
-    const familyInfo = families.find(f => f.suitability_family_id === familyId);
+    const familyRows = families.filter(f => f.suitability_family_id === familyId);
+    const familyInfo = familyRows[0];
 
     if (familyInfo) {
-      document.getElementById('family-hero-title').textContent = familyScopeLabel(familyId, familyInfo.name);
-      document.getElementById('family-hero-type').textContent = `Product: ${familyInfo.spatial_product_type.replace(/_/g, ' ')}`;
-      document.getElementById('family-hero-desc').textContent = familyInfo.definition;
-      document.getElementById('family-hero-limit').textContent = familyInfo.dominant_limiting_factor;
-      document.getElementById('family-hero-rationale').textContent = familyInfo.grouping_rationale;
+      const presentation = (dashboardData.family_presentation || {})[familyId] || {};
+      const uniqueValues = key => [...new Set(familyRows.map(row => row[key]).filter(Boolean))].join(' ');
+      const displayName = familyDisplayName(familyId);
+      document.getElementById('family-hero-title').textContent = familyScopeLabel(familyId, displayName);
+      document.getElementById('family-hero-type').textContent = `Product: ${uniqueValues('spatial_product_type').replace(/_/g, ' ')}`;
+      document.getElementById('family-hero-desc').textContent = presentation.description || uniqueValues('definition');
+      const commonValue = (key, fallback) => {
+        const values = [...new Set(familyRows.map(row => row[key] || ''))];
+        return values.length === 1 ? values[0] : fallback;
+      };
+      document.getElementById('family-hero-limit').textContent = commonValue('dominant_limiting_factor', 'Variant-specific conditions; expand Variants and scope.');
+      document.getElementById('family-hero-rationale').textContent = commonValue('grouping_rationale', 'Grouped in one existing family; source-specific criteria remain separate.');
+      const variantList = document.getElementById('family-hero-variant-list');
+      variantList.replaceChildren();
+      familyRows.forEach(row => {
+        const item = document.createElement('p');
+        const role = presentation.navigation_group === 'evidence' || familyId.endsWith('__cross_family') ? 'Evidence routing tag'
+          : row.subpractice_id === presentation.umbrella_subpractice_id ? 'Umbrella category' : 'Variant';
+        item.textContent = `${role}: ${row.name}. Definition: ${row.definition || 'Not recorded.'} Limiting factor: ${row.dominant_limiting_factor || 'Not recorded.'} Grouping rationale: ${row.grouping_rationale || 'Not recorded.'}`;
+        variantList.appendChild(item);
+      });
       document.getElementById('family-hero').style.display = 'block';
     } else {
       document.getElementById('family-hero').style.display = 'none';

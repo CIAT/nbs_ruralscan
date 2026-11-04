@@ -399,7 +399,7 @@ const html=t.nodes.get('progress-app').innerHTML;
 assert(t.nodes.get('dp-scope-notes').open);
 assert(html.includes('Evidence tagged as applying across all families'));
 assert(html.includes('Sources without a recorded family'));
-assert(!html.includes('>Cross family<'));
+assert(!html.split('dp-family-table')[1].split('<tbody>')[1].split('</tbody>')[0].includes('>Cross family<'));
 assert(html.includes('1 source records in this scope'));assert(!html.includes('99 source records in this scope'));
 assert(html.includes('dp-column-filter'));assert(html.includes('data-action="family-sort"'));
 assert(html.includes('percentage cannot be calculated'));
@@ -516,4 +516,26 @@ assert(!t.api.revealTarget('progress:BAD:output:T3:all'));
 choose('');html=t.nodes.get('progress-app').innerHTML;
 assert(html.includes('Evidence progress · All evidence'));
 assert(html.includes('id="dp-chart-practice-agroforestry"'));
+""")
+
+
+def test_evidence_groups_and_umbrella_labels_do_not_become_practice_options():
+    run_js(r"""
+const t=setup(), p=t.fixture.progress_overview.practices[0];
+p.families[0].subpractices=[{name:'Broad umbrella',presentation_role:'umbrella'},{name:'Specific <variant>',presentation_role:'variant'}];
+p.families.push({family_id:'agroforestry__cross_family',name:'Shared claims',navigation_group:'evidence',metrics:p.metrics,subpractices:[{name:'Routing tag',presentation_role:'evidence'}]});
+p.families.push({family_id:'__unassigned',name:'Unassigned claims',navigation_group:'evidence',metrics:p.metrics,subpractices:[]});
+t.api.refresh(t.fixture);t.api.revealTarget('family:agroforestry__f1');
+let select=t.nodes.get('dp-progress-family');select.value='';select.trigger('change');
+let html=t.nodes.get('progress-app').innerHTML;
+const table=html.match(/<table class="dp-table dp-summary-table dp-family-table">[\s\S]*?<\/table>/)[0];
+const rows=table.split('<tbody>')[1].split('</tbody>')[0];
+assert(rows.includes('Planted systems'));assert(!rows.includes('Shared claims'));assert(!rows.includes('Unassigned claims'));
+assert(table.includes('Umbrella category: Broad umbrella'));assert(table.includes('Variant: Specific &lt;variant&gt;'));
+const evidence=html.match(/<table class="dp-table dp-summary-table dp-evidence-family-table">[\s\S]*?<\/table>/)[0];
+assert(evidence.includes('Shared claims'));assert(evidence.includes('Unassigned claims'));assert(!evidence.includes('Planted systems'));
+assert(t.api.revealTarget('family:agroforestry__cross_family'));
+assert.equal(t.api.scope().family,'agroforestry__cross_family');
+html=t.nodes.get('progress-app').innerHTML;assert(html.includes('data-feedback-key="family:agroforestry__cross_family"'));
+assert.equal(t.fixture.progress_overview.totals.known_sources,1);
 """)
