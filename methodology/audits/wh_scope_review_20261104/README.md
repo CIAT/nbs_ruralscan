@@ -2,6 +2,19 @@
 
 4 November 2026 · proposal for #547 and #232 · no family changes applied.
 
+## Pete's proposal approval — 4 November 2026
+
+Pete approved the following proposed groupings **for domain review** in the project chat ("yes approve, next"), responding to the explicit distinction between proposal approval and analytical implementation:
+
+- Retain in-situ, micro-catchment and terracing distinctions.
+- Group farm ponds and communal tanks under surface storage.
+- Treat percolation tanks as a separate recharge branch.
+- Group sand and subsurface dams under alluvial storage, retaining variants.
+- Classify check dams by purpose before grouping.
+- Keep spate distinct pending domain review.
+
+This records Pete's approval to advance these proposals, not completed domain/team sign-off, NbS certification, approval of thresholds, or authorization to migrate analytical families. The crosswalk retains `proposal_not_ratified` until that gate is met. No low-evidence exclusions were proposed or approved. Existing rooftop and homegarden exclusions remain unchanged. The hydrology reviewer remains to be identified; no assignment or consultation is claimed.
+
 ## Decision requested
 
 Keep the in-situ, micro-catchment and terracing distinction **where the actual water source and slope modification justify it**. Do not merge similar names automatically. Replace the single storage/recharge assumption within runoff-catchment work with purpose-specific review: surface storage, intentional recharge, and alluvial/sediment storage. Check dams require a stated purpose before routing. These are proposed analytical distinctions, not ratified new family IDs.
