@@ -416,3 +416,21 @@ discount applies. Example: Kidane 2019 basin net returns, KS test P = 0.08.
 - Plastic or other synthetic mulch (polyethylene film over ridges) is never an NbS
   component: an arm that depends on it gives no unit. A meta-analysis that pools it among
   many techniques stays. Pond and reservoir liners are structural, not mulch, and stay.
+
+## Reviewer-readable units — Pete's review 2026-11-03
+
+53. **A unit must be readable without the paper** (Pete 2026-11-03, review of
+`af_backlog_judgement_2026-11-03`: 17 of 30 units held because they could not be read alone).
+- **Expand every acronym** for practice names, treatments, land-use or plot codes and
+  measured variables (AC/AF, SPS, AFP, ET, SOC, PVINR …), in `context.practice_as_described`
+  or `context.note`, and describe the practice in plain words.
+- **Always record the baseline** (comparator practice or land use) in
+  `context.practice_as_described`; a relative change without its baseline is not readable.
+- **Give the absolute amount beside a relative change** where the source states it: put both
+  in the quote when they are in the same sentence (e.g. "+127% (3.7 Mg CO2eq/ha/yr)"), else
+  record the absolute in `context.note` with its page.
+- **Use stated numbers, not narrative.** When the quoted text states the effect size
+  (e.g. "reduced air temperature by 1.2 °C"), encode it (`metric` + `magnitude`/`unit`);
+  `metric = narrative` only when the source gives no number for this effect.
+- **Name the table or figure** a value comes from, with its caption, in `context.note`
+  (`"Table 5: Soil moisture by layer …"`), and say which rows or layers were left out and why.
