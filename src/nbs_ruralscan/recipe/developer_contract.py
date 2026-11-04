@@ -1328,6 +1328,8 @@ def verify_package(root, output):
     """Verify pinned inputs and outputs independently of the current branch HEAD."""
     root, output = Path(root).resolve(), Path(output).resolve()
     manifest = json.loads((output / "manifest.json").read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict):
+        raise ValueError("Incomplete package manifest: not a JSON object")
     required_outputs = {
         "developer_contract.json",
         "developer_table.csv",
