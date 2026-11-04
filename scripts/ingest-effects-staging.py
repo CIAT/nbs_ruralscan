@@ -83,6 +83,8 @@ _RULESETS = {
     "v1.9.2",
     # v1.9.3: catalogue #53, reviewer-readable units (acronyms, baseline, absolute amounts)
     "v1.9.3",
+    # v1.9.4: catalogue #54, preserve T4 relationships separately from executable mappings
+    "v1.9.4",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
