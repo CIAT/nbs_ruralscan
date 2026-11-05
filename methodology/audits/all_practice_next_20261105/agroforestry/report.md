@@ -1,0 +1,15 @@
+# Ranchi agroforestry full-paper review — 2026-11-05
+
+Staging only. Seven unapproved T4 claims; seven source-model variable uses and seven local directions; zero executable functions; zero operational-risk claims. No registers, acquisition queue, synthesis tables or Git state changed by this task.
+
+Source: Ahmad, Goparaju & Qayum, DOI10.1007/s10457-017-0145-y, online2017 / journal volume2019. Opening title, DOI and authors match. Team-library local copy exists and matches cache SHA256. Queue DOI verified; fresh central source verification/promotion remains orchestrator work. No matching SRC DOI/title and no existing source EV. ahmad_2017 is Palamu, ahmad_2018 Samastipur and ahmad_2020 South Asia: related methods, different papers. Queue planted_silvoarable label cannot establish F1; stage cross_family.
+
+Read native text all14pages; visually inspected all15figures across PDF4–11 and key Table2/Table4. Forty explicit dispositions account for all7tables, all15figures,9 main Table4 criteria,3 nutrient subcriteria, supporting prose, species/crop suggestions, operational assertion and references. Full native page text preserved in inventory.json. Deterministic indexed artifact + retrieval package saved with table capability. No supplement named; external raster/soil datasets not silently acquired.
+
+Staged: elevation↓, annual precipitation↑, soil organic carbon↑, soil pH↑ within acidic range, NDVI↑, slope↓, soil nitrogen↑. Source native classes retained. Table2 N33.3% is nutrient-component weight only (Fig13 rounds33.33%); no full-model weights exist despite prose reference to Table4. Source ranks are not runtime weights. Table4 N>35% slope retained as regional source exclusion, not activated globally. pH/SOC sampling depth absent. Soil nitrogen kg/ha cannot become g/kg without more information. SOC Table4 conflicts with Figure2 label soil organic matter; no proxy conversion made.
+
+Holds: spectral wetness ≠ measured soil moisture/TWI; composite NPK and individual P/K lack exact ontology matches; sandy river-bank row does not establish stone-cover threshold. Figure/raw-map extrema are context, not suitability endpoints. Marginal/open-land planning emphasis requires contextual review. NDVI marginal prose says low-to-nil while Table4 says nil; retain discrepancy. pH decimal gaps/interval closure, score calibration and global transfer unresolved. Queue/date citation must preserve online2017 vs volume2019 distinction.
+
+Operational: funding/technical-guidance sentence is conditional speculative planning, not measured limiting-factor finding. Species/crop and M6 pointers retained separately, including Albert2013 horticultural pH and bamboo-moisture suggestion; not generic AF calibration. Block-area rounding discrepancies and rainfall description/map discrepancy visible in inventory.
+
+Validation: EvidenceUnit schema passes; all7 quotes are exact native page slices. Source identity duplicate audit passes. Parent central provenance/number/scope checks and independent semantic review still required before admission. No human approval claimed. No search/review/learning-progress stamps advanced.

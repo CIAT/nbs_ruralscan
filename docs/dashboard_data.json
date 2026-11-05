@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-05T06:15:02.361362+00:00",
-  "git_commit": "72386b2a548481580ef72c661134d820907a923e",
+  "timestamp": "2026-11-05T06:28:07.695207+00:00",
+  "git_commit": "15aa77e6e1bf60e11db5b42d9832bf1c33d28726",
   "registers": {
     "SRC_source_register": [
       {
@@ -15447,6 +15447,52 @@
         "source_category": "updated_lit",
         "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/5_Wetlands_Constructed/malhotra_2025_ecodrr_cost_effectiveness_sr.pdf",
         "study_income_group": "upper_middle|lower_middle|low",
+        "venue_type": "peer_reviewed_journal"
+      },
+      {
+        "source_id": "shono_anr_degraded_tropical_2007",
+        "citation": "Shono et al. (2007). Application of Assisted Natural Regeneration to Restore Degraded Tropical Forestlands. Restoration Ecology.",
+        "doi": "10.1111/j.1526-100x.2007.00274.x",
+        "benchmark_tier": "medium",
+        "region": "Tropical forestlands; emphasis on Southeast Asia",
+        "method_type": "review",
+        "nbs_ids": "forest_restoration",
+        "vars_extracted": "distance_to_forest|extension_governance",
+        "extraction_status": "in_progress",
+        "extraction_date": "2026-11-05",
+        "extraction_run_id": "all_practice_next_20261105",
+        "extractor": "Codex (gated pipeline)",
+        "source_kind": "paper",
+        "url": "http://formad-environnement.org/RNA_Restoration-Ecology_Shono-et-al2007.pdf",
+        "artifact_sha1": "579da827833d5346b716d13b160105c6459c482e",
+        "retrieved_at": "2026-11-05",
+        "access_status": "open_access",
+        "source_category": "updated_lit",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/2_ForestRestoration/shono_anr_degraded_tropical_2007.pdf",
+        "venue_type": "peer_reviewed_journal"
+      },
+      {
+        "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+        "citation": "Ahmad et al. (2017). FAO guidelines and geospatial application for agroforestry suitability mapping: case study of Ranchi, Jharkhand state of India. Agroforestry Systems.",
+        "doi": "10.1007/s10457-017-0145-y",
+        "benchmark_tier": "low",
+        "study_country": "IND",
+        "region": "Ranchi district, Jharkhand, India",
+        "method_type": "model",
+        "nbs_ids": "agroforestry",
+        "vars_extracted": "annual_precipitation|elevation|ndvi|slope|soil_nitrogen|soil_organic_carbon|soil_ph",
+        "extraction_status": "in_progress",
+        "extraction_date": "2026-11-05",
+        "extraction_run_id": "all_practice_next_20261105",
+        "extractor": "Codex (gated pipeline)",
+        "source_kind": "paper",
+        "url": "https://www.academia.edu/34984989/FAO_guidelines_and_geospatial_application_for_agroforestry_suitability_mapping_case_study_of_Ranchi_Jharkhand_state_of_India",
+        "artifact_sha1": "26aca4cccbd8dab535592e71ba1b06bc07f71506",
+        "retrieved_at": "2026-11-05",
+        "access_status": "open_access",
+        "source_category": "updated_lit",
+        "library_path": "D591_Rural-Scan_NBS/2_Technical_&_Data/library/1_Agroforestry/india_fao_agroforestry_suitability_mapping_2017.pdf",
+        "study_income_group": "lower_middle",
         "venue_type": "peer_reviewed_journal"
       },
       {
@@ -249968,6 +250014,489 @@
         "ruleset_version": "v1.9.4"
       },
       {
+        "evidence_id": "ev_fr_distance_forest_shono07_20261105",
+        "source_id": "shono_anr_degraded_tropical_2007",
+        "nbs_id": "forest_restoration",
+        "suitability_family_id": "forest_restoration__assisted_regeneration",
+        "variable": "distance_to_forest",
+        "relationship": {
+          "type": "qualitative_requirement",
+          "direction": "decreasing",
+          "requirement": "Remnant forest should be in proximity to supply seeds for further succession.",
+          "note": "Proximity requirement supports nearer forest, but source gives no distance cutoff, response scores or calibrated curve."
+        },
+        "context": {
+          "region": "Degraded tropical forestlands; review informed particularly by Asian practice",
+          "practice_as_described": "Assisted natural regeneration (ANR): release existing woody regeneration, suppress weeds and prevent disturbance. No experimental comparator; guidance for site selection.",
+          "note": "Printed page 621, Rationale for Using ANR and Required Conditions. Distance is the inverse of proximity; decreasing denotes closer remnant forest, not a quantified dose-response. Requirement concerns continued succession, not proof that distant sites cannot establish. Enrichment planting is an alternative if propagules are insufficient. VONT distance_to_forest remains pending_review; no dataset binding or analytical cutoff is created."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "To ensure further\nsuccessional development, remnant forest should be in\nproximity so that there would be sufﬁcient input of seeds.",
+        "page": 2,
+        "reviewer_ok": false,
+        "raw_name": "proximity to remnant forest",
+        "locator_type": "page",
+        "selection_justification": "ANR is most suitable for restoring areas where some level\nof natural succession is in progress.",
+        "selection_justification_page": 2,
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_fr_extension_shono07_20261105",
+        "source_id": "shono_anr_degraded_tropical_2007",
+        "nbs_id": "forest_restoration",
+        "suitability_family_id": "forest_restoration__assisted_regeneration",
+        "variable": "extension_governance",
+        "relationship": {
+          "type": "qualitative_operational_constraint",
+          "factor": "Lack of awareness and demonstration of results",
+          "constraint": "Authors attribute underuse of assisted natural regeneration to this knowledge and demonstration gap.",
+          "note": "Review judgement, not a measured adoption effect, national governance score or proof of a financial barrier."
+        },
+        "context": {
+          "region": "Degraded tropical forestlands; review informed particularly by Asian practice",
+          "practice_as_described": "Assisted natural regeneration (ANR) restores degraded forestlands through protection and release of natural woody regeneration. No treatment-control comparison for this adoption assertion.",
+          "note": "Printed page 624, Discussion. Source explicitly requests systematic application, monitoring and validation of personal experience. Operational enabling evidence for extension and demonstration, not T4 suitability or an effect of restoration on governance."
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "expert",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Despite its practical advantages, ANR remains underutil-\nized due to lack of awareness and demonstrative results.",
+        "page": 5,
+        "reviewer_ok": false,
+        "raw_name": "lack of awareness and demonstrative results",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_fr_participation_shono07_20261105",
+        "source_id": "shono_anr_degraded_tropical_2007",
+        "nbs_id": "forest_restoration",
+        "suitability_family_id": "forest_restoration__assisted_regeneration",
+        "variable": "extension_governance",
+        "relationship": {
+          "type": "qualitative_operational_constraint",
+          "factor": "Sustained community participation and support",
+          "constraint": "Community involvement supports prevention of recurrent disturbance that reverses assisted regeneration.",
+          "note": "Author guidance about participatory protection, not a quantified governance effect or geographic suitability gate."
+        },
+        "context": {
+          "region": "Degraded tropical forestlands; review informed particularly by Asian practice",
+          "practice_as_described": "Assisted natural regeneration (ANR) restores degraded forestlands through protection and release of natural woody regeneration. No treatment-control comparison for this adoption assertion.",
+          "note": "Printed page623, Protection From Disturbance. Participatory governance supports continued site protection from fire, grazing and human disturbance. Distinct from awareness-limited adoption on page624; not an independent source vote. No quantified effectiveness, fire hazard threshold or exclusion inferred."
+        },
+        "use_role": "operational_risk",
+        "evidence_type": "expert",
+        "claim_basis": "expert_assertion",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "high",
+        "quote": "Long-term community involve-\nment and support is critical in preventing the reoccurrence\nof disturbance events that will set back succession to the\nbefore-treatment state.",
+        "page": 4,
+        "reviewer_ok": false,
+        "raw_name": "long-term community involvement and support",
+        "locator_type": "page",
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_af_elevation_ranchi2017_20261105",
+        "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "elevation",
+        "relationship": {
+          "type": "source_ranked_classes",
+          "direction": "decreasing",
+          "note": "Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight."
+        },
+        "context": {
+          "region": "Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India",
+          "practice_as_described": "Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.",
+          "note": "Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Elevation used as energy proxy because temperature unavailable; do not substitute mean annual temperature. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.",
+          "reported_values": {
+            "S1": "<500 m",
+            "S2": "500–700 m",
+            "S3": ">700 m",
+            "N": "—"
+          },
+          "model_use": {
+            "used": true,
+            "scope": "regional_cross_family_suitability",
+            "method": "FAO-based weighted GIS land evaluation",
+            "criterion_set": [
+              "elevation",
+              "rainfall",
+              "Landsat tasseled-cap wetness",
+              "NPK nutrient status",
+              "organic carbon",
+              "soil pH",
+              "NDVI",
+              "slope"
+            ],
+            "source_weight": "Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only."
+          },
+          "calibration_hold": "No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Elevation used as energy proxy because temperature unavailable; do not substitute mean annual temperature.",
+          "remaining_decision": "Human source/context review; numerical compilation and family transfer remain unapproved."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Elevation (m)*\n\\ 500\n500–700\n[ 700\n–",
+        "page": 11,
+        "reviewer_ok": false,
+        "raw_name": "Elevation (m)",
+        "attribution": "Ahmad, Goparaju & Qayum; Ranchi study; online2017 / volume2019. Same-team Palamu/Dumka/Chakardharpur methods cited; not independent replicated threshold validations.",
+        "locator_type": "page",
+        "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+        "justification_page": 11,
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_af_annual_precipitation_ranchi2017_20261105",
+        "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "annual_precipitation",
+        "relationship": {
+          "type": "source_ranked_classes",
+          "direction": "increasing",
+          "note": "Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight."
+        },
+        "context": {
+          "region": "Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India",
+          "practice_as_described": "Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.",
+          "note": "Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Annual rainfall averaged 1993–2002 (PDF6); preserve descending source endpoints. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.",
+          "reported_values": {
+            "S1": ">1170 mm",
+            "S2": "1170–1150 mm",
+            "S3": "<1150 mm",
+            "N": "—"
+          },
+          "model_use": {
+            "used": true,
+            "scope": "regional_cross_family_suitability",
+            "method": "FAO-based weighted GIS land evaluation",
+            "criterion_set": [
+              "elevation",
+              "rainfall",
+              "Landsat tasseled-cap wetness",
+              "NPK nutrient status",
+              "organic carbon",
+              "soil pH",
+              "NDVI",
+              "slope"
+            ],
+            "source_weight": "Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only."
+          },
+          "calibration_hold": "No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Annual rainfall averaged 1993–2002 (PDF6); preserve descending source endpoints.",
+          "remaining_decision": "Human source/context review; numerical compilation and family transfer remain unapproved."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Rainfall (mm)\n[ 1170\n1170–1150\n\\ 1150\n–",
+        "page": 11,
+        "reviewer_ok": false,
+        "raw_name": "Rainfall (mm)",
+        "attribution": "Ahmad, Goparaju & Qayum; Ranchi study; online2017 / volume2019. Same-team Palamu/Dumka/Chakardharpur methods cited; not independent replicated threshold validations.",
+        "locator_type": "page",
+        "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+        "justification_page": 11,
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_af_soil_organic_carbon_ranchi2017_20261105",
+        "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "soil_organic_carbon",
+        "relationship": {
+          "type": "source_ranked_classes",
+          "direction": "increasing",
+          "note": "Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight."
+        },
+        "context": {
+          "region": "Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India",
+          "practice_as_described": "Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.",
+          "note": "Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Sampling depth unspecified. Preserve source percent; do not assume compatibility with canonical 0–30 cm or convert to threshold. Figure2(PDF5) labels soil organic matter, conflicting with Table4/prose organic carbon; retain Table4 identity, no SOM conversion. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.",
+          "reported_values": {
+            "S1": ">0.75%",
+            "S2": "0.75–0.50%",
+            "S3": "<0.50%",
+            "N": "—"
+          },
+          "model_use": {
+            "used": true,
+            "scope": "regional_cross_family_suitability",
+            "method": "FAO-based weighted GIS land evaluation",
+            "criterion_set": [
+              "elevation",
+              "rainfall",
+              "Landsat tasseled-cap wetness",
+              "NPK nutrient status",
+              "organic carbon",
+              "soil pH",
+              "NDVI",
+              "slope"
+            ],
+            "source_weight": "Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only."
+          },
+          "calibration_hold": "No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Sampling depth unspecified. Preserve source percent; do not assume compatibility with canonical 0–30 cm or convert to threshold.",
+          "remaining_decision": "Human source/context review; numerical compilation and family transfer remain unapproved."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Organic carbon\n[ 0.75%\n0.75–0.50%\n\\ 0.50%\n–",
+        "page": 11,
+        "reviewer_ok": false,
+        "raw_name": "Organic carbon",
+        "attribution": "Ahmad, Goparaju & Qayum; Ranchi study; online2017 / volume2019. Same-team Palamu/Dumka/Chakardharpur methods cited; not independent replicated threshold validations.",
+        "locator_type": "page",
+        "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+        "justification_page": 11,
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_af_soil_ph_ranchi2017_20261105",
+        "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "soil_ph",
+        "relationship": {
+          "type": "source_ranked_classes",
+          "direction": "increasing",
+          "note": "Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight."
+        },
+        "context": {
+          "region": "Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India",
+          "practice_as_described": "Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.",
+          "note": "Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Increasing only within reported acidic range; not a global pH response. Sampling depth and pH assay absent. Gaps between decimal classes not filled. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.",
+          "reported_values": {
+            "S1": "6.5–5.6",
+            "S2": "5.5–5.1",
+            "S3": "5–4.5",
+            "N": "—"
+          },
+          "model_use": {
+            "used": true,
+            "scope": "regional_cross_family_suitability",
+            "method": "FAO-based weighted GIS land evaluation",
+            "criterion_set": [
+              "elevation",
+              "rainfall",
+              "Landsat tasseled-cap wetness",
+              "NPK nutrient status",
+              "organic carbon",
+              "soil pH",
+              "NDVI",
+              "slope"
+            ],
+            "source_weight": "Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only."
+          },
+          "calibration_hold": "No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Increasing only within reported acidic range; not a global pH response. Sampling depth and pH assay absent. Gaps between decimal classes not filled.",
+          "remaining_decision": "Human source/context review; numerical compilation and family transfer remain unapproved."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Soil pH\n6.5–5.6\n5.5–5.1\n5–4.5\n–",
+        "page": 11,
+        "reviewer_ok": false,
+        "raw_name": "Soil pH",
+        "attribution": "Ahmad, Goparaju & Qayum; Ranchi study; online2017 / volume2019. Same-team Palamu/Dumka/Chakardharpur methods cited; not independent replicated threshold validations.",
+        "locator_type": "page",
+        "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+        "justification_page": 11,
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_af_ndvi_ranchi2017_20261105",
+        "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "ndvi",
+        "relationship": {
+          "type": "source_ranked_classes",
+          "direction": "increasing",
+          "note": "Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight."
+        },
+        "context": {
+          "region": "Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India",
+          "practice_as_described": "Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.",
+          "note": "Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Table4 classes differ marginal prose PDF10 low to nil. No numeric NDVI boundaries; no tree-cover substitution. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.",
+          "reported_values": {
+            "S1": "Very dense and dense",
+            "S2": "Medium and poor",
+            "S3": "Nil",
+            "N": "—"
+          },
+          "model_use": {
+            "used": true,
+            "scope": "regional_cross_family_suitability",
+            "method": "FAO-based weighted GIS land evaluation",
+            "criterion_set": [
+              "elevation",
+              "rainfall",
+              "Landsat tasseled-cap wetness",
+              "NPK nutrient status",
+              "organic carbon",
+              "soil pH",
+              "NDVI",
+              "slope"
+            ],
+            "source_weight": "Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only."
+          },
+          "calibration_hold": "No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Table4 classes differ marginal prose PDF10 low to nil. No numeric NDVI boundaries; no tree-cover substitution.",
+          "remaining_decision": "Human source/context review; numerical compilation and family transfer remain unapproved."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Vegetation vigorous/\nNDVI\nVery dense and\ndense\nMedium and\npoor\nNil\n–",
+        "page": 11,
+        "reviewer_ok": false,
+        "raw_name": "Vegetation vigorous/NDVI",
+        "attribution": "Ahmad, Goparaju & Qayum; Ranchi study; online2017 / volume2019. Same-team Palamu/Dumka/Chakardharpur methods cited; not independent replicated threshold validations.",
+        "locator_type": "page",
+        "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+        "justification_page": 11,
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_af_slope_ranchi2017_20261105",
+        "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "slope",
+        "relationship": {
+          "type": "source_ranked_classes",
+          "direction": "decreasing",
+          "note": "Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight."
+        },
+        "context": {
+          "region": "Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India",
+          "practice_as_described": "Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.",
+          "note": "Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Percent gradient, not degrees; shared boundaries unspecified. Source N class retained, not promoted to universal exclusion. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.",
+          "reported_values": {
+            "S1": "0–5%",
+            "S2": "5–15%",
+            "S3": "15–35%",
+            "N": ">35%"
+          },
+          "model_use": {
+            "used": true,
+            "scope": "regional_cross_family_suitability",
+            "method": "FAO-based weighted GIS land evaluation",
+            "criterion_set": [
+              "elevation",
+              "rainfall",
+              "Landsat tasseled-cap wetness",
+              "NPK nutrient status",
+              "organic carbon",
+              "soil pH",
+              "NDVI",
+              "slope"
+            ],
+            "source_weight": "Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only."
+          },
+          "calibration_hold": "No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Percent gradient, not degrees; shared boundaries unspecified. Source N class retained, not promoted to universal exclusion.",
+          "remaining_decision": "Human source/context review; numerical compilation and family transfer remain unapproved."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Slope angle (%)\n0–5\n5–15\n15–35\n[ 35",
+        "page": 11,
+        "reviewer_ok": false,
+        "raw_name": "Slope angle (%)",
+        "attribution": "Ahmad, Goparaju & Qayum; Ranchi study; online2017 / volume2019. Same-team Palamu/Dumka/Chakardharpur methods cited; not independent replicated threshold validations.",
+        "locator_type": "page",
+        "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+        "justification_page": 11,
+        "ruleset_version": "v1.9.4"
+      },
+      {
+        "evidence_id": "ev_af_soil_nitrogen_ranchi2017_20261105",
+        "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+        "nbs_id": "agroforestry",
+        "suitability_family_id": "agroforestry__cross_family",
+        "variable": "soil_nitrogen",
+        "relationship": {
+          "type": "source_ranked_classes",
+          "direction": "increasing",
+          "note": "Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight."
+        },
+        "context": {
+          "region": "Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India",
+          "practice_as_described": "Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.",
+          "note": "Table 2; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Availability kg/ha, not concentration g/kg; depth, extraction assay and mass conversion unspecified. Composite nutrient subcriterion, not independent full-model weight. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.",
+          "reported_values": {
+            "High": "rank3; >560 kg/ha",
+            "Medium": "rank2; 560–280 kg/ha",
+            "Low": "rank1; ≤280 kg/ha"
+          },
+          "model_use": {
+            "used": true,
+            "scope": "regional_cross_family_suitability",
+            "method": "FAO-based weighted GIS land evaluation",
+            "criterion_set": [
+              "elevation",
+              "rainfall",
+              "Landsat tasseled-cap wetness",
+              "NPK nutrient status",
+              "organic carbon",
+              "soil pH",
+              "NDVI",
+              "slope"
+            ],
+            "source_weight": {
+              "value": 33.3,
+              "unit": "percent",
+              "parent": "nutrient status only",
+              "siblings": [
+                "nitrogen",
+                "phosphorus",
+                "potassium"
+              ],
+              "figure13_value": 33.33
+            }
+          },
+          "calibration_hold": "No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Availability kg/ha, not concentration g/kg; depth, extraction assay and mass conversion unspecified. Composite nutrient subcriterion, not independent full-model weight.",
+          "remaining_decision": "Human source/context review; numerical compilation and family transfer remain unapproved."
+        },
+        "use_role": "structural_suitability",
+        "evidence_type": "scoping_candidate",
+        "claim_basis": "modelled",
+        "claim_scope": "practice_technology",
+        "extraction_confidence": "medium",
+        "quote": "Nitrogen\n33.3\n[ 560\n3\nHigh\n560–280\n2\nMedium\nB 280\n1\nLow",
+        "page": 9,
+        "reviewer_ok": false,
+        "raw_name": "Nitrogen",
+        "attribution": "Ahmad, Goparaju & Qayum; Ranchi study; online2017 / volume2019. Same-team Palamu/Dumka/Chakardharpur methods cited; not independent replicated threshold validations.",
+        "locator_type": "page",
+        "justification_quote": "Table 2 Weight matrix for\nparameters and ranking for\nnutrient status mapping\nNutrient factor\nWeights (%)\nValue/description (kg/ha)\nRanks\nSuitability",
+        "justification_page": 9,
+        "ruleset_version": "v1.9.4"
+      },
+      {
         "evidence_id": "ev_economic_return_hagg17_1",
         "source_id": "haggar_2017_cited",
         "nbs_id": "agroforestry",
@@ -351689,11 +352218,11 @@
       "family": "agroforestry__cross_family",
       "searched": "done",
       "screened": "done",
-      "verified": "not_started",
-      "last_run_id": "discovery_crossfam_homegardens_2026-08",
-      "updated": "2026-08-05",
-      "by": "Pete/Claude",
-      "note": "targeted discovery fan-out; SRCH logged; extraction parked"
+      "verified": "in_progress",
+      "last_run_id": "all_practice_next_20261105",
+      "updated": "2026-11-05",
+      "by": "Codex",
+      "note": "Ranchi2017 full main paper inventoried;7 unapproved source model-use/direction claims gated. Numerical calibration/transfer and ontology holds remain. No new search or review completion claimed."
     },
     {
       "nbs_id": "agroforestry",
@@ -351794,10 +352323,10 @@
       "searched": "done",
       "screened": "done",
       "verified": "in_progress",
-      "last_run_id": "fr_t4_sweep_2026-09",
-      "updated": "2026-09-29",
-      "by": "Namita-J",
-      "note": "automated verify pass over the FR T4 sweep: 30 units from 12 of 32 extractable sources; quotes verified verbatim centrally; 1 unit auto-quarantined (study_site false positive, flagged for re-open); human QA and benchmark-tier sign-off outstanding"
+      "last_run_id": "all_practice_next_20261105",
+      "updated": "2026-11-05",
+      "by": "Codex",
+      "note": "Shono2007 full main paper inventoried;1 uncalibrated T4 proximity and2 operational claims gated. M6/effect pointers and human review remain. No new search or review completion claimed."
     },
     {
       "nbs_id": "forest_restoration",
@@ -405515,26 +406044,38 @@
         "citation": "Ahmad et al. (2017). FAO guidelines and geospatial application for agroforestry suitability mapping: case study of Ranchi, Jharkhand state of India. Agroforestry Systems.",
         "url": "https://www.academia.edu/34984989/FAO_guidelines_and_geospatial_application_for_agroforestry_suitability_mapping_case_study_of_Ranchi_Jharkhand_state_of_India",
         "doi": "10.1007/s10457-017-0145-y",
-        "type": "unknown",
-        "origins": [],
+        "type": "literature",
+        "origins": [
+          "updated_lit"
+        ],
         "nbs_ids": [
           "agroforestry"
         ],
         "family_ids": [
-          "agroforestry__planted_silvoarable"
+          "agroforestry__cross_family"
         ],
         "screening": "not_recorded",
         "search_ids": [],
-        "extraction_status": [],
-        "queue_statuses": [
-          "acquired"
+        "extraction_status": [
+          "in_progress"
         ],
-        "evidence_ids": [],
+        "queue_statuses": [
+          "extracted"
+        ],
+        "evidence_ids": [
+          "ev_af_annual_precipitation_ranchi2017_20261105",
+          "ev_af_elevation_ranchi2017_20261105",
+          "ev_af_ndvi_ranchi2017_20261105",
+          "ev_af_slope_ranchi2017_20261105",
+          "ev_af_soil_nitrogen_ranchi2017_20261105",
+          "ev_af_soil_organic_carbon_ranchi2017_20261105",
+          "ev_af_soil_ph_ranchi2017_20261105"
+        ],
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
         "reviewed_evidence_ids": [],
         "extraction_counts": {
-          "T4": 0,
+          "T4": 7,
           "effects": 0,
           "M2b": 0,
           "other": 0
@@ -420623,9 +421164,11 @@
         ],
         "citation": "Shono et al. (2007). Application of Assisted Natural Regeneration to Restore Degraded Tropical Forestlands. Restoration Ecology.",
         "url": "http://formad-environnement.org/RNA_Restoration-Ecology_Shono-et-al2007.pdf",
-        "doi": "10.1111/j.1526-100X.2007.00274.x",
-        "type": "unknown",
-        "origins": [],
+        "doi": "10.1111/j.1526-100x.2007.00274.x",
+        "type": "literature",
+        "origins": [
+          "updated_lit"
+        ],
         "nbs_ids": [
           "forest_restoration"
         ],
@@ -420634,26 +421177,35 @@
         ],
         "screening": "not_recorded",
         "search_ids": [],
-        "extraction_status": [],
-        "queue_statuses": [
-          "acquired",
-          "duplicate"
+        "extraction_status": [
+          "in_progress"
         ],
-        "evidence_ids": [],
+        "queue_statuses": [
+          "duplicate",
+          "extracted"
+        ],
+        "evidence_ids": [
+          "ev_fr_distance_forest_shono07_20261105",
+          "ev_fr_extension_shono07_20261105",
+          "ev_fr_participation_shono07_20261105"
+        ],
         "dropped_evidence_ids": [],
         "approved_evidence_ids": [],
         "reviewed_evidence_ids": [],
         "extraction_counts": {
-          "T4": 0,
+          "T4": 1,
           "effects": 0,
-          "M2b": 0,
+          "M2b": 2,
           "other": 0
         },
         "contributions": {
           "T4": [],
           "T3": [],
           "T6": [],
-          "M2b": []
+          "M2b": [
+            "ev_fr_extension_shono07_20261105",
+            "ev_fr_participation_shono07_20261105"
+          ]
         }
       },
       {
@@ -454399,6 +454951,13 @@
         "ev_adoption_rate_willem21_1",
         "ev_adoption_rate_worl23_op1",
         "ev_adoption_rate_wvfmnr19_13",
+        "ev_af_annual_precipitation_ranchi2017_20261105",
+        "ev_af_elevation_ranchi2017_20261105",
+        "ev_af_ndvi_ranchi2017_20261105",
+        "ev_af_slope_ranchi2017_20261105",
+        "ev_af_soil_nitrogen_ranchi2017_20261105",
+        "ev_af_soil_organic_carbon_ranchi2017_20261105",
+        "ev_af_soil_ph_ranchi2017_20261105",
         "ev_agricultural_production_value_arega24_2",
         "ev_agricultural_production_value_arsky20_7",
         "ev_agricultural_production_value_bado21_1",
@@ -457228,6 +457787,7 @@
         "ev_fr_asc_soil_ph_mahdavi17_20261029",
         "ev_fr_asc_soil_texture_mahdavi17_20261029",
         "ev_fr_aspect_shive18_1",
+        "ev_fr_distance_forest_shono07_20261105",
         "ev_fr_distance_to_forest_barros22_1",
         "ev_fr_distance_to_forest_bukoski24_1",
         "ev_fr_distance_to_forest_chazdonguariguata16_1",
@@ -457243,6 +457803,7 @@
         "ev_fr_elevation_zomer08_1",
         "ev_fr_extension_governance_chazdonguariguata16_1",
         "ev_fr_extension_governance_le11_1",
+        "ev_fr_extension_shono07_20261105",
         "ev_fr_finance_credit_access_chazdonguariguata16_1",
         "ev_fr_finance_fao_module_20261029",
         "ev_fr_fire_hazard_williams24_1",
@@ -457268,6 +457829,7 @@
         "ev_fr_pa_slope_mahdavi17_20261029",
         "ev_fr_pa_soil_ph_mahdavi17_20261029",
         "ev_fr_pa_soil_texture_mahdavi17_20261029",
+        "ev_fr_participation_shono07_20261105",
         "ev_fr_population_density_chazdon16_1",
         "ev_fr_population_density_chazdon16_2",
         "ev_fr_precip_wocat1048_1",
@@ -461264,17 +461826,17 @@
         "zougmore_2014",
         "zoure_2025_traditional_practices_burkina"
       ],
-      "extracted_sources": 680,
+      "extracted_sources": 682,
       "reviewed_sources": 83,
       "fully_reviewed_sources": 45,
       "sources_with_reviewed_excerpts": 320,
       "sources_with_approved_excerpts": 83,
-      "active_excerpts": 4765,
-      "retained_excerpts": 4765,
-      "all_excerpts": 6250,
+      "active_excerpts": 4775,
+      "retained_excerpts": 4775,
+      "all_excerpts": 6260,
       "reviewed_excerpts": 1955,
-      "unreviewed_excerpts": 4295,
-      "reviewed_pct": 31.3,
+      "unreviewed_excerpts": 4305,
+      "reviewed_pct": 31.2,
       "approved_excerpts": 282,
       "approved_pct": 14.4,
       "reviewed_active_excerpts": 475,
@@ -461287,10 +461849,10 @@
       "t4_evidence_backed_relationships": 50,
       "t4_contributing_sources": 34,
       "source_mix": {
-        "literature": 552,
+        "literature": 554,
         "grey": 156,
         "tools": 5,
-        "unknown": 165
+        "unknown": 163
       },
       "search_metrics": {
         "events": 205,
@@ -461559,6 +462121,13 @@
             "ev_adoption_rate_spia24_1",
             "ev_adoption_rate_thorlak12_1",
             "ev_adoption_rate_wvfmnr19_13",
+            "ev_af_annual_precipitation_ranchi2017_20261105",
+            "ev_af_elevation_ranchi2017_20261105",
+            "ev_af_ndvi_ranchi2017_20261105",
+            "ev_af_slope_ranchi2017_20261105",
+            "ev_af_soil_nitrogen_ranchi2017_20261105",
+            "ev_af_soil_organic_carbon_ranchi2017_20261105",
+            "ev_af_soil_ph_ranchi2017_20261105",
             "ev_agricultural_production_value_bado21_1",
             "ev_agricultural_production_value_bado21_2",
             "ev_agricultural_production_value_coulibaly16_1",
@@ -463146,17 +463715,17 @@
             "zhu_2019",
             "zomer_2014"
           ],
-          "extracted_sources": 193,
+          "extracted_sources": 194,
           "reviewed_sources": 70,
           "fully_reviewed_sources": 41,
           "sources_with_reviewed_excerpts": 108,
           "sources_with_approved_excerpts": 70,
-          "active_excerpts": 1211,
-          "retained_excerpts": 1211,
-          "all_excerpts": 1557,
+          "active_excerpts": 1218,
+          "retained_excerpts": 1218,
+          "all_excerpts": 1564,
           "reviewed_excerpts": 652,
-          "unreviewed_excerpts": 905,
-          "reviewed_pct": 41.9,
+          "unreviewed_excerpts": 912,
+          "reviewed_pct": 41.7,
           "approved_excerpts": 263,
           "approved_pct": 40.3,
           "reviewed_active_excerpts": 307,
@@ -463169,10 +463738,10 @@
           "t4_evidence_backed_relationships": 17,
           "t4_contributing_sources": 10,
           "source_mix": {
-            "literature": 198,
+            "literature": 199,
             "grey": 10,
             "tools": 2,
-            "unknown": 46
+            "unknown": 45
           },
           "search_metrics": {
             "events": 91,
@@ -463307,6 +463876,13 @@
                 "ev_adoption_rate_crs23_7",
                 "ev_adoption_rate_santos25_11",
                 "ev_adoption_rate_thorlak12_1",
+                "ev_af_annual_precipitation_ranchi2017_20261105",
+                "ev_af_elevation_ranchi2017_20261105",
+                "ev_af_ndvi_ranchi2017_20261105",
+                "ev_af_slope_ranchi2017_20261105",
+                "ev_af_soil_nitrogen_ranchi2017_20261105",
+                "ev_af_soil_organic_carbon_ranchi2017_20261105",
+                "ev_af_soil_ph_ranchi2017_20261105",
                 "ev_agricultural_production_value_thorlak12_1",
                 "ev_biodiversity_outcome_harv13_4",
                 "ev_biodiversity_outcome_pumarino15_1",
@@ -463566,7 +464142,7 @@
               ],
               "contributing_excerpts": 184,
               "contributing_sources": 46,
-              "known_sources": 73,
+              "known_sources": 74,
               "source_keys": [
                 "ahmad_2017",
                 "ahmad_2018",
@@ -463593,6 +464169,7 @@
                 "haile_2024",
                 "harvey_2013_livefences_windbreaks_biodiversity_tropical",
                 "haverhals_2016",
+                "india_fao_agroforestry_suitability_mapping_2017",
                 "ipcc_ar6_wg2_ch5_2022",
                 "ipcc_ar6_wg3_ch7_2022",
                 "ipcc_srccl_ch6_2019",
@@ -463642,17 +464219,17 @@
                 "yadav_2024",
                 "zhu_2019"
               ],
-              "extracted_sources": 61,
+              "extracted_sources": 62,
               "reviewed_sources": 18,
               "fully_reviewed_sources": 13,
               "sources_with_reviewed_excerpts": 31,
               "sources_with_approved_excerpts": 18,
-              "active_excerpts": 311,
-              "retained_excerpts": 311,
-              "all_excerpts": 343,
+              "active_excerpts": 318,
+              "retained_excerpts": 318,
+              "all_excerpts": 350,
               "reviewed_excerpts": 125,
-              "unreviewed_excerpts": 218,
-              "reviewed_pct": 36.4,
+              "unreviewed_excerpts": 225,
+              "reviewed_pct": 35.7,
               "approved_excerpts": 82,
               "approved_pct": 65.6,
               "reviewed_active_excerpts": 94,
@@ -463665,7 +464242,7 @@
               "t4_evidence_backed_relationships": 5,
               "t4_contributing_sources": 4,
               "source_mix": {
-                "literature": 67,
+                "literature": 68,
                 "grey": 1,
                 "tools": 1,
                 "unknown": 4
@@ -464511,7 +465088,7 @@
               ],
               "contributing_excerpts": 153,
               "contributing_sources": 38,
-              "known_sources": 87,
+              "known_sources": 86,
               "source_keys": [
                 "adhikary_2022_econ",
                 "ahammad_2013_eba_coastal_bangladesh",
@@ -464545,7 +465122,6 @@
                 "haris_2021",
                 "ieg_ethiopia_slmp_ppar_2020",
                 "inab_landcap_guatemala",
-                "india_fao_agroforestry_suitability_mapping_2017",
                 "ipcc_ar6_wg2_ch5_2022",
                 "julius_2019_rainfall_variability_trees_maize_malawi",
                 "kang_econ_erosion_alley_notill_nigeria_1990",
@@ -464627,7 +465203,7 @@
                 "literature": 78,
                 "grey": 3,
                 "tools": 1,
-                "unknown": 5
+                "unknown": 4
               },
               "search_metrics": {
                 "events": 12,
@@ -474385,6 +474961,7 @@
             "ev_fr_asc_soil_ph_mahdavi17_20261029",
             "ev_fr_asc_soil_texture_mahdavi17_20261029",
             "ev_fr_aspect_shive18_1",
+            "ev_fr_distance_forest_shono07_20261105",
             "ev_fr_distance_to_forest_barros22_1",
             "ev_fr_distance_to_forest_bukoski24_1",
             "ev_fr_distance_to_forest_chazdonguariguata16_1",
@@ -474400,6 +474977,7 @@
             "ev_fr_elevation_zomer08_1",
             "ev_fr_extension_governance_chazdonguariguata16_1",
             "ev_fr_extension_governance_le11_1",
+            "ev_fr_extension_shono07_20261105",
             "ev_fr_finance_credit_access_chazdonguariguata16_1",
             "ev_fr_finance_fao_module_20261029",
             "ev_fr_fire_hazard_williams24_1",
@@ -474423,6 +475001,7 @@
             "ev_fr_pa_slope_mahdavi17_20261029",
             "ev_fr_pa_soil_ph_mahdavi17_20261029",
             "ev_fr_pa_soil_texture_mahdavi17_20261029",
+            "ev_fr_participation_shono07_20261105",
             "ev_fr_population_density_chazdon16_1",
             "ev_fr_population_density_chazdon16_2",
             "ev_fr_precip_wocat1048_1",
@@ -475052,16 +475631,16 @@
             "zhang_2017_forest_water_yield_global",
             "zhou_2015_forest_recovery_water_yield"
           ],
-          "extracted_sources": 128,
+          "extracted_sources": 129,
           "reviewed_sources": 3,
           "fully_reviewed_sources": 2,
           "sources_with_reviewed_excerpts": 41,
           "sources_with_approved_excerpts": 3,
-          "active_excerpts": 762,
-          "retained_excerpts": 762,
-          "all_excerpts": 961,
+          "active_excerpts": 765,
+          "retained_excerpts": 765,
+          "all_excerpts": 964,
           "reviewed_excerpts": 230,
-          "unreviewed_excerpts": 731,
+          "unreviewed_excerpts": 734,
           "reviewed_pct": 23.9,
           "approved_excerpts": 4,
           "approved_pct": 1.7,
@@ -475075,10 +475654,10 @@
           "t4_evidence_backed_relationships": 0,
           "t4_contributing_sources": 0,
           "source_mix": {
-            "literature": 91,
+            "literature": 92,
             "grey": 37,
             "tools": 2,
-            "unknown": 34
+            "unknown": 33
           },
           "search_metrics": {
             "events": 30,
@@ -475600,11 +476179,14 @@
                 "ev_fr_aridity_wocat1626_1",
                 "ev_fr_aridity_wocat2325_1",
                 "ev_fr_aridity_wocat4372_1",
+                "ev_fr_distance_forest_shono07_20261105",
                 "ev_fr_distance_to_road_elliott16_1",
+                "ev_fr_extension_shono07_20261105",
                 "ev_fr_labour_availability_elliott16_1",
                 "ev_fr_land_cover_evans15_1",
                 "ev_fr_landcover_denr_tb27_20261102",
                 "ev_fr_landcover_wocat_anr1971_20261102",
+                "ev_fr_participation_shono07_20261105",
                 "ev_fr_precip_wocat1626_1",
                 "ev_fr_precip_wocat2325_1",
                 "ev_fr_regen_denr_tb27_20261102",
@@ -475685,17 +476267,17 @@
                 "woldearegay_2017_landscape_restoration_rwh_ethiopia",
                 "wri_2017_roots_of_prosperity"
               ],
-              "extracted_sources": 12,
+              "extracted_sources": 13,
               "reviewed_sources": 1,
               "fully_reviewed_sources": 1,
               "sources_with_reviewed_excerpts": 4,
               "sources_with_approved_excerpts": 1,
-              "active_excerpts": 47,
-              "retained_excerpts": 47,
-              "all_excerpts": 75,
+              "active_excerpts": 50,
+              "retained_excerpts": 50,
+              "all_excerpts": 78,
               "reviewed_excerpts": 30,
-              "unreviewed_excerpts": 45,
-              "reviewed_pct": 40.0,
+              "unreviewed_excerpts": 48,
+              "reviewed_pct": 38.5,
               "approved_excerpts": 2,
               "approved_pct": 6.7,
               "reviewed_active_excerpts": 2,
@@ -475708,10 +476290,10 @@
               "t4_evidence_backed_relationships": 0,
               "t4_contributing_sources": 0,
               "source_mix": {
-                "literature": 23,
+                "literature": 24,
                 "grey": 8,
                 "tools": 1,
-                "unknown": 6
+                "unknown": 5
               },
               "search_metrics": {
                 "events": 6,
@@ -537604,6 +538186,13 @@
             "ev_T4_temp_seja2022_1",
             "ev_T4_temp_seja2022_2",
             "ev_accessibility_travel_time_fesenmyer25_1",
+            "ev_af_annual_precipitation_ranchi2017_20261105",
+            "ev_af_elevation_ranchi2017_20261105",
+            "ev_af_ndvi_ranchi2017_20261105",
+            "ev_af_slope_ranchi2017_20261105",
+            "ev_af_soil_nitrogen_ranchi2017_20261105",
+            "ev_af_soil_organic_carbon_ranchi2017_20261105",
+            "ev_af_soil_ph_ranchi2017_20261105",
             "ev_annual_precipitation_abigaba24_banana",
             "ev_annual_precipitation_abigaba24_robusta",
             "ev_annual_precipitation_batcheler24_1",
@@ -537665,6 +538254,7 @@
             "ev_fr_asc_soil_ph_mahdavi17_20261029",
             "ev_fr_asc_soil_texture_mahdavi17_20261029",
             "ev_fr_aspect_shive18_1",
+            "ev_fr_distance_forest_shono07_20261105",
             "ev_fr_distance_to_forest_barros22_1",
             "ev_fr_distance_to_forest_bukoski24_1",
             "ev_fr_distance_to_forest_chazdonguariguata16_1",
@@ -538490,7 +539080,7 @@
           ],
           "contributing_excerpts": 96,
           "contributing_sources": 34,
-          "known_sources": 201,
+          "known_sources": 203,
           "source_keys": [
             "abigaba_2024",
             "affan_2024",
@@ -538541,6 +539131,7 @@
             "haris_2021",
             "ijbcs_rna_mali_2020",
             "inab_landcap_guatemala",
+            "india_fao_agroforestry_suitability_mapping_2017",
             "itto_flr_guidelines_ps24_2020",
             "jawarneh_2025",
             "kadam2012_scscn_india_rwh",
@@ -538578,6 +539169,7 @@
             "saraheb3_af_midwest",
             "seja_2022",
             "sendzimir_2011",
+            "shono_anr_degraded_tropical_2007",
             "singh_2019_fuzzy_wh_structure_rainfed",
             "singh_2026",
             "site_specific_vs_fixed_width_cost_2016",
@@ -538694,17 +539286,17 @@
             "yadav_2024",
             "zomer_2014"
           ],
-          "extracted_sources": 188,
+          "extracted_sources": 190,
           "reviewed_sources": 44,
           "fully_reviewed_sources": 42,
           "sources_with_reviewed_excerpts": 59,
           "sources_with_approved_excerpts": 44,
-          "active_excerpts": 824,
-          "retained_excerpts": 824,
-          "all_excerpts": 1043,
+          "active_excerpts": 832,
+          "retained_excerpts": 832,
+          "all_excerpts": 1051,
           "reviewed_excerpts": 397,
-          "unreviewed_excerpts": 646,
-          "reviewed_pct": 38.1,
+          "unreviewed_excerpts": 654,
+          "reviewed_pct": 37.8,
           "approved_excerpts": 179,
           "approved_pct": 45.1,
           "reviewed_active_excerpts": 180,
@@ -538717,7 +539309,7 @@
           "t4_evidence_backed_relationships": 50,
           "t4_contributing_sources": 34,
           "source_mix": {
-            "literature": 98,
+            "literature": 100,
             "grey": 98,
             "tools": 5,
             "unknown": 0
@@ -538917,6 +539509,13 @@
                 "ev_T4_temp_seja2022_1",
                 "ev_T4_temp_seja2022_2",
                 "ev_accessibility_travel_time_fesenmyer25_1",
+                "ev_af_annual_precipitation_ranchi2017_20261105",
+                "ev_af_elevation_ranchi2017_20261105",
+                "ev_af_ndvi_ranchi2017_20261105",
+                "ev_af_slope_ranchi2017_20261105",
+                "ev_af_soil_nitrogen_ranchi2017_20261105",
+                "ev_af_soil_organic_carbon_ranchi2017_20261105",
+                "ev_af_soil_ph_ranchi2017_20261105",
                 "ev_annual_precipitation_abigaba24_banana",
                 "ev_annual_precipitation_abigaba24_robusta",
                 "ev_annual_precipitation_batcheler24_1",
@@ -539169,7 +539768,7 @@
               ],
               "contributing_excerpts": 22,
               "contributing_sources": 10,
-              "known_sources": 53,
+              "known_sources": 54,
               "source_keys": [
                 "abigaba_2024",
                 "affan_2024",
@@ -539194,6 +539793,7 @@
                 "haris_2021",
                 "ijbcs_rna_mali_2020",
                 "inab_landcap_guatemala",
+                "india_fao_agroforestry_suitability_mapping_2017",
                 "jawarneh_2025",
                 "kiziridis_2026",
                 "lohbeck_2020",
@@ -539225,17 +539825,17 @@
                 "yadav_2024",
                 "zomer_2014"
               ],
-              "extracted_sources": 43,
+              "extracted_sources": 44,
               "reviewed_sources": 42,
               "fully_reviewed_sources": 40,
               "sources_with_reviewed_excerpts": 52,
               "sources_with_approved_excerpts": 42,
-              "active_excerpts": 209,
-              "retained_excerpts": 209,
-              "all_excerpts": 409,
+              "active_excerpts": 216,
+              "retained_excerpts": 216,
+              "all_excerpts": 416,
               "reviewed_excerpts": 376,
-              "unreviewed_excerpts": 33,
-              "reviewed_pct": 91.9,
+              "unreviewed_excerpts": 40,
+              "reviewed_pct": 90.4,
               "approved_excerpts": 176,
               "approved_pct": 46.8,
               "reviewed_active_excerpts": 177,
@@ -539248,7 +539848,7 @@
               "t4_evidence_backed_relationships": 17,
               "t4_contributing_sources": 10,
               "source_mix": {
-                "literature": 42,
+                "literature": 43,
                 "grey": 9,
                 "tools": 2,
                 "unknown": 0
@@ -539358,6 +539958,13 @@
                     "ev_T4_soc_haile2024_1",
                     "ev_T4_soc_haile2024_continuation",
                     "ev_T4_soilph_ahmad2018_1",
+                    "ev_af_annual_precipitation_ranchi2017_20261105",
+                    "ev_af_elevation_ranchi2017_20261105",
+                    "ev_af_ndvi_ranchi2017_20261105",
+                    "ev_af_slope_ranchi2017_20261105",
+                    "ev_af_soil_nitrogen_ranchi2017_20261105",
+                    "ev_af_soil_organic_carbon_ranchi2017_20261105",
+                    "ev_af_soil_ph_ranchi2017_20261105",
                     "ev_operational_risk_built_up_areas_baldwin_2022_full",
                     "ev_production_gap_saraheb3_tool",
                     "ev_soil_erosion_risk_saraheb3_tool",
@@ -539391,7 +539998,7 @@
                   ],
                   "contributing_excerpts": 9,
                   "contributing_sources": 5,
-                  "known_sources": 16,
+                  "known_sources": 17,
                   "source_keys": [
                     "ahmad_2017",
                     "ahmad_2018",
@@ -539403,6 +540010,7 @@
                     "cgspace_singh_southasia_2020",
                     "chuma_2021",
                     "haile_2024",
+                    "india_fao_agroforestry_suitability_mapping_2017",
                     "moisa_2025",
                     "mushtaq_2023",
                     "nath_2021",
@@ -539410,17 +540018,17 @@
                     "singh_2026",
                     "yadav_2024"
                   ],
-                  "extracted_sources": 12,
+                  "extracted_sources": 13,
                   "reviewed_sources": 12,
                   "fully_reviewed_sources": 10,
                   "sources_with_reviewed_excerpts": 16,
                   "sources_with_approved_excerpts": 12,
-                  "active_excerpts": 68,
-                  "retained_excerpts": 68,
-                  "all_excerpts": 89,
+                  "active_excerpts": 75,
+                  "retained_excerpts": 75,
+                  "all_excerpts": 96,
                   "reviewed_excerpts": 80,
-                  "unreviewed_excerpts": 9,
-                  "reviewed_pct": 89.9,
+                  "unreviewed_excerpts": 16,
+                  "reviewed_pct": 83.3,
                   "approved_excerpts": 60,
                   "approved_pct": 75.0,
                   "reviewed_active_excerpts": 60,
@@ -539433,7 +540041,7 @@
                   "t4_evidence_backed_relationships": 5,
                   "t4_contributing_sources": 4,
                   "source_mix": {
-                    "literature": 15,
+                    "literature": 16,
                     "grey": 0,
                     "tools": 1,
                     "unknown": 0
@@ -540998,6 +541606,7 @@
                 "ev_fr_asc_soil_ph_mahdavi17_20261029",
                 "ev_fr_asc_soil_texture_mahdavi17_20261029",
                 "ev_fr_aspect_shive18_1",
+                "ev_fr_distance_forest_shono07_20261105",
                 "ev_fr_distance_to_forest_barros22_1",
                 "ev_fr_distance_to_forest_bukoski24_1",
                 "ev_fr_distance_to_forest_chazdonguariguata16_1",
@@ -541113,7 +541722,7 @@
               ],
               "contributing_excerpts": 0,
               "contributing_sources": 0,
-              "known_sources": 42,
+              "known_sources": 43,
               "source_keys": [
                 "anr_carbon_farming_cost_2015",
                 "barros_mcda_prioritize_restoration_amazon_2022",
@@ -541133,6 +541742,7 @@
                 "mahdavi_2017_indigenous_reforestation_gis",
                 "optimizing_afforestation_reforestation_degraded_2024",
                 "reforestation_failure_project_scale_mediterranean_dryland_2021",
+                "shono_anr_degraded_tropical_2007",
                 "stanturf_2014_function",
                 "williams_2024_natregen_potential_model",
                 "wocat_1048_2011",
@@ -541158,17 +541768,17 @@
                 "wocat_anr_approach_1971",
                 "wri_restoration_diagnostic_2015"
               ],
-              "extracted_sources": 42,
+              "extracted_sources": 43,
               "reviewed_sources": 2,
               "fully_reviewed_sources": 2,
               "sources_with_reviewed_excerpts": 2,
               "sources_with_approved_excerpts": 2,
-              "active_excerpts": 138,
-              "retained_excerpts": 138,
-              "all_excerpts": 139,
+              "active_excerpts": 139,
+              "retained_excerpts": 139,
+              "all_excerpts": 140,
               "reviewed_excerpts": 3,
-              "unreviewed_excerpts": 136,
-              "reviewed_pct": 2.2,
+              "unreviewed_excerpts": 137,
+              "reviewed_pct": 2.1,
               "approved_excerpts": 3,
               "approved_pct": 100.0,
               "reviewed_active_excerpts": 3,
@@ -541181,7 +541791,7 @@
               "t4_evidence_backed_relationships": 0,
               "t4_contributing_sources": 0,
               "source_mix": {
-                "literature": 15,
+                "literature": 16,
                 "grey": 25,
                 "tools": 2,
                 "unknown": 0
@@ -541393,6 +542003,7 @@
                     "ev_fr_aridity_wocat1626_1",
                     "ev_fr_aridity_wocat2325_1",
                     "ev_fr_aridity_wocat4372_1",
+                    "ev_fr_distance_forest_shono07_20261105",
                     "ev_fr_land_cover_evans15_1",
                     "ev_fr_landcover_denr_tb27_20261102",
                     "ev_fr_landcover_wocat_anr1971_20261102",
@@ -541412,27 +542023,28 @@
                   ],
                   "contributing_excerpts": 0,
                   "contributing_sources": 0,
-                  "known_sources": 7,
+                  "known_sources": 8,
                   "source_keys": [
                     "anr_carbon_farming_cost_2015",
                     "denr_fmb_tb27_2019",
                     "fao_fp175_drylands_restoration_2015",
+                    "shono_anr_degraded_tropical_2007",
                     "wocat_1626_2014",
                     "wocat_2325_2017",
                     "wocat_4372_2019",
                     "wocat_anr_approach_1971"
                   ],
-                  "extracted_sources": 7,
+                  "extracted_sources": 8,
                   "reviewed_sources": 1,
                   "fully_reviewed_sources": 1,
                   "sources_with_reviewed_excerpts": 1,
                   "sources_with_approved_excerpts": 1,
-                  "active_excerpts": 20,
-                  "retained_excerpts": 20,
-                  "all_excerpts": 20,
+                  "active_excerpts": 21,
+                  "retained_excerpts": 21,
+                  "all_excerpts": 21,
                   "reviewed_excerpts": 2,
-                  "unreviewed_excerpts": 18,
-                  "reviewed_pct": 10.0,
+                  "unreviewed_excerpts": 19,
+                  "reviewed_pct": 9.5,
                   "approved_excerpts": 2,
                   "approved_pct": 100.0,
                   "reviewed_active_excerpts": 2,
@@ -541445,7 +542057,7 @@
                   "t4_evidence_backed_relationships": 0,
                   "t4_contributing_sources": 0,
                   "source_mix": {
-                    "literature": 1,
+                    "literature": 2,
                     "grey": 5,
                     "tools": 1,
                     "unknown": 0
@@ -626147,12 +626759,12 @@
       "agroforestry": {
         "catalogue": {
           "summary": {
-            "structural_claims": 208,
+            "structural_claims": 215,
             "explicitly_linked_claims": 21,
             "focus_claims": 83,
             "selection_only_with_relationship_content": 36,
             "scopes": {
-              "practice_technology": 147,
+              "practice_technology": 154,
               "species_specific": 47,
               "crop_specific": 14
             }
@@ -632231,6 +632843,209 @@
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
+            },
+            {
+              "evidence_id": "ev_af_elevation_ranchi2017_20261105",
+              "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+              "citation": "Ahmad et al. (2017). FAO guidelines and geospatial application for agroforestry suitability mapping: case study of Ranchi, Jharkhand state of India. Agroforestry Systems.",
+              "variable": "elevation",
+              "suitability_family_id": "agroforestry__cross_family",
+              "claim_scope": "practice_technology",
+              "evidence_type": "scoping_candidate",
+              "reviewer_ok": "false",
+              "relationship": "{\"type\": \"source_ranked_classes\", \"direction\": \"decreasing\", \"note\": \"Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight.\"}",
+              "context": "{\"region\": \"Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India\", \"practice_as_described\": \"Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.\", \"note\": \"Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Elevation used as energy proxy because temperature unavailable; do not substitute mean annual temperature. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.\", \"reported_values\": {\"S1\": \"<500 m\", \"S2\": \"500–700 m\", \"S3\": \">700 m\", \"N\": \"—\"}, \"model_use\": {\"used\": true, \"scope\": \"regional_cross_family_suitability\", \"method\": \"FAO-based weighted GIS land evaluation\", \"criterion_set\": [\"elevation\", \"rainfall\", \"Landsat tasseled-cap wetness\", \"NPK nutrient status\", \"organic carbon\", \"soil pH\", \"NDVI\", \"slope\"], \"source_weight\": \"Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only.\"}, \"calibration_hold\": \"No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Elevation used as energy proxy because temperature unavailable; do not substitute mean annual temperature.\", \"remaining_decision\": \"Human source/context review; numerical compilation and family transfer remain unapproved.\"}",
+              "quote": "Elevation (m)*\n\\ 500\n500–700\n[ 700\n–",
+              "page": "11",
+              "locator_type": "page",
+              "locator": "",
+              "lineage_of": "",
+              "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+              "justification_page": "11",
+              "taxon": "",
+              "source_direction": "decreasing",
+              "has_stated_direction": true,
+              "has_source_classes": false,
+              "source_shape": "",
+              "compilation_disposition": "unresolved_review",
+              "linked_mapping_ids": [],
+              "focus_review": false,
+              "visibility_flag": false,
+              "runtime_authorization": "None granted by this catalogue"
+            },
+            {
+              "evidence_id": "ev_af_annual_precipitation_ranchi2017_20261105",
+              "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+              "citation": "Ahmad et al. (2017). FAO guidelines and geospatial application for agroforestry suitability mapping: case study of Ranchi, Jharkhand state of India. Agroforestry Systems.",
+              "variable": "annual_precipitation",
+              "suitability_family_id": "agroforestry__cross_family",
+              "claim_scope": "practice_technology",
+              "evidence_type": "scoping_candidate",
+              "reviewer_ok": "false",
+              "relationship": "{\"type\": \"source_ranked_classes\", \"direction\": \"increasing\", \"note\": \"Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight.\"}",
+              "context": "{\"region\": \"Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India\", \"practice_as_described\": \"Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.\", \"note\": \"Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Annual rainfall averaged 1993–2002 (PDF6); preserve descending source endpoints. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.\", \"reported_values\": {\"S1\": \">1170 mm\", \"S2\": \"1170–1150 mm\", \"S3\": \"<1150 mm\", \"N\": \"—\"}, \"model_use\": {\"used\": true, \"scope\": \"regional_cross_family_suitability\", \"method\": \"FAO-based weighted GIS land evaluation\", \"criterion_set\": [\"elevation\", \"rainfall\", \"Landsat tasseled-cap wetness\", \"NPK nutrient status\", \"organic carbon\", \"soil pH\", \"NDVI\", \"slope\"], \"source_weight\": \"Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only.\"}, \"calibration_hold\": \"No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Annual rainfall averaged 1993–2002 (PDF6); preserve descending source endpoints.\", \"remaining_decision\": \"Human source/context review; numerical compilation and family transfer remain unapproved.\"}",
+              "quote": "Rainfall (mm)\n[ 1170\n1170–1150\n\\ 1150\n–",
+              "page": "11",
+              "locator_type": "page",
+              "locator": "",
+              "lineage_of": "",
+              "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+              "justification_page": "11",
+              "taxon": "",
+              "source_direction": "increasing",
+              "has_stated_direction": true,
+              "has_source_classes": false,
+              "source_shape": "",
+              "compilation_disposition": "unresolved_review",
+              "linked_mapping_ids": [],
+              "focus_review": false,
+              "visibility_flag": false,
+              "runtime_authorization": "None granted by this catalogue"
+            },
+            {
+              "evidence_id": "ev_af_soil_organic_carbon_ranchi2017_20261105",
+              "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+              "citation": "Ahmad et al. (2017). FAO guidelines and geospatial application for agroforestry suitability mapping: case study of Ranchi, Jharkhand state of India. Agroforestry Systems.",
+              "variable": "soil_organic_carbon",
+              "suitability_family_id": "agroforestry__cross_family",
+              "claim_scope": "practice_technology",
+              "evidence_type": "scoping_candidate",
+              "reviewer_ok": "false",
+              "relationship": "{\"type\": \"source_ranked_classes\", \"direction\": \"increasing\", \"note\": \"Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight.\"}",
+              "context": "{\"region\": \"Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India\", \"practice_as_described\": \"Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.\", \"note\": \"Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Sampling depth unspecified. Preserve source percent; do not assume compatibility with canonical 0–30 cm or convert to threshold. Figure2(PDF5) labels soil organic matter, conflicting with Table4/prose organic carbon; retain Table4 identity, no SOM conversion. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.\", \"reported_values\": {\"S1\": \">0.75%\", \"S2\": \"0.75–0.50%\", \"S3\": \"<0.50%\", \"N\": \"—\"}, \"model_use\": {\"used\": true, \"scope\": \"regional_cross_family_suitability\", \"method\": \"FAO-based weighted GIS land evaluation\", \"criterion_set\": [\"elevation\", \"rainfall\", \"Landsat tasseled-cap wetness\", \"NPK nutrient status\", \"organic carbon\", \"soil pH\", \"NDVI\", \"slope\"], \"source_weight\": \"Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only.\"}, \"calibration_hold\": \"No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Sampling depth unspecified. Preserve source percent; do not assume compatibility with canonical 0–30 cm or convert to threshold.\", \"remaining_decision\": \"Human source/context review; numerical compilation and family transfer remain unapproved.\"}",
+              "quote": "Organic carbon\n[ 0.75%\n0.75–0.50%\n\\ 0.50%\n–",
+              "page": "11",
+              "locator_type": "page",
+              "locator": "",
+              "lineage_of": "",
+              "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+              "justification_page": "11",
+              "taxon": "",
+              "source_direction": "increasing",
+              "has_stated_direction": true,
+              "has_source_classes": false,
+              "source_shape": "",
+              "compilation_disposition": "unresolved_review",
+              "linked_mapping_ids": [],
+              "focus_review": false,
+              "visibility_flag": false,
+              "runtime_authorization": "None granted by this catalogue"
+            },
+            {
+              "evidence_id": "ev_af_soil_ph_ranchi2017_20261105",
+              "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+              "citation": "Ahmad et al. (2017). FAO guidelines and geospatial application for agroforestry suitability mapping: case study of Ranchi, Jharkhand state of India. Agroforestry Systems.",
+              "variable": "soil_ph",
+              "suitability_family_id": "agroforestry__cross_family",
+              "claim_scope": "practice_technology",
+              "evidence_type": "scoping_candidate",
+              "reviewer_ok": "false",
+              "relationship": "{\"type\": \"source_ranked_classes\", \"direction\": \"increasing\", \"note\": \"Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight.\"}",
+              "context": "{\"region\": \"Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India\", \"practice_as_described\": \"Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.\", \"note\": \"Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Increasing only within reported acidic range; not a global pH response. Sampling depth and pH assay absent. Gaps between decimal classes not filled. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.\", \"reported_values\": {\"S1\": \"6.5–5.6\", \"S2\": \"5.5–5.1\", \"S3\": \"5–4.5\", \"N\": \"—\"}, \"model_use\": {\"used\": true, \"scope\": \"regional_cross_family_suitability\", \"method\": \"FAO-based weighted GIS land evaluation\", \"criterion_set\": [\"elevation\", \"rainfall\", \"Landsat tasseled-cap wetness\", \"NPK nutrient status\", \"organic carbon\", \"soil pH\", \"NDVI\", \"slope\"], \"source_weight\": \"Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only.\"}, \"calibration_hold\": \"No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Increasing only within reported acidic range; not a global pH response. Sampling depth and pH assay absent. Gaps between decimal classes not filled.\", \"remaining_decision\": \"Human source/context review; numerical compilation and family transfer remain unapproved.\"}",
+              "quote": "Soil pH\n6.5–5.6\n5.5–5.1\n5–4.5\n–",
+              "page": "11",
+              "locator_type": "page",
+              "locator": "",
+              "lineage_of": "",
+              "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+              "justification_page": "11",
+              "taxon": "",
+              "source_direction": "increasing",
+              "has_stated_direction": true,
+              "has_source_classes": false,
+              "source_shape": "",
+              "compilation_disposition": "unresolved_review",
+              "linked_mapping_ids": [],
+              "focus_review": false,
+              "visibility_flag": false,
+              "runtime_authorization": "None granted by this catalogue"
+            },
+            {
+              "evidence_id": "ev_af_ndvi_ranchi2017_20261105",
+              "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+              "citation": "Ahmad et al. (2017). FAO guidelines and geospatial application for agroforestry suitability mapping: case study of Ranchi, Jharkhand state of India. Agroforestry Systems.",
+              "variable": "ndvi",
+              "suitability_family_id": "agroforestry__cross_family",
+              "claim_scope": "practice_technology",
+              "evidence_type": "scoping_candidate",
+              "reviewer_ok": "false",
+              "relationship": "{\"type\": \"source_ranked_classes\", \"direction\": \"increasing\", \"note\": \"Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight.\"}",
+              "context": "{\"region\": \"Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India\", \"practice_as_described\": \"Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.\", \"note\": \"Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Table4 classes differ marginal prose PDF10 low to nil. No numeric NDVI boundaries; no tree-cover substitution. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.\", \"reported_values\": {\"S1\": \"Very dense and dense\", \"S2\": \"Medium and poor\", \"S3\": \"Nil\", \"N\": \"—\"}, \"model_use\": {\"used\": true, \"scope\": \"regional_cross_family_suitability\", \"method\": \"FAO-based weighted GIS land evaluation\", \"criterion_set\": [\"elevation\", \"rainfall\", \"Landsat tasseled-cap wetness\", \"NPK nutrient status\", \"organic carbon\", \"soil pH\", \"NDVI\", \"slope\"], \"source_weight\": \"Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only.\"}, \"calibration_hold\": \"No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Table4 classes differ marginal prose PDF10 low to nil. No numeric NDVI boundaries; no tree-cover substitution.\", \"remaining_decision\": \"Human source/context review; numerical compilation and family transfer remain unapproved.\"}",
+              "quote": "Vegetation vigorous/\nNDVI\nVery dense and\ndense\nMedium and\npoor\nNil\n–",
+              "page": "11",
+              "locator_type": "page",
+              "locator": "",
+              "lineage_of": "",
+              "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+              "justification_page": "11",
+              "taxon": "",
+              "source_direction": "increasing",
+              "has_stated_direction": true,
+              "has_source_classes": false,
+              "source_shape": "",
+              "compilation_disposition": "unresolved_review",
+              "linked_mapping_ids": [],
+              "focus_review": false,
+              "visibility_flag": false,
+              "runtime_authorization": "None granted by this catalogue"
+            },
+            {
+              "evidence_id": "ev_af_slope_ranchi2017_20261105",
+              "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+              "citation": "Ahmad et al. (2017). FAO guidelines and geospatial application for agroforestry suitability mapping: case study of Ranchi, Jharkhand state of India. Agroforestry Systems.",
+              "variable": "slope",
+              "suitability_family_id": "agroforestry__cross_family",
+              "claim_scope": "practice_technology",
+              "evidence_type": "scoping_candidate",
+              "reviewer_ok": "false",
+              "relationship": "{\"type\": \"source_ranked_classes\", \"direction\": \"decreasing\", \"note\": \"Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight.\"}",
+              "context": "{\"region\": \"Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India\", \"practice_as_described\": \"Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.\", \"note\": \"Table 4; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Percent gradient, not degrees; shared boundaries unspecified. Source N class retained, not promoted to universal exclusion. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.\", \"reported_values\": {\"S1\": \"0–5%\", \"S2\": \"5–15%\", \"S3\": \"15–35%\", \"N\": \">35%\"}, \"model_use\": {\"used\": true, \"scope\": \"regional_cross_family_suitability\", \"method\": \"FAO-based weighted GIS land evaluation\", \"criterion_set\": [\"elevation\", \"rainfall\", \"Landsat tasseled-cap wetness\", \"NPK nutrient status\", \"organic carbon\", \"soil pH\", \"NDVI\", \"slope\"], \"source_weight\": \"Not reported: prose PDF7 references Table4 weights, but Table4 contains classes only.\"}, \"calibration_hold\": \"No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Percent gradient, not degrees; shared boundaries unspecified. Source N class retained, not promoted to universal exclusion.\", \"remaining_decision\": \"Human source/context review; numerical compilation and family transfer remain unapproved.\"}",
+              "quote": "Slope angle (%)\n0–5\n5–15\n15–35\n[ 35",
+              "page": "11",
+              "locator_type": "page",
+              "locator": "",
+              "lineage_of": "",
+              "justification_quote": "Table 4 Land requirements for agroforestry purposes\nLand qualiﬁes\nLand characteristics\nS1\nS2\nS3\nN",
+              "justification_page": "11",
+              "taxon": "",
+              "source_direction": "decreasing",
+              "has_stated_direction": true,
+              "has_source_classes": false,
+              "source_shape": "",
+              "compilation_disposition": "unresolved_review",
+              "linked_mapping_ids": [],
+              "focus_review": false,
+              "visibility_flag": false,
+              "runtime_authorization": "None granted by this catalogue"
+            },
+            {
+              "evidence_id": "ev_af_soil_nitrogen_ranchi2017_20261105",
+              "source_id": "india_fao_agroforestry_suitability_mapping_2017",
+              "citation": "Ahmad et al. (2017). FAO guidelines and geospatial application for agroforestry suitability mapping: case study of Ranchi, Jharkhand state of India. Agroforestry Systems.",
+              "variable": "soil_nitrogen",
+              "suitability_family_id": "agroforestry__cross_family",
+              "claim_scope": "practice_technology",
+              "evidence_type": "scoping_candidate",
+              "reviewer_ok": "false",
+              "relationship": "{\"type\": \"source_ranked_classes\", \"direction\": \"increasing\", \"note\": \"Suitability direction within reported regional source classes only. Native class values retained in context.reported_values; no executable curve or runtime weight.\"}",
+              "context": "{\"region\": \"Namkum, Bundu and Rahe blocks, Ranchi district, Jharkhand, India\", \"practice_as_described\": \"Regional generic agroforestry land-evaluation model integrating trees and agricultural production; paper discusses agri-silvi-horticulture and dryland alternatives. No uniquely established suitability family. Comparator is source land classes, not experimental treatment.\", \"note\": \"Table 2; source class ranking is not an executable membership function. Native inequality glyphs are corrupted in text extraction; rendered table visually verified. Availability kg/ha, not concentration g/kg; depth, extraction assay and mass conversion unspecified. Composite nutrient subcriterion, not independent full-model weight. Native row quote is contiguous; caption/header preserved separately in justification_quote at same page. S1=highly suitable, S2=moderately suitable, S3=marginally suitable, N=not suitable (Table3 PDF10: cannot sustain use OR benefits do not justify inputs, not universally biophysical exclusion). NDVI=Normalized Difference Vegetation Index; NPK=nitrogen, phosphorus and potassium. Visual Table2/4 inspection resolves native glyph corruption only; no invented values.\", \"reported_values\": {\"High\": \"rank3; >560 kg/ha\", \"Medium\": \"rank2; 560–280 kg/ha\", \"Low\": \"rank1; ≤280 kg/ha\"}, \"model_use\": {\"used\": true, \"scope\": \"regional_cross_family_suitability\", \"method\": \"FAO-based weighted GIS land evaluation\", \"criterion_set\": [\"elevation\", \"rainfall\", \"Landsat tasseled-cap wetness\", \"NPK nutrient status\", \"organic carbon\", \"soil pH\", \"NDVI\", \"slope\"], \"source_weight\": {\"value\": 33.3, \"unit\": \"percent\", \"parent\": \"nutrient status only\", \"siblings\": [\"nitrogen\", \"phosphorus\", \"potassium\"], \"figure13_value\": 33.33}}, \"calibration_hold\": \"No global transfer, membership scores or unreported interval closure. Regional allocation/prioritisation emphasis needs review. Availability kg/ha, not concentration g/kg; depth, extraction assay and mass conversion unspecified. Composite nutrient subcriterion, not independent full-model weight.\", \"remaining_decision\": \"Human source/context review; numerical compilation and family transfer remain unapproved.\"}",
+              "quote": "Nitrogen\n33.3\n[ 560\n3\nHigh\n560–280\n2\nMedium\nB 280\n1\nLow",
+              "page": "9",
+              "locator_type": "page",
+              "locator": "",
+              "lineage_of": "",
+              "justification_quote": "Table 2 Weight matrix for\nparameters and ranking for\nnutrient status mapping\nNutrient factor\nWeights (%)\nValue/description (kg/ha)\nRanks\nSuitability",
+              "justification_page": "9",
+              "taxon": "",
+              "source_direction": "increasing",
+              "has_stated_direction": true,
+              "has_source_classes": false,
+              "source_shape": "",
+              "compilation_disposition": "unresolved_review",
+              "linked_mapping_ids": [],
+              "focus_review": false,
+              "visibility_flag": false,
+              "runtime_authorization": "None granted by this catalogue"
             }
           ]
         },
@@ -632336,6 +633151,7 @@
               "claim_sources": [
                 "ahmad_2020",
                 "haile_2024",
+                "india_fao_agroforestry_suitability_mapping_2017",
                 "kiziridis_2026",
                 "lohbeck_2020",
                 "mushtaq_2023",
@@ -632355,6 +633171,7 @@
                   "direction": "increasing",
                   "sources": [
                     "ahmad_2020",
+                    "india_fao_agroforestry_suitability_mapping_2017",
                     "singh_2026"
                   ]
                 }
@@ -632657,7 +633474,8 @@
                 "EV_wocat_1358_2017_001",
                 "ev_T4_model_use_ahmad2020_annual_precipitation",
                 "ev_T4_rereview_singh_2026_annual_precipitation_6",
-                "ev_T4_rereview_ahmad_2020_annual_precipitation_2"
+                "ev_T4_rereview_ahmad_2020_annual_precipitation_2",
+                "ev_af_annual_precipitation_ranchi2017_20261105"
               ]
             },
             {
@@ -633321,6 +634139,7 @@
               "claim_sources": [
                 "chuma_2021",
                 "haile_2024",
+                "india_fao_agroforestry_suitability_mapping_2017",
                 "nath_2021"
               ],
               "direction_by_family": [
@@ -633329,6 +634148,7 @@
                   "direction": "decreasing",
                   "sources": [
                     "haile_2024",
+                    "india_fao_agroforestry_suitability_mapping_2017",
                     "nath_2021"
                   ]
                 }
@@ -633524,7 +634344,8 @@
               "evidence_ids": [
                 "ev_T4_elevation_chuma2021_recovery",
                 "ev_T4_rereview_nath_2021_elevation_11",
-                "ev_T4_rereview_haile_2024_elevation_1"
+                "ev_T4_rereview_haile_2024_elevation_1",
+                "ev_af_elevation_ranchi2017_20261105"
               ]
             },
             {
@@ -634531,6 +635352,7 @@
               "claim_sources": [
                 "ahmad_2018",
                 "ahmad_2020",
+                "india_fao_agroforestry_suitability_mapping_2017",
                 "nath_2021"
               ],
               "direction_by_family": [
@@ -634539,7 +635361,8 @@
                   "direction": "increasing",
                   "sources": [
                     "ahmad_2018",
-                    "ahmad_2020"
+                    "ahmad_2020",
+                    "india_fao_agroforestry_suitability_mapping_2017"
                   ]
                 }
               ],
@@ -634652,7 +635475,8 @@
                 "ev_t4_landcov_nath21_01",
                 "ev_T4_model_use_ahmad2020_ndvi",
                 "ev_T4_rereview_ahmad_2018_ndvi_1",
-                "ev_T4_rereview_ahmad_2020_ndvi_4"
+                "ev_T4_rereview_ahmad_2020_ndvi_4",
+                "ev_af_ndvi_ranchi2017_20261105"
               ]
             },
             {
@@ -634886,6 +635710,7 @@
                 "chuma_2021",
                 "haile_2024",
                 "haris_2021",
+                "india_fao_agroforestry_suitability_mapping_2017",
                 "kiziridis_2026",
                 "moisa_2025",
                 "nath_2021",
@@ -634900,6 +635725,7 @@
                   "direction": "decreasing",
                   "sources": [
                     "ahmad_2020",
+                    "india_fao_agroforestry_suitability_mapping_2017",
                     "singh_2026"
                   ]
                 }
@@ -635185,7 +636011,8 @@
                 "EV_wocat_1358_2017_003",
                 "ev_T4_model_use_ahmad2020_slope",
                 "ev_T4_rereview_singh_2026_slope_4",
-                "ev_T4_rereview_ahmad_2020_slope_5"
+                "ev_T4_rereview_ahmad_2020_slope_5",
+                "ev_af_slope_ranchi2017_20261105"
               ]
             },
             {
@@ -636672,6 +637499,197 @@
               ]
             },
             {
+              "variable": "soil_nitrogen",
+              "group": "edaphic",
+              "group_use": {
+                "module": "M1",
+                "claim_scope": "practice_technology",
+                "system": "all_systems",
+                "review_lane": "all_recorded",
+                "level": "group",
+                "group": "edaphic",
+                "variable": "",
+                "n": 6,
+                "N": 10,
+                "percent": 60.0,
+                "paper_keys": [
+                  "10.1016/j.envc.2021.100199",
+                  "10.11648/j.aff.20241306.17",
+                  "10.2478/ctg-2018-0015",
+                  "10.3389/frsen.2026.1780218",
+                  "10.3390/su18010439",
+                  "crs_fmnr_niger_2025"
+                ],
+                "denominator_paper_keys": [
+                  "10.1007/s42489-020-00045-0",
+                  "10.1016/j.envc.2021.100199",
+                  "10.1016/j.tfp.2021.100125",
+                  "10.1088/1748-9326/adab09",
+                  "10.11648/j.aff.20241306.17",
+                  "10.2478/ctg-2018-0015",
+                  "10.3389/frsen.2026.1780218",
+                  "10.3390/su18010439",
+                  "10.5716/wp16013.pdf",
+                  "crs_fmnr_niger_2025"
+                ],
+                "evidence_ids": [
+                  "EV_crs_fmnr_niger_2025_017",
+                  "ev_T4_ph_haile2024_1",
+                  "ev_T4_rereview_nath_2021_soil_available_water_capacity_10",
+                  "ev_T4_rereview_nath_2021_soil_bulk_density_8",
+                  "ev_T4_rereview_nath_2021_soil_cation_exchange_capacity_3",
+                  "ev_T4_rereview_nath_2021_soil_organic_carbon_subsoil_5",
+                  "ev_T4_rereview_nath_2021_soil_ph_7",
+                  "ev_T4_rereview_nath_2021_soil_ph_subsoil_4",
+                  "ev_T4_rereview_nath_2021_soil_ph_subsoil_9",
+                  "ev_T4_rereview_nath_2021_soil_texture_2",
+                  "ev_T4_rereview_nath_2021_soil_texture_6",
+                  "ev_T4_rereview_singh_2026_soil_drainage_2",
+                  "ev_T4_rereview_singh_2026_soil_ph_3",
+                  "ev_T4_rereview_singh_2026_soil_texture_1",
+                  "ev_T4_soc_ahmad2018_1",
+                  "ev_T4_soc_haile2024_1",
+                  "ev_T4_soc_haile2024_continuation",
+                  "ev_soil_ph_singh26",
+                  "ev_soil_texture_singh26",
+                  "ev_t4_soc_kizir_1",
+                  "ev_t4_soildra_nath21_01",
+                  "ev_t4_soilorg_nath21_01",
+                  "ev_t4_soilph_nath21_01"
+                ],
+                "within_group_N": null,
+                "within_group_percent": null
+              },
+              "variable_use": null,
+              "claim_sources": [
+                "india_fao_agroforestry_suitability_mapping_2017"
+              ],
+              "direction_by_family": [
+                {
+                  "family": "agroforestry__cross_family",
+                  "direction": "increasing",
+                  "sources": [
+                    "india_fao_agroforestry_suitability_mapping_2017"
+                  ]
+                }
+              ],
+              "weight_summary": [],
+              "study_weights": [],
+              "mapped_group_weights": [
+                {
+                  "model_id": "singh_2026_relative_weights",
+                  "source_id": "singh_2026",
+                  "scope": "regional_practice_model",
+                  "share": 0.07070707070707072,
+                  "unmapped_model_variables": [
+                    "distance_cropland",
+                    "distance_forest",
+                    "distance_road",
+                    "distance_settlement",
+                    "distance_water",
+                    "maximum_temperature",
+                    "minimum_temperature",
+                    "soil_profile_depth",
+                    "soil_type"
+                  ],
+                  "interpretation": "Sum of mapped variable shares; partial where unmapped variables remain. Not the study's declared group weight."
+                },
+                {
+                  "model_id": "singh_2026_rf_importance",
+                  "source_id": "singh_2026",
+                  "scope": "regional_practice_model",
+                  "share": 0.07269076305220884,
+                  "unmapped_model_variables": [
+                    "distance_cropland",
+                    "distance_forest",
+                    "distance_road",
+                    "distance_settlement",
+                    "distance_water",
+                    "maximum_temperature",
+                    "minimum_temperature",
+                    "soil_profile_depth",
+                    "soil_type"
+                  ],
+                  "interpretation": "Sum of mapped variable shares; partial where unmapped variables remain. Not the study's declared group weight."
+                },
+                {
+                  "model_id": "nath_2021_table2",
+                  "source_id": "nath_2021",
+                  "scope": "regional_practice_model",
+                  "share": 0.17000000000000004,
+                  "unmapped_model_variables": [
+                    "distance_drainage",
+                    "distance_road",
+                    "distance_settlement",
+                    "forest_cover",
+                    "soil_bulk_density_subsoil",
+                    "soil_cec_subsoil",
+                    "soil_texture_subsoil"
+                  ],
+                  "interpretation": "Sum of mapped variable shares; partial where unmapped variables remain. Not the study's declared group weight."
+                },
+                {
+                  "model_id": "haile_2024_table3",
+                  "source_id": "haile_2024",
+                  "scope": "regional_practice_model",
+                  "share": 0.13999999999999999,
+                  "unmapped_model_variables": [
+                    "nitrogen_stock",
+                    "phosphorus_stock",
+                    "potassium_stock",
+                    "wetness"
+                  ],
+                  "interpretation": "Sum of mapped variable shares; partial where unmapped variables remain. Not the study's declared group weight."
+                },
+                {
+                  "model_id": "haile_2024_table5",
+                  "source_id": "haile_2024",
+                  "scope": "regional_practice_model",
+                  "share": 0.13813813813813813,
+                  "unmapped_model_variables": [
+                    "nitrogen_stock",
+                    "phosphorus_stock",
+                    "potassium_stock",
+                    "wetness"
+                  ],
+                  "interpretation": "Sum of mapped variable shares; partial where unmapped variables remain. Not the study's declared group weight."
+                },
+                {
+                  "model_id": "ahmad_2018_tables1_2",
+                  "source_id": "ahmad_2018",
+                  "scope": "regional_practice_model",
+                  "share": 0.1832,
+                  "unmapped_model_variables": [
+                    "nitrogen_stock",
+                    "phosphorus_stock",
+                    "potassium_stock",
+                    "wetness"
+                  ],
+                  "interpretation": "Sum of mapped variable shares; partial where unmapped variables remain. Not the study's declared group weight."
+                },
+                {
+                  "model_id": "crs_2025_saza_ahp",
+                  "source_id": "crs_fmnr_niger_2025",
+                  "scope": "fmnr_niger_practitioner_model",
+                  "share": 0.051051051051051045,
+                  "unmapped_model_variables": [
+                    "dialogue_framework",
+                    "education",
+                    "landform",
+                    "legal_framework",
+                    "policy_framework",
+                    "vegetation_density",
+                    "vulnerability"
+                  ],
+                  "interpretation": "Sum of mapped variable shares; partial where unmapped variables remain. Not the study's declared group weight."
+                }
+              ],
+              "function_support": [],
+              "evidence_ids": [
+                "ev_af_soil_nitrogen_ranchi2017_20261105"
+              ]
+            },
+            {
               "variable": "soil_organic_carbon",
               "group": "edaphic",
               "group_use": {
@@ -636775,12 +637793,21 @@
               "claim_sources": [
                 "ahmad_2018",
                 "haile_2024",
+                "india_fao_agroforestry_suitability_mapping_2017",
                 "kiziridis_2026",
                 "nath_2021",
                 "sperandio_2024",
                 "yadav_2024"
               ],
-              "direction_by_family": [],
+              "direction_by_family": [
+                {
+                  "family": "agroforestry__cross_family",
+                  "direction": "increasing",
+                  "sources": [
+                    "india_fao_agroforestry_suitability_mapping_2017"
+                  ]
+                }
+              ],
               "weight_summary": [
                 {
                   "scope": "regional_practice_model",
@@ -637027,7 +638054,8 @@
                 "ev_t4_soilorg_nath21_01",
                 "ev_t4_soc_sper24_1",
                 "ev_t4_soc_yadav24_6",
-                "ev_T4_soc_haile2024_continuation"
+                "ev_T4_soc_haile2024_continuation",
+                "ev_af_soil_organic_carbon_ranchi2017_20261105"
               ]
             },
             {
@@ -637394,10 +638422,18 @@
               },
               "claim_sources": [
                 "haile_2024",
+                "india_fao_agroforestry_suitability_mapping_2017",
                 "nath_2021",
                 "singh_2026"
               ],
               "direction_by_family": [
+                {
+                  "family": "agroforestry__cross_family",
+                  "direction": "increasing",
+                  "sources": [
+                    "india_fao_agroforestry_suitability_mapping_2017"
+                  ]
+                },
                 {
                   "family": "agroforestry__cross_family",
                   "direction": "optimum_range",
@@ -637695,7 +638731,8 @@
                 "ev_t4_soilph_nath21_01",
                 "ev_soil_ph_singh26",
                 "ev_T4_rereview_nath_2021_soil_ph_7",
-                "ev_T4_rereview_singh_2026_soil_ph_3"
+                "ev_T4_rereview_singh_2026_soil_ph_3",
+                "ev_af_soil_ph_ranchi2017_20261105"
               ]
             },
             {
@@ -638717,12 +639754,12 @@
       "forest_restoration": {
         "catalogue": {
           "summary": {
-            "structural_claims": 138,
+            "structural_claims": 139,
             "explicitly_linked_claims": 0,
             "focus_claims": 3,
             "selection_only_with_relationship_content": 0,
             "scopes": {
-              "practice_technology": 122,
+              "practice_technology": 123,
               "species_specific": 16
             }
           },
@@ -642728,6 +643765,35 @@
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
+            },
+            {
+              "evidence_id": "ev_fr_distance_forest_shono07_20261105",
+              "source_id": "shono_anr_degraded_tropical_2007",
+              "citation": "Shono et al. (2007). Application of Assisted Natural Regeneration to Restore Degraded Tropical Forestlands. Restoration Ecology.",
+              "variable": "distance_to_forest",
+              "suitability_family_id": "forest_restoration__assisted_regeneration",
+              "claim_scope": "practice_technology",
+              "evidence_type": "scoping_candidate",
+              "reviewer_ok": "false",
+              "relationship": "{\"type\": \"qualitative_requirement\", \"direction\": \"decreasing\", \"requirement\": \"Remnant forest should be in proximity to supply seeds for further succession.\", \"note\": \"Proximity requirement supports nearer forest, but source gives no distance cutoff, response scores or calibrated curve.\"}",
+              "context": "{\"region\": \"Degraded tropical forestlands; review informed particularly by Asian practice\", \"practice_as_described\": \"Assisted natural regeneration (ANR): release existing woody regeneration, suppress weeds and prevent disturbance. No experimental comparator; guidance for site selection.\", \"note\": \"Printed page 621, Rationale for Using ANR and Required Conditions. Distance is the inverse of proximity; decreasing denotes closer remnant forest, not a quantified dose-response. Requirement concerns continued succession, not proof that distant sites cannot establish. Enrichment planting is an alternative if propagules are insufficient. VONT distance_to_forest remains pending_review; no dataset binding or analytical cutoff is created.\"}",
+              "quote": "To ensure further\nsuccessional development, remnant forest should be in\nproximity so that there would be sufﬁcient input of seeds.",
+              "page": "2",
+              "locator_type": "page",
+              "locator": "",
+              "lineage_of": "",
+              "justification_quote": "",
+              "justification_page": "",
+              "taxon": "",
+              "source_direction": "decreasing",
+              "has_stated_direction": true,
+              "has_source_classes": false,
+              "source_shape": "",
+              "compilation_disposition": "unresolved_review",
+              "linked_mapping_ids": [],
+              "focus_review": false,
+              "visibility_flag": false,
+              "runtime_authorization": "None granted by this catalogue"
             }
           ]
         },
@@ -642859,9 +643925,18 @@
                 "cookpatton_2020_regrowth_carbon_map",
                 "crouzeilles_2016_btp_nr_tool",
                 "landscape_regen_after_disturbance_2018",
+                "shono_anr_degraded_tropical_2007",
                 "williams_2024_natregen_potential_model"
               ],
-              "direction_by_family": [],
+              "direction_by_family": [
+                {
+                  "family": "forest_restoration__assisted_regeneration",
+                  "direction": "decreasing",
+                  "sources": [
+                    "shono_anr_degraded_tropical_2007"
+                  ]
+                }
+              ],
               "weight_summary": [],
               "study_weights": [],
               "mapped_group_weights": [],
@@ -642872,7 +643947,8 @@
                 "ev_fr_distance_to_forest_cookpatton20_1",
                 "ev_fr_distance_to_forest_chazdonguariguata16_1",
                 "ev_fr_distance_to_forest_shive18_1",
-                "ev_fr_distance_to_forest_williams24_2"
+                "ev_fr_distance_to_forest_williams24_2",
+                "ev_fr_distance_forest_shono07_20261105"
               ]
             },
             {
@@ -662721,10 +663797,10 @@
   "build": {
     "release": "1.3.2",
     "ui_id": "3344169a869e",
-    "data_id": "36aa3b2d975d",
+    "data_id": "a6d38f75ae49",
     "count_definition_version": "4",
-    "built_at": "2026-11-05T06:15:02.361362+00:00",
-    "source_commit": "72386b2a548481580ef72c661134d820907a923e",
+    "built_at": "2026-11-05T06:28:07.695207+00:00",
+    "source_commit": "15aa77e6e1bf60e11db5b42d9832bf1c33d28726",
     "history": [
       {
         "release": "1.0.0",
@@ -662957,6 +664033,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-05T06:15:02.361362+00:00",
         "source_commit": "72386b2a548481580ef72c661134d820907a923e"
+      },
+      {
+        "release": "1.3.2",
+        "ui_id": "3344169a869e",
+        "data_id": "a6d38f75ae49",
+        "count_definition_version": "4",
+        "built_at": "2026-11-05T06:28:07.695207+00:00",
+        "source_commit": "15aa77e6e1bf60e11db5b42d9832bf1c33d28726"
       }
     ]
   }
