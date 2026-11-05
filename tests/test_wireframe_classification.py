@@ -60,6 +60,20 @@ const baseSubset=C.build('drought',{classes:{vh:1},climate:'base'},{count:3,meth
 const futureSubset=C.build('drought',{classes:{vh:1},climate:'ssp'},{count:3,method:'quantile',cuts:[]});
 assert.notEqual(baseSubset.sample.length,futureSubset.sample.length);
 assert.deepEqual(Array.from(baseSubset.cuts),Array.from(futureSubset.cuts));
+// Direction flips severity, not numeric bin membership or cut points.
+const forward=C.build('poverty',st,{count:5,method:'threshold',cuts:[20,40,60,80],direction:'higher_worse'});
+const reverse=C.build('poverty',st,{count:5,method:'threshold',cuts:[20,40,60,80],direction:'higher_better'});
+assert.equal(forward.names[0],'Best');assert.equal(reverse.names[0],'Worst');
+assert.equal(forward.mapKey(cells[0],'base'),'lhq0');assert.equal(reverse.mapKey(cells[0],'base'),'lhq4');
+assert.equal(reverse.classify(cells[0],'base'),forward.classify(cells[0],'base'));
+assert.equal(reverse.high(cells[0],'base'),true);assert.equal(forward.high(cells[0],'base'),false);
+assert.equal(reverse.high(cells[9],'base'),false);
+assert.deepEqual(Array.from(reverse.order),[4,3,2,1,0]);
+assert(C.set('poverty',{count:2,method:'threshold',cuts:[60],direction:'higher_better'}));
+assert.equal(boot().get('poverty').direction,'higher_better');
+const directionSnapshot=C.snapshot();C.restore({});C.restore(directionSnapshot);
+assert.equal(C.get('poverty').direction,'higher_better');
+assert(!C.set('poverty',{count:2,method:'threshold',cuts:[60],direction:'sideways'}));
 // Exact boundaries enter higher class, with no gaps in map class labels.
 const E=C.build('poverty',st,{count:2,method:'threshold',cuts:[100/3]});
 assert.equal(E.classify(cells[3],'base'),1);
