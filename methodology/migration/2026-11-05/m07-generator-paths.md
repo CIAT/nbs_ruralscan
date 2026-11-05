@@ -1,6 +1,6 @@
 # M07/M08: generator paths and operation boundaries
 
-Date: 5 November 2026. Baseline: `6c28a64a367eafc695d42c7fdf754e170c103d6b` (merged PR #586). Status: implemented; pending merge. This is a bounded continuation of the [T4 adapter](m07-t4-build-paths.md), not an evidence cutover.
+Date: 5 November 2026. Baseline: `6c28a64a367eafc695d42c7fdf754e170c103d6b` (merged PR #586). Status: merged in PR #588 (`7a11a32b788756c55ae612a94e4de48752690911`). This is a bounded continuation of the [T4 adapter](m07-t4-build-paths.md), not an evidence cutover.
 
 ## Result
 
@@ -56,6 +56,6 @@ Independent review identified hard-linked output leaves as an overwrite route. T
 
 ## Remaining work
 
-M07 remains bounded to explicit T4 and generator contexts. M08 still needs transactional publication, deeper separation of compilation from artifact writing, and submission/writer boundaries. Publication currently writes files sequentially: a later I/O or compilation failure can leave partial derived output, although separate-build inputs remain untouched. Build from stable snapshots; concurrent source edits are not locked by this interface. The next publication slice should stage the complete output, validate a manifest, and publish only after every stage succeeds.
+M07 remains bounded to explicit T4 and generator contexts. At the close of PR #588, publication still wrote files sequentially, so a late failure could leave partial derived output. The following [M08 staging slice](m08-staged-publication.md) addresses compilation isolation and caught-error rollback. Reader-consistent release publication, deeper separation of compilation from artifact writing, and submission/writer boundaries remain open. Build from stable snapshots; concurrent source edits are not locked by these interfaces.
 
 Authored/generated T4 ownership, method/evidence release contracts and live writer cutover retain their existing approval and continuity gates. Review continues in CIAT throughout.

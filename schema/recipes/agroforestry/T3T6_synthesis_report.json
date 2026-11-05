@@ -1,11 +1,11 @@
 {
   "nbs_id": "agroforestry",
-  "n_units_pooled": 902,
+  "n_units_pooled": 904,
   "parked_families": [
     "agroforestry__homegardens_proximity"
   ],
   "units_by_role": {
-    "nbs_effect": 872,
+    "nbs_effect": 874,
     "asset_vulnerability": 30
   },
   "cells": [
@@ -71,10 +71,12 @@
     {
       "table": "T6",
       "cell": "drought_hazard",
-      "rows": 8,
+      "rows": 10,
       "used": 17,
       "scope_rows": [
-        "agroforestry__drought_hazard__income_group-high"
+        "agroforestry__drought_hazard__income_group-high",
+        "agroforestry__drought_hazard__income_group-lic_lmic",
+        "agroforestry__drought_hazard__farming_system-cropping_rainfed"
       ]
     },
     {
@@ -117,13 +119,12 @@
     {
       "table": "T6",
       "cell": "production_gap",
-      "rows": 14,
-      "used": 228,
+      "rows": 13,
+      "used": 230,
       "scope_rows": [
         "agroforestry__production_gap__income_group-high",
         "agroforestry__production_gap__income_group-mixed",
         "agroforestry__production_gap__income_group-upper_middle",
-        "agroforestry__production_gap__farming_system-agro_pastoral",
         "agroforestry__production_gap__farming_system-cropping_irrigated",
         "agroforestry__production_gap__farming_system-pastoral_rangeland",
         "agroforestry__production_gap__farming_system-tree_perennial"
@@ -182,14 +183,14 @@
       "table": "T3",
       "cell": "drought__agro_pastoral",
       "rows": 3,
-      "used": 6,
+      "used": 5,
       "scope_rows": []
     },
     {
       "table": "T3",
       "cell": "drought__all",
       "rows": 8,
-      "used": 44,
+      "used": 46,
       "scope_rows": [
         "agroforestry__drought__all__income_group-high"
       ]
@@ -214,9 +215,9 @@
       "table": "T3",
       "cell": "drought__pastoral_rangeland",
       "rows": 3,
-      "used": 12,
+      "used": 15,
       "scope_rows": [
-        "agroforestry__drought__pastoral_rangeland__income_group-upper_middle"
+        "agroforestry__drought__pastoral_rangeland__income_group-lic_lmic"
       ]
     },
     {
@@ -287,21 +288,21 @@
       "table": "T3",
       "cell": "heat_stress__cropping_rainfed",
       "rows": 4,
-      "used": 11,
+      "used": 12,
       "scope_rows": []
     },
     {
       "table": "T3",
       "cell": "heat_stress__mixed_crop_livestock",
       "rows": 2,
-      "used": 5,
+      "used": 6,
       "scope_rows": []
     },
     {
       "table": "T3",
       "cell": "heat_stress__pastoral_rangeland",
       "rows": 3,
-      "used": 15,
+      "used": 16,
       "scope_rows": [
         "agroforestry__heat_stress__pastoral_rangeland__income_group-upper_middle"
       ]
@@ -310,7 +311,7 @@
       "table": "T3",
       "cell": "heat_stress__tree_perennial",
       "rows": 2,
-      "used": 8,
+      "used": 9,
       "scope_rows": []
     },
     {
@@ -8373,12 +8374,6 @@
     [
       "T3",
       "drought__agro_pastoral",
-      "ev_livestock_productivity_faosen24_22",
-      "hazard_type=heat_stress ≠ cell drought"
-    ],
-    [
-      "T3",
-      "drought__agro_pastoral",
       "ev_household_income_crs23_5",
       "hazard unstated; household_income routes to 6 hazards"
     ],
@@ -9200,6 +9195,12 @@
     ],
     [
       "T3",
+      "drought__agro_pastoral",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell drought"
+    ],
+    [
+      "T3",
       "drought__all",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -9833,12 +9834,6 @@
       "drought__all",
       "ev_forage_productivity_faosen24_21",
       "hazard unstated; forage_productivity routes to 6 hazards"
-    ],
-    [
-      "T3",
-      "drought__all",
-      "ev_livestock_productivity_faosen24_22",
-      "hazard_type=heat_stress ≠ cell drought"
     ],
     [
       "T3",
@@ -11456,6 +11451,12 @@
     ],
     [
       "T3",
+      "drought__all",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell drought"
+    ],
+    [
+      "T3",
       "drought__cropping_rainfed",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -13148,6 +13149,12 @@
     ],
     [
       "T3",
+      "drought__cropping_rainfed",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell drought"
+    ],
+    [
+      "T3",
       "drought__mixed_crop_livestock",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -14492,6 +14499,12 @@
     ],
     [
       "T3",
+      "drought__mixed_crop_livestock",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell drought"
+    ],
+    [
+      "T3",
       "drought__pastoral_rangeland",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -15803,6 +15816,12 @@
       "drought__pastoral_rangeland",
       "ev_soil_moisture_bogie18_3",
       "claim_scope=species_specific"
+    ],
+    [
+      "T3",
+      "drought__pastoral_rangeland",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell drought"
     ],
     [
       "T3",
@@ -17270,6 +17289,12 @@
     ],
     [
       "T3",
+      "drought__tree_perennial",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell drought"
+    ],
+    [
+      "T3",
       "fire__agro_pastoral",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -17639,12 +17664,6 @@
       "fire__agro_pastoral",
       "ev_livestock_productivity_moran18_14",
       "hazard unstated; livestock_productivity routes to 6 hazards"
-    ],
-    [
-      "T3",
-      "fire__agro_pastoral",
-      "ev_livestock_productivity_faosen24_22",
-      "hazard_type=heat_stress ≠ cell fire"
     ],
     [
       "T3",
@@ -18434,6 +18453,12 @@
     ],
     [
       "T3",
+      "fire__agro_pastoral",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell fire"
+    ],
+    [
+      "T3",
       "fire__all",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -19013,12 +19038,6 @@
       "fire__all",
       "ev_forage_productivity_faosen24_21",
       "hazard unstated; forage_productivity routes to 6 hazards"
-    ],
-    [
-      "T3",
-      "fire__all",
-      "ev_livestock_productivity_faosen24_22",
-      "hazard_type=heat_stress ≠ cell fire"
     ],
     [
       "T3",
@@ -20474,6 +20493,24 @@
     ],
     [
       "T3",
+      "fire__all",
+      "ev_forage_productivity_singhrao08_1",
+      "hazard_type=drought ≠ cell fire"
+    ],
+    [
+      "T3",
+      "fire__all",
+      "ev_forage_productivity_singhrao08_2",
+      "hazard_type=drought ≠ cell fire"
+    ],
+    [
+      "T3",
+      "fire__all",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell fire"
+    ],
+    [
+      "T3",
       "flood__all",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -21215,12 +21252,6 @@
       "flood__all",
       "ev_forage_productivity_faosen24_21",
       "hazard unstated; forage_productivity routes to 6 hazards"
-    ],
-    [
-      "T3",
-      "flood__all",
-      "ev_livestock_productivity_faosen24_22",
-      "hazard_type=heat_stress ≠ cell flood"
     ],
     [
       "T3",
@@ -22844,6 +22875,24 @@
     ],
     [
       "T3",
+      "flood__all",
+      "ev_forage_productivity_singhrao08_1",
+      "hazard_type=drought ≠ cell flood"
+    ],
+    [
+      "T3",
+      "flood__all",
+      "ev_forage_productivity_singhrao08_2",
+      "hazard_type=drought ≠ cell flood"
+    ],
+    [
+      "T3",
+      "flood__all",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell flood"
+    ],
+    [
+      "T3",
       "flood__mixed_crop_livestock",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -24323,6 +24372,12 @@
       "flood__mixed_crop_livestock",
       "ev_soil_moisture_bogie18_3",
       "claim_scope=species_specific"
+    ],
+    [
+      "T3",
+      "flood__mixed_crop_livestock",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell flood"
     ],
     [
       "T3",
@@ -25937,6 +25992,12 @@
       "flood__tree_perennial",
       "ev_crop_yield_armengot16_1",
       "hazard unstated; crop_yield routes to 6 hazards"
+    ],
+    [
+      "T3",
+      "flood__tree_perennial",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell flood"
     ],
     [
       "T3",
@@ -29300,6 +29361,18 @@
     ],
     [
       "T3",
+      "heat_stress__all",
+      "ev_forage_productivity_singhrao08_1",
+      "hazard_type=drought ≠ cell heat_stress"
+    ],
+    [
+      "T3",
+      "heat_stress__all",
+      "ev_forage_productivity_singhrao08_2",
+      "hazard_type=drought ≠ cell heat_stress"
+    ],
+    [
+      "T3",
       "heat_stress__cropping_rainfed",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -33494,6 +33567,18 @@
     ],
     [
       "T3",
+      "heat_stress__pastoral_rangeland",
+      "ev_forage_productivity_singhrao08_1",
+      "hazard_type=drought ≠ cell heat_stress"
+    ],
+    [
+      "T3",
+      "heat_stress__pastoral_rangeland",
+      "ev_forage_productivity_singhrao08_2",
+      "hazard_type=drought ≠ cell heat_stress"
+    ],
+    [
+      "T3",
       "heat_stress__tree_perennial",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -35565,12 +35650,6 @@
     [
       "T3",
       "waterlogging__all",
-      "ev_livestock_productivity_faosen24_22",
-      "hazard_type=heat_stress ≠ cell waterlogging"
-    ],
-    [
-      "T3",
-      "waterlogging__all",
       "ev_household_income_crs23_5",
       "hazard unstated; household_income routes to 6 hazards"
     ],
@@ -37016,6 +37095,24 @@
     ],
     [
       "T3",
+      "waterlogging__all",
+      "ev_forage_productivity_singhrao08_1",
+      "hazard_type=drought ≠ cell waterlogging"
+    ],
+    [
+      "T3",
+      "waterlogging__all",
+      "ev_forage_productivity_singhrao08_2",
+      "hazard_type=drought ≠ cell waterlogging"
+    ],
+    [
+      "T3",
+      "waterlogging__all",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell waterlogging"
+    ],
+    [
+      "T3",
       "waterlogging__cropping_irrigated",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -38186,6 +38283,12 @@
     ],
     [
       "T3",
+      "waterlogging__cropping_irrigated",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell waterlogging"
+    ],
+    [
+      "T3",
       "wind_cyclone__all",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -38759,12 +38862,6 @@
       "wind_cyclone__all",
       "ev_forage_productivity_faosen24_21",
       "hazard unstated; forage_productivity routes to 6 hazards"
-    ],
-    [
-      "T3",
-      "wind_cyclone__all",
-      "ev_livestock_productivity_faosen24_22",
-      "hazard_type=heat_stress ≠ cell wind_cyclone"
     ],
     [
       "T3",
@@ -40250,6 +40347,24 @@
     ],
     [
       "T3",
+      "wind_cyclone__all",
+      "ev_forage_productivity_singhrao08_1",
+      "hazard_type=drought ≠ cell wind_cyclone"
+    ],
+    [
+      "T3",
+      "wind_cyclone__all",
+      "ev_forage_productivity_singhrao08_2",
+      "hazard_type=drought ≠ cell wind_cyclone"
+    ],
+    [
+      "T3",
+      "wind_cyclone__all",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell wind_cyclone"
+    ],
+    [
+      "T3",
       "wind_cyclone__cropping_rainfed",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -41744,6 +41859,12 @@
     ],
     [
       "T3",
+      "wind_cyclone__cropping_rainfed",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell wind_cyclone"
+    ],
+    [
+      "T3",
       "wind_cyclone__tree_perennial",
       "ev_t6_yield_soilfert_castle21_2",
       "hazard unstated; crop_yield routes to 6 hazards"
@@ -43112,6 +43233,12 @@
     ],
     [
       "T3",
+      "wind_cyclone__tree_perennial",
+      "ev_livestock_productivity_porter14_1",
+      "hazard_type=heat_stress ≠ cell wind_cyclone"
+    ],
+    [
+      "T3",
       "asset_threat__drought",
       "ev_tree_canopy_cover_watts22_7",
       "claim_scope=species_specific"
@@ -43498,7 +43625,7 @@
     "T6 agroforestry/cost_reduction: rank 1 A=0.745 limited×medium→low; 0 scope row(s); transfer in_context",
     "cost_reduction: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
     "T6 agroforestry/cost_reduction: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
-    "T6 agroforestry/drought_hazard: rank 1 A=0.753 robust×medium→high; 1 scope row(s); transfer in_context",
+    "T6 agroforestry/drought_hazard: rank 1 A=0.6 robust×low→medium; 3 scope row(s); transfer in_context",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "drought_hazard: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
     "T6 agroforestry/drought_hazard: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
@@ -43506,8 +43633,8 @@
     "T6 agroforestry/drought_hazard: rank 1 A=1.0 medium×high→high; 0 scope row(s); transfer out_of_context",
     "T6 agroforestry/drought_hazard: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer in_context",
     "T6 agroforestry/drought_hazard: rank -1 A=0.0 limited×low→very_low; 0 scope row(s); transfer in_context",
-    "drought_hazard: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
-    "T6 agroforestry/drought_hazard: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer in_context",
+    "T6 agroforestry/drought_hazard: rank -1 A=0.0 limited×low→very_low; 0 scope row(s); transfer in_context",
+    "roll-up class set by sub-practice vote: conflicting_evidence -> slight_positive (linear_boundary=slight_positive, planted_silvoarable=slight_positive, regeneration_farmland=slight_positive, shaded_perennial=slight_negative, silvopastoral=slight_negative)",
     "T6 agroforestry/flood_hazard: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer in_context",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "flood_hazard: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
@@ -43539,14 +43666,14 @@
     "T6 agroforestry/heat_stress_hazard: rank 1 A=1.0 medium×high→high; 0 scope row(s); transfer in_context",
     "T6 agroforestry/heat_stress_hazard: rank 1 A=0.971 robust×high→very_high; 0 scope row(s); transfer adjacent",
     "T6 agroforestry/heat_stress_hazard: rank 2 A=0.942 robust×high→very_high; 0 scope row(s); transfer adjacent",
-    "T6 agroforestry/production_gap: rank 3 A=0.709 robust×medium→high; 7 scope row(s); transfer in_context",
+    "T6 agroforestry/production_gap: rank 3 A=0.709 robust×medium→high; 6 scope row(s); transfer in_context",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T6 agroforestry/production_gap: rank 3 A=0.944 robust×high→very_high; 0 scope row(s); transfer adjacent",
     "T6 agroforestry/production_gap: rank 2 A=0.574 robust×low→medium; 0 scope row(s); transfer adjacent",
     "T6 agroforestry/production_gap: rank 3 A=0.626 robust×medium→high; 0 scope row(s); transfer in_context",
-    "T6 agroforestry/production_gap: rank 3 A=0.835 robust×high→very_high; 0 scope row(s); transfer in_context",
+    "T6 agroforestry/production_gap: rank 3 A=0.829 robust×high→very_high; 0 scope row(s); transfer in_context",
     "T6 agroforestry/production_gap: rank 2 A=0.588 robust×low→medium; 0 scope row(s); transfer in_context",
-    "T6 agroforestry/production_gap: rank 3 A=0.512 robust×low→medium; 0 scope row(s); transfer adjacent",
+    "T6 agroforestry/production_gap: rank 3 A=0.574 robust×low→medium; 0 scope row(s); transfer adjacent",
     "roll-up class set by sub-practice vote: strong_positive -> conflicting_evidence (cross_family=strong_positive, linear_boundary=conflicting_evidence, planted_silvoarable=conflicting_evidence, regeneration_farmland=strong_positive, shaded_perennial=conflicting_evidence, silvopastoral=conflicting_evidence)",
     "T6 agroforestry/recurrent_cost: rank 3 A=0.0 limited×low→very_low; 0 scope row(s); transfer in_context",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
@@ -43584,16 +43711,16 @@
     "T3 agroforestry/drought__agro_pastoral: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer adjacent",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T3 agroforestry/drought__agro_pastoral: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer in_context",
-    "T3 agroforestry/drought__agro_pastoral: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer in_context",
-    "T3 agroforestry/drought__all: rank 1 A=0.663 robust×medium→high; 1 scope row(s); transfer in_context",
+    "drought: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
+    "T3 agroforestry/drought__agro_pastoral: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer out_of_context",
+    "T3 agroforestry/drought__all: rank 1 A=0.634 robust×medium→high; 1 scope row(s); transfer in_context",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T3 agroforestry/drought__all: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer in_context",
     "T3 agroforestry/drought__all: rank 1 A=0.63 limited×medium→low; 0 scope row(s); transfer in_context",
     "T3 agroforestry/drought__all: rank 1 A=0.586 robust×low→medium; 0 scope row(s); transfer in_context",
     "T3 agroforestry/drought__all: rank 3 A=1.0 robust×high→very_high; 0 scope row(s); transfer in_context",
     "T3 agroforestry/drought__all: rank -1 A=0.607 robust×medium→high; 0 scope row(s); transfer in_context",
-    "T3 agroforestry/drought__all: rank 2 A=0.854 robust×high→very_high; 0 scope row(s); transfer adjacent",
-    "roll-up class set by sub-practice vote: low -> conflicting_evidence (cross_family=low, linear_boundary=low, planted_silvoarable=conflicting_evidence, regeneration_farmland=very_high, shaded_perennial=conflicting_evidence, silvopastoral=moderate)",
+    "T3 agroforestry/drought__all: rank 1 A=0.554 robust×low→medium; 0 scope row(s); transfer adjacent",
     "T3 agroforestry/drought__cropping_rainfed: rank 1 A=0.661 robust×medium→high; 1 scope row(s); transfer in_context",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T3 agroforestry/drought__cropping_rainfed: rank 1 A=0.63 limited×medium→low; 0 scope row(s); transfer in_context",
@@ -43604,9 +43731,9 @@
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T3 agroforestry/drought__mixed_crop_livestock: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer in_context",
     "T3 agroforestry/drought__mixed_crop_livestock: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer in_context",
-    "T3 agroforestry/drought__pastoral_rangeland: rank 2 A=0.873 robust×high→very_high; 1 scope row(s); transfer adjacent",
+    "T3 agroforestry/drought__pastoral_rangeland: rank 1 A=0.659 robust×medium→high; 1 scope row(s); transfer adjacent",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
-    "T3 agroforestry/drought__pastoral_rangeland: rank 2 A=0.785 medium×medium→medium; 0 scope row(s); transfer adjacent",
+    "T3 agroforestry/drought__pastoral_rangeland: rank 1 A=0.544 medium×low→low; 0 scope row(s); transfer adjacent",
     "T3 agroforestry/drought__tree_perennial: rank -1 A=0.531 robust×low→medium; 1 scope row(s); transfer adjacent",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T3 agroforestry/drought__tree_perennial: rank -1 A=0.607 robust×medium→high; 0 scope row(s); transfer in_context",
@@ -43644,16 +43771,16 @@
     "T3 agroforestry/heat_stress__agro_pastoral: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer adjacent",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T3 agroforestry/heat_stress__agro_pastoral: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer in_context",
-    "T3 agroforestry/heat_stress__all: rank 1 A=0.944 robust×high→very_high; 1 scope row(s); transfer adjacent",
+    "T3 agroforestry/heat_stress__all: rank 1 A=0.947 robust×high→very_high; 1 scope row(s); transfer adjacent",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T3 agroforestry/heat_stress__all: rank 1 A=1.0 limited×high→medium; 0 scope row(s); transfer adjacent",
     "T3 agroforestry/heat_stress__all: rank 1 A=0.724 limited×medium→low; 0 scope row(s); transfer adjacent",
     "heat_stress: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
     "T3 agroforestry/heat_stress__all: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer in_context",
-    "T3 agroforestry/heat_stress__all: rank 1 A=0.903 medium×high→high; 0 scope row(s); transfer in_context",
+    "T3 agroforestry/heat_stress__all: rank 1 A=0.88 medium×high→high; 0 scope row(s); transfer in_context",
     "T3 agroforestry/heat_stress__all: rank 1 A=1.0 medium×high→high; 0 scope row(s); transfer adjacent",
     "T3 agroforestry/heat_stress__all: rank 2 A=1.0 robust×high→very_high; 0 scope row(s); transfer adjacent",
-    "T3 agroforestry/heat_stress__cropping_rainfed: rank 1 A=0.88 robust×high→very_high; 0 scope row(s); transfer adjacent",
+    "T3 agroforestry/heat_stress__cropping_rainfed: rank 1 A=0.901 robust×high→very_high; 0 scope row(s); transfer adjacent",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T3 agroforestry/heat_stress__cropping_rainfed: rank 1 A=0.724 limited×medium→low; 0 scope row(s); transfer adjacent",
     "heat_stress: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
@@ -43661,8 +43788,7 @@
     "T3 agroforestry/heat_stress__cropping_rainfed: rank 1 A=0.0 limited×low→very_low; 0 scope row(s); transfer in_context",
     "T3 agroforestry/heat_stress__mixed_crop_livestock: rank 2 A=1.0 limited×high→medium; 0 scope row(s); transfer adjacent",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
-    "heat_stress: data deficient — one source, none of it measured (claim basis: cited_secondary) — a second independent source or one measured finding would let this cell state a class",
-    "T3 agroforestry/heat_stress__mixed_crop_livestock: rank 0 A=0.0 limited×low→very_low; 0 scope row(s); transfer adjacent",
+    "T3 agroforestry/heat_stress__mixed_crop_livestock: rank 3 A=1.0 limited×high→medium; 0 scope row(s); transfer in_context",
     "T3 agroforestry/heat_stress__pastoral_rangeland: rank 2 A=1.0 robust×high→very_high; 1 scope row(s); transfer adjacent",
     "18 existing-forest comparator unit(s) kept out of the roll-up (PICOS B): ['ev_biodiversity_outcome_nguyen26_11', 'ev_biodiversity_outcome_nguyen26_4', 'ev_biodiversity_outcome_nguyen26_5', 'ev_biodiversity_outcome_nguyen26_6', 'ev_biodiversity_outcome_nguyen26_7', 'ev_biodiversity_outcome_nguyen26_9']…",
     "T3 agroforestry/heat_stress__pastoral_rangeland: rank 2 A=1.0 robust×high→very_high; 0 scope row(s); transfer adjacent",
@@ -43757,6 +43883,6 @@
     "agroforestry__cost_per_tco2e_avoided"
   ],
   "t3_rows": 95,
-  "t6_rows": 108,
+  "t6_rows": 109,
   "t6e_rows": 14
 }
