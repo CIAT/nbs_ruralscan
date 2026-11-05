@@ -47,3 +47,12 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
 
 Remaining active claims: 13 awaiting individual review decisions.
+
+## 5. Soil-bund slope: lower-bound clarification, decision pending
+
+- Evidence: `ev_wh_bund_slope_wolka18_followup_20261105`.
+- Source: Wolka et al. (2018), `wolka2018_swc_ssa_meta`, PDF p. 3, Table 1: level/graded soil bunds fit well-drained soils deeper than 0.5 m, with a slope of up to 30%.
+- Pete's clarification: "lower range is also uncertain it says slopes not flats too".
+- Required interpretation: the source gives no explicit lower slope bound. Do not convert "up to 30%" into an approved 0–30% interval or infer that flat land is suitable. Conversely, the wording does not establish that flat land is unsuitable. Preserve the lower bound as unknown, the reported upper applicability value as 30%, and the soil conditions; suitability above 30% also remains unspecified.
+- Do not invent a positive minimum slope or infer a numerical response curve. This clarification does not approve graded-bund routing or an executable mapping.
+- Status: clarification recorded; final keep/hold decision on this claim remains pending. The remaining-claim count above is unchanged.
