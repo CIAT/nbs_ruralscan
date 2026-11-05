@@ -2,6 +2,8 @@
 
 Date: 5 November 2026. Status: proposed execution baseline; phases require their stated acceptance gates.
 
+Execution has started: see the [Phase 0 record](phase-0/README.md) for the refreshed baseline, verified private recovery snapshot, table/function ownership schedules and exact 15-file initial import proposal. CIAT remains authoritative; no evidence cutover has occurred.
+
 This plan moves the project towards a readable, reusable World Bank methodology and a reproducible implementation, while evidence review continues. It is not an instruction to move the entire existing repository or to change analytical decisions during a repository move.
 
 ## 1. Outcome and decisions
@@ -38,7 +40,7 @@ An application repository is conditional. Inspect `dagudelo30/nbs-ruralscan` for
 
 Organization setup completed on 5 November: [RuralScan](https://github.com/RuralScan) exists on GitHub Free, with peetmate verified as an active owner and the agreed contact. Pete confirmed acceptance of GitHub's terms at creation. [RuralScan/runtime](https://github.com/RuralScan/runtime) is a public fork of Diego's runtime; both default heads and all advertised branch/tag refs match `78fba87d88a6f1d1a308e06632fb7fec76032696`. No runtime files, existing package/data pins or upstream repositories were changed. See the [setup verification record](setup-verification.md). Owner recovery, additional maintainers, protections and the agreed future runtime work location remain governance follow-ups; no colleagues were invited automatically.
 
-The immediate feedback work is available in [PR #578](https://github.com/CIAT/nbs_ruralscan/pull/578): ten note dispositions, the interface fixes and a read-only audit of all 17 cross-family agroforestry source records / 96 claims. That audit found a confirmed duplicate identity and specific scope questions; it does not authorize automatic reclassification. Acceptance remains subject to PR checks and review.
+The immediate feedback work merged in [PR #578](https://github.com/CIAT/nbs_ruralscan/pull/578): ten note dispositions, the interface fixes and a read-only audit of all 17 cross-family agroforestry source records / 96 claims. That audit found a confirmed duplicate identity and specific scope questions; it does not authorize automatic reclassification. Follow-on priority controls merged in [PR #582](https://github.com/CIAT/nbs_ruralscan/pull/582) with passing CI; the repaired build is loaded in the local dashboard preview.
 
 ### Constraints retained
 
