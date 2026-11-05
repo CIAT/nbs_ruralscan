@@ -350,3 +350,36 @@ def test_individual_check_writers_do_not_create_docs(tmp_path):
     assert generate.generate_progress_report(schema, check=True)
     assert generate.generate_dashboard_data(schema, check=True)
     assert snapshot(tmp_path) == before
+
+
+@pytest.mark.parametrize("isolated", [False, True])
+def test_late_generator_failure_cannot_publish_partial_output(
+    inputs, tmp_path, monkeypatch, isolated
+):
+    from nbs_ruralscan.runtime import effect_rows
+
+    paths = SchemaBuildPaths(inputs / "schema", tmp_path / "out" if isolated else None)
+    # A stale artifact would have been overwritten before the last producer failed.
+    stale = inputs / "schema/registers/SRC_source_register.json"
+    stale.write_text("[]\n")
+    before = snapshot(inputs)
+
+    def fail_last(*args, **kwargs):
+        raise RuntimeError("flat effect rows failed")
+
+    monkeypatch.setattr(effect_rows, "write_flat", fail_last)
+    with pytest.raises(RuntimeError, match="flat effect rows failed"):
+        generate.build(paths)
+    assert snapshot(inputs) == before
+    if isolated:
+        assert paths.output_root is not None
+        assert not paths.output_root.exists()
+
+
+def test_check_does_not_stage_artifacts(inputs, monkeypatch):
+    from nbs_ruralscan.schema_tools import publication
+
+    before = snapshot(inputs)
+    monkeypatch.setattr(publication, "staged_publish", forbid)
+    generate.build(SchemaBuildPaths(inputs / "schema"), check=True)
+    assert snapshot(inputs) == before

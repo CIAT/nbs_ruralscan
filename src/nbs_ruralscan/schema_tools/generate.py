@@ -765,31 +765,47 @@ def _table_outputs(paths: SchemaBuildPaths) -> list[tuple[Path, Path]]:
     ]
 
 
+def _destinations(paths: SchemaBuildPaths) -> list[Path]:
+    return [
+        *(dest for _, dest in _table_outputs(paths)),
+        *(
+            [paths.docs_output / "progress.json"]
+            if (paths.schema / "registers/SRC_source_register.csv").exists()
+            else []
+        ),
+        *(
+            paths.docs_output / name
+            for name in (
+                "dashboard_data.json",
+                "review/decisions.json",
+                "table_progress.json",
+                "scorecard.json",
+                "effect_rows_flat.csv",
+            )
+        ),
+    ]
+
+
 def _preflight(paths: SchemaBuildPaths) -> None:
-    paths.preflight(
-        [
-            *(dest for _, dest in _table_outputs(paths)),
-            *(
-                paths.docs_output / name
-                for name in (
-                    "progress.json",
-                    "dashboard_data.json",
-                    "review/decisions.json",
-                    "table_progress.json",
-                    "scorecard.json",
-                    "effect_rows_flat.csv",
-                )
-            ),
-        ]
-    )
+    paths.preflight(_destinations(paths))
 
 
 def publish_outputs(paths: SchemaBuildPaths, *, check: bool = False) -> list[Path]:
-    """Write/compare derived artifacts only. Validate before calling; no quarantine.
+    """Stage a complete build before replacing derived files; no quarantine.
 
-    Publication is not transactional yet: an I/O failure can leave partial outputs.
+    Validate before calling. Checks remain read-only. Writes have rollback for
+    caught failures, not whole-build reader atomicity or crash durability.
     """
     _preflight(paths)
+    if check:
+        return _render_outputs(paths, check=True)
+    from nbs_ruralscan.schema_tools.publication import staged_publish
+
+    return staged_publish(paths, _destinations(paths), _render_outputs)
+
+
+def _render_outputs(paths: SchemaBuildPaths, *, check: bool = False) -> list[Path]:
+    """Compile into the supplied destination (private staging for write builds)."""
     schema_root, docs = paths.schema, paths.docs_output
     changed: list[Path] = []
     for csv_path, json_path in _table_outputs(paths):
