@@ -1,0 +1,52 @@
+[
+  {
+    "evidence_id": "ev_wet_land_cover_xiangchina2023_20261105",
+    "source_id": "wet_potential_distribution_china_ml_2023",
+    "nbs_id": "wetland_management",
+    "suitability_family_id": "wetland_management__restoration_rewetting",
+    "variable": "land_cover",
+    "use_role": "structural_suitability",
+    "evidence_type": "scoping_candidate",
+    "claim_basis": "modelled",
+    "claim_scope": "practice_technology",
+    "extraction_confidence": "medium",
+    "quote": "Overlaying the results of this study \nwith those of the China_LUCC for 2020 showed that 8795.5 km2 of potential wetlands in China \nwere anthropogenically occupied and unsuitable for wetland restoration. The second national wet­\nland resources survey also shows that infrastructure occupation has become one of the five major \nthreat factors affecting the change in wetlands in China, and it has permanent effects. Therefore, \nwhen considering wetland restoration, the first step is to mask off the existing built-up land area \nfrom the results.",
+    "locator_type": "page",
+    "page": 17,
+    "locator": null,
+    "commit_sha": null,
+    "relationship": {
+      "type": "categorical_gate",
+      "excluded_classes": [
+        "existing built-up land"
+      ],
+      "note": "Source explicitly masks built-up land from modelled potential wetlands before selecting restoration areas. No numerical suitability score or automatic global mask."
+    },
+    "context": {
+      "country": [
+        "CHN"
+      ],
+      "region": "China, nationwide 500m analysis",
+      "income_group": "upper_middle",
+      "practice_as_described": "Wetland restoration on modelled potential wetland locations currently converted to cropland, grassland or woodland. Existing built-up land is excluded before mapping restoration targets. Baseline is current land cover rather than experimental treatment.",
+      "note": "Section4.3 PDF17 and Figure9: a spatial implementation gate, not occurrence-only evidence. Modelled potential wetlands are overlaid with China_LUCC2020. Native source cites8795.5km2 anthropogenically occupied potential wetlands as unsuitable; existing built-up area is the explicit exclusion class. Do not generalize that every anthropogenic use is excluded: cropland is an explicit restoration target(PDF18). Woodland conversion has ecological tradeoffs acknowledged by authors. Source screen does not establish former wetland history pixel-by-pixel, landowner feasibility, legal status or global applicability. Retain unapproved scoping evidence; no runtime mask activated. No species/crop envelope.",
+      "model_use": {
+        "used": true,
+        "scope": "restoration_targeting_after_potential_wetland_prediction",
+        "method": "Overlay potential wetland model with current land cover; remove existing built-up area"
+      }
+    },
+    "taxon": null,
+    "lineage_of": null,
+    "reviewer_ok": false,
+    "review_state": "",
+    "raw_name": "existing built-up land area",
+    "observed_dataset": null,
+    "attribution": null,
+    "justification_quote": "Figure 9a shows the spatial distribution of potential suitable areas for wetland restoration, with \nthe results of this study indicating potential wetlands and remote sensing results indicating crop­\nland, grassland, or woodland.",
+    "justification_page": 18,
+    "selection_justification": null,
+    "selection_justification_page": null,
+    "ruleset_version": "v1.9.4"
+  }
+]
