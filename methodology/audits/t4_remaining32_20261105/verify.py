@@ -5,15 +5,13 @@ import csv
 import io
 import json
 import subprocess
-import sys
 
 import fitz
 
-ROOT = Path(__file__).resolve().parents[3]
-sys.path.insert(0, str(ROOT / "src"))
-from nbs_ruralscan.recipe.evidence import EvidenceUnit, validate_units  # noqa: E402
-from nbs_ruralscan.schema_tools.validate_sources import _norm  # noqa: E402
+from nbs_ruralscan.recipe.evidence import EvidenceUnit, validate_units
+from nbs_ruralscan.schema_tools.validate_sources import _norm
 
+ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).parent
 BASE = "dd36350"
 rows = json.loads((HERE / "sources.json").read_text())
