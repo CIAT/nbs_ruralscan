@@ -76,10 +76,11 @@ FIELDS = (
 )
 
 
-def _rows() -> list[dict]:
-    if not LEDGER.exists():
+def _rows(path: Path | None = None) -> list[dict]:
+    path = path if path is not None else LEDGER
+    if not path.exists():
         return []
-    with LEDGER.open(newline="", encoding="utf-8") as f:
+    with path.open(newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
@@ -151,14 +152,14 @@ def facts_for(
     return agg
 
 
-def check(schema_root: str | Path) -> list[str]:
+def check(schema_root: str | Path, *, ledger_path: Path | None = None) -> list[str]:
     """Hard reconciliation (build-failing). Returns list of violations (empty = OK)."""
     from nbs_ruralscan.schema_tools.search_log import has_search
 
     srch = Path(schema_root) / "registers" / "SRCH_search_register.csv"
     facts = derive_facts(schema_root)
     errs: list[str] = []
-    for r in _rows():
+    for r in _rows(ledger_path):
         nbs, tbl, c, fam = (
             r["nbs_id"],
             r["table"],

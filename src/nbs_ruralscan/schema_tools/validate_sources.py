@@ -104,12 +104,20 @@ def _find_artifact(corpus: Path, sid: str) -> tuple[Path, str] | None:
     return None
 
 
-def validate_all_sources(schema_root: str | Path) -> None:
+def validate_all_sources(
+    schema_root: str | Path, *, corpus_root: Path | None = None
+) -> None:
     """Verify every EV row; raise ``ValueError`` listing all violations on failure."""
     schema_root = Path(schema_root)
     src_csv = schema_root / "registers" / "SRC_source_register.csv"
     ev_csv = schema_root / "registers" / "EV_evidence_register.csv"
-    corpus = schema_root.parent / ".cache" / "corpus"
+    corpus = (
+        Path(corpus_root)
+        if corpus_root is not None
+        else schema_root.parent / ".cache" / "corpus"
+    )
+    if corpus_root is not None and not corpus.is_dir():
+        raise ValueError(f"Explicit source corpus directory does not exist: {corpus}")
 
     if not src_csv.exists() or not ev_csv.exists():
         print(f"Skipping verification: missing registers in {schema_root}")

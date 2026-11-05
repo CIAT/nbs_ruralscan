@@ -146,10 +146,19 @@ def summary(
     return {"batches": by_batch, "nbs": by_nbs}
 
 
-def write_decisions(check: bool = False, dest: Path | None = None) -> list[Path]:
+def write_decisions(
+    check: bool = False,
+    dest: Path | None = None,
+    *,
+    exports_dir: Path | None = None,
+    batch_dir: Path | None = None,
+) -> list[Path]:
     """(Re)write `docs/review/decisions.json`; `[]` when the content is unchanged."""
     dest = Path(dest) if dest else DEST
-    payload = {"decisions": collect(), "summary": summary()}
+    payload = {
+        "decisions": collect(exports_dir),
+        "summary": summary(exports_dir, batch_dir),
+    }
     try:
         current = json.loads(dest.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):

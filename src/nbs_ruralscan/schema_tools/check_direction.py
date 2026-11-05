@@ -43,10 +43,11 @@ _SENSE = ROOT / "schema" / "lookups" / "variable_direction_sense.csv"
 _EXCEPTIONS = ROOT / "schema" / "lookups" / "direction_cue_exceptions.csv"
 
 
-def _exceptions() -> set[str]:
-    if not _EXCEPTIONS.exists():
+def _exceptions(*, exceptions_path: str | Path | None = None) -> set[str]:
+    path = Path(exceptions_path) if exceptions_path is not None else _EXCEPTIONS
+    if not path.exists():
         return set()
-    with _EXCEPTIONS.open(newline="", encoding="utf-8") as f:
+    with path.open(newline="", encoding="utf-8") as f:
         return {r["evidence_id"] for r in csv.DictReader(f)}
 
 
@@ -105,9 +106,14 @@ _GENERIC = {
 }
 
 
-def _keywords(variable: str) -> set[str]:
+def _keywords(variable: str, *, sense_path: str | Path | None = None) -> set[str]:
     """Words that name the variable's own quantity (id parts + sense `quantity`)."""
-    sense = _cached_sense().get(variable) or {}
+    senses = (
+        _cached_sense()
+        if sense_path is None
+        else _cached_sense(Path(sense_path).resolve())
+    )
+    sense = senses.get(variable) or {}
     words = re.findall(
         r"[a-z]{4,}", (variable + " " + sense.get("quantity", "")).lower()
     )
@@ -163,7 +169,7 @@ def check_structure(
     return out
 
 
-def check_unit(r: dict) -> list[dict]:
+def check_unit(r: dict, *, sense_path: str | Path | None = None) -> list[dict]:
     try:
         rel = json.loads(r.get("relationship") or "{}")
     except json.JSONDecodeError:
@@ -184,7 +190,7 @@ def check_unit(r: dict) -> list[dict]:
     var = r.get("variable", "")
     if (
         cue
-        and any(k in _norm(cue) for k in _keywords(var))
+        and any(k in _norm(cue) for k in _keywords(var, sense_path=sense_path))
         and d in ("positive", "negative")
         and r.get("use_role") == "nbs_effect"
         and rel.get("framing") != "loss"
@@ -192,7 +198,7 @@ def check_unit(r: dict) -> list[dict]:
         and "wocat" not in (r.get("source_id") or "")
     ):
         text = cue
-        own = _keywords(var)
+        own = _keywords(var, sense_path=sense_path)
         if any(m.group(0).lower()[:6] not in own for m in _REVERSERS.finditer(text)):
             return out  # a reversing noun that is not the variable itself: words can't tell
         down, up = bool(_DOWN.search(text)), bool(_UP.search(text))
@@ -210,12 +216,17 @@ def check_unit(r: dict) -> list[dict]:
     return out
 
 
-def check(ev_path: str | Path | None = None) -> list[dict]:
+def check(
+    ev_path: str | Path | None = None,
+    *,
+    sense_path: str | Path | None = None,
+    exceptions_path: str | Path | None = None,
+) -> list[dict]:
     p = Path(ev_path) if ev_path else _EV
     if not p.exists():
         return []
     out: list[dict] = []
-    skip = _exceptions()
+    skip = _exceptions(exceptions_path=exceptions_path)
     with p.open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
             if (
@@ -225,7 +236,7 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
                 continue
             out += [
                 x
-                for x in check_unit(r)
+                for x in check_unit(r, sense_path=sense_path)
                 if not (x["signal"] == "cue_word_conflict" and r["evidence_id"] in skip)
             ]
     return out

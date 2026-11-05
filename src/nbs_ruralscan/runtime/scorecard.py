@@ -439,7 +439,11 @@ def build(schema_root: str | Path) -> dict[str, Any]:
     }
 
 
-def _git_commit() -> str:
+def _git_commit(root: Path | None = None) -> str:
+    if root is not None:
+        from nbs_ruralscan.schema_tools.build_paths import source_revision
+
+        return source_revision(root, short=True)
     try:
         return subprocess.run(
             ["git", "rev-parse", "--short", "HEAD"],
@@ -469,10 +473,11 @@ def write(
         out = {
             "build": {
                 "timestamp": datetime.now(timezone.utc).isoformat(),
-                "git_commit": _git_commit(),
+                "git_commit": _git_commit(schema_root.parent),
             },
             **payload,
         }
+        dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(
             json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
         )

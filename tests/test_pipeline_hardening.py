@@ -819,10 +819,13 @@ def test_check_scope_flags_m2b_policy_variables(tmp_path):
 
 
 def test_quarantine_drops_m2b_exclude_but_not_m2b_flag(tmp_path):
-    from nbs_ruralscan.schema_tools import quarantine
+    from nbs_ruralscan.schema_tools import quarantine, check_scope
 
     reg = tmp_path / "schema" / "registers"
     reg.mkdir(parents=True)
+    policy = tmp_path / "schema/lookups/m2b_variable_policy.csv"
+    policy.parent.mkdir()
+    policy.write_bytes(check_scope.M2B_POLICY.read_bytes())
     cols = [
         "evidence_id",
         "source_id",

@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import csv
 import re
-from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -37,10 +36,9 @@ _SCHEME_BY_DATASET = {
 _SCHEME_BY_VARIABLE: dict[str, str] = {}  # e.g. {"land_cover": "cdl"} once unambiguous
 
 
-@lru_cache(maxsize=None)
-def load(scheme: str) -> dict[int, str]:
+def load(scheme: str, *, codelists: Path | None = None) -> dict[int, str]:
     """Load a code→label legend from schema/codelists/<scheme>.csv."""
-    path = CODELISTS / f"{scheme}.csv"
+    path = (codelists if codelists is not None else CODELISTS) / f"{scheme}.csv"
     if not path.exists():
         return {}
     out: dict[int, str] = {}
@@ -82,12 +80,14 @@ def expand_codes(spec: str) -> list[int]:
     return sorted(out)
 
 
-def summarise_class_ranges(scheme: str, suitable: str, not_suitable: str = "") -> dict:
+def summarise_class_ranges(
+    scheme: str, suitable: str, not_suitable: str = "", *, codelists: Path | None = None
+) -> dict:
     """Decode `classes_suitable` / `classes_not_suitable` range specs against a legend.
 
     For relationship-coded class evidence (e.g. HWSD soil-quality "classes_suitable": "1-4").
     """
-    legend = load(scheme)
+    legend = load(scheme, codelists=codelists)
     inc = expand_codes(suitable)
     exc = expand_codes(not_suitable)
     return {
@@ -139,9 +139,9 @@ def codes_from_cdl_mask(expr: str, legend_codes: set[int] | None = None) -> set[
     return {c for c in universe if eval(pred, {"__builtins__": {}}, {"c": c})}  # noqa: S307
 
 
-def summarise_cdl_mask(expr: str) -> dict:
+def summarise_cdl_mask(expr: str, *, codelists: Path | None = None) -> dict:
     """Readable summary of a CDL inclusion mask: included names + excluded names."""
-    legend = load("cdl")
+    legend = load("cdl", codelists=codelists)
     included = codes_from_cdl_mask(expr, set(legend))
     excluded = {int(k) for k in _NEQ.findall(expr)}
     return {

@@ -245,8 +245,9 @@ def test_decoded_class_tuples_compare_as_serialised_json(repo, monkeypatch):
     monkeypatch.setattr(
         codelist,
         "summarise_cdl_mask",
-        lambda quote: {"n_included": 1, "included": [(1, "Class one")]},
+        lambda quote, **kwargs: {"n_included": 1, "included": [(1, "Class one")]},
     )
     generate.generate_dashboard_data(repo)
+    assert read_build(repo)["decoded_classes"]["mask"]["included"] == [[1, "Class one"]]
     assert generate.generate_dashboard_data(repo, check=True) == []
     assert generate.generate_dashboard_data(repo) == []

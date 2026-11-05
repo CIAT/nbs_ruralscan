@@ -193,11 +193,13 @@ def m2b_policy(path: Path | None = None) -> dict[str, dict]:
         return {r["variable"]: r for r in csv.DictReader(f)}
 
 
-def check(ev_path: str | Path | None = None) -> list[dict]:
+def check(
+    ev_path: str | Path | None = None, *, policy_path: str | Path | None = None
+) -> list[dict]:
     """Return advisory off-scope flags: [{evidence_id, signal, snippet}]."""
     path = Path(ev_path) if ev_path else EV
     flags: list[dict] = []
-    policy = m2b_policy()
+    policy = m2b_policy(Path(policy_path) if policy_path is not None else None)
     if not path.exists():
         return flags
     with path.open(newline="", encoding="utf-8") as f:
