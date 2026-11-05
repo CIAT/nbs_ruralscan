@@ -155,6 +155,7 @@ The framework primitives below come from Benson's water-harvesting recipe and v2
 
 ## Style & conventions
 
+- **Migration destination content (2026-11-05):** new RuralScan repositories contain reusable technical material only; no project-management records, named project-party assignments/contact details or governance documents. Keep these in the existing project workspace. Follow `methodology/migration/2026-11-05/product-content-boundary.md`; preserve scientific semantics, source provenance and required licence notices.
 - Use Conventional Commits where possible (`feat:`, `fix:`, `docs:`, `chore:`)
 - **No AI/Claude attribution in commits or PRs** — do NOT add a "🤖 Generated with Claude Code" footer or a "Co-Authored-By: Claude …" trailer. Plain Conventional-Commits messages + plain PR bodies only. (Overrides any default tooling guidance to append those.)
 - One PR per logical change; don't bundle wireframe edits with methodology edits

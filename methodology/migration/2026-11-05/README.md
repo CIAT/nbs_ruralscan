@@ -30,7 +30,7 @@ The five work areas therefore have clear homes without five separate repositorie
 4. Evidence and compilation → evidence; accepted analytical releases published through method.
 5. Haiti demonstration → one executable example in runtime; explanation and versioned results linked from method.
 
-An application repository is conditional. Inspect `dagudelo30/nbs-ruralscan` for useful application/notebook work; do not create a fourth active codebase merely because the older repository exists. An organization `.github` profile repository is optional navigation/governance infrastructure, not another product.
+An application repository is conditional. Inspect `dagudelo30/nbs-ruralscan` for useful application/notebook work; do not create a fourth active codebase merely because the older repository exists. An organization `.github` profile repository, if needed, contains product navigation only. Project governance stays in the existing workspace.
 
 ### Confirmed by Pete in this chat
 
@@ -143,6 +143,8 @@ Method site embeds or deploys the pinned public build under its navigation; it d
 
 ## 4. Target structure and reader experience
 
+**Content boundary (5 November 2026):** new repositories contain reusable technical material only. No project-management records, named project parties or governance documents. Administration and this migration plan stay in the existing project workspace. The [destination content boundary](product-content-boundary.md) supersedes earlier import suggestions where mixed technical/admin material occurs.
+
 These trees are design targets, not bulk move commands. Runtime keeps its current clear structure during the initial copy.
 
 ```text
@@ -171,10 +173,9 @@ method/
   site/                           # Handbook site; pinned workbook build reference
   examples/haiti/                 # Narrative/report, runtime notebook links
   releases/                       # Manifest/index source; bulky artifacts outside Git
-  governance/                     # Decisions, contribution/release/compatibility policy
   tests/
   tools/
-  LICENSE, CITATION.cff, CONTRIBUTORS.md
+  LICENSE, CITATION.cff            # Required notices and scientific citation metadata
 
 evidence/
   README.md
@@ -207,7 +208,7 @@ runtime/                          # Start as unchanged Diego fork
   # Add tested environment lock and Colab bootstrap separately.
 ```
 
-Use lowercase folder names; keep stable scientific IDs such as `water_harvesting_conservation`. Each top-level directory gets a short README explaining purpose, inputs, outputs, authority and what does not belong there. No unexplained `final`, `final2`, duplicate handoff directories or personal absolute paths in current documentation.
+Use lowercase folder names; keep stable scientific IDs such as `water_harvesting_conservation`. Each top-level directory gets a short technical README explaining purpose, inputs, outputs and dependencies, without project assignments or administration. No unexplained `final`, `final2`, duplicate handoff directories or personal absolute paths in current documentation.
 
 Public navigation should answer five tasks: **Understand Rural Scan → Choose a recipe → Implement it → Inspect evidence → Extend evidence**. Add a prominent **Run Haiti example** entry. Progress is supporting transparency, not the only entrance to the methodology. Show release/readiness labels consistently and provide printable cookbook material.
 
@@ -301,7 +302,7 @@ Phase numbers group work; the board's `depends_on` values define the execution o
 2. Fork `dagudelo30/nbs-ruralscan-runtime` into `RuralScan/runtime`, preserving upstream linkage and commit attribution. Record all original refs; verify selected default head/tree. If required tags/branches are not included by the fork operation, copy the missing refs explicitly to the empty destination and verify them. Do not repeatedly mirror-push over subsequent organization work.
 3. Keep package distribution `nbs-ruralscan-runtime`, Python import `nbs_runtime`, existing paths, CIAT publisher pin and Hugging Face `dagudelo30/nbs-ruralscan-data` unchanged. Forking Git does not move external data hosting, secrets, deployments, issues or review processes.
 4. Run existing runtime checks before any cleanup. Inventory issue/PR/release metadata separately. Record canonical runtime work location/cutover with Diego, the unresolved license status and its resolution owner, and branch/review protections. Until that coordination, the fork is a staging copy; upstream changes enter as reviewed PRs. Preserve all attribution and notices; do not add a guessed license.
-5. Create method/evidence repository skeletons with concise scope/authority READMEs, contribution rules and verified notices. No bulk data import yet.
+5. Create method/evidence repository skeletons with concise technical READMEs and verified notices. Keep project administration and governance in the existing workspace; apply the destination content boundary before every import. No bulk data import yet.
 
 **Exit:** unchanged staging fork matches source; original pin still verifies; original remains intact; deployment/access metadata and any unresolved license gap are recorded. This gate does not certify a reusable distribution. An explicit reuse/redistribution license decision is required before publishing a reusable runtime release or WB handover, and is checked again in M26. A fork preserves code continuity; transfer is a later owner action only if agreed, not this plan's default.
 
@@ -330,7 +331,7 @@ Phase numbers group work; the board's `depends_on` values define the execution o
 1. Deploy method site with current cookbook/data model and pinned public workbook build. Show separate method, evidence, recipe, UI and runtime versions where relevant.
 2. Public and reviewer builds must give identical counts/IDs for the same evidence bundle. Keep Table default and all accepted dashboard feedback; preserve print/deep links and bibliography/evidence navigation.
 3. Add configurable runtime publisher location while preserving old URLs and immutable pins. Test old and new package origins.
-4. Upgrade runtime from developer v0.1.5 to v0.1.7 in its own PR with semantic diff/readiness report and conformance checks. Same contract number alone is insufficient proof of analytical equivalence.
+4. Remove project administration and named parties from runtime documentation. Neutralize public labels and person-named API/output identifiers through a coordinated compatibility change with consumers/tests; retain source pins and original provenance. Then upgrade runtime from developer v0.1.5 to v0.1.7 in its own PR with semantic diff/readiness report and conformance checks. Same contract number alone is insufficient proof of analytical equivalence.
 5. Add pinned runtime environment and working Colab bootstrap; retain documented external authentication/access requirements.
 
 **Exit:** independent clean checkout loads exact compatible releases; public site has no review write route; changed pins produce explicit change reports; old consumers continue to work.
