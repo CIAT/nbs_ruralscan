@@ -2,7 +2,7 @@
 
 5 November 2026. CIAT remains the working authority. No method/evidence repository import, analytical release or writer cutover has occurred.
 
-Dashboard feedback is implemented in merged [PR #578](https://github.com/CIAT/nbs_ruralscan/pull/578). The follow-on priority queue is tested in [PR #582](https://github.com/CIAT/nbs_ruralscan/pull/582), with CI passing and normal auto-merge enabled pending the required review. The existing local address `http://127.0.0.1:8876/dashboard.html` now serves its v1.5.0 read-only preview. The review service on port 8766 was left running; no decisions were applied or cleared.
+Dashboard feedback is implemented in merged [PR #578](https://github.com/CIAT/nbs_ruralscan/pull/578). The follow-on priority queue is tested in [PR #582](https://github.com/CIAT/nbs_ruralscan/pull/582), now merged with passing CI. The existing local address `http://127.0.0.1:8876/dashboard.html` now serves its v1.5.0 read-only preview. The review service on port 8766 was left running; no decisions were applied or cleared.
 
 ## What is complete
 
