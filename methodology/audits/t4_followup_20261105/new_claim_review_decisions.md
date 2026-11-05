@@ -67,4 +67,14 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Provenance: author synthesis links reduced stability and greater occupation of cultivable land on steep slopes to crop-yield patterns. This review accepts the physical implementation condition only; it does not extract or approve crop-yield effects in the T4 lane.
 - Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
 
-Remaining active claims: 11 awaiting individual review decisions.
+## 7. Tied ridges: qualitative gentle-slope condition
+
+- Evidence: `ev_wh_tiedridge_slope_wolka18_followup_20261105`.
+- Source: Wolka et al. (2018), `wolka2018_swc_ssa_meta`, PDF p. 3 (printed p. 69), Table 1.
+- Proposal presented: keep the qualitative implementation condition that tied ridges are effective on gently sloping land. No numerical definition of gentle, lower slope bound, flat-land suitability, maximum slope or numerical curve is established. Construction dimensions are not landscape suitability thresholds.
+- Pete's exact response: "ok next".
+- Accepted decision: keep on that qualitative basis, restricted to tied ridges forming enclosed rainwater-retaining micro-basins; do not generalize to open ridges, tillage alone or all in-situ water-harvesting practices.
+- Provenance: secondary review guidance with grouped citations, not independently verified votes from each cited primary.
+- Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
+
+Remaining active claims: 10 awaiting individual review decisions.
