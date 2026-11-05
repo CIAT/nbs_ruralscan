@@ -10,7 +10,7 @@ import csv
 import io
 import json
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -235,6 +235,25 @@ def _existing_rows(f: Path) -> list[dict[str, str]]:
     return list(csv.DictReader(io.StringIO(f.read_bytes().decode("utf-8"), newline="")))
 
 
+def _dataset_binding_hold(row: dict[str, Any]) -> str:
+    """Honor reviewed profile requirements instead of falling back to a proxy."""
+    reasons = []
+    for profile in row.get("relationship_params", {}).get("profiles", []):
+        adaptation = profile.get("reviewed_adaptation") or {}
+        if "dataset_binding" not in adaptation:
+            continue
+        binding = adaptation["dataset_binding"]
+        if (
+            not isinstance(binding, dict)
+            or binding.get("status") != "requires_matching_input"
+            or not isinstance(binding.get("reason"), str)
+            or not binding["reason"].strip()
+        ):
+            raise ValueError("Invalid reviewed dataset binding requirement")
+        reasons.append(binding["reason"].strip())
+    return " ".join(dict.fromkeys(reasons))
+
+
 def write_recipe(
     nbs_id: str,
     results: dict[str, FamilyResult],
@@ -287,15 +306,27 @@ def write_recipe(
                 )
     csv_rows: list[dict[str, object]] = []
     for family, res in results.items():
-        save_family(res, recipe_dir / f"T4_{family}.json")
-        for row in res.rows:
+        output_rows = [dict(row) for row in res.rows]
+        binding_holds = set()
+        for row in output_rows:
+            reason = _dataset_binding_hold(row)
+            if reason:
+                binding_holds.add(row["mapping_id"])
+                row["dataset_id"] = ""
+                note = "Dataset binding unresolved; requires matching input: " + reason
+                if note not in row.get("justification", ""):
+                    row["justification"] = row.get("justification", "") + " " + note
+        save_family(replace(res, rows=output_rows), recipe_dir / f"T4_{family}.json")
+        for row in output_rows:
             if (family, row["variable"]) in gates:
                 continue
             csv_rows.append(
                 {
                     "mapping_id": row["mapping_id"],
                     "nbs_id": nbs_id,
-                    "dataset_id": ds_by_var.get(row["variable"], ""),
+                    "dataset_id": ""
+                    if row["mapping_id"] in binding_holds
+                    else ds_by_var.get(row["variable"], ""),
                     "suitability_dimension": row["suitability_dimension"],
                     "relationship_type": row["relationship_type"],
                     "relationship_params": json.dumps(row["relationship_params"]),

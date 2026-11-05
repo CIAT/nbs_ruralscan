@@ -21,6 +21,8 @@
     <p class="lede">Read what each practice is, where it can work, what it does and roughly what it costs, before any map. <b>You take away the practice to map</b> — choosing one here sets it in the control bar.</p>
   </section>
 
+  <p class="m2-note"><b>Three worked examples in this prototype.</b> These options demonstrate different practice types; they are not the full NbS catalogue. Other practices and families will become selectable when their profiles are connected.</p>
+
   <div class="ctlrow">
     <div class="seg" id="pick" role="group" aria-label="Practice"></div>
   </div>
@@ -61,11 +63,11 @@
   </section>
 
   <section class="tabpanel" role="tabpanel" id="tp-3" hidden>
-    <div class="tp-head"><div><h2><span class="sec-n">2.3</span>What it addresses</h2><p>What the pooled evidence says the practice does for each problem, and how sure that is.</p></div>
+    <div class="tp-head"><div><h2><span class="sec-n">2.3</span>What it addresses</h2><p>How effects, confidence and disagreement will be shown. All effect rows below are illustrative, not an evidence synthesis.</p></div>
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
     <div class="kread" id="kr-3"></div>
     <div class="tabwrap"><table class="qt" id="t3" style="max-width:900px"></table></div>
-    <p class="m2-note" style="border-left-color:var(--s3);max-width:900px"><b>Strength and confidence are separate.</b> Strength is how large the effect is; confidence is how much evidence there is and how well it agrees. Both come from pooled studies elsewhere, not from measurement in the project area.</p>
+    <p class="m2-note" style="border-left-color:var(--s3);max-width:900px"><b>Direction, magnitude and confidence are separate.</b> Benefit and adverse effect show direction; weak, moderate and strong show magnitude. Conflicting evidence keeps both directions visible rather than averaging them into “no effect”. Low confidence does not mean no effect. The last two rows demonstrate these display states, not findings for this practice.</p>
   </section>
 
   <section class="tabpanel" role="tabpanel" id="tp-4" hidden>
@@ -73,13 +75,13 @@
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download CSV</a></div></div>
     <div class="kread" id="kr-4"></div>
     <div class="tabwrap"><table class="qt" id="t4" style="max-width:900px"></table></div>
-    <p class="m2-note" style="max-width:900px;border-left-color:var(--fire)"><b>Local costing required.</b> These ranges come from mixed sources and years, undiscounted and in US dollars. Stage 06 uses them only to show the order of magnitude a budget can reach.</p>
+    <p class="m2-note" style="max-width:900px;border-left-color:var(--fire)"><b>Illustrative costs only.</b> These authored ranges have no linked cost evidence. Geography, price year, currency conversion and study period are not recorded. Do not treat them as local prices or use them to prepare a budget. A source link will appear when a cost evidence unit is connected.</p>
   </section>
 
   <section class="tabpanel" role="tabpanel" id="tp-5" hidden>
     <div class="tp-head"><div><h2><span class="sec-n">2.5</span>Key reading</h2><p>The syntheses and practitioner primers to start from, taken from the project’s source register.</p></div></div>
     <div class="tabwrap"><table class="qt kr" id="t5" style="max-width:1000px"></table></div>
-    <p class="kr-foot">From the project source register; every DOI is round-trip verified.</p>
+    <p class="kr-foot">Readings are drawn from the project source register. Broader-practice readings are labelled; they do not establish family-specific thresholds or support the fictional effect and cost rows. Spatial-reading metadata is a snapshot; missing source links are stated explicitly.</p>
   </section>
 
   <div class="nextstage">
@@ -331,7 +333,7 @@
  }
 }</script>
 <script src="../sle_geo.js"></script>
-<script src="v1b-versions.js"></script>
+<script src="v1b-versions.js?v=20261105-scope"></script>
 <script src="v1b-map.js"></script>
 <script src="v1b-fixture.js"></script>
 <script>
@@ -386,6 +388,47 @@
     riparian: { syn: ['mayer_2007_n_removal_meta', 'rip_buffer_width_guidelines_review_2004', 'global_review_riparian_veg_restoration_2015'], s1: 'primer:0', s2: ['rip_buffer_width_guidelines_review_2004'], s3: ['mayer_2007_n_removal_meta'], s4: 'wocat' },
     anr: { syn: ['crouzeilles_2017_natregen_vs_active', 'crouzeilles_2016_restoration_success_meta', 'poorter_2021_multidimensional_recovery'], s1: 'primer:0', s2: ['crouzeilles_2016_restoration_success_meta'], s3: ['crouzeilles_2017_natregen_vs_active', 'poorter_2021_multidimensional_recovery'], s4: 'wocat' }
   };
+  // Read-only SRC snapshot (2026-11-05); DOI links require doi_verified=true in acquisition_queue.csv. Regional methods are not local thresholds.
+  var SPATIAL = {
+  "agro_f1": [
+    {
+      "source_id": "wotlolan_2021",
+      "citation": "Wotlolan, Dean L.; Lowry, John H.; Wales, N.; Glencross, Kevin (2021). Land suitability evaluation for multiple crop agroforestry planning using GIS and multi-criteria decision analysis: A case study in Fiji. Agroforestry Systems.",
+      "scope": "Fiji",
+      "url": "",
+      "tier": "Medium",
+      "method": "empirical"
+    },
+    {
+      "source_id": "mendonca_2023",
+      "citation": "de Mendonça et al. (2023). Multicriteria spatial model to prioritize degraded areas for landscape restoration through agroforestry. MethodsX.",
+      "scope": "Brazil",
+      "url": "https://doi.org/10.1016/j.mex.2023.102052",
+      "tier": "high",
+      "method": "Spatial MCDA"
+    }
+  ],
+  "riparian": [
+    {
+      "source_id": "spatial_mcda_riparian_priorities_2013",
+      "citation": "Zhao et al. (2013). A spatial multi-criteria planning scheme for evaluating riparian buffer restoration priorities. Ecological Engineering.",
+      "scope": "Liuxihe River basin, Guangdong",
+      "url": "https://doi.org/10.1016/j.ecoleng.2013.01.037",
+      "tier": "medium",
+      "method": "modelling"
+    }
+  ],
+  "anr": [
+    {
+      "source_id": "barros_mcda_prioritize_restoration_amazon_2022",
+      "citation": "Cavalcante et al. (2022). Multicriteria approach to prioritize forest restoration areas for biodiversity conservation in the eastern Amazon. Journal of Environmental Management.",
+      "scope": "Eastern Amazon (title); country not recorded",
+      "url": "https://doi.org/10.1016/j.jenvman.2022.115590",
+      "tier": "medium",
+      "method": "Spatial MCDA"
+    }
+  ]
+};
   var REFDATA = null;
   try { REFDATA = JSON.parse(document.getElementById('refs-inline').textContent); } catch (e) { REFDATA = null; }
   if (/^https?:/.test(location.protocol) && window.fetch) {
@@ -397,32 +440,69 @@
     var h = href(e), cit = h ? '<a href="' + h + '" target="_blank" rel="noopener">' + e.citation + '</a>' : e.citation;
     return cit + ' <span class="rtag">' + (METHOD[e.method] || e.method) + '</span>' + (e.tier ? '<span class="rtag">Tier: ' + e.tier + '</span>' : '') + (withId ? ' <span class="rid">' + e.source_id + '</span>' : '');
   }
+  function spatialLine(e) {
+    return refLine(e, true) + '<br><span class="sub">Study scope: ' + e.scope + '. Broader-practice method example.' + (e.url ? '' : ' Direct source link not included in this snapshot; locate by source ID in the <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/registers/SRC_source_register.csv">source register</a>.') + '</span>';
+  }
   function renderReading() {
     var box = REFDATA && REFDATA[REG[open]], pk = PICK[open];
     if (!box) return;
     var all = box.syntheses.concat(box.primers);
     function byId(id) { return all.filter(function (e) { return e.source_id === id; })[0]; }
-    var syn = pk.syn.map(byId).filter(Boolean).slice(0, 3), prim = box.primers.slice(0, 3);
-    var t = '<caption class="tabcap"><b>Table 2.5</b> · Key reading for ' + box.label.toLowerCase() + '<small>Citations exactly as recorded in the source register. Select a citation to open it.</small></caption>';
-    t += '<tbody><tr class="gh"><th colspan="2">Seminal syntheses</th></tr>' + (syn.length ? syn.map(function (e, i) { return '<tr><td class="r kr-n">' + (i + 1) + '</td><td>' + refLine(e, true) + '</td></tr>'; }).join('') : '<tr><td></td><td class="sub">No synthesis in the register yet.</td></tr>') + '</tbody>';
-    t += '<tbody><tr class="gh"><th colspan="2">Practitioner primers</th></tr>' + (prim.length ? prim.map(function (e, i) { return '<tr><td class="r kr-n">' + (i + 1) + '</td><td>' + refLine(e, true) + '</td></tr>'; }).join('') : '<tr><td></td><td class="sub">No practitioner primer in the register yet.</td></tr>') + '</tbody>';
+    var syn = pk.syn.map(byId).filter(Boolean).slice(0, 3);
+    // FMNR belongs to regeneration in cropland, not planted silvoarable or forest ANR.
+    var prim = open === 'agro_f1' ? [] : box.primers.filter(function (e) { return e.source_id !== 'wocat_507_2019'; }).slice(0, 3);
+    var spatial = SPATIAL[open] || [];
+    var t = '<caption class="tabcap"><b>Table 2.5</b> · Key reading for ' + box.label.toLowerCase() + '<small>Citations exactly as recorded in the source register. Linked citations open the recorded source; other entries retain their source ID.</small></caption>';
+    t += '<tbody><tr class="gh"><th colspan="2">Syntheses · broader-practice evidence</th></tr>' + (syn.length ? syn.map(function (e, i) { return '<tr><td class="r kr-n">' + (i + 1) + '</td><td>' + refLine(e, true) + '</td></tr>'; }).join('') : '<tr><td></td><td class="sub">No synthesis in the register yet.</td></tr>') + '</tbody>';
+    t += '<tbody><tr class="gh"><th colspan="2">Practitioner primers</th></tr>' + (prim.length ? prim.map(function (e, i) { return '<tr><td class="r kr-n">' + (i + 1) + '</td><td>' + refLine(e, true) + '</td></tr>'; }).join('') : '<tr><td></td><td class="sub">No matching practitioner primer selected for this family.</td></tr>') + '</tbody>';
+    t += '<tbody><tr class="gh"><th colspan="2">Geospatial planning and MCDA · regional method examples</th></tr>' + spatial.map(function (e, i) { return '<tr><td>' + (i + 1) + '</td><td>' + spatialLine(e) + '</td></tr>'; }).join('') + '</tbody>';
     document.getElementById('t5').innerHTML = t;
     function micro(id, list, empty) {
       document.getElementById(id).innerHTML = '<span class="kread-l">Key reading</span>' +
         (list.length ? '<ul>' + list.map(function (e) { return '<li>' + refLine(e, false) + '</li>'; }).join('') + '</ul>' : '<p class="sub">' + empty + '</p>');
     }
-    micro('kr-1', prim.slice(0, 1), 'No practitioner primer in the register yet.');
+    document.getElementById('kr-1').innerHTML = '<span class="kread-l">Geospatial reading</span><ul>' + spatial.map(function (e) { return '<li>' + spatialLine(e) + '</li>'; }).join('') + '</ul><p class="sub">Regional examples of spatial planning; wider-practice scope, not a validated recipe for this family or project area.</p>';
     micro('kr-2', pk.s2.map(byId).filter(Boolean), 'No synthesis on establishment in the register yet.');
     micro('kr-3', pk.s3.map(byId).filter(Boolean), 'No synthesis on effects in the register yet.');
-    // agroforestry: the only WOCAT sheet is FMNR (regeneration family), not planted silvoarable — Pete 2026-11-03: show no source; it stays in 2.5 primers
-    micro('kr-4', open === 'agro_f1' ? [] : box.primers.filter(function (e) { return /^WOCAT/.test(e.citation); }).slice(0, 1),
-      open === 'agro_f1' ? 'No cost source in the register for the planted silvoarable family yet.' : 'No cost source in the register for this practice.');
+    micro('kr-4', [], 'No cost evidence is linked to these illustrative ranges. Practitioner readings in 2.5 are background, not provenance for these amounts.');
   }
-  var ORDER = ['agro_f1', 'riparian', 'anr'], open = V1BUI.state.practices[0] || 'agro_f1';
+  var ORDER = ['agro_f1', 'riparian', 'anr'], open = P[V1BUI.state.practices[0]] ? V1BUI.state.practices[0] : 'agro_f1';
 
   document.getElementById('pick').innerHTML = ORDER.map(function (id) { return '<button type="button" data-v="' + id + '" aria-pressed="' + (id === open) + '">' + P[id].name + '</button>'; }).join('');
   function g3(n) { var s = ''; for (var i = 0; i < 3; i++) s += '<i class="' + (i < n ? 'on' : '') + '"></i>'; return '<span class="g3" aria-hidden="true">' + s + '</span>'; }
 
+  var CONDITION = {
+    agro_f1: [
+      'Slope in degrees: suitability falls as terrain steepens. Numeric threshold not connected here; see example response card.',
+      'Mean annual rainfall (mm/year): both dry and very wet conditions can limit establishment. Family thresholds not connected.',
+      'Mean annual temperature (°C): response limits not connected.',
+      'Texture classes and drainage classes: accepted categories not connected.',
+      'Existing annual cropland / crop mosaic. Category scores shown on the example card are not hard exclusions.',
+      'Existing cropping system: accepted system classes not connected.',
+      'Legal exclusion mask: excluded cells are removed before scoring. Local designation and permitted uses require validation.'
+    ],
+    riparian: [
+      'Distance to stream (m): identifies the stream margin; buffer distance not connected.',
+      'Bank slope (degrees): terrain constraint; numeric response not connected.',
+      'Existing cover at the stream margin: accepted classes not connected.',
+      'Flood frequency (events/year or return period): dataset and response not connected.',
+      'Legal exclusion mask: excluded cells are removed before scoring. Local designation and permitted uses require validation.'
+    ],
+    anr: [
+      'Existing fallow / shrub cover in this example. Accepted classes and scores not connected.',
+      'Distance to forest edge (m): proxy for nearby seed sources; distance threshold not connected.',
+      'Fire frequency (events/year): disturbance constraint; response not connected.',
+      'Slope (degrees): terrain constraint; family-specific response not connected.',
+      'Mean annual rainfall (mm/year): moisture constraint; family-specific response not connected.',
+      'Legal exclusion mask: excluded cells are removed before scoring. Local designation and permitted uses require validation.'
+    ]
+  };
+  function effectRows() {
+    return P[open].resp.concat([
+      ['Adverse outcome · display example', 2, 'moderate adverse effect', 'medium confidence', null, 'adverse'],
+      ['Conflicting findings · display example', null, 'benefit and adverse effects reported', 'low confidence · disagreement', null, 'mixed']
+    ]);
+  }
   function render() {
     var p = P[open];
     document.getElementById('pc-type').textContent = p.type;
@@ -435,20 +515,25 @@
       '<thead><tr><th>Family</th><th>What it is</th><th>Dominant limiting factor</th><th>Spatial product type</th></tr></thead><tbody>' +
       p.fam.map(function (f, i) { return '<tr' + (i === 0 ? ' class="hl-row"' : '') + '><td><b>' + f[0] + '</b>' + (i === 0 ? ' <span class="sub">mapped here</span>' : '') + '</td><td>' + f[1] + '</td><td>' + f[2] + '</td><td>' + f[3] + '</td></tr>'; }).join('') + '</tbody>';
     document.getElementById('t2').innerHTML = '<caption class="tabcap"><b>Table 2.2</b> · Conditions the ' + p.fam[0][0].toLowerCase() + ' family depends on<small>Soft factors a project can change (roads, markets, tenure) are not here; they are levers in Stage 04.</small></caption>' +
-      '<thead><tr><th>Variable</th><th>Kind of constraint</th><th>Role</th><th>Variable card</th></tr></thead><tbody>' +
-      p.vars.map(function (v) { return '<tr><td><b>' + v[0] + '</b></td><td>' + v[1] + '</td><td>' + (v[2] === 'Limiting' ? '<span class="yes">Usually limiting</span>' : v[2] === 'Mask' ? 'Excluded where present' : '<span class="sub">Contributes</span>') + '</td><td>' + (v[3] ? '<a href="00-config.html#card-' + v[3] + '">Open card</a>' : '<span class="sub">Card not in this prototype</span>') + '</td></tr>'; }).join('') + '</tbody>';
-    document.getElementById('t3').innerHTML = '<caption class="tabcap"><b>Table 2.3</b> · What ' + p.name.toLowerCase() + ' can address<small>Example rows; source counts are fictional.</small></caption>' +
-      '<thead><tr><th>Problem</th><th>Strength</th><th>Confidence</th><th class="r">Sources</th><th>Evidence</th></tr></thead><tbody>' +
-      p.resp.map(function (r, i) { return '<tr><td><b>' + r[0] + '</b></td><td>' + g3(r[1]) + r[2] + '</td><td>' + r[3] + '</td><td class="r">' + r[4] + '</td><td><button type="button" class="ev-link" data-ev="' + i + '">View evidence</button></td></tr>'; }).join('') + '</tbody>';
+      '<thead><tr><th>Variable</th><th>Kind of constraint</th><th>How to interpret the value</th><th>Variable card</th></tr></thead><tbody>' +
+      p.vars.map(function (v, i) { return '<tr><td><b>' + v[0] + '</b></td><td>' + v[1] + '</td><td>' + CONDITION[open][i] + '</td><td>' + (v[3] && open === 'agro_f1' ? '<a href="00-config.html#card-' + v[3] + '">Open card</a>' : '<span class="sub">Card not in this prototype</span>') + '</td></tr>'; }).join('') + '</tbody>';
+    document.getElementById('t3').innerHTML = '<caption class="tabcap"><b>Table 2.3</b> · What ' + p.name.toLowerCase() + ' can address<small>Illustrative rows and fictional source counts. Last two rows demonstrate adverse and conflicting results; they are not practice claims.</small></caption>' +
+      '<thead><tr><th>Problem</th><th>Direction and magnitude</th><th>Confidence / agreement</th><th class="r">Sources</th><th>Evidence</th></tr></thead><tbody>' +
+      effectRows().map(function (r, i) { return '<tr><td><b>' + r[0] + '</b></td><td>' + (r[5] === 'mixed' ? '↔ ' : r[5] === 'adverse' ? '− ' : g3(r[1])) + r[2] + '</td><td>' + r[3] + '</td><td class="r">' + (r[4] === null ? 'Demo only' : r[4] + ' (example)') + '</td><td><button type="button" class="ev-link" data-ev="' + i + '">View evidence</button></td></tr>'; }).join('') + '</tbody>';
     document.getElementById('t4').innerHTML = '<caption class="tabcap"><b>Table 2.4</b> · Indicative cost components<small>Example ranges. Local costing required.</small></caption>' +
-      '<thead><tr><th>Component</th><th>Indicative range</th><th>Source class</th></tr></thead><tbody>' +
-      p.cost.map(function (c) { return '<tr><td><b>' + c[0] + '</b></td><td>' + c[1] + '</td><td class="sub">' + c[2] + '</td></tr>'; }).join('') + '</tbody>';
+      '<thead><tr><th>Component</th><th>Indicative range</th><th>Geography / price year</th><th>Evidence source</th></tr></thead><tbody>' +
+      p.cost.map(function (c) { return '<tr><td><b>' + c[0] + '</b></td><td>' + c[1] + '</td><td>Not recorded / not recorded</td><td><button type="button" class="ev-link" data-cost="' + p.cost.indexOf(c) + '">Source not linked</button></td></tr>'; }).join('') + '</tbody>';
     renderReading();
   }
   document.getElementById('t3').addEventListener('click', function (e) {
     var b = e.target.closest('[data-ev]'); if (!b) return;
-    var r = P[open].resp[+b.getAttribute('data-ev')];
-    V1BUI.openPanel('Evidence · ' + r[0], '<p>' + r[2].charAt(0).toUpperCase() + r[2].slice(1) + ', ' + r[3] + ', from ' + r[4] + ' sources (fictional). Three example source lines:</p><ol class="ev-list"><li>Example study A (2019) · meta-analysis · mixed income countries · transfer: direct</li><li>Example study B (2016) · field trial · lower-middle income · transfer: comparable</li><li>Example study C (2021) · practitioner survey · low income · transfer: indicative</li></ol><div class="ev-rule"><b>Band rule (example).</b> The pooled effect falls in the band the evidence register sets for “' + r[2] + '”. Bands live in the register, not in this view.</div>');
+    var r = effectRows()[+b.getAttribute('data-ev')];
+    V1BUI.openPanel('Evidence · ' + r[0], '<p class="pl-mark">Prototype display — no linked evidence units</p><h3>' + P[open].name + '</h3><dl class="pc-facts"><dt>Selected outcome</dt><dd>' + r[0] + '</dd><dt>Direction / magnitude</dt><dd>' + r[2] + '</dd><dt>Confidence</dt><dd>' + r[3] + '</dd><dt>Source count</dt><dd>' + (r[4] === null ? 'Not applicable — display demonstration' : r[4] + ' fictional sources') + '</dd></dl><p>' + (r[5] === 'mixed' ? 'A connected evidence view would show the beneficial and adverse findings separately, with their study contexts and reasons for disagreement. Mixed findings must not be presented as no effect.' : r[5] === 'adverse' ? 'This demonstrates an unfavourable effect on an outcome, not a finding about this practice. Adverse direction is explicit and does not rely on colour.' : 'This reproduces the selected example row. It is not a conclusion drawn from the readings in section 2.5.') + '</p><div class="ev-rule"><b>Evidence not connected.</b> No source citation, page, quote, study geography, observation period or synthesis rule is available for this row. Those details must be linked before the row can support a project decision.</div>');
+  });
+  document.getElementById('t4').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-cost]'); if (!b) return;
+    var c = P[open].cost[+b.getAttribute('data-cost')];
+    V1BUI.openPanel('Cost source · ' + c[0], '<p class="pl-mark">Illustrative amount — source not linked</p><h3>' + P[open].name + '</h3><p><b>' + c[0] + ':</b> ' + c[1] + '</p><p>Geography: not recorded.<br>Price year: not recorded.<br>Study period: not recorded.<br>Currency conversion / inflation basis: not recorded.</p><p>No evidence unit supports this authored range. A future source link must show the citation, page or table, original amount and unit, geography and price year. Background readings do not substantiate this cost.</p>');
   });
   V1BUI.segmented(document.getElementById('pick'), function (v) {
     open = v; render();
