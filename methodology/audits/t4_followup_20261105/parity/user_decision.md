@@ -35,4 +35,17 @@ Pete, 5 November 2026: prioritize these six mappings for human review and reques
 - Source scope is hydrological screening for paludiculture. Applying this criterion to rewetting drained former-wetland farmland is the reviewed adaptation, not new evidence of general restoration validity. Preserve that distinction in provenance and context; do not silently rewrite family definitions or apply it to all farmland.
 - This decision concerns the water-depth criterion only. It does not approve seepage scores, soil water capacity scores, the source's multiplicative combined rule or an overall suitability threshold.
 - Application status: recorded for the scoped T4 correction/compilation step after this review sequence. No analytical tables or evidence approval flags changed by this note.
-- Remaining three priority items: awaiting their individual decisions.
+- At this point, the remaining three priority items awaited their individual decisions.
+
+### 4. Groundwater seepage: retain the three source classes
+
+- Mapping under review: `wetland_management__peatland__groundwater_seepage`.
+- Evidence: `ev_wet_groundwater_seepage_brouwer26_1`.
+- Pete requested more context after a four-band proposal including a zero tail. The subsequent explanation presented three source classes and explicitly recommended leaving values beyond 0.5 mm/day unclassified rather than declaring them unsuitable.
+- Pete's exact response to that explanation: "I think your table is fine, next".
+- Accepted classification: flux < -0.1 mm/day (upward supply) is high; -0.1 through +0.1 mm/day is moderate; > +0.1 through +0.5 mm/day (downward loss) is marginal. Values > +0.5 mm/day remain unclassified. The earlier proposed zero tail was superseded by the clarified recommendation, not approved.
+- Provenance: Brouwer et al. (2026), PDF pp. 2–3, hydrological screening for paludiculture. The latest approved table contains qualitative classes; the source assigns ordinal scores 3/2/1. Do not describe a zero tail as source-derived or silently retain the current abs_max=0.5 semantics.
+- Context: rewetting drained former-wetland farmland, as discussed for the preceding criterion; not arbitrary farmland or all wetland restoration. This is vertical groundwater flux, not runoff or canal flow. Input data must measure the same quantity and respect the source's negative-upward sign convention.
+- This decision does not approve a combined model, automatic extrapolation, or substitution of a runoff proxy for groundwater seepage.
+- Application status: recorded for the scoped T4 correction/compilation step after this review sequence. No analytical tables or evidence approval flags changed by this note.
+- Remaining two priority items: awaiting their individual decisions.
