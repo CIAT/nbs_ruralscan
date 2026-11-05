@@ -15,4 +15,14 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Limitation preserved: this is an author recommendation from a 21-year comparison, not a fitted distance-response model or guarantee of complete passive recovery. Later interventions may still be needed. Do not classify study-site distances as suitability thresholds.
 - Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
 
-Remaining active claims: 16 awaiting individual review decisions.
+## 2. Active forest planting: regional upper treeline
+
+- Evidence: `ev_fr_elevation_wocat4101_t4_20261105`.
+- Source: WOCAT (2018), `wocat_4101_2018`, PDF p. 1, high-altitude afforestation for erosion control in Armenia.
+- Proposal presented: keep as regional contextual evidence only. Distinguish the reported South Caucasus upper treeline band of 2,300–2,600 m from the project's planting locations at 1,900–2,300 m; neither establishes a universal elevation cutoff.
+- Pete's exact response: "ok".
+- Accepted decision: retain the regional natural-forest-boundary evidence for contextual siting review. No global elevation threshold, numerical suitability curve, or inference that naturally treeless grasslands should become forest is approved.
+- Limitation preserved: this is a regional expert statement without an exact local calibration. The nonnumeric lower treeline description (steppe and semi-desert ecosystems) must not be converted into an invented lower elevation threshold.
+- Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
+
+Remaining active claims: 15 awaiting individual review decisions.
