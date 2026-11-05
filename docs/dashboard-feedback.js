@@ -455,7 +455,9 @@
         window._vfScope = Object.assign({}, scope);
         window._vfPriority = scope.reviewPriority || 'all';
         window._vfPriorityEvidence = scope.priorityEvidence || '';
-        if (typeof vfSimpleQueue === 'function') vfSimpleQueue(scope.reviewQueue || 'todo');
+        if (scope.priorityEvidence && window.DashboardPriority) {
+          window.DashboardPriority.openFromHash('#review-evidence=' + encodeURIComponent(scope.priorityEvidence));
+        } else if (typeof vfSimpleQueue === 'function') vfSimpleQueue(scope.reviewQueue || 'todo');
         var queue = document.querySelector('[data-review-view="queue"]'); if (queue) queue.click();
       }
     }
