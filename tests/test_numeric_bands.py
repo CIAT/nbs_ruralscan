@@ -162,15 +162,19 @@ def test_source_policy_never_bypasses_review_or_species_routing():
 
 def test_all_numeric_policy_rows_accounted_for_without_unhandled_encoding():
     build = runpy.run_path(str(ROOT / "scripts/synthesise-recipe.py"))
-    results = build["synthesise"]("agroforestry")
-    dispositions = {
-        eid: d for f in results.values() for eid, d in f.dispositions.items()
-    }
     policies = list(
         csv.DictReader(
             (ROOT / "schema/lookups/t4_numeric_compilation_policy.csv").open()
         )
     )
+    results = {
+        family: result
+        for nbs_id in sorted({p["nbs_id"] for p in policies})
+        for family, result in build["synthesise"](nbs_id).items()
+    }
+    dispositions = {
+        eid: d for f in results.values() for eid, d in f.dispositions.items()
+    }
     reviewed = {
         r["evidence_id"]: r["reviewer_ok"].lower() == "true"
         for r in csv.DictReader(
