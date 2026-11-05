@@ -86,4 +86,21 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Accepted decision: keep that source-specific scenario evidence and the requirement for enough available compatible area within hydrological units. No universal class scores, global land-cover gate, pixel-level proof of former wetland history or permission to convert forest is approved.
 - Application status: human decision recorded; central review application and compilation pending. No executable mapping approved.
 
-Remaining active claims: 9 awaiting individual review decisions.
+## 9–15. China potential-wetland model: inputs and Figure 8 importance
+
+- Source: Xiang et al. (2023), `wet_potential_distribution_china_ml_2023`. Table 1 / methods, PDF pp. 6–8; Figure 8, p. 16; restoration overlay, pp. 17–18.
+- Seven evidence IDs and their retained Figure 8 relative importance values:
+  - `ev_wet_xiang_apre_modeluse_20261105`: annual precipitation, 3.81%.
+  - `ev_wet_xiang_amt_modeluse_20261105`: mean annual temperature, 4.20%.
+  - `ev_wet_xiang_clay_modeluse_20261105`: clay content, 2.66%.
+  - `ev_wet_xiang_ndvi_modeluse_20261105`: NDVI, 3.58%.
+  - `ev_wet_xiang_dem_modeluse_20261105`: elevation, 5.05%.
+  - `ev_wet_xiang_slope_modeluse_20261105`: slope, 3.43%.
+  - `ev_wet_xiang_asp_modeluse_20261105`: aspect, 1.05%.
+- Pete asked whether Figure 8 had been considered. A register check confirmed its values, method and denominator were already retained in each record's context; the review summary had understated this numerical evidence.
+- Revised proposal presented: keep model use plus numerical importance and its method/denominator. These are relative mean-decrease-accuracy importance values across all 30 predictors, not percentages renormalized over these seven. They can inform variable selection and weighting discussions but do not supply standalone suitability directions, thresholds or response functions.
+- Pete's exact response to the revised proposal: "ok good next".
+- Accepted decision: keep all seven on that basis, preserving the China potential-wetland model and downstream restoration-targeting context. One study supplies seven variable records, not seven independent studies. Figure 8 values remain source-specific predictive importance; adoption as Rural Scan weights would require a separate modelling decision, which was not requested or approved here.
+- Application status: human decisions recorded; central review application and compilation pending. No executable numeric suitability functions or runtime weights approved.
+
+Remaining active claims: 2 awaiting individual review decisions.
