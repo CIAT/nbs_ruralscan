@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Redesign Prototypes</title>
+<title>Home</title>
 <script>(function(){var t="light";try{t=localStorage.getItem("v1b-theme")||"light"}catch(e){}document.documentElement.setAttribute("data-theme",t)})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,25 +11,126 @@
 <link rel="stylesheet" href="v1b.css">
 <link rel="stylesheet" href="review-mode.css">
 <style>
-  .ix { padding: 72px 0 80px; max-width: 760px; }
-  .ix h1 { font-family: var(--f-display); font-weight: 500; font-size: var(--t40); line-height: 1.12; margin: 0 0 18px; }
-  .ix > p { color: var(--ink-2); font-size: var(--t17); }
-  .ix ol { list-style: none; padding: 0; margin: 36px 0 0; border-top: 1px solid var(--ink); }
-  .ix li { border-bottom: 1px solid var(--rule); }
-  .ix li a { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 4px 16px; padding: 16px 0; text-decoration: none; color: var(--ink); }
-  .ix li a:hover b { color: var(--accent); }
-  .ix .n { font: 500 var(--t22)/1.1 var(--f-display); color: var(--accent); grid-row: span 2; }
-  .ix b { font-weight: 600; font-size: var(--t17); }
-  .ix span.d { color: var(--ink-2); font-size: var(--t15); }
+  .home { padding-bottom: 80px; }
+  .hs { padding: 40px 0 8px; border-top: 1px solid var(--rule); margin-top: 28px; }
+  .hs h2 { font-family: var(--f-display); font-weight: 500; font-size: var(--t28); margin-bottom: 14px; }
+  .hs .col { max-width: 65ch; }
+  .hs p, .hs li { font-size: var(--t17); }
+  .hs ul.plainl { padding-left: 20px; } .hs ul.plainl li { margin-bottom: 6px; }
+  .hs .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 56px; }
+  .hs .two > div { max-width: 65ch; }
+  .hs h3 { font-family: var(--f-display); font-weight: 500; font-size: var(--t22); margin: 6px 0 8px; }
+  .hs .isnot { padding-top: 0; }
+  .hs .use dt { font-weight: 600; font-size: var(--t17); margin-top: 12px; }
+  .hs .use dd { margin: 2px 0 0; font-size: var(--t15); color: var(--ink-2); max-width: 62ch; }
+  .pages { list-style: none; padding: 0; margin: 8px 0 0; border-top: 1px solid var(--ink); max-width: 820px; }
+  .pages li { border-bottom: 1px solid var(--rule); }
+  .pages li a { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 2px 14px; padding: 10px 0; text-decoration: none; color: var(--ink); }
+  .pages li a:hover b { color: var(--accent); }
+  .pages .n { font: 500 var(--t17)/1.3 var(--f-display); color: var(--accent); grid-row: span 2; }
+  .pages b { font-weight: 600; font-size: var(--t15); } .pages span.d { color: var(--ink-2); font-size: var(--t13); }
+  @media (max-width: 760px) { .hs .two { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<main class="wrap ix">
-  <span class="eyebrow sc">Rural NbS Scan · redesign v1b · 31 October 2026</span>
-  <h1>NbS spatial opportunity scoping tool — one question, one figure, per stage</h1>
-  <p>All seven stages in direction A, where each stage is a chapter — a question, one dominant map or table, a short reading column, and optional depth — plus a grey-box sketch of the workbench alternative for comparison. All maps draw a synthetic example surface on real Sierra Leone boundaries; no thresholds, weights, evidence or schema tables are used.</p>
-  <ol>
-    <li><a href="01-setup.html"><span class="n">01</span><b>Setup</b><span class="d">The problem, the seven-stage method strip, what this is and is not, and a three-step scope.</span></a></li>
+<div id="chrome"></div>
+<main class="wrap home">
+  <section class="chapter">
+    <span class="eyebrow sc">Home · Rural NbS Scan</span>
+    <h1 class="question">A method for scoping where nature-based solutions could work in rural landscapes</h1>
+    <p class="lede">What the project is, what this visual wireframe is for, and how to read the seven stages that follow. <b>Everything shown is example data</b> on real Sierra Leone boundaries.</p>
+  </section>
+
+  <section class="hs" id="h1">
+    <h2><span class="sec-n">H.1</span>What this project is</h2>
+    <div class="col">
+      <p>The Rural NbS Scan is a World Bank-funded methodology (project D591, led by the Alliance of Bioversity International and CIAT) for the spatial prioritisation of nature-based solutions in rural, agricultural and forestry landscapes. It helps World Bank task team leaders scope where different practices could be invested in, what their footprint would be, and which project priorities — poverty, biodiversity, climate risk, gender equity — those footprints meet.</p>
+      <p>The project delivers three things:</p>
+      <ul class="plainl">
+        <li><b>A methodology toolkit</b> — a cross-cutting framework and a recipe for each practice.</li>
+        <li><b>A pilot implementation report</b> — the method applied in two least-developed-country pilots.</li>
+        <li><b>Reproducible Jupyter and Colab notebooks</b> — the contracted delivery format for the pilot analyses.</li>
+      </ul>
+      <p><b>Scoping, not feasibility.</b> The scan does no site design, no full cost–benefit analysis and no ecosystem-service modelling. Those come later, and the scan points to them in its final stage.</p>
+    </div>
+  </section>
+
+  <section class="hs" id="h2">
+    <h2><span class="sec-n">H.2</span>What this wireframe is for</h2>
+    <div class="two">
+      <div>
+        <p>These pages are a visual explanation of the method and a sketch of the interface a task team could use. Each stage shows its question, its inputs, the evidence behind it and what it hands on, so that the project team and the Bank can agree the method before it is built into notebooks.</p>
+        <p>It is a demonstrator: not the final interface and not a contracted product. Everything on these pages is example data on real Sierra Leone boundaries; no figure is a pilot result.</p>
+      </div>
+      <div>
+        <h3>Who it is for</h3>
+        <p>World Bank task team leaders and their country counterparts scoping rural NbS investments before any feasibility study — and the project team and reviewers who shape the method.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="hs" id="h3">
+    <h2><span class="sec-n">H.3</span>How the method flows</h2>
+    <p class="col">Each stage answers one question and hands its result to the next.</p>
+    <ol class="strip strip7" id="strip">
+    <li><a href="01-setup.html"><span class="thumb"><svg id="th1" aria-hidden="true"></svg></span><span class="s-n">01</span><span class="s-l">Set the scope</span><span class="s-q">What problem, which practices, where?</span></a></li>
+    <li><a href="02-practices.html"><span class="thumb"><svg id="th7" viewBox="0 0 100 100" aria-hidden="true"></svg></span><span class="s-n">02</span><span class="s-l">Explore the practices</span><span class="s-q">Which practices could answer this?</span></a></li>
+    <li><a href="03-opportunity.html"><span class="thumb"><svg id="th2" aria-hidden="true"></svg></span><span class="s-n">03</span><span class="s-l">Map the opportunity space</span><span class="s-q">Where could the practice establish?</span></a></li>
+    <li><a href="04-risk.html"><span class="thumb"><svg id="th3" aria-hidden="true"></svg></span><span class="s-n">04</span><span class="s-l">Screen project risk</span><span class="s-q">Would hazards put the planting at risk?</span></a></li>
+    <li><a href="05-hotspots.html"><span class="thumb"><svg id="th4" aria-hidden="true"></svg></span><span class="s-n">05</span><span class="s-l">Find priority hotspots</span><span class="s-q">Where does it meet the project’s priorities?</span></a></li>
+    <li><a href="06-comparison.html"><span class="thumb"><svg id="th5" viewBox="0 0 100 100" aria-hidden="true"></svg></span><span class="s-n">06</span><span class="s-l">Compare practices</span><span class="s-q">Which deserve a closer look?</span></a></li>
+    <li><a href="07-next.html"><span class="thumb"><svg id="th6" viewBox="0 0 100 100" aria-hidden="true"></svg></span><span class="s-n">07</span><span class="s-l">Plan next steps</span><span class="s-q">What must feasibility confirm?</span></a></li>
+  </ol>
+    <div class="col" style="margin-top:22px">
+      <p>A user leaves with four scoping-grade products:</p>
+      <ul class="leave" style="max-width:760px">
+        <li>An opportunity map<span>where each practice could establish</span></li>
+        <li>A hotspot shortlist<span>where that overlaps the project’s priorities</span></li>
+        <li>A practice comparison<span>footprint, evidence and indicative cost</span></li>
+        <li>A draft scoping brief<span>what to check next, and with whom</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="hs" id="h4">
+    <h2><span class="sec-n">H.4</span>What it is and is not</h2>
+    <section class="isnot">
+    <div>
+      <h3>What this is</h3>
+      <dl>
+        <dt>Scoping</dt><dd>A first, country-scale view of where to look, before anyone visits a site.</dd>
+        <dt>A method demonstrator</dt><dd>Shows how the stages fit together so the team can agree the method.</dd>
+        <dt>Example data</dt><dd>Maps use an authored surface that behaves like real inputs.</dd>
+      </dl>
+    </div>
+    <div>
+      <h3>What it is not</h3>
+      <dl>
+        <dt>Feasibility</dt><dd>No site design, cost–benefit analysis or ecosystem-service model. Those follow.</dd>
+        <dt>The final interface</dt><dd>The contracted delivery is a set of reproducible notebooks.</dd>
+        <dt>A pilot result</dt><dd>No figure on these pages describes Sierra Leone.</dd>
+      </dl>
+    </div>
+  </section>
+    <p class="col" style="margin-top:16px"><b>Four things stay separate throughout:</b> whether a practice can establish (suitability), who needs it (livelihood need), what the evidence says it does (NbS response), and what could damage the investment (project risk). Project risk is a flag, never added to the others.</p>
+  </section>
+
+  <section class="hs" id="h5">
+    <h2><span class="sec-n">H.5</span>How to use these pages</h2>
+    <dl class="use">
+      <dt>Control bar</dt><dd>Under the stage bar on every stage: practice, suitability classes, view and climate. Changes carry across pages.</dd>
+      <dt>Sub-tabs</dt><dd>Each stage opens on a simple view; numbered sub-tabs under the main figure hold the detail.</dd>
+      <dt>Technical configuration</dt><dd>Datasets, suitability functions, exclusions, clustering, climate framing, and saving or loading a project. The walkthrough never needs it.</dd>
+      <dt>Review mode</dt><dd>Switch on “Review” in the version bar to comment on any figure, table or section, highlight text or take a screengrab. Notes stay in your browser; export them as a report or open a prefilled GitHub issue.</dd>
+      <dt>Version selector</dt><dd>Switch between v0 (original mock-up), v1 (draft) and v2 (this version) in the version bar.</dd>
+      <dt>History</dt><dd><a href="history.html" target="_blank" rel="noopener">What changed between versions</a>, and every World Bank and team request with what was done about it.</dd>
+    </dl>
+  </section>
+
+  <section class="hs" id="h6">
+    <h2><span class="sec-n">H.6</span>Pages</h2>
+  <ol class="pages">
+    <li><a href="01-setup.html"><span class="n">01</span><b>Setup</b><span class="d">The challenge, the practice and the geography: three choices that set the scope.</span></a></li>
     <li><a href="00-config.html"><span class="n">1.2</span><b>Technical configuration</b><span class="d">Datasets, suitability functions with variable cards, masks, clustering, climate framing, save and load.</span></a></li>
     <li><a href="02-practices.html"><span class="n">02</span><b>Explore the practices</b><span class="d">What each practice is, where it fits, what it addresses, what it costs, where to read more.</span></a></li>
     <li><a href="03-opportunity.html"><span class="n">03</span><b>Opportunity space</b><span class="d">Suitability map with staged depth: fingerprint, livelihood risk, priority context, responses.</span></a></li>
@@ -40,28 +141,18 @@
     <li><a href="history.html"><span class="n">H</span><b>History and feedback</b><span class="d">How v0, v1 and v2 differ, and every World Bank and team request with what was done about it.</span></a></li>
     <li><a href="direction-b.html"><span class="n">B</span><b>Direction B · workbench</b><span class="d">Rail, full-bleed map, inspector and reading strip — grey boxes, for contrast.</span></a></li>
   </ol>
+    <div class="nextstage" style="margin-top:36px">
+      <p><b>Start the walkthrough.</b> Stage 01 sets the challenge, the practice and the geography.</p>
+      <a class="btn" href="01-setup.html">Open Stage 01</a>
+    </div>
+  </section>
 </main>
-<section class="wrap ix-strip">
-  <div class="strip-h">
-    <h2>Seven stages, always in this order</h2>
-    <p>Each stage answers one question and hands its result to the next.</p>
-  </div>
-  <ol class="strip strip7" id="strip">
-    <li><a href="01-setup.html"><span class="thumb"><svg id="th1" aria-hidden="true"></svg></span><span class="s-n">01</span><span class="s-l">Set the scope</span><span class="s-q">What problem, which practices, where?</span></a></li>
-    <li><a href="02-practices.html"><span class="thumb"><svg id="th7" viewBox="0 0 100 100" aria-hidden="true"></svg></span><span class="s-n">02</span><span class="s-l">Explore the practices</span><span class="s-q">Which practices could answer this?</span></a></li>
-    <li><a href="03-opportunity.html"><span class="thumb"><svg id="th2" aria-hidden="true"></svg></span><span class="s-n">03</span><span class="s-l">Map the opportunity space</span><span class="s-q">Where could the practice establish?</span></a></li>
-    <li><a href="04-risk.html"><span class="thumb"><svg id="th3" aria-hidden="true"></svg></span><span class="s-n">04</span><span class="s-l">Screen project risk</span><span class="s-q">Would hazards put the planting at risk?</span></a></li>
-    <li><a href="05-hotspots.html"><span class="thumb"><svg id="th4" aria-hidden="true"></svg></span><span class="s-n">05</span><span class="s-l">Find priority hotspots</span><span class="s-q">Where does it meet the project’s priorities?</span></a></li>
-    <li><a href="06-comparison.html"><span class="thumb"><svg id="th5" viewBox="0 0 100 100" aria-hidden="true"></svg></span><span class="s-n">06</span><span class="s-l">Compare practices</span><span class="s-q">Which deserve a closer look?</span></a></li>
-    <li><a href="07-next.html"><span class="thumb"><svg id="th6" viewBox="0 0 100 100" aria-hidden="true"></svg></span><span class="s-n">07</span><span class="s-l">Plan next steps</span><span class="s-q">What must feasibility confirm?</span></a></li>
-  </ol>
-  <p class="figcap">The seven stages of the scan, with a thumbnail of each stage’s main figure</p>
-</section>
 <script src="../sle_geo.js"></script>
+<script src="v1b-versions.js"></script>
 <script src="v1b-map.js"></script>
 <script src="v1b-fixture.js"></script>
+<script>V1BUI.chrome(0);</script>
 <script src="v1b-strip.js"></script>
-<script src="v1b-versions.js"></script>
 <script src="review-mode.js"></script>
 </body>
 </html>
