@@ -1,12 +1,12 @@
 ---
 name: "source-command-extract-evidence"
 description: "Extract and verify source-provenanced evidence for an authorised T4 suitability, T3/T6 effect, or operational-risk lane."
-version: "v1.9.4"
+version: "v1.9.5"
 ---
 
 # Evidence extraction
 
-Current ruleset: **v1.9.4**. Stamp new units with the version actually used; never restamp
+Current ruleset: **v1.9.5**. Stamp new units with the version actually used; never restamp
 historical evidence. Version log: `methodology/RULESET_VERSIONS.md`. This skill is the
 canonical extraction instruction; `.claude/commands/extract-evidence.md` delegates here.
 
@@ -31,6 +31,24 @@ Dataset intake remains paused without an approved adapter; a discovery seed is n
 Read [defect catalogue](references/defects.md) and the applicable contract. For effects,
 also read `../extraction_contracts/DIRECTION_ADDENDUM.md`. T4 suitability direction and
 change in an outcome variable are different meanings; do not interchange their vocabularies.
+
+## T4 source-purpose gate
+
+Before a T4 extraction, record page/section-linked evidence that the publication actually
+selects, maps or explains **where the authorised practice can be implemented**. A queue
+label, spatial study location, measured benefit or the word "suitability" in a title is not
+proof. Implementation guidance qualifies when it states spatially usable conditions;
+labour, finance and construction dimensions alone do not qualify.
+
+Record the source-purpose quote, locator and disposition in the source inventory before
+claim extraction. Separate establishment suitability from benefit/need prioritisation,
+existing-habitat occurrence, species selection and engineering design. Useful targeting
+methods may remain explicit referrals; their priorities are not structural thresholds.
+A publication need not contain a map: explicit generalising siting requirements qualify.
+If the gate fails, stop T4 extraction and report a screening disposition, not a completed
+extraction sweep. A pass never makes every reported variable or number a suitability rule.
+This gate applies only to the authorised T4 lane; it does not authorise effects or
+operational-risk extraction. Retain supported direction even when calibration is missing.
 
 ## Source and coverage checks
 

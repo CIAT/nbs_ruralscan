@@ -2,6 +2,16 @@
 
 Decision: Pete, 21 October 2026. Applies to extraction, verification, synthesis and human-review presentation. This supersedes instructions that discard a supported suitability direction solely because no numeric scale is available.
 
+## Source-purpose check before the three assessments
+
+Record a native page/section quote showing spatial targeting or spatially usable
+implementation conditions for the authorised practice. Study location and measured
+benefits alone fail this gate. Keep benefit-priority mapping, habitat occurrence,
+species selection and engineering design distinct from practice establishment.
+Generalising siting guidance can qualify without a map. Failed sources receive an
+honest screening disposition; do not call them fully extracted. Passing this check
+still requires all claim-level assessments below.
+
 ## Three independent assessments
 
 1. **Variable use:** did the paper actually use this variable in its suitability calculation? Record source method, scope and any source-specific weight in `context.model_use`. Mention alone is not use. Species-selection methods, restoration-priority models and practice-level suitability remain separate lanes.
