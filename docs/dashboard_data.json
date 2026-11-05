@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-05T07:58:37.104014+00:00",
-  "git_commit": "31ea5c0071589ba5478ff1448b0337ff88004cc4",
+  "timestamp": "2026-11-05T08:09:03.526379+00:00",
+  "git_commit": "22766a0c5889a6771dc0b54b99fbf6617368bb9b",
   "registers": {
     "SRC_source_register": [
       {
@@ -386152,6 +386152,98 @@
       "evidence_sha256": "ddc19df0ced4815196a7341e2a996a908793825ba630fa9974b2ac58d856144f"
     }
   },
+  "review_priorities": [
+    {
+      "batch_id": "t4_wetland_live_mapping_review_20261105",
+      "batch_label": "Wetland T4 live mappings",
+      "priority": "high",
+      "evidence_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+      "source_id": "wet_optimal_location_created_mediterranean_2010",
+      "page": "6",
+      "mapping_id": "wetland_management__creation__distance_to_waterbody",
+      "reason": "PDF p6 distinguishes an approximately 500 m very-suitable distance from water delivery cost and pumping. It gives no outer zero-suitability tail. Diagnostic pooling conflicts with Uuemaa’s 125 m outer bound; the same-source 450 m value is a calibration variant.",
+      "decision_needed": "Keep scoped direction and native approximate class; review 450 vs 500 m within source and separate Uuemaa system before pooling. Decide whether cost-driven distance belongs structural siting or operational guidance; do not silently create missing tail.",
+      "requested_by": "Pete",
+      "requested_date": "2026-11-05",
+      "evidence_sha256": "a6bf9926bf8bddeb030ec115ccfcb9924cf27ae7e853c48d65fd2cb9c55870f5",
+      "context_changed": false
+    },
+    {
+      "batch_id": "t4_wetland_live_mapping_review_20261105",
+      "batch_label": "Wetland T4 live mappings",
+      "priority": "high",
+      "evidence_id": "ev_wet_drainage_density_sumarga26_1",
+      "source_id": "tropical_peatland_restoration_reduces_fire_2026",
+      "page": "5",
+      "mapping_id": "wetland_management__peatland__drainage_density",
+      "reason": "PDF p5 reports 1.2 km/km² as the observed mean across peatlands, not a minimum restoration threshold. The mean is 2.5 km/km² in canal-dam areas and 1.5 km/km² near wells. Dense drainage and prior fire activity describe targeting, not an ecological exclusion. The current runoff-composite binding is not an observed canal-density layer.",
+      "decision_needed": "Retain observed targeting direction and literal means; propose removal of unsupported abs_min only through review. No numeric runtime threshold supported here. Request observed canal dataset binding if retained as targeting variable.",
+      "requested_by": "Pete",
+      "requested_date": "2026-11-05",
+      "evidence_sha256": "63d7e3b1d34669b5af99cad1c627ed05d944253d7979b99f005880177d8c0425",
+      "context_changed": false
+    },
+    {
+      "batch_id": "t4_wetland_live_mapping_review_20261105",
+      "batch_label": "Wetland T4 live mappings",
+      "priority": "high",
+      "evidence_id": "ev_wet_water_table_depth_brouwer26_1",
+      "source_id": "page_nl_paludiculture_crop_suitability_model",
+      "page": "3",
+      "mapping_id": "wetland_management__peatland__water_table_depth",
+      "reason": "PDF p3, Table 1 describes Netherlands paludiculture classes for mean lowest groundwater level: 0–30 high, 30–80 moderate and 80–160 marginal. The endpoint 160 does not establish zero suitability. The source multiplies three discrete scores and selects products ≥8; this differs from the live trapezoid.",
+      "decision_needed": "Retain native ordinal classes, direction and Netherlands paludiculture scope. Human decision: applicability to generic peatland rewetting versus paludiculture-only model referral; if a runtime class model is desired, approve scores, tails and combined rule separately. Do not approve current abs_max semantics by approving quote.",
+      "requested_by": "Pete",
+      "requested_date": "2026-11-05",
+      "evidence_sha256": "5dec16b2960abe0c9a79e0a2557a699802674379e4ac0e5f141266cd706bf9b1",
+      "context_changed": false
+    },
+    {
+      "batch_id": "t4_wetland_live_mapping_review_20261105",
+      "batch_label": "Wetland T4 live mappings",
+      "priority": "high",
+      "evidence_id": "ev_wet_groundwater_seepage_brouwer26_1",
+      "source_id": "page_nl_paludiculture_crop_suitability_model",
+      "page": "3",
+      "mapping_id": "wetland_management__peatland__groundwater_seepage",
+      "reason": "PDF p3, Table 1 describes signed seepage classes: upward <−0.1 mm/day high; −0.1 to 0.1 neutral/moderate; 0.1 to 0.5 downward/marginal. The endpoint 0.5 does not establish zero suitability. The source’s discrete product model differs from the live trapezoid.",
+      "decision_needed": "Same paludiculture applicability decision as water table. Preserve signed seepage and ordinal classes; require explicit tail/score semantics and appropriate binding before execution.",
+      "requested_by": "Pete",
+      "requested_date": "2026-11-05",
+      "evidence_sha256": "f0139f40f40f2a0b72f0bc7a2306f6f36dfd009c5f8f2fafaa3b4a503d8adf30",
+      "context_changed": false
+    },
+    {
+      "batch_id": "t4_wetland_live_mapping_review_20261105",
+      "batch_label": "Wetland T4 live mappings",
+      "priority": "high",
+      "evidence_id": "ev_wet_site_area_russell97_1",
+      "source_id": "gis_riparian_siting_russell_1997",
+      "page": "10",
+      "mapping_id": "wetland_management__restoration_rewetting__restorable_patch_area",
+      "reason": "PDF p10 applies a 1 ha sieve after separating high-priority sites within 90 m. Remaining areas below 1 ha receive low priority. The 1 ha value is explicitly arbitrary, with a flood-attenuation rationale. A universal minimum loses this conditional rule and turns low priority into exclusion.",
+      "decision_needed": "Retain source conditional restoration-priority method; ask whether remove this live structural cutoff while preserving evidence and source priorities. Any new minimum ecological area requires separate evidence/approval.",
+      "requested_by": "Pete",
+      "requested_date": "2026-11-05",
+      "evidence_sha256": "f25dbaaa83cc4b6216b7439f6aa854c483ed7b2ca70df1effef4956ba6c2f70a",
+      "context_changed": false
+    },
+    {
+      "batch_id": "t4_wetland_live_mapping_review_20261105",
+      "batch_label": "Wetland T4 live mappings",
+      "priority": "high",
+      "evidence_id": "ev_wet_distance_to_waterbody_russell97_1",
+      "source_id": "gis_riparian_siting_russell_1997",
+      "page": "10",
+      "mapping_id": "wetland_management__restoration_rewetting__distance_to_waterbody",
+      "reason": "PDF p10 treats distances >120 m as low-priority restoration, not unsuitable; 90 m defines the first high-priority branch. The live 120 m maximum turns priority into exclusion. Diagnostic pooling also combines Medland’s 250/500 m and Qiu’s 300 m values from different contexts.",
+      "decision_needed": "Retain full 90 m / 120 m priority branching and observed target definition; decide removal from structural runtime, preserve method referral. Do not pool these priority/feasibility contexts into a single distance envelope.",
+      "requested_by": "Pete",
+      "requested_date": "2026-11-05",
+      "evidence_sha256": "62618bb007ad7e1b55d103dd92870936b06f1b834b1dca78b318272857ceb46d",
+      "context_changed": false
+    }
+  ],
   "gaps": [],
   "stocktake": {
     "peer_reviewed": [
@@ -666142,15 +666234,21 @@
       "date": "2026-11-05",
       "count_definition_version": 4,
       "changes": "Clarify table-specific source counts and later review decisions; combine broader family scopes; move independent pipeline records into Evidence review; surface reviewer guidance and Rural Scan methodology; preserve scoped feedback and deep links."
+    },
+    {
+      "version": "1.5.0",
+      "date": "2026-11-05",
+      "count_definition_version": 4,
+      "changes": "Review priority filter and wetland T4 batch; native evidence links and source-specific questions; priority remains separate from decisions, approval and runtime readiness."
     }
   ],
   "build": {
-    "release": "1.4.0",
-    "ui_id": "316de6a994c8",
-    "data_id": "3a825160988d",
+    "release": "1.5.0",
+    "ui_id": "afee041f1a1a",
+    "data_id": "86800afe93cc",
     "count_definition_version": "4",
-    "built_at": "2026-11-05T07:58:37.104014+00:00",
-    "source_commit": "31ea5c0071589ba5478ff1448b0337ff88004cc4",
+    "built_at": "2026-11-05T08:09:03.526379+00:00",
+    "source_commit": "22766a0c5889a6771dc0b54b99fbf6617368bb9b",
     "history": [
       {
         "release": "1.0.0",
@@ -666363,58 +666461,82 @@
       {
         "release": "1.3.2",
         "ui_id": "3344169a869e",
-        "data_id": "cbf76df668c8",
+        "data_id": "94c788c94135",
         "count_definition_version": "4",
-        "built_at": "2026-11-05T06:01:13.025654+00:00",
+        "built_at": "2026-11-05T05:24:31.644422+00:00",
         "source_commit": "72386b2a548481580ef72c661134d820907a923e"
       },
       {
-        "release": "1.3.2",
-        "ui_id": "3344169a869e",
-        "data_id": "c6a07c1a5e96",
+        "release": "1.4.0",
+        "ui_id": "7bbdcc27d481",
+        "data_id": "0edfa7d232ba",
         "count_definition_version": "4",
-        "built_at": "2026-11-05T06:02:54.313870+00:00",
-        "source_commit": "72386b2a548481580ef72c661134d820907a923e"
-      },
-      {
-        "release": "1.3.2",
-        "ui_id": "3344169a869e",
-        "data_id": "36aa3b2d975d",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T06:15:02.361362+00:00",
-        "source_commit": "72386b2a548481580ef72c661134d820907a923e"
-      },
-      {
-        "release": "1.3.2",
-        "ui_id": "3344169a869e",
-        "data_id": "a6d38f75ae49",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T06:28:07.695207+00:00",
-        "source_commit": "15aa77e6e1bf60e11db5b42d9832bf1c33d28726"
+        "built_at": "2026-11-05T06:26:11.253146+00:00",
+        "source_commit": "ff623f375989fd713dccdece40b523287af0f9cf"
       },
       {
         "release": "1.4.0",
         "ui_id": "316de6a994c8",
-        "data_id": "c43302e1b6ad",
+        "data_id": "0edfa7d232ba",
         "count_definition_version": "4",
-        "built_at": "2026-11-05T06:54:17.693359+00:00",
-        "source_commit": "c4de532c88e2cbbe971142cd6e332fb9e79554a5"
+        "built_at": "2026-11-05T06:34:57.368555+00:00",
+        "source_commit": "ae7b538daf5ea3418499f4cc6769a3457674d7b5"
       },
       {
         "release": "1.4.0",
         "ui_id": "316de6a994c8",
-        "data_id": "01c2a53ab84a",
+        "data_id": "d2ee1a515b89",
         "count_definition_version": "4",
-        "built_at": "2026-11-05T07:07:57.415260+00:00",
-        "source_commit": "0fb6c83aa66ef647d8e23b58526f047d1334c1ce"
+        "built_at": "2026-11-05T06:53:01.826701+00:00",
+        "source_commit": "d3f83b7b1a203b9633248511d3ada1e7e999ce97"
       },
       {
-        "release": "1.4.0",
-        "ui_id": "316de6a994c8",
-        "data_id": "3a825160988d",
+        "release": "1.5.0",
+        "ui_id": "ca1081684b7d",
+        "data_id": "28a7604d1fd3",
         "count_definition_version": "4",
-        "built_at": "2026-11-05T07:58:37.104014+00:00",
-        "source_commit": "31ea5c0071589ba5478ff1448b0337ff88004cc4"
+        "built_at": "2026-11-05T07:08:48.083777+00:00",
+        "source_commit": "dd80226700432e9abd4aa9262262b9ad5ad6dfd5"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "54aadd92bb3c",
+        "data_id": "16d73c9398e3",
+        "count_definition_version": "4",
+        "built_at": "2026-11-05T07:12:00.773816+00:00",
+        "source_commit": "dd80226700432e9abd4aa9262262b9ad5ad6dfd5"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "c7a44300908c",
+        "data_id": "16d73c9398e3",
+        "count_definition_version": "4",
+        "built_at": "2026-11-05T07:16:41.710762+00:00",
+        "source_commit": "39c58cb034f7d9372caa9bf9846249b8f35cad97"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "e8eb227814ef",
+        "data_id": "16d73c9398e3",
+        "count_definition_version": "4",
+        "built_at": "2026-11-05T07:20:12.402380+00:00",
+        "source_commit": "3413410d76e952641ea21cbeef2750970e39ad03"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "afee041f1a1a",
+        "data_id": "16d73c9398e3",
+        "count_definition_version": "4",
+        "built_at": "2026-11-05T07:22:57.500664+00:00",
+        "source_commit": "4bc1ae3c37ff62eeecf60a7dc37f221e0c7ffe44"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "afee041f1a1a",
+        "data_id": "86800afe93cc",
+        "count_definition_version": "4",
+        "built_at": "2026-11-05T08:09:03.526379+00:00",
+        "source_commit": "22766a0c5889a6771dc0b54b99fbf6617368bb9b"
       }
     ]
   }

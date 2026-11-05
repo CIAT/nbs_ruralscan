@@ -42,6 +42,11 @@
       var pipeline = document.getElementById('review-pipeline-panel');
       scope = pipeline && !pipeline.hidden && window.DashboardProgress && window.DashboardProgress.pipelineContext
         ? window.DashboardProgress.pipelineContext() : Object.assign({}, window._vfScope || {});
+      if (!pipeline || pipeline.hidden) {
+        scope.reviewPriority = window._vfPriority || 'all';
+        scope.priorityEvidence = window._vfPriorityEvidence || '';
+        scope.reviewQueue = window._vfSimpleView || 'todo';
+      }
     }
     else if (tabId === 'tab-interrogator') scope = {
       nbs: (document.getElementById('select-nbs') || {}).value || 'all',
@@ -447,6 +452,12 @@
         window.DashboardShell.openPipelineRecords();
       }
       if (targetTab === 'tab-qaqc' && scope.view === 'queue') {
+        window._vfScope = Object.assign({}, scope);
+        window._vfPriority = scope.reviewPriority || 'all';
+        window._vfPriorityEvidence = scope.priorityEvidence || '';
+        if (scope.priorityEvidence && window.DashboardPriority) {
+          window.DashboardPriority.openFromHash('#review-evidence=' + encodeURIComponent(scope.priorityEvidence));
+        } else if (typeof vfSimpleQueue === 'function') vfSimpleQueue(scope.reviewQueue || 'todo');
         var queue = document.querySelector('[data-review-view="queue"]'); if (queue) queue.click();
       }
     }

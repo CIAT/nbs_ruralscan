@@ -329,6 +329,10 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
 
     data["t4_review_notes"] = load_review_notes(schema_root.parent)
 
+    from nbs_ruralscan.schema_tools.review_priorities import load_review_priorities
+
+    data["review_priorities"] = load_review_priorities(schema_root.parent)
+
     # Reported evidence gaps (missing variables / figures a reviewer flagged) — see /api/gap.
     gaps_csv = schema_root.parent / "pipeline" / "metrics" / "gaps.csv"
     data["gaps"] = _csv_to_rows(gaps_csv) if gaps_csv.exists() else []
@@ -456,6 +460,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "dashboard-progress.css",
         "dashboard-shell.js",
         "dashboard-shell.css",
+        "dashboard-priority.js",
         "dashboard-relationships.js",
         "dashboard-relationships.css",
         "dashboard-feedback.js",
