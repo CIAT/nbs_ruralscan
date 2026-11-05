@@ -12,7 +12,7 @@
     if (restoringRoute) return;
     var route = { 'tab-overview': '#overview', 'tab-search': '#progress', 'tab-variables': '#datasets' }[tab];
     if (tab === 'tab-methods') route = '#methods/' + selectedView('method', 'rural');
-    if (tab === 'tab-qaqc') route = { queue: '#review-queue', help: '#review-help', pipeline: '#pipeline-records' }[selectedView('review', 'queue')];
+    if (tab === 'tab-qaqc') route = { queue: window.DashboardPriority ? window.DashboardPriority.route() : '#review-queue', help: '#review-help', pipeline: '#pipeline-records' }[selectedView('review', 'queue')];
     if (tab === 'tab-stocktake') route = location.hash.startsWith('#source=') ? location.hash : '#bibliography';
     if (tab === 'tab-interrogator') route = location.hash.startsWith('#t4/') ? location.hash : selectedView('query', 'relationships') === 'explorer' ? '#evidence-explorer' : '#relationships';
     if (route && location.hash !== route) history.replaceState(null, '', route);
@@ -28,7 +28,7 @@
     if (!panels || !panels[view]) return;
     Object.keys(panels).forEach(function (key) { var panel = byId(panels[key]); if (panel) panel.hidden = key !== view; });
     document.querySelectorAll(selector).forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset[kind + 'View'] === view)); });
-    var route = kind === 'method' ? '#methods/' + view : kind === 'review' ? { queue: '#review-queue', help: '#review-help', pipeline: '#pipeline-records' }[view] : '';
+    var route = kind === 'method' ? '#methods/' + view : kind === 'review' ? { queue: window.DashboardPriority ? window.DashboardPriority.route() : '#review-queue', help: '#review-help', pipeline: '#pipeline-records' }[view] : '';
     if (route && location.hash !== route) history.replaceState(null, '', route);
     if (kind === 'review' && view === 'pipeline' && window.DashboardProgress && typeof window.DashboardProgress.renderPipelineRecords === 'function') window.DashboardProgress.renderPipelineRecords();
     syncSubtabs();
@@ -37,6 +37,7 @@
     // Opening a main tab must not overwrite the deep link before its subview is restored.
     restoringRoute = true;
     try {
+      if (window.DashboardPriority && window.DashboardPriority.openFromHash(location.hash)) return;
       if (location.hash === '#relationships') { open('btn-interrogator'); setView('query', 'relationships'); }
       else if (location.hash === '#evidence-explorer' || location.hash.startsWith('#t4/')) { open('btn-interrogator'); setView('query', 'explorer'); }
       else if (location.hash === '#pipeline-records') { open('btn-qaqc'); setView('review', 'pipeline'); }
@@ -175,6 +176,6 @@
     window.addEventListener('hashchange', openHash);
     openHash();
   }
-  window.DashboardShell = { syncSubtabs: syncSubtabs, onTab: onTab, openFromHash: openHash, showExplorer: function () { open('btn-interrogator'); setView('query', 'explorer'); syncRoute('tab-interrogator'); }, openReviewHelp: function () { open('btn-qaqc'); setView('review', 'help'); }, openPipelineRecords: function () { open('btn-qaqc'); setView('review', 'pipeline'); }, openMethods: function (view) { open('btn-methods'); setView('method', view || 'rural'); }, numberContent: numberContent };
+  window.DashboardShell = { syncSubtabs: syncSubtabs, onTab: onTab, openFromHash: openHash, showExplorer: function () { open('btn-interrogator'); setView('query', 'explorer'); syncRoute('tab-interrogator'); }, openReviewQueue: function () { open('btn-qaqc'); setView('review', 'queue'); }, openReviewHelp: function () { open('btn-qaqc'); setView('review', 'help'); }, openPipelineRecords: function () { open('btn-qaqc'); setView('review', 'pipeline'); }, openMethods: function (view) { open('btn-methods'); setView('method', view || 'rural'); }, numberContent: numberContent };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
