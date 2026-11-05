@@ -118,10 +118,11 @@
       <div><h2><span class="sec-n">3.2</span>People and land maps</h2><p>Poverty, food insecurity, soils, biodiversity, carbon and water stress.</p></div>
       <div class="dl-pair"><a href="#" onclick="return false" title="Prototype">Download PNG</a><a href="#" onclick="return false" title="Prototype">Download CSV</a></div>
     </div>
-    <p>Non-climate problems within the selected opportunity space. Choose a variable to see its national fifths; darker means more affected. These synthetic values demonstrate the display, not country findings.</p>
-    <label class="fld"><span>Problem to map</span><select id="context-map"></select></label>
-    <figure class="plate" style="margin:20px 0"><svg class="map" id="map-context" role="img" aria-label="Non-climate problem within opportunity space"></svg><div class="legend" id="context-lg"></div></figure>
+    <div class="multiples" id="context-mult"></div>
+    <div class="mult-lg" id="context-lg"></div>
     <p id="context-caption" class="figcap"></p>
+    <p class="m2-note"><b>People and land conditions, not climate projections.</b> Each map shows national fifths of an illustrative indicator, from least to most affected. These values describe needs within the opportunity space; they do not measure the practice’s effect.</p>
+    <div class="tabwrap" style="margin-top:28px"><table class="qt" id="context-table" style="max-width:760px"></table></div>
   </section>
 
   <!-- 2.3 -->
@@ -426,18 +427,29 @@
       '<div class="ev-rule"><b>Band rule (example).</b> The pooled change in ' + r[4] + ' falls in the band the evidence register sets for “' + r[1] + '”.</div><p style="margin-top:12px">Full evidence table: <a href="02-practices.html?tab=3">Stage 02, Section 2.3</a>.</p>');
   });
 
-  var contextOptions = PROB.slice(4), contextSelect = document.getElementById('context-map');
-  contextSelect.innerHTML = contextOptions.map(function(p) { return '<option value="' + p.k + '">' + p.name + '</option>'; }).join('');
-  contextSelect.value = 'poverty';
-  var contextSvg = M.plate(document.getElementById('map-context'), {uid:'context', viewBox:'352 14 590 606'});
+  var contextOptions = PROB.slice(4);
+  document.getElementById('context-mult').innerHTML = contextOptions.map(function(p) {
+    return '<figure><svg id="context-' + p.k + '" role="img" aria-label="' + p.name + ' map, example data"></svg><figcaption><b>' + p.name + '</b><div class="mult-lg">' + [0,1,2,3,4].map(function(q) {
+      return '<span class="sw"><i style="background:color-mix(in srgb,var(' + p.hue + ') ' + [18,34,52,74,100][q] + '%,var(--paper))"></i>Fifth ' + (q+1) + '</span>';
+    }).join('') + '</div></figcaption></figure>';
+  }).join('');
+  var contextSvgs = contextOptions.map(function(p) {
+    var map = M.plate(document.getElementById('context-' + p.k), {uid:'context-' + p.k, labels:false, scale:false, cities:false, context:false, viewBox:'366 22 568 592'});
+    map.style.setProperty('--hz', 'var(' + p.hue + ')');
+    return map;
+  });
   function contextMap() {
-    var p = contextOptions.filter(function(p) { return p.k === contextSelect.value; })[0];
-    contextSvg.style.setProperty('--hz', 'var(' + p.hue + ')');
-    M.paintCells(contextSvg, F.cells, function(c) { return R.sel(c) ? 'lhq' + c.indQ[p.k] : null; });
-    document.getElementById('context-lg').innerHTML = '<b>' + p.name + '</b><div class="lg-row">' + [0,1,2,3,4].map(function(q) { return '<span class="sw"><i style="background:color-mix(in srgb,var(' + p.hue + ') ' + [18,34,52,74,100][q] + '%,var(--paper))"></i>Fifth ' + (q+1) + '</span>'; }).join('') + '</div><p>1 = least affected · 5 = most affected<br>Blank = outside selected opportunity space</p>';
-    document.getElementById('context-caption').textContent = p.name + ': ' + p.unit + '. National fifths of synthetic example values, within ' + V1BUI.classWords(ST) + '; not observed data or a future projection.';
+    var selected = F.cells.filter(R.sel);
+    contextOptions.forEach(function(p,i) {
+      M.paintCells(contextSvgs[i], F.cells, function(c) { return R.sel(c) ? 'lhq' + c.indQ[p.k] : null; });
+    });
+    document.getElementById('context-lg').textContent = 'Fifth 1 = least affected; fifth 5 = most affected. Blank = outside the selected opportunity space (' + V1BUI.classWords(ST) + ').';
+    document.getElementById('context-caption').innerHTML = '<b>Figure 3.4</b> · People and land conditions within the opportunity space, 5 km cells. Synthetic example values; not observed data or future projections.';
+    document.getElementById('context-table').innerHTML = '<caption class="tabcap"><b>Table 3.5</b> · Share of opportunity-space area in the two most affected national fifths<small>Both columns use % of area. Equal-area example cells; country reference is 40 % by construction. Changing climate period changes the selected suitability extent, not these indicator values.</small></caption><thead><tr><th>Problem</th><th class="r">Opportunity space</th><th class="r">Country reference</th></tr></thead><tbody>' + contextOptions.map(function(p) {
+      var affected = selected.filter(function(c) { return c.indQ[p.k] >= 3; }).length;
+      return '<tr><td>' + p.name + '<span class="sub" style="display:block">' + p.unit + '</span></td><td class="r">' + (selected.length ? pct(affected / selected.length) : 'No selected cells') + '</td><td class="r">40 %</td></tr>';
+    }).join('') + '</tbody>';
   }
-  contextSelect.addEventListener('change', contextMap);
 
   /* ---- tabs ---- */
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.subtabs [role=tab]'));
