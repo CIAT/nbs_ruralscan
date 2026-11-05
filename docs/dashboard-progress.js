@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   let data, model, evidence = new Map(), bibliography = [], drawerReturn = null, drawerTab = '', drawerSource = '', registered = new Map();
-  const state = { nbs: '', family: '', bibNbs: '', bibType: '', bibSet: '', bibTable: '', bibFamily: '', bibOrigin: '', bibEvidence: '', query: '', page: 0, methodNbs: '', methodTable: '', familyFilter: '', reviewFilter: '', ledgerTable: '', ledgerChannel: '', ledgerPage: 0, familySort: 'name', familySortDesc: false, ledgerSort: 'updated', ledgerSortDesc: true, overviewView: 'chart', chartScale: 'counts', progressTable: 'T4', bibKeys: null, bibScopeLabel: '' };
+  const state = { nbs: '', family: '', bibNbs: '', bibType: '', bibSet: '', bibTable: '', bibFamily: '', bibOrigin: '', bibEvidence: '', query: '', page: 0, methodNbs: '', methodTable: '', familyFilter: '', reviewFilter: '', ledgerTable: '', ledgerChannel: '', ledgerPage: 0, familySort: 'name', familySortDesc: false, ledgerSort: 'updated', ledgerSortDesc: true, overviewView: 'table', chartScale: 'counts', progressTable: 'T4', bibKeys: null, bibScopeLabel: '' };
   const $ = id => document.getElementById(id);
   const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const fmt = v => v == null ? 'Not recorded' : Number(v).toLocaleString('en-GB');
@@ -22,7 +22,7 @@
   const progressTitle = () => progressLabels[state.progressTable] || 'All evidence';
   const feedbackKey = key => state.progressTable&&state.progressTable!=='T4'?'progress:'+state.progressTable+':'+key:key;
   // Each table keeps its own controls; T4 remains the primary view.
-  const sectionState = Object.fromEntries(['T4','T2a','T3','T6'].map(t=>[t,{view:'chart',scale:'counts',open:false}]));
+  const sectionState = Object.fromEntries(['T4','T2a','T3','T6'].map(t=>[t,{view:'table',scale:'counts',open:false}]));
   const sectionId = (table,id) => table==='T4'?id:id.replace(/^dp-/, 'dp-'+table+'-');
   const sectionNumber = () => viewNumber()+'.'+({T4:state.nbs?1:2,T2a:state.nbs?4:3,T3:state.nbs?5:4,T6:state.nbs?6:5}[state.progressTable]);
   const outputTitle = () => ({T4:'T4 rules compiled',T2a:'Risk indicators configured',T3:'T3 assessments compiled',T6:'T6 assessments compiled'}[state.progressTable]);
