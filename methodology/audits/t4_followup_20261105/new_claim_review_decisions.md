@@ -77,4 +77,13 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Provenance: secondary review guidance with grouped citations, not independently verified votes from each cited primary.
 - Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
 
-Remaining active claims: 10 awaiting individual review decisions.
+## 8. Wetland expansion: source-specific compatible land cover
+
+- Evidence: `ev_wet_goyette_compatible_cover_20261105`.
+- Source: Goyette et al., `watershed_restoration_targets_hydro_2022`, PDF pp. 5–6 (printed pp. 369–370), restoration scenarios in the St. Charles watershed, Quebec.
+- Proposal presented: retain the model's forest, agriculture, open-land and bare-soil list as contextual spatial-allocation/scenario evidence only; do not turn those classes into universal restoration permissions, especially forest conversion. Impervious surfaces were omitted for socio-economic practicality, not established ecological impossibility.
+- Pete's exact response: "fine, next".
+- Accepted decision: keep that source-specific scenario evidence and the requirement for enough available compatible area within hydrological units. No universal class scores, global land-cover gate, pixel-level proof of former wetland history or permission to convert forest is approved.
+- Application status: human decision recorded; central review application and compilation pending. No executable mapping approved.
+
+Remaining active claims: 9 awaiting individual review decisions.
