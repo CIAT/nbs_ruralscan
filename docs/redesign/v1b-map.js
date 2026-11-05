@@ -418,7 +418,7 @@
 
   function classWords(st) {
     var on = CLASSES.filter(function (c) { return st.classes[c[0]]; }).map(function (c) { return c[1]; });
-    return on.join(' + ');
+    return on.join(' + ') || 'No classes';
   }
   function practiceWords(st) {
     var names = st.practices.map(function (id) { return PRACTICES.filter(function (p) { return p.id === id; })[0].name; });
@@ -457,7 +457,7 @@
       '<div class="cb-g cb-prac"><span class="cb-l" id="cbl-p">Practice</span><div class="cb-chips" aria-labelledby="cbl-p">' + chips +
         '<button type="button" class="cb-add" aria-expanded="false" aria-haspopup="true">+ Add</button>' +
         '<div class="cb-menu" hidden>' + menu + '</div></div></div>' +
-      '<div class="cb-g"><span class="cb-l">Suitability classes</span>' + seg('classes', CLASSES, true) + '</div>' +
+      '<div class="cb-g cb-extent"><span class="cb-l">Opportunity extent · select classes</span>' + seg('classes', CLASSES, true) + '<small>Selected: ' + classWords(st) + '. At least one class; default Very high + High.</small></div>' +
       '<div class="cb-g"><span class="cb-l">View</span>' + seg('view', [['cells', '5 km cells'], ['adm2', 'Admin 2'], ['adm3', 'Admin 3']]) + '</div>' +
       '<div class="cb-g"><span class="cb-l">Climate</span>' + seg('climate', [['base', 'Baseline 1995–2014'], ['ssp', 'SSP2-4.5 ~2050']]) + '</div>' +
       (opts.hotspot ? '<div class="cb-g"><span class="cb-l">Hotspot score</span>' + seg('hot', [['high', 'High+'], ['vh', 'Very high']]) + '</div>' : '') +
@@ -502,22 +502,23 @@
 
   function stageBar(current) {
     var steps = STAGES.map(function (s) {
-      var state = s.n < current ? 'done' : s.n === current ? 'now' : 'next';
+      var state = current > 0 && s.n < current ? 'done' : s.n === current ? 'now' : 'next';
       var mark = state === 'done' && s.href ? '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.3 4.7-5"/></svg>' : s.n;
       var inner = '<span class="st-n">' + mark + '</span><span class="st-name">' + s.name + '</span>';
       if (!s.href) return '<li class="st st-' + state + ' st-off" title="Not prototyped in this round">' + inner + '</li>';
       return '<li class="st st-' + state + '"><a href="' + s.href + '"' + (state === 'now' ? ' aria-current="step"' : '') + '>' + inner + '</a></li>';
     }).join('');
+    var home = '<li class="st st-home' + (current === 0 ? ' st-now' : '') + '"><a href="index.html"' + (current === 0 ? ' aria-current="page"' : '') + ' title="Home"><span class="st-n st-house"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.8 6.2L6 2.4l4.2 3.8M3.2 5.2v4.4h5.6V5.2"/></svg></span><span class="st-name">Home</span></a></li>';
     return '<header class="stagebar"><div class="sb-in">' +
-      '<a class="sb-proj" href="index.html">Rural NbS Scan<span> · Sierra Leone example</span></a>' +
-      '<ol class="stepper" aria-label="Stages">' + steps + '</ol>' +
-      '<a class="btn-ghost tc-link" href="00-config.html">Technical configuration</a>' +
+      '<a class="sb-proj" href="index.html" title="Home">Rural NbS Scan<span> · Sierra Leone example</span></a>' +
+      '<ol class="stepper" aria-label="Stages">' + home + steps + '</ol>' +
+      (current === 0 ? '' : '<a class="btn-ghost tc-link" href="00-config.html">Configuration</a>') +
       '</div></header>' +
-      '<div class="ctlbar" id="ctlbar" role="region" aria-label="Controls"></div>';
+      (current === 0 ? '' : '<div class="ctlbar" id="ctlbar" role="region" aria-label="Controls"></div>');
   }
 
   var JUMP = { practice: '00-config.html?tab=2', classes: '00-config.html?tab=2', geo: '00-config.html?tab=1', grain: '00-config.html?tab=1',
-    period: '00-config.html?tab=5', priorities: '05-hotspots.html?tab=2', data: '00-config.html?tab=1', rules: '00-config.html?tab=2' };
+    period: '01-setup.html', priorities: '05-hotspots.html?tab=2', data: '00-config.html?tab=1', rules: '00-config.html?tab=2' };
   function drawer() {
     var sec = [
       ['practice', 'Practice and suitability family', '<p>Agroforestry, family F1 — planted silvoarable (trees in rows within annual cropland). Each family is mapped separately because each is limited by a different factor.</p><label class="fld"><span>Practice</span><select><option>Agroforestry · planted silvoarable</option><option>Agroforestry · regeneration-based</option><option>Riparian buffers</option></select></label>'],
@@ -538,6 +539,10 @@
 
   function openDrawer(key) {
     var d = document.getElementById('drawer'), sc = document.querySelector('.scrim');
+    var panel = key === 'panel';
+    d.classList.toggle('panel-mode', panel);
+    d.querySelector('.dr-head h2').textContent = panel ? 'Evidence details' : 'Quick settings';
+    d.setAttribute('aria-label', panel ? 'Evidence details' : 'Technical configuration');
     d.classList.add('open'); d.setAttribute('aria-hidden', 'false'); sc.hidden = false;
     document.querySelectorAll('.dr-sec').forEach(function (s) { s.classList.remove('hl'); });
     var t = document.getElementById('dr-' + key);

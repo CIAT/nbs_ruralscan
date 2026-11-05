@@ -43,21 +43,23 @@ FIELDS = [
 ]
 
 
-def _review_rows() -> list[dict]:
+def _review_rows(path: Path | None = None) -> list[dict]:
     # De-dup to distinct reviews (latest per evidence_id × reviewer). The raw log APPENDS
     # on every apply run, so raw counts over-state reviews ~3x (220 raw → 68 distinct, 2026-06-22).
     from nbs_ruralscan.schema_tools.review import latest_review_rows
 
-    if not REVIEW_LOG.exists():
+    path = path if path is not None else REVIEW_LOG
+    if not path.exists():
         return []
-    with REVIEW_LOG.open(encoding="utf-8") as f:
+    with path.open(encoding="utf-8") as f:
         return latest_review_rows(list(csv.DictReader(f)))
 
 
-def _learnings_rows() -> list[dict]:
-    if not LEARNINGS_LOG.exists():
+def _learnings_rows(path: Path | None = None) -> list[dict]:
+    path = path if path is not None else LEARNINGS_LOG
+    if not path.exists():
         return []
-    with LEARNINGS_LOG.open(encoding="utf-8") as f:
+    with path.open(encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
 
@@ -81,14 +83,18 @@ def _snapshot_bytes(rows: list[dict]) -> bytes:
     return json.dumps(_fingerprints(rows), sort_keys=True, indent=2).encode()
 
 
-def status() -> dict:
-    rl = _review_rows()
-    ll = _learnings_rows()
+def status(
+    *, review_log: Path | None = None, learnings_log: Path | None = None
+) -> dict:
+    rl = _review_rows(review_log)
+    ll = _learnings_rows(learnings_log)
     latest = ll[-1] if ll else {}
     reviewed_through = int(latest.get("reviewed_through") or 0)
     basis = "legacy_count_estimate"
     unprocessed = max(0, len(rl) - reviewed_through)
-    snapshot = LEARNINGS_LOG.with_suffix(".feedback.json")
+    snapshot = (
+        learnings_log if learnings_log is not None else LEARNINGS_LOG
+    ).with_suffix(".feedback.json")
     if snapshot.exists():
         data = snapshot.read_bytes()
         digest = hashlib.sha256(data).hexdigest()
@@ -119,8 +125,10 @@ def status() -> dict:
     }
 
 
-def coverage_note() -> str | None:
-    s = status()
+def coverage_note(
+    *, review_log: Path | None = None, learnings_log: Path | None = None
+) -> str | None:
+    s = status(review_log=review_log, learnings_log=learnings_log)
     if s["unprocessed"] > 0:
         return (
             f"{s['unprocessed']} review decision(s) not yet incorporated into the learning "

@@ -109,8 +109,8 @@ def _authoritative_citation(m: dict) -> str:
     return f"{au} ({yr}). {title}. {cont}.".strip()
 
 
-def _rows() -> tuple[list[dict], list[str]]:
-    with QUEUE.open(encoding="utf-8") as f:
+def _rows(path: Path | None = None) -> tuple[list[dict], list[str]]:
+    with (path if path is not None else QUEUE).open(encoding="utf-8") as f:
         rd = csv.DictReader(f)
         rows = list(rd)
         cols = list(rd.fieldnames or [])
@@ -361,9 +361,9 @@ def verify() -> int:
     return 0
 
 
-def check() -> int:
+def check(*, queue_path: Path | None = None, sources_path: Path | None = None) -> int:
     """Offline gate: any pending row with a DOI must be doi_verified=true."""
-    rows, _ = _rows()
+    rows, _ = _rows(queue_path)
     bad = [
         r["source_id"]
         for r in rows
@@ -372,8 +372,9 @@ def check() -> int:
         and (r.get("doi_verified") or "") != "true"
     ]
     registered = set()
-    if SRC.exists():
-        with SRC.open(encoding="utf-8") as f:
+    sources_path = sources_path if sources_path is not None else SRC
+    if sources_path.exists():
+        with sources_path.open(encoding="utf-8") as f:
             registered = {r["source_id"] for r in csv.DictReader(f)}
     bad_title = [
         r["source_id"]

@@ -274,25 +274,44 @@ def flatten(table: str, r: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def build_flat(schema_root: str | Path) -> str:
+def build_flat(schema_root: str | Path, *, from_csv: bool = False) -> str:
     buf = io.StringIO()
     w = csv.DictWriter(buf, fieldnames=FLAT_COLUMNS, lineterminator="\n")
     w.writeheader()
     for table in TABLES:
-        for r in load_rows(schema_root, table):
+        if from_csv:
+            from nbs_ruralscan.schema_tools.generate import _csv_to_rows
+
+            rows = [
+                row
+                for path in sorted(
+                    (Path(schema_root) / "recipes").glob(
+                        f"*/{Path(TABLES[table]).with_suffix('.csv')}"
+                    )
+                )
+                for row in _csv_to_rows(path)
+            ]
+        else:
+            rows = load_rows(schema_root, table)
+        for r in rows:
             w.writerow(flatten(table, r))
     return buf.getvalue()
 
 
 def write_flat(
-    schema_root: str | Path, check: bool = False, dest: Path | None = None
+    schema_root: str | Path,
+    check: bool = False,
+    dest: Path | None = None,
+    *,
+    from_csv: bool = False,
 ) -> list[Path]:
     """(Re)write `docs/effect_rows_flat.csv`; returns [dest] when it changed (or would)."""
     schema_root = Path(schema_root)
     dest = Path(dest) if dest else schema_root.parent / "docs" / "effect_rows_flat.csv"
-    text = build_flat(schema_root)
+    text = build_flat(schema_root, from_csv=from_csv)
     if dest.exists() and dest.read_text(encoding="utf-8") == text:
         return []
     if not check:
+        dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(text, encoding="utf-8")
     return [dest]

@@ -95,7 +95,9 @@ def candidates(schema_root: str | Path = "schema") -> list[dict]:
     if not ev.exists():
         return []
     flags: dict[str, dict] = {}
-    for f in check_scope.check(ev):
+    for f in check_scope.check(
+        ev, policy_path=root / "lookups/m2b_variable_policy.csv"
+    ):
         if f["signal"] in _ADVISORY_ONLY:
             continue  # advisory-only — surfaced for review, not auto-quarantined
         flags.setdefault(f["evidence_id"], {"kind": "off_scope", **f})

@@ -21,6 +21,7 @@ Stdlib only.
 
 from __future__ import annotations
 
+import argparse
 import csv
 from datetime import datetime, timezone
 import json
@@ -29,6 +30,8 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
+
+from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths, source_revision
 
 
 def _coerce(value: str):
@@ -66,25 +69,17 @@ def _csv_files(schema_root: Path, location: str) -> list[Path]:
     return sorted(schema_root.glob(glob + ".csv"))
 
 
-def generate_progress_report(schema_root: Path, check: bool = False) -> list[Path]:
+def generate_progress_report(
+    schema_root: Path, check: bool = False, *, dest: Path | None = None
+) -> list[Path]:
     """Generates docs/progress.json summarizing literature registers status."""
     src_csv = schema_root / "registers" / "SRC_source_register.csv"
     if not src_csv.exists():
         return []
 
-    import subprocess
     from collections import Counter
 
-    try:
-        git_commit = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=True,
-        ).stdout.strip()
-    except Exception:
-        git_commit = "unknown"
+    git_commit = source_revision(schema_root.parent)
 
     nbs_stats: dict[str, dict[str, Any]] = {}
     with src_csv.open(newline="", encoding="utf-8") as f:
@@ -145,8 +140,9 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
         "nbs_progress": formatted_stats,
     }
 
-    dest_path = schema_root.parent / "docs" / "progress.json"
-    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    dest_path = (
+        dest if dest is not None else schema_root.parent / "docs" / "progress.json"
+    )
 
     current_data = None
     if dest_path.exists():
@@ -174,6 +170,7 @@ def generate_progress_report(schema_root: Path, check: bool = False) -> list[Pat
 
     changed = [dest_path]
     if not check:
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
         dest_path.write_text(text, encoding="utf-8", newline="\n")
     return changed
 
@@ -239,7 +236,9 @@ def _parse_discovery_logs(schema_root: Path) -> dict[str, dict]:
     return parsed_logs
 
 
-def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path]:
+def generate_dashboard_data(
+    schema_root: Path, check: bool = False, *, dest: Path | None = None
+) -> list[Path]:
     """Generates docs/dashboard_data.json aggregating all registers and recipe data."""
     registers = [
         "SRC_source_register",
@@ -258,18 +257,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         "T7_geographic_context",
     ]
 
-    import subprocess
-
-    try:
-        git_commit = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=True,
-        ).stdout.strip()
-    except Exception:
-        git_commit = "unknown"
+    git_commit = source_revision(schema_root.parent)
 
     data = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
@@ -396,7 +384,9 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         # (a) GEE band mask in the quote → CDL-style decode
         if _mask_re.search(quote):
             try:
-                summary = _codelist.summarise_cdl_mask(quote)
+                summary = _codelist.summarise_cdl_mask(
+                    quote, codelists=schema_root / "codelists"
+                )
             except Exception:  # noqa: BLE001 — never break the build on a mask
                 summary = None
         # (b) relationship class-range spec (e.g. HWSD "classes_suitable": "1-4") → decode
@@ -404,11 +394,12 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         elif isinstance(rel, dict) and rel.get("classes_suitable"):
             dataset = (ctx or {}).get("dataset") if isinstance(ctx, dict) else None
             scheme = _codelist.scheme_for(variable=ev.get("variable"), dataset=dataset)
-            if scheme and _codelist.load(scheme):
+            if scheme and _codelist.load(scheme, codelists=schema_root / "codelists"):
                 summary = _codelist.summarise_class_ranges(
                     scheme,
                     rel.get("classes_suitable", ""),
                     rel.get("classes_not_suitable", ""),
+                    codelists=schema_root / "codelists",
                 )
         if summary and summary["n_included"]:
             data["decoded_classes"][ev["evidence_id"]] = summary
@@ -479,13 +470,23 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
         json.dumps(content, sort_keys=True, ensure_ascii=False).encode()
     ).hexdigest()[:12]
 
-    dest_path = schema_root.parent / "docs" / "dashboard_data.json"
-    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    dest_path = (
+        dest
+        if dest is not None
+        else schema_root.parent / "docs" / "dashboard_data.json"
+    )
 
+    # A first relocated publication retains the selected snapshot's build history.
+    # Later builds use their own destination history. Neither path changes inputs.
+    history_path = (
+        dest_path
+        if dest_path.exists()
+        else schema_root.parent / "docs/dashboard_data.json"
+    )
     current_data = None
-    if dest_path.exists():
+    if history_path.exists():
         try:
-            parsed = json.loads(dest_path.read_text(encoding="utf-8"))
+            parsed = json.loads(history_path.read_text(encoding="utf-8"))
             current_data = parsed if isinstance(parsed, dict) else None
         except Exception:
             pass
@@ -514,7 +515,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
     data["build"] = {**build_entry, "history": history[-50:]}
     # Compare every generated section, not just five legacy sections. New progress,
     # bibliography, scope annotations and build IDs must participate in stale detection.
-    if check and current_data:
+    if check and current_data and dest_path.exists():
         # Stored IDs are claims, not proof: also compare the regenerated payload.
         # Otherwise edited totals or recipes can pass --check with old hashes intact.
         normalised = json.loads(json.dumps(data, ensure_ascii=False))
@@ -528,6 +529,7 @@ def generate_dashboard_data(schema_root: Path, check: bool = False) -> list[Path
 
     changed = [dest_path]
     if not check:
+        dest_path.parent.mkdir(parents=True, exist_ok=True)
         dest_path.write_text(text, encoding="utf-8", newline="\n")
     return changed
 
@@ -567,22 +569,24 @@ def refresh_review_state(schema_root: str | Path) -> None:
     generate_progress_report(schema_root)
 
 
-def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
-    """Write (or, under ``check``, compare) every JSON from its CSV. Returns the
-    list of paths that were written / are stale."""
+def validate_inputs(paths: SchemaBuildPaths) -> None:
+    """Run existing hard gates and advisory checks without changing any inputs/outputs."""
     _safe_console()
-    schema_root = Path(schema_root)
+    schema_root = paths.schema
+    root = paths.source_root
 
     # Run the strict source and quote validation guardrails first
     from nbs_ruralscan.schema_tools.validate_sources import validate_all_sources
 
-    validate_all_sources(schema_root)
+    validate_all_sources(schema_root, corpus_root=paths.corpus)
 
     # Enforce the progress ledger: its stage claims must reconcile with the register
     # (no unproven "done", no evidence for an unstamped stage, valid stage order).
     from nbs_ruralscan.schema_tools.ledger import check as _ledger_check
 
-    _ledger_errs = _ledger_check(schema_root)
+    _ledger_errs = _ledger_check(
+        schema_root, ledger_path=root / "pipeline/progress_ledger.csv"
+    )
     if _ledger_errs:
         raise ValueError(
             "PROGRESS LEDGER FAILED: stage claims do not reconcile with the register:\n"
@@ -596,7 +600,13 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     try:
         from nbs_ruralscan.schema_tools.verify_metadata import check as _meta_check
 
-        if _meta_check() != 0:
+        if (
+            _meta_check(
+                queue_path=root / "pipeline/acquisition_queue.csv",
+                sources_path=schema_root / "registers/SRC_source_register.csv",
+            )
+            != 0
+        ):
             print(
                 "  METADATA NOTE: acquisition-queue rows carry an UNVERIFIED DOI — run "
                 "`verify_metadata.py verify`, or blank the DOI and acquire by title. "
@@ -609,7 +619,10 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     from nbs_ruralscan.schema_tools.check_scope import check as _scope_check
     from nbs_ruralscan.schema_tools.learnings import coverage_note as _learn_note
 
-    _scope_flags = _scope_check(schema_root / "registers" / "EV_evidence_register.csv")
+    _scope_flags = _scope_check(
+        schema_root / "registers" / "EV_evidence_register.csv",
+        policy_path=schema_root / "lookups/m2b_variable_policy.csv",
+    )
     if _scope_flags:
         print(
             f"  SCOPE NOTES ({len(_scope_flags)} active unit(s) with off-scope signals — "
@@ -634,7 +647,8 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     from nbs_ruralscan.schema_tools.check_species import check as _species_check
 
     _species_flags = _species_check(
-        schema_root / "registers" / "EV_evidence_register.csv"
+        schema_root / "registers" / "EV_evidence_register.csv",
+        sources_path=schema_root / "registers/SRC_source_register.csv",
     )
     if _species_flags:
         print(
@@ -680,7 +694,11 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
             "lookups/variable_direction_sense.csv and XW polarity must agree with it:\n"
             + "\n".join(f"  - {e['signal']}: {e['detail']}" for e in _dir_errs)
         )
-    _dir_flags = _dir_check(_ev_csv)
+    _dir_flags = _dir_check(
+        _ev_csv,
+        sense_path=schema_root / "lookups/variable_direction_sense.csv",
+        exceptions_path=schema_root / "lookups/direction_cue_exceptions.csv",
+    )
     if _dir_flags:
         print(
             f"  DIRECTION NOTES ({len(_dir_flags)} cue problem(s) on active effect units "
@@ -700,87 +718,223 @@ def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
     # provenance pass on numbers from other rows (Pete 2026-10-12 review theme).
     from nbs_ruralscan.schema_tools import check_quote as _cq
 
-    _wide = [f for f in _cq.check() if "whole table" in f["why"]]
+    _wide = [f for f in _cq.check(_ev_csv) if "whole table" in f["why"]]
     if _wide:
         print(
             f"  QUOTE WIDTH: {len(_wide)} active unit(s) quote a whole table/page "
             "(run check_quote.py; quote the table ROW + header instead)"
         )
-    # Guard B (2026-06-23): auto-quarantine off-scope/wrong-practice on the WRITE path only —
-    # soft-delete (reversible) so junk stops reaching the worklist; never mutate on --check.
-    if not check:
-        from nbs_ruralscan.schema_tools.quarantine import apply as _quarantine_apply
-
-        _q = _quarantine_apply(schema_root)
-        if _q:
-            print(
-                f"  AUTO-QUARANTINE: soft-dropped {len(_q)} off-scope/wrong-practice "
-                "unit(s) (review_state=dropped, reversible via the QA dashboard)"
-            )
-    _ln = _learn_note()
+    _ln = _learn_note(
+        review_log=root / "pipeline/metrics/review_log.csv",
+        learnings_log=root / "pipeline/metrics/learnings_log.csv",
+    )
     if _ln:
         print(f"  LEARNING-LOOP NOTE: {_ln}")
 
+
+def quarantine_inputs(paths: SchemaBuildPaths) -> list[dict]:
+    """Explicit legacy register mutation; callers must validate first."""
+    if paths.output_root is not None:
+        raise ValueError(
+            "A separate-output build cannot quarantine its source snapshot"
+        )
+    from nbs_ruralscan.schema_tools.quarantine import apply
+
+    quarantined = apply(paths.schema)
+    if quarantined:
+        print(
+            f"  AUTO-QUARANTINE: soft-dropped {len(quarantined)} off-scope/wrong-practice "
+            "unit(s) (review_state=dropped, reversible via the QA dashboard)"
+        )
+    return quarantined
+
+
+def _table_outputs(paths: SchemaBuildPaths) -> list[tuple[Path, Path]]:
+    schema_root = paths.schema
     manifest = json.loads(
         (schema_root / "structure" / "columns.json").read_text(encoding="utf-8")
     )
+    return [
+        (
+            csv_path,
+            paths.schema_output
+            / csv_path.relative_to(schema_root).with_suffix(".json"),
+        )
+        for spec in manifest["tables"].values()
+        for csv_path in _csv_files(schema_root, spec["location"])
+    ]
+
+
+def _preflight(paths: SchemaBuildPaths) -> None:
+    paths.preflight(
+        [
+            *(dest for _, dest in _table_outputs(paths)),
+            *(
+                paths.docs_output / name
+                for name in (
+                    "progress.json",
+                    "dashboard_data.json",
+                    "review/decisions.json",
+                    "table_progress.json",
+                    "scorecard.json",
+                    "effect_rows_flat.csv",
+                )
+            ),
+        ]
+    )
+
+
+def publish_outputs(paths: SchemaBuildPaths, *, check: bool = False) -> list[Path]:
+    """Write/compare derived artifacts only. Validate before calling; no quarantine.
+
+    Publication is not transactional yet: an I/O failure can leave partial outputs.
+    """
+    _preflight(paths)
+    schema_root, docs = paths.schema, paths.docs_output
     changed: list[Path] = []
-    for spec in manifest["tables"].values():
-        for csv_path in _csv_files(schema_root, spec["location"]):
-            json_path = csv_path.with_suffix(".json")
-            text = (
-                json.dumps(_csv_to_rows(csv_path), ensure_ascii=False, indent=2) + "\n"
-            )
-            current = (
-                json_path.read_text(encoding="utf-8") if json_path.exists() else None
-            )
-            if text == current:
-                continue
-            changed.append(json_path)
-            if not check:
-                json_path.write_text(text, encoding="utf-8", newline="\n")
+    for csv_path, json_path in _table_outputs(paths):
+        text = json.dumps(_csv_to_rows(csv_path), ensure_ascii=False, indent=2) + "\n"
+        current = json_path.read_text(encoding="utf-8") if json_path.exists() else None
+        if text == current:
+            continue
+        changed.append(json_path)
+        if not check:
+            json_path.parent.mkdir(parents=True, exist_ok=True)
+            json_path.write_text(text, encoding="utf-8", newline="\n")
 
     # Compile the progress.json report
-    changed.extend(generate_progress_report(schema_root, check=check))
+    changed.extend(
+        generate_progress_report(schema_root, check=check, dest=docs / "progress.json")
+    )
     # Compile the dashboard_data.json payload
-    changed.extend(generate_dashboard_data(schema_root, check=check))
+    changed.extend(
+        generate_dashboard_data(
+            schema_root, check=check, dest=docs / "dashboard_data.json"
+        )
+    )
     # Compile the per NbS × T3/T6 pipeline-position report (docs/table_progress.json)
     from nbs_ruralscan.schema_tools import review_exports, table_progress
 
     # committed review-page exports → docs/review/decisions.json (shared decision view)
-    changed.extend(review_exports.write_decisions(check=check))
+    changed.extend(
+        review_exports.write_decisions(
+            check=check,
+            dest=docs / "review/decisions.json",
+            exports_dir=paths.source_root / "docs/review/exports",
+            batch_dir=paths.source_root / "docs/review",
+        )
+    )
 
-    changed.extend(table_progress.write(schema_root, check=check))
+    changed.extend(
+        table_progress.write(
+            schema_root, check=check, dest=docs / "table_progress.json"
+        )
+    )
     # NbS comparison scorecard (decisions D3–D7) → docs/scorecard.json
     from nbs_ruralscan.runtime import scorecard
 
-    changed.extend(scorecard.write(schema_root, check=check))
+    changed.extend(
+        scorecard.write(schema_root, check=check, dest=docs / "scorecard.json")
+    )
     # flat, filterable view of every T3/T6/T6E row → docs/effect_rows_flat.csv
     from nbs_ruralscan.runtime import effect_rows
 
-    changed.extend(effect_rows.write_flat(schema_root, check=check))
+    changed.extend(
+        effect_rows.write_flat(
+            schema_root, check=check, dest=docs / "effect_rows_flat.csv", from_csv=True
+        )
+    )
     return changed
 
 
-def main(argv: list[str] | None = None) -> int:
-    argv = argv if argv is not None else sys.argv[1:]
-    check = "--check" in argv
-    positional = [a for a in argv if not a.startswith("-")]
-    root = (
-        Path(positional[0])
-        if positional
-        else Path(__file__).resolve().parents[3] / "schema"
-    )
-    changed = generate(root, check=check)
-    if check and changed:
-        print(
-            "Stale JSON (regenerate with `python3 src/nbs_ruralscan/schema_tools/generate.py schema`):"
+def build(paths: SchemaBuildPaths, *, check: bool = False) -> list[Path]:
+    """Validate and publish a reconciled snapshot without changing its inputs."""
+    if paths.schema.name != "schema":
+        raise ValueError(
+            "Snapshot builds currently require a CIAT-layout schema/ directory"
         )
-        for p in changed:
-            print(f"  {p}")
+    _preflight(paths)
+    validate_inputs(paths)
+    from nbs_ruralscan.schema_tools.quarantine import candidates
+
+    pending = candidates(paths.schema)
+    if pending:
+        raise ValueError(
+            f"Snapshot has {len(pending)} pending automatic quarantine candidate(s); "
+            "reconcile explicitly before building without input changes: "
+            + ", ".join(row["evidence_id"] for row in pending)
+        )
+    return publish_outputs(paths, check=check)
+
+
+def generate(schema_root: str | Path, *, check: bool = False) -> list[Path]:
+    """Compatibility flow: validate, quarantine on writes, then publish in place."""
+    paths = SchemaBuildPaths(Path(schema_root))
+    _preflight(paths)
+    validate_inputs(paths)
+    if not check:
+        quarantine_inputs(paths)
+    return publish_outputs(paths, check=check)
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "schema_root",
+        nargs="?",
+        type=Path,
+        default=Path(__file__).resolve().parents[3] / "schema",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="compare generated artifacts without creating files or folders",
+    )
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--validate-only",
+        action="store_true",
+        help="run existing source/ledger/policy checks without publication or quarantine",
+    )
+    mode.add_argument(
+        "--build-only",
+        action="store_true",
+        help="validate and publish a reconciled snapshot without quarantine",
+    )
+    parser.add_argument(
+        "--output-root",
+        type=Path,
+        help="separate derived schema/ and docs/ destination; requires --build-only",
+    )
+    parser.add_argument(
+        "--corpus-dir",
+        type=Path,
+        help="explicit existing source corpus; missing/empty artifacts still fail validation",
+    )
+    args = parser.parse_args(argv)
+    if args.output_root is not None and not args.build_only:
+        parser.error("--output-root requires --build-only")
+    if args.validate_only and args.check:
+        parser.error("--validate-only and --check are separate operations")
+    paths = SchemaBuildPaths(args.schema_root, args.output_root, args.corpus_dir)
+    if args.validate_only:
+        validate_inputs(paths)
+        print("Validation complete; no files written.")
+        return 0
+    if args.build_only:
+        changed = build(paths, check=args.check)
+    else:
+        _preflight(paths)
+        validate_inputs(paths)
+        if not args.check:
+            quarantine_inputs(paths)
+        changed = publish_outputs(paths, check=args.check)
+    if args.check and changed:
+        print("Stale generated artifacts:")
+        for path in changed:
+            print(f"  {path}")
         return 1
-    verb = "stale" if check else "wrote"
-    print(f"{verb}: {len(changed)} file(s).")
+    print(f"{'stale' if args.check else 'wrote'}: {len(changed)} file(s).")
     return 0
 
 

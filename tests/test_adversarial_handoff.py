@@ -108,6 +108,7 @@ def test_invalid_nbs_cannot_escape_recipe_directory(runner):
 
 def test_compiler_does_not_invent_missing_source_quality(runner, monkeypatch):
     from nbs_ruralscan.recipe.family import FamilyResult
+    from nbs_ruralscan.recipe import t4_build
 
     original = runner._rd
     missing_id = original(runner.REG / "SRC_source_register.csv")[0]["source_id"]
@@ -124,8 +125,8 @@ def test_compiler_does_not_invent_missing_source_quality(runner, monkeypatch):
         seen.append(tiers)
         return FamilyResult(kwargs["family"], None)
 
-    monkeypatch.setattr(runner, "_rd", read)
-    monkeypatch.setattr(runner, "synthesise_family", synthesize)
+    monkeypatch.setattr(t4_build, "_rd", read)
+    monkeypatch.setattr(t4_build, "synthesise_family", synthesize)
     runner.synthesise("agroforestry")
     assert seen and all(missing_id not in tiers for tiers in seen)
 
