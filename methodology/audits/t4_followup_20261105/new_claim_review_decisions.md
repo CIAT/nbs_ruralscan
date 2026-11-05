@@ -113,4 +113,15 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Preserve independence: this is another component of the same Xiang study, not an additional independent source or a duplicate vote for the already reviewed built-up exclusion.
 - Application status: human decision recorded; central review application and compilation pending. No global land-cover mask, numeric scores or authorization to convert other habitats approved.
 
-Remaining active claims: 1 awaiting its individual review decision.
+## 17. Active afforestation: severe water-deficit constraint
+
+- Evidence: `ev_fr_aridity_cao2011_t4_20261105`.
+- Source: Cao et al. (2011), `excessive_afforestation_arid_china_2010`, PDF p. 5 (printed p. 244).
+- Proposal presented: retain qualitative dry-region afforestation siting guidance where precipitation is much lower than potential evapotranspiration. No quantified meaning of "much lower", numerical rainfall/aridity cutoff, blanket dryland exclusion or globally monotonic wetter-is-better response.
+- Pete's exact response: "ok next".
+- Accepted decision: keep the qualitative constraint for active afforestation in the source's arid/semi-arid northern-China context, preserving the need to match vegetation restoration to available water.
+- Provenance: secondary attribution to Cao et al. (2010), Nature correspondence, preserved. Do not count the cited finding twice or present it as an independently measured threshold from the 2011 review.
+- Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
+
+All 17 active new claims now have recorded review decisions. The two quarantined
+Rao claims remain separate and pending; none was reopened by these decisions.
