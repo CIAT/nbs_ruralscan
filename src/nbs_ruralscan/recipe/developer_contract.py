@@ -81,7 +81,63 @@ def country_match(context, countries):
     )
 
 
-def _binding(variable, recipe_dataset, bindings, catalog, ontology, contexts):
+def _validate_matching_input(requirement):
+    if (
+        not isinstance(requirement, dict)
+        or requirement.get("status") != "requires_matching_input"
+        or not isinstance(requirement.get("reason"), str)
+        or not requirement["reason"].strip()
+    ):
+        raise ValueError("Invalid reviewed dataset binding requirement")
+    return requirement
+
+
+def _matching_input_requirement(row):
+    """A reviewed row/profile hold cannot be bypassed by BIND or selection."""
+    params = obj(row.get("relationship_params"), {})
+    reasons = []
+    for carrier in [row, params, *params.get("profiles", [])]:
+        adaptation = carrier.get("reviewed_adaptation")
+        if adaptation is None:
+            continue
+        if not isinstance(adaptation, dict):
+            raise ValueError("Invalid reviewed adaptation")
+        if "dataset_binding" in adaptation:
+            requirement = _validate_matching_input(adaptation["dataset_binding"])
+            reasons.append(requirement["reason"].strip())
+    return (
+        {
+            "status": "requires_matching_input",
+            "reason": " ".join(dict.fromkeys(reasons)),
+        }
+        if reasons
+        else None
+    )
+
+
+def _binding(
+    variable,
+    recipe_dataset,
+    bindings,
+    catalog,
+    ontology,
+    contexts,
+    *,
+    matching_input=None,
+):
+    if matching_input is not None:
+        requirement = _validate_matching_input(matching_input)
+        # No candidate or fallback has demonstrated this profile's input semantics.
+        unresolved = _binding(variable, "", [], {}, ontology, contexts)
+        return {
+            **unresolved,
+            "recipe_dataset_id": recipe_dataset or None,
+            "needs_upload": True,
+            "matching_input_required": True,
+            "hold_reason": requirement["reason"].strip(),
+            "matching_input_requirement": requirement,
+            "prompt": "Requires matching input: " + requirement["reason"].strip(),
+        }
     note, used, resolution = "Recipe fallback; no matching BIND row", None, None
     # Refuse ambiguous best matches rather than relying on CSV row order.
     candidates = [
@@ -163,6 +219,11 @@ def _options(row, evidence, sources, countries):
     for p in profiles:
         options.append(
             {
+                **{
+                    key: p[key]
+                    for key in ("reviewed_adaptation", "source_relationship")
+                    if key in p
+                },
                 **(
                     {"source_completions": p["source_completions"]}
                     if p.get("source_completions")
@@ -627,6 +688,7 @@ def build_contract(
             catalog,
             ontology,
             target_contexts,
+            matching_input=_matching_input_requirement(raw),
         )
         if dataset["dataset_id"] and dataset["dataset_id"] not in catalog:
             raise ValueError(f"Dataset absent from T1: {dataset['dataset_id']}")
@@ -636,6 +698,8 @@ def build_contract(
             )
         if dataset["dataset_id"] is None:
             blockers.append("Dataset or local upload is required")
+        if dataset.get("matching_input_requirement"):
+            blockers.append(dataset["prompt"])
         dependencies = {}
         for name, spec in params.get("host_bindings", {}).items():
             required = spec.get("variables", [])

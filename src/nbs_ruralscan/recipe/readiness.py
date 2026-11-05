@@ -125,6 +125,12 @@ def assess(row):
                 + (f" Local input needed: {', '.join(missing)}." if missing else ""),
             )
     if state != "reference_only":
+        if row["dataset"].get("matching_input_required"):
+            action(
+                "Implementation team",
+                "Supply a matching spatial input before execution; response selection "
+                "does not lift this requirement: " + row["dataset"]["hold_reason"],
+            )
         if row["dataset"].get("binding_differs_from_recipe"):
             action(
                 "Implementation team",
