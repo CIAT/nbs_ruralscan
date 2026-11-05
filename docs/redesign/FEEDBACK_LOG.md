@@ -46,3 +46,5 @@ One row per request, who made it, and what we did. Stakeholder requests (World B
 - 2026-11-05 · Pete: strengthen Table 3.5 with selectable summary classes and a plot toggle. Added semantic class checkboxes (default Worse/Worst), per-variable included-class labels, and paired opportunity/country bars on a common 0–100% scale. Both views use the same computed shares and respond to C.5 edits.
 
 - 2026-11-05 · Pete: apply summary selection/plot to Table 3.3 and use risk terminology in 3.3. Added risk-class controls and baseline/future population-share plot; shared C.5 hazard labels now read Low/Moderate/High risk, with Very low/Very high for five classes. Exposure-screening scope retained.
+
+- 2026-11-05 · Pete: log the suggested methodological workflow to review variables and their distributions for the chosen context. Recorded as a proposal, with context → variable meaning/direction → distribution review → classification → comparative summaries → documented hand-off in [methodological development note](../../methodology/decisions/2026-11-05_context_variable_review.md).
