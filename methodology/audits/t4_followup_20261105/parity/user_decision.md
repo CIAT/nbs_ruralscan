@@ -1,0 +1,1 @@
+Pete, 5 November 2026: prioritize these six mappings for human review and request a dashboard priority filter/control. Temporary mapping removal was not approved. Live mappings and all evidence remain unchanged. The proposed empty mapping CSV is an unapplied diagnostic proposal, not the selected repair.
