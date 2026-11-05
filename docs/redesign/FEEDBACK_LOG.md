@@ -42,3 +42,5 @@ One row per request, who made it, and what we did. Stakeholder requests (World B
 | 2026-11-05 | Pete | C.5 needs Apply default values | Added selected-variable reset to default quantiles, class count and direction. Saves across pages and preserves other variables’ settings. | done v2 prototype |
 
 - 2026-11-05 · Pete: open C.5 beside Section 3.2. Map classification links in 3.2 and 3.3 now open the selected variable in an embedded C.5 panel; edits update maps live. Current extent and climate carry through; narrow screens use a bottom panel. Close/Escape returns to the map.
+
+- 2026-11-05 · Pete: strengthen Table 3.5 with selectable summary classes and a plot toggle. Added semantic class checkboxes (default Worse/Worst), per-variable included-class labels, and paired opportunity/country bars on a common 0–100% scale. Both views use the same computed shares and respond to C.5 edits.
