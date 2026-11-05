@@ -48,7 +48,7 @@
       <p>The project delivers three things:</p>
       <ul class="plainl">
         <li><b>A methodology toolkit</b> — a cross-cutting framework and a recipe for each practice.</li>
-        <li><b>A pilot implementation report</b> — the method applied in two least-developed-country pilots.</li>
+        <li><b>A pilot implementation report</b> — the method applied in Haiti for three practices: agroforestry, forest restoration and mangrove restoration (selected by the World Bank team, October 2026).</li>
         <li><b>Reproducible Jupyter and Colab notebooks</b> — the contracted delivery format for the pilot analyses.</li>
       </ul>
       <p><b>Scoping, not feasibility.</b> The scan does no site design, no full cost–benefit analysis and no ecosystem-service modelling. Those come later, and the scan points to them in its final stage.</p>
@@ -60,7 +60,7 @@
     <div class="two">
       <div>
         <p>These pages are a visual explanation of the method and a sketch of the interface a task team could use. Each stage shows its question, its inputs, the evidence behind it and what it hands on, so that the project team and the Bank can agree the method before it is built into notebooks.</p>
-        <p>It is a demonstrator: not the final interface and not a contracted product. Everything on these pages is example data on real Sierra Leone boundaries; no figure is a pilot result.</p>
+        <p>It is a demonstrator: not the final interface and not a contracted product. Everything on these pages is example data on real Sierra Leone boundaries; no figure is a pilot result. The pages use Sierra Leone example geometry to demonstrate the method; the pilot application is in Haiti.</p>
       </div>
       <div>
         <h3>Who it is for</h3>
@@ -141,11 +141,28 @@
     <li><a href="history.html"><span class="n">H</span><b>History and feedback</b><span class="d">How v0, v1 and v2 differ, and every World Bank and team request with what was done about it.</span></a></li>
     <li><a href="direction-b.html"><span class="n">B</span><b>Direction B · workbench</b><span class="d">Rail, full-bleed map, inspector and reading strip — grey boxes, for contrast.</span></a></li>
   </ol>
-    <div class="nextstage" style="margin-top:36px">
+
+  </section>
+  <section class="hs" id="h7">
+    <h2><span class="sec-n">H.7</span>Acknowledgements</h2>
+    <div class="col">
+      <p>The work is commissioned and funded by the World Bank, through project D591 under the NBS Invest Global Knowledge Platform. NBS Invest is an eight-year, US$20 million Global Knowledge Platform (2023–2031), funded by the Global Environment Facility's Least Developed Countries Fund and implemented by the World Bank Group's Global Environment Department. The task team sits in NBS Invest — Policies &amp; Regulations, Environment · Planet Vice Presidency, The World Bank: Dinara Akhmetova (Senior Natural Resource Management Specialist; Program Manager, NBS Invest) leads, with Laurent Xavier Frapaise.</p>
+      <p>The method and these pages are built by the Alliance of Bioversity International and CIAT, with Pete Steward as team leader.</p>
+    </div>
+    <div class="logos" aria-label="Partner logos">
+      <figure class="logo"><img src="img/alliance-logo.png" alt="Alliance of Bioversity International and CIAT"></figure>
+      <figure class="logo slot" data-logo="worldbank"><img alt="The World Bank" hidden><figcaption>World Bank<span>logo to be supplied</span></figcaption></figure>
+      <figure class="logo slot" data-logo="nbs-invest"><img alt="NBS Invest" hidden><figcaption>NBS Invest<span>logo to be supplied</span></figcaption></figure>
+      <figure class="logo slot" data-logo="gef"><img alt="Global Environment Facility, Least Developed Countries Fund" hidden><figcaption>GEF LDCF<span>logo to be supplied</span></figcaption></figure>
+    </div>
+    <p class="logo-note">World Bank, NBS Invest and GEF marks to be added with the Bank team's approval.</p>
+    <p class="col disclaim">The views on these pages are those of the project team and do not necessarily reflect those of the World Bank, its Board or the governments it represents.</p>
+  </section>
+
+  <div class="nextstage" style="margin-top:36px">
       <p><b>Start the walkthrough.</b> Stage 01 sets the challenge, the practice and the geography.</p>
       <a class="btn" href="01-setup.html">Open Stage 01</a>
     </div>
-  </section>
 </main>
 <script src="../sle_geo.js"></script>
 <script src="v1b-versions.js"></script>
@@ -153,6 +170,15 @@
 <script src="v1b-fixture.js"></script>
 <script>V1BUI.chrome(0);</script>
 <script src="v1b-strip.js"></script>
+<script>
+/* logo slots: pick up img/<name>-logo.png or .svg when supplied; placeholder stays otherwise */
+document.querySelectorAll('.logo.slot').forEach(function (f) {
+  var img = f.querySelector('img'), name = f.getAttribute('data-logo'), exts = ['png', 'svg'], i = 0;
+  img.onload = function () { img.hidden = false; f.classList.add('has-logo'); };
+  img.onerror = function () { i++; if (i < exts.length) img.src = 'img/' + name + '-logo.' + exts[i]; };
+  img.src = 'img/' + name + '-logo.' + exts[0];
+});
+</script>
 <script src="review-mode.js"></script>
 </body>
 </html>

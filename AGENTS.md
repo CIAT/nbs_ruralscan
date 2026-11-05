@@ -11,7 +11,7 @@ The Rural NbS Scan is a World Bank-funded methodology and demonstrator (D591, $2
 ## Deliverables (per proposal)
 
 - **Methodology toolkit** — cross-cutting framework + per-NbS recipes
-- **Pilot Implementation Report** — applying methodology to 2 LDC pilots
+- **Pilot Implementation Report** — applying the methodology to one pilot: Haiti, for agroforestry, forest restoration and mangrove restoration (World Bank selection, Oct 2026; was "2 LDC pilots" in the proposal)
 - **Reproducible Jupyter / Colab notebooks** — the contracted delivery format for pilot analyses
 
 Demonstrator-grade artefacts (not contracted but valuable):

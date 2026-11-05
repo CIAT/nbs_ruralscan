@@ -15,6 +15,7 @@
       '<a class="vb-changes vb-hist" href="history.html" target="_blank" rel="noopener">What changed? · history and feedback ↗</a>' +
     '</div></div>';
   document.body.insertAdjacentHTML('afterbegin', html);
+  document.body.insertAdjacentHTML('beforeend', '<footer class="v2-credit">Alliance of Bioversity International and CIAT · for the World Bank NBS Invest team · project D591 · example data</footer>');
   var sel = document.getElementById('v1b-version');
   sel.addEventListener('change', function () {
     if (sel.value !== 'index.html') window.location.assign(new URL(sel.value, window.location.href).href);
