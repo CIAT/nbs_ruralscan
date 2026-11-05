@@ -1,5 +1,6 @@
 """Consensus reduction for the headless review-submit path (scripts/submit-review.sh)."""
 
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -93,6 +94,8 @@ def shipping_repo(tmp_path, monkeypatch):
                     "reviewed\n"
                 )
                 (cwd / "application.py").write_text("must never ship\n")
+            if mode["replay"] == "actual":
+                submit.replay(cwd)
             return subprocess.CompletedProcess(args, 0, "replayed", "")
         if args[0] == "gh":
             output = (
@@ -135,6 +138,37 @@ def test_ship_noop_does_not_push_or_open_pr(shipping_repo):
         c[:2] == ["git", "push"] or c[:3] == ["gh", "pr", "create"] for c in calls
     )
     assert len(git("worktree", "list").splitlines()) == 1
+
+
+def test_ship_real_replay_preserves_newer_main_rows(shipping_repo):
+    root, git, calls, mode = shipping_repo
+    mode["replay"] = "actual"
+    ev = root / "schema/registers/EV_evidence_register.csv"
+    header = "evidence_id,source_id,attribution,review_state,reviewer_ok\n"
+    ev.write_text(header + "e1,s1,original,,false\n")
+    git("add", str(ev))
+    git("commit", "-m", "review fixture")
+    git("push", "origin", "main")
+    stale_head = git("rev-parse", "HEAD")
+    git("switch", "-c", "newer-main")
+    ev.write_text(ev.read_text() + "remote-only,s2,new record,,true\n")
+    git("add", str(ev))
+    git("commit", "-m", "new evidence")
+    git("push", "origin", "HEAD:main")
+    git("switch", "main")
+    store = root / "pipeline/review/decisions.json"
+    store.write_text(json.dumps({"e1": {"alice": {"decision": "drop"}}}))
+    before = ev.read_bytes(), store.read_bytes()
+
+    assert submit.ship("alice", root=root) == 0
+
+    branch = next(c[-1] for c in calls if c[:3] == ["git", "push", "-u"])
+    shipped = git("show", f"{branch}:schema/registers/EV_evidence_register.csv")
+    assert "remote-only,s2,new record,,true" in shipped
+    assert "dropped" in shipped
+    assert git("rev-parse", "HEAD") == stale_head
+    assert (ev.read_bytes(), store.read_bytes()) == before
+    assert (root / "application.py").read_text() == "user edits\n"
 
 
 def test_ship_failed_gate_preserves_recovery_checkout(shipping_repo):

@@ -308,6 +308,8 @@ Phase numbers group work; the board's `depends_on` values define the execution o
 
 ### Phase 2 — Make the existing pipeline portable before splitting it (M07–M10)
 
+The [explicit review replay slice](m08-review-replay-paths.md) adds isolated record replay and preserves the existing shipping route. It records remaining writer paths and failure-recovery work; it does not move review authority.
+
 1. Refactor inside current CIAT repository: explicit paths/build context instead of hidden `parents[...]` roots; preserve current commands as compatibility wrappers.
 2. Separate validation, synthesis, dashboard export/build, release packaging and review submission. Inventory every input before assigning its new home. Separate authored gates/policies from generated recipe rows, retaining the full-corpus before-filter parity protection described in section 3.2.
 3. Extract the small shared contract/validation interface; decide ownership of codelist/scoring helpers and provide conformance fixtures. Eliminate compiler dependence on a separately deployed runtime.

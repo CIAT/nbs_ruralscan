@@ -239,7 +239,7 @@ def test_submit_replays_clarifications_without_extraction_decisions(
 
     monkeypatch.setattr(submit_review, "generate", rebuild)
     monkeypatch.setattr(submit_review, "ROOT", tmp_path)
-    monkeypatch.setattr(submit_review, "_load_store", lambda: {})
+    monkeypatch.setattr(submit_review, "_load_store", lambda path: {})
     monkeypatch.setattr(
         submit_review,
         "apply_decisions",
