@@ -36,4 +36,14 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Preserve source provenance: this publication demonstrates the exclusion in China's wetland-restoration overlay; it is not evidence for every NbS independently. Do not copy the claim into all families as independent source support, treat all anthropogenic land as excluded, or silently convert every mixed/coarse land-cover cell to a built-up footprint.
 - Application status: human decision recorded; central review application and shared-mask consistency check pending. No schema, global runtime mask or family definitions changed by this note.
 
-Remaining active claims: 14 awaiting individual review decisions.
+## 4. Level soil bunds: rainfall preference
+
+- Evidence: `ev_wh_levelbund_rain_wolka18_followup_20261105`.
+- Source: Wolka et al. (2018), `wolka2018_swc_ssa_meta`, PDF p. 3 (printed p. 69), Table 1.
+- Proposal presented: retain mean annual rainfall <1,400 mm as a preference for level soil bunds only, not a hard exclusion at or above 1,400 mm or a condition for every water-harvesting practice.
+- Pete's exact response: "yes,  next".
+- Accepted decision: keep that scoped implementation preference. Level soil bunds retain rainwater along contours; graded bunds discharge excess water and remain a separate scope issue. No numerical suitability curve, optimum lower bound, or zero-suitability tail is approved.
+- Provenance: secondary review guidance with a grouped reference list; do not count the cited works as independently verified evidence votes or assign the condition to a particular primary without verification.
+- Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
+
+Remaining active claims: 13 awaiting individual review decisions.
