@@ -123,5 +123,14 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Provenance: secondary attribution to Cao et al. (2010), Nature correspondence, preserved. Do not count the cited finding twice or present it as an independently measured threshold from the 2011 review.
 - Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
 
-All 17 active new claims now have recorded review decisions. The two quarantined
-Rao claims remain separate and pending; none was reopened by these decisions.
+All 17 active new claims now have recorded review decisions.
+
+## Quarantined Rao claims: approve contextual reopening
+
+- Evidence: `ev_af_annual_precipitation_rao97_targeting_20261105` and `ev_af_soil_ph_rao97_targeting_20261105`.
+- Source: Rao, Nair and Ong (1997), `nair1997_biophys_interactions`, PDF pp. 15–16 (printed pp. 17–18), conclusions on hedgerow intercropping.
+- Proposal presented: reopen both as contextual T4 implementation evidence for planted hedgerows alongside annual crops only. Retain rainfall–soil–management interactions; no independent rainfall/pH curve or blanket agroforestry exclusion.
+- Pete's exact response: "ok next".
+- Accepted decision: reopen and keep on that limited basis. Rainfall <1,000 mm/year is a conditional water-competition concern, not an absolute minimum; acid/infertile soils interact with amendments and long-term management, with no numerical pH threshold. Preserve management exceptions and the source discussion's scope; do not transform crop-yield or biomass values into T4 thresholds.
+- The prior automated `off_scope:carbon_biomass` quarantine remains part of the history. Apply the authorized reopen through the normal review mechanism; do not erase the prior reason or broadly disable scope screening.
+- Application status: decision recorded; central review application pending. No executable numeric mappings approved.
