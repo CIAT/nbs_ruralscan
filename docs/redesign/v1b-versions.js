@@ -8,12 +8,13 @@
       '<select id="v1b-version" aria-describedby="v1b-version-note">' +
         '<option value="../wireframe-v0.html">v0 · Original</option>' +
         '<option value="../wireframe.html">v1 · Draft</option>' +
-        '<option value="index.html" selected>v2 · Scoping tool</option>' +
+        '<option value="index.html" selected>v2 · Visual methodology</option>' +
       '</select>' +
-      '<span id="v1b-version-note">v2 · NbS spatial opportunity scoping tool · example data</span>' +
+      '<span id="v1b-version-note">v2 · Rural NbS Scan · wireframe / mock-up · example data</span>' +
       '<button type="button" class="vb-theme" id="v1b-theme" aria-pressed="false"><svg viewBox="0 0 16 16" aria-hidden="true"><path class="ic-moon" d="M11.5 10.6A5 5 0 0 1 5.4 4.5a5 5 0 1 0 6.1 6.1z"/><g class="ic-sun"><circle cx="8" cy="8" r="2.8"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1"/></g></svg><span>Dark theme</span></button>' +
       '<a class="vb-changes vb-hist" href="history.html" target="_blank" rel="noopener">What changed? · history and feedback ↗</a>' +
-    '</div></div>';
+    '</div></div>' +
+    '<aside aria-label="Wireframe scope" style="padding:12px 24px;border-bottom:2px solid var(--accent);background:var(--paper);font-size:14px"><b>Visual methodology · idealised implementation · wireframe / mock-up.</b> For discussion and co-design with the World Bank to align expectations. <b>Not a tool the Alliance is contracted to build.</b> <a href="index.html#h1">Purpose and contracted deliverables</a></aside>';
   document.body.insertAdjacentHTML('afterbegin', html);
   var sel = document.getElementById('v1b-version');
   sel.addEventListener('change', function () {

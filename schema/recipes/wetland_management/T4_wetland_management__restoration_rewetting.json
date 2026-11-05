@@ -1,50 +1,174 @@
 [
   {
-    "mapping_id": "wetland_management__restoration_rewetting__restorable_patch_area",
-    "suitability_family_id": "wetland_management__restoration_rewetting",
-    "variable": "restorable_patch_area",
-    "variable_unit": "ha",
-    "dataset_id": null,
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 1.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 1.0}; uncertainty ±30% from spread. ",
-    "references": [
-      "gis_riparian_siting_russell_1997"
-    ],
-    "evidence_ids": [
-      "ev_wet_site_area_russell97_1"
-    ],
-    "paper_support_pct": 16.1,
-    "n_sources": 1,
-    "corpus_n": 9
-  },
-  {
     "mapping_id": "wetland_management__restoration_rewetting__distance_to_waterbody",
     "suitability_family_id": "wetland_management__restoration_rewetting",
     "variable": "distance_to_waterbody",
     "variable_unit": "m",
-    "dataset_id": "[\"merit_hydro_v1\", \"jrc_global_surface_water_v1_4\"]",
+    "dataset_id": "",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "abs_max": 120.0
+      "profiles": [
+        {
+          "reviewed_adaptation": {
+            "kind": "human_reviewed_step_profile",
+            "reviewer": "Peter",
+            "reviewed_date": "2026-11-05",
+            "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+            "scope": "Habitat-connectivity preference among already eligible riparian wetland restoration sites; distance to existing riparian habitat OR open water.",
+            "note": "Human-adapted bands simplify conditional patch-area/proximity priorities. Middle .5 and outer .33 are reviewed scores, not source ecological limits. Negative values unknown; no water-supply pooling. Requires both habitat and open-water distance inputs plus eligibility mask.",
+            "input_unit": "m",
+            "evidence_fingerprint": "f88cfc47af5ad4d272bc7639be3c09d58a0c510150ad44271786bbb167aa3d95",
+            "context_fingerprint": "fd6968fea893f1fb6d45106d70111174c8f3cde2de80e6630e8b9fec62184a92",
+            "intervals": [
+              {
+                "lower": 0,
+                "upper": 90,
+                "label": "high",
+                "lower_inclusive": true,
+                "upper_inclusive": true
+              },
+              {
+                "lower": 90,
+                "upper": 120,
+                "label": "middle",
+                "lower_inclusive": false,
+                "upper_inclusive": true
+              },
+              {
+                "lower": 120,
+                "upper": null,
+                "label": "low",
+                "lower_inclusive": false,
+                "upper_inclusive": false
+              }
+            ],
+            "dataset_binding": {
+              "status": "requires_matching_input",
+              "reason": "Habitat-connectivity preference among already eligible riparian wetland restoration sites; distance to existing riparian habitat OR open water. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute."
+            }
+          },
+          "source_relationship": {
+            "unit": "m",
+            "direction": "candidate sites farther than 120 m from extant riparian vegetation or open water are down-prioritised — proximity reduces habitat fragmentation and aids species recruitment into the restored site",
+            "type": "conditional_restoration_priority",
+            "note": "Priority in a conditional spatial allocation sequence, not a universal ecological suitability threshold. Full source includes a separate scrub-cover preservation/restoration branch."
+          },
+          "profile_id": "ev_wet_distance_to_waterbody_russell97_1",
+          "source_id": "gis_riparian_siting_russell_1997",
+          "continuation_of": "",
+          "evidence_ids": [
+            "ev_wet_distance_to_waterbody_russell97_1"
+          ],
+          "page_locators": {
+            "ev_wet_distance_to_waterbody_russell97_1": 10
+          },
+          "evidence_id": "ev_wet_distance_to_waterbody_russell97_1",
+          "context": {
+            "reviewed_correction": {
+              "reviewer": "Peter",
+              "date": "2026-11-05",
+              "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+              "note": "Remove source abs_max=120: source describes low priority, not unsuitable. Reviewed 0–90=1, >90–120=.5, >120=.33 lives in numeric policy as human habitat-connectivity preference. Requires eligible riparian wetland sites and distance to existing riparian habitat OR open water, not generic river proximity."
+            },
+            "practice_as_described": "Riparian wetland restoration prioritisation among already eligible sites, using proximity to existing riparian habitat or open water and contiguous patch area.",
+            "region": "San Luis Rey watershed",
+            "reported_values": {
+              "source_page": 10,
+              "first_priority_distance_m": 90,
+              "remaining_patch_sieve_ha": 1,
+              "remaining_patch_proximity_m": 120,
+              "meaning": "conditional high/medium/low priorities; small or distant sites low, not excluded"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "high": 3,
+            "middle": 2,
+            "low": 1
+          },
+          "applicability_note": "Habitat-connectivity preference among already eligible riparian wetland restoration sites; distance to existing riparian habitat OR open water. Human-adapted bands simplify conditional patch-area/proximity priorities. Middle .5 and outer .33 are reviewed scores, not source ecological limits. Negative values unknown; no water-supply pooling. Requires both habitat and open-water distance inputs plus eligibility mask.",
+          "unit": "m",
+          "intervals": [
+            {
+              "lower": 0.0,
+              "upper": 90.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "high",
+              "rank": 3,
+              "score": 1,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "reviewed_scoping_adaptation"
+            },
+            {
+              "lower": 90.0,
+              "upper": 120.0,
+              "lower_inclusive": false,
+              "upper_inclusive": true,
+              "label": "middle",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.6666666666666666,
+              "source_score": null,
+              "score_basis": "reviewed_scoping_adaptation"
+            },
+            {
+              "lower": 120.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "low",
+              "rank": 1,
+              "score": 0.33,
+              "legacy_score": 0.3333333333333333,
+              "source_score": null,
+              "score_basis": "reviewed_scoping_adaptation"
+            }
+          ],
+          "origin_id": "gis_riparian_siting_russell_1997",
+          "source_weight": 0.5,
+          "variable": "distance_to_waterbody",
+          "score_policy": "human_reviewed_steps_v1",
+          "pool_id": "",
+          "system_id": "wetland_management__restoration_rewetting",
+          "context_id": "ev_wet_distance_to_waterbody_russell97_1",
+          "compatibility_approved": false,
+          "applicability_review": {},
+          "pool_review": "compatibility_review_required"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_wet_distance_to_waterbody_russell97_1",
+            "reason": "compatibility_review_required"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 30.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 120.0}; uncertainty ±30% from spread. ",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362. Dataset binding unresolved; requires matching input: Habitat-connectivity preference among already eligible riparian wetland restoration sites; distance to existing riparian habitat OR open water. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute.",
     "references": [
       "gis_riparian_siting_russell_1997"
     ],
     "evidence_ids": [
       "ev_wet_distance_to_waterbody_russell97_1"
     ],
-    "paper_support_pct": 16.1,
+    "parameter_source_ids": [
+      "gis_riparian_siting_russell_1997"
+    ],
+    "n_parameter_sources": 1,
+    "paper_support_pct": null,
     "n_sources": 1,
-    "corpus_n": 9
+    "corpus_n": null
   }
 ]

@@ -26,6 +26,10 @@
   refresh();
   function get(key) {return Object.assign({direction:'higher_worse'},copy(settings[key] || {count:3,method:'quantile',cuts:[33.33,66.67]}));}
   function set(key,config) {if(!valid(key,config))return false;refresh();settings[key]=copy(config);save();return true;}
+  function reset(key) {
+    if(!variables.some(function(v){return v.key===key;}))return false;
+    refresh();delete settings[key];save();return true;
+  }
   function build(key,state,override) {
     var config=override || get(key);
     if(!valid(key,config))return {error:'Enter ' + ((config && config.count || 3)-1) + ' strictly increasing cut points between 0 and 100.'};
@@ -41,6 +45,7 @@
     var cuts=config.method==='threshold' ? config.cuts.slice() : Array.from({length:config.count-1},function(_,i){return base[Math.min(base.length-1,Math.floor(base.length*(i+1)/config.count))];});
     var direction=config.direction || 'higher_worse', reversed=direction==='higher_better';
     var severityNames=config.count===2 ? ['Better','Worse'] : config.count===3 ? ['Better','Intermediate','Worse'] : ['Best','Better','Intermediate','Worse','Worst'];
+    if(meta.hazard)severityNames=config.count===2 ? ['Low risk','High risk'] : config.count===3 ? ['Low risk','Moderate risk','High risk'] : ['Very low risk','Low risk','Moderate risk','High risk','Very high risk'];
     function severity(i){return reversed ? config.count-1-i : i;}
     var names=severityNames.map(function(_,i){return severityNames[severity(i)];});
     var order=Array.from({length:config.count},function(_,i){return reversed ? config.count-1-i : i;});
@@ -56,5 +61,5 @@
       range:function(i){return i===0 ? '< '+cuts[0].toFixed(1) : i===cuts.length ? '≥ '+cuts[i-1].toFixed(1) : cuts[i-1].toFixed(1)+' to < '+cuts[i].toFixed(1);}
     };
   }
-  window.V1BClassification={refresh:refresh,variables:variables,get:get,set:set,snapshot:function(){return copy(settings);},restore:restore,build:build};
+  window.V1BClassification={refresh:refresh,variables:variables,get:get,set:set,reset:reset,snapshot:function(){return copy(settings);},restore:restore,build:build};
 })();
