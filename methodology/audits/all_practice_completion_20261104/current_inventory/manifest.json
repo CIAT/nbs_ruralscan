@@ -1,0 +1,41 @@
+{
+  "inputs": {
+    "pipeline/progress_ledger.csv": "77b97cfadfdb72c053d50e1878a6e49b2c6af2c12f9f0d824efa8636873f981a",
+    "pipeline/acquisition_queue.csv": "2bcc5f3cd2697fc326db8db9d013ed411e9767ce082bb7adf401d1dc6c30bfb9",
+    "schema/registers/EV_evidence_register.csv": "d53e713b57437f383331dfccc307de02cc310e69e0400a258befd075bea8ebf9",
+    "schema/registers/SRC_source_register.csv": "3d4546531196cf475911d8e4b09a8de5c7ce72dc01152d162bfa87b5a7da69fc",
+    "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
+    "schema/registers/XW_target_crosswalk.csv": "4a811a751c9db882faacb5bed2e02954836889112c6a651dc402434ea248faf3",
+    "schema/registers/SRCH_search_register.csv": "8ee4ace893b22c666f06b4354195baefc956fdb249f9816c8a1edfc27f68b2d3"
+  },
+  "counts": {
+    "EV_all": 6208,
+    "EV_active": 4730,
+    "EV_dropped": 1478,
+    "FAM_rows": 56,
+    "FAM_unique_families": 28,
+    "SRC": 709,
+    "queue": 828,
+    "ledger": 184
+  },
+  "SRC_status": {
+    "complete": 59,
+    "in_progress": 37,
+    "swept": 613
+  },
+  "queue_status": {
+    "acquired": 113,
+    "extracted": 649,
+    "duplicate": 24,
+    "pending": 42
+  },
+  "family_table_inventory_rows": 87,
+  "source_work_inventory_rows": 189,
+  "limitations": [
+    "T3/T6 counts use XW routing candidates, not full synthesis eligibility. Roles, species/crop exclusions, review and comparator gates remain separate.",
+    "reviewer_ok is stored flag, not independent reconstruction of human consensus.",
+    "Source status swept/complete does not prove whole-source claim accounting.",
+    "No ledger stage inferred or updated.",
+    "Queue source identity flags not reverified in this read-only inventory."
+  ]
+}
