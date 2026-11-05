@@ -49,7 +49,7 @@ The previous and new compatibility wrappers ran on independent copies of the bas
 
 Focused tests exercise two interleaved roots from an unrelated working directory, untouched compiler/live defaults, retained pending stores, conflicts, reclassification, repeat replay, reopen/reapply event history, clarification-only rebuilding, redirected destinations and missing/malformed inputs. Shipping integration uses real local Git with simulated GitHub and the real replay function: a newer-main-only evidence row survives while the stale, dirty local checkout remains unchanged. Independent review found no actionable issues.
 
-Full-suite and repository check results are recorded in the accompanying PR. Clean verification copies omit the private corpus; none of these results claims source/quote verification.
+All **1,169 tests passed** in a clean Git checkout. Lint/format, scoped type checks, schema synchronization (zero stale artifacts), structure validation and T4 coverage passed. Structure retains 4,007 existing warnings. Broad type checking retains the same 191 diagnostics on baseline and candidate; none were added. An initial archive-only test copy lacked the Git metadata required by existing tests; the successful run used a proper checkout. Clean verification copies omit the private corpus; none of these results claims source/quote verification.
 
 ## Limits and next step
 
