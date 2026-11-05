@@ -17,7 +17,7 @@ import os
 from collections import Counter
 from pathlib import Path
 
-from .developer_corpus import rebuild
+from .developer_corpus import rebuild, verify_compiler_snapshot
 from .run_policy import compile_policies, reference_scores
 from .readiness import assess
 from .harmonization import harmonize
@@ -1093,6 +1093,7 @@ def _package_inputs(root, nbs):
 def write_package(root, output, **kwargs):
     """Build transactionally; never publish partial output or mismatched input hashes."""
     root, output = Path(root), Path(output)
+    verify_compiler_snapshot(root)
     resolved = output.resolve()
     if resolved == root.resolve() or any(
         resolved == (root / p).resolve() or (root / p).resolve() in resolved.parents
@@ -1117,6 +1118,7 @@ def write_package(root, output, **kwargs):
     ) as directory:
         stage = Path(directory)
         manifest = _write_package(root, stage, **kwargs)
+        verify_compiler_snapshot(root)
         after = {
             name: hashlib.sha256((root / name).read_bytes()).hexdigest()
             for name in sorted(inputs)

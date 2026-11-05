@@ -18,18 +18,10 @@ def corpus(tmp_path):
         "schema/registers",
         "schema/lookups",
         "schema/recipes/agroforestry",
-        "src/nbs_ruralscan/recipe",
     ):
         shutil.copytree(
             ROOT / name, tmp_path / name, ignore=shutil.ignore_patterns("__pycache__")
         )
-    for name in (
-        "scripts/synthesise-recipe.py",
-        "src/nbs_ruralscan/schema_tools/generate.py",
-    ):
-        path = tmp_path / name
-        path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(ROOT / name, path)
     return tmp_path
 
 

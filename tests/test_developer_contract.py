@@ -279,6 +279,8 @@ def test_input_mutation_during_package_build_rejected(tmp_path, baseline, monkey
 
     checkout = tmp_path / "source"
     files = set(baseline["inputs"]) | {
+        "scripts/synthesise-recipe.py",
+        "src/nbs_ruralscan/schema_tools/generate.py",
         "schema/structure/columns.json",
         "methodology/T4_developer_contract.md",
         "handoff/agroforestry-t4/IMPLEMENTATION.md",

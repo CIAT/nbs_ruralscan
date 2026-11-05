@@ -9,10 +9,45 @@ from __future__ import annotations
 import csv
 from dataclasses import asdict
 import hashlib
-import importlib.util
 import json
 from pathlib import Path
 import tempfile
+
+from . import t4_build
+
+
+def compiler_paths() -> dict[str, Path]:
+    """Project compiler sources from the executing installation, not the data copy.
+
+    This is a source-tree fingerprint, not an environment/dependency lock or a
+    claim that every listed module was called. Keep those identities separate.
+    """
+    package = Path(__file__).resolve().parents[1]
+    paths = {
+        "src/nbs_ruralscan/" + path.relative_to(package).as_posix(): path
+        for folder in ("recipe", "runtime")
+        for path in sorted((package / folder).glob("*.py"))
+    }
+    paths["src/nbs_ruralscan/schema_tools/generate.py"] = (
+        package / "schema_tools/generate.py"
+    )
+    return paths
+
+
+def verify_compiler_snapshot(root: Path) -> None:
+    """Refuse a package whose copied-code provenance differs from its compiler."""
+    mismatches = [
+        name
+        for name, path in compiler_paths().items()
+        if not (root / name).is_file()
+        or (root / name).read_bytes() != path.read_bytes()
+    ]
+    if mismatches:
+        raise ValueError(
+            "Compiler snapshot differs from executing installation: "
+            + ", ".join(mismatches)
+            + ". Use a matching compiler checkout before publishing a package."
+        )
 
 
 def _read(path: Path) -> list[dict[str, str]]:
@@ -44,73 +79,37 @@ def rebuild(root: Path, nbs: str) -> dict:
     if not nbs or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789_" for c in nbs):
         raise ValueError("nbs must be a canonical lowercase identifier")
     recipe = f"schema/recipes/{nbs}/T4_suitability_mappings.csv"
-    inputs = [
-        "scripts/synthesise-recipe.py",
-        "schema/registers/EV_evidence_register.csv",
-        "schema/registers/SRC_source_register.csv",
-        "schema/registers/VONT_variable_ontology.csv",
-        "schema/lookups/crop_scope_policy.csv",
-        "schema/lookups/t4_numeric_compilation_policy.csv",
-        recipe,
-    ]
-    inputs += [
-        str(p.relative_to(root))
-        for p in sorted((root / "src/nbs_ruralscan/recipe").glob("*.py"))
-    ]
-    inputs += ["src/nbs_ruralscan/schema_tools/generate.py"]
+    build_inputs = t4_build.T4BuildInputs.from_root(root, nbs)
+    inputs = [path.relative_to(root).as_posix() for path in build_inputs.paths()]
     before = {
         name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in inputs
     }
-    spec = importlib.util.spec_from_file_location(
-        "_developer_t4_synthesis", root / "scripts/synthesise-recipe.py"
-    )
-    if spec is None or spec.loader is None:
-        raise ValueError("Cannot load the T4 synthesis entrypoint")
-    synthesis = importlib.util.module_from_spec(spec)
-    # Execute source directly so importlib does not create a __pycache__ beside
-    # the caller's synthesis script. Analytical inputs remain strictly read-only.
-    exec(
-        compile(
-            (root / "scripts/synthesise-recipe.py").read_bytes(),
-            str(spec.origin),
-            "exec",
-        ),
-        synthesis.__dict__,
-    )
-    setattr(synthesis, "ROOT", root)
-    setattr(synthesis, "REG", root / "schema/registers")
-    # The typed CSV reader omits empty fields, but EvidenceUnit requires a family
-    # argument. Preserve an explicitly unassigned family for disposition coverage;
-    # synthesise() already excludes empty families from compiled configurations.
-    typed_reader = synthesis._csv_to_rows
-
-    def typed_rows(path):
-        rows = typed_reader(path)
-        for row in rows:
-            row.setdefault("suitability_family_id", "")
-        return rows
-
-    setattr(synthesis, "_csv_to_rows", typed_rows)
-    evidence = [
-        r
-        for r in _read(synthesis.REG / "EV_evidence_register.csv")
-        if r["nbs_id"] == nbs
-    ]
-    sources = _read(synthesis.REG / "SRC_source_register.csv")
+    code_paths = compiler_paths()
+    compiler_before = {
+        name: hashlib.sha256(path.read_bytes()).hexdigest()
+        for name, path in code_paths.items()
+    }
+    evidence = [r for r in _read(build_inputs.evidence) if r["nbs_id"] == nbs]
+    sources = _read(build_inputs.sources)
     live = _read(root / recipe)
-    results = synthesis.synthesise(nbs, approved_only=True)
+    results = t4_build.synthesise(nbs, inputs=build_inputs, approved_only=True)
     with tempfile.TemporaryDirectory(prefix="t4-developer-corpus-") as directory:
-        synthesis.write_recipe(
+        t4_build.write_recipe(
             nbs,
             results,
-            _read(synthesis.REG / "VONT_variable_ontology.csv"),
+            _read(build_inputs.ontology),
+            inputs=build_inputs,
             output_dir=Path(directory),
         )
         rows = _read(Path(directory) / "T4_suitability_mappings.csv")
     after = {
         name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in inputs
     }
-    if before != after:
+    compiler_after = {
+        name: hashlib.sha256(path.read_bytes()).hexdigest()
+        for name, path in compiler_paths().items()
+    }
+    if before != after or compiler_before != compiler_after:
         raise RuntimeError(
             "T4 inputs changed during rebuild; rerun against a stable checkout"
         )
@@ -158,6 +157,7 @@ def rebuild(root: Path, nbs: str) -> dict:
         else "approved_only",
         "audited_recipe_matches": True,
         "input_sha256": before,
+        "compiler_source_sha256": compiler_before,
         "families": {family: asdict(result) for family, result in results.items()},
         "evidence_dispositions": accounted,
         "coverage": {
