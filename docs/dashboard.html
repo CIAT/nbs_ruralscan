@@ -1030,7 +1030,7 @@
 <script src="t4_analysis.js"></script>
 <link rel="stylesheet" href="dashboard-progress.css?v=1.4.0">
 <link rel="stylesheet" href="dashboard-feedback.css?v=1.0.2">
-<link rel="stylesheet" href="dashboard-shell.css?v=1.2.1">
+<link rel="stylesheet" href="dashboard-shell.css?v=1.5.0">
 <link rel="stylesheet" href="dashboard-relationships.css?v=1.2.0">
 </head>
 <body data-theme="dark">
@@ -2039,10 +2039,10 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
   }
   // Task 3: click a card's source / page chip to subset the worklist to that paper / location.
   // Toggling the same value clears it. Applies via _inScope, so it works across flagged/passed.
-  function vfSetSubset(kind,val){ if(!window._vfScope)window._vfScope={}; val=(val==null?'':String(val)); window._vfScope[kind]=(window._vfScope[kind]===val?'':val); renderVfWorklist(); }
+  function vfSetSubset(kind,val){ if(window.DashboardPriority)DashboardPriority.leaveFocus(); if(!window._vfScope)window._vfScope={}; val=(val==null?'':String(val)); window._vfScope[kind]=(window._vfScope[kind]===val?'':val); renderVfWorklist(); }
   // Task (chips): clicking a card's OA / channel / NbS / sub-practice chip sets that scope
   // filter (single-value, like the sidebar pills) so the worklist narrows to matching cards.
-  function vfScopeSet(key,val){ if(!window._vfScope)window._vfScope={}; window._vfScope[key]=val; if(key==='nbs'){ window._vfScope.family='all'; window._vfScope.round='all'; } renderVfWorklist(); }
+  function vfScopeSet(key,val){ if(window.DashboardPriority)DashboardPriority.leaveFocus(); if(!window._vfScope)window._vfScope={}; window._vfScope[key]=val; if(key==='nbs'){ window._vfScope.family='all'; window._vfScope.round='all'; } renderVfWorklist(); }
   // Uniform little pill for the card chip row — matches the OA / channel badge look so the
   // NbS / sub-practice / location / source chips all read as one consistent chip set.
   function _vfChip(label,color,title,onclick,noCaps){ return '<span '+(onclick?('onclick="'+onclick+'" '):'')+'title="'+vfEsc(title||'')+'" style="'+(onclick?'cursor:pointer; ':'')+'font-size:9.5px; font-weight:700; '+(noCaps?'':'text-transform:uppercase; ')+'letter-spacing:.03em; color:'+color+'; border:1px solid '+color+'; border-radius:3px; padding:1px 6px; white-space:nowrap;">'+label+'</span>'; }
@@ -2102,7 +2102,7 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     el.innerHTML=n>0?n+' decision'+(n===1?'':'s')+' ready to submit':(nc?'Discussion updates ready to submit':'All decisions submitted');
     if(n||nc)el.innerHTML+='<details style="font-weight:400;font-size:11px"><summary>Submission details</summary>Your '+n+' decisions across all queues'+(nc?', plus '+nc+' saved discussion updates (all reviewers)':'')+'.</details>';
     _vfStyleApply(n+nc); }
-  function _vfRenderSubsetBanner(){ var el=document.getElementById('vf-subset-banner'); if(!el)return; var sc=window._vfScope||{}; var chips=[]; if(sc.sourceId)chips.push(['sourceId','📄 source: '+sc.sourceId, sc.sourceId]); if(sc.section)chips.push(['section','📍 page '+sc.section, sc.section]); if(!chips.length){ el.style.display='none'; el.innerHTML=''; return; } el.style.display='block'; el.innerHTML='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.3); border-radius:6px; padding:6px 10px; font-size:11px;"><span style="color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em;">Subset</span>'+chips.map(function(c){return '<span style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:2px 9px;">'+vfEsc(c[1])+' <a href="#" title="remove this subset" onclick="vfSetSubset(\''+c[0]+'\',\''+vfEsc(String(c[2]))+'\');return false;" style="color:var(--accent-rose); text-decoration:none; font-weight:700;">✕</a></span>';}).join('')+'<a href="#" onclick="window._vfScope.sourceId=\'\';window._vfScope.section=\'\';renderVfWorklist();return false;" style="color:var(--accent-sky); margin-left:auto;">clear all</a></div>'; }
+  function _vfRenderSubsetBanner(){ var el=document.getElementById('vf-subset-banner'); if(!el)return; var sc=window._vfScope||{}; var chips=[]; if(sc.sourceId)chips.push(['sourceId','📄 source: '+sc.sourceId, sc.sourceId]); if(sc.section)chips.push(['section','📍 page '+sc.section, sc.section]); if(!chips.length){ el.style.display='none'; el.innerHTML=''; return; } el.style.display='block'; el.innerHTML='<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:rgba(14,165,233,0.08); border:1px solid rgba(14,165,233,0.3); border-radius:6px; padding:6px 10px; font-size:11px;"><span style="color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em;">Subset</span>'+chips.map(function(c){return '<span style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:12px; padding:2px 9px;">'+vfEsc(c[1])+' <a href="#" title="remove this subset" onclick="vfSetSubset(\''+c[0]+'\',\''+vfEsc(String(c[2]))+'\');return false;" style="color:var(--accent-rose); text-decoration:none; font-weight:700;">✕</a></span>';}).join('')+'<a href="#" onclick="if(window.DashboardPriority)DashboardPriority.leaveFocus();window._vfScope.sourceId=\'\';window._vfScope.section=\'\';renderVfWorklist();return false;" style="color:var(--accent-sky); margin-left:auto;">clear all</a></div>'; }
   function vfSourcePages(ev){
     var pages={},c=ev.context||{};
     if(typeof c==='string'){try{c=JSON.parse(c);}catch(e){c={};}}
@@ -2457,7 +2457,7 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     renderVfWorklist();
   }
   function vfSearch(value){
-    window._vfSearch=value;var input=document.getElementById('vf-search');var position=input&&input.selectionStart;
+    if(window.DashboardPriority)DashboardPriority.leaveFocus();window._vfSearch=value;var input=document.getElementById('vf-search');var position=input&&input.selectionStart;
     renderVfWorklist();input=document.getElementById('vf-search');if(input){input.focus();if(position!==null&&position!==undefined)input.setSelectionRange(position,position);}
   }
   function vfRepeatedConflicts(log,reviewer){
@@ -2809,10 +2809,10 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     var _footerHtml=window._vfSimpleView==='waiting'?'<p>Waiting for an answer. Your question is saved; no repeat review needed.</p>':(_settledC&&!vfHasAnswerForReview(ev.evidence_id))?_footerSettled:_footerPending;
     var _decChipS=_myDecC?('<span style="font-size:9px; font-weight:700; text-transform:uppercase; padding:1px 7px; border-radius:3px; color:#fff; background:'+(_myDecC==='ok'?'var(--accent-emerald)':(_myDecC==='drop'?'var(--accent-rose)':'var(--accent-amber)'))+';">you: '+vfEsc(_myDecC==='flag'?'query':_myDecC)+'</span>'):'';
     var _revChipS=_rk.length?('<span style="font-size:10px; color:var(--text-muted);">'+_rk.map(function(rv){return vfEsc(rv)+'='+vfEsc(_allr[rv]);}).join(' · ')+'</span>'):'';
-    var _summaryHtml='<summary style="cursor:pointer; display:flex; align-items:center; gap:9px; flex-wrap:wrap; padding:9px 14px; border-left:4px solid '+_aiCol+'; border-radius:8px; background:var(--bg-secondary);">'+_aiBadge+_dropBadgeD+'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code><span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+'</span>'+_decChipS+'<span style="margin-left:auto; display:inline-flex; gap:8px; align-items:center;">'+_revChipS+'</span></summary>';
+    var _summaryHtml='<summary style="cursor:pointer; display:flex; align-items:center; gap:9px; flex-wrap:wrap; padding:9px 14px; border-left:4px solid '+_aiCol+'; border-radius:8px; background:var(--bg-secondary);">'+_aiBadge+_dropBadgeD+(window.DashboardPriority?DashboardPriority.badge(ev):'')+'<code style="color:var(--accent-sky); font-size:11.5px;">'+vfEsc(ev.evidence_id||'')+'</code><span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+'</span>'+_decChipS+'<span style="margin-left:auto; display:inline-flex; gap:8px; align-items:center;">'+_revChipS+'</span></summary>';
     var _card='<div data-vfeid="'+vfEsc(ev.evidence_id||'')+'" style="border:1px solid '+(dec?'var(--accent-emerald)':'var(--border-color)')+'; border-left:4px solid '+_aiCol+'; border-radius:8px; padding:14px 16px; margin-bottom:10px; background:var(--bg-secondary);">'
       +(_collap?'':('<div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">'
-      +_aiBadge+_dropBadgeD
+      +_aiBadge+_dropBadgeD+(window.DashboardPriority?DashboardPriority.badge(ev):'')
       +'<code style="color:var(--accent-sky); font-size:12px;">'+vfEsc(ev.evidence_id||'')+'</code>'
       +'<span style="font-weight:700; font-size:10px; color:'+vc+'; text-transform:uppercase;" title="AI verify verdict">'+vfEsc(verdict)+'</span>'
       +'<span style="font-size:11px; color:var(--text-secondary);">'+vfEsc(ev.variable||'')+' · '+vfEsc((ev.use_role||'').replace(/_/g,' '))+' · '+(ev.page?('<a href="#" onclick="vfSetSubset(\'section\',\''+vfEsc(String(ev.page))+'\');return false;" title="subset the worklist to page '+vfEsc(String(ev.page))+' of this source" style="color:var(--accent-sky); text-decoration:none; border-bottom:1px dotted var(--accent-sky);">'+vfEsc(page)+'</a>'):vfEsc(page))+' · '+vfEsc(vfLocHint(ev))+'</span>'
@@ -2820,6 +2820,7 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
       +_chipRow
       +(ev._reviewConflict?'<p style="border-left:3px solid var(--accent-amber);padding:8px"><b>Reviewers disagree:</b> this record has both Keep and Drop decisions. Check the reviewer notes below and give your judgement.</p>':'')
       +vfClarificationHtml(ev)
+      +(window.DashboardPriority?DashboardPriority.card(ev):'')
       +vfReviewMeaning(ev)
       +vfSourceAuditHtml(ev)
       +(ev.relationship && JSON.stringify(ev.relationship)!=='{}' && ev.relationship!=='{}' ? '<div style="font-size:11.5px;margin:5px 0;"><b>Extracted rule / values:</b> '+vfRelHtml(ev)+'</div>' : '')
@@ -2908,9 +2909,9 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     if(window._vfScope.claimScope===undefined)window._vfScope.claimScope='general';
     if(window._vfScope.sourceId===undefined)window._vfScope.sourceId='';
     if(window._vfScope.section===undefined)window._vfScope.section='';
-    // Practice is single-select (no "All"). Evidence type is fixed at T4 — T3/T6 are deferred.
+    // T4 remains the default; explicit all-scope is available for review batches.
     if(!window._vfScope.table)window._vfScope.table='T4';
-    if(window._vfScope.nbs==='all'&&_nbsOpts.length)window._vfScope.nbs=_nbsOpts[0];
+    // Explicit all-practice scope supports priority batches spanning practices.
     _vfUpdatePending(); _vfRenderSubsetBanner();
     // Task 3: sourceId subsets to one paper/tool; section subsets to one page within it.
     function _inScope(ev){ return _vfInScope(ev); }
@@ -2922,7 +2923,7 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
       var _srcPresent=new Set(evAll.filter(_inNbs).map(_vfChanKey));
       var _srcOpts=['stock','updated_lit','grey','tool'].concat(_srcPresent.has('unknown')?['unknown']:[]);
       // noAll=true → single-select mandatory (no "All" pill): used for Practice + Evidence-type.
-      var _mkPills=function(key,label,opts,fmt,cls,noAll,tip){ var cur=window._vfScope[key]; var list=(noAll?[]:['all']).concat(opts); var btns=list.map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\'){window._vfScope.family=\'all\';window._vfScope.round=\'all\';} renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
+      var _mkPills=function(key,label,opts,fmt,cls,noAll,tip){ var cur=window._vfScope[key]; var list=(noAll?[]:['all']).concat(opts); var btns=list.map(function(o){ var a=(cur===o)?(' active '+cls):''; var lab=(o==='all'?'All':fmt(o)); return '<button class="pill-btn'+a+'" onclick="if(window.DashboardPriority)DashboardPriority.leaveFocus();window._vfScope.'+key+'=\''+o+'\'; if(\''+key+'\'===\'nbs\'){window._vfScope.family=\'all\';window._vfScope.round=\'all\';} renderVfWorklist();" style="font-size:11px; padding:4px 10px; border-radius:6px;">'+vfEsc(lab)+'</button>'; }).join(''); return '<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;"'+(tip?(' title="'+vfEsc(tip)+'"'):'')+'><span style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; margin-right:2px; min-width:84px;">'+label+'</span>'+btns+'</div>'; };
       // Evidence type: T4 (suitability) or T3/T6 (effect + asset-vulnerability units behind the
       // generated hazard / scorecard rows; QA items from the prose reviews land here, 2026-10).
       var _tblDesc={T4:'<b>T4 analysis · Suitability + operational feasibility</b> — review establishment conditions and M2b implementation evidence together. Operational evidence remains separate from the core suitability score.','T3/T6':'<b>T3/T6 · Effects</b> — what the NbS does to hazards and priorities (effect units) and what hazards do to the works (asset vulnerability). Generated rows; review = these units.'};
@@ -2937,8 +2938,8 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
       var _csFmt=function(o){ var m={general:'General (practice)',species:'🧬 Species',crop:'🌾 Crop'}; var lab=m[o]||o; var n=_csCount(o); return n?(lab+' ('+n+')'):lab; };
       var _csHint=(window._vfScope.claimScope&&window._vfScope.claimScope!=='general'&&window._vfScope.claimScope!=='all')?'<div style="font-size:9.5px; color:var(--text-muted); margin:2px 0 4px 0; line-height:1.4;">🧬 <b>Species / crop lane</b> — per-taxon evidence, <b>kept &amp; banked for reuse</b> but filtered out of the practice-level MCDA. Fix a mis-tagged row by re-classifying it (keep), not dropping it.</div>':'';
       var select=function(key,label,options){return '<label>'+label+' <select onchange="vfScopeSet(\''+key+'\',this.value)" style="padding:7px;background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:5px">'+options.map(function(o){return '<option value="'+vfEsc(o[0])+'"'+(window._vfScope[key]===o[0]?' selected':'')+'>'+vfEsc(o[1])+'</option>';}).join('')+'</select></label>';};
-      scEl.innerHTML=select('nbs','Practice',_nbsOpts.map(function(n){return [n,_capNbs(n)];}))
-        +select('table','Evidence type',[['T4','T4 + operational feasibility'],['T3/T6','T3/T6 effects']])
+      scEl.innerHTML=select('nbs','Practice',[['all','All practices']].concat(_nbsOpts.map(function(n){return [n,_capNbs(n)];})))
+        +select('table','Evidence type',[['all','All evidence types'],['T4','T4 + operational feasibility'],['T3/T6','T3/T6 effects']])
         +'<label>Search <input id="vf-search" type="search" placeholder="Paper, variable or text" value="'+vfEsc(window._vfSearch||'')+'" oninput="vfSearch(this.value)" style="padding:7px;background:var(--bg-secondary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:5px"></label>';
       window._vfAdvancedScopeHtml=_mkPills('observations','Site observations',['hide','show','only'],function(o){return {hide:'Hide (default)',show:'Include',only:'Only observations'}[o];},'sky',true,'Site descriptions and observed presence are deferred; tested relationships remain in review.')
         +_mkPills('family','Family / evidence scope',_famOpts,_capFam,'emerald',false)
@@ -2999,6 +3000,7 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
     // origin=passed (its control is hidden there) so a stale verdict can't silently zero the list.
     var _sec=function(u,effOrigin,effMe,effStatus,effVerdict){
       if(!vfSimpleMatch(u,window._vfSimpleView||'todo'))return false;
+      if(window.DashboardPriority&&!DashboardPriority.matches(u.ev))return false;
       var search=(window._vfSearch||'').trim().toLowerCase();if(search&&[u.ev.source_id,u.ev.variable,u.ev.quote,u.ev.evidence_id].join(' ').toLowerCase().indexOf(search)<0)return false;
       if(window._vfClarificationFilter&&window._vfClarificationFilter!=='all'&&!vfClarificationsFor(u.ev.evidence_id).some(function(g){return g.status===window._vfClarificationFilter;}))return false;
       if(window._vfSimpleView!=='advanced')return true;
@@ -3043,18 +3045,18 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
       var _rdN=function(k){ var sc=window._vfScope||{}; var sv=sc.round; sc.round='all'; var n=((window._vfPreScope)||[]).filter(function(e){ return _vfInScope(e)&&(window._vfAxStatus==='any'||((e.review_state==='dropped')===(window._vfAxStatus==='dropped')))&&(k==='all'||_vfRoundKey(e)===k); }).length; sc.round=sv; return n; };
       var _rdCur=(window._vfScope&&window._vfScope.round)||'all';
       _bar+='<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:1px 0;" title="Which discovery round the source was found in. Round 1 = the original sweeps; Round 2 = grey literature + WOCAT practice database (2026-09)."><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">Search round</span>'
-        +['all'].concat(_rdAll).map(function(k){ var active=(_rdCur===k)?'active sky':''; var lab=(k==='all')?'Any':('Round '+String(k).replace('round','')); return '<button class="pill-btn '+active+'" onclick="window._vfScope.round=\''+k+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+lab+' ('+_rdN(k)+')</button>'; }).join('')+'</div>';
+        +['all'].concat(_rdAll).map(function(k){ var active=(_rdCur===k)?'active sky':''; var lab=(k==='all')?'Any':('Round '+String(k).replace('round','')); return '<button class="pill-btn '+active+'" onclick="if(window.DashboardPriority)DashboardPriority.leaveFocus();window._vfScope.round=\''+k+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px;">'+lab+' ('+_rdN(k)+')</button>'; }).join('')+'</div>';
       if(window._vfAxMe==='yes'){ _bar+=_seg('','My call',[['all','All'],['ok','✓ Kept'],['query','⚑ Queried'],['drop','🗑 Dropped']],'_vfMyCall','Narrow your own reviewed units by the call you made.'); }
       // verdict pills (only meaningful when flagged units can be in view) + tables toggle
       var _extra='';
       if(window._vfAxOrigin!=='passed'){ var verdicts=['all'].concat(Array.from(new Set(_uni.filter(function(u){return u.origin==='flagged';}).map(function(u){return u.verdict;})))).concat(['conflict']);
         _extra=verdicts.map(function(v){ var active=window._vfVerdictFilter===v?'active rose':''; var n=(v==='all')?0:_axN('verdict',v); return '<button class="pill-btn '+active+'" onclick="window._vfSimpleView=\'advanced\';window._vfVerdictFilter=\''+v+'\'; renderVfWorklist();" style="font-size:11px; padding:3px 10px; border-radius:4px; text-transform:capitalize;">'+(v==='all'?'All':(v+' ('+n+')'))+'</button>'; }).join('')+'<span style="width:1px; height:16px; background:var(--border-color); margin:0 5px;"></span>'; }
       _bar+='<div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; margin:3px 0 0; padding-top:4px; border-top:1px solid var(--border-color);" title="The AI verify verdict on a flagged unit (mismatch / unsupported / conflict), plus a tabular-quotes-only toggle."><span style="font-size:9px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; font-weight:700; min-width:118px; flex:0 0 118px;">Verdict</span>'+_extra+_tblPill+'</div>';
-      var matches=function(u,view){var search=(window._vfSearch||'').trim().toLowerCase();return vfSimpleMatch(u,view)&&(!search||[u.ev.source_id,u.ev.variable,u.ev.quote,u.ev.evidence_id].join(' ').toLowerCase().indexOf(search)>=0);};
+      var matches=function(u,view){var search=(window._vfSearch||'').trim().toLowerCase();return (!window.DashboardPriority||DashboardPriority.matches(u.ev))&&vfSimpleMatch(u,view)&&(!search||[u.ev.source_id,u.ev.variable,u.ev.quote,u.ev.evidence_id].join(' ').toLowerCase().indexOf(search)>=0);};
       var summary='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'+[['todo','To review'],['waiting','Waiting for answers'],['mine','My reviewed']].map(function(q){return '<button class="pill-btn '+(window._vfSimpleView===q[0]?'active sky':'')+'" onclick="vfSimpleQueue(\''+q[0]+'\')">'+q[1]+' ('+_uni.filter(function(u){return matches(u,q[0]);}).length+')</button>';}).join('')+'</div>';
       var maintenance='<details><summary>Team maintenance</summary>'+[['unresolved','Decision / status checks'],['approval_only','Missing review history'],['dropped','Dropped history'],['all','All records']].map(function(q){return '<button class="pill-btn" onclick="vfReviewQueue(\''+q[0]+'\')">'+q[1]+'</button>';}).join('')+'</details>';
       var cl=window._vfClarificationError?'<p>'+vfEsc(window._vfClarificationError)+'</p>':'';
-      fd.innerHTML=summary+cl+'<details '+(window._vfMoreFilters?'open':'')+' ontoggle="window._vfMoreFilters=this.open"><summary style="cursor:pointer">More filters'+((window._vfScope.observations||'hide')==='hide'?' · site observations hidden':'')+(window._vfSimpleView==='advanced'?' — custom view active':'')+'</summary><button class="pill-btn" onclick="vfSimpleQueue(\'advanced\')">Use custom filters</button>'+(window._vfAdvancedScopeHtml||'')+_bar+maintenance+'<details><summary>Review a whole source</summary><div id="vf-bulk"></div></details></details>'; }
+      fd.innerHTML=(window.DashboardPriority?DashboardPriority.controls():'')+summary+cl+'<details '+(window._vfMoreFilters?'open':'')+' ontoggle="window._vfMoreFilters=this.open"><summary style="cursor:pointer">More filters'+((window._vfScope.observations||'hide')==='hide'?' · site observations hidden':'')+(window._vfSimpleView==='advanced'?' — custom view active':'')+'</summary><button class="pill-btn" onclick="vfSimpleQueue(\'advanced\')">Use custom filters</button>'+(window._vfAdvancedScopeHtml||'')+_bar+maintenance+'<details><summary>Review a whole source</summary><div id="vf-bulk"></div></details></details>'; }
     // ---- apply the toggle filters to the universe (secondary filters via the shared _sec) ----
     var _list=_uni.filter(function(u){
       if(window._vfSimpleView!=='advanced')return _sec(u,'any','any');
@@ -5714,8 +5716,9 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
 
 </script>
 <script src="dashboard-progress.js?v=1.4.0"></script>
-<script src="dashboard-feedback.js?v=1.4.0"></script>
+<script src="dashboard-feedback.js?v=1.5.0"></script>
 <script src="dashboard-relationships.js?v=1.2.1"></script>
-<script src="dashboard-shell.js?v=1.4.0"></script>
+<script src="dashboard-priority.js?v=1.5.0"></script>
+<script src="dashboard-shell.js?v=1.5.0"></script>
 </body>
 </html>
