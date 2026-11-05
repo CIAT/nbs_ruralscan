@@ -85,6 +85,8 @@ _RULESETS = {
     "v1.9.3",
     # v1.9.4: catalogue #54, preserve T4 relationships separately from executable mappings
     "v1.9.4",
+    # v1.9.5: page-linked T4 spatial-targeting / implementation-purpose gate
+    "v1.9.5",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
