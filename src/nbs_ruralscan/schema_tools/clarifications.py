@@ -40,16 +40,30 @@ def all_events(root):
     return sorted(events.values(), key=lambda e: (e["date"], event_key(e)))
 
 
-def publish(root):
-    """Replay local events onto latest shared history, preserving others' events."""
+def publish(root, *, local_events=None):
+    """Replay local events onto shared history, preserving others' events.
+
+    A captured event list supports private staging without copying pending stores
+    into the output set. None retains the existing local-store behavior.
+    """
     root = Path(root)
     with LOCK:
-        pending = pending_events(root)
+        local = (
+            read_json(root / "pipeline/review/clarifications.json", [])
+            if local_events is None
+            else local_events
+        )
+        shared = shared_events(root)
+        known = {event_key(e) for e in shared}
+        pending = [e for e in local if event_key(e) not in known]
         if not pending:
             return 0
         path = root / "pipeline/metrics/clarification_log.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
         tmp = path.with_suffix(".tmp")
-        tmp.write_text(json.dumps(all_events(root), indent=2) + "\n", encoding="utf-8")
+        events = {event_key(e): e for e in shared + pending}
+        ordered = sorted(events.values(), key=lambda e: (e["date"], event_key(e)))
+        tmp.write_text(json.dumps(ordered, indent=2) + "\n", encoding="utf-8")
         tmp.replace(path)
         return len(pending)
 

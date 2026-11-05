@@ -1,4 +1,4 @@
-"""Stage complete generator output, then install with recoverable file rollback.
+"""Stage an allowlisted file set, then install with recoverable file rollback.
 
 Use stable inputs and one writer per output root. Individual replacements are
 atomic; readers can still see mixed generations during installation. This is
@@ -49,19 +49,22 @@ def _state(path: Path) -> tuple | None:
     )
 
 
-def _manifest(root: Path, names: list[Path]) -> dict[str, dict]:
+def _manifest(root: Path, names: list[Path], optional: set[Path]) -> dict[str, dict]:
     entries = list(root.rglob("*"))
     if any(path.is_symlink() for path in entries):
         raise ValueError("Staged output contains a symlink")
     found = {path.relative_to(root) for path in entries if path.is_file()}
-    if found != set(names):
+    required = set(names) - optional
+    if not required.issubset(found) or not found.issubset(names):
         raise ValueError(
             "Staged artifact set changed: "
-            f"missing={sorted(map(str, set(names) - found))}, "
+            f"missing={sorted(map(str, required - found))}, "
             f"unexpected={sorted(map(str, found - set(names)))}"
         )
     result = {}
     for name in names:
+        if name not in found:
+            continue
         path = root / name
         if path.stat().st_nlink != 1:
             raise ValueError(f"Staged artifact is not independent: {name}")
@@ -109,18 +112,31 @@ def staged_publish(
     paths: SchemaBuildPaths,
     destinations: list[Path],
     render: Callable[[SchemaBuildPaths], list[Path]],
+    *,
+    optional_destinations: tuple[Path, ...] = (),
 ) -> list[Path]:
     """Render all artifacts before touching outputs; keep recovery on rollback failure.
 
     The frozen artifact list is the allowlist, not the renderer's changed list.
     Existing bytes seed history and stable timestamps. Unrelated files survive.
+    Optional destinations may stay absent only when absent before staging; this
+    never permits deleting an existing file. All allowed paths are drift-checked.
     """
     paths.preflight(destinations)
     output = paths.output_root or paths.source_root
     names = [path.relative_to(output) for path in destinations]
     if len(set(names)) != len(names):
         raise ValueError("Duplicate generated destinations")
+    if not set(optional_destinations).issubset(destinations):
+        raise ValueError(
+            "Optional destinations must belong to the publication allowlist"
+        )
     before = {name: _state(output / name) for name in names}
+    optional = {
+        path.relative_to(output)
+        for path in optional_destinations
+        if before[path.relative_to(output)] is None
+    }
     workspace = Path(tempfile.mkdtemp(prefix="ruralscan-publication-"))
     stage, backups = workspace / "artifacts", workspace / "before"
     stage.mkdir()
@@ -143,7 +159,7 @@ def staged_publish(
                 ):
                     raise ValueError(f"Output changed while staging: {output / name}")
         render(SchemaBuildPaths(paths.schema, stage, paths.corpus))
-        manifest = _manifest(stage, names)
+        manifest = _manifest(stage, names, optional)
         (workspace / "manifest.json").write_text(
             json.dumps(
                 {
@@ -163,7 +179,8 @@ def staged_publish(
         changed = [
             name
             for name, previous in before.items()
-            if previous is None or previous[0] != manifest[str(name)]["sha256"]
+            if str(name) in manifest
+            and (previous is None or previous[0] != manifest[str(name)]["sha256"])
         ]
         # Prepare every replacement before installing any file. These temporary
         # files live beside their destination, even when output spans mounts.

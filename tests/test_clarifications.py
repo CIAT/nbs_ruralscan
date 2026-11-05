@@ -404,3 +404,18 @@ def test_other_recipes_use_same_evidence_reply_workflow(tmp_path):
     issues = build(tmp_path)
     assert issues
     assert {r["evidence_id"] for g in issues for r in g["records"]} == {"one", "two"}
+
+
+def test_publish_explicit_snapshot_never_falls_back_to_local_store(tmp_path):
+    from nbs_ruralscan.schema_tools.clarifications import publish
+
+    local = tmp_path / "pipeline/review/clarifications.json"
+    local.parent.mkdir(parents=True)
+    events = [{"date": "2026-01-01", "issue_id": "one", "note": "pending"}]
+    local.write_text(json.dumps(events))
+    before = local.read_bytes()
+    assert publish(tmp_path, local_events=[]) == 0
+    assert not (tmp_path / "pipeline/metrics").exists()
+    assert publish(tmp_path, local_events=events) == 1
+    assert local.read_bytes() == before
+    assert publish(tmp_path, local_events=events) == 0

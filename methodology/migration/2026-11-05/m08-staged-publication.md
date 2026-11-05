@@ -1,6 +1,6 @@
 # M08: staged artifact publication
 
-Date: 5 November 2026. Baseline: `7a11a32b788756c55ae612a94e4de48752690911` (merged PR #588). Status: implemented; pending merge. This continues the [generator boundaries](m07-generator-paths.md); it does not change evidence authority or complete M08.
+Date: 5 November 2026. Baseline: `7a11a32b788756c55ae612a94e4de48752690911` (merged PR #588). Status: merged in PR #591 at `770f2d9`. This continues the [generator boundaries](m07-generator-paths.md); it does not change evidence authority or complete M08.
 
 ## Result
 

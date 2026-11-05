@@ -288,3 +288,81 @@ def test_preparation_failure_creates_no_published_files(setup, monkeypatch):
         publication.staged_publish(paths, destinations, render)
     assert not paths.output_root.exists()
     assert not list(scratch.iterdir())
+
+
+def test_absent_optional_output_stays_absent_and_repeat_is_noop(setup):
+    paths, destinations, _, scratch = setup
+
+    def render(staged):
+        path = staged.schema_output / "first.json"
+        path.parent.mkdir(parents=True)
+        path.write_text("{}\n")
+        return []
+
+    assert publication.staged_publish(
+        paths, destinations, render, optional_destinations=(destinations[1],)
+    ) == [destinations[0]]
+    assert not destinations[1].exists()
+    before = inventory(paths.output_root)
+
+    def noop(staged):
+        return []
+
+    assert (
+        publication.staged_publish(
+            paths, destinations, noop, optional_destinations=tuple(destinations)
+        )
+        == []
+    )
+    assert inventory(paths.output_root) == before
+    assert not list(scratch.iterdir())
+
+
+def test_existing_optional_output_cannot_be_deleted(setup):
+    paths, destinations, render, scratch = setup
+    populate(destinations)
+    before = inventory(paths.output_root)
+
+    def missing(staged):
+        render(staged)
+        (staged.docs_output / "nested/second.json").unlink()
+        return []
+
+    with pytest.raises(ValueError, match="missing="):
+        publication.staged_publish(
+            paths, destinations, missing, optional_destinations=tuple(destinations)
+        )
+    assert inventory(paths.output_root) == before
+    assert not list(scratch.iterdir())
+
+
+def test_optional_outside_allowlist_refused_before_render(setup):
+    paths, destinations, _, scratch = setup
+    with pytest.raises(ValueError, match="Optional destinations"):
+        publication.staged_publish(
+            paths,
+            destinations,
+            lambda _: pytest.fail("Must not render"),
+            optional_destinations=(paths.output_root / "other.json",),
+        )
+    assert not list(scratch.iterdir())
+
+
+def test_concurrent_creation_of_skipped_optional_output_refuses_publication(setup):
+    paths, destinations, _, scratch = setup
+    populate(destinations[:1])
+    before = destinations[0].read_bytes()
+
+    def render(staged):
+        (staged.schema_output / "first.json").write_text("{}\n")
+        destinations[1].parent.mkdir(parents=True)
+        destinations[1].write_text('{"concurrent": true}\n')
+        return []
+
+    with pytest.raises(ValueError, match="changed during compilation"):
+        publication.staged_publish(
+            paths, destinations, render, optional_destinations=(destinations[1],)
+        )
+    assert destinations[0].read_bytes() == before
+    assert json.loads(destinations[1].read_text()) == {"concurrent": True}
+    assert not list(scratch.iterdir())

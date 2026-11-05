@@ -13,7 +13,8 @@ CLI: uv run python -m nbs_ruralscan.schema_tools.submit_review [--ship HANDLE --
 
 For a local snapshot, --root PATH replays and rebuilds there. The replay(root) API
 only applies review/clarification records; it never builds artifacts or submits Git
-changes. Neither operation is a multi-file transaction; use an independent copy.
+changes. Replay stages its three records and rolls back caught installation
+failures. Artifact rebuilding remains separate; use an independent copy.
 """
 
 from __future__ import annotations
@@ -30,7 +31,9 @@ import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
+from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths
 from nbs_ruralscan.schema_tools.generate import generate
+from nbs_ruralscan.schema_tools.publication import staged_publish
 from nbs_ruralscan.schema_tools.review import (
     ReviewFiles,
     apply_decisions,
@@ -106,14 +109,17 @@ def replay(root: Path) -> ReplayResult:
 
     The source stores remain unchanged. Consensus, soft deletion, reclassification
     and event deduplication use the same implementation as the existing workflow.
-    Register/audit writes are not transactional; retain a snapshot for recovery.
+    Prepare all three records privately, then install with rollback for caught
+    failures. Incomplete rollback retains recovery copies. This is not crash-safe
+    or atomically visible to readers; use a stable snapshot and one writer.
     """
-    from nbs_ruralscan.schema_tools.clarifications import publish
+    from nbs_ruralscan.schema_tools.clarifications import publish, read_json
 
     root = Path(root).resolve(strict=True)
     files = ReviewFiles.from_root(root)
     store = _load_store(root / "pipeline/review/decisions.json")
     decisions, conflicts = consensus_decisions(store)
+    local_events = read_json(root / "pipeline/review/clarifications.json", [])
     check_review_destinations(
         files.evidence,
         files.log,
@@ -123,11 +129,38 @@ def replay(root: Path) -> ReplayResult:
     # A missing evidence snapshot must not leave clarification history partly applied.
     if decisions and not files.evidence.is_file():
         raise ValueError(f"Evidence register missing: {files.evidence}")
-    clarification_count = publish(root)
-    applied = (
-        apply_decisions(decisions, "consensus", files=files) if decisions else None
+    destinations = (
+        files.evidence,
+        files.log,
+        root / "pipeline/metrics/clarification_log.json",
     )
-    return ReplayResult(clarification_count, applied, tuple(conflicts))
+    result = None
+
+    def render(staged: SchemaBuildPaths) -> list[Path]:
+        nonlocal result
+        assert staged.output_root is not None
+        staged_files = ReviewFiles.from_root(staged.output_root)
+        clarification_count = publish(staged.output_root, local_events=local_events)
+        applied = (
+            apply_decisions(decisions, "consensus", files=staged_files)
+            if decisions
+            else None
+        )
+        if applied and applied["reasons"] and not staged_files.log.is_file():
+            raise ValueError("Review decisions produced no audit log")
+        result = ReplayResult(clarification_count, applied, tuple(conflicts))
+        return []
+
+    # Optional files can remain absent on no-op/unknown-ID/clarification-only runs.
+    # Existing files are always required; no deletion is permitted by publication.
+    staged_publish(
+        SchemaBuildPaths(root / "schema"),
+        list(destinations),
+        render,
+        optional_destinations=destinations,
+    )
+    assert result is not None
+    return result
 
 
 def main(*, root: Path | None = None) -> int:
@@ -136,7 +169,17 @@ def main(*, root: Path | None = None) -> int:
     result = replay(root)
     print(f"submit_review: replayed {result.clarification_count} clarification events")
     if result.needs_rebuild:
-        generate(root / "schema")
+        try:
+            generate(root / "schema")
+        except BaseException:
+            print(
+                "Review replay completed, but artifact rebuilding failed. "
+                f"Retry generation explicitly for {root / 'schema'}; "
+                "replaying clarification-only events may not trigger another rebuild. "
+                "Keep any reported publication recovery copies before retrying.",
+                file=sys.stderr,
+            )
+            raise
     if result.applied is None:
         print("submit_review: no agreed decisions to apply (nothing to do).")
         if result.conflicts:
