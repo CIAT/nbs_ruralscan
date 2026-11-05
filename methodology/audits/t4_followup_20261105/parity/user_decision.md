@@ -48,4 +48,16 @@ Pete, 5 November 2026: prioritize these six mappings for human review and reques
 - Context: rewetting drained former-wetland farmland, as discussed for the preceding criterion; not arbitrary farmland or all wetland restoration. This is vertical groundwater flux, not runoff or canal flow. Input data must measure the same quantity and respect the source's negative-upward sign convention.
 - This decision does not approve a combined model, automatic extrapolation, or substitution of a runoff proxy for groundwater seepage.
 - Application status: recorded for the scoped T4 correction/compilation step after this review sequence. No analytical tables or evidence approval flags changed by this note.
-- Remaining two priority items: awaiting their individual decisions.
+- At this point, the remaining two priority items awaited their individual decisions.
+
+### 5. Restoration-patch area: remove the hard 1 ha minimum
+
+- Mapping: `wetland_management__restoration_rewetting__restorable_patch_area`.
+- Evidence: `ev_wet_site_area_russell97_1`.
+- Proposal presented: remove the hard 1 ha minimum while retaining the source-specific conditional restoration-priority guidance. Small patches remain eligible; no replacement minimum is established.
+- Pete's exact response: "yes, next".
+- Accepted decision: remove the unsupported universal `abs_min=1` suitability cutoff. Retain the evidence record and source's conditional priority rule; do not drop the practice or interpret low priority as zero suitability.
+- Provenance: Russell et al. (1997), PDF p. 10. Eligible sites within 90 m are considered first; the subsequent size/proximity screening down-prioritizes patches below 1 ha. Authors explicitly describe the 1 ha threshold as arbitrary, with a flood-attenuation rationale. Preserve the source's separate scrub-cover preservation/restoration branch when describing the complete method.
+- This decision does not yet approve a correction to the separate 120 m distance mapping or deployment of the full priority algorithm.
+- Application status: recorded for the scoped T4 correction/compilation step after this review sequence. No analytical tables or evidence approval flags changed by this note.
+- Remaining priority item: restoration distance, awaiting its individual decision.
