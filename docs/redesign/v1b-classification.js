@@ -26,6 +26,10 @@
   refresh();
   function get(key) {return Object.assign({direction:'higher_worse'},copy(settings[key] || {count:3,method:'quantile',cuts:[33.33,66.67]}));}
   function set(key,config) {if(!valid(key,config))return false;refresh();settings[key]=copy(config);save();return true;}
+  function reset(key) {
+    if(!variables.some(function(v){return v.key===key;}))return false;
+    refresh();delete settings[key];save();return true;
+  }
   function build(key,state,override) {
     var config=override || get(key);
     if(!valid(key,config))return {error:'Enter ' + ((config && config.count || 3)-1) + ' strictly increasing cut points between 0 and 100.'};
@@ -56,5 +60,5 @@
       range:function(i){return i===0 ? '< '+cuts[0].toFixed(1) : i===cuts.length ? '≥ '+cuts[i-1].toFixed(1) : cuts[i-1].toFixed(1)+' to < '+cuts[i].toFixed(1);}
     };
   }
-  window.V1BClassification={refresh:refresh,variables:variables,get:get,set:set,snapshot:function(){return copy(settings);},restore:restore,build:build};
+  window.V1BClassification={refresh:refresh,variables:variables,get:get,set:set,reset:reset,snapshot:function(){return copy(settings);},restore:restore,build:build};
 })();
