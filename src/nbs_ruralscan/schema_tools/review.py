@@ -7,7 +7,7 @@ A static dashboard can't write the register, so human review happens here:
   2. A human fills `decision` for each row in a spreadsheet:
        ok    = evidence stands (auto-correction accepted, or flag was a false positive)
                → sets reviewer_ok=true and clears the [VERIFY-FLAG ...] marker
-       drop  = remove the unit from the register
+       drop  = mark the unit dropped, retaining the row and its history
        (leave blank = undecided; left flagged)
   3. apply → reads the filled CSV, mutates EV_evidence_register.csv accordingly, then you
      regenerate + can mark the ledger `reviewed` stage done for fully-reviewed tables.
@@ -24,6 +24,7 @@ from __future__ import annotations
 import csv
 import re
 from collections import Counter
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -31,6 +32,41 @@ ROOT = Path(__file__).resolve().parents[3]
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 WORKLIST = ROOT / "pipeline" / "review" / "flag_worklist.csv"
 LOG = ROOT / "pipeline" / "metrics" / "review_log.csv"
+
+
+@dataclass(frozen=True)
+class ReviewFiles:
+    """Explicit mutable evidence and audit files for an isolated review replay."""
+
+    evidence: Path
+    log: Path
+
+    @classmethod
+    def from_root(cls, root: Path) -> ReviewFiles:
+        root = Path(root).resolve()
+        return cls(
+            root / "schema/registers/EV_evidence_register.csv",
+            root / "pipeline/metrics/review_log.csv",
+        )
+
+
+def check_review_destinations(*paths: Path) -> None:
+    """Refuse redirected/shared write targets before a relocated replay mutates files.
+
+    This is a preflight check, not a lock or a multi-file transaction. Callers must
+    use a stable snapshot with one writer throughout replay and regeneration.
+    """
+    if len({p.resolve() for p in paths}) != len(paths):
+        raise ValueError("Review destinations must be distinct files.")
+    for path in paths:
+        if path.absolute() != path.resolve():
+            raise ValueError(f"Review destination contains a symlink: {path}")
+        if path.exists() and (not path.is_file() or path.stat().st_nlink > 1):
+            raise ValueError(f"Review destination is not an independent file: {path}")
+        if any(p.exists() and not p.is_dir() for p in path.parents):
+            raise ValueError(f"Review destination parent is not a directory: {path}")
+
+
 # Active reason codes (2026-07: merged cross_row_stitch→table_error; broadened
 # uninterpretable_weight→unusable_value = weight-with-no-scale OR land-cover-with-no-classes).
 # Legacy codes (cross_row_stitch, table_garble, uninterpretable_weight) may still appear in
@@ -138,12 +174,17 @@ def latest_review_rows(rows: list[dict] | None = None) -> list[dict]:
     return list(latest.values())
 
 
-def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
+def apply_decisions(
+    decisions: dict, reviewer: str = "reviewer", *, files: ReviewFiles | None = None
+) -> dict:
     """Apply decisions to EV. Each value is 'ok'|'drop' OR {'decision','reason'}.
 
     Logs every decision (with reason code) to pipeline/metrics/review_log.csv so the
     sweep retrospective can tally failure patterns and feed them back into the spec/checks.
     """
+    evidence, log = (files.evidence, files.log) if files else (EV, LOG)
+    if files is not None:
+        check_review_destinations(evidence, log)
     today = datetime.now(timezone.utc).date().isoformat()
 
     def _norm(v):
@@ -157,7 +198,7 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
         return (str(v or "").strip().lower(), "", "", "")
 
     try:
-        with EV.open(newline="", encoding="utf-8") as f:
+        with evidence.open(newline="", encoding="utf-8") as f:
             rd = csv.DictReader(f)
             cols = list(rd.fieldnames or [])
             rows = list(rd)
@@ -167,8 +208,8 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
         # `git restore` the register (committed copy is clean UTF-8); decisions live in
         # pipeline/review/decisions.json, so a restore loses no review work.
         raise ValueError(
-            f"{EV} is not valid UTF-8 (byte 0x{e.object[e.start]:02x} at position "
-            f"{e.start}). `git restore {EV.name}` — the committed register is clean UTF-8; "
+            f"{evidence} is not valid UTF-8 (byte 0x{e.object[e.start]:02x} at position "
+            f"{e.start}). `git restore {evidence.name}` — the committed register is clean UTF-8; "
             "your decisions are safe in decisions.json."
         ) from e
     kept, dropped, resolved, queried, reclassified = [], 0, 0, 0, 0
@@ -176,8 +217,8 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
     logrows = []
     # A different reviewer or note is a new event even if state is unchanged.
     previous = {}
-    if LOG.exists():
-        with LOG.open(newline="", encoding="utf-8") as f:
+    if log.exists():
+        with log.open(newline="", encoding="utf-8") as f:
             for event in csv.DictReader(f):
                 previous[(event["evidence_id"], event["reviewer"])] = event
 
@@ -322,16 +363,16 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
             r["attribution"] = (tag + " " + (r["attribution"] or "")).strip()
             resolved += 1
         kept.append(r)
-    with EV.open("w", newline="", encoding="utf-8") as f:
+    with evidence.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(
             f, fieldnames=cols, extrasaction="ignore", lineterminator="\n"
         )
         w.writeheader()
         w.writerows(kept)
     if logrows:
-        LOG.parent.mkdir(parents=True, exist_ok=True)
-        new_file = not LOG.exists()
-        with LOG.open("a", newline="", encoding="utf-8") as f:
+        log.parent.mkdir(parents=True, exist_ok=True)
+        new_file = not log.exists()
+        with log.open("a", newline="", encoding="utf-8") as f:
             w = csv.writer(f, lineterminator="\n")
             if new_file:
                 w.writerow(
@@ -357,24 +398,32 @@ def apply_decisions(decisions: dict, reviewer: str = "reviewer") -> dict:
     }
 
 
-def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
+def reopen_units(
+    evidence_ids: list[str],
+    reviewer: str = "reviewer",
+    *,
+    files: ReviewFiles | None = None,
+) -> dict:
     """Revert an ok-reviewed EV row back to flagged (clears reviewer_ok, restores the
     [VERIFY-FLAG verdict: reason] from the review_log) so it re-enters the worklist.
 
     Existing active, queried and dropped units can be reopened. Logs the reviewer's
     reset even when reviewer_ok was already false, so an old query cannot hide it.
     """
+    evidence, log = (files.evidence, files.log) if files else (EV, LOG)
+    if files is not None:
+        check_review_destinations(evidence, log)
     today = datetime.now(timezone.utc).date().isoformat()
     # latest logged verdict+reason per evidence_id (for restoring the flag text)
     last: dict[str, tuple[str, str]] = {}
-    if LOG.exists():
-        with LOG.open(newline="", encoding="utf-8") as f:
+    if log.exists():
+        with log.open(newline="", encoding="utf-8") as f:
             for row in csv.DictReader(f):
                 last[row["evidence_id"]] = (
                     row.get("verdict", ""),
                     row.get("reason", ""),
                 )
-    with EV.open(newline="", encoding="utf-8") as f:
+    with evidence.open(newline="", encoding="utf-8") as f:
         rd = csv.DictReader(f)
         cols = list(rd.fieldnames or [])
         rows = list(rd)
@@ -406,16 +455,16 @@ def reopen_units(evidence_ids: list[str], reviewer: str = "reviewer") -> dict:
                 reviewer,
             ]
         )
-    with EV.open("w", newline="", encoding="utf-8") as f:
+    with evidence.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(
             f, fieldnames=cols, extrasaction="ignore", lineterminator="\n"
         )
         w.writeheader()
         w.writerows(rows)
     if logrows:
-        LOG.parent.mkdir(parents=True, exist_ok=True)
-        new_file = not LOG.exists()
-        with LOG.open("a", newline="", encoding="utf-8") as f:
+        log.parent.mkdir(parents=True, exist_ok=True)
+        new_file = not log.exists()
+        with log.open("a", newline="", encoding="utf-8") as f:
             w = csv.writer(f, lineterminator="\n")
             if new_file:
                 w.writerow(

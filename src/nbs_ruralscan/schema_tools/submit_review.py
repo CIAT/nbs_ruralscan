@@ -10,6 +10,10 @@ reverts other people's rows (the recurring pain that buried tiny review edits in
 generated-JSON churn + stale-branch reverts).
 
 CLI: uv run python -m nbs_ruralscan.schema_tools.submit_review [--ship HANDLE --auto]
+
+For a local snapshot, --root PATH replays and rebuilds there. The replay(root) API
+only applies review/clarification records; it never builds artifacts or submits Git
+changes. Neither operation is a multi-file transaction; use an independent copy.
 """
 
 from __future__ import annotations
@@ -23,19 +27,23 @@ import subprocess
 import sys
 import tempfile
 import uuid
+from dataclasses import dataclass
 from pathlib import Path
 
 from nbs_ruralscan.schema_tools.generate import generate
-from nbs_ruralscan.schema_tools.review import apply_decisions
+from nbs_ruralscan.schema_tools.review import (
+    ReviewFiles,
+    apply_decisions,
+    check_review_destinations,
+)
 
 ROOT = Path(__file__).resolve().parents[3]
-STORE = ROOT / "pipeline" / "review" / "decisions.json"
 
 
-def _load_store() -> dict:
-    if not STORE.exists():
+def _load_store(path: Path) -> dict:
+    if not path.exists():
         return {}
-    raw = STORE.read_bytes()
+    raw = path.read_bytes()
     try:
         return json.loads(raw.decode("utf-8"))
     except UnicodeDecodeError:
@@ -82,27 +90,63 @@ def consensus_decisions(store: dict) -> tuple[dict, list[str]]:
     return decisions, conflicts
 
 
-def main() -> int:
+@dataclass(frozen=True)
+class ReplayResult:
+    clarification_count: int
+    applied: dict | None
+    conflicts: tuple[str, ...]
+
+    @property
+    def needs_rebuild(self) -> bool:
+        return self.applied is not None or self.clarification_count > 0
+
+
+def replay(root: Path) -> ReplayResult:
+    """Apply local decisions/events to this snapshot, without generation or Git.
+
+    The source stores remain unchanged. Consensus, soft deletion, reclassification
+    and event deduplication use the same implementation as the existing workflow.
+    Register/audit writes are not transactional; retain a snapshot for recovery.
+    """
     from nbs_ruralscan.schema_tools.clarifications import publish
 
-    clarification_count = publish(ROOT)
-    print(f"submit_review: replayed {clarification_count} clarification events")
-    store = _load_store()
+    root = Path(root).resolve(strict=True)
+    files = ReviewFiles.from_root(root)
+    store = _load_store(root / "pipeline/review/decisions.json")
     decisions, conflicts = consensus_decisions(store)
-    if not decisions:
-        if clarification_count:
-            generate(ROOT / "schema")
+    check_review_destinations(
+        files.evidence,
+        files.log,
+        root / "pipeline/metrics/clarification_log.json",
+        root / "pipeline/metrics/clarification_log.tmp",
+    )
+    # A missing evidence snapshot must not leave clarification history partly applied.
+    if decisions and not files.evidence.is_file():
+        raise ValueError(f"Evidence register missing: {files.evidence}")
+    clarification_count = publish(root)
+    applied = (
+        apply_decisions(decisions, "consensus", files=files) if decisions else None
+    )
+    return ReplayResult(clarification_count, applied, tuple(conflicts))
+
+
+def main(*, root: Path | None = None) -> int:
+    """Compatibility wrapper: replay records, then run the existing full generator."""
+    root = Path(root if root is not None else ROOT).resolve()
+    result = replay(root)
+    print(f"submit_review: replayed {result.clarification_count} clarification events")
+    if result.needs_rebuild:
+        generate(root / "schema")
+    if result.applied is None:
         print("submit_review: no agreed decisions to apply (nothing to do).")
-        if conflicts:
+        if result.conflicts:
             print(
-                f"  ({len(conflicts)} conflicted, left pending: {', '.join(conflicts)})"
+                f"  ({len(result.conflicts)} conflicted, left pending: {', '.join(result.conflicts)})"
             )
         return 0
-    res = apply_decisions(decisions, "consensus")
-    generate(ROOT / "schema")
-    print(f"submit_review: applied {res}")
-    if conflicts:
-        print(f"  conflicts skipped (left pending): {', '.join(conflicts)}")
+    print(f"submit_review: applied {result.applied}")
+    if result.conflicts:
+        print(f"  conflicts skipped (left pending): {', '.join(result.conflicts)}")
     return 0
 
 
@@ -288,9 +332,20 @@ def cli() -> int:
     parser.add_argument("--ship", metavar="REVIEWER")
     parser.add_argument("--title")
     parser.add_argument("--auto", action="store_true")
+    parser.add_argument(
+        "--root",
+        type=Path,
+        help="Replay and rebuild a local snapshot (not with --ship).",
+    )
     args = parser.parse_args()
+    if args.ship and args.root is not None:
+        parser.error("--root is for local replay only; it cannot be used with --ship.")
     try:
-        return ship(args.ship, args.title, args.auto) if args.ship else main()
+        return (
+            ship(args.ship, args.title, args.auto)
+            if args.ship
+            else main(root=args.root)
+        )
     except (ValueError, RuntimeError, OSError, subprocess.TimeoutExpired) as exc:
         print(f"Submit failed: {exc}. Local decisions remain saved.", file=sys.stderr)
         return 1
