@@ -48,3 +48,5 @@ One row per request, who made it, and what we did. Stakeholder requests (World B
 - 2026-11-05 · Pete: apply summary selection/plot to Table 3.3 and use risk terminology in 3.3. Added risk-class controls and baseline/future population-share plot; shared C.5 hazard labels now read Low/Moderate/High risk, with Very low/Very high for five classes. Exposure-screening scope retained.
 
 - 2026-11-05 · Pete: log the suggested methodological workflow to review variables and their distributions for the chosen context. Recorded as a proposal, with context → variable meaning/direction → distribution review → classification → comparative summaries → documented hand-off in [methodological development note](../../methodology/decisions/2026-11-05_context_variable_review.md).
+
+- 2026-11-05 · Pete: explicitly frame the walkthrough as visual methodology and an idealised implementation, a wireframe/mock-up for tangible co-design and expectation alignment with the World Bank—not a tool the Alliance is building under its contract. Added prominent home-page scope statement and shared notice across v2 pages; retained the three contracted deliverables.
