@@ -103,4 +103,14 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Accepted decision: keep all seven on that basis, preserving the China potential-wetland model and downstream restoration-targeting context. One study supplies seven variable records, not seven independent studies. Figure 8 values remain source-specific predictive importance; adoption as Rural Scan weights would require a separate modelling decision, which was not requested or approved here.
 - Application status: human decisions recorded; central review application and compilation pending. No executable numeric suitability functions or runtime weights approved.
 
-Remaining active claims: 2 awaiting individual review decisions.
+## 16. China restoration overlay: cropland, grassland and woodland
+
+- Evidence: `ev_wet_xiang_convertible_cover_20261105`.
+- Source: Xiang et al. (2023), `wet_potential_distribution_china_ml_2023`, PDF p. 18, section 4.3.
+- Proposal presented: retain the source's intersection of modelled potential wetlands with current cropland, grassland and woodland as a spatial-targeting approach. No universal conversion permissions, class scores or assumption that every predicted site was historically wetland; retain the authors' woodland conservation trade-off.
+- Pete's exact response: "fine, next".
+- Accepted decision: keep that source-specific restoration-target overlay evidence. Land-cover membership alone is not a suitability condition: the source also requires predicted potential wetland location and its preceding built-up exclusion.
+- Preserve independence: this is another component of the same Xiang study, not an additional independent source or a duplicate vote for the already reviewed built-up exclusion.
+- Application status: human decision recorded; central review application and compilation pending. No global land-cover mask, numeric scores or authorization to convert other habitats approved.
+
+Remaining active claims: 1 awaiting its individual review decision.
