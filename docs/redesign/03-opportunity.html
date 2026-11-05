@@ -10,6 +10,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="v1b.css">
 <link rel="stylesheet" href="review-mode.css">
+<style>
+#classification-panel[hidden]{display:none}
+#classification-panel{position:fixed;right:0;top:0;bottom:0;width:440px;max-width:100%;z-index:1000;background:var(--paper,#fff);border-left:1px solid var(--line);display:flex;flex-direction:column;box-shadow:-4px 0 18px #0002}
+.classification-panel-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+#classification-frame{width:100%;flex:1;border:0;min-height:0}
+body.classification-open{padding-right:440px}
+@media(max-width:900px){body.classification-open{padding-right:0;padding-bottom:55vh}#classification-panel{top:auto;width:100%;height:55vh;border-top:1px solid var(--line)}}
+</style>
 </head>
 <body>
 <div id="chrome"></div>
@@ -470,6 +478,33 @@
   if (q.get('fp') === 'chart') document.querySelector('#seg-fp [data-v="chart"]').click();
   if (q.get('variant') === 'change') document.querySelector('#seg-opp [data-v="change"]').click();
   narrow.addEventListener && narrow.addEventListener('change', function () { fitView(svg); });
+})();
+</script>
+<aside id="classification-panel" role="region" aria-label="C.5 variable classes" hidden>
+  <div class="classification-panel-head"><b>C.5 · Variable classes</b><button type="button" class="btn" id="classification-close">Close</button></div>
+  <iframe id="classification-frame" title="C.5 classification settings"></iframe>
+</aside>
+<script>
+(function(){
+  var panel=document.getElementById('classification-panel'),frame=document.getElementById('classification-frame'),close=document.getElementById('classification-close'),opener;
+  function closePanel(){panel.hidden=true;document.body.classList.remove('classification-open');if(opener){var target=opener.isConnected?opener:document.querySelector('a[href="'+opener.getAttribute("href")+'"]');if(target)target.focus();}}
+  document.addEventListener('click',function(event){
+    var link=event.target.closest('a[href^="00-config.html?tab=5"]');
+    if(!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)return;
+    event.preventDefault();opener=link;
+    var url=new URL(link.href),state=V1BUI.state;
+    url.searchParams.set('panel','classes');url.searchParams.set('climate',state.climate);
+    url.searchParams.set('classes',Object.keys(state.classes).filter(function(k){return state.classes[k];}).join(','));
+    frame.src=url.href;panel.hidden=false;document.body.classList.add('classification-open');close.focus();
+  });
+  close.addEventListener('click',closePanel);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!panel.hidden)closePanel();});
+  frame.addEventListener('load',function(){
+    var doc=frame.contentDocument;
+    doc.addEventListener('keydown',function(e){if(e.key==='Escape')closePanel();});
+    doc.addEventListener('click',function(e){var a=e.target.closest('a[href^="03-opportunity.html"]');if(a){e.preventDefault();var tab=new URL(a.href).searchParams.get('tab');document.getElementById('tab-'+tab).click();closePanel();}});
+  });
+  V1BUI.onControls(function(state){if(panel.hidden)return;var url=new URL(frame.src);url.searchParams.set('climate',state.climate);url.searchParams.set('classes',Object.keys(state.classes).filter(function(k){return state.classes[k];}).join(','));frame.src=url.href;});
 })();
 </script>
 <script src="review-mode.js"></script>
