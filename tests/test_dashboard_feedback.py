@@ -49,7 +49,7 @@ assert(!source.includes("fetch('/api/"));
 
 def test_feedback_assets_and_stable_family_targets():
     html = (ROOT / "docs/dashboard.html").read_text()
-    assert html.count('src="dashboard-feedback.js?v=1.0.2"') == 1
+    assert html.count('src="dashboard-feedback.js?v=1.4.0"') == 1
     assert html.count('href="dashboard-feedback.css?v=1.0.2"') == 1
     progress = (ROOT / "docs/dashboard-progress.js").read_text()
     assert (

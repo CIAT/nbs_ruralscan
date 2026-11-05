@@ -38,13 +38,21 @@
     var tab = document.querySelector('.tab-btn.active');
     var tabId = tabParam();
     var scope;
-    if (tabId === 'tab-qaqc') scope = Object.assign({}, window._vfScope || {});
+    if (tabId === 'tab-qaqc') {
+      var pipeline = document.getElementById('review-pipeline-panel');
+      scope = pipeline && !pipeline.hidden && window.DashboardProgress && window.DashboardProgress.pipelineContext
+        ? window.DashboardProgress.pipelineContext() : Object.assign({}, window._vfScope || {});
+    }
     else if (tabId === 'tab-interrogator') scope = {
       nbs: (document.getElementById('select-nbs') || {}).value || 'all',
       family: (document.getElementById('select-family') || {}).value || 'all'
     };
     else if (window.DashboardProgress) scope = window.DashboardProgress.context(tabId);
     else scope = { nbs: 'all', family: 'all' };
+    var subview = document.querySelector(tabId === 'tab-methods' ? '[data-method-view][aria-pressed="true"]' : '[data-review-view][aria-pressed="true"]');
+    if (subview && (tabId === 'tab-methods' || tabId === 'tab-qaqc')) {
+      scope = Object.assign({}, scope, {view: subview.dataset[tabId === 'tab-methods' ? 'methodView' : 'reviewView']});
+    }
     return { tab: tab ? clean(tab.textContent) : '', scope: scope,
       build: typeof dashboardData !== 'undefined' && dashboardData ? dashboardData.git_commit : '' };
   }
@@ -79,7 +87,9 @@
   function anchorId(e) { var a = e; while (a && !a.id) a = a.parentElement; return a && a.id && !/^rv-/.test(a.id) ? a.id : ''; }
   // Only migrate notes with an explicit stable source identity. Text matches are unsafe.
   function noteTab(n) {
-    return n.targetKey && n.targetKey.indexOf('source:') === 0 ? 'tab-stocktake' : n.tab;
+    if (n.targetKey && n.targetKey.indexOf('source:') === 0) return 'tab-stocktake';
+    if (n.targetKey && (n.targetKey.indexOf('ledger:') === 0 || n.targetKey === 'id:dp-ledger')) return 'tab-qaqc';
+    return n.tab;
   }
   function findTarget(n) {
     var targetTab = noteTab(n);
@@ -425,6 +435,21 @@
     var targetTab = noteTab(n);
     if (n.page !== page) { location.href = n.page + (targetTab ? '?tab=' + targetTab : '') + '#rv=' + n.id; return; }
     if (targetTab) { var tb = Array.from(document.querySelectorAll('.tab-btn')).find(function(b) { return b.dataset.tab === targetTab; }); if (tb && !tb.classList.contains('active')) tb.click(); }
+    var scope = n.context && n.context.scope || {};
+    if (window.DashboardShell) {
+      if (targetTab === 'tab-methods') {
+        if (window.DashboardProgress && window.DashboardProgress.restoreMethodsContext) window.DashboardProgress.restoreMethodsContext(scope);
+        window.DashboardShell.openMethods(scope.view || 'search');
+      }
+      if (targetTab === 'tab-qaqc' && scope.view === 'help') window.DashboardShell.openReviewHelp();
+      if (targetTab === 'tab-qaqc' && scope.view === 'pipeline') {
+        if (window.DashboardProgress && window.DashboardProgress.restorePipelineContext) window.DashboardProgress.restorePipelineContext(scope);
+        window.DashboardShell.openPipelineRecords();
+      }
+      if (targetTab === 'tab-qaqc' && scope.view === 'queue') {
+        var queue = document.querySelector('[data-review-view="queue"]'); if (queue) queue.click();
+      }
+    }
     if (n.targetKey && window.DashboardProgress && window.DashboardProgress.revealTarget) {
       window.DashboardProgress.revealTarget(n.targetKey);
     }

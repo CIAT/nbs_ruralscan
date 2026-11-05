@@ -1028,7 +1028,7 @@
 </style>
 <link rel="stylesheet" href="t4_analysis.css">
 <script src="t4_analysis.js"></script>
-<link rel="stylesheet" href="dashboard-progress.css?v=1.3.2">
+<link rel="stylesheet" href="dashboard-progress.css?v=1.4.0">
 <link rel="stylesheet" href="dashboard-feedback.css?v=1.0.2">
 <link rel="stylesheet" href="dashboard-shell.css?v=1.2.1">
 <link rel="stylesheet" href="dashboard-relationships.css?v=1.2.0">
@@ -1077,12 +1077,6 @@
     </a>
   </div>
 </header>
-<div id="readonly-banner" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:9px 16px; background:rgba(245,158,11,0.12); border-bottom:1px solid rgba(245,158,11,0.35); color:var(--text-primary); font-size:12.5px;">
-  <span style="font-size:15px;">&#9888;&#65039;</span>
-  <span><b>Read-only preview.</b> No review server is connected. Evidence decisions cannot be submitted from this preview. Dashboard feedback notes stay in this browser until exported.</span>
-  <button class="shell-link" onclick="DashboardShell.openReviewHelp()">How to review</button>
-</div>
-
 <main class="main-container">
   
   <nav class="tab-nav" aria-label="Dashboard sections">
@@ -1126,16 +1120,32 @@
         <p>The Rural NbS Scan is a World Bank-funded project helping project teams scope where nature-based solutions could work in rural, agricultural and forestry landscapes, and which investment priorities they could support.</p>
         <p>This dashboard shows the research behind that work: which sources were selected, what evidence was extracted, how it was checked, and how it supports the scan’s rules. It supports project oversight and technical review. It does not establish site-level feasibility or replace engineering studies.</p>
       </header>
-      <section class="shell-overview-block"><h3>1.1 From research to a scoping decision</h3>
-        <ol class="shell-process"><li><b>Find and select sources</b><span>Search literature, guidance and tools using documented criteria.</span></li><li><b>Extract and check evidence</b><span>Capture claims with their source and location; reviewers check accuracy and relevance.</span></li><li><b>Build analytical rules</b><span>Translate suitable evidence into traceable rules for practices and their suitability families.</span></li><li><b>Support the rural scan</b><span>Use those rules with spatial data to scope opportunity, risk and project priorities.</span></li></ol>
-        <p class="shell-caption">Figure 1.1. How evidence supports the Rural NbS Scan. Sources, claims and rules are different units; one source can support several claims and rules.</p>
+      <section class="shell-overview-block"><h3>1.1 How the Rural Scan works</h3>
+        <ol class="shell-process"><li><b>Define the question</b><span>Select the area, practices and project priorities. A shared framework sets the steps; each practice has its own recipe.</span></li><li><b>Find the opportunity space</b><span>Combine practice requirements with spatial data to identify suitable or applicable locations, with host-system gates and hard exclusions kept explicit.</span></li><li><b>Assess risk and priorities</b><span>Distinguish risk to rural livelihoods from risk to the proposed investment. Examine who and what lies in the opportunity space, then identify priority hotspots.</span></li><li><b>Compare and hand over</b><span>Compare expected benefits, limitations and evidence gaps. Use the results to guide subsequent feasibility work and local validation.</span></li></ol>
+        <p class="shell-caption">Figure 1.1. The scoping sequence. Evidence supports the recipes; the runtime applies them to an area. An evidence-backed rule is not, by itself, a validated spatial result.</p>
+        <p class="shell-explainer"><a href="pipeline.html" target="_blank" rel="noopener noreferrer">Architecture diagram (v0.5 snapshot) ↗</a> · <a href="pipeline_visualization.html" target="_blank" rel="noopener noreferrer">Analytical and evidence pipeline visualization ↗</a> · <button class="shell-link" type="button" onclick="DashboardShell.openMethods('rural')">Read the Rural Scan method</button></p>
       </section>
-      <section class="shell-overview-block"><h3>1.2 Choose your task</h3><div class="shell-task-grid">
+      <section class="shell-overview-block"><h3>1.2 What the analytical tables do</h3>
+        <p class="shell-explainer">The tables connect the written method to its implementation. Source and evidence registers preserve the citations and claims behind these rules; table numbers describe different purposes, not a sequence of approval.</p>
+        <div class="dp-scroll"><table class="dp-table"><caption>Table 1.1. Purpose of the Rural Scan analytical tables</caption><thead><tr><th scope="col">Table</th><th scope="col">What it records</th><th scope="col">Where it is used</th></tr></thead><tbody>
+          <tr><th scope="row">T0 · Practices</th><td>Identity and scope of each nature-based solution.</td><td>Set up the scan and describe the options.</td></tr>
+          <tr><th scope="row">T1 · Datasets</th><td>Available spatial datasets, access routes and limitations.</td><td>Obtain inputs; context-specific bindings select the appropriate dataset.</td></tr>
+          <tr><th scope="row">T2 · Climate risk</th><td>Hazard, exposure and vulnerability variables and their role in risk formulation. Shown as T2a in Progress.</td><td>Assess rural livelihood risk; supply hazard inputs to project-risk screening.</td></tr>
+          <tr><th scope="row">T3 · Hazard response</th><td>How a practice can mitigate a hazard, and how hazards can affect the practice as an asset.</td><td>Keep mitigation benefits and investment vulnerability distinct.</td></tr>
+          <tr><th scope="row">T4 · Suitability</th><td>Practice-family requirements, response functions, host gates and hard exclusions.</td><td>Define opportunity space; soft operational constraints remain separate.</td></tr>
+          <tr><th scope="row">T5 · Priorities and descriptors</th><td>Indicators for people, production, climate, biodiversity and other project concerns.</td><td>Characterise opportunity space; use priority indicators to locate hotspots.</td></tr>
+          <tr><th scope="row">T6 · Benefits</th><td>Evidence-based effects, confidence and contextual limitations.</td><td>Compare practices against project priorities.</td></tr>
+          <tr><th scope="row">T6E · Economics</th><td>Indicative economic evidence and its context, separate from the benefit scorecard.</td><td>Inform scoping and subsequent investigation; not a cost-benefit analysis.</td></tr>
+          <tr><th scope="row">T7 · Context</th><td>Geographic and farming-system context definitions.</td><td>Resolve applicable rules and datasets for the chosen area.</td></tr>
+        </tbody></table></div>
+        <p class="shell-explainer"><a href="erd.html" target="_blank" rel="noopener noreferrer">Data-model diagram (v0.3.0 snapshot) ↗</a> · <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/spec.md" target="_blank" rel="noopener noreferrer">Maintained field-level schema specification ↗</a></p>
+      </section>
+      <section class="shell-overview-block"><h3>1.3 Choose your task</h3><div class="shell-task-grid">
         <button data-shell-open="btn-search"><b>Understand progress</b><span>For funders and project leads: see research effort, completed outputs and remaining review work.</span></button>
         <button data-shell-open="btn-interrogator"><b>Inspect evidence and rules</b><span>For technical reviewers: compare relationships and trace rules back to source evidence.</span></button>
         <button data-shell-open="btn-stocktake"><b>Find a source or dataset</b><span>Check publication details, linked extracts, variable definitions and available spatial datasets.</span></button>
         <button data-shell-open="btn-qaqc"><b>Review an extraction</b><span>For the review team: check a claim against its source, then Keep, Drop or Query.</span></button>
-        <button data-shell-open="btn-methods"><b>Understand the methods</b><span>Inspect search protocols, selection criteria and how reported counts were derived.</span></button>
+        <button data-shell-open="btn-methods"><b>Understand the methods</b><span>Follow the Rural Scan method, evidence workflow and recorded search protocols.</span></button>
       </div></section>
     </section>
 
@@ -1586,13 +1596,38 @@
     <!-- TAB 5: SEARCH & DISCOVERY LOGS -->
     <div id="tab-qaqc" class="tab-content">
 <header class="shell-intro"><h2>5. Evidence review</h2><p>Help the team check whether each extracted claim faithfully represents its source and belongs in the intended practice and analytical table. Review the source context before deciding; an automated check is not human approval.</p></header>
-      <nav class="shell-subnav" aria-label="Evidence review views"><button type="button" data-review-view="queue" aria-pressed="true">5.1 Review queue</button><button type="button" data-review-view="help" aria-pressed="false">5.2 How to review</button></nav>
+      <nav class="shell-subnav" aria-label="Evidence review views"><button type="button" data-review-view="queue" aria-pressed="true">5.1 Review queue</button><button type="button" data-review-view="help" aria-pressed="false">5.2 How to review</button><button type="button" data-review-view="pipeline" aria-pressed="false">5.3 Pipeline records</button></nav>
+      <div id="readonly-banner" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:9px 16px; background:rgba(245,158,11,0.12); border-bottom:1px solid rgba(245,158,11,0.35); color:var(--text-primary); font-size:12.5px;">
+        <span style="font-size:15px;">&#9888;&#65039;</span>
+        <span><b>Read-only preview.</b> No review server is connected. Evidence decisions cannot be submitted from this preview. Dashboard feedback notes stay in this browser until exported.</span>
+        <button class="shell-link" type="button" onclick="DashboardShell.openReviewHelp()">How to review</button>
+      </div>
       <section id="review-help-panel" hidden><h3>5.2 How to review</h3>
-        <ol class="shell-review-steps"><li><b>Choose your reviewer identity in Review queue.</b> Decisions are attributed to this handle. Choose a practice, family or table to focus your review.</li><li><b>Read the claim and open its source.</b> Check the page or table, units, context, practice and intended use. Use the full source when an excerpt lacks context.</li><li><b>Keep</b> when the extraction is faithful and relevant. <b>Drop</b> when it is unsuitable or incorrect: select a reason and explain it. Drop quarantines the record; it does not erase it. <b>Query</b> when you need clarification: state the question clearly. A query is not approval.</li><li><b>Revisit answers and conflicts.</b> Check the reply or other reviewer’s reasoning, then make a Keep, Drop or Query decision on the evidence card.</li><li><b>Submit reviews when ready.</b> With the local review server connected, submission applies saved decisions and opens a pull request subject to checks and approvals. Disagreements remain pending for resolution.</li></ol>
-        <p><b>Preview limitation:</b> without the review server, decisions cannot be submitted to the shared register. Dashboard Feedback records comments about this interface separately; it does not approve or reject evidence.</p>
-        <p><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer">Setup and detailed reviewer guide ↗</a></p>
+        <p>Review checks the extraction against its source. It does not approve a spatial model, a proposed investment or every other claim from the same paper.</p>
+        <h4>5.2.1 Get connected</h4>
+        <p>To save evidence decisions, use the local review server and confirm <b>Live review server connected</b>. The public website and a static preview are read-only. You need repository write access and access to the source library; choosing a reviewer name does not grant either.</p>
+        <details><summary>First-time setup and starting a session</summary>
+          <p>Follow the <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer">reviewer setup guide ↗</a> to install the tools, clone the repository and sync the library. From your repository folder, hydrate the sources and start the server:</p>
+          <pre><code>python3 scripts/hydrate-corpus.py
+uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
+          <p>Open <code>http://localhost:8765/dashboard.html</code> and choose <b>5. Evidence review</b>. If that port is already occupied, leave the other application running; the guide explains using another port.</p>
+          <p>Before updating an existing checkout, finish submitting saved decisions. Keep the local decision store. Then update, hydrate the corpus, restart the server and hard-reload the page. Do not clear decisions to remove a version warning.</p>
+        </details>
+        <h4>5.2.2 Work through the queue</h4>
+        <ol class="shell-review-steps">
+          <li><b>Set your own GitHub handle in Review queue.</b> Choose <b>Other…</b> if it is missing. Your handle attributes decisions; it is not a login. Use practice, evidence type and search to narrow the queue.</li>
+          <li><b>Start with To review.</b> <b>Waiting for answers</b> holds your outstanding questions; <b>My reviewed</b> shows your decisions. More filters contains technical filters and dropped history. Site observations are deferred by default and can be included there.</li>
+          <li><b>Read the claim and inspect its source.</b> Check the page or table, units, context, practice and intended use. Open the source region or full paper when the excerpt lacks context. A restricted source may require the synced library or its SharePoint link; ask Pete or Namita if access is missing.</li>
+          <li><b>Keep</b> when the extraction is faithful and relevant. <b>Drop</b> when it is unsuitable or incorrect: select a coded reason and explain it. Drop quarantines the record; it does not erase it. <b>Query</b> when clarification is needed: state what needs checking. A query is not approval.</li>
+          <li><b>Review answers on the evidence card.</b> Answered records return to To review. Read the answer and source, then Keep, Drop or Query. There is no separate answer-approval step; deciding one record does not approve the other records sharing its answer.</li>
+          <li><b>Submit reviews when ready.</b> The bottom Submit reviews bar sends saved decisions and discussion updates through validation and a pull request. Wait for the result and inspect the link. Required checks and approvals still apply; an auto-merge request is not confirmation of merge. Reviewer disagreements remain pending.</li>
+        </ol>
+        <h4>5.2.3 If something needs attention</h4>
+        <ul><li><b>Missing sources:</b> hydrate the corpus and use Recheck. A source-cache presence count is not a completed quote check; submission runs the provenance guardrail.</li><li><b>Missing extraction:</b> use Report missing evidence under More actions and identify the source and location.</li><li><b>Submission failed:</b> decisions remain saved locally. Read the reported error before retrying; do not start a second submission while one is still running.</li><li><b>Interface feedback:</b> use Feedback in the dashboard header. These notes stay in this browser at this address until exported; they do not Keep, Drop, Query or submit an evidence decision.</li></ul>
+        <p><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/docs/REVIEWER_GUIDE.md" target="_blank" rel="noopener noreferrer">Full reviewer guide, source access and recovery instructions ↗</a></p>
         <div id="review-reference-guide"></div>
       </section>
+      <section id="review-pipeline-panel" hidden><div id="pipeline-records-app"><p>Loading pipeline records…</p></div></section>
       <section id="review-queue-panel">
     <label style="display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-secondary); margin-right:10px;" title="Your reviewer identity — every QA decision is attributed to this handle">&#128100; Reviewer
       <select id="vf-reviewer" onchange="if(this.value==='__other__'){var h=prompt('Git handle:');setVfReviewer((h||'').trim());}else{setVfReviewer(this.value);}" style="font-size:12px; padding:4px 9px; border-radius:5px; background:var(--bg-secondary); color:var(--text-primary); border:1px solid var(--border-color); font-weight:600;"><option value="">— pick reviewer —</option><option value="peetmate">peetmate</option><option value="bensonkenduiywo">bensonkenduiywo</option><option value="bjyberg">bjyberg</option><option value="Namita-J">Namita-J</option><option value="Mlolita26">Mlolita26</option><option value="__other__">Other…</option></select>
@@ -1680,7 +1715,40 @@
       <div id="progress-app"></div>
     </div>
     <div id="tab-methods" class="tab-content">
-      <div id="methods-app"></div>
+      <header class="shell-intro"><h2>6. Methods</h2><p>Understand the Rural Scan, how evidence is prepared for it, and the searches actually recorded. Method descriptions, evidence approval and implementation readiness are separate parts of the record.</p></header>
+      <nav class="shell-subnav" aria-label="Methods views"><button type="button" data-method-view="rural" aria-pressed="true">6.1 Rural Scan method</button><button type="button" data-method-view="evidence" aria-pressed="false">6.2 Evidence workflow</button><button type="button" data-method-view="search" aria-pressed="false">6.3 Search protocols</button></nav>
+      <section id="method-rural-panel" class="shell-overview-block"><h3>6.1 Rural Scan method</h3>
+        <p class="shell-explainer">The Rural Scan is a scoping method for nature-based solutions in rural landscapes. A common framework defines the analytical steps. Each practice recipe specifies its relevant families, variables, relationships and contextual limits. The runtime combines that configuration with spatial data for a chosen area.</p>
+        <div class="dp-scroll"><table class="dp-table"><caption>Table 6.1. Analytical stages and the questions they answer</caption><thead><tr><th scope="col">Module</th><th scope="col">Question</th><th scope="col">Result</th></tr></thead><tbody>
+          <tr><th scope="row">M0 · Setup and scope</th><td>What area, practices and decisions are in scope?</td><td>A declared study area, context and configuration.</td></tr>
+          <tr><th scope="row">M1 · Opportunity space</th><td>Where could the practice be suitable or applicable?</td><td>Practice-family suitability or applicability, with host gates and exclusions.</td></tr>
+          <tr><th scope="row">M2 · Rural climate risk</th><td>Where are rural livelihoods exposed to climate hazards?</td><td>Risk information for understanding need and priorities.</td></tr>
+          <tr><th scope="row">M2b · Project risk</th><td>What hazards or operational barriers could affect the investment?</td><td>Separate risk filters and flags, not another term added to suitability.</td></tr>
+          <tr><th scope="row">M3 · Characterisation</th><td>Who and what lies within the opportunity space?</td><td>A profile of people, production, environment and other project concerns.</td></tr>
+          <tr><th scope="row">M4 · Priority hotspots</th><td>Where do the chosen project priorities concentrate?</td><td>Priorities within the opportunity space, with explicit assumptions.</td></tr>
+          <tr><th scope="row">M5 · Comparison</th><td>What benefits and limitations does each practice offer?</td><td>Evidence-based response and benefit profiles with uncertainty.</td></tr>
+          <tr><th scope="row">M6 · Hand-off</th><td>What must be checked before implementation?</td><td>Feasibility questions, local validation needs and next-step guidance.</td></tr>
+        </tbody></table></div>
+        <p class="shell-explainer">The scan does not establish site-level feasibility or provide engineering design. Linear practices are not automatically reported as planted pixel area. Evidence-backed configuration still requires appropriate datasets, target-context checks and a tested spatial implementation.</p>
+        <h4>6.1.1 Read the method and data model</h4>
+        <ul class="shell-review-steps"><li><a href="pipeline.html" target="_blank" rel="noopener noreferrer">Architecture diagram ↗</a> — v0.5 snapshot; useful for the module layout, with historical implementation and progress notes.</li><li><a href="erd.html" target="_blank" rel="noopener noreferrer">Data-model diagram ↗</a> — v0.3.0 snapshot; see the <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/schema/spec.md" target="_blank" rel="noopener noreferrer">maintained schema specification ↗</a> for field definitions and subsequent changes.</li><li><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/methodology/modules/M1_suitability.md" target="_blank" rel="noopener noreferrer">M1 suitability method ↗</a> — the written module specification; current recipe policies and recorded decisions govern implementation.</li><li><a href="pipeline_visualization.html" target="_blank" rel="noopener noreferrer">Pipeline visualization ↗</a> — an explanatory view of the architecture, modules and evidence flow, not a live completion report.</li><li><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/methodology/framework.md" target="_blank" rel="noopener noreferrer">Cross-cutting framework ↗</a> — living draft. <a href="https://github.com/CIAT/nbs_ruralscan/tree/main/methodology/recipes" target="_blank" rel="noopener noreferrer">Written practice recipes ↗</a> — method narratives alongside the structured analytical tables.</li></ul>
+      </section>
+      <section id="method-evidence-panel" class="shell-overview-block" hidden><h3>6.2 Evidence workflow</h3>
+        <p class="shell-explainer">The evidence system turns bounded searches into source-linked claims and then into analytical configuration. AI helps locate and extract material; source verification, review decisions and compilation remain separately recorded.</p>
+        <ol class="shell-review-steps">
+          <li><b>Define the scope.</b> Declare the practice, suitability family, analytical table and question. Check existing sources and coverage before starting another search.</li>
+          <li><b>Discover and screen.</b> Account for stocktake, literature, grey literature and tools. Record actual queries, limits, selection criteria and assessed candidates. Broad search-engine hit counts are not a screening backlog.</li>
+          <li><b>Verify and acquire the source.</b> Check citation and document identity. Store an accessible library artifact or web/code snapshot, with its page or other locator.</li>
+          <li><b>Extract atomic claims.</b> Keep the source wording, units, context and practice scope. Stage proposed evidence before registration; an extracted claim is not automatically approved.</li>
+          <li><b>Validate and review.</b> Check provenance, values, scope and omissions. Reviewers Keep, Drop, Query or reclassify claims; disagreements and unresolved questions remain visible.</li>
+          <li><b>Compile and document.</b> Use eligible evidence and recorded policies to build T4 suitability relationships and T3/T6 effect summaries. Retain links to contributing evidence, exclusions and unresolved choices. Record lessons and ruleset versions for the next round.</li>
+        </ol>
+        <p class="shell-caption">Figure 6.1. Evidence preparation and compilation. Sources, claims and compiled rules are different units; one source can contribute to several claims, tables or practices.</p>
+        <p class="shell-explainer"><button type="button" class="shell-link" onclick="DashboardShell.openReviewHelp()">How to review evidence</button> · <button type="button" class="shell-link" onclick="DashboardShell.openMethods('search')">Inspect recorded search protocols</button></p>
+        <h4>6.2.1 Protocols and operating instructions</h4>
+        <ul class="shell-review-steps"><li><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/methodology/search_protocol.md" target="_blank" rel="noopener noreferrer">Discovery and screening protocol ↗</a> — scope, search records, selection and acquisition.</li><li><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/methodology/T4_generation_method.md" target="_blank" rel="noopener noreferrer">T4 generation method ↗</a> — evidence-to-suitability reasoning. <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/methodology/T3_T6_generation_method.md" target="_blank" rel="noopener noreferrer">T3/T6 generation method ↗</a> — effect synthesis with its decision history.</li><li><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/.agents/skills/source-command-discover-sources/SKILL.md" target="_blank" rel="noopener noreferrer">Current discovery instructions ↗</a> · <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/.agents/skills/source-command-extract-evidence/SKILL.md" target="_blank" rel="noopener noreferrer">Current extraction instructions ↗</a> — bounded agent tasks and validation requirements.</li><li><a href="https://github.com/CIAT/nbs_ruralscan/blob/main/methodology/RULESET_VERSIONS.md" target="_blank" rel="noopener noreferrer">Ruleset history ↗</a> · <a href="https://github.com/CIAT/nbs_ruralscan/blob/main/methodology/extraction_retrospective.md" target="_blank" rel="noopener noreferrer">Extraction retrospective ↗</a> — preserve historical instructions and turn review findings into checked improvements.</li></ul>
+      </section>
+      <section id="method-search-panel" hidden><div id="methods-app"></div></section>
     </div>
 
   </div>
@@ -5645,9 +5713,9 @@
 
 
 </script>
-<script src="dashboard-progress.js?v=1.3.2"></script>
-<script src="dashboard-feedback.js?v=1.0.2"></script>
+<script src="dashboard-progress.js?v=1.4.0"></script>
+<script src="dashboard-feedback.js?v=1.4.0"></script>
 <script src="dashboard-relationships.js?v=1.2.1"></script>
-<script src="dashboard-shell.js?v=1.2.1"></script>
+<script src="dashboard-shell.js?v=1.4.0"></script>
 </body>
 </html>

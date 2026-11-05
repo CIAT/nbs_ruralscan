@@ -42,8 +42,8 @@ function setup() {
   document.querySelectorAll=()=>[];
   const window={scrollX:7,scrollY:321,scrollTo(x,y){this.scrollX=x;this.scrollY=y;},addEventListener(k,f){events[k]=f;},removeEventListener(k){delete events[k];},print(){assert(document.body.classList.contains('dp-print'));assert.equal(activeTab,'tab-search');if(events.afterprint)events.afterprint();}};
   const history={replaceState(_,__,url){location.hash=url.includes('#')?url.slice(url.indexOf('#')):'';}};
-  for(const id of ['progress-app','bibliography-app','methods-app','dashboard-build'])new Node(id);
-  for(const id of ['tab-search','tab-stocktake','tab-methods','tab-interrogator']){const n=new Node();n.dataset.tab=id;n.click=()=>{activeTab=id;window.DashboardProgress.onTab(id);};tabs[id]=n;}
+  for(const id of ['progress-app','bibliography-app','methods-app','dashboard-build','pipeline-records-app'])new Node(id);
+  for(const id of ['tab-search','tab-stocktake','tab-methods','tab-interrogator','tab-qaqc']){const n=new Node();n.dataset.tab=id;n.click=()=>{activeTab=id;window.DashboardProgress.onTab(id);};tabs[id]=n;}
   const search_metrics={events:0,retrieved:null,screened:null,included:null,complete_counts:0,screened_pct:null,coverage:Object.fromEntries(['retrieved','screened','included'].map(k=>[k,{recorded:0}]))};
   const metrics={known_sources:1,source_mix:{literature:1},extracted_sources:1,reviewed_sources:1,active_excerpts:1,approved_excerpts:1,all_excerpts:2,reviewed_excerpts:2,reviewed_unresolved_excerpts:0,dropped_excerpts:1,t4_structural_relationships:1,t4_operational_relationships:0,t4_evidence_backed_relationships:1,t4_relationships:1,t4_contributing_sources:1,search_metrics};
   const source={key:'canonical',source_id:'canonical',aliases:['alias'],citation:'First publication <img src=x onerror=alert(1)>',url:'javascript:alert(1)',doi:'',origins:['stock'],nbs_ids:['agroforestry'],family_ids:['agroforestry__f1'],evidence_ids:['ev1'],approved_evidence_ids:['ev1'],dropped_evidence_ids:['ev2'],contributions:{T4:['ev1']},extraction_counts:{T4:1,effects:0,M2b:0,other:0},type:'literature'};
@@ -178,18 +178,18 @@ const t=setup();
 let html=t.nodes.get('progress-app').innerHTML;
 assert(!html.includes('Results found'));assert(!html.includes('Results screened'));
 assert(!html.includes('Candidates screened'));assert(!html.includes('Candidates selected'));
-assert(html.includes('Extracts reviewed'));assert(html.includes('Extracts approved'));
+assert(html.includes('Extracts with a review decision'));assert(html.includes('Extracts approved'));
 assert(html.includes('View subpractices'));assert(!html.includes('dp-flow'));
 assert(t.nodes.get('methods-app').innerHTML.includes('Candidates screened'));
 const sourceTable=html.split('<table class="dp-table dp-summary-table">')[1].split('</table>')[0];
-assert(!sourceTable.includes('Screening'));assert(sourceTable.includes('Sources with tracked extracts'));
+assert(!sourceTable.includes('Screening'));assert(sourceTable.includes('Sources with T4 extracts'));
 assert(!html.includes('Planted systems'));assert(!html.includes('dp-family-group'));
 assert(!html.includes('searches fully counted'));assert(!html.includes('Search hits selected'));
 assert(html.includes('Type not recorded'));assert(!html.includes('Tools | ?'));
 assert(t.api.revealTarget('family:agroforestry__f1'));
 html=t.nodes.get('progress-app').innerHTML;
 assert(!html.includes('dp-flow'));assert(html.includes('100%'));assert(html.includes('dp-progress-family'));
-assert(html.includes('Verification stage'));assert(!html.includes('<th>Extracted</th>'));
+assert(!html.includes('dp-ledger'));assert(!html.includes('Pipeline step records'));
 """)
 
 
@@ -212,18 +212,40 @@ assert.equal(t.fixture.progress_overview.totals.known_sources,1);
 """)
 
 
-def test_activity_log_filters_and_paginates_real_ledger_stages():
+def test_pipeline_records_filter_and_paginate_independently_of_progress_and_review():
     run_js(r"""
 const t=setup();
-t.fixture.progress_ledger=Array.from({length:45},(_,i)=>({nbs_id:'agroforestry',family:'agroforestry__f1',table:i<30?'T4':'T6',category:'stock',searched:'done',screened:'in_progress',verified:'done',updated:'2026-11-04'}));
-t.api.refresh(t.fixture);t.api.revealTarget('family:agroforestry__f1');
-let html=t.nodes.get('progress-app').innerHTML;
+const click=(action,value)=>{const target={dataset:{action,value},closest:()=>target};t.handlers.click({target});};
+t.window._vfDecisions={ev1:'keep'};t.window._vfScope={nbs:'forest_restoration'};
+const pending=JSON.stringify(t.window._vfDecisions), reviewerScope=JSON.stringify(t.window._vfScope);
+t.fixture.progress_ledger=Array.from({length:45},(_,i)=>({nbs_id:'agroforestry',family:'agroforestry__f1',table:i<30?'T4':'T6',category:'stock',searched:'done',screened:'in_progress',extracted:'done',verified:'done',reviewed:'',updated:'2026-11-04',note:'<img src=x onerror=alert(1)>'}));
+t.api.refresh(t.fixture);
+let html=t.nodes.get('pipeline-records-app').innerHTML;
 assert(html.includes('45 records · 1–20 shown'));assert(html.includes('Page 1 / 3'));
 assert.equal((html.match(/<td>T4<\/td>/g)||[]).length,20);
-let select=t.nodes.get('dp-ledger-table');t.nodes.get('dp-ledger').open=true;select.value='T6';select.trigger('change');
-html=t.nodes.get('progress-app').innerHTML;
-assert(html.includes('15 records · 1–15 shown'));assert.equal(t.nodes.get('dp-ledger').open,true);
-assert(!html.includes('<td>T4</td>'));assert(html.includes('Verification stage'));
+assert(html.includes('Extraction'));assert(html.includes('Verification'));assert(html.includes('Not recorded'));
+assert(!html.includes('<img'));assert(html.includes('&lt;img'));
+click('pipeline-page','1');html=t.nodes.get('pipeline-records-app').innerHTML;
+assert(html.includes('45 records · 21–40 shown'));assert(html.includes('Page 2 / 3'));
+let select=t.nodes.get('dp-pipeline-table');select.value='T6';select.trigger('change');
+html=t.nodes.get('pipeline-records-app').innerHTML;
+assert(html.includes('15 records · 1–15 shown'));assert(!html.includes('<td>T4</td>'));
+assert.equal(t.document.activeElement.id,'dp-pipeline-table');
+t.api.revealTarget('family:agroforestry__f1');
+assert(!t.nodes.get('progress-app').innerHTML.includes('45 records'));
+assert.equal(t.api.pipelineContext().table,'T6');
+click('pipeline-sort','family');assert.equal(t.api.pipelineContext().table,'T6');
+click('pipeline-reset','');assert.equal(t.api.pipelineContext().table,'all');
+assert.equal(t.api.scope().family,'agroforestry__f1');
+assert(!t.api.revealTarget('ledger:missing::T4:stock'));
+assert(t.api.revealTarget('ledger:agroforestry:agroforestry__f1:T6:stock'));
+assert.equal(t.activeTab,'tab-qaqc');assert.equal(t.api.pipelineContext().table,'T6');
+assert.equal(t.api.pipelineContext().family,'agroforestry__f1');
+assert(t.nodes.get('pipeline-records-app').innerHTML.includes('data-feedback-key="ledger:agroforestry:agroforestry__f1:T6:stock"'));
+assert(t.api.revealTarget('id:dp-ledger'));assert.equal(t.api.pipelineContext().table,'T6');
+assert.equal(t.api.scope().family,'agroforestry__f1');
+assert.equal(JSON.stringify(t.window._vfDecisions),pending);
+assert.equal(JSON.stringify(t.window._vfScope),reviewerScope);
 """)
 
 
@@ -381,28 +403,48 @@ const table=html.split('<table class="dp-table dp-summary-table">')[1].split('</
 assert(table.includes('</td><td>7</td><td>30</td><td title="20 reviewed out of 30 recorded extracts">20'));
 assert(table.includes('(66.7%)'));assert(table.includes('5 approved out of 20 reviewed extracts'));assert(table.includes('(25%)'));
 assert(table.includes('</td><td>7</td><td>99</td>'));
-assert(table.indexOf('Extracts reviewed') < table.indexOf('Extracts approved'));
-assert(html.includes('A source</strong> is a publication'));
+assert(table.indexOf('Extracts with a review decision') < table.indexOf('Extracts approved'));
+assert(html.includes('source</strong> is a publication'));
 assert(!html.includes('Claims still in use'));assert(!html.includes('dp-flow'));
 """)
 
 
-def test_family_scope_notes_and_count_definitions_follow_selected_practice():
+def test_family_scope_and_count_definitions_distinguish_practice_from_project():
     run_js(r"""
 const t=setup(),p=t.fixture.progress_overview.practices[0];
 p.metrics={...p.metrics,known_sources:1};
 t.fixture.progress_overview.totals={...p.metrics,known_sources:99};
 p.families.push({family_id:'agroforestry__cross_family',name:'Cross family',scope_kind:'all_families',scope_definition:'Tagged for all families; not a subpractice.',metrics:p.metrics,subpractices:[]});
-p.families.push({family_id:'__unassigned',name:'Family not recorded',scope_kind:'unassigned',metrics:{...p.metrics,all_excerpts:0},subpractices:[]});
+p.families.push({family_id:'__unassigned',name:'Family not recorded',scope_kind:'unassigned',metrics:{known_sources:0,all_excerpts:0,compiled_outputs:0,t4_structural_relationships:0},subpractices:[]});
 t.api.refresh(t.fixture);t.api.revealTarget('family:agroforestry__cross_family');
 const html=t.nodes.get('progress-app').innerHTML;
-assert(t.nodes.get('dp-scope-notes').open);
-assert(html.includes('Evidence tagged as applying across all families'));
-assert(html.includes('Sources without a recorded family'));
-assert(!html.split('dp-family-table')[1].split('<tbody>')[1].split('</tbody>')[0].includes('>Cross family<'));
-assert(html.includes('1 source records in this scope'));assert(!html.includes('99 source records in this scope'));
+assert(!html.includes('dp-scope-notes'));assert(!html.includes('dp-evidence-family-table'));
+assert(html.includes('Tagged for all families; not a subpractice.'));
+assert(html.includes('Broader or unassigned evidence scope'));
+assert(!html.includes('Family not recorded'));
+assert(html.split('dp-family-table')[1].split('<tbody>')[1].split('</tbody>')[0].includes('>Cross family<'));
+assert(html.includes('1 catalogued sources linked to T4 · Suitability · Agroforestry'));
+assert(html.includes('project catalogue contains 99 known sources'));
+assert(!html.includes('Count definitions · whole project'));
 assert(html.includes('dp-column-filter'));assert(html.includes('data-action="family-sort"'));
-assert(html.includes('percentage cannot be calculated'));
+assert(html.includes('data-action="scope-bibliography"'));
+""")
+
+
+def test_overview_shows_project_catalogue_before_narrower_table_counts():
+    run_js(r"""
+const t=setup(),model=t.fixture.progress_overview, scoped={...model.totals,known_sources:3};
+model.totals={...model.totals,known_sources:99};
+model.table_views={T4:{totals:scoped,practices:[{...model.practices[0],metrics:scoped}]}};
+t.api.refresh(t.fixture);
+const html=t.nodes.get('progress-app').innerHTML;
+const intro=html.split('<div class="dp-progress-explanation">')[1].split('</div>')[0];
+assert(intro.includes('<strong>99 catalogued sources</strong>'));
+assert(intro.includes('Each table below shows a narrower evidence scope'));
+assert(!intro.includes('<h3>'));assert(!intro.includes('dp-orientation'));
+const table=html.split('<table class="dp-table dp-summary-table">')[1].split('</table>')[0];
+assert(table.includes('<b>3</b>'));assert(!table.includes('<b>99</b>'));
+assert(html.includes('3 catalogued sources linked to T4 · Suitability · all practices'));
 """)
 
 
@@ -459,7 +501,7 @@ t.api.refresh(t.fixture);
 let html=t.nodes.get('progress-app').innerHTML;
 assert(html.includes('id="dp-chart-view" hidden'));
 assert(html.includes('id="dp-table-view">'));
-assert(html.includes('Approved: 5; Reviewed · unresolved: 8; Reviewed · excluded: 7; No assessment recorded: 10'));
+assert(html.includes('Approved: 5; Reviewed · unresolved: 8; Reviewed · excluded: 7; No later review decision logged: 10'));
 assert(html.includes('66.7% reviewed; 25% of reviewed extracts approved'));
 assert(html.includes('7 reviewed · excluded'));assert(!html.includes('9 reviewed · excluded'));
 assert(html.includes('All practice bars share one count scale: 0–30 recorded extracts'));
@@ -493,8 +535,8 @@ t.api.refresh(t.fixture);
 const click=(action,value,table='T4')=>{const target={dataset:{action,value,table},closest:()=>target};t.handlers.click({target});};
 let html=t.nodes.get('progress-app').innerHTML;
 assert(!html.includes('dp-progress-table'));assert(!html.includes('Compare outputs across'));
-assert(html.includes('2.1.2 Evidence progress · T4 · Suitability'));
-assert(html.includes('2.1.3 T2a · Climate risk'));assert(html.includes('2.1.4 T3 · Hazard response'));assert(html.includes('2.1.5 T6 · Benefits'));
+assert(html.includes('2.1.1 Evidence progress · T4 · Suitability'));
+assert(html.includes('2.1.2 T2a · Climate risk'));assert(html.includes('2.1.3 T3 · Hazard response'));assert(html.includes('2.1.4 T6 · Benefits'));
 assert(html.includes('4 reviewed out of 10 recorded extracts'));assert(html.includes('(40%)'));assert(html.includes('(50%)'));
 assert(html.includes('2 T3 assessments compiled'));assert(html.includes('7 T6 assessments compiled'));
 assert(html.includes('Drought &lt;img&gt;'));assert(!html.includes('Drought <img>'));
@@ -517,7 +559,7 @@ click('output-sources','T3','T3');assert(t.nodes.get('bibliography-app').innerHT
 click('practice','agroforestry','T3');html=t.nodes.get('progress-app').innerHTML;
 assert(t.nodes.get('dp-section-T3').open);
 assert(!html.includes('id="dp-T2a-output-T2a"'));
-assert(html.includes('2.2.1 T4 · Evidence by suitability family'));assert(html.includes('2.2.5 T3 · Hazard response'));
+assert(html.includes('2.2.1 T4 · Evidence by suitability family'));assert(html.includes('2.2.3 T3 · Hazard response'));
 assert(html.includes('practice-level allocations are not recorded'));assert(html.includes('Count definitions'));
 assert(t.api.revealTarget('progress:T3:chart-practice:agroforestry'));assert(t.nodes.get('dp-section-T3').open);
 assert(t.api.revealTarget('progress:T3:output:T3:all'));assert(t.nodes.get('dp-section-T3').open);
@@ -537,10 +579,10 @@ let select=t.nodes.get('dp-progress-family');select.value='';select.trigger('cha
 let html=t.nodes.get('progress-app').innerHTML;
 const table=html.match(/<table class="dp-table dp-summary-table dp-family-table">[\s\S]*?<\/table>/)[0];
 const rows=table.split('<tbody>')[1].split('</tbody>')[0];
-assert(rows.includes('Planted systems'));assert(!rows.includes('Shared claims'));assert(!rows.includes('Unassigned claims'));
+assert(rows.includes('Planted systems'));assert(rows.includes('Shared claims'));assert(rows.includes('Unassigned claims'));
 assert(table.includes('Umbrella category: Broad umbrella'));assert(table.includes('Variant: Specific &lt;variant&gt;'));
-const evidence=html.match(/<table class="dp-table dp-summary-table dp-evidence-family-table">[\s\S]*?<\/table>/)[0];
-assert(evidence.includes('Shared claims'));assert(evidence.includes('Unassigned claims'));assert(!evidence.includes('Planted systems'));
+assert(!html.includes('dp-evidence-family-table'));
+assert(rows.includes('Evidence routing tag: Routing tag'));assert(rows.includes('Broader or unassigned evidence scope'));
 assert(t.api.revealTarget('family:agroforestry__cross_family'));
 assert.equal(t.api.scope().family,'agroforestry__cross_family');
 html=t.nodes.get('progress-app').innerHTML;assert(html.includes('data-feedback-key="family:agroforestry__cross_family"'));
