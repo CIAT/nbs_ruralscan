@@ -60,4 +60,17 @@ Pete, 5 November 2026: prioritize these six mappings for human review and reques
 - Provenance: Russell et al. (1997), PDF p. 10. Eligible sites within 90 m are considered first; the subsequent size/proximity screening down-prioritizes patches below 1 ha. Authors explicitly describe the 1 ha threshold as arbitrary, with a flood-attenuation rationale. Preserve the source's separate scrub-cover preservation/restoration branch when describing the complete method.
 - This decision does not yet approve a correction to the separate 120 m distance mapping or deployment of the full priority algorithm.
 - Application status: recorded for the scoped T4 correction/compilation step after this review sequence. No analytical tables or evidence approval flags changed by this note.
-- Remaining priority item: restoration distance, awaiting its individual decision.
+- At this point, restoration distance remained awaiting its individual decision.
+
+### 6. Restoration distance: reviewed connectivity preference
+
+- Mapping under review: `wetland_management__restoration_rewetting__distance_to_waterbody`.
+- Evidence: `ev_wet_distance_to_waterbody_russell97_1`.
+- Pete proposed "0-90 = 1 / 90-120 = (0.66+0.33)/2 = 0.5? / >120 = <0.5". The response proposed an explicit 0.33 for the final band, explained that 0.495 was rounded to 0.5, and distinguished the adaptation from the source's patch-size-dependent priority rules.
+- Pete's exact response: "ok next".
+- Accepted stepwise scores for distance in metres: [0,90] -> 1; (90,120] -> 0.5; >120 -> 0.33. Replace the hard 120 m zero-suitability cutoff with this nonzero final band.
+- Scope: a reviewed habitat-connectivity preference for eligible riparian wetland restoration sites, measuring distance to existing riparian habitat or open water. It is not the water-delivery criterion used for wetland creation, and it does not establish that a site can support wetland conditions.
+- Provenance: Russell et al. (1997), PDF p. 10, supplies the conditional spatial prioritisation framework. The simplified three bands and numeric scores are Pete's reviewed adaptation, not source-validated ecological thresholds. The middle score averages priority levels instead of reproducing the original area/proximity branches; do not attribute that averaging to the paper.
+- Do not pool this criterion with Moreno-Mateos water-access distances or other contextually different distance thresholds. Do not silently assume a generic river-distance dataset measures distance to both riparian habitat and open water.
+- Application status: all six legacy review decisions are now recorded. Analytical correction/compilation and normal review provenance remain pending; this document does not itself set evidence approval flags or deploy mappings.
+- Next stage in the agreed sequence: review the 17 active new T4 claims, with the two quarantined Rao claims handled separately.
