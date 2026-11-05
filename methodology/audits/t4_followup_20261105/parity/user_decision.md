@@ -22,4 +22,17 @@ Pete, 5 November 2026: prioritize these six mappings for human review and reques
 - Accepted decision: remove the unsupported numeric minimum; retain evidence only for restoration of artificially drained peatlands, under `wetland_management__peatland`. Do not inherit or pool this claim into general wetland creation/restoration, or treat natural drainage density as interchangeable with artificial canal density.
 - Preserve the source's combined targeting context: denser artificial drainage and prior high fire-hotspot density. This does not establish a universally increasing suitability curve or a new numerical cutoff.
 - Application status: recorded for the scoped T4 correction/compilation step after this review sequence. No analytical tables or evidence approval flags changed by this note.
-- Remaining four priority items: awaiting their individual decisions.
+- At this point, the remaining four priority items awaited their individual decisions.
+
+### 3. Rewetting former-wetland farmland: mean lowest groundwater depth
+
+- Mapping under review: `wetland_management__peatland__water_table_depth`.
+- Evidence: `ev_wet_water_table_depth_brouwer26_1`.
+- Pete proposed: "0-30 = high 1 / 30-80 = moderate 0.66 / 80-160 = marginal 0.33 / >160 = 0 suitability" and considered farmland rewetting more generalizable than peatland canal density.
+- The response clarified applicability to drained former-wetland farmland, rather than arbitrary farmland; the mean lowest groundwater level is the average for the three lowest-water months, not an annual mean or single measurement. Pete then said "next", accepting advancement after that clarification.
+- Accepted stepwise rule (depth below ground in cm): [0,30] -> 1; (30,80] -> 0.66; (80,160] -> 0.33; >160 -> 0. Negative depths / surface inundation are unspecified and must not be silently assigned a class.
+- Provenance: the first three depth classes and ordinal scores 3/2/1 come from Brouwer et al. (2026), PDF pp. 2–3. The 1/0.66/0.33 normalization and >160 cm zero score are the reviewed scoping adaptation; the zero tail is Pete's screening assumption, not a source-established ecological limit.
+- Source scope is hydrological screening for paludiculture. Applying this criterion to rewetting drained former-wetland farmland is the reviewed adaptation, not new evidence of general restoration validity. Preserve that distinction in provenance and context; do not silently rewrite family definitions or apply it to all farmland.
+- This decision concerns the water-depth criterion only. It does not approve seepage scores, soil water capacity scores, the source's multiplicative combined rule or an overall suitability threshold.
+- Application status: recorded for the scoped T4 correction/compilation step after this review sequence. No analytical tables or evidence approval flags changed by this note.
+- Remaining three priority items: awaiting their individual decisions.
