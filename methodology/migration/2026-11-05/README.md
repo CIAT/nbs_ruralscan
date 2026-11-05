@@ -4,7 +4,7 @@ Date: 5 November 2026. Status: proposed execution baseline; phases require their
 
 Execution has started: see the [Phase 0 record](phase-0/README.md) for the refreshed baseline, verified private recovery snapshot, table/function ownership schedules and exact 15-file initial import proposal. CIAT remains authoritative; no evidence cutover has occurred.
 
-M07 implementation has started inside CIAT with the [T4 explicit-input adapter](m07-t4-build-paths.md). This first slice is pending merge; generator, workbook publication and review/submission path separation remain open.
+M07 implementation started inside CIAT with the [T4 explicit-input adapter](m07-t4-build-paths.md), merged in PR #586. The next [generator-path and operation-boundary slice](m07-generator-paths.md) is implemented pending merge. Transactional publication and review/submission separation remain open.
 
 This plan moves the project towards a readable, reusable World Bank methodology and a reproducible implementation, while evidence review continues. It is not an instruction to move the entire existing repository or to change analytical decisions during a repository move.
 

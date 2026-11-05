@@ -482,7 +482,9 @@ def build(schema_root: str | Path) -> dict:
         "decisions": load_decisions(schema_root),
         # QA review queue + decisions committed under docs/review/exports (the review page
         # is where flagged units are judged; this is its progress, per batch and per NbS)
-        "review": review_exports.summary(),
+        "review": review_exports.summary(
+            repo / "docs/review/exports", repo / "docs/review"
+        ),
     }
 
 
@@ -588,7 +590,11 @@ def _blockers(
 
 
 # ------------------------------------------------------------------------------- write
-def _git_commit() -> str:
+def _git_commit(root: Path | None = None) -> str:
+    if root is not None:
+        from nbs_ruralscan.schema_tools.build_paths import source_revision
+
+        return source_revision(root)
     try:
         return subprocess.run(
             ["git", "rev-parse", "HEAD"],
@@ -624,7 +630,7 @@ def write(
     out = {
         "build": {
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "git_commit": _git_commit(),
+            "git_commit": _git_commit(schema_root.parent),
         },
         **payload,
     }

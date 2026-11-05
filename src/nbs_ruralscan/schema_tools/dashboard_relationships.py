@@ -33,9 +33,7 @@ def build_relationships(data: dict, root: Path) -> dict:
             "aggregate_status": "unavailable",
             "aggregate_note": "Source claims remain available. The current recipe has not passed the aggregate rebuild check.",
         }
-        if (root / "scripts/synthesise-recipe.py").exists() and (
-            root / "schema/recipes" / nbs / "T4_suitability_mappings.csv"
-        ).exists():
+        if (root / "schema/recipes" / nbs / "T4_suitability_mappings.csv").exists():
             try:
                 result = build_contract(root, nbs=nbs)
             except ValueError as error:

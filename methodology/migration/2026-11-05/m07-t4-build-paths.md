@@ -1,6 +1,6 @@
 # M07, first slice: explicit T4 build inputs
 
-Date: 5 November 2026. Baseline: `1703e20bbf82896985beee0397e7b6838b4c00b1` (merged PR #585). Status: implemented and reviewed; pending merge. M07 remains partial.
+Date: 5 November 2026. Baseline: `1703e20bbf82896985beee0397e7b6838b4c00b1` (merged PR #585). Status: merged in [PR #586](https://github.com/CIAT/nbs_ruralscan/pull/586) at `6c28a64`. M07 remains partial; see the [generator continuation](m07-generator-paths.md).
 
 ## Result and boundary
 

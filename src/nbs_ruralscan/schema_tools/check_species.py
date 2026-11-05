@@ -58,14 +58,17 @@ def _has_taxon(text: str) -> bool:
     return bool(_BINOMIAL.search(text) or _TAXON_MARKER.search(text))
 
 
-def _citations() -> dict[str, str]:
-    if not SRC.exists():
+def _citations(*, sources_path: str | Path | None = None) -> dict[str, str]:
+    path = Path(sources_path) if sources_path is not None else SRC
+    if not path.exists():
         return {}
-    with SRC.open(newline="", encoding="utf-8") as f:
+    with path.open(newline="", encoding="utf-8") as f:
         return {r["source_id"]: (r.get("citation") or "") for r in csv.DictReader(f)}
 
 
-def check(ev_path: str | Path | None = None) -> list[dict]:
+def check(
+    ev_path: str | Path | None = None, *, sources_path: str | Path | None = None
+) -> list[dict]:
     """Return advisory species-mis-tag flags: [{evidence_id, signal, snippet}].
 
     Only structural_suitability rows tagged practice_technology are candidates — a row already
@@ -75,7 +78,7 @@ def check(ev_path: str | Path | None = None) -> list[dict]:
     flags: list[dict] = []
     if not path.exists():
         return flags
-    cites = _citations()
+    cites = _citations(sources_path=sources_path)
     with path.open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
             if (r.get("review_state") or "") == "dropped":
