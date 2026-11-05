@@ -150,9 +150,11 @@ body.classification-open{padding-right:440px}
     <div class="mult-lg" id="mult-lg"></div>
     <p class="figcap" id="cap-22"></p>
     <p class="m2-note"><b>This is need, not project risk.</b> It shows hazards to people’s livelihoods (a need layer that feeds the hotspots in Stage 05). Hazards to the planting itself are screened separately in Stage 04; the two are never added together.</p>
-    <div class="tabwrap" style="margin-top:28px">
-      <table class="qt" id="t23" style="max-width:760px"></table>
-    </div>
+    <fieldset id="risk-classes" style="margin-top:28px"><legend>Risk classes to summarise</legend><div style="display:flex;gap:18px;flex-wrap:wrap"><label><input type="checkbox" value="Very low risk"> Very low</label><label><input type="checkbox" value="Low risk"> Low</label><label><input type="checkbox" value="Moderate risk"> Moderate</label><label><input type="checkbox" value="High risk" checked> High</label><label><input type="checkbox" value="Very high risk" checked> Very high</label></div><p class="sub">C.5 defines classes and direction per hazard. Very low and Very high exist only with five classes; Moderate exists with three or five. Each row names classes included.</p></fieldset>
+    <div class="seg seg-sm" id="risk-view" role="group" aria-label="Risk summary view" style="margin:16px 0"><button type="button" data-v="table" aria-pressed="true">Table</button><button type="button" data-v="plot" aria-pressed="false">Plot</button></div>
+    <p id="risk-summary-status" role="status"></p>
+    <div class="tabwrap" id="risk-table-wrap"><table class="qt" id="t23" style="max-width:760px"></table></div>
+    <figure id="risk-plot" hidden style="margin:0"><figcaption class="figcap"></figcaption><div id="risk-bars"></div></figure>
   </section>
 
   <!-- 2.4 -->
@@ -176,7 +178,7 @@ body.classification-open{padding-right:440px}
 <script src="v1b-versions.js"></script>
 <script src="v1b-map.js"></script>
 <script src="v1b-fixture.js"></script>
-<script src="v1b-classification.js"></script>
+<script src="v1b-classification.js?v=20261105-risk"></script>
 <script>
 (function () {
   'use strict';
@@ -361,25 +363,33 @@ body.classification-open{padding-right:440px}
     return '<b>' + p.name + '</b><div class="mult-lg">' + model.order.map(function(i) { var label=model.names[i];
       var shade=[18,34,52,74,100][Math.round(model.severity(i)*4/(model.count-1))];
       return '<span class="sw"><i style="background:color-mix(in srgb,var(' + p.hue + ') ' + shade + '%,var(--paper))"></i>' + label + ' (' + M.esc(model.range(i)) + ')</span>';
-    }).join('') + '</div><a href="00-config.html?tab=5&variable=' + p.k + '">C.5 · ' + model.count + ' classes · ' + (model.method==='quantile'?'quantiles':'thresholds') + '</a><div class="sub">' + (model.direction==='higher_better'?'Higher values = better':'Higher values = worse') + '</div>';
+    }).join('') + '</div><a href="00-config.html?tab=5&variable=' + p.k + '">C.5 · ' + model.count + ' classes · ' + (model.method==='quantile'?'quantiles':'thresholds') + '</a><div class="sub">' + (p.risk?(model.direction==='higher_better'?'Higher values = lower risk':'Higher values = higher risk'):(model.direction==='higher_better'?'Higher values = better':'Higher values = worse')) + '</div>';
   }
   function livelihoods() {
     var models=HZ.map(function(h){return CL.build(h[0],ST);});
     HZ.forEach(function(h,i) {
       var model=models[i];
       M.paintCells(msvgs[i],F.cells,function(c){return !model.error && R.sel(c) ? model.mapKey(c,ST.climate) : null;},{outline:function(c){return R.sel(c);}});
-      msvgs[i].parentNode.querySelector('figcaption').innerHTML=classLegend({k:h[0],name:h[1],hue:h[2]},model);
+      msvgs[i].parentNode.querySelector('figcaption').innerHTML=classLegend({k:h[0],name:h[1],hue:h[2],risk:true},model);
     });
-    document.getElementById('mult-lg').textContent='Dark outline = selected opportunity-space boundary, as in Figure 3.1. Classes, direction and cut points come from C.5. Darker = worse conditions. Blank = outside selected opportunity space (' + V1BUI.classWords(ST) + '). Values use a synthetic baseline-normalised index, not probabilities.';
-    document.getElementById('cap-22').innerHTML='<b>Figure 3.2</b> · Hazards where rural livelihoods occur, 5 km cells, ' + (ST.climate==='ssp'?'SSP2-4.5 about 2050':'baseline 1995–2014');
-    var tot=R.totals.residentsSel;
-    var rows=HZ.map(function(h,i) {
-      var model=models[i], now=0,fut=0;
-      if(!model.error)model.sample.forEach(function(c){if(model.high(c,'base'))now+=c.residents;if(model.high(c,'ssp'))fut+=c.residents;});
-      return '<tr><td>'+h[1]+'</td><td class="r">'+(!model.error && tot ? pct(now/tot) : 'No data')+'</td><td class="r">'+(!model.error && tot ? pct(fut/tot) : 'No data')+'</td></tr>';
-    }).join('');
-    document.getElementById('t23').innerHTML='<caption class="tabcap"><b>Table 3.3</b> · Share of people in Worse or Worst hazard classes<small>C.5 defines classes per hazard. Both columns show % of people within the same selected extent, using identical cut points derived within the baseline opportunity extent. Residents and hazards are fictional.</small></caption><thead><tr><th>Hazard</th><th class="r">Baseline 1995–2014</th><th class="r">SSP2-4.5, about 2050</th></tr></thead><tbody>'+rows+'</tbody>';
+    document.getElementById('mult-lg').textContent='Dark outline = selected opportunity-space boundary, as in Figure 3.1. Classes, direction and cut points come from C.5. Darker = higher risk. Blank = outside selected opportunity space (' + V1BUI.classWords(ST) + '). Values use a synthetic baseline-normalised index, not probabilities.';
+    document.getElementById('cap-22').innerHTML='<b>Figure 3.2</b> · Relative livelihood risk from hazard exposure, 5 km cells, ' + (ST.climate==='ssp'?'SSP2-4.5 about 2050':'baseline 1995–2014');
+    var selected=Array.from(document.querySelectorAll('#risk-classes input:checked')).map(function(input){return input.value;});
+    var title='Share of people in '+(selected.length?selected.join(' / '):'selected risk classes');
+    var note='Relative risk screening based on hazard exposure, not loss probabilities. Both periods use the same selected extent, resident population and baseline C.5 cut points. Residents and hazards are fictional.';
+    document.getElementById('risk-summary-status').textContent=selected.length?'':'Select at least one risk class to summarise.';
+    var rows=HZ.map(function(h,i){var model=models[i],tot=model.error?0:model.sample.reduce(function(sum,c){return sum+c.residents;},0);
+      function share(period){return !tot||!selected.length?null:100*model.sample.reduce(function(sum,c){return sum+(selected.includes(model.names[model.classify(c,period)])?c.residents:0);},0)/tot;}
+      return {name:h[1],classes:model.error?'No data':model.order.map(function(j){return model.names[j];}).filter(function(name){return selected.includes(name);}).join(', ')||'None of these classes',now:share('base'),future:share('ssp')};
+    });
+    function display(value){return value===null?'No data':value.toFixed(1)+' %';}
+    document.getElementById('t23').innerHTML='<caption class="tabcap"><b>Table 3.3</b> · '+title+'<small>'+note+'</small></caption><thead><tr><th>Hazard / risk classes included</th><th class="r">Baseline 1995–2014</th><th class="r">SSP2-4.5, about 2050</th></tr></thead><tbody>'+rows.map(function(row){return '<tr><td>'+row.name+'<span class="sub" style="display:block">'+row.classes+'</span></td><td class="r">'+display(row.now)+'</td><td class="r">'+display(row.future)+'</td></tr>';}).join('')+'</tbody>';
+    document.querySelector('#risk-plot figcaption').textContent=title+'. '+note+' All bars use a 0–100% scale.';
+    document.getElementById('risk-bars').innerHTML=rows.map(function(row){return '<div style="margin:20px 0"><b>'+row.name+'</b><span class="sub"> · '+row.classes+'</span>'+[['Baseline 1995–2014',row.now,'var(--ink-3,#788780)'],['SSP2-4.5, about 2050',row.future,'var(--s4,#205b41)']].map(function(series){return '<div style="margin-top:8px">'+series[0]+': <b>'+display(series[1])+'</b><div style="height:14px;background:var(--line);max-width:760px" aria-hidden="true"><div style="height:100%;width:'+(series[1]===null?0:series[1])+'%;background:'+series[2]+'"></div></div></div>';}).join('')+'</div>';}).join('');
   }
+
+  document.getElementById('risk-classes').addEventListener('change',livelihoods);
+  V1BUI.segmented(document.getElementById('risk-view'),function(view){document.getElementById('risk-table-wrap').hidden=view!=='table';document.getElementById('risk-plot').hidden=view!=='plot';});
 
   /* ---- 3.4 problems in the opportunity space + practice response ---- */
   var PROB = [

@@ -45,6 +45,7 @@
     var cuts=config.method==='threshold' ? config.cuts.slice() : Array.from({length:config.count-1},function(_,i){return base[Math.min(base.length-1,Math.floor(base.length*(i+1)/config.count))];});
     var direction=config.direction || 'higher_worse', reversed=direction==='higher_better';
     var severityNames=config.count===2 ? ['Better','Worse'] : config.count===3 ? ['Better','Intermediate','Worse'] : ['Best','Better','Intermediate','Worse','Worst'];
+    if(meta.hazard)severityNames=config.count===2 ? ['Low risk','High risk'] : config.count===3 ? ['Low risk','Moderate risk','High risk'] : ['Very low risk','Low risk','Moderate risk','High risk','Very high risk'];
     function severity(i){return reversed ? config.count-1-i : i;}
     var names=severityNames.map(function(_,i){return severityNames[severity(i)];});
     var order=Array.from({length:config.count},function(_,i){return reversed ? config.count-1-i : i;});

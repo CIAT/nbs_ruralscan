@@ -112,7 +112,7 @@
   <!-- C.5 -->
   <section class="cfg tabpanel" role="tabpanel" id="tp-5" hidden>
     <div class="tp-head"><div><h2><span class="sec-n">C.5</span>Opportunity-space variable classes</h2><p class="need">How do low and high values become map classes?</p></div></div>
-    <p class="job-note">Choose a variable, check whether higher values mean better or worse conditions, then split its distribution into 2, 3 or 5 classes. Better/worse labels describe relative conditions under these cut points. Quantiles divide baseline example cells into roughly equal groups (three groups are terciles); thresholds use explicit cut points. High poverty means a higher poverty indicator; high drought means a higher drought-hazard indicator, not a combined risk score.</p>
+    <p class="job-note">Choose a variable, check whether higher values mean better or worse conditions, then split its distribution into 2, 3 or 5 classes. People and land indicators use Better/Worse labels; climate hazards use Low/Moderate/High risk (plus Very low/Very high with five classes). These describe relative conditions under the cut points, not loss probabilities. Quantiles divide baseline example cells into roughly equal groups (three groups are terciles); thresholds use explicit cut points. High poverty means a higher poverty indicator; high drought means a higher drought-hazard indicator, not a combined risk score.</p>
     <div class="cfg-controls"><label class="fld"><span>Variable</span><select id="class-variable"><option value="poverty">Rural poverty</option><option value="drought">Drought hazard</option><option value="food">Food insecurity</option><option value="water">Water stress</option></select></label><label class="fld"><span>Number of classes</span><select id="class-number"><option>2</option><option selected>3</option><option>5</option></select></label><label class="fld"><span>Direction: what does a higher value mean?</span><select id="class-direction"><option value="higher_worse">Worse conditions</option><option value="higher_better">Better conditions</option></select></label><label class="fld"><span>Split method</span><select id="class-method"><option value="quantile">Quantiles</option><option value="threshold">Thresholds</option></select></label><label class="fld" id="class-cuts-field" hidden><span>Cut points (comma-separated, 0–100)</span><input id="class-cuts" value="33.33, 66.67"></label></div>
     <div class="cfg-controls"><button type="button" class="btn" id="class-defaults">Apply default values</button><span class="sub">Selected variable only: 3 quantile classes; higher values mean worse. Cut points recalculate from the baseline opportunity extent.</span></div>
     <p id="class-default-status" role="status" aria-live="polite"></p>
@@ -143,7 +143,7 @@
 <script src="v1b-versions.js"></script>
 <script src="v1b-map.js"></script>
 <script src="v1b-fixture.js"></script>
-<script src="v1b-classification.js"></script>
+<script src="v1b-classification.js?v=20261105-risk"></script>
 <script>
 (function () {
   'use strict';
