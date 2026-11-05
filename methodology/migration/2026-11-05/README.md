@@ -36,7 +36,9 @@ An application repository is conditional. Inspect `dagudelo30/nbs-ruralscan` for
 - Keep review work running during migration.
 - Address dashboard feedback exported on 5 November as a separate active work item before the migration makes its targets stale.
 
-Organization creation is not yet complete at this plan's first draft: the desktop in-app GitHub session requires sign-in. A public username lookup returned no RuralScan account, which is not a reservation or a guarantee that the signup form will accept the name. Complete any required legal/account confirmation in GitHub before publishing there. Organization membership visibility and public repository visibility are separate settings.
+Organization setup status: GitHub sign-in is complete and the Free-plan form is prepared with RuralScan, the confirmed contact and peetmate personal-account ownership. GitHub's account verification passed. Creation is awaiting Pete's action-time confirmation to accept the Terms of Service; the organization and runtime fork are not yet created. A public username lookup returned no RuralScan account, which is not a reservation or a guarantee that final submission will accept the name. Organization membership visibility and public repository visibility are separate settings.
+
+The immediate feedback work is available in [PR #578](https://github.com/CIAT/nbs_ruralscan/pull/578): ten note dispositions, the interface fixes and a read-only audit of all 17 cross-family agroforestry source records / 96 claims. That audit found a confirmed duplicate identity and specific scope questions; it does not authorize automatic reclassification. Acceptance remains subject to PR checks and review.
 
 ### Constraints retained
 
