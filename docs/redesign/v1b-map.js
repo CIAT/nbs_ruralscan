@@ -502,18 +502,19 @@
 
   function stageBar(current) {
     var steps = STAGES.map(function (s) {
-      var state = s.n < current ? 'done' : s.n === current ? 'now' : 'next';
+      var state = current > 0 && s.n < current ? 'done' : s.n === current ? 'now' : 'next';
       var mark = state === 'done' && s.href ? '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.3 4.7-5"/></svg>' : s.n;
       var inner = '<span class="st-n">' + mark + '</span><span class="st-name">' + s.name + '</span>';
       if (!s.href) return '<li class="st st-' + state + ' st-off" title="Not prototyped in this round">' + inner + '</li>';
       return '<li class="st st-' + state + '"><a href="' + s.href + '"' + (state === 'now' ? ' aria-current="step"' : '') + '>' + inner + '</a></li>';
     }).join('');
+    var home = '<li class="st st-home' + (current === 0 ? ' st-now' : '') + '"><a href="index.html"' + (current === 0 ? ' aria-current="page"' : '') + ' title="Home"><span class="st-n st-house"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.8 6.2L6 2.4l4.2 3.8M3.2 5.2v4.4h5.6V5.2"/></svg></span><span class="st-name">Home</span></a></li>';
     return '<header class="stagebar"><div class="sb-in">' +
-      '<a class="sb-proj" href="index.html">Rural NbS Scan<span> · Sierra Leone example</span></a>' +
-      '<ol class="stepper" aria-label="Stages">' + steps + '</ol>' +
-      '<a class="btn-ghost tc-link" href="00-config.html">Technical configuration</a>' +
+      '<a class="sb-proj" href="index.html" title="Home">Rural NbS Scan<span> · Sierra Leone example</span></a>' +
+      '<ol class="stepper" aria-label="Stages">' + home + steps + '</ol>' +
+      (current === 0 ? '' : '<a class="btn-ghost tc-link" href="00-config.html">Configuration</a>') +
       '</div></header>' +
-      '<div class="ctlbar" id="ctlbar" role="region" aria-label="Controls"></div>';
+      (current === 0 ? '' : '<div class="ctlbar" id="ctlbar" role="region" aria-label="Controls"></div>');
   }
 
   var JUMP = { practice: '00-config.html?tab=2', classes: '00-config.html?tab=2', geo: '00-config.html?tab=1', grain: '00-config.html?tab=1',
