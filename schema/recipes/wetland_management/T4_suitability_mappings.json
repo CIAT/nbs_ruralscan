@@ -2,151 +2,639 @@
   {
     "mapping_id": "wetland_management__creation__distance_to_waterbody",
     "nbs_id": "wetland_management",
-    "dataset_id": "merit_hydro_v1",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "opt_high": 500.0
+      "profiles": [
+        {
+          "reviewed_adaptation": {
+            "kind": "human_reviewed_step_profile",
+            "reviewer": "Peter",
+            "reviewed_date": "2026-11-05",
+            "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+            "scope": "Wetland creation with frequently flowing stream water supply in semiarid irrigated agricultural landscapes.",
+            "note": "Reviewed 0–500 m optimum; all other values unknown. Source approximately 500 m and separate 450 m calibration are not pooled. Requires matching frequently flowing water-supply distance and site eligibility.",
+            "input_unit": "m",
+            "evidence_fingerprint": "5b545bf4a558f7e85f10ae3b9ee522d5fd5a6c20909507c879be14f545c11374",
+            "context_fingerprint": "7e7f954fedad33877ef113a8b7605c3b592546ddd58968d1151e133d666d3a0a",
+            "intervals": [
+              {
+                "lower": 0,
+                "upper": 500,
+                "label": "optimum",
+                "lower_inclusive": true,
+                "upper_inclusive": true
+              }
+            ],
+            "dataset_binding": {
+              "status": "requires_matching_input",
+              "reason": "Wetland creation with frequently flowing stream water supply in semiarid irrigated agricultural landscapes. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute."
+            }
+          },
+          "source_relationship": {
+            "opt_high": 500,
+            "unit": "m",
+            "direction": "for created and restored wetlands, VERY suitable land lies within about 500 m of a frequently flowing stream; cost and energy rise in buffer steps beyond it (the paper's one-hundred-and-fifty-metre buffers), and land above the highest point where water flows frequently is unsuitable without pumping"
+          },
+          "profile_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+          "source_id": "wet_optimal_location_created_mediterranean_2010",
+          "continuation_of": "",
+          "evidence_ids": [
+            "ev_wet_distance_to_waterbody_morenomateos10_1"
+          ],
+          "page_locators": {
+            "ev_wet_distance_to_waterbody_morenomateos10_1": 6
+          },
+          "evidence_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+          "context": {
+            "reviewed_correction": {
+              "reviewer": "Peter",
+              "date": "2026-11-05",
+              "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+              "note": "Retain reviewed 0–500 m optimum; outside unknown. Source reports approximately 500 m and separately calibrates 450 m. Human adaptation lives in numeric policy; no Uuemaa pooling. Frequently flowing water supply and local delivery context required."
+            },
+            "practice_as_described": "Wetland creation/restoration in irrigated semiarid Mediterranean agricultural catchments; distance to frequently flowing streams combines water availability and delivery costs.",
+            "region": "Monegros, Ebro basin, northeastern Spain"
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "optimum": 1
+          },
+          "applicability_note": "Wetland creation with frequently flowing stream water supply in semiarid irrigated agricultural landscapes. Reviewed 0–500 m optimum; all other values unknown. Source approximately 500 m and separate 450 m calibration are not pooled. Requires matching frequently flowing water-supply distance and site eligibility.",
+          "unit": "m",
+          "intervals": [
+            {
+              "lower": 0.0,
+              "upper": 500.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "optimum",
+              "rank": 1,
+              "score": 1,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "reviewed_scoping_adaptation"
+            }
+          ],
+          "origin_id": "wet_optimal_location_created_mediterranean_2010",
+          "source_weight": 0.7,
+          "variable": "distance_to_waterbody",
+          "score_policy": "human_reviewed_steps_v1",
+          "pool_id": "",
+          "system_id": "wetland_management__creation",
+          "context_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+          "compatibility_approved": false,
+          "applicability_review": {},
+          "pool_review": "compatibility_review_required"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+            "reason": "compatibility_review_required"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 1.0,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 500.0}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362. Dataset binding unresolved; requires matching input: Wetland creation with frequently flowing stream water supply in semiarid irrigated agricultural landscapes. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute.",
     "variable": "distance_to_waterbody",
     "suitability_family_id": "wetland_management__creation",
     "evidence_ids": [
       "ev_wet_distance_to_waterbody_morenomateos10_1"
     ],
-    "n_sources": 1,
-    "corpus_n": 24,
-    "paper_support_pct": 6.8
-  },
-  {
-    "mapping_id": "wetland_management__peatland__drainage_density",
-    "nbs_id": "wetland_management",
-    "dataset_id": "scs_cn_runoff_composite",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 1.2
-    },
-    "uncertainty_pct": 20.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.3333,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 1.2}; uncertainty ±20% from spread. ",
-    "variable": "drainage_density",
-    "suitability_family_id": "wetland_management__peatland",
-    "evidence_ids": [
-      "ev_wet_drainage_density_sumarga26_1"
-    ],
-    "n_sources": 1,
-    "corpus_n": 14,
-    "paper_support_pct": 11.4
+    "n_sources": 1
   },
   {
     "mapping_id": "wetland_management__peatland__water_table_depth",
     "nbs_id": "wetland_management",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "opt_low": 0.0,
-      "opt_high": 30.0,
-      "abs_max": 160.0
+      "profiles": [
+        {
+          "reviewed_adaptation": {
+            "kind": "human_reviewed_step_profile",
+            "reviewer": "Peter",
+            "reviewed_date": "2026-11-05",
+            "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+            "scope": "Rewetting drained former-wetland farmland; mean lowest groundwater depth, average of three lowest-water months.",
+            "note": "Scores and >160 cm zero tail are human scoping assumptions, not source ecological limits. Negative depths unknown. Does not approve full three-factor source product, all-peatland transfer, or change family definitions. Requires matching groundwater model and eligible land mask.",
+            "input_unit": "cm",
+            "evidence_fingerprint": "12d57b15a251a2d8db3094de201a97a443256bfdc7d47430fc1a712a7874bf9c",
+            "context_fingerprint": "7374869590af701b52a37de5ef2983dbc6dc8883419fd1a83a28ed3102364823",
+            "intervals": [
+              {
+                "lower": 0,
+                "upper": 30,
+                "label": "high",
+                "lower_inclusive": true,
+                "upper_inclusive": true
+              },
+              {
+                "lower": 30,
+                "upper": 80,
+                "label": "moderate",
+                "lower_inclusive": false,
+                "upper_inclusive": true
+              },
+              {
+                "lower": 80,
+                "upper": 160,
+                "label": "marginal",
+                "lower_inclusive": false,
+                "upper_inclusive": true
+              },
+              {
+                "lower": 160,
+                "upper": null,
+                "label": "screened_out",
+                "lower_inclusive": false,
+                "upper_inclusive": false
+              }
+            ],
+            "dataset_binding": {
+              "status": "requires_matching_input",
+              "reason": "Rewetting drained former-wetland farmland; mean lowest groundwater depth, average of three lowest-water months. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute."
+            }
+          },
+          "source_relationship": {
+            "unit": "cm",
+            "class_potential": {
+              "0-30": "high (3)",
+              "30-80": "moderate (2)",
+              "80-160": "marginal (1)"
+            },
+            "direction": "decreasing",
+            "type": "source_ordinal_classes",
+            "note": "Direction applies within the reported mean-lowest-groundwater classes. Source ranks high/moderate/marginal are 3/2/1; 160 cm ends marginal class, not an ecological zero."
+          },
+          "profile_id": "ev_wet_water_table_depth_brouwer26_1",
+          "source_id": "page_nl_paludiculture_crop_suitability_model",
+          "continuation_of": "",
+          "evidence_ids": [
+            "ev_wet_water_table_depth_brouwer26_1"
+          ],
+          "page_locators": {
+            "ev_wet_water_table_depth_brouwer26_1": 3
+          },
+          "evidence_id": "ev_wet_water_table_depth_brouwer26_1",
+          "context": {
+            "reviewed_correction": {
+              "reviewer": "Peter",
+              "date": "2026-11-05",
+              "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+              "note": "Preserve source hydrological paludiculture ordinal classes. Remove source abs_max=160: endpoint was marginal, not unsuitable. Reviewed 0–30=1, >30–80=.66, >80–160=.33, >160=0 lives in numeric policy; last tail and scores are human adaptation. Mean lowest groundwater depth, drained former-wetland farmland; negative depths unknown."
+            },
+            "practice_as_described": "Hydrological screening for paludiculture on rewetted former agricultural wetlands; source combines available water capacity, mean lowest groundwater level and seepage.",
+            "region": "Netherlands",
+            "source_combined_method": "Multiply ordinal scores 3/2/1 for three criteria; source retains product >=8. Reviewed single-variable adaptations do not reproduce or approve the complete product model."
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "high": 3,
+            "moderate": 2,
+            "marginal": 1,
+            "screened_out": 0
+          },
+          "applicability_note": "Rewetting drained former-wetland farmland; mean lowest groundwater depth, average of three lowest-water months. Scores and >160 cm zero tail are human scoping assumptions, not source ecological limits. Negative depths unknown. Does not approve full three-factor source product, all-peatland transfer, or change family definitions. Requires matching groundwater model and eligible land mask.",
+          "unit": "cm",
+          "intervals": [
+            {
+              "lower": 0.0,
+              "upper": 30.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "high",
+              "rank": 3,
+              "score": 1,
+              "legacy_score": 1.0,
+              "source_score": 3,
+              "score_basis": "reviewed_scoping_adaptation"
+            },
+            {
+              "lower": 30.0,
+              "upper": 80.0,
+              "lower_inclusive": false,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": 0.66,
+              "legacy_score": 0.6666666666666666,
+              "source_score": 2,
+              "score_basis": "reviewed_scoping_adaptation"
+            },
+            {
+              "lower": 80.0,
+              "upper": 160.0,
+              "lower_inclusive": false,
+              "upper_inclusive": true,
+              "label": "marginal",
+              "rank": 1,
+              "score": 0.33,
+              "legacy_score": 0.3333333333333333,
+              "source_score": 1,
+              "score_basis": "reviewed_scoping_adaptation"
+            },
+            {
+              "lower": 160.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "screened_out",
+              "rank": 0,
+              "score": 0,
+              "legacy_score": 0.0,
+              "source_score": null,
+              "score_basis": "reviewed_scoping_adaptation"
+            }
+          ],
+          "origin_id": "page_nl_paludiculture_crop_suitability_model",
+          "source_weight": 0.54,
+          "variable": "water_table_depth",
+          "score_policy": "human_reviewed_steps_v1",
+          "pool_id": "",
+          "system_id": "wetland_management__peatland",
+          "context_id": "ev_wet_water_table_depth_brouwer26_1",
+          "compatibility_approved": false,
+          "applicability_review": {},
+          "pool_review": "compatibility_review_required"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_wet_water_table_depth_brouwer26_1",
+            "reason": "compatibility_review_required"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 0.3333,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 0.0, 'opt_high': 30.0, 'abs_max': 160.0}; uncertainty ±20% from spread. ",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362. Dataset binding unresolved; requires matching input: Rewetting drained former-wetland farmland; mean lowest groundwater depth, average of three lowest-water months. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute.",
     "variable": "water_table_depth",
     "suitability_family_id": "wetland_management__peatland",
     "evidence_ids": [
       "ev_wet_water_table_depth_brouwer26_1"
     ],
-    "n_sources": 1,
-    "corpus_n": 14,
-    "paper_support_pct": 6.8
+    "n_sources": 1
   },
   {
     "mapping_id": "wetland_management__peatland__groundwater_seepage",
     "nbs_id": "wetland_management",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "opt_high": -0.1,
-      "abs_max": 0.5
+      "profiles": [
+        {
+          "reviewed_adaptation": {
+            "kind": "human_reviewed_step_profile",
+            "reviewer": "Peter",
+            "reviewed_date": "2026-11-05",
+            "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+            "scope": "Rewetting drained former-wetland farmland; vertical groundwater flux, negative upward and positive downward.",
+            "note": "Reviewed qualitative classes only. Source ordinal ranks retained; normalized runtime scores not approved. Above +0.5 mm/day unknown. Requires matching groundwater flux dataset, sign convention and eligible land mask.",
+            "input_unit": "mm/d",
+            "evidence_fingerprint": "f239d340dc3cc8cd5f9a2a4bf7bf7bcd4def30d4e7fd1a852b79c45f6b97d40f",
+            "context_fingerprint": "44ada34f6f1c05d6d9ffe996be0f7fb12e9ab61cd5a9af09d0d8ec39cbf788ce",
+            "intervals": [
+              {
+                "lower": null,
+                "upper": -0.1,
+                "label": "high",
+                "lower_inclusive": false,
+                "upper_inclusive": false
+              },
+              {
+                "lower": -0.1,
+                "upper": 0.1,
+                "label": "moderate",
+                "lower_inclusive": true,
+                "upper_inclusive": true
+              },
+              {
+                "lower": 0.1,
+                "upper": 0.5,
+                "label": "marginal",
+                "lower_inclusive": false,
+                "upper_inclusive": true
+              }
+            ],
+            "dataset_binding": {
+              "status": "requires_matching_input",
+              "reason": "Rewetting drained former-wetland farmland; vertical groundwater flux, negative upward and positive downward. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute."
+            }
+          },
+          "source_relationship": {
+            "unit": "mm/d",
+            "class_potential": {
+              "<-0.1 (upward)": "high (3)",
+              "-0.1 to 0.1 (neutral)": "moderate (2)",
+              "0.1 to 0.5 (downward)": "marginal (1)"
+            },
+            "direction": "decreasing",
+            "type": "source_ordinal_classes",
+            "note": "Direction refers to the source negative-upward flux convention within reported classes. Scores 3/2/1 are source ordinal ranks; 0.5 mm/day ends marginal class, not zero suitability."
+          },
+          "profile_id": "ev_wet_groundwater_seepage_brouwer26_1",
+          "source_id": "page_nl_paludiculture_crop_suitability_model",
+          "continuation_of": "",
+          "evidence_ids": [
+            "ev_wet_groundwater_seepage_brouwer26_1"
+          ],
+          "page_locators": {
+            "ev_wet_groundwater_seepage_brouwer26_1": 3
+          },
+          "evidence_id": "ev_wet_groundwater_seepage_brouwer26_1",
+          "context": {
+            "reviewed_correction": {
+              "reviewer": "Peter",
+              "date": "2026-11-05",
+              "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+              "note": "Preserve source ordinal seepage classes. Remove abs_max=.5: marginal endpoint is not zero. Latest accepted table is qualitative; >.5 remains unknown. Negative-upward groundwater flux, drained former-wetland farmland; no invented normalized scores."
+            },
+            "practice_as_described": "Hydrological screening for paludiculture on rewetted former agricultural wetlands; source combines available water capacity, mean lowest groundwater level and seepage.",
+            "region": "Netherlands",
+            "source_combined_method": "Multiply ordinal scores 3/2/1 for three criteria; source retains product >=8. Reviewed single-variable adaptations do not reproduce or approve the complete product model."
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "high": 3,
+            "moderate": 2,
+            "marginal": 1
+          },
+          "applicability_note": "Rewetting drained former-wetland farmland; vertical groundwater flux, negative upward and positive downward. Reviewed qualitative classes only. Source ordinal ranks retained; normalized runtime scores not approved. Above +0.5 mm/day unknown. Requires matching groundwater flux dataset, sign convention and eligible land mask.",
+          "unit": "mm/d",
+          "intervals": [
+            {
+              "lower": null,
+              "upper": -0.1,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "high",
+              "rank": 3,
+              "score": null,
+              "legacy_score": 1.0,
+              "source_score": 3,
+              "score_basis": "unresolved_class_meaning"
+            },
+            {
+              "lower": -0.1,
+              "upper": 0.1,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "moderate",
+              "rank": 2,
+              "score": null,
+              "legacy_score": 0.6666666666666666,
+              "source_score": 2,
+              "score_basis": "unresolved_class_meaning"
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.5,
+              "lower_inclusive": false,
+              "upper_inclusive": true,
+              "label": "marginal",
+              "rank": 1,
+              "score": null,
+              "legacy_score": 0.3333333333333333,
+              "source_score": 1,
+              "score_basis": "unresolved_class_meaning"
+            }
+          ],
+          "origin_id": "page_nl_paludiculture_crop_suitability_model",
+          "source_weight": 0.54,
+          "variable": "groundwater_seepage",
+          "score_policy": "human_reviewed_steps_v1",
+          "pool_id": "",
+          "system_id": "wetland_management__peatland",
+          "context_id": "ev_wet_groundwater_seepage_brouwer26_1",
+          "compatibility_approved": false,
+          "applicability_review": {},
+          "pool_review": "compatibility_review_required"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_wet_groundwater_seepage_brouwer26_1",
+            "reason": "compatibility_review_required"
+          },
+          {
+            "profile_id": "ev_wet_groundwater_seepage_brouwer26_1",
+            "reason": "unresolved_class_meaning"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 0.3333,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': -0.1, 'abs_max': 0.5}; uncertainty ±20% from spread. ",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362. Dataset binding unresolved; requires matching input: Rewetting drained former-wetland farmland; vertical groundwater flux, negative upward and positive downward. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute.",
     "variable": "groundwater_seepage",
     "suitability_family_id": "wetland_management__peatland",
     "evidence_ids": [
       "ev_wet_groundwater_seepage_brouwer26_1"
     ],
-    "n_sources": 1,
-    "corpus_n": 14,
-    "paper_support_pct": 6.8
-  },
-  {
-    "mapping_id": "wetland_management__restoration_rewetting__restorable_patch_area",
-    "nbs_id": "wetland_management",
-    "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
-    "relationship_params": {
-      "abs_min": 1.0
-    },
-    "uncertainty_pct": 30.0,
-    "context_overrides": [],
-    "is_scenario_candidate": false,
-    "has_future_projection": false,
-    "weight_default": 0.5,
-    "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 1.0}; uncertainty ±30% from spread. ",
-    "variable": "restorable_patch_area",
-    "suitability_family_id": "wetland_management__restoration_rewetting",
-    "evidence_ids": [
-      "ev_wet_site_area_russell97_1"
-    ],
-    "n_sources": 1,
-    "corpus_n": 9,
-    "paper_support_pct": 16.1
+    "n_sources": 1
   },
   {
     "mapping_id": "wetland_management__restoration_rewetting__distance_to_waterbody",
     "nbs_id": "wetland_management",
-    "dataset_id": "merit_hydro_v1",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "abs_max": 120.0
+      "profiles": [
+        {
+          "reviewed_adaptation": {
+            "kind": "human_reviewed_step_profile",
+            "reviewer": "Peter",
+            "reviewed_date": "2026-11-05",
+            "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+            "scope": "Habitat-connectivity preference among already eligible riparian wetland restoration sites; distance to existing riparian habitat OR open water.",
+            "note": "Human-adapted bands simplify conditional patch-area/proximity priorities. Middle .5 and outer .33 are reviewed scores, not source ecological limits. Negative values unknown; no water-supply pooling. Requires both habitat and open-water distance inputs plus eligibility mask.",
+            "input_unit": "m",
+            "evidence_fingerprint": "f88cfc47af5ad4d272bc7639be3c09d58a0c510150ad44271786bbb167aa3d95",
+            "context_fingerprint": "fd6968fea893f1fb6d45106d70111174c8f3cde2de80e6630e8b9fec62184a92",
+            "intervals": [
+              {
+                "lower": 0,
+                "upper": 90,
+                "label": "high",
+                "lower_inclusive": true,
+                "upper_inclusive": true
+              },
+              {
+                "lower": 90,
+                "upper": 120,
+                "label": "middle",
+                "lower_inclusive": false,
+                "upper_inclusive": true
+              },
+              {
+                "lower": 120,
+                "upper": null,
+                "label": "low",
+                "lower_inclusive": false,
+                "upper_inclusive": false
+              }
+            ],
+            "dataset_binding": {
+              "status": "requires_matching_input",
+              "reason": "Habitat-connectivity preference among already eligible riparian wetland restoration sites; distance to existing riparian habitat OR open water. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute."
+            }
+          },
+          "source_relationship": {
+            "unit": "m",
+            "direction": "candidate sites farther than 120 m from extant riparian vegetation or open water are down-prioritised — proximity reduces habitat fragmentation and aids species recruitment into the restored site",
+            "type": "conditional_restoration_priority",
+            "note": "Priority in a conditional spatial allocation sequence, not a universal ecological suitability threshold. Full source includes a separate scrub-cover preservation/restoration branch."
+          },
+          "profile_id": "ev_wet_distance_to_waterbody_russell97_1",
+          "source_id": "gis_riparian_siting_russell_1997",
+          "continuation_of": "",
+          "evidence_ids": [
+            "ev_wet_distance_to_waterbody_russell97_1"
+          ],
+          "page_locators": {
+            "ev_wet_distance_to_waterbody_russell97_1": 10
+          },
+          "evidence_id": "ev_wet_distance_to_waterbody_russell97_1",
+          "context": {
+            "reviewed_correction": {
+              "reviewer": "Peter",
+              "date": "2026-11-05",
+              "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+              "note": "Remove source abs_max=120: source describes low priority, not unsuitable. Reviewed 0–90=1, >90–120=.5, >120=.33 lives in numeric policy as human habitat-connectivity preference. Requires eligible riparian wetland sites and distance to existing riparian habitat OR open water, not generic river proximity."
+            },
+            "practice_as_described": "Riparian wetland restoration prioritisation among already eligible sites, using proximity to existing riparian habitat or open water and contiguous patch area.",
+            "region": "San Luis Rey watershed",
+            "reported_values": {
+              "source_page": 10,
+              "first_priority_distance_m": 90,
+              "remaining_patch_sieve_ha": 1,
+              "remaining_patch_proximity_m": 120,
+              "meaning": "conditional high/medium/low priorities; small or distant sites low, not excluded"
+            }
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "high": 3,
+            "middle": 2,
+            "low": 1
+          },
+          "applicability_note": "Habitat-connectivity preference among already eligible riparian wetland restoration sites; distance to existing riparian habitat OR open water. Human-adapted bands simplify conditional patch-area/proximity priorities. Middle .5 and outer .33 are reviewed scores, not source ecological limits. Negative values unknown; no water-supply pooling. Requires both habitat and open-water distance inputs plus eligibility mask.",
+          "unit": "m",
+          "intervals": [
+            {
+              "lower": 0.0,
+              "upper": 90.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "high",
+              "rank": 3,
+              "score": 1,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "reviewed_scoping_adaptation"
+            },
+            {
+              "lower": 90.0,
+              "upper": 120.0,
+              "lower_inclusive": false,
+              "upper_inclusive": true,
+              "label": "middle",
+              "rank": 2,
+              "score": 0.5,
+              "legacy_score": 0.6666666666666666,
+              "source_score": null,
+              "score_basis": "reviewed_scoping_adaptation"
+            },
+            {
+              "lower": 120.0,
+              "upper": null,
+              "lower_inclusive": false,
+              "upper_inclusive": false,
+              "label": "low",
+              "rank": 1,
+              "score": 0.33,
+              "legacy_score": 0.3333333333333333,
+              "source_score": null,
+              "score_basis": "reviewed_scoping_adaptation"
+            }
+          ],
+          "origin_id": "gis_riparian_siting_russell_1997",
+          "source_weight": 0.5,
+          "variable": "distance_to_waterbody",
+          "score_policy": "human_reviewed_steps_v1",
+          "pool_id": "",
+          "system_id": "wetland_management__restoration_rewetting",
+          "context_id": "ev_wet_distance_to_waterbody_russell97_1",
+          "compatibility_approved": false,
+          "applicability_review": {},
+          "pool_review": "compatibility_review_required"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_wet_distance_to_waterbody_russell97_1",
+            "reason": "compatibility_review_required"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 30.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
     "is_scenario_candidate": false,
     "has_future_projection": false,
     "weight_default": 0.5,
     "weight_adjustable": true,
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_max': 120.0}; uncertainty ±30% from spread. ",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362. Dataset binding unresolved; requires matching input: Habitat-connectivity preference among already eligible riparian wetland restoration sites; distance to existing riparian habitat OR open water. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute.",
     "variable": "distance_to_waterbody",
     "suitability_family_id": "wetland_management__restoration_rewetting",
     "evidence_ids": [
       "ev_wet_distance_to_waterbody_russell97_1"
     ],
-    "n_sources": 1,
-    "corpus_n": 9,
-    "paper_support_pct": 16.1
+    "n_sources": 1
   }
 ]

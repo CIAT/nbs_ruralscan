@@ -4,23 +4,123 @@
     "suitability_family_id": "wetland_management__creation",
     "variable": "distance_to_waterbody",
     "variable_unit": "m",
-    "dataset_id": "[\"merit_hydro_v1\", \"jrc_global_surface_water_v1_4\"]",
+    "dataset_id": "",
     "suitability_dimension": "biophysical_constraint",
-    "relationship_type": "trapezoidal",
+    "relationship_type": "piecewise",
     "relationship_params": {
-      "opt_high": 500.0
+      "profiles": [
+        {
+          "reviewed_adaptation": {
+            "kind": "human_reviewed_step_profile",
+            "reviewer": "Peter",
+            "reviewed_date": "2026-11-05",
+            "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+            "scope": "Wetland creation with frequently flowing stream water supply in semiarid irrigated agricultural landscapes.",
+            "note": "Reviewed 0–500 m optimum; all other values unknown. Source approximately 500 m and separate 450 m calibration are not pooled. Requires matching frequently flowing water-supply distance and site eligibility.",
+            "input_unit": "m",
+            "evidence_fingerprint": "5b545bf4a558f7e85f10ae3b9ee522d5fd5a6c20909507c879be14f545c11374",
+            "context_fingerprint": "7e7f954fedad33877ef113a8b7605c3b592546ddd58968d1151e133d666d3a0a",
+            "intervals": [
+              {
+                "lower": 0,
+                "upper": 500,
+                "label": "optimum",
+                "lower_inclusive": true,
+                "upper_inclusive": true
+              }
+            ],
+            "dataset_binding": {
+              "status": "requires_matching_input",
+              "reason": "Wetland creation with frequently flowing stream water supply in semiarid irrigated agricultural landscapes. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute."
+            }
+          },
+          "source_relationship": {
+            "opt_high": 500,
+            "unit": "m",
+            "direction": "for created and restored wetlands, VERY suitable land lies within about 500 m of a frequently flowing stream; cost and energy rise in buffer steps beyond it (the paper's one-hundred-and-fifty-metre buffers), and land above the highest point where water flows frequently is unsuitable without pumping"
+          },
+          "profile_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+          "source_id": "wet_optimal_location_created_mediterranean_2010",
+          "continuation_of": "",
+          "evidence_ids": [
+            "ev_wet_distance_to_waterbody_morenomateos10_1"
+          ],
+          "page_locators": {
+            "ev_wet_distance_to_waterbody_morenomateos10_1": 6
+          },
+          "evidence_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+          "context": {
+            "reviewed_correction": {
+              "reviewer": "Peter",
+              "date": "2026-11-05",
+              "decision_ref": "methodology/audits/t4_followup_20261105/parity/user_decision.md",
+              "note": "Retain reviewed 0–500 m optimum; outside unknown. Source reports approximately 500 m and separately calibrates 450 m. Human adaptation lives in numeric policy; no Uuemaa pooling. Frequently flowing water supply and local delivery context required."
+            },
+            "practice_as_described": "Wetland creation/restoration in irrigated semiarid Mediterranean agricultural catchments; distance to frequently flowing streams combines water availability and delivery costs.",
+            "region": "Monegros, Ebro basin, northeastern Spain"
+          },
+          "source_group": "default",
+          "ordinal_scale": {
+            "optimum": 1
+          },
+          "applicability_note": "Wetland creation with frequently flowing stream water supply in semiarid irrigated agricultural landscapes. Reviewed 0–500 m optimum; all other values unknown. Source approximately 500 m and separate 450 m calibration are not pooled. Requires matching frequently flowing water-supply distance and site eligibility.",
+          "unit": "m",
+          "intervals": [
+            {
+              "lower": 0.0,
+              "upper": 500.0,
+              "lower_inclusive": true,
+              "upper_inclusive": true,
+              "label": "optimum",
+              "rank": 1,
+              "score": 1,
+              "legacy_score": 1.0,
+              "source_score": null,
+              "score_basis": "reviewed_scoping_adaptation"
+            }
+          ],
+          "origin_id": "wet_optimal_location_created_mediterranean_2010",
+          "source_weight": 0.7,
+          "variable": "distance_to_waterbody",
+          "score_policy": "human_reviewed_steps_v1",
+          "pool_id": "",
+          "system_id": "wetland_management__creation",
+          "context_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+          "compatibility_approved": false,
+          "applicability_review": {},
+          "pool_review": "compatibility_review_required"
+        }
+      ],
+      "profile_selection": "explicit",
+      "outside_domain": "unknown",
+      "conflicting_boundaries": "unknown",
+      "score_policy": "per_profile_schema_policy",
+      "harmonization": {
+        "pools": [],
+        "review": [
+          {
+            "profile_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+            "reason": "compatibility_review_required"
+          }
+        ]
+      },
+      "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
     },
-    "uncertainty_pct": 20.0,
+    "uncertainty_pct": 20,
     "context_overrides": [],
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 500.0}; uncertainty ±20% from spread. Collapsed 1 citation echo(es). ",
+    "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362. Dataset binding unresolved; requires matching input: Wetland creation with frequently flowing stream water supply in semiarid irrigated agricultural landscapes. Matching spatial input and eligible site mask must be supplied before application; generic dataset candidate is not an approved substitute.",
     "references": [
       "wet_optimal_location_created_mediterranean_2010"
     ],
     "evidence_ids": [
       "ev_wet_distance_to_waterbody_morenomateos10_1"
     ],
-    "paper_support_pct": 6.8,
+    "parameter_source_ids": [
+      "wet_optimal_location_created_mediterranean_2010"
+    ],
+    "n_parameter_sources": 1,
+    "paper_support_pct": null,
     "n_sources": 1,
-    "corpus_n": 24
+    "corpus_n": null
   }
 ]

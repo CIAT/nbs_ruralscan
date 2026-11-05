@@ -74,3 +74,7 @@ Pete, 5 November 2026: prioritize these six mappings for human review and reques
 - Do not pool this criterion with Moreno-Mateos water-access distances or other contextually different distance thresholds. Do not silently assume a generic river-distance dataset measures distance to both riparian habitat and open water.
 - Application status: all six legacy review decisions are now recorded. Analytical correction/compilation and normal review provenance remain pending; this document does not itself set evidence approval flags or deploy mappings.
 - Next stage in the agreed sequence: review the 17 active new T4 claims, with the two quarantined Rao claims handled separately.
+
+## Application update — 5 November 2026
+
+The decisions above have now been applied through normal evidence review handling. See `methodology/audits/t4_followup_20261105/REVIEW_APPLICATION.md` for corrected claims, scoped compiled profiles, preserved evidence and outstanding dataset/eligibility holds. Earlier pending-status entries remain historical records of the review sequence.

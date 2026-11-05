@@ -134,3 +134,7 @@ All 17 active new claims now have recorded review decisions.
 - Accepted decision: reopen and keep on that limited basis. Rainfall <1,000 mm/year is a conditional water-competition concern, not an absolute minimum; acid/infertile soils interact with amendments and long-term management, with no numerical pH threshold. Preserve management exceptions and the source discussion's scope; do not transform crop-yield or biomass values into T4 thresholds.
 - The prior automated `off_scope:carbon_biomass` quarantine remains part of the history. Apply the authorized reopen through the normal review mechanism; do not erase the prior reason or broadly disable scope screening.
 - Application status: decision recorded; central review application pending. No executable numeric mappings approved.
+
+## Application update — 5 November 2026
+
+The decisions above have now been applied through normal evidence review handling. See `methodology/audits/t4_followup_20261105/REVIEW_APPLICATION.md` for corrected claims, scoped compiled profiles, preserved evidence and outstanding dataset/eligibility holds. Earlier pending-status entries remain historical records of the review sequence.

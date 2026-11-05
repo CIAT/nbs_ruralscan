@@ -9,6 +9,7 @@ import json
 import hashlib
 import re
 from dataclasses import replace
+from datetime import date
 
 from .synthesis import SynthesisReport, _harmonise, _weight, _resolve_root_origin
 from .harmonization import harmonize, standardize
@@ -36,6 +37,48 @@ def completion_fingerprint(unit):
     return hashlib.sha256(
         json.dumps(content, sort_keys=True, ensure_ascii=False).encode()
     ).hexdigest()
+
+
+def context_fingerprint(unit):
+    """Pin effective context, including source context added by the build adapter."""
+    return hashlib.sha256(
+        json.dumps(unit.context or {}, sort_keys=True, ensure_ascii=False).encode()
+    ).hexdigest()
+
+
+def _reviewed_adaptation(unit, policy, hp):
+    """Validate an explicitly reviewed design without rewriting its source claim."""
+    adaptation = hp.get("reviewed_adaptation")
+    if not isinstance(adaptation, dict):
+        raise ValueError("reviewed_adaptation_required")
+    required = ("reviewer", "reviewed_date", "decision_ref", "scope", "note")
+    if (
+        adaptation.get("kind") != "human_reviewed_step_profile"
+        or any(
+            not isinstance(adaptation.get(k), str) or not adaptation[k].strip()
+            for k in required
+        )
+        or unit.reviewer_ok is not True
+        or unit.review_state == "dropped"
+        or unit.claim_scope != "practice_technology"
+        or unit.use_role != "structural_suitability"
+        or adaptation.get("evidence_fingerprint") != completion_fingerprint(unit)
+        or adaptation.get("context_fingerprint") != context_fingerprint(unit)
+        or not policy.get("input_unit")
+        or adaptation.get("input_unit") != policy["input_unit"]
+        or adaptation.get("input_unit") != (unit.relationship or {}).get("unit")
+        or hp.get("score_kind") != "ordinal"
+        or not isinstance(hp.get("class_scores"), dict)
+    ):
+        raise ValueError("invalid_or_stale_reviewed_adaptation")
+    if (
+        date.fromisoformat(adaptation["reviewed_date"]).isoformat()
+        != adaptation["reviewed_date"]
+    ):
+        raise ValueError("invalid_reviewed_adaptation_date")
+    if hp.get("pool_id") or hp.get("compatibility_approved"):
+        raise ValueError("reviewed_adaptation_pooling_not_supported")
+    return adaptation
 
 
 def source_completion(unit, units, policies):
@@ -125,7 +168,7 @@ def _interval(low, high, label, scale, includes_low=True, includes_high=True):
     }
 
 
-def parse_profiles(rel, policy):
+def parse_profiles(rel, policy, *, reviewed_adaptation=None):
     scale = json.loads(policy["ordinal_scale"])
     if (
         not isinstance(scale, dict)
@@ -136,7 +179,42 @@ def parse_profiles(rel, policy):
         raise ValueError("invalid_ordinal_scale")
     encoding = policy["encoding"]
     profiles = {}
-    if encoding == "labelled_ranges":
+    if encoding == "reviewed_intervals":
+        if reviewed_adaptation is None:
+            raise ValueError("reviewed_adaptation_required")
+        items = reviewed_adaptation.get("intervals")
+        if not isinstance(items, list) or not items:
+            raise ValueError("invalid_reviewed_intervals")
+        bands = []
+        for item in items:
+            if not isinstance(item, dict) or set(item) != {
+                "lower",
+                "upper",
+                "lower_inclusive",
+                "upper_inclusive",
+                "label",
+            }:
+                raise ValueError("invalid_reviewed_interval_fields")
+            if (
+                type(item["lower_inclusive"]) is not bool
+                or type(item["upper_inclusive"]) is not bool
+                or not isinstance(item["label"], str)
+                or (item["lower"] is None and item["lower_inclusive"])
+                or (item["upper"] is None and item["upper_inclusive"])
+            ):
+                raise ValueError("invalid_reviewed_interval_boundary")
+            bands.append(
+                _interval(
+                    item["lower"],
+                    item["upper"],
+                    item["label"],
+                    scale,
+                    item["lower_inclusive"],
+                    item["upper_inclusive"],
+                )
+            )
+        profiles["default"] = bands
+    elif encoding == "labelled_ranges":
         items = rel[policy["field"]]
         if isinstance(items, str):
             items = [
@@ -212,6 +290,13 @@ def parse_profiles(rel, policy):
         for a, b in zip(bands, bands[1:]):
             if a["upper"] is None or b["lower"] is None or a["upper"] > b["lower"]:
                 raise ValueError("overlapping_source_intervals")
+            if (
+                encoding == "reviewed_intervals"
+                and a["upper"] == b["lower"]
+                and a["upper_inclusive"]
+                and b["lower_inclusive"]
+            ):
+                raise ValueError("overlapping_reviewed_boundaries")
     return profiles
 
 
@@ -235,10 +320,17 @@ def compile_bands(
             unresolved.append((u.evidence_id, "selection_only"))
             continue
         try:
-            parsed = parse_profiles(u.relationship or {}, policy)
             hp = policy.get("harmonization") or {}
             if isinstance(hp, str):
                 hp = json.loads(hp)
+            adaptation = (
+                _reviewed_adaptation(u, policy, hp)
+                if policy.get("encoding") == "reviewed_intervals"
+                else None
+            )
+            parsed = parse_profiles(
+                u.relationship or {}, policy, reviewed_adaptation=adaptation
+            )
             completion = source_completion(u, by_id, policies)
             origin = _resolve_root_origin(u, by_id, by_source)
             origin_units = [x for x in units if x.source_id == origin]
@@ -264,6 +356,13 @@ def compile_bands(
                     raise ValueError("incomplete_source_class_table")
                 if hp:
                     standardize(bands, hp)
+                if adaptation:
+                    for band in bands:
+                        band["score_basis"] = (
+                            "reviewed_scoping_adaptation"
+                            if band["score"] is not None
+                            else "unresolved_class_meaning"
+                        )
                 for band in bands:
                     for key in ("lower", "upper"):
                         if band[key] is not None:
@@ -288,6 +387,14 @@ def compile_bands(
                             band[key] = value["abs_max"]
                 converted_profiles.append(
                     {
+                        **(
+                            {
+                                "reviewed_adaptation": adaptation,
+                                "source_relationship": u.relationship or {},
+                            }
+                            if adaptation
+                            else {}
+                        ),
                         **({"source_completions": [completion]} if completion else {}),
                         "profile_id": u.evidence_id
                         + ("" if group == "default" else "__" + group),
