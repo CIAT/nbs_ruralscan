@@ -249,6 +249,18 @@ assert.equal(JSON.stringify(t.window._vfScope),reviewerScope);
 """)
 
 
+def test_pipeline_only_shows_stages_present_in_its_input():
+    run_js(r"""
+const t=setup();
+t.fixture.progress_ledger=[{nbs_id:'agroforestry',table:'T4',category:'stock',searched:'done',screened:'done',verified:'in_progress'}];
+t.api.refresh(t.fixture);t.api.renderPipelineRecords();
+const html=t.nodes.get('pipeline-records-app').innerHTML;
+assert(html.includes('data-value="searched"'));assert(html.includes('data-value="verified"'));
+assert(!html.includes('data-value="extracted"'));assert(!html.includes('data-value="reviewed"'));
+assert(html.includes('Only stages stored in this log appear below'));
+""")
+
+
 def test_methods_uses_matched_discovery_counts_only():
     run_js(r"""
 const t=setup(), m=t.fixture.progress_overview.totals;
