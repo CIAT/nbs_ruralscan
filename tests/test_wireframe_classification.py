@@ -74,6 +74,13 @@ assert.equal(boot().get('poverty').direction,'higher_better');
 const directionSnapshot=C.snapshot();C.restore({});C.restore(directionSnapshot);
 assert.equal(C.get('poverty').direction,'higher_better');
 assert(!C.set('poverty',{count:2,method:'threshold',cuts:[60],direction:'sideways'}));
+// Reset only selected variable, including its direction; preserve other tabs' settings.
+const resetter=boot();other.set('drought',{count:5,method:'threshold',cuts:[10,30,50,70]});
+assert(resetter.reset('poverty'));assert.equal(boot().get('poverty').count,3);
+assert.equal(boot().get('poverty').method,'quantile');
+assert.equal(boot().get('poverty').direction,'higher_worse');
+assert.equal(boot().get('drought').cuts[0],10);
+assert(!resetter.reset('unknown'));
 // Exact boundaries enter higher class, with no gaps in map class labels.
 const E=C.build('poverty',st,{count:2,method:'threshold',cuts:[100/3]});
 assert.equal(E.classify(cells[3],'base'),1);
