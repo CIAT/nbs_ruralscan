@@ -57,4 +57,14 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Accepted decision: keep the conditional evidence with both the lower-bound uncertainty and unspecified suitability above 30% explicit. Retain the current level-soil-bund scope rather than applying this condition to all water-harvesting practices.
 - Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
 
-Remaining active claims: 12 awaiting individual review decisions.
+## 6. Fanya juu: slope-related embankment stability
+
+- Evidence: `ev_wh_fanyajuu_slope_wolka18_followup_20261105`.
+- Source: Wolka et al. (2018), `wolka2018_swc_ssa_meta`, PDF p. 9 (printed p. 75), discussion; practice description in Table 1, PDF p. 3.
+- Proposal presented: retain a qualitative physical implementation constraint for Fanya juu: increasing steepness can reduce embankment stability. No slope cutoff, lower bound or numerical response curve; do not infer flat land is optimal or generalize to every terrace type.
+- Pete's exact response: "ok next".
+- Accepted decision: keep that qualitative constraint, scoped to Fanya juu in the source's Sub-Saharan African agricultural context. The source also mentions soil bunds, but this evidence unit remains scoped to Fanya juu rather than approving new family assignments.
+- Provenance: author synthesis links reduced stability and greater occupation of cultivable land on steep slopes to crop-yield patterns. This review accepts the physical implementation condition only; it does not extract or approve crop-yield effects in the T4 lane.
+- Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
+
+Remaining active claims: 11 awaiting individual review decisions.
