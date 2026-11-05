@@ -108,9 +108,9 @@
   <!-- C.5 -->
   <section class="cfg tabpanel" role="tabpanel" id="tp-5" hidden>
     <div class="tp-head"><div><h2><span class="sec-n">C.5</span>Opportunity-space variable classes</h2><p class="need">How do low and high values become map classes?</p></div></div>
-    <p class="job-note">Choose a variable, then split its distribution into 2, 3 or 5 classes. Quantiles divide the example cells into roughly equal groups (three groups are terciles); thresholds use explicit cut points. High poverty means a higher poverty indicator; high drought means a higher drought-hazard indicator, not a combined risk score.</p>
+    <p class="job-note">Choose a variable, then split its distribution into 2, 3 or 5 classes. Quantiles divide baseline example cells into roughly equal groups (three groups are terciles); thresholds use explicit cut points. High poverty means a higher poverty indicator; high drought means a higher drought-hazard indicator, not a combined risk score.</p>
     <div class="cfg-controls"><label class="fld"><span>Variable</span><select id="class-variable"><option value="poverty">Rural poverty</option><option value="drought">Drought hazard</option><option value="food">Food insecurity</option><option value="water">Water stress</option></select></label><label class="fld"><span>Number of classes</span><select id="class-number"><option>2</option><option selected>3</option><option>5</option></select></label><label class="fld"><span>Split method</span><select id="class-method"><option value="quantile">Quantiles</option><option value="threshold">Thresholds</option></select></label><label class="fld" id="class-cuts-field" hidden><span>Cut points (comma-separated, 0–100)</span><input id="class-cuts" value="33.33, 66.67"></label></div>
-    <p class="cfg-note">Synthetic indicator values rescaled to 0–100 over eligible example cells; not poverty percentages or hazard probabilities. Preview is restricted to the current opportunity-space selection. Breaks are calculated within that selection. No recipe or downstream classification is changed.</p>
+    <p class="cfg-note">Synthetic indicator values rescaled to 0–100 over eligible example cells; not poverty percentages or hazard probabilities. Preview is restricted to the current opportunity-space selection. Quantile breaks use baseline values within the baseline opportunity extent for the selected classes; the same breaks classify baseline and future values. Future indicator values may exceed 100. Valid edits are saved per variable and applied to the maps and distributions in <a href="03-opportunity.html?tab=2">Section 3.2 · People and land</a> and <a href="03-opportunity.html?tab=3">Section 3.3 · Climate hazards</a>. Scientific recipes and evidence remain unchanged.</p>
     <p id="class-error" class="cfg-error" role="status"></p>
     <div class="tp-grid cfg-preview"><figure><svg id="class-map" role="img" aria-label="Classified opportunity-space variable"></svg><figcaption id="class-map-caption"></figcaption></figure><figure><svg id="class-hist" viewBox="0 0 560 250" role="img" aria-label="Variable distribution with class cut points"></svg><figcaption>Distribution of eligible selected cells · vertical lines mark class boundaries</figcaption></figure></div>
     <div class="cfg-legend" id="class-legend"></div><p id="class-summary" aria-live="polite"></p>
@@ -136,6 +136,7 @@
 <script src="v1b-versions.js"></script>
 <script src="v1b-map.js"></script>
 <script src="v1b-fixture.js"></script>
+<script src="v1b-classification.js"></script>
 <script>
 (function () {
   'use strict';
@@ -388,41 +389,65 @@
   document.getElementById('mask-variable').addEventListener('change', drawMasks);
   document.getElementById('mask-limit').addEventListener('input', drawMasks);
   rebuildMasks();
+  var Classification = window.V1BClassification;
+  var variableSelect = document.getElementById('class-variable');
+  variableSelect.innerHTML = Classification.variables.map(function(v){return '<option value="' + v.key + '">' + v.label + '</option>';}).join('');
   function defaultCuts() {var n = Number(document.getElementById('class-number').value);document.getElementById('class-cuts').value = Array.from({length:n-1}, function(_,i){return (100*(i+1)/n).toFixed(2);}).join(', ');}
-  function drawClasses() {
-    var variable = document.getElementById('class-variable').value, n = Number(document.getElementById('class-number').value), method = document.getElementById('class-method').value;
-    var select = document.getElementById('class-variable'), label = select.options[select.selectedIndex].text;
-    document.getElementById('class-cuts-field').hidden = method !== 'threshold';
-    var eligible = F.cells.filter(function(c){return !c.excluded && !c.unknown;}), vals = eligible.map(function(c){return c.ind[variable];}), min = Math.min.apply(null,vals), max = Math.max.apply(null,vals);
-    function value(c){return 100 * (c.ind[variable] - min) / (max - min || 1);}
-    function selected(c){return !c.excluded && !c.unknown && V1BUI.state.classes[V1BUI.state.climate === 'ssp' ? c.suitClass2050 : c.suitClass];}
-    var sample = F.cells.filter(selected), sorted = sample.map(value).sort(function(a,b){return a-b;}), cuts = [];
-    if(method === 'threshold') cuts = document.getElementById('class-cuts').value.split(',').map(function(x){return x.trim() === '' ? NaN : Number(x);});
-    else for(var k=1;k<n;k++) cuts.push(sorted[Math.min(sorted.length-1,Math.floor(sorted.length*k/n))]);
-    var error = !sample.length ? 'No eligible cells in the selected opportunity space.' : cuts.length !== n-1 || cuts.some(function(x,i){return !Number.isFinite(x) || x <= 0 || x >= 100 || (i > 0 && x <= cuts[i-1]);}) ? 'Enter ' + (n-1) + ' strictly increasing cut points between 0 and 100.' : '';
-    document.getElementById('class-error').textContent = error;
-    if(error) {M.paintCells(classMap,F.cells,function(c){return c.excluded ? 'excluded' : c.unknown ? 'unknown' : null;});document.getElementById('class-hist').innerHTML = '';document.getElementById('class-legend').innerHTML = '';document.getElementById('class-summary').textContent = '';return;}
-    var names = n === 2 ? ['Low','High'] : n === 3 ? ['Low','Medium','High'] : ['Very low','Low','Medium','High','Very high'], colors = ['#e6eedc','#bbd3ac','#80ae81','#48835d','#205b41'], counts = Array(n).fill(0);
-    function cls(v){var idx=0;while(idx<cuts.length && v>=cuts[idx])idx++;return idx;}
-    function shade(i){return colors[Math.round(i*4/(n-1))];}
-    sample.forEach(function(c){counts[cls(value(c))]++;});
-    M.paintCells(classMap,F.cells,function(c){if(c.excluded)return 'excluded';if(c.unknown)return 'unknown';if(!selected(c))return null;var i=cls(value(c));return 'q'+(1+Math.round(i*4/(n-1)));});
-    classMap.style.setProperty('--hz', '#205b41');
-    // Use identical colors in map, distribution and legend.
-    classMap.querySelectorAll('[class^="k-q"]').forEach(function(path){var q=Number(path.getAttribute('class').slice(3));path.style.fill=colors[q-1];});
-    var bins = Array(20).fill(0); sorted.forEach(function(v){bins[Math.min(19,Math.floor(v/5))]++;});var peak=Math.max.apply(null,bins), html='';
-    bins.forEach(function(count,i){var h=count/(peak||1)*150;html+='<rect x="'+(40+i*24)+'" y="'+(180-h)+'" width="23" height="'+h+'" fill="'+shade(cls(i*5+2.5))+'"/>';});
-    html+='<path d="M40 20V180H520" fill="none" stroke="currentColor"/><text x="40" y="16">Cells (maximum bin: '+peak+')</text>';
-    [0,25,50,75,100].forEach(function(v){html+='<text x="'+(40+v*4.8)+'" y="202" text-anchor="middle">'+v+'</text>';});
-    cuts.forEach(function(c,i){var x=40+c*4.8;html+='<path d="M'+x+' 25V180" stroke="currentColor" stroke-dasharray="4 3"/><text x="'+x+'" y="'+(224+(i%2)*18)+'" text-anchor="middle">'+c.toFixed(1)+'</text>';});
-    document.getElementById('class-hist').innerHTML=html;
-    document.getElementById('class-map-caption').textContent=label+' · '+n+' classes · '+(method==='quantile'?'quantile cut points':'explicit thresholds');
-    document.getElementById('class-legend').innerHTML=names.map(function(name,i){return '<span style="border-color:'+shade(i)+'">'+name+': '+(i?cuts[i-1].toFixed(1):'0')+' to '+(i<cuts.length?'&lt; '+cuts[i].toFixed(1):'100')+' · '+counts[i]+' cells</span>';}).join('');
-    document.getElementById('class-summary').textContent=sample.length+' selected cells. Darker green = higher '+label.toLowerCase()+'. Blank = outside selected opportunity space; hatched = excluded; dotted = no data. Values exactly at a cut point enter the higher class.';
+  function classificationInputs() {
+    return {count:Number(document.getElementById('class-number').value), method:document.getElementById('class-method').value,
+      cuts:document.getElementById('class-cuts').value.split(',').map(function(x){return x.trim() === '' ? NaN : Number(x);})};
   }
-  ['class-variable','class-number','class-method','class-cuts'].forEach(function(id){document.getElementById(id).addEventListener('change',function(){if(id==='class-number')defaultCuts();drawClasses();});});
-  drawClasses();
-  V1BUI.onControls(drawClasses);
+  function syncClassificationInputs() {
+    var config = Classification.get(variableSelect.value);
+    document.getElementById('class-number').value = String(config.count);
+    document.getElementById('class-method').value = config.method;
+    if(config.cuts && config.cuts.length) document.getElementById('class-cuts').value = config.cuts.join(', '); else defaultCuts();
+  }
+  function drawClasses(persist) {
+    var variable = variableSelect.value, label = variableSelect.options[variableSelect.selectedIndex].text, config = classificationInputs();
+    document.getElementById('class-cuts-field').hidden = config.method !== 'threshold';
+    var result = Classification.build(variable, V1BUI.state, config), error = result.error;
+    document.getElementById('class-error').textContent = error || '';
+    if(error) {
+      M.paintCells(classMap,F.cells,function(c){return c.excluded ? 'excluded' : c.unknown ? 'unknown' : null;});
+      document.getElementById('class-hist').innerHTML = '';document.getElementById('class-legend').innerHTML = '';
+      document.getElementById('class-summary').textContent = 'Sections 3.2 and 3.3 retain the last valid saved classification.';
+      document.getElementById('class-map-caption').textContent = 'Classification preview unavailable';return;
+    }
+    if(persist === true && !Classification.set(variable, config)) {document.getElementById('class-error').textContent = 'Invalid classification; the last valid settings remain saved.';return;}
+    var period = V1BUI.state.climate === 'ssp' ? 'ssp' : 'base', sample = new Set(result.sample);
+    M.paintCells(classMap,F.cells,function(c){if(c.excluded)return 'excluded';if(c.unknown)return 'unknown';return sample.has(c) ? result.mapKey(c,period) : null;});
+    // Color classes by the shared result so maps, histograms and legends agree.
+    var classColors = {};result.sample.forEach(function(c){classColors[result.mapKey(c,period)]=result.colors[result.classify(c,period)];});
+    Object.keys(classColors).forEach(function(key){var path=classMap.querySelector('.k-'+key);if(path)path.style.fill=classColors[key];});
+    var lo = Math.min.apply(null,[0].concat(result.values)), hi = Math.max.apply(null,[100].concat(result.values)), span = hi-lo || 1;
+    var bins = Array.from({length:20},function(){return Array(result.count).fill(0);});
+    result.sample.forEach(function(c){var value=result.value(c,period), bin=Math.max(0,Math.min(19,Math.floor((value-lo)/span*20)));bins[bin][result.classify(c,period)]++;});
+    var peak=Math.max.apply(null,bins.map(function(bin){return bin.reduce(function(sum,count){return sum+count;},0);})), html='';
+    bins.forEach(function(bin,i){var y=180;bin.forEach(function(count,cl){var h=count/(peak||1)*150;y-=h;html+='<rect x="'+(40+i*24)+'" y="'+y+'" width="23" height="'+h+'" fill="'+result.colors[cl]+'"/>';});});
+    html+='<path d="M40 20V180H520" fill="none" stroke="currentColor"/><text x="40" y="16">Cells (maximum bin: '+peak+')</text>';
+    [0,.25,.5,.75,1].forEach(function(fraction){var value=lo+span*fraction;html+='<text x="'+(40+fraction*480)+'" y="202" text-anchor="middle">'+value.toFixed(0)+'</text>';});
+    result.cuts.forEach(function(c,i){var x=40+(c-lo)/span*480;html+='<path d="M'+x+' 25V180" stroke="currentColor" stroke-dasharray="4 3"/><text x="'+x+'" y="'+(224+(i%2)*18)+'" text-anchor="middle">'+c.toFixed(1)+'</text>';});
+    document.getElementById('class-hist').innerHTML=html;
+    document.getElementById('class-map-caption').textContent=label+' · '+result.count+' classes · '+(result.method==='quantile'?'baseline quantile cut points':'explicit thresholds')+' · '+(period==='ssp'?'around 2050':'baseline');
+    var legend=document.getElementById('class-legend');legend.replaceChildren();
+    result.names.forEach(function(name,i){var item=document.createElement('span');item.style.borderColor=result.colors[i];item.textContent=name+': '+result.range(i)+' · '+result.counts[i]+' cells';legend.appendChild(item);});
+    document.getElementById('class-summary').textContent=result.sample.length+' selected cells. Darker green = higher '+label.toLowerCase()+'. Blank = outside selected opportunity space; hatched = excluded; dotted = no data. Baseline cut points also classify future values, including values above 100. Valid settings are saved for Sections 3.2 and 3.3.';
+  }
+  variableSelect.value = 'poverty';
+  var requestedVariable = new URLSearchParams(location.search).get('variable');
+  if(Classification.variables.some(function(v){return v.key === requestedVariable;})){variableSelect.value=requestedVariable;openCfg(4);}
+  syncClassificationInputs();
+  variableSelect.addEventListener('change',function(){syncClassificationInputs();drawClasses();});
+  ['class-number','class-method','class-cuts'].forEach(function(id){document.getElementById(id).addEventListener('change',function(){if(id==='class-number')defaultCuts();drawClasses(true);});});
+  V1BUI.onControls(function(){drawClasses();});
+  function refreshClassificationInputs() {
+    Classification.refresh();syncClassificationInputs();drawClasses();
+  }
+  window.addEventListener('storage',function(event){
+    if(event.key === 'v2-variable-classification' || event.key === null) refreshClassificationInputs();
+  });
+  window.addEventListener('pageshow',function(event){if(event.persisted) refreshClassificationInputs();});
 
   /* ---- C.7 save / load ---- */
   function download(name, obj) {
@@ -432,7 +457,7 @@
   }
   document.getElementById('save-proj').addEventListener('click', function () {
     download('rural-nbs-scan-project.json', { kind: 'project-settings', saved: new Date().toISOString(), controls: V1BUI.state,
-      datasetProposals: Object.keys(proposals), previewRoles: roles, clusterThreshold: document.getElementById('cluster-threshold').value, clusterSelection: clusterSelection, maskThreshold: document.getElementById('mask-limit').value, variableClasses: ['class-variable','class-number','class-method','class-cuts'].map(function(id){return {id:id,value:document.getElementById(id).value};}), ruleEdits: VARS.filter(function (v) { return edits[v.id]; }).map(function (v) { return { variable: v.id, fn: v.fn, a: v.a, b: v.b, classes: v.classes }; }) });
+      classifications: Classification.snapshot(), datasetProposals: Object.keys(proposals), previewRoles: roles, clusterThreshold: document.getElementById('cluster-threshold').value, clusterSelection: clusterSelection, maskThreshold: document.getElementById('mask-limit').value, variableClasses: ['class-variable','class-number','class-method','class-cuts'].map(function(id){return {id:id,value:document.getElementById(id).value};}), ruleEdits: VARS.filter(function (v) { return edits[v.id]; }).map(function (v) { return { variable: v.id, fn: v.fn, a: v.a, b: v.b, classes: v.classes }; }) });
   });
   document.getElementById('save-res').addEventListener('click', function () {
     var R = F.rollup(V1BUI.state);
@@ -471,8 +496,16 @@
         clusterSelection=o.clusterSelection && typeof o.clusterSelection==='object' ? o.clusterSelection : {};
         if(Number(o.maskThreshold)>=0 && Number(o.maskThreshold)<=40)document.getElementById('mask-limit').value=o.maskThreshold;
         (o.variableClasses || []).forEach(function(saved){if(['class-variable','class-number','class-method','class-cuts'].indexOf(saved.id)<0)return;var el=document.getElementById(saved.id);if(el.tagName==='SELECT' && !Array.from(el.options).some(function(opt){return opt.value===String(saved.value);}))return;el.value=saved.value;});
-        rebuildMasks();drawClusters();drawClasses();
-        msg.textContent = 'Project loaded: controls and valid local preview edits restored. Downstream results remain illustrative.';
+        var classificationMessage = '';
+        if(o.classifications && typeof o.classifications === 'object') {
+          if(Classification.restore(o.classifications) === false) classificationMessage = ' Invalid classification settings were not applied.';
+        } else {
+          Classification.restore({});
+          // Older projects stored only the visible variable's class controls.
+          if(Array.isArray(o.variableClasses) && o.variableClasses.length && !Classification.set(variableSelect.value, classificationInputs())) classificationMessage = ' Invalid legacy classification settings were not applied.';
+        }
+        syncClassificationInputs();rebuildMasks();drawClusters();drawClasses();
+        msg.textContent = 'Project loaded: controls and valid preview settings restored. Variable classes apply to Sections 3.2 and 3.3; results remain illustrative.' + classificationMessage;
       } catch (err) { msg.textContent = 'Could not read that file.'; }
     };
     rd.readAsText(file);

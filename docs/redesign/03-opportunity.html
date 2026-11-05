@@ -121,7 +121,7 @@
     <div class="multiples" id="context-mult"></div>
     <div class="mult-lg" id="context-lg"></div>
     <p id="context-caption" class="figcap"></p>
-    <p class="m2-note"><b>People and land conditions, not climate projections.</b> Each map shows national fifths of an illustrative indicator, from least to most affected. These values describe needs within the opportunity space; they do not measure the practice’s effect.</p>
+    <p class="m2-note"><b>People and land conditions, not climate projections.</b> Each map uses the class count and cut points set for its variable in <a href="00-config.html?tab=5">C.5</a>, from least to most affected. These values describe needs within the opportunity space; they do not measure the practice’s effect.</p>
     <div class="tabwrap" style="margin-top:28px"><table class="qt" id="context-table" style="max-width:760px"></table></div>
   </section>
 
@@ -161,6 +161,7 @@
 <script src="v1b-versions.js"></script>
 <script src="v1b-map.js"></script>
 <script src="v1b-fixture.js"></script>
+<script src="v1b-classification.js"></script>
 <script>
 (function () {
   'use strict';
@@ -339,28 +340,30 @@
     s.style.setProperty('--hz', 'var(' + h[2] + ')');
     return s;
   });
+  var CL = V1BClassification;
+  function classLegend(p, model) {
+    if(model.error)return '<b>' + p.name + '</b><p>' + model.error + '</p>';
+    return '<b>' + p.name + '</b><div class="mult-lg">' + model.names.map(function(label,i) {
+      var shade=[18,34,52,74,100][Math.round(i*4/(model.count-1))];
+      return '<span class="sw"><i style="background:color-mix(in srgb,var(' + p.hue + ') ' + shade + '%,var(--paper))"></i>' + label + ' (' + M.esc(model.range(i)) + ')</span>';
+    }).join('') + '</div><a href="00-config.html?tab=5&variable=' + p.k + '">C.5 · ' + model.count + ' classes · ' + (model.method==='quantile'?'quantiles':'thresholds') + '</a>';
+  }
   function livelihoods() {
-    var ssp = ST.climate === 'ssp';
-    HZ.forEach(function (h, i) {
-      M.paintCells(msvgs[i], F.cells, function (c) {
-        if (!R.sel(c)) return null;
-        var k = (ssp ? c.lh2050 : c.lh)[h[0]]; return k === 'high' ? 'lh3' : k === 'moderate' ? 'lh2' : 'lh1';
-      });
+    var models=HZ.map(function(h){return CL.build(h[0],ST);});
+    HZ.forEach(function(h,i) {
+      var model=models[i];
+      M.paintCells(msvgs[i],F.cells,function(c){return !model.error && R.sel(c) ? model.mapKey(c,ST.climate) : null;});
+      msvgs[i].parentNode.querySelector('figcaption').innerHTML=classLegend({k:h[0],name:h[1],hue:h[2]},model);
     });
-    HZ.forEach(function(h, i) {
-      msvgs[i].parentNode.querySelector('figcaption').innerHTML = '<b>' + h[1] + '</b><div class="mult-lg">' + ['Low', 'Moderate', 'High'].map(function(label, j) { return '<span class="sw"><i style="background:color-mix(in srgb,var(' + h[2] + ') ' + [22,52,100][j] + '%,var(--paper))"></i>' + label + '</span>'; }).join('') + '</div>';
-    });
-    document.getElementById('mult-lg').innerHTML = 'Colour shows hazard class where rural livelihoods occur, inside ' + V1BUI.classWords(ST) + '. Blank = outside the selected opportunity space. Population exposure is summarised below.';
-    document.getElementById('cap-22').innerHTML = '<b>Figure 3.2</b> · Exposure of people to four climate hazards within the opportunity space, 5 km cells, ' + (ssp ? 'SSP2-4.5 about 2050' : 'baseline 1995–2014');
-    var tot = R.totals.residentsSel || 1;
-    var rows = HZ.map(function (h) {
-      var now = 0, fut = 0;
-      F.cells.forEach(function (c) { if (!R.sel(c)) return; if (c.lh[h[0]] === 'high') now += c.residents; if (c.lh2050[h[0]] === 'high') fut += c.residents; });
-      return '<tr><td>' + h[1] + '</td><td class="r">' + pct(now / tot) + '</td><td class="r">' + pct(fut / tot) + '</td></tr>';
+    document.getElementById('mult-lg').textContent='Classes and cut points come from C.5. Blank = outside selected opportunity space (' + V1BUI.classWords(ST) + '). Values use a synthetic baseline-normalised index, not probabilities.';
+    document.getElementById('cap-22').innerHTML='<b>Figure 3.2</b> · Hazards where rural livelihoods occur, 5 km cells, ' + (ST.climate==='ssp'?'SSP2-4.5 about 2050':'baseline 1995–2014');
+    var tot=R.totals.residentsSel;
+    var rows=HZ.map(function(h,i) {
+      var model=models[i], now=0,fut=0;
+      if(!model.error)model.sample.forEach(function(c){if(model.high(c,'base'))now+=c.residents;if(model.high(c,'ssp'))fut+=c.residents;});
+      return '<tr><td>'+h[1]+'</td><td class="r">'+(!model.error && tot ? pct(now/tot) : 'No data')+'</td><td class="r">'+(!model.error && tot ? pct(fut/tot) : 'No data')+'</td></tr>';
     }).join('');
-    document.getElementById('t23').innerHTML =
-      '<caption class="tabcap"><b>Table 3.3</b> · Share of people in the opportunity space with High exposure, now and around 2050<small>Both columns use the same unit: % of people within the selected opportunity extent. Residents and hazard classes are fictional.</small></caption>' +
-      '<thead><tr><th>Hazard</th><th class="r">Baseline 1995–2014</th><th class="r">SSP2-4.5, about 2050</th></tr></thead><tbody>' + rows + '</tbody>';
+    document.getElementById('t23').innerHTML='<caption class="tabcap"><b>Table 3.3</b> · Share of people in High or Very high hazard classes<small>C.5 defines classes per hazard. Both columns show % of people within the same selected extent, using identical cut points derived within the baseline opportunity extent. Residents and hazards are fictional.</small></caption><thead><tr><th>Hazard</th><th class="r">Baseline 1995–2014</th><th class="r">SSP2-4.5, about 2050</th></tr></thead><tbody>'+rows+'</tbody>';
   }
 
   /* ---- 3.4 problems in the opportunity space + practice response ---- */
@@ -428,28 +431,18 @@
   });
 
   var contextOptions = PROB.slice(4);
-  document.getElementById('context-mult').innerHTML = contextOptions.map(function(p) {
-    return '<figure><svg id="context-' + p.k + '" role="img" aria-label="' + p.name + ' map, example data"></svg><figcaption><b>' + p.name + '</b><div class="mult-lg">' + [0,1,2,3,4].map(function(q) {
-      return '<span class="sw"><i style="background:color-mix(in srgb,var(' + p.hue + ') ' + [18,34,52,74,100][q] + '%,var(--paper))"></i>Fifth ' + (q+1) + '</span>';
-    }).join('') + '</div></figcaption></figure>';
-  }).join('');
-  var contextSvgs = contextOptions.map(function(p) {
-    var map = M.plate(document.getElementById('context-' + p.k), {uid:'context-' + p.k, labels:false, scale:false, cities:false, context:false, viewBox:'366 22 568 592'});
-    map.style.setProperty('--hz', 'var(' + p.hue + ')');
-    return map;
-  });
+  document.getElementById('context-mult').innerHTML=contextOptions.map(function(p){return '<figure><svg id="context-'+p.k+'" role="img" aria-label="'+p.name+' map, example data"></svg><figcaption></figcaption></figure>';}).join('');
+  var contextSvgs=contextOptions.map(function(p){var map=M.plate(document.getElementById('context-'+p.k),{uid:'context-'+p.k,labels:false,scale:false,cities:false,context:false,viewBox:'366 22 568 592'});map.style.setProperty('--hz','var('+p.hue+')');return map;});
   function contextMap() {
-    var selected = F.cells.filter(R.sel);
-    contextOptions.forEach(function(p,i) {
-      M.paintCells(contextSvgs[i], F.cells, function(c) { return R.sel(c) ? 'lhq' + c.indQ[p.k] : null; });
-    });
-    document.getElementById('context-lg').textContent = 'Fifth 1 = least affected; fifth 5 = most affected. Blank = outside the selected opportunity space (' + V1BUI.classWords(ST) + ').';
-    document.getElementById('context-caption').innerHTML = '<b>Figure 3.4</b> · People and land conditions within the opportunity space, 5 km cells. Synthetic example values; not observed data or future projections.';
-    document.getElementById('context-table').innerHTML = '<caption class="tabcap"><b>Table 3.5</b> · Share of opportunity-space area in the two most affected national fifths<small>Both columns use % of area. Equal-area example cells; country reference is 40 % by construction. Changing climate period changes the selected suitability extent, not these indicator values.</small></caption><thead><tr><th>Problem</th><th class="r">Opportunity space</th><th class="r">Country reference</th></tr></thead><tbody>' + contextOptions.map(function(p) {
-      var affected = selected.filter(function(c) { return c.indQ[p.k] >= 3; }).length;
-      return '<tr><td>' + p.name + '<span class="sub" style="display:block">' + p.unit + '</span></td><td class="r">' + (selected.length ? pct(affected / selected.length) : 'No selected cells') + '</td><td class="r">40 %</td></tr>';
-    }).join('') + '</tbody>';
+    var models=contextOptions.map(function(p){return CL.build(p.k,ST);});
+    contextOptions.forEach(function(p,i){var model=models[i];M.paintCells(contextSvgs[i],F.cells,function(c){return !model.error && R.sel(c) ? model.mapKey(c,ST.climate) : null;});contextSvgs[i].parentNode.querySelector('figcaption').innerHTML=classLegend(p,model);});
+    document.getElementById('context-lg').textContent='Classes and cut points come from C.5. Darker = more affected; blank = outside selected opportunity space ('+V1BUI.classWords(ST)+'). Values use a synthetic baseline-normalised index.';
+    document.getElementById('context-caption').innerHTML='<b>Figure 3.4</b> · People and land conditions within the opportunity space, 5 km cells. Synthetic example values; not observed data or future projections.';
+    var eligible=F.cells.filter(function(c){return !c.excluded && !c.unknown;});
+    document.getElementById('context-table').innerHTML='<caption class="tabcap"><b>Table 3.5</b> · Share of area in High or Very high classes<small>C.5 defines classes per variable. Both columns use % of eligible area and the same cut points; the country reference is calculated, not fixed. Climate period changes suitability extent, not these non-climate indicator values.</small></caption><thead><tr><th>Problem</th><th class="r">Opportunity space</th><th class="r">Country reference</th></tr></thead><tbody>'+contextOptions.map(function(p,i){var model=models[i];return '<tr><td>'+p.name+'<span class="sub" style="display:block">'+p.unit+'</span></td><td class="r">'+(model.error?'No data':pct(model.sample.filter(function(c){return model.high(c,ST.climate);}).length/model.sample.length))+'</td><td class="r">'+(model.error?'No data':pct(eligible.filter(function(c){return model.high(c,ST.climate);}).length/eligible.length))+'</td></tr>';}).join('')+'</tbody>';
   }
+  window.addEventListener('pageshow',function(e){if(e.persisted){CL.refresh();livelihoods();contextMap();}});
+  window.addEventListener('storage',function(e){if(e.key==='v2-variable-classification' || e.key===null){CL.refresh();livelihoods();contextMap();}});
 
   /* ---- tabs ---- */
   var tabs = Array.prototype.slice.call(document.querySelectorAll('.subtabs [role=tab]'));
