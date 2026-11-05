@@ -1,8 +1,22 @@
 /* Dashboard navigation and orientation. Does not alter evidence or review decisions. */
 (function () {
   'use strict';
+  var restoringRoute = false;
   function byId(id) { return document.getElementById(id); }
   function open(id) { var button = byId(id); if (button) button.click(); }
+  function selectedView(kind, fallback) {
+    var button = document.querySelector('[data-' + kind + '-view][aria-pressed="true"]');
+    return button ? button.dataset[kind + 'View'] : fallback;
+  }
+  function syncRoute(tab) {
+    if (restoringRoute) return;
+    var route = { 'tab-overview': '#overview', 'tab-search': '#progress', 'tab-variables': '#datasets' }[tab];
+    if (tab === 'tab-methods') route = '#methods/' + selectedView('method', 'rural');
+    if (tab === 'tab-qaqc') route = { queue: '#review-queue', help: '#review-help', pipeline: '#pipeline-records' }[selectedView('review', 'queue')];
+    if (tab === 'tab-stocktake') route = location.hash.startsWith('#source=') ? location.hash : '#bibliography';
+    if (tab === 'tab-interrogator') route = location.hash.startsWith('#t4/') ? location.hash : selectedView('query', 'relationships') === 'explorer' ? '#evidence-explorer' : '#relationships';
+    if (route && location.hash !== route) history.replaceState(null, '', route);
+  }
   function setView(kind, view) {
     var selector = '[data-' + kind + '-view]';
     var views = {
@@ -20,20 +34,26 @@
     syncSubtabs();
   }
   function openHash() {
-    if (location.hash === '#relationships') { open('btn-interrogator'); setView('query', 'relationships'); }
-    else if (location.hash === '#evidence-explorer' || location.hash.startsWith('#t4/')) { open('btn-interrogator'); setView('query', 'explorer'); }
-    else if (location.hash === '#pipeline-records') { open('btn-qaqc'); setView('review', 'pipeline'); }
-    else if (location.hash === '#review-help') { open('btn-qaqc'); setView('review', 'help'); }
-    else if (location.hash === '#review-queue') { open('btn-qaqc'); setView('review', 'queue'); }
-    else if (location.hash.startsWith('#methods/')) { open('btn-methods'); setView('method', location.hash.slice('#methods/'.length)); }
+    // Opening a main tab must not overwrite the deep link before its subview is restored.
+    restoringRoute = true;
+    try {
+      if (location.hash === '#relationships') { open('btn-interrogator'); setView('query', 'relationships'); }
+      else if (location.hash === '#evidence-explorer' || location.hash.startsWith('#t4/')) { open('btn-interrogator'); setView('query', 'explorer'); }
+      else if (location.hash === '#pipeline-records') { open('btn-qaqc'); setView('review', 'pipeline'); }
+      else if (location.hash === '#review-help') { open('btn-qaqc'); setView('review', 'help'); }
+      else if (location.hash === '#review-queue') { open('btn-qaqc'); setView('review', 'queue'); }
+      else if (location.hash.startsWith('#methods/')) { open('btn-methods'); setView('method', location.hash.slice('#methods/'.length)); }
+      else { var tab = { '#overview': 'btn-overview', '#progress': 'btn-search', '#bibliography': 'btn-stocktake', '#datasets': 'btn-variables' }[location.hash]; if (tab) open(tab); }
+    } finally { restoringRoute = false; }
   }
-  function onTab(tab) {
+  function onTab(tab, updateRoute) {
     var sourceTab = tab === 'tab-stocktake' || tab === 'tab-variables';
     byId('btn-stocktake').classList.toggle('shell-group-active', sourceTab);
     document.querySelectorAll('#tab-stocktake [data-shell-open], #tab-variables [data-shell-open]').forEach(function (button) {
       button.setAttribute('aria-pressed', String(button.dataset.shellOpen === (tab === 'tab-variables' ? 'btn-variables' : 'btn-stocktake')));
     });
     // Old deep links and direct calls still use the original tab IDs.
+    if (updateRoute !== false) syncRoute(tab);
     syncSubtabs();
     numberContent();
   }
@@ -150,10 +170,11 @@
       document.querySelectorAll('.shell-subnav').forEach(function (node) { resize.observe(node); });
     }
     window.addEventListener('resize', measure);
-    onTab(document.querySelector('.tab-content.active').id);
+    // The default Overview markup is not a navigation choice on first load.
+    onTab(document.querySelector('.tab-content.active').id, false);
     window.addEventListener('hashchange', openHash);
     openHash();
   }
-  window.DashboardShell = { syncSubtabs: syncSubtabs, onTab: onTab, openFromHash: openHash, showExplorer: function () { open('btn-interrogator'); setView('query', 'explorer'); }, openReviewHelp: function () { open('btn-qaqc'); setView('review', 'help'); }, openPipelineRecords: function () { open('btn-qaqc'); setView('review', 'pipeline'); }, openMethods: function (view) { open('btn-methods'); setView('method', view || 'rural'); }, numberContent: numberContent };
+  window.DashboardShell = { syncSubtabs: syncSubtabs, onTab: onTab, openFromHash: openHash, showExplorer: function () { open('btn-interrogator'); setView('query', 'explorer'); syncRoute('tab-interrogator'); }, openReviewHelp: function () { open('btn-qaqc'); setView('review', 'help'); }, openPipelineRecords: function () { open('btn-qaqc'); setView('review', 'pipeline'); }, openMethods: function (view) { open('btn-methods'); setView('method', view || 'rural'); }, numberContent: numberContent };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
