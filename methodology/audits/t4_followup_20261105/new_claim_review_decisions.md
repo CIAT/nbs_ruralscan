@@ -25,4 +25,15 @@ change registers, approval flags, review-server decisions, mappings or family de
 - Limitation preserved: this is a regional expert statement without an exact local calibration. The nonnumeric lower treeline description (steppe and semi-desert ecosystems) must not be converted into an invented lower elevation threshold.
 - Application status: human decision recorded; central review application and compilation pending. No executable numeric mapping approved.
 
-Remaining active claims: 15 awaiting individual review decisions.
+## 3. Built-up land: shared exclusion, with wetland-source corroboration
+
+- Evidence: `ev_wet_land_cover_xiangchina2023_20261105`.
+- Source: Xiang et al. (2023), `wet_potential_distribution_china_ml_2023`, PDF pp. 17–18, section 4.3.
+- Proposal presented: keep evidence supporting exclusion of existing built-up land from wetland-restoration candidates; retain the China/model context and distinguish built-up land from other human-used land such as cropland.
+- Pete's exact response: "yes, but this is obvious rule that applies to nearly anything in rural scan\\".
+- Accepted decision: keep the evidence as corroboration of a shared Rural Scan built-up-footprint exclusion, not as a distinctive wetland-specific suitability driver or an additional weighted score for this practice.
+- The methodological hard-exclusion policy already includes urban/built-up footprints (`methodology/T4_generation_method.md`, section 2.7). During application, check shared-mask handling and avoid duplicate masking/weighting. A common policy statement is not proof that every runtime consumer already implements it.
+- Preserve source provenance: this publication demonstrates the exclusion in China's wetland-restoration overlay; it is not evidence for every NbS independently. Do not copy the claim into all families as independent source support, treat all anthropogenic land as excluded, or silently convert every mixed/coarse land-cover cell to a built-up footprint.
+- Application status: human decision recorded; central review application and shared-mask consistency check pending. No schema, global runtime mask or family definitions changed by this note.
+
+Remaining active claims: 14 awaiting individual review decisions.
