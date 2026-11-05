@@ -1,26 +1,59 @@
 /* Dashboard navigation and orientation. Does not alter evidence or review decisions. */
 (function () {
   'use strict';
+  var restoringRoute = false;
   function byId(id) { return document.getElementById(id); }
   function open(id) { var button = byId(id); if (button) button.click(); }
+  function selectedView(kind, fallback) {
+    var button = document.querySelector('[data-' + kind + '-view][aria-pressed="true"]');
+    return button ? button.dataset[kind + 'View'] : fallback;
+  }
+  function syncRoute(tab) {
+    if (restoringRoute) return;
+    var route = { 'tab-overview': '#overview', 'tab-search': '#progress', 'tab-variables': '#datasets' }[tab];
+    if (tab === 'tab-methods') route = '#methods/' + selectedView('method', 'rural');
+    if (tab === 'tab-qaqc') route = { queue: '#review-queue', help: '#review-help', pipeline: '#pipeline-records' }[selectedView('review', 'queue')];
+    if (tab === 'tab-stocktake') route = location.hash.startsWith('#source=') ? location.hash : '#bibliography';
+    if (tab === 'tab-interrogator') route = location.hash.startsWith('#t4/') ? location.hash : selectedView('query', 'relationships') === 'explorer' ? '#evidence-explorer' : '#relationships';
+    if (route && location.hash !== route) history.replaceState(null, '', route);
+  }
   function setView(kind, view) {
-    var selector = kind === 'review' ? '[data-review-view]' : '[data-query-view]';
-    var panels = kind === 'review' ? { queue: 'review-queue-panel', help: 'review-help-panel' } : { relationships: 'relationship-review-root', explorer: 'query-explorer-panel' };
-    Object.keys(panels).forEach(function (key) { byId(panels[key]).hidden = key !== view; });
+    var selector = '[data-' + kind + '-view]';
+    var views = {
+      review: { queue: 'review-queue-panel', help: 'review-help-panel', pipeline: 'review-pipeline-panel' },
+      query: { relationships: 'relationship-review-root', explorer: 'query-explorer-panel' },
+      method: { rural: 'method-rural-panel', evidence: 'method-evidence-panel', search: 'method-search-panel' }
+    };
+    var panels = views[kind];
+    if (!panels || !panels[view]) return;
+    Object.keys(panels).forEach(function (key) { var panel = byId(panels[key]); if (panel) panel.hidden = key !== view; });
     document.querySelectorAll(selector).forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset[kind + 'View'] === view)); });
+    var route = kind === 'method' ? '#methods/' + view : kind === 'review' ? { queue: '#review-queue', help: '#review-help', pipeline: '#pipeline-records' }[view] : '';
+    if (route && location.hash !== route) history.replaceState(null, '', route);
+    if (kind === 'review' && view === 'pipeline' && window.DashboardProgress && typeof window.DashboardProgress.renderPipelineRecords === 'function') window.DashboardProgress.renderPipelineRecords();
     syncSubtabs();
   }
   function openHash() {
-    if (location.hash === '#relationships') { open('btn-interrogator'); setView('query', 'relationships'); }
-    else if (location.hash === '#evidence-explorer' || location.hash.startsWith('#t4/')) { open('btn-interrogator'); setView('query', 'explorer'); }
+    // Opening a main tab must not overwrite the deep link before its subview is restored.
+    restoringRoute = true;
+    try {
+      if (location.hash === '#relationships') { open('btn-interrogator'); setView('query', 'relationships'); }
+      else if (location.hash === '#evidence-explorer' || location.hash.startsWith('#t4/')) { open('btn-interrogator'); setView('query', 'explorer'); }
+      else if (location.hash === '#pipeline-records') { open('btn-qaqc'); setView('review', 'pipeline'); }
+      else if (location.hash === '#review-help') { open('btn-qaqc'); setView('review', 'help'); }
+      else if (location.hash === '#review-queue') { open('btn-qaqc'); setView('review', 'queue'); }
+      else if (location.hash.startsWith('#methods/')) { open('btn-methods'); setView('method', location.hash.slice('#methods/'.length)); }
+      else { var tab = { '#overview': 'btn-overview', '#progress': 'btn-search', '#bibliography': 'btn-stocktake', '#datasets': 'btn-variables' }[location.hash]; if (tab) open(tab); }
+    } finally { restoringRoute = false; }
   }
-  function onTab(tab) {
+  function onTab(tab, updateRoute) {
     var sourceTab = tab === 'tab-stocktake' || tab === 'tab-variables';
     byId('btn-stocktake').classList.toggle('shell-group-active', sourceTab);
     document.querySelectorAll('#tab-stocktake [data-shell-open], #tab-variables [data-shell-open]').forEach(function (button) {
       button.setAttribute('aria-pressed', String(button.dataset.shellOpen === (tab === 'tab-variables' ? 'btn-variables' : 'btn-stocktake')));
     });
     // Old deep links and direct calls still use the original tab IDs.
+    if (updateRoute !== false) syncRoute(tab);
     syncSubtabs();
     numberContent();
   }
@@ -66,7 +99,7 @@
     return clone.textContent.replace(/[▼▶↗]/g, '').replace(/\s+/g, ' ').trim();
   }
   function setNumber(node, number) {
-    if (/^\d+(?:\.\d+)*[.\s]/.test(textWithoutNumber(node))) return;
+    if (/^(?:(?:Table|Figure)\s+)?\d+(?:\.\d+)*[.\s]/.test(textWithoutNumber(node))) return;
     var label = node.querySelector(':scope > .shell-section-number');
     if (!label) { label = document.createElement('span'); label.className = 'shell-section-number'; node.prepend(label); }
     if (label.textContent !== number + ' ') label.textContent = number + ' ';
@@ -113,6 +146,7 @@
     document.querySelectorAll('[data-shell-open]').forEach(function (button) { button.addEventListener('click', function () { open(button.dataset.shellOpen); }); });
     document.querySelectorAll('[data-review-view]').forEach(function (button) { button.addEventListener('click', function () { setView('review', button.dataset.reviewView); }); });
     document.querySelectorAll('[data-query-view]').forEach(function (button) { button.addEventListener('click', function () { setView('query', button.dataset.queryView); history.replaceState(null, '', button.dataset.queryView === 'relationships' ? '#relationships' : '#evidence-explorer'); if (button.dataset.queryView === 'explorer' && typeof window.refreshQueryProvenance === 'function') window.refreshQueryProvenance(); }); });
+    document.querySelectorAll('[data-method-view]').forEach(function (button) { button.addEventListener('click', function () { setView('method', button.dataset.methodView); }); });
     var guide = byId('review-reference-guide');
     ['vf-howto', 'vf-reason-codes'].forEach(function (id) { var item = byId(id); if (item) guide.appendChild(item); });
     var theme = byId('theme-toggle'), feedback = byId('rv-toggle');
@@ -136,10 +170,11 @@
       document.querySelectorAll('.shell-subnav').forEach(function (node) { resize.observe(node); });
     }
     window.addEventListener('resize', measure);
-    onTab(document.querySelector('.tab-content.active').id);
+    // The default Overview markup is not a navigation choice on first load.
+    onTab(document.querySelector('.tab-content.active').id, false);
     window.addEventListener('hashchange', openHash);
     openHash();
   }
-  window.DashboardShell = { syncSubtabs: syncSubtabs, onTab: onTab, openFromHash: openHash, showExplorer: function () { open('btn-interrogator'); setView('query', 'explorer'); }, openReviewHelp: function () { open('btn-qaqc'); setView('review', 'help'); }, numberContent: numberContent };
+  window.DashboardShell = { syncSubtabs: syncSubtabs, onTab: onTab, openFromHash: openHash, showExplorer: function () { open('btn-interrogator'); setView('query', 'explorer'); syncRoute('tab-interrogator'); }, openReviewHelp: function () { open('btn-qaqc'); setView('review', 'help'); }, openPipelineRecords: function () { open('btn-qaqc'); setView('review', 'pipeline'); }, openMethods: function (view) { open('btn-methods'); setView('method', view || 'rural'); }, numberContent: numberContent };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
