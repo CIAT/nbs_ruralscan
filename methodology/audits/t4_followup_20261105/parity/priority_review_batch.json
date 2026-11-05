@@ -1,0 +1,60 @@
+{
+  "batch_id": "t4_wetland_live_mapping_review_20261105",
+  "label": "Priority: wetland T4 mappings",
+  "priority": "high",
+  "requested_by": "Pete",
+  "requested_date": "2026-11-05",
+  "user_instruction": "Prioritize these for review; ask dashboard session to integrate a priority filter/control. No removal approved.",
+  "status": "pending_human_review",
+  "mutation_policy": "Priority metadata is not an approval, drop, reclassification or runtime hold. Preserve existing evidence/review state and live mappings.",
+  "items": [
+    {
+      "evidence_id": "ev_wet_distance_to_waterbody_morenomateos10_1",
+      "mapping_id": "wetland_management__creation__distance_to_waterbody",
+      "source_id": "wet_optimal_location_created_mediterranean_2010",
+      "page": 6,
+      "reason": "Source PDF6 distinguishes approximate500m very-suitable distance from water delivery cost/pumping; no outer zero-suitability tail. Diagnostic pooling conflicts with Uuemaa125m outer bound, while source companion450m is a calibration variant.",
+      "decision_needed": "Keep scoped direction and native approximate class; review450vs500 within source and separate Uuemaa system before pooling. Decide whether cost-driven distance belongs structural siting or operational guidance; do not silently create missing tail."
+    },
+    {
+      "evidence_id": "ev_wet_drainage_density_sumarga26_1",
+      "mapping_id": "wetland_management__peatland__drainage_density",
+      "source_id": "tropical_peatland_restoration_reduces_fire_2026",
+      "page": 5,
+      "reason": "Source PDF5 reports1.2km/km2 as observed mean of all peatlands, not minimum restoration suitability.2.5km/km2 is mean treated canal-dam area and1.5near wells. Dense drainage plus prior fire activity describes actual targeting, not an ecological exclusion. Existing scs_cn_runoff_composite binding is a runoff proxy, not an observed canal-density layer.",
+      "decision_needed": "Retain observed targeting direction and literal means; propose removal of unsupported abs_min only through review. No numeric runtime threshold supported here. Request observed canal dataset binding if retained as targeting variable."
+    },
+    {
+      "evidence_id": "ev_wet_water_table_depth_brouwer26_1",
+      "mapping_id": "wetland_management__peatland__water_table_depth",
+      "source_id": "page_nl_paludiculture_crop_suitability_model",
+      "page": 3,
+      "reason": "PDF3 Table1 is paludiculture hydrological screening: mean lowest groundwater level classes0\u201330high,30\u201380moderate,80\u2013160marginal.160 is endpoint of marginal class, not demonstrated zero; source multiplies three discrete scores and selects product>=8. Generic trapezoidal fall-to-zero is not that method.",
+      "decision_needed": "Retain native ordinal classes, direction and Netherlands paludiculture scope. Human decision: applicability to generic peatland rewetting versus paludiculture-only model referral; if a runtime class model is desired, approve scores, tails and combined rule separately. Do not approve current abs_max semantics by approving quote."
+    },
+    {
+      "evidence_id": "ev_wet_groundwater_seepage_brouwer26_1",
+      "mapping_id": "wetland_management__peatland__groundwater_seepage",
+      "source_id": "page_nl_paludiculture_crop_suitability_model",
+      "page": 3,
+      "reason": "PDF3 Table1: upward<-0.1mm/d high, -0.1to0.1neutral moderate,0.1to0.5downward marginal.0.5 is marginal-class endpoint, not stated zero. Source discrete product model differs from live trapezoid.",
+      "decision_needed": "Same paludiculture applicability decision as water table. Preserve signed seepage and ordinal classes; require explicit tail/score semantics and appropriate binding before execution."
+    },
+    {
+      "evidence_id": "ev_wet_site_area_russell97_1",
+      "mapping_id": "wetland_management__restoration_rewetting__restorable_patch_area",
+      "source_id": "gis_riparian_siting_russell_1997",
+      "page": 10,
+      "reason": "PDF10 applies1ha sieve only after separating high-priority sites within90m; remaining<1ha areas receive low priority.1ha explicitly arbitrary, rationale flood attenuation. Universal abs_min loses conditional rule and converts low priority to exclusion.",
+      "decision_needed": "Retain source conditional restoration-priority method; ask whether remove this live structural cutoff while preserving evidence and source priorities. Any new minimum ecological area requires separate evidence/approval."
+    },
+    {
+      "evidence_id": "ev_wet_distance_to_waterbody_russell97_1",
+      "mapping_id": "wetland_management__restoration_rewetting__distance_to_waterbody",
+      "source_id": "gis_riparian_siting_russell_1997",
+      "page": 10,
+      "reason": "PDF10 says>120m is low-priority restoration, not unsuitable;90m defines first high-priority branch. Current abs_max120 turns priority into exclusion. Diagnostic pooling also combines Medland250/500 and Qiu300 values with different contexts.",
+      "decision_needed": "Retain full90m/120m priority branching and observed target definition; decide removal from structural runtime, preserve method referral. Do not pool these priority/feasibility contexts into a single distance envelope."
+    }
+  ]
+}
