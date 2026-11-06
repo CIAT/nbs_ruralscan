@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T3/T6 Decisions Round 2</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1b2430;--muted:#5b6675;--line:#dde2e8;--accent:#0f6e5c;--rec:#e7f4f0;--recline:#9ccfc1;--chip:#eef1f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}}
+:root[data-theme="dark"]{--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:12px 16px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+h1{font-size:19px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.bar input[type=text]{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:150px}
+button{padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer;font:inherit;font-size:14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.progress{font-size:13px;color:var(--muted);margin-left:auto}
+h2{font-size:16px;margin:28px 0 4px}
+.sec-note{color:var(--muted);font-size:13px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+.card.done{border-left:4px solid var(--accent)}
+.code{display:inline-block;font-weight:700;font-size:12px;background:var(--chip);border-radius:4px;padding:1px 6px;margin-right:6px}
+.q{font-weight:600}
+.ctx{color:var(--ink);font-size:14px;margin:8px 0 6px}
+.aff{color:var(--muted);font-size:13px;margin:0 0 6px;border-left:3px solid var(--line);padding-left:8px}
+.opt{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;border:1px solid var(--line);border-radius:7px;margin:5px 0;cursor:pointer}
+.opt.rec{background:var(--rec);border-color:var(--recline)}
+.opt input{margin-top:3px}
+.tag{font-size:11px;font-weight:700;color:var(--accent);margin-left:6px;white-space:nowrap}
+textarea{width:100%;margin-top:6px;min-height:38px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px}
+.secbtn{font-size:12px;padding:4px 9px}
+footer{color:var(--muted);font-size:12px;padding:30px 0 50px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>T3/T6 backlog decisions — round 2 (6 Nov 2026)</h1>
+  <div class="sub">One card per question. The recommended option is highlighted. Pick an option (add a note if needed), then <b>Export CSV</b> and send the file to Claude. Answers save in this browser as you go.</div>
+  <div class="bar">
+    <input type="text" id="reviewer" placeholder="Your name" aria-label="Reviewer name">
+    <button id="acceptAll">Accept all recommendations</button>
+    <button class="primary" id="export">Export CSV</button>
+    <button id="clear">Clear</button>
+    <span class="progress" id="progress"></span>
+  </div>
+</div></header>
+<main class="wrap" id="main"></main>
+<div class="wrap"><footer>Round 2: the 13 items returned for more context, plus a follow-up to your A2 note. Your round-1 answers are already recorded. The CSV columns are code, question, choice, choice_label, recommended, note, reviewer, date.</footer></div>
+<script>
+const R="Recommended";
+const SECTIONS=[
+{title:"Follow-up on your answers",note:"Your note on A2 asked a question back; this card answers it.",items:[
+{code:"A2b",q:"When an author prints exactly p = .05, may we count it as significant if the effect is large and precise?",ctx:"Kosmowski 2018 compared terraced with matched unterraced plots in Ethiopia during the 2015 El Niño drought. It prints p = .05 for four results: a 9.5% normal-year yield penalty from terraces, 14% and 13% penalties in low and intermediate dry-day areas, and a +33% gain where dry spells were longest. You chose to apply the 5% rule literally (p = .05 counts as not significant).",affects:"Water harvesting → terracing → drought (currently moderate, very high confidence) and the production rows. Non-significant findings carry less weight, so both the +33% drought benefit and the penalties count less.",opts:[["A","Keep the rule strict: exactly .05 is not significant"],["B","Count it as significant only when the paper's confidence interval or standard error shows the effect clearly excludes zero (checked case by case and noted)"]],rec:"B"}]},
+{title:"A. Rule that changes many rows",note:"",items:[
+{code:"A3",q:"How strong should a finding count when it comes from a ratio, a range, or a single small comparison?",ctx:"Each finding gets a strength (slight, moderate or strong) that sets the scorecard symbol. Some came out 'strong' in ways that may overstate them. (1) Bogie 2018, Senegal: millet next to native Guiera shrubs yielded about 10 times more than millet without shrubs when irrigation was withheld (a two-arm trial). (2) Vaast 2014, West Africa, quoting older trials: cacao in full sun yielded 2.47 times shaded cacao. (3) Massuel 2014, India: silt clogging reduced tank percolation by 4–56%, classed by the midpoint (30%). (4) Rahn 2014, Nicaragua: traditional shaded coffee held 41 vs 16 t carbon/ha in simplified shade — one 10×10 m plot per farm, about 10 farms each, no statistical test.",affects:"(1) AF regeneration farmland → drought (very high). (2) AF shaded perennial → production gap (conflicting). (3) WH → asset threat from sedimentation (moderate). (4) AF shaded perennial → carbon (no class yet).",opts:[["A","Keep two-arm trial ratios as computed; cap one-plot, no-statistics comparisons (Rahn) at moderate; classify ranges by their lower end (Massuel → slight)"],["B","Leave all as computed"],["C","Treat every ratio and range as direction only (no strength)"]],rec:"A"}]},
+{title:"B. Single findings",note:"",items:[
+{code:"B4",q:"Confirm dropping seven Castle 2021 findings that compare certified with non-certified coffee farms",ctx:"Castle et al. 2021 is a Campbell systematic review of agroforestry impacts in low- and middle-income countries. Seven of its findings (yield, income, biodiversity, carbon) come from one study, Haggar 2017, which compared farms certified under coffee standards (Rainforest Alliance, Utz, organic, C.A.F.E.) with non-certified farms. We read Haggar: the authors attribute the differences to certification and to differences between farms that existed before certification — not to shade trees. So these findings measure certification, not agroforestry. They are already set aside (reversibly).",affects:"AF shaded perennial → biodiversity, carbon, production gap and rural poverty. No rating changed when they were removed.",opts:[["A","Confirm the drop"],["B","Restore them"]],rec:"A"},
+{code:"B5",q:"Keep a finding whose authors cannot explain it?",ctx:"Haggar 2017 surveyed 278 coffee farms in Nicaragua. Among farms with the same investment, those with more diverse shade trees earned less: net revenue fell by about US$634/ha per step on a tree-diversity index (significant), and yield also fell (not significant). The authors write that 'it is less obvious why' diversity itself would lower yields. Our rule #39 asks for a stated cause before a finding counts.",affects:"AF shaded perennial → production gap (conflicting) and rural poverty (moderate positive, high confidence) — these add a harm signal.",opts:[["A","Keep at low confidence (a measured result, even if unexplained)"],["B","Drop (no stated cause)"]],rec:"A"},
+{code:"B6",q:"Count carbon held in trees that were later felled and sold?",ctx:"Ram 2011, Haryana, India: eucalyptus planted in blocks on waterlogged canal-irrigated land drew the water table down by 0.85 m and raised wheat yields from 0.6 to 2.2 t/ha. The trees held 15.5 t carbon/ha when harvested — and were then felled and sold as timber, so that carbon was not stored long term. Our rule #39 treats harvested biomass as not stored.",affects:"AF planted silvoarable → carbon (currently strong positive, very high confidence).",opts:[["A","Drop the carbon finding (keep the water-table and yield findings)"],["B","Keep it"]],rec:"A"},
+{code:"B7",q:"Keep modelled benefit-cost ratios from a national restoration assessment?",ctx:"Uganda's Ministry of Water and Environment with IUCN (2016) assessed forest-landscape restoration options. Using assumed yields and prices over 30 years at a 10% discount rate, it modelled benefit-cost ratios of 31.5 for natural regeneration, 13.6 for agroforestry and 1.5 for woodlots. These are projections, not measured returns. Modelled findings can only reach 'moderate'.",affects:"The economic profiles (T6E) for forest restoration and agroforestry; not the main scorecard symbols.",opts:[["A","Keep, marked modelled (capped at moderate)"],["B","Drop (projections with assumed benefits)"]],rec:"A"},
+{code:"B8",q:"One study, two carbon comparisons: keep both?",ctx:"Roshetko 2002 measured carbon in Indonesian (Lampung) homegardens: about 35 t carbon/ha more than nearby Imperata grassland and cassava fields (measured). It then projected a time-averaged figure of about 54 t/ha more over a full homegarden cycle (a model). Both come from the same plots, so counting both double-counts one study.",affects:"AF homegardens → carbon. Homegardens are a text-only family (no map), so this changes the written evidence, not a map.",opts:[["A","Keep the measured comparison only"],["B","Keep both"]],rec:"A"},
+{code:"B10",q:"A salt-marsh finding from a mangrove paper: keep it under wetlands?",ctx:"Krauss 2009 (US Geological Survey) recorded water levels across mangroves and an adjacent salt marsh in Florida during Hurricanes Charley and Wilma. Storm surge fell by 4–9 cm per km through mangrove, and separately by 16.3 cm over about 2.3 km of salt marsh. We filed the marsh result under wetland management (coastal family) because it is about marsh, not mangrove. It describes existing marsh, so it stays out of the overall wetland rating.",affects:"Wetland coastal → flood (family row only).",opts:[["A","Keep under wetlands"],["B","Drop it (the paper is about mangroves)"]],rec:"A"},
+{code:"B12",q:"Food-security gain from farmer-managed natural regeneration: significant or not?",ctx:"Binam 2015 surveyed households in Burkina Faso, Mali, Niger and Senegal practising farmer-managed natural regeneration (FMNR) at low or high intensity. High-intensity households had a 12% higher food consumption score. The paper's percentage table marks this at the 10% level only (not significant under our 5% rule), but its log-scale table — the actual statistical test — marks the same contrast significant at 5%.",affects:"AF regeneration farmland → food insecurity (slight positive, very high confidence).",opts:[["A","Not significant (follow the percentage table, as coded)"],["B","Significant (the log-scale table is the paper's actual test)"]],rec:"B"}]},
+{title:"C. Scope",note:"",items:[
+{code:"C1",q:"Two versions of the same mangrove flood model: which do we keep?",ctx:"Losada 2018 is a Nature Conservancy technical report modelling the global flood protection value of existing mangroves: without them, 39% more people would be flooded each year and US$82 billion more damage. Menéndez 2020 (Scientific Reports) is the peer-reviewed publication of the same model with revised figures (28% more people flooded); it is already in the evidence. The Losada record also has an unresolved DOI problem, so its 9 findings are on hold.",affects:"Mangrove → flood rows. These are existing-mangrove findings, so they sit in the coastal family row, not the overall mangrove rating.",opts:[["A","Keep Menéndez only; drop Losada"],["B","Add Losada too, linked to Menéndez so they count as one study"]],rec:"A"},
+{code:"C5",q:"Split one Chinese terracing meta-analysis across water-harvesting families?",ctx:"Chen 2019 pooled Chinese studies of six terrace-like structures and soil moisture, all called 'terracing' by the authors: level, sloped, reverse-slope and slope-separated terraces, level ditches (+35%) and fish-scale pits (+9%). Our water-harvesting families are defined by how water is caught: terracing (benches, stone bunds), in-situ (pits, ridges, contour ditches that hold rain where it falls) and micro-catchment (a small runoff area feeding a planting pit). We filed level ditches as in-situ and fish-scale pits as micro-catchment.",affects:"WH terracing, in-situ and micro-catchment → water stress rows. Under 'all terracing', the in-situ row loses the +35% ditch result and the terracing row gains it.",opts:[["A","Keep the split (follows how our families are defined)"],["B","File all six under terracing (follows the authors' label)"]],rec:"A"},
+{code:"C7",q:"Add a 'managed forest' option for what a practice is compared with",ctx:"Each finding records what the practice was compared with (its comparator). Orefice 2016 (north-east USA) compared silvopasture made by thinning forest with open pasture and with a thinned woodlot (forest thinned for timber). Our only fitting option was 'unmanaged state' (untouched land), which is wrong for a managed woodlot. 'Unmanaged state' comparisons are kept out of hazard (T3) rows; a 'managed forest' comparator would treat the woodlot as an ordinary alternative land use.",affects:"AF silvopastoral → economic return and the economic profile (one Orefice finding); future forest-based silvopasture studies.",opts:[["A","Add 'managed forest' and retag Orefice"],["B","Leave as 'unmanaged state'"]],rec:"A"},
+{code:"C8",q:"Keep studies of EXISTING forest, peat or mangrove out of the overall restoration ratings",ctx:"Some findings show what keeping an existing ecosystem does, not what restoring one achieves. (1) Somanathan 2009, India: forests managed by village councils had the same broad-leaved cover as state-managed forests, at about one-tenth of the cost. (2) Jauhiainen 2016, Indonesia/Malaysia: undrained peat has the lowest fire risk, drained peat near canals the highest. (3) Krauss 2009: existing mangroves cut storm surge. Our rule tags these 'existing' so they inform the protection / peatland / coastal family rows but not the overall NbS rating. Jauhiainen and Krauss are tagged; Somanathan is not, so it currently counts in the overall forest-restoration rating.",affects:"Forest restoration overall → carbon (moderate positive) and forest-cover rows; Somanathan's findings would move to the protection / community forest family row only.",opts:[["A","Tag Somanathan as existing forest (family row only)"],["B","Leave it counting in the overall forest-restoration rating"]],rec:"A"},
+{code:"C9",q:"Count the value of fish caught inside standing mangroves as a mangrove benefit?",ctx:"Hutchison 2014 (Nature Conservancy / Wetlands International) lists the value of fish, crabs and cockles harvested from standing mangroves per hectare per year at many sites. These are amounts, not comparisons: they do not say what the catch would be without mangroves. If we assume zero (no mangrove, no mangrove fishery), about 10 more positive findings would join the mangrove economics and livelihood rows. Our rule #28 says a level without a comparison is context, not an effect.",affects:"Mangrove → rural poverty (moderate positive, very high confidence) and the economic profile — existing-mangrove evidence, coastal family row.",opts:[["A","No: keep them as context"],["B","Yes: count them, assuming zero catch without mangroves"]],rec:"A"}]}];
+const KEY="t3t6_decisions_round2_2026-11-06";
+let S={answers:{},notes:{},reviewer:""};
+try{const s=localStorage.getItem(KEY);if(s)S=Object.assign(S,JSON.parse(s));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}progress();}
+const ITEMS=SECTIONS.flatMap(s=>s.items);
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function render(){
+  const m=document.getElementById("main");m.innerHTML="";
+  SECTIONS.forEach((sec,si)=>{
+    const h=document.createElement("h2");h.textContent=sec.title;m.appendChild(h);
+    const p=document.createElement("p");p.className="sec-note";p.innerHTML=(sec.note?esc(sec.note)+" ":"")+`<button class="secbtn" data-sec="${si}">Accept recommendations in this section</button>`;m.appendChild(p);
+    sec.items.forEach(it=>{
+      const c=document.createElement("div");c.className="card"+(S.answers[it.code]?" done":"");c.id="card-"+it.code;
+      let html=`<div><span class="code">${it.code}</span><span class="q">${esc(it.q)}</span></div>`;
+      if(it.ctx)html+=`<div class="ctx">${esc(it.ctx)}</div>`;if(it.affects)html+=`<div class="aff"><b>Feeds:</b> ${esc(it.affects)}</div>`;html+=`<div style="height:6px"></div>`;
+      it.opts.forEach(([v,l])=>{const id=it.code+"-"+v;html+=`<label class="opt${v===it.rec?" rec":""}" for="${id}"><input type="radio" name="${it.code}" id="${id}" value="${v}" ${S.answers[it.code]===v?"checked":""}><span><b>${v}.</b> ${esc(l)}${v===it.rec?`<span class="tag">${R}</span>`:""}</span></label>`;});
+      html+=`<textarea data-note="${it.code}" placeholder="Note (optional)">${esc(S.notes[it.code]||"")}</textarea>`;
+      c.innerHTML=html;m.appendChild(c);
+    });
+  });
+  m.querySelectorAll("input[type=radio]").forEach(r=>r.addEventListener("change",e=>{S.answers[e.target.name]=e.target.value;document.getElementById("card-"+e.target.name).classList.add("done");save();}));
+  m.querySelectorAll("textarea").forEach(t=>t.addEventListener("input",e=>{S.notes[e.target.dataset.note]=e.target.value;save();}));
+  m.querySelectorAll(".secbtn").forEach(b=>b.addEventListener("click",e=>{SECTIONS[+e.target.dataset.sec].items.forEach(it=>{S.answers[it.code]=it.rec;});save();render();}));
+  progress();
+}
+function progress(){const n=ITEMS.filter(i=>S.answers[i.code]).length;document.getElementById("progress").textContent=`${n} / ${ITEMS.length} answered`;}
+const rv=document.getElementById("reviewer");rv.value=S.reviewer||"";rv.addEventListener("input",()=>{S.reviewer=rv.value;save();});
+document.getElementById("acceptAll").onclick=()=>{ITEMS.forEach(i=>{if(!S.answers[i.code])S.answers[i.code]=i.rec;});save();render();};
+document.getElementById("clear").onclick=()=>{if(confirm("Clear all answers and notes?")){S.answers={};S.notes={};save();render();}};
+document.getElementById("export").onclick=()=>{
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const d=new Date().toISOString().slice(0,10);
+  const rows=[["code","question","choice","choice_label","recommended","note","reviewer","date"].join(",")];
+  ITEMS.forEach(i=>{const a=S.answers[i.code]||"";const lab=(i.opts.find(o=>o[0]===a)||["",""])[1];rows.push([i.code,i.q,a,lab,i.rec,S.notes[i.code]||"",S.reviewer||"",d].map(q).join(","));});
+  const blob=new Blob([rows.join("\n")+"\n"],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`decisions_t3t6_round2_2026-11-06_${(S.reviewer||"reviewer").replace(/\W+/g,"_")}.csv`;a.click();
+};
+render();
+</script>
+</body>
+</html>
