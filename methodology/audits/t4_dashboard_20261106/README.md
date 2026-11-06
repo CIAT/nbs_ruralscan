@@ -1,5 +1,7 @@
 # Remaining T4 review through the dashboard
 
+6 November follow-up: the remaining 515 active source checks are now documented in [the follow-up audit](../t4_remaining_source_checks_20261106/README.md) and dashboard queues. Counts below describe the earlier handoff.
+
 6 November 2026. Nine explicit Keep decisions (eight reviewed cards plus elevation)
 applied through normal review handling. All 6,369 evidence rows and all source payloads
 preserved. See `../t4_followup_20261106/eight_plus_elevation_application.json`.
