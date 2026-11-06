@@ -85,6 +85,8 @@ _RULESETS = {
     "v1.9.7",
     # v1.9.8: retain quantitative regional profiles for compatible-source synthesis
     "v1.9.8",
+    # v1.9.9: catalogue #57, ranges by weaker end, single-plot cap, p = .05 case by case
+    "v1.9.9",
 }
 
 

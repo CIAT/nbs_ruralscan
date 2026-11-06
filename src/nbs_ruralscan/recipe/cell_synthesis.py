@@ -75,6 +75,16 @@ SIZE_SPARSE_SHARE = 1 / 3
 SIZE_SPARSE_MIN_UNITS = 3
 
 
+def range_floor(nums: list[float]) -> float:
+    """The weakest end of a reported range (T3/T6 backlog A3, Pete 2026-11-06).
+
+    A range is classed by its lower end, not its midpoint: 4–56% → 4. A range that
+    spans zero has no assured effect, so its floor is 0."""
+    if len(nums) > 1 and min(nums) < 0 < max(nums):
+        return 0.0
+    return min(nums, key=abs)
+
+
 def bundle_factor(unit: EvidenceUnit) -> float:
     ctx = unit.context or {}
     if str(ctx.get("attribution") or "") != "bundled":
@@ -575,11 +585,12 @@ def unit_rank(
         lo, hi = rel.get("magnitude_low"), rel.get("magnitude_high")
         nums = [float(x) for x in (lo, hi) if isinstance(x, (int, float))]
         if nums and str(rel.get("metric") or "") not in ("narrative", ""):
-            # a RANGE is a quantified claim: class its midpoint rather than treating the
-            # unit as direction-only (43 units; e.g. "seedling mortality 35–40%")
+            # a RANGE is a quantified claim: class its weakest end rather than treating
+            # the unit as direction-only (43 units; e.g. "seedling mortality 35–40%").
+            # T3/T6 backlog A3 (Pete 2026-11-06): lower end, not midpoint.
             cls = classify_magnitude(
                 str(rel.get("metric") or ""),
-                sum(nums) / len(nums),
+                range_floor(nums),
                 bands if bands is not None else _default_bands(),
                 unit=str(rel.get("unit") or ""),
                 income_band=income_band,
