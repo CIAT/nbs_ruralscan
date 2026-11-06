@@ -28,6 +28,7 @@ from .binding_requirements import (
     validate_matching_input as _validate_matching_input,
 )
 from .numeric_bands import source_completion
+from .calibration_requirements import calibration_requirement
 from .inclusion import inclusion_estimates
 from ..runtime.binding import Binding, resolve_binding
 from ..runtime.categorical import evaluate_categorical
@@ -179,6 +180,8 @@ def _binding(
 
 
 def _options(row, evidence, sources, countries):
+    if calibration_requirement(row):
+        return []
     params = obj(row["relationship_params"], {})
     profiles = [
         p
@@ -556,13 +559,14 @@ def build_contract(
         )
         system, rule_id = raw["suitability_family_id"], raw["mapping_id"]
         operational = raw.get("is_scenario_candidate", "").lower() == "true"
+        calibration_hold = calibration_requirement(raw)
         role = (
             "operational_scenario"
             if operational
             else "eligibility_gate"
             if "class_map" in params
             else "suitability_score"
-            if params.get("profiles")
+            if params.get("profiles") or calibration_hold
             else "hard_exclusion"
         )
         options = _options(raw, evidence, sources, evidence_countries)
@@ -622,6 +626,8 @@ def build_contract(
             ):
                 raise ValueError(f"Invalid target system for {rule_id}")
             applicability = "explicit_decision_recorded"
+        elif calibration_hold:
+            blockers.append("Numerical calibration held: " + calibration_hold["reason"])
         elif role == "eligibility_gate":
             selected = options[0]
             applicability = "recipe_host_design"

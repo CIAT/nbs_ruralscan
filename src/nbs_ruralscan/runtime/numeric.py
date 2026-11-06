@@ -8,8 +8,13 @@ from __future__ import annotations
 import json
 import numpy as np
 
+from ..recipe.calibration_requirements import calibration_requirement
+
 
 def evaluate_numeric(row, values, *, profile_id=None, pool_id=None):
+    hold = calibration_requirement(row)
+    if hold:
+        raise ValueError("Numerical calibration held: " + hold["reason"])
     params = row["relationship_params"]
     if isinstance(params, str):
         params = json.loads(params)

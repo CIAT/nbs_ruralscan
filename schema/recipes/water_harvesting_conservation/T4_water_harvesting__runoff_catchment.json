@@ -42,15 +42,10 @@
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-    "suitability_family_id": "water_harvesting__runoff_catchment",
-    "variable": "runoff_potential_index",
-    "variable_unit": "index_or_native",
-    "dataset_id": "",
+    "nbs_id": "water_harvesting_conservation",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
-      "abs_min": 75.0,
-      "opt_low": 80.0,
       "reviewed_adaptation": {
         "dataset_binding": {
           "status": "requires_matching_input",
@@ -60,19 +55,35 @@
           "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
           "scope": "water_harvesting__runoff_catchment__runoff_potential_index",
           "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+        },
+        "numerical_calibration": {
+          "status": "held",
+          "reason": "The inherited 75/80 pair is not a standalone runoff suitability calibration. Vema reports fuzzy Curve Number input memberships; the five sources use incompatible native CN, runoff-depth and runoff-coefficient quantities. Retain complete source profiles for quantity- and system-compatible synthesis before approving a replacement.",
+          "scope": "water_harvesting__runoff_catchment__runoff_potential_index",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-06",
+          "decision_ref": "methodology/audits/t4_calibration_hold_applied_20261106/user_decision.md",
+          "source_profiles_ref": "methodology/audits/t4_binding_holds_applied_20261106/next_calibration_decision.json",
+          "held_relationship": {
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 75.0,
+              "opt_low": 80.0
+            },
+            "uncertainty_pct": "60.0"
+          },
+          "approval_scope": "Hold the inherited combined numerical function only. Keep all five source profiles and their existing review states. No replacement curve, scores, pooling, source drops or new evidence approval."
         }
       }
     },
-    "uncertainty_pct": 60.0,
     "context_overrides": [],
-    "justification": "Reconciled from 5 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 75.0, 'opt_low': 80.0}; uncertainty ±60% from spread.  Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
-    "references": [
-      "dewinnaar_2007_gis_runoff_thukela",
-      "fuzzy_ahp_2017_wh_zones",
-      "karimi_2019_runoff_map_rwh_zones",
-      "mahmoud_2016_mcda_gis_wh_recharge",
-      "singh_2019_fuzzy_wh_structure_rainfed"
-    ],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.1111,
+    "weight_adjustable": true,
+    "justification": "Reviewed numerical calibration hold (Peter, 2026-11-06): inherited 75/80 function and its derived uncertainty are historical only, archived in reviewed_adaptation.numerical_calibration. All five source profiles, native classes/ranges, directions, labelled weights and evidence links are retained for compatible synthesis. No replacement or source approval. Separate approved dataset-binding hold remains in force. Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+    "variable": "runoff_potential_index",
+    "suitability_family_id": "water_harvesting__runoff_catchment",
     "evidence_ids": [
       "ev_wh_runoff_potential_index_dewinnaar07_1",
       "ev_wh_runoff_potential_index_alabadi17_1",
@@ -80,9 +91,10 @@
       "ev_wh_runoff_potential_index_singh17_1",
       "ev_wh_runoff_potential_index_vema19_1"
     ],
-    "paper_support_pct": 35.8,
     "n_sources": 5,
-    "corpus_n": 13
+    "corpus_n": 13,
+    "paper_support_pct": 35.8,
+    "dataset_id": ""
   },
   {
     "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
