@@ -38,10 +38,12 @@ Producer documentation checked 6 November 2026:
 These references inform implementation interpretation only; no SRC/EV intake is implied.
 Existing v1.9.6 T4 contract already requires explicit proxy meaning and reviewed transfer.
 
-## Application status
+## Application status (superseded by completed batch application)
 
 Human Keep is recorded in `pending_ranchi_review_export.csv`; register application awaits
 completion of the review batch. Preserve `scoping_candidate`, original NDVI variable and
 source payload. Source-payload fingerprint (all fields except reviewer_ok, review_state,
 attribution):
 365888e15b1df572e6255217827ce93791cd5717e8071ec61088c127e8a76a6a
+
+**Applied 6 November 2026:** normal review helper approved this decision. See `eight_plus_elevation_application.json` and `applied_eight_plus_elevation_export.csv`. Historical queued-status text above records the state when the decision was captured; the Keep is now applied. Source payloads remain unchanged.

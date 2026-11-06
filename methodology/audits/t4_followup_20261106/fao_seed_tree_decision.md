@@ -20,7 +20,7 @@ universal cutoff. No normalized scores, global exclusion or specific species-to-
 assignment is invented. Compatible source recommendations can inform later synthesis;
 this source alone does not determine the final recipe.
 
-## Application status
+## Application status (superseded by completed batch application)
 
 Decision added to `pending_ranchi_review_export.csv` (shared batch export, historical
 filename). Four approved decisions are now queued: elevation, NDVI, slope, seed trees.
@@ -29,3 +29,5 @@ retain this complete quantified approval scope; earlier qualitative-only framing
 not override Pete's decision. Numeric implementation/proxy design remains a separate step.
 Source-payload fingerprint excluding reviewer_ok, review_state, attribution:
 1819420afb95bb484c4e76fd087c4c432fcd65b44a9ca23584c15a31f9bf71ba
+
+**Applied 6 November 2026:** normal review helper approved this decision. See `eight_plus_elevation_application.json` and `applied_eight_plus_elevation_export.csv`. Historical queued-status text above records the state when the decision was captured; the Keep is now applied. Source payloads remain unchanged.

@@ -37,7 +37,7 @@ automatic blanket downgrade of regional tables. Preserve complete tables, condit
 and provenance for synthesis; aggregation does not cure incompatible measurements or
 turn several dependent sources into independent support.
 
-## Application status
+## Application status (superseded by completed batch application)
 
 Human decision recorded in `pending_ranchi_review_export.csv`; application awaits the
 batch. Current `scoping_candidate` compiler status does not erase the table or overrule
@@ -46,3 +46,5 @@ numeric promotion/harmonisation separately rather than treating this as directio
 Source payload remains unchanged. Fingerprint excluding reviewer_ok, review_state,
 attribution:
 6d75cdda27fa6b03ebf96cca7eefabbcf081932abc124d8eaeeb08b4e1f46926
+
+**Applied 6 November 2026:** normal review helper approved this decision. See `eight_plus_elevation_application.json` and `applied_eight_plus_elevation_export.csv`. Historical queued-status text above records the state when the decision was captured; the Keep is now applied. Source payloads remain unchanged.

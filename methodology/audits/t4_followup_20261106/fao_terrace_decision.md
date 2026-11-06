@@ -18,3 +18,5 @@ Approval recorded in shared `pending_ranchi_review_export.csv`. Application repo
 will track normal review handling for all nine approvals (eight cards plus elevation).
 Source-payload fingerprint excluding reviewer_ok, review_state, attribution:
 9dc2135c882f607d72f6654e15b3a83fcedbd1b9e6643f3a43d509d4cc042183
+
+**Applied 6 November 2026:** normal review helper approved this decision. See `eight_plus_elevation_application.json` and `applied_eight_plus_elevation_export.csv`. Historical queued-status text above records the state when the decision was captured; the Keep is now applied. Source payloads remain unchanged.
