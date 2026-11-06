@@ -3,6 +3,7 @@
 (function () {
   'use strict';
   var html =
+    '<div class="programme-brand" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:4px 24px;background:var(--paper);border-bottom:1px solid var(--line)"><a href="https://www.worldbank.org/en/programs/nbs-invest" aria-label="NBS Invest programme at the World Bank"><img src="assets/nbs-invest-logo.jpg" alt="NBS Invest — Accelerating Nature Based Solutions in Least Developed Countries" width="195" height="110" style="display:block;object-fit:contain;background:white"></a><div><b>Rural NbS Scan</b><br><span>Visual methodology · Alliance–World Bank co-design</span></div><a href="help.html">Help / Contact / Team</a></div>' +
     '<div class="vbar" role="region" aria-label="Mock-up versions"><div class="vb-in">' +
       '<label for="v1b-version">Version</label>' +
       '<select id="v1b-version" aria-describedby="v1b-version-note">' +

@@ -448,3 +448,15 @@ Use `recipe.relationship_catalogue` visibility flags and tests; inspect context 
 lineage before proposing correction. Counts of explicit mapping links do not measure
 independent support, review completion or total evidence use. A display fix grants no
 human approval and does not advance review-feedback learning cursors.
+
+
+55. **Published numeric classes can be scientifically implausible for recipe use**
+(Pete, 2026-11-06; Ranchi rainfall's 1,150–1,170 mm moderate class). Exact quote matching
+proves transcription, not calibration validity. Apply the T4 review contract's numeric
+plausibility gate during extraction, independent review and synthesis: inspect class
+width against measurement support/uncertainty, false precision, unexplained jumps,
+missing tails, proxy semantics and ecological transfer. Keep source values and supported
+qualitative evidence; unresolved numeric use remains held pending justification and
+explicit approval. No universal 20 mm rejection rule, invented uncertainty, automatic
+drop or silently widened intervals. Existing scoping-candidate compilation holds remain;
+this scientific assessment requires documented review, not a claim of automated validation.

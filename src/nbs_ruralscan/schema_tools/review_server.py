@@ -270,13 +270,42 @@ def _load() -> dict:
 _STORE_LOCK = threading.RLock()
 
 
-def _save(d: dict) -> None:
-    STORE.parent.mkdir(parents=True, exist_ok=True)
+def _save(d: dict, *, path: Path | None = None) -> None:
+    target = path if path is not None else STORE
+    target.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(d, indent=2)
     with _STORE_LOCK:
-        tmp = STORE.with_name(STORE.name + f".tmp.{os.getpid()}")
+        tmp = target.with_name(target.name + f".tmp.{os.getpid()}")
         tmp.write_text(payload, encoding="utf-8")
-        os.replace(tmp, STORE)  # atomic on the same filesystem
+        os.replace(tmp, target)  # atomic on the same filesystem
+
+
+def _stage_review_action(mutate):
+    from nbs_ruralscan.schema_tools.review import ReviewFiles, stage_review_records
+
+    return stage_review_records(
+        mutate, files=ReviewFiles.from_root(ROOT), decision_store=STORE
+    )
+
+
+def _review_rebuild_error(error: Exception, *, full: bool) -> dict:
+    import shlex
+
+    method = "generate" if full else "refresh_review_state"
+    script = (
+        f"from nbs_ruralscan.schema_tools.generate import {method}; "
+        f"{method}({str(ROOT / 'schema')!r})"
+    )
+    return {
+        "error": (
+            "Review records saved, but dashboard rebuilding failed. "
+            "Keep any reported recovery copies and reconcile incomplete rollback first. "
+            "Retry rebuilding without repeating Reopen or Challenge: "
+            f"uv run python -c {shlex.quote(script)}\n{error}"
+        ),
+        "records_saved": True,
+        "rebuild_required": True,
+    }
 
 
 def _git_version() -> dict:
@@ -777,15 +806,23 @@ class Handler(SimpleHTTPRequestHandler):
                         "message": "no agreed units to apply",
                     },
                 )
+
+            def apply_records(files, staged_store):
+                res = apply_decisions(decisions, "consensus", files=files)
+                for eid in decisions:  # keep history and other reviewers' calls
+                    for rv in store.get(eid, {}):
+                        store[eid][rv]["applied"] = True
+                _save(store, path=staged_store)
+                return res
+
             try:
-                res = apply_decisions(decisions, "consensus")
-                generate(ROOT / "schema")
+                res = _stage_review_action(apply_records)
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"error": str(e)})
-            for eid in decisions:  # mark applied; keep the record (history + re-review)
-                for rv in store.get(eid, {}):
-                    store[eid][rv]["applied"] = True
-            _save(store)
+            try:
+                generate(ROOT / "schema")
+            except Exception as e:  # noqa: BLE001
+                return self._json(500, _review_rebuild_error(e, full=True))
             return self._json(200, {"ok": True, **res, "conflicts": conflicts})
 
         if self.path == "/api/submit":
@@ -884,18 +921,27 @@ class Handler(SimpleHTTPRequestHandler):
                 if (v.get("decision") or "").strip()
             }
             conflict = len(set(decs.values())) > 1
-            _save(store)
             reopened = 0
             if conflict and not payload.get("reviewed_conflict"):
                 from nbs_ruralscan.schema_tools.review import reopen_units
                 from nbs_ruralscan.schema_tools.generate import refresh_review_state
 
+                def challenge_records(files, staged_store):
+                    res = reopen_units([eid], rev, files=files)
+                    _save(store, path=staged_store)
+                    return res
+
                 try:
-                    res = reopen_units([eid], rev)
-                    refresh_review_state(ROOT / "schema")
+                    res = _stage_review_action(challenge_records)
                     reopened = res.get("reopened", 0)
                 except Exception as e:  # noqa: BLE001
                     return self._json(500, {"error": str(e)})
+                try:
+                    refresh_review_state(ROOT / "schema")
+                except Exception as e:  # noqa: BLE001
+                    return self._json(500, _review_rebuild_error(e, full=False))
+            else:
+                _save(store)
             return self._json(
                 200,
                 {
@@ -916,19 +962,27 @@ class Handler(SimpleHTTPRequestHandler):
             from nbs_ruralscan.schema_tools.review import reopen_units
             from nbs_ruralscan.schema_tools.generate import refresh_review_state
 
-            try:
-                res = reopen_units(eids, rev)
+            store = _load()
+
+            def reopen_records(files, staged_store):
+                res = reopen_units(eids, rev, files=files)
                 # Clear only this reviewer's saved call; other reviewers stay intact.
-                store = _load()
                 for eid in eids:
                     if eid in store:
                         store[eid].pop(rev, None)
                         if not store[eid]:
                             store.pop(eid)
-                _save(store)
-                refresh_review_state(ROOT / "schema")
+                _save(store, path=staged_store)
+                return res
+
+            try:
+                res = _stage_review_action(reopen_records)
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"error": str(e)})
+            try:
+                refresh_review_state(ROOT / "schema")
+            except Exception as e:  # noqa: BLE001
+                return self._json(500, _review_rebuild_error(e, full=False))
             return self._json(200, {"ok": True, **res})
 
         if self.path == "/api/clear":

@@ -30,408 +30,54 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import csv
-import json
-from collections import Counter
 from pathlib import Path
-from typing import Any
 
-from nbs_ruralscan.recipe import cell_synthesis as cs
-from nbs_ruralscan.recipe import prose as P
-from nbs_ruralscan.recipe.evidence import EvidenceUnit, load_units
+from nbs_ruralscan.recipe import t3t6_build as build
+from nbs_ruralscan.recipe.t3t6_build import T3T6BuildInputs
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMA = ROOT / "schema"
 REG = SCHEMA / "registers"
 LOOK = SCHEMA / "lookups"
-
-# column orders as frozen in schema/structure/columns.json (v0.4.0) — required + optional + conditional
-T3_FIELDS = [
-    "record_id",
-    "nbs_id",
-    "hazard_type",
-    "farming_system",
-    "mitigation_potential",
-    "mitigation_mechanism",
-    "confidence",
-    "timescale_of_effect",
-    "landscape_scale_only",
-    "caveats",
-    "justification",
-    "risk_role",
-    "evidence_ids",
-    "suitability_family_id",
-    "scope_type",
-    "scope_id",
-    "applicability",
-    "family_spread",
-    "evidence_level",
-    "agreement_level",
-    "context_dependent",
-    "asset_sensitivity",
-    "asset_risk_weight",
-]
-T6_FIELDS = [
-    "record_id",
-    "nbs_id",
-    "variable_id",
-    "variable_type",
-    "effect_direction",
-    "effect_confidence",
-    "effect_mechanism",
-    "conditionality",
-    "timescale_of_effect",
-    "economic_indicator_type",
-    "economic_value_range",
-    "justification",
-    "economic_archetype_id",
-    "evidence_ids",
-    "suitability_family_id",
-    "scope_type",
-    "scope_id",
-    "applicability",
-    "family_spread",
-    "magnitude_summary",
-    "evidence_level",
-    "agreement_level",
-    "context_dependent",
-]
-T3_HAZARDS = cs.T3_HAZARDS
-COMPARATOR_POLICY = cs.load_comparator_policy(LOOK / "comparator_policy.csv")
-# per-NbS route exclusions (Pete 2026-10-19: a variable-level XW route can carry a causal
-# presumption that fails for one NbS — wetland cooling has no rural receptor)
-XW_ROUTE_POLICY = cs.load_xw_route_policy(LOOK / "xw_route_policy.csv")
-# families parked out of the NbS roll-up but keeping their own rows (Pete 2026-10-19:
-# plantation forestry is tree farming, not forest restoration)
-FAMILY_ROLLUP_POLICY = cs.load_family_rollup_policy(LOOK / "family_rollup_policy.csv")
+cs = build.cs
+T3_FIELDS, T6_FIELDS, T3_HAZARDS = build.T3_FIELDS, build.T6_FIELDS, build.T3_HAZARDS
+synthesise = build.synthesise
+_summary = build._summary
 
 
-def _rd(path: Path) -> list[dict[str, str]]:
-    with path.open(newline="", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
+def crop_scope_policy(nbs_id, *, inputs=None):
+    selected = inputs or T3T6BuildInputs.from_root(ROOT, nbs_id)
+    return build.crop_scope_policy(nbs_id, path=selected.crop_policy)
 
 
-def _cell(v: Any) -> str:
-    if v is None:
-        return ""
-    if isinstance(v, bool):
-        return "true" if v else "false"
-    if isinstance(v, (dict, list)):
-        return json.dumps(v, ensure_ascii=False)
-    return str(v)
-
-
-def crop_scope_policy(nbs_id: str) -> bool | frozenset[str]:
-    """`allow_crop_scope` for an NbS from `schema/lookups/crop_scope_policy.csv`.
-
-    A row with an empty `suitability_family_id` sets the NbS-wide policy (returns True).
-    Family rows re-include crop_specific units of THOSE families only (returns the set) —
-    e.g. AF F5 shaded perennials, wetland peatland paludiculture. Until 2026-10-22 family
-    rows were ignored here, so those ratified rulings never reached T3/T6.
-    Default False = the species/crop lock (`claim_scope=crop_specific` routed out)."""
-    path = SCHEMA / "lookups" / "crop_scope_policy.csv"
-    if not path.exists():
-        return False
-    fams: set[str] = set()
-    with path.open(newline="", encoding="utf-8") as f:
-        for r in csv.DictReader(f):
-            if r["nbs_id"] != nbs_id:
-                continue
-            if str(r.get("allow_crop_scope") or "").lower() != "true":
-                continue
-            fam = (r.get("suitability_family_id") or "").strip()
-            if not fam:
-                return True
-            fams.add(fam)
-    return frozenset(fams) if fams else False
-
-
-def load_inputs(nbs_id: str, staging: list[Path]) -> dict[str, Any]:
-    src = _rd(REG / "SRC_source_register.csv")
-    tiers = {r["source_id"]: (r["benchmark_tier"] or "medium").lower() for r in src}
-    categories = {r["source_id"]: r.get("source_category", "") for r in src}
-    # SRC.study_country is free text ("Brazil; Colombia; Mexico", "Global"): normalise to
-    # ISO3 here so the envelope never carries a raw name (riparian prose review 2026-10-01)
-    name_to_iso3 = {
-        r["country_name"]: r["iso3"] for r in _rd(LOOK / "wb_income_groups.csv")
-    }
-    src_contexts: dict[str, dict[str, Any]] = {}
-    unresolved: dict[str, list[str]] = {}
-    for r in src:
-        codes, bad = cs.normalise_countries(r.get("study_country", ""), name_to_iso3)
-        if bad:
-            unresolved[r["source_id"]] = bad
-        src_contexts[r["source_id"]] = {
-            "country": codes,
-            "aez": r.get("aez", ""),
-            "farming_system": r.get("farming_system", ""),
-            "income_group": r.get("study_income_group", ""),
-        }
-    xw = cs.load_xw(REG / "XW_target_crosswalk.csv")
-    income = cs.load_income_lookup(LOOK / "wb_income_groups.csv")
-    matrix = cs.load_confidence_matrix(LOOK / "ipcc_confidence_matrix.csv")
-    # a `qualitative_only` family (FAM.spatial_product_type) is parked out of the scored
-    # tables: its evidence stays in the register for Module 6 hand-off material but never
-    # sets a T3/T6 class (Pete 2026-10-06: rooftop / household cisterns are a built domestic
-    # supply technology, not a landscape NbS)
-    parked = {
-        r["suitability_family_id"]
-        for r in _rd(REG / "FAM_family_registry.csv")
-        if r["nbs_id"] == nbs_id
-        and r.get("spatial_product_type") == "qualitative_only"
-        # the cross-cutting envelope meta-tag is qualitative_only too, but it is a
-        # tagging value for pooled evidence, not a parked practice
-        and not r["subpractice_id"].startswith("cross_cutting_envelope")
-    }
-    units = [
-        u
-        for u in load_units(REG / "EV_evidence_register.json")
-        if u.nbs_id == nbs_id
-        and u.use_role in cs.EFFECT_ROLES
-        # soft-deleted rows stay in the register as records; the engine skips them per
-        # cell, but the run report must not count them as pooled (2026-10-06)
-        and getattr(u, "review_state", "") != "dropped"
-        and u.suitability_family_id not in parked
-    ]
-    for p in staging:
-        units += [
-            u
-            for u in load_units(p)
-            if u.nbs_id == nbs_id and u.use_role in cs.EFFECT_ROLES
-        ]
-    return {
-        "units": units,
-        "parked_families": sorted(parked),
-        "tiers": tiers,
-        "categories": categories,
-        "src_contexts": src_contexts,
-        "src_country_unresolved": unresolved,
-        "xw": xw,
-        "income": income,
-        "matrix": matrix,
-    }
-
-
-def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
-    units: list[EvidenceUnit] = inp["units"]
-    xw: list[cs.XWRow] = cs.filter_xw(inp["xw"], nbs_id, XW_ROUTE_POLICY)
-    common: dict[str, Any] = {
-        "categories": inp["categories"],
-        "src_contexts": inp["src_contexts"],
-        "income_lookup": inp["income"],
-        "matrix": inp["matrix"],
-        "xw_rows": xw,
-        # crop_specific re-inclusion is a per-NbS policy read from the schema, never
-        # hardcoded (schema/lookups/crop_scope_policy.csv; Pete 2026-10-06 for WH)
-        "allow_crop_scope": crop_scope_policy(nbs_id),
-    }
-    t3_rows: list[dict[str, Any]] = []
-    t6_rows: list[dict[str, Any]] = []
-    report: dict[str, Any] = {
-        "nbs_id": nbs_id,
-        "n_units_pooled": len(units),
-        "parked_families": inp.get("parked_families", []),
-        "units_by_role": dict(Counter(u.use_role for u in units)),
-        "cells": [],
-        "dropped": [],
-        "collapsed": [],
-        "excluded_economics": [],
-        "weights_incomplete": [],
-        "notes": [],
-    }
-    live_vars = {u.variable for u in units if u.use_role == "nbs_effect"}
-    routed_vars = {x.ev_variable for x in xw}
-    report["unmapped_variables"] = sorted(
-        {
-            v: sum(1 for u in units if u.variable == v and u.use_role == "nbs_effect")
-            for v in live_vars - routed_vars
-        }.items()
+def load_inputs(nbs_id, staging, *, inputs=None):
+    return build.load_inputs(
+        nbs_id, staging, inputs=inputs or T3T6BuildInputs.from_root(ROOT, nbs_id)
     )
 
-    def _collect(rows, rep, table, key):
-        report["cells"].append(
-            {
-                "table": table,
-                "cell": key,
-                "rows": len(rows),
-                "used": len(rep.used),
-                "scope_rows": rep.scope_rows_emitted,
-            }
-        )
-        report["dropped"] += [(table, key, *d) for d in rep.dropped]
-        report["collapsed"] += [(table, key, *c) for c in rep.collapsed]
-        report["excluded_economics"] += [
-            (table, key, *e) for e in rep.excluded_economics
-        ]
-        report["notes"] += rep.notes
 
-    # ── T6: every XW T6 target (priorities + economic indicators) ──
-    for key in sorted({x.target_key for x in xw if x.target_table == "T6"}):
-        rows, rep = cs.synthesise_cell_with_families(
-            units,
-            inp["tiers"],
-            table="T6",
-            nbs_id=nbs_id,
-            comparator_policy=COMPARATOR_POLICY,
-            family_rollup_policy=FAMILY_ROLLUP_POLICY,
-            target_key=key,
-            **common,
-        )
-        if rows:
-            t6_rows += rows
-            _collect(rows, rep, "T6", key)
-
-    # ── T3 mitigation: every XW T3 hazard × the farming systems present (+ all) ──
-    fs_present = sorted(
-        {str((u.context or {}).get("farming_system") or "all") for u in units} | {"all"}
+def write_recipe(nbs_id, out, *, dry_run, inputs=None, output_dir=None):
+    return build.write_recipe(
+        nbs_id,
+        out,
+        dry_run=dry_run,
+        inputs=inputs or T3T6BuildInputs.from_root(ROOT, nbs_id),
+        output_dir=output_dir
+        if output_dir is not None
+        else SCHEMA / "recipes" / nbs_id,
     )
-    for hz in sorted({x.target_key for x in xw if x.target_table == "T3"}):
-        for fs in fs_present:
-            rows, rep = cs.synthesise_cell_with_families(
-                units,
-                inp["tiers"],
-                table="T3",
-                nbs_id=nbs_id,
-                comparator_policy=COMPARATOR_POLICY,
-                family_rollup_policy=FAMILY_ROLLUP_POLICY,
-                target_key=hz,
-                farming_system=fs,
-                **common,
-            )
-            if rows:
-                t3_rows += rows
-                _collect(rows, rep, "T3", f"{hz}__{fs}")
-
-    # ── T3 asset threat: per hazard (+ asset-only hazards), from asset_vulnerability units ──
-    for hz in T3_HAZARDS + cs.ASSET_ONLY_HAZARDS:
-        rows, rep = cs.synthesise_cell_with_families(
-            units,
-            inp["tiers"],
-            table="T3",
-            nbs_id=nbs_id,
-            comparator_policy=COMPARATOR_POLICY,
-            family_rollup_policy=FAMILY_ROLLUP_POLICY,
-            target_key=hz,
-            role="asset_vulnerability",
-            **common,
-        )
-        if rows:
-            t3_rows += rows
-            _collect(rows, rep, "T3", f"asset_threat__{hz}")
-    cs.apply_effect_locus(t3_rows, cs.load_effect_locus(LOOK / "effect_locus.csv"))
-    weights = cs.asset_risk_weights(t3_rows, nbs_id)
-    if weights is None:
-        if any(r.get("risk_role") == "asset_threat" for r in t3_rows):
-            report["weights_incomplete"].append(nbs_id)
-    else:
-        for r in t3_rows:
-            if (
-                r.get("risk_role") == "asset_threat"
-                and not r.get("scope_type")
-                and not r.get("suitability_family_id")
-            ):
-                r["asset_risk_weight"] = weights[r["hazard_type"]]
-
-    # Pete 2026-10-23 (row review D8): cost rows are not scorecard effects — they move to the
-    # NbS economic profile (T6E, feeds the econometric / economic-archetype profiles), and
-    # cost per tCO2e is a feasibility-level figure, not generated at scoping grade
-    econ = [r for r in t6_rows if r.get("variable_type") == "economic_indicator"]
-    report["dropped_economics"] = sorted(
-        {
-            r["record_id"]
-            for r in econ
-            if r.get("variable_id") in cs.FEASIBILITY_ONLY_ECON
-        }
-    )
-    t6e_rows = [r for r in econ if r.get("variable_id") not in cs.FEASIBILITY_ONLY_ECON]
-    t6_rows = [r for r in t6_rows if r.get("variable_type") != "economic_indicator"]
-    report["t3_rows"] = len(t3_rows)
-    report["t6_rows"] = len(t6_rows)
-    report["t6e_rows"] = len(t6e_rows)
-    return {"T3": t3_rows, "T6": t6_rows, "T6E": t6e_rows, "report": report}
-
-
-def write_recipe(nbs_id: str, out: dict[str, Any], *, dry_run: bool) -> list[Path]:
-    rdir = SCHEMA / "recipes" / nbs_id
-    written: list[Path] = []
-    # prose sidecar (contract §5): re-apply AI-written mechanism/conditionality only to rows
-    # whose evidence_ids are exactly what the prose was written against; else stays pending
-    sidecar = P.load_sidecar(rdir)
-    for table, fields, fname in (
-        ("T3", T3_FIELDS, "T3_nbs_hazard_farming.csv"),
-        ("T6", T6_FIELDS, "T6_nbs_scorecard.csv"),
-        ("T6E", T6_FIELDS, "T6E_economic_profile.csv"),
-    ):
-        rows = out[table]
-        if sidecar:
-            # T6E rows carry the T6 columns, so prose lands on the T6 field names
-            applied, stale = P.apply_prose(
-                rows, "T6" if table == "T6E" else table, sidecar
-            )
-            print(
-                f"{table}: prose applied to {applied} row(s); {stale} stale (evidence changed → pending)"
-            )
-        path = rdir / fname
-        if dry_run:
-            print(f"[dry-run] {path}: {len(rows)} row(s)")
-            continue
-        rdir.mkdir(parents=True, exist_ok=True)
-        with path.open("w", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(
-                f, fieldnames=fields, lineterminator="\n", extrasaction="ignore"
-            )
-            w.writeheader()
-            for r in rows:
-                w.writerow({c: _cell(r.get(c)) for c in fields})
-        written.append(path)
-    rp = rdir / "T3T6_synthesis_report.json"
-    if not dry_run:
-        rp.write_text(
-            json.dumps(out["report"], ensure_ascii=False, indent=2, default=str) + "\n",
-            encoding="utf-8",
-        )
-        written.append(rp)
-    return written
-
-
-def _summary(out: dict[str, Any]) -> str:
-    lines = [
-        "| table | record_id | class | evidence×agreement→confidence | n | transfer | strength |",
-        "|---|---|---|---|---|---|---|",
-    ]
-    for table in ("T3", "T6", "T6E"):
-        for r in out[table]:
-            cls = (
-                r.get("effect_direction")
-                or r.get("mitigation_potential")
-                or r.get("asset_sensitivity")
-            )
-            conf = r.get("confidence") or r.get("effect_confidence")
-            app = r.get("applicability") or {}
-            sb = (r.get("justification") or {}).get("strength_basis", "")
-            lines.append(
-                f"| {table} | {r['record_id']} | {cls} | {r['evidence_level']}×{r['agreement_level']}→{conf} | {r.get('n_sources')} | {app.get('transfer_class')} | {sb} |"
-            )
-    rep = out["report"]
-    lines.append("")
-    lines.append(
-        f"pooled units {rep['n_units_pooled']} {rep['units_by_role']}; T3 rows {rep['t3_rows']}; T6 rows {rep['t6_rows']}"
-    )
-    if rep["unmapped_variables"]:
-        lines.append(f"unmapped variables: {rep['unmapped_variables']}")
-    if rep["excluded_economics"]:
-        lines.append(f"excluded economics: {len(rep['excluded_economics'])}")
-    if rep["weights_incomplete"]:
-        lines.append(
-            f"asset_risk_weight blank (incomplete hazard set): {rep['weights_incomplete']}"
-        )
-    return "\n".join(lines)
 
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     ap.add_argument("nbs_id")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument(
+        "--source-root", type=Path, help="Read an independent input snapshot"
+    )
+    ap.add_argument(
+        "--output-dir", type=Path, help="Write the four candidate recipe files here"
+    )
     ap.add_argument(
         "--staging",
         nargs="*",
@@ -445,7 +91,29 @@ def main(argv: list[str] | None = None) -> int:
             "--staging is preview-only; add --dry-run (register units must pass the central gates first)"
         )
         return 2
-    inp = load_inputs(args.nbs_id, staging)
+    source = (args.source_root or ROOT).resolve()
+    inputs = T3T6BuildInputs.from_root(source, args.nbs_id)
+    if args.source_root and not args.output_dir and not args.dry_run:
+        ap.error(
+            "--source-root requires --output-dir for writing; use --dry-run for a preview"
+        )
+    output = (
+        args.output_dir
+        if args.output_dir is not None
+        else source / "schema/recipes" / args.nbs_id
+    )
+    if args.output_dir:
+        resolved = output.resolve()
+        for protected in (source, ROOT.resolve()):
+            if (
+                resolved == protected
+                or resolved.is_relative_to(protected)
+                or protected.is_relative_to(resolved)
+            ):
+                ap.error(
+                    "--output-dir must be separate from the input snapshot and compiler checkout"
+                )
+    inp = load_inputs(args.nbs_id, staging, inputs=inputs)
     out = synthesise(args.nbs_id, inp)
     print(_summary(out))
     used = {u.source_id for u in inp["units"]}
@@ -454,8 +122,10 @@ def main(argv: list[str] | None = None) -> int:
         print(
             f"SRC.study_country tokens not resolved to ISO3 (dropped from envelopes): {bad}"
         )
-    for p in write_recipe(args.nbs_id, out, dry_run=args.dry_run):
-        print("wrote", p.relative_to(ROOT))
+    for path in write_recipe(
+        args.nbs_id, out, dry_run=args.dry_run, inputs=inputs, output_dir=output
+    ):
+        print("wrote", path.relative_to(ROOT) if path.is_relative_to(ROOT) else path)
     return 0
 
 

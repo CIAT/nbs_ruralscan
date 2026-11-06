@@ -883,3 +883,19 @@ tbody.collapsed tr:not(.gh) { display: none; }
 .mult-lg .sw i { display:inline-block; width:18px; height:10px; margin-right:4px; border:1px solid var(--rule); }
 /* Component display rules must not override conditional form visibility. */
 [hidden] { display:none !important; }
+
+.dl-pair { flex-wrap:wrap; }
+.export-unavailable { display:inline-block; padding:6px 10px; border:1px dashed var(--rule); border-radius:var(--r); color:var(--ink-2); font-size:var(--t13); cursor:default; }
+
+/* Reading pages share one measure; maps retain the wider canvas. */
+.home.wrap, .help-page.wrap { max-width:calc(760px + 2 * var(--gutter)); text-align:left; }
+.home .question, .help-page .question,
+.home .lede, .help-page .lede,
+.home .hs .col, .home .hs .two > div, .home .hs .use dd { max-width:none; }
+.home .hs .two, .help-page .tp-grid { grid-template-columns:minmax(0,1fr); gap:24px; }
+.home .chapter, .help-page .chapter { padding:36px 0 16px; }
+.home .hs { padding-top:28px; margin-top:24px; }
+.home .strip { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.help-page .acc .a-body { margin-left:0; max-width:none; }
+.help-page p, .help-page li { overflow-wrap:anywhere; }
+@media(max-width:600px) { .home .strip { grid-template-columns:repeat(2,minmax(0,1fr)); } }

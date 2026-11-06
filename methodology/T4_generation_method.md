@@ -837,6 +837,10 @@ extensions; this implementation combines compatible step profiles only.
 
 Pete ratified three independent assessments: variable use, suitability direction and numeric calibration. Supported directional claims remain evidence even when no executable curve is defensible. Counts are deduplicated by independent lineage, variable and compatible system/context; source weights do not become runtime weights. Extraction and adversarial review follow [.agents/skills/extraction_contracts/T4_review_contract.md](../.agents/skills/extraction_contracts/T4_review_contract.md), including full-table coverage, shared-weight handling and retention of unresolved source values. Earlier instructions to discard direction solely for lacking a scale are superseded.
 
+### Numeric plausibility before recipe calibration (6 November 2026)
+
+Published classes must pass the [T4 review contract's numeric plausibility gate](../.agents/skills/extraction_contracts/T4_review_contract.md): check measurement support and uncertainty, class widths and precision, mechanisms for transitions, proxy semantics and context transfer. Exact transcription and approval of variable use do not approve numerical calibration. Preserve source values and supported qualitative direction while unresolved numeric use remains held. The Ranchi 20 mm annual-rainfall band motivated this clarification; no universal band-width threshold or automatic evidence deletion is introduced.
+
 ## Within-study relative importance — decision 21 October 2026
 
 Raw percentages are not directly comparable across models with different variable counts and hierarchies. Pete accepted the relative-to-mean and hierarchy-adjusted comparison conventions, including three theoretical tests, recorded in [T4 variable importance](T4_variable_importance.md). Preserve raw weights, branch structure, flat ratios and local ranks; use hierarchy-adjusted ratios as the primary hierarchical comparison. Implementation and real-source validation remain next steps; this decision does not change runtime weights.

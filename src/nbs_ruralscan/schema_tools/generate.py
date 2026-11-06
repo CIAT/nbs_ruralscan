@@ -553,20 +553,46 @@ def _safe_console() -> None:
 
 
 def refresh_review_state(schema_root: str | Path) -> None:
-    """Refresh review-only UI artifacts; full source validation still runs on Apply.
+    """Stage review-only UI artifacts; full source validation still runs on Apply.
 
     Reopening changes review metadata, not source claims. Avoid re-reading every PDF
-    before returning the editable card to the reviewer.
+    before returning the editable card to the reviewer. Caught publication failures
+    restore prior artifacts; review records have their own publication boundary.
     """
-    schema_root = Path(schema_root)
-    path = schema_root / "registers/EV_evidence_register.csv"
-    path.with_suffix(".json").write_text(
-        json.dumps(_csv_to_rows(path), ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-        newline="\n",
-    )
-    generate_dashboard_data(schema_root)
-    generate_progress_report(schema_root)
+    from nbs_ruralscan.schema_tools.publication import staged_publish
+
+    paths = SchemaBuildPaths(Path(schema_root))
+    evidence = paths.schema / "registers/EV_evidence_register.csv"
+    destinations = [
+        evidence.with_suffix(".json"),
+        paths.docs_output / "dashboard_data.json",
+    ]
+    # Keep the existing no-source-register behavior: no progress artifact is made.
+    if (paths.schema / "registers/SRC_source_register.csv").exists():
+        destinations.append(paths.docs_output / "progress.json")
+
+    def render(staged: SchemaBuildPaths) -> list[Path]:
+        dest = staged.schema_output / "registers/EV_evidence_register.json"
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        dest.write_text(
+            json.dumps(_csv_to_rows(evidence), ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+            newline="\n",
+        )
+        changed = [dest]
+        changed.extend(
+            generate_dashboard_data(
+                paths.schema, dest=staged.docs_output / "dashboard_data.json"
+            )
+        )
+        changed.extend(
+            generate_progress_report(
+                paths.schema, dest=staged.docs_output / "progress.json"
+            )
+        )
+        return changed
+
+    staged_publish(paths, destinations, render)
 
 
 def validate_inputs(paths: SchemaBuildPaths) -> None:
