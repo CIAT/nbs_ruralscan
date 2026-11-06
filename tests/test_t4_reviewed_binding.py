@@ -1,6 +1,7 @@
 """Reviewed matching-input holds survive recipe and family-output regeneration."""
 
 from copy import deepcopy
+from dataclasses import replace
 import csv
 import json
 
@@ -110,3 +111,95 @@ def test_ordinary_profile_metadata_does_not_create_binding_policy(tmp_path):
     ] = {"status": "requires_matching_input", "reason": "Not a reviewed adaptation"}
     write_recipe("example", results, vont, inputs=inputs, output_dir=tmp_path / "out")
     assert read(tmp_path / "out")["scoped"]["dataset_id"] == "generic_proxy"
+
+
+def reviewed_baseline(tmp_path):
+    inputs, results, vont = case(tmp_path)
+    output = tmp_path / "baseline"
+    write_recipe("example", results, vont, inputs=inputs, output_dir=output)
+    path = output / "T4_suitability_mappings.csv"
+    with path.open() as handle:
+        reader = csv.DictReader(handle)
+        fields, rows = reader.fieldnames, list(reader)
+    assert fields is not None
+    requirement = {
+        "status": "requires_matching_input",
+        "reason": "Reviewed measurement required.",
+        "reviewer": "Peter",
+        "decision_ref": "reviewed-binding-decision",
+        "scope": "scoped__distance",
+    }
+    for row in rows:
+        if row["suitability_family_id"] == "scoped":
+            params = json.loads(row["relationship_params"])
+            params["reviewed_adaptation"] = {"dataset_binding": requirement}
+            row["relationship_params"] = json.dumps(params)
+            row["dataset_id"] = ""
+    with path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    return replace(inputs, audited_recipe=path), results, vont, requirement
+
+
+@pytest.mark.parametrize("missing_family", [False, True])
+def test_mapping_hold_survives_disappearance_and_reappearance(tmp_path, missing_family):
+    inputs, results, vont, requirement = reviewed_baseline(tmp_path)
+    original = deepcopy(results)
+    reduced = {"ordinary": results["ordinary"]}
+    if not missing_family:
+        reduced["scoped"] = FamilyResult(family="scoped", corpus_n=None)
+    first = tmp_path / "empty_round"
+    write_recipe("example", reduced, vont, inputs=inputs, output_dir=first)
+    held = read(first)["scoped"]
+    assert held["dataset_id"] == ""
+    assert "no new numeric synthesis or approval" in held["justification"]
+    assert json.loads(held["evidence_ids"]) == ["scoped_evidence"]
+    family_rows = json.loads((first / "T4_scoped.json").read_text())
+    assert len(family_rows) == 1 and family_rows[0]["dataset_id"] == ""
+    assert family_rows[0]["relationship_params"]["reviewed_adaptation"] == {
+        "dataset_binding": requirement
+    }
+
+    # The next compiler sees the last output, not the original baseline.
+    next_inputs = replace(inputs, audited_recipe=first / "T4_suitability_mappings.csv")
+    reappeared = deepcopy(results)
+    params = reappeared["scoped"].rows[0]["relationship_params"]
+    params["profiles"] = [{"profile_id": "new-scientific-profile"}]
+    params["reviewed_adaptation"] = {"independent_metadata": "preserve"}
+    before = deepcopy(reappeared)
+    second = tmp_path / "reappeared"
+    write_recipe("example", reappeared, vont, inputs=next_inputs, output_dir=second)
+    actual = read(second)
+    assert actual["scoped"]["dataset_id"] == ""
+    regenerated = json.loads(actual["scoped"]["relationship_params"])
+    assert regenerated["profiles"] == params["profiles"]
+    assert regenerated["reviewed_adaptation"] == {
+        "independent_metadata": "preserve",
+        "dataset_binding": requirement,
+    }
+    assert actual["ordinary"]["dataset_id"] == "generic_proxy"
+    assert actual["ordinary"] == read(tmp_path / "baseline")["ordinary"]
+    assert reappeared == before and results == original
+
+
+@pytest.mark.parametrize("binding", [None, {}, {"status": "ready", "reason": "x"}])
+def test_malformed_authoritative_row_hold_fails_before_publication(tmp_path, binding):
+    inputs, results, vont, _ = reviewed_baseline(tmp_path)
+    text = inputs.audited_recipe.read_text()
+    with inputs.audited_recipe.open() as handle:
+        reader = csv.DictReader(handle)
+        fields, rows = reader.fieldnames, list(reader)
+    assert fields is not None
+    params = json.loads(rows[0]["relationship_params"])
+    params["reviewed_adaptation"]["dataset_binding"] = binding
+    rows[0]["relationship_params"] = json.dumps(params)
+    with inputs.audited_recipe.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fields)
+        writer.writeheader()
+        writer.writerows(rows)
+    assert inputs.audited_recipe.read_text() != text
+    output = tmp_path / "invalid"
+    with pytest.raises(ValueError, match="Invalid reviewed dataset binding"):
+        write_recipe("example", results, vont, inputs=inputs, output_dir=output)
+    assert not (output / "T4_suitability_mappings.csv").exists()

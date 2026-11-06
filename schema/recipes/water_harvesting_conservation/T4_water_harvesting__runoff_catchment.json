@@ -45,16 +45,27 @@
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "variable": "runoff_potential_index",
     "variable_unit": "index_or_native",
-    "dataset_id": "[\"scs_cn_runoff_composite\"]",
+    "dataset_id": "",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 75.0,
-      "opt_low": 80.0
+      "opt_low": 80.0,
+      "reviewed_adaptation": {
+        "dataset_binding": {
+          "status": "requires_matching_input",
+          "reason": "The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-06",
+          "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
+          "scope": "water_harvesting__runoff_catchment__runoff_potential_index",
+          "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+        }
+      }
     },
     "uncertainty_pct": 60.0,
     "context_overrides": [],
-    "justification": "Reconciled from 5 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 75.0, 'opt_low': 80.0}; uncertainty ±60% from spread. ",
+    "justification": "Reconciled from 5 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 75.0, 'opt_low': 80.0}; uncertainty ±60% from spread.  Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
     "references": [
       "dewinnaar_2007_gis_runoff_thukela",
       "fuzzy_ahp_2017_wh_zones",
@@ -111,18 +122,29 @@
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "variable": "stream_order",
     "variable_unit": "ordinal",
-    "dataset_id": "[\"scs_cn_runoff_composite\",\"srtm_dem_30m\"]",
+    "dataset_id": "",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
       "abs_min": 1.0,
       "opt_low": 2.0,
       "opt_high": 2.0,
-      "abs_max": 4.0
+      "abs_max": 4.0,
+      "reviewed_adaptation": {
+        "dataset_binding": {
+          "status": "requires_matching_input",
+          "reason": "HydroBASINS ORDER is a classical hierarchy with the main stem numbered 1, not the Strahler order required by this mapping. It cannot be substituted unchanged. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-06",
+          "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
+          "scope": "water_harvesting__runoff_catchment__stream_order",
+          "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+        }
+      }
     },
     "uncertainty_pct": 60.0,
     "context_overrides": [],
-    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 1.0, 'opt_low': 2.0, 'opt_high': 2.0, 'abs_max': 4.0}; uncertainty ±60% from spread. ",
+    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 1.0, 'opt_low': 2.0, 'opt_high': 2.0, 'abs_max': 4.0}; uncertainty ±60% from spread.  Dataset binding unresolved; requires matching input: HydroBASINS ORDER is a classical hierarchy with the main stem numbered 1, not the Strahler order required by this mapping. It cannot be substituted unchanged. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
     "references": [
       "kadam2012_scscn_india_rwh",
       "mahmoud_2016_mcda_gis_wh_recharge",
@@ -170,15 +192,26 @@
     "suitability_family_id": "water_harvesting__runoff_catchment",
     "variable": "drainage_density",
     "variable_unit": "km/km2",
-    "dataset_id": "[\"scs_cn_runoff_composite\",\"srtm_dem_30m\"]",
+    "dataset_id": "",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
-      "opt_high": 0.25
+      "opt_high": 0.25,
+      "reviewed_adaptation": {
+        "dataset_binding": {
+          "status": "requires_matching_input",
+          "reason": "Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-06",
+          "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
+          "scope": "water_harvesting__runoff_catchment__drainage_density",
+          "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+        }
+      }
     },
     "uncertainty_pct": 60.0,
     "context_overrides": [],
-    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 0.25}; uncertainty ±60% from spread. ",
+    "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 0.25}; uncertainty ±60% from spread.  Dataset binding unresolved; requires matching input: Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
     "references": [
       "karimi_2019_runoff_map_rwh_zones",
       "mahmoud_2016_mcda_gis_wh_recharge",

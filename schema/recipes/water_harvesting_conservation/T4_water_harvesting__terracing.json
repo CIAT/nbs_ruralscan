@@ -125,15 +125,26 @@
     "suitability_family_id": "water_harvesting__terracing",
     "variable": "runoff_potential_index",
     "variable_unit": "index_or_native",
-    "dataset_id": "[\"scs_cn_runoff_composite\"]",
+    "dataset_id": "",
     "suitability_dimension": "biophysical_constraint",
     "relationship_type": "trapezoidal",
     "relationship_params": {
-      "opt_low": 0.9
+      "opt_low": 0.9,
+      "reviewed_adaptation": {
+        "dataset_binding": {
+          "status": "requires_matching_input",
+          "reason": "The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-06",
+          "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
+          "scope": "water_harvesting__terracing__runoff_potential_index",
+          "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+        }
+      }
     },
     "uncertainty_pct": 20.0,
     "context_overrides": [],
-    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 0.9}; uncertainty ±20% from spread. ",
+    "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 0.9}; uncertainty ±20% from spread.  Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
     "references": [
       "gismcda_swc_siting_2014"
     ],
