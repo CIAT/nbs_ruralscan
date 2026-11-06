@@ -1,0 +1,646 @@
+{
+  "baseline": "f31f0d1de8932958517866d16683475bf89674cc",
+  "comparison": "Separate baseline wrapper and candidate explicit-path CLI processes, same disposable selected paths; exact queue/cache/library bytes, output messages and HTTP request sequences match without normalization. Candidate compiler has no schema or pipeline during comparison.",
+  "maintained_readonly_rows": {
+    "queue": 922,
+    "sources": 743
+  },
+  "synthetic_cases": 22,
+  "fixture": "Synthetic PDFs, fixed fetch clock and mocked HTTP only. Maintained rows are selector guards, not reacquired or reverified. No private corpus or real library touched.",
+  "steps": [
+    {
+      "step": "selected_date",
+      "result": {
+        "exit": 0,
+        "outcomes": [
+          {
+            "blocker": "",
+            "source_id": "parity_direct",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_direct.pdf",
+            "url": "https://example.invalid/direct.pdf"
+          },
+          {
+            "blocker": "needs_ocr (scanned PDF, no text layer)",
+            "source_id": "parity_ocr",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_ocr.pdf",
+            "url": "https://example.invalid/ocr.pdf"
+          },
+          {
+            "blocker": "document identity hold \u2014 https://example.invalid/title_hold.pdf: downloaded PDF does not match the citation title on its opening pages; wrong documents, scans and chapters require document identity verification",
+            "source_id": "parity_title_hold",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/title_hold.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_wayback",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_wayback.pdf",
+            "url": "https://example.invalid/recovered.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_unpaywall",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_unpaywall.pdf",
+            "url": "https://example.invalid/unpaywall.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_html_meta",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_html_meta.pdf",
+            "url": "https://example.invalid/meta.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_html_href",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_html_href.pdf",
+            "url": "https://example.invalid/href.pdf"
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no URL/DOI route; human browser download / OA web-search recovery",
+            "source_id": "parity_missing",
+            "status": "pending",
+            "target_library_path": "",
+            "url": ""
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery",
+            "source_id": "parity_http_failure",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/http_failure.pdf"
+          },
+          {
+            "blocker": "library copy held \u2014 Existing artifact differs: /private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-acquisition-queue.fq8jis6a/selected-data/library-volume/archive/library/fixture/parity_collision.pdf; reconcile before replacement",
+            "source_id": "parity_collision",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/collision.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_identical",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_identical.pdf",
+            "url": "https://example.invalid/identical.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_cached",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_cached.pdf",
+            "url": "https://example.invalid/cached.pdf"
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery",
+            "source_id": "parity_malformed",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/malformed.pdf"
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery",
+            "source_id": "parity_orphan",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/orphan.pdf"
+          },
+          {
+            "blocker": "HUMAN CHECK: retained",
+            "source_id": "parity_human",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/human.pdf"
+          },
+          {
+            "blocker": "paywalled (verified no OA copy)",
+            "source_id": "parity_paywall",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/paywall.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_other_date",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/other_date.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_other_nbs",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/other_nbs.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_substring",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/substring.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_tokens",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_tokens.pdf",
+            "url": "https://example.invalid/tokens.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_acquired",
+            "status": "acquired",
+            "target_library_path": "",
+            "url": "https://example.invalid/acquired.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "../parity_bad",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/invalid.pdf"
+          }
+        ],
+        "requests": [
+          {
+            "url": "https://example.invalid/direct.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/ocr.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/title_hold.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/wayback.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/recovered.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://api.unpaywall.org/v2/10.9999/fixture?email=p.steward@cgiar.org",
+            "user_agent": null
+          },
+          {
+            "url": "https://example.invalid/unpaywall.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/meta",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/meta",
+            "user_agent": "Mozilla/5.0 (Macintosh) nbs-ruralscan evidence pipeline (p.steward@cgiar.org)"
+          },
+          {
+            "url": "https://example.invalid/meta.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/href",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/href",
+            "user_agent": "Mozilla/5.0 (Macintosh) nbs-ruralscan evidence pipeline (p.steward@cgiar.org)"
+          },
+          {
+            "url": "https://example.invalid/href.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/http_failure.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/http_failure.pdf",
+            "user_agent": "curl/8.7.1"
+          },
+          {
+            "url": "https://example.invalid/collision.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/identical.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/tokens.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ],
+        "stdout": "Counter({'ok': 9, 'fail': 7, 'skip': 2})\n  [fail] parity_title_hold: document identity hold \u2014 https://example.invalid/title_hold.pdf: downloaded PDF does not match the citation title on its opening pages; wrong documents, scans and chapters require document identity verification\n  [fail] parity_missing: no URL/DOI route\n  [fail] parity_http_failure: no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy)\n  [fail] parity_collision: library copy held \u2014 Existing artifact differs: /private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-acquisition-queue.fq8jis6a/selected-data/library-volume/archive/library/fixture/parity_collision.pdf; reconcile before replacement\n  [fail] parity_malformed: no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy)\n  [fail] parity_orphan: no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy)\n  [skip] parity_human: human / verified paywalled\n  [skip] parity_paywall: human / verified paywalled\n  [fail] ../parity_bad: Invalid source_id: '../parity_bad'; expected a filename-safe ID\n"
+      },
+      "changed": [
+        "external-cache/parity_collision.meta.json",
+        "external-cache/parity_collision.pdf",
+        "external-cache/parity_direct.meta.json",
+        "external-cache/parity_direct.pdf",
+        "external-cache/parity_html_href.meta.json",
+        "external-cache/parity_html_href.pdf",
+        "external-cache/parity_html_meta.meta.json",
+        "external-cache/parity_html_meta.pdf",
+        "external-cache/parity_identical.meta.json",
+        "external-cache/parity_identical.pdf",
+        "external-cache/parity_ocr.meta.json",
+        "external-cache/parity_ocr.pdf",
+        "external-cache/parity_tokens.meta.json",
+        "external-cache/parity_tokens.pdf",
+        "external-cache/parity_unpaywall.meta.json",
+        "external-cache/parity_unpaywall.pdf",
+        "external-cache/parity_wayback.meta.json",
+        "external-cache/parity_wayback.pdf",
+        "library-volume/archive/library/fixture/parity_cached.pdf",
+        "library-volume/archive/library/fixture/parity_direct.pdf",
+        "library-volume/archive/library/fixture/parity_html_href.pdf",
+        "library-volume/archive/library/fixture/parity_html_meta.pdf",
+        "library-volume/archive/library/fixture/parity_ocr.pdf",
+        "library-volume/archive/library/fixture/parity_tokens.pdf",
+        "library-volume/archive/library/fixture/parity_unpaywall.pdf",
+        "library-volume/archive/library/fixture/parity_wayback.pdf",
+        "pipeline/acquisition_queue.csv"
+      ],
+      "inventory_sha256": "7bab4752acc3e01b0c2f615d790e63ba8e239c7f42865daa134fc2585a5753f9"
+    },
+    {
+      "step": "all_dates",
+      "result": {
+        "exit": 0,
+        "outcomes": [
+          {
+            "blocker": "",
+            "source_id": "parity_direct",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_direct.pdf",
+            "url": "https://example.invalid/direct.pdf"
+          },
+          {
+            "blocker": "needs_ocr (scanned PDF, no text layer)",
+            "source_id": "parity_ocr",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_ocr.pdf",
+            "url": "https://example.invalid/ocr.pdf"
+          },
+          {
+            "blocker": "document identity hold \u2014 https://example.invalid/title_hold.pdf: downloaded PDF does not match the citation title on its opening pages; wrong documents, scans and chapters require document identity verification",
+            "source_id": "parity_title_hold",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/title_hold.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_wayback",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_wayback.pdf",
+            "url": "https://example.invalid/recovered.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_unpaywall",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_unpaywall.pdf",
+            "url": "https://example.invalid/unpaywall.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_html_meta",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_html_meta.pdf",
+            "url": "https://example.invalid/meta.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_html_href",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_html_href.pdf",
+            "url": "https://example.invalid/href.pdf"
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no URL/DOI route; human browser download / OA web-search recovery",
+            "source_id": "parity_missing",
+            "status": "pending",
+            "target_library_path": "",
+            "url": ""
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery",
+            "source_id": "parity_http_failure",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/http_failure.pdf"
+          },
+          {
+            "blocker": "library copy held \u2014 Existing artifact differs: /private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-acquisition-queue.fq8jis6a/selected-data/library-volume/archive/library/fixture/parity_collision.pdf; reconcile before replacement",
+            "source_id": "parity_collision",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/collision.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_identical",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_identical.pdf",
+            "url": "https://example.invalid/identical.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_cached",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_cached.pdf",
+            "url": "https://example.invalid/cached.pdf"
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery",
+            "source_id": "parity_malformed",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/malformed.pdf"
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery",
+            "source_id": "parity_orphan",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/orphan.pdf"
+          },
+          {
+            "blocker": "HUMAN CHECK: retained",
+            "source_id": "parity_human",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/human.pdf"
+          },
+          {
+            "blocker": "paywalled (verified no OA copy)",
+            "source_id": "parity_paywall",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/paywall.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_other_date",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_other_date.pdf",
+            "url": "https://example.invalid/other_date.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_other_nbs",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/other_nbs.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_substring",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/substring.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_tokens",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_tokens.pdf",
+            "url": "https://example.invalid/tokens.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_acquired",
+            "status": "acquired",
+            "target_library_path": "",
+            "url": "https://example.invalid/acquired.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "../parity_bad",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/invalid.pdf"
+          }
+        ],
+        "requests": [
+          {
+            "url": "https://example.invalid/title_hold.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/http_failure.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/http_failure.pdf",
+            "user_agent": "curl/8.7.1"
+          },
+          {
+            "url": "https://example.invalid/other_date.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ],
+        "stdout": "Counter({'fail': 7, 'skip': 2, 'ok': 1})\n  [fail] parity_title_hold: document identity hold \u2014 https://example.invalid/title_hold.pdf: downloaded PDF does not match the citation title on its opening pages; wrong documents, scans and chapters require document identity verification\n  [fail] parity_missing: no URL/DOI route\n  [fail] parity_http_failure: no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy)\n  [fail] parity_collision: library copy held \u2014 Existing artifact differs: /private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-acquisition-queue.fq8jis6a/selected-data/library-volume/archive/library/fixture/parity_collision.pdf; reconcile before replacement\n  [fail] parity_malformed: no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy)\n  [fail] parity_orphan: no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy)\n  [skip] parity_human: human / verified paywalled\n  [skip] parity_paywall: human / verified paywalled\n  [fail] ../parity_bad: Invalid source_id: '../parity_bad'; expected a filename-safe ID\n"
+      },
+      "changed": [
+        "external-cache/parity_other_date.meta.json",
+        "external-cache/parity_other_date.pdf",
+        "library-volume/archive/library/fixture/parity_other_date.pdf",
+        "pipeline/acquisition_queue.csv"
+      ],
+      "inventory_sha256": "10fce5dd1fb9c688d93a5f63246a2bf33e80fb49c7f09d9e1bd206545977b882"
+    },
+    {
+      "step": "repeat",
+      "result": {
+        "exit": 0,
+        "outcomes": [
+          {
+            "blocker": "",
+            "source_id": "parity_direct",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_direct.pdf",
+            "url": "https://example.invalid/direct.pdf"
+          },
+          {
+            "blocker": "needs_ocr (scanned PDF, no text layer)",
+            "source_id": "parity_ocr",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_ocr.pdf",
+            "url": "https://example.invalid/ocr.pdf"
+          },
+          {
+            "blocker": "document identity hold \u2014 https://example.invalid/title_hold.pdf: downloaded PDF does not match the citation title on its opening pages; wrong documents, scans and chapters require document identity verification",
+            "source_id": "parity_title_hold",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/title_hold.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_wayback",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_wayback.pdf",
+            "url": "https://example.invalid/recovered.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_unpaywall",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_unpaywall.pdf",
+            "url": "https://example.invalid/unpaywall.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_html_meta",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_html_meta.pdf",
+            "url": "https://example.invalid/meta.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_html_href",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_html_href.pdf",
+            "url": "https://example.invalid/href.pdf"
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no URL/DOI route; human browser download / OA web-search recovery",
+            "source_id": "parity_missing",
+            "status": "pending",
+            "target_library_path": "",
+            "url": ""
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery",
+            "source_id": "parity_http_failure",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/http_failure.pdf"
+          },
+          {
+            "blocker": "library copy held \u2014 Existing artifact differs: /private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-acquisition-queue.fq8jis6a/selected-data/library-volume/archive/library/fixture/parity_collision.pdf; reconcile before replacement",
+            "source_id": "parity_collision",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/collision.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_identical",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_identical.pdf",
+            "url": "https://example.invalid/identical.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_cached",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_cached.pdf",
+            "url": "https://example.invalid/cached.pdf"
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery",
+            "source_id": "parity_malformed",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/malformed.pdf"
+          },
+          {
+            "blocker": "tool acquisition failed \u2014 no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy); human browser download / OA web-search recovery",
+            "source_id": "parity_orphan",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/orphan.pdf"
+          },
+          {
+            "blocker": "HUMAN CHECK: retained",
+            "source_id": "parity_human",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/human.pdf"
+          },
+          {
+            "blocker": "paywalled (verified no OA copy)",
+            "source_id": "parity_paywall",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/paywall.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_other_date",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_other_date.pdf",
+            "url": "https://example.invalid/other_date.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_other_nbs",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/other_nbs.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_substring",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/substring.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_tokens",
+            "status": "acquired",
+            "target_library_path": "archive/library/fixture/parity_tokens.pdf",
+            "url": "https://example.invalid/tokens.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "parity_acquired",
+            "status": "acquired",
+            "target_library_path": "",
+            "url": "https://example.invalid/acquired.pdf"
+          },
+          {
+            "blocker": "",
+            "source_id": "../parity_bad",
+            "status": "pending",
+            "target_library_path": "",
+            "url": "https://example.invalid/invalid.pdf"
+          }
+        ],
+        "requests": [
+          {
+            "url": "https://example.invalid/title_hold.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/http_failure.pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/http_failure.pdf",
+            "user_agent": "curl/8.7.1"
+          }
+        ],
+        "stdout": "Counter({'fail': 7, 'skip': 2})\n  [fail] parity_title_hold: document identity hold \u2014 https://example.invalid/title_hold.pdf: downloaded PDF does not match the citation title on its opening pages; wrong documents, scans and chapters require document identity verification\n  [fail] parity_missing: no URL/DOI route\n  [fail] parity_http_failure: no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy)\n  [fail] parity_collision: library copy held \u2014 Existing artifact differs: /private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-acquisition-queue.fq8jis6a/selected-data/library-volume/archive/library/fixture/parity_collision.pdf; reconcile before replacement\n  [fail] parity_malformed: no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy)\n  [fail] parity_orphan: no candidate URL yielded a PDF (landing page / 403 / no Unpaywall copy)\n  [skip] parity_human: human / verified paywalled\n  [skip] parity_paywall: human / verified paywalled\n  [fail] ../parity_bad: Invalid source_id: '../parity_bad'; expected a filename-safe ID\n"
+      },
+      "changed": [],
+      "inventory_sha256": "10fce5dd1fb9c688d93a5f63246a2bf33e80fb49c7f09d9e1bd206545977b882"
+    }
+  ]
+}

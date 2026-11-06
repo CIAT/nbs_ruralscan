@@ -125,6 +125,7 @@ def staged_publish(
     render: Callable[[SchemaBuildPaths], list[Path]],
     *,
     optional_destinations: tuple[Path, ...] = (),
+    create_only_destinations: tuple[Path, ...] = (),
     markdown_destinations: tuple[Path, ...] = (),
     artifact_validators: Mapping[Path, Callable[[Path], None]] | None = None,
     dry_run: bool = False,
@@ -139,6 +140,8 @@ def staged_publish(
     and validates the same staged set, then returns changes without installation.
     Other artifact formats require a named, read-only validator for each allowed
     destination. Validators add checks; they never bypass CSV/JSON validation.
+    Create-only destinations accept identical existing bytes, refuse changes, and
+    publish new files exclusively without replacing a competing writer's file.
     """
     paths.preflight(destinations)
     output = paths.output_root or paths.source_root
@@ -149,6 +152,13 @@ def staged_publish(
         raise ValueError(
             "Optional destinations must belong to the publication allowlist"
         )
+    if not set(create_only_destinations).issubset(destinations):
+        raise ValueError(
+            "Create-only destinations must belong to the publication allowlist"
+        )
+    create_only = frozenset(
+        path.relative_to(output) for path in create_only_destinations
+    )
     if not set(markdown_destinations).issubset(destinations) or any(
         p.suffix != ".md" for p in markdown_destinations
     ):
@@ -188,6 +198,10 @@ def staged_publish(
                 staged.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(output / name, backup)
                 shutil.copy2(backup, staged)
+                if name in create_only:
+                    # Immutable inputs may be read-only; only this private copy
+                    # needs to be writable while rendering a comparison.
+                    staged.chmod(stat.S_IMODE(previous[2]) | stat.S_IWUSR)
                 if (
                     _state(output / name) != before[name]
                     or _digest(backup) != previous[0]
@@ -217,6 +231,9 @@ def staged_publish(
             if str(name) in manifest
             and (previous is None or previous[0] != manifest[str(name)]["sha256"])
         ]
+        for name in changed:
+            if name in create_only and before[name] is not None:
+                raise ValueError(f"Create-only destination differs: {output / name}")
         if dry_run:
             return [output / name for name in changed]
         # Prepare every replacement before installing any file. These temporary
@@ -242,13 +259,32 @@ def staged_publish(
             # Register the attempt before the syscall: an interrupt can arrive
             # after replacement succeeds but before Python bookkeeping resumes.
             installed[name] = replacement_state
-            os.replace(prepared[name], destination)
+            if name in create_only:
+                os.link(prepared[name], destination)
+                prepared[name].unlink()
+            else:
+                os.replace(prepared[name], destination)
         return [output / name for name in changed]
     except BaseException as error:
         failures = []
         for name, installed_state in reversed(list(installed.items())):
             destination = output / name
             try:
+                if name in create_only:
+                    temp = prepared[name]
+                    # A caught failure can follow a successful link before its
+                    # temporary name is removed. Release only our proven link;
+                    # then the normal independent-file preflight remains strict.
+                    if (
+                        installed_state is not None
+                        and destination.absolute() == destination.resolve()
+                        and temp.absolute() == temp.resolve()
+                        and _state(destination) == installed_state
+                        and _state(temp) == installed_state
+                        and destination.stat().st_nlink == 2
+                        and temp.stat().st_nlink == 2
+                    ):
+                        temp.unlink()
                 paths.preflight([destination])
                 current = _state(destination)
                 if current == before[name]:

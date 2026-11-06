@@ -1,6 +1,6 @@
 # M08: acquired artifact and provenance recovery
 
-Date: 6 November 2026. Baseline: `0223429763d6f23597479b00f96bc6f891f6d749` (merged PR #616). Status: implemented; pending merge. This internal receipt stays in CIAT, outside destination product repositories.
+Date: 6 November 2026. Baseline: `0223429763d6f23597479b00f96bc6f891f6d749` (merged PR #616). Status: merged in PR #619 at `f31f0d1de8932958517866d16683475bf89674cc`. This internal receipt stays in CIAT, outside destination product repositories.
 
 ## Result and boundary
 
