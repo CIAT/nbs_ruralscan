@@ -200,6 +200,42 @@ def test_staging_valid_source_passes_and_historical_t4_stamp_allowed(staging):
     assert module.gate([unit], {"structural_suitability"}) == []
 
 
+@pytest.mark.parametrize("bad_summary", [1, "1", True, [], {}, None])
+def test_staging_rejects_truncated_observed_summary_without_rewriting(
+    staging, bad_summary
+):
+    fitz = pytest.importorskip("fitz")
+    module, unit, identity = staging
+    quote = "Observed rainfall classes: 751 - 1 000 mm; 1 001 - 1 500 mm."
+    path = module.CORPUS / "paper.pdf"
+    with fitz.open() as doc:
+        doc.new_page().insert_text((50, 50), "Paper\n" + quote)
+        doc.save(path)
+    identity["artifact_sha1"] = hashlib.sha1(path.read_bytes()).hexdigest()
+    write_csv(module.REG / "SRC_source_register.csv", [identity])
+    write_csv(module.QUEUE, [identity])
+    unit.update(
+        variable="annual_precipitation",
+        evidence_type="scoping_candidate",
+        quote=quote,
+        relationship={
+            "type": "observed_presence",
+            "observed_classes": ["751 - 1 000 mm", "1 001 - 1 500 mm"],
+            "observed_min": 751,
+            "observed_max": bad_summary,
+            "unit": "mm",
+        },
+    )
+    before = (module.REG / "EV_evidence_register.csv").read_bytes()
+    errors = module.gate([unit], {"structural_suitability"})
+    assert len(errors) == 1
+    assert "observed_max=" in errors[0]
+    assert unit["relationship"]["observed_max"] == bad_summary
+    assert (module.REG / "EV_evidence_register.csv").read_bytes() == before
+    unit["relationship"]["observed_max"] = 1500
+    assert module.gate([unit], {"structural_suitability"}) == []
+
+
 @pytest.mark.parametrize(
     ("key", "value", "message"),
     [

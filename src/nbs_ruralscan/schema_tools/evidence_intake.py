@@ -23,7 +23,12 @@ from nbs_ruralscan.ingest.integrity import (
 from nbs_ruralscan.recipe.evidence import EvidenceUnit, validate
 from nbs_ruralscan.recipe.cell_synthesis import load_bands
 from nbs_ruralscan.schema_tools import check_bands, check_context, check_direction
-from nbs_ruralscan.schema_tools.check_numbers import _floats, _nums, _rel_nums
+from nbs_ruralscan.schema_tools.check_numbers import (
+    _floats,
+    _nums,
+    _rel_nums,
+    observed_range_mismatches,
+)
 from nbs_ruralscan.schema_tools.check_scope import m2b_policy
 from nbs_ruralscan.schema_tools.validate_sources import _native_part
 from nbs_ruralscan.schema_tools.migrate_effects import (
@@ -405,6 +410,17 @@ def gate(
                 except (IndexError, ValueError) as exc:
                     errs.append(f"{eid}: {page_key} unreadable ({exc})")
             rel = u.get("relationship") or {}
+            for mismatch in observed_range_mismatches(rel):
+                detail = mismatch.get("problem") or (
+                    "is incompatible with selected observed-class intervals; "
+                    "outer class endpoint "
+                    f"{mismatch['class_envelope']}"
+                )
+                errs.append(
+                    f"{eid}: {mismatch['field']}={mismatch['stored']} {detail} "
+                    "— preserve source classes and correct the summary before intake; "
+                    "these are observations, not suitability limits"
+                )
             # the WHOLE relationship, exactly the surface `check_numbers.check` walks — not
             # only the numeric fields. The 2026-10-13 retrospective found the gate passing
             # lanes that the next build then flagged at 23%: every miss was a study descriptor
