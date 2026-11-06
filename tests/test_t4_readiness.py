@@ -109,3 +109,26 @@ def test_recipe_host_design_is_not_reported_as_new_user_selection(contract):
     gates = [r for r in contract["rows"] if r["role"] == "eligibility_gate"]
     assert all(r["readiness"]["function_basis"] == "recipe_host_design" for r in gates)
     assert all(r["selection_decision"] is None for r in gates)
+
+
+def test_matching_input_hold_survives_recognition_of_defined_logic(contract):
+    row = deepcopy(
+        next(
+            r
+            for r in contract["rows"]
+            if r["rule_id"] == "agroforestry__planted_silvoarable__slope"
+        )
+    )
+    row["dataset"].update(
+        dataset_id=None,
+        matching_input_required=True,
+        hold_reason="Match the reviewed measurement and eligible land mask.",
+    )
+    result = assess(row)
+    assert result["state"] == "defined"
+    assert not result["execution_ready"]
+    assert any(
+        row["dataset"]["hold_reason"] in action["action"]
+        and "response selection does not lift" in action["action"]
+        for action in result["next_actions"]
+    )
