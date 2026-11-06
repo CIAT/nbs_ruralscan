@@ -84,6 +84,13 @@ discipline as the agroforestry F1/F2 planted-vs-regenerated split.)
   **intervention feasibility** (access, labour, management) that passive regeneration does not. Different position on
   the degradation gradient, different variable set → its own family. *(Same look as F1, different driver.)*
 - **Footprint.** `area_suitability`.
+- **T4 recipe interpretation (Pete, 2026-11-06).** Retain Shono (2007) remnant-forest
+  proximity as qualitative siting evidence. The final recipe must combine observed
+  degraded/former-forest context and distance to contemporary remnant patches with a
+  separate regeneration-potential check. Recent forest loss alone does not establish
+  ANR suitability or land availability. No distance cutoff, loss-age window or score
+  is approved. See the [decision and spatial-input design](../audits/t4_followup_20261106/anr_proximity_decision.md)
+  for candidate datasets, unresolved choices and the required uncalibrated outputs.
 
 ### F3 — Active tree planting · `forest_restoration__active_planting`
 - **Definition.** Deliberate establishment by planting — reforestation (formerly forest), afforestation (not
