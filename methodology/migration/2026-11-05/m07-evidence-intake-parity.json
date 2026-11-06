@@ -1,0 +1,55 @@
+{
+  "baseline": "aee4c16dfbe5aec44892cb6763923ec54354db6f",
+  "comparison": "identical old/new process results and EV/SRC output bytes, no normalization",
+  "baseline_evidence_rows": 6369,
+  "baseline_source_rows": 741,
+  "results": {
+    "gate_units": 6369,
+    "gate_problems": 8367,
+    "gate_sha256": "9fe2444e7d197f6ec629a584393c475513fce607c056115044e6a84bdd4c3f37",
+    "steps": [
+      {
+        "step": "dry_run",
+        "returncode": 0,
+        "evidence": "107476c83294fa7b7f0a1dd92027c31dfd8ba205c094dd00747d5b283292fb63",
+        "sources": "66eff3d367ca312fb177914d57e78717cf5f54f7224ab663d553d4360cc003da"
+      },
+      {
+        "step": "append",
+        "returncode": 0,
+        "evidence": "52bb68b30da49f19781070587967e9020dd9317039e33c520d5f40c5ed6be822",
+        "sources": "a0a185f583abe73945111f189aaa9ce84233585a0435148c61e32968de2bab2f"
+      },
+      {
+        "step": "rerun",
+        "returncode": 0,
+        "evidence": "52bb68b30da49f19781070587967e9020dd9317039e33c520d5f40c5ed6be822",
+        "sources": "a0a185f583abe73945111f189aaa9ce84233585a0435148c61e32968de2bab2f"
+      },
+      {
+        "step": "rerun_after_review",
+        "returncode": 0,
+        "evidence": "609ed6ee2e8acdc5266df60eb7ae736a3af41a1822c628bada8012f18baa35fa",
+        "sources": "3acb5807b5581e8a572f1f7fde47940b705cb1779fa3c545c82c0856c5bdcad0"
+      },
+      {
+        "step": "conflicting_batch",
+        "returncode": 1,
+        "evidence": "609ed6ee2e8acdc5266df60eb7ae736a3af41a1822c628bada8012f18baa35fa",
+        "sources": "3acb5807b5581e8a572f1f7fde47940b705cb1779fa3c545c82c0856c5bdcad0"
+      }
+    ],
+    "changed_files": [
+      "schema/registers/EV_evidence_register.csv",
+      "schema/registers/SRC_source_register.csv"
+    ]
+  },
+  "private_corpus_used": false,
+  "scope": "Full-register preservation plus synthetic cached PDF intake; diagnostic gate parity does not verify real source quotes.",
+  "checks": {
+    "dry_run_matches_initial_bytes": true,
+    "before_after_file_sets_match": true,
+    "only_ev_src_bytes_changed": true,
+    "candidate_compiler_schema_absent": true
+  }
+}

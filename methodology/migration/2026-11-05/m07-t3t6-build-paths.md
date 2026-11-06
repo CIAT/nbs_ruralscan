@@ -1,6 +1,6 @@
 # M07/M08: explicit T3/T6 synthesis inputs and candidate outputs
 
-Date: 6 November 2026. Baseline: `358b6fc370ae7d9e8934210b9d34f99962f2affd` (merged PR #602). Status: implemented; pending merge. This migration receipt stays in the existing project workspace, outside destination product repositories.
+Date: 6 November 2026. Baseline: `358b6fc370ae7d9e8934210b9d34f99962f2affd` (merged PR #602). Status: merged in PR #606 (`aee4c16dfbe5aec44892cb6763923ec54354db6f`). This migration receipt stays in the existing project workspace, outside destination product repositories.
 
 ## Result
 
