@@ -20,6 +20,38 @@ still requires all claim-level assessments below.
 
 A claim can pass assessments 1 and 2 while assessment 3 remains unresolved. Do not drop it or label the whole claim unusable for that reason. Do not substitute a model weight for a suitability score.
 
+## Numeric plausibility gate (Pete, 6 November 2026)
+
+Provenance is necessary but not sufficient: a correctly transcribed published class
+can still be unsuitable for an executable recipe. Before proposing numeric calibration,
+extraction agents, independent reviewers and synthesis agents must record:
+
+- **Measurement and precision:** units, statistic, averaging period, spatial support,
+  class widths and endpoint inclusion. Compare the claimed precision with reported
+  measurement/interpolation uncertainty and relevant temporal variability. If those
+  are unavailable, say so; do not invent an error estimate or claim significance.
+- **Scientific meaning:** what mechanism and evidence justify each transition? Distinguish
+  validated response boundaries from local ranking, quantiles, map-class breaks,
+  expert choices and temperature/other proxies. Flag unusually narrow bands, false
+  precision, abrupt jumps or exclusions, and missing tails; verify table, legend and
+  prose before interpreting them. A proxy cannot silently become the underlying variable.
+- **Transfer:** state the practice/family, climate, region and measurement context in
+  which the rule was derived and tested. Local ordering is not a global monotonic
+  response. Check overlap with other criteria before counting a proxy separately.
+- **Disposition:** report source values, concern, available justification, missing
+  validation and exact approval scope. Unresolved numeric plausibility stays a
+  calibration/transfer hold: preserve raw values and any independently supported
+  variable use or direction, but do not promote to an executable curve, scores, pooled
+  cutoffs or hard exclusion. A generic Keep decision is not numerical approval.
+
+Worked warning: Ranchi Table 4 places moderate annual-rainfall suitability between
+1,150 and 1,170 mm (20 mm wide), using an interpolated ten-year average. Flag the narrow
+band and request evidence that it represents a defensible suitability distinction.
+Pete retained regional qualitative use/direction only. This is not a universal minimum
+band width, proof the paper is wrong, or permission to round/widen its classes. A narrow
+band can be defensible when its mechanism, measurement and validation support it.
+Any replacement or transfer needs explicit human approval; never silently repair values.
+
 ## Required source-table sweep
 
 Inventory EVERY row, including unweighted rows, combined criteria, categorical exclusions and continuations. Each row receives evidence IDs or a page-linked reason for deferral/exclusion. Existing source × variable records are not proof of complete extraction: check whether use, direction, numeric values and source context were captured before skipping. A weight-only record cannot close a row with a supported direction or response.
@@ -40,6 +72,8 @@ Return separate findings for variable use, direction, numeric calibration, scope
 - Are shared weights kept at their stated level, and missing units/scales explicit?
 - Are source-page/image references correct and distinct from explanatory prose?
 - Are regional, crop/species and priority contexts kept separate?
+- Did numeric plausibility pass separately from quote matching, with uncertainty,
+  class-width justification, proxy meaning and transfer limits visible?
 - Does the review card explain what approval retains and what it cannot activate?
 
 Use `relationship_missed` for omitted supported direction/response. Use `insufficient_context` when legend/caption cannot establish meaning. Lack of cutoffs alone is a calibration hold, not a reason to remove supported directional evidence. Never grant human approval on the reviewer's behalf.
