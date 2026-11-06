@@ -460,3 +460,25 @@ qualitative evidence; unresolved numeric use remains held pending justification 
 explicit approval. No universal 20 mm rejection rule, invented uncertainty, automatic
 drop or silently widened intervals. Existing scoping-candidate compilation holds remain;
 this scientific assessment requires documented review, not a claim of automated validation.
+
+
+56. **The hazard intensity a practice was tested against is not logged** (Pete, 2026-11-06,
+T3/T6 backlog A1: "the severity of the hazard a practice can respond to is important
+information to log"). A drought or flood claim is only interpretable alongside how bad
+the event was: demi-lunes gaining +112% in a season with 14–23-day dry spells is a
+different finding from nothing harvested at 200–250 mm of rain. On every unit with a
+`context.hazard_type`:
+- set `hazard_severity` (mild · moderate · severe · extreme) from the **author's own**
+  characterisation, with the verbatim `severity_cue`; `unspecified` only when the source
+  gives no characterisation (never infer it from rainfall statistics yourself);
+- record the event's **stated magnitude** verbatim with units in `context.hazard_magnitude`
+  (season rainfall, dry-spell length, rainfall deficit, flood depth/return period, heat-day
+  count, e.g. `"14 to 23 day dry spells"`, `"200-250 mm"`), whether or not a severity word
+  is given; leave it empty only when the source states no magnitude;
+- a failure under an extreme event and a gain under a mild one are both kept: they mark
+  the edges of the practice's response range.
+`check_context` raises the advisory `severity_unlogged` when a hazard unit's quote or
+outcome states a severity word or an event magnitude but neither `hazard_severity`
+(other than `unspecified`) nor `hazard_magnitude` is recorded (units stamped v1.9.7 or
+later; the ingest gate refuses them). When the matched words are not about the hazard
+event (e.g. "moderate shade"), set `hazard_magnitude: "not_stated"`.
