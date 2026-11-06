@@ -31,6 +31,10 @@ operational, observed-presence and unresolved-applicability lanes.
    unsupported units, conflicting class boundaries, lineage and calibration holds.
    Preserve categorical gates and deliberate design fields. Do not infer a numeric
    curve from direction, map extrema, observations or an importance weight.
+   Apply the T4 review contract's numeric plausibility gate to proposed functions and
+   pooled inputs: source transcription and human approval of qualitative use do not
+   establish numeric validity. Keep unresolved narrow bands, false precision, jumps,
+   proxy substitutions and regional transfer on hold; show the rationale to Pete.
 4. Review differences against the current recipe. Resolve genuine ambiguities with
    Pete before changing applicability, pooled functions, missing tails, masks or weights.
    Compilation is not policy approval. Preserve existing approved mappings and record

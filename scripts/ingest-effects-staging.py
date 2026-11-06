@@ -87,6 +87,8 @@ _RULESETS = {
     "v1.9.4",
     # v1.9.5: page-linked T4 spatial-targeting / implementation-purpose gate
     "v1.9.5",
+    # v1.9.6: scientific plausibility before T4 numeric calibration
+    "v1.9.6",
 }
 
 ROOT = Path(__file__).resolve().parents[1]
