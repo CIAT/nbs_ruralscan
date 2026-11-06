@@ -84,9 +84,10 @@ def _rows(path: Path | None = None) -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def _write(rows: list[dict]) -> None:
-    LEDGER.parent.mkdir(parents=True, exist_ok=True)
-    with LEDGER.open("w", newline="", encoding="utf-8") as f:
+def _write(rows: list[dict], path: Path | None = None) -> None:
+    path = path if path is not None else LEDGER
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=FIELDS, lineterminator="\n")
         w.writeheader()
         for r in rows:
@@ -226,6 +227,7 @@ def mark(
     run_id: str = "",
     by: str = "orchestrator",
     note: str = "",
+    path: Path | None = None,
 ) -> None:
     if table not in TABLES:
         raise ValueError(f"table must be one of {TABLES}")
@@ -235,7 +237,7 @@ def mark(
         raise ValueError(f"stage must be one of {STAGES}")
     if status not in STATUSES:
         raise ValueError(f"status must be one of {sorted(STATUSES)}")
-    rows = _rows()
+    rows = _rows(path)
     row = next(
         (
             r
@@ -263,7 +265,7 @@ def mark(
     row["updated"] = datetime.now(timezone.utc).date().isoformat()
     if note:
         row["note"] = note
-    _write(rows)
+    _write(rows, path)
 
 
 def _show() -> None:

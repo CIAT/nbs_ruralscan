@@ -1,0 +1,79 @@
+{
+  "baseline": "ef70f10ed2898ba67d5c69e7d5c77cce6cc85f7c",
+  "comparison": "separate old/new processes; complete output inventories and hashes identical without normalization",
+  "fixture": "Synthetic discovery candidates/protocols only; no acquisition or evidence extraction",
+  "clock": "Ledger UTC clock pinned to 2026-11-06; supplied search dates remain 2026-01-02/03/04",
+  "candidate_compiler_schema_and_pipeline_absent": true,
+  "results": {
+    "initial_rows": {
+      "pipeline/acquisition_queue.csv": 916,
+      "schema/registers/SRC_source_register.csv": 741,
+      "schema/registers/FAM_family_registry.csv": 56,
+      "schema/registers/SRCH_search_register.csv": 229,
+      "pipeline/progress_ledger.csv": 184
+    },
+    "initial_inventory_sha256": "47c074c97e8c60f3c4b2cd9a13a70d6c1938ca783ce7abd05c5d82bea1a993f0",
+    "initial_files": 152,
+    "steps": [
+      {
+        "step": "generic_two_lanes",
+        "returncode": 0,
+        "changed": {
+          "pipeline/acquisition_queue.csv": "e1d8a77e5a520cb36a14f5ba7fb21fc46fee7225c79e64b5584cff0417dba266",
+          "schema/registers/SRCH_search_register.csv": "bd3f6679393697db95d01712efe146c5ac750dafbd129a0fb68d2e9f593251ac",
+          "pipeline/progress_ledger.csv": "4effeee92d88d7d616bd628cf0b7a4b158a11f7e8d51ed282238d0d24fe00015",
+          "methodology/discovery_logs/synthetic_discovery_parity-grey.md": "46b7ff34a4839be6b5ef3de524068c17ed2f30ad1b4988ed626b1f07708b38d7",
+          "methodology/discovery_logs/synthetic_discovery_parity-lit.md": "2b1ea17c406dda41f926d5622aee9946ff65543e4abb4693fd2fa4f9859ac726"
+        },
+        "inventory_sha256": "ea096875b0e32d007ab1b5e438e9a606951dffa6f47199ce78af88c4458db7de",
+        "file_count": 154
+      },
+      {
+        "step": "identical_rerun",
+        "returncode": 0,
+        "changed": {},
+        "inventory_sha256": "ea096875b0e32d007ab1b5e438e9a606951dffa6f47199ce78af88c4458db7de",
+        "file_count": 154
+      },
+      {
+        "step": "targeted_deduplicated_and_zero_yield",
+        "returncode": 0,
+        "changed": {
+          "schema/registers/SRCH_search_register.csv": "15173c09bb1f4ffe42ddce3534b1b9d7ba4f9b4d3b8e9f184ccbc1ada5cf2dd1",
+          "pipeline/progress_ledger.csv": "c3fd3247cc7446ba9fc181fc22c2c5ff9a0b7933da39c8fa9741f60a3bff1e6e",
+          "methodology/discovery_logs/synthetic_discovery_targeted-lit.md": "d9ab9f3115e2e6155fffbb33817d3efd73e0b6c4ed365f6ef61b68e5ed319547"
+        },
+        "inventory_sha256": "9890e04ac55d15ed4a9a83778581efac2e289f93de70068e4586d551880bd9b8",
+        "file_count": 155
+      },
+      {
+        "step": "explicit_cross_scope_reuse",
+        "returncode": 0,
+        "changed": {
+          "schema/registers/SRCH_search_register.csv": "38eb4f9e56f420ec625014831e232777a8f76f5db1fff85ac7ecc8b7927e0148",
+          "pipeline/progress_ledger.csv": "adef972e483d92c1241785d2036aa4f3805fd1b60b3435b758be7bef9dc59084",
+          "methodology/discovery_logs/synthetic_discovery_reuse.json": "ab58727da2053d82224fc0bf6988682eb4c5fcff21b56aef06d9872f6f08f278",
+          "methodology/discovery_logs/synthetic_discovery_reuse-lit.md": "ba725fd3b63af848c7ebf2a5f3390b906907df451bbe597c02d2e2a508593c67"
+        },
+        "inventory_sha256": "431bc47f3e846799179c9bfb1d71bddd5c1c1e09d339f211abf0a8a601a7aab0",
+        "file_count": 157
+      },
+      {
+        "step": "changed_protocol_rejected",
+        "returncode": 2,
+        "changed": {},
+        "inventory_sha256": "431bc47f3e846799179c9bfb1d71bddd5c1c1e09d339f211abf0a8a601a7aab0",
+        "file_count": 157
+      },
+      {
+        "step": "source_id_collision_rejected",
+        "returncode": 2,
+        "changed": {},
+        "inventory_sha256": "431bc47f3e846799179c9bfb1d71bddd5c1c1e09d339f211abf0a8a601a7aab0",
+        "file_count": 157
+      }
+    ],
+    "final_files": 157,
+    "read_only_inputs_and_all_prior_logs_unchanged": true
+  }
+}
