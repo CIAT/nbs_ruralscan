@@ -375,6 +375,7 @@ def synthesise(nbs_id: str, inp: dict[str, Any]) -> dict[str, Any]:
                 r.get("risk_role") == "asset_threat"
                 and not r.get("scope_type")
                 and not r.get("suitability_family_id")
+                and r["hazard_type"] in weights  # asset-only hazards carry no weight
             ):
                 r["asset_risk_weight"] = weights[r["hazard_type"]]
 
