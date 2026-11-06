@@ -107,3 +107,28 @@ def test_priority_controls_and_queue_semantics():
     if not shutil.which("node"):
         pytest.skip("node is required for dashboard behavior tests")
     subprocess.run(["node", "tests/js/review_priority.test.cjs"], cwd=ROOT, check=True)
+
+
+def test_section_locator_without_pdf_page_and_stale_detection(fixture):
+    root, ev, row = fixture
+    ev.update(
+        page="", locator_type="section", locator="5.3 Contour bunds > Suitability"
+    )
+    row.update(page="", source_locator=ev["locator"])
+    row["evidence_sha256"] = evidence_fingerprint(ev)
+    write_rows(root / "schema/registers/EV_evidence_register.csv", [ev])
+    write_rows(root / "pipeline/review_priorities.csv", [row])
+    before = (root / "schema/registers/EV_evidence_register.csv").read_bytes()
+    assert load_review_priorities(root)[0]["context_changed"] is False
+    assert (root / "schema/registers/EV_evidence_register.csv").read_bytes() == before
+    ev["locator"] = "5.4 Negarim > Suitability"
+    write_rows(root / "schema/registers/EV_evidence_register.csv", [ev])
+    assert load_review_priorities(root)[0]["context_changed"] is True
+
+
+def test_priority_requires_page_or_section_locator(fixture):
+    root, _, row = fixture
+    row.update(page="", source_locator="")
+    write_rows(root / "pipeline/review_priorities.csv", [row])
+    with pytest.raises(ValueError, match="Incomplete review priority"):
+        load_review_priorities(root)

@@ -31,3 +31,15 @@ window._vfScope.nbs='agroforestry';api.openFromHash('#review-priority=high');ass
 api.openFromHash('#review-evidence=one');api.leaveFocus();assert.equal(window._vfPriorityEvidence,'');assert.equal(lastHash,'#review-queue');
 assert.equal(JSON.stringify([window._vfDecisions,window._vfAllReviews]),decisions);assert.equal(JSON.stringify(data),original);
 assert(renders>0);console.log('Priority scopes, links, escaping, queue semantics and no state mutation passed.');
+
+// Web sources carry section locators, never a fabricated PDF page.
+const web=row('web');data.registers.EV_evidence_register.push(web);
+data.review_priorities.push({batch_id:'web',batch_label:'Web sources',priority:'high',evidence_id:'web',source_id:'manual',page:'',source_locator:'5.3 <img onerror="bad"> > Suitability',reason:'Inspect source section',decision_needed:'Verify recommendation'});
+api.set('web');
+for (const markup of [api.controls(),api.card(web)]) {
+  assert(markup.includes('Source location: 5.3 &lt;img'));
+  assert(!markup.includes('<img onerror'));
+  assert(!markup.includes('PDF p'));
+}
+assert(api.card(ev[0]).includes('PDF p3'));
+console.log('Section locators displayed and escaped; PDF compatibility preserved.');

@@ -8,6 +8,9 @@
   const selected = () => window._vfPriority || 'all';
   const batchRoute = id => '#review-priority=' + encodeURIComponent(id);
   const cardRoute = id => '#review-evidence=' + encodeURIComponent(id);
+  function sourceLocation(row) {
+    return String(row.page || '').trim() ? 'PDF p' + esc(row.page) : 'Source location: ' + esc(row.source_locator);
+  }
   function matches(ev) {
     if (window._vfPriorityEvidence && ev.evidence_id !== window._vfPriorityEvidence) return false;
     const value = selected();
@@ -72,7 +75,7 @@
       + '<span style="margin-left:10px">'+batches.map(([id,label]) => '<a href="'+batchRoute(id)+'">'+esc(label)+' ('+new Set(rows().filter(r=>r.batch_id===id).map(r=>r.evidence_id)).size+')</a>').join(' · ')+'</span>'
       + '<p style="margin:8px 0;font-size:12px">Priority identifies what to inspect first. It does not change decisions, extraction approval, source credibility or runtime readiness.</p>'
       + (focused ? '<p>Showing one evidence card, including its existing decision state. <button class="pill-btn" onclick="DashboardPriority.set(\'all\')">Show scoped queue</button></p>' : '')
-      + (batchRows.length ? '<p style="font-size:12px">Batch shortcuts reset scope; the current filters above still apply. Use More filters to narrow family, source or evidence scope. Queue tabs follow existing decisions.</p><details><summary>All '+batchRows.length+' batch records · open a native evidence card</summary><ul>'+batchRows.map(r=>'<li><a href="'+cardRoute(r.evidence_id)+'">'+esc(r.evidence_id)+'</a> · '+esc(r.source_id)+' · PDF p'+esc(r.page)+'</li>').join('')+'</ul></details>' : '')
+      + (batchRows.length ? '<p style="font-size:12px">Batch shortcuts reset scope; the current filters above still apply. Use More filters to narrow family, source or evidence scope. Queue tabs follow existing decisions.</p><details><summary>All '+batchRows.length+' batch records · open a native evidence card</summary><ul>'+batchRows.map(r=>'<li><a href="'+cardRoute(r.evidence_id)+'">'+esc(r.evidence_id)+'</a> · '+esc(r.source_id)+' · '+sourceLocation(r)+'</li>').join('')+'</ul></details>' : '')
       + '</section>';
   }
   function badge(ev) {
@@ -85,7 +88,7 @@
       +'<b>'+esc(r.batch_label)+'</b> · requested by '+esc(r.requested_by)+' · '+esc(r.requested_date)
       +(r.context_changed?'<p><b>Evidence changed since this request.</b> Check these original review questions against the current record.</p>':'')
       +'<p><b>Why prioritized:</b> '+esc(r.reason)+'</p><p><b>Decision needed:</b> '+esc(r.decision_needed)+'</p>'
-      +'<details><summary>Request reference and links</summary><p>Source '+esc(r.source_id)+' · PDF p'+esc(r.page)+'</p><p>Mapping: '+esc(r.mapping_id)+'</p><a href="'+cardRoute(ev.evidence_id)+'">Link to this evidence card</a> · <a href="'+batchRoute(r.batch_id)+'">Open priority batch</a></details>'
+      +'<details><summary>Request reference and links</summary><p>Source '+esc(r.source_id)+' · '+sourceLocation(r)+'</p><p>Mapping: '+esc(r.mapping_id)+'</p><a href="'+cardRoute(ev.evidence_id)+'">Link to this evidence card</a> · <a href="'+batchRoute(r.batch_id)+'">Open priority batch</a></details>'
       +'<p>Review request only. Keep confirms the extraction; changing a live mapping requires a separate reviewed change.</p></section>').join('');
   }
   window.DashboardPriority = {matches, set, route, leaveFocus, openFromHash, controls, badge, card};
