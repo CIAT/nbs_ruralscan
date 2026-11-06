@@ -502,17 +502,18 @@
 
   function stageBar(current) {
     var steps = STAGES.map(function (s) {
-      var state = current > 0 && s.n < current ? 'done' : s.n === current ? 'now' : 'next';
-      var mark = state === 'done' && s.href ? '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6.3l2.3 2.3 4.7-5"/></svg>' : s.n;
+      var state = window.location.pathname.split('/').pop() === s.href ? 'now' : 'next';
+      var mark = s.n;
       var inner = '<span class="st-n">' + mark + '</span><span class="st-name">' + s.name + '</span>';
       if (!s.href) return '<li class="st st-' + state + ' st-off" title="Not prototyped in this round">' + inner + '</li>';
       return '<li class="st st-' + state + '"><a href="' + s.href + '"' + (state === 'now' ? ' aria-current="step"' : '') + '>' + inner + '</a></li>';
     }).join('');
-    var home = '<li class="st st-home' + (current === 0 ? ' st-now' : '') + '"><a href="index.html"' + (current === 0 ? ' aria-current="page"' : '') + ' title="Home"><span class="st-n st-house"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.8 6.2L6 2.4l4.2 3.8M3.2 5.2v4.4h5.6V5.2"/></svg></span><span class="st-name">Home</span></a></li>';
+    var isHome = /\/redesign\/(index\.html)?$/.test(window.location.pathname);
+    var home = '<li class="st st-home' + (isHome ? ' st-now' : '') + '"><a href="index.html"' + (isHome ? ' aria-current="page"' : '') + ' title="Home"><span class="st-n st-house"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1.8 6.2L6 2.4l4.2 3.8M3.2 5.2v4.4h5.6V5.2"/></svg></span><span class="st-name">Home</span></a></li>';
     return '<header class="stagebar"><div class="sb-in">' +
-      '<a class="sb-proj" href="index.html" title="Home">Rural NbS Scan<span> · Sierra Leone example</span></a>' +
+      '<span class="sb-proj">Rural NbS Scan</span>' +
       '<ol class="stepper" aria-label="Stages">' + home + steps + '</ol>' +
-      (current === 0 ? '' : '<a class="btn-ghost tc-link" href="00-config.html">Configuration</a>') +
+      '<a class="tc-link" href="00-config.html"' + (location.pathname.endsWith('/00-config.html') ? ' aria-current="page"' : '') + '>Configuration</a>' +
       '</div></header>' +
       (current === 0 ? '' : '<div class="ctlbar" id="ctlbar" role="region" aria-label="Controls"></div>');
   }
