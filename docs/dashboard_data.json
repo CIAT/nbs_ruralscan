@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-06T13:54:07.254134+00:00",
-  "git_commit": "8267a9daea22050bde92414dbd6ce799426a841e",
+  "timestamp": "2026-11-06T14:08:32.490432+00:00",
+  "git_commit": "1ce92d6c2f5e262314c0819448b1bc0842350aee",
   "registers": {
     "SRC_source_register": [
       {
@@ -323406,12 +323406,22 @@
         {
           "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
           "nbs_id": "water_harvesting_conservation",
-          "dataset_id": "scs_cn_runoff_composite",
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {
             "abs_min": 75.0,
-            "opt_low": 80.0
+            "opt_low": 80.0,
+            "reviewed_adaptation": {
+              "dataset_binding": {
+                "status": "requires_matching_input",
+                "reason": "The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-06",
+                "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
+                "scope": "water_harvesting__runoff_catchment__runoff_potential_index",
+                "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+              }
+            }
           },
           "uncertainty_pct": 60.0,
           "context_overrides": [],
@@ -323419,7 +323429,7 @@
           "has_future_projection": false,
           "weight_default": 0.1111,
           "weight_adjustable": true,
-          "justification": "Reconciled from 5 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 75.0, 'opt_low': 80.0}; uncertainty ±60% from spread. ",
+          "justification": "Reconciled from 5 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 75.0, 'opt_low': 80.0}; uncertainty ±60% from spread.  Approved dataset-binding hold (Peter, 2026-11-06): requires matching input; existing numeric values remain unapproved by this decision.",
           "variable": "runoff_potential_index",
           "suitability_family_id": "water_harvesting__runoff_catchment",
           "evidence_ids": [
@@ -323467,14 +323477,24 @@
         {
           "mapping_id": "water_harvesting__runoff_catchment__stream_order",
           "nbs_id": "water_harvesting_conservation",
-          "dataset_id": "scs_cn_runoff_composite",
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {
             "abs_min": 1.0,
             "opt_low": 2.0,
             "opt_high": 2.0,
-            "abs_max": 4.0
+            "abs_max": 4.0,
+            "reviewed_adaptation": {
+              "dataset_binding": {
+                "status": "requires_matching_input",
+                "reason": "HydroBASINS ORDER is a classical hierarchy with the main stem numbered 1, not the Strahler order required by this mapping. It cannot be substituted unchanged. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-06",
+                "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
+                "scope": "water_harvesting__runoff_catchment__stream_order",
+                "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+              }
+            }
           },
           "uncertainty_pct": 60.0,
           "context_overrides": [],
@@ -323482,7 +323502,7 @@
           "has_future_projection": false,
           "weight_default": 0.1111,
           "weight_adjustable": true,
-          "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 1.0, 'opt_low': 2.0, 'opt_high': 2.0, 'abs_max': 4.0}; uncertainty ±60% from spread. ",
+          "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 1.0, 'opt_low': 2.0, 'opt_high': 2.0, 'abs_max': 4.0}; uncertainty ±60% from spread.  Approved dataset-binding hold (Peter, 2026-11-06): requires matching input; existing numeric values remain unapproved by this decision.",
           "variable": "stream_order",
           "suitability_family_id": "water_harvesting__runoff_catchment",
           "evidence_ids": [
@@ -323525,11 +323545,21 @@
         {
           "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
           "nbs_id": "water_harvesting_conservation",
-          "dataset_id": "scs_cn_runoff_composite",
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {
-            "opt_high": 0.25
+            "opt_high": 0.25,
+            "reviewed_adaptation": {
+              "dataset_binding": {
+                "status": "requires_matching_input",
+                "reason": "Basin polygons do not provide the required stream-length-per-area density. A compatible river network, area support and derivation must be specified. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-06",
+                "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
+                "scope": "water_harvesting__runoff_catchment__drainage_density",
+                "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+              }
+            }
           },
           "uncertainty_pct": 60.0,
           "context_overrides": [],
@@ -323537,7 +323567,7 @@
           "has_future_projection": false,
           "weight_default": 0.1111,
           "weight_adjustable": true,
-          "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 0.25}; uncertainty ±60% from spread. ",
+          "justification": "Reconciled from 3 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_high': 0.25}; uncertainty ±60% from spread.  Approved dataset-binding hold (Peter, 2026-11-06): requires matching input; existing numeric values remain unapproved by this decision.",
           "variable": "drainage_density",
           "suitability_family_id": "water_harvesting__runoff_catchment",
           "evidence_ids": [
@@ -323798,11 +323828,21 @@
         {
           "mapping_id": "water_harvesting__terracing__runoff_potential_index",
           "nbs_id": "water_harvesting_conservation",
-          "dataset_id": "scs_cn_runoff_composite",
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {
-            "opt_low": 0.9
+            "opt_low": 0.9,
+            "reviewed_adaptation": {
+              "dataset_binding": {
+                "status": "requires_matching_input",
+                "reason": "The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-06",
+                "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
+                "scope": "water_harvesting__terracing__runoff_potential_index",
+                "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+              }
+            }
           },
           "uncertainty_pct": 20.0,
           "context_overrides": [],
@@ -323810,7 +323850,7 @@
           "has_future_projection": false,
           "weight_default": 0.2,
           "weight_adjustable": true,
-          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 0.9}; uncertainty ±20% from spread. ",
+          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 0.9}; uncertainty ±20% from spread.  Approved dataset-binding hold (Peter, 2026-11-06): requires matching input; existing numeric values remain unapproved by this decision.",
           "variable": "runoff_potential_index",
           "suitability_family_id": "water_harvesting__terracing",
           "evidence_ids": [
@@ -400499,13 +400539,13 @@
     {
       "batch_id": "t4_mapped_claims_20261106",
       "batch_label": "T4 mapped claims — review first",
-      "priority": "normal",
+      "priority": "high",
       "evidence_id": "ev_wh_runoff_potential_index_dewinnaar07_1",
       "source_id": "dewinnaar_2007_gis_runoff_thukela",
       "page": "7",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Source checked; proposed KEEP (not applied). De Winnaar et al. explicitly maps runoff-harvesting opportunities (PDF1). PDF7 says higher curve numbers and steeper source-area slopes increase runoff generation; the runoff-potential layer then combines with distances to users/fields for site allocation. Source-area generation and storage-site suitability are distinct. No numeric curve-number cutoff is supplied by this quote.",
-      "decision_needed": "Keep qualitative higher-CN runoff-generation evidence in its source-area role. No numeric cutoff, universal storage-site slope preference or imported socio-economic criterion into structural suitability. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: SCS Curve Number (CN), runoff-generating source area (dimensionless CN scale). Current claim supplies qualitative CN direction. Numeric map bins describe the local input; no 75/80 suitability boundary is provided. Runoff-generation surface and downstream storage location are separate steps.",
+      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "51d0527cf60bccafb91160fdd3610fbc9208ddcae8daf82e160404697435bc15",
@@ -400568,8 +400608,8 @@
       "source_id": "fuzzy_ahp_2017_wh_zones",
       "page": "11",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Source checked; proposed HOLD (not applied). Al-Abadi et al. Table 4 gives runoff-depth importance weight 0.368 (AHP consistency ratio 0.02). Increasing direction is supported by the LARGE fuzzy-function passage on PDF 9, not by the currently quoted Table 4/Figure 10 text alone. Only one existing dam was available for validation.",
-      "decision_needed": "Hold claim-provenance completeness for correction: retain weight and increasing runoff-depth direction, but attach the PDF 9 direction passage before approving the combined claim. No unreported membership midpoint/spread or probability interpretation. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: Modelled runoff depth (mm). Criterion weight 0.368 is not runoff quantity or membership score. Source describes LARGE transformation but no transferable midpoint/spread is established here; no 75/80 cutoff supported. Existing EV already contains the verified PDF p9 rationale; the earlier missing-rationale request is resolved.",
+      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "39fd299d8b2db0d8331d1f702344bc971210a4df543b3eec9ef724b862f59247",
@@ -400632,8 +400672,8 @@
       "source_id": "kadam2012_scscn_india_rwh",
       "page": "14",
       "mapping_id": "water_harvesting__runoff_catchment__stream_order",
-      "reason": "Source checked; proposed HOLD (not applied). Table 6 (PDF14 / printed2550) places farm ponds/gully plugs on first-order streams, check dams/percolation tanks on orders 1–4. Current global 1–4 bounds conceal these differences. Stream-order values depend on extracted drainage network and are joint siting specifications, not a monotonic ranking.",
-      "decision_needed": "Keep full per-structure stream-order table; hold generic 1–4 suitability function. Resolve structure scope, stream-network definition and joint criteria before numerical compilation. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed HOLD (not applied). Table 6 (PDF14 / printed2550) places farm ponds/gully plugs on first-order streams, check dams/percolation tanks on orders 1–4. Current global 1–4 bounds conceal these differences. Stream-order values depend on extracted drainage network and are joint siting specifications, not a monotonic ranking.",
+      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Keep full per-structure stream-order table; hold generic 1–4 suitability function. Resolve structure scope, stream-network definition and joint criteria before numerical compilation. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "313d8e947ec280ebc6aad6bd26754eba671ebff80f2c09274f4b0c09298c4769",
@@ -400691,13 +400731,13 @@
     {
       "batch_id": "t4_mapped_claims_20261106",
       "batch_label": "T4 mapped claims — review first",
-      "priority": "normal",
+      "priority": "high",
       "evidence_id": "ev_wh_drainage_density_karimi19_1",
       "source_id": "karimi_2019_runoff_map_rwh_zones",
       "page": "19",
       "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
-      "reason": "Source checked; proposed KEEP (not applied). Karimi & Zeinivand map farm-pond potential in Kakareza, Iran. Table 6 ranks drainage density <0.5, 0.5–1, >1 km/km² from best to worst; criterion weight is 0.059. That source-specific decreasing preference differs from check-dam studies favouring high density.",
-      "decision_needed": "Keep full ranks and local direction, preserving farm-pond context and source weight separately. Opposite directions across structure types are contextual disagreement, not a reason to average them blindly. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed KEEP (not applied). Karimi & Zeinivand map farm-pond potential in Kakareza, Iran. Table 6 ranks drainage density <0.5, 0.5–1, >1 km/km² from best to worst; criterion weight is 0.059. That source-specific decreasing preference differs from check-dam studies favouring high density.",
+      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Keep full ranks and local direction, preserving farm-pond context and source weight separately. Opposite directions across structure types are contextual disagreement, not a reason to average them blindly. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "4086574dc3e883878084c4fd7d9a8feef206619c3553fd02aa8936d2bc849149",
@@ -400707,13 +400747,13 @@
     {
       "batch_id": "t4_mapped_claims_20261106",
       "batch_label": "T4 mapped claims — review first",
-      "priority": "normal",
+      "priority": "high",
       "evidence_id": "ev_wh_runoff_potential_index_karimi19_1",
       "source_id": "karimi_2019_runoff_map_rwh_zones",
       "page": "19",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Source checked; proposed KEEP (not applied). Table 6 ranks runoff >200, 100–200, <100 mm from best to worst and gives criterion weight 0.427. Results identify the input as an annual runoff-depth map from WetSpa, rather than a dimensionless index or event runoff coefficient.",
-      "decision_needed": "Keep full annual-runoff-depth classes and source weight for farm-pond targeting. Require compatible temporal/unit binding before numerical pooling; do not use as dimensionless runoff index or turn class ranks into calibrated probabilities. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: WetSpa mean annual runoff depth (mm annual runoff depth). Mean annual depth differs from CN and coefficient. Preserve all three source classes and weights; the >200 source preferred class cannot be pooled numerically with CN 75/80. No rejection based on regional origin.",
+      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "8f7b613f0f39de0eddf1171588e66e29717ff2fa6d9db1be82c845a4a41305ea",
@@ -400739,13 +400779,13 @@
     {
       "batch_id": "t4_mapped_claims_20261106",
       "batch_label": "T4 mapped claims — review first",
-      "priority": "normal",
+      "priority": "high",
       "evidence_id": "ev_wh_drainage_density_singh17_1",
       "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
       "page": "3",
       "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
-      "reason": "Source checked; proposed KEEP (not applied). Singh, Jha & Chowdary (2017), stored under historical source ID mahmoud_2016_mcda_gis_wh_recharge: Table 3 <0.25, 0.25–0.50, 0.50–0.75, 0.75–1.00, >1.00 km/km² rank very high through very low. This is local rainwater-harvesting potential mapping before structure-specific Boolean siting. Table gives theme and feature weights separately; these are not probabilities.",
-      "decision_needed": "Keep full source classes, direction and separately labelled source weights for local potential-model evidence. Do not turn low ranks into exclusions, fill unreported tails, or apply one pooled profile to every structure without compatibility review. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed KEEP (not applied). Singh, Jha & Chowdary (2017), stored under historical source ID mahmoud_2016_mcda_gis_wh_recharge: Table 3 <0.25, 0.25–0.50, 0.50–0.75, 0.75–1.00, >1.00 km/km² rank very high through very low. This is local rainwater-harvesting potential mapping before structure-specific Boolean siting. Table gives theme and feature weights separately; these are not probabilities.",
+      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Keep full source classes, direction and separately labelled source weights for local potential-model evidence. Do not turn low ranks into exclusions, fill unreported tails, or apply one pooled profile to every structure without compatibility review. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "c32d2338ccb03b656cb34f15249e91980c9b7d1fdba393c583e3a5b4bd3bee57",
@@ -400755,13 +400795,13 @@
     {
       "batch_id": "t4_mapped_claims_20261106",
       "batch_label": "T4 mapped claims — review first",
-      "priority": "normal",
+      "priority": "high",
       "evidence_id": "ev_wh_runoff_potential_index_singh17_1",
       "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
       "page": "3",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Source checked; proposed KEEP (not applied). Singh, Jha & Chowdary (2017), stored under historical source ID mahmoud_2016_mcda_gis_wh_recharge: Table 3 >0.4, 0.4–0.3, 0.3–0.2, 0.1–0.2, <0.1 rank very high through very low. This is local rainwater-harvesting potential mapping before structure-specific Boolean siting. Table gives theme and feature weights separately; these are not probabilities.",
-      "decision_needed": "Keep full source classes, direction and separately labelled source weights for local potential-model evidence. Do not turn low ranks into exclusions, fill unreported tails, or apply one pooled profile to every structure without compatibility review. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: Runoff coefficient (dimensionless runoff/rainfall fraction). Coefficient ranges near 0–1 differ from CN scale and depth in mm. Current corrected record explicitly contains no abs/opt boundaries. Low-ranked classes are not exclusions; keep source weights distinct from normalized suitability.",
+      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "296c22bd444bc44fbec464467593d2aee7df81e1693b15bd3b05343b086d7a03",
@@ -400787,13 +400827,13 @@
     {
       "batch_id": "t4_mapped_claims_20261106",
       "batch_label": "T4 mapped claims — review first",
-      "priority": "normal",
+      "priority": "high",
       "evidence_id": "ev_wh_stream_order_singh17_1",
       "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
       "page": "6",
       "mapping_id": "water_harvesting__runoff_catchment__stream_order",
-      "reason": "Source checked; proposed KEEP (not applied). Table 6, attributed to Jha et al. (2014), specifies second- and third-order drainage for stream percolation tanks and check dams; it does not apply that condition to farm ponds or ground tanks. Figure/table visual confirms column ownership.",
-      "decision_needed": "Keep explicit structure-specific categories {2,3} with secondary attribution and shared lineage. Do not treat all structures as interchangeable or give stream order a generic monotonic suitability direction. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed KEEP (not applied). Table 6, attributed to Jha et al. (2014), specifies second- and third-order drainage for stream percolation tanks and check dams; it does not apply that condition to farm ponds or ground tanks. Figure/table visual confirms column ownership.",
+      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Keep explicit structure-specific categories {2,3} with secondary attribution and shared lineage. Do not treat all structures as interchangeable or give stream order a generic monotonic suitability direction. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "b299e0cb47a22c8dc36a273d848f3caab83991be1c5b50ceda81ecfb3d3ceb0a",
@@ -400808,8 +400848,8 @@
       "source_id": "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
       "page": "8",
       "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
-      "reason": "Source checked; proposed HOLD (not applied). Actual author is Ettazarini (2021), despite historical source ID. Check-dam targeting in Khenifra, Morocco uses increasing drainage density; Table 1 also gives <0.2,0.2–0.4,0.4–0.6,>0.6 with scores 1–4, which this direction-only row omits. Stream network uses a 500 m minimum segment length; density is scale-dependent.",
-      "decision_needed": "Keep supported direction but hold completeness pending adding/explicitly accounting for the source class table. Preserve 500 m network-definition context; do not equate this check-dam drainage-density response with farm-pond profiles. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed HOLD (not applied). Actual author is Ettazarini (2021), despite historical source ID. Check-dam targeting in Khenifra, Morocco uses increasing drainage density; Table 1 also gives <0.2,0.2–0.4,0.4–0.6,>0.6 with scores 1–4, which this direction-only row omits. Stream network uses a 500 m minimum segment length; density is scale-dependent.",
+      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Keep supported direction but hold completeness pending adding/explicitly accounting for the source class table. Preserve 500 m network-definition context; do not equate this check-dam drainage-density response with farm-pond profiles. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "62b4b444d2d81da6bcef0193fed68062184c4a3d5d1598a15bfd2ef33e0bd153",
@@ -400824,8 +400864,8 @@
       "source_id": "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
       "page": "7",
       "mapping_id": "water_harvesting__runoff_catchment__stream_order",
-      "reason": "Source checked; proposed HOLD (not applied). Ettazarini Table 1 assigns order 1 score 0, order 2 score 5, then 3/4/5 scores 4/3/2 and ≥6 score 1. Current row omits order 1. Prose calls ≥6 non-suitable while table labels it very low with score 1; source conflict must stay visible.",
-      "decision_needed": "Hold incomplete profile for correction; preserve full source order-score table including order 1 and explicit prose/table conflict for ≥6. Do not invent an optimum-only universal rule or resolve that conflict silently. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed HOLD (not applied). Ettazarini Table 1 assigns order 1 score 0, order 2 score 5, then 3/4/5 scores 4/3/2 and ≥6 score 1. Current row omits order 1. Prose calls ≥6 non-suitable while table labels it very low with score 1; source conflict must stay visible.",
+      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Hold incomplete profile for correction; preserve full source order-score table including order 1 and explicit prose/table conflict for ≥6. Do not invent an optimum-only universal rule or resolve that conflict silently. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "a917010f7deb9d4d42d5eca4e18193e9f890928f631359a2e2703426edff6df3",
@@ -400867,13 +400907,13 @@
     {
       "batch_id": "t4_mapped_claims_20261106",
       "batch_label": "T4 mapped claims — review first",
-      "priority": "normal",
+      "priority": "high",
       "evidence_id": "ev_wh_runoff_potential_index_vema19_1",
       "source_id": "singh_2019_fuzzy_wh_structure_rainfed",
       "page": "4",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Source checked; proposed KEEP (not applied). Vema et al. (2019), Table 2 / Fig.1 (PDF4), gives trapezoidal INPUT classes for SCS curve-number runoff potential: low (0,35,55,60), medium (55,60,75,80), high (75,80,100,100). Section 3.3 combines all three inputs through 27 fuzzy rules; check dams/farm ponds and percolation tanks can respond differently. These values do not directly score structure suitability.",
-      "decision_needed": "Keep all SCS curve-number runoff potential input classes and the conditional rule-base context. No direct input-membership-to-suitability conversion; retain storage-specific direction separately and do not extend it to percolation/recharge structures. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: SCS Curve Number (CN) fuzzy INPUT classes (dimensionless CN scale). 75 and 80 are the a/b rising-edge parameters of HIGH CN input membership and c/d falling-edge parameters of MEDIUM input membership. They are not a 75 exclusion and 80 optimum for structure suitability. PDF p4 counterexample gives HIGH check-dam/farm-pond suitability at MEDIUM runoff when permeability and slope are low. Complete joint rule base remains unverified; no new standalone function proposed.",
+      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "37952053943a40ffc677c880d8d154b53114464b4164576aa84906e73915e713",
@@ -401027,13 +401067,13 @@
     {
       "batch_id": "t4_mapped_claims_20261106",
       "batch_label": "T4 mapped claims — review first",
-      "priority": "normal",
+      "priority": "high",
       "evidence_id": "ev_wh_runoff_potential_index_krois14_1",
       "source_id": "gismcda_swc_siting_2014",
       "page": "9",
       "mapping_id": "water_harvesting__terracing__runoff_potential_index",
-      "reason": "Source checked; proposed KEEP (not applied). Table 4 ranks runoff coefficient >0.9 optimal (9), 0.6–0.9 high (7), 0.3–0.6 moderate (5), 0–0.3 marginal (3). PDF 5 defines coefficient as modelled direct runoff divided by design rainfall for a 33%-exceedance maximum-daily storm, not annual runoff or SCS curve number.",
-      "decision_needed": "Keep full ranked coefficient profile and source scores with storm/design definition. Do not use generic runoff index, annual runoff depth or curve number interchangeably; no default runtime weight or unreported tails. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed KEEP (not applied). Table 4 ranks runoff coefficient >0.9 optimal (9), 0.6–0.9 high (7), 0.3–0.6 moderate (5), 0–0.3 marginal (3). PDF 5 defines coefficient as modelled direct runoff divided by design rainfall for a 33%-exceedance maximum-daily storm, not annual runoff or SCS curve number.",
+      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Keep full ranked coefficient profile and source scores with storm/design definition. Do not use generic runoff index, annual runoff depth or curve number interchangeably; no default runtime weight or unreported tails. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "2a67661ffdd0888c86af2861701c56709bbd1efc623ee8abdac23058b17ae4ee",
@@ -700265,19 +700305,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "81bfad047df2",
-    "data_id": "31989b06e8c1",
+    "data_id": "57cdad7ad628",
     "count_definition_version": "4",
-    "built_at": "2026-11-06T13:54:07.254134+00:00",
-    "source_commit": "8267a9daea22050bde92414dbd6ce799426a841e",
+    "built_at": "2026-11-06T14:08:32.490432+00:00",
+    "source_commit": "1ce92d6c2f5e262314c0819448b1bc0842350aee",
     "history": [
-      {
-        "release": "1.1.2",
-        "ui_id": "71d23e7f1f97",
-        "data_id": "4f3dbb15d8d7",
-        "count_definition_version": "2",
-        "built_at": "2026-11-04T17:56:57.973582+00:00",
-        "source_commit": "6cea094a8e5473e568c9690784c2a3728f2ad031"
-      },
       {
         "release": "1.1.2",
         "ui_id": "71d23e7f1f97",
@@ -700669,6 +700701,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-06T13:54:07.254134+00:00",
         "source_commit": "8267a9daea22050bde92414dbd6ce799426a841e"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "81bfad047df2",
+        "data_id": "57cdad7ad628",
+        "count_definition_version": "4",
+        "built_at": "2026-11-06T14:08:32.490432+00:00",
+        "source_commit": "1ce92d6c2f5e262314c0819448b1bc0842350aee"
       }
     ]
   }
