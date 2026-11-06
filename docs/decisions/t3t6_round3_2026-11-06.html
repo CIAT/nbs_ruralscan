@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T3/T6 Decisions Round 3</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1b2430;--muted:#5b6675;--line:#dde2e8;--accent:#0f6e5c;--rec:#e7f4f0;--recline:#9ccfc1;--chip:#eef1f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}}
+:root[data-theme="dark"]{--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:12px 16px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+h1{font-size:19px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.bar input[type=text]{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:150px}
+button{padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer;font:inherit;font-size:14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.progress{font-size:13px;color:var(--muted);margin-left:auto}
+h2{font-size:16px;margin:28px 0 4px}
+.sec-note{color:var(--muted);font-size:13px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+.card.done{border-left:4px solid var(--accent)}
+.code{display:inline-block;font-weight:700;font-size:12px;background:var(--chip);border-radius:4px;padding:1px 6px;margin-right:6px}
+.q{font-weight:600}
+.ctx{color:var(--ink);font-size:14px;margin:8px 0 6px}
+.aff{color:var(--muted);font-size:13px;margin:0 0 6px;border-left:3px solid var(--line);padding-left:8px}
+.opt{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;border:1px solid var(--line);border-radius:7px;margin:5px 0;cursor:pointer}
+.opt.rec{background:var(--rec);border-color:var(--recline)}
+.opt input{margin-top:3px}
+.tag{font-size:11px;font-weight:700;color:var(--accent);margin-left:6px;white-space:nowrap}
+textarea{width:100%;margin-top:6px;min-height:38px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px}
+.secbtn{font-size:12px;padding:4px 9px}
+footer{color:var(--muted);font-size:12px;padding:30px 0 50px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>T3/T6 backlog decisions — round 3 (6 Nov 2026)</h1>
+  <div class="sub">One card per question. The recommended option is highlighted. Pick an option (add a note if needed), then <b>Export CSV</b> and send the file to Claude. Answers save in this browser as you go.</div>
+  <div class="bar">
+    <input type="text" id="reviewer" placeholder="Your name" aria-label="Reviewer name">
+    <button id="acceptAll">Accept all recommendations</button>
+    <button class="primary" id="export">Export CSV</button>
+    <button id="clear">Clear</button>
+    <span class="progress" id="progress"></span>
+  </div>
+</div></header>
+<main class="wrap" id="main"></main>
+<div class="wrap"><footer>Round 3: the item you asked about (C7) and two that came out of applying your answers. Rounds 1 and 2 are applied (PRs #612, #615). B9 resolved itself: with the round-2 rules, silvopastoral heat is now moderate. The CSV columns are code, question, choice, choice_label, recommended, note, reviewer, date.</footer></div>
+<script>
+const R="Recommended";
+const SECTIONS=[
+{title:"Round 3 — three open items",note:"",items:[
+{code:"C7",q:"Add a 'managed forest' option for what a practice is compared with",ctx:"You asked which practice this is. Orefice 2016 (north-east USA) studied silvopasture made by thinning an existing forest and grazing livestock under the remaining trees: forest-based silvopasture, which sits in our agroforestry silvopastoral family. They compared it with open pasture and with a woodlot thinned for timber (a managed forest, still producing wood). Every finding records what the practice was compared with. Our only option that fits the woodlot is 'unmanaged state' (untouched land), which is wrong, and 'unmanaged state' comparisons are kept out of the hazard (T3) rows.",affects:"Agroforestry silvopastoral → economic return and the economic profile (one Orefice finding). Future forest-based silvopasture studies would use the same option.",opts:[["A","Add 'managed forest' and retag Orefice (the woodlot counts as an ordinary alternative land use)"],["B","Leave as 'unmanaged state'"],["C","Drop the woodlot comparison (keep only silvopasture vs open pasture)"]],rec:"A"},
+{code:"E3",q:"Franzel 2002 (Calliandra fodder shrub adoption, Kenya): the free copy turned out to be the wrong document",ctx:"You accepted 'the whole ICRAF book' in round 1, but that PDF is a 12-page Calliandra nursery pamphlet by Wambugu, not the book (my earlier note was wrong). The book 'Trees on the farm' (CABI 2002) has no free copy. An earlier version of the same study, ICRAF AFRENA Report 127 (Franzel, Arimi, Murithi, Karanja 1999), is catalogued in AGRIS but has no PDF online. Eight findings in two host papers (Chaudhury 2011, Kiptot 2011) cite this chapter second-hand.",affects:"Agroforestry linear/fodder-bank adoption and income rows (rural poverty, production gap); the second-hand findings stay in use either way.",opts:[["A","Get the chapter through institutional (CGIAR) access"],["B","Ask ICRAF colleagues for the 1999 AFRENA report"],["C","Drop the chase; keep the second-hand findings as they are"]],rec:"A"},
+{code:"B3b",q:"Two findings left with no supporting source after re-lineage: drop them?",ctx:"In round 1 you asked to move four findings onto the other papers they cite. For two, nothing supports them. (1) patil25_8 (Patil 2025, coffee/cacao review): 'intercropping may compete for soil moisture during drought'. Of the two papers it cites, Vaast & Somarriba 2014 says the opposite (shade trees buffer drought), and the other, Vega 2005, is a one-page book review. (2) ribeiro22_1 (Ribeiro 2022, Brazil): agrosilvopastoral systems ease losses from rising temperature in coffee. Lin 2007 found no mean-temperature relief, Weimann 2017 (we extracted it) has no temperature content, and Balbino 2012 is an introductory chapter on what integrated crop-livestock-forest systems are.",affects:"patil25_8 → agroforestry shaded perennial drought / water stress. ribeiro22_1 → agroforestry heat stress (one of many findings).",opts:[["A","Drop both (no source supports the claim)"],["B","Keep both as the host authors' own assertion, at low weight"]],rec:"A"}]}];
+const KEY="t3t6_decisions_round3_2026-11-06";
+let S={answers:{},notes:{},reviewer:""};
+try{const s=localStorage.getItem(KEY);if(s)S=Object.assign(S,JSON.parse(s));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}progress();}
+const ITEMS=SECTIONS.flatMap(s=>s.items);
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function render(){
+  const m=document.getElementById("main");m.innerHTML="";
+  SECTIONS.forEach((sec,si)=>{
+    const h=document.createElement("h2");h.textContent=sec.title;m.appendChild(h);
+    const p=document.createElement("p");p.className="sec-note";p.innerHTML=(sec.note?esc(sec.note)+" ":"")+`<button class="secbtn" data-sec="${si}">Accept recommendations in this section</button>`;m.appendChild(p);
+    sec.items.forEach(it=>{
+      const c=document.createElement("div");c.className="card"+(S.answers[it.code]?" done":"");c.id="card-"+it.code;
+      let html=`<div><span class="code">${it.code}</span><span class="q">${esc(it.q)}</span></div>`;
+      if(it.ctx)html+=`<div class="ctx">${esc(it.ctx)}</div>`;if(it.affects)html+=`<div class="aff"><b>Feeds:</b> ${esc(it.affects)}</div>`;html+=`<div style="height:6px"></div>`;
+      it.opts.forEach(([v,l])=>{const id=it.code+"-"+v;html+=`<label class="opt${v===it.rec?" rec":""}" for="${id}"><input type="radio" name="${it.code}" id="${id}" value="${v}" ${S.answers[it.code]===v?"checked":""}><span><b>${v}.</b> ${esc(l)}${v===it.rec?`<span class="tag">${R}</span>`:""}</span></label>`;});
+      html+=`<textarea data-note="${it.code}" placeholder="Note (optional)">${esc(S.notes[it.code]||"")}</textarea>`;
+      c.innerHTML=html;m.appendChild(c);
+    });
+  });
+  m.querySelectorAll("input[type=radio]").forEach(r=>r.addEventListener("change",e=>{S.answers[e.target.name]=e.target.value;document.getElementById("card-"+e.target.name).classList.add("done");save();}));
+  m.querySelectorAll("textarea").forEach(t=>t.addEventListener("input",e=>{S.notes[e.target.dataset.note]=e.target.value;save();}));
+  m.querySelectorAll(".secbtn").forEach(b=>b.addEventListener("click",e=>{SECTIONS[+e.target.dataset.sec].items.forEach(it=>{S.answers[it.code]=it.rec;});save();render();}));
+  progress();
+}
+function progress(){const n=ITEMS.filter(i=>S.answers[i.code]).length;document.getElementById("progress").textContent=`${n} / ${ITEMS.length} answered`;}
+const rv=document.getElementById("reviewer");rv.value=S.reviewer||"";rv.addEventListener("input",()=>{S.reviewer=rv.value;save();});
+document.getElementById("acceptAll").onclick=()=>{ITEMS.forEach(i=>{if(!S.answers[i.code])S.answers[i.code]=i.rec;});save();render();};
+document.getElementById("clear").onclick=()=>{if(confirm("Clear all answers and notes?")){S.answers={};S.notes={};save();render();}};
+document.getElementById("export").onclick=()=>{
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const d=new Date().toISOString().slice(0,10);
+  const rows=[["code","question","choice","choice_label","recommended","note","reviewer","date"].join(",")];
+  ITEMS.forEach(i=>{const a=S.answers[i.code]||"";const lab=(i.opts.find(o=>o[0]===a)||["",""])[1];rows.push([i.code,i.q,a,lab,i.rec,S.notes[i.code]||"",S.reviewer||"",d].map(q).join(","));});
+  const blob=new Blob([rows.join("\n")+"\n"],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`decisions_t3t6_round3_2026-11-06_${(S.reviewer||"reviewer").replace(/\W+/g,"_")}.csv`;a.click();
+};
+render();
+</script>
+</body>
+</html>
