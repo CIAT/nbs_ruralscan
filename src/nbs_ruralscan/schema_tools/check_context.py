@@ -17,6 +17,10 @@ Flags (advisory, never fatal), on ACTIVE `nbs_effect` / `asset_vulnerability` un
 * `severity_without_hazard` — `hazard_severity` set on a unit with no `hazard_type` (v1.6.3)
 * `missing_severity_cue`  — `hazard_severity` other than `unspecified` with no `severity_cue`
 * `severity_cue_not_in_quote` — the cue is not a verbatim substring of quote / note / outcome_raw
+* `severity_unlogged`     — a hazard unit whose quote / outcome states a severity word or an
+                            event magnitude, with neither `hazard_severity` (≠ unspecified)
+                            nor `hazard_magnitude` recorded (catalogue #56; units at
+                            v1.9.7+; `hazard_magnitude: "not_stated"` answers a false match)
 * `missing_practice_description` — an effect unit extracted under v1.6.9 or later with no
                             `practice_as_described` (the source's own words for the practice)
 
@@ -32,6 +36,13 @@ import sys
 from pathlib import Path
 
 EFFECT_ROLES = {"nbs_effect", "asset_vulnerability"}
+#: catalogue #56: words or numbers that characterise how bad a hazard event was
+SEVERITY_TEXT_RE = re.compile(
+    r"\b(severe|extreme|exceptional|prolonged|worst|record|catastrophic|mild|moderate"
+    r"|sévère|extrême|grave|forte sécheresse|severa|extrema)\b"
+    r"|\d+\s*(?:-|–|to|à|a)?\s*\d*\s*(?:mm|day|days|jours|días|year return|-year)\b",
+    re.I,
+)
 ALLOWED_KEYS = {
     "country",
     "region",
@@ -43,6 +54,7 @@ ALLOWED_KEYS = {
     "hazard_type",
     "hazard_severity",  # v1.6.3: author-stated intensity of the hazard event
     "severity_cue",  # v1.6.3: verbatim words that justify hazard_severity
+    "hazard_magnitude",  # v1.9.7 (#56): the event's stated size, verbatim with units
     "comparator",  # v1.6.4: what the practice is compared against (existing_forest)
     # v1.6.9 (Pete 2026-10-12, review theme 2): the SOURCE's own words for what was done,
     # so a reviewer can see whether the thing measured is really the NbS — supplemental
@@ -63,6 +75,9 @@ ALLOWED_KEYS = {
     "component_share_kind",
     "nbs_component",
     "normal_year_reference",
+    # T3/T6 backlog A4 (Pete 2026-11-06): the no-practice case is implied by physics,
+    # not measured (recharge from a tank: the runoff would otherwise have left)
+    "counterfactual",
     "beneficiary",
     "landscape_scale_only",
     "timescale_of_effect",
@@ -134,6 +149,7 @@ COMPARATOR = {
 GAS = {"co2", "ch4", "n2o", "net_co2e"}
 ATTRIBUTION = {"isolated", "bundled"}
 NORMAL_YEAR = {"present", "absent"}
+COUNTERFACTUAL = {"measured", "implied"}
 BENEFICIARY = {"farm_household", "community", "society"}
 #: an ADOPTION share (how many of the sample used the NbS component) scales attribution;
 #: a DESIGN share (the component is mandatory in every comparison) does not
@@ -146,6 +162,8 @@ TIMESCALE = {"immediate", "short_term_1_3yr", "medium_term_3_7yr", "long_term_7y
 #: the field is filled going forward and back-filled where a reviewer asks for it, never by
 #: a retrospective sweep over 3,500 rows.
 PRACTICE_DESC_FROM = (1, 6, 9)
+#: catalogue #56: hazard severity / magnitude logging applies from v1.9.7 on
+SEVERITY_LOG_FROM = (1, 9, 7)
 _ISO3 = re.compile(r"^[A-Z]{3}$")
 
 
@@ -246,6 +264,7 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
     for key, vocab in (
         ("attribution", ATTRIBUTION),
         ("normal_year_reference", NORMAL_YEAR),
+        ("counterfactual", COUNTERFACTUAL),
         ("beneficiary", BENEFICIARY),
         ("component_share_kind", SHARE_KIND),
         ("cost_nature", COST_NATURE),
@@ -292,6 +311,25 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
                 flag("missing_severity_cue", f"hazard_severity='{sev}'")
             elif cue not in hay:
                 flag("severity_cue_not_in_quote", cue[:80])
+    if (
+        _ver(row.get("ruleset_version")) >= SEVERITY_LOG_FROM
+        and ctx.get("hazard_type")
+        and sev in (None, "", "unspecified")
+        # an explicit "not_stated" answers a false match (e.g. "moderate shade")
+        and "hazard_magnitude" not in ctx
+    ):
+        rel = row.get("relationship")
+        if isinstance(rel, str):
+            try:
+                rel = json.loads(rel) if rel else {}
+            except json.JSONDecodeError:
+                rel = {}
+        text = " ".join(
+            str(x or "") for x in (row.get("quote"), (rel or {}).get("outcome_raw"))
+        )
+        m = SEVERITY_TEXT_RE.search(text)
+        if m:
+            flag("severity_unlogged", m.group(0)[:40])
     return flags
 
 

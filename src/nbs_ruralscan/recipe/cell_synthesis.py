@@ -67,6 +67,9 @@ BUNDLE_W = 0.6
 BUNDLE_SHARE_FLOOR = 0.25
 #: theme 3A: hazard-year claim with no normal-year comparison
 NO_NORMAL_YEAR_W = 0.7
+#: T3/T6 backlog A4 (Pete 2026-11-06): an implied (unmeasured) counterfactual is
+#: accepted at low confidence
+IMPLIED_COUNTERFACTUAL_W = 0.7
 #: theme 8B: a class above moderate needs more than one unit that states a size
 SIZE_SPARSE_SHARE = 1 / 3
 SIZE_SPARSE_MIN_UNITS = 3
@@ -663,6 +666,8 @@ def unit_weight(
         # cannot be separated from an ordinary production gain — it still counts, at a
         # discount, and the account says so.
         w *= NO_NORMAL_YEAR_W
+    if str((unit.context or {}).get("counterfactual") or "") == "implied":
+        w *= IMPLIED_COUNTERFACTUAL_W
     return w
 
 
