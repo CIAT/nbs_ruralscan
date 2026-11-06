@@ -105,7 +105,7 @@ def main() -> int:
 
             n_bad = len(_ckn(ROOT / "schema"))
             print(
-                f"    number-prov flag: {n_bad} (numbers not traceable to quote — review)"
+                f"    number-prov flag: {n_bad} (quote/observed-summary issues — review)"
             )
         except Exception:
             pass
