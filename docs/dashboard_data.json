@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-06T11:40:41.506614+00:00",
-  "git_commit": "7f41289bda9529a21c65ed5175e4c748d2b58101",
+  "timestamp": "2026-11-06T12:04:42.350899+00:00",
+  "git_commit": "8d10b70944b6a9ff1d9f566c5801bcaa9f57e761",
   "registers": {
     "SRC_source_register": [
       {
@@ -397117,8 +397117,8 @@
       "source_id": "boers_1986_mcwh_arid",
       "page": "2",
       "mapping_id": "",
-      "reason": "Source check 6 November 2026 (PDF page(s) 1, 2). PDF2 defines microcatchment water harvesting by runoff travelling less than100m to an adjacent infiltration basin. That number measures transport distance, whereas EV variable is catchment_area and stores abs_max100 with unit m.",
-      "decision_needed": "Retain <100m as technology-definition/design geometry; correct variable/routing before any suitability use. Do not interpret100m as area, convert to hectares, or use it as landscape exclusion.",
+      "reason": "Quantity and use review, 6 November 2026. Boers PDF p2 and Figure 1 define micro-catchment water harvesting by runoff travelling less than 100 m to an adjacent infiltration basin. Stored catchment_area uses hectares, but this claim contains a distance and abs_max=100 m. Figure geometry supplies no width or shape permitting an area conversion.",
+      "decision_needed": "Use Query to request correction: retain <100 m as micro-catchment definition/design geometry and remove its interpretation as a catchment-area suitability limit. No area conversion or landscape exclusion. Keep alone approves the unchanged catchment_area record; it does not perform this correction.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "e627bd53309cbf1a62fc811ee7f1a36b93418237cb9e6b1c19669c968b532d7b",
@@ -397949,8 +397949,8 @@
       "source_id": "wh_stocktake_adham_2018",
       "page": "4",
       "mapping_id": "",
-      "reason": "Source check 6 November 2026 (PDF page(s) 1, 3, 4). Native Table1/PDF4 confirms <50mm→1;50–60→3;60–70→4;70–80→9;80–90→8. These are expert-adjusted source model scores for wadi dams, not measured establishment probabilities. >90mm is unreported, the 70–80 maximum drops at80–90, and raw runoff depth is not a dimensionless generic index.",
-      "decision_needed": "Keep non-monotonic table with original scores, missing tail and runoff-depth units. Hold numeric transfer until rainfall/runoff statistic, tails and the9-to8 change are justified.",
+      "reason": "Quantity and use review, 6 November 2026. Runoff depth; SCS-CN modelled runoff depth; rainfall event/aggregation period underlying the table is not specified in inspected main text. Do not label annual. All classes/weights retained verbatim in context.reported_values.native_rows and quote; relationship intentionally stores direction only. No numeric restoration or overwriting needed. Table 1 labels 80–90 mm Medium suitability despite score 8; 70–80 mm receives score 9. Preserve both label and number; no silent repair. No >90 mm table class; endpoints and out-of-domain behaviour unresolved. Expert-adjusted local scores are not ecological probabilities or global limits. CN is an input used to estimate depth, not the measured quantity of this criterion. Separate binding concern: the shared runoff dataset record currently points to HydroBASINS boundary metadata and needs reconciliation.",
+      "decision_needed": "Use Query to request the limited interpretation and binding review: Retain complete runoff-depth table in mm: <50→1; 50–60→3; 60–70→4; 70–80→9; 80–90→8, including the printed Medium suitability label for 80–90. Request quantity/statistic-specific binding review; rainfall period, >90 tail and 9-to-8 reversal remain unresolved. Keep source profile without converting to CN, coefficient, normalized membership or an executable cutoff. Generic runoff_potential_index already allows native units; no automatic ontology split. Keep alone approves the unchanged stored record and does not apply corrections or binding changes.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "0607c90de229ebb9a9152e9c00f396f5e0a1c56ef8641af5c81b74ed43c6fcd5",
@@ -398285,8 +398285,8 @@
       "source_id": "wh_stocktake_bera_2023",
       "page": "5",
       "mapping_id": "",
-      "reason": "Source check 6 November 2026 (PDF page(s) 1, 4, 5, 6, 13, 14). Table3/PDF5–6 retains annual mean SWAT runoff2003–2013:570–590,590–608,608–623,623–643,643–687,687–774mm with increasing class weights0.051,0.074,0.085,0.156,0.255,0.380. Table2/PDF4 provides separate overall criterion weights; neither comparison-matrix entries nor class weights are 0–1 ecological probabilities.",
-      "decision_needed": "Keep full mm/year runoff-depth profile and source ranking. Review canonical binding before combining with curve-number or runoff-coefficient evidence; preserve missing out-of-domain tails and source-specific class support.",
+      "reason": "Quantity and use review, 6 November 2026. Mean annual surface runoff depth; Sub-basin SWAT yearly runoff, averaged over 11 years (2003–2013); 30 m reclassified overlay cells do not establish 30 m runoff measurement support. All classes/weights retained verbatim in context.reported_values.native_rows and quote; relationship intentionally stores direction only. No numeric restoration or overwriting needed. Table 3 class weights differ from Table 2 criterion weight 0.125 and comparison-matrix entries; none is an ecological probability. PDF9 recommends gully plugs for high–very high runoff, check dams for moderate–high runoff, and farm ponds/percolation tanks for low–moderately low runoff; low runoff suits recharge/subsurface systems. These source-cited structure conditions qualify overall increasing model ranking. Classes cover 570–774 mm; no outside-domain rule or exact endpoint convention established. Validation uses 52 existing concrete check dams, not every structure or individual class boundary. Source does not establish uncertainty for narrow class boundaries; retain full classes for compatible synthesis rather than auto-widening or discarding them. Separate binding concern: the shared runoff dataset record currently points to HydroBASINS boundary metadata and needs reconciliation.",
+      "decision_needed": "Use Query to request the limited interpretation and binding review: Retain complete 2003–2013 mean-annual SWAT runoff-depth profile and six class weights, separate from criterion weight 0.125. Retain PDF9 structure caveats: gully plugs high–very high, check dams moderate–high, farm ponds/percolation tanks low–moderately low, recharge/subsurface low runoff. Request quantity/statistic-specific binding review. Do not generalize overall increasing rank to every structure or pool with CN/runoff coefficients. Generic runoff_potential_index already allows native units; no automatic ontology split. Keep alone approves the unchanged stored record and does not apply corrections or binding changes.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "8ecd2cf1dafc3e4e32fc6bee050b5340c59badda1454fab5cf296054ba88909b",
@@ -398509,8 +398509,8 @@
       "source_id": "wh_stocktake_jha_2014",
       "page": "13",
       "mapping_id": "",
-      "reason": "Source check 6 November 2026 (PDF page(s) 1, 7, 13). Table4/PDF13 reports runoff coefficient<0.2,0.2–0.3,0.3–0.4,>0.4 with increasing feature weights0.14,0.23,0.27,0.36; criterion weight0.39. Quantity is runoff coefficient (dimensionless fraction), not CN, annual runoff depth, or final RWH potential index.",
-      "decision_needed": "Keep full runoff-coefficient profile and source weights; review canonical binding and do not pool directly with mm runoff or CN. No conversion to final membership scores.",
+      "reason": "Quantity and use review, 6 November 2026. Annual runoff coefficient; Annual SCS-CN runoff divided by corresponding annual rainfall, using normal year 2003 for suitability mapping; daily runoff aggregated to monthly then annual totals. All classes/weights retained verbatim in context.reported_values.native_rows and quote; relationship intentionally stores direction only. No numeric restoration or overwriting needed. Keep source descending printed intervals 0.4–0.3 and 0.3–0.2; readable ascending equivalents do not establish endpoint inclusion. Assigned parent weight 9 / normalized parent weight 0.39 are different from assigned feature weights 8,6,5,3 / normalized feature weights 0.36,0.27,0.23,0.14. Normal-year coefficient integrates rainfall, soil and land cover; avoid double counting these inputs as independent source support. No conversion to CN, runoff mm, or final rainwater harvesting potential index; common dimensionless notation does not make quantities interchangeable. Separate binding concern: the shared runoff dataset record currently points to HydroBASINS boundary metadata and needs reconciliation.",
+      "decision_needed": "Use Query to request the limited interpretation and binding review: Retain complete annual runoff-coefficient table for normal year 2003: <0.2→0.14; 0.3–0.2→0.23; 0.4–0.3→0.27; >0.4→0.36, retaining original assigned feature weights and separate criterion weight 0.39. Request quantity/statistic-specific binding review. Preserve fraction-of-rainfall meaning; no pooling with runoff depth, CN, or final model index and no conversion of AHP weights to suitability probabilities. Generic runoff_potential_index already allows native units; no automatic ontology split. Keep alone approves the unchanged stored record and does not apply corrections or binding changes.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "02cc8637472ccd4f5835aa74a35c160ca13bd1d7e9ab8e789055b6c25adfa95c",
@@ -398733,8 +398733,8 @@
       "source_id": "wh_stocktake_terencio_2017",
       "page": "5",
       "mapping_id": "",
-      "reason": "Source check 6 November 2026 (PDF page(s) 1, 5, 6). Table1/PDF5 explicitly ranks Curve Number0–20→5 through80–100→1, a decreasing pattern. CN is not generic runoff index; this is opposite common runoff-capture preference and needs explanation in the catchment-planning/allocation context.",
-      "decision_needed": "Keep complete decreasing CN table as published and preserve disagreement. Hold transfer to runoff availability until measurement and mechanism are reconciled; never silently reverse the source direction.",
+      "reason": "Quantity and use review, 6 November 2026. Curve Number (CN); Empirical direct-runoff/infiltration parameter from SNIRH mapping; source separately uses a runoff coefficient C=0.7 in engineering allocation calculations. All classes/weights retained verbatim in context.reported_values.native_rows and quote; relationship intentionally stores direction only. No numeric restoration or overwriting needed. Table 1 clearly decreases RWH suitability as CN increases. Retain disagreement; source does not explain specific decreasing-CN mechanism in inspected text. PDF3 loosely calls curve number a runoff coefficient; Table2/PDF7 explicitly identifies CN as empirical hydrology parameter. Do not equate Table1 CN with later engineering runoff coefficient C=0.7. Generic planning weights all equal 1; Table1 parenthetical group 3 is project-oriented physical-group weight, not CN factor weight or default runtime weight. Source combines physical suitability, demand and ecological priorities and includes engineered storage; practice applicability and planning-versus-establishment interpretation remain qualified. Separate binding concern: the shared runoff dataset record currently points to HydroBASINS boundary metadata and needs reconciliation.",
+      "decision_needed": "Use Query to request the limited interpretation and binding review: Retain complete decreasing CN table exactly: 0–20→5; 20–40→4; 40–60→3; 60–80→2; 80–100→1. Request native-quantity/binding and interpretation review; do not reverse direction, convert CN to coefficient C, or use these ranks as default membership. Keep generic weight 1 separate from project physical-group weight 3 and preserve combined planning/allocation context. Generic runoff_potential_index already allows native units; no automatic ontology split. Keep alone approves the unchanged stored record and does not apply corrections or binding changes.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "051fbddd88d5b45073ca9e7f3762eab544ddedd8cf0e0abea9db0610b7d47c63",
@@ -400733,8 +400733,8 @@
       "source_id": "balancing_2022_floodplain_reconnection_wetland_restoration",
       "page": "9",
       "mapping_id": "",
-      "reason": "Source check 6 November 2026 (PDF page(s) 1, 9). PDF9 says LARGE DRAINAGE AREA and low-gradient settings yield more flood attenuation. Stored variable drainage_density is a different quantity (stream length per area); source offers no drainage-density rule.",
-      "decision_needed": "Retain cited drainage-area/flood-benefit observation as planning evidence; correct variable/routing before structural use. No density direction or threshold may be inferred.",
+      "reason": "Quantity and use review, 6 November 2026. Worley PDF p9 section 4.2 discusses flood-peak attenuation, not whether wetland vegetation can establish. It cites large drainage-area, low-gradient settings. Stored drainage_density is stream length per area, a different quantity. The source does not state a density direction or quantify an area boundary; small-headwater benefit per project is an added interpretation, not the quoted claim.",
+      "decision_needed": "Use Query to request correction: retain the cited large-drainage-area AND low-gradient condition as flood-benefit planning evidence, with original attributions; remove the drainage-density interpretation and unsupported per-project/headwater comparison. Review quantity, purpose and family routing together. No area cutoff, density direction or structural suitability approval. Keep alone approves the unchanged scientific record; quantity and routing remain uncorrected.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "29c42d9eec6bc2df3effa1fa0faac835802bfab8c90bcb2c78c3de5c1b287dbc",
@@ -400973,8 +400973,8 @@
       "source_id": "wet_rehabilitation_areas_multisource_china_2020",
       "page": "4",
       "mapping_id": "",
-      "reason": "Source check 6 November 2026 (PDF page(s) 1, 4). PDF4 applies500m outside built-up land as an anthropogenic-disturbance buffer. Variable built_up_areas describes a class, but relationship is a distance in metres; this is study-specific disturbance policy, not automatically a hard legal exclusion.",
-      "decision_needed": "Keep complete500m study buffer and rationale as planning evidence; review distance-variable/routing and legal versus soft disturbance interpretation before any structural mask.",
+      "reason": "Quantity and use review, 6 November 2026. Qiu PDF pp3-4 applies a 500 m outward buffer to transportation, residential, industrial and mining land as an anthropogenic-disturbance screen. Important clarification: VONT built_up_areas explicitly permits boolean_or_distance, so metres are not themselves a wrong-variable defect. This is a study modelling choice; the paper discusses protected-area legislation separately in section 2.3.5.",
+      "decision_needed": "Use Query to record the proposed limited interpretation: retain the full 500 m study buffer and its transport/residential/industrial/mining classes as marsh-rehabilitation planning evidence. Metres are allowed by built_up_areas; no automatic variable rename. Keep calibration/routing held: this is not approval for a universal legal exclusion or settlement-only layer. Keep alone approves the unchanged stored record.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "718771be8face756a9659b68c0b9bf035d79c2cf7c71ca7575a8f70e238ce2f6",
@@ -688366,19 +688366,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "81bfad047df2",
-    "data_id": "c1a9ff109d05",
+    "data_id": "a37d485e4f92",
     "count_definition_version": "4",
-    "built_at": "2026-11-06T11:40:41.506614+00:00",
-    "source_commit": "7f41289bda9529a21c65ed5175e4c748d2b58101",
+    "built_at": "2026-11-06T12:04:42.350899+00:00",
+    "source_commit": "8d10b70944b6a9ff1d9f566c5801bcaa9f57e761",
     "history": [
-      {
-        "release": "1.0.0",
-        "ui_id": "18c80da589e5",
-        "data_id": "b123c6e699ae",
-        "count_definition_version": "1",
-        "built_at": "2026-11-04T09:43:43.272807+00:00",
-        "source_commit": "4a47b47371bb099b09654fa2c00970a4f917f7fb"
-      },
       {
         "release": "1.0.0",
         "ui_id": "6cc4009c5411",
@@ -688770,6 +688762,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-06T11:40:41.506614+00:00",
         "source_commit": "7f41289bda9529a21c65ed5175e4c748d2b58101"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "81bfad047df2",
+        "data_id": "a37d485e4f92",
+        "count_definition_version": "4",
+        "built_at": "2026-11-06T12:04:42.350899+00:00",
+        "source_commit": "8d10b70944b6a9ff1d9f566c5801bcaa9f57e761"
       }
     ]
   }
