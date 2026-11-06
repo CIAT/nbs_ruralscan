@@ -54,3 +54,5 @@ One row per request, who made it, and what we did. Stakeholder requests (World B
 - 2026-11-06 · Pete: add NBS Invest branding and Help / Contact / Team page. Added unmodified official programme logo and shared navigation, walkthrough guidance, verified programme mailbox, project contact and team roles. Mock-up/contract scope retained.
 
 - 2026-11-06 · Pete: main navigation missing from Help. Restored the missing shared-navigation dependency; verified Home plus all seven stages render, with Help identified as current instead of Home.
+
+- 2026-11-06 · Pete: consistent main navigation on every page; team links; clarify Home versus project title; retain stage numbers. Shared navigation now covers all 12 v2 pages, including Help, History and Direction B; project name is a label and Home the destination. Only current stage is highlighted; numbers remain 1–7. Team names link to verified work emails. Local destination/asset audit found no missing targets; 32 inert prototype download links now explicitly show unavailable in mock-up.
