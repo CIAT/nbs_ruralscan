@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T3/T6 Backlog Decisions</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--ink:#1b2430;--muted:#5b6675;--line:#dde2e8;--accent:#0f6e5c;--rec:#e7f4f0;--recline:#9ccfc1;--chip:#eef1f5}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}}
+:root[data-theme="dark"]{--bg:#0e131b;--card:#161d28;--ink:#e6ebf2;--muted:#9aa6b6;--line:#2a3443;--accent:#4fc4a8;--rec:#14302a;--recline:#2f6b5c;--chip:#1f2835}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:12px 16px}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+h1{font-size:19px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.bar input[type=text]{padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:150px}
+button{padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--chip);color:var(--ink);cursor:pointer;font:inherit;font-size:14px}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.progress{font-size:13px;color:var(--muted);margin-left:auto}
+h2{font-size:16px;margin:28px 0 4px}
+.sec-note{color:var(--muted);font-size:13px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
+.card.done{border-left:4px solid var(--accent)}
+.code{display:inline-block;font-weight:700;font-size:12px;background:var(--chip);border-radius:4px;padding:1px 6px;margin-right:6px}
+.q{font-weight:600}
+.ctx{color:var(--muted);font-size:14px;margin:6px 0 10px}
+.opt{display:flex;gap:9px;align-items:flex-start;padding:7px 9px;border:1px solid var(--line);border-radius:7px;margin:5px 0;cursor:pointer}
+.opt.rec{background:var(--rec);border-color:var(--recline)}
+.opt input{margin-top:3px}
+.tag{font-size:11px;font-weight:700;color:var(--accent);margin-left:6px;white-space:nowrap}
+textarea{width:100%;margin-top:6px;min-height:38px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit;font-size:14px}
+.secbtn{font-size:12px;padding:4px 9px}
+footer{color:var(--muted);font-size:12px;padding:30px 0 50px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>T3/T6 backlog decisions — 5 Nov 2026</h1>
+  <div class="sub">One card per question. The recommended option is highlighted. Pick an option (add a note if needed), then <b>Export CSV</b> and send the file to Claude. Answers save in this browser as you go.</div>
+  <div class="bar">
+    <input type="text" id="reviewer" placeholder="Your name" aria-label="Reviewer name">
+    <button id="acceptAll">Accept all recommendations</button>
+    <button class="primary" id="export">Export CSV</button>
+    <button id="clear">Clear</button>
+    <span class="progress" id="progress"></span>
+  </div>
+</div></header>
+<main class="wrap" id="main"></main>
+<div class="wrap"><footer>Source: methodology/decisions/2026-11-05_t3t6_backlog_decisions.md. The CSV columns are code, question, choice, choice_label, recommended, note, reviewer, date.</footer></div>
+<script>
+const R="Recommended";
+const SECTIONS=[
+{title:"A. Rules that change many rows",note:"Highest impact — each changes how many units are scored.",items:[
+{code:"A1",q:"Does a gain in a dry season make a practice a drought defence?",ctx:"Water-harvesting micro-catchments jumped to high drought mitigation, mainly on Botoni & Reij's 2007 Burkina season (demi-lunes +112%). The same source has an extreme-drought failure (Batodi: nothing harvested at 200–250 mm).",opts:[["A","Keep as computed (the intensity discount already handles severe failures)"],["B","Cap micro-catchment drought at moderate until there is measured evidence across more than one season"]],rec:"B"},
+{code:"A2",q:"Is \"p = .05\" significant?",ctx:"Kosmowski 2018 prints p = .05. The 5% rule (#51) says 0.05 ≤ P < 0.10 is not significant; read literally, 4 units become non-significant and terracing drought weakens.",opts:[["A","Apply the rule literally: not significant"],["B","Treat p = .05 as significant"]],rec:"A"},
+{code:"A3",q:"How should ratios, ranges and single-plot contrasts set \"strong\"?",ctx:"Bogie 2018 and Vaast 2014 are strong from a ratio between two trial arms; a range like 4–56% is classed by its midpoint; Rahn 2014 (41 vs 16 t C/ha, one plot per farm, no statistics) is strong.",opts:[["A","Keep two-arm ratios; cap single-plot no-statistics contrasts at moderate; use the lower bound of ranges"],["B","Leave all as computed"],["C","Treat all ratios and ranges as direction-only"]],rec:"A"},
+{code:"A4",q:"Accept an implied counterfactual for groundwater recharge?",ctx:"Massuel 2014 (percolation tank) and Dashora 2017 (check dams) never measure a no-structure case; the counterfactual is \"the runoff would have left\".",opts:[["A","Accept, at low confidence"],["B","Reject (no measured baseline, #28)"]],rec:"A"},
+{code:"A5",q:"Several units from one study or analysis",ctx:"Ehui 1990 gives five return units from one simulation; Botoni's 2007 summary (+30–100%) overlaps its own per-technique rows from the same season.",opts:[["A","Collapse Ehui to one unit; drop the Botoni summary, keep per-technique rows"],["B","Keep all as they are"]],rec:"A"},
+{code:"A6",q:"Pauw 2008 sand dams: bundled or isolated?",ctx:"Crop and income gains are coded as the dam's effect, but dam households also used terraces and small-scale irrigation from dam water.",opts:[["A","Mark bundled (weight 0.6), as in the 12 Oct ruling"],["B","Keep isolated"]],rec:"A"}]},
+{title:"B. Single units",note:"",items:[
+{code:"B1",q:"Ward 2020 canal blocks: direction of the yield finding",ctx:"9.7% of farmers report lower yields; 61% noticed no impact.",opts:[["A","none (no effect)"],["B","negative"]],rec:"A"},
+{code:"B2",q:"ipccar6ch5_2 cites two papers for \"shade cools coffee\"; neither says so",ctx:"",opts:[["A","Drop"],["B","Re-lineage to the IPCC chapter itself"]],rec:"A"},
+{code:"B3",q:"mello18_9, vannoordwijk21_7, patil25_8, ribeiro22_1: cited source does not contain the claim (they also cite others)",ctx:"",opts:[["A","Remove that source from their lineage; keep the units"],["B","Drop the units"]],rec:"A"},
+{code:"B4",q:"Castle 2021 ×7 (certified vs non-certified farms) — already dropped as wrong practice",ctx:"",opts:[["A","Confirm drop"],["B","Restore"]],rec:"A"},
+{code:"B5",q:"Haggar 2017 diversity units (authors: \"it is less obvious why\")",ctx:"",opts:[["A","Keep at low confidence"],["B","Drop under #39 (no mechanism)"]],rec:"A"},
+{code:"B6",q:"Ram 2011 carbon unit — the trees were felled and sold",ctx:"",opts:[["A","Drop (harvested uptake, #39)"],["B","Keep"]],rec:"A"},
+{code:"B7",q:"MWE 2016 modelled benefit-cost ratios (ex-ante, assumed benefits)",ctx:"",opts:[["A","Keep as modelled (modelled-only cap applies)"],["B","Drop under #23"]],rec:"A"},
+{code:"B8",q:"Roshetko 2002: measured and projected carbon comparisons from one source",ctx:"",opts:[["A","Keep measured only"],["B","Keep both"]],rec:"A"},
+{code:"B9",q:"Silvopastoral heat → high, resting partly on a second-hand IPCC claim",ctx:"",opts:[["A","Cap at moderate until a primary is added"],["B","Accept as computed"]],rec:"A"},
+{code:"B10",q:"Krauss 2009 salt-marsh unit filed under wetlands from a mangrove paper",ctx:"",opts:[["A","Keep (the finding is about marsh)"],["B","Drop"]],rec:"A"},
+{code:"B11",q:"Botoni & Reij figures: cited_secondary (national reports) or primary?",ctx:"",opts:[["A","Keep cited_secondary (avoids double counting later)"],["B","Primary (the authors coordinated the study)"]],rec:"A"},
+{code:"B12",q:"Binam 2015: two tables disagree (P<10% vs P<5%)",ctx:"",opts:[["A","Not significant (the % table, as coded)"],["B","Significant (the log table)"]],rec:"A"}]},
+{title:"C. Scope and families",note:"",items:[
+{code:"C1",q:"Losada 2018 (9 modelled flood units held): lift the DOI hold?",ctx:"Overlaps Menéndez 2020 (same model, revised numbers).",opts:[["A","Drop; Menéndez is the published version"],["B","Lift the hold and ingest with lineage to Menéndez"]],rec:"A"},
+{code:"C2",q:"Yang 2019: hedgerows on construction spoil heaps (no crop)",ctx:"",opts:[["A","Out"],["B","In (choose a family in the note)"]],rec:"A"},
+{code:"C3",q:"Onduru 2008: off-farm Tithonia green manure as \"tree biomass transfer\"",ctx:"",opts:[["A","Out (no trees in the system)"],["B","In"]],rec:"A"},
+{code:"C4",q:"Live fences in pasture (now silvopastoral) vs windbreaks in pasture (linear boundary)",ctx:"",opts:[["A","Both linear boundary"],["B","Both silvopastoral"],["C","Leave as is"]],rec:"A"},
+{code:"C5",q:"Chen 2019: level ditches → in-situ, fish-scale pits → micro-catchment (authors call all six \"terracing\")",ctx:"",opts:[["A","Keep the split"],["B","All terracing"]],rec:"A"},
+{code:"C6",q:"Merkelbach paludiculture barriers: family",ctx:"",opts:[["A","Peatland"],["B","Restoration / rewetting"]],rec:"A"},
+{code:"C7",q:"Add a managed_forest comparator (Orefice's thinned woodlot is tagged \"unmanaged\")",ctx:"",opts:[["A","Yes"],["B","No"]],rec:"A"},
+{code:"C8",q:"Keep existing forest/peat/mangrove management studies (Somanathan, Jauhiainen, Krauss) out of restoration roll-ups",ctx:"",opts:[["A","Yes (tag existing_forest / existing_wetland where missing)"],["B","No"]],rec:"A"},
+{code:"C9",q:"Gross fishery value per ha of standing mangrove (~10 units): accept a zero-catch counterfactual?",ctx:"",opts:[["A","No (levels, #28)"],["B","Yes"]],rec:"A"}]},
+{title:"D. Vocabulary gaps",note:"Each blocks evidence already read.",items:[
+{code:"D1",q:"Add routes for water_table_depth and establishment_survival now",ctx:"Peat canal blocks, biodrainage, planting / micro-catchment survival.",opts:[["A","Yes"],["B","Later"]],rec:"A"},
+{code:"D2",q:"Add a fish catch / fisheries production variable",ctx:"",opts:[["A","Yes"],["B","Later"]],rec:"A"},
+{code:"D3",q:"Route ecosystem_service (dung-beetle processes) to biodiversity",ctx:"",opts:[["A","Yes"],["B","No (keep catalogued only)"]],rec:"B"},
+{code:"D4",q:"Social capital, tree density, air quality (PM10), crop labour demand",ctx:"",opts:[["A","Defer"],["B","Add now (say which in the note)"]],rec:"A"},
+{code:"D5",q:"Gender in living-fence adoption",ctx:"",opts:[["A","Module 6 guidance only"],["B","M2b operational stream"]],rec:"A"}]},
+{title:"E. Different versions of a source",note:"",items:[
+{code:"E1",q:"Pinoargote 2016 — only the author's thesis (same study) is free",ctx:"",opts:[["A","Accept"],["B","Reject"]],rec:"A"},
+{code:"E2",q:"Dixon 2015 — only a conference abstract is free",ctx:"",opts:[["A","Reject (too thin)"],["B","Accept"]],rec:"A"},
+{code:"E3",q:"Franzel 2002 — the whole ICRAF book, chapter inside",ctx:"",opts:[["A","Accept (cite the chapter pages)"],["B","Reject"]],rec:"A"},
+{code:"E4",q:"Oweis 1997 — only the 2012 second edition is free",ctx:"",opts:[["A","Reject unless the cited figures are unchanged"],["B","Accept"]],rec:"A"}]}];
+const KEY="t3t6_decisions_2026-11-05";
+let S={answers:{},notes:{},reviewer:""};
+try{const s=localStorage.getItem(KEY);if(s)S=Object.assign(S,JSON.parse(s));}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}progress();}
+const ITEMS=SECTIONS.flatMap(s=>s.items);
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function render(){
+  const m=document.getElementById("main");m.innerHTML="";
+  SECTIONS.forEach((sec,si)=>{
+    const h=document.createElement("h2");h.textContent=sec.title;m.appendChild(h);
+    const p=document.createElement("p");p.className="sec-note";p.innerHTML=(sec.note?esc(sec.note)+" ":"")+`<button class="secbtn" data-sec="${si}">Accept recommendations in this section</button>`;m.appendChild(p);
+    sec.items.forEach(it=>{
+      const c=document.createElement("div");c.className="card"+(S.answers[it.code]?" done":"");c.id="card-"+it.code;
+      let html=`<div><span class="code">${it.code}</span><span class="q">${esc(it.q)}</span></div>`;
+      if(it.ctx)html+=`<div class="ctx">${esc(it.ctx)}</div>`;else html+=`<div style="height:8px"></div>`;
+      it.opts.forEach(([v,l])=>{const id=it.code+"-"+v;html+=`<label class="opt${v===it.rec?" rec":""}" for="${id}"><input type="radio" name="${it.code}" id="${id}" value="${v}" ${S.answers[it.code]===v?"checked":""}><span><b>${v}.</b> ${esc(l)}${v===it.rec?`<span class="tag">${R}</span>`:""}</span></label>`;});
+      html+=`<textarea data-note="${it.code}" placeholder="Note (optional)">${esc(S.notes[it.code]||"")}</textarea>`;
+      c.innerHTML=html;m.appendChild(c);
+    });
+  });
+  m.querySelectorAll("input[type=radio]").forEach(r=>r.addEventListener("change",e=>{S.answers[e.target.name]=e.target.value;document.getElementById("card-"+e.target.name).classList.add("done");save();}));
+  m.querySelectorAll("textarea").forEach(t=>t.addEventListener("input",e=>{S.notes[e.target.dataset.note]=e.target.value;save();}));
+  m.querySelectorAll(".secbtn").forEach(b=>b.addEventListener("click",e=>{SECTIONS[+e.target.dataset.sec].items.forEach(it=>{S.answers[it.code]=it.rec;});save();render();}));
+  progress();
+}
+function progress(){const n=ITEMS.filter(i=>S.answers[i.code]).length;document.getElementById("progress").textContent=`${n} / ${ITEMS.length} answered`;}
+const rv=document.getElementById("reviewer");rv.value=S.reviewer||"";rv.addEventListener("input",()=>{S.reviewer=rv.value;save();});
+document.getElementById("acceptAll").onclick=()=>{ITEMS.forEach(i=>{if(!S.answers[i.code])S.answers[i.code]=i.rec;});save();render();};
+document.getElementById("clear").onclick=()=>{if(confirm("Clear all answers and notes?")){S.answers={};S.notes={};save();render();}};
+document.getElementById("export").onclick=()=>{
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const d=new Date().toISOString().slice(0,10);
+  const rows=[["code","question","choice","choice_label","recommended","note","reviewer","date"].join(",")];
+  ITEMS.forEach(i=>{const a=S.answers[i.code]||"";const lab=(i.opts.find(o=>o[0]===a)||["",""])[1];rows.push([i.code,i.q,a,lab,i.rec,S.notes[i.code]||"",S.reviewer||"",d].map(q).join(","));});
+  const blob=new Blob([rows.join("\n")+"\n"],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`decisions_t3t6_backlog_2026-11-05_${(S.reviewer||"reviewer").replace(/\W+/g,"_")}.csv`;a.click();
+};
+render();
+</script>
+</body>
+</html>
