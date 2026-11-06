@@ -1,6 +1,6 @@
 # M07/M08: explicit review replay paths
 
-Date: 5 November 2026. Baseline: `904db18a4d9287141357e248ff48e28beabe9a7a` (merged PR #593). Status: implemented; pending merge. This is another bounded portability step, not an evidence cutover or completion of M07/M08. Project administration stays in this existing workspace; this receipt is not imported into the new product repositories.
+Date: 5 November 2026. Baseline: `904db18a4d9287141357e248ff48e28beabe9a7a` (merged PR #593). Status: merged in PR #596 at `f90cd5c`. This is another bounded portability step, not an evidence cutover or completion of M07/M08. Project administration stays in this existing workspace; this receipt is not imported into the new product repositories.
 
 ## Result
 
@@ -52,6 +52,8 @@ Focused tests exercise two interleaved roots from an unrelated working directory
 All **1,169 tests passed** in a clean Git checkout. Lint/format, scoped type checks, schema synchronization (zero stale artifacts), structure validation and T4 coverage passed. Structure retains 4,007 existing warnings. Broad type checking retains the same 191 diagnostics on baseline and candidate; none were added. An initial archive-only test copy lacked the Git metadata required by existing tests; the successful run used a proper checkout. Clean verification copies omit the private corpus; none of these results claims source/quote verification.
 
 ## Limits and next step
+
+The following describes this slice as merged. The subsequent [review-record recovery slice](m08-review-recovery.md) stages its three record writes and adds caught-failure rollback; generation remains separate.
 
 Review replay is **not transactional**. Clarification publication, evidence rewriting, audit append and generation remain separate mutations. A later failure can leave some already-applied records; staged artifact publication in PR #591 does not roll them back. Shipping retains its failed isolated checkout for recovery, and migration rehearsals must keep their input snapshot. Do not run this against the live review checkout while other writes are active.
 

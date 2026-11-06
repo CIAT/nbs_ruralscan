@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 import pytest
-from nbs_ruralscan.schema_tools import review, submit_review as submit
+from nbs_ruralscan.schema_tools import publication, review, submit_review as submit
 
 
 def snapshot(root: Path, *, action="ok") -> Path:
@@ -213,3 +213,190 @@ def test_cli_routes_local_root(tmp_path, monkeypatch):
     monkeypatch.setattr(submit, "main", lambda **kwargs: calls.append(kwargs) or 0)
     assert submit.cli() == 0
     assert calls == [{"root": tmp_path}]
+
+
+@pytest.mark.parametrize("failed_write", ["evidence", "audit", "clarification"])
+def test_staging_write_failure_leaves_every_live_record_untouched(
+    tmp_path, monkeypatch, failed_write
+):
+    root = snapshot(tmp_path / "snapshot")
+    before = tree(root)
+    original = Path.open
+    names = {
+        "evidence": "EV_evidence_register.csv",
+        "audit": "review_log.csv",
+        "clarification": "clarification_log.tmp",
+    }
+
+    def fail_write(path, mode="r", *args, **kwargs):
+        if path.name == names[failed_write] and mode in {"w", "a"}:
+            assert not path.is_relative_to(root)
+            raise OSError(f"injected {failed_write} write failure")
+        return original(path, mode, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", fail_write)
+    with pytest.raises(OSError, match="injected"):
+        submit.replay(root)
+    assert tree(root) == before
+
+
+@pytest.mark.parametrize(
+    "failure,existing_audit",
+    [
+        ("second_replace", False),
+        ("after_replace_interrupt", False),
+        ("third_replace", True),
+        ("after_third_interrupt", True),
+    ],
+)
+def test_record_install_failure_restores_existing_and_removes_new_records(
+    tmp_path, monkeypatch, failure, existing_audit
+):
+    root = snapshot(tmp_path / "snapshot")
+    log = review.ReviewFiles.from_root(root).log
+    if existing_audit:
+        log.write_text(
+            "date,evidence_id,source_id,verdict,decision,reason,note,reviewer\n"
+            "2026-01-01,e4,s4,,ok,,,previous_reviewer\n"
+        )
+    before = tree(root)
+    replace = publication.os.replace
+    calls = 0
+
+    def fail_install(source, target):
+        nonlocal calls
+        if Path(target).is_relative_to(root):
+            calls += 1
+            if failure == "second_replace" and calls == 2:
+                raise OSError("record install failed")
+            if failure == "after_replace_interrupt" and calls == 2:
+                replace(source, target)
+                raise KeyboardInterrupt("record install interrupted")
+            if failure == "third_replace" and calls == 3:
+                raise OSError("record install failed")
+            if failure == "after_third_interrupt" and calls == 3:
+                replace(source, target)
+                raise KeyboardInterrupt("record install interrupted")
+        replace(source, target)
+
+    monkeypatch.setattr(publication.os, "replace", fail_install)
+    with pytest.raises((OSError, KeyboardInterrupt), match="record install"):
+        submit.replay(root)
+    assert tree(root) == before
+    assert log.exists() == existing_audit
+
+
+def test_incomplete_record_rollback_preserves_recovery_copies(tmp_path, monkeypatch):
+    root = snapshot(tmp_path / "snapshot")
+    before = tree(root)
+    replace = publication.os.replace
+    calls = 0
+
+    def fail_install_and_restore(source, target):
+        nonlocal calls
+        if Path(target).is_relative_to(root):
+            calls += 1
+            if calls >= 2:
+                raise OSError("disk unavailable")
+        replace(source, target)
+
+    monkeypatch.setattr(publication.os, "replace", fail_install_and_restore)
+    with pytest.raises(publication.PublicationRecoveryError) as caught:
+        submit.replay(root)
+    recovery = caught.value.recovery_dir
+    manifest = json.loads((recovery / "manifest.json").read_text())
+    assert manifest["output_root"] == str(root)
+    ev = "schema/registers/EV_evidence_register.csv"
+    assert (recovery / "before" / ev).read_bytes() == before[ev]
+    assert (recovery / "artifacts" / ev).read_bytes() == (root / ev).read_bytes()
+    assert manifest["previous"]["pipeline/metrics/review_log.csv"] is None
+    for name in ("decisions.json", "clarifications.json"):
+        path = "pipeline/review/" + name
+        assert (root / path).read_bytes() == before[path]
+    import shutil
+
+    shutil.rmtree(recovery)
+
+
+def test_unknown_evidence_id_does_not_create_empty_audit_log(tmp_path):
+    root = snapshot(tmp_path)
+    (root / "pipeline/review/decisions.json").write_text(
+        json.dumps({"unknown": {"alice": {"decision": "ok"}}})
+    )
+    (root / "pipeline/review/clarifications.json").unlink()
+    before = tree(root)
+    result = submit.replay(root)
+    assert result.applied is not None and result.applied["ok"] == 0
+    assert tree(root) == before
+    assert not review.ReviewFiles.from_root(root).log.exists()
+
+
+def test_clarification_only_replay_can_create_history_without_other_records(tmp_path):
+    local = tmp_path / "pipeline/review/clarifications.json"
+    local.parent.mkdir(parents=True)
+    events = [{"date": "2026-01-01", "issue_id": "one", "note": "reply"}]
+    local.write_text(json.dumps(events))
+    original = local.read_bytes()
+    result = submit.replay(tmp_path)
+    assert result.applied is None and result.clarification_count == 1
+    assert (
+        json.loads((tmp_path / "pipeline/metrics/clarification_log.json").read_text())
+        == events
+    )
+    assert local.read_bytes() == original
+    assert not review.ReviewFiles.from_root(tmp_path).log.exists()
+    assert not review.ReviewFiles.from_root(tmp_path).evidence.exists()
+    before = tree(tmp_path)
+    assert not submit.replay(tmp_path).needs_rebuild
+    assert tree(tmp_path) == before
+
+
+def test_generator_failure_retains_successful_replay_and_explains_explicit_retry(
+    tmp_path, monkeypatch, capsys
+):
+    root = snapshot(tmp_path)
+    (root / "pipeline/review/decisions.json").unlink()
+    evidence_before = review.ReviewFiles.from_root(root).evidence.read_bytes()
+    attempts = []
+
+    def fail_build(schema):
+        attempts.append(schema)
+        assert (
+            len(
+                json.loads(
+                    (root / "pipeline/metrics/clarification_log.json").read_text()
+                )
+            )
+            == 2
+        )
+        raise RuntimeError("artifact build failed")
+
+    monkeypatch.setattr(submit, "generate", fail_build)
+    with pytest.raises(RuntimeError, match="artifact build failed"):
+        submit.main(root=root)
+    assert "Retry generation explicitly" in capsys.readouterr().err
+    assert review.ReviewFiles.from_root(root).evidence.read_bytes() == evidence_before
+    assert submit.main(root=root) == 0
+    assert attempts == [
+        root / "schema"
+    ]  # Duplicate events are not republished/rebuilt.
+
+
+def test_staged_replay_does_not_overwrite_concurrent_record_edit(tmp_path, monkeypatch):
+    root = snapshot(tmp_path)
+    before = tree(root)
+    apply = submit.apply_decisions
+    log = review.ReviewFiles.from_root(root).log
+
+    def concurrent(*args, **kwargs):
+        result = apply(*args, **kwargs)
+        log.write_text("another writer\n")
+        return result
+
+    monkeypatch.setattr(submit, "apply_decisions", concurrent)
+    with pytest.raises(ValueError, match="changed during compilation"):
+        submit.replay(root)
+    assert log.read_text() == "another writer\n"
+    after = tree(root)
+    del after["pipeline/metrics/review_log.csv"]
+    assert after == before

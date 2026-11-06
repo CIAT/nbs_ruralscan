@@ -383,3 +383,56 @@ def test_check_does_not_stage_artifacts(inputs, monkeypatch):
     monkeypatch.setattr(publication, "staged_publish", forbid)
     generate.build(SchemaBuildPaths(inputs / "schema"), check=True)
     assert snapshot(inputs) == before
+
+
+@pytest.mark.parametrize("with_decision", [False, True])
+def test_review_replay_survives_failed_artifact_build_and_explicit_retry(
+    inputs, monkeypatch, capsys, with_decision
+):
+    from nbs_ruralscan.schema_tools import submit_review
+    from nbs_ruralscan.runtime import effect_rows
+
+    local = inputs / "pipeline/review"
+    local.mkdir(parents=True, exist_ok=True)
+    event = {"date": "2026-11-05", "issue_id": "recovery-fixture", "note": "reply"}
+    (local / "clarifications.json").write_text(json.dumps([event]))
+    if with_decision:
+        with (inputs / "schema/registers/EV_evidence_register.csv").open() as f:
+            unit = next(r for r in csv.DictReader(f) if r["reviewer_ok"] == "true")
+        (local / "decisions.json").write_text(
+            json.dumps({unit["evidence_id"]: {"fixture": {"decision": "ok"}}})
+        )
+    pending_before = snapshot(local)
+    paths = SchemaBuildPaths(inputs / "schema")
+    stale = inputs / "schema/registers/SRC_source_register.json"
+    stale.write_text("[]\n")
+    before = {path: path.read_bytes() for path in generate._destinations(paths)}
+
+    def fail_last(*args, **kwargs):
+        raise RuntimeError("last artifact failed")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(effect_rows, "write_flat", fail_last)
+        with pytest.raises(RuntimeError, match="last artifact failed"):
+            submit_review.main(root=inputs)
+    assert "Retry generation explicitly" in capsys.readouterr().err
+    assert {path: path.read_bytes() for path in before} == before
+    assert snapshot(local) == pending_before
+    shared = inputs / "pipeline/metrics/clarification_log.json"
+    assert event in json.loads(shared.read_text())
+    records_after = {
+        path: path.read_bytes()
+        for path in (
+            inputs / "schema/registers/EV_evidence_register.csv",
+            inputs / "pipeline/metrics/review_log.csv",
+            shared,
+        )
+    }
+    # Explicit generation retries even when all clarification events are already shared.
+    generate.generate(inputs / "schema")
+    assert generate.generate(inputs / "schema", check=True) == []
+    result = submit_review.replay(inputs)
+    assert result.clarification_count == 0
+    assert result.applied is None or result.applied["ok"] == 0
+    assert {path: path.read_bytes() for path in records_after} == records_after
+    assert snapshot(local) == pending_before
