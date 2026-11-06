@@ -1,6 +1,6 @@
 # M07/M08: explicit metadata verification and recoverable queue/audit writes
 
-Date: 6 November 2026. Baseline: `7f41289bda9529a21c65ed5175e4c748d2b58101` (merged PR #614). Status: implemented; pending merge. This internal migration receipt stays outside destination product repositories.
+Date: 6 November 2026. Baseline: `7f41289bda9529a21c65ed5175e4c748d2b58101` (merged PR #614). Status: merged in PR #616 at `0223429763d6f23597479b00f96bc6f891f6d749`. This internal migration receipt stays outside destination product repositories.
 
 ## Result
 

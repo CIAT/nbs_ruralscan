@@ -23,7 +23,8 @@ from pathlib import Path
 
 import requests
 
-from .integrity import atomic_write, validate_body, validate_source_id
+from .artifact_publication import PairSnapshot, publish_pair
+from .integrity import validate_body, validate_source_id
 
 # Corpus cache root — parallel to the docindex cache (.cache/ingest)
 DEFAULT_CORPUS_DIR = ".cache/corpus"
@@ -131,18 +132,20 @@ def acquire(
     AcquireError
         Non-200 HTTP status, empty response body, or content-type mismatch.
     ValueError
-        Unknown ``kind``.
+        Unknown ``kind``, unsafe destination, or observed cache drift.
+    PublicationRecoveryError
+        Incomplete publication rollback/cleanup; retained recovery requires attention.
     """
     if kind not in _VALID_KINDS:
         raise ValueError(f"Unknown kind {kind!r}. Valid values: {sorted(_VALID_KINDS)}")
 
     validate_source_id(source_id)
     corpus_path = Path(corpus_dir)
-    corpus_path.mkdir(parents=True, exist_ok=True)
 
     ext = _EXT_MAP[kind]
     artifact_path = corpus_path / f"{source_id}{ext}"
     meta_path = corpus_path / f"{source_id}.meta.json"
+    snapshot = PairSnapshot.capture(artifact_path, meta_path)
 
     if meta_path.exists() and not artifact_path.exists():
         raise AcquireError(
@@ -173,6 +176,7 @@ def acquire(
             raise AcquireError(
                 f"Invalid cache for {source_id!r}: {exc}; inspect before explicit replacement"
             ) from exc
+        snapshot.assert_unchanged()
         return AcquireResult(
             ok=True,
             source_id=source_id,
@@ -209,9 +213,7 @@ def acquire(
     except ValueError as exc:
         raise AcquireError(f"{source_id}: {exc}") from exc
 
-    atomic_write(artifact_path, body)
-
-    # --- Write sidecar ---------------------------------------------------
+    # --- Prepare and publish the artifact/provenance pair -----------------
     meta: dict = {
         "source_id": source_id,
         "url": url,
@@ -223,8 +225,14 @@ def acquire(
         "bytes": len(body),
         "commit_sha": commit_sha,
     }
-    atomic_write(
-        meta_path, json.dumps(meta, indent=2, ensure_ascii=False).encode("utf-8")
+    publish_pair(
+        snapshot,
+        body,
+        json.dumps(meta, indent=2, ensure_ascii=False).encode("utf-8"),
+        source_id=source_id,
+        url=url,
+        kind=kind,
+        commit_sha=commit_sha,
     )
 
     return AcquireResult(

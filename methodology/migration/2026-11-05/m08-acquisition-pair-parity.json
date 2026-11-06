@@ -1,0 +1,314 @@
+{
+  "baseline": "0223429763d6f23597479b00f96bc6f891f6d749",
+  "comparison": "Separate baseline/candidate processes; selected-file inventories and acquisition outcomes/request sequences match without byte normalization. Returned paths are recorded relative to each selected data root.",
+  "maintained_readonly_rows": {
+    "queue": 918,
+    "sources": 741
+  },
+  "candidate_compiler_schema_and_pipeline_absent": true,
+  "fixture": "Synthetic PDF/HTML/Markdown bytes, fixed fetched_at clock and mocked HTTP only. No private corpus, real network, library or queue writes. This tests acquisition compatibility, not historical source identity.",
+  "steps": [
+    {
+      "step": "website_fetch",
+      "result": {
+        "artifact": "corpus/web.html",
+        "ok": true,
+        "reason": null,
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/web",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ],
+        "sidecar": "corpus/web.meta.json"
+      },
+      "changed": [
+        "corpus/web.html",
+        "corpus/web.meta.json"
+      ],
+      "inventory_sha256": "74c4f0f94bb121e1b45c75b53149878144922933dee69846a108c9c3e74a7126"
+    },
+    {
+      "step": "website_cached",
+      "result": {
+        "artifact": "corpus/web.html",
+        "ok": true,
+        "reason": "already_cached",
+        "requests": [],
+        "sidecar": "corpus/web.meta.json"
+      },
+      "changed": [],
+      "inventory_sha256": "74c4f0f94bb121e1b45c75b53149878144922933dee69846a108c9c3e74a7126"
+    },
+    {
+      "step": "pdf_fetch",
+      "result": {
+        "artifact": "corpus/pdf.pdf",
+        "ok": true,
+        "reason": null,
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/pdf",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ],
+        "sidecar": "corpus/pdf.meta.json"
+      },
+      "changed": [
+        "corpus/pdf.meta.json",
+        "corpus/pdf.pdf"
+      ],
+      "inventory_sha256": "cab6c888ea32c16e8f1c065c65b5c3d54df5fe56848b0fb0579dea90d510faf4"
+    },
+    {
+      "step": "pdf_cached",
+      "result": {
+        "artifact": "corpus/pdf.pdf",
+        "ok": true,
+        "reason": "already_cached",
+        "requests": [],
+        "sidecar": "corpus/pdf.meta.json"
+      },
+      "changed": [],
+      "inventory_sha256": "cab6c888ea32c16e8f1c065c65b5c3d54df5fe56848b0fb0579dea90d510faf4"
+    },
+    {
+      "step": "markdown_fetch",
+      "result": {
+        "artifact": "corpus/markdown.md",
+        "ok": true,
+        "reason": null,
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/markdown",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ],
+        "sidecar": "corpus/markdown.meta.json"
+      },
+      "changed": [
+        "corpus/markdown.md",
+        "corpus/markdown.meta.json"
+      ],
+      "inventory_sha256": "cf42d77630b94a8d7c62a0c6faefed5124773ca14c99de80b7be345afc5e74f0"
+    },
+    {
+      "step": "markdown_cached",
+      "result": {
+        "artifact": "corpus/markdown.md",
+        "ok": true,
+        "reason": "already_cached",
+        "requests": [],
+        "sidecar": "corpus/markdown.meta.json"
+      },
+      "changed": [],
+      "inventory_sha256": "cf42d77630b94a8d7c62a0c6faefed5124773ca14c99de80b7be345afc5e74f0"
+    },
+    {
+      "step": "website_overwrite",
+      "result": {
+        "artifact": "corpus/web.html",
+        "ok": true,
+        "reason": null,
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/web",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ],
+        "sidecar": "corpus/web.meta.json"
+      },
+      "changed": [
+        "corpus/web.html",
+        "corpus/web.meta.json"
+      ],
+      "inventory_sha256": "f0a25f1b957ae190e1e7c7cf14fb5ae91cd283f7498b6b237463ec2ee3ee19b1"
+    },
+    {
+      "step": "cache_url_mismatch",
+      "result": {
+        "error_type": "AcquireError",
+        "requests": []
+      },
+      "changed": [],
+      "inventory_sha256": "f0a25f1b957ae190e1e7c7cf14fb5ae91cd283f7498b6b237463ec2ee3ee19b1"
+    },
+    {
+      "step": "cache_pin_mismatch",
+      "result": {
+        "error_type": "AcquireError",
+        "requests": []
+      },
+      "changed": [],
+      "inventory_sha256": "f0a25f1b957ae190e1e7c7cf14fb5ae91cd283f7498b6b237463ec2ee3ee19b1"
+    },
+    {
+      "step": "kind_conflict",
+      "result": {
+        "error_type": "AcquireError",
+        "requests": []
+      },
+      "changed": [],
+      "inventory_sha256": "f0a25f1b957ae190e1e7c7cf14fb5ae91cd283f7498b6b237463ec2ee3ee19b1"
+    },
+    {
+      "step": "http_failure",
+      "result": {
+        "error_type": "AcquireError",
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/http_failure",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/parity/http_failure",
+            "user_agent": "curl/8.7.1"
+          }
+        ]
+      },
+      "changed": [],
+      "inventory_sha256": "f0a25f1b957ae190e1e7c7cf14fb5ae91cd283f7498b6b237463ec2ee3ee19b1"
+    },
+    {
+      "step": "content_type_failure",
+      "result": {
+        "error_type": "AcquireError",
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/content_type_failure",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ]
+      },
+      "changed": [],
+      "inventory_sha256": "f0a25f1b957ae190e1e7c7cf14fb5ae91cd283f7498b6b237463ec2ee3ee19b1"
+    },
+    {
+      "step": "signature_failure",
+      "result": {
+        "error_type": "AcquireError",
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/signature_failure",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ]
+      },
+      "changed": [],
+      "inventory_sha256": "f0a25f1b957ae190e1e7c7cf14fb5ae91cd283f7498b6b237463ec2ee3ee19b1"
+    },
+    {
+      "step": "empty_failure",
+      "result": {
+        "error_type": "AcquireError",
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/empty_failure",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ]
+      },
+      "changed": [],
+      "inventory_sha256": "f0a25f1b957ae190e1e7c7cf14fb5ae91cd283f7498b6b237463ec2ee3ee19b1"
+    },
+    {
+      "step": "ua_fallback",
+      "result": {
+        "artifact": "corpus/ua_fallback.html",
+        "ok": true,
+        "reason": null,
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/ua_fallback",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          },
+          {
+            "url": "https://example.invalid/parity/ua_fallback",
+            "user_agent": "curl/8.7.1"
+          }
+        ],
+        "sidecar": "corpus/ua_fallback.meta.json"
+      },
+      "changed": [
+        "corpus/ua_fallback.html",
+        "corpus/ua_fallback.meta.json"
+      ],
+      "inventory_sha256": "b9fab1ed2b1773dd19a58d135b366e12e2f799e153e80d1153e70240876a48b5"
+    },
+    {
+      "step": "queue_valid",
+      "result": {
+        "ok": true,
+        "operation": "queue",
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/queue_good",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ]
+      },
+      "changed": [
+        "corpus/queue_good.meta.json",
+        "corpus/queue_good.pdf"
+      ],
+      "inventory_sha256": "f086c0847fcb498bf5ed81e648f3a9e017b7648233b47b284b9173932dfed99a"
+    },
+    {
+      "step": "queue_cached",
+      "result": {
+        "ok": true,
+        "operation": "queue",
+        "requests": []
+      },
+      "changed": [],
+      "inventory_sha256": "f086c0847fcb498bf5ed81e648f3a9e017b7648233b47b284b9173932dfed99a"
+    },
+    {
+      "step": "queue_wrong_title",
+      "result": {
+        "ok": false,
+        "operation": "queue",
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/queue_wrong",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ]
+      },
+      "changed": [],
+      "inventory_sha256": "f086c0847fcb498bf5ed81e648f3a9e017b7648233b47b284b9173932dfed99a"
+    },
+    {
+      "step": "unsafe_id",
+      "result": {
+        "error_type": "ValueError",
+        "requests": []
+      },
+      "changed": [],
+      "inventory_sha256": "f086c0847fcb498bf5ed81e648f3a9e017b7648233b47b284b9173932dfed99a"
+    },
+    {
+      "step": "orphan_sidecar",
+      "result": {
+        "error_type": "AcquireError",
+        "requests": []
+      },
+      "changed": [],
+      "inventory_sha256": "f086c0847fcb498bf5ed81e648f3a9e017b7648233b47b284b9173932dfed99a"
+    },
+    {
+      "step": "network_failure",
+      "result": {
+        "error_type": "AcquireError",
+        "requests": [
+          {
+            "url": "https://example.invalid/parity/network_failure",
+            "user_agent": "nbs-ruralscan/0.1 (evidence pipeline; https://github.com/ciat/nbs_ruralscan)"
+          }
+        ]
+      },
+      "changed": [],
+      "inventory_sha256": "f086c0847fcb498bf5ed81e648f3a9e017b7648233b47b284b9173932dfed99a"
+    }
+  ]
+}

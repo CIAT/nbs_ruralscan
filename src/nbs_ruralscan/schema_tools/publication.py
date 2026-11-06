@@ -5,7 +5,7 @@ atomic; readers can still see mixed generations during installation. This is
 not a crash-safe transaction or a lock shared with the review server.
 """
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 import csv
 import hashlib
 import json
@@ -54,7 +54,9 @@ def _manifest(
     names: list[Path],
     optional: set[Path],
     markdown: frozenset[Path] = frozenset(),
+    artifact_validators: Mapping[Path, Callable[[Path], None]] | None = None,
 ) -> dict[str, dict]:
+    artifact_validators = artifact_validators or {}
     entries = list(root.rglob("*"))
     if any(path.is_symlink() for path in entries):
         raise ValueError("Staged output contains a symlink")
@@ -83,8 +85,10 @@ def _manifest(
                     raise ValueError(f"Invalid staged CSV: {name}")
         elif name in markdown and path.suffix == ".md":
             path.read_text(encoding="utf-8")  # Strict text decoding; no execution.
-        else:
+        elif name not in artifact_validators:
             raise ValueError(f"Unsupported generated artifact: {name}")
+        if name in artifact_validators:
+            artifact_validators[name](path)
         result[str(name)] = {"sha256": _digest(path), "size": path.stat().st_size}
     return result
 
@@ -122,6 +126,7 @@ def staged_publish(
     *,
     optional_destinations: tuple[Path, ...] = (),
     markdown_destinations: tuple[Path, ...] = (),
+    artifact_validators: Mapping[Path, Callable[[Path], None]] | None = None,
     dry_run: bool = False,
 ) -> list[Path]:
     """Render all artifacts before touching outputs; keep recovery on rollback failure.
@@ -132,6 +137,8 @@ def staged_publish(
     never permits deleting an existing file. All allowed paths are drift-checked.
     Markdown is accepted only for explicitly named destinations. A dry run renders
     and validates the same staged set, then returns changes without installation.
+    Other artifact formats require a named, read-only validator for each allowed
+    destination. Validators add checks; they never bypass CSV/JSON validation.
     """
     paths.preflight(destinations)
     output = paths.output_root or paths.source_root
@@ -149,6 +156,16 @@ def staged_publish(
             "Markdown destinations must be named .md files in the publication allowlist"
         )
     markdown = frozenset(p.relative_to(output) for p in markdown_destinations)
+    validators = dict(artifact_validators or {})
+    if not set(validators).issubset(destinations) or any(
+        not callable(validate) for validate in validators.values()
+    ):
+        raise ValueError(
+            "Artifact validators must name allowed destinations and be callable"
+        )
+    validators = {
+        path.relative_to(output): validate for path, validate in validators.items()
+    }
     before = {name: _state(output / name) for name in names}
     optional = {
         path.relative_to(output)
@@ -177,7 +194,7 @@ def staged_publish(
                 ):
                     raise ValueError(f"Output changed while staging: {output / name}")
         render(SchemaBuildPaths(paths.schema, stage, paths.corpus))
-        manifest = _manifest(stage, names, optional, markdown)
+        manifest = _manifest(stage, names, optional, markdown, validators)
         (workspace / "manifest.json").write_text(
             json.dumps(
                 {
