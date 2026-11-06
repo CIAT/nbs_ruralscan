@@ -37,7 +37,7 @@ Library callers construct `MetadataVerificationPaths(queue, sources, corpus, rep
 
 Blank/duplicate source IDs, unsafe filename characters and duplicate/missing identity columns now fail before checks or writes, avoiding last-row shadowing and cache-path traversal. Historical `#ref...` citation-chasing IDs remain valid: a full maintained-data comparison caught and corrected an initially over-strict filename check. Nothing rewrites those IDs.
 
-Queue and report destinations cannot alias each other or the selected SRC/corpus, including case-only aliases. Redirected write paths and shared hard links fail preflight. Preview runs complete serialization and validation. Failures in a later lookup, CSV/report serialization, replacement preparation or installation cannot leave an earlier queue write behind. These are write-boundary and malformed-input changes, not identity-method changes.
+Queue and report destinations cannot alias each other or the selected SRC/corpus, including case-only aliases. Redirected write paths and shared hard links fail preflight. Preview runs complete serialization and validation. Pre-installation failures leave originals untouched; caught installation failures trigger rollback, with incomplete recovery reported explicitly. These are write-boundary and malformed-input changes, not identity-method changes.
 
 ## Verification
 
