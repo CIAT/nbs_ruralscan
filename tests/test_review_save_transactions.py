@@ -40,7 +40,7 @@ def test_reopen_clears_only_requesting_reviewers_saved_call(tmp_path, monkeypatc
     )
     monkeypatch.setattr(server, "STORE", store)
     monkeypatch.setattr(server, "ROOT", tmp_path)
-    monkeypatch.setattr(review, "reopen_units", lambda *a: {"reopened": 1})
+    monkeypatch.setattr(review, "reopen_units", lambda *a, **kw: {"reopened": 1})
     refreshed = []
     monkeypatch.setattr(
         generate, "refresh_review_state", lambda path: refreshed.append(path)
@@ -93,7 +93,7 @@ def test_repeat_conflict_review_saved_without_settling_conflict(tmp_path, monkey
     store = tmp_path / "decisions.json"
     monkeypatch.setattr(server, "STORE", store)
     monkeypatch.setattr(server, "ROOT", tmp_path)
-    monkeypatch.setattr(review, "reopen_units", lambda *a: {"reopened": 0})
+    monkeypatch.setattr(review, "reopen_units", lambda *a, **kw: {"reopened": 0})
     monkeypatch.setattr(generate, "refresh_review_state", lambda *a: None)
     for route in ("/api/decision", "/api/challenge"):
         store.write_text(

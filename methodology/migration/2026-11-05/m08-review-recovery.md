@@ -1,6 +1,6 @@
 # M08: staged review records and recovery
 
-Date: 5 November 2026. Baseline: `f90cd5cb907ce046078bc824bdc4adc58084c501` (merged PR #596), including staged artifact publication from PR #591. Status: implemented; pending merge. This receipt stays in the existing project workspace; it is not destination product content.
+Date: 5 November 2026. Baseline: `f90cd5cb907ce046078bc824bdc4adc58084c501` (merged PR #596), including staged artifact publication from PR #591. Status: merged in PR #599 at `0aca2f3`. This receipt stays in the existing project workspace; it is not destination product content.
 
 ## Result and scope
 
@@ -70,4 +70,4 @@ All **1,207 tests passed** in a clean Git checkout. Lint/format, scoped type che
 
 ## Remaining boundary
 
-Record replay and generated artifacts now have separate caught-failure recovery, not a combined transaction. Next, consolidate remaining direct review writers behind the shared boundary with endpoint/export continuity tests. Reader-consistent release publication, durable interruption recovery, remaining intake/synthesis paths, authored/generated configuration separation and release contracts remain open. Evidence cutover still requires its later all-writer rehearsal; review continues under the existing authority.
+Record replay and generated artifacts now have separate caught-failure recovery, not a combined transaction. The next [direct review writer slice](m08-review-writers.md) consolidates dashboard and export callers with endpoint/export continuity tests. Reader-consistent release publication, durable interruption recovery, remaining intake/synthesis paths, authored/generated configuration separation and release contracts remain open. Evidence cutover still requires its later all-writer rehearsal; review continues under the existing authority.

@@ -22,11 +22,17 @@ Verdict meanings (from the adversarial relationship-verify):
 from __future__ import annotations
 
 import csv
+import os
 import re
+from collections.abc import Callable
 from collections import Counter
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import TypeVar
+
+from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths
+from nbs_ruralscan.schema_tools.publication import staged_publish
 
 ROOT = Path(__file__).resolve().parents[3]
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
@@ -65,6 +71,50 @@ def check_review_destinations(*paths: Path) -> None:
             raise ValueError(f"Review destination is not an independent file: {path}")
         if any(p.exists() and not p.is_dir() for p in path.parents):
             raise ValueError(f"Review destination parent is not a directory: {path}")
+
+
+_Result = TypeVar("_Result")
+
+
+def stage_review_records(
+    mutate: Callable[[ReviewFiles, Path | None], _Result],
+    *,
+    files: ReviewFiles | None = None,
+    decision_store: Path | None = None,
+) -> _Result:
+    """Prepare evidence, audit and optional saved decisions before installing any.
+
+    Mutations receive private file locations. Caught installation failures roll
+    back; incomplete rollback retains recovery copies. Rebuilds remain separate.
+    Use one writer and stable inputs; this is not crash-safe or reader-atomic.
+    """
+    files = files or ReviewFiles(EV, LOG)
+    destinations = [files.evidence.absolute(), files.log.absolute()]
+    if decision_store is not None:
+        destinations.append(decision_store.absolute())
+    check_review_destinations(*destinations)
+    root = Path(os.path.commonpath([p.parent for p in destinations]))
+    names = [p.relative_to(root) for p in destinations]
+    results: list[_Result] = []
+
+    def render(staged: SchemaBuildPaths) -> list[Path]:
+        assert staged.output_root is not None
+        targets = [staged.output_root / name for name in names]
+        results.append(
+            mutate(
+                ReviewFiles(*targets[:2]),
+                targets[2] if decision_store is not None else None,
+            )
+        )
+        return []
+
+    staged_publish(
+        SchemaBuildPaths(root / "schema"),
+        destinations,
+        render,
+        optional_destinations=tuple(destinations),
+    )
+    return results[0]
 
 
 # Active reason codes (2026-07: merged cross_row_stitch→table_error; broadened
@@ -112,9 +162,11 @@ def _flag(attr: str) -> tuple[str, str] | None:
     return (m.group(1), m.group(2).strip()) if m else None
 
 
-def export() -> Path:
+def export(*, files: ReviewFiles | None = None, worklist: Path | None = None) -> Path:
     """Write a review worklist of every currently-flagged EV unit."""
-    with EV.open(newline="", encoding="utf-8") as f:
+    evidence = files.evidence if files else EV
+    worklist = (worklist if worklist is not None else WORKLIST).absolute()
+    with evidence.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     out = []
     for r in rows:
@@ -136,18 +188,26 @@ def export() -> Path:
                 "note": "",
             }
         )
-    WORKLIST.parent.mkdir(parents=True, exist_ok=True)
-    with WORKLIST.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(
-            f, fieldnames=_WL_FIELDS, extrasaction="ignore", lineterminator="\n"
-        )
-        w.writeheader()
-        w.writerows(out)
-    print(f"exported {len(out)} flagged units → {WORKLIST.relative_to(ROOT)}")
+
+    def render(paths):
+        target = paths.output_root / worklist.name
+        with target.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(
+                stream,
+                fieldnames=_WL_FIELDS,
+                extrasaction="ignore",
+                lineterminator="\n",
+            )
+            writer.writeheader()
+            writer.writerows(out)
+        return [target]
+
+    staged_publish(SchemaBuildPaths(worklist.parent / "schema"), [worklist], render)
+    print(f"exported {len(out)} flagged units → {worklist}")
     print(
         "Fill the 'decision' column (ok | drop) + reviewer, then run: review.py apply"
     )
-    return WORKLIST
+    return worklist
 
 
 def _verdict_of(attr: str) -> str:
@@ -177,7 +237,18 @@ def latest_review_rows(rows: list[dict] | None = None) -> list[dict]:
 def apply_decisions(
     decisions: dict, reviewer: str = "reviewer", *, files: ReviewFiles | None = None
 ) -> dict:
-    """Apply decisions to EV. Each value is 'ok'|'drop' OR {'decision','reason'}.
+    """Apply decisions and audit together, with caught-failure rollback.
+
+    Each value is 'ok'|'drop' OR {'decision','reason'}. Derived files are not rebuilt.
+    """
+    return stage_review_records(
+        lambda staged, _: _apply_decisions(decisions, reviewer, files=staged),
+        files=files,
+    )
+
+
+def _apply_decisions(decisions: dict, reviewer: str, *, files: ReviewFiles) -> dict:
+    """Mutate private staged records; callers publish through stage_review_records.
 
     Logs every decision (with reason code) to pipeline/metrics/review_log.csv so the
     sweep retrospective can tally failure patterns and feed them back into the spec/checks.
@@ -404,6 +475,16 @@ def reopen_units(
     *,
     files: ReviewFiles | None = None,
 ) -> dict:
+    """Reopen evidence and append its audit together; derived files stay separate."""
+    return stage_review_records(
+        lambda staged, _: _reopen_units(evidence_ids, reviewer, files=staged),
+        files=files,
+    )
+
+
+def _reopen_units(
+    evidence_ids: list[str], reviewer: str, *, files: ReviewFiles
+) -> dict:
     """Revert an ok-reviewed EV row back to flagged (clears reviewer_ok, restores the
     [VERIFY-FLAG verdict: reason] from the review_log) so it re-enters the worklist.
 
@@ -483,12 +564,13 @@ def reopen_units(
     return {"reopened": reopened}
 
 
-def apply() -> None:
+def apply(*, files: ReviewFiles | None = None, worklist: Path | None = None) -> None:
     """Apply decisions from the filled worklist back into the EV register."""
-    if not WORKLIST.exists():
+    worklist = worklist if worklist is not None else WORKLIST
+    if not worklist.exists():
         print("no worklist found — run `review.py export` first.")
         return
-    with WORKLIST.open(newline="", encoding="utf-8") as f:
+    with worklist.open(newline="", encoding="utf-8") as f:
         decisions = {
             d["evidence_id"]: d
             for d in csv.DictReader(f)
@@ -514,6 +596,7 @@ def apply() -> None:
             for eid, d in decisions.items()
         },
         reviewer,
+        files=files,
     )
     print(
         f"applied: {res['ok']} marked reviewed-ok (flag cleared), {res['dropped']} dropped. EV now {res['rows']} rows."
@@ -525,16 +608,20 @@ def apply() -> None:
 
 
 def main(argv: list[str] | None = None) -> int:
-    import sys
+    import argparse
 
-    cmd = (argv or sys.argv[1:] or ["export"])[0]
-    if cmd == "export":
-        export()
-    elif cmd == "apply":
-        apply()
-    else:
-        print("usage: review.py [export|apply]", file=sys.stderr)
-        return 2
+    parser = argparse.ArgumentParser(description="Export or apply an evidence worklist")
+    parser.add_argument(
+        "action", nargs="?", choices=("export", "apply"), default="export"
+    )
+    parser.add_argument("--root", type=Path, help="Use an independent snapshot")
+    args = parser.parse_args(argv)
+    files = ReviewFiles.from_root(args.root) if args.root else None
+    worklist = (
+        args.root.resolve() / "pipeline/review/flag_worklist.csv" if args.root else None
+    )
+    operation = export if args.action == "export" else apply
+    operation(files=files, worklist=worklist)
     return 0
 
 
