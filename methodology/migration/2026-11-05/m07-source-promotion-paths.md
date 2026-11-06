@@ -1,6 +1,6 @@
 # M07/M08: explicit source promotion and recoverable SRC publication
 
-Date: 6 November 2026. Baseline: `cf864cff2e2d7a5981f8812795275fc305a8dbe6` (merged PR #611). Status: implemented; pending merge. This migration receipt stays in the existing project workspace, outside destination product repositories.
+Date: 6 November 2026. Baseline: `cf864cff2e2d7a5981f8812795275fc305a8dbe6` (merged PR #611). Status: merged in PR #614 at `7f41289bda9529a21c65ed5175e4c748d2b58101`. This migration receipt stays in the existing project workspace, outside destination product repositories.
 
 ## Result
 
