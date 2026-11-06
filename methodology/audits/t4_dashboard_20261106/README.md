@@ -36,7 +36,7 @@ mis-encodings, wrong statistics, omitted classes and source criticisms remain ex
 No remaining record has been automatically approved, dropped, reclassified or mapped.
 Existing recipes were not rewritten from unapproved diagnostics.
 
-Current-rule clarification is in extraction v1.9.7 and shared T4 contract. No historical
+Current-rule clarification is in extraction v1.9.8 and shared T4 contract. No historical
 evidence restamped. Agent proposals are traceable in `priority_source_checks.json`,
 with source pages, artifact hashes where supplied, and current evidence fingerprints.
 This is a bounded source check, not a new extraction sweep or full-publication audit.

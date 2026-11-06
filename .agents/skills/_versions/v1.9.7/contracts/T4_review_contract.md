@@ -52,27 +52,6 @@ band width, proof the paper is wrong, or permission to round/widen its classes. 
 band can be defensible when its mechanism, measurement and validation support it.
 Any replacement or transfer needs explicit human approval; never silently repair values.
 
-## Retain complete quantitative source recommendations (Pete, 6 November 2026)
-
-A source contributes evidence to synthesis; it need not establish the final global rule
-by itself. Regional origin alone is not a numeric-plausibility defect or a reason to
-reduce a published table to direction-only evidence. Preserve complete numeric classes,
-conditional ranges and caveats as quantitative source profiles for comparison with
-compatible independent studies. Keep source-specific exclusions visible with their
-actual meaning; do not silently turn them into final recipe masks. Pooling still needs
-compatible variables, units, practice/system context, lineage and explicit treatment
-of disagreements, missing endpoints and score conventions. More papers do not cure
-incompatible measurements or unsupported numbers. Source retention and executable
-calibration are separate decisions; neither automatic promotion nor blanket downgrade
-is acceptable.
-
-Approved examples: retain Ranchi's full slope-class table; retain FAO's species-dependent
-50–100 m seed-tree recommendation and conditional terrace slope/length guidance. Their
-values inform synthesis with their conditions. Witing/Bentrup corridor widths remain
-planning geometry because the authors defined them that way; preserve them for method
-interpretation, not as ecological thresholds. The rainfall 20 mm band retains its
-specific plausibility hold. This clarification grants no blanket approval of other rows.
-
 ## Required source-table sweep
 
 Inventory EVERY row, including unweighted rows, combined criteria, categorical exclusions and continuations. Each row receives evidence IDs or a page-linked reason for deferral/exclusion. Existing source × variable records are not proof of complete extraction: check whether use, direction, numeric values and source context were captured before skipping. A weight-only record cannot close a row with a supported direction or response.

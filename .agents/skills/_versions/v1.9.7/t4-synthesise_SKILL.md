@@ -35,9 +35,6 @@ operational, observed-presence and unresolved-applicability lanes.
    pooled inputs: source transcription and human approval of qualitative use do not
    establish numeric validity. Keep unresolved narrow bands, false precision, jumps,
    proxy substitutions and regional transfer on hold; show the rationale to Pete.
-   Retain complete quantitative source profiles for compatible-source comparison; a
-   regional paper need not establish the final global rule alone. Do not downgrade
-   numeric tables to direction-only evidence solely because transfer needs synthesis.
 4. Review differences against the current recipe. Resolve genuine ambiguities with
    Pete before changing applicability, pooled functions, missing tails, masks or weights.
    Compilation is not policy approval. Preserve existing approved mappings and record

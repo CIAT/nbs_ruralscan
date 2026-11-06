@@ -81,8 +81,6 @@ operational-risk extraction. Retain supported direction even when calibration is
   before proposing calibration. Report narrow bands, false precision, unsupported jumps,
   proxy meanings and transfer limits even when every number matches its source. Preserve
   unresolved values as source context; no silent widening, scoring or promotion (defect #55).
-  Regional origin alone does not justify direction-only retention: preserve full numeric
-  tables and conditional recommendations for compatible-source synthesis (T4 contract).
 - Preserve cited-primary attribution and lineage. Count independent studies, not duplicate
   records, depth branches or repository copies. Keep source importance separate from runtime
   MCDA weights; record enough of the original criterion set to explain relative importance.
