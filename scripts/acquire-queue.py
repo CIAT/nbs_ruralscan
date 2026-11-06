@@ -20,15 +20,18 @@ from __future__ import annotations
 
 import argparse
 import csv
+from contextlib import contextmanager
 import json
 import io
 import os
 import pathlib
 import re
+import shutil
 import time
 import tempfile
 
 from nbs_ruralscan.ingest.acquire import AcquireError, acquire
+from nbs_ruralscan.ingest.artifact_publication import PairSnapshot, publish_pair
 from nbs_ruralscan.ingest.integrity import (
     atomic_write,
     copy_immutable,
@@ -36,6 +39,7 @@ from nbs_ruralscan.ingest.integrity import (
     validate_source_id,
 )
 from urllib.parse import urljoin
+from nbs_ruralscan.schema_tools.publication import PublicationRecoveryError
 
 import requests
 
@@ -50,6 +54,29 @@ LIB_REL = "D591_Rural-Scan_NBS/2_Technical_&_Data/library"
 UA = {
     "User-Agent": "Mozilla/5.0 (Macintosh) nbs-ruralscan evidence pipeline (p.steward@cgiar.org)"
 }
+
+
+@contextmanager
+def _acquisition_workspace():
+    # Resolve only this owned system-temp path (e.g. /var -> /private on macOS).
+    directory = pathlib.Path(
+        tempfile.mkdtemp(prefix="ruralscan-acquisition-")
+    ).resolve()
+    retain = False
+    try:
+        yield directory
+    except PublicationRecoveryError as exc:
+        retain = True
+        exc.add_note(f"Temporary acquisition files retained at {directory}")
+        raise
+    finally:
+        if not retain:
+            try:
+                shutil.rmtree(directory)
+            except Exception as exc:
+                raise PublicationRecoveryError(
+                    directory, [f"Temporary acquisition cleanup failed: {exc}"]
+                ) from exc
 
 
 def _acquire(
@@ -69,15 +96,20 @@ def _acquire(
             identity_holds.append(f"{url}: {problem}")
         return problem is None
 
-    dest.parent.mkdir(parents=True, exist_ok=True)
     try:
+        validate_source_id(sid)
+        snapshot = PairSnapshot.capture(dest, dest.with_suffix(".meta.json"))
+        if snapshot.sidecar_state is not None and snapshot.artifact_state is None:
+            raise AcquireError("Existing provenance without requested PDF artifact")
         if dest.exists():
             if not identity_matches(dest):
                 return False
             acquire(sid, url, kind="pdf", corpus_dir=dest.parent)
             with fitz.open(dest) as doc:
-                return doc.page_count > 0
-        with tempfile.TemporaryDirectory(dir=dest.parent) as tmp:
+                readable = doc.page_count > 0
+            snapshot.assert_unchanged()
+            return readable
+        with _acquisition_workspace() as tmp:
             result = acquire(sid, url, kind="pdf", corpus_dir=tmp)
             if result.artifact_path is None or result.meta_path is None:
                 return False
@@ -86,9 +118,17 @@ def _acquire(
                     return False
             if not identity_matches(result.artifact_path):
                 return False
-            result.artifact_path.replace(dest)
-            result.meta_path.replace(dest.with_suffix(".meta.json"))
+            publish_pair(
+                snapshot,
+                result.artifact_path.read_bytes(),
+                result.meta_path.read_bytes(),
+                source_id=sid,
+                url=url,
+                kind="pdf",
+            )
         return True
+    except PublicationRecoveryError:
+        raise  # Recovery requires intervention; never continue to another URL.
     except (AcquireError, ValueError, RuntimeError, OSError):
         return False
 
