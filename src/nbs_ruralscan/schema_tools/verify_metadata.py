@@ -32,7 +32,10 @@ Extraction may proceed on a source only if `doi_verified=true`, or it has no DOI
 
 from __future__ import annotations
 
+import argparse
 import csv
+from dataclasses import dataclass, fields
+import os
 import json
 import time
 import re
@@ -42,6 +45,13 @@ import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
+
+# Keep direct-file invocation usable without an installed package or PYTHONPATH.
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths
+from nbs_ruralscan.schema_tools.publication import staged_publish
 
 ROOT = Path(__file__).resolve().parents[3]
 QUEUE = ROOT / "pipeline" / "acquisition_queue.csv"
@@ -56,6 +66,87 @@ _STOP = set(
     "the and for with from into their which under across between within based using "
     "study effects impact assessment analysis review journal international climate change".split()
 )
+
+
+@dataclass(frozen=True)
+class MetadataVerificationPaths:
+    """Selected records and cached artifacts, independent of compiler location."""
+
+    queue: Path
+    sources: Path
+    corpus: Path
+    report: Path
+
+    def __post_init__(self):
+        for field in fields(self):
+            object.__setattr__(
+                self, field.name, Path(os.path.abspath(getattr(self, field.name)))
+            )
+
+    @classmethod
+    def from_root(
+        cls, root: Path, *, corpus: Path | None = None
+    ) -> MetadataVerificationPaths:
+        root = Path(root).resolve()
+        return cls(
+            root / "pipeline/acquisition_queue.csv",
+            root / "schema/registers/SRC_source_register.csv",
+            corpus if corpus is not None else root / ".cache/corpus",
+            root / "pipeline/metrics/doi_audit.json",
+        )
+
+    def preflight(self, *, title_only: bool) -> tuple[SchemaBuildPaths, list[Path]]:
+        if not self.queue.is_file():
+            raise FileNotFoundError(f"Missing metadata queue: {self.queue}")
+        destinations = [self.queue] if title_only else [self.queue, self.report]
+        root = Path(os.path.commonpath([p.parent for p in destinations]))
+        context = SchemaBuildPaths(root / "schema")
+        context.preflight(destinations)
+        queue, report, sources = (
+            str(p.resolve()).casefold() for p in (self.queue, self.report, self.sources)
+        )
+        if (
+            queue == report
+            or queue.startswith(report + os.sep)
+            or report.startswith(queue + os.sep)
+        ):
+            raise ValueError("Metadata queue and audit report overlap")
+        corpus = str(self.corpus.resolve()).casefold().rstrip(os.sep)
+        for path in destinations:
+            target = str(path.resolve()).casefold()
+            if (
+                target == sources
+                or target.startswith(sources + os.sep)
+                or target == corpus
+                or target.startswith(corpus + os.sep)
+            ):
+                raise ValueError(
+                    "Metadata destination overlaps read-only sources/corpus"
+                )
+        return context, destinations
+
+
+def _legacy_paths() -> MetadataVerificationPaths:
+    return MetadataVerificationPaths(QUEUE, SRC, CORPUS, REPORT)
+
+
+def _verification_rows(path: Path) -> tuple[list[dict], list[str]]:
+    rows, cols = _rows(path)
+    if "source_id" not in cols or len(cols) != len(set(cols)):
+        raise ValueError("Metadata queue requires unique columns including source_id")
+    seen = set()
+    for row in rows:
+        source_id = row.get("source_id") or ""
+        # Historical citation-chasing IDs use '#ref...'; preserve these safe
+        # cache filenames while rejecting paths and ambiguous blank identities.
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.#-]*", source_id):
+            raise ValueError(
+                f"Invalid source_id: {source_id!r}; expected a filename-safe ID"
+            )
+        if source_id in seen:
+            raise ValueError(f"Duplicate source_id in metadata queue: {source_id!r}")
+        seen.add(source_id)
+    return rows, cols
 
 
 def _toks(s: str) -> set[str]:
@@ -131,10 +222,13 @@ def _title_of(citation: str) -> str:
     return body[:j] if j > 0 else body
 
 
-def _head_text(source_id: str, pages: int = 3) -> str | None:
+def _head_text(
+    source_id: str, pages: int = 3, *, corpus: Path | None = None
+) -> str | None:
     """Text of the opening pages of the cached artifact, or None if not cached."""
+    corpus = corpus if corpus is not None else CORPUS
     for ext in (".pdf", ".txt", ".html", ".md"):
-        f = CORPUS / f"{source_id}{ext}"
+        f = corpus / f"{source_id}{ext}"
         if not f.exists():
             continue
         if ext != ".pdf":
@@ -165,7 +259,9 @@ def _title_coverage(title: str, text: str) -> float:
     return cov
 
 
-def _title_page_in_body(source_id: str, title: str) -> int | None:
+def _title_page_in_body(
+    source_id: str, title: str, *, corpus: Path | None = None
+) -> int | None:
     """PDF page (1-indexed) whose text covers the citation title, or None.
 
     A chapter inside a larger cached artefact is legitimate — the team decided on
@@ -175,7 +271,8 @@ def _title_page_in_body(source_id: str, title: str) -> int | None:
     title is sought across the body. A WRONG book still fails: it has no page covering
     the chapter title.
     """
-    f = CORPUS / f"{source_id}.pdf"
+    corpus = corpus if corpus is not None else CORPUS
+    f = corpus / f"{source_id}.pdf"
     if not f.exists():
         return None
     import fitz  # PyMuPDF
@@ -235,8 +332,7 @@ def _cited_not_titled(title: str, text: str) -> bool:
 HAND_CONFIRMED = "[title: confirmed by hand]"
 
 
-def verify_titles() -> int:
-    rows, cols = _rows()
+def _verify_title_rows(rows: list[dict], *, corpus: Path) -> dict:
     passed = failed = uncached = 0
     for r in rows:
         if (r.get("doi") or "").strip() or r.get("status") not in (
@@ -254,7 +350,7 @@ def verify_titles() -> int:
         ):
             passed += 1
             continue  # a person confirmed identity where the text layer cannot show it
-        text = _head_text(r["source_id"])
+        text = _head_text(r["source_id"], corpus=corpus)
         if text is None:
             uncached += 1
             continue
@@ -263,7 +359,7 @@ def verify_titles() -> int:
         ok = cov >= TITLE_THRESH
         body_page = None
         if not ok:
-            body_page = _title_page_in_body(r["source_id"], title)
+            body_page = _title_page_in_body(r["source_id"], title, corpus=corpus)
         r["title_verified"] = "true" if ok else "false"
         if ok:
             passed += 1
@@ -275,16 +371,10 @@ def verify_titles() -> int:
                 flag += f" Body-only match at PDF page {body_page} may be a reference; verify chapter identity manually."
             if flag not in note:
                 r["note"] = (note + " | " if note else "") + flag
-    with QUEUE.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
-        w.writeheader()
-        w.writerows(rows)
-    print(f"verify-titles: passed={passed} failed={failed} not_cached={uncached}")
-    return 0
+    return {"passed": passed, "failed": failed, "not_cached": uncached}
 
 
-def verify() -> int:
-    rows, cols = _rows()
+def _verify_doi_rows(rows: list[dict]) -> dict:
     pending = [r for r in rows if (r.get("status") or "pending") == "pending"]
     with_doi = [r for r in pending if (r.get("doi") or "").strip()]
 
@@ -338,25 +428,78 @@ def verify() -> int:
             r["doi"] = ""
             mismatched += 1
 
-    with QUEUE.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
-        w.writeheader()
-        w.writerows(rows)
-    REPORT.parent.mkdir(parents=True, exist_ok=True)
-    json.dump(
-        {
-            "checked": len(with_doi),
-            "verified": verified,
-            "failed": mismatched,
-            "unreachable": unreachable,
-            "results": list(results.values()),
-        },
-        REPORT.open("w", encoding="utf-8"),
-        indent=1,
+    return {
+        "checked": len(with_doi),
+        "verified": verified,
+        "failed": mismatched,
+        "unreachable": unreachable,
+        "results": list(results.values()),
+    }
+
+
+def _publish_verification(
+    paths: MetadataVerificationPaths, *, title_only: bool, dry_run: bool
+) -> dict:
+    """Prepare complete records before publishing; roll back caught write failures.
+
+    Stable inputs and one writer are required. Dry runs still perform the selected
+    checks (including Crossref requests for DOI verification), without saving.
+    """
+    context, destinations = paths.preflight(title_only=title_only)
+    result = {}
+
+    def render(staged: SchemaBuildPaths) -> list[Path]:
+        assert staged.output_root is not None
+        queue = staged.output_root / paths.queue.relative_to(context.source_root)
+        rows, cols = _verification_rows(queue)
+        result.update(
+            _verify_title_rows(rows, corpus=paths.corpus)
+            if title_only
+            else _verify_doi_rows(rows)
+        )
+        with queue.open("w", newline="", encoding="utf-8") as stream:
+            writer = csv.DictWriter(stream, fieldnames=cols, lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        if not title_only:
+            report = staged.output_root / paths.report.relative_to(context.source_root)
+            report.parent.mkdir(parents=True, exist_ok=True)
+            report.write_text(json.dumps(result, indent=1), encoding="utf-8")
+        return []
+
+    staged_publish(context, destinations, render, dry_run=dry_run)
+    return result
+
+
+def verify_titles(
+    *, paths: MetadataVerificationPaths | None = None, dry_run: bool = False
+) -> int:
+    result = _publish_verification(
+        paths if paths is not None else _legacy_paths(),
+        title_only=True,
+        dry_run=dry_run,
     )
+    if dry_run:
+        print("DRY RUN: title verification validated; nothing published")
     print(
-        f"verify: checked={len(with_doi)} verified={verified} failed(blanked)={mismatched} "
-        f"unreachable(left alone)={unreachable}"
+        f"verify-titles: passed={result['passed']} failed={result['failed']} not_cached={result['not_cached']}"
+    )
+    return 0
+
+
+def verify(
+    *, paths: MetadataVerificationPaths | None = None, dry_run: bool = False
+) -> int:
+    result = _publish_verification(
+        paths if paths is not None else _legacy_paths(),
+        title_only=False,
+        dry_run=dry_run,
+    )
+    if dry_run:
+        print("DRY RUN: DOI verification validated; nothing published")
+    print(
+        f"verify: checked={result['checked']} verified={result['verified']} failed(blanked)={result['failed']} "
+        f"unreachable(left alone)={result['unreachable']}"
     )
     return 0
 
@@ -406,16 +549,44 @@ def check(*, queue_path: Path | None = None, sources_path: Path | None = None) -
 
 
 def main(argv: list[str] | None = None) -> int:
-    argv = argv if argv is not None else sys.argv[1:]
-    cmd = argv[0] if argv else "check"
-    if cmd == "verify":
-        return verify()
-    if cmd == "check":
-        return check()
-    if cmd == "verify-titles":
-        return verify_titles()
-    print("usage: verify_metadata.py [verify|verify-titles|check]")
-    return 2
+    parser = argparse.ArgumentParser(
+        description="Verify source identities in selected records."
+    )
+    parser.add_argument(
+        "command",
+        nargs="?",
+        default="check",
+        choices=("verify", "verify-titles", "check"),
+    )
+    parser.add_argument("--root", type=Path, help="Data root (default: this checkout)")
+    parser.add_argument("--corpus-dir", type=Path, help="Selected cached artifacts")
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run verification without publishing; verify still queries Crossref",
+    )
+    args = parser.parse_args(argv if argv is not None else sys.argv[1:])
+    paths = (
+        MetadataVerificationPaths.from_root(args.root, corpus=args.corpus_dir)
+        if args.root is not None
+        else _legacy_paths()
+    )
+    if args.root is None and args.corpus_dir is not None:
+        paths = MetadataVerificationPaths(
+            paths.queue, paths.sources, args.corpus_dir, paths.report
+        )
+    if args.command == "check":
+        if args.dry_run:
+            parser.error(
+                "check is already read-only; --dry-run applies to verify/verify-titles"
+            )
+        return check(queue_path=paths.queue, sources_path=paths.sources)
+    try:
+        operation = verify if args.command == "verify" else verify_titles
+        return operation(paths=paths, dry_run=args.dry_run)
+    except (OSError, ValueError) as exc:
+        print(f"METADATA VERIFICATION FAILED: {exc}")
+        return 1
 
 
 if __name__ == "__main__":

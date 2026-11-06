@@ -1,0 +1,65 @@
+{
+  "baseline": "7f41289bda9529a21c65ed5175e4c748d2b58101",
+  "comparison": "Separate baseline/candidate processes; complete selected-data inventories, queue/report bytes, stdout summaries and return codes match without normalization",
+  "candidate_compiler_schema_and_pipeline_absent": true,
+  "fixture": "Full maintained queue/SRC plus synthetic documents and deterministic Crossref adapter responses. No real network, private corpus, acquisition or evidence extraction.",
+  "initial_rows": {
+    "queue": 918,
+    "sources": 741,
+    "synthetic_queue_rows_added": 15
+  },
+  "steps": [
+    {
+      "step": "titles",
+      "returncode": 0,
+      "changed": [
+        "pipeline/acquisition_queue.csv"
+      ],
+      "queue_sha256": "4b131f5194226f58127571898fe3fe870f7fdb442d28423444d9b15e2604fa39",
+      "report_sha256": "5d02734e49601f4d2cf0a343d23c8c17a3ce34246776ec76b29e989f131dfb3a",
+      "inventory_sha256": "690e7f3e20918f118b3d4c9efe043fde67ee4d97629f13e571871b1dca84b354",
+      "summary": "verify-titles: passed=7 failed=3 not_cached=215"
+    },
+    {
+      "step": "titles_rerun",
+      "returncode": 0,
+      "changed": [],
+      "queue_sha256": "4b131f5194226f58127571898fe3fe870f7fdb442d28423444d9b15e2604fa39",
+      "report_sha256": "5d02734e49601f4d2cf0a343d23c8c17a3ce34246776ec76b29e989f131dfb3a",
+      "inventory_sha256": "690e7f3e20918f118b3d4c9efe043fde67ee4d97629f13e571871b1dca84b354",
+      "summary": "verify-titles: passed=7 failed=3 not_cached=215"
+    },
+    {
+      "step": "doi",
+      "returncode": 0,
+      "changed": [
+        "pipeline/acquisition_queue.csv",
+        "pipeline/metrics/doi_audit.json"
+      ],
+      "queue_sha256": "646f21e164847f1b3a435b6bc31de9bd55bec52757ede7f04eb9a9caa0c86897",
+      "report_sha256": "6022ead3578e7e0cb5dfe24b9f89a6f4e11068314247b669e9c50d96718b27fc",
+      "inventory_sha256": "041fcb3b564e2a8f842464f2b52fc2ca4b514e01ebd9baf716070081be103606",
+      "summary": "verify: checked=83 verified=1 failed(blanked)=2 unreachable(left alone)=80"
+    },
+    {
+      "step": "doi_rerun",
+      "returncode": 0,
+      "changed": [
+        "pipeline/metrics/doi_audit.json"
+      ],
+      "queue_sha256": "646f21e164847f1b3a435b6bc31de9bd55bec52757ede7f04eb9a9caa0c86897",
+      "report_sha256": "4701235a190f7980aa5feb6ef27ac7710491c1057bdf27177f805243ba449791",
+      "inventory_sha256": "895132595df2440d2c7d5095ff619ea9b3a99bac0c4a7131f743e6cf5a289278",
+      "summary": "verify: checked=81 verified=1 failed(blanked)=0 unreachable(left alone)=80"
+    },
+    {
+      "step": "check",
+      "returncode": 1,
+      "changed": [],
+      "queue_sha256": "646f21e164847f1b3a435b6bc31de9bd55bec52757ede7f04eb9a9caa0c86897",
+      "report_sha256": "4701235a190f7980aa5feb6ef27ac7710491c1057bdf27177f805243ba449791",
+      "inventory_sha256": "895132595df2440d2c7d5095ff619ea9b3a99bac0c4a7131f743e6cf5a289278",
+      "summary": "METADATA CHECK FAILED: 1 queue row(s) carry an unverified DOI (run verify_metadata.py verify, or blank the DOI + acquire by title):\n   - synthetic_metadata_doi_unreachable"
+    }
+  ]
+}
