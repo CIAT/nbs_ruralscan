@@ -34,7 +34,7 @@ Fast refresh has its own publication boundary. Rendering or installation failure
 
 Use the [record recovery procedure](m08-review-recovery.md#recovery-procedure) for retained copies. Inspect every manifest's `output_root` before restoring anything. Nested staging may report a temporary private stage, not the selected working snapshot; never copy intermediate records onto the live snapshot blindly. Recovery directories can be incomplete after cleanup failure. Preserve remaining material and the complete error first.
 
-Individual replacements are atomic, but readers can observe intermediate combinations. This is not crash-safe recovery for power loss or forced termination. The dashboard serializes its own POST handlers; other processes still require one writer per selected snapshot and stable inputs. Publication detects observed competing changes and refuses to overwrite them; it is not a global lock.
+Individual replacements are atomic, but readers can observe intermediate combinations. This is not crash-safe recovery for power loss or forced termination. The dashboard serializes the listed review POST handlers; other processes still require one writer per selected snapshot and stable inputs. Publication detects observed competing changes and refuses to overwrite them; it is not a global lock.
 
 ## Verification
 
