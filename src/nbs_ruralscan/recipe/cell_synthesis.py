@@ -30,6 +30,7 @@ import json
 import math
 from collections import defaultdict
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -621,12 +622,18 @@ def load_design_weights(path: Path | None = None) -> dict[str, float]:
     return out or dict(_DEFAULT_DESIGN_W)
 
 
-DESIGN_W: dict[str, float] = load_design_weights()
+@lru_cache(maxsize=1)
+def _default_design_weights() -> dict[str, float]:
+    """Load legacy installed-checkout defaults only when a caller requests them."""
+    return load_design_weights()
 
 
-def design_factor(unit: EvidenceUnit) -> float:
+def design_factor(
+    unit: EvidenceUnit, *, design_weights: dict[str, float] | None = None
+) -> float:
     d = str((unit.relationship or {}).get("design") or "").strip().lower()
-    return DESIGN_W.get(d, 1.0)
+    weights = _default_design_weights() if design_weights is None else design_weights
+    return weights.get(d, 1.0)
 
 
 def unit_weight(
@@ -635,9 +642,11 @@ def unit_weight(
     category: str,
     distance: int,
     xw_factor: float = 1.0,
+    *,
+    design_weights: dict[str, float] | None = None,
 ) -> float:
     w = TIER_W.get((tier or "").lower(), 0.5) * BASIS_W.get(unit.claim_basis, 0.5)
-    w *= design_factor(unit)
+    w *= design_factor(unit, design_weights=design_weights)
     if (category or "").lower() == "grey":
         w *= GREY_DISCOUNT.get(unit.use_role, _DEFAULT_GREY_DISCOUNT)
     w *= TRANSFER_W.get(distance, TRANSFER_W[2]) * xw_factor
@@ -1127,6 +1136,9 @@ def _contribs(
     target_ctx: dict[str, Any],
     src_contexts: dict[str, dict[str, Any]],
     income_lookup: dict[str, str] | None,
+    *,
+    bands: list[dict[str, Any]] | None = None,
+    design_weights: dict[str, float] | None = None,
 ) -> list[_Contrib]:
     out: list[_Contrib] = []
     for u in units:
@@ -1135,6 +1147,7 @@ def _contribs(
         sign, mag = unit_rank(
             u,
             xw.polarity,
+            bands=bands,
             income_band=INCOME_BAND.get(str(ctx.get("income_group") or ""), ""),
         )
         w = unit_weight(
@@ -1143,6 +1156,7 @@ def _contribs(
             categories.get(u.source_id, ""),
             d,
             xw.factor,
+            design_weights=design_weights,
         )
         ns = str((u.relationship or {}).get("significance") or "").lower() == "ns"
         has_dir = str((u.relationship or {}).get("direction") or "").lower() in (
@@ -2288,6 +2302,8 @@ def synthesise_cell(
     src_contexts: dict[str, dict[str, Any]] | None = None,
     income_lookup: dict[str, str] | None = None,
     matrix: dict[tuple[str, str], str] | None = None,
+    bands: list[dict[str, Any]] | None = None,
+    design_weights: dict[str, float] | None = None,
     target_ctx: dict[str, Any] | None = None,
     allow_crop_scope: bool | frozenset[str] = False,
     emit_scope_rows: bool = True,
@@ -2298,7 +2314,9 @@ def synthesise_cell(
     `units` may be the whole register slice for the NbS: the XW rows select what reaches
     the cell. `role` = `nbs_effect` (T3 mitigation / T6) or `asset_vulnerability` (T3
     asset threat; XW is bypassed — the unit's `context.hazard_type` selects the cell).
-    Returns ([] , report) when nothing survives.
+    `bands` and `design_weights` select explicit policy inputs; None retains legacy
+    defaults, while an empty collection stays empty. Returns ([] , report) when
+    nothing survives.
     """
     categories = categories or {}
     src_contexts = src_contexts or {}
@@ -2435,7 +2453,15 @@ def synthesise_cell(
     for u in kept_units:
         x = xw_by_unit[u.evidence_id]
         contribs += _contribs(
-            [u], tiers, categories, x, target_ctx, src_contexts, income_lookup
+            [u],
+            tiers,
+            categories,
+            x,
+            target_ctx,
+            src_contexts,
+            income_lookup,
+            bands=bands,
+            design_weights=design_weights,
         )
     _apply_shares(contribs, shares)
     proxies = sorted(
@@ -2611,6 +2637,7 @@ def synthesise_cell(
                     # (limited × undefined agreement → very_low) carries the caveat
                     "magnitude_summary": magnitude_summary(
                         cs,
+                        bands=bands,
                         target_band=INCOME_BAND.get(
                             str(
                                 rec["applicability"]["target"].get("income_group") or ""
@@ -2681,6 +2708,8 @@ def synthesise_cell(
                         s_target,
                         src_contexts,
                         income_lookup,
+                        bands=bands,
+                        design_weights=design_weights,
                     )
                 _apply_shares(s_contribs, shares)
                 # the class-eligibility rules bind a SCOPE row exactly as they bind the
