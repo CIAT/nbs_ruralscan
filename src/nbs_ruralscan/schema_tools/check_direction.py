@@ -106,13 +106,19 @@ _GENERIC = {
 }
 
 
-def _keywords(variable: str, *, sense_path: str | Path | None = None) -> set[str]:
+def _keywords(
+    variable: str,
+    *,
+    sense_path: str | Path | None = None,
+    senses: dict[str, dict[str, str]] | None = None,
+) -> set[str]:
     """Words that name the variable's own quantity (id parts + sense `quantity`)."""
-    senses = (
-        _cached_sense()
-        if sense_path is None
-        else _cached_sense(Path(sense_path).resolve())
-    )
+    if senses is None:
+        senses = (
+            _cached_sense()
+            if sense_path is None
+            else _cached_sense(Path(sense_path).resolve())
+        )
     sense = senses.get(variable) or {}
     words = re.findall(
         r"[a-z]{4,}", (variable + " " + sense.get("quantity", "")).lower()
@@ -169,7 +175,12 @@ def check_structure(
     return out
 
 
-def check_unit(r: dict, *, sense_path: str | Path | None = None) -> list[dict]:
+def check_unit(
+    r: dict,
+    *,
+    sense_path: str | Path | None = None,
+    senses: dict[str, dict[str, str]] | None = None,
+) -> list[dict]:
     try:
         rel = json.loads(r.get("relationship") or "{}")
     except json.JSONDecodeError:
@@ -190,7 +201,10 @@ def check_unit(r: dict, *, sense_path: str | Path | None = None) -> list[dict]:
     var = r.get("variable", "")
     if (
         cue
-        and any(k in _norm(cue) for k in _keywords(var, sense_path=sense_path))
+        and any(
+            k in _norm(cue)
+            for k in _keywords(var, sense_path=sense_path, senses=senses)
+        )
         and d in ("positive", "negative")
         and r.get("use_role") == "nbs_effect"
         and rel.get("framing") != "loss"
@@ -198,7 +212,7 @@ def check_unit(r: dict, *, sense_path: str | Path | None = None) -> list[dict]:
         and "wocat" not in (r.get("source_id") or "")
     ):
         text = cue
-        own = _keywords(var, sense_path=sense_path)
+        own = _keywords(var, sense_path=sense_path, senses=senses)
         if any(m.group(0).lower()[:6] not in own for m in _REVERSERS.finditer(text)):
             return out  # a reversing noun that is not the variable itself: words can't tell
         down, up = bool(_DOWN.search(text)), bool(_UP.search(text))
