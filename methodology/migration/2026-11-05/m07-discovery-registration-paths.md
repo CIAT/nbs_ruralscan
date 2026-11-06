@@ -1,6 +1,6 @@
 # M07/M08: discovery registration and linked search/progress records
 
-Date: 6 November 2026. Baseline: `ef70f10ed2898ba67d5c69e7d5c77cce6cc85f7c` (after merged PR #609). Status: implemented; pending merge. This migration receipt stays in the existing project workspace, outside destination product repositories.
+Date: 6 November 2026. Baseline: `ef70f10ed2898ba67d5c69e7d5c77cce6cc85f7c` (after merged PR #609). Status: merged in PR #611 (`cf864cff2e2d7a5981f8812795275fc305a8dbe6`). This migration receipt stays in the existing project workspace, outside destination product repositories.
 
 ## Result
 
