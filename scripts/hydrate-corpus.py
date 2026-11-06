@@ -1,308 +1,48 @@
 #!/usr/bin/env python3
-"""Hydrate .cache/corpus/ so a fresh clone can preview + Apply.
+"""Hydrate source artifacts from selected records, library and source adapters.
 
-`.cache/corpus/` is gitignored, so a fresh clone has none of the source artifacts the
-QA/QC review server needs — screengrabs/PDF previews 404 AND Apply's provenance guardrail
-fails (it verifies every quote against the cached artifact). This script fetches them all:
-
-* **PDFs** (`SRC.library_path`) — copied from the local OneDrive mirror of the SharePoint
-  library. Needs `NBS_LIBRARY_ROOT` (or the default Mac mount).
-* **Code / web sources** (`SRC.url`, `source_category=tool` or `source_kind=website`) — a
-  snapshot fetched from the URL: a GitHub `/blob/` link -> raw text `.txt`; any other page
-  -> `.html`. These have NO `library_path`, so the PDF pass alone leaves them missing and
-  Apply blocks on them (#191, e.g. the saraheb3 GEE tool sources).
-
-A source being *swept* does not have an `SRC` row yet (the SRC row is written at the central
-merge, after extraction), so the SRC pass alone cannot hydrate it. `--queue` adds the
-acquisition queue's **acquired** rows (`pipeline/acquisition_queue.csv` ->
-`target_library_path`), which is what an extraction sweep needs. See `docs/HYDRATION.md`.
-
-Usage:
-    python3 scripts/hydrate-corpus.py                  # SRC rows (review / guardrail)
-    python3 scripts/hydrate-corpus.py --queue          # + acquired queue rows (sweeps)
-    python3 scripts/hydrate-corpus.py --queue --nbs forest_restoration
-
-The library root defaults to Pete's CGIAR OneDrive mount; override with NBS_LIBRARY_ROOT if
-your OneDrive folder name differs (e.g. on Windows):
-    NBS_LIBRARY_ROOT="$HOME/OneDrive - CGIAR/ClimateActionNetZero/1_Projects" \
-        python3 scripts/hydrate-corpus.py
-Code/web hydration runs even without a library root (it only needs network).
+Existing defaults and --queue/--nbs behavior remain. --root, --corpus-dir,
+--library-root and --archive-dir select independent inputs and storage.
+--dry-run fetches/checks privately without publishing selected corpus files.
 """
 
 from __future__ import annotations
 
-import argparse
-import csv
-import hashlib
-import os
-import re
-import shutil
-import urllib.parse
-import urllib.request
 from pathlib import Path
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CACHE = ROOT / ".cache" / "corpus"
-SRC_CSV = ROOT / "schema" / "registers" / "SRC_source_register.csv"
-QUEUE_CSV = ROOT / "pipeline" / "acquisition_queue.csv"
-_SNAPSHOT_EXTS = (".pdf", ".txt", ".html", ".md")
+sys.path.insert(0, str(ROOT / "src"))
+from nbs_ruralscan.ingest import hydration  # noqa: E402
+
+CACHE = ROOT / ".cache/corpus"
+SRC_CSV = ROOT / "schema/registers/SRC_source_register.csv"
+QUEUE_CSV = ROOT / "pipeline/acquisition_queue.csv"
+_SNAPSHOT_EXTS = hydration._SNAPSHOT_EXTS
+library_root = hydration.library_root
+_github_raw = hydration._github_raw
+_fetch = hydration._fetch
 
 
-def library_root() -> Path | None:
-    """Resolve the local OneDrive mirror of the SharePoint .../1_Projects/ folder."""
-    env = os.environ.get("NBS_LIBRARY_ROOT")
-    if env:
-        return Path(env).expanduser()
-    default = (
-        Path.home()
-        / "Library/CloudStorage/OneDrive-CGIAR/ClimateActionNetZero/1_Projects"
-    )
-    return default if default.exists() else None
+def _cached(sid):
+    return hydration._cached(CACHE, sid)
 
 
-def _github_raw(url: str) -> str | None:
-    """github.com/<o>/<r>/blob/<ref>/<path> -> raw.githubusercontent.com/<o>/<r>/<ref>/<path>."""
-    m = re.match(
-        r"^https://github\.com/([^/]+)/([^/]+)/blob/(.+)$", (url or "").strip()
-    )
-    return (
-        f"https://raw.githubusercontent.com/{m.group(1)}/{m.group(2)}/{m.group(3)}"
-        if m
-        else None
+def _paths(root):
+    return hydration.HydrationPaths(
+        SRC_CSV, QUEUE_CSV, CACHE, ROOT / "methodology/audits", root
     )
 
 
-def _fetch(url: str) -> bytes | None:
-    """Fetch a URL (4 MB cap); None on any failure."""
-    # paths copied from a browser may carry raw spaces ("R shiny app … .R"); encode them
-    url = urllib.parse.quote(url, safe=":/?&=%#+@,;~")
-    req = urllib.request.Request(url, headers={"User-Agent": "nbs-ruralscan-hydrate"})
-    try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            if resp.status != 200:
-                return None
-            return resp.read(4_000_000)
-    except Exception:  # noqa: BLE001
-        return None
-
-
-def _cached(sid: str) -> bool:
-    return any((CACHE / (sid + ext)).exists() for ext in _SNAPSHOT_EXTS)
-
-
-def hydrate_queue(root: Path | None, nbs: str | None) -> None:
-    """Copy the acquisition queue's `acquired` PDFs into the cache (pre-SRC sweep sources)."""
-    if not QUEUE_CSV.exists():
-        print(f"acquisition queue not found: {QUEUE_CSV}")
-        return
-    with QUEUE_CSV.open(newline="", encoding="utf-8") as f:
-        rows = [
-            r
-            for r in csv.DictReader(f)
-            if not nbs or (r.get("nbs_id") or "").strip() == nbs
-        ]
-
-    copied = already = 0
-    missing: list[str] = []
-    pending: list[tuple[str, str]] = []
-    for r in rows:
-        sid = (r.get("source_id") or "").strip()
-        status = (r.get("status") or "").strip().lower()
-        if not sid or status == "duplicate":
-            continue
-        if status != "acquired":  # pending / unacquired — not in the library yet
-            pending.append((sid, (r.get("blocker") or "not acquired").strip()))
-            continue
-        if _cached(sid):
-            already += 1
-            continue
-        lib_path = (r.get("target_library_path") or "").strip()
-        url = (r.get("url") or "").strip()
-        if not lib_path and url:
-            # a code / web source (e.g. a tool's commit-pinned GitHub file) has no
-            # library PDF: snapshot it as the SRC pass does — /blob/ -> raw .txt
-            raw = _github_raw(url)
-            data = _fetch(raw or url)
-            if data:
-                (CACHE / (sid + (".txt" if raw else ".html"))).write_bytes(data)
-                copied += 1
-            else:
-                missing.append(f"{sid} (fetch failed: {url})")
-            continue
-        if root is None or not lib_path:
-            missing.append(f"{sid} (set NBS_LIBRARY_ROOT)" if root is None else sid)
-            continue
-        src_pdf = root / lib_path
-        if not src_pdf.exists():
-            missing.append(sid)
-            continue
-        try:
-            shutil.copy2(src_pdf, CACHE / (sid + ".pdf"))
-            copied += 1
-        except Exception as e:  # noqa: BLE001
-            print(f"  ! failed to copy {sid}: {e}")
-            missing.append(sid)
-
-    scope = nbs or "all NbS"
-    print("")
-    print(f"acquisition queue ({scope})")
-    print(f"queue copied/fetched: {copied}")
-    print(f"queue already cached: {already}")
-    for sid, blocker in pending:
-        print(f"SKIP {sid} - not acquired ({blocker})")
-    if missing:
-        print(f"queue MISSING from library: {len(missing)}")
-        for sid in missing:
-            print(f"  - {sid}")
-
-
-def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument(
-        "--queue",
-        action="store_true",
-        help="also hydrate the acquisition queue's `acquired` rows (pre-SRC sweep sources)",
+def hydrate_queue(root, nbs):
+    result = hydration.run_hydration(
+        _paths(root), queue_only=True, nbs=nbs, fetch=_fetch
     )
-    ap.add_argument(
-        "--nbs",
-        default=None,
-        help="restrict --queue to one nbs_id (e.g. forest_restoration)",
-    )
-    args = ap.parse_args(argv)
+    print(result.report, end="")
 
-    if not SRC_CSV.exists():
-        print(f"SRC register not found: {SRC_CSV}")
-        return 0
-    CACHE.mkdir(parents=True, exist_ok=True)
-    root = library_root()
 
-    with SRC_CSV.open(newline="", encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
-
-    pdf_copied = pdf_already = code_fetched = code_already = skipped = 0
-    pdf_missing: list[str] = []
-    code_failed: list[str] = []
-
-    for r in rows:
-        sid = (r.get("source_id") or "").strip()
-        if not sid:
-            continue
-        lib_path = (r.get("library_path") or "").strip()
-        url = (r.get("url") or "").strip()
-        kind = (r.get("source_kind") or "").strip().lower()
-        cat = (r.get("source_category") or "").strip().lower()
-
-        if lib_path:  # PDF from the SharePoint/OneDrive library
-            if (CACHE / (sid + ".pdf")).exists():
-                pdf_already += 1
-                continue
-            if root is None:
-                pdf_missing.append(f"{sid} (set NBS_LIBRARY_ROOT)")
-                continue
-            src_pdf = root / lib_path
-            if not src_pdf.exists():
-                pdf_missing.append(sid)
-                continue
-            try:
-                shutil.copy2(src_pdf, CACHE / (sid + ".pdf"))
-                pdf_copied += 1
-            except Exception as e:  # noqa: BLE001
-                print(f"  ! failed to copy {sid}: {e}")
-                pdf_missing.append(sid)
-        elif re.fullmatch(r"wocat_[a-z0-9_]+_approach_\d+", sid):
-            # Approach narratives are not technology impact questionnaires. Generic
-            # HTML hydration loses the embedded narrative and cannot supply locators.
-            if (CACHE / f"{sid}.md").exists():
-                code_already += 1
-                continue
-            # Prefer the reviewed, tracked snapshot: a fresh clone should not depend
-            # on the publisher continuing to serve the same selected version.
-            expected = r.get("artifact_sha1", "")
-            archived = next(
-                (
-                    path
-                    for path in sorted(ROOT.glob(f"methodology/audits/*/{sid}.md"))
-                    if expected
-                    and hashlib.sha1(path.read_bytes()).hexdigest() == expected
-                ),
-                None,
-            )
-            if archived is not None:
-                shutil.copy2(archived, CACHE / f"{sid}.md")
-                code_fetched += 1
-                continue
-            from nbs_ruralscan.ingest import wocat_approach
-
-            try:
-                wocat_approach.acquire(
-                    sid, CACHE, expected_sha1=r.get("artifact_sha1", "")
-                )
-                code_fetched += 1
-            except Exception as exc:
-                print(f"  ! approach hydration failed {sid}: {exc}")
-                code_failed.append(sid)
-        elif url and (
-            cat == "tool" or kind in ("website", "github")
-        ):  # code/web snapshot
-            if _cached(sid):
-                code_already += 1
-                continue
-            raw = _github_raw(url)
-            data = _fetch(raw or url)
-            if not data:
-                code_failed.append(sid)
-                continue
-            (CACHE / (sid + (".txt" if raw else ".html"))).write_bytes(data)
-            code_fetched += 1
-        else:
-            skipped += (
-                1  # no artifact source (e.g. a PDF not yet uploaded to the library)
-            )
-
-    # WOCAT transcripts: section-locator evidence verifies against `<sid>.md`, which the
-    # adapter renders from the questionnaire JSON (never in the SharePoint library) —
-    # re-acquire any that are missing (needs network; 2026-10-06)
-    wocat_fetched = wocat_failed = 0
-    wocat_ids = sorted(
-        {
-            r["source_id"]
-            for r in rows
-            if r["source_id"].startswith("wocat_")
-            and re.match(r"wocat_\d+_", r["source_id"])
-            and not (CACHE / f"{r['source_id']}.md").exists()
-        }
-    )
-    if wocat_ids:
-        from nbs_ruralscan.ingest import wocat as _wocat
-
-        for sid in wocat_ids:
-            try:
-                _wocat.acquire(sid, CACHE)
-                wocat_fetched += 1
-            except Exception:  # noqa: BLE001
-                wocat_failed += 1
-
-    print(f"library root       : {root}")
-    print(f"PDF copied         : {pdf_copied}")
-    print(f"WOCAT transcripts   : {wocat_fetched} fetched, {wocat_failed} failed")
-    print(f"PDF already cached  : {pdf_already}")
-    print(f"code/web fetched    : {code_fetched}")
-    print(f"code/web cached     : {code_already}")
-    print(f"no artifact source  : {skipped}")
-    if pdf_missing:
-        print(f"PDF missing from library: {len(pdf_missing)}")
-        for sid in pdf_missing:
-            print(f"  - {sid}")
-    if code_failed:
-        print(
-            f"code/web fetch FAILED: {len(code_failed)} (check the SRC.url / network)"
-        )
-        for sid in code_failed:
-            print(f"  - {sid}")
-
-    if args.queue:
-        hydrate_queue(root, args.nbs)
-    return 0
+def main(argv=None):
+    return hydration.main(argv, paths=_paths(library_root()), fetch=_fetch)
 
 
 if __name__ == "__main__":

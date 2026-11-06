@@ -17,18 +17,26 @@ Endpoints:
 from __future__ import annotations
 
 import csv as _csv_mod
+import hashlib
+import io
 import json
 import os
 import threading
-import shutil
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+from nbs_ruralscan.ingest.integrity import validate_source_id
+from nbs_ruralscan.ingest.source_publication import SourceSnapshot
+from nbs_ruralscan.schema_tools.publication import PublicationRecoveryError
 
 ROOT = Path(__file__).resolve().parents[3]
 DOCS = ROOT / "docs"
 STORE = ROOT / "pipeline" / "review" / "decisions.json"
 CACHE = ROOT / ".cache" / "corpus"
+# Serialize this server process's preview cache misses; other processes remain
+# independent writers and are protected by publication drift checks.
+_HYDRATION_LOCK = threading.RLock()
 
 
 # Local OneDrive mirror of the SharePoint library. SRC.library_path is relative to
@@ -71,61 +79,136 @@ def _github_raw_url(blob_url: str) -> str | None:
     return f"https://raw.githubusercontent.com/{m.group(1)}/{m.group(2)}/{m.group(3)}"
 
 
-def _ensure_code_snapshot(source_id: str) -> Path | None:
+def _source_field_input(
+    source_id: str, field: str, sources: Path
+) -> tuple[str, SourceSnapshot]:
+    """Bind the selected field to unchanged source-register bytes."""
+    snapshot = SourceSnapshot.capture([sources])
+    state = snapshot.states[0]
+    if state is None:
+        return "", snapshot
+    raw = sources.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != state[0]:
+        raise ValueError("Source register changed while reading")
+    snapshot.assert_unchanged()
+    rows = _csv_mod.DictReader(io.StringIO(raw.decode("utf-8"), newline=""))
+    for row in rows:
+        if row.get("source_id") == source_id:
+            return (row.get(field) or "").strip(), snapshot
+    return "", snapshot
+
+
+def _ensure_code_snapshot(
+    source_id: str, *, sources: Path | None = None, corpus: Path | None = None
+) -> Path | None:
     """Return a local cached text snapshot for a code source_id, fetching from
     GitHub raw (commit-pinned SRC.url blob URL) on cache miss."""
-    # already cached? (.txt / .html / .md — match the existing resolution order)
-    for ext in (".txt", ".html", ".md"):
-        p = CACHE / (source_id + ext)
-        if p.exists():
-            return p
-    # not cached -> try GitHub raw from SRC.url (commit-pinned blob URL)
-    url = _src_field(source_id, "url")
-    raw = _github_raw_url(url)
-    if not raw:
-        return None
-    import urllib.request
+    with _HYDRATION_LOCK:
+        import urllib.request
 
-    req = urllib.request.Request(
-        raw, headers={"User-Agent": "nbs-ruralscan-review-server"}
-    )
-    try:
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            if resp.status != 200:
+        try:
+            validate_source_id(source_id)
+            corpus = Path(corpus) if corpus is not None else CACHE
+            sources = (
+                Path(sources)
+                if sources is not None
+                else ROOT / "schema/registers/SRC_source_register.csv"
+            )
+            # Keep the existing .txt/.html/.md precedence and guard every candidate.
+            candidates = [
+                corpus / (source_id + ext) for ext in (".txt", ".html", ".md")
+            ]
+            cached = SourceSnapshot.capture(candidates)
+            for path, state in zip(candidates, cached.states):
+                if state is not None:
+                    return path
+            dest = candidates[0]
+            target = SourceSnapshot.capture([dest])
+            if str(dest.resolve()).casefold() == str(sources.resolve()).casefold():
                 return None
-            data = resp.read(4_000_000)  # 4 MB cap
-    except Exception:
-        return None
-    try:
-        CACHE.mkdir(parents=True, exist_ok=True)
-        dest = CACHE / (source_id + ".txt")
-        dest.write_bytes(data)
-        return dest
-    except Exception:
-        return None
+            url, registry = _source_field_input(source_id, "url", sources)
+            raw = _github_raw_url(url)
+            if not raw:
+                return None
+            req = urllib.request.Request(
+                raw, headers={"User-Agent": "nbs-ruralscan-review-server"}
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                if resp.status != 200:
+                    return None
+                data = resp.read(4_000_000)  # 4 MB cap
+
+            def validate(stage):
+                registry.assert_unchanged()
+                cached.assert_unchanged()
+                if (stage / dest.name).read_bytes() != data:
+                    raise ValueError("Code snapshot differs from fetched bytes")
+
+            target.publish({dest: data}, validate, create_only=True)
+            return dest
+        except PublicationRecoveryError:
+            raise
+        except Exception:
+            return None
 
 
-def _resolve_pdf(source_id: str) -> Path | None:
+def _resolve_pdf(
+    source_id: str,
+    *,
+    sources: Path | None = None,
+    corpus: Path | None = None,
+    library: Path | None = None,
+) -> Path | None:
     """Return a local cached PDF for source_id, hydrating from the OneDrive library on cache miss."""
-    cached = CACHE / (source_id + ".pdf")
-    if cached.exists():
-        return cached
-    lib_path = _src_field(source_id, "library_path")
-    if not lib_path:
-        return None
-    root = _library_root()
-    if not root:
-        return None
-    # library_path may be posix-style with & etc.; join verbatim
-    src_pdf = root / lib_path
-    if not src_pdf.exists():
-        return None
-    try:
-        CACHE.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src_pdf, cached)
-        return cached
-    except Exception:
-        return None
+    with _HYDRATION_LOCK:
+        try:
+            validate_source_id(source_id)
+            corpus = Path(corpus) if corpus is not None else CACHE
+            sources = (
+                Path(sources)
+                if sources is not None
+                else ROOT / "schema/registers/SRC_source_register.csv"
+            )
+            cached = corpus / (source_id + ".pdf")
+            target = SourceSnapshot.capture([cached])
+            if target.states[0] is not None:
+                return cached
+            if str(cached.resolve()).casefold() == str(sources.resolve()).casefold():
+                return None
+            lib_path, registry = _source_field_input(source_id, "library_path", sources)
+            if not lib_path:
+                return None
+            root = Path(library) if library is not None else _library_root()
+            if root is None:
+                return None
+            relative = Path(lib_path)
+            if relative.is_absolute() or ".." in relative.parts or "\\" in lib_path:
+                return None
+            src_pdf = root / relative
+            if not src_pdf.resolve().is_relative_to(root.resolve()):
+                return None
+            if str(src_pdf.resolve()).casefold() == str(cached.resolve()).casefold():
+                return None
+            source = SourceSnapshot.capture([src_pdf])
+            state = source.states[0]
+            if state is None:
+                return None
+            data = src_pdf.read_bytes()
+            if hashlib.sha256(data).hexdigest() != state[0]:
+                raise ValueError("Library PDF changed while reading")
+
+            def validate(stage):
+                registry.assert_unchanged()
+                source.assert_unchanged()
+                if (stage / cached.name).read_bytes() != data:
+                    raise ValueError("Cached PDF differs from library bytes")
+
+            target.publish({cached: data}, validate, create_only=True)
+            return cached
+        except PublicationRecoveryError:
+            raise
+        except Exception:
+            return None
 
 
 def render_region_png(
