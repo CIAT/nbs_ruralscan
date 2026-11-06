@@ -488,3 +488,18 @@ outcome states a severity word or an event magnitude but neither `hazard_severit
 (other than `unspecified`) nor `hazard_magnitude` is recorded (units stamped v1.9.7 or
 later; the ingest gate refuses them). When the matched words are not about the hazard
 event (e.g. "moderate shade"), set `hazard_magnitude: "not_stated"`.
+
+
+57. **Strength read off the most flattering number** (Pete, 2026-11-06, T3/T6 backlog
+round 2, decisions A2b/A3). Three rules for `strength_class` and `significance`:
+- **A range is classed by its weaker end**, never its midpoint: silt clogging cutting
+  percolation by 4–56% is `slight` (4%), not `strong` (30%). A range that spans zero
+  (a confidence interval) has no assured strength. The engine and `check_bands` use
+  the same rule, so a class set from the midpoint is flagged `band_mismatch`.
+- **A comparison of one plot per farm with no statistical test is capped at
+  `moderate`**, however large the gap (Rahn 2014: 41 vs 16 t C/ha). A ratio between two
+  measured trial arms keeps its computed class.
+- **An exactly printed p = .05** is judged case by case: count it `sig` only when the
+  paper's confidence interval or standard error shows the effect excludes zero, or the
+  same paper's own reporting makes the threshold intent plain (Kosmowski 2018 prints
+  p = .05 for four results it calls significant). Record the reasoning in `context.note`.

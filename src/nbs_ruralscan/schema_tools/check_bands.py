@@ -42,6 +42,13 @@ METRICS = {
 }
 
 
+def _range_floor(nums: list[float]) -> float:
+    """Weakest end of a range; 0 when it spans zero (T3/T6 backlog A3)."""
+    if len(nums) > 1 and min(nums) < 0 < max(nums):
+        return 0.0
+    return min(nums, key=abs)
+
+
 def contrast_class(rel: dict, bands: list[dict]) -> str:
     """Derived strength_class of a `contrast` / `complete_contrast` relationship."""
     metric = str(rel.get("metric") or "")
@@ -83,11 +90,12 @@ def check_unit(row: dict, bands: list[dict]) -> list[dict]:
     cls = str(rel.get("strength_class") or "unspecified")
     mag = rel.get("magnitude")
     if mag is None:
-        # a RANGE is a quantified claim: check its midpoint, as the engine ranks it
+        # a RANGE is a quantified claim: check its weakest end, as the engine ranks it
+        # (T3/T6 backlog A3, Pete 2026-11-06: lower end, not midpoint)
         lo, hi = rel.get("magnitude_low"), rel.get("magnitude_high")
         nums = [float(x) for x in (lo, hi) if isinstance(x, (int, float))]
         if nums:
-            mag = sum(nums) / len(nums)
+            mag = _range_floor(nums)
     flags: list[dict] = []
     if metric and metric not in METRICS:
         flags.append({"signal": "unknown_metric", "evidence_id": eid, "detail": metric})
@@ -276,9 +284,9 @@ def explain_unit(row: dict, bands: list[dict]) -> dict:
             lo, hi = rel.get("magnitude_low"), rel.get("magnitude_high")
             nums = [float(x) for x in (lo, hi) if isinstance(x, (int, float))]
             if nums:
-                mag = sum(nums) / len(nums)
+                mag = _range_floor(nums)
                 out["value"] = (
-                    f"a range of {lo} to {hi}, taken at its midpoint {_fmt(mag)}"
+                    f"a range of {lo} to {hi}, taken at its weaker end {_fmt(mag)}"
                 )
         if isinstance(mag, (int, float)) and not out["value"]:
             out["value"] = _METRIC_WORDS.get(metric, "a value of {v}{u}").format(

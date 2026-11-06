@@ -71,3 +71,10 @@ def test_implied_counterfactual_discounts_weight():
         unit({"counterfactual": "implied"}), "high", "updated_lit", 0
     )
     assert abs(implied - base * cs.IMPLIED_COUNTERFACTUAL_W) < 1e-9
+
+
+def test_range_classed_by_weaker_end():
+    assert cs.range_floor([4.0, 56.0]) == 4.0
+    assert cs.range_floor([-58.0, -9.0]) == -9.0
+    assert cs.range_floor([-0.35, 2.67]) == 0.0
+    assert cs.range_floor([12.0]) == 12.0
