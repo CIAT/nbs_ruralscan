@@ -199,3 +199,41 @@ def test_ordinary_option_payload_and_fingerprint_unchanged_without_metadata():
     }
     assert dc.fingerprint(option) == dc.fingerprint(expected)
     assert dc._matching_input_requirement(row) is None
+
+
+def test_approved_water_holds_block_even_a_catalogued_override():
+    recipe = ROOT / "schema/recipes/water_harvesting_conservation"
+    held = [
+        r
+        for r in dc.read_csv(recipe / "T4_suitability_mappings.csv")
+        if dc._matching_input_requirement(r)
+    ]
+    assert len(held) == 4
+    for row in held:
+        assert row["dataset_id"] == ""
+        requirement = dc._matching_input_requirement(row)
+        approval = json.loads(row["relationship_params"])["reviewed_adaptation"][
+            "dataset_binding"
+        ]
+        assert approval["scope"] == row["mapping_id"]
+        assert (ROOT / approval["decision_ref"]).is_file()
+        override = Binding(
+            "test", row["variable"], "global", "", "proxy", 1, "catalogued"
+        )
+        result = dc._binding(
+            row["variable"],
+            "proxy",
+            [override],
+            {"proxy": {"gee_asset_id": "asset"}},
+            {},
+            set(),
+            matching_input=requirement,
+        )
+        assert result["dataset_id"] is None and result["asset"] is None
+        assert result["needs_upload"] and result["matching_input_required"]
+        family = json.loads(
+            (recipe / f"T4_{row['suitability_family_id']}.json").read_text()
+        )
+        published = next(r for r in family if r["mapping_id"] == row["mapping_id"])
+        assert published["dataset_id"] == ""
+        assert dc._matching_input_requirement(published) == requirement

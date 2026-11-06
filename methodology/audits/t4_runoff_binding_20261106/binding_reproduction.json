@@ -1,0 +1,174 @@
+[
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
+    "variable": "runoff_potential_index",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 75.0,
+      "opt_low": 80.0
+    },
+    "evidence_ids": [
+      "ev_wh_runoff_potential_index_dewinnaar07_1",
+      "ev_wh_runoff_potential_index_alabadi17_1",
+      "ev_wh_runoff_potential_index_karimi19_1",
+      "ev_wh_runoff_potential_index_singh17_1",
+      "ev_wh_runoff_potential_index_vema19_1"
+    ],
+    "direct_BIND_resolution": "\"no BIND row matches variable 'runoff_potential_index' for set()\"",
+    "developer_binding_projection": {
+      "dataset_id": "scs_cn_runoff_composite",
+      "recipe_dataset_id": "scs_cn_runoff_composite",
+      "binding_id": null,
+      "preferred_binding_id": null,
+      "band": null,
+      "asset": "WWF/HydroSHEDS/v1/Basins/hybas_12",
+      "documented_input": null,
+      "access_type": "direct_download",
+      "native_resolution_m": "90",
+      "time_period": "2000 (SRTM-derived)",
+      "source_unit": null,
+      "canonical_unit": "index_or_native",
+      "scale_offset": null,
+      "temporal_reducer": null,
+      "source_unit_status": "Consumer must verify native band units and scaling; canonical units are not native units",
+      "derive_then_aggregate": false,
+      "min_meaningful_resolution_m": "1000",
+      "needs_upload": false,
+      "prompt": "Recipe fallback; no matching BIND row",
+      "limitations": "Derived from 3-arc-second SRTM; misses ephemeral channels in flat arid terrain. Resolution insufficient for first-order gully mapping. Not for: Detailed gully morphometry; flash flood routing",
+      "preparation": [
+        "Use HydroBASINS level 8-10 for sub-watershed delineation context. Stream order used as a primary RWH site-type discriminator: first/second-order streams suit check dams and gully plugs; third/fourth-order streams suit percolation tanks; larger streams suit small dams. Kumar et al. (2018) and Singh et al. (2016) use stream order as a primary MCDA criterion."
+      ],
+      "binding_differs_from_recipe": false,
+      "access_validation": "Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction"
+    },
+    "current_numeric_probe": "Unsupported numeric relationship"
+  },
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__stream_order",
+    "variable": "stream_order",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "abs_min": 1.0,
+      "opt_low": 2.0,
+      "opt_high": 2.0,
+      "abs_max": 4.0
+    },
+    "evidence_ids": [
+      "ev_wh_stream_order_kadam12_1",
+      "ev_wh_stream_order_singh17_1",
+      "ev_wh_stream_order_mahmoud21_1"
+    ],
+    "direct_BIND_resolution": "\"no BIND row matches variable 'stream_order' for set()\"",
+    "developer_binding_projection": {
+      "dataset_id": "scs_cn_runoff_composite",
+      "recipe_dataset_id": "scs_cn_runoff_composite",
+      "binding_id": null,
+      "preferred_binding_id": null,
+      "band": null,
+      "asset": "WWF/HydroSHEDS/v1/Basins/hybas_12",
+      "documented_input": null,
+      "access_type": "direct_download",
+      "native_resolution_m": "90",
+      "time_period": "2000 (SRTM-derived)",
+      "source_unit": null,
+      "canonical_unit": "ordinal",
+      "scale_offset": null,
+      "temporal_reducer": null,
+      "source_unit_status": "Consumer must verify native band units and scaling; canonical units are not native units",
+      "derive_then_aggregate": true,
+      "min_meaningful_resolution_m": "90",
+      "needs_upload": false,
+      "prompt": "Recipe fallback; no matching BIND row",
+      "limitations": "Derived from 3-arc-second SRTM; misses ephemeral channels in flat arid terrain. Resolution insufficient for first-order gully mapping. Not for: Detailed gully morphometry; flash flood routing",
+      "preparation": [
+        "Use HydroBASINS level 8-10 for sub-watershed delineation context. Stream order used as a primary RWH site-type discriminator: first/second-order streams suit check dams and gully plugs; third/fourth-order streams suit percolation tanks; larger streams suit small dams. Kumar et al. (2018) and Singh et al. (2016) use stream order as a primary MCDA criterion."
+      ],
+      "binding_differs_from_recipe": false,
+      "access_validation": "Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction"
+    },
+    "current_numeric_probe": "Unsupported numeric relationship"
+  },
+  {
+    "mapping_id": "water_harvesting__runoff_catchment__drainage_density",
+    "variable": "drainage_density",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "opt_high": 0.25
+    },
+    "evidence_ids": [
+      "ev_wh_drainage_density_karimi19_1",
+      "ev_wh_drainage_density_singh17_1",
+      "ev_wh_drainage_density_mahmoud21_1"
+    ],
+    "direct_BIND_resolution": "\"no BIND row matches variable 'drainage_density' for set()\"",
+    "developer_binding_projection": {
+      "dataset_id": "scs_cn_runoff_composite",
+      "recipe_dataset_id": "scs_cn_runoff_composite",
+      "binding_id": null,
+      "preferred_binding_id": null,
+      "band": null,
+      "asset": "WWF/HydroSHEDS/v1/Basins/hybas_12",
+      "documented_input": null,
+      "access_type": "direct_download",
+      "native_resolution_m": "90",
+      "time_period": "2000 (SRTM-derived)",
+      "source_unit": null,
+      "canonical_unit": "km/km2",
+      "scale_offset": null,
+      "temporal_reducer": null,
+      "source_unit_status": "Consumer must verify native band units and scaling; canonical units are not native units",
+      "derive_then_aggregate": true,
+      "min_meaningful_resolution_m": "90",
+      "needs_upload": false,
+      "prompt": "Recipe fallback; no matching BIND row",
+      "limitations": "Derived from 3-arc-second SRTM; misses ephemeral channels in flat arid terrain. Resolution insufficient for first-order gully mapping. Not for: Detailed gully morphometry; flash flood routing",
+      "preparation": [
+        "Use HydroBASINS level 8-10 for sub-watershed delineation context. Stream order used as a primary RWH site-type discriminator: first/second-order streams suit check dams and gully plugs; third/fourth-order streams suit percolation tanks; larger streams suit small dams. Kumar et al. (2018) and Singh et al. (2016) use stream order as a primary MCDA criterion."
+      ],
+      "binding_differs_from_recipe": false,
+      "access_validation": "Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction"
+    },
+    "current_numeric_probe": "Unsupported numeric relationship"
+  },
+  {
+    "mapping_id": "water_harvesting__terracing__runoff_potential_index",
+    "variable": "runoff_potential_index",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "opt_low": 0.9
+    },
+    "evidence_ids": [
+      "ev_wh_runoff_potential_index_krois14_1"
+    ],
+    "direct_BIND_resolution": "\"no BIND row matches variable 'runoff_potential_index' for set()\"",
+    "developer_binding_projection": {
+      "dataset_id": "scs_cn_runoff_composite",
+      "recipe_dataset_id": "scs_cn_runoff_composite",
+      "binding_id": null,
+      "preferred_binding_id": null,
+      "band": null,
+      "asset": "WWF/HydroSHEDS/v1/Basins/hybas_12",
+      "documented_input": null,
+      "access_type": "direct_download",
+      "native_resolution_m": "90",
+      "time_period": "2000 (SRTM-derived)",
+      "source_unit": null,
+      "canonical_unit": "index_or_native",
+      "scale_offset": null,
+      "temporal_reducer": null,
+      "source_unit_status": "Consumer must verify native band units and scaling; canonical units are not native units",
+      "derive_then_aggregate": false,
+      "min_meaningful_resolution_m": "1000",
+      "needs_upload": false,
+      "prompt": "Recipe fallback; no matching BIND row",
+      "limitations": "Derived from 3-arc-second SRTM; misses ephemeral channels in flat arid terrain. Resolution insufficient for first-order gully mapping. Not for: Detailed gully morphometry; flash flood routing",
+      "preparation": [
+        "Use HydroBASINS level 8-10 for sub-watershed delineation context. Stream order used as a primary RWH site-type discriminator: first/second-order streams suit check dams and gully plugs; third/fourth-order streams suit percolation tanks; larger streams suit small dams. Kumar et al. (2018) and Singh et al. (2016) use stream order as a primary MCDA criterion."
+      ],
+      "binding_differs_from_recipe": false,
+      "access_validation": "Not fetched; developer dataset_access.csv must identify representation, band, scaling and temporal reduction"
+    },
+    "current_numeric_probe": "Unsupported numeric relationship"
+  }
+]
