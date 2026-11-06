@@ -1,6 +1,6 @@
 # M08: direct review writers and dashboard refresh
 
-Date: 6 November 2026. Baseline: `0aca2f3763fafb7cc98ef3637ff9af509e34ba6e` (merged PR #599). Status: implemented; pending merge. This migration receipt stays in the existing project workspace, outside the destination product repositories.
+Date: 6 November 2026. Baseline: `0aca2f3763fafb7cc98ef3637ff9af509e34ba6e` (merged PR #599). Status: merged in PR #602 at `358b6fc`. This migration receipt stays in the existing project workspace, outside the destination product repositories.
 
 ## Result
 
