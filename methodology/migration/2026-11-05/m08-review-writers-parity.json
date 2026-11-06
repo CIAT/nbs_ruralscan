@@ -1,0 +1,232 @@
+{
+  "baseline": "0aca2f3763fafb7cc98ef3637ff9af509e34ba6e",
+  "clock_utc": "2026-11-06T12:00:00Z",
+  "mode": "separate-process direct-writer success parity on disposable copies of real evidence and audit records",
+  "steps_compared": 10,
+  "evidence_rows": 6369,
+  "final_audit_rows": 3542,
+  "steps": [
+    {
+      "step": "dashboard_apply",
+      "result": [
+        200,
+        {
+          "ok": 2,
+          "dropped": 1,
+          "queried": 1,
+          "reclassified": 1,
+          "rows": 6369,
+          "reasons": {
+            "confirmed_pass": 1,
+            "off_scope": 1,
+            "insufficient_context": 1,
+            "species_envelope": 1,
+            "confirmed_pass;false_flag": 1
+          },
+          "conflicts": [
+            {
+              "evidence_id": "ev_labour_availability_castle21_1",
+              "reviews": {
+                "parity_alpha": "ok",
+                "parity_beta": "drop"
+              }
+            }
+          ]
+        }
+      ],
+      "files_compared": 3,
+      "build_calls": [
+        "full"
+      ]
+    },
+    {
+      "step": "dashboard_repeat_apply",
+      "result": [
+        200,
+        {
+          "ok": 0,
+          "dropped": 0,
+          "queried": 0,
+          "reclassified": 0,
+          "rows": 6369,
+          "reasons": {},
+          "conflicts": [
+            {
+              "evidence_id": "ev_labour_availability_castle21_1",
+              "reviews": {
+                "parity_alpha": "ok",
+                "parity_beta": "drop"
+              }
+            }
+          ]
+        }
+      ],
+      "files_compared": 3,
+      "build_calls": [
+        "full",
+        "full"
+      ]
+    },
+    {
+      "step": "dashboard_reopen",
+      "result": [
+        200,
+        {
+          "ok": true,
+          "reopened": 2
+        }
+      ],
+      "files_compared": 3,
+      "build_calls": [
+        "full",
+        "full",
+        "refresh"
+      ]
+    },
+    {
+      "step": "dashboard_challenge_conflict",
+      "result": [
+        200,
+        {
+          "ok": true,
+          "conflict": true,
+          "reopened": 1,
+          "reviews": {
+            "parity_beta": "drop",
+            "parity_gamma": "ok"
+          }
+        }
+      ],
+      "files_compared": 3,
+      "build_calls": [
+        "full",
+        "full",
+        "refresh",
+        "refresh"
+      ]
+    },
+    {
+      "step": "dashboard_challenge_agreement",
+      "result": [
+        200,
+        {
+          "ok": true,
+          "conflict": false,
+          "reopened": 0,
+          "reviews": {
+            "parity_beta": "ok",
+            "parity_gamma": "ok"
+          }
+        }
+      ],
+      "files_compared": 3,
+      "build_calls": [
+        "full",
+        "full",
+        "refresh",
+        "refresh"
+      ]
+    },
+    {
+      "step": "csv_import_two_reviewers",
+      "result": {
+        "exit_code": 0,
+        "valid_rows": 3,
+        "skipped_rows": 1
+      },
+      "files_compared": 4,
+      "build_calls": [
+        "full",
+        "full",
+        "refresh",
+        "refresh"
+      ]
+    },
+    {
+      "step": "csv_import_repeat",
+      "result": {
+        "exit_code": 0
+      },
+      "files_compared": 4,
+      "build_calls": [
+        "full",
+        "full",
+        "refresh",
+        "refresh"
+      ]
+    },
+    {
+      "step": "worklist_export",
+      "result": {
+        "exit_code": 0,
+        "rows": 33
+      },
+      "files_compared": 5,
+      "build_calls": [
+        "full",
+        "full",
+        "refresh",
+        "refresh"
+      ]
+    },
+    {
+      "step": "worklist_apply",
+      "result": {
+        "exit_code": 0,
+        "filled_rows": 3
+      },
+      "files_compared": 5,
+      "build_calls": [
+        "full",
+        "full",
+        "refresh",
+        "refresh"
+      ]
+    },
+    {
+      "step": "worklist_repeat_apply",
+      "result": {
+        "exit_code": 0
+      },
+      "files_compared": 5,
+      "build_calls": [
+        "full",
+        "full",
+        "refresh",
+        "refresh"
+      ]
+    }
+  ],
+  "final_files": {
+    "pipeline/metrics/review_log.csv": {
+      "sha256": "855713682097081566927396299fc1cda603ddc1d177697ea39b5175d3cf9ac7",
+      "bytes": 741881
+    },
+    "pipeline/review/decisions.json": {
+      "sha256": "2ee5eae7d99185e7710d14af669624c9703d7c510f031b75b13d6095b8abe279",
+      "bytes": 1241
+    },
+    "pipeline/review/flag_worklist.csv": {
+      "sha256": "70fc200264c574b0a82a28445dd10dc1bd5029eb6e3925d2e96a5c29d9cc9c0e",
+      "bytes": 33854
+    },
+    "review-export-fixture.csv": {
+      "sha256": "8503faff5c7186d43e18753c6379ca664c0b9151f3a0fdb60f318c1d81faab4f",
+      "bytes": 437
+    },
+    "schema/registers/EV_evidence_register.csv": {
+      "sha256": "7117a5ad47b9fcafcfeb1a1ff3268c0d25ee5ffe243410dd84975d39af2cdcb1",
+      "bytes": 10200024
+    }
+  },
+  "parity": true,
+  "artifact_generation": "stubbed for direct-writer record parity; real refresh output parity tested separately",
+  "private_corpus": "absent; source and quote verification not established",
+  "known_behavior_preserved": "dashboard consensus reducer still defaults reclassify to species_specific; worklist reviewer attribution unchanged",
+  "tested_candidate_code": {
+    "src/nbs_ruralscan/schema_tools/review.py": "8ac3a9e9515808d069259649c72ebe56daf98dbd2b49a63ee7ce790495373e1d",
+    "src/nbs_ruralscan/schema_tools/review_server.py": "6077692e78cc3cc01d353105f230b41c4bb7089002d18f024569f519fa36b861",
+    "src/nbs_ruralscan/schema_tools/publication.py": "ab5c8ebfa84c70603a7f34974a726321901756b1f43ccb41e26a46e9110e086e",
+    "scripts/apply-review-export.py": "bb3559efa98d5abbc171caf0c6b4b8807874d881ca20559a3e0bbf0b1889349e"
+  }
+}

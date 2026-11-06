@@ -20,7 +20,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-from nbs_ruralscan.schema_tools.review import REASON_CODES, apply_decisions  # noqa: E402
+from nbs_ruralscan.schema_tools.review import (  # noqa: E402
+    REASON_CODES,
+    ReviewFiles,
+    apply_decisions,
+    stage_review_records,
+)
 
 MAP = {"approve": "ok", "reject": "drop", "hold": "flag"}
 
@@ -29,8 +34,10 @@ def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     ap.add_argument("csv")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--root", type=Path, help="Apply to an independent snapshot")
     a = ap.parse_args(argv)
-    rows = list(csv.DictReader(open(a.csv, encoding="utf-8")))
+    with Path(a.csv).open(encoding="utf-8") as stream:
+        rows = list(csv.DictReader(stream))
     by_reviewer: dict[str, dict] = {}
     bad = []
     for r in rows:
@@ -71,10 +78,23 @@ def main(argv: list[str] | None = None) -> int:
         print("  SKIP", eid, why)
     if a.dry_run:
         return 0
-    for rev, dec in by_reviewer.items():
-        out = apply_decisions(dec, reviewer=rev)
+
+    def apply_batch(files, _):
+        return [
+            (rev, apply_decisions(dec, reviewer=rev, files=files))
+            for rev, dec in by_reviewer.items()
+        ]
+
+    results = (
+        stage_review_records(
+            apply_batch, files=ReviewFiles.from_root(a.root) if a.root else None
+        )
+        if by_reviewer
+        else []
+    )
+    for rev, out in results:
         print(f"  applied for {rev}: {out}")
-    print("now: python3 src/nbs_ruralscan/schema_tools/generate.py schema")
+    print(f"now rebuild schema artifacts in: {a.root or ROOT}")
     return 0
 
 
