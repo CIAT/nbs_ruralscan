@@ -49,7 +49,12 @@ def _state(path: Path) -> tuple | None:
     )
 
 
-def _manifest(root: Path, names: list[Path], optional: set[Path]) -> dict[str, dict]:
+def _manifest(
+    root: Path,
+    names: list[Path],
+    optional: set[Path],
+    markdown: frozenset[Path] = frozenset(),
+) -> dict[str, dict]:
     entries = list(root.rglob("*"))
     if any(path.is_symlink() for path in entries):
         raise ValueError("Staged output contains a symlink")
@@ -76,6 +81,8 @@ def _manifest(root: Path, names: list[Path], optional: set[Path]) -> dict[str, d
                 header = next(rows, [])
                 if not header or any(len(row) != len(header) for row in rows):
                     raise ValueError(f"Invalid staged CSV: {name}")
+        elif name in markdown and path.suffix == ".md":
+            path.read_text(encoding="utf-8")  # Strict text decoding; no execution.
         else:
             raise ValueError(f"Unsupported generated artifact: {name}")
         result[str(name)] = {"sha256": _digest(path), "size": path.stat().st_size}
@@ -114,6 +121,8 @@ def staged_publish(
     render: Callable[[SchemaBuildPaths], list[Path]],
     *,
     optional_destinations: tuple[Path, ...] = (),
+    markdown_destinations: tuple[Path, ...] = (),
+    dry_run: bool = False,
 ) -> list[Path]:
     """Render all artifacts before touching outputs; keep recovery on rollback failure.
 
@@ -121,6 +130,8 @@ def staged_publish(
     Existing bytes seed history and stable timestamps. Unrelated files survive.
     Optional destinations may stay absent only when absent before staging; this
     never permits deleting an existing file. All allowed paths are drift-checked.
+    Markdown is accepted only for explicitly named destinations. A dry run renders
+    and validates the same staged set, then returns changes without installation.
     """
     paths.preflight(destinations)
     output = paths.output_root or paths.source_root
@@ -131,6 +142,13 @@ def staged_publish(
         raise ValueError(
             "Optional destinations must belong to the publication allowlist"
         )
+    if not set(markdown_destinations).issubset(destinations) or any(
+        p.suffix != ".md" for p in markdown_destinations
+    ):
+        raise ValueError(
+            "Markdown destinations must be named .md files in the publication allowlist"
+        )
+    markdown = frozenset(p.relative_to(output) for p in markdown_destinations)
     before = {name: _state(output / name) for name in names}
     optional = {
         path.relative_to(output)
@@ -159,7 +177,7 @@ def staged_publish(
                 ):
                     raise ValueError(f"Output changed while staging: {output / name}")
         render(SchemaBuildPaths(paths.schema, stage, paths.corpus))
-        manifest = _manifest(stage, names, optional)
+        manifest = _manifest(stage, names, optional, markdown)
         (workspace / "manifest.json").write_text(
             json.dumps(
                 {
@@ -182,6 +200,8 @@ def staged_publish(
             if str(name) in manifest
             and (previous is None or previous[0] != manifest[str(name)]["sha256"])
         ]
+        if dry_run:
+            return [output / name for name in changed]
         # Prepare every replacement before installing any file. These temporary
         # files live beside their destination, even when output spans mounts.
         for name in changed:

@@ -1,6 +1,6 @@
 # M07/M08: explicit evidence-intake inputs and joint register publication
 
-Date: 6 November 2026. Baseline: `aee4c16dfbe5aec44892cb6763923ec54354db6f` (merged PR #606). Status: implemented; pending merge. This migration receipt remains in the existing project workspace, outside destination product repositories.
+Date: 6 November 2026. Baseline: `aee4c16dfbe5aec44892cb6763923ec54354db6f` (merged PR #606). Status: merged in PR #609 (`cf0ecdcb3adeeaa70c407fc7199741144f780435`). This migration receipt remains in the existing project workspace, outside destination product repositories.
 
 ## Result
 
