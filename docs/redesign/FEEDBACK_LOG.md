@@ -50,3 +50,7 @@ One row per request, who made it, and what we did. Stakeholder requests (World B
 - 2026-11-05 · Pete: log the suggested methodological workflow to review variables and their distributions for the chosen context. Recorded as a proposal, with context → variable meaning/direction → distribution review → classification → comparative summaries → documented hand-off in [methodological development note](../../methodology/decisions/2026-11-05_context_variable_review.md).
 
 - 2026-11-05 · Pete: explicitly frame the walkthrough as visual methodology and an idealised implementation, a wireframe/mock-up for tangible co-design and expectation alignment with the World Bank—not a tool the Alliance is building under its contract. Added prominent home-page scope statement and shared notice across v2 pages; retained the three contracted deliverables.
+
+- 2026-11-06 · Pete: add NBS Invest branding and Help / Contact / Team page. Added unmodified official programme logo and shared navigation, walkthrough guidance, verified programme mailbox, project contact and team roles. Mock-up/contract scope retained.
+
+- 2026-11-06 · Pete: main navigation missing from Help. Restored the missing shared-navigation dependency; verified Home plus all seven stages render, with Help identified as current instead of Home.
