@@ -737,7 +737,7 @@ def test_changed_existing_search_protocol_rejected_before_queue_write(
     monkeypatch.setattr(
         module.search_log,
         "rows",
-        lambda: [
+        lambda path: [
             dict(
                 nbs_id="forest_restoration",
                 suitability_family_id="",

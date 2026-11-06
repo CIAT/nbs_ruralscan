@@ -1,12 +1,12 @@
 ---
 name: "source-command-extract-evidence"
 description: "Extract and verify source-provenanced evidence for an authorised T4 suitability, T3/T6 effect, or operational-risk lane."
-version: "v1.9.7"
+version: "v1.9.8"
 ---
 
 # Evidence extraction
 
-Current ruleset: **v1.9.7**. Stamp new units with the version actually used; never restamp
+Current ruleset: **v1.9.8**. Stamp new units with the version actually used; never restamp
 historical evidence. Version log: `methodology/RULESET_VERSIONS.md`. This skill is the
 canonical extraction instruction; `.claude/commands/extract-evidence.md` delegates here.
 
@@ -81,6 +81,8 @@ operational-risk extraction. Retain supported direction even when calibration is
   before proposing calibration. Report narrow bands, false precision, unsupported jumps,
   proxy meanings and transfer limits even when every number matches its source. Preserve
   unresolved values as source context; no silent widening, scoring or promotion (defect #55).
+  Regional origin alone does not justify direction-only retention: preserve full numeric
+  tables and conditional recommendations for compatible-source synthesis (T4 contract).
 - Preserve cited-primary attribution and lineage. Count independent studies, not duplicate
   records, depth branches or repository copies. Keep source importance separate from runtime
   MCDA weights; record enough of the original criterion set to explain relative importance.

@@ -1402,3 +1402,11 @@ Record: `ev_tree_canopy_cover_abigaba24_shading_levels`. Reviewer: peetmate. Rea
 Feedback: this is not structural suitability, it shows the ability of the NbS to reduce max temperatures which relates to T3 hazard response.
 
 Disposition: Evidence remains excluded. Quarantine contains the issue; it does not prove the extraction or display was repaired.
+
+### Ranchi elevation · Table 4 proxy meaning (6 November 2026)
+
+Record: `ev_af_elevation_ranchi2017_20261105`. Reviewer: Peter.
+
+Resolved source-table interpretation: PDF11 footnote uses elevation as energy proxy
+when temperature is unavailable. Pete approved regional proxy evidence only. No new
+cutoffs/scores or direct-temperature substitution. Future input design remains separate.

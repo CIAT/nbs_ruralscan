@@ -78,6 +78,8 @@ _RULESETS = {
     "v1.9.6",
     # v1.9.7: catalogue #56, hazard severity + stated event magnitude logged on hazard units
     "v1.9.7",
+    # v1.9.8: retain quantitative regional profiles for compatible-source synthesis
+    "v1.9.8",
 }
 
 

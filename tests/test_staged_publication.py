@@ -366,3 +366,82 @@ def test_concurrent_creation_of_skipped_optional_output_refuses_publication(setu
     assert destinations[0].read_bytes() == before
     assert json.loads(destinations[1].read_text()) == {"concurrent": True}
     assert not list(scratch.iterdir())
+
+
+@pytest.mark.parametrize("existing", [False, True])
+def test_preview_validates_all_artifacts_without_installing(setup, existing):
+    paths, destinations, render, scratch = setup
+    if existing:
+        populate(destinations)
+    before = inventory(paths.output_root)
+    assert (
+        publication.staged_publish(paths, destinations, render, dry_run=True)
+        == destinations
+    )
+    assert inventory(paths.output_root) == before
+    assert paths.output_root.exists() == existing
+    assert not list(scratch.iterdir())
+
+
+def test_preview_rejects_malformed_rendered_artifact(setup):
+    paths, destinations, render, scratch = setup
+
+    def malformed(staged):
+        render(staged)
+        (staged.output_root / "docs/nested/second.json").write_text("not JSON")
+        return []
+
+    with pytest.raises(json.JSONDecodeError):
+        publication.staged_publish(paths, destinations, malformed, dry_run=True)
+    assert not paths.output_root.exists()
+    assert not list(scratch.iterdir())
+
+
+def test_markdown_requires_exact_opt_in_and_valid_utf8(setup):
+    paths, _, _, scratch = setup
+    destination = paths.output_root / "reports/search.md"
+
+    def render(staged):
+        report = staged.output_root / "reports/search.md"
+        report.parent.mkdir(parents=True)
+        report.write_text("# Search\nSynthetic query and counts.\n", encoding="utf-8")
+        return []
+
+    with pytest.raises(ValueError, match="Unsupported generated artifact"):
+        publication.staged_publish(paths, [destination], render)
+    assert not paths.output_root.exists()
+    assert publication.staged_publish(
+        paths, [destination], render, markdown_destinations=(destination,), dry_run=True
+    ) == [destination]
+    assert not paths.output_root.exists()
+    publication.staged_publish(
+        paths, [destination], render, markdown_destinations=(destination,)
+    )
+    before = inventory(paths.output_root)
+
+    def invalid(staged):
+        (staged.output_root / "reports/search.md").write_bytes(b"\xff\xfe")
+        return []
+
+    with pytest.raises(UnicodeDecodeError):
+        publication.staged_publish(
+            paths,
+            [destination],
+            invalid,
+            markdown_destinations=(destination,),
+            dry_run=True,
+        )
+    assert inventory(paths.output_root) == before
+    assert not list(scratch.iterdir())
+
+
+@pytest.mark.parametrize("extension", [".json", ".txt", ".md"])
+def test_markdown_opt_in_cannot_expand_publication_allowlist(setup, extension):
+    paths, destinations, render, scratch = setup
+    extra = paths.output_root / f"extra{extension}"
+    with pytest.raises(ValueError, match="Markdown destinations"):
+        publication.staged_publish(
+            paths, destinations, render, markdown_destinations=(extra,)
+        )
+    assert not paths.output_root.exists()
+    assert not list(scratch.iterdir())

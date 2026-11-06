@@ -25,7 +25,6 @@ def load_review_priorities(root):
         "priority",
         "evidence_id",
         "source_id",
-        "page",
         "reason",
         "decision_needed",
         "requested_by",
@@ -34,7 +33,11 @@ def load_review_priorities(root):
     )
     for row in rows:
         eid, bid = row.get("evidence_id"), row.get("batch_id")
-        if not all(row.get(key, "").strip() for key in required):
+        page = (row.get("page") or "").strip()
+        source_locator = (row.get("source_locator") or "").strip()
+        if not all(row.get(key, "").strip() for key in required) or not (
+            page or source_locator
+        ):
             raise ValueError(f"Incomplete review priority: {eid}")
         if not re.fullmatch(r"[a-zA-Z0-9_-]+", bid):
             raise ValueError(f"Invalid priority batch ID: {bid}")
@@ -53,6 +56,10 @@ def load_review_priorities(root):
         row["context_changed"] = (
             evidence_fingerprint(evidence[eid]) != row["evidence_sha256"]
             or row["source_id"] != evidence[eid]["source_id"]
-            or str(row["page"]) != str(evidence[eid]["page"])
+            or page != str(evidence[eid].get("page") or "").strip()
+            or (
+                bool(source_locator)
+                and source_locator != str(evidence[eid].get("locator") or "").strip()
+            )
         )
     return rows

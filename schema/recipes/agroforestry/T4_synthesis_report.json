@@ -4,7 +4,7 @@
     "schema/registers/XW_target_crosswalk.csv": "4a811a751c9db882faacb5bed2e02954836889112c6a651dc402434ea248faf3",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
     "schema/registers/SRC_source_register.csv": "41478915820b02d7a63cd0ce05acd382b3b00dc7c87ee6d6d8de47d2bb94ec23",
-    "schema/registers/EV_evidence_register.csv": "107476c83294fa7b7f0a1dd92027c31dfd8ba205c094dd00747d5b283292fb63",
+    "schema/registers/EV_evidence_register.csv": "e8d2cca0c149d3f093ace861513ee36246b35ac7f05395994d73f87f2546048b",
     "schema/registers/SRCH_search_register.csv": "8ee4ace893b22c666f06b4354195baefc956fdb249f9816c8a1edfc27f68b2d3",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
@@ -163,7 +163,7 @@
           ],
           "n_parameter_sources": 1,
           "paper_support_pct": null,
-          "n_sources": 3,
+          "n_sources": 4,
           "corpus_n": null
         },
         {
@@ -432,7 +432,7 @@
           ],
           "n_parameter_sources": 2,
           "paper_support_pct": null,
-          "n_sources": 4,
+          "n_sources": 5,
           "corpus_n": null
         },
         {
@@ -1024,7 +1024,7 @@
           ],
           "n_parameter_sources": 1,
           "paper_support_pct": null,
-          "n_sources": 3,
+          "n_sources": 4,
           "corpus_n": null
         }
       ],
@@ -1048,7 +1048,7 @@
         {
           "variable": "slope",
           "support_pct": null,
-          "n_sources": 4,
+          "n_sources": 5,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -1056,7 +1056,7 @@
         {
           "variable": "elevation",
           "support_pct": null,
-          "n_sources": 3,
+          "n_sources": 4,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -1064,7 +1064,7 @@
         {
           "variable": "ndvi",
           "support_pct": null,
-          "n_sources": 3,
+          "n_sources": 4,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -1232,6 +1232,18 @@
           ],
           "quality_weighted_pct": null
         },
+        "topographic": {
+          "key": "topographic",
+          "n_sources": 6,
+          "corpus_n": null,
+          "pct": null,
+          "members": [
+            "aspect",
+            "elevation",
+            "slope"
+          ],
+          "quality_weighted_pct": null
+        },
         "land_use": {
           "key": "land_use",
           "n_sources": 5,
@@ -1242,21 +1254,9 @@
           ],
           "quality_weighted_pct": null
         },
-        "topographic": {
-          "key": "topographic",
-          "n_sources": 5,
-          "corpus_n": null,
-          "pct": null,
-          "members": [
-            "aspect",
-            "elevation",
-            "slope"
-          ],
-          "quality_weighted_pct": null
-        },
         "land_cover_vegetation": {
           "key": "land_cover_vegetation",
-          "n_sources": 3,
+          "n_sources": 4,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -6929,9 +6929,9 @@
         "ev_af_elevation_ranchi2017_20261105": {
           "source_id": "india_fao_agroforestry_suitability_mapping_2017",
           "variable": "elevation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {
             "type": "source_ranked_classes",
             "direction": "decreasing",
@@ -6977,9 +6977,9 @@
         "ev_af_ndvi_ranchi2017_20261105": {
           "source_id": "india_fao_agroforestry_suitability_mapping_2017",
           "variable": "ndvi",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {
             "type": "source_ranked_classes",
             "direction": "increasing",
@@ -6989,9 +6989,9 @@
         "ev_af_slope_ranchi2017_20261105": {
           "source_id": "india_fao_agroforestry_suitability_mapping_2017",
           "variable": "slope",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {
             "type": "source_ranked_classes",
             "direction": "decreasing",
@@ -7074,6 +7074,10 @@
             ],
             [
               "ev_T4_rereview_ahmad_2020_ndvi_4",
+              "selection_only"
+            ],
+            [
+              "ev_af_ndvi_ranchi2017_20261105",
               "selection_only"
             ],
             [
@@ -7224,6 +7228,10 @@
             ],
             [
               "ev_T4_rereview_ahmad_2020_slope_5",
+              "selection_only"
+            ],
+            [
+              "ev_af_slope_ranchi2017_20261105",
               "selection_only"
             ]
           ],
@@ -7525,6 +7533,10 @@
             [
               "ev_T4_rereview_haile_2024_elevation_1",
               "selection_only"
+            ],
+            [
+              "ev_af_elevation_ranchi2017_20261105",
+              "selection_only"
             ]
           ],
           "parameter_evidence": {
@@ -7757,7 +7769,7 @@
         },
         "slope": {
           "key": "slope",
-          "n_sources": 4,
+          "n_sources": 5,
           "corpus_n": null,
           "pct": null,
           "members": [],
@@ -7765,7 +7777,7 @@
         },
         "elevation": {
           "key": "elevation",
-          "n_sources": 3,
+          "n_sources": 4,
           "corpus_n": null,
           "pct": null,
           "members": [],
@@ -7773,7 +7785,7 @@
         },
         "ndvi": {
           "key": "ndvi",
-          "n_sources": 3,
+          "n_sources": 4,
           "corpus_n": null,
           "pct": null,
           "members": [],

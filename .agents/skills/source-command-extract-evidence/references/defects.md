@@ -461,6 +461,12 @@ explicit approval. No universal 20 mm rejection rule, invented uncertainty, auto
 drop or silently widened intervals. Existing scoping-candidate compilation holds remain;
 this scientific assessment requires documented review, not a claim of automated validation.
 
+Clarification to #55 (Pete, 2026-11-06): regional context is not itself a plausibility
+defect. Retain full quantitative tables/ranges with caveats for comparative synthesis;
+one source need not set the final rule alone. Avoid a blanket direction-only downgrade.
+The T4 contract separates quantitative recommendations from planning geometry and
+retains specific numeric holds; no automatic pooling or numerical approval follows.
+
 
 56. **The hazard intensity a practice was tested against is not logged** (Pete, 2026-11-06,
 T3/T6 backlog A1: "the severity of the hazard a practice can respond to is important

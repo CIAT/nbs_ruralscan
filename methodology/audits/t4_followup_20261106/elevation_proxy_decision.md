@@ -12,7 +12,7 @@ altitude cutoffs, numerical scores, temperature conversion or specific-family as
 is approved. Recipe interpretation must assess direct temperature evidence and avoid
 counting temperature and its elevation proxy independently without checking overlap.
 
-## Application status
+## Application status (superseded by completed batch application)
 
 Human decision recorded; register application is **pending the next review batch**.
 The reproducible input is `pending_ranchi_review_export.csv` in this directory. Apply
@@ -25,3 +25,5 @@ before applying; changed claims need fresh review.
 
 Source-payload fingerprint (all fields except reviewer_ok, review_state, attribution):
 78c8b1ed8bab12ba9cfda73231153f18268aeab557a205859da408976e30ed0c
+
+**Applied 6 November 2026:** normal review helper approved this decision. See `eight_plus_elevation_application.json` and `applied_eight_plus_elevation_export.csv`. Historical queued-status text above records the state when the decision was captured; the Keep is now applied. Source payloads remain unchanged.
