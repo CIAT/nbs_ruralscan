@@ -596,6 +596,10 @@ def unit_rank(
                 income_band=income_band,
             )
     mag = STRENGTH_RANK.get(cls)
+    if mag is not None and (unit.context or {}).get("unreplicated") is True:
+        # catalogue #57 (Pete 2026-11-06, A3): one plot per farm / unreplicated
+        # before-after with no statistics is capped at moderate, whatever its ratio
+        mag = min(mag, STRENGTH_RANK["moderate"])
     if sign == 0:
         mag = None
     return sign, mag
@@ -1107,8 +1111,14 @@ def asset_risk_weights(
     ]
     # a data-deficient asset row (blank sensitivity) is NOT assessed: it counts as a
     # missing hazard, so M2b falls back to equal weights rather than reading it as zero
+    # only the core T3 hazards set the weights; asset-only hazards (sedimentation,
+    # extreme rainfall, landslide) stay as descriptive rows and must not make a complete
+    # set look incomplete (bug found 2026-11-06: forest restoration had all six core
+    # hazards rated plus two asset-only rows, so no weights were emitted)
     by_h = {
-        r["hazard_type"]: r for r in global_rows if (r.get("asset_sensitivity") or "")
+        r["hazard_type"]: r
+        for r in global_rows
+        if (r.get("asset_sensitivity") or "") and r["hazard_type"] in T3_HAZARDS
     }
     if set(by_h) != set(T3_HAZARDS):
         if report is not None:
