@@ -87,6 +87,25 @@ paraphrase. **No sub-practice-targeted search (F1…F6) has been run yet** — t
 when run, and are NOT covered by the generic parent search. Synthesis #114 is gated on the
 per-family searches being run + logged.
 
+## Scanned PDFs (no text layer) — OCR handling rule (2026-11-07, Pete, decision F1)
+
+A scanned PDF has page images but no text, so a quote cannot be sliced from it. Rule:
+
+1. **OCR once, never re-run.** `uv run python scripts/ocr-scan.py <source_id> [--force]`
+   renders each image-only page at 300 dpi and adds an invisible Tesseract text layer under
+   the page image (pages that already carry text are copied unchanged; `--force` OCRs every
+   page when a publisher banner makes image pages look like text).
+2. **Artefact of record** = `<source_id>_ocr.pdf` in the team library (the original scan is
+   kept beside it, untouched). The queue's `target_library_path` points at the OCR file and
+   the local corpus copy is replaced by it, so page locators match the scan's pages.
+3. **Quotes** are sliced from the OCR text like any PDF; the central verbatim gate checks
+   them against that text. OCR errors are therefore inside the quote, not hidden: a passage
+   whose OCR text is garbled or out of reading order (two-column pages) is a blocker, never
+   retyped or stitched.
+4. **Units carry `context.ocr_text = true`.** A person checks a sample of their quotes
+   against the page image (review batch with page crops) before any is approved: at least
+   three per source or a fifth of its units, whichever is larger.
+
 ## Word documents (.docx) — handling rule (2026-10-05, Pete)
 
 A `.docx` is a format the pipeline cannot verify quotes against directly (no stable pages). Rule:
