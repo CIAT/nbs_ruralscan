@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-06T14:08:32.490432+00:00",
-  "git_commit": "1ce92d6c2f5e262314c0819448b1bc0842350aee",
+  "timestamp": "2026-11-07T05:36:28.219556+00:00",
+  "git_commit": "2ca9cfaa48262dfc6bae5cdef21ab4cba7b370f4",
   "registers": {
     "SRC_source_register": [
       {
@@ -323409,8 +323409,6 @@
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {
-            "abs_min": 75.0,
-            "opt_low": 80.0,
             "reviewed_adaptation": {
               "dataset_binding": {
                 "status": "requires_matching_input",
@@ -323420,16 +323418,33 @@
                 "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
                 "scope": "water_harvesting__runoff_catchment__runoff_potential_index",
                 "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+              },
+              "numerical_calibration": {
+                "status": "held",
+                "reason": "The inherited 75/80 pair is not a standalone runoff suitability calibration. Vema reports fuzzy Curve Number input memberships; the five sources use incompatible native CN, runoff-depth and runoff-coefficient quantities. Retain complete source profiles for quantity- and system-compatible synthesis before approving a replacement.",
+                "scope": "water_harvesting__runoff_catchment__runoff_potential_index",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-06",
+                "decision_ref": "methodology/audits/t4_calibration_hold_applied_20261106/user_decision.md",
+                "source_profiles_ref": "methodology/audits/t4_binding_holds_applied_20261106/next_calibration_decision.json",
+                "held_relationship": {
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 75.0,
+                    "opt_low": 80.0
+                  },
+                  "uncertainty_pct": "60.0"
+                },
+                "approval_scope": "Hold the inherited combined numerical function only. Keep all five source profiles and their existing review states. No replacement curve, scores, pooling, source drops or new evidence approval."
               }
             }
           },
-          "uncertainty_pct": 60.0,
           "context_overrides": [],
           "is_scenario_candidate": false,
           "has_future_projection": false,
           "weight_default": 0.1111,
           "weight_adjustable": true,
-          "justification": "Reconciled from 5 evidence unit(s) (weighted median, tier×claim_basis). Global {'abs_min': 75.0, 'opt_low': 80.0}; uncertainty ±60% from spread.  Approved dataset-binding hold (Peter, 2026-11-06): requires matching input; existing numeric values remain unapproved by this decision.",
+          "justification": "Reviewed numerical calibration hold (Peter, 2026-11-06): inherited 75/80 function and its derived uncertainty are historical only, archived in reviewed_adaptation.numerical_calibration. All five source profiles, native classes/ranges, directions, labelled weights and evidence links are retained for compatible synthesis. No replacement or source approval. Separate approved dataset-binding hold remains in force.",
           "variable": "runoff_potential_index",
           "suitability_family_id": "water_harvesting__runoff_catchment",
           "evidence_ids": [
@@ -400544,8 +400559,8 @@
       "source_id": "dewinnaar_2007_gis_runoff_thukela",
       "page": "7",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: SCS Curve Number (CN), runoff-generating source area (dimensionless CN scale). Current claim supplies qualitative CN direction. Numeric map bins describe the local input; no 75/80 suitability boundary is provided. Runoff-generation surface and downstream storage location are separate steps.",
-      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
+      "reason": "Binding and 75/80 calibration holds APPLIED, 6 November 2026. Source profile retained: SCS Curve Number (CN), runoff-generating source area (dimensionless CN scale). Current claim supplies qualitative CN direction. Numeric map bins describe the local input; no 75/80 suitability boundary is provided. Runoff-generation surface and downstream storage location are separate steps.",
+      "decision_needed": "Mapping-level 75/80 calibration hold approved and applied by Peter, 6 November 2026; no repeat approval needed. All five complete source profiles remain available for compatible synthesis. This did not grant source Keep/Drop approval or authorize a replacement curve. Existing evidence-level review remains separate; dataset binding also stays held.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "51d0527cf60bccafb91160fdd3610fbc9208ddcae8daf82e160404697435bc15",
@@ -400608,8 +400623,8 @@
       "source_id": "fuzzy_ahp_2017_wh_zones",
       "page": "11",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: Modelled runoff depth (mm). Criterion weight 0.368 is not runoff quantity or membership score. Source describes LARGE transformation but no transferable midpoint/spread is established here; no 75/80 cutoff supported. Existing EV already contains the verified PDF p9 rationale; the earlier missing-rationale request is resolved.",
-      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
+      "reason": "Binding and 75/80 calibration holds APPLIED, 6 November 2026. Source profile retained: Modelled runoff depth (mm). Criterion weight 0.368 is not runoff quantity or membership score. Source describes LARGE transformation but no transferable midpoint/spread is established here; no 75/80 cutoff supported. Existing EV already contains the verified PDF p9 rationale; the earlier missing-rationale request is resolved.",
+      "decision_needed": "Mapping-level 75/80 calibration hold approved and applied by Peter, 6 November 2026; no repeat approval needed. All five complete source profiles remain available for compatible synthesis. This did not grant source Keep/Drop approval or authorize a replacement curve. Existing evidence-level review remains separate; dataset binding also stays held.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "39fd299d8b2db0d8331d1f702344bc971210a4df543b3eec9ef724b862f59247",
@@ -400752,8 +400767,8 @@
       "source_id": "karimi_2019_runoff_map_rwh_zones",
       "page": "19",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: WetSpa mean annual runoff depth (mm annual runoff depth). Mean annual depth differs from CN and coefficient. Preserve all three source classes and weights; the >200 source preferred class cannot be pooled numerically with CN 75/80. No rejection based on regional origin.",
-      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
+      "reason": "Binding and 75/80 calibration holds APPLIED, 6 November 2026. Source profile retained: WetSpa mean annual runoff depth (mm annual runoff depth). Mean annual depth differs from CN and coefficient. Preserve all three source classes and weights; the >200 source preferred class cannot be pooled numerically with CN 75/80. No rejection based on regional origin.",
+      "decision_needed": "Mapping-level 75/80 calibration hold approved and applied by Peter, 6 November 2026; no repeat approval needed. All five complete source profiles remain available for compatible synthesis. This did not grant source Keep/Drop approval or authorize a replacement curve. Existing evidence-level review remains separate; dataset binding also stays held.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "8f7b613f0f39de0eddf1171588e66e29717ff2fa6d9db1be82c845a4a41305ea",
@@ -400800,8 +400815,8 @@
       "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
       "page": "3",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: Runoff coefficient (dimensionless runoff/rainfall fraction). Coefficient ranges near 0–1 differ from CN scale and depth in mm. Current corrected record explicitly contains no abs/opt boundaries. Low-ranked classes are not exclusions; keep source weights distinct from normalized suitability.",
-      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
+      "reason": "Binding and 75/80 calibration holds APPLIED, 6 November 2026. Source profile retained: Runoff coefficient (dimensionless runoff/rainfall fraction). Coefficient ranges near 0–1 differ from CN scale and depth in mm. Current corrected record explicitly contains no abs/opt boundaries. Low-ranked classes are not exclusions; keep source weights distinct from normalized suitability.",
+      "decision_needed": "Mapping-level 75/80 calibration hold approved and applied by Peter, 6 November 2026; no repeat approval needed. All five complete source profiles remain available for compatible synthesis. This did not grant source Keep/Drop approval or authorize a replacement curve. Existing evidence-level review remains separate; dataset binding also stays held.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "296c22bd444bc44fbec464467593d2aee7df81e1693b15bd3b05343b086d7a03",
@@ -400912,8 +400927,8 @@
       "source_id": "singh_2019_fuzzy_wh_structure_rainfed",
       "page": "4",
       "mapping_id": "water_harvesting__runoff_catchment__runoff_potential_index",
-      "reason": "Binding hold APPLIED, 6 November 2026. Next, separate calibration review: SCS Curve Number (CN) fuzzy INPUT classes (dimensionless CN scale). 75 and 80 are the a/b rising-edge parameters of HIGH CN input membership and c/d falling-edge parameters of MEDIUM input membership. They are not a 75 exclusion and 80 optimum for structure suitability. PDF p4 counterexample gives HIGH check-dam/farm-pond suitability at MEDIUM runoff when permeability and slope are low. Complete joint rule base remains unverified; no new standalone function proposed.",
-      "decision_needed": "Dataset-binding hold is already applied. Use Query to record this separate calibration decision: Approve placing the inherited combined runoff-catchment function (abs_min 75, opt_low 80) on numerical-calibration hold, while retaining all five sources, their complete native classes/ranges, directions and separately labelled weights for compatible synthesis? Vema uses 75/80 as CN input-membership parameters, not independent suitability limits. No replacement curve, scores, source drops or family-wide exclusions would be introduced; the approved dataset-binding hold remains separate. Keep alone neither removes the inherited curve nor approves a replacement.",
+      "reason": "Binding and 75/80 calibration holds APPLIED, 6 November 2026. Source profile retained: SCS Curve Number (CN) fuzzy INPUT classes (dimensionless CN scale). 75 and 80 are the a/b rising-edge parameters of HIGH CN input membership and c/d falling-edge parameters of MEDIUM input membership. They are not a 75 exclusion and 80 optimum for structure suitability. PDF p4 counterexample gives HIGH check-dam/farm-pond suitability at MEDIUM runoff when permeability and slope are low. Complete joint rule base remains unverified; no new standalone function proposed.",
+      "decision_needed": "Mapping-level 75/80 calibration hold approved and applied by Peter, 6 November 2026; no repeat approval needed. All five complete source profiles remain available for compatible synthesis. This did not grant source Keep/Drop approval or authorize a replacement curve. Existing evidence-level review remains separate; dataset binding also stays held.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "37952053943a40ffc677c880d8d154b53114464b4164576aa84906e73915e713",
@@ -401072,8 +401087,8 @@
       "source_id": "gismcda_swc_siting_2014",
       "page": "9",
       "mapping_id": "water_harvesting__terracing__runoff_potential_index",
-      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed KEEP (not applied). Table 4 ranks runoff coefficient >0.9 optimal (9), 0.6–0.9 high (7), 0.3–0.6 moderate (5), 0–0.3 marginal (3). PDF 5 defines coefficient as modelled direct runoff divided by design rainfall for a 33%-exceedance maximum-daily storm, not annual runoff or SCS curve number.",
-      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Keep full ranked coefficient profile and source scores with storm/design definition. Do not use generic runoff index, annual runoff depth or curve number interchangeably; no default runtime weight or unreported tails. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Binding hold already APPLIED. Separate calibration review: Krois & Schulte (2014), Table 4/PDF9, really does rank event runoff coefficient >0.9 optimal (9), 0.6–0.9 high (7), 0.3–0.6 moderate (5), and 0–0.3 marginal (3); no runoff-based exclusion class. Current mapping keeps only opt_low=0.9. Input is modelled storm runoff/rainfall (Q/P), using wet antecedent conditions and a 33%-exceedance maximum-daily design storm (PDF4–5), not CN or annual runoff. Source AHP weight is 0.14 (Table5/PDF10), separate from ranks.",
+      "decision_needed": "Use Query to record this separate mapping decision. Proposed, not applied: retain this complete quantitative source profile, source direction and separately labelled 0.14 weight for compatible terrace synthesis; place the incomplete single-number opt_low=0.9 mapping on numerical-calibration hold until an explicit class-preserving function, endpoint handling and score convention are reviewed. This preserves the genuine source optimum >0.9; regional origin alone does not invalidate it. No source drop, automatic score normalization, new exclusion, replacement dataset or bund-family expansion. Dataset-binding hold already applied; no repeat approval needed. A source Keep decision alone does not change the mapping.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "2a67661ffdd0888c86af2861701c56709bbd1efc623ee8abdac23058b17ae4ee",
@@ -700305,19 +700320,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "81bfad047df2",
-    "data_id": "57cdad7ad628",
+    "data_id": "dd1e86382dab",
     "count_definition_version": "4",
-    "built_at": "2026-11-06T14:08:32.490432+00:00",
-    "source_commit": "1ce92d6c2f5e262314c0819448b1bc0842350aee",
+    "built_at": "2026-11-07T05:36:28.219556+00:00",
+    "source_commit": "2ca9cfaa48262dfc6bae5cdef21ab4cba7b370f4",
     "history": [
-      {
-        "release": "1.1.2",
-        "ui_id": "71d23e7f1f97",
-        "data_id": "e133fea1d018",
-        "count_definition_version": "2",
-        "built_at": "2026-11-04T18:23:51.721036+00:00",
-        "source_commit": "004c3a1651cffe8689f40d4f74c408b3ccc084b8"
-      },
       {
         "release": "1.1.2",
         "ui_id": "71d23e7f1f97",
@@ -700709,6 +700716,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-06T14:08:32.490432+00:00",
         "source_commit": "1ce92d6c2f5e262314c0819448b1bc0842350aee"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "81bfad047df2",
+        "data_id": "dd1e86382dab",
+        "count_definition_version": "4",
+        "built_at": "2026-11-07T05:36:28.219556+00:00",
+        "source_commit": "2ca9cfaa48262dfc6bae5cdef21ab4cba7b370f4"
       }
     ]
   }
