@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
 """Render proposed input decisions; never modify analytical schema or approvals."""
 
+import argparse
 import csv
 import html
 import json
+import sys
 from pathlib import Path
 from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
-DATA = (
-    ROOT
-    / "pipeline/t4_audit/agroforestry/final_audit/executable_categories/input_decision_cards.csv"
-)
+sys.path.insert(0, str(ROOT / "src"))
+
+from nbs_ruralscan.schema_tools.review_batches import batch_directory  # noqa: E402
+from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs  # noqa: E402
+from nbs_ruralscan.schema_tools.build_paths import SchemaBuildPaths  # noqa: E402
+from nbs_ruralscan.schema_tools.publication import staged_publish  # noqa: E402
+
+CARDS = "pipeline/t4_audit/agroforestry/final_audit/executable_categories/input_decision_cards.csv"
 VERSION = "2026-10-20-v1"
 
 
@@ -24,15 +30,14 @@ def esc(value):
     return html.escape(str(value), quote=True)
 
 
-def main():
-    cards = rows(DATA)
+def render(cards, root):
     evidence = {
         r["evidence_id"]: r
-        for r in rows(ROOT / "schema/registers/EV_evidence_register.csv")
+        for r in rows(root / "schema/registers/EV_evidence_register.csv")
     }
     sources = {
         r["source_id"]: r
-        for r in rows(ROOT / "schema/registers/SRC_source_register.csv")
+        for r in rows(root / "schema/registers/SRC_source_register.csv")
     }
     sections = []
     for card in cards:
@@ -120,8 +125,46 @@ function exportText(s,date){const rows=[['decision_id','answer','notes','reviewe
 byId('export').onclick=()=>{const s=state();if(!s.reviewer.trim()){byId('status').textContent='Enter reviewer name before export.';byId('reviewer').focus();return;}const date=new Date().toLocaleDateString('en-CA');const blob=new Blob([exportText(s,date)],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='review_agroforestry-t4-input-decisions-oct20_'+s.reviewer.replace(/[^a-z0-9_-]/gi,'_')+'_'+date+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 byId('clear').onclick=()=>{if(!confirm('Clear this browser draft? Export first if you want to keep it.'))return;byId('reviewer').value='';for(const id of ids){byId('answer-'+id).value='';byId('notes-'+id).value='';}save();};
 </script></body></html>"""
-    dest = ROOT / "docs/review/t4-input-decisions.html"
-    dest.write_text(page, encoding="utf-8")
+    return page
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=ROOT, help="Review data checkout")
+    parser.add_argument(
+        "--output-dir", type=Path, help="Folder for the generated review page"
+    )
+    args = parser.parse_args(argv)
+    root = args.root.resolve()
+    dest = batch_directory(root, args.output_dir) / "t4-input-decisions.html"
+    inputs = ReviewInputs(
+        [
+            root / CARDS,
+            root / "schema/registers/EV_evidence_register.csv",
+            root / "schema/registers/SRC_source_register.csv",
+        ]
+    )
+    inputs.check_outputs([dest])
+    cards = rows(root / CARDS)
+    body = render(cards, root).encode("utf-8")
+
+    def write(staged):
+        inputs.verify()
+        assert staged.output_root is not None
+        (staged.output_root / dest.name).write_bytes(body)
+        return []
+
+    def validate(path):
+        inputs.verify()
+        if path.read_bytes() != body:
+            raise ValueError("Staged decision cards differ from the selected review")
+
+    staged_publish(
+        SchemaBuildPaths(dest.parent / "schema"),
+        [dest],
+        write,
+        artifact_validators={dest: validate},
+    )
     print(f"Rendered {len(cards)} cards: {dest}")
 
 

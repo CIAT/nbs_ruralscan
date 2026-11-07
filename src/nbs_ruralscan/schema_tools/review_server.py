@@ -16,12 +16,14 @@ Endpoints:
 
 from __future__ import annotations
 
+import argparse
 import csv as _csv_mod
 import hashlib
 import io
 import json
 import os
 import threading
+from dataclasses import replace
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -30,13 +32,18 @@ from nbs_ruralscan.ingest.integrity import validate_source_id
 from nbs_ruralscan.ingest.source_publication import SourceSnapshot
 from nbs_ruralscan.schema_tools.publication import PublicationRecoveryError
 
-ROOT = Path(__file__).resolve().parents[3]
+from . import clarifications, review_local
+
+_COMPILER_ROOT = Path(__file__).resolve().parents[3]
+ROOT = _COMPILER_ROOT
 DOCS = ROOT / "docs"
 STORE = ROOT / "pipeline" / "review" / "decisions.json"
 CACHE = ROOT / ".cache" / "corpus"
 # Serialize this server process's preview cache misses; other processes remain
 # independent writers and are protected by publication drift checks.
 _HYDRATION_LOCK = threading.RLock()
+# One in-process lock covers requests that read or change linked review state.
+_STORE_LOCK = clarifications.LOCK
 
 
 # Local OneDrive mirror of the SharePoint library. SRC.library_path is relative to
@@ -323,51 +330,44 @@ def render_region_png(
         return None
 
 
+def _clarification_paths():
+    return replace(
+        clarifications.ClarificationPaths.from_root(ROOT),
+        decisions=STORE,
+        pending=STORE.with_name("clarifications.json"),
+    )
+
+
 def _load() -> dict:
-    if STORE.exists():
-        raw = STORE.read_bytes()
-        try:
-            return json.loads(raw.decode("utf-8"))
-        except UnicodeDecodeError:
-            # decisions.json is gitignored (per-reviewer, local) so `git restore` can't fix a
-            # stray Windows-1252 byte in it. Self-heal: re-decode cp1252 → rewrite UTF-8.
-            try:
-                txt = raw.decode("cp1252")
-                STORE.write_text(txt, encoding="utf-8")
-                print(
-                    "⚠  decisions.json had a non-UTF-8 byte — re-encoded cp1252→UTF-8 in place."
-                )
-                return json.loads(txt)
-            except Exception:
-                return {}
-        except Exception:
-            return {}
-    return {}
-
-
-# Serialise all writes to the decisions store. ThreadingHTTPServer handles requests
-# concurrently, so two saves (e.g. an /api/decision write racing the /api/submit
-# rewrite) could interleave. write_text is not atomic — an interleaved short write over
-# longer prior content left a valid-prefix + stale-tail file that failed to parse
-# ("Extra data"), silently hiding all pending decisions. Lock + write-temp-then-replace.
-_STORE_LOCK = threading.RLock()
-
-
-def _save(d: dict, *, path: Path | None = None) -> None:
-    target = path if path is not None else STORE
-    target.parent.mkdir(parents=True, exist_ok=True)
-    payload = json.dumps(d, indent=2)
     with _STORE_LOCK:
-        tmp = target.with_name(target.name + f".tmp.{os.getpid()}")
-        tmp.write_text(payload, encoding="utf-8")
-        os.replace(tmp, target)  # atomic on the same filesystem
+        return review_local.load_store(STORE)
 
 
-def _stage_review_action(mutate):
+def _decision_snapshot():
+    snapshot = SourceSnapshot.capture([STORE])
+    store, _ = review_local.read_decisions(STORE)
+    snapshot.assert_unchanged()
+    return store, snapshot
+
+
+def _save(d: dict, *, path: Path) -> None:
+    """Write the private decision copy for a staged register action."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(path.name + f".tmp.{os.getpid()}")
+    tmp.write_text(json.dumps(d, indent=2), encoding="utf-8")
+    os.replace(tmp, path)
+
+
+def _stage_review_action(mutate, snapshot):
     from nbs_ruralscan.schema_tools.review import ReviewFiles, stage_review_records
 
+    def checked(files, staged_store):
+        # Bind the consensus/reopen calculation to the bytes the publisher captured.
+        snapshot.assert_unchanged()
+        return mutate(files, staged_store)
+
     return stage_review_records(
-        mutate, files=ReviewFiles.from_root(ROOT), decision_store=STORE
+        checked, files=ReviewFiles.from_root(ROOT), decision_store=STORE
     )
 
 
@@ -472,11 +472,16 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_GET(self):  # noqa: N802
         if self.path == "/api/clarifications":
-            from .clarifications import build, pending_events
-
-            return self._json(
-                200, {"issues": build(ROOT), "pending": len(pending_events(ROOT))}
-            )
+            try:
+                with _STORE_LOCK:
+                    paths = _clarification_paths()
+                    data = {
+                        "issues": clarifications.build(paths),
+                        "pending": len(clarifications.pending_events(paths)),
+                    }
+                return self._json(200, data)
+            except (ValueError, OSError, PublicationRecoveryError) as exc:
+                return self._json(500, {"error": str(exc)})
         if self.path == "/api/health":
             return self._json(200, {"ok": True})
         if self.path == "/api/readiness":
@@ -484,7 +489,10 @@ class Handler(SimpleHTTPRequestHandler):
         if self.path == "/api/version":
             return self._json(200, _git_version())
         if self.path == "/api/state":
-            return self._json(200, {"decisions": _load()})
+            try:
+                return self._json(200, {"decisions": _load()})
+            except (ValueError, OSError, PublicationRecoveryError) as exc:
+                return self._json(500, {"error": str(exc)})
         if self.path == "/api/gaps":
             gaps_csv = ROOT / "pipeline" / "metrics" / "gaps.csv"
             rows = []
@@ -675,16 +683,23 @@ class Handler(SimpleHTTPRequestHandler):
 
     def do_POST(self):  # noqa: N802
         # Serialize whole read-modify-write transactions, not only final file writes.
-        if self.path in {
-            "/api/decision",
-            "/api/challenge",
-            "/api/reopen",
-            "/api/apply",
-            "/api/clear",
-        }:
-            with _STORE_LOCK:
-                return self._handle_post()
-        return self._handle_post()
+        try:
+            if self.path in {
+                "/api/decision",
+                "/api/clarifications",
+                "/api/challenge",
+                "/api/reopen",
+                "/api/apply",
+                "/api/clear",
+                "/api/gap",
+            }:
+                with _STORE_LOCK:
+                    return self._handle_post()
+            return self._handle_post()
+        except review_local.InvalidRequest as exc:
+            return self._json(400, {"error": str(exc)})
+        except (ValueError, OSError, _csv_mod.Error, PublicationRecoveryError) as exc:
+            return self._json(500, {"error": str(exc)})
 
     def _handle_post(self):
         length = int(self.headers.get("Content-Length", 0))
@@ -693,134 +708,23 @@ class Handler(SimpleHTTPRequestHandler):
         except Exception:
             return self._json(400, {"error": "bad json"})
 
-        if self.path == "/api/clarifications":
-            from .clarifications import record
+        if not isinstance(payload, dict):
+            return self._json(400, {"error": "request must be a JSON object"})
 
-            try:
-                return self._json(200, {"event": record(ROOT, payload)})
-            except ValueError as exc:
-                return self._json(400, {"error": str(exc)})
+        if self.path == "/api/clarifications":
+            event = clarifications.record(_clarification_paths(), payload)
+            return self._json(200, {"event": event})
 
         if self.path == "/api/decision":
-            # store is nested: {evidence_id: {reviewer: {decision, reason, note}}} — one per person.
-            eid = payload.get("evidence_id")
-            dec = payload.get("decision", "")
-            rev = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
-            if not eid:
-                return self._json(400, {"error": "evidence_id required"})
-            store = _load()
-            byrev = store.setdefault(eid, {})
-            if dec in ("", None):
-                byrev.pop(rev, None)
-            else:
-                entry = {
-                    "decision": dec,
-                    "reason": payload.get("reason", ""),
-                    "note": payload.get("note", ""),
-                }
-                if dec in {"flag", "query"} and payload.get("answered_issue_ids"):
-                    from .clarifications import build, record
-
-                    # A normal Query records its follow-up on this record only.
-                    # Publish through the existing review submission, without another UI action.
-                    issues = {g["id"]: g for g in build(ROOT)}
-                    try:
-                        for issue_id in set(payload["answered_issue_ids"]):
-                            issue = issues.get(issue_id)
-                            if not issue or not any(
-                                r["evidence_id"] == eid for r in issue["records"]
-                            ):
-                                continue
-                            record(
-                                ROOT,
-                                dict(
-                                    issue_id=issue_id,
-                                    fingerprint=issue["fingerprint"],
-                                    evidence_id=eid,
-                                    reviewer=rev,
-                                    action="reply",
-                                    note=payload.get("note", ""),
-                                ),
-                            )
-                    except ValueError as exc:
-                        return self._json(400, {"error": str(exc)})
-                # reclassify (species/crop) carries the target claim_scope + taxon
-                if payload.get("taxon"):
-                    entry["taxon"] = str(payload.get("taxon")).strip()
-                if payload.get("claim_scope"):
-                    entry["claim_scope"] = str(payload.get("claim_scope")).strip()
-                if payload.get("reviewed_conflict"):
-                    from datetime import datetime, timezone
-
-                    entry["reviewed_conflict_at"] = datetime.now(
-                        timezone.utc
-                    ).isoformat()
-                byrev[rev] = entry
-            if not byrev:
-                store.pop(eid, None)
-            _save(store)
-            decided = sum(
-                1 for e in store.values() for r in e.values() if r.get("decision")
+            return self._json(
+                200, review_local.save_decision(_clarification_paths(), payload)
             )
-            return self._json(200, {"ok": True, "decided": decided})
 
         if self.path == "/api/gap":
-            # Report MISSING evidence — a variable/figure/table a reviewer expected but that was
-            # never extracted. Appended to the in-repo gaps register so it's tracked + queryable
-            # and can feed a re-extraction sweep. Not an EV row (there's no source quote yet).
-            import datetime as _dt
-
-            cols = [
-                "gap_id",
-                "date",
-                "reporter",
-                "nbs_id",
-                "suitability_family_id",
-                "table",
-                "source_id",
-                "location",
-                "variable",
-                "note",
-                "status",
-            ]
-            g = payload or {}
-            variable = (g.get("variable") or "").strip()
-            note = (g.get("note") or "").strip()
-            if not (variable or note):
-                return self._json(
-                    400, {"error": "a gap needs at least a variable or a note"}
-                )
-            gaps_csv = ROOT / "pipeline" / "metrics" / "gaps.csv"
-            gaps_csv.parent.mkdir(parents=True, exist_ok=True)
-            existing = []
-            if gaps_csv.exists():
-                with gaps_csv.open(newline="", encoding="utf-8") as f:
-                    existing = list(_csv_mod.DictReader(f))
-            row = {c: "" for c in cols}
-            row.update(
-                {
-                    "gap_id": f"gap_{len(existing) + 1:04d}",
-                    "date": _dt.date.today().isoformat(),
-                    "reporter": (g.get("reporter") or "reviewer").strip(),
-                    "nbs_id": (g.get("nbs_id") or "").strip(),
-                    "suitability_family_id": (
-                        g.get("suitability_family_id") or ""
-                    ).strip(),
-                    "table": (g.get("table") or "").strip(),
-                    "source_id": (g.get("source_id") or "").strip(),
-                    "location": (g.get("location") or "").strip(),
-                    "variable": variable,
-                    "note": note,
-                    "status": "open",
-                }
+            return self._json(
+                200,
+                review_local.report_gap(ROOT / "pipeline/metrics/gaps.csv", payload),
             )
-            need_header = not gaps_csv.exists()
-            with gaps_csv.open("a", newline="", encoding="utf-8") as f:
-                w = _csv_mod.DictWriter(f, fieldnames=cols)
-                if need_header:
-                    w.writeheader()
-                w.writerow(row)
-            return self._json(200, {"ok": True, "gap_id": row["gap_id"]})
 
         if self.path == "/api/apply":
             # Preflight: scan every file the Apply path reads for a stray non-UTF-8 byte / CRLF
@@ -835,7 +739,7 @@ class Handler(SimpleHTTPRequestHandler):
                         + "\n".join(enc)
                     },
                 )
-            store = _load()
+            store, snapshot = _decision_snapshot()
             if not store:
                 return self._json(200, {"applied": 0, "message": "no decisions"})
             from nbs_ruralscan.schema_tools.review import apply_decisions
@@ -899,7 +803,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return res
 
             try:
-                res = _stage_review_action(apply_records)
+                res = _stage_review_action(apply_records, snapshot)
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"error": str(e)})
             try:
@@ -916,6 +820,15 @@ class Handler(SimpleHTTPRequestHandler):
             import re as _re
             import subprocess
 
+            review_local.validate_text_fields(payload, ("reviewer", "title"))
+            if ROOT != _COMPILER_ROOT:
+                return self._json(
+                    409,
+                    {
+                        "ok": False,
+                        "error": "Shipping uses the installed Git checkout. Run the server from the review checkout to submit its decisions.",
+                    },
+                )
             reviewer = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
             title = (
                 payload.get("title") or f"qaqc: review decisions ({reviewer})"
@@ -977,6 +890,9 @@ class Handler(SimpleHTTPRequestHandler):
             # A reviewer records a decision on an already-applied unit. If it disagrees
             # with the existing decision(s), it's a conflict -> auto-reopen into AI-flagged
             # for consensus. If it agrees, just record it.
+            review_local.validate_text_fields(
+                payload, ("evidence_id", "reviewer", "decision", "reason", "note")
+            )
             eid = payload.get("evidence_id")
             dec = (payload.get("decision") or "").strip()
             rev = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
@@ -984,7 +900,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return self._json(
                     400, {"error": "evidence_id + decision(ok|drop) required"}
                 )
-            store = _load()
+            store, snapshot = _decision_snapshot()
             byrev = store.setdefault(eid, {})
             byrev[rev] = {
                 "decision": dec,
@@ -1015,7 +931,7 @@ class Handler(SimpleHTTPRequestHandler):
                     return res
 
                 try:
-                    res = _stage_review_action(challenge_records)
+                    res = _stage_review_action(challenge_records, snapshot)
                     reopened = res.get("reopened", 0)
                 except Exception as e:  # noqa: BLE001
                     return self._json(500, {"error": str(e)})
@@ -1024,7 +940,10 @@ class Handler(SimpleHTTPRequestHandler):
                 except Exception as e:  # noqa: BLE001
                     return self._json(500, _review_rebuild_error(e, full=False))
             else:
-                _save(store)
+                snapshot.publish(
+                    {STORE: json.dumps(store, indent=2).encode("utf-8")},
+                    lambda _: snapshot.assert_unchanged(),
+                )
             return self._json(
                 200,
                 {
@@ -1036,16 +955,21 @@ class Handler(SimpleHTTPRequestHandler):
             )
 
         if self.path == "/api/reopen":
+            review_local.validate_text_fields(payload, ("evidence_id", "reviewer"))
             eids = payload.get("evidence_ids") or (
                 [payload["evidence_id"]] if payload.get("evidence_id") else []
             )
             rev = (payload.get("reviewer") or "reviewer").strip() or "reviewer"
-            if not eids:
+            if (
+                not isinstance(eids, list)
+                or not eids
+                or not all(isinstance(eid, str) and eid.strip() for eid in eids)
+            ):
                 return self._json(400, {"error": "evidence_id(s) required"})
             from nbs_ruralscan.schema_tools.review import reopen_units
             from nbs_ruralscan.schema_tools.generate import refresh_review_state
 
-            store = _load()
+            store, snapshot = _decision_snapshot()
 
             def reopen_records(files, staged_store):
                 res = reopen_units(eids, rev, files=files)
@@ -1059,7 +983,7 @@ class Handler(SimpleHTTPRequestHandler):
                 return res
 
             try:
-                res = _stage_review_action(reopen_records)
+                res = _stage_review_action(reopen_records, snapshot)
             except Exception as e:  # noqa: BLE001
                 return self._json(500, {"error": str(e)})
             try:
@@ -1069,36 +993,7 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(200, {"ok": True, **res})
 
         if self.path == "/api/clear":
-            # Reset to-review. Scoped to ONE reviewer by default (you can't wipe others'
-            # pending work) and to that reviewer's PENDING (not-yet-applied) decisions —
-            # applied entries are the durable review record and stay (matching the dialog's
-            # "already-applied decisions are NOT affected"). Full wipe requires reviewer="*".
-            # Always backs up first.
-            rev = (payload.get("reviewer") or "").strip()
-            store = _load()
-            if STORE.exists():
-                (STORE.parent / "decisions.bak.json").write_text(
-                    STORE.read_text(encoding="utf-8")
-                )
-            if rev and rev != "*":
-                cleared = 0
-                for eid in list(store):
-                    mine = store[eid].get(rev)
-                    if mine is not None and mine.get("applied") not in (True, "true"):
-                        store[eid].pop(rev, None)
-                        cleared += 1
-                    if not store[eid]:
-                        store.pop(eid, None)
-                _save(store)
-                return self._json(
-                    200, {"ok": True, "cleared_for": rev, "cleared": cleared}
-                )
-            if rev == "*":
-                _save({})
-                return self._json(200, {"ok": True, "cleared_for": "ALL"})
-            return self._json(
-                400, {"error": "reviewer required (use '*' to clear all)"}
-            )
+            return self._json(200, review_local.clear_decisions(STORE, payload))
 
         return self._json(404, {"error": "not found"})
 
@@ -1197,8 +1092,27 @@ def _startup_integrity_check() -> None:
         print("✓ register integrity OK (UTF-8, LF).")
 
 
-def main() -> int:
+def main(argv=None) -> int:
     import sys
+
+    global ROOT, CACHE, DOCS, STORE
+    parser = argparse.ArgumentParser(
+        description="Serve a local Rural Scan review checkout."
+    )
+    parser.add_argument("port", nargs="?", type=int, default=8765)
+    parser.add_argument(
+        "--root",
+        type=Path,
+        default=_COMPILER_ROOT,
+        help="Review data and dashboard checkout (default: installed checkout)",
+    )
+    args = parser.parse_args(argv)
+    ROOT = args.root.expanduser().resolve()
+    if not (ROOT / "schema").is_dir() or not (ROOT / "docs").is_dir():
+        parser.error("review root must contain schema/ and docs/")
+    CACHE = ROOT / ".cache/corpus"
+    DOCS = ROOT / "docs"
+    STORE = ROOT / "pipeline/review/decisions.json"
 
     # Windows cp1252 stdout can't encode the ⚠ ✓ ✗ → ═ glyphs the startup prints use, so
     # print() raises UnicodeEncodeError and the process exits 1 BEFORE binding the port —
@@ -1213,7 +1127,7 @@ def main() -> int:
                 pass
 
     _startup_integrity_check()
-    port = int(sys.argv[1]) if len(sys.argv) > 1 else 8765
+    port = args.port
     handler = partial(Handler, directory=str(DOCS))
     srv = ThreadingHTTPServer(("127.0.0.1", port), handler)
     print(

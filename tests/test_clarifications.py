@@ -419,3 +419,188 @@ def test_publish_explicit_snapshot_never_falls_back_to_local_store(tmp_path):
     assert publish(tmp_path, local_events=events) == 1
     assert local.read_bytes() == before
     assert publish(tmp_path, local_events=events) == 0
+
+
+def reply(root, **overrides):
+    issue = build(root)[0]
+    payload = dict(
+        issue_id=issue["id"],
+        fingerprint=issue["fingerprint"],
+        action="reply",
+        reviewer="reviewer",
+        note="Needs a locator",
+    )
+    return dict(payload, **overrides)
+
+
+def test_record_batch_rejects_invalid_later_reply_before_appending(tmp_path):
+    from nbs_ruralscan.schema_tools import clarifications as c
+
+    setup(tmp_path)
+    first = reply(tmp_path)
+    record(tmp_path, first)
+    pending = c.ClarificationPaths.from_root(tmp_path).pending
+    before = pending.read_bytes()
+    with pytest.raises(ValueError, match="does not belong"):
+        c.record_many(tmp_path, [first, dict(first, evidence_id="outside")])
+    assert pending.read_bytes() == before
+
+
+@pytest.mark.parametrize(
+    "field", ["issue_id", "action", "reviewer", "note", "evidence_id"]
+)
+def test_mistyped_response_refuses_event_without_changing_its_scope(tmp_path, field):
+    from nbs_ruralscan.schema_tools import clarifications as c
+    from nbs_ruralscan.schema_tools.review_local import InvalidRequest
+
+    setup(tmp_path)
+    paths = c.ClarificationPaths.from_root(tmp_path)
+    payload = reply(paths)
+    payload[field] = []
+    with pytest.raises(InvalidRequest, match=field):
+        record(paths, payload)
+    assert not paths.pending.exists()
+
+
+def test_split_paths_record_acknowledgement_and_legacy_events(tmp_path):
+    from dataclasses import replace
+    from nbs_ruralscan.schema_tools import clarifications as c
+
+    setup(tmp_path)
+    paths = replace(
+        c.ClarificationPaths.from_root(tmp_path),
+        pending=tmp_path / "local/pending.json",
+        history=tmp_path / "durable/history.json",
+    )
+    old = {
+        "issue_id": "old",
+        "date": "2000-01-01",
+        "note": "legacy",
+        "previous_format": {"version": 0},
+    }
+    paths.history.parent.mkdir()
+    paths.history.write_text(json.dumps([old]))
+    payload = reply(paths)
+    events = c.record_many(
+        paths, [dict(payload, evidence_id=i) for i in ("two", "one")]
+    )
+    before = paths.pending.read_bytes()
+    assert c.read_events(paths.pending) == events
+    assert [e["evidence_ids"] for e in events] == [["two"], ["one"]]
+    assert c.publish(paths) == 2 and c.pending_events(paths) == []
+    assert c.publish(paths) == 0 and paths.pending.read_bytes() == before
+    assert c.shared_events(paths) == sorted(
+        [old, *events], key=lambda e: (e["date"], c.event_key(e))
+    )
+    assert not (tmp_path / "pipeline/review/clarifications.json").exists()
+
+
+@pytest.mark.parametrize("store", ["history", "pending"])
+@pytest.mark.parametrize(
+    "malformed",
+    [b"{", b"{}", b"[{}]", b'[{"issue_id":"one","date":"today","evidence_ids":"one"}]'],
+)
+def test_malformed_events_refuse_record_and_replay_without_rewriting(
+    tmp_path, store, malformed
+):
+    from nbs_ruralscan.schema_tools import clarifications as c
+
+    setup(tmp_path)
+    paths = c.ClarificationPaths.from_root(tmp_path)
+    payload = reply(paths)
+    path = getattr(paths, store)
+    path.write_bytes(malformed)
+    for operation in (lambda: c.record(paths, payload), lambda: c.publish(paths)):
+        with pytest.raises(ValueError):
+            operation()
+        assert path.read_bytes() == malformed
+        other = paths.history if path == paths.pending else paths.pending
+        assert not other.exists()
+
+
+@pytest.mark.parametrize("existing", [False, True])
+def test_failure_after_pending_install_restores_event_list(
+    tmp_path, monkeypatch, existing
+):
+    from nbs_ruralscan.schema_tools import clarifications as c, publication
+
+    setup(tmp_path)
+    paths = c.ClarificationPaths.from_root(tmp_path)
+    payload = reply(paths)
+    if existing:
+        c.record(paths, payload)
+    before = paths.pending.read_bytes() if paths.pending.exists() else None
+    replace = publication.os.replace
+    hit = False
+
+    def fail_once(src, dst):
+        nonlocal hit
+        replace(src, dst)
+        if dst == paths.pending and not hit:
+            hit = True
+            raise OSError("interrupted after install")
+
+    monkeypatch.setattr(publication.os, "replace", fail_once)
+    with pytest.raises(OSError, match="after install"):
+        c.record_many(paths, [payload, dict(payload, evidence_id="two")])
+    assert (paths.pending.read_bytes() if paths.pending.exists() else None) == before
+
+
+def test_changed_issue_input_during_staging_refused_before_event_install(
+    tmp_path, monkeypatch
+):
+    from nbs_ruralscan.schema_tools import clarifications as c, publication
+
+    setup(tmp_path)
+    paths = c.ClarificationPaths.from_root(tmp_path)
+    payload = reply(paths)
+    manifest = publication._manifest
+
+    def change_issue(*args, **kwargs):
+        paths.followups.write_text("{}")
+        return manifest(*args, **kwargs)
+
+    monkeypatch.setattr(publication, "_manifest", change_issue)
+    with pytest.raises(ValueError, match="changed during preparation"):
+        c.record(paths, payload)
+    assert paths.followups.read_bytes() == b"{}" and not paths.pending.exists()
+
+
+def test_concurrent_local_replies_are_both_preserved(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    from nbs_ruralscan.schema_tools import clarifications as c
+
+    setup(tmp_path)
+    paths = c.ClarificationPaths.from_root(tmp_path)
+    payload = reply(paths)
+    with ThreadPoolExecutor(max_workers=2) as writers:
+        futures = [
+            writers.submit(c.record, paths, dict(payload, note=note))
+            for note in ("first", "second")
+        ]
+        events = [future.result() for future in futures]
+    assert {c.event_key(e) for e in c.pending_events(paths)} == {
+        c.event_key(e) for e in events
+    }
+
+
+def test_duplicate_foreign_store_path_refused(tmp_path):
+    from dataclasses import replace
+    from nbs_ruralscan.schema_tools import clarifications as c
+
+    paths = c.ClarificationPaths.from_root(tmp_path)
+    with pytest.raises(ValueError, match="distinct"):
+        replace(paths, pending=paths.history)
+
+
+def test_build_reads_windows_decisions_without_writing_a_repair(tmp_path):
+    from nbs_ruralscan.schema_tools import clarifications as c
+
+    setup(tmp_path)
+    paths = c.ClarificationPaths.from_root(tmp_path)
+    raw = json.dumps(
+        {"another": {"Renée": {"decision": "ok"}}}, ensure_ascii=False
+    ).encode("cp1252")
+    paths.decisions.write_bytes(raw)
+    assert build(paths)
+    assert paths.decisions.read_bytes() == raw

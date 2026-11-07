@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Browser review backup · Rural Scan</title>
+<style>
+  html { font-family: system-ui,sans-serif; color: #17372e; background: #f7faf8; line-height: 1.5; }
+  main { max-width: 41rem; margin: 3rem auto; padding: 0 1.25rem; }
+  section { border-top: 1px solid #c8d7d0; margin-top: 2rem; }
+  button,input { font: inherit; }
+  button { padding: .4rem .8rem; cursor: pointer; }
+  #status { overflow-wrap: anywhere; }
+</style>
+<main>
+<a href="../dashboard.html">Evidence dashboard</a>
+<h1>Browser review backup</h1>
+<p>Transfer this browser’s draft decisions, feedback notes, clear-all backup and reviewer settings. Keep the downloaded file private. The review server stores its own decisions separately.</p>
+<p>Current address <strong id="origin"></strong></p>
+<section><h2>Back up this browser</h2>
+<p>Open this page at the same address and port where you review. Repeat for each browser profile and address you use.</p>
+<button id="download" disabled>Download backup</button></section>
+<section><h2>Restore a backup</h2>
+<p>Close other review tabs first. Restore adds missing entries. If existing drafts differ, it stops so you can keep both copies.</p>
+<label>Backup file <input id="file" type="file" accept=".json,application/json"></label>
+<button id="restore" disabled>Restore drafts</button></section>
+<p role="status" id="status"></p>
+</main>
+<script src="browser-backup.js"></script>
+<script>
+  const statusLine = document.getElementById('status'), file = document.getElementById('file');
+  const download = document.getElementById('download'), restore = document.getElementById('restore');
+  const origin = location.origin;
+  document.getElementById('origin').textContent = origin;
+  let batches;
+  async function start() {
+    const response = await fetch('index.json', {cache: 'no-store'});
+    if (!response.ok) throw Error('Review batch index unavailable.');
+    const index = await response.json();
+    batches = new Set(index.batches.map(b => b.id));
+    download.disabled = false;
+    restore.disabled = !file.files.length;
+  }
+  start().catch(e => {statusLine.textContent = e.message;});
+  file.onchange = () => {restore.disabled = !batches || !file.files.length;};
+  download.onclick = () => {
+    try {
+      const backup = ReviewBackup.capture(localStorage, batches, origin);
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([JSON.stringify(backup)], {type:'application/json'}));
+      link.download = 'ruralscan-browser-review-' + new Date().toISOString().slice(0,10) + '.json';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      statusLine.textContent = 'Backup contains ' + backup.entries.length + ' browser storage entries.';
+    } catch (e) {statusLine.textContent = e.message;}
+  };
+  restore.onclick = async () => {
+    try {
+      const backup = JSON.parse(await file.files[0].text());
+      const count = ReviewBackup.restore(localStorage, batches, backup);
+      statusLine.textContent = 'Restored ' + count + ' entries. Reopen the notebook to read your drafts.';
+    } catch (e) {statusLine.textContent = e.message;}
+  };
+</script>
+</html>

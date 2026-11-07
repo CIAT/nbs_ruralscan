@@ -28,10 +28,16 @@ import fitz
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from nbs_ruralscan.recipe.cell_synthesis import load_bands  # noqa: E402
-from nbs_ruralscan.recipe.direction_sense import load_sense  # noqa: E402
+from nbs_ruralscan.recipe.direction_sense import load_sense, read_sense  # noqa: E402
 from nbs_ruralscan.recipe.direction_sense import reads as direction_reads  # noqa: E402
 from nbs_ruralscan.schema_tools import check_bands  # noqa: E402
 from nbs_ruralscan.schema_tools.review import REASON_CODES  # noqa: E402
+from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs  # noqa: E402
+from nbs_ruralscan.schema_tools.review_batches import (  # noqa: E402
+    batch_directory,
+    publish_batch,
+)
+from nbs_ruralscan.ingest.integrity import validate_source_id  # noqa: E402
 
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 SRC = ROOT / "schema" / "registers" / "SRC_source_register.csv"
@@ -122,11 +128,11 @@ _INCOME = {
 FAM = ROOT / "schema" / "registers" / "FAM_family_registry.csv"
 
 
-def _families() -> dict[str, str]:
+def _families(path: Path = FAM) -> dict[str, str]:
     """family id → 'name; name' of its sub-practices (what the practice actually is)."""
     out: dict[str, list[str]] = {}
     try:
-        for r in csv.DictReader(FAM.open(encoding="utf-8")):
+        for r in csv.DictReader(path.open(encoding="utf-8")):
             fid = (r.get("suitability_family_id") or "").strip()
             if fid and r.get("name"):
                 out.setdefault(fid, []).append(r["name"].strip())
@@ -135,11 +141,11 @@ def _families() -> dict[str, str]:
     return {k: "; ".join(v) for k, v in out.items()}
 
 
-def _labels() -> dict[str, str]:
+def _labels(path: Path = VONT) -> dict[str, str]:
     try:
         return {
             r["canonical_variable_id"]: r["label"]
-            for r in csv.DictReader(VONT.open(encoding="utf-8"))
+            for r in csv.DictReader(path.open(encoding="utf-8"))
         }
     except OSError:
         return {}
@@ -181,19 +187,19 @@ _PROX = {
 }
 
 
-def _routes() -> dict[str, list[dict]]:
+def _routes(path: Path = XW) -> dict[str, list[dict]]:
     out: dict[str, list[dict]] = {}
     try:
-        for r in csv.DictReader(XW.open(encoding="utf-8")):
+        for r in csv.DictReader(path.open(encoding="utf-8")):
             out.setdefault(r["ev_variable"], []).append(r)
     except OSError:
         pass
     return out
 
 
-def _t5_labels() -> dict[str, str]:
+def _t5_labels(path: Path = T5) -> dict[str, str]:
     try:
-        rows = list(csv.DictReader(T5.open(encoding="utf-8")))
+        rows = list(csv.DictReader(path.open(encoding="utf-8")))
         lab = next(
             (
                 c
@@ -404,6 +410,8 @@ def _pool_sentence(n_units: int, n_sources: int) -> str:
 
 def _placements(
     sources: dict[str, str] | None = None,
+    *,
+    recipe_dirs=None,
 ) -> dict[str, list[dict[str, str]]]:
     """evidence_id → the generated rows it is actually in. Ground truth beats a predicted
     route: a unit can route somewhere and still land nowhere (kept out of a roll-up by the
@@ -414,7 +422,7 @@ def _placements(
     Pete 2026-10-12); the engine weights by source, and the page has to say so."""
     sources = sources or {}
     out: dict[str, list[dict[str, str]]] = {}
-    for d in sorted(RECIPES.glob("*")):
+    for d in sorted(RECIPES.glob("*")) if recipe_dirs is None else recipe_dirs:
         for stem, label in _T_FILE_LABEL.items():
             f = d / f"{stem}.csv"
             if not f.exists():
@@ -441,10 +449,12 @@ def _placements(
     return out
 
 
-def _comparator_policy() -> dict[tuple[str, str], dict[str, str]]:
+def _comparator_policy(
+    path: Path = COMPARATOR_POLICY,
+) -> dict[tuple[str, str], dict[str, str]]:
     out: dict[tuple[str, str], dict[str, str]] = {}
     try:
-        for r in csv.DictReader(COMPARATOR_POLICY.open(encoding="utf-8")):
+        for r in csv.DictReader(path.open(encoding="utf-8")):
             out[(r["nbs_id"].strip(), r["comparator"].strip())] = r
     except OSError:
         pass
@@ -670,6 +680,7 @@ def plain_words(
     places: list[dict[str, str]] | None = None,
     pol: dict[tuple[str, str], dict[str, str]] | None = None,
     bands: list[dict] | None = None,
+    sense: dict | None = None,
 ) -> dict:
     """Plain-English sentences for a reviewer: what the unit claims, how it was
     established, and in what context. The codes stay in the JSON for the record."""
@@ -677,7 +688,8 @@ def plain_words(
     practice = r["nbs_id"].replace("_", " ")
     d = str(rel.get("direction") or "")
     hazard_var = r["variable"].endswith("_hazard")
-    high_is_bad = (load_sense().get(r["variable"]) or {}).get("high_is") == "bad"
+    sense = load_sense() if sense is None else sense
+    high_is_bad = (sense.get(r["variable"]) or {}).get("high_is") == "bad"
     if r["use_role"] == "asset_vulnerability":
         hz = (ctx.get("hazard_type") or "the hazard").replace("_", " ")
         verb = {
@@ -772,7 +784,7 @@ def plain_words(
     compared = str(rel.get("outcome_raw") or "").strip()
     return {
         "direction_reads": direction_reads(
-            r["variable"], d, r["use_role"], str(rel.get("framing") or "")
+            r["variable"], d, r["use_role"], str(rel.get("framing") or ""), sense=sense
         )["text"],
         "practice": practice_line(r, fams or {}),
         "described": described_line(ctx, r["use_role"]),
@@ -860,14 +872,7 @@ def render_crop(pdf: Path, page_no: int, quote: str, dest: Path) -> str:
     return note
 
 
-def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
-    ap.add_argument("batch_id")
-    ap.add_argument("--title", required=True)
-    ap.add_argument("--items", required=True)
-    ap.add_argument("--notes", default="")
-    a = ap.parse_args(argv)
-    item_rows = list(csv.DictReader(open(a.items, encoding="utf-8")))
+def _build_units(item_rows, ev, *, schema, corpus, image_dir, recipe_dirs):
     items = {r["evidence_id"]: (r.get("question") or "") for r in item_rows}
     # optional ai_decision / ai_reason columns: what the AI proposed, so a reviewer who
     # agrees can reject without re-picking the reason (Pete 2026-10-26)
@@ -879,18 +884,21 @@ def main(argv: list[str] | None = None) -> int:
         for r in item_rows
         if (r.get("ai_decision") or "").strip()
     }
-    src = {r["source_id"]: r for r in csv.DictReader(SRC.open(encoding="utf-8"))}
+    registers = schema / "registers"
+    with (registers / SRC.name).open(encoding="utf-8") as stream:
+        src = {r["source_id"]: r for r in csv.DictReader(stream)}
     units = []
     missing = []
-    labels = _labels()
-    fams = _families()
-    routes = _routes()
-    pol = _comparator_policy()
-    t5 = _t5_labels()
-    bands = load_bands(BANDS)
-    with EV.open(newline="", encoding="utf-8") as f:
-        ev = {r["evidence_id"]: r for r in csv.DictReader(f)}
-    places = _placements({k: v["source_id"] for k, v in ev.items()})
+    labels = _labels(registers / VONT.name)
+    fams = _families(registers / FAM.name)
+    routes = _routes(registers / XW.name)
+    pol = _comparator_policy(schema / "lookups" / COMPARATOR_POLICY.name)
+    t5 = _t5_labels(schema / T5.name)
+    bands = load_bands(registers / BANDS.name)
+    sense = read_sense(schema / "lookups/variable_direction_sense.csv")
+    places = _placements(
+        {k: v["source_id"] for k, v in ev.items()}, recipe_dirs=recipe_dirs
+    )
     for eid, question in items.items():
         r = ev.get(eid)
         if not r:
@@ -899,12 +907,13 @@ def main(argv: list[str] | None = None) -> int:
         rel, ctx = _j(r.get("relationship", "")), _j(r.get("context", ""))
         s_rec = src.get(r["source_id"], {})
         crop, crop_note = None, "no cached PDF"
-        pdf = CORPUS / f"{r['source_id']}.pdf"
+        pdf = corpus / f"{r['source_id']}.pdf"
         page = int(r["page"]) if (r.get("page") or "").isdigit() else 0
         if pdf.exists() and page:
-            dest = IMG / f"{eid}.png"
+            dest = image_dir / f"{eid}.png"
             crop_note = render_crop(pdf, page, r.get("quote", ""), dest)
-            crop = f"review/img/{eid}.png"
+            if crop_note != "page out of range":
+                crop = f"review/img/{eid}.png"
         elif (r.get("locator_type") or "") == "section":
             crop_note = f"transcript section {r.get('locator')} (no page image)"
         units.append(
@@ -971,6 +980,7 @@ def main(argv: list[str] | None = None) -> int:
                     places.get(eid) or [],
                     pol,
                     bands,
+                    sense,
                 ),
                 "picos": picos(r, rel, ctx, labels, fams, s_rec),
                 "identity": identity(r, ctx, labels, fams, routes, t5),
@@ -980,46 +990,89 @@ def main(argv: list[str] | None = None) -> int:
                 else "",
             }
         )
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / f"{a.batch_id}.json").write_text(
-        json.dumps(
-            {
-                "batch": {
-                    "id": a.batch_id,
-                    "title": a.title,
-                    "date": date.today().isoformat(),
-                    "notes": a.notes,
-                    "n": len(units),
-                },
-                "reasons": REASON_CODES,
-                "units": units,
-            },
-            ensure_ascii=False,
-            indent=1,
+    return units, missing
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
+    ap.add_argument("batch_id")
+    ap.add_argument("--title", required=True)
+    ap.add_argument("--items", required=True, type=Path)
+    ap.add_argument("--notes", default="")
+    ap.add_argument("--root", type=Path, default=ROOT, help="Selected data root")
+    ap.add_argument("--corpus-dir", type=Path)
+    ap.add_argument("--out-dir", type=Path, help="Review output directory")
+    ap.add_argument("--dry-run", action="store_true")
+    a = ap.parse_args(argv)
+    schema = a.root / "schema"
+    corpus = a.corpus_dir or a.root / ".cache/corpus"
+    output = batch_directory(a.root, a.out_dir, corpus)
+    recipe_dirs = sorted(p for p in (schema / "recipes").glob("*") if p.is_dir())
+    ev_file = schema / "registers" / EV.name
+    inputs = ReviewInputs(
+        [
+            a.items,
+            ev_file,
+            *(schema / "registers" / p.name for p in (SRC, VONT, FAM, XW, BANDS)),
+            schema / T5.name,
+            schema / "lookups" / COMPARATOR_POLICY.name,
+            schema / "lookups/variable_direction_sense.csv",
+            *(
+                directory / (stem + ".csv")
+                for directory in recipe_dirs
+                for stem in _T_FILE_LABEL
+            ),
+        ]
+    )
+    with a.items.open(encoding="utf-8", newline="") as stream:
+        item_rows = list(csv.DictReader(stream))
+    with ev_file.open(encoding="utf-8", newline="") as stream:
+        ev = {r["evidence_id"]: r for r in csv.DictReader(stream)}
+    crop_ids = []
+    for eid in dict.fromkeys(row["evidence_id"] for row in item_rows):
+        row = ev.get(eid)
+        if row is None:
+            continue
+        validate_source_id(row["source_id"])
+        pdf = corpus / (row["source_id"] + ".pdf")
+        inputs.include([pdf])
+        if pdf.exists() and (row.get("page") or "").isdigit() and int(row["page"]):
+            crop_ids.append(eid)
+    n = 0
+    missing = []
+
+    def render(stage):
+        nonlocal n, missing
+        units, missing = _build_units(
+            item_rows,
+            ev,
+            schema=schema,
+            corpus=corpus,
+            image_dir=stage / "img",
+            recipe_dirs=recipe_dirs,
         )
-        + "\n",
-        encoding="utf-8",
-    )
-    idx_p = OUT / "index.json"
-    idx = (
-        json.loads(idx_p.read_text(encoding="utf-8"))
-        if idx_p.exists()
-        else {"batches": []}
-    )
-    idx["batches"] = [b for b in idx["batches"] if b["id"] != a.batch_id] + [
-        {
-            "id": a.batch_id,
-            "title": a.title,
-            "date": date.today().isoformat(),
-            "n": len(units),
-            "file": f"review/{a.batch_id}.json",
+        n = len(units)
+        return {
+            "batch": {
+                "id": a.batch_id,
+                "title": a.title,
+                "date": date.today().isoformat(),
+                "notes": a.notes,
+                "n": n,
+            },
+            "reasons": REASON_CODES,
+            "units": units,
         }
-    ]
-    idx_p.write_text(
-        json.dumps(idx, ensure_ascii=False, indent=1) + "\n", encoding="utf-8"
+
+    result = publish_batch(
+        output, a.batch_id, render, inputs=inputs, crop_ids=crop_ids, dry_run=a.dry_run
+    )
+    target = (
+        str(result) if a.out_dir or a.root != ROOT else f"docs/review/{a.batch_id}.json"
     )
     print(
-        f"{len(units)} unit(s) → docs/review/{a.batch_id}.json; missing ids: {missing}"
+        f"{n} unit(s) → {target}; missing ids: {missing}"
+        + (" (dry run)" if a.dry_run else "")
     )
     return 0
 

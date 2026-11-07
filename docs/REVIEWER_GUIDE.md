@@ -210,3 +210,11 @@ unavailable, you can still save a text note.
 Feedback is separate from evidence review. Saving or exporting feedback never
 keeps, drops, queries, applies or submits an evidence decision. Continue using
 **QA / QC Flags** and **Submit reviews** for those actions.
+
+## Move review drafts between browser profiles or addresses
+
+Open the browser backup page at `review/browser-backup.html` on the same dashboard address, port and browser profile you use for review. Choose **Download backup** and keep the file private. Repeat for each origin you use. Batch drafts are selected from that notebook’s review index. Use the original index and profile for a retired batch. [Browser review backup](review/browser-backup.html)
+
+At the new address, close other review tabs, open the backup page, select the file and choose **Restore drafts**. Identical entries can be restored repeatedly. If the page reports different existing drafts or an unknown batch, retain both backups and reconcile them before continuing. The live dashboard loads decisions from the server when it connects. Restore the matching server files in `pipeline/review/` first. For browser-only drafts, reopen the static dashboard to export and reconcile them before connecting to a live server.
+
+For an isolated local review, run `uv run python -m nbs_ruralscan.schema_tools.review_server 8766 --root /path/to/review-copy`. This serves that copy's dashboard and records. To submit a review to GitHub, start the server from the checkout containing the installed code and the decisions to submit.

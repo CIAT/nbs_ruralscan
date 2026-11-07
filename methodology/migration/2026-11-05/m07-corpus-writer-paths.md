@@ -1,6 +1,6 @@
 # M07/M08: corpus hydration and remaining acquisition writers
 
-Date: 6 November 2026. Baseline: `788b72c3268bc0f446f70963c759a0da9d55debc` (merged PR #622). Status: implemented; pending merge. This internal receipt stays in CIAT, outside destination product repositories.
+Date: 6 November 2026. Baseline: `788b72c3268bc0f446f70963c759a0da9d55debc` (merged PR #622). Merged in PR #625 at `9e930e68`. This internal receipt stays in CIAT, outside destination product repositories.
 
 ## Result
 
