@@ -15,11 +15,16 @@ from __future__ import annotations
 
 import argparse
 import csv
+import io
 import sys
 from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+from nbs_ruralscan.ingest.source_publication import SourceSnapshot  # noqa: E402
+from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs  # noqa: E402
+
 LOG = ROOT / "pipeline" / "metrics" / "row_review_log.csv"
 LOG_COLS = [
     "date",
@@ -52,12 +57,26 @@ def _key(r: dict) -> tuple:
 
 
 def apply_export(export: Path, log: Path = LOG, dry_run: bool = False) -> dict:
+    export, log = Path(export), Path(log)
+    inputs = ReviewInputs([export])
+    inputs.check_outputs([log])
+    history = SourceSnapshot.capture([log])
     with export.open(newline="", encoding="utf-8-sig") as f:
-        rows = list(csv.DictReader(f))
+        rows = list(csv.DictReader(f, strict=True))
+    before = log.read_bytes() if history.states[0] is not None else b""
     existing: set[tuple] = set()
-    if log.exists():
-        with log.open(newline="", encoding="utf-8") as f:
-            existing = {_key(r) for r in csv.DictReader(f)}
+    if before:
+        reader = csv.DictReader(
+            io.StringIO(before.decode("utf-8"), newline=""), strict=True
+        )
+        if reader.fieldnames != LOG_COLS:
+            raise ValueError("Unexpected row review log columns")
+        for row in reader:
+            if None in row or None in row.values():
+                raise ValueError("Malformed row review history")
+            existing.add(_key(row))
+    inputs.verify()
+    history.assert_unchanged()
     good, bad = [], []
     for r in rows:
         rec = {k: (r.get(k) or "").strip() for k in LOG_COLS}
@@ -83,14 +102,18 @@ def apply_export(export: Path, log: Path = LOG, dry_run: bool = False) -> dict:
             continue
         existing.add(_key(rec))
         good.append(rec)
-    if good and not dry_run:
-        log.parent.mkdir(parents=True, exist_ok=True)
-        new = not log.exists()
-        with log.open("a", newline="", encoding="utf-8") as f:
-            w = csv.DictWriter(f, fieldnames=LOG_COLS)
-            if new:
-                w.writeheader()
-            w.writerows(good)
+    if good:
+        buffer = io.StringIO(newline="")
+        writer = csv.DictWriter(buffer, fieldnames=LOG_COLS)
+        if not before:
+            writer.writeheader()
+        writer.writerows(good)
+        separator = b"\r\n" if before and not before.endswith((b"\r", b"\n")) else b""
+        history.publish(
+            {log: before + separator + buffer.getvalue().encode("utf-8")},
+            lambda _: inputs.verify(),
+            dry_run=dry_run,
+        )
     return {
         "read": len(rows),
         "appended": 0 if dry_run else len(good),
@@ -104,10 +127,12 @@ def apply_export(export: Path, log: Path = LOG, dry_run: bool = False) -> dict:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     ap.add_argument("csv")
-    ap.add_argument("--log", default=str(LOG))
+    ap.add_argument("--root", type=Path)
+    ap.add_argument("--log", type=Path)
     ap.add_argument("--dry-run", action="store_true")
     a = ap.parse_args(argv)
-    out = apply_export(Path(a.csv), Path(a.log), a.dry_run)
+    log = a.log or (a.root / "pipeline/metrics/row_review_log.csv" if a.root else LOG)
+    out = apply_export(Path(a.csv), log, a.dry_run)
     print(
         f"{out['read']} row(s) read; {'would append' if a.dry_run else 'appended'} "
         f"{out['would_append']}; decisions: {dict(out['decisions'])}"

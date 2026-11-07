@@ -1,0 +1,255 @@
+{
+  "baseline": "f5f387f6e77faef6b1139aee0f2c49af9428ec2e",
+  "executed_candidate_modules": {
+    "review_server.py": "be3674f89d9a322939af7382ac1ac3103cced69b93cc430ee7cd6aae9d225409",
+    "review_local.py": "d8353728c8c5e03b5549316e9a5d9021f9c494691dc5882f1eba8b38368cf12b",
+    "review_inputs.py": "9246cd63ee53e622fba8c5029365fe541b3610260f9cd1ee3a0319fb3c07b93f",
+    "clarifications.py": "fde2c40267dddf97f1c491505b563707422db544d6a5b2c3c0956c2b18ff8431"
+  },
+  "comparison": "Exact status codes, sorted-key JSON response digests and raw file bytes matched after each action.",
+  "execution": "Separate source-only Python processes; real GET/POST handler methods over byte streams and identically seeded disposable data. No network or live records.",
+  "clock": "Fixed UTC 2026-11-07T08:00:00 plus one second per request. Calendar date fixed to 2026-11-07.",
+  "hash_algorithm": "SHA-256. Files digest hashes the sorted compact UTF-8 JSON object mapping every data-root-relative path to its raw-byte SHA-256. Responses use the same sorted compact JSON encoding.",
+  "initial_files": {
+    "pipeline/metrics/clarification_log.json": "70d9a516874faaf8faff315a203cf322502443aac8d875897415c06c68c3faae",
+    "pipeline/metrics/review_log.csv": "211f8def4a9caa734b0ba3798c0029c2821005548b2a63d1e0b0a89e108707fd",
+    "pipeline/review/decisions.json": "bbc7677a130baa57595e59df5d8149a3bf0a8bde032c718e1badfb34d64e34cb",
+    "pipeline/t4_audit/agroforestry/review_followups.json": "53d7f2e35bdabbf924e89e185924728d94681f8ae09ce5b453baa6d6188dcd02",
+    "schema/registers/EV_evidence_register.csv": "ddb083ddb7c0f25f4b310f74f5957943df347bc375fb29e4bd27dbe115cb23ad"
+  },
+  "final_files": {
+    "pipeline/metrics/clarification_log.json": "70d9a516874faaf8faff315a203cf322502443aac8d875897415c06c68c3faae",
+    "pipeline/metrics/gaps.csv": "1a407af148c1596cc38395a50f4f5ffeedff95259c220055ec934167c8c90984",
+    "pipeline/metrics/review_log.csv": "211f8def4a9caa734b0ba3798c0029c2821005548b2a63d1e0b0a89e108707fd",
+    "pipeline/review/clarifications.json": "9b9f1e17df84fb56e85b468b8011c38784ecd65547d0b9ee3a57c436b0628807",
+    "pipeline/review/decisions.bak.json": "848b506b6f7a6b0783761b329b27aa9022ac7384bb81d324bca424274b3d5378",
+    "pipeline/review/decisions.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "pipeline/t4_audit/agroforestry/review_followups.json": "53d7f2e35bdabbf924e89e185924728d94681f8ae09ce5b453baa6d6188dcd02",
+    "schema/registers/EV_evidence_register.csv": "ddb083ddb7c0f25f4b310f74f5957943df347bc375fb29e4bd27dbe115cb23ad"
+  },
+  "actions": 19,
+  "matched": true,
+  "changed_files_key": {
+    "decisions": "pipeline/review/decisions.json",
+    "replies": "pipeline/review/clarifications.json",
+    "gaps": "pipeline/metrics/gaps.csv",
+    "backup": "pipeline/review/decisions.bak.json"
+  },
+  "case_columns": [
+    "action",
+    "method",
+    "route",
+    "status",
+    "response_sha256",
+    "files_sha256",
+    "changed_files"
+  ],
+  "cases": [
+    [
+      "Read and normalize historic Windows store",
+      "GET",
+      "/api/state",
+      200,
+      "d16f769bc3dc72b0c2d8505928206cf51a68602f0863c4c248beb82b8a6f243b",
+      "adb590a6b01c72000d802dd794b95833b59f0cf029b10d17dd2c634c0eb3c5ed",
+      [
+        "decisions"
+      ]
+    ],
+    [
+      "Read grouped question",
+      "GET",
+      "/api/clarifications",
+      200,
+      "71840568fe452d267b353d69cd81da16b8712e10385b96d13e3b56dd7c5ea8bd",
+      "adb590a6b01c72000d802dd794b95833b59f0cf029b10d17dd2c634c0eb3c5ed",
+      []
+    ],
+    [
+      "Save ordinary decision",
+      "POST",
+      "/api/decision",
+      200,
+      "690a91278e970d46077503d4d2da3c3c30162655aaa2032edb7d1367f7cb44c4",
+      "e62ba832d8143df13476f7b3b97207821c41190873d906da0801e7f820304f13",
+      [
+        "decisions"
+      ]
+    ],
+    [
+      "Repeat ordinary decision",
+      "POST",
+      "/api/decision",
+      200,
+      "690a91278e970d46077503d4d2da3c3c30162655aaa2032edb7d1367f7cb44c4",
+      "e62ba832d8143df13476f7b3b97207821c41190873d906da0801e7f820304f13",
+      []
+    ],
+    [
+      "Save reclassification with taxon and scope",
+      "POST",
+      "/api/decision",
+      200,
+      "b443e3de39c8168c6df2672ff58f659d261783c40f273c6d2d89aecb90996d45",
+      "cb11f2574e94901ede3a008086ca6bcb41fd683dbd95879eccd864b496f50452",
+      [
+        "decisions"
+      ]
+    ],
+    [
+      "Remove reclassification",
+      "POST",
+      "/api/decision",
+      200,
+      "690a91278e970d46077503d4d2da3c3c30162655aaa2032edb7d1367f7cb44c4",
+      "e62ba832d8143df13476f7b3b97207821c41190873d906da0801e7f820304f13",
+      [
+        "decisions"
+      ]
+    ],
+    [
+      "Save standalone reply to one record",
+      "POST",
+      "/api/clarifications",
+      200,
+      "4286d24a43d87a999d6397679be36e585967391b816f11f5780028c0df88a2a5",
+      "7290a013561c2ca037c6597c2336a5ff50c36b7a88c1c468e0f99ffa86b70ba8",
+      [
+        "replies"
+      ]
+    ],
+    [
+      "Save query with linked reply",
+      "POST",
+      "/api/decision",
+      200,
+      "b443e3de39c8168c6df2672ff58f659d261783c40f273c6d2d89aecb90996d45",
+      "3aa07d3867f0fca018deb152ba7583b3f5596b9d783c6c68b30e9a26b8efa009",
+      [
+        "replies",
+        "decisions"
+      ]
+    ],
+    [
+      "Repeat query with linked reply",
+      "POST",
+      "/api/decision",
+      200,
+      "b443e3de39c8168c6df2672ff58f659d261783c40f273c6d2d89aecb90996d45",
+      "d76f86dcd8769239f3db65b7e8da1e66bd461a306e96c2208ef3a4ff648a6c9e",
+      [
+        "replies"
+      ]
+    ],
+    [
+      "Read updated clarification count and history",
+      "GET",
+      "/api/clarifications",
+      200,
+      "08b1bdb0fcc5c60c66ea05b6d960780465d9500db247447a4a74b7a6f73196cc",
+      "d76f86dcd8769239f3db65b7e8da1e66bd461a306e96c2208ef3a4ff648a6c9e",
+      []
+    ],
+    [
+      "Report gap with default reviewer",
+      "POST",
+      "/api/gap",
+      200,
+      "1ff710e3c5812e6a2ea42b525d610d12cb1ed61df24c9cac89c2370f9bb99993",
+      "7e9c6c8751a9b24eddd51933b6329e2bc2fbcf9c69a8a993578670f003a03d63",
+      [
+        "gaps"
+      ]
+    ],
+    [
+      "Report second gap",
+      "POST",
+      "/api/gap",
+      200,
+      "87896584a99cc2be9d2d7db6b7eadbd2e82c9ed785e19acd177c558786fff614",
+      "76bbac9b259c142d70a91e68e9f20d0b7c2aed696d7e559171498d482704635f",
+      [
+        "gaps"
+      ]
+    ],
+    [
+      "Read both gaps",
+      "GET",
+      "/api/gaps",
+      200,
+      "be6a595e2f5bec1b9bed6847c2059d76db6bdbf9767f8b51f42a931411863ff5",
+      "76bbac9b259c142d70a91e68e9f20d0b7c2aed696d7e559171498d482704635f",
+      []
+    ],
+    [
+      "Agree with prior applied decision",
+      "POST",
+      "/api/challenge",
+      200,
+      "6d29fdc770508e162eff367bd475fa94394b9cc5069a987e8e7ecfad01de6f3a",
+      "9e209f0400c3faeb0d6502272b0eb12ddd1d1dfeb78fac7713bab0fa28ddfa4a",
+      [
+        "decisions"
+      ]
+    ],
+    [
+      "Record reviewed conflict without another reopen",
+      "POST",
+      "/api/challenge",
+      200,
+      "2129fe6c4e437cb7ffa23b2347e9c6f19e3eff1985ae3a18f4ffc4966f2e7cda",
+      "f9ff3bdcc629e1c9e38103bed3e540e5b9680bae6afea4cedc79d6cd444555b8",
+      [
+        "decisions"
+      ]
+    ],
+    [
+      "Clear one reviewer",
+      "POST",
+      "/api/clear",
+      200,
+      "d52fe916bb7f2194abba43369a67b285234d90b5e26393839f8da1c88cbda753",
+      "2d7fe1517fc8733795401851c8f231ed5b0f70fd910f2ff8c12e7e3faa3faef5",
+      [
+        "backup",
+        "decisions"
+      ]
+    ],
+    [
+      "Repeat scoped clear",
+      "POST",
+      "/api/clear",
+      200,
+      "74b961b6c0688d88b614ff1cae669ff06bdcc2fca32a8666af73bbbf9622f925",
+      "0dd2914c6b09e964f77da4addce60490bb181e8141b62576b6c5b4c4fcd7fb49",
+      [
+        "backup"
+      ]
+    ],
+    [
+      "Read retained applied and other reviewers records",
+      "GET",
+      "/api/state",
+      200,
+      "1ebf944b786e2219462a24d52d440bb6395b8b9701b88e82ce5a0b0c3c232232",
+      "0dd2914c6b09e964f77da4addce60490bb181e8141b62576b6c5b4c4fcd7fb49",
+      []
+    ],
+    [
+      "Explicit clear all with recoverable backup",
+      "POST",
+      "/api/clear",
+      200,
+      "d8fa41418ca693c3d09eabb1fffff7a28a112c41fa8987b420cc73f0169b6eaa",
+      "835e971fef9c37db24d28ba1cc03b51033a8b208277c6de07c7467251c1adce8",
+      [
+        "decisions"
+      ]
+    ]
+  ],
+  "intentional_changes_outside_success_comparison": [
+    "Malformed persisted JSON or nested stores refuse writes and remain available for recovery.",
+    "A failed linked decision/reply or clear/backup publication restores affected files.",
+    "Gap numbering follows the highest recorded numeric ID when existing IDs contain gaps."
+  ]
+}
