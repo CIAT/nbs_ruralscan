@@ -1,43 +1,16 @@
 #!/usr/bin/env bash
-# Custom git merge driver for GENERATED JSON (dashboard_data.json, progress.json, the
-# register *.json). These are committed (GitHub Pages serves them statically) but are a
-# deterministic function of the CSV source of truth — so any two branches that both touch
-# the registers collide on the regenerated JSON with a meaningless line-level conflict.
+# Custom git merge driver for GENERATED files (dashboard/progress/scorecard JSON, register
+# and recipe *.json, the flat effect-row CSV). They are a deterministic function of the
+# source CSVs, so a 3-way text merge of them is noise.
 #
-# Instead of a 3-way text merge, this driver ignores BOTH sides and rebuilds the file from
-# the (already-merged) CSVs via generate.py, then drops the fresh content into git's result
-# slot. Registered in .gitattributes as `merge=regen`; activated per-clone by scripts/setup-repo.sh.
+# FAST PATH (2026-11-07): the driver no longer regenerates. It used to run the full
+# generate.py once PER conflicting file (~2 min each), so a merge touching eight generated
+# files spent ~16 min inside git. Now it keeps OUR copy (no conflict markers) and drops a
+# marker; regenerate ONCE after the merge. `scripts/resolve-pr-conflicts.sh` does that, and
+# CI's `generate.py --check` catches anyone who forgets.
 #
-# git calls:  git-merge-regen.sh %O %A %B %P
-#   %O ($1) = common-ancestor blob   %A ($2) = OUR/result file (driver must leave result here)
-#   %B ($3) = THEIR blob             %P ($4) = pathname of the file in the repo
+# git calls:  git-merge-regen.sh %O %A %B %P   (result must be left in %A)
 set -u
-root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 1
-cd "$root" || exit 1
-
-# Rebuild ALL generated JSON from the merged CSVs (one call regenerates everything).
-# Never abort the merge if generate fails (e.g. a CSV still conflicted, or missing deps);
-# CI's `generate.py --check` is the backstop that catches any staleness left behind.
-if command -v uv >/dev/null 2>&1; then
-  # `python`, not `python3` — see issue #212 (no python3.exe in a Windows venv).
-  uv run python src/nbs_ruralscan/schema_tools/generate.py schema >/dev/null 2>&1 || true
-else
-  # No uv. Pick an interpreter that actually RUNS: on Windows `command -v python3` happily
-  # finds the MS Store alias stub, which only prints "Python was not found" (issue #212).
-  py=""
-  for cand in python3 python; do
-    if command -v "$cand" >/dev/null 2>&1 && "$cand" -c "" >/dev/null 2>&1; then
-      py="$cand"; break
-    fi
-  done
-  [ -n "$py" ] && "$py" src/nbs_ruralscan/schema_tools/generate.py schema >/dev/null 2>&1 || true
-fi
-
-# Copy the freshly-generated canonical file ($4 = repo path) into git's result slot ($2 = %A).
-if [ -f "$4" ]; then
-  cp "$4" "$2"
-  exit 0
-fi
-# Couldn't regenerate the target — fall back to OUR version (no conflict markers); CI will
-# flag it stale until someone runs generate.py.
+root="$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+touch "$(git rev-parse --git-dir)/REGEN_NEEDED" 2>/dev/null || true
 exit 0
