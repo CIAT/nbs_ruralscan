@@ -1,0 +1,59 @@
+{
+  "baseline": "788b72c3268bc0f446f70963c759a0da9d55debc",
+  "comparison": "Separate merged wrapper/new explicit-path CLI processes; same disposable selected paths; exact corpus bytes, stdout, return codes and request sequence. Candidate compiler contains src/scripts only, no schema/pipeline.",
+  "maintained_guard_rows": {
+    "sources": 743,
+    "queue": 922
+  },
+  "synthetic_sources": 11,
+  "synthetic_queue_rows": 8,
+  "fixture": "Existing maintained SRC sources use synthetic cache placeholders to exercise skip routes. New library/code/transcript material is synthetic; network mocked and clock fixed. Register bytes unchanged. No private corpus or source identity re-verification.",
+  "steps": [
+    {
+      "step": "cold_missing_only",
+      "result": {
+        "requests": [
+          "https://example.invalid/page",
+          "https://raw.githubusercontent.com/owner/repo/pin/file.R",
+          "https://example.invalid/fail",
+          "https://wocat.net/en/database/approaches/919194/",
+          "technology:919193",
+          "https://example.invalid/queue",
+          "https://raw.githubusercontent.com/owner/repo/pin/queue.R"
+        ],
+        "returncode": 0,
+        "stdout": "library root       : /private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-corpus-writers.lllokgok/hydration-selected/library\nPDF copied         : 3\nWOCAT transcripts   : 1 fetched, 0 failed\nPDF already cached  : 740\ncode/web fetched    : 4\ncode/web cached     : 5\nno artifact source  : 1\ncode/web fetch FAILED: 1 (check the SRC.url / network)\n  - parity_failed\n\nacquisition queue (migration_fixture)\nqueue copied/fetched: 3\nqueue already cached: 1\nSKIP parity_pending - not acquired (human hold)\nqueue MISSING from library: 1\n  - parity_queue_missing\n"
+      },
+      "changed": [
+        "corpus/parity_copy.pdf",
+        "corpus/parity_cross_kind.pdf",
+        "corpus/parity_github.txt",
+        "corpus/parity_queue_code.txt",
+        "corpus/parity_queue_pdf.pdf",
+        "corpus/parity_queue_web.html",
+        "corpus/parity_web.html",
+        "corpus/wocat_919193_2026.md",
+        "corpus/wocat_919193_2026.meta.json",
+        "corpus/wocat_919193_2026.pdf",
+        "corpus/wocat_919193_2026.source.json",
+        "corpus/wocat_parity_approach_919191.md",
+        "corpus/wocat_parity_approach_919194.md",
+        "corpus/wocat_parity_approach_919194.meta.json",
+        "corpus/wocat_parity_approach_919194.source.json"
+      ],
+      "inventory_sha256": "1466897626920f7e3267fe04135ea4f984f1f2174576d466f6d285e7d84a5587"
+    },
+    {
+      "step": "warm_repeat",
+      "result": {
+        "requests": [
+          "https://example.invalid/fail"
+        ],
+        "returncode": 0,
+        "stdout": "library root       : /private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-corpus-writers.lllokgok/hydration-selected/library\nPDF copied         : 0\nWOCAT transcripts   : 0 fetched, 0 failed\nPDF already cached  : 743\ncode/web fetched    : 0\ncode/web cached     : 9\nno artifact source  : 1\ncode/web fetch FAILED: 1 (check the SRC.url / network)\n  - parity_failed\n\nacquisition queue (migration_fixture)\nqueue copied/fetched: 0\nqueue already cached: 4\nSKIP parity_pending - not acquired (human hold)\nqueue MISSING from library: 1\n  - parity_queue_missing\n"
+      },
+      "changed": [],
+      "inventory_sha256": "1466897626920f7e3267fe04135ea4f984f1f2174576d466f6d285e7d84a5587"
+    }
+  ]
+}

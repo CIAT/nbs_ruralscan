@@ -1,0 +1,96 @@
+{
+  "baseline": "788b72c3268bc0f446f70963c759a0da9d55debc",
+  "maintained_queue_rows": 922,
+  "current_src_rows_counted_readonly": 743,
+  "cases": [
+    {
+      "case": "move",
+      "result": {
+        "returncode": 0,
+        "stdout": "filed 1\n  ok   parity_download.pdf: title on opening pages\nnext: python3 src/nbs_ruralscan/schema_tools/verify_metadata.py verify  (DOI rows)\n"
+      },
+      "inventory": {
+        "corpus/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "downloads/nbs_ingested/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "library/archive/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "queue.csv": "4ed5278ed37ab6393df6a936761a0b32d38867a105c3b29591be98fd99badd00"
+      }
+    },
+    {
+      "case": "keep",
+      "result": {
+        "returncode": 0,
+        "stdout": "filed 1\n  ok   parity_download.pdf: title on opening pages\nnext: python3 src/nbs_ruralscan/schema_tools/verify_metadata.py verify  (DOI rows)\n"
+      },
+      "inventory": {
+        "corpus/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "downloads/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "library/archive/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "queue.csv": "4ed5278ed37ab6393df6a936761a0b32d38867a105c3b29591be98fd99badd00"
+      }
+    },
+    {
+      "case": "dry_run",
+      "result": {
+        "returncode": 0,
+        "stdout": "filed 1 (dry run)\n  ok   parity_download.pdf: title on opening pages\n"
+      },
+      "inventory": {
+        "downloads/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "queue.csv": "dda1d069ea4f44b4ab1957f44a3ccacc64cad8fa410a969c841ae66b46d13dae"
+      }
+    },
+    {
+      "case": "mixed",
+      "result": {
+        "returncode": 1,
+        "stdout": "filed 1\n  ok   parity_download.pdf: title on opening pages\n  FAIL parity_broken.pdf: unreadable PDF: Failed to open file '/private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-manual-intake-parity-sbga9jb4/selected/downloads/parity_broken.pdf'. (left in place)\nnext: python3 src/nbs_ruralscan/schema_tools/verify_metadata.py verify  (DOI rows)\n"
+      },
+      "inventory": {
+        "corpus/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "downloads/nbs_ingested/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "downloads/parity_broken.pdf": "f526795c95399cea27c055c842c3d6ab018ed0fa4f66f701c28ab22dec28237b",
+        "downloads/parity_unknown.pdf": "c719877a51b597f91b7f7166353244c87f6cc2296c2c64f78f793a3bc0b2bee6",
+        "library/archive/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "queue.csv": "22d9f3eef5e4bce6aefed7a6d3504fda064b2552fd844f15aa355bf95a4b26b6"
+      }
+    },
+    {
+      "case": "archive_collision",
+      "result": {
+        "returncode": 1,
+        "stdout": "filed 0\n  FAIL parity_download.pdf: existing cache/library artifact differs; reconcile identity before replacement (left in place)\n"
+      },
+      "inventory": {
+        "downloads/nbs_ingested/parity_download.pdf": "432b47382721a797bfc16c9cb0245a859cb717831ea46fb6caa722fb6df96c9d",
+        "downloads/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "queue.csv": "dda1d069ea4f44b4ab1957f44a3ccacc64cad8fa410a969c841ae66b46d13dae"
+      }
+    },
+    {
+      "case": "identical_copies",
+      "result": {
+        "returncode": 0,
+        "stdout": "filed 1\n  ok   parity_download.pdf: title on opening pages\nnext: python3 src/nbs_ruralscan/schema_tools/verify_metadata.py verify  (DOI rows)\n"
+      },
+      "inventory": {
+        "corpus/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "downloads/nbs_ingested/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "library/archive/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "queue.csv": "4ed5278ed37ab6393df6a936761a0b32d38867a105c3b29591be98fd99badd00"
+      }
+    },
+    {
+      "case": "no_library",
+      "result": {
+        "returncode": 1,
+        "stdout": "filed 0\n  library copy skipped (no library root / target path): parity_download\n"
+      },
+      "inventory": {
+        "downloads/parity_download.pdf": "9ac590faac65381c9238ce9c09f8ebc80b4e8a1e191ad51266ae3efecd9c23d5",
+        "queue.csv": "dda1d069ea4f44b4ab1957f44a3ccacc64cad8fa410a969c841ae66b46d13dae"
+      }
+    }
+  ],
+  "comparison": "Separate wrapper processes, same disposable selected paths; exact output bytes and stdout/returncodes match. Synthetic PDFs only; maintained queue rows are unmatched read-only guards. Compiler package shared for unchanged metadata helpers; baseline and candidate command implementations differ. File modes/timestamps are not compared."
+}

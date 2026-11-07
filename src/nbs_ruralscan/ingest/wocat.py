@@ -40,6 +40,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .integrity import validate_source_id
+from .source_publication import SourceSnapshot
+from nbs_ruralscan.schema_tools.publication import PublicationRecoveryError
+
 ROOT = Path(__file__).resolve().parents[3]
 CORPUS = ROOT / ".cache" / "corpus"
 LOOKUPS = ROOT / "schema" / "lookups"
@@ -129,13 +133,17 @@ def fetch_payload(tid: int, timeout: int = 40) -> dict[str, Any]:
 
 
 def acquire(source_id: str, corpus: Path = CORPUS) -> Path:
+    validate_source_id(source_id)
     tid = tech_id(source_id)
+    corpus = Path(corpus)
+    source, transcript, sidecar = (
+        corpus / f"{source_id}{suffix}"
+        for suffix in (".source.json", ".md", ".meta.json")
+    )
+    snapshot = SourceSnapshot.capture([source, transcript, sidecar])
     payload = fetch_payload(tid)
     raw = json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=1)
-    corpus.mkdir(parents=True, exist_ok=True)
-    (corpus / f"{source_id}.source.json").write_text(raw, encoding="utf-8")
     md = render(payload, source_id)
-    (corpus / f"{source_id}.md").write_text(md, encoding="utf-8")
     meta = {
         "source_id": source_id,
         "adapter": "ingest/wocat.py",
@@ -146,10 +154,31 @@ def acquire(source_id: str, corpus: Path = CORPUS) -> Path:
         "render_sha1": hashlib.sha1(md.encode("utf-8")).hexdigest(),
         "selected_version_id": (payload.get("selected_version") or {}).get("id"),
     }
-    (corpus / f"{source_id}.meta.json").write_text(
-        json.dumps(meta, indent=1), encoding="utf-8"
+
+    def validate(staged: Path) -> None:
+        raw_bytes = (staged / source.name).read_bytes()
+        md_bytes = (staged / transcript.name).read_bytes()
+        record = json.loads((staged / sidecar.name).read_text(encoding="utf-8"))
+        questionnaire = json.loads(raw_bytes)
+        if (
+            not isinstance(questionnaire, dict)
+            or questionnaire.get("id") != tid
+            or render(questionnaire, source_id).encode("utf-8") != md_bytes
+            or record != meta
+            or hashlib.sha1(raw_bytes).hexdigest() != meta["source_sha1"]
+            or hashlib.sha1(md_bytes).hexdigest() != meta["render_sha1"]
+        ):
+            raise ValueError("WOCAT artifact/provenance mismatch")
+
+    snapshot.publish(
+        {
+            source: raw.encode("utf-8"),
+            transcript: md.encode("utf-8"),
+            sidecar: json.dumps(meta, indent=1).encode("utf-8"),
+        },
+        validate,
     )
-    return corpus / f"{source_id}.md"
+    return transcript
 
 
 # ── 2. render (deterministic transcript) ─────────────────────────────────────────────
@@ -419,6 +448,8 @@ def emit_units(
     hazard_map: list[dict[str, str]],
     bands: list[dict[str, Any]],
     ruleset_version: str = "v1.6.2",
+    *,
+    lookups_dir: Path | None = None,
 ) -> list[dict[str, Any]]:
     from nbs_ruralscan.recipe.cell_synthesis import classify_magnitude
 
@@ -427,7 +458,9 @@ def emit_units(
     # WOCAT stores ISO2; the context vocabulary is ISO3 + WB income group (lookup)
     iso2 = str(sv.get("country") or "").upper()
     base_ctx: dict[str, Any] = {}
-    for r in _load_csv(LOOKUPS / "wb_income_groups.csv"):
+    for r in _load_csv(
+        (LOOKUPS if lookups_dir is None else lookups_dir) / "wb_income_groups.csv"
+    ):
         if r["iso2"] == iso2 or r["iso3"] == iso2:
             base_ctx = {"country": [r["iso3"]], "income_group": r["income_group"]}
             break
@@ -626,12 +659,12 @@ def emit_units(
 
 
 def _drop_cost_mismatches(
-    sid: str, units: list[dict[str, Any]]
+    sid: str, units: list[dict[str, Any]], corpus: Path | None = None
 ) -> list[dict[str, Any]]:
     """Keep a QT 4 cost unit only when the adapter's USD total agrees (±2 %) with the total
     WOCAT's own PDF export prints — the two use the same arithmetic, so a mismatch means the
     sheet's rate or basis is not what the JSON suggests (one sheet of 66 on 2026-10-06)."""
-    pdf = CORPUS / f"{sid}.pdf"
+    pdf = (CORPUS if corpus is None else corpus) / f"{sid}.pdf"
     if not pdf.exists():
         return units
     try:
@@ -671,37 +704,50 @@ def main(argv: list[str] | None = None) -> int:
     sub = ap.add_subparsers(dest="cmd", required=True)
     a = sub.add_parser("acquire")
     a.add_argument("source_ids", nargs="+")
+    a.add_argument("--corpus-dir", type=Path, default=CORPUS)
     e = sub.add_parser("emit")
     e.add_argument("source_ids", nargs="+")
     e.add_argument("--nbs", required=True)
     e.add_argument("--out", required=True)
+    e.add_argument("--root", type=Path)
+    e.add_argument("--corpus-dir", type=Path)
+    e.add_argument("--lookups-dir", type=Path)
+    e.add_argument("--evidence-register", type=Path)
     args = ap.parse_args(argv)
     if args.cmd == "acquire":
         for sid in args.source_ids:
             try:
-                p = acquire(sid)
+                p = acquire(sid, args.corpus_dir)
                 print(f"  acquired {sid} → {p.name}")
+            except PublicationRecoveryError:
+                raise  # Incomplete recovery must stop the batch, not report one failed URL.
             except Exception as ex:  # noqa: BLE001
                 print(f"  FAILED {sid}: {ex}", file=sys.stderr)
         return 0
     from nbs_ruralscan.recipe.cell_synthesis import load_bands
 
-    bands = load_bands(ROOT / "schema" / "registers" / "BANDS_magnitude_bands.csv")
-    imap = _load_csv(LOOKUPS / "wocat_impact_map.csv")
-    hmap = _load_csv(LOOKUPS / "wocat_hazard_map.csv")
+    root = args.root if args.root is not None else ROOT
+    corpus = args.corpus_dir or (root / ".cache/corpus" if args.root else CORPUS)
+    lookups = args.lookups_dir or (root / "schema/lookups" if args.root else LOOKUPS)
+    ev_csv = args.evidence_register or (
+        root / "schema/registers/EV_evidence_register.csv" if args.root else EV_CSV
+    )
+    bands = load_bands(root / "schema" / "registers" / "BANDS_magnitude_bands.csv")
+    imap = _load_csv(lookups / "wocat_impact_map.csv")
+    hmap = _load_csv(lookups / "wocat_hazard_map.csv")
     fam_nbs = {
         r["suitability_family_id"]: r["nbs_id"]
-        for r in _load_csv(ROOT / "schema" / "registers" / "FAM_family_registry.csv")
+        for r in _load_csv(root / "schema" / "registers" / "FAM_family_registry.csv")
     }
     out: list[dict[str, Any]] = []
     for sid in args.source_ids:
-        src = CORPUS / f"{sid}.source.json"
-        md = CORPUS / f"{sid}.md"
+        src = corpus / f"{sid}.source.json"
+        md = corpus / f"{sid}.md"
         if not src.exists() or not md.exists():
             print(f"  skip {sid}: not acquired", file=sys.stderr)
             continue
         payload = json.loads(src.read_text(encoding="utf-8"))
-        family = _family_of(sid)
+        family = _family_of(sid, ev_csv)
         # PICOS: the practice is the one the sheet's T4 family already names; a sheet
         # filed under another NbS (an ANR entry in the WH queue) emits under THAT NbS
         nbs = fam_nbs.get(family, args.nbs) if family else args.nbs
@@ -718,8 +764,9 @@ def main(argv: list[str] | None = None) -> int:
             imap,
             hmap,
             bands,
+            lookups_dir=lookups,
         )
-        units = _drop_cost_mismatches(sid, units)
+        units = _drop_cost_mismatches(sid, units, corpus)
         print(f"  {sid}: {len(units)} unit(s), family {family or '(none)'}")
         out += units
     Path(args.out).write_text(

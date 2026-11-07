@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .integrity import validate_source_id
+from .source_publication import SourceSnapshot
 from .wocat import _BLOCK
 
 # Administrative/media fields are not questionnaire claims. Linked technologies are
@@ -113,6 +114,12 @@ def render(payload: dict, source_id: str) -> str:
 
 def acquire(source_id: str, corpus: Path, *, expected_sha1: str = "") -> Path:
     aid = approach_id(source_id)
+    corpus = Path(corpus)
+    source, out, sidecar = (
+        corpus / f"{source_id}{suffix}"
+        for suffix in (".source.json", ".md", ".meta.json")
+    )
+    snapshot = SourceSnapshot.capture([source, out, sidecar])
     url = f"https://wocat.net/en/database/approaches/{aid}/"
     req = urllib.request.Request(
         url, headers={"User-Agent": "nbs-ruralscan/wocat-approach-adapter"}
@@ -127,10 +134,6 @@ def acquire(source_id: str, corpus: Path, *, expected_sha1: str = "") -> Path:
         raise ValueError(
             "Approach transcript changed; restore archived artifact or re-review source version"
         )
-    corpus.mkdir(parents=True, exist_ok=True)
-    (corpus / f"{source_id}.source.json").write_text(raw, encoding="utf-8")
-    out = corpus / f"{source_id}.md"
-    out.write_text(md, encoding="utf-8")
     meta = dict(
         source_id=source_id,
         adapter="ingest/wocat_approach.py",
@@ -140,7 +143,27 @@ def acquire(source_id: str, corpus: Path, *, expected_sha1: str = "") -> Path:
         source_sha1=hashlib.sha1(raw.encode()).hexdigest(),
         render_sha1=digest,
     )
-    (corpus / f"{source_id}.meta.json").write_text(
-        json.dumps(meta, indent=2), encoding="utf-8"
+
+    def validate(staged: Path) -> None:
+        raw_bytes = (staged / source.name).read_bytes()
+        md_bytes = (staged / out.name).read_bytes()
+        record = json.loads((staged / sidecar.name).read_text(encoding="utf-8"))
+        questionnaire = json.loads(raw_bytes)
+        if (
+            render(questionnaire, source_id).encode("utf-8") != md_bytes
+            or record != meta
+            or hashlib.sha1(raw_bytes).hexdigest() != meta["source_sha1"]
+            or hashlib.sha1(md_bytes).hexdigest() != meta["render_sha1"]
+            or (expected_sha1 and meta["render_sha1"] != expected_sha1)
+        ):
+            raise ValueError("WOCAT approach artifact/provenance mismatch")
+
+    snapshot.publish(
+        {
+            source: raw.encode("utf-8"),
+            out: md.encode("utf-8"),
+            sidecar: json.dumps(meta, indent=2).encode("utf-8"),
+        },
+        validate,
     )
     return out

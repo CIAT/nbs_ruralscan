@@ -126,8 +126,8 @@ uv run python3 scripts/intake-downloads.py             # file them
 uv run python3 src/nbs_ruralscan/schema_tools/verify_metadata.py verify   # stamp DOI rows
 ```
 
-Each file must show the citation's title on its opening pages (or on a body page for a chapter
-inside a book); a mismatch is refused and left in Downloads. Accepted files are copied to
+Each file must show the citation's title on its opening pages. A body-only match is held
+for manual chapter/reference identity review; a mismatch is refused and left in Downloads. Accepted files are copied to
 `.cache/corpus/` and to the SharePoint library folder (via the OneDrive mirror), the queue row is
 marked `acquired`, and the download moves to `~/Downloads/nbs_ingested/`. Nothing is downloaded
 by the script: ResearchGate and publisher downloads stay human clicks (their terms forbid
@@ -137,3 +137,52 @@ automated downloading).
 but no library PDF (e.g. a tool's commit-pinned GitHub file: `/blob/` → raw `.txt`, anything else →
 `.html`), the same way the SRC pass does. For a full tool interrogation across many repository
 files use `python -m nbs_ruralscan.ingest.github <owner/repo> <commit> --subdir …`.
+
+## Independent paths and recoverable publication
+
+The existing commands and defaults remain available. To use records and storage outside
+the compiler checkout, select their locations explicitly:
+
+```bash
+python3 scripts/hydrate-corpus.py --root /data/evidence \
+  --corpus-dir /data/corpus --library-root /team/library-parent \
+  --archive-dir /data/reviewed-archives --queue --dry-run
+
+python3 scripts/intake-downloads.py --root /data/evidence \
+  --corpus-dir /data/corpus --library-root /team/library-parent \
+  --dir /data/downloads --dry-run
+```
+
+`--root` selects the existing record layout: `schema/registers/SRC_source_register.csv`
+and `pipeline/acquisition_queue.csv`. Hydration defaults its archive search to
+`methodology/audits/*/<source_id>.md` under that root. Manual intake also accepts
+`--queue-path` for a queue outside that layout. The library root is the folder **before**
+the relative path recorded in `library_path` or `target_library_path`; it is independent
+of the corpus directory. Do not select overlapping storage roots.
+
+Hydration prepares missing files privately, then publishes the selected batch with
+recovery for caught errors. Existing cached snapshots retain their original bytes.
+WOCAT missing-transcript repair still refreshes its source/transcript/provenance bundle;
+tracked approach transcripts with the recorded hash remain the preferred offline source.
+Hydration preserves source bytes and routing; it does not newly verify source identity or
+stamp acquisition/extraction progress. `--nbs` retains its existing scope: it filters only
+the queue pass and matches the entire `nbs_id` cell, while the SRC pass remains unfiltered.
+
+Hydration `--dry-run` still downloads and validates privately; it publishes no corpus files.
+Manual-intake `--dry-run` checks local downloads only. Normal intake publishes cache,
+library and archive copies before updating the queue. Downloads are removed only after
+successful publication, unless `--keep` is supplied. If cleanup fails or a download changes,
+the command reports **CLEANUP PENDING**, returns a failure status and preserves the changed
+original; the published queue/copies remain valid. Reconcile the reported files before retrying.
+
+GitHub interrogation and WOCAT acquisition accept `--corpus-dir`. Each GitHub text/provenance
+pair and each WOCAT source/transcript/provenance bundle is published together. The multi-source
+commands still progress source by source; they are not one transaction across the entire repository
+or source list. Review previews use the same recoverable publication mechanism for missing
+code/PDF files and serialize hydration within their server process.
+
+Use stable inputs and one writer for a selected corpus. A reported `PublicationRecoveryError`
+means recovery was incomplete: retain the named recovery directory, stop writes to those paths,
+and reconcile the retained and current files before retrying. These operations handle caught
+errors; they do not guarantee recovery after power loss, lock other processes, provide a
+simultaneous multi-file reader snapshot or confirm remote OneDrive/SharePoint synchronization.

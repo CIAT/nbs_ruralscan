@@ -1,6 +1,6 @@
 # M07/M08: acquisition queue, cache and library coordination
 
-Date: 6 November 2026. Baseline: `f31f0d1de8932958517866d16683475bf89674cc` (merged PR #619). Status: implemented; pending merge. This internal receipt stays in CIAT, outside destination product repositories.
+Date: 6 November 2026. Baseline: `f31f0d1de8932958517866d16683475bf89674cc` (merged PR #619). Status: merged in PR #622 at `788b72c3268bc0f446f70963c759a0da9d55debc`. This internal receipt stays in CIAT, outside destination product repositories.
 
 ## Result and boundary
 
