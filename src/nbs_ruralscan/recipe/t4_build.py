@@ -22,6 +22,7 @@ from .binding_requirements import (
     params as binding_params,
     row_binding_requirement,
 )
+from .calibration_requirements import calibration_requirement
 from ..schema_tools.generate import _coerce, _csv_to_rows
 
 
@@ -214,7 +215,7 @@ def synthesise(
             if family in screened_sources
             else "unknown_screened_source_membership"
         )
-    return _preserve_mapping_binding_holds(out, _existing_rows(inputs.audited_recipe))
+    return _preserve_mapping_review_holds(out, _existing_rows(inputs.audited_recipe))
 
 
 # Fields a person sets on purpose (model design, not evidence synthesis). A re-run must
@@ -247,20 +248,23 @@ def _dataset_binding_hold(row: dict[str, Any]) -> str:
     return requirement["reason"] if requirement else ""
 
 
-def _preserve_mapping_binding_holds(results, existing):
-    """Keep mapping-specific input decisions even across an empty synthesis round.
+def _preserve_mapping_review_holds(results, existing):
+    """Keep mapping-specific input/calibration decisions across synthesis rounds.
 
     An absent held row is retained as blocked configuration, not as newly
     synthesized or approved evidence. Otherwise its hold would disappear and a
-    later round could silently restore an ontology candidate.
+    later round could silently restore an ontology candidate or a held response.
+    Binding-only holds preserve fresh numerical content. Calibration holds retain
+    the reviewed configuration until an explicit superseding decision.
     """
     held = {}
     for row in existing:
         requirement = row_binding_requirement(row)
-        if requirement:
+        calibration = calibration_requirement(row)
+        if requirement or calibration:
             if row["mapping_id"] in held:
-                raise ValueError("Duplicate mapping binding hold")
-            held[row["mapping_id"]] = (row, requirement)
+                raise ValueError("Duplicate mapping review hold")
+            held[row["mapping_id"]] = (row, requirement, calibration)
     out = {
         family: replace(res, rows=deepcopy(res.rows)) for family, res in results.items()
     }
@@ -268,30 +272,46 @@ def _preserve_mapping_binding_holds(results, existing):
     for family, res in out.items():
         for row in res.rows:
             if row["mapping_id"] in held:
-                baseline, requirement = held[row["mapping_id"]]
+                baseline, requirement, calibration = held[row["mapping_id"]]
                 if (
                     baseline["suitability_family_id"] != family
                     or baseline["variable"] != row["variable"]
                 ):
-                    raise ValueError("Mapping binding hold scope changed")
+                    raise ValueError("Mapping review hold scope changed")
+                if calibration:
+                    # A new synthesis is not authorization to release a numerical
+                    # hold. Retain the reviewed configuration and its source links.
+                    # Native source profiles remain in the evidence/audit records.
+                    row.clear()
+                    row.update(
+                        {
+                            key: _coerce(value)
+                            for key, value in baseline.items()
+                            if value != ""
+                        }
+                    )
                 relationship = deepcopy(binding_params(row))
                 adaptation = relationship.setdefault("reviewed_adaptation", {})
                 if not isinstance(adaptation, dict):
                     raise ValueError("Invalid reviewed adaptation")
-                adaptation["dataset_binding"] = deepcopy(requirement)
+                if requirement:
+                    adaptation["dataset_binding"] = deepcopy(requirement)
                 row["relationship_params"] = relationship
                 seen.add(row["mapping_id"])
             if _dataset_binding_hold(row):
                 row["dataset_id"] = ""
     for mapping_id in sorted(held.keys() - seen):
-        baseline, _ = held[mapping_id]
+        baseline, requirement, calibration = held[mapping_id]
         family = baseline["suitability_family_id"]
         row = {key: _coerce(value) for key, value in baseline.items() if value != ""}
-        row["dataset_id"] = ""
+        if requirement:
+            row["dataset_id"] = ""
         row["corpus_n"] = None
         row["paper_support_pct"] = None
         note = (
-            "Retained approved binding hold only; no new numeric synthesis or approval."
+            "Retained approved calibration hold; no new numeric synthesis or approval."
+            if calibration
+            else "Retained approved binding hold only; no new numeric synthesis or approval."
         )
         if note not in row.get("justification", ""):
             row["justification"] = (row.get("justification") or "") + " " + note
@@ -314,7 +334,7 @@ def write_recipe(
     recipe_dir = Path(output_dir)
     recipe_dir.mkdir(parents=True, exist_ok=True)
     existing = _existing_rows(inputs.audited_recipe)
-    results = _preserve_mapping_binding_holds(results, existing)
+    results = _preserve_mapping_review_holds(results, existing)
     weights_by_var = {
         (r["suitability_family_id"], r["variable"]): r.get("weight_default", "")
         for r in existing
