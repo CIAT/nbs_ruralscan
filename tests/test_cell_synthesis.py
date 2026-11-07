@@ -320,6 +320,15 @@ def test_asset_risk_weights_only_on_complete_hazard_set():
     assert w[cs.T3_HAZARDS[5]] == 0.0
 
 
+def test_asset_only_hazards_do_not_block_weights():
+    rows = [_asset_row(h, "moderate") for h in cs.T3_HAZARDS] + [
+        _asset_row(h, "low") for h in cs.ASSET_ONLY_HAZARDS
+    ]
+    w = cs.asset_risk_weights(rows, "riparian_buffer")
+    assert w is not None and set(w) == set(cs.T3_HAZARDS)
+    assert abs(sum(w.values()) - 1.0) < 1e-4
+
+
 def test_frost_is_out_of_t3():
     assert "frost" not in cs.T3_HAZARDS and "frost" in cs.EXCLUDED_T3_HAZARDS
 
