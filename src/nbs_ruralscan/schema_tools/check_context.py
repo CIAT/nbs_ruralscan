@@ -80,6 +80,8 @@ ALLOWED_KEYS = {
     "counterfactual",
     # catalogue #57: unreplicated comparison with no statistics → class capped at moderate
     "unreplicated",
+    # search_protocol §Scanned PDFs: quote sliced from an OCR text layer (sample-checked)
+    "ocr_text",
     "beneficiary",
     "landscape_scale_only",
     "timescale_of_effect",
@@ -274,8 +276,9 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
         v = ctx.get(key)
         if v is not None and v not in vocab:
             flag("bad_vocab", f"{key}={v!r}")
-    if "unreplicated" in ctx and not isinstance(ctx["unreplicated"], bool):
-        flag("bad_vocab", f"unreplicated={ctx['unreplicated']!r}")
+    for key in ("unreplicated", "ocr_text"):
+        if key in ctx and not isinstance(ctx[key], bool):
+            flag("bad_vocab", f"{key}={ctx[key]!r}")
     share = ctx.get("component_share_pct")
     if share is not None:
         try:
