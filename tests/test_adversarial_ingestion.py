@@ -349,7 +349,9 @@ def test_failed_queue_persistence_keeps_download_for_retry(intake, monkeypatch):
         module.main(["--dir", str(downloads)])
     assert module.QUEUE.read_bytes() == before
     assert (downloads / "z_good.pdf").exists()
-    assert (downloads / "nbs_ingested/z_good.pdf").exists()
+    assert not (downloads / "nbs_ingested/z_good.pdf").exists()
+    assert not (module.CORPUS / "z_good.pdf").exists()
+    assert not (module._H.library_root() / "forest/z_good.pdf").exists()
 
 
 def test_same_doi_with_conflicting_title_is_not_silently_deduplicated(
