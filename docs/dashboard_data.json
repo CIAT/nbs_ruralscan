@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-07T06:40:58.138689+00:00",
-  "git_commit": "f51954437c60bea08c09a620c86a5d6d65364819",
+  "timestamp": "2026-11-07T06:48:50.006750+00:00",
+  "git_commit": "a59ab7a686600ce6c6bd49c45c3e33ffee82ffdd",
   "registers": {
     "SRC_source_register": [
       {
@@ -305833,7 +305833,8 @@
           "evidence_level": "medium",
           "agreement_level": "high",
           "context_dependent": false,
-          "asset_sensitivity": "moderate"
+          "asset_sensitivity": "moderate",
+          "asset_risk_weight": 0.25
         },
         {
           "record_id": "forest_restoration__asset_threat__drought__income_group-high",
@@ -306122,7 +306123,8 @@
           "evidence_level": "medium",
           "agreement_level": "high",
           "context_dependent": false,
-          "asset_sensitivity": "very_high"
+          "asset_sensitivity": "very_high",
+          "asset_risk_weight": 0.375
         },
         {
           "record_id": "forest_restoration__active_planting__asset_threat__flood",
@@ -306554,7 +306556,8 @@
           "evidence_level": "limited",
           "agreement_level": "high",
           "context_dependent": false,
-          "asset_sensitivity": "low"
+          "asset_sensitivity": "low",
+          "asset_risk_weight": 0.125
         },
         {
           "record_id": "forest_restoration__asset_threat__fire",
@@ -306645,7 +306648,8 @@
           "evidence_level": "limited",
           "agreement_level": "high",
           "context_dependent": false,
-          "asset_sensitivity": "low"
+          "asset_sensitivity": "low",
+          "asset_risk_weight": 0.125
         },
         {
           "record_id": "forest_restoration__active_planting__asset_threat__fire",
@@ -307002,7 +307006,8 @@
           "evidence_level": "limited",
           "agreement_level": "high",
           "context_dependent": false,
-          "asset_sensitivity": "low"
+          "asset_sensitivity": "low",
+          "asset_risk_weight": 0.125
         },
         {
           "record_id": "forest_restoration__active_planting__asset_threat__wind_cyclone",
@@ -307454,7 +307459,8 @@
           "evidence_level": "limited",
           "agreement_level": "low",
           "context_dependent": false,
-          "asset_sensitivity": "none"
+          "asset_sensitivity": "none",
+          "asset_risk_weight": 0.0
         },
         {
           "record_id": "forest_restoration__asset_threat__extreme_rainfall",
@@ -324242,7 +324248,6 @@
           "suitability_dimension": "biophysical_constraint",
           "relationship_type": "trapezoidal",
           "relationship_params": {
-            "opt_low": 0.9,
             "reviewed_adaptation": {
               "dataset_binding": {
                 "status": "requires_matching_input",
@@ -324252,16 +324257,85 @@
                 "decision_ref": "methodology/audits/t4_binding_holds_applied_20261106/user_decision.md",
                 "scope": "water_harvesting__terracing__runoff_potential_index",
                 "approval_scope": "Dataset binding only; no evidence approval, numerical calibration or replacement dataset selection."
+              },
+              "numerical_calibration": {
+                "status": "held",
+                "reason": "The inherited opt_low=0.9 omits three ranked classes and assigns the optimum at a boundary the source specifies as strictly greater than 0.9. A class-preserving response requires reviewed endpoint and score conventions.",
+                "scope": "water_harvesting__terracing__runoff_potential_index",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-07",
+                "decision_ref": "methodology/audits/t4_krois_hold_20261107/user_decision.md",
+                "source_profiles_ref": "methodology/audits/t4_calibration_hold_applied_20261106/next_terracing_decision.json",
+                "held_relationship": {
+                  "type": "trapezoidal",
+                  "params": {
+                    "opt_low": 0.9
+                  },
+                  "uncertainty_pct": "20.0"
+                },
+                "retained_source_profile": {
+                  "source_id": "gismcda_swc_siting_2014",
+                  "evidence_id": "ev_wh_runoff_potential_index_krois14_1",
+                  "table_ref": "Table 4 (PDF p. 9), Table 5 (PDF p. 10)",
+                  "source_variable": "runoff coefficient",
+                  "quantity": "Modelled event direct runoff divided by design rainfall (Q/P)",
+                  "unit": "dimensionless ratio",
+                  "input_method": "SCS-CN; wet antecedent runoff condition III; 33%-exceedance probability of maximum daily rainfall used as design storm.",
+                  "spatial_support_m": 30,
+                  "direction": "Increasing suitability rank with increasing modelled event runoff coefficient for terraces and bunds in the source site-selection model.",
+                  "classes": [
+                    {
+                      "printed_range": ">0.9",
+                      "source_label": "Optimally suitable",
+                      "source_score": 9
+                    },
+                    {
+                      "printed_range": "0.6–0.9",
+                      "source_label": "Highly suitable",
+                      "source_score": 7
+                    },
+                    {
+                      "printed_range": "0.3–0.6",
+                      "source_label": "Moderately suitable",
+                      "source_score": 5
+                    },
+                    {
+                      "printed_range": "0–0.3",
+                      "source_label": "Marginally suitable",
+                      "source_score": 3
+                    }
+                  ],
+                  "no_source_runoff_classes": [
+                    "Not suitable (1): dash",
+                    "Restricted (0): dash"
+                  ],
+                  "boundary_ambiguity": "Shared endpoints 0.3 and 0.6 are printed in adjacent ranges without an inclusion convention; >0.9 is explicit, and 0.9 is the printed upper edge of the highly suitable interval. Do not silently set .9 to optimum or infer interpolation.",
+                  "importance": {
+                    "runoff_coefficient": 0.14,
+                    "complete_criterion_set": {
+                      "rainfall": 0.04,
+                      "runoff_coefficient": 0.14,
+                      "slope": 0.39,
+                      "land_use": 0.14,
+                      "soil_texture": 0.15,
+                      "soil_depth": 0.14
+                    },
+                    "consistency_ratio": 0.008,
+                    "meaning": "AHP source criterion weights, not calibrated response scores or approved runtime MCDA weights.",
+                    "locator": "Table 5, PDF page 10, printed page 140"
+                  },
+                  "source_scope": "Terraces and bunds, Ronquillo watershed, northern Peru. Existing EV and target mapping are terracing only; this proposal does not add bund-family applicability.",
+                  "lineage": "Source attributes boundary classes collectively to earlier manuals/studies; not independently estimated ecological transitions. Keep primary-source lineage unresolved rather than assign a specific cited source to the runoff classes."
+                }
               }
             }
           },
-          "uncertainty_pct": 20.0,
           "context_overrides": [],
           "is_scenario_candidate": false,
           "has_future_projection": false,
           "weight_default": 0.2,
           "weight_adjustable": true,
-          "justification": "Reconciled from 1 evidence unit(s) (weighted median, tier×claim_basis). Global {'opt_low': 0.9}; uncertainty ±20% from spread.  Approved dataset-binding hold (Peter, 2026-11-06): requires matching input; existing numeric values remain unapproved by this decision.",
+          "justification": "Peter approved the terracing calibration hold on 7 November 2026. Krois and Schulte (2014) ranked sites with four event-runoff coefficient classes. The reviewed source profile retains their class scores and AHP criterion weight of 0.14 for compatible synthesis. The former single-bound response and its uncertainty are archived with the decision. Dataset binding unresolved; requires matching input: The asset has no Curve Number, runoff-depth or runoff-coefficient field. These are distinct input quantities; a new dataset cannot by itself validate the existing thresholds. A source-compatible input must be reviewed before use; the former HydroBASINS association and generic candidates are not approved substitutes.",
           "variable": "runoff_potential_index",
           "suitability_family_id": "water_harvesting__terracing",
           "evidence_ids": [
@@ -402689,8 +402763,8 @@
       "source_id": "kadam2012_scscn_india_rwh",
       "page": "14",
       "mapping_id": "water_harvesting__runoff_catchment__stream_order",
-      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed HOLD (not applied). Table 6 (PDF14 / printed2550) places farm ponds/gully plugs on first-order streams, check dams/percolation tanks on orders 1–4. Current global 1–4 bounds conceal these differences. Stream-order values depend on extracted drainage network and are joint siting specifications, not a monotonic ranking.",
-      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Keep full per-structure stream-order table; hold generic 1–4 suitability function. Resolve structure scope, stream-network definition and joint criteria before numerical compilation. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Next mapping review — runoff-catchment stream order. Kadam et al., Table 6 (PDF p. 14), adopt order 1 for farm ponds and gully plugs and orders 1–4 for check dams and percolation tanks. For check dams, p. 12 recommends orders 2–3 on low-to-moderate slopes and identifies check dams on orders 1–3 during field verification. Page 4 cites Horton for stream ordering. The current evidence record labels the order Strahler. Check the ordering method before matching a network.",
+      "decision_needed": "The current recipe spans orders 1–4 with an optimum at order 2. Approve holding that combined curve and retaining the three source profiles by structure and stream-order method, with the Ettazarini table/prose conflict flagged? This mapping proposal awaits your decision. The existing dataset hold is already applied.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "313d8e947ec280ebc6aad6bd26754eba671ebff80f2c09274f4b0c09298c4769",
@@ -402849,8 +402923,8 @@
       "source_id": "mahmoud_2016_mcda_gis_wh_recharge",
       "page": "6",
       "mapping_id": "water_harvesting__runoff_catchment__stream_order",
-      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed KEEP (not applied). Table 6, attributed to Jha et al. (2014), specifies second- and third-order drainage for stream percolation tanks and check dams; it does not apply that condition to farm ponds or ground tanks. Figure/table visual confirms column ownership.",
-      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Keep explicit structure-specific categories {2,3} with secondary attribution and shared lineage. Do not treat all structures as interchangeable or give stream order a generic monotonic suitability direction. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Next mapping review — runoff-catchment stream order. Singh et al., Table 6 (PDF p. 6), specify orders 2–3 for check dams and in-stream percolation tanks. Farm ponds and ground percolation tanks have separate siting conditions. The authors attribute the specifications to Jha et al. (2014).",
+      "decision_needed": "The current recipe spans orders 1–4 with an optimum at order 2. Approve holding that combined curve and retaining the three source profiles by structure and stream-order method, with the Ettazarini table/prose conflict flagged? This mapping proposal awaits your decision. The existing dataset hold is already applied.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "b299e0cb47a22c8dc36a273d848f3caab83991be1c5b50ceda81ecfb3d3ceb0a",
@@ -402881,8 +402955,8 @@
       "source_id": "mahmoud_2021_checkdam_suitability_topo_drainage_morocco",
       "page": "7",
       "mapping_id": "water_harvesting__runoff_catchment__stream_order",
-      "reason": "Binding hold APPLIED, 6 November 2026: the linked T4 mapping has no automatic dataset binding; evidence and numeric source values are retained. Source checked; proposed HOLD (not applied). Ettazarini Table 1 assigns order 1 score 0, order 2 score 5, then 3/4/5 scores 4/3/2 and ≥6 score 1. Current row omits order 1. Prose calls ≥6 non-suitable while table labels it very low with score 1; source conflict must stay visible.",
-      "decision_needed": "Binding hold already approved and applied; no repeat approval needed. This does not approve source evidence, numerical calibration or a replacement dataset. Remaining source decision: Hold incomplete profile for correction; preserve full source order-score table including order 1 and explicit prose/table conflict for ≥6. Do not invent an optimum-only universal rule or resolve that conflict silently. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Next mapping review — runoff-catchment stream order. Ettazarini, Table 1 (PDF p. 6), scores stream orders 1, 2, 3, 4, 5 and ≥6 as 0, 5, 4, 3, 2 and 1 for check dams. The prose calls orders ≥6 unsuitable. The evidence row omits the first-order score. The study assigns stream order a criterion weight of 0.10.",
+      "decision_needed": "The current recipe spans orders 1–4 with an optimum at order 2. Approve holding that combined curve and retaining the three source profiles by structure and stream-order method, with the Ettazarini table/prose conflict flagged? This mapping proposal awaits your decision. The existing dataset hold is already applied.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "a917010f7deb9d4d42d5eca4e18193e9f890928f631359a2e2703426edff6df3",
@@ -403089,8 +403163,8 @@
       "source_id": "gismcda_swc_siting_2014",
       "page": "9",
       "mapping_id": "water_harvesting__terracing__runoff_potential_index",
-      "reason": "Binding hold already APPLIED. Separate calibration review: Krois & Schulte (2014), Table 4/PDF9, really does rank event runoff coefficient >0.9 optimal (9), 0.6–0.9 high (7), 0.3–0.6 moderate (5), and 0–0.3 marginal (3); no runoff-based exclusion class. Current mapping keeps only opt_low=0.9. Input is modelled storm runoff/rainfall (Q/P), using wet antecedent conditions and a 33%-exceedance maximum-daily design storm (PDF4–5), not CN or annual runoff. Source AHP weight is 0.14 (Table5/PDF10), separate from ranks.",
-      "decision_needed": "Use Query to record this separate mapping decision. Proposed, not applied: retain this complete quantitative source profile, source direction and separately labelled 0.14 weight for compatible terrace synthesis; place the incomplete single-number opt_low=0.9 mapping on numerical-calibration hold until an explicit class-preserving function, endpoint handling and score convention are reviewed. This preserves the genuine source optimum >0.9; regional origin alone does not invalidate it. No source drop, automatic score normalization, new exclusion, replacement dataset or bund-family expansion. Dataset-binding hold already applied; no repeat approval needed. A source Keep decision alone does not change the mapping.",
+      "reason": "Terracing calibration hold applied, 7 November 2026. Krois and Schulte ranked event runoff coefficient in northern Peru (Table 4, PDF p. 9): >0.9 optimal (9), 0.6–0.9 high (7), 0.3–0.6 moderate (5), 0–0.3 marginal (3). The unsuitable and restricted runoff cells are blank dashes. Table 5 (PDF p. 10) gives runoff a criterion weight of 0.14. The complete profile is retained with its storm and site context.",
+      "decision_needed": "Pete approved retaining the published classes and source weight and holding the single 0.9 calibration. The input layer also requires review. A future executable response needs explicit treatment of shared endpoints at 0.3 and 0.6 and a score convention.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "2a67661ffdd0888c86af2861701c56709bbd1efc623ee8abdac23058b17ae4ee",
@@ -702237,7 +702311,7 @@
         "aggregate": null,
         "aggregate_status": "unavailable",
         "aggregate_note": "Source claims remain available. The current recipe has not passed the aggregate rebuild check.",
-        "rebuild_detail": "Reviewed corpus does not reproduce the audited live T4 recipe: water_harvesting__in_situ__annual_precipitation, water_harvesting__in_situ__aridity_index, water_harvesting__in_situ__clay_content, water_harvesting__in_situ__slope, water_harvesting__in_situ__soil_depth_to_bedrock, water_harvesting__micro_catchment__annual_precipitation, water_harvesting__micro_catchment__slope, water_harvesting__micro_catchment__soil_depth_to_bedrock, water_harvesting__rooftop__annual_precipitation, water_harvesting__runoff_catchment__annual_precipitation, water_harvesting__runoff_catchment__aridity_index, water_harvesting__runoff_catchment__catchment_area, water_harvesting__runoff_catchment__clay_content, water_harvesting__runoff_catchment__drainage_density, water_harvesting__runoff_catchment__runoff_potential_index, water_harvesting__runoff_catchment__slope, water_harvesting__runoff_catchment__soil_permeability, water_harvesting__runoff_catchment__stream_order, water_harvesting__spate__annual_precipitation, water_harvesting__spate__slope, water_harvesting__terracing__annual_precipitation, water_harvesting__terracing__clay_content, water_harvesting__terracing__runoff_potential_index, water_harvesting__terracing__slope, water_harvesting__terracing__soil_depth_to_bedrock. Run scripts/synthesise-recipe.py water_harvesting_conservation --output-dir <trial-directory>, review the changes, regenerate the audited recipe and its JSON, then rebuild the developer package."
+        "rebuild_detail": "Reviewed corpus does not reproduce the audited live T4 recipe: water_harvesting__in_situ__annual_precipitation, water_harvesting__in_situ__aridity_index, water_harvesting__in_situ__clay_content, water_harvesting__in_situ__slope, water_harvesting__in_situ__soil_depth_to_bedrock, water_harvesting__micro_catchment__annual_precipitation, water_harvesting__micro_catchment__slope, water_harvesting__micro_catchment__soil_depth_to_bedrock, water_harvesting__rooftop__annual_precipitation, water_harvesting__runoff_catchment__annual_precipitation, water_harvesting__runoff_catchment__aridity_index, water_harvesting__runoff_catchment__catchment_area, water_harvesting__runoff_catchment__clay_content, water_harvesting__runoff_catchment__drainage_density, water_harvesting__runoff_catchment__runoff_potential_index, water_harvesting__runoff_catchment__slope, water_harvesting__runoff_catchment__soil_permeability, water_harvesting__runoff_catchment__stream_order, water_harvesting__spate__annual_precipitation, water_harvesting__spate__slope, water_harvesting__terracing__annual_precipitation, water_harvesting__terracing__clay_content, water_harvesting__terracing__slope, water_harvesting__terracing__soil_depth_to_bedrock. Run scripts/synthesise-recipe.py water_harvesting_conservation --output-dir <trial-directory>, review the changes, regenerate the audited recipe and its JSON, then rebuild the developer package."
       },
       "wetland_management": {
         "catalogue": {
@@ -704101,19 +704175,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "81bfad047df2",
-    "data_id": "13da178cfd8e",
+    "data_id": "666af2895117",
     "count_definition_version": "4",
-    "built_at": "2026-11-07T06:40:58.138689+00:00",
-    "source_commit": "f51954437c60bea08c09a620c86a5d6d65364819",
+    "built_at": "2026-11-07T06:48:50.006750+00:00",
+    "source_commit": "a59ab7a686600ce6c6bd49c45c3e33ffee82ffdd",
     "history": [
-      {
-        "release": "1.1.3",
-        "ui_id": "6855d5a32189",
-        "data_id": "f554ded2a706",
-        "count_definition_version": "2",
-        "built_at": "2026-11-04T20:01:46.615451+00:00",
-        "source_commit": "452553965dcb3e2df9b331c2ea81ff740bd5272e"
-      },
       {
         "release": "1.3.1",
         "ui_id": "1d7b93bc53eb",
@@ -704505,6 +704571,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-07T06:40:58.138689+00:00",
         "source_commit": "f51954437c60bea08c09a620c86a5d6d65364819"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "81bfad047df2",
+        "data_id": "666af2895117",
+        "count_definition_version": "4",
+        "built_at": "2026-11-07T06:48:50.006750+00:00",
+        "source_commit": "a59ab7a686600ce6c6bd49c45c3e33ffee82ffdd"
       }
     ]
   }
