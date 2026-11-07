@@ -33,7 +33,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import quote
 
-from .integrity import atomic_write, validate_source_id
+from .integrity import validate_source_id
+from .source_publication import SourceSnapshot
 
 DEFAULT_CORPUS_DIR = ".cache/corpus"
 
@@ -130,6 +131,10 @@ def acquire_file(
     pin = hashlib.sha256(f"{repo}:{path}@{commit}".encode()).hexdigest()[:12]
     sid = source_id or f"{_slug(repo, path)}_{pin}"
     validate_source_id(sid)
+    corpus = Path(corpus_dir)
+    dest = corpus / f"{sid}.txt"
+    meta_path = corpus / f"{sid}.meta.json"
+    snapshot = SourceSnapshot.capture([dest, meta_path])
     content = base64.b64decode(
         _gh(
             [
@@ -151,9 +156,6 @@ def acquire_file(
         raise GithubIngestError(
             "Code adapter refuses binary content containing NUL bytes"
         )
-    corpus = Path(corpus_dir)
-    corpus.mkdir(parents=True, exist_ok=True)
-    dest = corpus / f"{sid}.txt"
     sha1 = hashlib.sha1(content).hexdigest()
     meta = {
         "source_id": sid,
@@ -165,7 +167,7 @@ def acquire_file(
         "sha1": sha1,
         "fetched_at": datetime.now(tz=timezone.utc).isoformat(),
     }
-    meta_path = corpus / f"{sid}.meta.json"
+    snapshot.assert_unchanged()
     if meta_path.exists() and not dest.exists():
         raise GithubIngestError(
             f"Existing provenance without code artifact for {sid}; inspect missing artifact or conflicting source kind"
@@ -194,9 +196,26 @@ def acquire_file(
             raise GithubIngestError(
                 f"Refusing to replace existing source {sid}: {exc}"
             ) from exc
+        snapshot.assert_unchanged()
     else:
-        atomic_write(dest, content)
-        atomic_write(meta_path, json.dumps(meta, indent=2).encode("utf-8"))
+
+        def validate(staged: Path) -> None:
+            body = (staged / dest.name).read_bytes()
+            code = body.decode("utf-8")
+            record = json.loads((staged / meta_path.name).read_text(encoding="utf-8"))
+            if (
+                not body
+                or "\x00" in code
+                or record != meta
+                or hashlib.sha1(body).hexdigest() != meta["sha1"]
+            ):
+                raise ValueError("GitHub artifact/provenance mismatch")
+
+        snapshot.publish(
+            {dest: content, meta_path: json.dumps(meta, indent=2).encode("utf-8")},
+            validate,
+            create_only=True,
+        )
     return AcquiredFile(
         source_id=sid,
         repo=repo,
@@ -260,9 +279,10 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument(
         "--ignore", nargs="*", default=None, help="regex(es) of paths to skip"
     )
+    ap.add_argument("--corpus-dir", type=Path, default=DEFAULT_CORPUS_DIR)
     args = ap.parse_args(argv if argv is not None else sys.argv[1:])
 
-    res = interrogate(args.repo, args.commit, args.subdir, args.ignore)
+    res = interrogate(args.repo, args.commit, args.subdir, args.ignore, args.corpus_dir)
     print(f"acquired {len(res['acquired'])} file(s) @ {args.commit[:8]}:")
     for a in res["acquired"]:
         print(f"  {a['source_id']:36} {a['path']} ({a['n_lines']}L)")

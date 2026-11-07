@@ -78,6 +78,8 @@ ALLOWED_KEYS = {
     # T3/T6 backlog A4 (Pete 2026-11-06): the no-practice case is implied by physics,
     # not measured (recharge from a tank: the runoff would otherwise have left)
     "counterfactual",
+    # catalogue #57: unreplicated comparison with no statistics → class capped at moderate
+    "unreplicated",
     "beneficiary",
     "landscape_scale_only",
     "timescale_of_effect",
@@ -272,6 +274,8 @@ def check_unit(row: dict, aez: set[str], fs: set[str]) -> list[dict]:
         v = ctx.get(key)
         if v is not None and v not in vocab:
             flag("bad_vocab", f"{key}={v!r}")
+    if "unreplicated" in ctx and not isinstance(ctx["unreplicated"], bool):
+        flag("bad_vocab", f"unreplicated={ctx['unreplicated']!r}")
     share = ctx.get("component_share_pct")
     if share is not None:
         try:

@@ -596,6 +596,10 @@ def unit_rank(
                 income_band=income_band,
             )
     mag = STRENGTH_RANK.get(cls)
+    if mag is not None and (unit.context or {}).get("unreplicated") is True:
+        # catalogue #57 (Pete 2026-11-06, A3): one plot per farm / unreplicated
+        # before-after with no statistics is capped at moderate, whatever its ratio
+        mag = min(mag, STRENGTH_RANK["moderate"])
     if sign == 0:
         mag = None
     return sign, mag

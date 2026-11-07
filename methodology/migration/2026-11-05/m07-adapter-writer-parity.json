@@ -1,0 +1,421 @@
+{
+  "baseline": "788b72c3268bc0f446f70963c759a0da9d55debc",
+  "comparison": "Separate baseline/candidate processes run from foreign cwd against the same disposable corpus path. Exact byte hashes, return/error values, stdout and mocked request sequences match without normalization after each step. Neither compiler copy contains schema or pipeline.",
+  "fixture": "Synthetic UTF-8 code and WOCAT questionnaires only. Fixed per-step fetch clock. GitHub and WOCAT requests mocked; no network or private corpus.",
+  "cases": 14,
+  "steps": [
+    {
+      "step": "github_create",
+      "result": {
+        "calls": [
+          {
+            "github": [
+              "/repos/fixture/repo/contents/src/rules.js?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "-q",
+              ".content"
+            ]
+          }
+        ],
+        "outcome": {
+          "cached": "/private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-adapter-parity-soyh0_11/selected-corpus/fixture_code.txt",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "n_lines": 2,
+          "path": "src/rules.js",
+          "repo": "fixture/repo",
+          "sha1": "4b14b159804f23ecff774b76ffed10730974c6f8",
+          "source_id": "fixture_code"
+        },
+        "stdout": ""
+      },
+      "changed": [
+        "fixture_code.meta.json",
+        "fixture_code.txt"
+      ],
+      "files": {
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816"
+      }
+    },
+    {
+      "step": "github_cached",
+      "result": {
+        "calls": [
+          {
+            "github": [
+              "/repos/fixture/repo/contents/src/rules.js?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "-q",
+              ".content"
+            ]
+          }
+        ],
+        "outcome": {
+          "cached": "/private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-adapter-parity-soyh0_11/selected-corpus/fixture_code.txt",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "n_lines": 2,
+          "path": "src/rules.js",
+          "repo": "fixture/repo",
+          "sha1": "4b14b159804f23ecff774b76ffed10730974c6f8",
+          "source_id": "fixture_code"
+        },
+        "stdout": ""
+      },
+      "changed": [],
+      "files": {
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816"
+      }
+    },
+    {
+      "step": "github_conflicting_content",
+      "result": {
+        "calls": [
+          {
+            "github": [
+              "/repos/fixture/repo/contents/src/rules.js?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "-q",
+              ".content"
+            ]
+          }
+        ],
+        "outcome": {
+          "error": "GithubIngestError",
+          "message": "Refusing to replace existing source fixture_code: artifact or pin differs"
+        },
+        "stdout": ""
+      },
+      "changed": [],
+      "files": {
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816"
+      }
+    },
+    {
+      "step": "github_conflicting_pin",
+      "result": {
+        "calls": [
+          {
+            "github": [
+              "/repos/fixture/repo/contents/src/rules.js?ref=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "-q",
+              ".content"
+            ]
+          }
+        ],
+        "outcome": {
+          "error": "GithubIngestError",
+          "message": "Refusing to replace existing source fixture_code: artifact or pin differs"
+        },
+        "stdout": ""
+      },
+      "changed": [],
+      "files": {
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816"
+      }
+    },
+    {
+      "step": "github_binary",
+      "result": {
+        "calls": [
+          {
+            "github": [
+              "/repos/fixture/repo/contents/src/rules.js?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "-q",
+              ".content"
+            ]
+          }
+        ],
+        "outcome": {
+          "error": "GithubIngestError",
+          "message": "Code adapter requires UTF-8 text; binary sources need a dedicated adapter"
+        },
+        "stdout": ""
+      },
+      "changed": [],
+      "files": {
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816"
+      }
+    },
+    {
+      "step": "github_orphan",
+      "result": {
+        "calls": [
+          {
+            "github": [
+              "/repos/fixture/repo/contents/src/rules.js?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "-q",
+              ".content"
+            ]
+          }
+        ],
+        "outcome": {
+          "error": "GithubIngestError",
+          "message": "Existing provenance without code artifact for fixture_orphan; inspect missing artifact or conflicting source kind"
+        },
+        "stdout": ""
+      },
+      "changed": [
+        "fixture_orphan.meta.json"
+      ],
+      "files": {
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_orphan.meta.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      }
+    },
+    {
+      "step": "github_branch",
+      "result": {
+        "calls": [
+          {
+            "github": [
+              "/repos/fixture/repo/commits/main"
+            ]
+          },
+          {
+            "github": [
+              "/repos/fixture/repo/contents/src/rules.js?ref=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "-q",
+              ".content"
+            ]
+          }
+        ],
+        "outcome": {
+          "cached": "/private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-adapter-parity-soyh0_11/selected-corpus/fixture_branch.txt",
+          "commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "n_lines": 2,
+          "path": "src/rules.js",
+          "repo": "fixture/repo",
+          "sha1": "4b14b159804f23ecff774b76ffed10730974c6f8",
+          "source_id": "fixture_branch"
+        },
+        "stdout": ""
+      },
+      "changed": [
+        "fixture_branch.meta.json",
+        "fixture_branch.txt"
+      ],
+      "files": {
+        "fixture_branch.meta.json": "a2be4ba254e3a5503e049509f1c6ff24cb7afafe432b72018cedbd2295d699d3",
+        "fixture_branch.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_orphan.meta.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+      }
+    },
+    {
+      "step": "technology_create",
+      "result": {
+        "calls": [
+          {
+            "technology": 999
+          }
+        ],
+        "outcome": {
+          "path": "/private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-adapter-parity-soyh0_11/selected-corpus/wocat_999_2026.md"
+        },
+        "stdout": ""
+      },
+      "changed": [
+        "wocat_999_2026.md",
+        "wocat_999_2026.meta.json",
+        "wocat_999_2026.source.json"
+      ],
+      "files": {
+        "fixture_branch.meta.json": "a2be4ba254e3a5503e049509f1c6ff24cb7afafe432b72018cedbd2295d699d3",
+        "fixture_branch.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_orphan.meta.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "wocat_999_2026.md": "fcdf3b0c470b768fb9de56a36171a776fa3af3503e1d508d00cb11b527f496e6",
+        "wocat_999_2026.meta.json": "8e334e2a5d71447b279a72c7895d91ebdfc4279a7a75bbda3c19d0bfb90b8217",
+        "wocat_999_2026.source.json": "f4deeac25e437a382137ae797db2b87e0f294252a1e7d0bb2f7eba2cde8785b5"
+      }
+    },
+    {
+      "step": "technology_refresh",
+      "result": {
+        "calls": [
+          {
+            "technology": 999
+          }
+        ],
+        "outcome": {
+          "path": "/private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-adapter-parity-soyh0_11/selected-corpus/wocat_999_2026.md"
+        },
+        "stdout": ""
+      },
+      "changed": [
+        "wocat_999_2026.md",
+        "wocat_999_2026.meta.json",
+        "wocat_999_2026.source.json"
+      ],
+      "files": {
+        "fixture_branch.meta.json": "a2be4ba254e3a5503e049509f1c6ff24cb7afafe432b72018cedbd2295d699d3",
+        "fixture_branch.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_orphan.meta.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "wocat_999_2026.md": "138100864c435a952308b72284533cd1d05f249e11209c44da8e2e61b68d91c8",
+        "wocat_999_2026.meta.json": "5fbec4b0f77d80a0a1dc4cb2ed168798b8e1ef3fe0b6fc6739e21577ff92ff66",
+        "wocat_999_2026.source.json": "b4d17cf0406ccf48de74b7f459e6602096b1b195bf63f7023e9a754d306d81c9"
+      }
+    },
+    {
+      "step": "technology_restore",
+      "result": {
+        "calls": [
+          {
+            "technology": 999
+          }
+        ],
+        "outcome": {
+          "path": "/private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-adapter-parity-soyh0_11/selected-corpus/wocat_999_2026.md"
+        },
+        "stdout": ""
+      },
+      "changed": [
+        "wocat_999_2026.md",
+        "wocat_999_2026.meta.json",
+        "wocat_999_2026.source.json"
+      ],
+      "files": {
+        "fixture_branch.meta.json": "a2be4ba254e3a5503e049509f1c6ff24cb7afafe432b72018cedbd2295d699d3",
+        "fixture_branch.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_orphan.meta.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "wocat_999_2026.md": "fcdf3b0c470b768fb9de56a36171a776fa3af3503e1d508d00cb11b527f496e6",
+        "wocat_999_2026.meta.json": "8cd96681afbc8da91dff56e767436369a0a161c7304149277a1e4a0d7f3565f4",
+        "wocat_999_2026.source.json": "f4deeac25e437a382137ae797db2b87e0f294252a1e7d0bb2f7eba2cde8785b5"
+      }
+    },
+    {
+      "step": "approach_create",
+      "result": {
+        "calls": [
+          {
+            "approach": "https://wocat.net/en/database/approaches/999/",
+            "timeout": 40
+          }
+        ],
+        "outcome": {
+          "path": "/private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-adapter-parity-soyh0_11/selected-corpus/wocat_fixture_approach_999.md"
+        },
+        "stdout": ""
+      },
+      "changed": [
+        "wocat_fixture_approach_999.md",
+        "wocat_fixture_approach_999.meta.json",
+        "wocat_fixture_approach_999.source.json"
+      ],
+      "files": {
+        "fixture_branch.meta.json": "a2be4ba254e3a5503e049509f1c6ff24cb7afafe432b72018cedbd2295d699d3",
+        "fixture_branch.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_orphan.meta.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "wocat_999_2026.md": "fcdf3b0c470b768fb9de56a36171a776fa3af3503e1d508d00cb11b527f496e6",
+        "wocat_999_2026.meta.json": "8cd96681afbc8da91dff56e767436369a0a161c7304149277a1e4a0d7f3565f4",
+        "wocat_999_2026.source.json": "f4deeac25e437a382137ae797db2b87e0f294252a1e7d0bb2f7eba2cde8785b5",
+        "wocat_fixture_approach_999.md": "2c8eb8e55002baf474cf0d050c281d17488410c2e5c717d774197d09a6b807b0",
+        "wocat_fixture_approach_999.meta.json": "516574356ed96adebca9668daa6c9de3905f4640fc2c3fd4c5667befa820dfeb",
+        "wocat_fixture_approach_999.source.json": "f4deeac25e437a382137ae797db2b87e0f294252a1e7d0bb2f7eba2cde8785b5"
+      }
+    },
+    {
+      "step": "approach_refresh",
+      "result": {
+        "calls": [
+          {
+            "approach": "https://wocat.net/en/database/approaches/999/",
+            "timeout": 40
+          }
+        ],
+        "outcome": {
+          "path": "/private/var/folders/h2/_r5f3yld1f54dnm9157v7vkr0000gn/T/ruralscan-adapter-parity-soyh0_11/selected-corpus/wocat_fixture_approach_999.md"
+        },
+        "stdout": ""
+      },
+      "changed": [
+        "wocat_fixture_approach_999.md",
+        "wocat_fixture_approach_999.meta.json",
+        "wocat_fixture_approach_999.source.json"
+      ],
+      "files": {
+        "fixture_branch.meta.json": "a2be4ba254e3a5503e049509f1c6ff24cb7afafe432b72018cedbd2295d699d3",
+        "fixture_branch.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_orphan.meta.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "wocat_999_2026.md": "fcdf3b0c470b768fb9de56a36171a776fa3af3503e1d508d00cb11b527f496e6",
+        "wocat_999_2026.meta.json": "8cd96681afbc8da91dff56e767436369a0a161c7304149277a1e4a0d7f3565f4",
+        "wocat_999_2026.source.json": "f4deeac25e437a382137ae797db2b87e0f294252a1e7d0bb2f7eba2cde8785b5",
+        "wocat_fixture_approach_999.md": "8159990b4bf4b7e77e160142f823d929834f6fb4daad0422bd866234bf27fb35",
+        "wocat_fixture_approach_999.meta.json": "f97f0ff8aad17e9d59bb6a4bc41cf048d6d6576d91d1d45f5b0b7101e7cfd45c",
+        "wocat_fixture_approach_999.source.json": "b4d17cf0406ccf48de74b7f459e6602096b1b195bf63f7023e9a754d306d81c9"
+      }
+    },
+    {
+      "step": "approach_pin_hold",
+      "result": {
+        "calls": [
+          {
+            "approach": "https://wocat.net/en/database/approaches/999/",
+            "timeout": 40
+          }
+        ],
+        "outcome": {
+          "error": "ValueError",
+          "message": "Approach transcript changed; restore archived artifact or re-review source version"
+        },
+        "stdout": ""
+      },
+      "changed": [],
+      "files": {
+        "fixture_branch.meta.json": "a2be4ba254e3a5503e049509f1c6ff24cb7afafe432b72018cedbd2295d699d3",
+        "fixture_branch.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_orphan.meta.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "wocat_999_2026.md": "fcdf3b0c470b768fb9de56a36171a776fa3af3503e1d508d00cb11b527f496e6",
+        "wocat_999_2026.meta.json": "8cd96681afbc8da91dff56e767436369a0a161c7304149277a1e4a0d7f3565f4",
+        "wocat_999_2026.source.json": "f4deeac25e437a382137ae797db2b87e0f294252a1e7d0bb2f7eba2cde8785b5",
+        "wocat_fixture_approach_999.md": "8159990b4bf4b7e77e160142f823d929834f6fb4daad0422bd866234bf27fb35",
+        "wocat_fixture_approach_999.meta.json": "f97f0ff8aad17e9d59bb6a4bc41cf048d6d6576d91d1d45f5b0b7101e7cfd45c",
+        "wocat_fixture_approach_999.source.json": "b4d17cf0406ccf48de74b7f459e6602096b1b195bf63f7023e9a754d306d81c9"
+      }
+    },
+    {
+      "step": "approach_identity_hold",
+      "result": {
+        "calls": [
+          {
+            "approach": "https://wocat.net/en/database/approaches/999/",
+            "timeout": 40
+          }
+        ],
+        "outcome": {
+          "error": "ValueError",
+          "message": "Approach identity, publication status or English narrative missing"
+        },
+        "stdout": ""
+      },
+      "changed": [],
+      "files": {
+        "fixture_branch.meta.json": "a2be4ba254e3a5503e049509f1c6ff24cb7afafe432b72018cedbd2295d699d3",
+        "fixture_branch.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_code.meta.json": "9654116932fba1c236e491d3cca5da18e1c148a9e554aa4cd0938739fdfffd98",
+        "fixture_code.txt": "9412d668bc999d484edcb86f7c79055009564f2c631a55dd90043567f674e816",
+        "fixture_orphan.meta.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "wocat_999_2026.md": "fcdf3b0c470b768fb9de56a36171a776fa3af3503e1d508d00cb11b527f496e6",
+        "wocat_999_2026.meta.json": "8cd96681afbc8da91dff56e767436369a0a161c7304149277a1e4a0d7f3565f4",
+        "wocat_999_2026.source.json": "f4deeac25e437a382137ae797db2b87e0f294252a1e7d0bb2f7eba2cde8785b5",
+        "wocat_fixture_approach_999.md": "8159990b4bf4b7e77e160142f823d929834f6fb4daad0422bd866234bf27fb35",
+        "wocat_fixture_approach_999.meta.json": "f97f0ff8aad17e9d59bb6a4bc41cf048d6d6576d91d1d45f5b0b7101e7cfd45c",
+        "wocat_fixture_approach_999.source.json": "b4d17cf0406ccf48de74b7f459e6602096b1b195bf63f7023e9a754d306d81c9"
+      }
+    }
+  ]
+}

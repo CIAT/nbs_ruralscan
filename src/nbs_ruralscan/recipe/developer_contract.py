@@ -23,7 +23,12 @@ from .readiness import assess
 from .harmonization import harmonize
 from .importance import compare_importance, load_weight_models
 from .evidence import EvidenceUnit
+from .binding_requirements import (
+    matching_input_requirement as _matching_input_requirement,
+    validate_matching_input as _validate_matching_input,
+)
 from .numeric_bands import source_completion
+from .calibration_requirements import calibration_requirement
 from .inclusion import inclusion_estimates
 from ..runtime.binding import Binding, resolve_binding
 from ..runtime.categorical import evaluate_categorical
@@ -78,40 +83,6 @@ def country_match(context, countries):
     return not countries or bool(
         {c.casefold() for c in country_labels(context)}
         & {c.casefold() for c in countries}
-    )
-
-
-def _validate_matching_input(requirement):
-    if (
-        not isinstance(requirement, dict)
-        or requirement.get("status") != "requires_matching_input"
-        or not isinstance(requirement.get("reason"), str)
-        or not requirement["reason"].strip()
-    ):
-        raise ValueError("Invalid reviewed dataset binding requirement")
-    return requirement
-
-
-def _matching_input_requirement(row):
-    """A reviewed row/profile hold cannot be bypassed by BIND or selection."""
-    params = obj(row.get("relationship_params"), {})
-    reasons = []
-    for carrier in [row, params, *params.get("profiles", [])]:
-        adaptation = carrier.get("reviewed_adaptation")
-        if adaptation is None:
-            continue
-        if not isinstance(adaptation, dict):
-            raise ValueError("Invalid reviewed adaptation")
-        if "dataset_binding" in adaptation:
-            requirement = _validate_matching_input(adaptation["dataset_binding"])
-            reasons.append(requirement["reason"].strip())
-    return (
-        {
-            "status": "requires_matching_input",
-            "reason": " ".join(dict.fromkeys(reasons)),
-        }
-        if reasons
-        else None
     )
 
 
@@ -209,6 +180,8 @@ def _binding(
 
 
 def _options(row, evidence, sources, countries):
+    if calibration_requirement(row):
+        return []
     params = obj(row["relationship_params"], {})
     profiles = [
         p
@@ -586,13 +559,14 @@ def build_contract(
         )
         system, rule_id = raw["suitability_family_id"], raw["mapping_id"]
         operational = raw.get("is_scenario_candidate", "").lower() == "true"
+        calibration_hold = calibration_requirement(raw)
         role = (
             "operational_scenario"
             if operational
             else "eligibility_gate"
             if "class_map" in params
             else "suitability_score"
-            if params.get("profiles")
+            if params.get("profiles") or calibration_hold
             else "hard_exclusion"
         )
         options = _options(raw, evidence, sources, evidence_countries)
@@ -652,6 +626,8 @@ def build_contract(
             ):
                 raise ValueError(f"Invalid target system for {rule_id}")
             applicability = "explicit_decision_recorded"
+        elif calibration_hold:
+            blockers.append("Numerical calibration held: " + calibration_hold["reason"])
         elif role == "eligibility_gate":
             selected = options[0]
             applicability = "recipe_host_design"

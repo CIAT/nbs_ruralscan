@@ -78,3 +78,26 @@ def test_range_classed_by_weaker_end():
     assert cs.range_floor([-58.0, -9.0]) == -9.0
     assert cs.range_floor([-0.35, 2.67]) == 0.0
     assert cs.range_floor([12.0]) == 12.0
+
+
+def test_unreplicated_caps_contrast_class_at_moderate():
+    def unit(ctx):
+        return EvidenceUnit(
+            evidence_id="ev_x",
+            source_id="s",
+            nbs_id="agroforestry",
+            suitability_family_id="",
+            variable="crop_yield",
+            use_role="nbs_effect",
+            evidence_type="literature_relationship",
+            claim_basis="measured",
+            claim_scope="practice_technology",
+            extraction_confidence="medium",
+            quote="q",
+            page=1,
+            relationship={"direction": "positive", "strength_class": "strong"},
+            context=ctx,
+        )
+
+    assert cs.unit_rank(unit({}))[1] == cs.STRENGTH_RANK["strong"]
+    assert cs.unit_rank(unit({"unreplicated": True}))[1] == cs.STRENGTH_RANK["moderate"]
