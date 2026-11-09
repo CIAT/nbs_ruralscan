@@ -14,7 +14,6 @@ outside the enum — the row is skipped and reported. Only the context column ch
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import sys
 from pathlib import Path
@@ -23,19 +22,29 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from nbs_ruralscan.schema_tools.check_context import SEVERITY  # noqa: E402
 
+from nbs_ruralscan.schema_tools.record_publication import edit_records  # noqa: E402
+from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs  # noqa: E402
+from nbs_ruralscan.schema_tools.specialist_records import (  # noqa: E402
+    evidence,
+    json_field,
+    keyed_records,
+    rebuild_command,
+    write_table,
+)
+
 EV = ROOT / "schema" / "registers" / "EV_evidence_register.csv"
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("tags")
-    ap.add_argument("--dry-run", action="store_true")
-    a = ap.parse_args()
-    tags = json.loads(Path(a.tags).read_text(encoding="utf-8"))
-    with EV.open(newline="", encoding="utf-8") as f:
-        rdr = csv.DictReader(f)
-        cols = list(rdr.fieldnames or [])
-        rows = list(rdr)
+def annotate(ev: Path, tags_path: Path) -> None:
+    tags = keyed_records(tags_path, array=False)
+    for eid, tag in tags.items():
+        if (
+            not isinstance(tag.get("hazard_severity"), str)
+            or tag.get("severity_cue") is not None
+            and not isinstance(tag["severity_cue"], str)
+        ):
+            raise ValueError(f"Malformed severity annotation for {eid}")
+    cols, rows = evidence(ev, "context", "relationship", "quote")
     applied = skipped = 0
     problems: list[str] = []
     seen: set[str] = set()
@@ -44,10 +53,10 @@ def main() -> int:
         if not t:
             continue
         seen.add(r["evidence_id"])
-        ctx = json.loads(r["context"] or "{}")
+        ctx = json_field(r, "context")
         sev = t.get("hazard_severity")
         cue = t.get("severity_cue")
-        rel = json.loads(r["relationship"] or "{}")
+        rel = json_field(r, "relationship")
         hay = " ".join(
             str(x or "")
             for x in (r.get("quote"), ctx.get("note"), rel.get("outcome_raw"))
@@ -74,13 +83,28 @@ def main() -> int:
     if missing:
         print(f"{len(missing)} tag(s) with no matching EV row: {sorted(missing)[:5]} …")
     print(f"applied {applied}, skipped {skipped}, {len(rows)} rows read")
-    if a.dry_run:
-        return 0
-    with EV.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=cols, lineterminator="\n")
-        w.writeheader()
-        w.writerows(rows)
-    print(f"wrote {EV.relative_to(ROOT)}; now run generate.py schema")
+    if applied:
+        write_table(ev, cols, rows)
+
+
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
+    ap.add_argument(
+        "tags", type=Path, help="JSON input file; use a path without symlinks"
+    )
+    ap.add_argument("--root", type=Path, default=ROOT, help="Selected data root")
+    ap.add_argument("--dry-run", action="store_true")
+    a = ap.parse_args(argv)
+    root = a.root.resolve()
+    ev = root / EV.relative_to(ROOT)
+    edit_records(
+        [ev],
+        lambda files: annotate(files[ev], a.tags),
+        inputs=ReviewInputs([a.tags]),
+        dry_run=a.dry_run,
+    )
+    if not a.dry_run:
+        print(f"wrote {ev}; now: {rebuild_command(root)}")
     return 0
 
 

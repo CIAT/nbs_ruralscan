@@ -17,14 +17,16 @@ Then regenerate:         python3 src/nbs_ruralscan/schema_tools/generate.py sche
 
 from __future__ import annotations
 
-import csv
+import argparse
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC_CSV = ROOT / "schema" / "registers" / "SRC_source_register.csv"
-PEER_CSV = ROOT / "reference" / "stocktake" / "peer_reviewed_benchmarked.csv"
-GREY_CSV = ROOT / "reference" / "stocktake" / "grey_lit_benchmarked.csv"
+sys.path.insert(0, str(ROOT / "src"))
+from nbs_ruralscan.schema_tools.record_publication import edit_records  # noqa: E402
+from nbs_ruralscan.schema_tools.review_inputs import ReviewInputs  # noqa: E402
+from nbs_ruralscan.schema_tools.specialist_records import read_table, write_table  # noqa: E402
 
 _ABBR = {
     "democratic republic of congo": "DR Congo",
@@ -110,12 +112,15 @@ def concise_country(scope: str) -> str:
     return _abbr(cand)
 
 
-def _load_geo_lookup() -> tuple[dict[str, str], dict[str, str]]:
+def _load_geo_lookup(peer: Path, grey: Path) -> tuple[dict[str, str], dict[str, str]]:
     """(by_doi, by_title) -> raw Geographic_Scope / Geography string."""
     by_doi: dict[str, str] = {}
     by_title: dict[str, str] = {}
-    if PEER_CSV.exists():
-        for r in csv.DictReader(PEER_CSV.open(encoding="utf-8")):
+    if peer.exists():
+        _, peer_rows = read_table(
+            peer, ("Geographic_Scope", "doi_extracted", "oa_title")
+        )
+        for r in peer_rows:
             scope = (r.get("Geographic_Scope") or "").strip()
             if not scope:
                 continue
@@ -125,8 +130,9 @@ def _load_geo_lookup() -> tuple[dict[str, str], dict[str, str]]:
             t = _norm_title(r.get("oa_title", ""))
             if t:
                 by_title.setdefault(t, scope)
-    if GREY_CSV.exists():
-        for r in csv.DictReader(GREY_CSV.open(encoding="utf-8")):
+    if grey.exists():
+        _, grey_rows = read_table(grey, ("Geography", "Source_title"))
+        for r in grey_rows:
             scope = (r.get("Geography") or "").strip()
             if not scope:
                 continue
@@ -136,15 +142,15 @@ def _load_geo_lookup() -> tuple[dict[str, str], dict[str, str]]:
     return by_doi, by_title
 
 
-def main() -> int:
-    if not SRC_CSV.exists():
-        print(f"SRC register not found: {SRC_CSV}")
-        return 1
-    by_doi, by_title = _load_geo_lookup()
-
-    rows = list(csv.DictReader(SRC_CSV.open(encoding="utf-8")))
-    fieldnames = rows[0].keys() if rows else []
-    filled = 0
+def _fill(src: Path, peer: Path, grey: Path) -> tuple[list[tuple[str, str]], list[str]]:
+    by_doi, by_title = _load_geo_lookup(peer, grey)
+    cols, rows = read_table(
+        src, ("source_id", "study_country", "region", "aez", "doi", "citation")
+    )
+    ids = [r["source_id"] for r in rows]
+    if len(ids) != len(set(ids)) or any(not sid.strip() for sid in ids):
+        raise ValueError("Missing or duplicate source_id in source register")
+    filled = []
     skipped_no_match: list[str] = []
 
     for r in rows:
@@ -162,15 +168,44 @@ def main() -> int:
         country = concise_country(scope)
         if country:
             r["study_country"] = country
-            filled += 1
-            print(f"  {r.get('source_id', ''):28} -> {country}")
+            filled.append((r["source_id"], country))
+    if filled:
+        write_table(src, cols, rows)
+    return filled, skipped_no_match
 
-    with SRC_CSV.open("w", newline="", encoding="utf-8") as f:
-        w = csv.DictWriter(f, fieldnames=list(fieldnames))
-        w.writeheader()
-        w.writerows(rows)
 
-    print(f"\nfilled study_country on {filled} source(s)")
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description=__doc__.splitlines()[0] if __doc__ else None
+    )
+    parser.add_argument(
+        "--root",
+        type=Path,
+        default=ROOT,
+        help="Checkout containing the source register and stocktake",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Preview matching sources and countries"
+    )
+    args = parser.parse_args(argv)
+    root = args.root.resolve()
+    src = root / "schema/registers/SRC_source_register.csv"
+    if not src.exists():
+        print(f"SRC register not found: {src}")
+        return 1
+    stocktake = root / "reference/stocktake"
+    peer = stocktake / "peer_reviewed_benchmarked.csv"
+    grey = stocktake / "grey_lit_benchmarked.csv"
+    filled, skipped_no_match = edit_records(
+        [src],
+        lambda private: _fill(private[src], peer, grey),
+        inputs=ReviewInputs([peer, grey]),
+        dry_run=args.dry_run,
+    )
+    for sid, country in filled:
+        print(f"  {sid:28} -> {country}")
+    action = "would fill" if args.dry_run else "filled"
+    print(f"\n{action} study_country on {len(filled)} source(s)")
     if skipped_no_match:
         print(f"no stocktake match (left blank): {len(skipped_no_match)}")
         for sid in skipped_no_match:

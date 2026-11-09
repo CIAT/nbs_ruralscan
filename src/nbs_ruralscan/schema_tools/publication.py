@@ -129,6 +129,7 @@ def staged_publish(
     markdown_destinations: tuple[Path, ...] = (),
     artifact_validators: Mapping[Path, Callable[[Path], None]] | None = None,
     dry_run: bool = False,
+    verify_inputs: Callable[[], None] | None = None,
 ) -> list[Path]:
     """Render all artifacts before touching outputs; keep recovery on rollback failure.
 
@@ -142,6 +143,8 @@ def staged_publish(
     destination. Validators add checks; they never bypass CSV/JSON validation.
     Create-only destinations accept identical existing bytes, refuse changes, and
     publish new files exclusively without replacing a competing writer's file.
+    Optional verify_inputs checks read-only dependencies after dry-run validation,
+    just before installation, and after installation while rollback is available.
     """
     paths.preflight(destinations)
     output = paths.output_root or paths.source_root
@@ -235,6 +238,8 @@ def staged_publish(
             if name in create_only and before[name] is not None:
                 raise ValueError(f"Create-only destination differs: {output / name}")
         if dry_run:
+            if verify_inputs is not None:
+                verify_inputs()
             return [output / name for name in changed]
         # Prepare every replacement before installing any file. These temporary
         # files live beside their destination, even when output spans mounts.
@@ -250,6 +255,8 @@ def staged_publish(
         for name in names:
             if _state(output / name) != before[name]:
                 raise ValueError(f"Output changed before installation: {output / name}")
+        if verify_inputs is not None:
+            verify_inputs()
         for name in changed:
             destination = output / name
             paths.preflight([destination])
@@ -264,6 +271,14 @@ def staged_publish(
                 prepared[name].unlink()
             else:
                 os.replace(prepared[name], destination)
+        if changed and verify_inputs is not None:
+            verify_inputs()
+            paths.preflight(destinations)
+            for name in names:
+                if _state(output / name) != installed.get(name, before[name]):
+                    raise ValueError(
+                        f"Output changed during installation: {output / name}"
+                    )
         return [output / name for name in changed]
     except BaseException as error:
         failures = []
