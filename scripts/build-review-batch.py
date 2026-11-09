@@ -624,9 +624,13 @@ def identity(
     fams: dict[str, str],
     routes: dict[str, list[dict]],
     t5: dict[str, str],
+    placements: list[dict] | None = None,
 ) -> dict:
     """What a reviewer must see first (Pete 2026-10-26): the practice, the outcome variable and
-    the table(s) the unit feeds — each a short label."""
+    the table(s) the unit feeds — each a short label.
+
+    Plain words (Pete 2026-11-09, "what does 'no table (dropped or unrouted)' mean?"): the
+    labels name the rating, and an unused unit says WHY it is unused, in one sentence."""
     nbs = r["nbs_id"].replace("_", " ")
     fam = r.get("suitability_family_id") or ""
     fam_lbl = fam.split("__")[-1].replace("_", " ")
@@ -636,26 +640,50 @@ def identity(
     var = labels.get(r["variable"], r["variable"].replace("_", " "))
     role = r.get("use_role", "")
     hz = str(ctx.get("hazard_type") or "")
+    hz_lbl = hz.replace("_", " ")
     tables: list[str] = []
     if role == "structural_suitability":
-        tables = ["T4 suitability"]
+        tables = ["Where the practice can go (T4 suitability)"]
     elif role == "operational_risk":
-        tables = ["M2b project risk"]
+        tables = ["Risk to the investment: enabling conditions (M2b)"]
     elif role == "asset_vulnerability":
-        tables = [f"T3 asset threat · {hz.replace('_', ' ') or 'hazard'}"]
+        tables = [f"Risk to the investment from {hz_lbl or 'a hazard'} (T3)"]
     else:
         for x in routes.get(r["variable"], []):
-            tag = "" if x.get("proximity") == "direct" else " (proxy)"
+            tag = "" if x.get("proximity") == "direct" else " (indirect measure)"
             if x.get("target_table") == "T6":
-                tables.append(
-                    f"T6 · {t5.get(x['target_key'], x['target_key'].replace('_', ' '))}{tag}"
-                )
+                key = t5.get(x["target_key"], x["target_key"].replace("_", " "))
+                tables.append(f"Scorecard: {key} (T6){tag}")
             elif x.get("target_table") == "T3" and x.get("target_key") == hz:
-                tables.append(f"T3 · {hz.replace('_', ' ')}{tag}")
+                tables.append(f"Livelihood rating for {hz_lbl} (T3){tag}")
+    tables = list(dict.fromkeys(tables))
+    placed = bool(placements)
+    reason = ""
+    if (r.get("review_state") or "") == "dropped":
+        reason = "Not used in any rating: it was removed in an earlier review."
+    elif role in ("structural_suitability", "operational_risk"):
+        reason = ""  # T4 / M2b are not built from generated T3/T6 rows
+    elif not routes.get(r["variable"]):
+        reason = (
+            f"Not used in any rating: what it measures ({var}) is not yet linked "
+            "to any scorecard or hazard row."
+        )
+    elif not tables:
+        reason = (
+            "Not used in any rating: what it measures only feeds hazard ratings, and "
+            "the study does not name the hazard."
+        )
+    elif not placed:
+        reason = (
+            "Not used in a rating yet: it has a place to go but was held out "
+            "(open 'Where this lands' below for the rule that kept it out)."
+        )
     return {
         "practice": practice,
         "variable": var,
-        "tables": list(dict.fromkeys(tables)),
+        "tables": tables if (placed or role != "nbs_effect") and not reason else [],
+        "not_used_reason": reason,
+        "as_of": date.today().isoformat(),
     }
 
 
@@ -872,6 +900,35 @@ def render_crop(pdf: Path, page_no: int, quote: str, dest: Path) -> str:
     return note
 
 
+def _section_probes(quote: str) -> list[str]:
+    """Text to look for in the PDF version of a transcript-quoted source (WOCAT): the
+    compiler's comment first (printed verbatim on the sheet), then the field label."""
+    probes = []
+    m = re.search(r"comment:\s*(.+)$", quote, re.S)
+    if m:
+        probes.append(m.group(1).strip())
+    for line in quote.splitlines():
+        lab = re.match(r"\s*-\s*([a-z0-9_]+)\s*:", line)
+        if lab:
+            probes.append(lab.group(1).replace("_", " "))
+    probes.append(quote)
+    return [x for x in probes if len(_norm_word(x)) >= 12]
+
+
+def find_page_by_text(pdf: Path, quote: str) -> tuple[int, str]:
+    """(1-based page, probe) where the PDF prints the quoted text; (0, "") if nowhere.
+    For sources quoted from a transcript by section (no page number), so the reviewer
+    still gets the printed page beside the claim (Pete 2026-11-09: "there is no image")."""
+    doc = fitz.open(pdf)
+    streams = [_norm_word(pg.get_text()) for pg in doc]
+    for probe in _section_probes(quote):
+        target = _norm_word(probe)[:80]
+        for i, txt in enumerate(streams):
+            if target and target in txt:
+                return i + 1, probe
+    return 0, ""
+
+
 def _build_units(item_rows, ev, *, schema, corpus, image_dir, recipe_dirs):
     items = {r["evidence_id"]: (r.get("question") or "") for r in item_rows}
     # optional ai_decision / ai_reason columns: what the AI proposed, so a reviewer who
@@ -916,6 +973,20 @@ def _build_units(item_rows, ev, *, schema, corpus, image_dir, recipe_dirs):
                 crop = f"review/img/{eid}.png"
         elif (r.get("locator_type") or "") == "section":
             crop_note = f"transcript section {r.get('locator')} (no page image)"
+            if pdf.exists():
+                found, probe = find_page_by_text(pdf, r.get("quote", ""))
+                if found:
+                    dest = image_dir / f"{eid}.png"
+                    note = render_crop(pdf, found, probe, dest)
+                    if note != "page out of range":
+                        crop = f"review/img/{eid}.png"
+                        page = found
+                        crop_note = (
+                            f"Page {found} of the source PDF. Highlighted: the text this "
+                            "finding was coded from."
+                            if note == "quote highlighted"
+                            else f"Page {found} of the source PDF. {note}"
+                        )
         units.append(
             {
                 "evidence_id": eid,
@@ -983,7 +1054,9 @@ def _build_units(item_rows, ev, *, schema, corpus, image_dir, recipe_dirs):
                     sense,
                 ),
                 "picos": picos(r, rel, ctx, labels, fams, s_rec),
-                "identity": identity(r, ctx, labels, fams, routes, t5),
+                "identity": identity(
+                    r, ctx, labels, fams, routes, t5, places.get(eid) or []
+                ),
                 "library_path": s_rec.get("library_path", ""),
                 "cited_original": (r.get("lineage_of") or "").strip()
                 if r.get("claim_basis") == "cited_secondary"
@@ -1038,6 +1111,12 @@ def main(argv: list[str] | None = None) -> int:
         inputs.include([pdf])
         if pdf.exists() and (row.get("page") or "").isdigit() and int(row["page"]):
             crop_ids.append(eid)
+        elif (
+            pdf.exists()
+            and (row.get("locator_type") or "") == "section"
+            and find_page_by_text(pdf, row.get("quote", ""))[0]
+        ):
+            crop_ids.append(eid)  # transcript quote: page found by text in the PDF
     n = 0
     missing = []
 
