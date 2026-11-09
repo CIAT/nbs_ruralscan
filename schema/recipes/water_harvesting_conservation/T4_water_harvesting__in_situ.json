@@ -1,1 +1,194 @@
-[]
+[
+  {
+    "mapping_id": "water_harvesting__in_situ__annual_precipitation",
+    "nbs_id": "water_harvesting_conservation",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "status": "held",
+          "reason": "The required layer is annual rainfall with 80% probability of exceedance. A mean annual precipitation layer measures a different quantity. Hold the in-field rainfall calculation until a matching layer is available.",
+          "scope": "water_harvesting__in_situ__annual_precipitation",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/in_field_climate.md",
+          "retained_source_profiles": [
+            {
+              "evidence_id": "ev_wh_annual_precipitation_kahinda08_3",
+              "source_id": "kahinda2008_sa_rwh_suitability",
+              "evidence_sha256": "caaa066c877543ce0027bc35f706eaa19cc8fc9fe8d25667d7cdc9463c1005fb",
+              "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+              "structure": "in-field rainwater harvesting in South Africa",
+              "published_ranks": {
+                "0-100": 1,
+                "100-200": 2,
+                "200-400": 5,
+                "400-600": 4,
+                "600-800": 3,
+                "800-1000": 3,
+                ">1000": 1
+              },
+              "scale": "1 (least suitable) to 5 (most suitable). Adjacent printed bands share endpoints without a tie convention.",
+              "locator": "PDF p. 3 (printed p. 790), §2.2.1.2 and Table 3, IRWH column",
+              "statistic": "Annual rainfall with 80% probability of exceedance (mm)."
+            },
+            {
+              "evidence_id": "ev_wh_precip_critchley91_contourbunds",
+              "source_id": "fao_critchley_wh_manual_1991",
+              "evidence_sha256": "f5eaff2e3e129f51231e93356f4ecb0273ab77c367e439e12d7ebb826d554818",
+              "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+              "locator": "FAO manual §5.3.1–2, Contour bunds for trees, Suitability",
+              "structure": "contour bunds for tree planting",
+              "rainfall_range_mm": [
+                200,
+                750
+              ],
+              "conditions": "Arid to semi-arid areas. Soil at least 1.5 m deep, preferably 2 m. Flat to 5% slopes, even ground without gullies or rills.",
+              "use": "Structure-specific siting guidance. The range supplies no family-wide exclusion or common map score."
+            }
+          ],
+          "alternative_climate_inputs": {
+            "source_id": "kahinda2008_sa_rwh_suitability",
+            "family": "water_harvesting__in_situ",
+            "mapping_ids": [
+              "water_harvesting__in_situ__annual_precipitation",
+              "water_harvesting__in_situ__aridity_index"
+            ],
+            "evidence_ids": [
+              "ev_wh_annual_precipitation_kahinda08_3",
+              "ev_wh_aridity_index_kahinda08_2"
+            ],
+            "maximum_concurrent_climate_contributions": 1,
+            "decision": "In any future application of Kahinda’s in-field model select rainfall or aridity as its climate input. Give this source at most one climate contribution across the two mappings."
+          },
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 100.0,
+              "opt_low": 200.0,
+              "opt_high": 400.0,
+              "abs_max": 1000.0
+            },
+            "uncertainty_pct": "60.0"
+          }
+        },
+        "dataset_binding": {
+          "status": "requires_matching_input",
+          "reason": "The required layer is annual rainfall with 80% probability of exceedance. A mean annual precipitation layer measures a different quantity. Hold the in-field rainfall calculation until a matching layer is available.",
+          "scope": "water_harvesting__in_situ__annual_precipitation",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/in_field_climate.md",
+          "unmatched_dataset_id": "worldclim_v2_precip",
+          "required_statistic": "Annual precipitation with 80% probability of exceedance, in mm."
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.2,
+    "weight_adjustable": true,
+    "justification": "The required layer is annual rainfall with 80% probability of exceedance. A mean annual precipitation layer measures a different quantity. Hold the in-field rainfall calculation until a matching layer is available. Retain the two source profiles at their stated scopes. Use only one of Kahinda’s two alternative climate inputs for in-field harvesting. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: The required layer is annual rainfall with 80% probability of exceedance. A mean annual precipitation layer measures a different quantity. Hold the in-field rainfall calculation until a matching layer is available.",
+    "variable": "annual_precipitation",
+    "suitability_family_id": "water_harvesting__in_situ",
+    "evidence_ids": [
+      "ev_wh_annual_precipitation_kahinda08_3",
+      "ev_wh_precip_critchley91_contourbunds"
+    ],
+    "n_sources": 2,
+    "corpus_n": null,
+    "paper_support_pct": null,
+    "dataset_id": ""
+  },
+  {
+    "mapping_id": "water_harvesting__in_situ__aridity_index",
+    "nbs_id": "water_harvesting_conservation",
+    "dataset_id": "global_aridity_index_v3",
+    "suitability_dimension": "biophysical_constraint",
+    "relationship_type": "trapezoidal",
+    "relationship_params": {
+      "reviewed_adaptation": {
+        "numerical_calibration": {
+          "status": "held",
+          "reason": "The five published in-field aridity ranks are retained. Their conversion to map scores is open. A ratio outside 0.05–0.65 receives the lowest source rank, which alone does not establish a zero suitability score.",
+          "scope": "water_harvesting__in_situ__aridity_index",
+          "reviewer": "Peter",
+          "reviewed_date": "2026-11-09",
+          "decision_ref": "methodology/audits/t4_water_block_20261109/in_field_climate.md",
+          "retained_source_profiles": [
+            {
+              "evidence_id": "ev_wh_aridity_index_kahinda08_2",
+              "source_id": "kahinda2008_sa_rwh_suitability",
+              "evidence_sha256": "23ecdd446518f265ac5e8b2a36f609a2c3c681685f216a600a5d103862c6b685",
+              "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+              "structure": "in-field rainwater harvesting in South Africa",
+              "published_ranks": {
+                "<0.05": 1,
+                "0.05-0.2": 4,
+                "0.2-0.5": 5,
+                "0.5-0.65": 3,
+                ">0.65": 1
+              },
+              "scale": "1 (least suitable) to 5 (most suitable). Adjacent printed bands share endpoints without a tie convention.",
+              "locator": "PDF p. 3 (printed p. 790), §2.2.1.1 and Table 2, IRWH row",
+              "statistic": "Ratio of precipitation to potential evapotranspiration (dimensionless).",
+              "score_conversion": "Open. No calibrated score assigned to a published rank."
+            },
+            {
+              "evidence_id": "ev_wh_aridity_slm11_ca",
+              "source_id": "fao_slm_in_practice_2011",
+              "evidence_sha256": "988670bf96716f67f31711ae5912ccc6fde278ae726d625fe00a2e6a887937b8",
+              "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+              "locator": "PDF pp. 74–75 (printed pp. 77–78), Conservation agriculture: principles and climate applicability",
+              "structure": "conservation tillage and mulching, an in-field family subpractice",
+              "use": "Qualitative context. Conservation agriculture applies across climates and the benefits can be more pronounced where low or uneven rainfall limits crop production. No numeric aridity response."
+            }
+          ],
+          "alternative_climate_inputs": {
+            "source_id": "kahinda2008_sa_rwh_suitability",
+            "family": "water_harvesting__in_situ",
+            "mapping_ids": [
+              "water_harvesting__in_situ__annual_precipitation",
+              "water_harvesting__in_situ__aridity_index"
+            ],
+            "evidence_ids": [
+              "ev_wh_annual_precipitation_kahinda08_3",
+              "ev_wh_aridity_index_kahinda08_2"
+            ],
+            "maximum_concurrent_climate_contributions": 1,
+            "decision": "In any future application of Kahinda’s in-field model select rainfall or aridity as its climate input. Give this source at most one climate contribution across the two mappings."
+          },
+          "held_relationship": {
+            "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+            "type": "trapezoidal",
+            "params": {
+              "abs_min": 0.05,
+              "opt_low": 0.2,
+              "opt_high": 0.5,
+              "abs_max": 0.65
+            },
+            "uncertainty_pct": "20.0"
+          }
+        }
+      }
+    },
+    "context_overrides": [],
+    "is_scenario_candidate": false,
+    "has_future_projection": false,
+    "weight_default": 0.2,
+    "weight_adjustable": true,
+    "justification": "The five published in-field aridity ranks are retained. Their conversion to map scores is open. A ratio outside 0.05–0.65 receives the lowest source rank, which alone does not establish a zero suitability score. Retain the two source profiles at their stated scopes. Use only one of Kahinda’s two alternative climate inputs for in-field harvesting. Retained approved calibration hold; no new numeric synthesis or approval.",
+    "variable": "aridity_index",
+    "suitability_family_id": "water_harvesting__in_situ",
+    "evidence_ids": [
+      "ev_wh_aridity_index_kahinda08_2",
+      "ev_wh_aridity_slm11_ca"
+    ],
+    "n_sources": 2,
+    "corpus_n": null,
+    "paper_support_pct": null
+  }
+]

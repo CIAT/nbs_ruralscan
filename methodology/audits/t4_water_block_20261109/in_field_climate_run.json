@@ -1,0 +1,106 @@
+{
+  "decision_date": "2026-11-09",
+  "decision_ref": "in_field_climate.md",
+  "reviewer": "Pete",
+  "input_revision": "f75e54c769513ac20718786372b66ee310f345f5",
+  "legacy_curve_reference": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+  "baseline": "The current accepted recipe contains neither in-field climate mapping. The previous revision supplies the archived parameters.",
+  "agents": [
+    {
+      "role": "Codex /root – source checks, dashboard, provenance and publication",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "ok hold the rainfall calculation until we have the right layer, keep all four evidence profiles and the aridity ranks, leave the score conversion open and don't double count rainfall and aridity. next"
+    },
+    {
+      "role": "Codex /root/climate_inputs – source checks, authored holds and compiler replay",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "Use T4 synthesis skill in /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan branch codex/t4-in-field-climate. Own authored recipe inputs and compiler generation of accepted T4 CSV/family output only. On #636 main the two in-field rows are absent (approved-only corpus), legacy bounds in #637 parent. Apply user's exact decisions as explicit retained review holds, respecting missing denominators and current release parity. Rainfall wrong dataset must block direct numeric evaluation and fallback until correct layer; aridity retain five source ranks, conversion open, no runnable score; explicitly record alternate climate layers scoped to Kahinda/in-field so no double vote. Preserve all 4 source profiles, confirm conditional scope in authorized docs, original evidence IDs. Link new audit methodology/audits/t4_water_block_20261109/in_field_climate.md. Validate runtime/developer and approved only compile/replay. Do not change EV human approval, do not modify dashboard or general generator, no commit. Notify when generated and ready."
+    },
+    {
+      "role": "Codex /root/depth_next – read-only source check of next decision block",
+      "provider": "OpenAI",
+      "model": "gpt-6-astra",
+      "reasoning_effort": "high",
+      "settings_source": "Codex turn_context.model and turn_context.effort",
+      "prompt": "Using source review guidance, read-only in /Users/pstewarda/.codex/worktrees/t4-riparian-recovery/nbs_ruralscan; verify next coherent soil-depth block for water harvesting in-field and related family if useful, prioritizing source logging, superseding #636 state, wrong page/measure, dashboard IDs and actionable in-context source facts. Directly inspect native pages (Kahinda, supporting other card(s)) and existing EV/priority/current and prior recipe. Report concise recommendation and evidence locators. No edits or human approvals."
+    }
+  ],
+  "replay": {
+    "file_sha256": {
+      "AGENTS.md": "6d32ed199cf4ce3c262b50804dd5dc3a7eaf5d1c5a8fd8eba736ba80a4794c57",
+      ".agents/skills/source-command-t4-synthesise/SKILL.md": "a87b41ea4a9ef9c25c21b8260f3d15f62d016c514ff6b170453676dc9fd694ff",
+      ".agents/skills/extraction_contracts/T4_review_contract.md": "86ca001a35d80214f53362fa2f99293524615afb299f509782491688da024542",
+      "methodology/T4_generation_method.md": "2c5c177001b212a2f5d03730e3a5dfe10547926a095bc90658f350ed2a127818",
+      "schema/lookups/crop_scope_policy.csv": "62f6bf68b618116e63d4bee57d7b01c6710b4a2ba62b4405bf7daf1662f9a5b4",
+      "schema/lookups/t4_numeric_compilation_policy.csv": "e3af05d083e8ae3f17cb3a69995591f8c80df9f3e1b0c87aad023357ab96e3dd",
+      "schema/T1_data_registry.csv": "1746c118f1c13594e18baf884238718e67d8f528d2c1ac25d2c6d0ca2e55e5b0",
+      "schema/registers/BIND_dataset_binding.csv": "6aeb5481a121cca768efd69ebe277b95a85e2c7f1ef9941e9cc74536c9bcfa35",
+      "schema/registers/EV_evidence_register.csv": "a1187c19ba8ecfe6dbcae8a097bda1af078691452d7a607140070d9b04b8af44",
+      "schema/registers/SRC_source_register.csv": "d1a6743c8cf64524619895c36cf5d48e6821b52cb984594fe560325dfeb501ed",
+      "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
+      "schema/registers/VONT_variable_ontology.csv": "5c53fb4873449ce787052b0f0b3effe8070d7ebfc8dd34920c211f4a522736ea",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/review_holds.csv": "0d1fa2acd9d336346e12e8342f62fa4548d9aae8dd4d6810f75428347a6a2428",
+      "schema/recipe_inputs/t4/water_harvesting_conservation/mapping_settings.csv": "fefdd6efbe68ed3903d3c08b7cd4aa98c2cf584f71a16d98c763cf8d44143b1f"
+    },
+    "compiler": "scripts/synthesise-recipe.py and src/nbs_ruralscan/recipe/t4_build.py at input_revision",
+    "command": "candidate=$(mktemp -d) && PYTHONPATH=src python scripts/synthesise-recipe.py water_harvesting_conservation --output-dir \"$candidate\"",
+    "row_hash_convention": "SHA-256 over all CSV fields keyed by column name, serialized as UTF-8 JSON with sorted keys, compact separators and unescaped Unicode.",
+    "mapping_csv": "schema/recipes/water_harvesting_conservation/T4_suitability_mappings.csv"
+  },
+  "decisions": [
+    {
+      "mapping_id": "water_harvesting__in_situ__annual_precipitation",
+      "result_sha256": "60423b31f419b8d57e559e29a73cae0d56c661a249dd38f6e30323600f88bbde",
+      "dataset_id": null,
+      "disposition": "The required layer is annual rainfall with 80% probability of exceedance. A mean annual precipitation layer measures a different quantity. Hold the in-field rainfall calculation until a matching layer is available.",
+      "source_profiles": [
+        {
+          "source_id": "kahinda2008_sa_rwh_suitability",
+          "evidence_id": "ev_wh_annual_precipitation_kahinda08_3",
+          "evidence_sha256": "caaa066c877543ce0027bc35f706eaa19cc8fc9fe8d25667d7cdc9463c1005fb",
+          "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+          "locator": "PDF p. 3 (printed p. 790), §2.2.1.2 and Table 3, IRWH column",
+          "extraction_ruleset": "v1.5.1"
+        },
+        {
+          "source_id": "fao_critchley_wh_manual_1991",
+          "evidence_id": "ev_wh_precip_critchley91_contourbunds",
+          "evidence_sha256": "f5eaff2e3e129f51231e93356f4ecb0273ab77c367e439e12d7ebb826d554818",
+          "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+          "locator": "FAO manual §5.3.1–2, Contour bunds for trees, Suitability",
+          "extraction_ruleset": "v1.6.0"
+        }
+      ]
+    },
+    {
+      "mapping_id": "water_harvesting__in_situ__aridity_index",
+      "result_sha256": "4725697ae52c6f03ed9971b0e847c0efbf976045d716eafca901b0c049ddd752",
+      "dataset_id": "global_aridity_index_v3",
+      "disposition": "The five published in-field aridity ranks are retained. Their conversion to map scores is open. A ratio outside 0.05–0.65 receives the lowest source rank, which alone does not establish a zero suitability score.",
+      "source_profiles": [
+        {
+          "source_id": "kahinda2008_sa_rwh_suitability",
+          "evidence_id": "ev_wh_aridity_index_kahinda08_2",
+          "evidence_sha256": "23ecdd446518f265ac5e8b2a36f609a2c3c681685f216a600a5d103862c6b685",
+          "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+          "locator": "PDF p. 3 (printed p. 790), §2.2.1.1 and Table 2, IRWH row",
+          "extraction_ruleset": "v1.5.1"
+        },
+        {
+          "source_id": "fao_slm_in_practice_2011",
+          "evidence_id": "ev_wh_aridity_slm11_ca",
+          "evidence_sha256": "988670bf96716f67f31711ae5912ccc6fde278ae726d625fe00a2e6a887937b8",
+          "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+          "locator": "PDF pp. 74–75 (printed pp. 77–78), Conservation agriculture: principles and climate applicability",
+          "extraction_ruleset": "v1.6.0"
+        }
+      ]
+    }
+  ]
+}

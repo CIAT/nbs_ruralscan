@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-09T08:02:57.593099+00:00",
-  "git_commit": "549940fd33f5bd2dcf5a79b48e1b08c1e2ee8b6d",
+  "timestamp": "2026-11-09T09:14:05.387575+00:00",
+  "git_commit": "f75e54c769513ac20718786372b66ee310f345f5",
   "registers": {
     "SRC_source_register": [
       {
@@ -323632,6 +323632,193 @@
       ],
       "T4_suitability_mappings": [
         {
+          "mapping_id": "water_harvesting__in_situ__annual_precipitation",
+          "nbs_id": "water_harvesting_conservation",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "numerical_calibration": {
+                "status": "held",
+                "reason": "The required layer is annual rainfall with 80% probability of exceedance. A mean annual precipitation layer measures a different quantity. Hold the in-field rainfall calculation until a matching layer is available.",
+                "scope": "water_harvesting__in_situ__annual_precipitation",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/in_field_climate.md",
+                "retained_source_profiles": [
+                  {
+                    "evidence_id": "ev_wh_annual_precipitation_kahinda08_3",
+                    "source_id": "kahinda2008_sa_rwh_suitability",
+                    "evidence_sha256": "caaa066c877543ce0027bc35f706eaa19cc8fc9fe8d25667d7cdc9463c1005fb",
+                    "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+                    "structure": "in-field rainwater harvesting in South Africa",
+                    "published_ranks": {
+                      "0-100": 1,
+                      "100-200": 2,
+                      "200-400": 5,
+                      "400-600": 4,
+                      "600-800": 3,
+                      "800-1000": 3,
+                      ">1000": 1
+                    },
+                    "scale": "1 (least suitable) to 5 (most suitable). Adjacent printed bands share endpoints without a tie convention.",
+                    "locator": "PDF p. 3 (printed p. 790), §2.2.1.2 and Table 3, IRWH column",
+                    "statistic": "Annual rainfall with 80% probability of exceedance (mm)."
+                  },
+                  {
+                    "evidence_id": "ev_wh_precip_critchley91_contourbunds",
+                    "source_id": "fao_critchley_wh_manual_1991",
+                    "evidence_sha256": "f5eaff2e3e129f51231e93356f4ecb0273ab77c367e439e12d7ebb826d554818",
+                    "source_artifact_sha256": "b7607ac54c3ac96908fc4d453041cda21f5ee027a47f30b0caf57044a2dce860",
+                    "locator": "FAO manual §5.3.1–2, Contour bunds for trees, Suitability",
+                    "structure": "contour bunds for tree planting",
+                    "rainfall_range_mm": [
+                      200,
+                      750
+                    ],
+                    "conditions": "Arid to semi-arid areas. Soil at least 1.5 m deep, preferably 2 m. Flat to 5% slopes, even ground without gullies or rills.",
+                    "use": "Structure-specific siting guidance. The range supplies no family-wide exclusion or common map score."
+                  }
+                ],
+                "alternative_climate_inputs": {
+                  "source_id": "kahinda2008_sa_rwh_suitability",
+                  "family": "water_harvesting__in_situ",
+                  "mapping_ids": [
+                    "water_harvesting__in_situ__annual_precipitation",
+                    "water_harvesting__in_situ__aridity_index"
+                  ],
+                  "evidence_ids": [
+                    "ev_wh_annual_precipitation_kahinda08_3",
+                    "ev_wh_aridity_index_kahinda08_2"
+                  ],
+                  "maximum_concurrent_climate_contributions": 1,
+                  "decision": "In any future application of Kahinda’s in-field model select rainfall or aridity as its climate input. Give this source at most one climate contribution across the two mappings."
+                },
+                "held_relationship": {
+                  "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 100.0,
+                    "opt_low": 200.0,
+                    "opt_high": 400.0,
+                    "abs_max": 1000.0
+                  },
+                  "uncertainty_pct": "60.0"
+                }
+              },
+              "dataset_binding": {
+                "status": "requires_matching_input",
+                "reason": "The required layer is annual rainfall with 80% probability of exceedance. A mean annual precipitation layer measures a different quantity. Hold the in-field rainfall calculation until a matching layer is available.",
+                "scope": "water_harvesting__in_situ__annual_precipitation",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/in_field_climate.md",
+                "unmatched_dataset_id": "worldclim_v2_precip",
+                "required_statistic": "Annual precipitation with 80% probability of exceedance, in mm."
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.2,
+          "weight_adjustable": true,
+          "justification": "The required layer is annual rainfall with 80% probability of exceedance. A mean annual precipitation layer measures a different quantity. Hold the in-field rainfall calculation until a matching layer is available. Retain the two source profiles at their stated scopes. Use only one of Kahinda’s two alternative climate inputs for in-field harvesting. Retained approved calibration hold; no new numeric synthesis or approval. Dataset binding unresolved; requires matching input: The required layer is annual rainfall with 80% probability of exceedance. A mean annual precipitation layer measures a different quantity. Hold the in-field rainfall calculation until a matching layer is available.",
+          "variable": "annual_precipitation",
+          "suitability_family_id": "water_harvesting__in_situ",
+          "evidence_ids": [
+            "ev_wh_annual_precipitation_kahinda08_3",
+            "ev_wh_precip_critchley91_contourbunds"
+          ],
+          "n_sources": 2
+        },
+        {
+          "mapping_id": "water_harvesting__in_situ__aridity_index",
+          "nbs_id": "water_harvesting_conservation",
+          "dataset_id": "global_aridity_index_v3",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "trapezoidal",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "numerical_calibration": {
+                "status": "held",
+                "reason": "The five published in-field aridity ranks are retained. Their conversion to map scores is open. A ratio outside 0.05–0.65 receives the lowest source rank, which alone does not establish a zero suitability score.",
+                "scope": "water_harvesting__in_situ__aridity_index",
+                "reviewer": "Peter",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_water_block_20261109/in_field_climate.md",
+                "retained_source_profiles": [
+                  {
+                    "evidence_id": "ev_wh_aridity_index_kahinda08_2",
+                    "source_id": "kahinda2008_sa_rwh_suitability",
+                    "evidence_sha256": "23ecdd446518f265ac5e8b2a36f609a2c3c681685f216a600a5d103862c6b685",
+                    "source_artifact_sha256": "a33eb1884bafe3b7a82d8b838d76ee95e5c312e126563b577fafe9e1ec311dc8",
+                    "structure": "in-field rainwater harvesting in South Africa",
+                    "published_ranks": {
+                      "<0.05": 1,
+                      "0.05-0.2": 4,
+                      "0.2-0.5": 5,
+                      "0.5-0.65": 3,
+                      ">0.65": 1
+                    },
+                    "scale": "1 (least suitable) to 5 (most suitable). Adjacent printed bands share endpoints without a tie convention.",
+                    "locator": "PDF p. 3 (printed p. 790), §2.2.1.1 and Table 2, IRWH row",
+                    "statistic": "Ratio of precipitation to potential evapotranspiration (dimensionless).",
+                    "score_conversion": "Open. No calibrated score assigned to a published rank."
+                  },
+                  {
+                    "evidence_id": "ev_wh_aridity_slm11_ca",
+                    "source_id": "fao_slm_in_practice_2011",
+                    "evidence_sha256": "988670bf96716f67f31711ae5912ccc6fde278ae726d625fe00a2e6a887937b8",
+                    "source_artifact_sha256": "a11fad6f1a6419f8cb0848edc5948c370bfded2fe7b363bcbc169ecbed46b5e3",
+                    "locator": "PDF pp. 74–75 (printed pp. 77–78), Conservation agriculture: principles and climate applicability",
+                    "structure": "conservation tillage and mulching, an in-field family subpractice",
+                    "use": "Qualitative context. Conservation agriculture applies across climates and the benefits can be more pronounced where low or uneven rainfall limits crop production. No numeric aridity response."
+                  }
+                ],
+                "alternative_climate_inputs": {
+                  "source_id": "kahinda2008_sa_rwh_suitability",
+                  "family": "water_harvesting__in_situ",
+                  "mapping_ids": [
+                    "water_harvesting__in_situ__annual_precipitation",
+                    "water_harvesting__in_situ__aridity_index"
+                  ],
+                  "evidence_ids": [
+                    "ev_wh_annual_precipitation_kahinda08_3",
+                    "ev_wh_aridity_index_kahinda08_2"
+                  ],
+                  "maximum_concurrent_climate_contributions": 1,
+                  "decision": "In any future application of Kahinda’s in-field model select rainfall or aridity as its climate input. Give this source at most one climate contribution across the two mappings."
+                },
+                "held_relationship": {
+                  "source_revision": "624a23f03788b5e6adafb2fe0b564326ab527b28",
+                  "type": "trapezoidal",
+                  "params": {
+                    "abs_min": 0.05,
+                    "opt_low": 0.2,
+                    "opt_high": 0.5,
+                    "abs_max": 0.65
+                  },
+                  "uncertainty_pct": "20.0"
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_default": 0.2,
+          "weight_adjustable": true,
+          "justification": "The five published in-field aridity ranks are retained. Their conversion to map scores is open. A ratio outside 0.05–0.65 receives the lowest source rank, which alone does not establish a zero suitability score. Retain the two source profiles at their stated scopes. Use only one of Kahinda’s two alternative climate inputs for in-field harvesting. Retained approved calibration hold; no new numeric synthesis or approval.",
+          "variable": "aridity_index",
+          "suitability_family_id": "water_harvesting__in_situ",
+          "evidence_ids": [
+            "ev_wh_aridity_index_kahinda08_2",
+            "ev_wh_aridity_slm11_ca"
+          ],
+          "n_sources": 2
+        },
+        {
           "mapping_id": "water_harvesting__runoff_catchment__annual_precipitation",
           "nbs_id": "water_harvesting_conservation",
           "dataset_id": "worldclim_v2_precip",
@@ -402493,8 +402680,8 @@
       "source_id": "fao_critchley_wh_manual_1991",
       "page": "",
       "mapping_id": "water_harvesting__in_situ__annual_precipitation",
-      "reason": "Source checked; proposed KEEP (not applied). FAO manual §5.3.2 explicitly gives 200–750 mm rainfall for contour bunds for tree planting. This is practice-specific siting guidance, not a fitted zero-suitability response. Source also requires deep soils and even terrain.",
-      "decision_needed": "Keep full 200–750 mm recommendation for tree-planting contour bunds, with dryland context and other conditions; do not infer zero suitability immediately outside the range or apply to every in-situ technique. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. Critchley & Siegert §5.3.2 specifies 200–750 mm for tree-planting contour bunds in arid to semi-arid conditions. Soil must be at least 1.5 m deep, preferably 2 m, with even ground, no gullies or rills, and slopes from flat to 5%.",
+      "decision_needed": "Approved, 9 November 2026. Keep the complete contour-bund recommendation at its stated scope. Its range supplies no endpoints for scoring other in-field techniques. The family’s rainfall calculation awaits a compatible layer for the Kahinda ranks.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "f5eaff2e3e129f51231e93356f4ecb0273ab77c367e439e12d7ebb826d554818",
@@ -402541,8 +402728,8 @@
       "source_id": "fao_slm_in_practice_2011",
       "page": "75",
       "mapping_id": "water_harvesting__in_situ__aridity_index",
-      "reason": "Source checked; proposed DROP (not applied). PDF74–75 / printed77–78 describes conservation agriculture: minimum/no tillage, permanent mulch/cover and crop rotation. Climate guidance says CA suits all climates with stronger benefits where rainfall is low/uneven. This passage establishes no water-harvesting capture structure. Climate benefit wording is not an aridity-index response.",
-      "decision_needed": "Propose soft-drop from water-harvesting T4 for wrong_practice, retaining the record and source. Do not reinterpret generic conservation-agriculture guidance as a water-harvesting suitability rule. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. FAO describes conservation agriculture including reduced tillage and permanent cover or mulch. Those techniques belong to the registered in-field conservation tillage/mulching subpractice. The paper describes benefits under low or uneven rainfall.",
+      "decision_needed": "Approved, 9 November 2026. Keep as qualitative climate guidance for conservation tillage and mulch. The passage supplies no numerical rainfall/PET class or suitability score. This decision supersedes the previous wrong-practice drop proposal.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "988670bf96716f67f31711ae5912ccc6fde278ae726d625fe00a2e6a887937b8",
@@ -402589,8 +402776,8 @@
       "source_id": "kahinda2008_sa_rwh_suitability",
       "page": "3",
       "mapping_id": "water_harvesting__in_situ__annual_precipitation",
-      "reason": "Source checked; proposed HOLD (not applied). Kahinda Table 3 (PDF3) ranks in-field harvesting highest at 200–400 mm, but 0–100 and >1,000 mm retain rank 1, not zero. Methods specify annual rainfall with 80% probability of exceedance, explicitly rejecting mean annual rainfall for this application. Current abs_min=100/abs_max=1000 encode exclusions not supplied by the rank table. National South African model, not universal limits.",
-      "decision_needed": "Hold current hard bounds and mean-rainfall substitution. Keep the complete in-field rank table for synthesis using the correct rainfall statistic; agree any score conversion, endpoints and compatible pool separately. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. Kahinda Table 3 ranks in-field harvesting using annual rainfall exceeded in 80% of years. The 200–400 mm class ranks 5 of 5. Both ends rank 1. WorldClim mean annual rainfall measures a different statistic.",
+      "decision_needed": "Approved, 9 November 2026. Keep all seven source ranks. Hold rainfall calculation until a layer represents the 80% exceedance statistic. In this model rainfall and aridity are alternative climate layers with at most one contribution.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "caaa066c877543ce0027bc35f706eaa19cc8fc9fe8d25667d7cdc9463c1005fb",
@@ -402605,8 +402792,8 @@
       "source_id": "kahinda2008_sa_rwh_suitability",
       "page": "3",
       "mapping_id": "water_harvesting__in_situ__aridity_index",
-      "reason": "Source checked; proposed HOLD (not applied). Table 2 (PDF3) gives in-field maximum rank in semi-arid P/PET 0.2–0.5; both tails remain rank 1. Source uses precipitation/potential evapotranspiration. Current abs_min/abs_max turn low ranks into ecological exclusions. Methods allow rainfall OR aridity as alternatives, not two independent climate votes.",
-      "decision_needed": "Hold unsupported hard bounds. Keep full in-field ranked classes and source scope; resolve rank-to-score convention and avoid double-counting rainfall/aridity before a recipe is pooled. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source profile retained, 9 November 2026. Kahinda Table 2 reports five in-field rainfall/PET classes, with ranks 1, 4, 5, 3 and 1 from driest to wettest. Its model offers aridity or rainfall as the physical climate layer.",
+      "decision_needed": "Approved, 9 November 2026. Keep the original ranks and unresolved shared endpoints. Conversion to map scores remains open. Use at most one of Kahinda’s two alternative climate layers for this in-field model.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "23ecdd446518f265ac5e8b2a36f609a2c3c681685f216a600a5d103862c6b685",
@@ -402637,8 +402824,8 @@
       "source_id": "kahinda2008_sa_rwh_suitability",
       "page": "4",
       "mapping_id": "water_harvesting__in_situ__soil_depth_to_bedrock",
-      "reason": "Source checked; proposed HOLD (not applied). Table 5 is on PDF4, not stored PDF3. It ranks total topsoil+subsoil depth: >0.75 highest, 0.4–0.75 next, 0.3–0.4 middle, 0.2–0.3 low, <0.2 lowest (rank 1). PDF3 gives metre context and says this layer was omitted for external catchments because runoff and runon areas need different depths. Current abs_min=0.2 invents a zero-suitability tail.",
-      "decision_needed": "Hold current locator and absolute-minimum encoding. Correct page to PDF4 through the evidence workflow and keep the full in-field depth ranking, with total-profile depth context and no universal shallow-soil exclusion. This proposal is not a decision. Use this card to Keep, Query/Hold, or soft-drop with reason; approving retained source evidence does not itself approve a new executable mapping.",
+      "reason": "Source checked, 9 November 2026. The evidence locator correctly points to Table 5 on PDF p. 4. PDF p. 3 defines total soil depth as topsoil plus subsoil thickness. In-field ranks increase from 1 below 0.2 m to 5 above 0.75 m. External catchments omit this layer. The latest release contains no in-field soil-depth score.",
+      "decision_needed": "Proposed for review: retain the five published in-field depth ranks, including rank 1 in the shallowest class. Check whether a spatial layer represents total soil profile depth before translating ranks to scores. The table leaves shared internal endpoints unresolved.",
       "requested_by": "Pete",
       "requested_date": "2026-11-06",
       "evidence_sha256": "848543eec66956f20335f31fb85306728f3710108242d2a9a6840f33523fa8c8",
@@ -428695,6 +428882,7 @@
         },
         "contributions": {
           "T4": [
+            "ev_wh_precip_critchley91_contourbunds",
             "ev_wh_precip_critchley91_trapezoidal"
           ],
           "T3": [],
@@ -428861,7 +429049,9 @@
           "other": 0
         },
         "contributions": {
-          "T4": [],
+          "T4": [
+            "ev_wh_aridity_slm11_ca"
+          ],
           "T3": [],
           "T6": [
             "ev_rain_water_productivity_faoslm11_1",
@@ -436221,7 +436411,9 @@
         },
         "contributions": {
           "T4": [
-            "ev_wh_annual_precipitation_kahinda08_4"
+            "ev_wh_annual_precipitation_kahinda08_3",
+            "ev_wh_annual_precipitation_kahinda08_4",
+            "ev_wh_aridity_index_kahinda08_2"
           ],
           "T3": [],
           "T6": [],
@@ -485676,7 +485868,7 @@
       }
     ],
     "totals": {
-      "compiled_outputs": 721,
+      "compiled_outputs": 723,
       "evidence_ids": [
         "EV_binam_2017_007",
         "EV_chomba_2020_001",
@@ -492126,7 +492318,7 @@
         "ev_yield_stability_sileshi12_3",
         "ev_yield_stability_silv26_1"
       ],
-      "contributing_excerpts": 3062,
+      "contributing_excerpts": 3066,
       "contributing_sources": 564,
       "known_sources": 946,
       "source_keys": [
@@ -493094,11 +493286,11 @@
       "reviewed_dropped_excerpts": 1529,
       "reviewed_unresolved_excerpts": 190,
       "dropped_excerpts": 1534,
-      "t4_relationships": 36,
+      "t4_relationships": 38,
       "t4_operational_relationships": 8,
-      "t4_structural_relationships": 28,
-      "t4_evidence_backed_relationships": 27,
-      "t4_contributing_sources": 25,
+      "t4_structural_relationships": 30,
+      "t4_evidence_backed_relationships": 29,
+      "t4_contributing_sources": 26,
       "source_mix": {
         "literature": 582,
         "grey": 160,
@@ -517314,7 +517506,7 @@
         "nbs_id": "water_harvesting_conservation",
         "name": "Water harvesting conservation",
         "metrics": {
-          "compiled_outputs": 209,
+          "compiled_outputs": 211,
           "evidence_ids": [
             "ev_accessibility_travel_time_schmidt12_11",
             "ev_accessibility_travel_time_wei16_1_op",
@@ -519946,7 +520138,7 @@
             "ev_yield_stability_seti18_3",
             "ev_yield_stability_silv26_1"
           ],
-          "contributing_excerpts": 1061,
+          "contributing_excerpts": 1065,
           "contributing_sources": 171,
           "known_sources": 259,
           "source_keys": [
@@ -520227,11 +520419,11 @@
           "reviewed_dropped_excerpts": 904,
           "reviewed_unresolved_excerpts": 83,
           "dropped_excerpts": 905,
-          "t4_relationships": 6,
+          "t4_relationships": 8,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 6,
-          "t4_evidence_backed_relationships": 6,
-          "t4_contributing_sources": 12,
+          "t4_structural_relationships": 8,
+          "t4_evidence_backed_relationships": 8,
+          "t4_contributing_sources": 13,
           "source_mix": {
             "literature": 137,
             "grey": 78,
@@ -520646,7 +520838,7 @@
             "scope_kind": "family",
             "scope_definition": "Earthen bunds or ridges on the contour that hold rain where it falls on the field.",
             "metrics": {
-              "compiled_outputs": 22,
+              "compiled_outputs": 24,
               "evidence_ids": [
                 "ev_adoption_rate_arsl15_op1",
                 "ev_adoption_rate_arsl15_op2",
@@ -521262,8 +521454,8 @@
                 "ev_yield_stability_ndun23_1",
                 "ev_yield_stability_seti18_3"
               ],
-              "contributing_excerpts": 255,
-              "contributing_sources": 47,
+              "contributing_excerpts": 259,
+              "contributing_sources": 50,
               "known_sources": 105,
               "source_keys": [
                 "abate_2021_ifpri_dp2069_cbinremp",
@@ -521389,11 +521581,11 @@
               "reviewed_dropped_excerpts": 252,
               "reviewed_unresolved_excerpts": 24,
               "dropped_excerpts": 252,
-              "t4_relationships": 0,
+              "t4_relationships": 2,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 0,
-              "t4_evidence_backed_relationships": 0,
-              "t4_contributing_sources": 0,
+              "t4_structural_relationships": 2,
+              "t4_evidence_backed_relationships": 2,
+              "t4_contributing_sources": 3,
               "source_mix": {
                 "literature": 72,
                 "grey": 25,
@@ -527668,17 +527860,21 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 6,
-            "evidence_backed_outputs": 6,
-            "contributing_excerpts": 17,
-            "contributing_sources": 12,
+            "output_count": 8,
+            "evidence_backed_outputs": 8,
+            "contributing_excerpts": 21,
+            "contributing_sources": 13,
             "evidence_ids": [
+              "ev_wh_annual_precipitation_kahinda08_3",
               "ev_wh_annual_precipitation_kahinda08_4",
               "ev_wh_annual_precipitation_ryan20_1",
+              "ev_wh_aridity_index_kahinda08_2",
+              "ev_wh_aridity_slm11_ca",
               "ev_wh_catchment_area_kadam12_1",
               "ev_wh_drainage_density_karimi19_1",
               "ev_wh_drainage_density_mahmoud21_1",
               "ev_wh_drainage_density_singh17_1",
+              "ev_wh_precip_critchley91_contourbunds",
               "ev_wh_precip_critchley91_trapezoidal",
               "ev_wh_precip_wocatgl13_trapezoidal",
               "ev_wh_runoff_potential_index_alabadi17_1",
@@ -527694,6 +527890,7 @@
             "source_keys": [
               "dewinnaar_2007_gis_runoff_thukela",
               "fao_critchley_wh_manual_1991",
+              "fao_slm_in_practice_2011",
               "fuzzy_ahp_2017_wh_zones",
               "gismcda_swc_siting_2014",
               "kadam2012_scscn_india_rwh",
@@ -527706,6 +527903,46 @@
               "wocat_wh_guidelines_2013"
             ],
             "rows": [
+              {
+                "id": "water_harvesting__in_situ__annual_precipitation",
+                "label": "water harvesting  in situ  annual precipitation · In situ",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__in_situ"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_annual_precipitation_kahinda08_3",
+                  "ev_wh_precip_critchley91_contourbunds"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__in_situ__aridity_index",
+                "label": "water harvesting  in situ  aridity index · In situ",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__in_situ"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_aridity_index_kahinda08_2",
+                  "ev_wh_aridity_slm11_ca"
+                ],
+                "source_keys": [
+                  "fao_slm_in_practice_2011",
+                  "kahinda2008_sa_rwh_suitability"
+                ]
+              },
               {
                 "id": "water_harvesting__runoff_catchment__annual_precipitation",
                 "label": "water harvesting  runoff catchment  annual precipitation · Runoff-catchment water harvesting",
@@ -573003,7 +573240,7 @@
         "project_level": false,
         "evidence_tracking": "routed",
         "totals": {
-          "compiled_outputs": 28,
+          "compiled_outputs": 30,
           "evidence_ids": [
             "EV_chomba_2020_001",
             "EV_chomba_2020_002",
@@ -574076,8 +574313,8 @@
             "ev_wh_watertable_wocat7777_1",
             "ev_wh_watertable_wocat7778_1"
           ],
-          "contributing_excerpts": 43,
-          "contributing_sources": 25,
+          "contributing_excerpts": 47,
+          "contributing_sources": 26,
           "known_sources": 210,
           "source_keys": [
             "abigaba_2024",
@@ -574308,11 +574545,11 @@
           "reviewed_dropped_excerpts": 217,
           "reviewed_unresolved_excerpts": 3,
           "dropped_excerpts": 219,
-          "t4_relationships": 28,
+          "t4_relationships": 30,
           "t4_operational_relationships": 0,
-          "t4_structural_relationships": 28,
-          "t4_evidence_backed_relationships": 27,
-          "t4_contributing_sources": 25,
+          "t4_structural_relationships": 30,
+          "t4_evidence_backed_relationships": 29,
+          "t4_contributing_sources": 26,
           "source_mix": {
             "literature": 106,
             "grey": 99,
@@ -578403,7 +578640,7 @@
             "nbs_id": "water_harvesting_conservation",
             "name": "Water harvesting conservation",
             "metrics": {
-              "compiled_outputs": 6,
+              "compiled_outputs": 8,
               "evidence_ids": [
                 "ev_wh5_adham_2018_clay_content",
                 "ev_wh5_adham_2018_land_cover",
@@ -578788,8 +579025,8 @@
                 "ev_wh_watertable_wocat7777_1",
                 "ev_wh_watertable_wocat7778_1"
               ],
-              "contributing_excerpts": 17,
-              "contributing_sources": 12,
+              "contributing_excerpts": 21,
+              "contributing_sources": 13,
               "known_sources": 74,
               "source_keys": [
                 "boers_1986_mcwh_arid",
@@ -578884,11 +579121,11 @@
               "reviewed_dropped_excerpts": 15,
               "reviewed_unresolved_excerpts": 2,
               "dropped_excerpts": 15,
-              "t4_relationships": 6,
+              "t4_relationships": 8,
               "t4_operational_relationships": 0,
-              "t4_structural_relationships": 6,
-              "t4_evidence_backed_relationships": 6,
-              "t4_contributing_sources": 12,
+              "t4_structural_relationships": 8,
+              "t4_evidence_backed_relationships": 8,
+              "t4_contributing_sources": 13,
               "source_mix": {
                 "literature": 19,
                 "grey": 55,
@@ -579027,7 +579264,7 @@
                 "scope_kind": "family",
                 "scope_definition": "Earthen bunds or ridges on the contour that hold rain where it falls on the field.",
                 "metrics": {
-                  "compiled_outputs": 0,
+                  "compiled_outputs": 2,
                   "evidence_ids": [
                     "ev_wh_annual_precipitation_kahinda08_2",
                     "ev_wh_annual_precipitation_kahinda08_3",
@@ -579093,8 +579330,8 @@
                     "ev_wh_watertable_wocat1219_1",
                     "ev_wh_watertable_wocat1587_1"
                   ],
-                  "contributing_excerpts": 0,
-                  "contributing_sources": 0,
+                  "contributing_excerpts": 4,
+                  "contributing_sources": 3,
                   "known_sources": 15,
                   "source_keys": [
                     "fao_critchley_wh_manual_1991",
@@ -579130,11 +579367,11 @@
                   "reviewed_dropped_excerpts": 15,
                   "reviewed_unresolved_excerpts": 1,
                   "dropped_excerpts": 15,
-                  "t4_relationships": 0,
+                  "t4_relationships": 2,
                   "t4_operational_relationships": 0,
-                  "t4_structural_relationships": 0,
-                  "t4_evidence_backed_relationships": 0,
-                  "t4_contributing_sources": 0,
+                  "t4_structural_relationships": 2,
+                  "t4_evidence_backed_relationships": 2,
+                  "t4_contributing_sources": 3,
                   "source_mix": {
                     "literature": 4,
                     "grey": 11,
@@ -580086,17 +580323,21 @@
                 "label": "Suitability",
                 "unit": "suitability rules",
                 "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-                "output_count": 6,
-                "evidence_backed_outputs": 6,
-                "contributing_excerpts": 17,
-                "contributing_sources": 12,
+                "output_count": 8,
+                "evidence_backed_outputs": 8,
+                "contributing_excerpts": 21,
+                "contributing_sources": 13,
                 "evidence_ids": [
+                  "ev_wh_annual_precipitation_kahinda08_3",
                   "ev_wh_annual_precipitation_kahinda08_4",
                   "ev_wh_annual_precipitation_ryan20_1",
+                  "ev_wh_aridity_index_kahinda08_2",
+                  "ev_wh_aridity_slm11_ca",
                   "ev_wh_catchment_area_kadam12_1",
                   "ev_wh_drainage_density_karimi19_1",
                   "ev_wh_drainage_density_mahmoud21_1",
                   "ev_wh_drainage_density_singh17_1",
+                  "ev_wh_precip_critchley91_contourbunds",
                   "ev_wh_precip_critchley91_trapezoidal",
                   "ev_wh_precip_wocatgl13_trapezoidal",
                   "ev_wh_runoff_potential_index_alabadi17_1",
@@ -580112,6 +580353,7 @@
                 "source_keys": [
                   "dewinnaar_2007_gis_runoff_thukela",
                   "fao_critchley_wh_manual_1991",
+                  "fao_slm_in_practice_2011",
                   "fuzzy_ahp_2017_wh_zones",
                   "gismcda_swc_siting_2014",
                   "kadam2012_scscn_india_rwh",
@@ -580124,6 +580366,46 @@
                   "wocat_wh_guidelines_2013"
                 ],
                 "rows": [
+                  {
+                    "id": "water_harvesting__in_situ__annual_precipitation",
+                    "label": "water harvesting  in situ  annual precipitation · In situ",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__in_situ"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_annual_precipitation_kahinda08_3",
+                      "ev_wh_precip_critchley91_contourbunds"
+                    ],
+                    "source_keys": [
+                      "fao_critchley_wh_manual_1991",
+                      "kahinda2008_sa_rwh_suitability"
+                    ]
+                  },
+                  {
+                    "id": "water_harvesting__in_situ__aridity_index",
+                    "label": "water harvesting  in situ  aridity index · In situ",
+                    "nbs_id": "water_harvesting_conservation",
+                    "family_ids": [
+                      "water_harvesting__in_situ"
+                    ],
+                    "farming_system": "",
+                    "scope_type": "",
+                    "scope_id": "",
+                    "risk_role": "",
+                    "evidence_ids": [
+                      "ev_wh_aridity_index_kahinda08_2",
+                      "ev_wh_aridity_slm11_ca"
+                    ],
+                    "source_keys": [
+                      "fao_slm_in_practice_2011",
+                      "kahinda2008_sa_rwh_suitability"
+                    ]
+                  },
                   {
                     "id": "water_harvesting__runoff_catchment__annual_precipitation",
                     "label": "water harvesting  runoff catchment  annual precipitation · Runoff-catchment water harvesting",
@@ -581039,10 +581321,10 @@
             "label": "Suitability",
             "unit": "suitability rules",
             "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-            "output_count": 28,
-            "evidence_backed_outputs": 27,
-            "contributing_excerpts": 43,
-            "contributing_sources": 25,
+            "output_count": 30,
+            "evidence_backed_outputs": 29,
+            "contributing_excerpts": 47,
+            "contributing_sources": 26,
             "evidence_ids": [
               "EV_wocat_507_2019_008",
               "ev_T4_canopy_ahmad2018_1",
@@ -581070,12 +581352,16 @@
               "ev_wet_distance_to_waterbody_russell97_1",
               "ev_wet_groundwater_seepage_brouwer26_1",
               "ev_wet_water_table_depth_brouwer26_1",
+              "ev_wh_annual_precipitation_kahinda08_3",
               "ev_wh_annual_precipitation_kahinda08_4",
               "ev_wh_annual_precipitation_ryan20_1",
+              "ev_wh_aridity_index_kahinda08_2",
+              "ev_wh_aridity_slm11_ca",
               "ev_wh_catchment_area_kadam12_1",
               "ev_wh_drainage_density_karimi19_1",
               "ev_wh_drainage_density_mahmoud21_1",
               "ev_wh_drainage_density_singh17_1",
+              "ev_wh_precip_critchley91_contourbunds",
               "ev_wh_precip_critchley91_trapezoidal",
               "ev_wh_precip_wocatgl13_trapezoidal",
               "ev_wh_runoff_potential_index_alabadi17_1",
@@ -581094,6 +581380,7 @@
               "chuma_2021",
               "dewinnaar_2007_gis_runoff_thukela",
               "fao_critchley_wh_manual_1991",
+              "fao_slm_in_practice_2011",
               "fuzzy_ahp_2017_wh_zones",
               "gis_riparian_siting_russell_1997",
               "gismcda_swc_siting_2014",
@@ -581447,6 +581734,46 @@
                 ],
                 "source_keys": [
                   "vaast2016_double_dividend"
+                ]
+              },
+              {
+                "id": "water_harvesting__in_situ__annual_precipitation",
+                "label": "water harvesting  in situ  annual precipitation · In situ",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__in_situ"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_annual_precipitation_kahinda08_3",
+                  "ev_wh_precip_critchley91_contourbunds"
+                ],
+                "source_keys": [
+                  "fao_critchley_wh_manual_1991",
+                  "kahinda2008_sa_rwh_suitability"
+                ]
+              },
+              {
+                "id": "water_harvesting__in_situ__aridity_index",
+                "label": "water harvesting  in situ  aridity index · In situ",
+                "nbs_id": "water_harvesting_conservation",
+                "family_ids": [
+                  "water_harvesting__in_situ"
+                ],
+                "farming_system": "",
+                "scope_type": "",
+                "scope_id": "",
+                "risk_role": "",
+                "evidence_ids": [
+                  "ev_wh_aridity_index_kahinda08_2",
+                  "ev_wh_aridity_slm11_ca"
+                ],
+                "source_keys": [
+                  "fao_slm_in_practice_2011",
+                  "kahinda2008_sa_rwh_suitability"
                 ]
               },
               {
@@ -645229,10 +645556,10 @@
         "label": "Suitability",
         "unit": "suitability rules",
         "count_definition": "Distinct configured/compiled record IDs, including family, practice roll-up and context variants; not unique hazard or benefit dimensions. Counts do not certify review completion.",
-        "output_count": 28,
-        "evidence_backed_outputs": 27,
-        "contributing_excerpts": 43,
-        "contributing_sources": 25,
+        "output_count": 30,
+        "evidence_backed_outputs": 29,
+        "contributing_excerpts": 47,
+        "contributing_sources": 26,
         "evidence_ids": [
           "EV_wocat_507_2019_008",
           "ev_T4_canopy_ahmad2018_1",
@@ -645260,12 +645587,16 @@
           "ev_wet_distance_to_waterbody_russell97_1",
           "ev_wet_groundwater_seepage_brouwer26_1",
           "ev_wet_water_table_depth_brouwer26_1",
+          "ev_wh_annual_precipitation_kahinda08_3",
           "ev_wh_annual_precipitation_kahinda08_4",
           "ev_wh_annual_precipitation_ryan20_1",
+          "ev_wh_aridity_index_kahinda08_2",
+          "ev_wh_aridity_slm11_ca",
           "ev_wh_catchment_area_kadam12_1",
           "ev_wh_drainage_density_karimi19_1",
           "ev_wh_drainage_density_mahmoud21_1",
           "ev_wh_drainage_density_singh17_1",
+          "ev_wh_precip_critchley91_contourbunds",
           "ev_wh_precip_critchley91_trapezoidal",
           "ev_wh_precip_wocatgl13_trapezoidal",
           "ev_wh_runoff_potential_index_alabadi17_1",
@@ -645284,6 +645615,7 @@
           "chuma_2021",
           "dewinnaar_2007_gis_runoff_thukela",
           "fao_critchley_wh_manual_1991",
+          "fao_slm_in_practice_2011",
           "fuzzy_ahp_2017_wh_zones",
           "gis_riparian_siting_russell_1997",
           "gismcda_swc_siting_2014",
@@ -645637,6 +645969,46 @@
             ],
             "source_keys": [
               "vaast2016_double_dividend"
+            ]
+          },
+          {
+            "id": "water_harvesting__in_situ__annual_precipitation",
+            "label": "water harvesting  in situ  annual precipitation · In situ",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__in_situ"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_annual_precipitation_kahinda08_3",
+              "ev_wh_precip_critchley91_contourbunds"
+            ],
+            "source_keys": [
+              "fao_critchley_wh_manual_1991",
+              "kahinda2008_sa_rwh_suitability"
+            ]
+          },
+          {
+            "id": "water_harvesting__in_situ__aridity_index",
+            "label": "water harvesting  in situ  aridity index · In situ",
+            "nbs_id": "water_harvesting_conservation",
+            "family_ids": [
+              "water_harvesting__in_situ"
+            ],
+            "farming_system": "",
+            "scope_type": "",
+            "scope_id": "",
+            "risk_role": "",
+            "evidence_ids": [
+              "ev_wh_aridity_index_kahinda08_2",
+              "ev_wh_aridity_slm11_ca"
+            ],
+            "source_keys": [
+              "fao_slm_in_practice_2011",
+              "kahinda2008_sa_rwh_suitability"
             ]
           },
           {
@@ -684934,7 +685306,7 @@
         "catalogue": {
           "summary": {
             "structural_claims": 367,
-            "explicitly_linked_claims": 17,
+            "explicitly_linked_claims": 21,
             "focus_claims": 5,
             "selection_only_with_relationship_content": 2,
             "scopes": {
@@ -685909,7 +686281,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__in_situ__aridity_index"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -685967,7 +686341,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__in_situ__annual_precipitation"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -686650,7 +687026,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__in_situ__annual_precipitation"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -687145,7 +687523,9 @@
               "has_source_classes": false,
               "source_shape": "",
               "compilation_disposition": "unresolved_review",
-              "linked_mapping_ids": [],
+              "linked_mapping_ids": [
+                "water_harvesting__in_situ__aridity_index"
+              ],
               "focus_review": false,
               "visibility_flag": false,
               "runtime_authorization": "None granted by this catalogue"
@@ -695695,6 +696075,12 @@
               "mapped_group_weights": [],
               "function_support": [
                 {
+                  "family": "water_harvesting__in_situ",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__in_situ__annual_precipitation"
+                },
+                {
                   "family": "water_harvesting__runoff_catchment",
                   "sources": [],
                   "function_options": 0,
@@ -695827,7 +696213,14 @@
               "weight_summary": [],
               "study_weights": [],
               "mapped_group_weights": [],
-              "function_support": [],
+              "function_support": [
+                {
+                  "family": "water_harvesting__in_situ",
+                  "sources": [],
+                  "function_options": 0,
+                  "mapping_id": "water_harvesting__in_situ__aridity_index"
+                }
+              ],
               "evidence_ids": [
                 "ev_wh_aridity_index_kahinda08_1",
                 "ev_wh_aridity_index_kahinda08_2",
@@ -698559,19 +698952,11 @@
   "build": {
     "release": "1.5.0",
     "ui_id": "d7e835455079",
-    "data_id": "5730eb71be67",
+    "data_id": "cdbb231eb0ab",
     "count_definition_version": "4",
-    "built_at": "2026-11-09T08:02:57.593099+00:00",
-    "source_commit": "549940fd33f5bd2dcf5a79b48e1b08c1e2ee8b6d",
+    "built_at": "2026-11-09T09:14:05.387575+00:00",
+    "source_commit": "f75e54c769513ac20718786372b66ee310f345f5",
     "history": [
-      {
-        "release": "1.5.0",
-        "ui_id": "54aadd92bb3c",
-        "data_id": "16d73c9398e3",
-        "count_definition_version": "4",
-        "built_at": "2026-11-05T07:12:00.773816+00:00",
-        "source_commit": "dd80226700432e9abd4aa9262262b9ad5ad6dfd5"
-      },
       {
         "release": "1.5.0",
         "ui_id": "c7a44300908c",
@@ -698963,6 +699348,14 @@
         "count_definition_version": "4",
         "built_at": "2026-11-09T08:02:57.593099+00:00",
         "source_commit": "549940fd33f5bd2dcf5a79b48e1b08c1e2ee8b6d"
+      },
+      {
+        "release": "1.5.0",
+        "ui_id": "d7e835455079",
+        "data_id": "cdbb231eb0ab",
+        "count_definition_version": "4",
+        "built_at": "2026-11-09T09:14:05.387575+00:00",
+        "source_commit": "f75e54c769513ac20718786372b66ee310f345f5"
       }
     ]
   }
