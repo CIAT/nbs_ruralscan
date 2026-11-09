@@ -15,7 +15,7 @@ uv run python -m nbs_ruralscan.recipe.publish_release inspect --store ../recipe-
 
 The publisher copies the declared inputs, compiles the full practice corpus and checks the output against its audited tables before selecting a release. Stale typed evidence, a missing definition, a changed approved function fingerprint or a table mismatch stops publication of the whole requested set. The command reports practice-specific holds. A header-only table is included with zero rows. The readiness report retains unresolved scientific or implementation decisions.
 
-The [first six-practice release](../methodology/migration/2026-11-05/m08-recipe-releases.md#first-six-practice-release-9-november-2026) lists the table counts and scientific holds by practice. Mangrove establishment time, benefit timing and recurrent cost class need local values before operational use. The current runtime pin includes 11 water-harvesting mappings held for calibration, eight of which also need matching inputs. [797-row handoff and accompanying depth audits](../methodology/migration/2026-11-05/m16-runtime-797-handoff.md)
+The [first six-practice release](../methodology/migration/2026-11-05/m08-recipe-releases.md#first-six-practice-release-9-november-2026) lists the table counts and scientific holds by practice. Mangrove establishment time, benefit timing and recurrent cost class need local values before operational use. The current runtime pin includes 12 water-harvesting mappings held for calibration, eight of which also need matching inputs. [798-row handoff and accompanying depth and slope audits](../methodology/migration/2026-11-05/m16-runtime-798-handoff.md)
 
 Each successful publish selects exactly the requested set as the directory's current release. Earlier release IDs remain available. Identical content and provenance yield the same ID. Use separate store directories for collections that need independent current selections.
 
@@ -41,7 +41,7 @@ Opening a release verifies its complete file inventory, hashes, table formats, r
 
 ## Verify the external runtime reader
 
-Install the pinned version of `RuralScan/runtime` in its own Python environment, then run `python -I -m nbs_runtime.recipe_release --store /path/to/recipe-releases` there. Its bundled pin names the release, producer revision and six practices. The command verifies the local files and prints row counts and spatial execution status. For a comparison of every table, setting, report and provenance record against the producer, follow the [runtime handoff instructions](../methodology/migration/2026-11-05/m16-runtime-797-handoff.md#verify-both-readers).
+Install the pinned version of `RuralScan/runtime` in its own Python environment, then run `python -I -m nbs_runtime.recipe_release --store /path/to/recipe-releases` there. Its bundled pin names the release, producer revision and six practices. The command verifies the local files and prints row counts and spatial execution status. For a comparison of every table, setting, report and provenance record against the producer, follow the [runtime handoff instructions](../methodology/migration/2026-11-05/m16-runtime-798-handoff.md#verify-both-readers).
 
 ## Maintain settings
 
