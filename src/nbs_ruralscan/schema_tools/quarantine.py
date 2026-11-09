@@ -111,7 +111,12 @@ def _human_touched(paths: QuarantinePaths) -> set[str]:
 # is the defect, not the claim, so it goes to the reviewer to RE-SLICE (retro 2026-09, FR).
 # `m2b_flag` = feasibility-level detail in an operational unit (catalogue #50): the reviewer
 # decides; only the `m2b_exclude` variables are dropped (2026-10-29 retro).
-_ADVISORY_ONLY = {"site_context", "span_bleed", "m2b_flag"}
+_ADVISORY_ONLY = {
+    "site_context",
+    "span_bleed",
+    "m2b_flag",
+    "observed_suitability_bound",
+}
 
 
 def _screen(paths: QuarantinePaths, ev: Path, rows: list[dict]) -> list[dict]:

@@ -2,8 +2,7 @@
 description: Extract source-provenanced evidence using the canonical extraction skill
 ---
 
-Read and follow `.agents/skills/source-command-extract-evidence/SKILL.md` (current ruleset
-v1.9.5), its defect catalogue and applicable extraction contracts. It is the single active
+Read and follow `.agents/skills/source-command-extract-evidence/SKILL.md`, its defect catalogue and applicable extraction contracts. It is the single active
 instruction source for this command; do not revive archived September T3/T6 deferral text.
 
 Use the user's authorised scope. Stage evidence, preserve source identity and review history,

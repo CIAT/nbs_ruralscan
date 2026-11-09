@@ -503,3 +503,21 @@ round 2, decisions A2b/A3). Three rules for `strength_class` and `significance`:
   paper's confidence interval or standard error shows the effect excludes zero, or the
   same paper's own reporting makes the threshold intent plain (Kosmowski 2018 prints
   p = .05 for four results it calls significant). Record the reasoning in `context.note`.
+
+58. **A review can retain a reported range without establishing suitability at its endpoints.**
+Lohbeck reports FMNR practice across rainfall contexts of 100–950 mm/year. Keep the
+range and underlying citations as observed presence. Encoding either endpoint as an
+absolute limit or optimum requires separate evidence of a siting criterion or a
+performance constraint. Check the source's actual claim even when several cases or
+regions are represented. The advisory `observed_suitability_bound` flags a proposed
+bound on explicitly labelled observations or a quote describing where a practice is
+commonly used. Inspect any companion criterion before deciding.
+
+For a ranked table spanning pages (Haile parklands), retain locators for each
+fragment and count one profile. Read the units in the value column separately
+from units of the study weight. Resolve practice, units and transfer before scoring.
+In a review of adoption studies, record what was counted (studies including the
+predictor, significant associations, direction among those studies, or farmers
+adopting). Identify the outcome and comparison for a predictor, including whether
+it measures adoption or subsequent management. Source-specific exclusions and
+holds remain visible in their review records.

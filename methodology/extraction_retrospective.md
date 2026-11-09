@@ -87,3 +87,11 @@ work; repeated applies with unchanged content do not. `learnings.record` records
 current feedback snapshot: use it only after reading that complete set. A bounded maintenance
 pass reports its exact scope and leaves the global cursor unchanged. Flag-rate comparisons
 require comparable scope and denominators; a smaller/easier batch is not proof of improvement.
+
+For a reviewer-specific pass, log each inspected review in
+`pipeline/metrics/learnings_log.feedback.scoped.csv` with its existing content
+fingerprint, the SHA-256 of the current full snapshot and the documented lesson.
+The build credits that exact decision. An amended note, reason or decision
+returns to the backlog. The next full retrospective supersedes those receipts.
+
+[9 November 2026 retrospective of Namita’s 40 decisions](audits/namita_review_20261109.md).

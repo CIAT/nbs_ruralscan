@@ -249,3 +249,47 @@ def test_named_forest_land_classes_are_recognised():
     ):
         assert _LC_CLASS.search(quote)
     assert not _LC_CLASS.search("Land cover is an input criterion")
+
+
+def test_reported_practice_range_is_evidence_without_an_establishment_limit(tmp_path):
+    from nbs_ruralscan.schema_tools.quarantine import _ADVISORY_ONLY
+
+    quote = (
+        "FMNR is largely being practiced in arid and semi-arid areas, "
+        "also referred to as dry and sub-humid areas in sub-Saharan Africa. "
+        "Rainfall is unevenly distributed and ranges between 100 and 950 mm per year."
+    )
+    bound = '{"direction":"envelope","abs_min":100,"abs_max":950}'
+    observed = '{"type":"observed_presence","reported_practice_rainfall_mm":[100,950]}'
+    p = _write(
+        tmp_path,
+        [
+            _row("old_lohbeck", "annual_precipitation", quote, relationship=bound),
+            _row("corrected", "annual_precipitation", quote, relationship=observed),
+            _row(
+                "tested",
+                "annual_precipitation",
+                quote + " Establishment requires at least 100 mm.",
+                relationship=bound,
+            ),
+            _row(
+                "explicit",
+                "slope",
+                "Reported implementation sites.",
+                relationship='{"type":"observed_presence","opt_low":0}',
+            ),
+            _row(
+                "other_role",
+                "annual_precipitation",
+                quote,
+                relationship=bound,
+                use_role="operational_risk",
+            ),
+        ],
+    )
+    signal = "observed_suitability_bound"
+    assert {f["evidence_id"] for f in check(p) if f["signal"] == signal} == {
+        "old_lohbeck",
+        "explicit",
+    }
+    assert signal in _ADVISORY_ONLY

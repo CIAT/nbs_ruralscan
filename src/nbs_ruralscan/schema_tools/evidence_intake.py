@@ -87,6 +87,8 @@ _RULESETS = {
     "v1.9.8",
     # v1.9.9: catalogue #57, ranges by weaker end, single-plot cap, p = .05 case by case
     "v1.9.9",
+    # v1.10.0: reported practice ranges and reviewed calibration are distinct
+    "v1.10.0",
 }
 
 
