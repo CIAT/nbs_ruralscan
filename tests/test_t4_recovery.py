@@ -12,6 +12,8 @@ from nbs_ruralscan.recipe.numeric_bands import join_continuations
 from nbs_ruralscan.schema_tools.t4_coverage import check, check_direction_inventory
 
 ROOT = Path(__file__).resolve().parents[1]
+# Two source rows and their superseded continuation authorization from c10e14b3.
+COMPLETION_FIXTURE = ROOT / "tests/fixtures/t4_source_completion/schema"
 
 
 def profiles(path):
@@ -29,11 +31,6 @@ def test_recovered_evidence_preserves_approval_and_one_source_vote():
         / "pipeline/t4_audit/agroforestry/final_audit/draft/T4_suitability_mappings.csv"
     )
     assert len(live["ev_T4_slope_chuma21_1"]["intervals"]) == 3
-    assert len(live["ev_T4_soc_haile2024_1"]["intervals"]) == 4
-    assert (
-        live["ev_T4_soc_haile2024_1"]["source_completions"][0]["kind"]
-        == "verified_table_continuation"
-    )
     assert len(draft["ev_T4_soc_haile2024_1"]["intervals"]) == 4
     assert draft["ev_T4_soc_haile2024_1"]["page_locators"] == {
         "ev_T4_soc_haile2024_1": 5,
@@ -47,7 +44,6 @@ def test_recovered_evidence_preserves_approval_and_one_source_vote():
         )
     }
     elevation = evidence["ev_T4_elevation_chuma2021_recovery"]
-    assert evidence["ev_T4_soc_haile2024_continuation"]["reviewer_ok"] == "false"
     assert ("ev_T4_elevation_chuma2021_recovery" in live) == (
         elevation["reviewer_ok"].lower() == "true"
         and elevation["review_state"] != "dropped"
@@ -71,17 +67,18 @@ def test_recovered_evidence_preserves_approval_and_one_source_vote():
     ],
 )
 def test_source_completion_cannot_admit_changed_or_unauthorized_claims(defect):
-    from nbs_ruralscan.recipe.evidence import load_units
+    from nbs_ruralscan.recipe.evidence import EvidenceUnit
     from nbs_ruralscan.recipe.numeric_bands import source_completion
+    from nbs_ruralscan.schema_tools.generate import _csv_to_rows
 
     units = {
-        u.evidence_id: u
-        for u in load_units(ROOT / "schema/registers/EV_evidence_register.json")
+        r["evidence_id"]: EvidenceUnit(**r)
+        for r in _csv_to_rows(COMPLETION_FIXTURE / "registers/EV_evidence_register.csv")
     }
     policies = {
         r["evidence_id"]: r
         for r in csv.DictReader(
-            (ROOT / "schema/lookups/t4_numeric_compilation_policy.csv").open()
+            (COMPLETION_FIXTURE / "lookups/t4_numeric_compilation_policy.csv").open()
         )
     }
     unit = units["ev_T4_soc_haile2024_continuation"]
@@ -118,7 +115,7 @@ def test_source_completion_cannot_admit_changed_or_unauthorized_claims(defect):
 )
 def test_continuations_reject_incompatible_context(mismatch):
     base = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")[
-        "ev_T4_soc_haile2024_1"
+        "ev_T4_slope_chuma21_1"
     ]
     part = copy.deepcopy(base)
     part.update(
@@ -131,7 +128,7 @@ def test_continuations_reject_incompatible_context(mismatch):
 
 def test_continuation_rejects_overlapping_table():
     base = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")[
-        "ev_T4_soc_haile2024_1"
+        "ev_T4_slope_chuma21_1"
     ]
     part = copy.deepcopy(base)
     part.update(
@@ -223,7 +220,7 @@ def test_wrong_class_count_is_an_explicit_compiler_hold():
 
 def test_orphan_continuation_cannot_become_independent_vote():
     part = profiles(ROOT / "schema/recipes/agroforestry/T4_suitability_mappings.csv")[
-        "ev_T4_soc_haile2024_1"
+        "ev_T4_slope_chuma21_1"
     ]
     part["continuation_of"] = "missing_parent"
     result, rejected = join_continuations([part])

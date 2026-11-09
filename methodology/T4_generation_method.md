@@ -694,7 +694,9 @@ site descriptor, unsupported applicability, or scope exclusion. Evidence approva
 does not turn site conditions or AHP weights into response curves. The approved Singh
 pH bands now compile; Haile's overlapping pH bands remain held. Ahmad's explicitly
 permitted descending SOC band is reordered without changing its endpoints; Haile's
-contradictory pH table is not repaired by that rule.
+contradictory pH table is not repaired by that rule. Haile’s soil-carbon classes on
+PDF pages 5–6 form one documentary Ethiopian parkland profile. The SOC unit is
+unstated and the cross-family score is inactive. [9 November decision](audits/t4_haile_parkland_20261109/decision.md)
 
 ### 6.1 Publication bias & uncertainty (pragmatic)
 

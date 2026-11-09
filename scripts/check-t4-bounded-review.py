@@ -31,10 +31,18 @@ def documented_review_transition(row, old, log, since):
         return False
     approved = str(row.get("reviewer_ok", "")).lower() == "true"
     state = row.get("review_state", "")
-    return (
-        (action == "ok" and approved and state == "")
-        or (action == "flag" and not approved and state == "")
-        or (action == "drop" and not approved and state == "dropped")
+    if action == "drop":
+        # A soft drop changes review_state and preserves the previous reviewer_ok.
+        previous_ok = str(old.get("reviewer_ok", "")).lower() == "true"
+        for prior in reversed(entries[:-1]):
+            if prior["decision"] in {"ok", "flag", "query", "reclassify", "reopen"}:
+                previous_ok = prior["decision"] in {"ok", "reclassify"}
+                if prior["source_id"] != row["source_id"] or not prior.get("reviewer"):
+                    return False
+                break
+        return state == "dropped" and approved == previous_ok
+    return (action == "ok" and approved and state == "") or (
+        action == "flag" and not approved and state == ""
     )
 
 

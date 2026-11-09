@@ -1,19 +1,23 @@
 {
   "status": "reviewed_compilation_with_explicit_gaps",
   "input_sha256": {
-    "schema/registers/XW_target_crosswalk.csv": "4a811a751c9db882faacb5bed2e02954836889112c6a651dc402434ea248faf3",
+    "schema/registers/XW_target_crosswalk.csv": "67a650deb642e52c2fcdf8a72a79fb87af502f7ba15dd7af5c3c74f70250fa48",
     "schema/registers/FAM_family_registry.csv": "3050387be3fd30d2913effcde7dc51fe60de833366be95fb111518959e214136",
-    "schema/registers/SRC_source_register.csv": "41478915820b02d7a63cd0ce05acd382b3b00dc7c87ee6d6d8de47d2bb94ec23",
-    "schema/registers/EV_evidence_register.csv": "e8d2cca0c149d3f093ace861513ee36246b35ac7f05395994d73f87f2546048b",
+    "schema/registers/SRC_source_register.csv": "b88d53a1d09332bfc548cc9dd7a3dc89c43e4ca133c8aa6b06b508bfc478d721",
+    "schema/registers/EV_evidence_register.csv": "c6763ef7b67f6b593a1aee03fbe84f90d4e5d8a8d79801e32db13462237db3ea",
     "schema/registers/SRCH_search_register.csv": "8ee4ace893b22c666f06b4354195baefc956fdb249f9816c8a1edfc27f68b2d3",
     "schema/registers/TOOL_tool_registry.csv": "caf08695dbe039689d48289c35afdd1f29c00f800add581bf85906d9070dad7a",
     "schema/registers/CV_per_paper_agroforestry_F1.csv": "2cb5db00081038b335253ed49493af9dd2134c98fbd5b97094b75d159771e3b1",
     "schema/registers/CV_lit_review_agroforestry.csv": "f5f2cf246c2ed624cc45fad741c39523b69daf6471a746272431ee80b132b7c5",
     "schema/registers/BIND_dataset_binding.csv": "6aeb5481a121cca768efd69ebe277b95a85e2c7f1ef9941e9cc74536c9bcfa35",
-    "schema/registers/VONT_variable_ontology.csv": "077931150bc3c8b806080c25a82d2103268a8155e609b7dc51b286984bf9d1be",
+    "schema/registers/VONT_variable_ontology.csv": "5c53fb4873449ce787052b0f0b3effe8070d7ebfc8dd34920c211f4a522736ea",
     "schema/registers/BANDS_magnitude_bands.csv": "3be4a86b555e6f94a5662b5ab16d9173149cb72dcf8b72326a7a4f3bfe13c3bb",
     "schema/lookups/crop_scope_policy.csv": "62f6bf68b618116e63d4bee57d7b01c6710b4a2ba62b4405bf7daf1662f9a5b4",
-    "schema/lookups/t4_numeric_compilation_policy.csv": "e3af05d083e8ae3f17cb3a69995591f8c80df9f3e1b0c87aad023357ab96e3dd"
+    "schema/lookups/t4_numeric_compilation_policy.csv": "ee653fa0c9747e9333949b9795e1f6bffd17e9b678546607b57033e3c3d4f668",
+    "schema/recipe_inputs/t4/practices.csv": "1304354079666ddb36f8c02b6bfc8246aa47720ceced17a8537b9f88450de5a2",
+    "schema/recipe_inputs/t4/agroforestry/authored_mappings.csv": "3a0a59781ea7dc28bddf8d5bb836f7f6b33b63bf791128925095c072a9212fd6",
+    "schema/recipe_inputs/t4/agroforestry/mapping_settings.csv": "1d912368006bbb20a9c19ee3f4ccd7c3f0aa49f02dba703a2ca4515bf784ebfc",
+    "schema/recipe_inputs/t4/agroforestry/review_holds.csv": "65a6d911993fd7fb76f16cfe10cf3e6fa0c1e17d4a35ab4531e0d4ccb4e3ea7d"
   },
   "screened_corpus_manifest": null,
   "review_mode": "approved_only",
@@ -22,6 +26,263 @@
       "family": "agroforestry__cross_family",
       "corpus_n": null,
       "rows": [
+        {
+          "mapping_id": "agroforestry__cross_family__annual_precipitation",
+          "suitability_family_id": "agroforestry__cross_family",
+          "variable": "annual_precipitation",
+          "variable_unit": "mm/year",
+          "dataset_id": "worldclim_v2_precip",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "profiles": [
+              {
+                "profile_id": "ev_T4_precip_haile2024_2",
+                "source_id": "haile_2024",
+                "continuation_of": "",
+                "evidence_ids": [
+                  "ev_T4_precip_haile2024_2"
+                ],
+                "page_locators": {
+                  "ev_T4_precip_haile2024_2": 5
+                },
+                "evidence_id": "ev_T4_precip_haile2024_2",
+                "context": {
+                  "study_country": "Ethiopia",
+                  "study_area": "Genale sub-basin, Oromia, Ethiopia",
+                  "model_use": {
+                    "verified": true,
+                    "method": "AHP_weight",
+                    "page": "4-6",
+                    "weight_path_pct": [
+                      12
+                    ],
+                    "scope": "practice_technology",
+                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch.",
+                    "weight_alternatives_pct": [
+                      [
+                        12
+                      ],
+                      [
+                        10.5
+                      ]
+                    ],
+                    "weight_conflict": true,
+                    "weight_conflict_note": "Table3 p4–5 classification weights conflict with Table5 p9 final AHP weights; human resolution required."
+                  },
+                  "system_applicability_review": {
+                    "reviewer": "Codex source review",
+                    "date": "2026-10-20",
+                    "pages": [
+                      2,
+                      9
+                    ],
+                    "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+                    "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+                    "status": "establishment_pathway_unresolved",
+                    "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+                  }
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "low": 1,
+                  "moderate": 2,
+                  "medium": 2,
+                  "high": 3,
+                  "very_high": 4
+                },
+                "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+                "unit": "mm/year",
+                "intervals": [
+                  {
+                    "lower": null,
+                    "upper": 600.0,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "Low",
+                    "rank": 1,
+                    "score": 0.25,
+                    "legacy_score": 0.25,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 600.0,
+                    "upper": 800.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "Medium",
+                    "rank": 2,
+                    "score": 0.5,
+                    "legacy_score": 0.5,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 800.0,
+                    "upper": 1200.0,
+                    "lower_inclusive": true,
+                    "upper_inclusive": true,
+                    "label": "High",
+                    "rank": 3,
+                    "score": 0.75,
+                    "legacy_score": 0.75,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  },
+                  {
+                    "lower": 1200.0,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "Very high",
+                    "rank": 4,
+                    "score": 0.9,
+                    "legacy_score": 1.0,
+                    "source_score": null,
+                    "score_basis": "schema_class_convention"
+                  }
+                ],
+                "origin_id": "haile_2024",
+                "source_weight": 0.315,
+                "variable": "annual_precipitation",
+                "score_policy": "semantic_classes_v1",
+                "pool_id": "",
+                "system_id": "",
+                "context_id": "",
+                "compatibility_approved": false,
+                "applicability_review": {
+                  "pages": [
+                    2,
+                    9
+                  ],
+                  "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
+                  "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
+                  "status": "establishment_pathway_unresolved",
+                  "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
+                },
+                "pool_review": "establishment_pathway_unresolved"
+              },
+              {
+                "profile_id": "ev_t4_precip_mushtaq2023_2",
+                "source_id": "mushtaq_2023",
+                "continuation_of": "",
+                "evidence_ids": [
+                  "ev_t4_precip_mushtaq2023_2"
+                ],
+                "page_locators": {
+                  "ev_t4_precip_mushtaq2023_2": 17
+                },
+                "evidence_id": "ev_t4_precip_mushtaq2023_2",
+                "context": {
+                  "study_country": "India",
+                  "model_use": {
+                    "verified": true,
+                    "method": "AHP_weight",
+                    "page": "13",
+                    "weight_path_pct": [
+                      14.98
+                    ],
+                    "scope": "species_specific",
+                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
+                  },
+                  "system_applicability_review": {
+                    "reviewer": "Codex source review",
+                    "date": "2026-10-20",
+                    "pages": [
+                      1,
+                      17
+                    ],
+                    "source_scope": "Mulberry-tree production study; >1200 mm statement is secondary generic agroforestry discussion, citing Ahmad 2019.",
+                    "decision": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
+                    "status": "generic_secondary_context",
+                    "quote": "Agroforestry-friendly climates are characterized by mean annual precipitation exceeding 1200 mm"
+                  }
+                },
+                "source_group": "default",
+                "ordinal_scale": {
+                  "favourable": 1
+                },
+                "applicability_note": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
+                "unit": "mm/year",
+                "intervals": [
+                  {
+                    "lower": 1200.0,
+                    "upper": null,
+                    "lower_inclusive": false,
+                    "upper_inclusive": false,
+                    "label": "favourable",
+                    "rank": 1,
+                    "score": null,
+                    "legacy_score": 1.0,
+                    "source_score": null,
+                    "score_basis": "unresolved_class_meaning"
+                  }
+                ],
+                "origin_id": "Ahmad et al. (2019). Agroforestry suitability mapping of India. Agroforestry Systems 93(4):1319–1336.",
+                "source_weight": 0.24,
+                "variable": "annual_precipitation",
+                "score_policy": "semantic_classes_v1",
+                "pool_id": "",
+                "system_id": "",
+                "context_id": "",
+                "compatibility_approved": false,
+                "applicability_review": {
+                  "pages": [
+                    1,
+                    17
+                  ],
+                  "source_scope": "Mulberry-tree production study; >1200 mm statement is secondary generic agroforestry discussion, citing Ahmad 2019.",
+                  "decision": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
+                  "status": "generic_secondary_context",
+                  "quote": "Agroforestry-friendly climates are characterized by mean annual precipitation exceeding 1200 mm"
+                },
+                "pool_review": "generic_secondary_context"
+              }
+            ],
+            "profile_selection": "explicit",
+            "outside_domain": "unknown",
+            "conflicting_boundaries": "unknown",
+            "score_policy": "per_profile_schema_policy",
+            "harmonization": {
+              "pools": [],
+              "review": [
+                {
+                  "profile_id": "ev_T4_precip_haile2024_2",
+                  "reason": "establishment_pathway_unresolved"
+                },
+                {
+                  "profile_id": "ev_t4_precip_mushtaq2023_2",
+                  "reason": "generic_secondary_context"
+                },
+                {
+                  "profile_id": "ev_t4_precip_mushtaq2023_2",
+                  "reason": "unresolved_class_meaning"
+                }
+              ]
+            },
+            "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
+          },
+          "uncertainty_pct": 20,
+          "context_overrides": [],
+          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
+          "references": [
+            "haile_2024",
+            "mushtaq_2023"
+          ],
+          "evidence_ids": [
+            "ev_T4_precip_haile2024_2",
+            "ev_t4_precip_mushtaq2023_2"
+          ],
+          "parameter_source_ids": [
+            "haile_2024",
+            "mushtaq_2023"
+          ],
+          "n_parameter_sources": 2,
+          "paper_support_pct": null,
+          "n_sources": 7,
+          "corpus_n": null
+        },
         {
           "mapping_id": "agroforestry__cross_family__ndvi",
           "suitability_family_id": "agroforestry__cross_family",
@@ -436,454 +697,6 @@
           "corpus_n": null
         },
         {
-          "mapping_id": "agroforestry__cross_family__annual_precipitation",
-          "suitability_family_id": "agroforestry__cross_family",
-          "variable": "annual_precipitation",
-          "variable_unit": "mm/year",
-          "dataset_id": "worldclim_v2_precip",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "piecewise",
-          "relationship_params": {
-            "profiles": [
-              {
-                "profile_id": "ev_T4_precip_haile2024_2",
-                "source_id": "haile_2024",
-                "continuation_of": "",
-                "evidence_ids": [
-                  "ev_T4_precip_haile2024_2"
-                ],
-                "page_locators": {
-                  "ev_T4_precip_haile2024_2": 5
-                },
-                "evidence_id": "ev_T4_precip_haile2024_2",
-                "context": {
-                  "study_country": "Ethiopia",
-                  "study_area": "Genale sub-basin, Oromia, Ethiopia",
-                  "model_use": {
-                    "verified": true,
-                    "method": "AHP_weight",
-                    "page": "4-6",
-                    "weight_path_pct": [
-                      12
-                    ],
-                    "scope": "practice_technology",
-                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch.",
-                    "weight_alternatives_pct": [
-                      [
-                        12
-                      ],
-                      [
-                        10.5
-                      ]
-                    ],
-                    "weight_conflict": true,
-                    "weight_conflict_note": "Table3 p4–5 classification weights conflict with Table5 p9 final AHP weights; human resolution required."
-                  },
-                  "system_applicability_review": {
-                    "reviewer": "Codex source review",
-                    "date": "2026-10-20",
-                    "pages": [
-                      2,
-                      9
-                    ],
-                    "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
-                    "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
-                    "status": "establishment_pathway_unresolved",
-                    "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
-                  }
-                },
-                "source_group": "default",
-                "ordinal_scale": {
-                  "low": 1,
-                  "moderate": 2,
-                  "medium": 2,
-                  "high": 3,
-                  "very_high": 4
-                },
-                "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
-                "unit": "mm/year",
-                "intervals": [
-                  {
-                    "lower": null,
-                    "upper": 600.0,
-                    "lower_inclusive": false,
-                    "upper_inclusive": false,
-                    "label": "Low",
-                    "rank": 1,
-                    "score": 0.25,
-                    "legacy_score": 0.25,
-                    "source_score": null,
-                    "score_basis": "schema_class_convention"
-                  },
-                  {
-                    "lower": 600.0,
-                    "upper": 800.0,
-                    "lower_inclusive": true,
-                    "upper_inclusive": true,
-                    "label": "Medium",
-                    "rank": 2,
-                    "score": 0.5,
-                    "legacy_score": 0.5,
-                    "source_score": null,
-                    "score_basis": "schema_class_convention"
-                  },
-                  {
-                    "lower": 800.0,
-                    "upper": 1200.0,
-                    "lower_inclusive": true,
-                    "upper_inclusive": true,
-                    "label": "High",
-                    "rank": 3,
-                    "score": 0.75,
-                    "legacy_score": 0.75,
-                    "source_score": null,
-                    "score_basis": "schema_class_convention"
-                  },
-                  {
-                    "lower": 1200.0,
-                    "upper": null,
-                    "lower_inclusive": false,
-                    "upper_inclusive": false,
-                    "label": "Very high",
-                    "rank": 4,
-                    "score": 0.9,
-                    "legacy_score": 1.0,
-                    "source_score": null,
-                    "score_basis": "schema_class_convention"
-                  }
-                ],
-                "origin_id": "haile_2024",
-                "source_weight": 0.315,
-                "variable": "annual_precipitation",
-                "score_policy": "semantic_classes_v1",
-                "pool_id": "",
-                "system_id": "",
-                "context_id": "",
-                "compatibility_approved": false,
-                "applicability_review": {
-                  "pages": [
-                    2,
-                    9
-                  ],
-                  "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
-                  "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
-                  "status": "establishment_pathway_unresolved",
-                  "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
-                },
-                "pool_review": "establishment_pathway_unresolved"
-              },
-              {
-                "profile_id": "ev_t4_precip_mushtaq2023_2",
-                "source_id": "mushtaq_2023",
-                "continuation_of": "",
-                "evidence_ids": [
-                  "ev_t4_precip_mushtaq2023_2"
-                ],
-                "page_locators": {
-                  "ev_t4_precip_mushtaq2023_2": 17
-                },
-                "evidence_id": "ev_t4_precip_mushtaq2023_2",
-                "context": {
-                  "study_country": "India",
-                  "model_use": {
-                    "verified": true,
-                    "method": "AHP_weight",
-                    "page": "13",
-                    "weight_path_pct": [
-                      14.98
-                    ],
-                    "scope": "species_specific",
-                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch."
-                  },
-                  "system_applicability_review": {
-                    "reviewer": "Codex source review",
-                    "date": "2026-10-20",
-                    "pages": [
-                      1,
-                      17
-                    ],
-                    "source_scope": "Mulberry-tree production study; >1200 mm statement is secondary generic agroforestry discussion, citing Ahmad 2019.",
-                    "decision": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
-                    "status": "generic_secondary_context",
-                    "quote": "Agroforestry-friendly climates are characterized by mean annual precipitation exceeding 1200 mm"
-                  }
-                },
-                "source_group": "default",
-                "ordinal_scale": {
-                  "favourable": 1
-                },
-                "applicability_note": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
-                "unit": "mm/year",
-                "intervals": [
-                  {
-                    "lower": 1200.0,
-                    "upper": null,
-                    "lower_inclusive": false,
-                    "upper_inclusive": false,
-                    "label": "favourable",
-                    "rank": 1,
-                    "score": null,
-                    "legacy_score": 1.0,
-                    "source_score": null,
-                    "score_basis": "unresolved_class_meaning"
-                  }
-                ],
-                "origin_id": "Ahmad et al. (2019). Agroforestry suitability mapping of India. Agroforestry Systems 93(4):1319–1336.",
-                "source_weight": 0.24,
-                "variable": "annual_precipitation",
-                "score_policy": "semantic_classes_v1",
-                "pool_id": "",
-                "system_id": "",
-                "context_id": "",
-                "compatibility_approved": false,
-                "applicability_review": {
-                  "pages": [
-                    1,
-                    17
-                  ],
-                  "source_scope": "Mulberry-tree production study; >1200 mm statement is secondary generic agroforestry discussion, citing Ahmad 2019.",
-                  "decision": "Remove F5 shaded-perennial assignment from this generic rainfall statement. Retain as cross-family secondary context with unresolved score; do not infer a crop-under-shade requirement or use it as an independent numeric response.",
-                  "status": "generic_secondary_context",
-                  "quote": "Agroforestry-friendly climates are characterized by mean annual precipitation exceeding 1200 mm"
-                },
-                "pool_review": "generic_secondary_context"
-              }
-            ],
-            "profile_selection": "explicit",
-            "outside_domain": "unknown",
-            "conflicting_boundaries": "unknown",
-            "score_policy": "per_profile_schema_policy",
-            "harmonization": {
-              "pools": [],
-              "review": [
-                {
-                  "profile_id": "ev_T4_precip_haile2024_2",
-                  "reason": "establishment_pathway_unresolved"
-                },
-                {
-                  "profile_id": "ev_t4_precip_mushtaq2023_2",
-                  "reason": "generic_secondary_context"
-                },
-                {
-                  "profile_id": "ev_t4_precip_mushtaq2023_2",
-                  "reason": "unresolved_class_meaning"
-                }
-              ]
-            },
-            "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
-          },
-          "uncertainty_pct": 20,
-          "context_overrides": [],
-          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
-          "references": [
-            "haile_2024",
-            "mushtaq_2023"
-          ],
-          "evidence_ids": [
-            "ev_T4_precip_haile2024_2",
-            "ev_t4_precip_mushtaq2023_2"
-          ],
-          "parameter_source_ids": [
-            "haile_2024",
-            "mushtaq_2023"
-          ],
-          "n_parameter_sources": 2,
-          "paper_support_pct": null,
-          "n_sources": 6,
-          "corpus_n": null
-        },
-        {
-          "mapping_id": "agroforestry__cross_family__soil_organic_carbon",
-          "suitability_family_id": "agroforestry__cross_family",
-          "variable": "soil_organic_carbon",
-          "variable_unit": "g/kg",
-          "dataset_id": "isric_soilgrids250_v2",
-          "suitability_dimension": "biophysical_constraint",
-          "relationship_type": "piecewise",
-          "relationship_params": {
-            "profiles": [
-              {
-                "profile_id": "ev_T4_soc_haile2024_1",
-                "source_id": "haile_2024",
-                "continuation_of": "",
-                "evidence_ids": [
-                  "ev_T4_soc_haile2024_1",
-                  "ev_T4_soc_haile2024_continuation"
-                ],
-                "page_locators": {
-                  "ev_T4_soc_haile2024_1": 5,
-                  "ev_T4_soc_haile2024_continuation": 6
-                },
-                "evidence_id": "ev_T4_soc_haile2024_1",
-                "context": {
-                  "study_country": "Ethiopia",
-                  "study_area": "Genale sub-basin, Oromia, Ethiopia",
-                  "model_use": {
-                    "verified": true,
-                    "method": "AHP_weight",
-                    "page": "4-6",
-                    "weight_path_pct": [
-                      20,
-                      35
-                    ],
-                    "scope": "practice_technology",
-                    "note": "Source model use verified independently of threshold admissibility; source count deduplicates repeated records. Nath soil weight path represents topsoil nutrient branch only; pH also appears in rooting branch.",
-                    "weight_alternatives_pct": [
-                      [
-                        35,
-                        20
-                      ],
-                      [
-                        34.5,
-                        20
-                      ]
-                    ],
-                    "weight_conflict": true,
-                    "weight_conflict_note": "Table3 p4–5 classification weights conflict with Table5 p9 final AHP weights; human resolution required."
-                  },
-                  "system_applicability_review": {
-                    "reviewer": "Codex source review",
-                    "date": "2026-10-20",
-                    "pages": [
-                      2,
-                      9
-                    ],
-                    "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
-                    "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
-                    "status": "establishment_pathway_unresolved",
-                    "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
-                  }
-                },
-                "source_group": "default",
-                "ordinal_scale": {
-                  "low": 1,
-                  "moderate": 2,
-                  "medium": 2,
-                  "high": 3,
-                  "very_high": 4
-                },
-                "applicability_note": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
-                "unit": "g/kg",
-                "intervals": [
-                  {
-                    "lower": null,
-                    "upper": 5.0,
-                    "lower_inclusive": false,
-                    "upper_inclusive": false,
-                    "label": "low",
-                    "rank": 1,
-                    "score": 0.25,
-                    "legacy_score": 0.25,
-                    "source_score": null,
-                    "score_basis": "schema_class_convention"
-                  },
-                  {
-                    "lower": 5.0,
-                    "upper": 7.0,
-                    "lower_inclusive": true,
-                    "upper_inclusive": true,
-                    "label": " medium",
-                    "rank": 2,
-                    "score": 0.5,
-                    "legacy_score": 0.5,
-                    "source_score": null,
-                    "score_basis": "schema_class_convention"
-                  },
-                  {
-                    "lower": 7.0,
-                    "upper": 7.5,
-                    "lower_inclusive": true,
-                    "upper_inclusive": true,
-                    "label": "high",
-                    "rank": 3,
-                    "score": 0.75,
-                    "legacy_score": 0.75,
-                    "source_score": null,
-                    "score_basis": "schema_class_convention"
-                  },
-                  {
-                    "lower": 7.5,
-                    "upper": null,
-                    "lower_inclusive": false,
-                    "upper_inclusive": false,
-                    "label": " very_high",
-                    "rank": 4,
-                    "score": 0.9,
-                    "legacy_score": 1.0,
-                    "source_score": null,
-                    "score_basis": "schema_class_convention"
-                  }
-                ],
-                "origin_id": "haile_2024",
-                "source_weight": 0.315,
-                "variable": "soil_organic_carbon",
-                "score_policy": "semantic_classes_v1",
-                "pool_id": "",
-                "system_id": "",
-                "context_id": "",
-                "compatibility_approved": false,
-                "applicability_review": {
-                  "pages": [
-                    2,
-                    9
-                  ],
-                  "source_scope": "Traditional parkland agroforestry; validation also describes parkland.",
-                  "decision": "Parkland established; planting versus natural retention/regeneration not established. Keep F1/F2 assignment unresolved and exclude from combined planted-system pools.",
-                  "status": "establishment_pathway_unresolved",
-                  "quote": "Parkland agroforestry is practiced in most part of Genale sub-basin"
-                },
-                "pool_review": "establishment_pathway_unresolved",
-                "source_completions": [
-                  {
-                    "kind": "verified_table_continuation",
-                    "authorization": "Pete, 2026-10-27: fix obvious incomplete curves; retain explicit inference/provenance.",
-                    "verified_by": "Codex source review (agent; not human approval)",
-                    "verified_date": "2026-10-27",
-                    "source_pdf_sha256": "f9aba0e5ce1dad8d21d9c3922dc81e15de6d92b6a6f352492cc67140abcb9eb0",
-                    "evidence_fingerprint": "55e1516fed65326de440b3482e82fdac5855d57ce1b15a810b538cbe9d69bee1",
-                    "parent_fingerprint": "92246ebac4161f222f659c5393647e24250659aa5090595f7790162a1e248f69",
-                    "input_unit": "%",
-                    "note": "Joined Table 4 across PDF pages 5–6: low <0.5; medium 0.5–0.7; high 0.7–0.75; very high >0.75. All four bands are printed, not invented. Percent units inherit the reviewed parent interpretation; the table does not print a SOC unit. System applicability and conflicting model weights remain unresolved.",
-                    "evidence_id": "ev_T4_soc_haile2024_continuation",
-                    "page": 6
-                  }
-                ]
-              }
-            ],
-            "profile_selection": "explicit",
-            "outside_domain": "unknown",
-            "conflicting_boundaries": "unknown",
-            "score_policy": "per_profile_schema_policy",
-            "harmonization": {
-              "pools": [],
-              "review": [
-                {
-                  "profile_id": "ev_T4_soc_haile2024_1",
-                  "reason": "establishment_pathway_unresolved"
-                }
-              ]
-            },
-            "score_interpretation": "Relative suitability convention; source ranks retained; not probability or measured performance"
-          },
-          "uncertainty_pct": 20,
-          "context_overrides": [],
-          "justification": "Reconciled from reviewed ordinal source bands. Explicit source-context profile selection required; no global consensus or automatic cross-family inheritance. Scores follow versioned semantic class conventions; original source ranks and scores retained. Missing class crosswalks remain unknown. Compatible pools require explicit schema approval; weighted median ties and exclusion conflicts remain unresolved. Unreported ranges and conflicting shared boundaries remain unknown. See T4 numeric compilation policy and schema issue #362.",
-          "references": [
-            "haile_2024"
-          ],
-          "evidence_ids": [
-            "ev_T4_soc_haile2024_1",
-            "ev_T4_soc_haile2024_continuation"
-          ],
-          "parameter_source_ids": [
-            "haile_2024"
-          ],
-          "n_parameter_sources": 1,
-          "paper_support_pct": null,
-          "n_sources": 2,
-          "corpus_n": null
-        },
-        {
           "mapping_id": "agroforestry__cross_family__elevation",
           "suitability_family_id": "agroforestry__cross_family",
           "variable": "elevation",
@@ -1026,21 +839,122 @@
           "paper_support_pct": null,
           "n_sources": 4,
           "corpus_n": null
+        },
+        {
+          "mapping_id": "agroforestry__cross_family__soil_organic_carbon",
+          "nbs_id": "agroforestry",
+          "dataset_id": "isric_soilgrids250_v2",
+          "suitability_dimension": "biophysical_constraint",
+          "relationship_type": "piecewise",
+          "relationship_params": {
+            "reviewed_adaptation": {
+              "numerical_calibration": {
+                "scope": "agroforestry__cross_family__soil_organic_carbon",
+                "status": "held",
+                "reason": "Haile (2024) Table 4 reports ordinal soil-carbon classes for nutrient availability in traditional parkland agroforestry in the Genale sub-basin, Ethiopia. The carbon unit is unstated and 0.7 is shared by adjacent classes. Retain the two pages as one regional profile. No cross-family soil-carbon score is approved.",
+                "reviewer": "Pete",
+                "reviewed_date": "2026-11-09",
+                "decision_ref": "methodology/audits/t4_haile_parkland_20261109/decision.md",
+                "retained_source_profiles": [
+                  {
+                    "profile_id": "ev_T4_soc_haile2024_1",
+                    "source_id": "haile_2024",
+                    "evidence_ids": [
+                      "ev_T4_soc_haile2024_1",
+                      "ev_T4_soc_haile2024_continuation"
+                    ],
+                    "locator": "Haile (2024), Table 4, PDF pp. 5–6",
+                    "source_artifact_sha256": "f9aba0e5ce1dad8d21d9c3922dc81e15de6d92b6a6f352492cc67140abcb9eb0",
+                    "source_fragments": [
+                      {
+                        "evidence_id": "ev_T4_soc_haile2024_1",
+                        "page": 5,
+                        "locator": "Table 4, PDF p. 5, nutrient availability mapping",
+                        "source_quote": "Soil Organic Carbon \n20 \n<0.5 \n1 \nLow \n0.5-0.7 \n2 \nMedium",
+                        "evidence_sha256": "93e157196606a9a40fe19f66fb739f30b4cdb7f967028f3b59963f170f6cb4b0"
+                      },
+                      {
+                        "evidence_id": "ev_T4_soc_haile2024_continuation",
+                        "page": 6,
+                        "locator": "Table 4, PDF p. 6, nutrient availability mapping",
+                        "source_quote": "Nutrient factor \nWeights (%) \nValue/Description \nClass/rank \nSuitability \n0.7-0.75 \n3 \nHigh \n>0.75 \n4 \nVery high",
+                        "evidence_sha256": "7b3f3967efe79a2f47c6b54815887dbc5280b5c9f91e4f7d06f43b634678268a"
+                      }
+                    ],
+                    "published_profile": {
+                      "profile_id": "ev_T4_soc_haile2024_1",
+                      "source_id": "haile_2024",
+                      "evidence_ids": [
+                        "ev_T4_soc_haile2024_1",
+                        "ev_T4_soc_haile2024_continuation"
+                      ],
+                      "study_area": "Genale sub-basin, Oromia, Ethiopia",
+                      "practice": "Traditional parkland agroforestry",
+                      "source_table": "Table 4, nutrient availability mapping",
+                      "unit_as_printed": null,
+                      "unit_note": "No SOC unit is printed in the Value/Description column. The percent heading belongs to the criterion weights.",
+                      "source_criterion_weight_pct": 20,
+                      "classes": [
+                        {
+                          "value_as_printed": "<0.5",
+                          "rank": 1,
+                          "suitability_as_printed": "Low",
+                          "pdf_page": 5
+                        },
+                        {
+                          "value_as_printed": "0.5-0.7",
+                          "rank": 2,
+                          "suitability_as_printed": "Medium",
+                          "pdf_page": 5
+                        },
+                        {
+                          "value_as_printed": "0.7-0.75",
+                          "rank": 3,
+                          "suitability_as_printed": "High",
+                          "pdf_page": 6
+                        },
+                        {
+                          "value_as_printed": ">0.75",
+                          "rank": 4,
+                          "suitability_as_printed": "Very high",
+                          "pdf_page": 6
+                        }
+                      ],
+                      "endpoint_note": "Medium and high share 0.7. Preserve both printed endpoints.",
+                      "approved_use": "One regional ordinal parkland profile, source evidence only. No cross-family soil-carbon score. Pathway of tree establishment is unresolved."
+                    }
+                  }
+                ],
+                "superseded_mapping": {
+                  "source_revision": "c3f92d283896a33fb61daca2bb0ea93be08223eb",
+                  "mapping_csv": "schema/recipes/agroforestry/T4_suitability_mappings.csv",
+                  "mapping_id": "agroforestry__cross_family__soil_organic_carbon",
+                  "row_sha256": "1d0fb758e1859c1af78dda9e36dfab0f81ee7b1345a1d4f0eccd6c047159bae4"
+                }
+              }
+            }
+          },
+          "context_overrides": [],
+          "is_scenario_candidate": false,
+          "has_future_projection": false,
+          "weight_adjustable": false,
+          "justification": "Haile (2024) Table 4 reports ordinal soil-carbon classes for nutrient availability in traditional parkland agroforestry in the Genale sub-basin, Ethiopia. The carbon unit is unstated and 0.7 is shared by adjacent classes. Retain the two pages as one regional profile. No cross-family soil-carbon score is approved. Retained approved calibration hold; no new numeric synthesis or approval.",
+          "variable": "soil_organic_carbon",
+          "suitability_family_id": "agroforestry__cross_family",
+          "evidence_ids": [
+            "ev_T4_soc_haile2024_1",
+            "ev_T4_soc_haile2024_continuation"
+          ],
+          "n_sources": 1,
+          "corpus_n": null,
+          "paper_support_pct": null
         }
       ],
       "selection": [
         {
           "variable": "annual_precipitation",
           "support_pct": null,
-          "n_sources": 6,
-          "ml_important": false,
-          "decision": "review_unknown_support",
-          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
-        },
-        {
-          "variable": "land_cover",
-          "support_pct": null,
-          "n_sources": 5,
+          "n_sources": 7,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -1062,7 +976,23 @@
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
         },
         {
+          "variable": "land_cover",
+          "support_pct": null,
+          "n_sources": 4,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
           "variable": "ndvi",
+          "support_pct": null,
+          "n_sources": 4,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        },
+        {
+          "variable": "soil_ph",
           "support_pct": null,
           "n_sources": 4,
           "ml_important": false,
@@ -1078,7 +1008,7 @@
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
         },
         {
-          "variable": "soil_ph",
+          "variable": "soil_organic_carbon",
           "support_pct": null,
           "n_sources": 3,
           "ml_important": false,
@@ -1103,14 +1033,6 @@
         },
         {
           "variable": "mean_annual_temperature",
-          "support_pct": null,
-          "n_sources": 2,
-          "ml_important": false,
-          "decision": "review_unknown_support",
-          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
-        },
-        {
-          "variable": "soil_organic_carbon",
           "support_pct": null,
           "n_sources": 2,
           "ml_important": false,
@@ -1201,7 +1123,7 @@
       "groups": {
         "climatic": {
           "key": "climatic",
-          "n_sources": 8,
+          "n_sources": 9,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -1215,7 +1137,7 @@
         },
         "edaphic": {
           "key": "edaphic",
-          "n_sources": 6,
+          "n_sources": 7,
           "corpus_n": null,
           "pct": null,
           "members": [
@@ -1244,16 +1166,6 @@
           ],
           "quality_weighted_pct": null
         },
-        "land_use": {
-          "key": "land_use",
-          "n_sources": 5,
-          "corpus_n": null,
-          "pct": null,
-          "members": [
-            "land_cover"
-          ],
-          "quality_weighted_pct": null
-        },
         "land_cover_vegetation": {
           "key": "land_cover_vegetation",
           "n_sources": 4,
@@ -1261,6 +1173,16 @@
           "pct": null,
           "members": [
             "ndvi"
+          ],
+          "quality_weighted_pct": null
+        },
+        "land_use": {
+          "key": "land_use",
+          "n_sources": 4,
+          "corpus_n": null,
+          "pct": null,
+          "members": [
+            "land_cover"
           ],
           "quality_weighted_pct": null
         },
@@ -1316,9 +1238,9 @@
         "ev_t4_precip_ahmad17_1": {
           "source_id": "ahmad_2017",
           "variable": "annual_precipitation",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "qa_dropped",
+          "status": "class_or_gate_requires_mapping",
           "relationship": {
             "type": "source_ordinal_classes",
             "unit": "mm",
@@ -1545,7 +1467,7 @@
           "variable": "land_cover",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "selection_only",
+          "status": "qa_dropped",
           "relationship": {
             "type": "model_input",
             "source_variable": "Land use and land cover",
@@ -1720,10 +1642,52 @@
           "variable": "soil_organic_carbon",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "parameter_contributor",
+          "status": "Regional source rank retained; missing SOC units and overlapping boundary prevent cross-family calibration.",
           "relationship": {
-            "unit": "%",
-            "classes": "low:<0.5, medium:0.5-0.7"
+            "unit": null,
+            "classes": "low:<0.5, medium:0.5-0.7",
+            "source_profile": {
+              "profile_id": "ev_T4_soc_haile2024_1",
+              "source_id": "haile_2024",
+              "evidence_ids": [
+                "ev_T4_soc_haile2024_1",
+                "ev_T4_soc_haile2024_continuation"
+              ],
+              "study_area": "Genale sub-basin, Oromia, Ethiopia",
+              "practice": "Traditional parkland agroforestry",
+              "source_table": "Table 4, nutrient availability mapping",
+              "unit_as_printed": null,
+              "unit_note": "No SOC unit is printed in the Value/Description column. The percent heading belongs to the criterion weights.",
+              "source_criterion_weight_pct": 20,
+              "classes": [
+                {
+                  "value_as_printed": "<0.5",
+                  "rank": 1,
+                  "suitability_as_printed": "Low",
+                  "pdf_page": 5
+                },
+                {
+                  "value_as_printed": "0.5-0.7",
+                  "rank": 2,
+                  "suitability_as_printed": "Medium",
+                  "pdf_page": 5
+                },
+                {
+                  "value_as_printed": "0.7-0.75",
+                  "rank": 3,
+                  "suitability_as_printed": "High",
+                  "pdf_page": 6
+                },
+                {
+                  "value_as_printed": ">0.75",
+                  "rank": 4,
+                  "suitability_as_printed": "Very high",
+                  "pdf_page": 6
+                }
+              ],
+              "endpoint_note": "Medium and high share 0.7. Preserve both printed endpoints.",
+              "approved_use": "One regional ordinal parkland profile, source evidence only. No cross-family soil-carbon score. Pathway of tree establishment is unresolved."
+            }
           }
         },
         "ev_T4_accesstraveltime_marinis22_1": {
@@ -2215,7 +2179,7 @@
         "ev_microclimate_buffering_dobhal24_1": {
           "source_id": "dobhal_2024",
           "variable": "microclimate_buffering",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -2338,7 +2302,7 @@
         "ev_erosion_hazard_philpott08_9": {
           "source_id": "philpott_2008",
           "variable": "erosion_hazard",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -2559,7 +2523,7 @@
         "ev_crop_yield_vannoordwijk21_7": {
           "source_id": "van_noordwijk_2021",
           "variable": "crop_yield",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -2948,7 +2912,7 @@
         "ev_microclimate_buffering_ipccar6_1": {
           "source_id": "ipcc_ar6_wg3_ch7_2022",
           "variable": "microclimate_buffering",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -3976,9 +3940,9 @@
         "ev_microclimate_buffering_ribeiro22_1": {
           "source_id": "ribeiro_2022_pt",
           "variable": "microclimate_buffering",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "strength_class": "unspecified",
@@ -4655,9 +4619,9 @@
         "ev_tenure_security_lasco14_1": {
           "source_id": "lasco_2014",
           "variable": "tenure_security",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qualitative_relationship",
           "relationship": {
             "type": "unresolved_source_claim",
             "direction": "not_established",
@@ -4789,14 +4753,13 @@
           }
         },
         "ev_T4_soc_haile2024_continuation": {
-          "admission_basis": "authorized_source_completion",
           "source_id": "haile_2024",
           "variable": "soil_organic_carbon",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "source_verified_continuation",
+          "status": "Regional source rank retained; missing SOC units and overlapping boundary prevent cross-family calibration.",
           "relationship": {
-            "unit": "%",
+            "unit": null,
             "classes": "high:0.7-0.75, very_high:>0.75"
           }
         },
@@ -6849,9 +6812,9 @@
         "ev_tenure_security_patt03_op1": {
           "source_id": "pattanayak2003_af_adoption_stock",
           "variable": "tenure_security",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qualitative_relationship",
           "relationship": {
             "direction": "positive",
             "metric": "narrative",
@@ -6865,9 +6828,9 @@
         "ev_extension_governance_patt03_op2": {
           "source_id": "pattanayak2003_af_adoption_stock",
           "variable": "extension_governance",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qualitative_relationship",
           "relationship": {
             "direction": "positive",
             "metric": "narrative",
@@ -6883,7 +6846,7 @@
           "variable": "finance_credit_access",
           "reviewer_ok": false,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "metric": "narrative",
@@ -6897,9 +6860,9 @@
         "ev_labour_availability_patt03_op4": {
           "source_id": "pattanayak2003_af_adoption_stock",
           "variable": "labour_availability",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qualitative_relationship",
           "relationship": {
             "direction": "positive",
             "metric": "narrative",
@@ -6915,7 +6878,7 @@
           "variable": "distance_to_market",
           "reviewer_ok": false,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "negative",
             "metric": "narrative",
@@ -6953,9 +6916,9 @@
         "ev_af_soil_organic_carbon_ranchi2017_20261105": {
           "source_id": "india_fao_agroforestry_suitability_mapping_2017",
           "variable": "soil_organic_carbon",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {
             "type": "source_ranked_classes",
             "direction": "increasing",
@@ -6965,9 +6928,9 @@
         "ev_af_soil_ph_ranchi2017_20261105": {
           "source_id": "india_fao_agroforestry_suitability_mapping_2017",
           "variable": "soil_ph",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {
             "type": "source_ranked_classes",
             "direction": "increasing",
@@ -7003,7 +6966,7 @@
           "variable": "soil_nitrogen",
           "reviewer_ok": false,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "type": "source_ranked_classes",
             "direction": "increasing",
@@ -7034,7 +6997,7 @@
           "variable": "economic_return",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "metric": "absolute",
@@ -7053,6 +7016,50 @@
       "support_basis": "unknown_screened_source_membership",
       "support_sources": [],
       "reports": {
+        "annual_precipitation": {
+          "used": [
+            "ev_T4_precip_haile2024_2",
+            "ev_t4_precip_mushtaq2023_2"
+          ],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped",
+            "Regional profiles retained separately; uncertainty floor 20%, not a measured confidence interval."
+          ],
+          "unresolved": [
+            [
+              "ev_t4_precip_ahmad17_1",
+              "class_or_gate_requires_mapping"
+            ],
+            [
+              "ev_t4_precip_yadav24_5",
+              "importance_weight_not_response"
+            ],
+            [
+              "ev_T4_model_use_ahmad2020_annual_precipitation",
+              "selection_only"
+            ],
+            [
+              "ev_T4_rereview_singh_2026_annual_precipitation_6",
+              "selection_only"
+            ],
+            [
+              "ev_T4_rereview_ahmad_2020_annual_precipitation_2",
+              "selection_only"
+            ],
+            [
+              "ev_af_annual_precipitation_ranchi2017_20261105",
+              "selection_only"
+            ]
+          ],
+          "parameter_evidence": {
+            "profiles": [
+              "ev_T4_precip_haile2024_2",
+              "ev_t4_precip_mushtaq2023_2"
+            ]
+          }
+        },
         "ndvi": {
           "used": [
             "ev_T4_canopy_ahmad2018_1"
@@ -7142,10 +7149,6 @@
               "class_or_gate_requires_mapping"
             ],
             [
-              "ev_T4_land_cover_chuma21_1",
-              "selection_only"
-            ],
-            [
               "ev_t4_treecan_nath21_01",
               "class_or_gate_requires_mapping"
             ],
@@ -7173,7 +7176,15 @@
               "qualitative_relationship"
             ],
             [
+              "ev_tenure_security_lasco14_1",
+              "qualitative_relationship"
+            ],
+            [
               "ev_tenure_security_haverhals16_1",
+              "qualitative_relationship"
+            ],
+            [
+              "ev_tenure_security_patt03_op1",
               "qualitative_relationship"
             ]
           ],
@@ -7197,6 +7208,10 @@
             ],
             [
               "ev_labour_availability_snapp10_1",
+              "qualitative_relationship"
+            ],
+            [
+              "ev_labour_availability_patt03_op4",
               "qualitative_relationship"
             ]
           ],
@@ -7269,46 +7284,6 @@
           ],
           "parameter_evidence": {}
         },
-        "annual_precipitation": {
-          "used": [
-            "ev_T4_precip_haile2024_2",
-            "ev_t4_precip_mushtaq2023_2"
-          ],
-          "dropped": [],
-          "collapsed": [],
-          "notes": [
-            "only 0 independent source(s) → uncertainty bumped",
-            "Regional profiles retained separately; uncertainty floor 20%, not a measured confidence interval."
-          ],
-          "unresolved": [
-            [
-              "ev_t4_precip_yadav24_5",
-              "importance_weight_not_response"
-            ],
-            [
-              "ev_T4_model_use_ahmad2020_annual_precipitation",
-              "selection_only"
-            ],
-            [
-              "ev_T4_rereview_singh_2026_annual_precipitation_6",
-              "selection_only"
-            ],
-            [
-              "ev_T4_rereview_ahmad_2020_annual_precipitation_2",
-              "selection_only"
-            ],
-            [
-              "ev_af_annual_precipitation_ranchi2017_20261105",
-              "selection_only"
-            ]
-          ],
-          "parameter_evidence": {
-            "profiles": [
-              "ev_T4_precip_haile2024_2",
-              "ev_t4_precip_mushtaq2023_2"
-            ]
-          }
-        },
         "soil_ph": {
           "used": [],
           "dropped": [],
@@ -7319,6 +7294,10 @@
           "unresolved": [
             [
               "ev_T4_rereview_nath_2021_soil_ph_7",
+              "selection_only"
+            ],
+            [
+              "ev_af_soil_ph_ranchi2017_20261105",
               "selection_only"
             ],
             [
@@ -7333,28 +7312,31 @@
           "parameter_evidence": {}
         },
         "soil_organic_carbon": {
-          "used": [
-            "ev_T4_soc_haile2024_1",
-            "ev_T4_soc_haile2024_continuation"
-          ],
+          "used": [],
           "dropped": [],
           "collapsed": [],
           "notes": [
-            "only 0 independent source(s) → uncertainty bumped",
-            "Regional profiles retained separately; uncertainty floor 20%, not a measured confidence interval."
+            "only 0 independent source(s) → uncertainty bumped"
           ],
           "unresolved": [
             [
               "ev_t4_soc_yadav24_6",
               "importance_weight_not_response"
+            ],
+            [
+              "ev_af_soil_organic_carbon_ranchi2017_20261105",
+              "selection_only"
+            ],
+            [
+              "ev_T4_soc_haile2024_1",
+              "Regional source rank retained; missing SOC units and overlapping boundary prevent cross-family calibration."
+            ],
+            [
+              "ev_T4_soc_haile2024_continuation",
+              "Regional source rank retained; missing SOC units and overlapping boundary prevent cross-family calibration."
             ]
           ],
-          "parameter_evidence": {
-            "profiles": [
-              "ev_T4_soc_haile2024_1",
-              "ev_T4_soc_haile2024_continuation"
-            ]
-          }
+          "parameter_evidence": {}
         },
         "accessibility_travel_time": {
           "used": [],
@@ -7443,6 +7425,10 @@
             [
               "ev_extension_governance_ribeiro22_3",
               "class_or_gate_requires_mapping"
+            ],
+            [
+              "ev_extension_governance_patt03_op2",
+              "qualitative_relationship"
             ]
           ],
           "parameter_evidence": {}
@@ -7753,15 +7739,7 @@
       "variable_support": {
         "annual_precipitation": {
           "key": "annual_precipitation",
-          "n_sources": 6,
-          "corpus_n": null,
-          "pct": null,
-          "members": [],
-          "quality_weighted_pct": null
-        },
-        "land_cover": {
-          "key": "land_cover",
-          "n_sources": 5,
+          "n_sources": 7,
           "corpus_n": null,
           "pct": null,
           "members": [],
@@ -7783,8 +7761,24 @@
           "members": [],
           "quality_weighted_pct": null
         },
+        "land_cover": {
+          "key": "land_cover",
+          "n_sources": 4,
+          "corpus_n": null,
+          "pct": null,
+          "members": [],
+          "quality_weighted_pct": null
+        },
         "ndvi": {
           "key": "ndvi",
+          "n_sources": 4,
+          "corpus_n": null,
+          "pct": null,
+          "members": [],
+          "quality_weighted_pct": null
+        },
+        "soil_ph": {
+          "key": "soil_ph",
           "n_sources": 4,
           "corpus_n": null,
           "pct": null,
@@ -7799,8 +7793,8 @@
           "members": [],
           "quality_weighted_pct": null
         },
-        "soil_ph": {
-          "key": "soil_ph",
+        "soil_organic_carbon": {
+          "key": "soil_organic_carbon",
           "n_sources": 3,
           "corpus_n": null,
           "pct": null,
@@ -7825,14 +7819,6 @@
         },
         "mean_annual_temperature": {
           "key": "mean_annual_temperature",
-          "n_sources": 2,
-          "corpus_n": null,
-          "pct": null,
-          "members": [],
-          "quality_weighted_pct": null
-        },
-        "soil_organic_carbon": {
-          "key": "soil_organic_carbon",
           "n_sources": 2,
           "corpus_n": null,
           "pct": null,
@@ -8238,7 +8224,7 @@
           "variable": "carbon_sequestration",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "metric": "absolute",
@@ -8851,7 +8837,7 @@
           "variable": "labour_availability",
           "reviewer_ok": false,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "type": "reported_adoption_barriers",
             "barriers": [
@@ -9139,7 +9125,7 @@
         "ev_microclimate_buffering_quenol06_1": {
           "source_id": "quenol_2006_fr",
           "variable": "microclimate_buffering",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -10017,6 +10003,23 @@
             "design": "observational",
             "outcome_raw": "total annual seed-rain density and total annual seed-rain species richness significantly greater in windbreaks than in open pasture (no values in the review)",
             "direction_cue": "signiﬁcantly greater in\nwindbreaks compared to open pastures",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_forage_productivity_garbach12_1": {
+          "source_id": "garbach2012_nicaragua_pes",
+          "variable": "forage_productivity",
+          "reviewer_ok": true,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "narrative",
+            "framing": "presence",
+            "significance": "not_reported",
+            "design": "observational",
+            "outcome_raw": "forage availability lower along pasture edges where unpruned multistrata live fences shade out the grasses",
+            "direction_cue": "may\n reduce\n forage\n availability",
             "strength_class": "unspecified"
           }
         },
@@ -18397,7 +18400,7 @@
         "ev_crop_yield_singhlal18_4": {
           "source_id": "singh_lal_2018",
           "variable": "crop_yield",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -18661,7 +18664,7 @@
         "ev_rain_water_productivity_bado21_1": {
           "source_id": "bado_2021_econ",
           "variable": "rain_water_productivity",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -18675,7 +18678,7 @@
             "framing": "presence",
             "significance": "not_reported",
             "direction_cue": "increased the WUE of millet",
-            "strength_class": "strong"
+            "strength_class": "moderate"
           }
         },
         "ev_rain_water_productivity_bado21_2": {
@@ -18847,7 +18850,7 @@
         "ev_crop_yield_sileshi08_1": {
           "source_id": "sileshi_2008",
           "variable": "crop_yield",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -18861,7 +18864,7 @@
             "design": "meta_analysis",
             "framing": "presence",
             "direction_cue": "The 95% confidence interval for RR was 1.27–1.43\nin rotational fallows",
-            "strength_class": "strong"
+            "strength_class": "moderate"
           }
         },
         "ev_crop_yield_sileshi08_2": {
@@ -19023,7 +19026,7 @@
         "ev_crop_yield_blan22_1": {
           "source_id": "walnut_alley_drought_shade_winterpea_2021",
           "variable": "crop_yield",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -19037,13 +19040,13 @@
             "outcome_raw": "winter pea grain yield in the walnut alleys vs full-sun control under normal rainfall, range across the shade gradient (north/south of tree line, tree size); mechanism per the authors: tree shade cuts light at pod set, raising flower and pod abortion (fewer pods per plant, lighter seeds)",
             "direction_cue": "Pea yield was lower in AF condi-\ntions compared to AC",
             "framing": "presence",
-            "strength_class": "strong"
+            "strength_class": "moderate"
           }
         },
         "ev_crop_yield_blan22_2": {
           "source_id": "walnut_alley_drought_shade_winterpea_2021",
           "variable": "crop_yield",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -19057,7 +19060,7 @@
             "outcome_raw": "winter pea grain yield in the walnut alleys vs full-sun control under imposed spring drought, range across the shade gradient; still a loss, but smaller than under normal rainfall; mechanism per the authors: drought shifts yield formation from pod set (shade-sensitive) to grain filling",
             "direction_cue": "Pea yield was lower in AF condi-\ntions compared to AC",
             "framing": "presence",
-            "strength_class": "moderate"
+            "strength_class": "slight"
           }
         },
         "ev_soil_moisture_blan22_4": {
@@ -19291,7 +19294,7 @@
           "variable": "economic_return",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "metric": "absolute",
@@ -19310,7 +19313,7 @@
           "variable": "economic_return",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "metric": "absolute",
@@ -19329,7 +19332,7 @@
           "variable": "economic_return",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "metric": "absolute",
@@ -19348,7 +19351,7 @@
           "variable": "economic_return",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "negative",
             "metric": "narrative",
@@ -19474,9 +19477,9 @@
         "ev_extension_governance_bayard07_1": {
           "source_id": "bayard2006_haiti_alleycrop_econ",
           "variable": "extension_governance",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {
             "direction": "positive",
             "direction_cue": "play a signiﬁcant and positive role in the adoption",
@@ -19492,7 +19495,7 @@
           "variable": "labour_availability",
           "reviewer_ok": false,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "negative",
             "direction_cue": "suggesting a negative effect",
@@ -19551,7 +19554,7 @@
         "ev_crop_yield_martins13_2": {
           "source_id": "martins_2013_cited",
           "variable": "crop_yield",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -19727,7 +19730,7 @@
           "variable": "carbon_sequestration",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "metric": "absolute",
@@ -19840,6 +19843,114 @@
             "unit": "degC",
             "strength_class": "unspecified"
           }
+        },
+        "ev_crop_yield_mugendi99_1": {
+          "source_id": "mugendi1999_kenya_alleycrop_maize",
+          "variable": "crop_yield",
+          "reviewer_ok": true,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "framing": "presence",
+            "significance": "sig",
+            "design": "rct",
+            "outcome_raw": "maize grain yield, leucaena alley cropping with prunings incorporated vs maize monoculture without fertiliser and with the recommended fertiliser rate",
+            "direction_cue": "significantly higher yields",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_crop_yield_mugendi99_2": {
+          "source_id": "mugendi1999_kenya_alleycrop_maize",
+          "variable": "crop_yield",
+          "reviewer_ok": true,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "narrative",
+            "framing": "presence",
+            "significance": "not_reported",
+            "design": "rct",
+            "outcome_raw": "maize grain yield, calliandra alley cropping with prunings incorporated vs unfertilised maize monoculture",
+            "direction_cue": "the yield of maize was less than",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_crop_yield_mugendi99_3": {
+          "source_id": "mugendi1999_kenya_alleycrop_maize",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "pct_change",
+            "framing": "presence",
+            "significance": "sig",
+            "design": "rct",
+            "outcome_raw": "maize grain yield per season, calliandra alley cropping vs maize monocrop given the same calliandra prunings grown elsewhere: 11% to 51% lower (hedgerow competition effect)",
+            "direction_cue": "were 11% to 51% lower",
+            "magnitude_low": 11,
+            "magnitude_high": 51,
+            "unit": "percent",
+            "strength_class": "moderate"
+          }
+        },
+        "ev_crop_yield_mugendi99_4": {
+          "source_id": "mugendi1999_kenya_alleycrop_maize",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "pct_change",
+            "framing": "presence",
+            "significance": "ns",
+            "design": "rct",
+            "outcome_raw": "maize grain yield per season, leucaena alley cropping vs maize monocrop given the same leucaena prunings grown elsewhere: reduced by 2% to 17% (hedgerow competition effect)",
+            "direction_cue": "reduced by 2%\nto 17%",
+            "magnitude_low": 2,
+            "magnitude_high": 17,
+            "unit": "percent",
+            "strength_class": "slight"
+          }
+        },
+        "ev_crop_yield_mugendi99_5": {
+          "source_id": "mugendi1999_kenya_alleycrop_maize",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "narrative",
+            "framing": "presence",
+            "significance": "not_reported",
+            "design": "rct",
+            "outcome_raw": "maize grain yield, alley cropping with the hedgerow prunings removed from the plot (Trt 3 and 4): lowest of all treatments, below the unfertilised no-tree control",
+            "direction_cue": "The lowest yields",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_soil_nitrogen_mugendi99_1": {
+          "source_id": "mugendi1999_kenya_alleycrop_maize",
+          "variable": "soil_nitrogen",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "framing": "presence",
+            "significance": "sig",
+            "design": "rct",
+            "outcome_raw": "change in total soil nitrogen (topsoil) over the trial, plots receiving hedgerow prunings (alley cropping with prunings incorporated, and biomass transfer) vs plots without prunings, including the recommended-fertiliser monocrop",
+            "direction_cue": "Total soil N, however,\nincreased in the plots that received prunings",
+            "strength_class": "unspecified"
+          }
         }
       },
       "crop_results": {},
@@ -19900,6 +20011,10 @@
             [
               "ev_extension_governance_chaudhury11_1",
               "qualitative_relationship"
+            ],
+            [
+              "ev_extension_governance_bayard07_1",
+              "selection_only"
             ]
           ],
           "parameter_evidence": {}
@@ -20693,9 +20808,9 @@
         "EV_crs_fmnr_niger_2025_015": {
           "source_id": "crs_fmnr_niger_2025",
           "variable": "distance_to_market",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "unsupported_numeric_encoding",
           "relationship": {
             "source_priority": 2.2,
             "priority_rank": 13,
@@ -20857,7 +20972,7 @@
         "EV_lohbeck_2020_002": {
           "source_id": "lohbeck_2020",
           "variable": "annual_precipitation",
-          "reviewer_ok": true,
+          "reviewer_ok": false,
           "use_role": "structural_suitability",
           "status": "observed_presence",
           "relationship": {
@@ -23731,7 +23846,7 @@
         "ev_crop_yield_sida18_3": {
           "source_id": "sida_2018_faidherbia_wheat",
           "variable": "crop_yield",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -24125,7 +24240,7 @@
         "ev_food_security_bina15_7": {
           "source_id": "binam_2015",
           "variable": "food_security",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -24133,7 +24248,7 @@
             "metric": "pct_change",
             "magnitude": 12,
             "unit": "percent",
-            "significance": "ns",
+            "significance": "sig",
             "design": "quasi_experimental",
             "outcome_raw": "household food consumption score (FCS, the World Food Programme index of dietary diversity and food frequency over a reference week), Sahel pooled: about 12 % higher if an average low-intensity farmer managed natural regeneration (FMNR) practitioner became a new/young practitioner; pathway per the authors: fruits, leaves and other edible tree products adding micronutrients to cereal-based diets",
             "direction_cue": "signiﬁcant increase in the dietary diversity",
@@ -24287,6 +24402,196 @@
             "direction_cue": "little observable diﬀerence",
             "strength_class": "unspecified"
           }
+        },
+        "ev_crop_yield_boton10_1": {
+          "source_id": "botoni_2010_fr",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "absolute",
+            "magnitude_low": 50,
+            "magnitude_high": 100,
+            "unit": "kg_per_ha",
+            "design": "observational",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "millet grain yield on fields with regenerated trees (100 to 370 kg/ha) vs control fields without trees (50 to 270 kg/ha); tree presence raises production by 50 to 100 kg/ha",
+            "direction_cue": "les rendements sont meilleurs sur des champs bénéficiant de la présence des ligneux",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_food_security_boton10_2": {
+          "source_id": "botoni_2010_fr",
+          "variable": "food_security",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "design": "observational",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "household food security during the 2005 Niger food crisis: FMNR-practising farmers were less severely hit and had relatively lower infant mortality than other farmers, through sales of wood and other forest products",
+            "direction_cue": "moins durement frappés",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_windbreak_protection_boton10_3": {
+          "source_id": "botoni_2010_fr",
+          "variable": "windbreak_protection",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "design": "observational",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "farmer-perceived shelter of crops from strong dusty winds in FMNR parklands vs about 20 years earlier",
+            "direction_cue": "La présence d’arbres diminue la violence des vents de poussière",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_biodiversity_outcome_boton10_4": {
+          "source_id": "botoni_2010_fr",
+          "variable": "biodiversity_outcome",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "design": "case_study",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "woody species richness in Dan Saga / Aguié village (Maradi, Niger): few species in the 1980s vs at least 30 tree species now, with farmers reintroducing species lost in the 1970s and 1980s",
+            "direction_cue": "à présent le village compte au moins 30 espèces d’arbres",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_biodiversity_outcome_boton10_5": {
+          "source_id": "botoni_2010_fr",
+          "variable": "biodiversity_outcome",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "design": "expert",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "tree species diversity under FMNR is not always improved: in some regions farmers protect Faidherbia albida with priority, giving a near-monoculture",
+            "direction_cue": "ceci n’est pas toujours le cas",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_erosion_hazard_boton10_6": {
+          "source_id": "botoni_2010_fr",
+          "variable": "erosion_hazard",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "narrative",
+            "design": "expert",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "soil erosion on FMNR fields: trees protect against wind and reduce erosion and evaporation",
+            "direction_cue": "atténue l’érosion",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_forage_productivity_boton10_7": {
+          "source_id": "botoni_2010_fr",
+          "variable": "forage_productivity",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "design": "expert",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "dry-season fodder supply from the leaves and pods of protected FMNR trees; animals suffer less from the usual dry-season feed shortage",
+            "direction_cue": "Les animaux souffrent ainsi moins de la pénurie alimentaire",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_household_income_boton10_8": {
+          "source_id": "botoni_2010_fr",
+          "variable": "household_income",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "absolute",
+            "magnitude": 100000,
+            "unit": "fcfa_per_farmer_over_5_years",
+            "design": "expert",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "wood sales income per farmer: more than 100 000 FCFA of fuelwood and construction wood after 5 years of FMNR, rising with the age of the regeneration",
+            "direction_cue": "un paysan peut vendre plus de 100 000 FCFA de bois",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_economic_return_boton10_9": {
+          "source_id": "botoni_2010_fr",
+          "variable": "economic_return",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "design": "case_study",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "economic profitability (internal rate of return) of FMNR, clearly higher than that of classical reforestation",
+            "direction_cue": "une nette supériorité en termes de rentabilité économique de la RNA",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_tenure_security_boton10_1": {
+          "source_id": "botoni_2010_fr",
+          "variable": "tenure_security",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "design": "expert",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "secure tree-use rights for farmers (2004 forest code; farmers no longer fined by the forest service for pruning or thinning their own trees) encouraged farmers to protect tree regrowth in their fields",
+            "direction_cue": "cela les a encouragés à protéger les repousses"
+          }
+        },
+        "ev_extension_governance_boton10_2": {
+          "source_id": "botoni_2010_fr",
+          "variable": "extension_governance",
+          "reviewer_ok": false,
+          "use_role": "operational_risk",
+          "status": "unresolved_review",
+          "relationship": {
+            "direction": "positive",
+            "metric": "narrative",
+            "design": "expert",
+            "framing": "presence",
+            "significance": "not_reported",
+            "outcome_raw": "project-funded farmer study tours and farmer-to-farmer training spread FMNR to other regions of Niger",
+            "direction_cue": "s’est également répandue dans les autres régions du Niger grâce aux voyages d’étude"
+          }
         }
       },
       "crop_results": {},
@@ -24406,6 +24711,21 @@
             [
               "ev_labour_availability_wocat_507_2019_workload",
               "class_or_gate_requires_mapping"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "distance_to_market": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "EV_crs_fmnr_niger_2025_015",
+              "unsupported_numeric_encoding"
             ]
           ],
           "parameter_evidence": {}
@@ -24760,8 +25080,28 @@
       "family": "agroforestry__shaded_perennial",
       "corpus_n": null,
       "rows": [],
-      "selection": [],
-      "groups": {},
+      "selection": [
+        {
+          "variable": "mean_annual_temperature",
+          "support_pct": null,
+          "n_sources": 1,
+          "ml_important": false,
+          "decision": "review_unknown_support",
+          "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
+        }
+      ],
+      "groups": {
+        "climatic": {
+          "key": "climatic",
+          "n_sources": 1,
+          "corpus_n": null,
+          "pct": null,
+          "members": [
+            "mean_annual_temperature"
+          ],
+          "quality_weighted_pct": null
+        }
+      },
       "dispositions": {
         "ev_tree_canopy_cover_sprenkle24_3": {
           "source_id": "sprenkle_hyppolite_2024",
@@ -24898,9 +25238,9 @@
         "ev_t4_mat_mushtaq2023_2": {
           "source_id": "mushtaq_2023",
           "variable": "mean_annual_temperature",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "unresolved_review",
+          "status": "selection_only",
           "relationship": {
             "type": "attributed_regional_climate_statement",
             "reported_temperature_range_c": [
@@ -25604,9 +25944,9 @@
         "ev_soil_water_retention_patil25_8": {
           "source_id": "patil_2025",
           "variable": "soil_water_retention",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "negative",
             "strength_class": "unspecified",
@@ -25651,7 +25991,7 @@
         "ev_soil_water_retention_dobhal24_8": {
           "source_id": "dobhal_2024",
           "variable": "soil_water_retention",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -25670,7 +26010,7 @@
         "ev_flood_hazard_dobhal24_12": {
           "source_id": "dobhal_2024",
           "variable": "flood_hazard",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -25815,7 +26155,7 @@
         "ev_erosion_hazard_philpott08_10": {
           "source_id": "philpott_2008",
           "variable": "erosion_hazard",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -25911,7 +26251,7 @@
           "variable": "microclimate_buffering",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "strength_class": "unspecified",
@@ -26031,7 +26371,7 @@
           "variable": "crop_yield",
           "reviewer_ok": false,
           "use_role": "nbs_effect",
-          "status": "other_role",
+          "status": "qa_dropped",
           "relationship": {
             "direction": "positive",
             "strength_class": "slight",
@@ -28058,7 +28398,7 @@
         "ev_economic_return_hagg17_1": {
           "source_id": "haggar_2017_cited",
           "variable": "economic_return",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -28075,7 +28415,7 @@
         "ev_crop_yield_hagg17_1": {
           "source_id": "haggar_2017_cited",
           "variable": "crop_yield",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -28126,7 +28466,7 @@
         "ev_carbon_sequestration_rahn14_1": {
           "source_id": "rahn_2014_cited",
           "variable": "carbon_sequestration",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -28140,7 +28480,7 @@
             "unit": "t_c_per_ha",
             "value_with": 41,
             "value_without": 16,
-            "strength_class": "strong"
+            "strength_class": "moderate"
           }
         },
         "ev_crop_yield_vaast14_1": {
@@ -28325,6 +28665,123 @@
             "direction_cue": "total costs were lower in the\nagroforestry systems",
             "strength_class": "unspecified"
           }
+        },
+        "ev_carbon_sequestration_pinoar14_1": {
+          "source_id": "pinoargote_2016_cited",
+          "variable": "carbon_sequestration",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "contrast",
+            "framing": "presence",
+            "significance": "sig",
+            "design": "observational",
+            "outcome_raw": "aboveground-biomass carbon stock, most diversified shade coffee vs unshaded full-sun coffee: 35.3 vs 7.8 Mg C per ha; woody shade trees hold 74% of the carbon (19.6 Mg C per ha on average)",
+            "direction_cue": "varió desde 7.8 Mg ha-1 en cafetales sin sombra hasta 35.3 Mg",
+            "value_with": 35.3,
+            "value_without": 7.8,
+            "unit": "mg_c_per_ha",
+            "strength_class": "strong"
+          }
+        },
+        "ev_crop_yield_pinoar14_1": {
+          "source_id": "pinoargote_2016_cited",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "contrast",
+            "framing": "presence",
+            "significance": "ns",
+            "design": "observational",
+            "outcome_raw": "green-coffee yield, most diversified shade (C4) 22.1 vs full sun (C1) 37.7 qq per ha per yr; C3 (service + timber trees) 28.8; lower but not significantly different from full sun (shared letter)",
+            "direction_cue": "37.7±7.8 ab \n38.8±5.9 a \n28.8±3.4 ab \n22.1±2.5 b",
+            "value_with": 22.1,
+            "value_without": 37.7,
+            "unit": "qq_green_coffee_per_ha_yr",
+            "strength_class": "strong"
+          }
+        },
+        "ev_crop_yield_pinoar14_2": {
+          "source_id": "pinoargote_2016_cited",
+          "variable": "crop_yield",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "contrast",
+            "framing": "presence",
+            "significance": "ns",
+            "design": "observational",
+            "outcome_raw": "green-coffee yield, coffee with musaceae and service shade trees (C2) 38.8 vs full sun (C1) 37.7 qq per ha per yr; not significantly different (shared letter)",
+            "direction_cue": "37.7±7.8 ab \n38.8±5.9 a",
+            "value_with": 38.8,
+            "value_without": 37.7,
+            "unit": "qq_green_coffee_per_ha_yr",
+            "strength_class": "slight"
+          }
+        },
+        "ev_household_income_pinoar14_1": {
+          "source_id": "pinoargote_2016_cited",
+          "variable": "household_income",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "none",
+            "metric": "narrative",
+            "framing": "presence",
+            "significance": "ns",
+            "design": "observational",
+            "outcome_raw": "family benefits (net cash flow plus the money value of products eaten or burned at home) of shaded agroforestry coffee vs full-sun coffee: equal; lower coffee earnings under shade are made up by bananas, fruit and firewood",
+            "direction_cue": "permite igualar a los beneficios totales obtenidos en \ncafetales a pleno sol",
+            "strength_class": "unspecified"
+          }
+        },
+        "ev_economic_return_pinoar14_1": {
+          "source_id": "pinoargote_2016_cited",
+          "variable": "economic_return",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "negative",
+            "metric": "contrast",
+            "framing": "presence",
+            "significance": "ns",
+            "design": "observational",
+            "outcome_raw": "net cash flow (gross sales income minus cash costs), most diversified shade coffee (C4) 1887 vs full-sun coffee (C1) 2813 US$ per ha per yr, not significant (P 0.4906); net income after valued family labour 1389 vs 2759 (P 0.3979), also not significant",
+            "direction_cue": "2813±667.7 a \n2806±472.1 a \n2119±472.1 a \n1887±504.7 a",
+            "value_with": 1887,
+            "value_without": 2813,
+            "unit": "usd_per_ha_yr",
+            "strength_class": "strong"
+          }
+        },
+        "ev_project_cost_pinoar14_1": {
+          "source_id": "pinoargote_2016_cited",
+          "variable": "project_cost",
+          "reviewer_ok": false,
+          "use_role": "nbs_effect",
+          "status": "other_role",
+          "relationship": {
+            "direction": "positive",
+            "metric": "contrast",
+            "framing": "presence",
+            "significance": "sig",
+            "design": "observational",
+            "outcome_raw": "in-kind cost (money value of family labour) of most diversified shade coffee (C4) 498 vs full-sun coffee (C1) 54 US$ per ha per yr, significant (P 0.0302); cash costs not different (1188 vs 1753, P 0.5742)",
+            "direction_cue": "54±68.3 b \n693±291.7 a \n271±89 ab \n498±180.3 a",
+            "value_with": 498,
+            "value_without": 54,
+            "unit": "usd_per_ha_yr",
+            "strength_class": "strong"
+          }
         }
       },
       "crop_results": {
@@ -28398,8 +28855,33 @@
       },
       "support_basis": "unknown_screened_source_membership",
       "support_sources": [],
-      "reports": {},
-      "variable_support": {}
+      "reports": {
+        "mean_annual_temperature": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_t4_mat_mushtaq2023_2",
+              "selection_only"
+            ]
+          ],
+          "parameter_evidence": {}
+        }
+      },
+      "variable_support": {
+        "mean_annual_temperature": {
+          "key": "mean_annual_temperature",
+          "n_sources": 1,
+          "corpus_n": null,
+          "pct": null,
+          "members": [],
+          "quality_weighted_pct": null
+        }
+      }
     },
     "agroforestry__silvopastoral": {
       "family": "agroforestry__silvopastoral",
@@ -28409,7 +28891,7 @@
         {
           "variable": "land_cover",
           "support_pct": null,
-          "n_sources": 4,
+          "n_sources": 3,
           "ml_important": false,
           "decision": "review_unknown_support",
           "note": "Screened source membership unavailable; prevalence and floor cannot be evaluated"
@@ -28482,12 +28964,23 @@
       "groups": {
         "land_use": {
           "key": "land_use",
-          "n_sources": 4,
+          "n_sources": 3,
           "corpus_n": null,
           "pct": null,
           "members": [
             "land_cover",
             "tree_canopy_cover"
+          ],
+          "quality_weighted_pct": null
+        },
+        "climatic": {
+          "key": "climatic",
+          "n_sources": 2,
+          "corpus_n": null,
+          "pct": null,
+          "members": [
+            "annual_precipitation",
+            "mean_annual_temperature"
           ],
           "quality_weighted_pct": null
         },
@@ -28508,17 +29001,6 @@
           "pct": null,
           "members": [
             "carbon_sequestration_potential"
-          ],
-          "quality_weighted_pct": null
-        },
-        "climatic": {
-          "key": "climatic",
-          "n_sources": 1,
-          "corpus_n": null,
-          "pct": null,
-          "members": [
-            "annual_precipitation",
-            "mean_annual_temperature"
           ],
           "quality_weighted_pct": null
         },
@@ -28808,7 +29290,7 @@
           "variable": "annual_precipitation",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "selection_only",
+          "status": "qa_dropped",
           "relationship": null
         },
         "ev_t4_temp_kizir_1": {
@@ -28912,7 +29394,7 @@
           "variable": "land_cover",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "selection_only",
+          "status": "qa_dropped",
           "relationship": {}
         },
         "ev_t4_road_moisa25_1": {
@@ -29027,7 +29509,7 @@
           "variable": "annual_precipitation",
           "reviewer_ok": true,
           "use_role": "structural_suitability",
-          "status": "qa_dropped",
+          "status": "selection_only",
           "relationship": null
         },
         "ev_mean_annual_temperature_batcheler24_1": {
@@ -30629,7 +31111,7 @@
         "ev_microclimate_buffering_cisneros24_1": {
           "source_id": "cisneros_2024_es",
           "variable": "microclimate_buffering",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -31756,7 +32238,7 @@
         "ev_forage_productivity_peri24_1": {
           "source_id": "argentina2024_forage_drought",
           "variable": "forage_productivity",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -31773,7 +32255,7 @@
         "ev_forage_productivity_peri24_5": {
           "source_id": "argentina2024_forage_drought",
           "variable": "forage_productivity",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "nbs_effect",
           "status": "other_role",
           "relationship": {
@@ -31967,29 +32449,12 @@
             "strength_class": "unspecified"
           }
         },
-        "ev_forage_productivity_garbach12_1": {
-          "source_id": "garbach2012_nicaragua_pes",
-          "variable": "forage_productivity",
-          "reviewer_ok": false,
-          "use_role": "nbs_effect",
-          "status": "other_role",
-          "relationship": {
-            "direction": "negative",
-            "metric": "narrative",
-            "framing": "presence",
-            "significance": "not_reported",
-            "design": "observational",
-            "outcome_raw": "forage availability lower along pasture edges where unpruned multistrata live fences shade out the grasses",
-            "direction_cue": "may\n reduce\n forage\n availability",
-            "strength_class": "unspecified"
-          }
-        },
         "ev_extension_governance_shrestha04_op2": {
           "source_id": "shrestha2003_florida_sps_adoption",
           "variable": "extension_governance",
           "reviewer_ok": false,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "type": "qualitative_operational_constraint",
             "factor": "Uncertain future government regulation on private land",
@@ -32000,9 +32465,9 @@
         "ev_extension_governance_garbach12_op1": {
           "source_id": "garbach2012_nicaragua_pes",
           "variable": "extension_governance",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qualitative_relationship",
           "relationship": {
             "type": "qualitative_operational_condition",
             "condition": "Access to practical training and information supported adoption of multistrata live fences; payments and assistance were substitutes rather than synergistic.",
@@ -32013,9 +32478,9 @@
         "ev_finance_credit_access_garbach12_op2": {
           "source_id": "garbach2012_nicaragua_pes",
           "variable": "finance_credit_access",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qualitative_relationship",
           "relationship": {
             "type": "qualitative_operational_condition",
             "condition": "Project payments incentivized adoption of a practice with public benefits and perceived private forage costs; no credit-market effect claimed.",
@@ -32026,9 +32491,9 @@
         "ev_labour_availability_garbach12_op3": {
           "source_id": "garbach2012_nicaragua_pes",
           "variable": "labour_availability",
-          "reviewer_ok": false,
+          "reviewer_ok": true,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qualitative_relationship",
           "relationship": {
             "type": "qualitative_operational_condition",
             "condition": "More available labour was associated with greater information exposure and adoption; labour also proxies farm size and assets, not an isolated labour intervention.",
@@ -32041,7 +32506,7 @@
           "variable": "extension_governance",
           "reviewer_ok": false,
           "use_role": "operational_risk",
-          "status": "unresolved_review",
+          "status": "qa_dropped",
           "relationship": {
             "type": "qualitative_operational_condition",
             "condition": "Farmer communication was positively associated with multistrata live-fence adoption; community norms and information supply are proposed pathways, not independently measured mediators.",
@@ -32139,10 +32604,6 @@
               "selection_only"
             ],
             [
-              "ev_t4_lcover_moisa25_1",
-              "selection_only"
-            ],
-            [
               "ev_structural_suitability_land_cover_pinto_2019_full",
               "selection_only"
             ]
@@ -32183,21 +32644,6 @@
             [
               "ev_t4_tcc_kizir_1",
               "scenario_grid_requires_parameter_choice"
-            ]
-          ],
-          "parameter_evidence": {}
-        },
-        "annual_precipitation": {
-          "used": [],
-          "dropped": [],
-          "collapsed": [],
-          "notes": [
-            "only 0 independent source(s) → uncertainty bumped"
-          ],
-          "unresolved": [
-            [
-              "ev_t4_precip_kizir_1",
-              "selection_only"
             ]
           ],
           "parameter_evidence": {}
@@ -32243,6 +32689,10 @@
             [
               "ev_t4_ext_kizir_1",
               "selection_only"
+            ],
+            [
+              "ev_extension_governance_garbach12_op1",
+              "qualitative_relationship"
             ]
           ],
           "parameter_evidence": {}
@@ -32257,6 +32707,21 @@
           "unresolved": [
             [
               "ev_t4_pa_mucida23_1",
+              "selection_only"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "annual_precipitation": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_annual_precipitation_batcheler24_1",
               "selection_only"
             ]
           ],
@@ -32318,6 +32783,25 @@
             [
               "ev_labour_availability_diasf08_6",
               "class_or_gate_requires_mapping"
+            ],
+            [
+              "ev_labour_availability_garbach12_op3",
+              "qualitative_relationship"
+            ]
+          ],
+          "parameter_evidence": {}
+        },
+        "finance_credit_access": {
+          "used": [],
+          "dropped": [],
+          "collapsed": [],
+          "notes": [
+            "only 0 independent source(s) → uncertainty bumped"
+          ],
+          "unresolved": [
+            [
+              "ev_finance_credit_access_garbach12_op2",
+              "qualitative_relationship"
             ]
           ],
           "parameter_evidence": {}
@@ -32326,7 +32810,7 @@
       "variable_support": {
         "land_cover": {
           "key": "land_cover",
-          "n_sources": 4,
+          "n_sources": 3,
           "corpus_n": null,
           "pct": null,
           "members": [],

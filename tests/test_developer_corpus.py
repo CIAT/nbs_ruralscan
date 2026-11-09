@@ -8,20 +8,18 @@ import shutil
 import pytest
 
 from nbs_ruralscan.recipe.developer_corpus import rebuild
+from nbs_ruralscan.recipe.t4_build import T4BuildInputs
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 @pytest.fixture
 def corpus(tmp_path):
-    for name in (
-        "schema/registers",
-        "schema/lookups",
-        "schema/recipes/agroforestry",
-    ):
-        shutil.copytree(
-            ROOT / name, tmp_path / name, ignore=shutil.ignore_patterns("__pycache__")
-        )
+    inputs = T4BuildInputs.from_root(ROOT, "agroforestry", require_authored=True)
+    for source in inputs.paths():
+        destination = tmp_path / source.relative_to(ROOT)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
     return tmp_path
 
 

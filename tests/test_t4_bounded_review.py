@@ -57,3 +57,30 @@ def test_documented_later_review_is_allowed_but_unlogged_approval_is_not():
         row, old, [entry, dict(entry, decision="flag")], "2026-10-21"
     )
     assert not MOD.documented_review_transition(row, old, [entry], "2026-10-23")
+
+
+def test_drop_preserves_logged_approval_but_cannot_invent_it():
+    old = {"reviewer_ok": "false", "review_state": ""}
+    row = dict(
+        evidence_id="unit",
+        source_id="paper",
+        reviewer_ok="true",
+        review_state="dropped",
+        attribution="[dropped 2026-11-09 by B] [reviewed 2026-10-23 by A]",
+    )
+    keep = dict(
+        evidence_id="unit",
+        source_id="paper",
+        reviewer="A",
+        date="2026-10-23",
+        decision="ok",
+    )
+    drop = dict(keep, reviewer="B", date="2026-11-09", decision="drop")
+    assert MOD.documented_review_transition(row, old, [keep, drop], "2026-10-21")
+    assert not MOD.documented_review_transition(row, old, [drop], "2026-10-21")
+    assert not MOD.documented_review_transition(
+        row, old, [dict(keep, decision="flag"), drop], "2026-10-21"
+    )
+    assert not MOD.documented_review_transition(
+        row, old, [keep, dict(keep, decision="reopen"), drop], "2026-10-21"
+    )
