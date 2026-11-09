@@ -1914,6 +1914,24 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
       });
   });
 
+  function t4DatasetLabel(mapping) {
+    if (!mapping.dataset_id) {
+      const binding = mapping.relationship_params?.reviewed_adaptation?.dataset_binding;
+      return binding?.status === 'requires_matching_input'
+        ? 'Matching dataset needed'
+        : 'No standard dataset specified';
+    }
+    const datasets = dashboardData.global_tables.T1_data_registry || [];
+    const dataset = datasets.find(row => row.dataset_id === mapping.dataset_id);
+    return dataset?.dataset_name ? dataset.dataset_name + ' (' + mapping.dataset_id + ')' : mapping.dataset_id;
+  }
+
+  function t4PublicRationale(mapping) {
+    const review = mapping.relationship_params?.reviewed_adaptation;
+    const reasons = [review?.numerical_calibration?.reason, review?.dataset_binding?.reason].filter(Boolean);
+    return reasons.length ? [...new Set(reasons)].join(' ') : mapping.justification || 'No rationale recorded.';
+  }
+
   // Konstrukt Github Issue link
   function openGitIssue(type, item) {
     const baseUrl = "https://github.com/CIAT/nbs_ruralscan/issues/new";
@@ -1928,10 +1946,10 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
 - **Family ID**: \`${item.suitability_family_id}\`
 - **Variable**: \`${item.variable}\`
 - **Default Weight**: \`${item.weight_default}\`
-- **Dataset ID**: \`${item.dataset_id}\`
+- **Standard dataset**: \`${t4DatasetLabel(item)}\`
 - **Relationship Type**: \`${item.relationship_type}\`
 - **Reconciliation Comments**: 
-  > ${item.justification || 'None'}
+  > ${t4PublicRationale(item)}
 
 ---
 ### Review Comments / Requested Changes
@@ -4253,10 +4271,10 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
         <td style="font-weight:bold; font-family:var(--font-outfit); font-size:14px; color:var(--accent-emerald);">
           ${m.weight_default !== undefined ? m.weight_default : 'N/A'}
         </td>
-        <td><code style="font-size:11px; color:var(--accent-sky);">${m.dataset_id}</code></td>
+        <td><code style="font-size:11px; color:var(--accent-sky);">${vfEsc(t4DatasetLabel(m))}</code></td>
         <td>${paramsStr}</td>
         <td style="font-size:12px; color:var(--text-secondary); max-width: 300px;">
-          ${m.justification || 'No reconciliation comments.'}
+          ${vfEsc(t4PublicRationale(m))}
           ${m.paper_support_pct !== undefined ? `<div style="margin-top:4px; font-size:10.5px; color:var(--accent-emerald);">Lit support: <strong>${Math.round(m.paper_support_pct)}%</strong> (${m.n_sources || 0} papers)</div>` : ''}
           ${evidenceDrawer}
         </td>
@@ -5057,9 +5075,9 @@ uv run python3 -m nbs_ruralscan.schema_tools.review_server</code></pre>
       html += `
         <p><strong>Suitability Dimension:</strong> <span style="text-transform: capitalize;">${m.suitability_dimension.replace(/_/g, ' ')}</span> ${isScenario}</p>
         <p><strong>Default Siting Weight:</strong> <strong style="color: var(--accent-emerald); font-size: 15px;">${m.weight_default !== undefined ? m.weight_default : 'N/A'}</strong></p>
-        <p><strong>Dataset Sourced:</strong> <code style="color: var(--accent-sky);">${m.dataset_id}</code></p>
+        <p><strong>Dataset Sourced:</strong> <code style="color: var(--accent-sky);">${vfEsc(t4DatasetLabel(m))}</code></p>
         <p><strong>Siting Threshold Logic:</strong><br>${paramsStr}</p>
-        <p><strong>Reconciliation Comments:</strong><br>${m.justification || 'No justification details.'}</p>
+        <p><strong>Reconciliation Comments:</strong><br>${vfEsc(t4PublicRationale(m))}</p>
       `;
     }
 
