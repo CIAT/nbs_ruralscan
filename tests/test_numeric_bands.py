@@ -56,15 +56,12 @@ def test_organic_carbon_percent_is_converted_to_grams_per_kg():
     row = live("soil_organic_carbon", "planted_silvoarable")
     values = evaluate_numeric(row, [4, 6, 8], profile_id="ev_T4_soc_ahmad2018_1")
     np.testing.assert_allclose(values, [0.25, 0.5, 0.75])
-    np.testing.assert_allclose(
+    with pytest.raises(ValueError, match="Numerical calibration held"):
         evaluate_numeric(
             live("soil_organic_carbon", "cross_family"),
             [4, 6, 7, 7.2, 7.5, 8],
             profile_id="ev_T4_soc_haile2024_1",
-        ),
-        [0.25, 0.5, np.nan, 0.75, 0.75, 0.9],
-        equal_nan=True,
-    )
+        )
 
 
 def test_species_clusters_are_retained_but_not_used_for_practice_temperature():
@@ -176,13 +173,17 @@ def test_all_numeric_policy_rows_accounted_for_without_unhandled_encoding():
         eid: d for f in results.values() for eid, d in f.dispositions.items()
     }
     reviewed = {
-        r["evidence_id"]: r["reviewer_ok"].lower() == "true"
+        r["evidence_id"]: r
         for r in csv.DictReader(
             (ROOT / "schema/registers/EV_evidence_register.csv").open()
         )
     }
     for p in policies:
-        if not reviewed[p["evidence_id"]]:
+        unit = reviewed[p["evidence_id"]]
+        if unit["review_state"] == "dropped":
+            assert dispositions[p["evidence_id"]]["status"] == "qa_dropped"
+            continue
+        if unit["reviewer_ok"].lower() != "true":
             assert dispositions[p["evidence_id"]]["status"] == (
                 "source_verified_continuation"
                 if json.loads(p.get("harmonization") or "{}").get("source_completion")

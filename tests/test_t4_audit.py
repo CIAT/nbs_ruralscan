@@ -11,6 +11,8 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTINUATION = "ev_T4_soc_haile2024_continuation"
+PARENT = "ev_T4_soc_haile2024_1"
+COMPLETION_FIXTURE = ROOT / "tests/fixtures/t4_source_completion"
 
 
 def script(name):
@@ -39,7 +41,7 @@ def reports(tmp_path):
     return tmp_path
 
 
-def test_data_audit_retains_correction_and_human_status(reports, monkeypatch):
+def test_data_audit_accounts_for_held_documentary_evidence(reports, monkeypatch):
     audit = script("audit-t4-compilation.py")
     historical = ROOT / "docs/review/t4-pipeline-audit.html"
     before = historical.read_bytes()
@@ -49,22 +51,50 @@ def test_data_audit_retains_correction_and_human_status(reports, monkeypatch):
     audit.main()
     with (reports / "record_reconciliation.csv").open() as handle:
         rows = {r["evidence_id"]: r for r in csv.DictReader(handle)}
-    row = rows[CONTINUATION]
-    assert row["reviewer_ok"] == "false"
-    assert row["final_disposition"] == "live_verified_source_completion"
-    assert "human review status unchanged" in row["disposition_reason"]
+    for eid in (PARENT, CONTINUATION):
+        assert rows[eid]["reviewer_ok"] == "true"
+        assert rows[eid]["final_disposition"] == "live_documentary_profile"
     summary = json.loads((reports / "summary.json").read_text())
-    assert summary["authorized_source_completions"] == [CONTINUATION]
+    assert CONTINUATION not in summary["authorized_source_completions"]
     assert summary["all_records_accounted_for"]
     assert historical.read_bytes() == before
 
 
-def test_report_cannot_authorize_unreviewed_live_link(reports, monkeypatch):
+def test_report_cannot_authorize_unreviewed_live_link(tmp_path, monkeypatch):
+    # Reproduce an earlier unreviewed continuation and an untrusted report
+    # claiming it can enter a score without its source-fingerprint authorization.
     audit = script("audit-t4-compilation.py")
-    # Even a compiler report claiming completion cannot supply authorization.
+    shutil.copytree(COMPLETION_FIXTURE / "schema", tmp_path / "schema")
+    mappings = tmp_path / "schema/recipes/agroforestry/T4_suitability_mappings.csv"
+    mappings.parent.mkdir(parents=True)
+    with mappings.open("w", newline="") as f:
+        w = csv.DictWriter(f, ["mapping_id", "relationship_params", "evidence_ids"])
+        w.writeheader()
+        w.writerow(
+            dict(
+                mapping_id="test",
+                relationship_params="{}",
+                evidence_ids=json.dumps([CONTINUATION]),
+            )
+        )
+    report = {
+        "input_sha256": {},
+        "families": {
+            "test": {
+                "dispositions": {
+                    PARENT: {"status": "parameter_contributor"},
+                    CONTINUATION: {"status": "source_verified_continuation"},
+                }
+            }
+        },
+    }
+    for mode in ("approved", "draft"):
+        (tmp_path / mode).mkdir()
+        (tmp_path / mode / "report.json").write_text(json.dumps(report))
+    monkeypatch.setattr(audit, "ROOT", tmp_path)
     monkeypatch.setattr(audit, "validated_completions", lambda root: {})
     monkeypatch.setattr(
-        "sys.argv", ["audit", "agroforestry", str(reports), "--data-only"]
+        "sys.argv", ["audit", "agroforestry", str(tmp_path), "--data-only"]
     )
     with pytest.raises(ValueError, match="unapproved/dropped evidence"):
         audit.main()
@@ -72,13 +102,7 @@ def test_report_cannot_authorize_unreviewed_live_link(reports, monkeypatch):
 
 def test_audit_revalidates_source_content_and_artifact(tmp_path):
     audit = script("audit-t4-compilation.py")
-    for name in (
-        "registers/EV_evidence_register.csv",
-        "lookups/t4_numeric_compilation_policy.csv",
-    ):
-        target = tmp_path / "schema" / name
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(ROOT / "schema" / name, target)
+    shutil.copytree(COMPLETION_FIXTURE / "schema", tmp_path / "schema")
     assert CONTINUATION in audit.validated_completions(tmp_path)
     pdf = tmp_path / ".cache/corpus/haile_2024.pdf"
     pdf.parent.mkdir(parents=True)

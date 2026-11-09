@@ -610,16 +610,14 @@ def write_recipe(
         watched.assert_unchanged()
     recipe_dir.mkdir(parents=True, exist_ok=True)
     results = _preserve_mapping_review_holds(results, holds)
-    adjustable_by_var = (
-        {
-            (r["suitability_family_id"], r["variable"]): r.get(
-                "weight_adjustable", "true"
-            )
-            for r in existing
-        }
+    # A legacy recipe can carry an explicitly reviewed hold with a fixed weight.
+    adjustable_by_var = {
+        (r["suitability_family_id"], r["variable"]): r.get("weight_adjustable", "true")
+        for r in existing
         if inputs.definition_index is not None
-        else {}
-    )
+        or row_binding_requirement(r)
+        or calibration_requirement(r)
+    }
     weights_by_var = {
         (r["suitability_family_id"], r["variable"]): r.get("weight_default", "")
         for r in existing

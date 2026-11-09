@@ -539,10 +539,22 @@ def test_soil_measurement_reviews_preserve_unknowns_and_input_hold(baseline):
         )
 
 
-def test_soil_context_review_preserves_published_numeric_contract(baseline):
+def test_haile_review_retires_only_the_cross_family_soc_function(baseline):
     package = ROOT / "handoff/agroforestry-t4/developer-v0.1.2"
-    assert baseline["fixtures"] == json.loads(
-        (package / "conformance_examples.json").read_text()
+    fixtures = json.loads((package / "conformance_examples.json").read_text())
+    retired = (
+        "agroforestry__cross_family__soil_organic_carbon",
+        "profile:ev_T4_soc_haile2024_1",
+    )
+
+    def identity(example):
+        return example["rule_id"], example["function_id"]
+
+    assert sum(identity(f) == retired for f in fixtures) == 1
+    # Published example order follows source support counts; inputs and expected
+    # scores must still match exactly for every other rule and function.
+    assert sorted(baseline["fixtures"], key=identity) == sorted(
+        (f for f in fixtures if identity(f) != retired), key=identity
     )
     previous = json.loads((package / "developer_contract.json").read_text())
     old = {o["function_id"]: o for r in previous["rows"] for o in r["function_options"]}
@@ -551,8 +563,9 @@ def test_soil_context_review_preserves_published_numeric_contract(baseline):
         for r in baseline["contract"]["rows"]
         for o in r["function_options"]
     }
-    assert old.keys() == current.keys()
-    for key in old:
+    assert old.keys() - current.keys() == {retired[1]}
+    assert not current.keys() - old.keys()
+    for key in current:
         # Source context is fingerprinted: a metadata revision correctly invalidates
         # old single-study selections. Approved pooled functions remain unchanged.
         if key.startswith("pool:"):

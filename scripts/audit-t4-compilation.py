@@ -16,6 +16,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+from nbs_ruralscan.recipe.calibration_requirements import calibration_requirement
 from nbs_ruralscan.recipe.evidence import EvidenceUnit
 from nbs_ruralscan.recipe.numeric_bands import source_completion
 from nbs_ruralscan.schema_tools.generate import _csv_to_rows
@@ -155,6 +156,9 @@ def main() -> None:
             else:
                 raise ValueError(f"Missing disposition: {eid}")
         mappings = live_links.get(eid, [])
+        documentary_only = bool(mappings) and all(
+            calibration_requirement(r) for r in mappings
+        )
         if mappings and (
             u["review_state"] == "dropped"
             or (u["reviewer_ok"].lower() != "true" and eid not in completions)
@@ -184,7 +188,9 @@ def main() -> None:
             payload_kind=payload_kind(rel),
             live_mapping_ids="|".join(r["mapping_id"] for r in mappings),
             final_disposition=(
-                "live_verified_source_completion"
+                "live_documentary_profile"
+                if documentary_only
+                else "live_verified_source_completion"
                 if mappings and eid in completions
                 else "live_categorical_host_reference"
                 if mappings
@@ -201,6 +207,8 @@ def main() -> None:
             disposition_reason=(
                 parked[eid]["reason"]
                 if eid in parked
+                else "Source profile retained under a reviewed numerical-calibration hold."
+                if documentary_only
                 else "Authorized source-table completion; human review status unchanged. "
                 + completions[eid].get("note", "")
                 if mappings and eid in completions
