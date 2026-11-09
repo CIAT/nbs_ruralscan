@@ -900,6 +900,35 @@ def render_crop(pdf: Path, page_no: int, quote: str, dest: Path) -> str:
     return note
 
 
+def _section_probes(quote: str) -> list[str]:
+    """Text to look for in the PDF version of a transcript-quoted source (WOCAT): the
+    compiler's comment first (printed verbatim on the sheet), then the field label."""
+    probes = []
+    m = re.search(r"comment:\s*(.+)$", quote, re.S)
+    if m:
+        probes.append(m.group(1).strip())
+    for line in quote.splitlines():
+        lab = re.match(r"\s*-\s*([a-z0-9_]+)\s*:", line)
+        if lab:
+            probes.append(lab.group(1).replace("_", " "))
+    probes.append(quote)
+    return [x for x in probes if len(_norm_word(x)) >= 12]
+
+
+def find_page_by_text(pdf: Path, quote: str) -> tuple[int, str]:
+    """(1-based page, probe) where the PDF prints the quoted text; (0, "") if nowhere.
+    For sources quoted from a transcript by section (no page number), so the reviewer
+    still gets the printed page beside the claim (Pete 2026-11-09: "there is no image")."""
+    doc = fitz.open(pdf)
+    streams = [_norm_word(pg.get_text()) for pg in doc]
+    for probe in _section_probes(quote):
+        target = _norm_word(probe)[:80]
+        for i, txt in enumerate(streams):
+            if target and target in txt:
+                return i + 1, probe
+    return 0, ""
+
+
 def _build_units(item_rows, ev, *, schema, corpus, image_dir, recipe_dirs):
     items = {r["evidence_id"]: (r.get("question") or "") for r in item_rows}
     # optional ai_decision / ai_reason columns: what the AI proposed, so a reviewer who
@@ -944,6 +973,19 @@ def _build_units(item_rows, ev, *, schema, corpus, image_dir, recipe_dirs):
                 crop = f"review/img/{eid}.png"
         elif (r.get("locator_type") or "") == "section":
             crop_note = f"transcript section {r.get('locator')} (no page image)"
+            if pdf.exists():
+                found, probe = find_page_by_text(pdf, r.get("quote", ""))
+                if found:
+                    dest = image_dir / f"{eid}.png"
+                    note = render_crop(pdf, found, probe, dest)
+                    if note != "page out of range":
+                        crop = f"review/img/{eid}.png"
+                        page = found
+                        crop_note = (
+                            f"page {found} of the PDF version, found by searching for the "
+                            f"quoted text (the quote itself is from the transcript, section "
+                            f"{r.get('locator')}); {note}"
+                        )
         units.append(
             {
                 "evidence_id": eid,
@@ -1068,6 +1110,12 @@ def main(argv: list[str] | None = None) -> int:
         inputs.include([pdf])
         if pdf.exists() and (row.get("page") or "").isdigit() and int(row["page"]):
             crop_ids.append(eid)
+        elif (
+            pdf.exists()
+            and (row.get("locator_type") or "") == "section"
+            and find_page_by_text(pdf, row.get("quote", ""))[0]
+        ):
+            crop_ids.append(eid)  # transcript quote: page found by text in the PDF
     n = 0
     missing = []
 
