@@ -1,0 +1,18 @@
+# Slope evidence for runoff-catchment water harvesting
+
+Pete approved all eight profiles on 9 November 2026, grouped by structure and purpose. No family-wide slope cutoff or score is approved. Each evidence record retains its source units (percent grade), locator and quantitative or qualitative scope.
+
+| Source | Use in T4 |
+|---|---|
+| Critchley & Siegert (1991), §5.6.2 | For crop-producing trapezoidal bunds, retain 0.25–1.5% with a preference for below 0.5% and even ground within the bund. Above 1.5% construction is technically possible, but the earthworks become prohibitively large. |
+| Kadam et al. (2012), Table 6, PDF p. 14 | Keep the adopted IMSD (1995) criteria with their joint runoff, land use, stream order, area and soil conditions. Farm ponds use 0–5%, check dams <15%, percolation tanks <10% and gully plugs 15–20%. |
+| Al-Abadi et al. (2017), Table 4 and Fig. 10 | Preserve the Maysan model’s flat check-dam setting (<2%) and undulating or rolling percolation-pond settings (2–8%, 8–15%) with their respective soil and land-cover criteria. The slope importance of 0.069 belongs to the local model. The reported 2–8% in good/excellent mapped zones describes a model output. |
+| Karimi et al. (2019), PDF pp. 6, 19, Table 6 | Preserve the discrepancy. The prose cites construction guidance against slopes above 5%. The implemented table ranks 0–5, 5–10, 10–15, 15–30 and >30% with positive class weights 0.082, 0.043, 0.034, 0.016 and 0.006. The slope criterion has weight 0.158. Keep the source weights as printed. The cited guidance refers back to Critchley et al. and Napoli et al. |
+| Ngugi et al. (2020), Tables 3 and 9 and topography discussion | Preserve the earlier 2–4% catchment-slope guideline and the field result for sand dams. Eight of nine dams in the survey’s 2–5% class had no water at assessment. The authors found no clear slope–performance pattern. The survey used a different interval and does not establish a replacement optimum or a riverbed-gradient rule. |
+| WOCAT (2013), PDF p. 88, printed p. 75 | Retain 1–10% site slopes with 150–600 mm annual rainfall for cultivated earthen reservoirs/tanks. The tank bed can support crops on residual moisture. Excavated farm ponds are described separately. |
+| Singh, Jha & Chowdary (2017), Table 3, PDF p. 3 | Keep the regional harvesting-potential classes before structure siting: 0–1% very high, 1–3% high, 3–5% moderate, 5–10% low. Class weights are 8, 7, 5 and 3 (normalised to 0.348, 0.304, 0.217 and 0.131). The overall slope criterion has weight 0.348. Above 10% the table supplies no ranking. |
+| Vema et al. (2019), Table 2, Fig. 1 and §3.3 | Keep the overlapping low (0, 0, 5, 10), medium (5, 10, 20, 30) and high (20, 30, 100, 100) fuzzy slope inputs in percent grade. The model combines permeability, slope and runoff through 27 rules. Study terrain spans 0–11.97% grade. Preserve the separate storage and recharge outcomes. |
+
+At 16% grade Kadam’s gully-plug range applies, its check-dam criterion is exceeded, and Karimi assigns its fourth pond-model class. A single maximum would erase these distinctions. Retain published interval boundaries and uncertainty. Local terrain slope and upstream catchment slope also describe different spatial supports. A terrain layer in degrees needs conversion to percent grade (100 times the tangent of the angle in radians) for the local comparisons. Ngugi’s catchment guideline also needs a delineated catchment and a verified slope statistic.
+
+The [synthesis run record](runoff_slope_run.json) pins the source profiles, accepted mapping, baseline, agent prompts, model and reasoning effort.
